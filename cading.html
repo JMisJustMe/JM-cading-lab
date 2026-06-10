@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Theomidul / zeze.nwona Cading Linear Prototype v1.0</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#0d1017;color:#f6f7fb;line-height:1.45;color-scheme:dark}
+body{margin:0;padding:16px;max-width:1160px;margin-inline:auto}
+header,section{background:#171b25;border:1px solid #2b3346;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 10px 28px #0005}
+h1,h2,h3{margin-top:0} h1{font-size:1.35rem} h2{font-size:1.08rem}
+textarea,input{width:100%;border-radius:14px;border:1px solid #3b455e;padding:12px;box-sizing:border-box;background:#0a0e15;color:#f6f7fb;font:1rem ui-monospace,Menlo,Consolas,monospace}
+textarea{min-height:105px;resize:vertical}
+button{border:0;border-radius:999px;padding:10px 14px;margin:8px 8px 0 0;cursor:pointer;font-weight:800;background:#f6f7fb;color:#10131a}
+button.secondary{background:#2a3142;color:#f6f7fb;border:1px solid #3b455e}
+button.danger{background:#5d2632;color:#fff;border:1px solid #7c3445}
+pre{overflow:auto;background:#0a0e15;border:1px solid #2b3346;border-radius:14px;padding:12px;color:#dfe7ff;white-space:pre-wrap;max-height:480px}
+code{background:#0a0e15;border:1px solid #2b3346;border-radius:6px;padding:1px 5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:10px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.card{background:#0a0e15;border:1px solid #2b3346;border-radius:14px;padding:12px}
+.pill{display:inline-block;padding:3px 8px;border-radius:999px;background:#0a0e15;border:1px solid #2b3346;margin:2px 4px 2px 0;font-size:.86rem}
+.tiny{opacity:.78;font-size:.92rem}.ok{color:#8ff0a4;font-weight:900}.warn{color:#ffd479;font-weight:900}.bad{color:#ff8f8f;font-weight:900}
+table{width:100%;border-collapse:collapse}th,td{border:1px solid #2b3346;padding:8px;vertical-align:top}th{background:#0a0e15}
+</style>
+</head>
+<body>
+<header>
+<h1>Theomidul / zeze.nwona Cading Linear Prototype v1.0</h1>
+<p>This completes v0.4 → v1.0 linearly: real-use feed, multi-line grammar, field tests, Fresh App Lab bridge, workspace, field-test candidate, and first complete prototype.</p>
+<p class="tiny"><b>Boundary:</b> first complete prototype; not full compiler, production language, public release, or diagnostic tool.</p>
+<p><span class="pill">v0.4 Feed Parser</span><span class="pill">v0.5 Multi-line</span><span class="pill">v0.6 Tests</span><span class="pill">v0.7 Bridge</span><span class="pill">v0.8 Workspace</span><span class="pill">v0.9 Field-Test</span><span class="pill">v1.0 Prototype</span></p>
+</header>
+
+<section><h2>Linear Stage Map</h2><div id="stageCards" class="grid"></div></section>
+
+<section><h2>1. Cading Line Parser</h2>
+<textarea id="lineInput">Zzza, za-zuh, zuzz = zeze.nwona.✓</textarea>
+<button onclick="runLine()">Parse cading line</button>
+<button class="secondary" onclick="setLine('TheOnly {pre}, Theought.all.native {post}.✓')">Pre/Post</button>
+<button class="secondary" onclick="setLine('32÷×& = free.to.divide.timesand.✓')">∅ candidate</button>
+<button class="secondary" onclick="setLine('Zzza, za-zuh.')">Foolstopped</button>
+<div class="two"><pre id="lineResult"></pre><pre id="lineAction"></pre></div></section>
+
+<section><h2>2. v0.4 Real-Use Feed Parser</h2>
+<p class="tiny">Paste real human text. It separates route-states; it does not diagnose.</p>
+<textarea id="feedInput">feeling down for a while, focused awareness, powerless around things I cannot change, bored or less jovial, too much thinking, not enough pre-planned meaning</textarea>
+<button onclick="runFeed()">Parse feed</button>
+<button class="secondary" onclick="loadFeed1()">Feed 001</button>
+<button class="secondary" onclick="loadBug()">Bug/stitch</button>
+<button class="secondary" onclick="loadCost()">Cost/effect</button>
+<pre id="feedResult"></pre></section>
+
+<section><h2>3. v0.5 Multi-line Parser</h2>
+<textarea id="multiInput">Zzza, za-zuh, zuzz = zeze.nwona.✓
+idea Ø, NOTA = observe.✓
+TheOnly {pre}, Theought.all.native {post}.✓</textarea>
+<button onclick="runMulti()">Parse multi-line</button><pre id="multiResult"></pre></section>
+
+<section><h2>4. v0.6 Test Suite</h2><button onclick="runTests()">Run all tests</button><pre id="testResult"></pre></section>
+<section><h2>5. v0.7 Fresh App Lab Bridge</h2><button onclick="bridge()">Generate bridge packet</button><pre id="bridgeResult"></pre></section>
+
+<section><h2>6. v0.8 Workspace</h2>
+<button onclick="saveWS()">Save locally</button><button class="secondary" onclick="loadWS()">Load</button><button class="secondary" onclick="exportWS()">Export JSON</button><button class="danger" onclick="clearWS()">Clear</button>
+<textarea id="importBox" placeholder="Paste exported workspace JSON here"></textarea><button onclick="importWS()">Import</button><pre id="workspaceResult"></pre></section>
+
+<section><h2>7. Operator Dictionary</h2><table><thead><tr><th>Mark</th><th>Name</th><th>Spec</th><th>Code</th><th>Reality</th></tr></thead><tbody id="dictionary"></tbody></table></section>
+<section><h2>8. v1.0 Proof Receipt</h2><button onclick="receipt()">Generate receipt</button><pre id="receiptResult"></pre></section>
+
+<script>
+const VERSION="1.0";
+const STAGES=[
+["v0.4","Real-Use Feed Parser","Takes human/contact-field material and separates route-states without diagnosis."],
+["v0.5","Multi-line Grammar","Parses multiple cading lines as a sequence."],
+["v0.6","Real-Use Tests","Tests parser, speech variants, bug/stitch chains, mental-state wording, and consequence chains."],
+["v0.7","Fresh App Lab Bridge","Creates bridge packet for later integration into the 12-room app."],
+["v0.8","Workspace Save/Load","Local save/export/import path proves a small working app body."],
+["v0.9","Field-Test Candidate","Usable enough for repeated real-use testing."],
+["v1.0","First Complete Prototype","Bounded first end-stage: usable, testable, exportable."]
+];
+const OPS=[
+[",","Comma Travel","travel-pause / traverse-junction","split items; keep grouped as travel-chain","lets variation continue without instant rejection"],
+[".","Foolstopped","questionable stop / premature-ending detector","marks stop needing validation","catches endings that stopped too soon"],
+[".✓","Fullstopped","validated completion for this stage","sets accepted completion","separates checked stop from rushed stop"],
+["Ø","Purposeful Gap","gap given purpose / held contact","marks uncertainty as held","prevents premature Ding"],
+["32÷×&","free.to.divide.timesand / ∅ candidate","free divide-timesand field","detects open field representative","inspects without false closure"],
+["=","Speakuals","relation becomes speakable","maps left to right landing","turns relation into usable expression"],
+["✓","Confirmation","stage confirmation, not eternal truth","sets proceed state","allows movement without overclaiming"],
+["NOTA","notake.observe.tally.analyse","observe without taking","produces audit log","audit without over-owning source"],
+["{pre}","TheOnly pre-state","source-specific condition","tags source condition","keeps origin visible"],
+["{post}","Theought.all.native post-state","alternative/native aligned outcome","tags aligned outcome","marks right-fit other-way"]
+];
+const FEED=[
+["low_state",["down","sad","low","negative","less jovial","depressed","depression"],"low mood / low-state language"],
+["focused_awareness",["aware","awareness","asking","question","focused","focus"],"focused awareness around state"],
+["helpless_powerless",["powerless","helpless","cannot change","can't change","cant change","stuck"],"powerlessness / helplessness signal"],
+["boredom_temperament",["bored","boredom","temperament","baseline"],"boredom or baseline temperament distinction"],
+["overthinking",["thinking","overthink","too much time","analyse","analyze"],"repeated thought-focus / analysis pressure"],
+["meaning_pressure",["meaning","pre-planned","dictated","purpose"],"meaning-pressure / lack of pre-given meaning"],
+["chain_effect",["chain","effect","cost","consequence","long-term","regret","distortion","bug","stitch"],"cause/effect chain"],
+["risk_escalation",["unsafe","suicide","kill myself","end it","not want to be here","harm myself"],"possible immediate safety risk"]
+];
+let state={};
+
+function setLine(t){document.getElementById("lineInput").value=t;runLine();}
+function detectCompletion(raw){let line=String(raw||"").trim(),c={symbol:null,name:"open",state:"not_stopped"},w=[],tok=[];if(line.endsWith(".✓")){c={symbol:".✓",name:"fullstopped",state:"validated_enough_for_now"};tok.push(".✓");line=line.slice(0,-2).trim()}else if(line.endsWith(".")){c={symbol:".",name:"foolstopped",state:"questionable_stop"};tok.push(".");w.push("line_stopped_without_validation");line=line.slice(0,-1).trim()}else if(line.endsWith("✓")){c={symbol:"✓",name:"confirmation",state:"confirmed_but_stop_missing"};tok.push("✓");w.push("confirmation_without_fullstop");line=line.slice(0,-1).trim()}else w.push("no_stop_operator_found");return{line,completion:c,warnings:w,tokens:tok}}
+function opObj(op){return{"Ø":{symbol:"Ø",name:"purposeful_gap",state:"held_contact_before_claim"},"32÷×&":{symbol:"32÷×&",name:"free.to.divide.timesand",state:"free_divide_timesand_field"},"NOTA":{symbol:"NOTA",name:"notake.observe.tally.analyse",state:"observation_without_taking"},"{pre}":{symbol:"{pre}",name:"TheOnly_pre",state:"source_condition"},"{post}":{symbol:"{post}",name:"Theought_all_native_post",state:"native_aligned_outcome"}}[op]}
+function key(op){return{"Ø":"purposeful_gap","32÷×&":"free_field","NOTA":"NOTA","{pre}":"pre_state","{post}":"post_state"}[op]}
+function parseLine(rawInput){
+ const raw=String(rawInput||"").trim(),r={version:VERSION,raw_input:raw,tokens_detected:[],operators:{},left:null,landing:null,variants:[],syntax_pattern:"unknown",meaning_read:"",plain_english:"",reality_use:"",warnings:[],distortion_score:0,status:"unknown"};
+ if(!raw){r.status="fail";r.warnings.push("empty_input");r.distortion_score=4;r.meaning_read="No input was given.";r.plain_english="Nothing to parse.";r.reality_use="Blocks empty input before false meaning is invented.";r.NOTA=nota(r);return r}
+ const comp=detectCompletion(raw);let line=comp.line;r.operators.completion=comp.completion;r.tokens_detected.push(...comp.tokens);r.warnings.push(...comp.warnings);
+ if(comp.completion.name==="foolstopped")r.distortion_score=Math.max(r.distortion_score,2); if(comp.completion.name==="open")r.distortion_score=Math.max(r.distortion_score,1);
+ ["Ø","32÷×&","NOTA","{pre}","{post}"].forEach(op=>{if(raw.includes(op)){r.tokens_detected.push(op);r.operators[key(op)]=opObj(op)}});
+ const eq=line.indexOf("="); if((line.match(/=/g)||[]).length>1){r.warnings.push("multiple_speakuals_operators_found");r.distortion_score=Math.max(r.distortion_score,3)}
+ if(eq!==-1){r.tokens_detected.push("=");r.operators.relation={symbol:"=",name:"speakuals",state:"left_becomes_speakable_as_right"};r.left=line.slice(0,eq).trim();r.landing=line.slice(eq+1).trim()||null;if(!r.landing){r.warnings.push("speakuals_missing_landing");r.distortion_score=4}}else{r.left=line;r.warnings.push("no_speakuals_operator_found");r.distortion_score=Math.max(r.distortion_score,2)}
+ if(r.left&&r.left.includes(",")){r.tokens_detected.push(",");r.operators.travel={symbol:",",name:"comma_travel",state:"travel_chain"};r.variants=r.left.split(",").map(x=>x.trim()).filter(Boolean)}else{r.operators.travel={symbol:null,name:"single_item",state:"no_comma_chain"};r.variants=r.left?[r.left].filter(Boolean):[]}
+ classify(r);r.distortion_read=dist(r.distortion_score);r.NOTA=nota(r);r.tokens_detected=[...new Set(r.tokens_detected)];return r
+}
+function classify(r){
+ const full=r.operators.completion.name==="fullstopped",fool=r.operators.completion.name==="foolstopped",land=!!r.landing,prepost=!!(r.operators.pre_state&&r.operators.post_state);
+ if(r.distortion_score>=4){r.status="warning";r.syntax_pattern="blocked_or_high_distortion";r.meaning_read="High distortion or missing landing.";r.plain_english="Something important is absent or misrouted.";r.reality_use="Stops broken line becoming false completion.";return}
+ if(prepost&&full){r.status="pass";r.syntax_pattern="pre_post_fullstopped";r.meaning_read="A pre-state travels into a native post-state and is validated.";r.plain_english="Source condition shown, then native alternative/right-fit outcome marked.";r.reality_use="Separates source from aligned outcome.";r.distortion_score=Math.max(r.distortion_score,1);return}
+ if(r.operators.free_field&&land&&full){r.status="pass";r.syntax_pattern="free_divide_timesand_speakuals_fullstopped";r.meaning_read="The free divide-timesand field becomes speakuals as a named landing.";r.plain_english="The ∅ candidate is represented as "+r.landing+".";r.reality_use="Gives open field a testable representative.";r.distortion_score=Math.max(r.distortion_score,1);return}
+ if((r.operators.purposeful_gap||r.operators.NOTA)&&land&&full){r.status="pass";r.syntax_pattern="gap_nota_speakuals_fullstopped";r.meaning_read="Purposeful gap or NOTA observation lands cleanly.";r.plain_english="Unclear material is held/observed, then mapped.";r.reality_use="Audit without over-taking source.";r.distortion_score=Math.max(r.distortion_score,1);return}
+ if(r.variants.length>1&&land&&full){r.status="pass";r.syntax_pattern="travel_chain_speakuals_fullstopped";r.meaning_read="A travel-chain lands through speakuals and is fullstopped.";r.plain_english="Items travel together and become speakable as "+r.landing+".";r.reality_use="Keeps variants connected while checking landing.";r.distortion_score=Math.max(r.distortion_score,1);return}
+ if(r.variants.length>1&&!land&&fool){r.status="warning";r.syntax_pattern="travel_chain_foolstopped_without_landing";r.meaning_read="Travel-chain stopped before landing.";r.plain_english="Line began moving then stopped before landing.";r.reality_use="Catches premature stopping.";r.warnings.push("travel_chain_stopped_without_landing");r.distortion_score=Math.max(r.distortion_score,3);return}
+ if(land&&full){r.status="pass";r.syntax_pattern="single_speakuals_fullstopped";r.meaning_read="A statement lands through speakuals and is fullstopped.";r.plain_english="Left side becomes speakable as "+r.landing+".";r.reality_use="Turns relation into usable expression.";r.distortion_score=Math.max(r.distortion_score,1);return}
+ if(fool){r.status="warning";r.syntax_pattern="foolstopped";r.meaning_read="The line stopped, but the stop is questionable.";r.plain_english="This may have ended too soon.";r.reality_use="Catches early conclusions.";r.distortion_score=Math.max(r.distortion_score,2);return}
+ r.status=r.distortion_score>=3?"warning":"partial";r.syntax_pattern="partial_or_open";r.meaning_read="Partly readable but not cleanly validated.";r.plain_english="More structure needed before complete.";r.reality_use="Holds unclear material instead of false Ding."
+}
+function interpret(p){let a={version:VERSION,primary_action:"HOLD_IN_Ø",secondary_actions:["NOTA_LOG"],adingur:false,adinga:false,proceed:false,explanation:""};if(p.status==="fail"||p.distortion_score>=4){a.primary_action="ADINGUR_BLOCK";a.adingur=true;a.explanation="Block false claim or missing landing.";return a}if(p.status==="pass"&&p.operators.completion.name==="fullstopped"){a.primary_action="ACCEPT_LANDING";a.proceed=true;a.explanation="Clean enough landing and validated stop.";return a}if(p.operators.completion.name==="foolstopped"){a.primary_action="ADINGA_REFORM";a.adinga=true;a.explanation="Stopped early or questionably; reform.";return a}a.explanation="Readable but open; hold in Ø.";return a}
+function dist(s){return["0: no visible distortion","1: tiny trace / acceptable variation","2: pattern wobble / needs watching","3: visible misalignment / repair route needed","4: irrefutable distortion / system-law candidate"][Math.max(0,Math.min(4,s))]}
+function nota(r){return{notake:"no premature ownership or final claim",observe:"tokens/operators/warnings/syntax recorded",tally:{token_count:r.tokens_detected.length,variant_count:r.variants.length,warning_count:r.warnings.length},analyse:{status:r.status,syntax_pattern:r.syntax_pattern,distortion_score:r.distortion_score,distortion_read:dist(r.distortion_score)}}}
+function parseFeed(text){
+ const raw=String(text||"").trim(),lower=raw.toLowerCase(),det=[];FEED.forEach(([key,words,note])=>{const hits=words.filter(w=>lower.includes(w));if(hits.length)det.push({key,note,hits})});
+ const clauses=raw.split(/[,.;
+]+/).map(x=>x.trim()).filter(Boolean),risk=det.some(d=>d.key==="risk_escalation");let status="pass",action="NOTA_LOG",score=Math.min(4,Math.max(1,Math.ceil(det.length/2))),plain="Feed separated into route-states without final diagnosis.";
+ if(!raw){status="fail";action="ADINGUR_BLOCK";score=4;plain="No feed supplied."} else if(risk){status="warning";action="SAFETY_ESCALATION";score=4;plain="Possible safety-risk language detected."} else if(det.length>=5){action="CHAIN_MAP";plain="Multiple route-states detected; map as a chain rather than one flat word."} else if(det.length>=2){action="SEPARATE_STATES";plain="Several route-states detected; separate before conclusion."} else {status="partial";action="HOLD_IN_Ø";plain="Limited signal; hold in Ø."}
+ return{version:VERSION,raw_input:raw,clauses,detected_route_states:det,status,action,distortion_score:score,distortion_read:dist(score),plain_english:plain,reality_use:"Separates lived material before conclusion.",safety_boundary:risk?"If someone may be unsafe or at risk of self-harm, contact emergency services, a crisis line, or a trusted person nearby immediately.":"Not a diagnosis; route map for conversation/reflection/support decisions.",NOTA:{notake:"do not diagnose or over-own",observe:"notice words/chains/pressure",tally:{clause_count:clauses.length,route_state_count:det.length},analyse:plain}}
+}
+function parseMulti(text){const lines=String(text||"").split(/
++/).map(x=>x.trim()).filter(Boolean),items=lines.map((line,i)=>{const p=parseLine(line),a=interpret(p);return{index:i+1,line,parsed:p,action_plan:a}}),pass=items.filter(x=>x.parsed.status==="pass").length,warn=items.filter(x=>x.parsed.status==="warning").length,high=items.filter(x=>x.parsed.distortion_score>=4).length;return{version:VERSION,line_count:lines.length,overall_status:high?"warning":(pass===items.length?"pass":"partial"),pass_count:pass,warning_count:warn,high_distortion_count:high,sequence_read:"Multi-line block parsed linearly; each line keeps its own action.",lines:items,NOTA:{notake:"do not collapse separate lines into one claim",observe:"each line parsed independently",tally:{line_count:lines.length,pass_count:pass,warning_count:warn,high_distortion_count:high},analyse:high?"warning":(pass===items.length?"pass":"partial")}}}
+function runLine(){const p=parseLine(document.getElementById("lineInput").value),a=interpret(p);state.latestLine={parsed:p,action_plan:a};lineResult.textContent=JSON.stringify(p,null,2);lineAction.textContent=JSON.stringify(a,null,2)}
+function runFeed(){const f=parseFeed(feedInput.value);state.latestFeed=f;feedResult.textContent=JSON.stringify(f,null,2)}
+function runMulti(){const m=parseMulti(multiInput.value);state.latestMulti=m;multiResult.textContent=JSON.stringify(m,null,2)}
+function loadFeed1(){feedInput.value="focused awareness around feeling down, possible depression question, feeling down after time, powerless or helpless around things one cannot change, different from boredom or baseline temperament, too much thinking, not enough pre-planned/dictated meaning";runFeed()}
+function loadBug(){feedInput.value="cross-stitch mistake, small distortion, whole pattern affected later, bug chain, how bad really is the distortion, repair before tangle";runFeed()}
+function loadCost(){feedInput.value="cost and effect, effort, long-term thinking, chain reaction, consequence, regret, creator realising impact later";runFeed()}
+function runTests(){const lines=[["Z","Zzza, za-zuh, zuzz = zeze.nwona.✓","pass"],["Fool","Zzza, za-zuh.","warning"],["Pre","TheOnly {pre}, Theought.all.native {post}.✓","pass"],["Free","32÷×& = free.to.divide.timesand.✓","pass"],["Missing","Zzza, za-zuh =","warning"]].map(t=>{const p=parseLine(t[1]),a=interpret(p);return{name:t[0],input:t[1],expected:t[2],actual:p.status,action:a.primary_action,pass:p.status===t[2]}});const feeds=[["Feed","feeling down, powerless, helpless, overthinking, meaning","pass"],["Sparse","hmm","partial"],["Safety","unsafe and harm myself","warning"]].map(t=>{const p=parseFeed(t[1]);return{name:t[0],input:t[1],expected:t[2],actual:p.status,action:p.action,pass:p.status===t[2]}});const m=parseMulti("Zzza, za-zuh, zuzz = zeze.nwona.✓\nidea Ø, NOTA = observe.✓");const all=[...lines,...feeds,{name:"Multi-line",expected:"pass",actual:m.overall_status,pass:m.overall_status==="pass"}];const s={version:VERSION,passed:all.filter(x=>x.pass).length,total:all.length,suite_pass:all.every(x=>x.pass),results:all};state.latestTests=s;testResult.textContent=JSON.stringify(s,null,2)}
+function bridge(){const p={version:VERSION,target:"JM Fresh App Lab",bridge_name:"Cading Lab / zeze.nwona Real-Use Feed Parser",rooms_suggested:{"Learning Route":"teach operators and coding lessons","Trace Timeline":"store NOTA/distortion/receipts","Beat Grid":"future lyric/rhythm tests","DIY RouteForge":"parser/interpreter routes","Portfolio Prism":"public-safe explanation"},embed_method:"single HTML section/module later",warning:"Bridge as layer; do not merge everything."};state.latestBridge=p;bridgeResult.textContent=JSON.stringify(p,null,2)}
+function workspace(){return{version:VERSION,saved_at:new Date().toISOString(),inputs:{line:lineInput.value,feed:feedInput.value,multi:multiInput.value},state}}
+function saveWS(){const w=workspace();localStorage.setItem("cading_linear_v1_workspace",JSON.stringify(w));workspaceResult.textContent=JSON.stringify({saved:true,workspace:w},null,2)}
+function loadWS(){const raw=localStorage.getItem("cading_linear_v1_workspace");if(!raw){workspaceResult.textContent="No workspace saved.";return}const w=JSON.parse(raw);applyWS(w);workspaceResult.textContent=JSON.stringify({loaded:true,workspace:w},null,2)}
+function applyWS(w){if(w.inputs){lineInput.value=w.inputs.line||"";feedInput.value=w.inputs.feed||"";multiInput.value=w.inputs.multi||""}state=w.state||state;runLine();runFeed();runMulti()}
+function exportWS(){download(workspace(),"cading_linear_v1_workspace.json")}
+function clearWS(){localStorage.removeItem("cading_linear_v1_workspace");workspaceResult.textContent="Workspace cleared."}
+function importWS(){try{const w=JSON.parse(importBox.value);applyWS(w);workspaceResult.textContent=JSON.stringify({imported:true,workspace:w},null,2)}catch(e){workspaceResult.textContent="Import failed: "+e}}
+function receipt(){const r={version:VERSION,status:"FIRST_COMPLETE_PROTOTYPE",stage_status:STAGES,current_state:state,truth_boundary:"Usable early prototype, not full compiler/public language/medical tool.",cold_ding:"v0.4-v1.0 completed linearly; cading now has line parser, feed parser, multi-line parser, tests, bridge packet, workspace, and proof receipt."};receiptResult.textContent=JSON.stringify(r,null,2)}
+function download(data,name){const b=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u)}
+function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function render(){stageCards.innerHTML=STAGES.map(s=>`<div class="card"><h3>${s[0]} — ${s[1]} ✅</h3><p>${s[2]}</p></div>`).join("");dictionary.innerHTML=OPS.map(o=>`<tr><td><code>${esc(o[0])}</code></td><td>${esc(o[1])}</td><td>${esc(o[2])}</td><td>${esc(o[3])}</td><td>${esc(o[4])}</td></tr>`).join("");runLine();runFeed();runMulti();runTests();bridge();receipt()}
+render();
+</script>
+</body>
+</html>

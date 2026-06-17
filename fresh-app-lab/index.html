@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>JM Fresh App Lab — Single File v0.2</title>
+<style>
+*{box-sizing:border-box} :root{--bg:#050505;--panel:rgba(255,255,255,.08);--line:rgba(255,255,255,.18);--ink:#f8f8f8;--muted:rgba(255,255,255,.72);--hot:#8cfffb;--warm:#ffef8a;--pink:#ff6bd6;--green:#89ff75;--orange:#ffa51f;--red:#ff4f64;--purple:#b599ff}
+body{margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,Arial,sans-serif;background:radial-gradient(circle at 10% 0%,#1e3347 0,#050505 38%),radial-gradient(circle at 92% 14%,#3a1430 0,#050505 43%);color:var(--ink)}
+button,input,textarea,select{font:inherit} button{border:0;border-radius:14px;padding:10px 12px;background:var(--hot);color:#031015;font-weight:950;cursor:pointer}button:hover{filter:brightness(1.08)}button.secondary{background:rgba(255,255,255,.12);color:#fff;border:1px solid var(--line)}button.danger{background:var(--red);color:#fff}input,textarea,select{width:100%;border:1px solid rgba(255,255,255,.24);background:rgba(0,0,0,.28);color:#fff;border-radius:14px;padding:10px;margin:6px 0}textarea{min-height:82px;resize:vertical}select option{color:#111}.wrap{max-width:1240px;margin:auto;padding:14px}.hero{border:1px solid var(--line);border-radius:30px;padding:20px;background:linear-gradient(135deg,rgba(255,255,255,.13),rgba(255,255,255,.04));box-shadow:0 28px 80px rgba(0,0,0,.35);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;right:-80px;bottom:-120px;width:310px;height:310px;background:radial-gradient(circle,var(--hot),transparent 68%);opacity:.16}.eyebrow{display:inline-flex;border:1px solid var(--hot);color:var(--hot);border-radius:999px;padding:8px 12px;font-size:13px;text-transform:uppercase;font-weight:950;letter-spacing:.04em}h1{font-size:clamp(38px,9vw,104px);line-height:.82;margin:14px 0 10px;letter-spacing:-.075em;text-transform:uppercase;max-width:1000px}h2{font-size:clamp(26px,5vw,48px);line-height:.9;letter-spacing:-.05em;margin:0 0 6px}h3{margin:0 0 8px;font-size:22px}.lede{font-size:clamp(16px,2vw,22px);color:var(--muted);line-height:1.35;max-width:900px}.pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.pill{border:1px solid var(--line);border-radius:999px;padding:9px 12px;background:rgba(0,0,0,.24);color:var(--muted);font-weight:850}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:16px 0}.hub{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}.card{border:1px solid var(--line);border-radius:24px;padding:16px;background:var(--panel);box-shadow:0 18px 48px rgba(0,0,0,.24)}.hub .card{min-height:230px;display:flex;flex-direction:column;justify-content:space-between}.card:hover{border-color:rgba(140,255,251,.75)}.num{font-size:34px;font-weight:1000;color:var(--warm);letter-spacing:-.08em}.kind{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:6px 9px;color:var(--muted);font-size:12px;font-weight:950;text-transform:uppercase}.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}.desc{color:var(--muted);line-height:1.35}.app{display:none}.app.active{display:block}.appHead{border:1px solid var(--line);border-radius:26px;padding:16px;background:rgba(255,255,255,.10);margin:12px 0 14px}.appGrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.appGrid.three{grid-template-columns:repeat(3,1fr)}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.item{padding:11px;border-radius:15px;margin:8px 0;background:rgba(0,0,0,.25);border-left:5px solid var(--hot);overflow-wrap:anywhere}.tiny{font-size:13px;color:var(--muted)}.metric{font-size:40px;font-weight:1000;color:var(--hot);line-height:1}.hidden{display:none!important}.footer{margin:14px 0 0;padding:14px;border:1px solid var(--line);border-radius:22px;background:rgba(0,0,0,.22);color:var(--muted)}hr{border:0;border-top:1px solid var(--line);margin:10px 0}.accent-red{--hot:var(--red)}.accent-cyan{--hot:#00e5ff}.accent-yellow{--hot:#f8ff00}.accent-pink{--hot:#ff7ad9}.accent-green{--hot:#79ff6b}.accent-orange{--hot:#ff9d00}.accent-purple{--hot:#a98bff}.accent-mint{--hot:#00ffb3}.accent-white{--hot:#fff}.accent-body{--hot:#ff4f9a}.accent-sport{--hot:#1cff00}.accent-gold{--hot:#ffefb0}
+@media(max-width:900px){.hub,.appGrid,.appGrid.three{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.wrap{padding:10px}.hero,.appHead{border-radius:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <span class="eyebrow">JM Fresh App Lab // Single File v0.2</span>
+    <h1>12 Apps. One Page. No Dead Routes.</h1>
+    <p class="lede">This version does not rely on separate HTML files, folder links, or a missing index route. The launcher and all 12 interactable app bodies live inside this one file.</p>
+    <div class="pills"><span class="pill">Single-file repair</span><span class="pill">Local state enabled</span><span class="pill">API parked</span><span class="pill">Phone-first click-test</span></div>
+  </section>
+
+  <section class="toolbar">
+    <input id="hubSearch" placeholder="Search apps: task, beat, debate, body, portfolio..." />
+    <button id="showHubBtn">Show hub</button>
+    <button class="secondary" id="copyLabReportBtn">Copy lab report</button>
+  </section>
+
+  <section id="hub" class="hub" aria-label="App launcher"></section>
+
+  <section id="apps">
+    <section class="app accent-red" id="app-task">
+      <div class="appHead"><div class="topline"><span class="kind">01 // Build rhythm</span><button class="secondary" data-back>Back to hub</button></div><h2>Task Pulse</h2><p class="desc">Capture tasks, sort by lane, mark done, and keep a receipt of dings.</p></div>
+      <div class="appGrid"><div class="card"><h3>Capture Task</h3><input id="tpTask" placeholder="What needs doing?"><select id="tpLane"><option>Build</option><option>Polish</option><option>Archive</option><option>Park</option></select><div class="row"><button id="tpAdd">Add + Ding</button><button class="secondary" id="tpClearDone">Clear Done</button></div><div id="tpTasks"></div></div><div class="card"><h3>Live Counts</h3><div class="metric" id="tpOpenCount">0</div><p>open tasks</p><div class="metric" id="tpDingCount">0</div><p>dings recorded</p><textarea id="tpReceipt" readonly></textarea></div></div>
+    </section>
+
+    <section class="app accent-cyan" id="app-flex">
+      <div class="appHead"><div class="topline"><span class="kind">02 // Utility bench</span><button class="secondary" data-back>Back to hub</button></div><h2>Flex Toolkit</h2><p class="desc">Calculator, quick converter, and rule builder.</p></div>
+      <div class="appGrid three"><div class="card"><h3>Custom Calculator</h3><input id="fxA" type="number" placeholder="A"><input id="fxB" type="number" placeholder="B"><select id="fxOp"><option>+</option><option>-</option><option>*</option><option>/</option><option>%</option></select><button id="fxCalc">Calculate</button><div class="metric" id="fxResult">—</div></div><div class="card"><h3>Unit-ish Converter</h3><input id="fxUnit" type="number" placeholder="Value"><button id="fxConv">x2 / half / square</button><div id="fxConvOut"></div></div><div class="card"><h3>Rule Builder</h3><input id="fxRule" placeholder="When X happens, do Y"><button id="fxAddRule">Save Rule</button><div id="fxRules"></div></div></div>
+    </section>
+
+    <section class="app accent-yellow" id="app-diy">
+      <div class="appHead"><div class="topline"><span class="kind">03 // Build route</span><button class="secondary" data-back>Back to hub</button></div><h2>DIY RouteForge</h2><p class="desc">Turn materials and steps into a dingable project route.</p></div>
+      <div class="appGrid"><div class="card"><h3>Build a Project Route</h3><input id="diyName" placeholder="Project name"><textarea id="diyMaterials" placeholder="Materials / tools, one per line"></textarea><textarea id="diySteps" placeholder="Steps, one per line"></textarea><button id="diyMake">Generate Route</button></div><div class="card"><h3>Route Board</h3><div id="diyPlan"></div></div></div>
+    </section>
+
+    <section class="app accent-pink" id="app-social">
+      <div class="appHead"><div class="topline"><span class="kind">04 // Public signal</span><button class="secondary" data-back>Back to hub</button></div><h2>Social SparkHub</h2><p class="desc">Build posts, preview/copy, and queue ideas.</p></div>
+      <div class="appGrid three"><div class="card"><h3>Post Builder</h3><input id="ssHook" placeholder="Opening hook"><textarea id="ssBody" placeholder="What happened / what changed?"></textarea><input id="ssTagline" placeholder="Call to action"><button id="ssCompose">Compose Post</button></div><div class="card"><h3>Preview</h3><textarea id="ssPost"></textarea><button id="ssCopy">Copy</button><p class="tiny" id="ssCopyStatus"></p></div><div class="card"><h3>Content Queue</h3><button id="ssQueue">Queue Preview</button><div id="ssQueueList"></div></div></div>
+    </section>
+
+    <section class="app accent-green" id="app-nearby">
+      <div class="appHead"><div class="topline"><span class="kind">05 // Place field</span><button class="secondary" data-back>Back to hub</button></div><h2>Nearby Radar</h2><p class="desc">Capture useful nearby places and optional location note.</p></div>
+      <div class="appGrid"><div class="card"><h3>Place Capture</h3><input id="nbPlace" placeholder="Place / thing nearby"><select id="nbType"><option>Food</option><option>Shop</option><option>Park</option><option>Event</option><option>Useful</option></select><input id="nbDistance" placeholder="Distance / note"><button id="nbAdd">Add Nearby</button><button class="secondary" id="nbGeo">Use My Location</button><p id="nbGeoOut" class="tiny"></p></div><div class="card"><h3>Local List</h3><div id="nbPlaces"></div></div></div>
+    </section>
+
+    <section class="app accent-orange" id="app-beat">
+      <div class="appHead"><div class="topline"><span class="kind">06 // Sound route</span><button class="secondary" data-back>Back to hub</button></div><h2>Beat Grid</h2><p class="desc">Tap pads, type frequency patterns, save loops.</p></div>
+      <div class="appGrid"><div class="card"><h3>Beat Pads</h3><div class="row"><button data-tone="120">Kick</button><button data-tone="220">Snare</button><button data-tone="440">Hat</button><button data-tone="660">Ping</button></div><textarea id="bgPattern" placeholder="Type numbers like: 120 220 440 660"></textarea><button id="bgPlay">Play Pattern</button></div><div class="card"><h3>Loop Log</h3><button id="bgSave">Save Pattern</button><div id="bgLoops"></div></div></div>
+    </section>
+
+    <section class="app accent-purple" id="app-trace">
+      <div class="appHead"><div class="topline"><span class="kind">07 // Evidence trail</span><button class="secondary" data-back>Back to hub</button></div><h2>Trace Timeline</h2><p class="desc">Log what happened, why, and what kind of trace it became.</p></div>
+      <div class="appGrid"><div class="card"><h3>Add Moment</h3><input id="ttMoment" placeholder="What happened?"><input id="ttWhy" placeholder="Why / cause"><select id="ttStatus"><option>Issue</option><option>Solution</option><option>Ding</option><option>Learning</option></select><button id="ttAdd">Add to Timeline</button></div><div class="card"><h3>Timeline</h3><div id="ttTimeline"></div></div></div>
+    </section>
+
+    <section class="app accent-mint" id="app-learning">
+      <div class="appHead"><div class="topline"><span class="kind">08 // Learning deck</span><button class="secondary" data-back>Back to hub</button></div><h2>Learning Route</h2><p class="desc">Create lesson cards with a simple explanation and an inside-out twist.</p></div>
+      <div class="appGrid"><div class="card"><h3>Create Lesson Card</h3><input id="lrTopic" placeholder="Topic"><textarea id="lrExplain" placeholder="Explain it simply"></textarea><input id="lrTwist" placeholder="Twist it inside out"><button id="lrAdd">Save Lesson</button></div><div class="card"><h3>Review Deck</h3><div id="lrDeck"></div></div></div>
+    </section>
+
+    <section class="app accent-white" id="app-debate">
+      <div class="appHead"><div class="topline"><span class="kind">09 // Truth test</span><button class="secondary" data-back>Back to hub</button></div><h2>Debate Arena</h2><p class="desc">Test a claim with for/against/question points and a verdict log.</p></div>
+      <div class="appGrid three"><div class="card"><h3>Claim</h3><textarea id="daClaim" placeholder="What is the argument?"></textarea><button id="daSet">Start Debate</button></div><div class="card"><h3>For / Against</h3><input id="daPoint" placeholder="Point"><select id="daSide"><option>FOR</option><option>AGAINST</option><option>QUESTION</option></select><button id="daAddPoint">Add Point</button><div id="daPoints"></div></div><div class="card"><h3>Verdict</h3><textarea id="daVerdict" placeholder="What changed after debate?"></textarea><button id="daSaveVerdict">Save Verdict Ding</button><div id="daLog"></div></div></div>
+    </section>
+
+    <section class="app accent-body" id="app-body">
+      <div class="appHead"><div class="topline"><span class="kind">10 // Body route</span><button class="secondary" data-back>Back to hub</button></div><h2>Body Motion Map</h2><p class="desc">Log body-area movement sessions in a non-diagnostic tracking route.</p></div>
+      <div class="appGrid"><div class="card"><h3>Movement Session</h3><select id="bmArea"><option>Neck</option><option>Shoulders</option><option>Back</option><option>Hips</option><option>Knees</option><option>Full body</option></select><input id="bmMove" placeholder="Movement / exercise"><input id="bmReps" placeholder="Time / reps"><button id="bmLog">Log Movement</button></div><div class="card"><h3>Body Log</h3><div class="metric" id="bmCount">0</div><p>movements logged</p><div id="bmMoves"></div></div></div>
+    </section>
+
+    <section class="app accent-sport" id="app-sports">
+      <div class="appHead"><div class="topline"><span class="kind">11 // Sports route</span><button class="secondary" data-back>Back to hub</button></div><h2>Sports Board</h2><p class="desc">Track matches, drills, sessions, and scores/results.</p></div>
+      <div class="appGrid"><div class="card"><h3>Match / Training Tracker</h3><input id="sbSport" placeholder="Sport"><input id="sbEvent" placeholder="Match, drill, session"><input id="sbScore" placeholder="Score / result"><button id="sbAdd">Add Sport Ding</button></div><div class="card"><h3>Board</h3><div id="sbSports"></div></div></div>
+    </section>
+
+    <section class="app accent-gold" id="app-portfolio">
+      <div class="appHead"><div class="topline"><span class="kind">12 // Output frame</span><button class="secondary" data-back>Back to hub</button></div><h2>Portfolio Prism</h2><p class="desc">Collect works and generate a simple public-facing bio line.</p></div>
+      <div class="appGrid three"><div class="card"><h3>Add Work</h3><input id="ppWork" placeholder="Work title"><select id="ppKind"><option>App</option><option>Music</option><option>Comic</option><option>Game</option><option>Theory</option></select><textarea id="ppDesc" placeholder="What makes it yours?"></textarea><button id="ppAdd">Add Work</button></div><div class="card"><h3>Showcase</h3><div id="ppWorks"></div></div><div class="card"><h3>Public Frame</h3><button id="ppBioBtn">Generate Bio Line</button><textarea id="ppBio"></textarea></div></div>
+    </section>
+  </section>
+
+  <section class="footer"><strong>Use note:</strong> Open this file itself. Do not click through a folder. All app bodies are embedded here, so the route should survive mobile/browser file handling much better.</section>
+</main>
+<script>
+(function(){
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const load = (key, fallback) => { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch(e) { return fallback; } };
+  const save = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const esc = (value) => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const now = () => new Date().toLocaleString();
+  const apps = [
+    ['01','Task Pulse','task','Build rhythm','Task capture, lane sorting, open count, ding receipt'],
+    ['02','Flex Toolkit','flex','Utility bench','Calculator, converter, custom rule builder'],
+    ['03','DIY RouteForge','diy','Build route','Materials, steps, route board, step dinging'],
+    ['04','Social SparkHub','social','Public signal','Post builder, preview copy, content queue'],
+    ['05','Nearby Radar','nearby','Place field','Place capture, local list, optional geolocation'],
+    ['06','Beat Grid','beat','Sound route','Audio pads, typed pattern player, loop saving'],
+    ['07','Trace Timeline','trace','Evidence trail','Moments, causes, status timeline'],
+    ['08','Learning Route','learning','Learning deck','Lesson cards, simple explanation, twist review'],
+    ['09','Debate Arena','debate','Truth test','Claim, for/against/question points, verdict log'],
+    ['10','Body Motion Map','body','Body route','Movement session logging and body area tracking'],
+    ['11','Sports Board','sports','Sports route','Match/training tracker and result board'],
+    ['12','Portfolio Prism','portfolio','Output frame','Work showcase and public bio line generator']
+  ];
+
+  function showHub(){ document.querySelectorAll('.app').forEach(a=>a.classList.remove('active')); $('hub').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+  function openApp(slug){ $('hub').classList.add('hidden'); document.querySelectorAll('.app').forEach(a=>a.classList.remove('active')); const el = $('app-'+slug); if(el) el.classList.add('active'); window.scrollTo({top:0,behavior:'smooth'}); }
+  function renderHub(){
+    const q = $('hubSearch').value.trim().toLowerCase();
+    $('hub').innerHTML = apps.filter(a => (`${a[1]} ${a[2]} ${a[3]} ${a[4]}`).toLowerCase().includes(q)).map(a => `<article class="card" data-slug="${a[2]}"><div><div class="topline"><span class="num">${a[0]}</span><span class="kind">${esc(a[3])}</span></div><h3>${esc(a[1])}</h3><p class="desc">${esc(a[4])}</p></div><button data-open="${a[2]}">Open inside this page</button></article>`).join('') || '<div class="card"><h3>No matches</h3><p class="desc">Try task, beat, debate, body, portfolio...</p></div>';
+  }
+  $('hubSearch').addEventListener('input', renderHub);
+  $('hub').addEventListener('click', e => { const btn = e.target.closest('[data-open]'); if(btn) openApp(btn.dataset.open); });
+  $('showHubBtn').addEventListener('click', showHub);
+  document.querySelectorAll('[data-back]').forEach(b => b.addEventListener('click', showHub));
+  $('copyLabReportBtn').addEventListener('click', async () => {
+    const txt = `JM Fresh App Lab Single File v0.2\nApps embedded: ${apps.length}\nGenerated: ${now()}\nStatus: one-page route, no separate file links required.`;
+    try{ await navigator.clipboard.writeText(txt); alert('Lab report copied'); } catch(e){ alert(txt); }
+  });
+
+  // 01 Task Pulse
+  let tpTasks = load('jm_tp_tasks', []), tpDings = load('jm_tp_dings', []);
+  function tpRender(){ $('tpTasks').innerHTML = tpTasks.map((x,i)=>`<div class="item"><b>${esc(x.lane)}</b> — ${esc(x.t)}<br><span class="tiny">${esc(x.at)}</span><br><button data-tp-toggle="${i}">${x.done?'Reopen':'Mark Done'}</button></div>`).join(''); $('tpOpenCount').textContent = tpTasks.filter(x=>!x.done).length; $('tpDingCount').textContent = tpDings.length; $('tpReceipt').value = tpDings.slice(-8).join('\n'); }
+  $('tpAdd').addEventListener('click',()=>{ const t=$('tpTask').value.trim(); if(!t) return; tpTasks.push({t,lane:$('tpLane').value,done:false,at:now()}); tpDings.push('Added '+t); $('tpTask').value=''; save('jm_tp_tasks',tpTasks); save('jm_tp_dings',tpDings); tpRender(); });
+  $('tpClearDone').addEventListener('click',()=>{ tpTasks=tpTasks.filter(x=>!x.done); tpDings.push('Cleared completed tasks'); save('jm_tp_tasks',tpTasks); save('jm_tp_dings',tpDings); tpRender(); });
+  $('tpTasks').addEventListener('click',e=>{ const b=e.target.closest('[data-tp-toggle]'); if(!b) return; const i=+b.dataset.tpToggle; tpTasks[i].done=!tpTasks[i].done; tpDings.push((tpTasks[i].done?'Done ':'Reopened ')+tpTasks[i].t); save('jm_tp_tasks',tpTasks); save('jm_tp_dings',tpDings); tpRender(); });
+
+  // 02 Flex Toolkit
+  let fxRules = load('jm_fx_rules', []);
+  function fxRender(){ $('fxRules').innerHTML = fxRules.map((r,i)=>`<div class="item">${esc(r)} <br><button data-fx-del="${i}">Delete</button></div>`).join(''); }
+  $('fxCalc').addEventListener('click',()=>{ const A=Number($('fxA').value), B=Number($('fxB').value); const op=$('fxOp').value; const r = op==='+'?A+B:op==='-'?A-B:op==='*'?A*B:op==='/'?(B?A/B:'No divide by zero'):(B?A%B:'No modulo zero'); $('fxResult').textContent=r; });
+  $('fxConv').addEventListener('click',()=>{ const v=Number($('fxUnit').value); $('fxConvOut').innerHTML=`<div class="item">Double: ${v*2}<br>Half: ${v/2}<br>Square: ${v*v}</div>`; });
+  $('fxAddRule').addEventListener('click',()=>{ const r=$('fxRule').value.trim(); if(!r) return; fxRules.push(r); $('fxRule').value=''; save('jm_fx_rules',fxRules); fxRender(); });
+  $('fxRules').addEventListener('click',e=>{ const b=e.target.closest('[data-fx-del]'); if(!b)return; fxRules.splice(+b.dataset.fxDel,1); save('jm_fx_rules',fxRules); fxRender(); });
+
+  // 03 DIY
+  let diyPlan = load('jm_diy_plan', null);
+  function diyRender(){ if(!diyPlan){ $('diyPlan').innerHTML=''; return; } $('diyPlan').innerHTML = `<div class="item"><h3>${esc(diyPlan.name||'Untitled build')}</h3><b>Materials:</b><ul>${diyPlan.materials.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><b>Steps:</b>${diyPlan.steps.map((x,i)=>`<div class="item">${i+1}. ${esc(x)}<br><button data-diy-ding="${i}" ${diyPlan.done[i]?'disabled':''}>${diyPlan.done[i]?'Dinged':'Ding Step'}</button></div>`).join('')}</div>`; }
+  $('diyMake').addEventListener('click',()=>{ diyPlan={name:$('diyName').value.trim(),materials:$('diyMaterials').value.split('\n').map(x=>x.trim()).filter(Boolean),steps:$('diySteps').value.split('\n').map(x=>x.trim()).filter(Boolean),done:{}}; save('jm_diy_plan',diyPlan); diyRender(); });
+  $('diyPlan').addEventListener('click',e=>{ const b=e.target.closest('[data-diy-ding]'); if(!b||!diyPlan)return; diyPlan.done[b.dataset.diyDing]=true; save('jm_diy_plan',diyPlan); diyRender(); });
+
+  // 04 Social SparkHub
+  let ssQueue = load('jm_ss_queue', []);
+  function ssRender(){ $('ssQueueList').innerHTML = ssQueue.map((x,i)=>`<div class="item">${esc(x.p).slice(0,120)}${x.p.length>120?'...':''}<br><span class="tiny">${esc(x.at)}</span><br><button data-ss-del="${i}">Posted/Delete</button></div>`).join(''); }
+  $('ssCompose').addEventListener('click',()=>{ $('ssPost').value = `${$('ssHook').value}\n\n${$('ssBody').value}\n\n${$('ssTagline').value}`.trim(); });
+  $('ssCopy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('ssPost').value); $('ssCopyStatus').textContent='Copied'; }catch(e){ $('ssCopyStatus').textContent='Copy blocked by browser — long press/select text instead.'; } });
+  $('ssQueue').addEventListener('click',()=>{ const p=$('ssPost').value.trim(); if(!p)return; ssQueue.push({p,at:now()}); save('jm_ss_queue',ssQueue); ssRender(); });
+  $('ssQueueList').addEventListener('click',e=>{ const b=e.target.closest('[data-ss-del]'); if(!b)return; ssQueue.splice(+b.dataset.ssDel,1); save('jm_ss_queue',ssQueue); ssRender(); });
+
+  // 05 Nearby
+  let nbPlaces = load('jm_nb_places', []);
+  function nbRender(){ $('nbPlaces').innerHTML = nbPlaces.map((p,i)=>`<div class="item"><b>${esc(p.type)}</b> ${esc(p.place)}<br>${esc(p.distance)}<br><span class="tiny">${esc(p.at)}</span><br><button data-nb-del="${i}">Remove</button></div>`).join(''); }
+  $('nbAdd').addEventListener('click',()=>{ const place=$('nbPlace').value.trim(); if(!place)return; nbPlaces.push({place,type:$('nbType').value,distance:$('nbDistance').value,at:now()}); $('nbPlace').value=$('nbDistance').value=''; save('jm_nb_places',nbPlaces); nbRender(); });
+  $('nbGeo').addEventListener('click',()=>{ if(!navigator.geolocation){ $('nbGeoOut').textContent='No geolocation available'; return; } navigator.geolocation.getCurrentPosition(p=>{$('nbGeoOut').textContent=`Lat ${p.coords.latitude.toFixed(4)}, Lng ${p.coords.longitude.toFixed(4)}`;},()=>{$('nbGeoOut').textContent='Location blocked/unavailable';}); });
+  $('nbPlaces').addEventListener('click',e=>{ const b=e.target.closest('[data-nb-del]'); if(!b)return; nbPlaces.splice(+b.dataset.nbDel,1); save('jm_nb_places',nbPlaces); nbRender(); });
+
+  // 06 Beat Grid
+  let audioCtx, bgLoops = load('jm_bg_loops', []);
+  function tone(f){ audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=Number(f)||220; o.connect(g); g.connect(audioCtx.destination); g.gain.setValueAtTime(.18,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.18); o.start(); o.stop(audioCtx.currentTime+.2); }
+  function bgRender(){ $('bgLoops').innerHTML = bgLoops.map((l,i)=>`<div class="item">${esc(l)}<br><button data-bg-play="${i}">Play</button><button data-bg-del="${i}" class="secondary">Delete</button></div>`).join(''); }
+  document.querySelectorAll('[data-tone]').forEach(b=>b.addEventListener('click',()=>tone(b.dataset.tone)));
+  $('bgPlay').addEventListener('click',()=>{ $('bgPattern').value.split(/\s+/).map(Number).filter(Boolean).forEach((f,i)=>setTimeout(()=>tone(f),i*180)); });
+  $('bgSave').addEventListener('click',()=>{ const p=$('bgPattern').value.trim(); if(!p)return; bgLoops.push(p); save('jm_bg_loops',bgLoops); bgRender(); });
+  $('bgLoops').addEventListener('click',e=>{ const play=e.target.closest('[data-bg-play]'), del=e.target.closest('[data-bg-del]'); if(play){ $('bgPattern').value=bgLoops[+play.dataset.bgPlay]; $('bgPlay').click(); } if(del){ bgLoops.splice(+del.dataset.bgDel,1); save('jm_bg_loops',bgLoops); bgRender(); } });
+
+  // 07 Trace Timeline
+  let ttMoments = load('jm_tt_moments', []);
+  function ttRender(){ $('ttTimeline').innerHTML = ttMoments.map((m,i)=>`<div class="item"><b>${esc(m.status)}</b> ${esc(m.moment)}<br>${esc(m.why)}<br><span class="tiny">${esc(m.at)}</span><br><button data-tt-del="${i}">Delete</button></div>`).join(''); }
+  $('ttAdd').addEventListener('click',()=>{ const moment=$('ttMoment').value.trim(); if(!moment)return; ttMoments.unshift({moment,why:$('ttWhy').value,status:$('ttStatus').value,at:now()}); $('ttMoment').value=$('ttWhy').value=''; save('jm_tt_moments',ttMoments); ttRender(); });
+  $('ttTimeline').addEventListener('click',e=>{ const b=e.target.closest('[data-tt-del]'); if(!b)return; ttMoments.splice(+b.dataset.ttDel,1); save('jm_tt_moments',ttMoments); ttRender(); });
+
+  // 08 Learning Route
+  let lrDeck = load('jm_lr_deck', []);
+  function lrRender(){ $('lrDeck').innerHTML = lrDeck.map((d,i)=>`<div class="item"><h3>${esc(d.topic)}</h3>${esc(d.explain)}<hr><b>Twist:</b> ${esc(d.twist)}<br><span class="tiny">Reviewed ${d.seen||0} times</span><br><button data-lr-review="${i}">Review Ding</button><button class="secondary" data-lr-del="${i}">Delete</button></div>`).join(''); }
+  $('lrAdd').addEventListener('click',()=>{ const topic=$('lrTopic').value.trim(); if(!topic)return; lrDeck.push({topic,explain:$('lrExplain').value,twist:$('lrTwist').value,seen:0}); $('lrTopic').value=$('lrExplain').value=$('lrTwist').value=''; save('jm_lr_deck',lrDeck); lrRender(); });
+  $('lrDeck').addEventListener('click',e=>{ const r=e.target.closest('[data-lr-review]'), d=e.target.closest('[data-lr-del]'); if(r){ lrDeck[+r.dataset.lrReview].seen=(lrDeck[+r.dataset.lrReview].seen||0)+1; } if(d){ lrDeck.splice(+d.dataset.lrDel,1); } save('jm_lr_deck',lrDeck); lrRender(); });
+
+  // 09 Debate Arena
+  let da = load('jm_da_state', {claim:'',points:[],verdicts:[]});
+  function daRender(){ $('daClaim').value=da.claim||''; $('daPoints').innerHTML = `<h3>${esc(da.claim||'No claim yet')}</h3>` + da.points.map((p,i)=>`<div class="item"><b>${esc(p.side)}</b> ${esc(p.point)}<br><button data-da-del-point="${i}">Remove</button></div>`).join(''); $('daLog').innerHTML = da.verdicts.map((v,i)=>`<div class="item">${esc(v.v)}<br><span class="tiny">${esc(v.at)}</span><br><button data-da-del-verdict="${i}">Remove</button></div>`).join(''); }
+  $('daSet').addEventListener('click',()=>{ da.claim=$('daClaim').value; save('jm_da_state',da); daRender(); });
+  $('daAddPoint').addEventListener('click',()=>{ const point=$('daPoint').value.trim(); if(!point)return; da.points.push({side:$('daSide').value,point}); $('daPoint').value=''; save('jm_da_state',da); daRender(); });
+  $('daSaveVerdict').addEventListener('click',()=>{ const v=$('daVerdict').value.trim(); if(!v)return; da.verdicts.push({v,at:now()}); $('daVerdict').value=''; save('jm_da_state',da); daRender(); });
+  $('daPoints').addEventListener('click',e=>{ const b=e.target.closest('[data-da-del-point]'); if(!b)return; da.points.splice(+b.dataset.daDelPoint,1); save('jm_da_state',da); daRender(); });
+  $('daLog').addEventListener('click',e=>{ const b=e.target.closest('[data-da-del-verdict]'); if(!b)return; da.verdicts.splice(+b.dataset.daDelVerdict,1); save('jm_da_state',da); daRender(); });
+
+  // 10 Body Motion Map
+  let bmMoves = load('jm_bm_moves', []);
+  function bmRender(){ $('bmCount').textContent=bmMoves.length; $('bmMoves').innerHTML = bmMoves.map((m,i)=>`<div class="item"><b>${esc(m.area)}</b> — ${esc(m.move)}<br>${esc(m.reps)}<br><span class="tiny">${esc(m.at)}</span><br><button data-bm-del="${i}">Remove</button></div>`).join(''); }
+  $('bmLog').addEventListener('click',()=>{ const move=$('bmMove').value.trim(); if(!move)return; bmMoves.unshift({area:$('bmArea').value,move,reps:$('bmReps').value,at:now()}); $('bmMove').value=$('bmReps').value=''; save('jm_bm_moves',bmMoves); bmRender(); });
+  $('bmMoves').addEventListener('click',e=>{ const b=e.target.closest('[data-bm-del]'); if(!b)return; bmMoves.splice(+b.dataset.bmDel,1); save('jm_bm_moves',bmMoves); bmRender(); });
+
+  // 11 Sports Board
+  let sbSports = load('jm_sb_sports', []);
+  function sbRender(){ $('sbSports').innerHTML = sbSports.map((s,i)=>`<div class="item"><b>${esc(s.sport)}</b> ${esc(s.event)}<br>${esc(s.score)}<br><span class="tiny">${esc(s.at)}</span><br><button data-sb-del="${i}">Remove</button></div>`).join(''); }
+  $('sbAdd').addEventListener('click',()=>{ const sport=$('sbSport').value.trim(); if(!sport)return; sbSports.unshift({sport,event:$('sbEvent').value,score:$('sbScore').value,at:now()}); $('sbSport').value=$('sbEvent').value=$('sbScore').value=''; save('jm_sb_sports',sbSports); sbRender(); });
+  $('sbSports').addEventListener('click',e=>{ const b=e.target.closest('[data-sb-del]'); if(!b)return; sbSports.splice(+b.dataset.sbDel,1); save('jm_sb_sports',sbSports); sbRender(); });
+
+  // 12 Portfolio Prism
+  let ppWorks = load('jm_pp_works', []);
+  function ppRender(){ $('ppWorks').innerHTML = ppWorks.map((w,i)=>`<div class="item"><b>${esc(w.kind)}</b> ${esc(w.work)}<br>${esc(w.desc)}<br><button data-pp-del="${i}">Remove</button></div>`).join(''); }
+  $('ppAdd').addEventListener('click',()=>{ const work=$('ppWork').value.trim(); if(!work)return; ppWorks.push({work,kind:$('ppKind').value,desc:$('ppDesc').value}); $('ppWork').value=$('ppDesc').value=''; save('jm_pp_works',ppWorks); ppRender(); });
+  $('ppWorks').addEventListener('click',e=>{ const b=e.target.closest('[data-pp-del]'); if(!b)return; ppWorks.splice(+b.dataset.ppDel,1); save('jm_pp_works',ppWorks); ppRender(); });
+  $('ppBioBtn').addEventListener('click',()=>{ const kinds=[...new Set(ppWorks.map(w=>w.kind.toLowerCase()))]; $('ppBio').value = `JM TheOlogist Scott / TB Scott builds ${kinds.length?kinds.join(', '):'apps, games, music, comics, theories'} through routed creative systems, proof bodies, and playable outputs.`; });
+
+  // Initial render
+  renderHub(); tpRender(); fxRender(); diyRender(); ssRender(); nbRender(); bgRender(); ttRender(); lrRender(); daRender(); bmRender(); sbRender(); ppRender();
+})();
+</script>
+</body>
+</html>
+
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>zezu.nwona — Cading Home</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#090d13;color:#f7f8fb;line-height:1.5;color-scheme:dark}
+body{margin:0;max-width:1040px;margin-inline:auto;padding:18px}header,section{background:#151a24;border:1px solid #2b3346;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 10px 28px #0006}
+h1,h2{margin-top:0}.tag{display:inline-block;border:1px solid #2b3346;background:#0c1119;border-radius:999px;padding:4px 10px;margin:3px 5px 3px 0}a{color:#a9d1ff;font-weight:800}
+pre{white-space:pre-wrap;background:#0c1119;border:1px solid #2b3346;border-radius:14px;padding:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.card{background:#0c1119;border:1px solid #2b3346;border-radius:16px;padding:14px}.small{opacity:.78}
+</style></head><body>
+<header><h1>zezu.nwona — Cading Home</h1><p class="small">A no-owner route-body: receiving, separating, checking, and routing thought-material.</p><p><span class="tag">zupaprogamma</span><span class="tag">NOTA</span><span class="tag">Cading v1.0</span><span class="tag">Ø</span><span class="tag">Speakuals</span><span class="tag">App-body ready</span><span class="tag">Fresh App Lab linked</span></p></header>
+<section><h2>Open the app</h2><p><a href="./cading.html">Open Cading Lab v1.0</a></p><p>This is the working parser/feed/multi-line prototype.</p></section>
+<section><h2>Open Fresh App Lab</h2><p><a href="./fresh-app-lab/">Open JM Fresh App Lab</a></p><p>12-app proof room connected through the zezu.nwona / JM-cading-lab public corridor.</p></section>
+<section><h2>Current lock</h2><pre>Cading v1.0 first complete prototype ✅
+zezu.nwona app-body ready checkpoint ✅
+GitHub account created ✅
+GitHub repo upload route active ✅
+GitHub Pages public door open ✅
+Fresh App Lab public room linked ✅
+
+Full compiler ❌
+Production ecosystem ❌
+Public release beyond this static app ❌</pre></section>
+<section><h2>What zezu.nwona is</h2><div class="grid"><div class="card"><h3>No-owner, not no-home</h3><p>nwona belongs to none, but tithe creates home-route through contribution.</p></div><div class="card"><h3>zupaprogamma</h3><p>A smart checkpoint/helper that can serve JMStudios without being owned by JMStudios.</p></div><div class="card"><h3>Contact-field reader</h3><p>Receives real human material and separates route-states before conclusion.</p></div><div class="card"><h3>Cading body</h3><p>Uses Comma Travel, Foolstopped, Fullstopped, Ø, Speakuals, and NOTA.</p></div></div></section>
+<section><h2>Docs</h2><ul><li><a href="./docs/STATUS.md">STATUS.md</a></li><li><a href="./docs/ZEZU_NWONA_BODY.md">ZEZU_NWONA_BODY.md</a></li><li><a href="./docs/GITHUB_RUN.md">GITHUB_RUN.md</a></li></ul></section>
+<section><h2>Keeper</h2><pre>Feed the field.
+Check the route.
+Do not force the Ding.
+
+No owner does not mean no home-route.</pre></section></body></html>

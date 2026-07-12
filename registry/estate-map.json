@@ -24,18 +24,28 @@
   ],
   "registered_departments": [
     {"body": "Coding / Cading", "state": "CONNECTED"},
-    {"body": "Game Engines", "state": "REGISTERED_LOCAL_SOURCE"},
-    {"body": "Apps and Tools", "state": "REGISTERED_LOCAL_SOURCE"},
-    {"body": "JM LyricStudio", "state": "REGISTERED_LOCAL_SOURCE"},
-    {"body": "Theory Wing", "state": "SOURCE_INTAKE_ACTIVE"},
+    {"body": "Game Engines", "state": "MOUNTED_IN_v4_CROWN"},
+    {"body": "Apps and Tools", "state": "MOUNTED_IN_v4_CROWN"},
+    {"body": "JM LyricStudio", "state": "MOUNTED_IN_v4_CROWN"},
+    {"body": "Theory Wing", "state": "MOUNTED_AND_REGISTRY_CONNECTED"},
+    {"body": "Books / Author / Lexicon", "state": "MOUNTED_IN_v4_CROWN"},
     {"body": "Receipts and Proof", "state": "CONNECTED"},
     {"body": "Zionfolders / FLL", "state": "OWNER_CONTROLLED_ARCHIVE"},
-    {"body": "Universal Edit", "state": "LOCAL_CROWN_v2.3.0"}
+    {"body": "Universal Edit", "state": "LINEAGE_PRESERVED"}
   ],
   "current_local_crown": {
-    "name": "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE",
-    "state": "LOCAL_DIRECT_OPEN_BUILT",
-    "github_state": "SOURCE_SPLIT_REQUIRED",
-    "reason": "Current embedded HTML bodies are oversized and must be normalised into repository modules rather than committed as giant generated wrappers."
+    "name": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY",
+    "state": "LOCAL_FULL_ARCHIVE_BUILT",
+    "mounted_entries": 29,
+    "exact_source_packs": 27,
+    "apk_state": "APK_READY_SOURCE",
+    "play_store_state": "NOT_SIGNED_NOT_PUBLISHED",
+    "lineage": [
+      "JM_QUADZE_MULTIHUB_ALL_IN_ONE_v1_0",
+      "JM_QUADZE_ONEBODY_OS_FULL_v3_0",
+      "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE"
+    ],
+    "github_state": "REGISTERED_FOR_SOURCE_NORMALISATION_AND_DEPLOYMENT",
+    "target_strategy": "JM coding and Quadze remain source-side; GDevelop becomes an optional downstream export target rather than the language ceiling."
   }
 }

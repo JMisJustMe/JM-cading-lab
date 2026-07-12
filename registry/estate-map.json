@@ -1,0 +1,41 @@
+{
+  "estate": "JM Estate",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "status": "GITHUB_BRIDGE_ACTIVE",
+  "active_keeper": "JM Estate Altogether / Mounting Body",
+  "laws": [
+    "Connect does not mean merge",
+    "Selection before structure",
+    "Keeper before API",
+    "Proof before packaging",
+    "Recover before rebuild",
+    "No Ding, No Claim"
+  ],
+  "delivery_routes": {
+    "OPEN": "direct-open HTML",
+    "LIGHT": "minimum continuation package",
+    "FULL_ARCHIVE": "complete Zionfolder with OPEN and LIGHT nested where applicable",
+    "S3": ["SOLO", "SERVE", "STORE"]
+  },
+  "live_github_routes": [
+    {"body": "Cading Lab", "path": "cading.html", "state": "LIVE"},
+    {"body": "Fresh App Lab", "path": "fresh-app-lab/", "state": "LIVE"},
+    {"body": "Estate Bridge", "path": "estate/index.html", "state": "LIVE"}
+  ],
+  "registered_departments": [
+    {"body": "Coding / Cading", "state": "CONNECTED"},
+    {"body": "Game Engines", "state": "REGISTERED_LOCAL_SOURCE"},
+    {"body": "Apps and Tools", "state": "REGISTERED_LOCAL_SOURCE"},
+    {"body": "JM LyricStudio", "state": "REGISTERED_LOCAL_SOURCE"},
+    {"body": "Theory Wing", "state": "SOURCE_INTAKE_ACTIVE"},
+    {"body": "Receipts and Proof", "state": "CONNECTED"},
+    {"body": "Zionfolders / FLL", "state": "OWNER_CONTROLLED_ARCHIVE"},
+    {"body": "Universal Edit", "state": "LOCAL_CROWN_v2.3.0"}
+  ],
+  "current_local_crown": {
+    "name": "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE",
+    "state": "LOCAL_DIRECT_OPEN_BUILT",
+    "github_state": "SOURCE_SPLIT_REQUIRED",
+    "reason": "Current embedded HTML bodies are oversized and must be normalised into repository modules rather than committed as giant generated wrappers."
+  }
+}

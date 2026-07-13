@@ -7,6 +7,12 @@ on:
     paths:
       - ".github/workflows/storage-census-reconciler-v0-1.yml"
       - "tools/storage-census-reconciler/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/storage-census-reconciler-v0-1.yml"
+      - "tools/storage-census-reconciler/**"
   workflow_dispatch:
 
 permissions:

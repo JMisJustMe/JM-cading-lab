@@ -9,7 +9,7 @@
   "generatedAt": "2026-07-13T12:00:22.001598+00:00",
   "purpose": "Extend the v0.3.0 Librarian with storage-pressure measurement and evidence-gated external archive planning while preserving a permissioned, read-only source boundary.",
   "lineage": {
-    "parent": "JM Estate Librarian v0.3.0 \u2014 Apron Mode",
+    "parent": "JM Estate Librarian v0.3.0 — Apron Mode",
     "method": "checkpoint-compatible forward patch; no source-body flattening",
     "parentEmbedded": false,
     "knownParentOpenFirstSha256": "6ff2ce6f8d864127dca1285baedeccc7696f227a03f8c5f0c697611edc21d7a2",
@@ -30,10 +30,10 @@
     "served/PWA route, standalone direct-open route and GitHub Actions APK route"
   ],
   "qa": {
-    "status": "PASS \u2014 WEB BODY",
+    "status": "PASS — WEB BODY",
     "renderer": "Playwright Chromium",
     "desktop": {
-      "title": "JM Estate Librarian v0.4 \u2014 Storage Pressure & Safe Archive",
+      "title": "JM Estate Librarian v0.4 — Storage Pressure & Safe Archive",
       "coverVisible": true,
       "files": "10 files",
       "exactGroups": "2 duplicate groups",
@@ -64,7 +64,7 @@
       "receipts/QA_MOBILE_v0_4.png"
     ],
     "knownVectorAndDuplicateProof": "PASS through real selected-file intake",
-    "androidCompilation": "PENDING external Android SDK/GitHub Actions runner",
+    "androidCompilation": "PASS — GitHub Actions run 29249979504",
     "physicalAndroidInstall": "PENDING user device proof"
   },
   "android": {
@@ -72,7 +72,12 @@
     "nativeFolderTree": "PRESENT",
     "nativeFileChooser": "PRESENT",
     "nativeExportSave": "PRESENT",
-    "apk": "NOT YET BUILT AT RECEIPT TIME"
+    "apk": "BUILT — releases/JM_ESTATE_LIBRARIAN_v0_4.apk",
+    "apkSha256": "1213e00a3b79e7101bb571d6623bdc6c03c431836eabc21c1e99bc9c36e737f2",
+    "githubActionsRun": 29249979504,
+    "workflowSha": "1f252207c24ffbd9830c707a31467ff8235ade17",
+    "archiveIntegrity": "PASS — unzip test",
+    "apkSigningBlock": "PRESENT"
   },
   "safety": {
     "readOnly": true,

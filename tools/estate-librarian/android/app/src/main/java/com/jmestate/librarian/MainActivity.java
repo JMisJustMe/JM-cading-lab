@@ -127,6 +127,7 @@ public class MainActivity extends Activity {
             try {
                 getContentResolver().takePersistableUriPermission(tree, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             } catch (Exception ignored) { }
+            webView.evaluateJavascript("window.JMScanStarted && window.JMScanStarted()", null);
             new Thread(() -> scanTreeAndReturn(tree)).start();
             return;
         }
@@ -135,9 +136,18 @@ public class MainActivity extends Activity {
             Uri target = data.getData();
             String content = pendingSaveText == null ? "" : pendingSaveText;
             new Thread(() -> {
+                boolean saved = false;
                 try (OutputStream out = getContentResolver().openOutputStream(target, "w")) {
-                    if (out != null) out.write(content.getBytes(StandardCharsets.UTF_8));
+                    if (out != null) {
+                        out.write(content.getBytes(StandardCharsets.UTF_8));
+                        saved = true;
+                    }
                 } catch (Exception ignored) { }
+                final boolean success = saved;
+                runOnUiThread(() -> webView.evaluateJavascript(
+                        success ? "window.JMExportSaved && window.JMExportSaved()" : "window.JMExportFailed && window.JMExportFailed()",
+                        null
+                ));
             }).start();
             pendingSaveText = null;
             pendingSaveMime = null;
@@ -148,7 +158,8 @@ public class MainActivity extends Activity {
         JSONArray rows = new JSONArray();
         try {
             String rootId = DocumentsContract.getTreeDocumentId(treeUri);
-            walkDocumentTree(treeUri, rootId, "", rows);
+            int[] count = new int[]{0};
+            walkDocumentTree(treeUri, rootId, "", rows, count);
         } catch (Exception ex) {
             try {
                 JSONObject error = new JSONObject();
@@ -165,7 +176,7 @@ public class MainActivity extends Activity {
         runOnUiThread(() -> webView.evaluateJavascript("window.JMReceiveNativeFolder(" + payload + ")", null));
     }
 
-    private void walkDocumentTree(Uri treeUri, String documentId, String prefix, JSONArray rows) throws Exception {
+    private void walkDocumentTree(Uri treeUri, String documentId, String prefix, JSONArray rows, int[] count) throws Exception {
         Uri childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, documentId);
         ContentResolver resolver = getContentResolver();
         String[] projection = {
@@ -185,7 +196,7 @@ public class MainActivity extends Activity {
                 long modified = cursor.isNull(4) ? 0 : cursor.getLong(4);
                 String path = prefix.isEmpty() ? name : prefix + "/" + name;
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(mime)) {
-                    walkDocumentTree(treeUri, childId, path, rows);
+                    walkDocumentTree(treeUri, childId, path, rows, count);
                 } else {
                     Uri fileUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, childId);
                     JSONObject row = new JSONObject();
@@ -196,9 +207,20 @@ public class MainActivity extends Activity {
                     row.put("hash", sha256(fileUri));
                     row.put("lastModified", modified);
                     rows.put(row);
+                    count[0]++;
+                    notifyScanProgress(count[0], name);
                 }
             }
         }
+    }
+
+
+    private void notifyScanProgress(int count, String name) {
+        final String safeName = JSONObject.quote(name == null ? "" : name);
+        runOnUiThread(() -> webView.evaluateJavascript(
+                "window.JMScanProgress && window.JMScanProgress(" + count + "," + safeName + ")",
+                null
+        ));
     }
 
     private String sha256(Uri uri) {
@@ -218,7 +240,19 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
+        if (webView != null && webView.canGoBack()) {
+            webView.goBack();
+            return;
+        }
+        if (webView != null) {
+            webView.evaluateJavascript(
+                    "window.JMHandleBack ? window.JMHandleBack() : false",
+                    value -> {
+                        if (!"true".equals(value)) MainActivity.super.onBackPressed();
+                    }
+            );
+        } else {
+            super.onBackPressed();
+        }
     }
 }

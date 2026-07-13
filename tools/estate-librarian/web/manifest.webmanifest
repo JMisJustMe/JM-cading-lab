@@ -1,9 +1,10 @@
 {
-  "name": "JM Estate Librarian",
+  "name": "JM Estate Librarian v0.4.1",
   "short_name": "Estate Librarian",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#081018",
-  "theme_color": "#0b1118",
-  "description": "Read-only storage pressure and safe archive planner."
+  "background_color": "#071019",
+  "theme_color": "#071019",
+  "description": "Read-only scanning, human review and proof-gated archive planning.",
+  "icons": [{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

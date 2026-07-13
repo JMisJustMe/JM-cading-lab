@@ -1,0 +1,20 @@
+{
+  "app": "JM Estate Librarian v0.4.1",
+  "status": "PASS_WEB_BODY",
+  "viewports": {
+    "mobile": {"width": 390, "height": 844, "scrollWidth": 390, "clientWidth": 390, "pageOverflow": false},
+    "desktop": {"width": 1440, "height": 1000, "scrollWidth": 1440, "clientWidth": 1440, "pageOverflow": false}
+  },
+  "functional": {
+    "demoItems": 10,
+    "reviewCards": 10,
+    "decisionUpdate": true,
+    "archiveDestinationSync": true,
+    "archiveReadinessRendering": true,
+    "advancedEvidenceRegister": true,
+    "versionFamilies": true,
+    "safeJobs": true,
+    "checkpointCompatibility": true
+  },
+  "errors": []
+}

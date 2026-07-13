@@ -1,42 +1,33 @@
 {
   "package": "JM Estate Librarian",
-  "version": "0.4.0",
-  "build": "STORAGE-PRESSURE-SAFE-ARCHIVE-PASS",
-  "generatedAt": "2026-07-13T12:00:22.001598+00:00",
+  "version": "0.4.1",
+  "build": "HANDHELD-PROFESSIONALISATION-PASS",
+  "generatedAt": "2026-07-13T13:32:00+01:00",
   "lineage": {
-    "parent": "JM Estate Librarian v0.3.0",
-    "mode": "checkpoint-compatible forward patch",
-    "parentEmbedded": false,
-    "knownParentOpenFirstSha256": "6ff2ce6f8d864127dca1285baedeccc7696f227a03f8c5f0c697611edc21d7a2"
+    "parent": "JM Estate Librarian v0.4.0",
+    "parentStatus": "FROZEN_ANDROID_PROVEN_ANCHOR",
+    "method": "surface-layer continuation; engine and safety boundary preserved"
   },
   "delivery": {
     "standaloneHtml": true,
     "pwaSource": true,
     "androidProject": true,
     "githubWorkflow": true,
-    "compiledApk": true
+    "compiledApk": false
   },
   "safety": {
     "readOnly": true,
     "permissionedSelectionOnly": true,
-    "destructiveRoutes": false
+    "destructiveRoutes": false,
+    "humanDecisionRequired": true
   },
   "proof": {
     "webFunctionalQA": "PASS",
     "mobileContainment": "PASS",
-    "selectedFileDuplicateProof": "PASS",
-    "androidCompilation": "PASS — GitHub Actions",
-    "physicalAndroidInstall": "PENDING user device proof",
-    "apkSha256": "1213e00a3b79e7101bb571d6623bdc6c03c431836eabc21c1e99bc9c36e737f2",
-    "githubActionsRun": 29249979504
-  },
-  "files": {
-    "openFirst": "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html",
-    "served": "web/index.html",
-    "androidProject": "android/",
-    "buildReceipt": "receipts/BUILD_RECEIPT_v0_4.json",
-    "qaReport": "receipts/QA_REPORT_v0_4.md",
-    "apk": "releases/JM_ESTATE_LIBRARIAN_v0_4.apk",
-    "apkChecksum": "releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256"
+    "mobileReviewCards": "PASS",
+    "archiveReadinessRoute": "PASS",
+    "consoleErrors": 0,
+    "androidCompilation": "PENDING",
+    "physicalAndroidInstall": "PENDING"
   }
 }

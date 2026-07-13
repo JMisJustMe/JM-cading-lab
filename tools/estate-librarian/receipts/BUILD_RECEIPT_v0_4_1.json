@@ -1,0 +1,19 @@
+{
+  "receiptType": "JM Estate Librarian build receipt",
+  "app": {"name": "JM Estate Librarian", "version": "0.4.1", "schema": "jm-estate-register-v0.4.1"},
+  "build": "HANDHELD-PROFESSIONALISATION-PASS",
+  "parent": {"name": "JM Estate Librarian v0.4.0", "status": "FROZEN_ANDROID_PROVEN_ANCHOR"},
+  "implemented": [
+    "Scan Review Archive handheld route",
+    "portrait-native file cards",
+    "advanced evidence register",
+    "fixed handheld bottom navigation",
+    "visible progress and state feedback",
+    "native Android scan-progress bridge",
+    "native Android save-result feedback",
+    "Android Back-to-Home behaviour",
+    "branded launcher and PWA icon"
+  ],
+  "qa": {"web": "PASS", "mobileContainment": "PASS", "errors": [], "androidCompilation": "PENDING", "physicalAndroid": "PENDING"},
+  "safety": {"readOnly": true, "destructiveRoutes": false, "suggestionsOverwriteDecisions": false}
+}

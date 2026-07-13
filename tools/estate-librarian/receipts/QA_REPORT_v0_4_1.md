@@ -32,6 +32,19 @@ Passed:
 - Branded adaptive/legacy launcher icon.
 - Android version code 5 / version name 0.4.1.
 
+## Android compilation and package verification
+
+GitHub Actions run `29255293858` compiled and packaged the v0.4.1 debug APK successfully.
+
+Independent local verification confirmed:
+
+- Android APK archive recognised.
+- `classes.dex`, `classes2.dex`, `AndroidManifest.xml`, resources and embedded `assets/index.html` are present.
+- APK compressed-data integrity: PASS.
+- APK Signing Block: PRESENT.
+- APK SHA-256: `d3693f05ed77921b864171870de61165c486e4bdce54ba6e06231de73627465d`.
+- Embedded Android HTML matches the standalone and PWA body byte-for-byte.
+
 ## Proof boundary
 
-The web/UI body is proven. Android source changes require compilation in GitHub Actions, and the resulting APK requires a separate physical-device proof. The parent v0.4 physical proof is not silently inherited as v0.4.1 device proof.
+The web/UI body and Android compilation are proven. Physical installation and live runtime behaviour on the user's phone remain a separate v0.4.1 device Ding. The parent v0.4 physical proof is not silently inherited.

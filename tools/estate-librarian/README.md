@@ -44,7 +44,10 @@ The Librarian reads only files the operator selects. It does **not** delete, mov
 - Demo duplicate/version families: **PASS**.
 - Human decision cards and Archive readiness route: **PASS**.
 - Console/page errors: **0**.
-- APK compilation: **PENDING GitHub Actions build**.
+- APK compilation and packaging: **PASS**, GitHub Actions run `29255293858`.
+- APK archive integrity: **PASS**.
+- APK Signing Block: **PRESENT**.
+- APK SHA-256: `d3693f05ed77921b864171870de61165c486e4bdce54ba6e06231de73627465d`.
 - Physical Android v0.4.1 Ding: **PENDING user-device proof**.
 
-The parent v0.4 already owns the first physical Android installation/runtime proof. v0.4.1 must earn its own device Ding after compilation.
+The parent v0.4 remains the first physical Android installation/runtime anchor. v0.4.1 now owns a compiled, package-verified APK but must still earn its own user-device Ding.

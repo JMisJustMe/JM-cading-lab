@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1] / "estate-librarian"
@@ -144,7 +145,13 @@ def patch_metadata() -> None:
 - Bottom navigation uses five equal viewport columns with no horizontal-scroll route.
 - This recovery package is a field-test lane. Permanent future updates require the stable release-signing workflow and repository secrets.
 """
-    text = text.replace("# JM Estate Librarian v0.4.1", "# JM Estate Librarian v0.4.1A", 1)
+    text = re.sub(
+        r"^# JM Estate Librarian v0\.4\.1A*$",
+        "# JM Estate Librarian v0.4.1A",
+        text,
+        count=1,
+        flags=re.MULTILINE,
+    )
     text = text.replace("**Handheld Professionalisation Pass**", "**Installation & Handheld Containment Recovery**", 1)
     readme.write_text(text, encoding="utf-8")
 

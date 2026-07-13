@@ -147,3 +147,32 @@ jobs:
             git commit -m "Record JM Estate Librarian v0.4 APK build receipt"
             git push origin HEAD:${{ github.ref_name }}
           fi
+
+      - name: Publish runner status even if an earlier gate fails
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${{ github.ref_name }}"
+          git reset --hard "origin/${{ github.ref_name }}"
+          mkdir -p tools/estate-librarian/receipts tools/estate-librarian/releases
+          {
+            echo "JM Estate Librarian v0.4 — GitHub Actions runner status"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Job status before TraceBox receipt: ${{ job.status }}"
+            echo "Run attempt: $GITHUB_RUN_ATTEMPT"
+          } > tools/estate-librarian/receipts/GITHUB_ACTIONS_RUNNER_STATUS.txt
+          if [ -f /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 ]; then
+            cp /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 \
+              tools/estate-librarian/releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+          fi
+          git add \
+            tools/estate-librarian/receipts/GITHUB_ACTIONS_RUNNER_STATUS.txt \
+            tools/estate-librarian/releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 2>/dev/null
+          if ! git diff --cached --quiet; then
+            git commit -m "Record JM Estate Librarian v0.4 Actions status"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

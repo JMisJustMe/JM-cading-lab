@@ -1,0 +1,23 @@
+plugins { id 'com.android.application' }
+def generatedAssetsDir = file("$buildDir/generated/stewardAssets")
+tasks.register('inflateStewardHtml') {
+    inputs.file('src/main/assets/index.html.gz.b64')
+    outputs.file(new File(generatedAssetsDir, 'index.html'))
+    doLast {
+        generatedAssetsDir.mkdirs()
+        byte[] packed = java.util.Base64.decoder.decode(file('src/main/assets/index.html.gz.b64').text.trim())
+        new java.util.zip.GZIPInputStream(new ByteArrayInputStream(packed)).withCloseable { input ->
+            new File(generatedAssetsDir, 'index.html').withOutputStream { output -> output << input }
+        }
+    }
+}
+android {
+    namespace 'com.jmisjustme.estatesteward'
+    compileSdk 36
+    buildToolsVersion '36.0.0'
+    defaultConfig { applicationId 'com.jmisjustme.estatesteward'; minSdk 29; targetSdk 36; versionCode 9; versionName '0.9B' }
+    buildTypes { debug { applicationIdSuffix '.debug'; versionNameSuffix '-debug' }; release { minifyEnabled false; shrinkResources false } }
+    sourceSets { main { assets.srcDirs = [generatedAssetsDir] } }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+preBuild.dependsOn inflateStewardHtml

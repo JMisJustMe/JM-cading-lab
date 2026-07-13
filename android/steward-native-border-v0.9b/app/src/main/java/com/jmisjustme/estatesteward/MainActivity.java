@@ -40,30 +40,32 @@ public final class MainActivity extends Activity {
         LinearLayout root = new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Color.rgb(7, 19, 31));
+        applyStatusBarInset(root);
 
         LinearLayout bar = new LinearLayout(this);
         bar.setGravity(Gravity.CENTER_VERTICAL);
-        bar.setPadding(dp(this, 10), dp(this, 5), dp(this, 8), dp(this, 5));
+        bar.setPadding(dp(this, 8), dp(this, 4), dp(this, 6), dp(this, 4));
         bar.setBackgroundColor(Color.rgb(10, 27, 42));
 
         TextView title = new TextView(this);
-        title.setText("JM Steward · v0.9B Native Border");
+        title.setText("JM Steward · v0.9C");
         title.setTextColor(Color.WHITE);
-        title.setTextSize(14);
+        title.setTextSize(13);
         title.setSingleLine();
+        title.setEllipsize(android.text.TextUtils.TruncateAt.END);
         bar.addView(title, new LinearLayout.LayoutParams(0, dp(this, 44), 1));
 
         Button body = new Button(this);
         body.setText("Body");
         body.setAllCaps(false);
         body.setOnClickListener(v -> chooseBody());
-        bar.addView(body, new LinearLayout.LayoutParams(dp(this, 78), dp(this, 44)));
+        bar.addView(body, new LinearLayout.LayoutParams(dp(this, 68), dp(this, 44)));
 
         Button shelf = new Button(this);
         shelf.setText("Receipts");
         shelf.setAllCaps(false);
         shelf.setOnClickListener(v -> showShelf());
-        bar.addView(shelf, new LinearLayout.LayoutParams(dp(this, 104), dp(this, 44)));
+        bar.addView(shelf, new LinearLayout.LayoutParams(dp(this, 92), dp(this, 44)));
         root.addView(bar);
 
         web = new WebView(this);
@@ -102,7 +104,28 @@ public final class MainActivity extends Activity {
         });
         root.addView(web, new LinearLayout.LayoutParams(-1, 0, 1));
         setContentView(root);
+        root.requestApplyInsets();
         loadMountedBodyOrWelcome();
+    }
+
+    private void applyStatusBarInset(View root) {
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            int left;
+            int top;
+            int right;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.statusBars());
+                left = bars.left;
+                top = bars.top;
+                right = bars.right;
+            } else {
+                left = insets.getSystemWindowInsetLeft();
+                top = insets.getSystemWindowInsetTop();
+                right = insets.getSystemWindowInsetRight();
+            }
+            view.setPadding(left, top, right, 0);
+            return insets;
+        });
     }
 
     private void chooseBody() {
@@ -117,7 +140,7 @@ public final class MainActivity extends Activity {
         }
         String html = "<!doctype html><meta name=viewport content='width=device-width,initial-scale=1'>"
                 + "<style>body{margin:0;background:#07131f;color:#eef6ff;font:17px system-ui;padding:28px}.box{max-width:680px;margin:auto;background:#102438;border:1px solid #31516c;border-radius:24px;padding:24px}button{background:#6eddba;border:0;border-radius:16px;padding:15px 18px;font-weight:800;font-size:17px}code{color:#9ce8d0}</style>"
-                + "<div class=box><h1>JM Estate Storage Steward</h1><h2>v0.9B · Native Border</h2>"
+                + "<div class=box><h1>JM Estate Storage Steward</h1><h2>v0.9C · Native Fit Repair</h2>"
                 + "<p>Mount the exact v0.9A Steward HTML once. The original stays untouched; this app keeps a private native-enabled working copy.</p>"
                 + "<button onclick='JMNative.openBodyPicker()'>Mount Steward HTML</button>"
                 + "<p>Exports remain in <code>Downloads/JM Estate Storage Steward</code>.</p></div>";
@@ -195,7 +218,7 @@ public final class MainActivity extends Activity {
 
     private static String sanitize(String value) {
         String name = value == null ? "JM_STEWARD_RECEIPT.json" : value.trim()
-                .replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]", "_").replaceAll("\\s+", "_");
+                .replaceAll("[\\/:*?\"<>|\\p{Cntrl}]", "_").replaceAll("\\s+", "_");
         while (name.startsWith(".")) name = name.substring(1);
         if (name.isEmpty()) name = "JM_STEWARD_RECEIPT.json";
         return name.length() > 120 ? name.substring(name.length() - 120) : name;

@@ -30,8 +30,8 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix '.debug'
-            versionNameSuffix '-debug'
+            applicationIdSuffix '.field'
+            versionNameSuffix '-field'
             signingConfig signingConfigs.fieldDebug
         }
         release {

@@ -57,7 +57,15 @@ The package contains a native Android project with:
 - Android document-save export bridge;
 - embedded offline web body.
 
-A compiled APK and physical-device Ding remain separate gates until an Android SDK runner compiles the project and the resulting APK is installed and tested on-device.
+GitHub Actions run `29249979504` compiled and packaged the debug APK successfully. Local delivery verification confirmed:
+
+- Android APK archive recognised;
+- `classes.dex`, `AndroidManifest.xml`, resources and embedded `assets/index.html` present;
+- no compressed-data errors;
+- APK Signing Block present;
+- SHA-256: `1213e00a3b79e7101bb571d6623bdc6c03c431836eabc21c1e99bc9c36e737f2`.
+
+Physical-device installation and runtime behaviour remain a separate user-device Ding.
 
 ## Safety boundary
 

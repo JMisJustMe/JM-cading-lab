@@ -1,12 +1,12 @@
 {
   "package": "JM Estate Librarian",
-  "version": "0.4.1",
-  "build": "HANDHELD-PROFESSIONALISATION-PASS",
+  "version": "0.4.1A",
+  "build": "INSTALLATION-AND-HANDHELD-CONTAINMENT-RECOVERY",
   "generatedAt": "2026-07-13T13:32:00+01:00",
   "lineage": {
-    "parent": "JM Estate Librarian v0.4.0",
-    "parentStatus": "FROZEN_ANDROID_PROVEN_ANCHOR",
-    "method": "surface-layer continuation; engine and safety boundary preserved"
+    "parent": "JM Estate Librarian v0.4.1",
+    "parentStatus": "APK_COMPILED_INSTALL_BLOCKED_BY_SIGNER_MISMATCH",
+    "method": "side-by-side field recovery; v0.4 anchor preserved"
   },
   "delivery": {
     "standaloneHtml": true,
@@ -22,25 +22,22 @@
     "humanDecisionRequired": true
   },
   "proof": {
-    "webFunctionalQA": "PASS",
-    "mobileContainment": "PASS",
-    "mobileReviewCards": "PASS",
-    "archiveReadinessRoute": "PASS",
-    "consoleErrors": 0,
-    "androidCompilation": "PASS — GitHub Actions",
+    "parentWebQA": "PASS",
+    "bottomNavigationStaticContainment": "PASS",
+    "sideBySideApplicationId": "com.jmestate.librarian.v041a",
+    "androidCompilation": "PASS \u2014 GitHub Actions",
     "physicalAndroidInstall": "PENDING user-device proof",
+    "apkPackageIdentity": "PASS \u2014 com.jmestate.librarian.v041a",
     "apkArchiveIntegrity": "PASS",
-    "apkSigningBlock": "PRESENT",
-    "apkSha256": "d3693f05ed77921b864171870de61165c486e4bdce54ba6e06231de73627465d",
-    "githubActionsRun": 29255293858,
-    "workflowSha": "ce282d3f5bf47ba76286b6f5943dbb6f54c77517"
+    "apkSha256": "cf65d4856c11d6b97849f6f6081cc9e9258221b4de43c6da5185ebadfc46aefa",
+    "githubActionsRun": 29258816904
   },
   "files": {
-    "openFirst": "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4_1.html",
+    "openFirst": "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4_1A.html",
     "served": "web/index.html",
     "androidProject": "android/",
-    "apk": "releases/JM_ESTATE_LIBRARIAN_v0_4_1.apk",
-    "apkChecksum": "releases/JM_ESTATE_LIBRARIAN_v0_4_1.apk.sha256",
+    "apk": "releases/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk",
+    "apkChecksum": "releases/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk.sha256",
     "qaReport": "receipts/QA_REPORT_v0_4_1.md",
     "buildReceipt": "receipts/BUILD_RECEIPT_v0_4_1.json"
   }

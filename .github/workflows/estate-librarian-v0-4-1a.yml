@@ -1,0 +1,166 @@
+name: JM Estate Librarian v0.4.1A — install recovery APK
+
+on:
+  push:
+    branches:
+      - agent/estate-librarian-v0-4-1a-install-recovery
+    paths:
+      - "tools/estate-librarian-v0-4-1a-install-recovery/**"
+      - ".github/workflows/estate-librarian-v0-4-1a.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-librarian-v0-4-1a-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  recover-and-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out recovery branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply deterministic v0.4.1A patch
+        id: patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/estate-librarian-v0-4-1a-install-recovery/patch_v041a.py
+          grep -q "applicationId 'com.jmestate.librarian.v041a'" tools/estate-librarian/android/app/build.gradle
+          grep -q "grid-template-columns:repeat(5,minmax(0,1fr))" tools/estate-librarian/web/index.html
+          ! grep -q "min-width:76px" tools/estate-librarian/web/index.html
+          cmp tools/estate-librarian/web/index.html tools/estate-librarian/android/app/src/main/assets/index.html
+          cmp tools/estate-librarian/web/index.html tools/estate-librarian/OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4_1A.html
+          python3 -m json.tool tools/estate-librarian/PACKAGE_MANIFEST.json >/dev/null
+          python3 -m json.tool tools/estate-librarian/receipts/INSTALL_RECOVERY_RECEIPT_v0_4_1A.json >/dev/null
+
+      - name: Commit readable recovery source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/estate-librarian
+          if ! git diff --cached --quiet; then
+            git commit -m "Mount JM Estate Librarian v0.4.1A install recovery"
+            git push origin HEAD:${{ github.ref_name }}
+          fi
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform 35
+        shell: bash
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build recovery APK
+        id: build
+        working-directory: tools/estate-librarian/android
+        run: gradle --no-daemon assembleDebug
+
+      - name: Verify install identity and package body
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK="tools/estate-librarian/android/app/build/outputs/apk/debug/app-debug.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | tee /tmp/v041a-badging.txt
+          grep -q "package: name='com.jmestate.librarian.v041a'" /tmp/v041a-badging.txt
+          grep -q "versionCode='6'" /tmp/v041a-badging.txt
+          grep -q "versionName='0.4.1A'" /tmp/v041a-badging.txt
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$APK" | tee /tmp/v041a-signing.txt
+          unzip -p "$APK" assets/index.html | cmp - tools/estate-librarian/web/index.html
+          unzip -t "$APK"
+
+      - name: Assemble delivery body
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/v041a-delivery
+          APK_OUT=/tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk
+          cp tools/estate-librarian/android/app/build/outputs/apk/debug/app-debug.apk "$APK_OUT"
+          sha256sum "$APK_OUT" > "$APK_OUT.sha256"
+          {
+            echo "JM Estate Librarian v0.4.1A — installation recovery receipt"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Build: PASS"
+            echo "Application ID: com.jmestate.librarian.v041a"
+            echo "Install mode: side-by-side with frozen v0.4"
+            echo "Bottom navigation: five equal viewport columns"
+            echo "APK package verification: PASS"
+            echo "Physical Android install: PENDING user-device proof"
+          } > /tmp/v041a-delivery/GITHUB_ACTIONS_INSTALL_RECOVERY_RECEIPT_v0_4_1A.txt
+          cd tools/estate-librarian
+          zip -qr /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_GITHUB_SOURCE.zip . -x ".git/*" "android/.gradle/*" "android/app/build/*" "releases/*.apk"
+
+      - name: Upload recovery APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY_APK
+          path: |
+            /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk
+            /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk.sha256
+            /tmp/v041a-delivery/GITHUB_ACTIONS_INSTALL_RECOVERY_RECEIPT_v0_4_1A.txt
+          if-no-files-found: error
+
+      - name: Upload recovery source
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_LIBRARIAN_v0_4_1A_SOURCE
+          path: /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_GITHUB_SOURCE.zip
+          if-no-files-found: error
+
+      - name: Publish TraceBox verdict
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${{ github.ref_name }}"
+          git reset --hard "origin/${{ github.ref_name }}"
+          mkdir -p tools/estate-librarian/receipts tools/estate-librarian/releases
+          {
+            echo "JM Estate Librarian v0.4.1A — GitHub Actions runner status"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Job status before receipt: ${{ job.status }}"
+            echo "Patch outcome: ${{ steps.patch.outcome }}"
+            echo "Build outcome: ${{ steps.build.outcome }}"
+            echo "Package verification outcome: ${{ steps.verify.outcome }}"
+            echo "Delivery outcome: ${{ steps.package.outcome }}"
+          } > tools/estate-librarian/receipts/GITHUB_ACTIONS_RUNNER_STATUS_v0_4_1A.txt
+          if [ -f /tmp/v041a-delivery/GITHUB_ACTIONS_INSTALL_RECOVERY_RECEIPT_v0_4_1A.txt ]; then
+            cp /tmp/v041a-delivery/GITHUB_ACTIONS_INSTALL_RECOVERY_RECEIPT_v0_4_1A.txt tools/estate-librarian/receipts/
+          fi
+          if [ -f /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk.sha256 ]; then
+            cp /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk.sha256 tools/estate-librarian/releases/
+            CHECKSUM=$(cut -d' ' -f1 /tmp/v041a-delivery/JM_ESTATE_LIBRARIAN_v0_4_1A_INSTALL_RECOVERY.apk.sha256)
+            python3 tools/estate-librarian-v0-4-1a-install-recovery/finalise_v041a.py --run-id "$GITHUB_RUN_ID" --checksum "$CHECKSUM"
+          fi
+          git add tools/estate-librarian/PACKAGE_MANIFEST.json tools/estate-librarian/receipts tools/estate-librarian/releases
+          if ! git diff --cached --quiet; then
+            git commit -m "Record JM Estate Librarian v0.4.1A recovery verdict"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

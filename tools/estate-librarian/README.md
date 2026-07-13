@@ -1,6 +1,6 @@
-# JM Estate Librarian v0.4.1
+# JM Estate Librarian v0.4.1A
 
-**Handheld Professionalisation Pass**
+**Installation & Handheld Containment Recovery**
 
 A surface-layer continuation of the Android-proven **JM Estate Librarian v0.4**. The v0.4 engine and proof boundary remain frozen; v0.4.1 keeps the same read-only analysis body while replacing the phone-first experience around it.
 
@@ -51,3 +51,11 @@ The Librarian reads only files the operator selects. It does **not** delete, mov
 - Physical Android v0.4.1 Ding: **PENDING user-device proof**.
 
 The parent v0.4 remains the first physical Android installation/runtime anchor. v0.4.1 now owns a compiled, package-verified APK but must still earn its own user-device Ding.
+
+
+## v0.4.1A recovery boundary
+
+- Android package identity: `com.jmestate.librarian.v041a`.
+- Installs beside the frozen v0.4 anchor; it does not overwrite or remove it.
+- Bottom navigation uses five equal viewport columns with no horizontal-scroll route.
+- This recovery package is a field-test lane. Permanent future updates require the stable release-signing workflow and repository secrets.

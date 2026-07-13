@@ -1,0 +1,24 @@
+{
+  "receiptType": "JM Estate Librarian v0.4.1A installation recovery receipt",
+  "parent": "JM Estate Librarian v0.4.1",
+  "problem": {
+    "install": "BLOCKED \u2014 parent and update APKs used different temporary debug signers",
+    "handheld": "BLOCKED \u2014 five 76px minimum-width tabs exceeded the phone viewport"
+  },
+  "repair": {
+    "applicationId": "com.jmestate.librarian.v041a",
+    "installMode": "SIDE_BY_SIDE_WITH_FROZEN_V0_4",
+    "bottomNavigation": "FIVE_EQUAL_MINMAX_ZERO_COLUMNS",
+    "horizontalNavScroll": false,
+    "permanentReleaseSigning": "SEPARATE GOVERNANCE GATE"
+  },
+  "proof": {
+    "sourcePatch": "PASS",
+    "androidCompilation": "PASS \u2014 GitHub Actions",
+    "physicalInstall": "PENDING user-device proof",
+    "apkPackageIdentity": "PASS \u2014 com.jmestate.librarian.v041a",
+    "apkArchiveIntegrity": "PASS",
+    "apkSha256": "cf65d4856c11d6b97849f6f6081cc9e9258221b4de43c6da5185ebadfc46aefa",
+    "githubActionsRun": 29258816904
+  }
+}

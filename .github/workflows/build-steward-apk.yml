@@ -27,10 +27,10 @@ jobs:
       - run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           sha256sum "$APK" > app/build/outputs/apk/debug/SHA256SUMS.txt
-          printf 'JM Estate Storage Steward v0.9B Native Border\nMount-once debug field-proof build; not production signed.\n' > app/build/outputs/apk/debug/BUILD_RECEIPT.txt
+          printf 'JM Estate Storage Steward v0.9C Field Channel\nStable field-signed debug build; side-by-side package; not production signed.\n' > app/build/outputs/apk/debug/BUILD_RECEIPT.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_ESTATE_STORAGE_STEWARD_v0_9B_DEBUG_APK
+          name: JM_ESTATE_STORAGE_STEWARD_v0_9C_FIELD_APK
           path: |
             android/steward-native-border-v0.9b/app/build/outputs/apk/debug/app-debug.apk
             android/steward-native-border-v0.9b/app/build/outputs/apk/debug/SHA256SUMS.txt
@@ -47,24 +47,28 @@ jobs:
         run: |
           cd "$GITHUB_WORKSPACE"
           mkdir -p .github/steward-build-status
-          tail -n 220 android/steward-native-border-v0.9b/build.log > .github/steward-build-status/v0.9b.log 2>/dev/null || true
+          tail -n 220 android/steward-native-border-v0.9b/build.log > .github/steward-build-status/v0.9c.log 2>/dev/null || true
           python3 - <<'PY'
           import json, os
           body = {
-              "body": "JM Estate Storage Steward v0.9B Native Border APK",
+              "body": "JM Estate Storage Steward v0.9C Field Channel APK",
               "run_id": int(os.environ["STEWARD_RUN_ID"]),
               "run_attempt": int(os.environ["STEWARD_RUN_ATTEMPT"]),
               "source_sha": os.environ["STEWARD_SOURCE_SHA"],
               "job_status": os.environ["STEWARD_JOB_STATUS"],
-              "artifact_name": "JM_ESTATE_STORAGE_STEWARD_v0_9B_DEBUG_APK",
-              "production_signed": False
+              "artifact_name": "JM_ESTATE_STORAGE_STEWARD_v0_9C_FIELD_APK",
+              "production_signed": False,
+              "stable_field_signed": True,
+              "side_by_side_package": "com.jmisjustme.estatesteward.field"
           }
-          with open('.github/steward-build-status/v0.9b.json', 'w', encoding='utf-8') as f:
+          with open('.github/steward-build-status/v0.9c.json', 'w', encoding='utf-8') as f:
               json.dump(body, f, indent=2, sort_keys=True)
               f.write('\n')
           PY
           git config user.name "JM Steward Build Receipt"
           git config user.email "actions@users.noreply.github.com"
-          git add .github/steward-build-status/v0.9b.json .github/steward-build-status/v0.9b.log
-          git commit -m "Record Steward v0.9B build status [skip ci]" || exit 0
-          git push
+          git add .github/steward-build-status/v0.9c.json .github/steward-build-status/v0.9c.log
+          git commit -m "Record Steward v0.9C build status [skip ci]" || exit 0
+          git push origin "HEAD:${GITHUB_REF_NAME}" || {
+            git pull --rebase origin "${GITHUB_REF_NAME}" && git push origin "HEAD:${GITHUB_REF_NAME}"
+          } || echo "::warning::APK artifact is valid, but the optional repository receipt could not be pushed."

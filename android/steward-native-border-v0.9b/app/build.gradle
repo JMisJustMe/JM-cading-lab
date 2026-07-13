@@ -1,5 +1,11 @@
 plugins { id 'com.android.application' }
 
+def fieldKeySource = rootProject.file('../../.github/steward-field-signing/steward-debug.keystore.b64')
+def fieldKeyStore = file("$buildDir/field-signing/steward-debug.jks")
+if (!fieldKeySource.isFile()) throw new GradleException('Steward field signing source is missing')
+fieldKeyStore.parentFile.mkdirs()
+fieldKeyStore.bytes = java.util.Base64.decoder.decode(fieldKeySource.text.trim())
+
 android {
     namespace 'com.jmisjustme.estatesteward'
     compileSdk 36
@@ -9,14 +15,24 @@ android {
         applicationId 'com.jmisjustme.estatesteward'
         minSdk 29
         targetSdk 36
-        versionCode 9
-        versionName '0.9B'
+        versionCode 10
+        versionName '0.9C'
+    }
+
+    signingConfigs {
+        fieldDebug {
+            storeFile fieldKeyStore
+            storePassword 'jm-steward-field'
+            keyAlias 'jm-steward-field'
+            keyPassword 'jm-steward-field'
+        }
     }
 
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
             versionNameSuffix '-debug'
+            signingConfig signingConfigs.fieldDebug
         }
         release {
             minifyEnabled false

@@ -14,7 +14,11 @@
   },
   "proof": {
     "sourcePatch": "PASS",
-    "androidCompilation": "PENDING GitHub Actions",
-    "physicalInstall": "PENDING user-device proof"
+    "androidCompilation": "PASS \u2014 GitHub Actions",
+    "physicalInstall": "PENDING user-device proof",
+    "apkPackageIdentity": "PASS \u2014 com.jmestate.librarian.v041a",
+    "apkArchiveIntegrity": "PASS",
+    "apkSha256": "cf65d4856c11d6b97849f6f6081cc9e9258221b4de43c6da5185ebadfc46aefa",
+    "githubActionsRun": 29258816904
   }
 }

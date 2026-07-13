@@ -1,8 +1,15 @@
 {
   "receiptType": "JM Estate Librarian build receipt",
-  "app": {"name": "JM Estate Librarian", "version": "0.4.1", "schema": "jm-estate-register-v0.4.1"},
+  "app": {
+    "name": "JM Estate Librarian",
+    "version": "0.4.1",
+    "schema": "jm-estate-register-v0.4.1"
+  },
   "build": "HANDHELD-PROFESSIONALISATION-PASS",
-  "parent": {"name": "JM Estate Librarian v0.4.0", "status": "FROZEN_ANDROID_PROVEN_ANCHOR"},
+  "parent": {
+    "name": "JM Estate Librarian v0.4.0",
+    "status": "FROZEN_ANDROID_PROVEN_ANCHOR"
+  },
   "implemented": [
     "Scan Review Archive handheld route",
     "portrait-native file cards",
@@ -14,6 +21,27 @@
     "Android Back-to-Home behaviour",
     "branded launcher and PWA icon"
   ],
-  "qa": {"web": "PASS", "mobileContainment": "PASS", "errors": [], "androidCompilation": "PENDING", "physicalAndroid": "PENDING"},
-  "safety": {"readOnly": true, "destructiveRoutes": false, "suggestionsOverwriteDecisions": false}
+  "qa": {
+    "web": "PASS",
+    "mobileContainment": "PASS",
+    "errors": [],
+    "androidCompilation": "PASS — GitHub Actions",
+    "physicalAndroid": "PENDING user-device proof",
+    "githubActionsRun": 29255293858,
+    "workflowSha": "ce282d3f5bf47ba76286b6f5943dbb6f54c77517",
+    "apkSha256": "d3693f05ed77921b864171870de61165c486e4bdce54ba6e06231de73627465d",
+    "apkArchiveIntegrity": "PASS",
+    "apkSigningBlock": "PRESENT"
+  },
+  "safety": {
+    "readOnly": true,
+    "destructiveRoutes": false,
+    "suggestionsOverwriteDecisions": false
+  },
+  "delivery": {
+    "standaloneHtml": true,
+    "githubReadySource": true,
+    "compiledApk": true,
+    "zionfolder": true
+  }
 }

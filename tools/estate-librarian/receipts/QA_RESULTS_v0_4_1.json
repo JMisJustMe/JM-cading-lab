@@ -1,9 +1,21 @@
 {
   "app": "JM Estate Librarian v0.4.1",
-  "status": "PASS_WEB_BODY",
+  "status": "PASS_WEB_AND_APK_COMPILE",
   "viewports": {
-    "mobile": {"width": 390, "height": 844, "scrollWidth": 390, "clientWidth": 390, "pageOverflow": false},
-    "desktop": {"width": 1440, "height": 1000, "scrollWidth": 1440, "clientWidth": 1440, "pageOverflow": false}
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "pageOverflow": false
+    },
+    "desktop": {
+      "width": 1440,
+      "height": 1000,
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "pageOverflow": false
+    }
   },
   "functional": {
     "demoItems": 10,
@@ -16,5 +28,14 @@
     "safeJobs": true,
     "checkpointCompatibility": true
   },
-  "errors": []
+  "errors": [],
+  "android": {
+    "compilation": "PASS",
+    "githubActionsRun": 29255293858,
+    "workflowSha": "ce282d3f5bf47ba76286b6f5943dbb6f54c77517",
+    "apkSha256": "d3693f05ed77921b864171870de61165c486e4bdce54ba6e06231de73627465d",
+    "archiveIntegrity": "PASS",
+    "signingBlock": "PRESENT",
+    "physicalInstall": "PENDING user-device proof"
+  }
 }

@@ -1,8 +1,5 @@
 name: Build JM Estate Storage Steward APK
 on:
-  push:
-    branches: [steward-native-border-v0.9b-clean]
-    paths: ['android/steward-native-border-v0.9b/**', '.github/workflows/build-steward-apk.yml']
   workflow_dispatch:
 permissions: { contents: write }
 jobs:

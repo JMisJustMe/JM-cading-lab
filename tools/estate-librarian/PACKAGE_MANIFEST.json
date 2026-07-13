@@ -14,7 +14,7 @@
     "pwaSource": true,
     "androidProject": true,
     "githubWorkflow": true,
-    "compiledApk": false
+    "compiledApk": true
   },
   "safety": {
     "readOnly": true,
@@ -25,14 +25,18 @@
     "webFunctionalQA": "PASS",
     "mobileContainment": "PASS",
     "selectedFileDuplicateProof": "PASS",
-    "androidCompilation": "PENDING",
-    "physicalAndroidInstall": "PENDING"
+    "androidCompilation": "PASS — GitHub Actions",
+    "physicalAndroidInstall": "PENDING user device proof",
+    "apkSha256": "1213e00a3b79e7101bb571d6623bdc6c03c431836eabc21c1e99bc9c36e737f2",
+    "githubActionsRun": 29249979504
   },
   "files": {
     "openFirst": "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html",
     "served": "web/index.html",
     "androidProject": "android/",
     "buildReceipt": "receipts/BUILD_RECEIPT_v0_4.json",
-    "qaReport": "receipts/QA_REPORT_v0_4.md"
+    "qaReport": "receipts/QA_REPORT_v0_4.md",
+    "apk": "releases/JM_ESTATE_LIBRARIAN_v0_4.apk",
+    "apkChecksum": "releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256"
   }
 }

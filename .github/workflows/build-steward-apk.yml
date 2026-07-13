@@ -1,0 +1,32 @@
+name: Build JM Estate Storage Steward APK
+on:
+  push:
+    branches: [steward-native-border-v0.9b-clean]
+    paths: ['android/steward-native-border-v0.9b/**', '.github/workflows/build-steward-apk.yml']
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: android/steward-native-border-v0.9b } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - run: yes | sdkmanager --licenses >/dev/null && sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '9.4.1' }
+      - run: gradle :app:assembleDebug --stacktrace --no-daemon
+      - run: |
+          APK=app/build/outputs/apk/debug/app-debug.apk
+          sha256sum "$APK" > app/build/outputs/apk/debug/SHA256SUMS.txt
+          printf 'JM Estate Storage Steward v0.9B Native Border\nDebug field-proof build; not production signed.\n' > app/build/outputs/apk/debug/BUILD_RECEIPT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_STORAGE_STEWARD_v0_9B_DEBUG_APK
+          path: |
+            android/steward-native-border-v0.9b/app/build/outputs/apk/debug/app-debug.apk
+            android/steward-native-border-v0.9b/app/build/outputs/apk/debug/SHA256SUMS.txt
+            android/steward-native-border-v0.9b/app/build/outputs/apk/debug/BUILD_RECEIPT.txt
+          if-no-files-found: error

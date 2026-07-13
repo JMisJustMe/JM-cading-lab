@@ -13,7 +13,7 @@
     "pwaSource": true,
     "androidProject": true,
     "githubWorkflow": true,
-    "compiledApk": true
+    "compiledApk": false
   },
   "safety": {
     "readOnly": true,
@@ -25,12 +25,8 @@
     "parentWebQA": "PASS",
     "bottomNavigationStaticContainment": "PASS",
     "sideBySideApplicationId": "com.jmestate.librarian.v041a",
-    "androidCompilation": "PASS \u2014 GitHub Actions",
-    "physicalAndroidInstall": "PENDING user-device proof",
-    "apkPackageIdentity": "PASS \u2014 com.jmestate.librarian.v041a",
-    "apkArchiveIntegrity": "PASS",
-    "apkSha256": "5a752053247b71340b97d116eff5812c42e6724b188f2af95f7d229ebb2ee44b",
-    "githubActionsRun": 29258256662
+    "androidCompilation": "PENDING GitHub Actions",
+    "physicalAndroidInstall": "PENDING user-device proof"
   },
   "files": {
     "openFirst": "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4_1A.html",

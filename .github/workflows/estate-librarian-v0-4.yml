@@ -1,8 +1,9 @@
 name: JM Estate Librarian v0.4 — expand source and build APK
 
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches:
+      - agent/estate-librarian-v0-4
     paths:
       - "tools/estate-librarian/bootstrap/**"
       - ".github/workflows/estate-librarian-v0-4.yml"
@@ -12,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: estate-librarian-v0-4-${{ github.event.pull_request.number || github.ref }}
+  group: estate-librarian-v0-4-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -24,7 +25,7 @@ jobs:
       - name: Check out the source branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Reassemble and verify the exact source package
@@ -63,7 +64,7 @@ jobs:
           git add tools/estate-librarian
           if ! git diff --cached --quiet; then
             git commit -m "Expand JM Estate Librarian v0.4 source body"
-            git push origin HEAD:${{ github.head_ref || github.ref_name }}
+            git push origin HEAD:${{ github.ref_name }}
           fi
 
       - name: Set up Java 17

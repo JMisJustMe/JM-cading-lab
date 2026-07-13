@@ -4,7 +4,7 @@ on:
     branches: [steward-native-border-v0.9b-clean]
     paths: ['android/steward-native-border-v0.9b/**', '.github/workflows/build-steward-apk.yml']
   workflow_dispatch:
-permissions: { contents: read }
+permissions: { contents: write }
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,3 +30,34 @@ jobs:
             android/steward-native-border-v0.9b/app/build/outputs/apk/debug/SHA256SUMS.txt
             android/steward-native-border-v0.9b/app/build/outputs/apk/debug/BUILD_RECEIPT.txt
           if-no-files-found: error
+      - name: Record build status
+        if: always()
+        working-directory: .
+        env:
+          STEWARD_RUN_ID: ${{ github.run_id }}
+          STEWARD_RUN_ATTEMPT: ${{ github.run_attempt }}
+          STEWARD_SOURCE_SHA: ${{ github.sha }}
+          STEWARD_JOB_STATUS: ${{ job.status }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          mkdir -p .github/steward-build-status
+          python3 - <<'PY'
+          import json, os
+          body = {
+              "body": "JM Estate Storage Steward v0.9B Native Border APK",
+              "run_id": int(os.environ["STEWARD_RUN_ID"]),
+              "run_attempt": int(os.environ["STEWARD_RUN_ATTEMPT"]),
+              "source_sha": os.environ["STEWARD_SOURCE_SHA"],
+              "job_status": os.environ["STEWARD_JOB_STATUS"],
+              "artifact_name": "JM_ESTATE_STORAGE_STEWARD_v0_9B_DEBUG_APK",
+              "production_signed": False
+          }
+          with open('.github/steward-build-status/v0.9b.json', 'w', encoding='utf-8') as f:
+              json.dump(body, f, indent=2, sort_keys=True)
+              f.write('\n')
+          PY
+          git config user.name "JM Steward Build Receipt"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/steward-build-status/v0.9b.json
+          git commit -m "Record Steward v0.9B build status [skip ci]" || exit 0
+          git push

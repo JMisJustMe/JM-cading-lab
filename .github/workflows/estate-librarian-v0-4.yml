@@ -127,3 +127,23 @@ jobs:
           name: JM_ESTATE_LIBRARIAN_v0_4_SOURCE
           path: /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4_GITHUB_SOURCE.zip
           if-no-files-found: error
+
+      - name: Publish the successful APK receipt to the branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin "${{ github.ref_name }}"
+          mkdir -p tools/estate-librarian/receipts tools/estate-librarian/releases
+          cp /tmp/estate-librarian-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt \
+            tools/estate-librarian/receipts/GITHUB_ACTIONS_APK_RECEIPT.txt
+          cp /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 \
+            tools/estate-librarian/releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+          git add \
+            tools/estate-librarian/receipts/GITHUB_ACTIONS_APK_RECEIPT.txt \
+            tools/estate-librarian/releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+          if ! git diff --cached --quiet; then
+            git commit -m "Record JM Estate Librarian v0.4 APK build receipt"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

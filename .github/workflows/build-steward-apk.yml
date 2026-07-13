@@ -1,5 +1,8 @@
 name: Build JM Estate Storage Steward APK
 on:
+  push:
+    branches: [steward-native-border-v0.9b-clean]
+    paths: ['android/steward-native-border-v0.9b/**', '.github/workflows/build-steward-apk.yml']
   workflow_dispatch:
 permissions: { contents: write }
 jobs:
@@ -24,7 +27,7 @@ jobs:
       - run: |
           APK=app/build/outputs/apk/debug/app-debug.apk
           sha256sum "$APK" > app/build/outputs/apk/debug/SHA256SUMS.txt
-          printf 'JM Estate Storage Steward v0.9B Native Border\nDebug field-proof build; not production signed.\n' > app/build/outputs/apk/debug/BUILD_RECEIPT.txt
+          printf 'JM Estate Storage Steward v0.9B Native Border\nMount-once debug field-proof build; not production signed.\n' > app/build/outputs/apk/debug/BUILD_RECEIPT.txt
       - uses: actions/upload-artifact@v4
         with:
           name: JM_ESTATE_STORAGE_STEWARD_v0_9B_DEBUG_APK

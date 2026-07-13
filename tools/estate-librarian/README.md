@@ -22,7 +22,8 @@ A checkpoint-compatible continuation of **JM Estate Librarian v0.3.0**. The v0.3
 - `OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html` — direct-open standalone body.
 - `web/index.html` — served/PWA route.
 - `android/` — Android Studio / Gradle carrier with native folder-tree hashing, multi-file selection and Android save-export bridge.
-- `.github/workflows/estate-librarian-v0-4.yml` — traced GitHub Actions APK builder.
+- Repository corridor: root `.github/workflows/estate-librarian-v0-4.yml` — traced build-and-receipt workflow used for the proven APK.
+- Standalone source package: `.github/workflows/build-apk.yml` — self-contained APK builder for a fresh repository.
 - `releases/JM_ESTATE_LIBRARIAN_v0_4.apk` — compiled debug APK in the release/Zionfolder body.
 
 ## Build Android locally

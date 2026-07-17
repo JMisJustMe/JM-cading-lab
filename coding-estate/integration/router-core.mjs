@@ -1,18 +1,20 @@
-const WORD_RE = /[a-z0-9]+(?:[-.][a-z0-9]+)*/g;
+const WORD_RE = /c\+\+|[a-z0-9]+(?:[-.][a-z0-9]+)*/g;
+const STOP_WORDS = new Set(["a","an","the","and","with","to","for","of","in","on","my","this","that","from","into","please"]);
 
 export function normalise(text = "") {
-  return String(text)
+  const words = String(text)
     .normalize("NFKD")
     .replace(/[’']/g, "")
     .toLowerCase()
     .match(WORD_RE) ?? [];
+  return words.filter(word => !STOP_WORDS.has(word) && (word.length > 1 || word === "c++"));
 }
 
 const INTENT_TAGS = {
   game: ["game", "play", "combat", "arena", "character", "mechanic"],
   touch: ["touch", "tap", "drag", "hold", "gesture", "hand", "mobile"],
   visual: ["visual", "graphic", "render", "animation", "screen", "feedback"],
-  compile: ["compile", "compiler", "emit", "javascript", "typescript", "wasm", "rust", "c++"],
+  compile: ["compile", "compiler", "emit", "javascript", "typescript", "js", "wasm", "rust", "c++"],
   parse: ["parse", "parser", "grammar", "syntax", "token"],
   route: ["route", "state", "transition", "door", "flow"],
   os: ["os", "operating", "service", "permission", "event", "world"],
@@ -22,7 +24,7 @@ const INTENT_TAGS = {
   govern: ["source", "govern", "register", "crown", "current", "ledger", "gate"],
   compose: ["combine", "bind", "graft", "bridge", "join", "pair"],
   formula: ["formula", "pattern", "dependency", "ratio"],
-  delivery: ["package", "deliver", "open_first", "zionfolder", "export", "android"]
+  delivery: ["package", "deliver", "delivery", "open_first", "zionfolder", "export", "android"]
 };
 
 function inferredTags(tokens) {
@@ -79,7 +81,6 @@ export function scoreBody(body, query) {
     if (tag === "govern" && body.family === "governance") score += 5;
   }
 
-  score += 1;
   return { body, score, reasons: [...new Set(reasons)] };
 }
 

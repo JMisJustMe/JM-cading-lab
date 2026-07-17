@@ -12,10 +12,14 @@ RouteCore Native · JM GAME NATIVE CORE · CodeHand RouteOS · Choice Box · Com
 node coding-estate/sovereign-batch-six/direct/native-selftest.mjs
 ```
 
-## Proof
+## Repository proof
 
-- Local conformance: **45 passed / 0 failed**
-- Digest: `cf522b65e71710ba`
+- **45 passed / 0 failed**
+- Conformance digest: `cf522b65e71710ba`
+- GitHub Actions run: `29588969363`
+- Final documented-head run: `29589252489`
+- Proof artifact: `8410217546`
+- Artifact SHA-256: `3b7e5236bcc63f652e7b4d5f1018505e28a572ade286e29a5d835551c0a80ccb`
 - Native route ABI and OS permission/service execution
 - JM game source → parser → IR → runtime → serving host
 - CodeHand authoring/world/operator/Cold-Ding connection
@@ -29,4 +33,4 @@ node coding-estate/sovereign-batch-six/direct/native-selftest.mjs
 
 ## Boundary
 
-These are authoritative current-native implementations grounded in the live registry laws. Historical-source recovery remains separately classified. Repository Ding is pending GitHub execution.
+These are repository-proven authoritative current-native implementations grounded in live registry laws. Historical-source recovery remains separately classified and no body is crowned supreme.

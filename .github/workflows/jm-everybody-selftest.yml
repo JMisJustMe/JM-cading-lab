@@ -25,6 +25,8 @@ jobs:
           node-version: 'lts/*'
       - name: Run sovereign registry and maximiser self-test
         run: node coding-estate/everybody/selftest.mjs
+      - name: Run exact native frontend tests
+        run: node coding-estate/everybody/native-selftest.mjs
       - name: Generate individual body packs
         run: node coding-estate/everybody/build-all.mjs
       - name: Execute all generated JavaScript bodies

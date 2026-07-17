@@ -31,6 +31,16 @@ function nativeFrontendState(body) {
   return 'UNCLASSIFIED';
 }
 
+function warningCleanCpp(source) {
+  return source.replace('  bool ok = true;\n', '  bool ok = true;\n  (void)strings;\n');
+}
+
+function warningCleanRust(source) {
+  return source
+    .replace('    let mut ding = false;\n', '    let mut ding = false;\n    let _ = ding;\n')
+    .replace('    let mut ok = true;\n', '    let mut ok = true;\n    let _ = &mut strings;\n');
+}
+
 await rm(OUT, { recursive: true, force: true });
 await mkdir(OUT, { recursive: true });
 
@@ -68,11 +78,11 @@ for (const body of registry.bodies) {
   await write(join(OUT, 'receipts', `${name}.json`), `${JSON.stringify(receipt, null, 2)}\n`);
   await write(join(OUT, 'js', `${name}.mjs`), emitJavaScriptModule(ir));
   await write(join(OUT, 'ts', `${name}.ts`), emitTypeScriptModule(ir));
-  await write(join(OUT, 'cpp', cppName), emitCppHeader(ir));
-  await write(join(OUT, 'rust', rustName), rust.source);
+  await write(join(OUT, 'cpp', cppName), warningCleanCpp(emitCppHeader(ir)));
+  await write(join(OUT, 'rust', rustName), warningCleanRust(rust.source));
 
   cppIncludes.push(`#include ${JSON.stringify(cppName)}`);
-  cppCalls.push(`  if (!receipt_${bodySymbol(body.id)}()) { std::cerr << ${JSON.stringify(body.id + ' failed\\n')}; ok = false; } else { ++passed; }`);
+  cppCalls.push(`  if (!receipt_${bodySymbol(body.id)}()) { std::cerr << ${JSON.stringify(body.id + ' failed\n')}; ok = false; } else { ++passed; }`);
   rustModules.push(`#[path = ${JSON.stringify(rustName)}] mod ${moduleName};`);
   rustCalls.push(`    if ${moduleName}::${rust.functionName}() { passed += 1; } else { eprintln!(${JSON.stringify(body.id + ' failed')}); ok = false; }`);
   jsImports.push(`import { run as run_${bodySymbol(body.id)} } from ${JSON.stringify(`./${name}.mjs`)};`);
@@ -87,8 +97,8 @@ for (const body of registry.bodies) {
     portableAst: 'WORKING',
     portableIr: 'WORKING',
     javascriptRuntime: receipt.ok ? 'PASS' : 'FAIL',
-    cppEmitter: 'GENERATED',
-    rustEmitter: 'GENERATED',
+    cppEmitter: 'GENERATED_WARNING_CLEAN',
+    rustEmitter: 'GENERATED_WARNING_CLEAN',
     irHash: ir.hash,
     ding: receipt.ding
   });

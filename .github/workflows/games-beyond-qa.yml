@@ -30,8 +30,14 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Boot and registry gate
         run: npx playwright test --project=mobile-chromium --grep '@boot'
-      - name: Room contact and route gate
-        run: npx playwright test --project=mobile-chromium --grep '@room'
+      - name: Mounted room opens
+        run: npx playwright test --project=mobile-chromium --grep '@room-open'
+      - name: Mounted room Ding contact
+        run: npx playwright test --project=mobile-chromium --grep '@room-ding'
+      - name: Body-native Edit route
+        run: npx playwright test --project=mobile-chromium --grep '@room-route'
+      - name: Room close and frame release
+        run: npx playwright test --project=mobile-chromium --grep '@room-close'
       - name: Workbench, export and receipt gate
         run: npx playwright test --project=mobile-chromium --grep '@workbench'
       - name: Responsive gate

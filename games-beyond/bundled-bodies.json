@@ -1,0 +1,88 @@
+{
+  "schema": "JM.GamesBeyondBundledBodies/0.2",
+  "house": "Games&Beyond — The JM Games House",
+  "keeper": "One front door. Many sovereign game rooms.",
+  "branch": "games-beyond-full-mount-v0-2",
+  "claimBoundary": "A body is bundled only when its exact playable or governing HTML is present in this repository and can be fetched by the House. Registered or Library-custodied bodies are not counted as bundled.",
+  "bundled": [
+    {
+      "id": "futarized",
+      "name": "FUTARIZED",
+      "version": "v1.2",
+      "category": "Playable Games",
+      "role": "Game-of-Game / playable manual / earned convergence",
+      "stage": "STAGE-READY",
+      "path": "bodies/futarized-v1-2.html",
+      "sourceStatus": "exact body committed",
+      "editable": true,
+      "routes": ["play", "source", "test", "recover", "export"]
+    },
+    {
+      "id": "fight-clash",
+      "name": "Fight Clash Chameleon",
+      "version": "v0.4 Open Ring",
+      "category": "Playable Games",
+      "role": "Open-ring fighting body / SideLane line",
+      "stage": "STAGE-READY",
+      "path": "bodies/fight-clash-v0-4.html",
+      "sourceStatus": "exact body committed",
+      "editable": true,
+      "routes": ["play", "source", "test", "recover", "export"]
+    },
+    {
+      "id": "aiming-run",
+      "name": "Aiming Run",
+      "version": "v0.1A",
+      "category": "Loops & Reusable Organs",
+      "role": "Movement-pressure aiming game / proof body",
+      "stage": "STAGE-READY",
+      "path": "bodies/aiming-run-v0-1a.html",
+      "sourceStatus": "exact body committed",
+      "editable": true,
+      "routes": ["play", "edit", "logic", "source", "proof", "recover", "export"]
+    },
+    {
+      "id": "drag-aim",
+      "name": "Drag & Aim Loop Kernel",
+      "version": "v0.9.9",
+      "category": "Loops & Reusable Organs",
+      "role": "Reusable touch / pull / release / trajectory organ",
+      "stage": "STAGE-READY",
+      "path": "bodies/drag-aim-loop-kernel-v0-9-9.html",
+      "sourceStatus": "exact body committed",
+      "editable": true,
+      "routes": ["play", "edit", "logic", "source", "proof", "recover", "export"]
+    },
+    {
+      "id": "loopit-boundary",
+      "name": "Loopit / GlyphPlay / GameForge Boundary",
+      "version": "Eco/Estate Rejoin Node",
+      "category": "Governance & Receipts",
+      "role": "External-vs-creator-owned playable boundary proof",
+      "stage": "FROZEN",
+      "path": "bodies/loopit-glyphplay-gameforge-boundary-rejoin-node.html",
+      "sourceStatus": "protected governing node committed",
+      "editable": true,
+      "routes": ["open", "source", "recover", "export"]
+    }
+  ],
+  "sourceTransferQueue": [
+    {"id":"fourfold-arena","name":"FOURFOLD Arena","version":"v0.17","sourceFileId":"file_000000004df072439d5c05c7e4de2705","status":"exact Library body protected; repository transfer pending"},
+    {"id":"tboys-core-clash","name":"T-Boys Core Clash","version":"v0.1 Final Graft","sourceFileId":"file_00000000968071f4abe13cf86ade4a33","status":"exact Library body protected; repository transfer pending"},
+    {"id":"rim-route","name":"JM Rim Route","version":"v0.8.2","sourceFileId":"file_0000000030ec71f48da93464e18acd03","status":"exact Library body protected; repository transfer pending"},
+    {"id":"crewbound-arena","name":"Crewbound Arena","version":"v0.5","sourceFileId":"file_0000000013f87243bc9cf3e56a8f1438","status":"exact Library body protected; repository transfer pending"},
+    {"id":"house-siege","name":"JM House Siege","version":"v1.3","sourceFileId":"file_00000000c8ec71f483f6687723085d40","status":"exact Library body protected; repository transfer pending"},
+    {"id":"western-sniper","name":"JM Western Sniper PvP","version":"v0.5","sourceFileId":"file_00000000ca987243b125ebb46787e474","status":"exact Library body protected; repository transfer pending"},
+    {"id":"dead-reckon","name":"Dead Reckon","version":"v0.9","sourceFileId":"file_00000000847c71f49689c8d1828c939b","status":"exact Library body protected; repository transfer pending"},
+    {"id":"cardbored","name":"cardBORED","version":"strongest playable/frozen route reconciliation","status":"current playable body must be selected before repository transfer"},
+    {"id":"gameforge","name":"GameForge","version":"v3.16","sourceFileId":"file_0000000034087243b05ccf8cd89dbf79","status":"exact Library body protected; repository transfer pending"},
+    {"id":"glyphplay","name":"GlyphPlay B1","version":"v29.1","sourceFileId":"file_000000008b40720aa488e97c5e5b6256","status":"exact Library body protected; repository transfer pending"},
+    {"id":"glyphforge","name":"GlyphForge","version":"v68.2","sourceFileId":"file_0000000089f47246be6514b14752ebc2","status":"exact Library body protected; repository transfer pending"},
+    {"id":"game-native-core","name":"JM Game Native Core","version":"v0.2","sourceFileId":"file_00000000ff6071f49fa5154609e5830c","status":"exact Library body protected; repository transfer pending"},
+    {"id":"gamecore","name":"JM GameCore","version":"v0.2I-A","status":"current exact body selection required"},
+    {"id":"playform","name":"PLAYFORM","version":"recovery route","status":"current exact body selection required"},
+    {"id":"combound","name":"JM Combound","version":"v0.7","sourceFileId":"file_000000009ad871f4a10dc96a3d9d3cde","status":"exact Library body protected; repository transfer pending"},
+    {"id":"quadze","name":"JM Quadze MultiHub","version":"runtime/authority selection","status":"smaller runtime body preferred over the 15.9 MB archive for first-load mounting"},
+    {"id":"jm-studios","name":"JM Studios","version":"Host Shelf","status":"preserved but not counted as active until a verified working host body is selected"}
+  ]
+}

@@ -7,10 +7,12 @@ on:
       - main
     paths:
       - 'games-beyond/**'
+      - 'GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt'
       - '.github/workflows/games-beyond-full-house-v0-3.yml'
   pull_request:
     paths:
       - 'games-beyond/**'
+      - 'GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt'
       - '.github/workflows/games-beyond-full-house-v0-3.yml'
 
 jobs:

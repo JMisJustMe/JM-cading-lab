@@ -1,0 +1,26 @@
+name: JM EveryBody Self-Test
+
+on:
+  push:
+    branches:
+      - jm-everybody-convergence-v0.1
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/**'
+      - '.github/workflows/jm-everybody-selftest.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Run sovereign registry and maximiser receipt
+        run: node coding-estate/everybody/selftest.mjs

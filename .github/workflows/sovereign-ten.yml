@@ -19,4 +19,10 @@ jobs:
         with:
           node-version: '22'
       - name: Run readable ten-body native conformance
-        run: node coding-estate/sovereign-ten/direct/native-selftest.mjs
+        shell: bash
+        run: |
+          set +e
+          node coding-estate/sovereign-ten/direct/native-selftest.mjs > /tmp/sovereign-ten-receipt.json
+          status=$?
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('/tmp/sovereign-ten-receipt.json','utf8')); console.log(JSON.stringify({passed:r.passed,failed:r.failed,digest:r.digest,failures:r.checks.filter(x=>!x.passed)},null,2));"
+          exit $status

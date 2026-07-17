@@ -4,26 +4,7 @@ This body advances twenty JM coding bodies from registry/canonical scaffolding i
 
 ## The twenty
 
-1. Cading
-2. Quadze
-3. Speakuals
-4. Mark-Level Syntax
-5. TBS.String
-6. TokenBody
-7. PunctBody
-8. GlyphBody
-9. RouteFrame
-10. StateField
-11. ContactBand
-12. FormulaGate
-13. Formula-Born Code
-14. Noncoding-Code
-15. ContactCode
-16. MorseMinus
-17. MorseMinus ZeroGrip
-18. Mudra Code
-19. JickMa / JickMah
-20. Mood Drills
+Cading · Quadze · Speakuals · Mark-Level Syntax · TBS.String · TokenBody · PunctBody · GlyphBody · RouteFrame · StateField · ContactBand · FormulaGate · Formula-Born Code · Noncoding-Code · ContactCode · MorseMinus · MorseMinus ZeroGrip · Mudra Code · JickMa / JickMah · Mood Drills
 
 ## Open first
 
@@ -45,17 +26,18 @@ node coding-estate/sovereign-batch-three/direct/native-selftest.mjs
 
 Cading → Speakuals → Mark-Level Syntax → TBS.String → TokenBody → PunctBody → Formula-Born Code → GlyphBody → FormulaGate → ContactBand → ContactCode → StateField → RouteFrame → MorseMinus → MorseMinus ZeroGrip → Mudra Code → JickMa → Mood Drills → Quadze → Noncoding-Code
 
-## Local proof
+## Repository proof
 
-- 51 passed / 0 failed
-- digest: `4eb70f69fafda4bc`
+- **51 passed / 0 failed**
+- Conformance digest: `4eb70f69fafda4bc`
+- GitHub workflow run: `29582569798`
+- Artifact ID: `8407617162`
+- Artifact SHA-256: `7d19a167aeee1ddc2f3bea80161734231a8c11c2792216e5b3001fde0d78a31a`
 - malformed source rejection
-- deterministic token and continuous route execution
+- deterministic execution
 - Fullstopped Cading/Speakuals completion
 - Quadze route, keeper, glyph and policy execution
-- mark-to-meaning routing
-- string segmentation and composition
-- token, punctuation and glyph semantics
+- mark, string, token, punctuation and glyph semantics
 - framed routing, guarded state transition and contact bands
 - formula gate pass/fail
 - Finger Two formula, signal, pressure, soft-grip, gesture, contact-transform and mood-shift bodies

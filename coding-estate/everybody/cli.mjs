@@ -5,23 +5,29 @@ import { resolve as resolvePath } from 'node:path';
 import { EverybodyMaximiser } from './everybody-maximiser.mjs';
 import { loadFederatedRegistry } from './registry-loader.mjs';
 import { compilePortable } from './compiler-core.mjs';
-import { compileNative, NATIVE_ADAPTERS } from './native-adapters.mjs';
+import { compileNativeUnified, EXACT_HISTORICAL_NATIVE_IDS, nativeStatusV2 } from './native-router-v2.mjs';
 
 function usage() {
-  return `JM EveryBody CLI v0.2
+  return `JM EveryBody CLI v2.0
 
 Usage:
   node cli.mjs list
   node cli.mjs audit
   node cli.mjs resolve --goal "..." [--cap parser,runtime] [--target javascript,cpp_lineage,rust] [--constraint Android]
   node cli.mjs compile <portable-source-file>
-  node cli.mjs native <body-id> --source "native source"
-  node cli.mjs native <body-id> --file <native-source-file>
+  node cli.mjs native <body-id> --source "native source" [--mode auto|historical|canonical]
+  node cli.mjs native <body-id> --file <native-source-file> [--mode auto|historical|canonical]
+  node cli.mjs spec <body-id>
   node cli.mjs adapters
   node cli.mjs build
 
+Native lanes:
+  historical = one of the four exact recovered historical-native subsets
+  canonical  = official current JM canonical-native v2 specification
+  auto       = detect canonical v2 header, otherwise use an exact historical adapter when available
+
 Boundaries:
-  Portable backend success never implies unrecovered native grammar parity.
+  Current canonical-native completion does not rewrite unrecovered historical syntax.
   A lead body is selected for one request only and is never crowned supreme.
 `;
 }
@@ -41,15 +47,6 @@ function groupCounts(items, key) {
   return Object.fromEntries(Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])));
 }
 
-function nativeState(body) {
-  if (NATIVE_ADAPTERS[body.id]) return 'EXACT_ADAPTER_TESTED';
-  const needs = body.needs.join(' ').toLowerCase();
-  const caps = body.caps.join(' ').toLowerCase();
-  if (/grammar recovery|identity audit|native parser/.test(needs)) return 'UNRECOVERED_OR_UNSPECIFIED';
-  if (/parser|grammar|lexer|tokenizer/.test(caps)) return 'PRESENT_OR_LINEAGE_NEEDS_EXTRACTION';
-  return 'REQUIRES_BODY_SPECIFICATION';
-}
-
 async function main() {
   const args = process.argv.slice(2);
   const command = args.shift() ?? 'help';
@@ -61,6 +58,7 @@ async function main() {
 
   if (command === 'build') {
     await import('./build-all.mjs');
+    await import('./canonical-native-v2-build.mjs');
     return;
   }
 
@@ -72,20 +70,28 @@ async function main() {
       schema: registry.schema,
       recoveredCount: registry.bodies.length,
       finalCountClaimed: false,
-      bodies: registry.bodies.map(body => ({ id: body.id, name: body.name, kind: body.kind, status: body.status, nativeFrontend: nativeState(body), targets: body.targets }))
+      currentCanonicalNativeComplete: registry.bodies.length,
+      exactHistoricalNativeBodyIds: EXACT_HISTORICAL_NATIVE_IDS,
+      bodies: registry.bodies.map(body => {
+        const status = nativeStatusV2(body, registry);
+        return { id: body.id, name: body.name, kind: body.kind, status: body.status, nativeFamily: status.family, currentCanonicalNative: status.currentCanonicalNative, historicalNative: status.historicalNative, targets: body.targets };
+      })
     }, null, 2));
     return;
   }
 
   if (command === 'audit') {
     const audit = maximiser.audit();
+    const nativeStates = registry.bodies.map(body => nativeStatusV2(body, registry));
     console.log(JSON.stringify({
       ...audit,
       kinds: groupCounts(registry.bodies, 'kind'),
       statuses: groupCounts(registry.bodies, 'status'),
-      exactNativeAdapters: Object.keys(NATIVE_ADAPTERS),
-      nativeFrontendStates: groupCounts(registry.bodies.map(body => ({ state: nativeState(body) })), 'state'),
-      completionBoundary: 'All recovered bodies have registry and portable target lanes. Exact native semantics remain complete only where an exact tested adapter is registered.'
+      nativeFamilies: groupCounts(nativeStates, 'family'),
+      currentCanonicalNativeComplete: nativeStates.filter(state => state.currentCanonicalNative === 'COMPLETE_V2').length,
+      exactHistoricalNativeBodyIds: EXACT_HISTORICAL_NATIVE_IDS,
+      historicalNativeStates: groupCounts(nativeStates, 'historicalNative'),
+      completionBoundary: 'All registered bodies have complete current canonical-native v2 specifications. Historical source evidence remains separately classified.'
     }, null, 2));
     return;
   }
@@ -117,18 +123,30 @@ async function main() {
     if (!bodyId) throw new Error('native requires a body id.');
     const inline = valueAfter(args, '--source');
     const file = valueAfter(args, '--file');
+    const mode = valueAfter(args, '--mode', 'auto');
     if (!inline && !file) throw new Error('native requires --source or --file.');
+    if (!['auto', 'historical', 'exact', 'canonical'].includes(mode)) throw new Error(`Unknown native mode ${mode}.`);
     const source = inline || await readFile(resolvePath(file), 'utf8');
-    const result = compileNative(bodyId, source, registry);
+    const result = compileNativeUnified(bodyId, source, registry, { mode });
     console.log(JSON.stringify(result, null, 2));
     if (!result.ok) process.exitCode = 1;
     return;
   }
 
+  if (command === 'spec') {
+    const bodyId = args[0];
+    if (!bodyId) throw new Error('spec requires a body id.');
+    const body = registry.bodies.find(candidate => candidate.id === bodyId);
+    if (!body) throw new Error(`Unknown body ${bodyId}.`);
+    console.log(JSON.stringify(nativeStatusV2(body, registry), null, 2));
+    return;
+  }
+
   if (command === 'adapters') {
     console.log(JSON.stringify({
-      exactAdapters: Object.entries(NATIVE_ADAPTERS).map(([id, adapter]) => ({ id, version: adapter.version })),
-      refusalLaw: 'Bodies without an exact adapter fail visibly instead of accepting invented native syntax.'
+      currentCanonicalNative: { version: '2.0', bodies: registry.bodies.length, state: 'COMPLETE' },
+      exactHistoricalNative: { count: EXACT_HISTORICAL_NATIVE_IDS.length, bodyIds: EXACT_HISTORICAL_NATIVE_IDS },
+      truthLaw: 'Current canonical specifications are authoritative for present builds; historical adapters only claim exact recovered subsets.'
     }, null, 2));
     return;
   }

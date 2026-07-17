@@ -1,0 +1,40 @@
+name: Games&Beyond QA
+
+on:
+  push:
+    branches:
+      - games-beyond-house-v0-1a
+      - main
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/games-beyond-qa.yml'
+  pull_request:
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/games-beyond-qa.yml'
+
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: games-beyond
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: games-beyond/package-lock.json
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - run: npm run qa
+      - name: Upload Playwright evidence on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: games-beyond-playwright-evidence
+          path: |
+            games-beyond/test-results
+            games-beyond/playwright-report
+          if-no-files-found: ignore

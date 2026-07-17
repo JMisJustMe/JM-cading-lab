@@ -2,7 +2,8 @@ import { loadRegistry } from './everybody-maximiser.mjs';
 
 const DEFAULT_REGISTRIES = Object.freeze([
   './body-registry.json',
-  './body-registry-extension-01.json'
+  './body-registry-extension-01.json',
+  './body-registry-extension-02.json'
 ]);
 
 export async function loadFederatedRegistry(sources = DEFAULT_REGISTRIES) {
@@ -27,9 +28,9 @@ export async function loadFederatedRegistry(sources = DEFAULT_REGISTRIES) {
   }
 
   return {
-    schema: 'jm.everybody.registry-federation/0.1',
+    schema: 'jm.everybody.registry-federation/1.1',
     name: 'JM EveryBody — Federated Sovereign Registry',
-    status: 'ALPHA_NOT_CROWN',
+    status: 'MAXIMAL_PORTABLE_NOT_CROWN',
     recovered_count: bodies.length,
     final_count_claimed: false,
     count_boundary: 'Federated recovered set only. Every further exact body is appended through another explicit registry extension.',
@@ -39,7 +40,8 @@ export async function loadFederatedRegistry(sources = DEFAULT_REGISTRIES) {
       'shared_organs_do_not_erase_identity',
       'lookup_before_composition',
       'targets_never_govern_source',
-      'no_ding_no_claim'
+      'no_ding_no_claim',
+      'working_profile_does_not_falsely_claim_historical_native_grammar'
     ],
     pipeline: parts[0].pipeline,
     registry_sources: sources,

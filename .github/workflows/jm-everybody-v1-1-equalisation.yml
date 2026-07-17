@@ -35,6 +35,9 @@ jobs:
         run: node --experimental-strip-types coding-estate/everybody/generated/ts/all-bodies.ts
       - name: Execute all WebAssembly bodies
         run: node coding-estate/everybody/generated/wasm/all-bodies.mjs
+      - name: Regenerate the six-axis completion matrix after pack generation
+        working-directory: coding-estate/everybody
+        run: npm run equalise
       - name: Preserve v1.1 matrices and 100-body packs
         uses: actions/upload-artifact@v4
         with:

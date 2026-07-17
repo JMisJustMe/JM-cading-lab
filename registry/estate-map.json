@@ -19,12 +19,14 @@
   },
   "live_github_routes": [
     {"body": "Cading Lab", "path": "cading.html", "state": "LIVE"},
+    {"body": "JM EveryBody — Sovereign Compatibility & Maximisation Fabric", "path": "coding-estate/everybody/index.html", "state": "PORTABLE_CONVERGENCE_V1_COMPLETE"},
     {"body": "Fresh App Lab", "path": "fresh-app-lab/", "state": "LIVE"},
     {"body": "Estate Bridge", "path": "estate/index.html", "state": "LIVE"},
     {"body": "Games&Beyond — The JM Games House", "path": "games-beyond/index.html", "state": "EDITABLE_HOST_FOUNDATION"}
   ],
   "registered_departments": [
     {"body": "Coding / Cading", "state": "CONNECTED"},
+    {"body": "JM EveryBody", "state": "V1_PORTABLE_CONVERGENCE_COMPLETE", "route": "coding-estate/everybody/", "recovered_entries": 76, "target_lanes_passed": 13, "native_adapters_tested": ["cading", "mmzg", "speakuals"], "boundary": "Portable convergence complete; exact native recovery remains body-specific."},
     {"body": "Games House", "state": "EDITABLE_HOST_AND_REGISTRY_CONNECTED", "route": "games-beyond/"},
     {"body": "Game Engines", "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING", "host": "Games&Beyond"},
     {"body": "Playable Games", "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING", "host": "Games&Beyond"},
@@ -37,6 +39,37 @@
     {"body": "Zionfolders / FLL", "state": "OWNER_CONTROLLED_ARCHIVE"},
     {"body": "Universal Edit", "state": "LINEAGE_PRESERVED"}
   ],
+  "jm_everybody": {
+    "name": "JM EveryBody — Sovereign Compatibility & Maximisation Fabric",
+    "version": "1.0",
+    "keeper_line": "Many complete bodies → one compatibility fabric → one maximiser above them, never a dictator over them.",
+    "route": "coding-estate/everybody/",
+    "open_first": "coding-estate/everybody/index.html",
+    "registry": [
+      "coding-estate/everybody/body-registry.json",
+      "coding-estate/everybody/body-registry-extension-01.json"
+    ],
+    "status": "COMPLETE_FEDERATED_PORTABLE_TOOLCHAIN",
+    "recovered_entries": 76,
+    "final_estate_count_claimed": false,
+    "target_lanes_passed": [
+      "JavaScript",
+      "TypeScript",
+      "WebAssembly",
+      "C++98",
+      "C++03",
+      "C++11",
+      "C++14",
+      "C++17",
+      "C++20",
+      "C++23",
+      "C++26 draft",
+      "Rust 2021",
+      "Rust 2024"
+    ],
+    "native_frontends_tested": ["Cading", "MMZG / MorseMinus ZeroGrip", "Speakuals"],
+    "source_boundary": "Every member body retains native authority. Missing historical grammar is not invented."
+  },
   "games_house": {
     "name": "Games&Beyond — The JM Games House",
     "version": "0.1A",

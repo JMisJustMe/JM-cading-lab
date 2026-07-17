@@ -1,5 +1,5 @@
 {
-  "schema": "jm.sovereign-ten.delivery/1.0",
+  "schema": "jm.sovereign-ten.delivery/1.1",
   "title": "JM Sovereign Ten Native Formation v1",
   "bodies": [
     "FlowTalk",
@@ -13,21 +13,25 @@
     "Game-CODING",
     "JM GameCore"
   ],
-  "parts": 8,
-  "packedFiles": 34,
-  "payloadSchema": "jm.sovereign-ten.pack/1.0",
-  "extractor": "OPEN_FIRST.mjs",
-  "localConformance": {
+  "authoritativeSource": "coding-estate/sovereign-ten/direct",
+  "sourceModules": [
+    "native-core.mjs",
+    "language-native.mjs",
+    "route-proof-native.mjs",
+    "game-native.mjs",
+    "native-corpus.mjs",
+    "native-selftest.mjs"
+  ],
+  "repositoryConformance": {
     "passed": 23,
     "failed": 0,
-    "digest": "2f2a03d1b483bab898d6866c26af10b0"
+    "digest": "8f872539157cf4c3",
+    "artifactSha256": "390a4bbbcd438f3ffee013dc4a1f4d347ea8c5eeefda8981c9ac1c803803ad19"
   },
-  "bundleConformance": {
-    "passed": 16,
-    "failed": 0,
-    "digest": "cab1db9bf3540ab588e7f60b9beed674"
-  },
-  "integrationDigest": "dc4487d5f9c026db14dea03d54b018d8",
+  "continuousRoutes": [
+    "FlowTalk -> JMLogic -> JM32-1DA -> RouteScript -> RouteVM -> RouteOS -> Reality Contact -> TraceBox -> Dings",
+    "Game-CODING -> JM GameCore"
+  ],
   "currentNativeClaim": true,
   "historicalRecoveryClaim": false
 }

@@ -69,6 +69,23 @@ The first registry includes:
 
 It is explicitly a proof body, not a game-world or engine.
 
+## Executed browser acceptance
+
+The following automated gates passed in Chromium:
+
+- House boot and registry;
+- mounted room open and body load;
+- real body-native Ding contact;
+- host-to-body Edit routing;
+- room close route;
+- exact-source workbench;
+- passport save;
+- individual body export;
+- genesis and export receipts;
+- portrait, landscape and desktop overflow checks.
+
+See `QA_RECEIPT_v0_1A.md` for the executed acceptance record.
+
 ## Claim boundary
 
 ### DING covers
@@ -78,8 +95,9 @@ It is explicitly a proof body, not a game-world or engine.
 - body registry;
 - local import/storage logic;
 - working interaction routes implemented in code;
-- PWA and Android source route;
-- automated browser-QA configuration.
+- exact-source workbench and export;
+- responsive browser acceptance;
+- PWA and Android source route.
 
 ### Not yet claimed
 
@@ -87,9 +105,9 @@ It is explicitly a proof body, not a game-world or engine.
 - Android device QA;
 - compiled or signed APK;
 - Play Store publication;
-- public release crown;
+- final public-release crown;
 - replacement of owner-controlled Zionfolders;
-- final visual acceptance before the browser QA run passes.
+- final manual visual-polish acceptance.
 
 ## Android
 

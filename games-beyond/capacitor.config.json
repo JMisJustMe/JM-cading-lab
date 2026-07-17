@@ -1,0 +1,13 @@
+{
+  "appId": "jm.ownmade.gamesbeyond",
+  "appName": "Games&Beyond",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  }
+}

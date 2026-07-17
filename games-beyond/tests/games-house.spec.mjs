@@ -23,7 +23,7 @@ async function openGameForgeEditor(page) {
   await openHouse(page);
   const card = await gameForgeCard(page);
   await card.locator('[data-edit="gameforge"]').click();
-  await expect(page.locator('[data-view="edit"]')).toHaveClass(/active/);
+  await expect(page.locator('.view[data-view="edit"]')).toHaveClass(/active/);
   await expect(page.locator('#bodyName')).toHaveValue(/GameForge/i);
   await expect(page.locator('#source')).toHaveValue(/<html|<!doctype/i);
 }
@@ -70,7 +70,7 @@ test('@room-route Host reaches the body-native Edit route', async ({ page }) => 
 test('@room-close Escape returns from the body workspace to Rooms', async ({ page }) => {
   await openGameForgeEditor(page);
   await page.keyboard.press('Escape');
-  await expect(page.locator('[data-view="rooms"]')).toHaveClass(/active/);
+  await expect(page.locator('.view[data-view="rooms"]')).toHaveClass(/active/);
   await expect(page.locator('.nav [data-view="rooms"]')).toHaveClass(/active/);
 });
 
@@ -125,6 +125,6 @@ test('@responsive Portrait, landscape and desktop House routes', async ({ page }
 
   for (const view of ['rooms', 'edit', 'proof', 'house']) {
     await page.locator(`.nav [data-view="${view}"]`).click();
-    await expect(page.locator(`[data-view="${view}"]`).first()).toHaveClass(/active/);
+    await expect(page.locator(`.view[data-view="${view}"]`)).toHaveClass(/active/);
   }
 });

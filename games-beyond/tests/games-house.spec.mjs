@@ -64,7 +64,7 @@ test('@workbench Passport, exact source, export and receipt', async ({ page }) =
   await card.locator('.select-body').click();
   await expect(page.locator('[data-view="workbench"] .section-head h2')).toHaveText('Creator Workbench');
   await expect(page.locator('#sourceEditor')).toBeEnabled();
-  await expect(page.locator('#sourceEditor')).toContainText('Games House Door Test');
+  await expect(page.locator('#sourceEditor')).toHaveValue(/Games House Door Test/);
   await page.locator('#editVersion').fill('v0.1 QA');
   await page.locator('#savePassport').click();
   await expect(page.locator('#workStatus')).toContainText('MOUNTED');

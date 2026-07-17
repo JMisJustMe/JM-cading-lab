@@ -1,0 +1,28 @@
+name: JM Sovereign Ten Native Conformance
+
+on:
+  push:
+    paths:
+      - 'coding-estate/sovereign-ten/**'
+      - '.github/workflows/sovereign-ten.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/sovereign-ten/**'
+      - '.github/workflows/sovereign-ten.yml'
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Extract sovereign native pack
+        run: node coding-estate/sovereign-ten/OPEN_FIRST.mjs
+      - name: Run ten-body native conformance
+        working-directory: coding-estate/sovereign-ten
+        run: node bundle-selftest.mjs
+      - name: Run continuous ten-body integration
+        working-directory: coding-estate/sovereign-ten
+        run: node integration.mjs

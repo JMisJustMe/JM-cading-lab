@@ -1,0 +1,73 @@
+name: JM EveryBody v2 Canonical Native Completion
+
+on:
+  push:
+    branches:
+      - jm-everybody-v2-canonical-native-completion
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/**'
+      - '.github/workflows/jm-everybody-v2-native.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  canonical_native:
+    name: 100-body current canonical-native grammar, runtime and receipts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Run full historical, portable and canonical-native tests
+        working-directory: coding-estate/everybody
+        run: npm test
+      - name: Build portable and canonical-native body packs
+        working-directory: coding-estate/everybody
+        run: npm run build
+      - name: Verify canonical-native completion matrix
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const path = 'coding-estate/everybody/generated/canonical-native-v2/CURRENT_NATIVE_COMPLETION_MATRIX_v2_0.json';
+          const report = JSON.parse(await readFile(path, 'utf8'));
+          if (report.summary.registered !== 100) throw new Error(`Expected 100, got ${report.summary.registered}`);
+          if (report.summary.currentCanonicalNativeComplete !== 100) throw new Error(`Canonical complete ${report.summary.currentCanonicalNativeComplete}/100`);
+          if (report.summary.currentNativeDegree !== 10) throw new Error('Current native degree must be 10.');
+          if (report.summary.exactHistoricalNative !== 4) throw new Error('Four exact historical adapters must remain preserved.');
+          if (report.summary.historicalSyntaxFabricated !== false) throw new Error('Historical syntax fabrication boundary failed.');
+          if (report.bodies.some(body => !body.ding || !body.roundTrip || body.currentNativeDegree !== 10)) throw new Error('One or more bodies failed canonical-native completion.');
+          console.log(JSON.stringify(report.summary, null, 2));
+          NODE
+      - name: Verify CLI audit and two opposite body specifications
+        working-directory: coding-estate/everybody
+        run: |
+          node cli.mjs audit > /tmp/jm-audit.json
+          node cli.mjs spec quadze > /tmp/quadze-spec.json
+          node cli.mjs spec root-method > /tmp/root-method-spec.json
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const audit = JSON.parse(await readFile('/tmp/jm-audit.json', 'utf8'));
+          const quadze = JSON.parse(await readFile('/tmp/quadze-spec.json', 'utf8'));
+          const root = JSON.parse(await readFile('/tmp/root-method-spec.json', 'utf8'));
+          if (audit.currentCanonicalNativeComplete !== 100) throw new Error('CLI audit did not report 100 current canonical bodies.');
+          if (quadze.currentDegree !== 10 || root.currentDegree !== 10) throw new Error('Strongest and formerly thinnest bodies are not equalised.');
+          if (!quadze.exactHistoricalAdapter || root.exactHistoricalAdapter) throw new Error('Historical evidence axis was flattened.');
+          NODE
+      - name: Execute generated JavaScript bodies
+        run: node coding-estate/everybody/generated/js/all-bodies.mjs
+      - name: Execute generated TypeScript bodies
+        run: node --experimental-strip-types coding-estate/everybody/generated/ts/all-bodies.ts
+      - name: Execute generated WebAssembly bodies
+        run: node coding-estate/everybody/generated/wasm/all-bodies.mjs
+      - name: Preserve complete v2 body packs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-everybody-v2-100-body-current-native-packs
+          path: coding-estate/everybody/generated
+          if-no-files-found: error
+          retention-days: 30

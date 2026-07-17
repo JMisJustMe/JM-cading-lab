@@ -5,9 +5,9 @@
 
 ## Purpose
 
-JM EveryBody is the new compatibility and maximisation body formed after every recovered JM coding body has been given its own complete implementation lane.
+JM EveryBody is the new compatibility and maximisation body formed as every recovered JM coding body receives its own complete implementation lane.
 
-It is **not** a supreme replacement language. It does not flatten Cading, MMZG, JMLogic, FlowTalk, Kading, Quadze, J’MP, Codifying, Kocodifying, FormeULA, Root Method, PrimeBody, TheoC, CadenVM, RouteOS, CodeHand or any other body into generic syntax.
+It is **not** a supreme replacement language. It does not flatten Cading, MMZG, JMLogic, FlowTalk, Mark-Level Syntax, Speakuals, Kading, Quadze, J’MP/JAMP, Codifying/Askual, Kocodifying, OS_CODING, Game-CODING, FormeULA/MarkeULA, Builder Lads, TokenBody, PunctBody, RouteFrame, StateField, ContactBand, Root Method, PrimeBody, TheoC, CadenVM, RouteVM, JMVM, RouteOS, CodeHand or any other body into generic syntax.
 
 Its job is to:
 
@@ -22,6 +22,21 @@ Its job is to:
 ## Governing law
 
 > Many complete bodies → one compatibility fabric → one new maximiser body above them, never a dictator over them.
+
+## Recovered registry state
+
+The federated registry currently carries **76 separately classified entries** across two machine-readable registry bodies.
+
+This includes the first compiler/runtime/engine sweep plus recovered bodies and organs from:
+
+- Starter 13 / CodeHouse;
+- Finger One and Finger Two;
+- the inner coding spine;
+- the 33-room Coding Body House lineage;
+- JM Coding Body House — Intuitive Builder v0.3 with 46 rooms;
+- Cading Lab, runtime and engine lineages.
+
+**76 is not the final estate count.** Some entries are languages, some are syntax or parser organs, some are runtimes/VMs, some are engines/adapters, and some are authoring or diagnostic houses. They stay separately classified so neither aliases nor containers are falsely treated as one undifferentiated language.
 
 ## Every individual body receives this lane
 
@@ -54,7 +69,7 @@ Each body owns its grammar and meaning. A shared parser toolkit may be used inte
 
 ### 2. Body-specific IRs
 
-Cading IR, MMZG IR, TheoC IR, Quadze game IR, FlowTalk flow graphs, Root Method bytecode and other IRs remain individually inspectable. They are not prematurely collapsed into one lowest-common-denominator tree.
+Cading IR, MMZG IR, TheoC IR, Quadze game IR, FlowTalk flow graphs, Root Method bytecode, Game-CODING gameplay IR and other IRs remain individually inspectable. They are not prematurely collapsed into one lowest-common-denominator tree.
 
 ### 3. JM Interop IR
 
@@ -70,7 +85,7 @@ Interop occurs through explicit adapters. The shared IR carries:
 
 ### 4. Runtime federation
 
-A body may execute through its own runtime, CadenVM/JMVM, RouteCore Native, JM GAME NATIVE CORE, a game engine adapter, or a generated native runtime. JM EveryBody resolves rather than assumes.
+A body may execute through its own runtime, CadenVM/JMVM/RouteVM, RouteCore Native, JM GAME NATIVE CORE, a game engine adapter, or a generated native runtime. JM EveryBody resolves rather than assumes.
 
 ### 5. Lookup and maximisation
 
@@ -93,7 +108,7 @@ The initial target order is:
 
 1. JavaScript and TypeScript host/runtime parity;
 2. WebAssembly bridge where browser and native execution need a shared binary route;
-3. C++ compatibility family, including established standards and a separately labelled preview lane for the developing next standard;
+3. C++11/14/17/20 compatibility, C++23 primary published-standard parity, and a separately labelled C++26 draft lane;
 4. Rust stable and edition-aware targets;
 5. C, JVM/Java/Kotlin, .NET/C#, Swift, Go, Python, Lua, GDScript, shader targets and other relevant backends;
 6. native Android, desktop, server, embedded and GPU routes where earned.
@@ -104,11 +119,12 @@ Target support must be recorded per body and per feature. “Can print source co
 
 This first body proves:
 
-- a sovereign-body registry format;
-- a recovered first set of individual coding bodies;
+- a sovereign-body registry and extension format;
+- a federated recovered set of 76 individually classified bodies/organs/houses;
 - a machine-readable per-body implementation lane;
 - a compatibility lookup and maximisation runtime;
 - explicit no-supreme-body governance;
-- target-family planning.
+- target-family planning;
+- a CI conformance route.
 
-It does **not** yet prove that every historical body has been recovered, that all front ends and runtimes are complete, or that C++/Rust parity has been achieved. Those are the next build passes.
+It does **not** yet prove that every historical body has been recovered, that all front ends and runtimes are complete, or that C++/Rust parity has been achieved. Those remain implementation passes, not paperwork claims.

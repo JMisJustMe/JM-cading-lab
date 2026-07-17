@@ -30,7 +30,8 @@ export async function loadFederatedRegistry(sources = DEFAULT_REGISTRIES) {
   return {
     schema: 'jm.everybody.registry-federation/1.1',
     name: 'JM EveryBody — Federated Sovereign Registry',
-    status: 'MAXIMAL_PORTABLE_NOT_CROWN',
+    status: 'ALPHA_NOT_CROWN',
+    release_state: 'MAXIMAL_PORTABLE_V1_1',
     recovered_count: bodies.length,
     final_count_claimed: false,
     count_boundary: 'Federated recovered set only. Every further exact body is appended through another explicit registry extension.',

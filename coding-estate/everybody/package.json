@@ -1,0 +1,20 @@
+{
+  "name": "jm-everybody",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Sovereign compatibility and maximisation fabric for JM coding bodies.",
+  "scripts": {
+    "test": "node selftest.mjs && node native-selftest.mjs",
+    "build": "node build-all.mjs",
+    "verify:js": "node build-all.mjs && node generated/js/all-bodies.mjs",
+    "audit": "node cli.mjs audit",
+    "list": "node cli.mjs list"
+  },
+  "bin": {
+    "jm-everybody": "./cli.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

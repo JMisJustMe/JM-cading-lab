@@ -1,0 +1,25 @@
+name: JM Sovereign Batch Six Native Conformance
+on:
+  push:
+    paths: ['coding-estate/sovereign-batch-six/**','.github/workflows/sovereign-batch-six.yml']
+  pull_request:
+    paths: ['coding-estate/sovereign-batch-six/**','.github/workflows/sovereign-batch-six.yml']
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Run readable Batch Six native conformance
+        continue-on-error: true
+        run: node coding-estate/sovereign-batch-six/direct/native-selftest.mjs > sovereign-batch-six-receipt.json
+      - name: Upload conformance receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-batch-six-conformance-receipt
+          path: sovereign-batch-six-receipt.json
+      - name: Enforce conformance result
+        if: always()
+        run: node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('sovereign-batch-six-receipt.json','utf8'));console.log(JSON.stringify({passed:r.passed,failed:r.failed,digest:r.digest,failures:r.checks.filter(x=>!x.passed)},null,2));if(r.failed)process.exit(1);"

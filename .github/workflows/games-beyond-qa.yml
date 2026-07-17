@@ -36,7 +36,7 @@ jobs:
         run: npx playwright test --project=mobile-chromium --grep '@room-ding'
       - name: Body-native Edit route
         run: npx playwright test --project=mobile-chromium --grep '@room-route'
-      - name: Room close and frame release
+      - name: Room close route
         run: npx playwright test --project=mobile-chromium --grep '@room-close'
       - name: Workbench, export and receipt gate
         run: npx playwright test --project=mobile-chromium --grep '@workbench'

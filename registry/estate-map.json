@@ -20,11 +20,15 @@
   "live_github_routes": [
     {"body": "Cading Lab", "path": "cading.html", "state": "LIVE"},
     {"body": "Fresh App Lab", "path": "fresh-app-lab/", "state": "LIVE"},
-    {"body": "Estate Bridge", "path": "estate/index.html", "state": "LIVE"}
+    {"body": "Estate Bridge", "path": "estate/index.html", "state": "LIVE"},
+    {"body": "Games&Beyond — The JM Games House", "path": "games-beyond/index.html", "state": "EDITABLE_HOST_FOUNDATION"}
   ],
   "registered_departments": [
     {"body": "Coding / Cading", "state": "CONNECTED"},
-    {"body": "Game Engines", "state": "MOUNTED_IN_v4_CROWN"},
+    {"body": "Games House", "state": "EDITABLE_HOST_AND_REGISTRY_CONNECTED", "route": "games-beyond/"},
+    {"body": "Game Engines", "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING", "host": "Games&Beyond"},
+    {"body": "Playable Games", "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING", "host": "Games&Beyond"},
+    {"body": "Loops and Reusable Organs", "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING", "host": "Games&Beyond"},
     {"body": "Apps and Tools", "state": "MOUNTED_IN_v4_CROWN"},
     {"body": "JM LyricStudio", "state": "MOUNTED_IN_v4_CROWN"},
     {"body": "Theory Wing", "state": "MOUNTED_AND_REGISTRY_CONNECTED"},
@@ -33,6 +37,17 @@
     {"body": "Zionfolders / FLL", "state": "OWNER_CONTROLLED_ARCHIVE"},
     {"body": "Universal Edit", "state": "LINEAGE_PRESERVED"}
   ],
+  "games_house": {
+    "name": "Games&Beyond — The JM Games House",
+    "version": "0.1A",
+    "keeper_line": "One front door. Many sovereign game rooms.",
+    "route": "games-beyond/",
+    "registry": "games-beyond/registry.json",
+    "status": "EDITABLE_HOST_FOUNDATION",
+    "storage": "IndexedDB local mounted copies",
+    "source_boundary": "Owner-controlled source files and Zionfolders remain preserved separately.",
+    "android": "route-ready-not-compiled"
+  },
   "current_local_crown": {
     "name": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY",
     "state": "LOCAL_FULL_ARCHIVE_BUILT",

@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#050711" />
+<title>Fight Clash: Chameleon Prologue v0.4 Open Ring</title>
+<style>
+:root{
+  --bg:#050711;--panel:#0d1220;--panel2:#121a2d;--line:#2a3854;--text:#f8fbff;
+  --muted:#9eb0c9;--cyan:#76ecff;--pink:#ff8fab;--gold:#ffd166;--green:#8ff7aa;
+  --red:#ff667d;--violet:#b98cff;--shadow:0 18px 55px rgba(0,0,0,.38);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body,#app,.topbar,.stageWrap,.hud,.controlOverlay,.controls,.dock,button{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable="true"]{user-select:text;-webkit-user-select:text;-webkit-touch-callout:default}
+html,body{height:100%;overscroll-behavior:none}
+body{margin:0;touch-action:manipulation;background:radial-gradient(circle at 50% -10%,#28345b 0,#0c1020 38%,#050711 72%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;overflow:hidden}
+button,input,select{font:inherit}
+button{color:var(--text)}
+#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;padding:max(7px,env(safe-area-inset-top)) 8px max(7px,env(safe-area-inset-bottom));max-width:1180px;margin:auto}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:rgba(10,15,28,.92);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:8px 10px;box-shadow:var(--shadow);backdrop-filter:blur(12px)}
+.brand{min-width:0}.brand h1{font-size:clamp(17px,4.3vw,28px);line-height:1;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.brand p{font-size:10px;color:var(--muted);margin:5px 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.modeRow{display:flex;gap:5px;flex-wrap:nowrap}.modeBtn,.dockBtn{border:1px solid rgba(255,255,255,.12);background:#11192b;border-radius:12px;padding:8px 9px;font-weight:900;font-size:11px;min-height:38px}.modeBtn.active{border-color:var(--gold);background:rgba(255,209,102,.15);box-shadow:0 0 0 1px rgba(255,209,102,.15) inset}
+.main{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:8px}
+.stageWrap{min-width:0;min-height:0;position:relative;touch-action:none;-webkit-user-drag:none;border:1px solid rgba(255,255,255,.12);border-radius:22px;overflow:hidden;background:#050914;box-shadow:var(--shadow)}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+.hud{position:absolute;inset:0;pointer-events:none;padding:8px;display:grid;grid-template-rows:auto 1fr auto}
+.fighterHud{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:start}
+.fighterCard{background:rgba(5,9,20,.76);border:1px solid rgba(255,255,255,.11);border-radius:14px;padding:7px;backdrop-filter:blur(8px)}
+.fighterCard.enemy{text-align:right}.name{display:flex;justify-content:space-between;gap:6px;font-size:11px;font-weight:1000;letter-spacing:.04em}.enemy .name{flex-direction:row-reverse}
+.bar{height:8px;border-radius:999px;background:#151e31;overflow:hidden;margin-top:5px;border:1px solid rgba(255,255,255,.06)}.fill{height:100%;width:100%;transition:width .14s linear}.hp{background:linear-gradient(90deg,var(--green),#d8ff85)}.enemy .hp{background:linear-gradient(90deg,#ffcf7b,var(--pink))}.stamina{background:linear-gradient(90deg,var(--cyan),var(--violet))}.balance{background:linear-gradient(90deg,var(--gold),var(--red))}
+.centerHud{text-align:center;background:rgba(5,9,20,.76);border:1px solid rgba(255,255,255,.11);border-radius:14px;padding:7px 9px;min-width:105px}.timer{font-size:22px;font-weight:1000;line-height:1}.law{font-size:9px;color:var(--gold);font-weight:900;margin-top:4px;letter-spacing:.08em}.round{font-size:9px;color:var(--muted);margin-top:2px}
+.callout{align-self:center;justify-self:center;text-align:center;font-weight:1000;font-size:clamp(24px,7vw,54px);text-shadow:0 4px 20px #000;opacity:0;transform:scale(.82);transition:.18s}.callout.show{opacity:1;transform:scale(1)}
+.bottomStatus{display:flex;justify-content:space-between;align-items:end;gap:8px}.statusPill{background:rgba(5,9,20,.74);border:1px solid rgba(255,255,255,.11);padding:6px 8px;border-radius:12px;font-size:10px;color:var(--muted);backdrop-filter:blur(8px)}.statusPill strong{color:#fff}
+.controlOverlay{position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px}.handZone{border:1px dashed rgba(255,255,255,.11);border-radius:24px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.022));position:relative;overflow:hidden}.handLabel{position:absolute;pointer-events:none;bottom:9px;left:6px;right:6px;text-align:center;font-size:8px;font-weight:1000;letter-spacing:.08em;color:rgba(255,255,255,.42);transition:opacity .25s}.strikeGuide{position:absolute;inset:8px 8px 34%;border-radius:18px;border:1px solid rgba(255,143,171,.12);display:grid;place-items:center;font-size:9px;font-weight:1000;color:rgba(255,143,171,.35)}.guardPad{position:absolute;left:10px;right:10px;bottom:24px;height:26%;min-height:44px;border-radius:18px;border:1px solid rgba(118,236,255,.2);background:rgba(118,236,255,.055);display:grid;place-items:center;font-size:9px;font-weight:1000;color:rgba(201,250,255,.56);letter-spacing:.08em}.thumb{position:absolute;width:48px;height:48px;border-radius:50%;border:2px solid rgba(255,255,255,.34);background:rgba(118,236,255,.12);transform:translate(-50%,-50%);display:none;box-shadow:0 0 24px rgba(118,236,255,.2)}body.in-fight .handLabel{opacity:0}body.in-fight .strikeGuide{opacity:0}body.in-fight .guardPad{background:rgba(118,236,255,.018);border-color:rgba(118,236,255,.08);color:transparent}
+.sidePanel{min-height:0;background:rgba(10,15,28,.94);border:1px solid rgba(255,255,255,.1);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr)}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px;border-bottom:1px solid rgba(255,255,255,.08)}.tab{border:0;border-radius:10px;background:#11192b;padding:8px 5px;font-size:10px;font-weight:1000}.tab.active{background:rgba(118,236,255,.16);color:var(--cyan)}
+.panelBody{overflow:auto;padding:8px}.panel{display:none}.panel.active{display:block}.panel h2{font-size:14px;margin:2px 0 8px}.panel p,.panel li{font-size:11px;line-height:1.4;color:var(--muted)}.panel ul{padding-left:16px;margin:7px 0}.traceList{display:grid;gap:6px}.trace{border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:7px;background:rgba(255,255,255,.035)}.traceTop{display:flex;justify-content:space-between;gap:8px;font-size:10px}.traceTop strong{color:var(--gold)}.trace small{display:block;margin-top:4px;color:var(--muted);font-size:9px}.lexSearch{width:100%;border:1px solid rgba(255,255,255,.12);background:#08101f;color:white;border-radius:12px;padding:9px;margin-bottom:7px}.lexCard{border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:8px;margin-bottom:7px;background:rgba(255,255,255,.035)}.lexCard h3{font-size:12px;margin:0 0 4px;color:var(--cyan)}.lexCard div{font-size:10px;line-height:1.4;color:var(--muted)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:82px}.movementPad{grid-template-rows:repeat(3,minmax(30px,1fr))}.controlPad{background:rgba(10,15,28,.95);border:1px solid rgba(255,255,255,.1);border-radius:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:6px;box-shadow:var(--shadow)}.actionBtn{border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#11192b;min-height:34px;font-size:10px;font-weight:1000;padding:4px}.actionBtn:active,.actionBtn.held{transform:scale(.97);background:rgba(118,236,255,.18);border-color:rgba(118,236,255,.5)}.actionBtn.primary{background:linear-gradient(180deg,rgba(255,143,171,.25),rgba(255,143,171,.12));border-color:rgba(255,143,171,.45)}.actionBtn.guard{background:linear-gradient(180deg,rgba(118,236,255,.22),rgba(118,236,255,.08))}.dock{display:flex;gap:5px;justify-content:center;align-items:center}.dockBtn{padding:7px 9px;min-height:34px}.dockBtn.good{border-color:rgba(143,247,170,.38);color:var(--green)}
+.overlay{position:fixed;inset:0;background:rgba(1,3,10,.86);display:none;place-items:center;padding:16px;z-index:50;backdrop-filter:blur(10px)}.overlay.show{display:grid}.modal{width:min(520px,100%);background:#0d1424;border:1px solid rgba(255,255,255,.14);border-radius:22px;padding:16px;box-shadow:var(--shadow)}.modal h2{margin:0 0 8px}.modal p{color:var(--muted);font-size:12px;line-height:1.5}.modalActions{display:flex;gap:8px;flex-wrap:wrap}.modal button{border:1px solid rgba(255,255,255,.14);background:#152039;border-radius:12px;padding:10px 12px;font-weight:900}
+
+body.touch-layout #app{grid-template-rows:auto minmax(0,1fr);padding-bottom:calc(54px + env(safe-area-inset-bottom))}
+body.touch-layout .controls{display:none}
+body.touch-layout .stageWrap{min-height:0}
+body.touch-layout .controlOverlay{height:52%;padding:10px;gap:10px}
+body.touch-layout .handZone{background:linear-gradient(180deg,transparent,rgba(118,236,255,.025));border-color:rgba(118,236,255,.16)}
+body.touch-layout .handLabel{bottom:12px;font-size:8px;color:rgba(255,255,255,.46)}
+body.touch-layout .dock{right:50%;left:auto;bottom:calc(8px + env(safe-area-inset-bottom));transform:translateX(50%);flex-direction:row}
+body.touch-layout .sidePanel{bottom:58px}
+body.button-layout .controlOverlay{opacity:.45}
+#layoutBtn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(118,236,255,.12)}
+@media(max-width:850px){.main{grid-template-columns:1fr}.sidePanel{position:absolute;z-index:20;right:10px;top:72px;bottom:98px;width:min(310px,calc(100% - 20px));display:none}.sidePanel.open{display:grid}.brand p{display:none}.modeBtn{padding:7px 7px;font-size:9px}.topbar{grid-template-columns:minmax(0,1fr) auto}.controls{min-height:92px}.dock{position:fixed;right:10px;bottom:calc(104px + env(safe-area-inset-bottom));z-index:25;flex-direction:column}.dockBtn{font-size:9px;min-height:32px;background:rgba(13,18,32,.94)}}
+@media(max-height:520px){#app{gap:5px;padding:4px}.topbar{padding:5px 8px}.brand h1{font-size:16px}.controls{min-height:68px}.actionBtn{min-height:27px}.fighterCard,.centerHud{padding:5px}.timer{font-size:18px}.sidePanel{top:54px;bottom:76px}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">
+      <h1>FIGHT CLASH: CHAMELEON PROLOGUE v0.4</h1>
+      <p>128 Hand × Fighting × GameForge × RouteOS</p>
+    </div>
+    <div class="modeRow" aria-label="Game modes">
+      <button class="modeBtn active" data-mode="boxing">BOXING</button>
+      <button class="modeBtn" data-mode="ringout">RING-OUT</button>
+      <button class="modeBtn" data-mode="chameleon">CHAMELEON</button>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="stageWrap" id="stageWrap">
+      <canvas id="game" aria-label="Fight Clash game arena"></canvas>
+      <div class="hud">
+        <div class="fighterHud">
+          <div class="fighterCard">
+            <div class="name"><span>JM / BLUE</span><span id="pRounds">0</span></div>
+            <div class="bar"><div class="fill hp" id="pHp"></div></div>
+            <div class="bar"><div class="fill stamina" id="pStamina"></div></div>
+            <div class="bar"><div class="fill balance" id="pBalance"></div></div>
+          </div>
+          <div class="centerHud">
+            <div class="timer" id="timer">30</div>
+            <div class="law" id="law">BOXING LAW</div>
+            <div class="round" id="round">ROUND 1 · FIRST TO 2</div>
+          </div>
+          <div class="fighterCard enemy">
+            <div class="name"><span>CPU / ROSE</span><span id="eRounds">0</span></div>
+            <div class="bar"><div class="fill hp" id="eHp"></div></div>
+            <div class="bar"><div class="fill stamina" id="eStamina"></div></div>
+            <div class="bar"><div class="fill balance" id="eBalance"></div></div>
+          </div>
+        </div>
+        <div class="callout" id="callout">FIGHT!</div>
+        <div class="bottomStatus">
+          <div class="statusPill"><strong id="status">READY</strong><br><span id="detail">Tap Start or throw a punch.</span></div>
+          <div class="statusPill" style="text-align:right"><strong id="routeResult">TRACE</strong><br><span id="contactState">Q0 · NO CONTACT</span></div>
+        </div>
+      </div>
+      <div class="controlOverlay" aria-hidden="true">
+        <div class="handZone"><div class="handLabel">LEFT THUMB · 360° RING MOVEMENT · DOUBLE-TAP SLIP</div><div class="thumb" id="leftThumb"></div></div>
+        <div class="handZone"><div class="strikeGuide">TAP CHAIN · JAB → CROSS → HOOK<br>SWIPE CHOOSE · HOLD GUARD</div><div class="guardPad">HOLD ANYWHERE TO GUARD</div><div class="handLabel">RIGHT THUMB · TAP RHYTHM · SWIPE SHOT · HOLD GUARD</div><div class="thumb" id="rightThumb"></div></div>
+      </div>
+    </section>
+
+    <aside class="sidePanel" id="sidePanel">
+      <div class="tabs">
+        <button class="tab active" data-tab="lexicon">LEXICON</button>
+        <button class="tab" data-tab="trace">TRACEBOX</button>
+        <button class="tab" data-tab="routeos">ROUTEOS</button>
+      </div>
+      <div class="panelBody">
+        <section class="panel active" id="panel-lexicon">
+          <h2>Radius Lexicon</h2>
+          <input class="lexSearch" id="lexSearch" placeholder="Search jab, slip, pressure…" />
+          <div id="lexiconList"></div>
+        </section>
+        <section class="panel" id="panel-trace">
+          <h2>JMGameCore Event Trace</h2>
+          <div class="traceList" id="traceList"></div>
+        </section>
+        <section class="panel" id="panel-routeos">
+          <h2>RouteOS Project Body</h2>
+          <p><b>Project:</b> Fight Clash Chameleon Prologue</p>
+          <p><b>Runtime:</b> GameForge one-player separation</p>
+          <p><b>Source route:</b> 128 Hand → Fighting → JMGameCore → GameForge</p>
+          <ul id="routeLedger"></ul>
+          <button class="dockBtn good" id="saveBtn">SAVE STATE</button>
+          <button class="dockBtn" id="exportBtn">EXPORT RECEIPT</button>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+  <section class="controls">
+    <div class="controlPad movementPad" aria-label="Ring movement controls">
+      <button class="actionBtn" data-hold="up">▲ UP</button>
+      <button class="actionBtn guard" data-hold="guard">GUARD</button>
+      <button class="actionBtn" data-action="slip">SLIP</button>
+      <button class="actionBtn" data-hold="left">◀ LEFT</button>
+      <button class="actionBtn" data-action="recover">RECOVER</button>
+      <button class="actionBtn" data-hold="right">RIGHT ▶</button>
+      <button class="actionBtn" data-hold="down">▼ DOWN</button>
+    </div>
+    <div class="controlPad" aria-label="Right hand controls">
+      <button class="actionBtn primary" data-action="jab">JAB</button>
+      <button class="actionBtn primary" data-action="cross">CROSS</button>
+      <button class="actionBtn primary" data-action="hook">HOOK</button>
+      <button class="actionBtn" data-action="body">BODY</button>
+      <button class="actionBtn" data-action="feint">FEINT</button>
+      <button class="actionBtn" id="resetBtn">RESET</button>
+      <button class="actionBtn" id="startBtn">START</button>
+    </div>
+  </section>
+</div>
+
+<div class="dock">
+  <button class="dockBtn" id="panelBtn">INSPECT</button>
+  <button class="dockBtn good" id="difficultyBtn">CPU: SPAR</button>
+  <button class="dockBtn" id="layoutBtn">BUTTONS</button>
+  <button class="dockBtn" id="pauseBtn">PAUSE</button>
+</div>
+
+<div class="overlay show" id="intro">
+  <div class="modal">
+    <h2>First Bell</h2>
+    <p><b>Boxing:</b> score damage, protect stamina, earn knockdowns.</p>
+    <p><b>Ring-Out:</b> damage matters less; displacement and balance decide the clash.</p>
+    <p><b>Chameleon:</b> the law changes during the round. The same punch changes meaning.</p>
+    <p><b>128 Hand Fair Play:</b> drag the left side in any direction for full-ring footwork; double-tap it to slip. On the right, repeated taps naturally chain jab → cross → hook; swipes choose deliberate shots; holding anywhere becomes guard. Player inputs stay buffered through short interruptions, while both fighters can circle, cut angles, escape corners and pressure across the whole ring.</p>
+    <div class="modalActions"><button id="introBoxing">BOXING</button><button id="introRing">RING-OUT</button><button id="introCham">CHAMELEON</button></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const lerp = (a,b,t) => a+(b-a)*t;
+const nowISO = () => new Date().toISOString();
+const rand = (a,b) => a+Math.random()*(b-a);
+
+// RADIUS LEXICON: meaning-action authority, not decorative glossary.
+const RadiusLexicon = {
+  JAB:{plain:'Fast lead-hand straight punch.',jm:'Low-commitment contact probe.',boxing:'Scores, interrupts and measures range.',ringout:'Interrupts movement and chips balance.',runtime:'fast strike · force 7 · recovery 0.22s',trace:'range, guard, impact, recovery'},
+  CROSS:{plain:'Rear-hand straight power punch.',jm:'Committed route through established contact.',boxing:'Higher damage and knockdown threat.',ringout:'Transfers strong ring-space displacement.',runtime:'power strike · force 15 · recovery 0.48s',trace:'momentum, contact, knockback, whiff'},
+  HOOK:{plain:'Curved punch from the side.',jm:'Route around the visible defence.',boxing:'Punishes static guard; close range.',ringout:'Turns the opponent and breaks balance.',runtime:'close strike · force 12 · guard-angle check',trace:'angle, range, balance break'},
+  BODY:{plain:'Punch aimed below the head line.',jm:'Pressure the support system rather than the surface.',boxing:'Drains stamina and slows recovery.',ringout:'Reduces balance recovery.',runtime:'body zone · stamina damage',trace:'zone, stamina, posture'},
+  GUARD:{plain:'Protect head and body with the hands.',jm:'Contain pressure before release.',boxing:'Reduces damage; costs stamina under impact.',ringout:'Redirects some force but still slides.',runtime:'held state · damage reduction · force redirect',trace:'guard strength, absorbed force'},
+  SLIP:{plain:'Move the head off the incoming line.',jm:'Preserve position by changing the contact route.',boxing:'Avoids straights and opens a counter window.',ringout:'Avoids force without surrendering ground.',runtime:'brief evade window · lateral shift',trace:'incoming route, closest distance'},
+  PRESSURE:{plain:'Sustained control of space and action.',jm:'Contact-field advantage that limits usable routes.',boxing:'Forces defence and scores ring control.',ringout:'Builds boundary danger and launch potential.',runtime:'proximity + forward motion + opponent retreat',trace:'territory, rope pressure'},
+  RECOVER:{plain:'Return to a usable fighting state.',jm:'Restore a broken or spent route.',boxing:'Regains stamina after commitment.',ringout:'Rebuilds balance away from the edge.',runtime:'stamina/balance regeneration action',trace:'pre-state, restored state'},
+  CHAMELEON:{plain:'Changes appearance or behaviour with context.',jm:'One body preserves identity while its active reading changes.',boxing:'Damage and knockdown reading.',ringout:'Displacement and boundary reading.',runtime:'law switch every 8 seconds',trace:'same action, changed consequence'}
+};
+
+const JMGameCore = {
+  events:[],
+  event(packet){
+    const trace={id:'trace-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6),at:nowISO(),...packet};
+    this.events.push(trace); if(this.events.length>160)this.events.shift();
+    renderTrace();
+    return trace;
+  }
+};
+
+const RouteOS = {
+  key:'fight_clash_chameleon_v0_4',
+  ledger:[],
+  queue:[],
+  log(type,note,data={}){this.ledger.unshift({type,note,data,at:nowISO()});if(this.ledger.length>30)this.ledger.pop();renderRouteLedger();},
+  queueRuntime(command,payload){const req={id:'runtime-'+Date.now(),command,payload,status:'processed',at:nowISO()};this.queue.unshift(req);this.log('runtime',command,payload);return req;},
+  save(){const packet={recordType:'FightClashRouteOSState',version:'0.4',savedAt:nowISO(),game:serializeGame(),events:JMGameCore.events.slice(-80),ledger:this.ledger};try{localStorage.setItem(this.key,JSON.stringify(packet));this.log('save','State saved locally',{round:game.round,mode:game.mode});flash('SAVE DING','RouteOS stored the current body.');return true}catch(e){this.log('save-fallback','Local storage blocked; use Export Receipt',{error:String(e)});flash('SAVE FALLBACK','Storage blocked here — Export Receipt remains available.');return false}},
+  load(){try{const raw=localStorage.getItem(this.key);if(!raw)return false;const p=JSON.parse(raw);if(!p?.game)return false;restoreGame(p.game);JMGameCore.events=p.events||[];this.ledger=p.ledger||[];this.log('restore','Saved state restored');return true}catch(e){return false}},
+  export(){const packet={recordType:'FightClashChameleonReceipt',version:'0.4',createdAt:nowISO(),sourceLineage:['128 Hand v0.5.1','JM Fighting Proof Demo v0.1A','JM GameCore v0.2I','GameForge','RouteOS','Radius Lexicon'],boundary:'Single-file browser/PWA-ready open-ring prototype; Android field feel still decides the next correction.',game:serializeGame(),events:JMGameCore.events,routeLedger:this.ledger,lexicon:RadiusLexicon};const blob=new Blob([JSON.stringify(packet,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='FIGHT_CLASH_CHAMELEON_PROLOGUE_v0_4_OPEN_RING_RECEIPT.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);this.log('export','Receipt exported');}
+};
+
+const canvas=$('game'),ctx=canvas.getContext('2d');
+let W=960,H=540,dpr=1,last=performance.now(),raf=0;
+const arena={left:58,right:902,top:92,bottom:442,ground:430,ropeLeft:84,ropeRight:876,ropeTop:104,ropeBottom:430};
+
+function fighter(side){return {side,x:side==='p'?lerp(arena.ropeLeft,arena.ropeRight,.34):lerp(arena.ropeLeft,arena.ropeRight,.66),y:side==='p'?lerp(arena.ropeTop,arena.ropeBottom,.70):lerp(arena.ropeTop,arena.ropeBottom,.46),vx:0,vy:0,facing:side==='p'?1:-1,hp:100,stamina:100,balance:100,guard:false,slip:0,hurt:0,stun:0,action:'idle',locomotion:'idle',actionT:0,cooldown:0,buffer:null,bufferT:0,score:0,knockdowns:0,pressure:0,combo:0,lastHit:0,moveIntent:0,moveIntentY:0,guardT:0,aiLock:0,pendingAttack:null,tell:0};}
+const CPU_LEVELS={
+  spar:{label:'SPAR',think:[.38,.68],speed:330,aggression:.48,defend:.10,damage:.72,force:.76,postAttack:[.30,.52],tell:[.22,.34]},
+  match:{label:'MATCH',think:[.24,.46],speed:410,aggression:.66,defend:.18,damage:.88,force:.90,postAttack:[.20,.38],tell:[.16,.27]},
+  beast:{label:'BEAST',think:[.12,.28],speed:500,aggression:.84,defend:.28,damage:1,force:1,postAttack:[.10,.25],tell:[.10,.20]}
+};
+let cpuLevel='spar';
+const cpuTune=()=>CPU_LEVELS[cpuLevel];
+let game;
+function freshGame(mode='boxing'){
+  game={mode,activeLaw:mode==='chameleon'?'boxing':mode,running:false,paused:false,round:1,time:30,lawClock:8,pRounds:0,eRounds:0,over:false,roundOver:false,player:fighter('p'),enemy:fighter('e'),particles:[],shake:0,hitstop:0,calloutT:0,status:'READY',detail:'Tap Start or throw a punch.',contact:'Q0 · NO CONTACT',result:'TRACE',cpuThink:.55,startedAt:0,cpuLevel};
+  syncUI(); RouteOS.queueRuntime('openProject',{projectId:'fight-clash-v0.4',mode}); draw();
+}
+function serializeF(f){const o={...f};return o}
+function serializeGame(){return {mode:game.mode,activeLaw:game.activeLaw,running:game.running,paused:game.paused,round:game.round,time:game.time,lawClock:game.lawClock,pRounds:game.pRounds,eRounds:game.eRounds,over:game.over,roundOver:game.roundOver,cpuLevel,player:serializeF(game.player),enemy:serializeF(game.enemy)}}
+function restoreGame(g){cpuLevel=g.cpuLevel||'spar';game={...g,cpuLevel,particles:[],shake:0,hitstop:0,calloutT:0,status:'RESTORED',detail:'RouteOS restored the saved fight.',contact:'Q0 · NO CONTACT',result:'RECOVER',cpuThink:.55,startedAt:performance.now()};syncDifficulty();syncUI();draw()}
+
+function resize(){const oldL=arena.ropeLeft,oldR=arena.ropeRight,oldT=arena.ropeTop,oldB=arena.ropeBottom;const r=canvas.getBoundingClientRect();dpr=Math.min(2,window.devicePixelRatio||1);canvas.width=Math.max(320,Math.floor(r.width*dpr));canvas.height=Math.max(240,Math.floor(r.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);W=r.width;H=r.height;arena.left=W*.035;arena.right=W*.965;arena.top=H*.19;arena.bottom=H*.88;arena.ropeLeft=W*.07;arena.ropeRight=W*.93;arena.ropeTop=H*.22;arena.ropeBottom=H*.84;arena.ground=arena.ropeBottom;if(game&&oldR>oldL&&oldB>oldT){for(const f of [game.player,game.enemy]){const rx=clamp((f.x-oldL)/(oldR-oldL),-.12,1.12),ry=clamp((f.y-oldT)/(oldB-oldT),-.12,1.12);f.x=lerp(arena.ropeLeft,arena.ropeRight,rx);f.y=lerp(arena.ropeTop,arena.ropeBottom,ry)}}draw();}
+window.addEventListener('resize',resize,{passive:true});
+
+function start(){if(game.over){freshGame(game.mode)}game.running=true;document.body.classList.add('in-fight');game.paused=false;game.roundOver=false;game.startedAt=performance.now();flash('FIGHT!','First contact decides the route.');RouteOS.queueRuntime('runPreview',{mode:game.mode,law:game.activeLaw});if(!raf){last=performance.now();raf=requestAnimationFrame(loop)}}
+function pause(){game.paused=!game.paused;$('pauseBtn').textContent=game.paused?'RESUME':'PAUSE';if(!game.paused){last=performance.now();raf=requestAnimationFrame(loop)}}
+function reset(){document.body.classList.remove('in-fight');freshGame(game.mode);flash('RESET','New route ready.');}
+function setMode(mode){document.body.classList.remove('in-fight');document.querySelectorAll('.modeBtn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));freshGame(mode);$('intro').classList.remove('show');flash(mode==='boxing'?'FIRST BELL':mode==='ringout'?'ROPEBREAK':'CHAMELEON',mode==='chameleon'?'The law changes every eight seconds.':'New rules mounted.');}
+
+function actionSpec(name){return {
+  jab:{duration:.18,active:[.035,.085],range:68,damage:6,force:7,stamina:5,zone:'head',step:22,bufferAt:.08},
+  cross:{duration:.34,active:[.085,.155],range:82,damage:12,force:15,stamina:11,zone:'head',step:42,bufferAt:.15},
+  hook:{duration:.35,active:[.09,.17],range:58,damage:10,force:12,stamina:10,zone:'head',arc:true,step:28,bufferAt:.16},
+  body:{duration:.30,active:[.075,.145],range:61,damage:5,force:7,stamina:8,zone:'body',step:32,bufferAt:.13},
+  feint:{duration:.17,active:[9,10],range:0,damage:0,force:0,stamina:2,zone:'none',step:-8,bufferAt:.08}
+}[name]}
+
+function vectorTo(a,b){const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;return {dx,dy,d,nx:dx/d,ny:dy/d}}
+function beginAction(actor,name){const spec=actionSpec(name);if(!spec)return false;if(actor.stamina<spec.stamina){setEvent(actor,'BUGG','STAMINA','Route lacked enough stamina');return false}actor.stamina-=spec.stamina;actor.action=name;actor.actionT=0;actor.cooldown=spec.duration;actor.guard=false;actor.guardT=0;actor._hitDone=false;actor.buffer=null;actor.bufferT=0;let step=spec.step||0;const other=actor.side==='p'?game.enemy:game.player,route=vectorTo(actor,other);if(actor.side==='p'){const gap=route.d,ideal=spec.range+24;if(gap>ideal&&gap<ideal+76)step+=Math.min(34,(gap-ideal)*.55)}actor.attackNX=route.nx;actor.attackNY=route.ny;actor.vx+=route.nx*step;actor.vy+=route.ny*step*.72;if(name==='feint'){setEvent(actor,'TRACE','FEINT','False route shown; no contact intended')}return true}
+function attemptAction(actor,name){if(!game.running)start();if(game.paused||game.roundOver||game.over)return;const spec=actionSpec(name);if(!spec)return;const interrupted=actor.stun>0||actor.hurt>.12;if(interrupted||actor.cooldown>0){if(actor.side==='p'){actor.buffer=name;actor.bufferT=.68;game.status='INPUT HELD';game.detail=`${name.toUpperCase()} will fire when the route opens`;return}return}beginAction(actor,name)}
+function recover(actor){if(actor.cooldown>0||actor.stun>0)return;actor.action='recover';actor.actionT=0;actor.cooldown=.46;actor.stamina=clamp(actor.stamina+18,0,100);actor.balance=clamp(actor.balance+14,0,100);setEvent(actor,'RECOVER','RECOVERY','Usable route restored')}
+function slip(actor){if(actor.cooldown>0||actor.stun>0)return;actor.action='slip';actor.actionT=0;actor.cooldown=.30;actor.slip=.22;actor.vx-=actor.facing*22;actor.stamina=clamp(actor.stamina-5,0,100);setEvent(actor,'TRACE','SLIP','Contact route changed')}
+
+function setEvent(actor,result,phase,detail,extra={}){
+  game.status=result;game.detail=detail;game.result=result;$('routeResult').textContent=result;
+  const trace=JMGameCore.event({game:'Fight Clash',actor:actor.side==='p'?'PLAYER':'CPU',mode:game.mode,law:game.activeLaw,phase,result,resultLabel:`${phase}_${result}`,detail,thread:Math.round((actor.stamina+actor.balance)/2),quadze:game.contact,...extra});
+  return trace;
+}
+
+function resolveHit(attacker,defender,spec){
+  const route=vectorTo(attacker,defender),dist=route.d;
+  const targetSlip=defender.slip>0 && spec.zone==='head';
+  const inputAssist=attacker.side==='p'?20:0;const inRange=dist<=spec.range+34+inputAssist;
+  if(!inRange){game.contact='Q0 · WHIFF';setEvent(attacker,'MISS','WHIFF','Valid strike; no effective contact',{distance:Math.round(dist)});return}
+  if(targetSlip){game.contact='Q2 · AVOIDED CONTACT';setEvent(defender,'DING','SLIP','Incoming route avoided',{attack:attacker.action});defender.stamina=clamp(defender.stamina+3,0,100);return}
+  const guarded=defender.guard && defender.stamina>0;
+  let damage=spec.damage,force=spec.force,stamDamage=spec.zone==='body'?16:5;const tune=cpuTune();if(attacker.side==='e'){damage*=tune.damage;force*=tune.force}else if(cpuLevel==='spar'){damage*=1.08;force*=1.06}
+  if(guarded){damage*=.25;force*=game.activeLaw==='ringout'?.72:.34;stamDamage+=8;defender.stamina=clamp(defender.stamina-stamDamage,0,100);game.contact='Q1 · BLOCKED CONTACT';setEvent(defender,'RECOVER','BLOCK',`${attacker.action.toUpperCase()} contained by guard`,{absorbedForce:Math.round(spec.force-force)});}
+  else{game.contact='Q3 · CONSEQUENCE CONTACT';setEvent(attacker,'DING','HIT',`${attacker.action.toUpperCase()} contacted ${spec.zone}`,{damage:Math.round(damage),force:Math.round(force)});}
+  if(spec.zone==='body')defender.stamina=clamp(defender.stamina-(guarded?6:16),0,100);
+  defender.hp=clamp(defender.hp-damage*(game.activeLaw==='ringout'?.55:1),0,100);
+  const lawForce=game.activeLaw==='ringout'?1.9:game.activeLaw==='boxing'?.75:1;
+  const edgeBonus=1+Math.max(0,1-Math.min(Math.abs(defender.x-arena.ropeLeft),Math.abs(arena.ropeRight-defender.x))/140)*.4;
+  const impulse=force*lawForce*edgeBonus*(guarded?.9:1.15);
+  defender.vx+=route.nx*impulse*7;defender.vy+=route.ny*impulse*5.2;
+  defender.balance=clamp(defender.balance-impulse*(game.activeLaw==='ringout'?2.7:1.15),0,100);
+  defender.hurt=guarded?.12:.24;defender.stun=defender.balance<22?.34:0;attacker.combo=guarded?0:Math.floor(attacker.combo)+1;attacker.score+=guarded?1:Math.round(damage+2);if(attacker.side==='e')attacker.aiLock=Math.max(attacker.aiLock,rand(...cpuTune().postAttack));if(!guarded&&attacker.combo>1){game.status=`${Math.floor(attacker.combo)} HIT FLOW`;game.detail='Buffered contact chain landed.'}
+  game.shake=Math.min(14,force*.65);game.hitstop=guarded?.018:.036;spawnImpact((attacker.x+defender.x)/2,(attacker.y+defender.y)/2-48,guarded?'#76ecff':'#ffd166',8+Math.round(force/2));
+  if(defender.hp<=0 && game.activeLaw==='boxing')knockdown(defender,attacker,'KNOCKDOWN');
+}
+
+function knockdown(loser,winner,reason){if(game.roundOver)return;loser.knockdowns++;winner.score+=10;game.roundOver=true;flash(reason,'Ten-count route ended the round.');setEvent(winner,'DING','KNOCKDOWN',reason);setTimeout(()=>endRound(winner),1050)}
+function ringOut(loser,winner){if(game.roundOver)return;game.roundOver=true;flash('RING OUT!','Boundary contact became defeat.');setEvent(winner,'DING','RING_OUT','Opponent crossed the live boundary');setTimeout(()=>endRound(winner),1050)}
+function endRound(winner){if(winner.side==='p')game.pRounds++;else game.eRounds++;if(game.pRounds>=2||game.eRounds>=2){game.over=true;game.running=false;flash(game.pRounds>game.eRounds?'JM WINS':'CPU WINS','Prologue bout complete.');RouteOS.log('match-end',game.pRounds>game.eRounds?'PLAYER WIN':'CPU WIN',{mode:game.mode});}
+  else{game.round++;game.time=30;game.lawClock=8;game.activeLaw=game.mode==='chameleon'?'boxing':game.mode;game.player=fighter('p');game.enemy=fighter('e');game.roundOver=false;game.running=false;syncUI();flash(`ROUND ${game.round}`,'New route ready.');}}
+
+function updateFighter(f,other,dt){
+  f.cooldown=Math.max(0,f.cooldown-dt);f.hurt=Math.max(0,f.hurt-dt);f.stun=Math.max(0,f.stun-dt);f.slip=Math.max(0,f.slip-dt);f.guardT=Math.max(0,(f.guardT||0)-dt);f.aiLock=Math.max(0,(f.aiLock||0)-dt);f.tell=Math.max(0,(f.tell||0)-dt);if(f.side==='e')f.guard=f.guardT>0;f.actionT+=dt;f.bufferT=Math.max(0,f.bufferT-dt);
+  if(f.bufferT<=0)f.buffer=null;
+  if(f.guard){f.stamina=clamp(f.stamina-dt*3.2,0,100);if(f.stamina<=0)f.guard=false}else if(f.action==='idle'||f.cooldown<=0)f.stamina=clamp(f.stamina+dt*10,0,100);
+  const spec=actionSpec(f.action);if(spec&&!f._hitDone&&f.actionT>=spec.active[0]){f._hitDone=true;resolveHit(f,other,spec)}
+  if(f.cooldown<=0){if(f.buffer&&f.hurt<=.08&&f.stun<=0&&!f.guard){const next=f.buffer;f.buffer=null;f.bufferT=0;beginAction(f,next)}else if(!f.guard&&!f.pendingAttack){f.action='idle';f.combo=Math.max(0,f.combo-dt*.7)}}
+  f.vx*=Math.pow(.028,dt);f.vy*=Math.pow(.032,dt);f.x+=f.vx*dt;f.y+=f.vy*dt;
+  const inside=f.x>arena.ropeLeft&&f.x<arena.ropeRight&&f.y>arena.ropeTop&&f.y<arena.ropeBottom;if(inside)f.balance=clamp(f.balance+dt*(f.guard?5:10),0,100);
+  if(game.activeLaw==='boxing'){
+    if(f.x<arena.ropeLeft){f.x=arena.ropeLeft;f.vx=Math.abs(f.vx)*.24;f.pressure+=dt*10}
+    if(f.x>arena.ropeRight){f.x=arena.ropeRight;f.vx=-Math.abs(f.vx)*.24;f.pressure+=dt*10}
+    if(f.y<arena.ropeTop){f.y=arena.ropeTop;f.vy=Math.abs(f.vy)*.24;f.pressure+=dt*10}
+    if(f.y>arena.ropeBottom){f.y=arena.ropeBottom;f.vy=-Math.abs(f.vy)*.24;f.pressure+=dt*10}
+  }else if(f.x<arena.left-24||f.x>arena.right+24||f.y<arena.top-20||f.y>arena.bottom+20)ringOut(f,other);
+  f.facing=f.x<other.x?1:-1;
+}
+
+const hold={moveX:0,moveY:0,guard:false};
+function playerMovement(dt){const p=game.player;if(p.stun>0||p.hurt>.14)return;let mx=hold.moveX||0,my=hold.moveY||0;const mag=Math.hypot(mx,my);if(mag>1){mx/=mag;my/=mag}const mobility=p.cooldown>0?.58:1;if(mag>.05){p.vx+=mx*690*dt*mobility;p.vy+=my*610*dt*mobility;p.stamina=clamp(p.stamina-dt*1.45*Math.min(1,mag),0,100);const toward=vectorTo(p,game.enemy);const approach=mx*toward.nx+my*toward.ny;p.locomotion=approach>.28?'pressure-step':approach<-.28?'retreat':'circle'}else p.locomotion='idle';p.guard=hold.guard&&p.cooldown<=0;if(p.guard)p.action='guard'}
+
+function cpu(dt){const e=game.enemy,p=game.player,t=cpuTune();if(e.stun>0||game.roundOver)return;const route=vectorTo(e,p),dist=route.d,nearEdge=e.x<arena.ropeLeft+58||e.x>arena.ropeRight-58||e.y<arena.ropeTop+48||e.y>arena.ropeBottom-48;
+  if(e.pendingAttack){e.pendingAttack.t-=dt;e.tell=e.pendingAttack.t;e.moveIntent=lerp(e.moveIntent,0,Math.min(1,dt*10));e.moveIntentY=lerp(e.moveIntentY,0,Math.min(1,dt*10));if(e.pendingAttack.t<=0){const name=e.pendingAttack.name;e.pendingAttack=null;if(e.cooldown<=0&&e.hurt<=.08){beginAction(e,name);e.aiLock=rand(...t.postAttack)}}return}
+  let desired=dist>98?1:dist<58?-.52:0;if(e.aiLock>0)desired=dist<66?-.25:0;if(game.activeLaw==='ringout'&&nearEdge)desired=.72;const circle=(Math.sin(performance.now()/780+(cpuLevel==='spar'?1.2:2.1)))*(cpuLevel==='spar'?.32:.20);e.moveIntent=lerp(e.moveIntent,route.nx*desired-route.ny*circle,Math.min(1,dt*4));e.moveIntentY=lerp(e.moveIntentY,route.ny*desired+route.nx*circle,Math.min(1,dt*4));const mobility=e.cooldown>0?.32:1;e.vx+=e.moveIntent*t.speed*dt*mobility;e.vy+=e.moveIntentY*t.speed*.82*dt*mobility;
+  if(e.aiLock>0||e.cooldown>0||e.hurt>.08)return;game.cpuThink-=dt;if(game.cpuThink>0)return;game.cpuThink=rand(...t.think);
+  if(e.stamina<28){if(Math.random()<.72){recover(e);e.aiLock=.28;return}e.guardT=rand(.28,.52);e.guard=true;e.aiLock=.22;return}
+  const playerCommitted=(p.action==='cross'||p.action==='hook'||p.action==='body')&&p.actionT>.075&&p.cooldown>0;if(playerCommitted&&Math.random()<t.defend){if(Math.random()<.68){e.guardT=rand(.25,.46);e.guard=true;e.action='guard'}else slip(e);e.aiLock=.24;return}
+  if(dist>108||Math.random()>t.aggression){if(Math.random()<.22){e.guardT=rand(.22,.42);e.guard=true}e.aiLock=rand(.12,.28);return}
+  const r=Math.random();let name=r<.52?'jab':r<.70?'body':r<.86?'cross':'hook';if(name==='jab'){beginAction(e,name);e.aiLock=rand(...t.postAttack)}else{e.pendingAttack={name,t:rand(...t.tell)};e.tell=e.pendingAttack.t;e.action='tell';game.status='CPU TELLS';game.detail=`Rose loads ${name.toUpperCase()} — move, guard or counter`}
+}
+
+function separateFighters(){const p=game.player,e=game.enemy,route=vectorTo(p,e),min=46;if(route.d<min){const push=(min-route.d)*.52;p.x-=route.nx*push;p.y-=route.ny*push;e.x+=route.nx*push;e.y+=route.ny*push;p.vx-=route.nx*18;p.vy-=route.ny*14;e.vx+=route.nx*18;e.vy+=route.ny*14}}
+
+function update(dt){if(!game.running||game.paused||game.over||game.roundOver)return;document.body.classList.add('in-fight');if(game.hitstop>0){game.hitstop=Math.max(0,game.hitstop-dt);updateParticles(dt*.25);syncUI();return}game.time=Math.max(0,game.time-dt);if(game.mode==='chameleon'){game.lawClock-=dt;if(game.lawClock<=0){game.activeLaw=game.activeLaw==='boxing'?'ringout':'boxing';game.lawClock=8;flash(game.activeLaw==='boxing'?'BOXING LAW':'RING-OUT LAW','The same contact now has a different consequence.');setEvent(game.player,'TRACE','CHAMELEON_SHIFT',`Active law changed to ${game.activeLaw}`)}}
+  if(game.time<=0){const pMetric=game.activeLaw==='boxing'?game.player.hp+game.player.score*.3:game.player.balance+territory(game.player);const eMetric=game.activeLaw==='boxing'?game.enemy.hp+game.enemy.score*.3:game.enemy.balance+territory(game.enemy);game.roundOver=true;flash('BELL!',pMetric>=eMetric?'JM takes the round.':'CPU takes the round.');setTimeout(()=>endRound(pMetric>=eMetric?game.player:game.enemy),900);return}
+  playerMovement(dt);cpu(dt);updateFighter(game.player,game.enemy,dt);updateFighter(game.enemy,game.player,dt);separateFighters();
+  game.shake=Math.max(0,game.shake-dt*42);updateParticles(dt);syncUI();
+}
+function territory(f){const cx=(arena.ropeLeft+arena.ropeRight)/2,cy=(arena.ropeTop+arena.ropeBottom)/2,max=Math.hypot((arena.ropeRight-arena.ropeLeft)/2,(arena.ropeBottom-arena.ropeTop)/2);return 100-Math.hypot(f.x-cx,f.y-cy)/Math.max(1,max)*100}
+
+function spawnImpact(x,y,color,count){for(let i=0;i<count;i++)game.particles.push({x,y,vx:rand(-120,120),vy:rand(-150,20),life:rand(.25,.55),max:.55,color,r:rand(2,5)})}
+function updateParticles(dt){for(let i=game.particles.length-1;i>=0;i--){const p=game.particles[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=330*dt;if(p.life<=0)game.particles.splice(i,1)}}
+
+function loop(t){raf=0;const dt=Math.min(.032,(t-last)/1000||.016);last=t;update(dt);draw();if(game.running&&!game.paused&&!game.over)raf=requestAnimationFrame(loop)}
+
+function draw(){ctx.save();ctx.clearRect(0,0,W,H);const sx=game?.shake?rand(-game.shake,game.shake):0,sy=game?.shake?rand(-game.shake*.35,game.shake*.35):0;ctx.translate(sx,sy);drawArena();if(game){[game.player,game.enemy].sort((a,b)=>a.y-b.y).forEach(drawFighter);drawParticles()}ctx.restore()}
+function drawArena(){
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#101a33');g.addColorStop(.58,'#07101f');g.addColorStop(1,'#03060d');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,.025)';for(let x=0;x<W;x+=54)ctx.fillRect(x,0,1,H);for(let y=0;y<H;y+=54)ctx.fillRect(0,y,W,1);
+  const floor=ctx.createLinearGradient(0,arena.ropeTop,0,arena.ropeBottom);floor.addColorStop(0,'#131e36');floor.addColorStop(1,'#24314c');ctx.fillStyle=floor;ctx.fillRect(arena.ropeLeft,arena.ropeTop,arena.ropeRight-arena.ropeLeft,arena.ropeBottom-arena.ropeTop);
+  ctx.fillStyle='rgba(118,236,255,.055)';ctx.fillRect(arena.ropeLeft,arena.ropeTop,(arena.ropeRight-arena.ropeLeft)/2,arena.ropeBottom-arena.ropeTop);ctx.fillStyle='rgba(255,143,171,.055)';ctx.fillRect(W/2,arena.ropeTop,(arena.ropeRight-arena.ropeLeft)/2,arena.ropeBottom-arena.ropeTop);
+  ctx.strokeStyle='rgba(255,255,255,.09)';ctx.lineWidth=1;for(let i=1;i<5;i++){const x=lerp(arena.ropeLeft,arena.ropeRight,i/5);ctx.beginPath();ctx.moveTo(x,arena.ropeTop);ctx.lineTo(x,arena.ropeBottom);ctx.stroke()}for(let i=1;i<5;i++){const y=lerp(arena.ropeTop,arena.ropeBottom,i/5);ctx.beginPath();ctx.moveTo(arena.ropeLeft,y);ctx.lineTo(arena.ropeRight,y);ctx.stroke()}
+  ctx.strokeStyle='rgba(255,255,255,.18)';ctx.beginPath();ctx.arc(W/2,(arena.ropeTop+arena.ropeBottom)/2,Math.min(W,H)*.12,0,Math.PI*2);ctx.stroke();
+  const rope=game?.activeLaw==='ringout'?'rgba(255,102,125,.78)':'rgba(255,209,102,.72)';ctx.strokeStyle=rope;ctx.lineWidth=4;ctx.setLineDash(game?.activeLaw==='ringout'?[8,7]:[]);ctx.strokeRect(arena.ropeLeft,arena.ropeTop,arena.ropeRight-arena.ropeLeft,arena.ropeBottom-arena.ropeTop);ctx.setLineDash([]);
+  for(const [x,y] of [[arena.ropeLeft,arena.ropeTop],[arena.ropeRight,arena.ropeTop],[arena.ropeLeft,arena.ropeBottom],[arena.ropeRight,arena.ropeBottom]]){ctx.fillStyle=rope;ctx.fillRect(x-4,y-7,8,14)}
+  ctx.fillStyle='rgba(255,255,255,.11)';ctx.font='900 12px system-ui';ctx.textAlign='center';ctx.fillText(game?.mode==='chameleon'?`CHAMELEON · ${game.activeLaw.toUpperCase()}`:(game?.mode||'BOXING').toUpperCase(),W/2,arena.ropeBottom+30);
+  if(game?.activeLaw==='ringout'){ctx.fillStyle='rgba(255,102,125,.08)';ctx.fillRect(0,arena.top,arena.ropeLeft,arena.bottom-arena.top);ctx.fillRect(arena.ropeRight,arena.top,W-arena.ropeRight,arena.bottom-arena.top);ctx.fillRect(arena.ropeLeft,arena.top,arena.ropeRight-arena.ropeLeft,arena.ropeTop-arena.top);ctx.fillRect(arena.ropeLeft,arena.ropeBottom,arena.ropeRight-arena.ropeLeft,arena.bottom-arena.ropeBottom)}
+}
+function drawFighter(f){
+  const depth=clamp((f.y-arena.ropeTop)/Math.max(1,arena.ropeBottom-arena.ropeTop),0,1),scale=lerp(.78,1.08,depth),baseY=f.y,dir=f.facing,lean=f.hurt>0?-dir*7:f.action==='slip'?-dir*10:f.action==='cross'?dir*7:0;
+  const main=f.side==='p'?'#76ecff':'#ff8fab',dark=f.side==='p'?'#234866':'#6b2944',glove=f.side==='p'?'#d9fbff':'#ffe1e9';
+  ctx.save();ctx.translate(f.x,baseY);ctx.scale(scale,scale);const bodyX=lean,headY=-92,bodyY=-54;
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.beginPath();ctx.ellipse(0,7,34,8,0,0,Math.PI*2);ctx.fill();
+  ctx.translate(bodyX,0);if(f.side==='e'&&f.tell>0){ctx.fillStyle='#ffd166';ctx.font='900 18px system-ui';ctx.textAlign='center';ctx.fillText('!',0,headY-32)}
+  if(f.guard){ctx.fillStyle='rgba(118,236,255,.11)';ctx.beginPath();ctx.arc(0,headY+20,48,0,Math.PI*2);ctx.fill()}
+  ctx.strokeStyle='rgba(0,0,0,.35)';ctx.lineWidth=12;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-10,-24);ctx.lineTo(-16,0);ctx.moveTo(10,-24);ctx.lineTo(16,0);ctx.stroke();
+  ctx.fillStyle=dark;roundRect(-22,bodyY-25,44,62,14);ctx.fill();ctx.fillStyle=main;roundRect(-19,bodyY-22,38,56,13);ctx.fill();
+  ctx.fillStyle=f.hurt>0?'#fff3b5':'#f1c9aa';ctx.beginPath();ctx.arc(0,headY,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#09111d';ctx.fillRect(dir>0?5:-10,headY-5,5,3);
+  const other=f.side==='p'?game.enemy:game.player,aim=vectorTo(f,other),ax=aim.nx,ay=aim.ny/Math.max(.78,scale);let leadX=dir*28,rearX=-dir*20,handY=headY+18,rearY=handY+4;
+  if(f.guard){leadX=dir*16;rearX=-dir*5;handY=headY+2;rearY=headY+8}
+  if(f.action==='jab'&&f.actionT>.05&&f.actionT<.18){leadX=ax*62;handY=headY+18+ay*48}
+  if(f.action==='cross'&&f.actionT>.10&&f.actionT<.29){rearX=ax*70;rearY=headY+20+ay*52}
+  if(f.action==='hook'&&f.actionT>.09&&f.actionT<.28){const px=-ay,py=ax;leadX=ax*44+px*24;handY=headY+24+ay*34+py*18}
+  if(f.action==='body'&&f.actionT>.08&&f.actionT<.26){leadX=ax*52;handY=bodyY+10+ay*36}
+  ctx.strokeStyle=main;ctx.lineWidth=10;ctx.beginPath();ctx.moveTo(dir*10,bodyY-10);ctx.lineTo(leadX,handY);ctx.moveTo(-dir*8,bodyY-8);ctx.lineTo(rearX,rearY);ctx.stroke();ctx.fillStyle=glove;ctx.beginPath();ctx.arc(leadX,handY,10,0,Math.PI*2);ctx.arc(rearX,rearY,10,0,Math.PI*2);ctx.fill();if(f.stun>0){ctx.fillStyle='#ffd166';ctx.font='900 14px system-ui';ctx.textAlign='center';ctx.fillText('STUN',0,headY-30)}ctx.restore();
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function drawParticles(){for(const p of game.particles){ctx.globalAlpha=clamp(p.life/p.max,0,1);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
+
+function syncUI(){if(!game)return;$('pHp').style.width=game.player.hp+'%';$('eHp').style.width=game.enemy.hp+'%';$('pStamina').style.width=game.player.stamina+'%';$('eStamina').style.width=game.enemy.stamina+'%';$('pBalance').style.width=game.player.balance+'%';$('eBalance').style.width=game.enemy.balance+'%';$('timer').textContent=Math.ceil(game.time);$('law').textContent=(game.activeLaw==='boxing'?'BOXING LAW':'RING-OUT LAW')+(game.mode==='chameleon'?` · ${Math.ceil(game.lawClock)}`:'');$('round').textContent=`ROUND ${game.round} · FIRST TO 2`;$('pRounds').textContent=game.pRounds;$('eRounds').textContent=game.eRounds;$('status').textContent=game.status;$('detail').textContent=game.detail;$('routeResult').textContent=game.result;$('contactState').textContent=game.contact;}
+function flash(text,detail=''){game.calloutT++;const n=game.calloutT;$('callout').textContent=text;$('callout').classList.add('show');game.status=text;game.detail=detail;syncUI();setTimeout(()=>{if(game.calloutT===n)$('callout').classList.remove('show')},650)}
+
+function renderTrace(){const box=$('traceList');if(!box)return;box.innerHTML='';JMGameCore.events.slice(-24).reverse().forEach(t=>{const d=document.createElement('div');d.className='trace';d.innerHTML=`<div class="traceTop"><strong>${escapeHTML(t.resultLabel||t.result)}</strong><span>${escapeHTML(t.law||'')}</span></div><small>${escapeHTML(t.detail||'')}</small><small>${escapeHTML(t.actor||'')} · ${escapeHTML(t.quadze||'Q0')}</small>`;box.appendChild(d)})}
+function renderRouteLedger(){const ul=$('routeLedger');if(!ul)return;ul.innerHTML='';RouteOS.ledger.slice(0,10).forEach(r=>{const li=document.createElement('li');li.textContent=`${r.type}: ${r.note}`;ul.appendChild(li)})}
+function renderLexicon(filter=''){const q=filter.trim().toLowerCase(),box=$('lexiconList');box.innerHTML='';Object.entries(RadiusLexicon).filter(([k,v])=>!q||k.toLowerCase().includes(q)||Object.values(v).join(' ').toLowerCase().includes(q)).forEach(([term,v])=>{const d=document.createElement('div');d.className='lexCard';d.innerHTML=`<h3>${term}</h3><div><b>JM:</b> ${escapeHTML(v.jm)}</div><div><b>Boxing:</b> ${escapeHTML(v.boxing)}</div><div><b>Ring-Out:</b> ${escapeHTML(v.ringout)}</div><div><b>Runtime:</b> ${escapeHTML(v.runtime)}</div>`;box.appendChild(d)})}
+function escapeHTML(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+// 128 HAND fair-play surface — fixed left pad + tap rhythm + hold-anywhere guard.
+const pointers=new Map();let tapChain={count:0,last:0};
+function tapStrike(){const now=performance.now();tapChain.count=now-tapChain.last<620?(tapChain.count%3)+1:1;tapChain.last=now;attemptAction(game.player,tapChain.count===1?'jab':tapChain.count===2?'cross':'hook')}
+let lastLeftTap=0;function setLeftVector(p,x,y){const dx=x-p.sx,dy=y-p.sy,span=52;hold.moveX=clamp(dx/span,-1,1);hold.moveY=clamp(dy/span,-1,1)}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();if(!game.running)start();canvas.setPointerCapture(e.pointerId);const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,side=x<r.width/2?'left':'right';const p={side,sx:x,sy:y,x,y,t:performance.now(),moved:false,fired:false,slipped:false,guarding:false,holdTimer:0};pointers.set(e.pointerId,p);showThumb(side,x,y,r);if(side==='left'){hold.moveX=0;hold.moveY=0}else p.holdTimer=setTimeout(()=>{const live=pointers.get(e.pointerId);if(live&&!live.moved&&!live.fired){live.guarding=true;hold.guard=true;game.status='GUARD';game.detail='Right thumb held — pressure contained'}},190)}, {passive:false});
+canvas.addEventListener('pointermove',e=>{e.preventDefault();const p=pointers.get(e.pointerId);if(!p)return;const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;p.x=x;p.y=y;const dx=x-p.sx,dy=y-p.sy,mag=Math.hypot(dx,dy);if(mag>11){p.moved=true;if(p.holdTimer){clearTimeout(p.holdTimer);p.holdTimer=0}}showThumb(p.side,x,y,r);
+  if(p.side==='left'){setLeftVector(p,x,y)}
+  else if(!p.fired&&!p.guarding){const threshold=20;if(Math.abs(dx)>threshold&&Math.abs(dx)>Math.abs(dy)*.72){p.fired=true;attemptAction(game.player,dx*game.player.facing>0?'cross':'hook')}else if(dy>threshold+2&&Math.abs(dy)>Math.abs(dx)*.72){p.fired=true;attemptAction(game.player,'body')}else if(dy<-(threshold+2)&&Math.abs(dy)>Math.abs(dx)*.72){p.fired=true;slip(game.player)}}
+}, {passive:false});
+function pointerEnd(e){e.preventDefault();const p=pointers.get(e.pointerId);if(!p)return;pointers.delete(e.pointerId);if(p.holdTimer)clearTimeout(p.holdTimer);hideThumb(p.side);if(p.side==='left'){hold.moveX=0;hold.moveY=0;const now=performance.now();if(!p.moved&&now-lastLeftTap<330)slip(game.player);if(!p.moved)lastLeftTap=now}if(p.guarding){hold.guard=false;return}if(p.side==='right'&&!p.fired){const elapsed=performance.now()-p.t;if(elapsed<360)tapStrike()}}
+canvas.addEventListener('pointerup',pointerEnd,{passive:false});canvas.addEventListener('pointercancel',pointerEnd,{passive:false});
+function showThumb(side,x,y,r){const el=$(side+'Thumb');const localX=side==='left'?x:x-r.width/2;el.style.left=localX+'px';el.style.top=(y-(r.height*.54))+'px';el.style.display='block'}
+function hideThumb(side){$(side+'Thumb').style.display='none'}
+
+// Mobile interaction lock: the fight surface is a controller, not selectable page text.
+for(const type of ['contextmenu','selectstart','dragstart']){
+  document.addEventListener(type,e=>{if(!e.target.closest('input,textarea,[contenteditable="true"]'))e.preventDefault()},{passive:false});
+}
+function setLayout(kind){
+  const touch=kind==='touch';
+  document.body.classList.toggle('touch-layout',touch);
+  document.body.classList.toggle('button-layout',!touch);
+  $('layoutBtn').textContent=touch?'BUTTONS':'TOUCH';
+  $('layoutBtn').classList.toggle('active',touch);
+  try{localStorage.setItem('fightclash_layout',touch?'touch':'buttons')}catch(_e){}
+  RouteOS.log('layout',touch?'Arena-touch layout active':'Fallback button layout active',{});
+  setTimeout(resize,30);
+}
+let savedLayout='';try{savedLayout=localStorage.getItem('fightclash_layout')||''}catch(_e){}
+const preferredLayout=savedLayout||((matchMedia('(pointer: coarse)').matches||innerWidth<850)?'touch':'buttons');
+setLayout(preferredLayout);
+
+// Button + keyboard fallback routes.
+document.querySelectorAll('[data-action]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const a=b.dataset.action;if(a==='slip')slip(game.player);else if(a==='recover')recover(game.player);else attemptAction(game.player,a)}));
+document.querySelectorAll('[data-hold]').forEach(b=>{const key=b.dataset.hold;const on=e=>{e.preventDefault();if(!game.running)start();try{b.setPointerCapture(e.pointerId)}catch(_e){}if(key==='left')hold.moveX=-1;else if(key==='right')hold.moveX=1;else if(key==='up')hold.moveY=-1;else if(key==='down')hold.moveY=1;else hold[key]=true;b.classList.add('held')};const off=e=>{e.preventDefault();if(key==='left'||key==='right')hold.moveX=0;else if(key==='up'||key==='down')hold.moveY=0;else hold[key]=false;b.classList.remove('held')};b.addEventListener('pointerdown',on);b.addEventListener('pointerup',off);b.addEventListener('pointercancel',off)});
+window.addEventListener('keydown',e=>{if(e.repeat)return;const k=e.key.toLowerCase();if(k==='a')hold.moveX=-1;if(k==='d')hold.moveX=1;if(k==='w')hold.moveY=-1;if(k==='s')hold.moveY=1;if(k==='i')hold.guard=true;if(k==='j')attemptAction(game.player,'jab');if(k==='k')attemptAction(game.player,'cross');if(k==='l')attemptAction(game.player,'hook');if(k==='q')slip(game.player);if(k==='r')recover(game.player);if(k===' ')pause()});
+window.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='a'||k==='d')hold.moveX=0;if(k==='w'||k==='s')hold.moveY=0;if(k==='i')hold.guard=false});
+
+function syncDifficulty(){$('difficultyBtn').textContent='CPU: '+CPU_LEVELS[cpuLevel].label;$('difficultyBtn').classList.toggle('good',cpuLevel==='spar')}function cycleDifficulty(){cpuLevel=cpuLevel==='spar'?'match':cpuLevel==='match'?'beast':'spar';if(game)game.cpuLevel=cpuLevel;syncDifficulty();flash('CPU '+CPU_LEVELS[cpuLevel].label,cpuLevel==='spar'?'Sparring pace and reduced power.':cpuLevel==='match'?'Balanced match pace.':'Original hard pressure route.');RouteOS.log('cpu-level',cpuLevel,{})}
+$('startBtn').onclick=start;$('resetBtn').onclick=reset;$('pauseBtn').onclick=pause;$('difficultyBtn').onclick=cycleDifficulty;$('layoutBtn').onclick=()=>setLayout(document.body.classList.contains('touch-layout')?'buttons':'touch');$('saveBtn').onclick=()=>RouteOS.save();$('exportBtn').onclick=()=>RouteOS.export();
+document.querySelectorAll('.modeBtn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+$('introBoxing').onclick=()=>setMode('boxing');$('introRing').onclick=()=>setMode('ringout');$('introCham').onclick=()=>setMode('chameleon');
+$('panelBtn').onclick=()=>{$('sidePanel').classList.toggle('open')};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+t.dataset.tab))});
+$('lexSearch').addEventListener('input',e=>renderLexicon(e.target.value));
+
+resize();freshGame('boxing');renderLexicon();renderTrace();renderRouteLedger();
+syncDifficulty();RouteOS.log('boot','Fight Clash v0.4 Open Ring mounted',{lineage:'128 Hand + Fighting + GameForge + RouteOS',touchLock:true,flowPatch:true,fairPlay:true,openRing:true,cpuLevel});
+if(RouteOS.load())flash('RESTORED','RouteOS recovered the previous local state.');
+})();
+</script>
+</body>
+</html>

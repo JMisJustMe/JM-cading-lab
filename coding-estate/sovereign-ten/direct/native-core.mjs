@@ -119,6 +119,12 @@ export function blocks(source, keyword) {
   return output;
 }
 
+function comparisonRight(raw) {
+  const text = String(raw).trim();
+  const isPath = /^[A-Za-z_][\w.]*$/.test(text) && !['true', 'false', 'null'].includes(text);
+  return isPath ? { kind: 'path', value: text } : { kind: 'literal', value: valueOf(text) };
+}
+
 export function parseExpr(source) {
   const text = String(source).trim().replace(/^\((.*)\)$/s, '$1').trim();
   need(text, 'EMPTY_EXPRESSION', 'Native expression cannot be empty.');
@@ -129,7 +135,7 @@ export function parseExpr(source) {
   }
   if (text.startsWith('not ')) return { type: 'not', value: parseExpr(text.slice(4)) };
   const comparison = text.match(/^(.+?)\s*(==|!=|>=|<=|>|<)\s*(.+)$/s);
-  if (comparison) return { type: 'compare', path: comparison[1].trim(), op: comparison[2], value: valueOf(comparison[3]) };
+  if (comparison) return { type: 'compare', path: comparison[1].trim(), op: comparison[2], right: comparisonRight(comparison[3]) };
   const call = text.match(/^([A-Za-z_][\w.]*)\((.*)\)$/s);
   if (call) return { type: 'call', name: call[1], args: argsOf(call[2]).positional };
   return { type: 'truthy', path: text };
@@ -144,7 +150,7 @@ export function evaluate(expression, facts = {}, functions = {}) {
     case 'call': return functions[expression.name] ? Boolean(functions[expression.name](...expression.args)) : getPath(facts, expression.name) === expression.args[0];
     case 'compare': {
       const left = getPath(facts, expression.path);
-      const right = expression.value;
+      const right = expression.right?.kind === 'path' ? getPath(facts, expression.right.value) : expression.right?.value;
       return ({ '==': left === right, '!=': left !== right, '>': left > right, '<': left < right, '>=': left >= right, '<=': left <= right })[expression.op];
     }
     default: throw new NativeError('UNKNOWN_EXPRESSION', `Unknown native expression ${expression.type}.`);

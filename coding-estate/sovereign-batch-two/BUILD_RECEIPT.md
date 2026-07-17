@@ -21,7 +21,7 @@ Every body has readable repository source for its body-specific grammar/parser, 
 
 CadenVM and JMVM use separate frozen opcode sets and checksummed bytecode verifiers. THEO/PrimeBody proves every stage rather than merely returning a target. Polyglot Bridge preserves named source and target identities. Kocodifying has explicit conflict and rollback semantics. FormeULA lowers parameterised forms into dependency graphs and rejects unresolved references.
 
-## Local proof gates
+## Repository proof gates
 
 - Conformance: **36 passed / 0 failed**
 - Conformance digest: `09bc53af70e01ff1`
@@ -45,6 +45,10 @@ Codifying
 
 ## Honest boundary
 
-**Pending repository Ding:** local conformance is complete; GitHub must independently execute the readable source before this receipt is upgraded to repository-proven and merged.
+**Ding:** GitHub Actions independently executed the readable source and passed **36 / 36** gates with conformance digest `09bc53af70e01ff1`.
+
+- Workflow run: `29579917062`
+- Proof artifact: `8406562713`
+- Artifact SHA-256: `458b08df89f9565d8d9a183d3cce615c6dec9d9f543010362e0daf06372b4cee`
 
 This build is current-authoritative native formation. It does not relabel reconstructed or newly authorised present canon as recovered historical source.

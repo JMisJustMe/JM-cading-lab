@@ -1,4 +1,4 @@
-name: JM EveryBody Self-Test
+name: JM EveryBody Full Conformance
 
 on:
   push:
@@ -13,7 +13,8 @@ permissions:
   contents: read
 
 jobs:
-  conformance:
+  javascript:
+    name: JavaScript registry parser runtime and receipts
     runs-on: ubuntu-latest
     steps:
       - name: Check out estate corridor
@@ -22,5 +23,55 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-      - name: Run sovereign registry and maximiser receipt
+      - name: Run sovereign registry and maximiser self-test
         run: node coding-estate/everybody/selftest.mjs
+      - name: Generate individual body packs
+        run: node coding-estate/everybody/build-all.mjs
+      - name: Execute all generated JavaScript bodies
+        run: node coding-estate/everybody/generated/js/all-bodies.mjs
+
+  cpp:
+    name: C++${{ matrix.standard }} all-body compile and runtime
+    needs: javascript
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        standard: ['11', '14', '17', '20', '23']
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Generate individual body packs
+        run: node coding-estate/everybody/build-all.mjs
+      - name: Compile all bodies as C++${{ matrix.standard }}
+        run: g++ -std=c++${{ matrix.standard }} -Wall -Wextra -Werror -pedantic coding-estate/everybody/generated/cpp/all_bodies.cpp -o /tmp/jm-everybody-cpp
+      - name: Execute C++ whole-estate receipts
+        run: /tmp/jm-everybody-cpp
+
+  rust:
+    name: Rust edition ${{ matrix.edition }} all-body compile and runtime
+    needs: javascript
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: ['2021', '2024']
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Generate individual body packs
+        run: node coding-estate/everybody/build-all.mjs
+      - name: Show Rust toolchain
+        run: rustc --version --verbose
+      - name: Compile all bodies for Rust edition ${{ matrix.edition }}
+        run: rustc --edition=${{ matrix.edition }} -D warnings coding-estate/everybody/generated/rust/all_bodies.rs -o /tmp/jm-everybody-rust
+      - name: Execute Rust whole-estate receipts
+        run: /tmp/jm-everybody-rust

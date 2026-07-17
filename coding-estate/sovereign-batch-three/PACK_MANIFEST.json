@@ -1,0 +1,50 @@
+{
+  "schema": "jm.sovereign-batch-three.delivery/1.0",
+  "title": "JM Sovereign Batch Three Twenty-Body Native Formation v1",
+  "bodies": [
+    "Cading",
+    "Quadze",
+    "Speakuals",
+    "Mark-Level Syntax",
+    "TBS.String",
+    "TokenBody",
+    "PunctBody",
+    "GlyphBody",
+    "RouteFrame",
+    "StateField",
+    "ContactBand",
+    "FormulaGate",
+    "Formula-Born Code",
+    "Noncoding-Code",
+    "ContactCode",
+    "MorseMinus",
+    "MorseMinus ZeroGrip",
+    "Mudra Code",
+    "JickMa / JickMah",
+    "Mood Drills"
+  ],
+  "authoritativeSource": "coding-estate/sovereign-batch-three/direct",
+  "sourceModules": [
+    "native-core.mjs",
+    "structured-core-native.mjs",
+    "mark-string-native.mjs",
+    "field-primitives-native.mjs",
+    "embodied-native.mjs",
+    "native-corpus.mjs",
+    "native-selftest.mjs"
+  ],
+  "localConformance": {
+    "passed": 51,
+    "failed": 0,
+    "digest": "4eb70f69fafda4bc"
+  },
+  "continuousRoute": "Cading -> Speakuals -> Mark-Level Syntax -> TBS.String -> TokenBody -> PunctBody -> Formula-Born Code -> GlyphBody -> FormulaGate -> ContactBand -> ContactCode -> StateField -> RouteFrame -> MorseMinus -> MorseMinus ZeroGrip -> Mudra Code -> JickMa -> Mood Drills -> Quadze -> Noncoding-Code",
+  "repositoryProofPending": true,
+  "currentNativeClaim": true,
+  "historicalRecoveryClaims": {
+    "cading": "recovered-native-subset",
+    "quadze": "recovered-tier0-subset",
+    "speakuals": "recovered-native-subset",
+    "others": false
+  }
+}

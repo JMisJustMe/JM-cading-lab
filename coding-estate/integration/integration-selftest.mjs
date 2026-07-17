@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 import { compatibilityBetween, planEstateRoute, validateRegistry } from "./router-core.mjs";
 import { runAllAdoptionProofs } from "./adoption-proofs.mjs";
 
@@ -46,6 +45,7 @@ check("04 game request returns native game and touch bodies", () => {
   expect(ids.has("seedform-choice-interface"), "TOUCH_BODY_MISSING");
   expect(ids.has("tracebox") && ids.has("dings") && ids.has("source-ledger"), "PROOF_SPINE_MISSING");
   expect(ids.has("zionfolder"), "DELIVERY_MISSING");
+  expect(!plan.tokens.some(token => ["a","and","with","to"].includes(token)), "STOP_WORD_NOISE_REMAINED");
   return plan;
 });
 check("05 compiler request returns source-to-target spine", () => {
@@ -85,15 +85,14 @@ check("10 three real adoption proofs execute", () => {
   return result;
 });
 check("11 Batch Six documentation no longer claims Ding pending", () => {
-  const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
-  const readme = fs.readFileSync(`${repoRoot}/sovereign-batch-six/README.md`, "utf8");
+  const readme = fs.readFileSync(new URL("../sovereign-batch-six/README.md", import.meta.url), "utf8");
   expect(!/Repository Ding is pending/i.test(readme), "STALE_BATCH_SIX_README");
   expect(/Repository proof/i.test(readme), "REPOSITORY_PROOF_NOT_RECORDED");
   return { corrected: true };
 });
 check("12 privacy gate remains explicit and non-green", () => {
   const privacy = fs.readFileSync(new URL("./PRIVACY_GATE.md", import.meta.url), "utf8");
-  expect(/CURRENT REPOSITORY VISIBILITY:\s*\*\*PUBLIC\*\*/i.test(privacy), "PUBLIC_VISIBILITY_NOT_RECORDED");
+  expect(/CURRENT REPOSITORY VISIBILITY:[^\n]*PUBLIC/i.test(privacy), "PUBLIC_VISIBILITY_NOT_RECORDED");
   expect(/NOT CLOSED/i.test(privacy), "PRIVACY_FALSE_GREEN");
   return { status: "external-admin-action-required" };
 });

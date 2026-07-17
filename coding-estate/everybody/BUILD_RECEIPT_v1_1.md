@@ -132,9 +132,9 @@ The release artifact contains the complete 100-body generated estate, including:
 - `BODY_COMPLETION_MATRIX_v1_1.md`.
 
 Artifact name: `jm-everybody-v1-1-100-body-maximal-packs`  
-Artifact ID: `8397332592`  
+Artifact ID: `8397365754`  
 Artifact size: `439832` bytes  
-Artifact SHA-256 digest: `ca13c1b50b2774dd4c841982f66f5f91556424814d679a90e2d186fbf6113963`  
+Artifact SHA-256 digest: `ddead29fdd5c02be2c3bbfd2fa1f0349a460e6a5e7d9dacf52158d479f7829d1`  
 Artifact retention expiry: 16 August 2026
 
 ## Failure and repair receipts

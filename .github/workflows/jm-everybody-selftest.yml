@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        standard: ['11', '14', '17', '20', '23']
+        standard: ['98', '03', '11', '14', '17', '20', '23', '2c']
     steps:
       - name: Check out estate corridor
         uses: actions/checkout@v4
@@ -53,6 +53,8 @@ jobs:
           node-version: 'lts/*'
       - name: Generate individual body packs
         run: node coding-estate/everybody/build-all.mjs
+      - name: Normalize generated runtime for all C++ standards
+        run: node coding-estate/everybody/cpp-all-standards.mjs
       - name: Compile all bodies as C++${{ matrix.standard }}
         run: g++ -std=c++${{ matrix.standard }} -Wall -Wextra -Werror -pedantic coding-estate/everybody/generated/cpp/all_bodies.cpp -o /tmp/jm-everybody-cpp
       - name: Execute C++ whole-estate receipts

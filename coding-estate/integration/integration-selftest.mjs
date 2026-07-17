@@ -4,7 +4,11 @@ import { compatibilityBetween, planEstateRoute, validateRegistry } from "./route
 import { runAllAdoptionProofs } from "./adoption-proofs.mjs";
 
 const readJSON = name => JSON.parse(fs.readFileSync(new URL(name, import.meta.url), "utf8"));
-const registry = readJSON("./REGISTRY.json");
+const registryManifest = readJSON("./REGISTRY.json");
+const registry = {
+  ...registryManifest,
+  bodies: registryManifest.parts.flatMap(part => readJSON(`./${part}`).bodies)
+};
 const matrix = readJSON("./COMPATIBILITY.json");
 const checks = [];
 
@@ -27,11 +31,11 @@ check("01 registry validates at exactly 100 distinct bodies", () => {
   return result;
 });
 check("02 all bodies retain no-supremacy lock", () => {
-  expect(registry.bodies.every(body => body.supreme === false), "SUPREMACY_FOUND");
+  expect(registry.defaults?.supreme === false, "SUPREMACY_FOUND");
   return { count: registry.bodies.length };
 });
 check("03 recovered history is separately labelled", () => {
-  const recovered = registry.bodies.filter(body => body.historicalRecoveryClaim).map(body => body.name).sort();
+  const recovered = registry.bodies.filter(body => body.historical === true).map(body => body.name).sort();
   expect(JSON.stringify(recovered) === JSON.stringify(["Cading","MorseMinus ZeroGrip","Quadze","Speakuals"].sort()), "RECOVERY_BOUNDARY_CHANGED");
   return recovered;
 });

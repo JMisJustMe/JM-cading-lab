@@ -1,0 +1,35 @@
+name: JM Sovereign Batch Four Native Conformance
+
+on:
+  push:
+    paths:
+      - 'coding-estate/sovereign-batch-four/**'
+      - '.github/workflows/sovereign-batch-four.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/sovereign-batch-four/**'
+      - '.github/workflows/sovereign-batch-four.yml'
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run readable Batch Four native conformance
+        id: conformance
+        continue-on-error: true
+        run: node coding-estate/sovereign-batch-four/direct/native-selftest.mjs > sovereign-batch-four-receipt.json
+      - name: Upload conformance receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-batch-four-conformance-receipt
+          path: sovereign-batch-four-receipt.json
+      - name: Enforce conformance result
+        if: always()
+        shell: bash
+        run: |
+          node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('sovereign-batch-four-receipt.json','utf8'));console.log(JSON.stringify({passed:r.passed,failed:r.failed,digest:r.digest,failures:r.checks.filter(x=>!x.passed)},null,2));if(r.failed)process.exit(1);"

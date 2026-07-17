@@ -15,13 +15,16 @@ The search recovered:
 - clear formulas and markings for the mark, token, punctuation, glyph, field and embodied bodies;
 - a five-finger operating anatomy that remains a higher organ rather than twenty extra language aliases.
 
-## Local proof
+## Repository proof
 
 - **51 passed / 0 failed**
 - Conformance digest: `4eb70f69fafda4bc`
+- GitHub workflow run: `29582569798`
+- Proof artifact: `8407617162`
+- Artifact SHA-256: `7d19a167aeee1ddc2f3bea80161734231a8c11c2792216e5b3001fde0d78a31a`
 
 The suite proves valid parsing/lowering/execution, malformed-source rejection, Fullstopped completion, deterministic execution, guarded routes and transitions, formula pass/fail, contact pressure and hold rules, ZeroGrip overpressure rejection, gesture hold enforcement, contact transformation, mood shifting and one complete twenty-body execution route.
 
 ## Honest boundary
 
-Repository Ding is pending GitHub execution. Current-native formation and historical source recovery remain separate evidence axes.
+**Repository Ding:** GitHub independently executed the readable source and passed every gate. Current-native formation and historical source recovery remain separate evidence axes.

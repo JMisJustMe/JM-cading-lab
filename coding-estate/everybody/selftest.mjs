@@ -7,7 +7,8 @@ const maximiser = new EverybodyMaximiser(registry);
 const audit = maximiser.audit();
 
 assert.equal(audit.ok, true);
-assert.equal(audit.status, 'MAXIMAL_PORTABLE_NOT_CROWN');
+assert.equal(audit.status, 'ALPHA_NOT_CROWN');
+assert.equal(registry.release_state, 'MAXIMAL_PORTABLE_V1_1');
 assert.equal(audit.noSupremeBody, true);
 assert.equal(audit.finalCountClaimed, false);
 assert.ok(audit.recoveredCount >= 100);
@@ -43,6 +44,7 @@ const result = {
   suite: 'JM EveryBody v1.1 federated self-test',
   passed: true,
   recoveredBodies: audit.recoveredCount,
+  releaseState: registry.release_state,
   finalCountClaimed: false,
   leadBodyForFixture: plan.leadBody.id,
   supportingBodiesForFixture: plan.supportingBodies.map(body => body.id),

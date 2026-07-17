@@ -13,6 +13,14 @@ async function openDoorTestCard(page) {
   return card;
 }
 
+async function openDoorTestRoom(page) {
+  await openHouse(page);
+  const card = await openDoorTestCard(page);
+  await card.locator('[data-open="house-door-test"]').click();
+  await expect(page.locator('#roomModal')).toHaveClass(/open/);
+  return page.frameLocator('#roomFrame');
+}
+
 test('@boot House boot and registry', async ({ page }) => {
   const errors = [];
   page.on('pageerror', error => errors.push(String(error)));
@@ -25,19 +33,29 @@ test('@boot House boot and registry', async ({ page }) => {
   expect(errors).toEqual([]);
 });
 
-test('@room Body room contact and internal route', async ({ page }) => {
-  await openHouse(page);
-  const card = await openDoorTestCard(page);
-  await card.locator('[data-open="house-door-test"]').click();
-  await expect(page.locator('#roomModal')).toHaveClass(/open/);
-  const frame = page.frameLocator('#roomFrame');
+test('@room-open Mounted room opens and body loads', async ({ page }) => {
+  const frame = await openDoorTestRoom(page);
   await expect(frame.locator('h1')).toHaveText('Games House Door Test');
+});
+
+test('@room-ding Mounted room accepts real contact', async ({ page }) => {
+  const frame = await openDoorTestRoom(page);
+  await expect(frame.locator('#ding')).toHaveText('DING 0');
   await frame.locator('#ding').click();
   await expect(frame.locator('#ding')).toHaveText('DING 1');
+});
+
+test('@room-route Host reaches body-native Edit route', async ({ page }) => {
+  const frame = await openDoorTestRoom(page);
   await page.locator('.room-actions [data-route="edit"]').click();
   await expect(frame.locator('#panel > b')).toHaveText('EDIT');
+});
+
+test('@room-close Room closes and releases its frame', async ({ page }) => {
+  await openDoorTestRoom(page);
   await page.locator('#closeRoom').click();
   await expect(page.locator('#roomModal')).not.toHaveClass(/open/);
+  await expect(page.locator('#roomFrame')).toHaveAttribute('srcdoc', '');
 });
 
 test('@workbench Passport, exact source, export and receipt', async ({ page }) => {

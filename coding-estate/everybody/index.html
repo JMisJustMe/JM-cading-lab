@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090b10">
+<title>JM EveryBody — Sovereign Coding Workbench</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;background:#090b10;color:#f5f7ff;line-height:1.45}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#263052 0,transparent 34rem),#090b10;min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}.shell{width:min(1240px,100%);margin:auto;padding:16px}.hero,.panel{background:#11151fdd;border:1px solid #2c3448;border-radius:22px;box-shadow:0 18px 50px #0008}.hero{padding:22px;margin-bottom:14px}.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:#aebce6;font-weight:900}.hero h1{font-size:clamp(1.7rem,6vw,3.5rem);line-height:1;margin:.35rem 0}.hero p{max-width:76ch;color:#cbd3e8}.law{padding:12px 14px;border-left:4px solid #b7c8ff;background:#090c13;border-radius:10px;font-weight:800}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:16px}.metric{background:#090c13;border:1px solid #293149;border-radius:16px;padding:13px}.metric b{display:block;font-size:1.45rem}.metric span{font-size:.8rem;color:#aab5cf}.tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 12px;position:sticky;top:0;z-index:4;background:#090b10ee;backdrop-filter:blur(14px)}.tab{border:1px solid #303950;background:#151a27;color:#dce4ff;border-radius:999px;padding:10px 14px;font-weight:850;white-space:nowrap}.tab.active{background:#edf1ff;color:#10131b}.panel{padding:16px;margin-bottom:14px}.view{display:none}.view.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}.body-card{background:#0b0e15;border:1px solid #293149;border-radius:16px;padding:13px}.body-card h3{margin:0 0 5px;font-size:1rem}.pill{display:inline-block;border:1px solid #39445f;background:#151b2a;border-radius:999px;padding:3px 8px;margin:2px;font-size:.72rem;color:#cbd6f6}.status{color:#9fe5ae;font-weight:800}.boundary{color:#ffd78d}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:10px}label{display:block;font-size:.8rem;font-weight:850;color:#b9c4df;margin-bottom:5px}input,textarea,select{width:100%;border:1px solid #35405a;background:#080b11;color:#f4f6ff;border-radius:14px;padding:12px}textarea{min-height:150px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9rem}.action{border:0;border-radius:999px;padding:11px 16px;background:#eef2ff;color:#10131b;font-weight:900;margin:4px 6px 4px 0}.secondary{background:#252d42;color:#eef2ff;border:1px solid #3c4867}.output{background:#05070b;border:1px solid #293149;border-radius:16px;padding:12px;white-space:pre-wrap;overflow:auto;max-height:560px;font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#dce6ff}.search{margin-bottom:12px}.empty{color:#aeb8cf;padding:20px;text-align:center}.small{font-size:.84rem;color:#aeb8cf}.pass{color:#8df0a8}.fail{color:#ff9999}@media(max-width:620px){.shell{padding:10px}.hero,.panel{border-radius:17px}.hero{padding:17px}.body-card{padding:11px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero">
+<div class="eyebrow">JM Coding Estate • Open First</div>
+<h1>JM EveryBody</h1>
+<p>Sovereign Compatibility &amp; Maximisation Fabric. Every coding body keeps its own identity; shared machinery looks up, connects and strengthens it without crowning a dictator.</p>
+<div class="law">Many complete bodies → one compatibility fabric → one maximiser above them, never a ruler over them.</div>
+<div class="metrics">
+<div class="metric"><b id="bodyCount">—</b><span>recovered entries</span></div>
+<div class="metric"><b id="adapterCount">—</b><span>exact native adapters</span></div>
+<div class="metric"><b>9</b><span>portable target lanes</span></div>
+<div class="metric"><b>0</b><span>supreme bodies crowned</span></div>
+</div>
+</section>
+<nav class="tabs" aria-label="Workbench sections">
+<button class="tab active" data-view="bodies">Bodies</button>
+<button class="tab" data-view="maximise">Maximise</button>
+<button class="tab" data-view="portable">Portable Compiler</button>
+<button class="tab" data-view="native">Native Front Ends</button>
+<button class="tab" data-view="receipt">Estate Receipt</button>
+</nav>
+<section id="bodies" class="panel view active">
+<h2>Recovered sovereign bodies</h2>
+<input id="bodySearch" class="search" placeholder="Search names, kinds, capabilities, status…" autocomplete="off">
+<div id="bodyGrid" class="grid"></div>
+</section>
+<section id="maximise" class="panel view">
+<h2>Lookup and maximisation</h2>
+<p class="small">The lead is selected for this request only. Supporting bodies remain independently named and traced.</p>
+<div class="row"><div><label for="goal">Goal</label><textarea id="goal">Build a mobile game runtime with parser, IR, trace, recovery and native delivery.</textarea></div><div><label for="caps">Capabilities, comma separated</label><textarea id="caps">game, parser, IR, runtime, trace, recovery, compatibility</textarea></div></div>
+<div class="row"><div><label for="targets">Targets</label><input id="targets" value="javascript, cpp_lineage, rust, wasm"></div><div><label for="constraints">Constraints</label><input id="constraints" value="Android, identity preservation, no supreme body"></div></div>
+<button id="resolveButton" class="action">Resolve strongest formation</button>
+<pre id="resolveOutput" class="output">No plan generated yet.</pre>
+</section>
+<section id="portable" class="panel view">
+<h2>JM portable parser → AST → IR → runtime</h2>
+<p class="small">This is the shared backend envelope. It never masquerades as every body’s native grammar.</p>
+<textarea id="portableSource">BODY cading
+VERSION 0.2
+SET counter 1
+ADD counter 2
+ROUTE cading.execute
+TRACE {"contact":"browser-workbench"}
+ASSERT counter 3
+DING {"state":"EXECUTED_NOT_CROWNED"}
+END</textarea>
+<button id="compileButton" class="action">Compile and execute</button>
+<pre id="compileOutput" class="output">Ready.</pre>
+</section>
+<section id="native" class="panel view">
+<h2>Exact recovered native front ends</h2>
+<p class="small">Bodies without exact grammar fail visibly. The workbench will not invent syntax to make a green badge.</p>
+<div class="row"><div><label for="nativeBody">Body adapter</label><select id="nativeBody"></select></div><div><label>Adapter state</label><input id="adapterState" readonly></div></div>
+<textarea id="nativeSource"></textarea>
+<button id="nativeButton" class="action">Parse, lower and execute</button>
+<pre id="nativeOutput" class="output">Ready.</pre>
+</section>
+<section id="receipt" class="panel view">
+<h2>Estate receipt</h2>
+<button id="auditButton" class="action">Generate current audit</button>
+<pre id="auditOutput" class="output">Ready.</pre>
+</section>
+</main>
+<script type="module">
+import { EverybodyMaximiser } from './everybody-maximiser.mjs';
+import { loadFederatedRegistry } from './registry-loader.mjs';
+import { compilePortable } from './compiler-core.mjs';
+import { compileNative, NATIVE_ADAPTERS } from './native-adapters.mjs';
+
+const $ = id => document.getElementById(id);
+const registry = await loadFederatedRegistry();
+const maximiser = new EverybodyMaximiser(registry);
+const examples = {
+  cading:'Zzza, za-zuh, zuzz = zeze.nwona.✓',
+  mmzg:'ZG[BOND] @ CH3 :: M−[stack:fold:governance] + I[fix] ⟐ F[connector-pass] → JM?[audit-pressure] → PΔ[tighten:body] → T✓[receipt:proof] → PALM[current-best]',
+  speakuals:'source route = native landing.✓'
+};
+
+$('bodyCount').textContent = registry.bodies.length;
+$('adapterCount').textContent = Object.keys(NATIVE_ADAPTERS).length;
+
+function csv(value){return value.split(',').map(item=>item.trim()).filter(Boolean)}
+function show(element,value){element.textContent=typeof value==='string'?value:JSON.stringify(value,null,2)}
+function bodyText(body){return [body.id,body.name,body.kind,body.status,body.law,...body.caps,...body.targets,...body.needs].join(' ').toLowerCase()}
+
+function renderBodies(filter=''){
+  const query=filter.trim().toLowerCase();
+  const bodies=registry.bodies.filter(body=>!query||bodyText(body).includes(query));
+  $('bodyGrid').replaceChildren(...bodies.map(body=>{
+    const card=document.createElement('article');card.className='body-card';
+    const title=document.createElement('h3');title.textContent=body.name;
+    const id=document.createElement('div');id.className='small';id.textContent=body.id;
+    const status=document.createElement('div');status.className='status';status.textContent=body.status;
+    const law=document.createElement('p');law.className='small';law.textContent=body.law;
+    const pills=document.createElement('div');
+    [body.kind,...body.caps.slice(0,5),...body.targets].forEach(text=>{const pill=document.createElement('span');pill.className='pill';pill.textContent=text;pills.append(pill)});
+    card.append(title,id,status,law,pills);return card;
+  }));
+  if(!bodies.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='No matching body.';$('bodyGrid').append(empty)}
+}
+renderBodies();
+$('bodySearch').addEventListener('input',event=>renderBodies(event.target.value));
+
+document.querySelectorAll('.tab').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(item=>item.classList.toggle('active',item===button));
+  document.querySelectorAll('.view').forEach(view=>view.classList.toggle('active',view.id===button.dataset.view));
+}));
+
+$('resolveButton').addEventListener('click',()=>{
+  try{show($('resolveOutput'),maximiser.resolve({goal:$('goal').value,capabilities:csv($('caps').value),targets:csv($('targets').value),constraints:csv($('constraints').value)}))}
+  catch(error){show($('resolveOutput'),{ok:false,error:error.message})}
+});
+
+$('compileButton').addEventListener('click',()=>{
+  try{show($('compileOutput'),compilePortable($('portableSource').value,registry))}
+  catch(error){show($('compileOutput'),{ok:false,error:error.message})}
+});
+
+Object.entries(NATIVE_ADAPTERS).forEach(([id,adapter])=>{const option=document.createElement('option');option.value=id;option.textContent=`${id} — adapter ${adapter.version}`;$('nativeBody').append(option)});
+function setNative(){const id=$('nativeBody').value;$('nativeSource').value=examples[id]??'';$('adapterState').value='EXACT TESTED SUBSET'}
+$('nativeBody').addEventListener('change',setNative);setNative();
+$('nativeButton').addEventListener('click',()=>{
+  try{show($('nativeOutput'),compileNative($('nativeBody').value,$('nativeSource').value,registry))}
+  catch(error){show($('nativeOutput'),{ok:false,error:error.message})}
+});
+
+$('auditButton').addEventListener('click',()=>show($('auditOutput'),{
+  ...maximiser.audit(),
+  exactNativeAdapters:Object.keys(NATIVE_ADAPTERS),
+  portableTargets:['JavaScript','TypeScript','C++11','C++14','C++17','C++20','C++23','Rust 2021','Rust 2024'],
+  truthBoundary:'Portable parity does not invent or overclaim unrecovered native grammar.'
+}));
+</script>
+</body>
+</html>

@@ -7,17 +7,18 @@ const maximiser = new EverybodyMaximiser(registry);
 const audit = maximiser.audit();
 
 assert.equal(audit.ok, true);
-assert.equal(audit.status, 'ALPHA_NOT_CROWN');
+assert.equal(audit.status, 'MAXIMAL_PORTABLE_NOT_CROWN');
 assert.equal(audit.noSupremeBody, true);
 assert.equal(audit.finalCountClaimed, false);
-assert.ok(audit.recoveredCount >= 76);
+assert.ok(audit.recoveredCount >= 100);
 assert.ok(audit.bodyAudits.every(body => body.implementationLane.length === 15));
 
 for (const requiredBody of [
   'cading', 'mmzg', 'jmlogic', 'flowtalk', 'mark-level-syntax', 'speakuals',
   'tokenbody', 'punctbody', 'routeframe', 'statefield', 'contactband',
   'theoc', 'cadenvm', 'routevm', 'jm-game-native-core', 'game-coding',
-  'hybrid-auto-compiler', 'bugg-error-library', 'coding-body-house'
+  'hybrid-auto-compiler', 'bugg-error-library', 'coding-body-house',
+  'parser', 'compiler', 'onebody-ir', 'noncoding-code', 'recorp', 'source-ledger'
 ]) {
   assert.ok(maximiser.getBody(requiredBody), `Missing recovered body: ${requiredBody}`);
 }
@@ -39,7 +40,7 @@ assert.ok(plan.invariants.includes('target emitter cannot silently govern source
 assert.ok(plan.invariants.includes('compatibility requires conformance and round-trip receipts'));
 
 const result = {
-  suite: 'JM EveryBody v0.1-alpha federated self-test',
+  suite: 'JM EveryBody v1.1 federated self-test',
   passed: true,
   recoveredBodies: audit.recoveredCount,
   finalCountClaimed: false,

@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        standard: ['98', '03', '11', '14', '17', '20', '23', '2c']
+        standard: ['98', '03', '11', '14', '17', '20', '23']
     steps:
       - name: Check out estate corridor
         uses: actions/checkout@v4
@@ -59,6 +59,28 @@ jobs:
         run: g++ -std=c++${{ matrix.standard }} -Wall -Wextra -Werror -pedantic coding-estate/everybody/generated/cpp/all_bodies.cpp -o /tmp/jm-everybody-cpp
       - name: Execute C++ whole-estate receipts
         run: /tmp/jm-everybody-cpp
+
+  cpp26_draft:
+    name: C++26 draft all-body Clang compile and runtime
+    needs: javascript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Generate individual body packs
+        run: node coding-estate/everybody/build-all.mjs
+      - name: Normalize generated runtime for all C++ standards
+        run: node coding-estate/everybody/cpp-all-standards.mjs
+      - name: Show Clang toolchain
+        run: clang++ --version
+      - name: Compile all bodies in C++26 draft mode
+        run: clang++ -std=c++2c -Wall -Wextra -Werror -pedantic coding-estate/everybody/generated/cpp/all_bodies.cpp -o /tmp/jm-everybody-cpp26
+      - name: Execute C++26 draft whole-estate receipts
+        run: /tmp/jm-everybody-cpp26
 
   rust:
     name: Rust edition ${{ matrix.edition }} all-body compile and runtime

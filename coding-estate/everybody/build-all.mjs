@@ -1,5 +1,5 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EverybodyMaximiser } from './everybody-maximiser.mjs';
 import { loadFederatedRegistry } from './registry-loader.mjs';
@@ -18,7 +18,7 @@ const ROOT = fileURLToPath(new URL('.', import.meta.url));
 const OUT = join(ROOT, 'generated');
 
 async function write(path, content) {
-  await mkdir(join(path, '..'), { recursive: true });
+  await mkdir(dirname(path), { recursive: true });
   await writeFile(path, content, 'utf8');
 }
 

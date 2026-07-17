@@ -19,10 +19,17 @@ jobs:
         with:
           node-version: '22'
       - name: Run readable ten-body native conformance
+        id: conformance
+        continue-on-error: true
+        run: node coding-estate/sovereign-ten/direct/native-selftest.mjs > sovereign-ten-receipt.json
+      - name: Upload conformance receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-ten-conformance-receipt
+          path: sovereign-ten-receipt.json
+      - name: Enforce conformance result
+        if: always()
         shell: bash
         run: |
-          set +e
-          node coding-estate/sovereign-ten/direct/native-selftest.mjs > /tmp/sovereign-ten-receipt.json
-          status=$?
-          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('/tmp/sovereign-ten-receipt.json','utf8')); console.log(JSON.stringify({passed:r.passed,failed:r.failed,digest:r.digest,failures:r.checks.filter(x=>!x.passed)},null,2));"
-          exit $status
+          node -e "const fs=require('fs'); const r=JSON.parse(fs.readFileSync('sovereign-ten-receipt.json','utf8')); console.log(JSON.stringify({passed:r.passed,failed:r.failed,digest:r.digest,failures:r.checks.filter(x=>!x.passed)},null,2)); if(r.failed) process.exit(1);"

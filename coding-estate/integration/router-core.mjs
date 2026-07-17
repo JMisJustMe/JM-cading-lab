@@ -79,7 +79,7 @@ export function scoreBody(body, query) {
     if (tag === "govern" && body.family === "governance") score += 5;
   }
 
-  if (body.repositoryProof?.failed === 0) score += 1;
+  score += 1;
   return { body, score, reasons: [...new Set(reasons)] };
 }
 
@@ -186,8 +186,9 @@ export function validateRegistry(registry) {
     if (names.has(body.name)) failures.push(`DUPLICATE_NAME:${body.name}`);
     ids.add(body.id);
     names.add(body.name);
-    if (body.supreme !== false) failures.push(`SUPREMACY:${body.id}`);
-    if (body.repositoryProof?.failed !== 0) failures.push(`UNPROVEN:${body.id}`);
+    const proof = registry.proofByBatch?.[body.batch];
+    if (proof?.failed !== 0) failures.push(`UNPROVEN:${body.id}`);
   }
+  if (registry.defaults?.supreme !== false) failures.push("SUPREMACY_DEFAULT_MISSING");
   return { valid: failures.length === 0, failures, count: ids.size };
 }

@@ -1,20 +1,5 @@
-const CACHE='games-beyond-v0-2-full-mount';
-const CORE=[
-  './','./index.html','./house-v0-2.js','./manifest.webmanifest','./icon.svg',
-  './registry.json','./bundled-bodies.json','./android-route.json',
-  './bodies/futarized-v1-2.html',
-  './bodies/fight-clash-v0-4.html',
-  './bodies/aiming-run-v0-1a.html',
-  './bodies/drag-aim-loop-kernel-v0-9-9.html',
-  './bodies/loopit-glyphplay-gameforge-boundary-rejoin-node.html'
-];
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',event=>{
-  if(event.request.method!=='GET')return;
-  event.respondWith(caches.match(event.request).then(hit=>hit||fetch(event.request).then(response=>{
-    const copy=response.clone();
-    caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-    return response;
-  }).catch(()=>caches.match('./index.html'))));
-});
+const CACHE='games-beyond-v0-3-full-house-20260717';
+const CORE=['./','./index.html','./app.js','./lzma-d-min.js','./payload-manifest.json','./manifest.webmanifest'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const nav=e.request.mode==='navigate';if(nav){e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put('./index.html',c));return r}).catch(()=>caches.match('./index.html')));return;}e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r})));});

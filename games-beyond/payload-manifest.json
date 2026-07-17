@@ -1,0 +1,39 @@
+{
+  "schema": "JM.GamesBeyondPayload/0.3",
+  "format": "lzma-alone+base64",
+  "parts": 1,
+  "partPattern": "GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt",
+  "compressedBytes": 703685,
+  "base64Chars": 938248,
+  "rawBytes": 3109318,
+  "compressedSha256": "260b92091399d7c4a277596874f2614cd9f87ba35abe84581714a10b661a5028",
+  "rawSha256": "0cd9fe7d67ef544dcc9108cd9a7d16333782ce3bde5a515ae3889db1bddcf2c5",
+  "bodyCount": 15,
+  "bodyIds": [
+    "fourfold-arena",
+    "tboys-core-clash",
+    "rim-route",
+    "crewbound-arena",
+    "house-siege",
+    "western-sniper",
+    "dead-reckon",
+    "cardbored",
+    "gameforge",
+    "glyphplay",
+    "glyphforge",
+    "game-native-core",
+    "gamecore",
+    "combound",
+    "quadze"
+  ],
+  "deliveryOptimization": {
+    "body": "fourfold-arena",
+    "scope": "embedded artwork only",
+    "scale": "50%",
+    "format": "WebP",
+    "quality": 75,
+    "originalExactHash": "3c0cff991e8e95bf647c303771c474f38bf15ae3b156fdeb76076892b050e31a",
+    "publicDeliveryHash": "388a16beba4a16227844c0c40e3239759b9cb49df038052d118ee76cb799af83",
+    "authority": "Untouched exact v0.3 source remains protected in the JM Estate / File Library."
+  }
+}

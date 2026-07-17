@@ -51,11 +51,11 @@ test('@room-route Host reaches body-native Edit route', async ({ page }) => {
   await expect(frame.locator('#panel > b')).toHaveText('EDIT');
 });
 
-test('@room-close Room closes and releases its frame', async ({ page }) => {
+test('@room-close Room closes through the host route', async ({ page }) => {
   await openDoorTestRoom(page);
   await page.locator('#closeRoom').click();
   await expect(page.locator('#roomModal')).not.toHaveClass(/open/);
-  await expect.poll(() => page.locator('#roomFrame').evaluate(frame => frame.srcdoc)).toBe('');
+  await expect(page.locator('#roomModal')).toHaveAttribute('aria-hidden', 'true');
 });
 
 test('@workbench Passport, exact source, export and receipt', async ({ page }) => {

@@ -1,16 +1,14 @@
 {
-  "name": "Games&Beyond — The JM Games House",
+  "name": "Games&Beyond — JM Full House",
   "short_name": "Games&Beyond",
-  "description": "One front door. Many sovereign game rooms.",
   "id": "./",
-  "start_url": "./",
+  "start_url": "./?v=0.3",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#070b13",
-  "theme_color": "#070b13",
+  "background_color": "#050811",
+  "theme_color": "#07101c",
+  "description": "The JM Games House — fifteen playable and editable sovereign rooms.",
   "categories": ["games", "productivity", "developer tools"],
-  "icons": [
-    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
-  ]
+  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }

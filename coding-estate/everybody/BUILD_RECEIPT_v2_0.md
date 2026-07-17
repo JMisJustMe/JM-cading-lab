@@ -135,13 +135,18 @@ generated/canonical-native-v2/
 └── INDEX.json
 ```
 
-The complete generated portable and current-native estate is preserved by the GitHub Actions artifact:
+The complete generated portable and current-native estate is preserved by the exact final release-head GitHub Actions artifact:
 
-```text
-jm-everybody-v2-100-body-current-native-packs
-```
+- **Name:** `jm-everybody-v2-100-body-current-native-packs`
+- **Artifact ID:** `8403768818`
+- **Size:** `816036` bytes
+- **SHA-256:** `7a4d8f4a5dacd7855bc9dfdec918018570171cdc4160406b9cfa5899e2b043d3`
+- **Created:** 17 July 2026 at 10:14:37 UTC
+- **Retention expiry:** 16 August 2026 at 10:14:35 UTC
+- **Proven release head:** `ba790c5148d2ffa57b0e33c7fb6a541d76fe0cbc`
+- **Merged release commit:** `78108bdc5bcce0e37ca29b8a7b6715a5dbe98160`
 
-The final release-head artifact ID, digest and retention date are recorded after the final green release run.
+All three release-head workflows passed: canonical-native v2 completion, maximal equalisation and full 13-target conformance.
 
 ## Open-first
 

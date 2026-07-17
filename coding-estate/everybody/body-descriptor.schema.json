@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "jm.everybody.body-descriptor/0.1",
+  "title": "JM EveryBody Sovereign Body Descriptor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "kind", "status", "law", "caps", "targets", "needs", "implementation"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]*$"},
+    "name": {"type": "string", "minLength": 1},
+    "kind": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1},
+    "law": {"type": "string", "minLength": 20},
+    "aliases": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "lineage": {"type": "array", "items": {"type": "string"}},
+    "caps": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "targets": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "needs": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "implementation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "lexer", "parser", "ast", "semantics", "body_ir", "interop", "runtime", "debugger", "tests", "emitters", "receipt"],
+      "properties": {
+        "source": {"$ref": "#/$defs/stage"},
+        "lexer": {"$ref": "#/$defs/stage"},
+        "parser": {"$ref": "#/$defs/stage"},
+        "ast": {"$ref": "#/$defs/stage"},
+        "semantics": {"$ref": "#/$defs/stage"},
+        "body_ir": {"$ref": "#/$defs/stage"},
+        "interop": {"$ref": "#/$defs/stage"},
+        "runtime": {"$ref": "#/$defs/stage"},
+        "debugger": {"$ref": "#/$defs/stage"},
+        "tests": {"$ref": "#/$defs/stage"},
+        "emitters": {
+          "type": "object",
+          "required": ["javascript", "typescript", "cpp", "rust", "wasm", "other"],
+          "properties": {
+            "javascript": {"$ref": "#/$defs/stage"},
+            "typescript": {"$ref": "#/$defs/stage"},
+            "cpp": {"$ref": "#/$defs/stage"},
+            "rust": {"$ref": "#/$defs/stage"},
+            "wasm": {"$ref": "#/$defs/stage"},
+            "other": {"type": "array", "items": {"$ref": "#/$defs/namedStage"}}
+          }
+        },
+        "receipt": {"$ref": "#/$defs/stage"}
+      }
+    }
+  },
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "proof"],
+      "properties": {
+        "state": {"enum": ["unrecovered", "named", "specified", "prototype", "working", "device_proven", "production"]},
+        "version": {"type": ["string", "null"]},
+        "files": {"type": "array", "items": {"type": "string"}},
+        "features": {"type": "array", "items": {"type": "string"}},
+        "missing": {"type": "array", "items": {"type": "string"}},
+        "proof": {"type": "array", "items": {"type": "string"}},
+        "lossy": {"type": "boolean", "default": false}
+      }
+    },
+    "namedStage": {
+      "allOf": [
+        {"$ref": "#/$defs/stage"},
+        {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}}}
+      ]
+    }
+  }
+}

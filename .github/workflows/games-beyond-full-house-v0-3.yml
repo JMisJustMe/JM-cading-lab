@@ -1,0 +1,97 @@
+name: Games&Beyond Full House v0.3 Proof
+
+on:
+  push:
+    branches:
+      - agent/games-beyond-full-house-v0-3-live
+      - main
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/games-beyond-full-house-v0-3.yml'
+  pull_request:
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/games-beyond-full-house-v0-3.yml'
+
+jobs:
+  full-house-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify payload and fifteen mounted bodies
+        shell: python
+        run: |
+          import base64, hashlib, json, lzma, pathlib, sys
+
+          root = pathlib.Path('games-beyond')
+          manifest = json.loads((root / 'payload-manifest.json').read_text(encoding='utf-8'))
+          payload_path = root / manifest['partPattern']
+          if not payload_path.exists():
+              raise SystemExit(f'MISSING_PAYLOAD: {payload_path}')
+
+          b64 = ''.join(payload_path.read_text(encoding='utf-8').split())
+          if len(b64) != manifest['base64Chars']:
+              raise SystemExit(f'BASE64_LENGTH: {len(b64)} != {manifest["base64Chars"]}')
+
+          compressed = base64.b64decode(b64, validate=True)
+          if len(compressed) != manifest['compressedBytes']:
+              raise SystemExit(f'COMPRESSED_SIZE: {len(compressed)} != {manifest["compressedBytes"]}')
+
+          compressed_hash = hashlib.sha256(compressed).hexdigest()
+          if compressed_hash != manifest['compressedSha256']:
+              raise SystemExit(f'COMPRESSED_SHA: {compressed_hash}')
+
+          raw = lzma.decompress(compressed, format=lzma.FORMAT_ALONE)
+          if len(raw) != manifest['rawBytes']:
+              raise SystemExit(f'RAW_SIZE: {len(raw)} != {manifest["rawBytes"]}')
+
+          raw_hash = hashlib.sha256(raw).hexdigest()
+          if raw_hash != manifest['rawSha256']:
+              raise SystemExit(f'RAW_SHA: {raw_hash}')
+
+          house = json.loads(raw.decode('utf-8'))
+          bodies = house.get('bodies', [])
+          ids = [body.get('id') for body in bodies]
+          expected = manifest['bodyIds']
+
+          if len(bodies) != manifest['bodyCount']:
+              raise SystemExit(f'BODY_COUNT: {len(bodies)} != {manifest["bodyCount"]}')
+          if ids != expected:
+              raise SystemExit(f'BODY_ORDER_OR_IDS: {ids}')
+
+          bad = []
+          for body in bodies:
+              html = body.get('html', '')
+              if not html or ('<html' not in html.lower() and '<!doctype' not in html.lower()):
+                  bad.append(body.get('id'))
+          if bad:
+              raise SystemExit(f'INVALID_HTML_BODIES: {bad}')
+
+          print(json.dumps({
+              'result': 'PACKAGE_DING',
+              'bodyCount': len(bodies),
+              'bodyIds': ids,
+              'compressedSha256': compressed_hash,
+              'rawSha256': raw_hash
+          }, indent=2))
+
+      - name: Verify public shell routes
+        shell: python
+        run: |
+          import pathlib
+          root = pathlib.Path('games-beyond')
+          index = (root / 'index.html').read_text(encoding='utf-8')
+          app = (root / 'app.js').read_text(encoding='utf-8')
+          worker = (root / 'sw.js').read_text(encoding='utf-8')
+          required = [
+              'HOUSE', 'ROOMS', 'EDIT', 'PROOF',
+              'PLAY BODY', 'SAVE REVISION', 'UNDO',
+              'RESTORE SOURCE', 'EXPORT FULL HOUSE'
+          ]
+          missing = [item for item in required if item not in index and item not in app]
+          if missing:
+              raise SystemExit(f'MISSING_ROUTES: {missing}')
+          if 'games-beyond-v0-2' in worker:
+              raise SystemExit('STALE_V0_2_CACHE')
+          print('PUBLIC_SHELL_DING')

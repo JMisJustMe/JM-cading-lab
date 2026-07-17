@@ -1,0 +1,48 @@
+name: JM EveryBody v1.1 Maximal Equalisation
+
+on:
+  push:
+    branches:
+      - jm-everybody-v1.1-maximal-equalisation
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/**'
+      - '.github/workflows/jm-everybody-v1-1-equalisation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  maximal_equalisation:
+    name: 100-body recovery, native and portable conformance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out estate corridor
+        uses: actions/checkout@v4
+      - name: Use current Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Run full v1.1 suite
+        working-directory: coding-estate/everybody
+        run: npm test
+      - name: Build all registered body packs
+        working-directory: coding-estate/everybody
+        run: npm run build
+      - name: Execute all JavaScript bodies
+        run: node coding-estate/everybody/generated/js/all-bodies.mjs
+      - name: Execute all TypeScript bodies
+        run: node --experimental-strip-types coding-estate/everybody/generated/ts/all-bodies.ts
+      - name: Execute all WebAssembly bodies
+        run: node coding-estate/everybody/generated/wasm/all-bodies.mjs
+      - name: Regenerate the six-axis completion matrix after pack generation
+        working-directory: coding-estate/everybody
+        run: npm run equalise
+      - name: Preserve v1.1 matrices and 100-body packs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-everybody-v1-1-100-body-maximal-packs
+          path: |
+            coding-estate/everybody/generated
+          if-no-files-found: error
+          retention-days: 30

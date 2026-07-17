@@ -65,10 +65,11 @@ Codifying
 
 The route creates and synchronises a door record, computes its force, authorises it from a rooted premise, executes its cadence in verified Caden bytecode, selects the correct jump, proves the compilation stages, runs a Ding-bearing JM machine and transfers the result into another language body without erasing either identity.
 
-## Local proof state
+## Repository proof state
 
-- Native conformance: **36 passed / 0 failed**
+- GitHub native conformance: **36 passed / 0 failed**
 - Conformance digest: `09bc53af70e01ff1`
+- Artifact SHA-256: `458b08df89f9565d8d9a183d3cce615c6dec9d9f543010362e0daf06372b4cee`
 - Invalid-source rejection: proven
 - Recovery and rollback: proven
 - Deterministic repeated execution: proven

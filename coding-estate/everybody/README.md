@@ -1,130 +1,149 @@
 # JM EveryBody — Sovereign Compatibility & Maximisation Fabric
 
-**Version:** v0.1-alpha  
-**Status:** BUILD BODY / NOT CROWNED / FIRST CONVERGENCE SPINE
+**Version:** v1.0 — Portable Convergence Release  
+**Status:** COMPLETE FEDERATED TOOLCHAIN / RELEASED BODY / NATIVE RECOVERY REMAINS OPEN
 
 ## Purpose
 
-JM EveryBody is the new compatibility and maximisation body formed as every recovered JM coding body receives its own complete implementation lane.
+JM EveryBody is the compatibility and maximisation body that lets every recovered JM coding body remain sovereign while sharing proven parser, IR, runtime, target, testing and receipt machinery.
 
-It is **not** a supreme replacement language. It does not flatten Cading, MMZG, JMLogic, FlowTalk, Mark-Level Syntax, Speakuals, Kading, Quadze, J’MP/JAMP, Codifying/Askual, Kocodifying, OS_CODING, Game-CODING, FormeULA/MarkeULA, Builder Lads, TokenBody, PunctBody, RouteFrame, StateField, ContactBand, Root Method, PrimeBody, TheoC, CadenVM, RouteVM, JMVM, RouteOS, CodeHand or any other body into generic syntax.
+It is **not** a supreme replacement language. Cading, MMZG, JMLogic, FlowTalk, Mark-Level Syntax, Speakuals, Kading, Quadze, J’MP/JAMP, Codifying/Askual, Kocodifying, OS_CODING, Game-CODING, FormeULA/MarkeULA, Builder Lads, TokenBody, PunctBody, RouteFrame, StateField, ContactBand, Root Method, PrimeBody, TheoC, CadenVM, RouteVM, JMVM, RouteOS, CodeHand and every other registered body retain their own names, laws, lineages and source authority.
 
-Its job is to:
+> **Many complete bodies → one compatibility fabric → one maximiser above them, never a dictator over them.**
 
-1. look up every available coding body;
-2. understand what that body uniquely expresses;
-3. inspect its parser, AST, IR, runtime, VM, bridge, emitter, debugger, tests and receipts;
-4. select the strongest compatible organs for the present task;
-5. preserve body identity and source maps through composition;
-6. maximise the body rather than silently replacing it;
-7. emit through JavaScript, C++ families, Rust and later targets without allowing the target language to become the authority.
+## v1.0 completion receipt
 
-## Governing law
+The release federates **76 separately classified recovered entries**. Every registered entry now receives an individually generated portable body pack containing:
 
-> Many complete bodies → one compatibility fabric → one new maximiser body above them, never a dictator over them.
+- portable source fixture;
+- lexer/parser contact through the JM portable language;
+- AST and semantic validation;
+- body-identified portable IR;
+- runtime execution and Ding/no-Ding receipt;
+- JavaScript module;
+- executable TypeScript module;
+- C++ header/runtime body;
+- Rust module/runtime body;
+- WebAssembly binary receipt;
+- build-report and estate index inclusion.
 
-## Recovered registry state
+The complete estate passed these **13 execution lanes**:
 
-The federated registry currently carries **76 separately classified entries** across two machine-readable registry bodies.
+1. JavaScript;
+2. TypeScript;
+3. WebAssembly;
+4. C++98;
+5. C++03;
+6. C++11;
+7. C++14;
+8. C++17;
+9. C++20;
+10. C++23;
+11. C++26 draft mode through Clang `c++2c`;
+12. Rust 2021 edition;
+13. Rust 2024 edition.
 
-This includes the first compiler/runtime/engine sweep plus recovered bodies and organs from:
+All C++ lanes compile with strict warnings treated as errors. Both Rust lanes compile with warnings denied. Every target then executes the whole-estate receipt body rather than stopping at source generation.
 
-- Starter 13 / CodeHouse;
-- Finger One and Finger Two;
-- the inner coding spine;
-- the 33-room Coding Body House lineage;
-- JM Coding Body House — Intuitive Builder v0.3 with 46 rooms;
-- Cading Lab, runtime and engine lineages.
+## Sovereign native front ends
 
-**76 is not the final estate count.** Some entries are languages, some are syntax or parser organs, some are runtimes/VMs, some are engines/adapters, and some are authoring or diagnostic houses. They stay separately classified so neither aliases nor containers are falsely treated as one undifferentiated language.
+The portable compiler is a shared delivery envelope. It does **not** pretend to be the historical native grammar of every coding body.
 
-## Every individual body receives this lane
+Exact recovered and tested native adapters currently exist for:
 
-```text
-native source / marks / gestures
-→ lexical specification
-→ tokenizer or lexer
-→ parser
-→ native AST
-→ semantic, type, effect, route and permission checks
-→ body-specific IR
-→ compatibility adapter into shared interop IR
-→ body-specific runtime or VM
-→ debugger, trace and recovery
-→ unit, conformance, fuzz, property and round-trip tests
-→ JavaScript / TypeScript host targets
-→ C++ standard-family targets
-→ Rust targets
-→ WebAssembly and wider targets
-→ Ding / no-Ding receipt
-```
+- **Cading** — travel chains, Speakuals landing and `.✓` completion;
+- **MMZG / MorseMinus ZeroGrip** — ZeroGrip, channel, signal, focus, field, pressure, Path Delta, trace and PALM grammar;
+- **Speakuals** — source-to-landing relation with validated completion.
 
-Shared tooling may implement reusable machinery, but every body must supply its own descriptor, grammar laws, semantics, lowering rules, runtime behaviour and proof suite.
+A body without an exact recovered adapter returns `NATIVE_ADAPTER_NOT_RECOVERED`. It is never given invented syntax merely to produce a green test.
 
 ## Architecture
 
-### 1. Sovereign body front ends
+### Registry federation
 
-Each body owns its grammar and meaning. A shared parser toolkit may be used internally, but the output must be a body-native AST with body-native diagnostics.
+Two extension-safe registries currently preserve 76 bodies, organs, runtimes, VMs, engines, adapters, authoring houses and diagnostics. **Seventy-six is the recovered count, not a claim that no additional historical body exists.** New recoveries append without replacing earlier entries.
 
-### 2. Body-specific IRs
+### Lookup and maximisation
 
-Cading IR, MMZG IR, TheoC IR, Quadze game IR, FlowTalk flow graphs, Root Method bytecode, Game-CODING gameplay IR and other IRs remain individually inspectable. They are not prematurely collapsed into one lowest-common-denominator tree.
+The maximiser scores candidate bodies using:
 
-### 3. JM Interop IR
-
-Interop occurs through explicit adapters. The shared IR carries:
-
-- body identity and version;
-- original source spans and symbols;
-- route, state, effect, permission and trace metadata;
-- lossless/lossy conversion flags;
-- required runtime capabilities;
-- target constraints;
-- recovery and Ding contracts.
-
-### 4. Runtime federation
-
-A body may execute through its own runtime, CadenVM/JMVM/RouteVM, RouteCore Native, JM GAME NATIVE CORE, a game engine adapter, or a generated native runtime. JM EveryBody resolves rather than assumes.
-
-### 5. Lookup and maximisation
-
-The resolver scores candidate bodies and organs by:
-
-- exact capability contact;
 - native semantic fit;
-- proven parser/runtime/receipt maturity;
+- requested capability contact;
+- parser/runtime/receipt maturity;
 - target support;
 - compatibility confidence;
-- identity-preservation strength;
-- performance and device constraints;
-- reversibility and recovery.
+- identity preservation;
+- performance/device constraints;
+- recovery and reversibility.
 
-A plan may have one lead body and several supporting bodies. “Lead” means best fit for this task, not supreme language.
+A body may lead one task and support another. “Lead” means strongest fit for that request only; it never means supreme language.
 
-## Target ladder
+### Portable compiler and runtime
 
-The initial target order is:
+```text
+BODY + VERSION
+→ lexer
+→ parser
+→ portable AST
+→ body-aware semantic checks
+→ body-identified portable IR
+→ runtime state / route / trace / assertion / Ding
+→ JavaScript / TypeScript / C++ / Rust / WebAssembly
+→ receipt
+```
 
-1. JavaScript and TypeScript host/runtime parity;
-2. WebAssembly bridge where browser and native execution need a shared binary route;
-3. C++11/14/17/20 compatibility, C++23 primary published-standard parity, and a separately labelled C++26 draft lane;
-4. Rust stable and edition-aware targets;
-5. C, JVM/Java/Kotlin, .NET/C#, Swift, Go, Python, Lua, GDScript, shader targets and other relevant backends;
-6. native Android, desktop, server, embedded and GPU routes where earned.
+The portable IR retains body id, body name, kind, status, native law, source authority, identity-preservation contract and lossy-conversion state.
 
-Target support must be recorded per body and per feature. “Can print source code” is not equivalent to semantic parity or a working native runtime.
+### Native completion lane for every body
 
-## Proof boundary for v0.1-alpha
+```text
+exact source recovery
+→ lexical specification
+→ tokenizer / lexer
+→ native parser
+→ body-native AST
+→ semantic, type, effect, route and permission checks
+→ body-specific IR
+→ explicit interop adapter
+→ body-specific runtime or VM
+→ debugger, trace and recovery
+→ conformance, fuzz, property and round-trip tests
+→ target emitters
+→ Ding / no-Ding receipt
+```
 
-This first body proves:
+This lane is permanently represented in the descriptor schema and audit. Shared organs may accelerate implementation, but they may not erase the body-specific front end.
 
-- a sovereign-body registry and extension format;
-- a federated recovered set of 76 individually classified bodies/organs/houses;
-- a machine-readable per-body implementation lane;
-- a compatibility lookup and maximisation runtime;
-- explicit no-supreme-body governance;
-- target-family planning;
-- a CI conformance route.
+## Use paths
 
-It does **not** yet prove that every historical body has been recovered, that all front ends and runtimes are complete, or that C++/Rust parity has been achieved. Those remain implementation passes, not paperwork claims.
+- `index.html` — mobile-first open-first workbench;
+- `cli.mjs` — audit, list, resolve, compile, native-adapter and build commands;
+- `package.json` — test/build command surface;
+- `build-all.mjs` — generates all 76 body packs;
+- `generated/` — produced release packs during build/CI;
+- `BUILD_RECEIPT_v1_0.md` — final release receipt;
+- `OPEN_FIRST.md` — plain use and test route.
+
+## Honest completion boundary
+
+### Complete in v1.0
+
+- recovered 76-entry sovereign registry federation;
+- compatibility lookup and maximisation runtime;
+- shared portable lexer, parser, AST, semantics, IR and runtime;
+- individual portable pack generation for every registered entry;
+- JavaScript, TypeScript, WebAssembly, C++98–C++23, C++26-draft, Rust 2021 and Rust 2024 execution parity for the portable receipt body;
+- exact tested native subsets for Cading, MMZG and Speakuals;
+- visible refusal for unrecovered native grammars;
+- CLI, browser workbench, CI matrix and durable artifact route.
+
+### Not falsely claimed
+
+- that all historical coding bodies have already been recovered;
+- that all 76 entries are the same kind of language;
+- that every body’s complete historical native grammar and semantics are already known;
+- that a portable execution proof equals universal native-language parity;
+- that C++26 is a published-final standard;
+- that JM EveryBody replaces or outranks its member bodies.
+
+**The convergence fabric is finished. The estate remains living.**

@@ -35,6 +35,13 @@ jobs:
         run: node --experimental-strip-types coding-estate/everybody/generated/ts/all-bodies.ts
       - name: Execute all generated WebAssembly binaries
         run: node coding-estate/everybody/generated/wasm/all-bodies.mjs
+      - name: Preserve generated release packs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-everybody-76-body-packs
+          path: coding-estate/everybody/generated
+          if-no-files-found: error
+          retention-days: 30
 
   cpp:
     name: C++${{ matrix.standard }} all-body compile and runtime

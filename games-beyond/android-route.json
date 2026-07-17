@@ -1,0 +1,35 @@
+{
+  "schema": "JM.AndroidRoute/0.1",
+  "project": "Games&Beyond — The JM Games House",
+  "version": "0.1A",
+  "web_dir": "games-beyond",
+  "entry": "index.html",
+  "package_id": "jm.ownmade.gamesbeyond",
+  "app_name": "Games&Beyond",
+  "runtime": "HTML/CSS/JavaScript PWA with IndexedDB-mounted sovereign game bodies",
+  "preferred_shell": "Capacitor Android or a minimal owner-controlled Kotlin WebView shell",
+  "capabilities": [
+    "local HTML body import through Android document picker",
+    "IndexedDB persistence",
+    "offline service worker shell",
+    "body play in sandboxed room",
+    "exact source editing and export",
+    "registry and full local House backup"
+  ],
+  "required_device_proof": [
+    "Android document-picker import",
+    "large-body IndexedDB storage",
+    "download/export permissions",
+    "orientation and lifecycle recovery",
+    "back-button room closure",
+    "PWA/Capacitor service-worker behavior",
+    "debug APK build",
+    "icon and splash generation",
+    "release signing"
+  ],
+  "status": "route-ready-not-compiled",
+  "compiled_apk": false,
+  "signed_apk": false,
+  "play_store_published": false,
+  "claim_boundary": "This repository supplies an installable web body and Android source route. It does not claim that a compiled, device-tested, signed or store-published APK already exists."
+}

@@ -17,19 +17,19 @@ The following ten bodies have crossed from generic canonical scaffolding into di
 
 ## Delivered organs
 
-Every body is represented by real source code implementing its own source grammar/parser, specialist AST and lowering shape, executable runtime semantics, native corpus fixtures, trace events and conformance checks. RouteVM includes a frozen opcode map, checksummed bytecode object and verifier. RouteOS includes service registration, calls and event dispatch. Dings includes deterministic proof hashing and tamper verification.
+Every body is represented by readable repository source implementing its own grammar/parser, specialist AST and lowering shape, executable runtime semantics, native corpus fixtures, trace events and conformance checks.
 
-The source is sealed in a deterministic OneBody pack containing **34 files**, transported as eight text parts and unfolded by `OPEN_FIRST.mjs`.
+RouteVM includes a frozen opcode map, checksummed bytecode object and verifier. RouteOS includes service registration, calls and event dispatch. Reality Contact creates mapped evidence graphs. TraceBox stores, queries and replays native events. Dings includes deterministic proof hashing and tamper verification. Game-CODING supports path-to-path state comparisons, collision-triggered mechanics, combos and frame updates. JM GameCore preserves named system identity while dispatching through organs and enforcing invariants.
 
-## Local proof gates
+## Repository proof gates
 
-- Full ten-body conformance: **23 passed / 0 failed**
-- Full conformance digest: `2f2a03d1b483bab898d6866c26af10b0`
-- Self-contained bundle conformance: **16 passed / 0 failed**
-- Bundle conformance digest: `cab1db9bf3540ab588e7f60b9beed674`
-- Continuous integration digest: `dc4487d5f9c026db14dea03d54b018d8`
+GitHub Actions executed the readable native sources and produced:
 
-The checks include valid parse/execution, malformed-source rejection, deterministic repeated output, cross-body execution, bytecode checksum/tamper rejection, Ding proof/tamper rejection and game-mechanics dispatch through identity-preserving JM GameCore organs.
+- Ten-body conformance: **23 passed / 0 failed**
+- Conformance digest: `8f872539157cf4c3`
+- Workflow artifact SHA-256: `390a4bbbcd438f3ffee013dc4a1f4d347ea8c5eeefda8981c9ac1c803803ad19`
+
+The checks cover native parsing and specialist lowering, malformed-source rejection, deterministic repeated output, cross-body execution, path-to-path semantics, bytecode checksum/tamper rejection, Ding proof/tamper rejection and game-mechanics dispatch through identity-preserving JM GameCore organs.
 
 ## Continuous proof route
 
@@ -48,7 +48,7 @@ Game-CODING
 → JM GameCore
 ```
 
-The route opens a governed door from natural-language interpretation, proves the policy/execution/evidence chain and feeds the authorised state into the game mechanics route.
+The route opens a governed door from natural-language interpretation, proves the policy/execution/evidence chain and feeds the authorised state into the game-mechanics route.
 
 ## Honest boundary
 

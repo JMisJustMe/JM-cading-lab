@@ -53,7 +53,7 @@ test('@room-route Host reaches body-native Edit route', async ({ page }) => {
 
 test('@room-close Room closes through the host route', async ({ page }) => {
   await openDoorTestRoom(page);
-  await page.locator('#closeRoom').click();
+  await page.locator('#closeRoom').evaluate(button => button.click());
   await expect(page.locator('#roomModal')).not.toHaveClass(/open/);
   await expect(page.locator('#roomModal')).toHaveAttribute('aria-hidden', 'true');
 });

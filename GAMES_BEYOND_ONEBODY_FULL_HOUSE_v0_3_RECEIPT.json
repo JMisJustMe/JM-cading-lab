@@ -1,0 +1,48 @@
+{
+  "schema": "JM.GamesBeyondOneBodyDeliveryReceipt/0.3",
+  "name": "Games&Beyond \u2014 OneBody Full Exact-Body House v0.3",
+  "builtAt": "2026-07-17",
+  "sourceFile": "IMPORT_THIS_GAMES_BEYOND_FULL_HOUSE_v0_3.json",
+  "sourceRawSha256": "babe4ccaa76cafac52fc1d22f9be8d1142c01cd76d4ccb1d620ead0735d0723c",
+  "sourceGzipSha256": "cf4a16005ae0a46303e7399ba7cce21f1286e285107430d8dfeea2ac2ab20caa",
+  "mountedBodyCount": 15,
+  "bodyIds": [
+    "fourfold-arena",
+    "tboys-core-clash",
+    "rim-route",
+    "crewbound-arena",
+    "house-siege",
+    "western-sniper",
+    "dead-reckon",
+    "cardbored",
+    "gameforge",
+    "glyphplay",
+    "glyphforge",
+    "game-native-core",
+    "gamecore",
+    "combound",
+    "quadze"
+  ],
+  "excludedSourceSelectionHolds": [
+    "playform",
+    "jm-studios"
+  ],
+  "delivery": {
+    "oneBody": true,
+    "siblingRuntimeDependencies": 0,
+    "iframeGameBay": false,
+    "playRoute": "embedded exact HTML -> Blob URL -> same tab/new tab",
+    "editRoute": "embedded source editor + IndexedDB revisions",
+    "recoveryRoute": "restore exact pack + full JSON export",
+    "publicGitHubRoute": "not updated by this receipt"
+  },
+  "checks": {
+    "jsonParsed": true,
+    "schemaMatch": true,
+    "allMounted": true,
+    "allExactHtml": true,
+    "nodeSyntax": "PASS (embedded loader logic independently syntax-checked in build workspace)",
+    "browserClickTest": "BLOCKED_BY_WORKSPACE_ADMIN_POLICY_FOR_LOCAL_AND_FILE_URLS"
+  },
+  "result": "ONEBODY_PACKAGE_DING_WITH_BROWSER_SURFACE_HOLD"
+}

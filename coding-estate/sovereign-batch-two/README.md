@@ -37,8 +37,14 @@ node coding-estate/sovereign-batch-two/direct/native-selftest.mjs
 Readable source lives under `coding-estate/sovereign-batch-two/direct/`:
 
 - `native-core.mjs` — low-level values, expressions, state paths, actions, traces and receipts
-- `language-shape-native.mjs` — Kading, J’MP, Codifying, Kocodifying and FormeULA
-- `runtime-bridge-native.mjs` — Root Method, CadenVM, THEO/PrimeBody, JMVM and Polyglot Bridge
+- `kading-jmp-native.mjs` — Kading and J’MP grammars, graphs and runtimes
+- `codifying-kocodifying-native.mjs` — typed codices and two-way binding semantics
+- `formeula-native.mjs` — parameterised formula parsing, dependency lowering and evaluation
+- `language-shape-native.mjs` — language-body integration surface
+- `root-caden-native.mjs` — Root Method and verified CadenVM bytecode
+- `prime-jmvm-native.mjs` — THEO/PrimeBody stage proof and JMVM
+- `polyglot-native.mjs` — identity-preserving translation contracts
+- `runtime-bridge-native.mjs` — compiler/VM integration surface
 - `native-corpus.mjs` — real body-native source fixtures
 - `native-selftest.mjs` — formation, rejection, tamper, recovery and integration proof gates
 

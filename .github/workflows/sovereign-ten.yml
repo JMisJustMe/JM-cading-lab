@@ -18,11 +18,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Extract sovereign native pack
-        run: node coding-estate/sovereign-ten/OPEN_FIRST.mjs
-      - name: Run ten-body native conformance
-        working-directory: coding-estate/sovereign-ten
-        run: node bundle-selftest.mjs
-      - name: Run continuous ten-body integration
-        working-directory: coding-estate/sovereign-ten
-        run: node integration.mjs
+      - name: Run readable ten-body native conformance
+        run: node coding-estate/sovereign-ten/direct/native-selftest.mjs

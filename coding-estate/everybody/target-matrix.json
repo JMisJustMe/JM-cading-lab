@@ -1,0 +1,50 @@
+{
+  "schema": "jm.everybody.targets/0.1",
+  "verified_on": "2026-07-17",
+  "law": "Targets host and deliver JM bodies; targets do not become source authority.",
+  "targets": [
+    {
+      "family": "JavaScript / ECMAScript",
+      "primary": "ECMAScript 2026",
+      "compatibility_lanes": ["ES2015", "ES2018", "ES2020", "ES2022", "ES2024", "ES2025", "ES2026"],
+      "experimental": "TC39 living specification features only after Stage 4 and explicit feature tests",
+      "proof_required": ["Test262-informed syntax/runtime checks", "browser and server-host matrices", "source maps", "round-trip JM IR tests"]
+    },
+    {
+      "family": "TypeScript",
+      "primary": "edition selected per build after official-current verification",
+      "compatibility_lanes": ["strict type declarations", "ESM", "declaration output", "JavaScript parity"],
+      "experimental": "nightly only in a separately labelled lane",
+      "proof_required": ["tsc strict pass", "declaration tests", "runtime parity with emitted JavaScript"]
+    },
+    {
+      "family": "C++",
+      "primary": "C++23 / ISO/IEC 14882:2024",
+      "compatibility_lanes": ["C++11", "C++14", "C++17", "C++20", "C++23"],
+      "experimental": "C++26 Draft International Standard lane; never reported as published-final until ISO publication",
+      "compiler_matrix": ["Clang", "GCC", "MSVC"],
+      "proof_required": ["compile on supported standard modes", "sanitisers", "ABI tests", "deterministic IR fixtures", "native runtime conformance"]
+    },
+    {
+      "family": "Rust",
+      "primary": "Rust 1.97.1 stable with Rust 2024 edition awareness",
+      "compatibility_lanes": ["Rust 2021 edition", "Rust 2024 edition", "stable toolchain"],
+      "experimental": "beta and nightly only in separately labelled CI lanes",
+      "proof_required": ["cargo check", "cargo test", "clippy", "rustfmt", "Miri where applicable", "FFI and unsafe-code audit"]
+    },
+    {
+      "family": "WebAssembly",
+      "primary": "versionless feature-tested core target",
+      "compatibility_lanes": ["MVP-compatible core", "JavaScript bridge", "WASI", "component adapters"],
+      "experimental": "individual proposals only after runtime feature detection",
+      "proof_required": ["binary validation", "host-call tests", "determinism checks", "JS/native parity", "sandbox permission receipts"]
+    },
+    {
+      "family": "Later backends",
+      "primary": "capability-driven rather than prestige-driven",
+      "compatibility_lanes": ["C", "JVM/Java/Kotlin", ".NET/C#", "Swift", "Go", "Python", "Lua", "GDScript", "WGSL/GLSL/SPIR-V", "native Android", "desktop", "server", "embedded"],
+      "experimental": "each backend begins as adapter proof, then semantic parity, then production target",
+      "proof_required": ["body-specific conformance", "interop ABI", "source maps", "runtime parity", "performance and device QA"]
+    }
+  ]
+}

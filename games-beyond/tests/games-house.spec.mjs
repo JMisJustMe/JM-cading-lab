@@ -55,7 +55,7 @@ test('@room-close Room closes and releases its frame', async ({ page }) => {
   await openDoorTestRoom(page);
   await page.locator('#closeRoom').click();
   await expect(page.locator('#roomModal')).not.toHaveClass(/open/);
-  await expect(page.locator('#roomFrame')).toHaveAttribute('srcdoc', '');
+  await expect.poll(() => page.locator('#roomFrame').evaluate(frame => frame.srcdoc)).toBe('');
 });
 
 test('@workbench Passport, exact source, export and receipt', async ({ page }) => {

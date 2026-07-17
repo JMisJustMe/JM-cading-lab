@@ -1,0 +1,37 @@
+{
+  "schema": "jm.sovereign-ten.delivery/1.1",
+  "title": "JM Sovereign Ten Native Formation v1",
+  "bodies": [
+    "FlowTalk",
+    "JMLogic",
+    "JM32-1DA",
+    "RouteScript / Route-Code",
+    "RouteVM / RouteOS",
+    "Reality Contact",
+    "Dings",
+    "TraceBox",
+    "Game-CODING",
+    "JM GameCore"
+  ],
+  "authoritativeSource": "coding-estate/sovereign-ten/direct",
+  "sourceModules": [
+    "native-core.mjs",
+    "language-native.mjs",
+    "route-proof-native.mjs",
+    "game-native.mjs",
+    "native-corpus.mjs",
+    "native-selftest.mjs"
+  ],
+  "repositoryConformance": {
+    "passed": 23,
+    "failed": 0,
+    "digest": "8f872539157cf4c3",
+    "artifactSha256": "390a4bbbcd438f3ffee013dc4a1f4d347ea8c5eeefda8981c9ac1c803803ad19"
+  },
+  "continuousRoutes": [
+    "FlowTalk -> JMLogic -> JM32-1DA -> RouteScript -> RouteVM -> RouteOS -> Reality Contact -> TraceBox -> Dings",
+    "Game-CODING -> JM GameCore"
+  ],
+  "currentNativeClaim": true,
+  "historicalRecoveryClaim": false
+}

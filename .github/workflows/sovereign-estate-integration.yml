@@ -1,0 +1,35 @@
+name: JM Sovereign Estate Integration Conformance
+
+on:
+  push:
+    paths:
+      - 'coding-estate/integration/**'
+      - 'coding-estate/sovereign-batch-six/README.md'
+      - '.github/workflows/sovereign-estate-integration.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/integration/**'
+      - 'coding-estate/sovereign-batch-six/README.md'
+      - '.github/workflows/sovereign-estate-integration.yml'
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run sovereign estate integration conformance
+        id: integration
+        continue-on-error: true
+        run: node coding-estate/integration/integration-selftest.mjs > sovereign-estate-integration-receipt.json
+      - name: Upload integration receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-estate-integration-receipt
+          path: sovereign-estate-integration-receipt.json
+      - name: Enforce integration result
+        if: always()
+        run: node -e "const fs=require('fs');const r=JSON.parse(fs.readFileSync('sovereign-estate-integration-receipt.json','utf8'));console.log(JSON.stringify({passed:r.passed,failed:r.failed,privacyGate:r.privacyGate,failures:r.checks.filter(x=>!x.passed)},null,2));if(r.failed)process.exit(1);"

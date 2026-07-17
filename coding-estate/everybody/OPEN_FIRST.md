@@ -1,89 +1,109 @@
-# OPEN FIRST — JM EveryBody v1.0
+# OPEN FIRST — JM EveryBody v2.0
 
 ## Fastest visible route
 
 Open:
 
 ```text
-coding-estate/everybody/index.html
+coding-estate/everybody/canonical-native-v2.html
 ```
 
-The browser workbench provides five rooms:
+This is the mobile-first current-native workbench. It lets you:
 
-1. **Bodies** — search and inspect all 76 recovered entries;
-2. **Maximise** — describe a goal and receive a lead/supporting-body formation without crowning a supreme body;
-3. **Portable Compiler** — run source through lexer → parser → AST → semantics → IR → runtime → receipt;
-4. **Native Front Ends** — test the exact recovered Cading, MMZG and Speakuals subsets;
-5. **Estate Receipt** — inspect current registry and target boundaries.
+1. select any of the 100 registered bodies;
+2. inspect its native grammar family, commands, law and historical-evidence state;
+3. load its official current native v2 fixture;
+4. edit the source;
+5. run parser → AST → semantics → source map → portable lowering → runtime → trace → Ding;
+6. see the complete receipt immediately.
+
+The older `index.html` remains the compatibility, maximisation, portable compiler and recovered-historical-adapter workbench.
 
 ## Command route
 
-From this folder:
+From `coding-estate/everybody/`:
 
 ```bash
 npm test
 npm run build
 npm run verify:js
-npm run audit
-npm run list
+node cli.mjs audit
+node cli.mjs list
+node cli.mjs adapters
 ```
 
-Or use the CLI directly:
+Inspect any current native specification:
 
 ```bash
-node cli.mjs list
-node cli.mjs audit
-node cli.mjs adapters
-node cli.mjs resolve --goal "Build a mobile game runtime" --cap game,parser,IR,runtime,trace --target javascript,cpp_lineage,rust,wasm --constraint Android,identity-preservation
-node cli.mjs native cading --source "Zzza, za-zuh, zuzz = zeze.nwona.✓"
-node cli.mjs native mmzg --source "ZG[BOND] @ CH3 :: M−[stack:fold:governance] + I[fix] ⟐ F[connector-pass] → JM?[audit-pressure] → PΔ[tighten:body] → T✓[receipt:proof] → PALM[current-best]"
+node cli.mjs spec quadze
+node cli.mjs spec cading
+node cli.mjs spec root-method
+node cli.mjs spec flowtalk
+node cli.mjs spec gameforge
+```
+
+Build and run a generated current-native fixture:
+
+```bash
+npm run build
+node cli.mjs native root-method \
+  --file generated/canonical-native-v2/source/root-method.jmn2 \
+  --mode canonical
+```
+
+Run one of the four exact recovered historical-native subsets:
+
+```bash
+node cli.mjs native cading \
+  --source "Zzza, za-zuh, zuzz = zeze.nwona.✓" \
+  --mode historical
 ```
 
 ## Expected result
 
-`npm test` should pass:
+`npm test` proves:
 
-- federated 76-entry registry checks;
-- no-supreme-body law;
-- maximiser resolution;
-- exact Cading native adapter;
-- exact MMZG native adapter;
-- exact Speakuals native adapter;
-- visible refusal of an unrecovered FlowTalk grammar;
-- malformed native-source rejection.
+- the 100-entry sovereign registry;
+- the no-supreme-body law;
+- existing portable compilation and maximisation;
+- the four recovered historical-native subsets;
+- **100 / 100 current canonical-native v2 specifications**;
+- thirteen semantic grammar families;
+- body-specific capability-command validation;
+- exact registered-law validation;
+- source maps;
+- native-to-portable lowering;
+- runtime Ding;
+- round-trip conformance;
+- wrong-body rejection;
+- invalid-command rejection;
+- missing-Ding rejection.
 
-`npm run build` creates `generated/` with one individual pack for every registered body.
-
-`npm run verify:js` generates all packs and executes all 76 JavaScript runtime receipts.
-
-The GitHub Actions matrix additionally compiles and executes all packs through:
-
-```text
-JavaScript
-TypeScript
-WebAssembly
-C++98
-C++03
-C++11
-C++14
-C++17
-C++20
-C++23
-C++26 draft / Clang c++2c
-Rust 2021
-Rust 2024
-```
-
-## Truth boundary
-
-A green portable target proves that the body identity, law and portable execution contract survived that target.
-
-It does **not** prove that the body’s full historical native syntax has been recovered. Exact native syntax is only claimed where an exact native adapter exists and passes its own tests.
-
-If an adapter is missing, the correct result is:
+`npm run build` creates:
 
 ```text
-NATIVE_ADAPTER_NOT_RECOVERED
+generated/
+├── source, IR, receipts and target packs for all 100 portable bodies
+└── canonical-native-v2/
+    ├── specs/       100 body-native specifications
+    ├── source/      100 .jmn2 native programs
+    ├── ast/         100 body-native ASTs and source maps
+    ├── portable/    100 identity-preserving lowerings
+    ├── receipts/    100 native completion receipts
+    ├── CURRENT_NATIVE_COMPLETION_MATRIX_v2_0.json
+    └── CURRENT_NATIVE_COMPLETION_MATRIX_v2_0.md
 ```
 
-That is not a dead button. It is the recovery route doing its job.
+## Current completion statement
+
+Every registered body now has a complete **current** native specification and executable proof.
+
+Historical source remains separate:
+
+- Quadze, Cading, MMZG and Speakuals have exact recovered historical subsets;
+- the other bodies have official current canonical-native v2 specifications;
+- none of those current specifications is falsely relabelled as recovered history.
+
+## Keeper
+
+> Every current body now has a native way to speak. History remains labelled by what history can actually prove.

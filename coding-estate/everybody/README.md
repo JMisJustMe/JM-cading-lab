@@ -1,149 +1,148 @@
-# JM EveryBody — Sovereign Compatibility & Maximisation Fabric
+# JM EveryBody v2.0 — Sovereign Current-Native Completion
 
-**Version:** v1.0 — Portable Convergence Release  
-**Status:** COMPLETE FEDERATED TOOLCHAIN / RELEASED BODY / NATIVE RECOVERY REMAINS OPEN
+**State:** CURRENT CANONICAL-NATIVE COMPLETE / HISTORICAL EVIDENCE PRESERVED SEPARATELY  
+**Registered federation:** 100 bodies  
+**Current native specifications:** 100 / 100  
+**Current native engineering degree:** 10 / 10 for every body  
+**Exact recovered historical-native subsets:** Quadze, Cading, MMZG and Speakuals  
+**Supreme body crowned:** No
 
-## Purpose
+## What v2 completes
 
-JM EveryBody is the compatibility and maximisation body that lets every recovered JM coding body remain sovereign while sharing proven parser, IR, runtime, target, testing and receipt machinery.
+JM EveryBody v2 closes the remaining present-day native-specification gap without pretending that missing historical files were recovered.
 
-It is **not** a supreme replacement language. Cading, MMZG, JMLogic, FlowTalk, Mark-Level Syntax, Speakuals, Kading, Quadze, J’MP/JAMP, Codifying/Askual, Kocodifying, OS_CODING, Game-CODING, FormeULA/MarkeULA, Builder Lads, TokenBody, PunctBody, RouteFrame, StateField, ContactBand, Root Method, PrimeBody, TheoC, CadenVM, RouteVM, JMVM, RouteOS, CodeHand and every other registered body retain their own names, laws, lineages and source authority.
+Every registered coding body now has:
 
-> **Many complete bodies → one compatibility fabric → one maximiser above them, never a dictator over them.**
+- an official current JM canonical-native v2 specification;
+- a distinct native grammar family selected from thirteen semantic families;
+- body-specific commands derived from its own registered capabilities;
+- exact governing-law validation;
+- tokens, parser and body-identified AST;
+- semantic and effect checks;
+- line-level source maps;
+- identity-preserving portable lowering;
+- runtime state, routes, traces, assertions and Ding;
+- deterministic formatting and parse/format/parse round-trip proof;
+- negative conformance for wrong body identity, invalid body commands and missing Ding;
+- individual generated specification, native source, AST, portable source and receipt.
 
-## v1.0 completion receipt
+This means Quadze and the formerly thinnest bodies now stand on the same **current engineering floor**. Quadze still retains stronger recovered historical evidence. Present engineering and historical evidence are no longer confused with one another.
 
-The release federates **76 separately classified recovered entries**. Every registered entry now receives an individually generated portable body pack containing:
+## Two native lanes
 
-- portable source fixture;
-- lexer/parser contact through the JM portable language;
-- AST and semantic validation;
-- body-identified portable IR;
-- runtime execution and Ding/no-Ding receipt;
-- JavaScript module;
-- executable TypeScript module;
-- C++ header/runtime body;
-- Rust module/runtime body;
-- WebAssembly binary receipt;
-- build-report and estate index inclusion.
+### 1. Current canonical-native v2
 
-The complete estate passed these **13 execution lanes**:
-
-1. JavaScript;
-2. TypeScript;
-3. WebAssembly;
-4. C++98;
-5. C++03;
-6. C++11;
-7. C++14;
-8. C++17;
-9. C++20;
-10. C++23;
-11. C++26 draft mode through Clang `c++2c`;
-12. Rust 2021 edition;
-13. Rust 2024 edition.
-
-All C++ lanes compile with strict warnings treated as errors. Both Rust lanes compile with warnings denied. Every target then executes the whole-estate receipt body rather than stopping at source generation.
-
-## Sovereign native front ends
-
-The portable compiler is a shared delivery envelope. It does **not** pretend to be the historical native grammar of every coding body.
-
-Exact recovered and tested native adapters currently exist for:
-
-- **Cading** — travel chains, Speakuals landing and `.✓` completion;
-- **MMZG / MorseMinus ZeroGrip** — ZeroGrip, channel, signal, focus, field, pressure, Path Delta, trace and PALM grammar;
-- **Speakuals** — source-to-landing relation with validated completion.
-
-A body without an exact recovered adapter returns `NATIVE_ADAPTER_NOT_RECOVERED`. It is never given invented syntax merely to produce a green test.
-
-## Architecture
-
-### Registry federation
-
-Two extension-safe registries currently preserve 76 bodies, organs, runtimes, VMs, engines, adapters, authoring houses and diagnostics. **Seventy-six is the recovered count, not a claim that no additional historical body exists.** New recoveries append without replacing earlier entries.
-
-### Lookup and maximisation
-
-The maximiser scores candidate bodies using:
-
-- native semantic fit;
-- requested capability contact;
-- parser/runtime/receipt maturity;
-- target support;
-- compatibility confidence;
-- identity preservation;
-- performance/device constraints;
-- recovery and reversibility.
-
-A body may lead one task and support another. “Lead” means strongest fit for that request only; it never means supreme language.
-
-### Portable compiler and runtime
+This is the official language/specification lane for present and future builds.
 
 ```text
-BODY + VERSION
-→ lexer
-→ parser
-→ portable AST
-→ body-aware semantic checks
-→ body-identified portable IR
-→ runtime state / route / trace / assertion / Ding
-→ JavaScript / TypeScript / C++ / Rust / WebAssembly
-→ receipt
+registered identity + governing law
+→ native grammar family
+→ body-specific capability commands
+→ parser and AST
+→ semantic/effect validation
+→ source map
+→ portable lowering
+→ runtime / trace / Ding
+→ round-trip and negative conformance
 ```
 
-The portable IR retains body id, body name, kind, status, native law, source authority, identity-preservation contract and lossy-conversion state.
+All 100 bodies pass this lane.
 
-### Native completion lane for every body
+### 2. Recovered historical-native subsets
+
+Exact recovered historical adapters remain preserved for:
+
+- **Quadze** — Mini-QUADZE Tier-0;
+- **Cading** — source/travel chain, Speakuals landing and Fullstopped completion;
+- **MMZG / MorseMinus ZeroGrip** — channel, signal, focus, field, pressure, Path Delta, trace and PALM;
+- **Speakuals** — source-to-landing relation and Fullstopped completion.
+
+A current canonical-native specification does not rewrite an older source or manufacture a missing historical grammar.
+
+## Thirteen grammar families
+
+The 100 bodies are not flattened into one syntax. They are routed into distinct semantic families:
+
+1. route;
+2. logic;
+3. formula;
+4. embodied;
+5. compiler;
+6. runtime;
+7. game;
+8. governance;
+9. delivery;
+10. visual;
+11. authoring;
+12. composition;
+13. service.
+
+Each family supplies its own meaningful operators. Each body additionally receives `CAP_*` operators derived from that body’s registered capabilities. A source file using commands that do not belong to its body is rejected.
+
+## Current native source shape
 
 ```text
-exact source recovery
-→ lexical specification
-→ tokenizer / lexer
-→ native parser
-→ body-native AST
-→ semantic, type, effect, route and permission checks
-→ body-specific IR
-→ explicit interop adapter
-→ body-specific runtime or VM
-→ debugger, trace and recovery
-→ conformance, fuzz, property and round-trip tests
-→ target emitters
-→ Ding / no-Ding receipt
+NATIVE root-method 2.0
+LAW "root opcodes expose irreducible state-changing operations"
+LOAD {"body":"root-method","command":"LOAD"}
+EXEC {"body":"root-method","command":"EXEC"}
+CAP_OPCODES {"body":"root-method","command":"CAP_OPCODES"}
+CAP_VM {"body":"root-method","command":"CAP_VM"}
+TRACE {"proof":"canonical-native-v2"}
+DING {"status":"CANONICAL_NATIVE_V2_READY"}
+END
 ```
 
-This lane is permanently represented in the descriptor schema and audit. Shared organs may accelerate implementation, but they may not erase the body-specific front end.
+The exact commands differ by family and by body capabilities.
 
-## Use paths
+## Conformance
 
-- `index.html` — mobile-first open-first workbench;
-- `cli.mjs` — audit, list, resolve, compile, native-adapter and build commands;
-- `package.json` — test/build command surface;
-- `build-all.mjs` — generates all 76 body packs;
-- `generated/` — produced release packs during build/CI;
-- `BUILD_RECEIPT_v1_0.md` — final release receipt;
-- `OPEN_FIRST.md` — plain use and test route.
+For each of the 100 bodies, v2 runs:
 
-## Honest completion boundary
+1. successful native parse, semantic validation, lowering and runtime execution;
+2. parse/format/parse round-trip;
+3. wrong-body rejection;
+4. invalid-command rejection;
+5. missing-Ding rejection.
 
-### Complete in v1.0
+That produces **500 body-level canonical-native conformance checks**, in addition to the existing portable and multi-target suites.
 
-- recovered 76-entry sovereign registry federation;
-- compatibility lookup and maximisation runtime;
-- shared portable lexer, parser, AST, semantics, IR and runtime;
-- individual portable pack generation for every registered entry;
-- JavaScript, TypeScript, WebAssembly, C++98–C++23, C++26-draft, Rust 2021 and Rust 2024 execution parity for the portable receipt body;
-- exact tested native subsets for Cading, MMZG and Speakuals;
-- visible refusal for unrecovered native grammars;
-- CLI, browser workbench, CI matrix and durable artifact route.
+The generated portable estate continues to execute across:
 
-### Not falsely claimed
+- JavaScript;
+- TypeScript;
+- WebAssembly;
+- C++98, 03, 11, 14, 17, 20 and 23;
+- C++26 draft through Clang `c++2c`;
+- Rust 2021 and Rust 2024.
 
-- that all historical coding bodies have already been recovered;
-- that all 76 entries are the same kind of language;
-- that every body’s complete historical native grammar and semantics are already known;
-- that a portable execution proof equals universal native-language parity;
-- that C++26 is a published-final standard;
-- that JM EveryBody replaces or outranks its member bodies.
+## Open-first routes
 
-**The convergence fabric is finished. The estate remains living.**
+- `canonical-native-v2.html` — mobile-first 100-body current-native workbench;
+- `index.html` — compatibility, maximisation, portable and historical-native workbench;
+- `OPEN_FIRST.md` — plain use and proof route;
+- `BUILD_RECEIPT_v2_0.md` — release receipt;
+- `generated/canonical-native-v2/` — generated current-native specifications and receipts.
+
+## Command routes
+
+```bash
+npm test
+npm run build
+node cli.mjs audit
+node cli.mjs spec root-method
+node cli.mjs spec quadze
+node cli.mjs native root-method --file generated/canonical-native-v2/source/root-method.jmn2 --mode canonical
+node cli.mjs native cading --source "Zzza, za-zuh, zuzz = zeze.nwona.✓" --mode historical
+```
+
+## Governance boundary
+
+- Current canonical-native v2 is authoritative for present builds.
+- Historical evidence is never silently upgraded.
+- Shared parser/runtime organs may be reused without erasing body identity.
+- A body may lead one task without becoming supreme.
+- No trace and no Ding means no completion claim.
+- New recovered history can improve the evidence axis without reopening or weakening the completed current-native fabric.
+
+> Every current body now has a native way to speak. History remains labelled by what history can actually prove.

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM EveryBody v2 — 100-Body Native Workbench</title>
+<style>
+:root{color-scheme:dark;--bg:#080b11;--panel:#111827;--line:#2a3548;--text:#eef4ff;--muted:#a9b5c8;--hot:#62e6bd;--warn:#ffd166;--bad:#ff7187}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#172338 0,#080b11 48%);color:var(--text);font:16px/1.45 system-ui,sans-serif}.shell{width:min(1180px,100%);margin:auto;padding:18px}.hero,.panel{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}.hero{padding:22px;margin-bottom:14px}.hero h1{font-size:clamp(1.8rem,7vw,3.8rem);line-height:1;margin:0 0 10px}.hero p{color:var(--muted);max-width:820px}.badges,.actions{display:flex;flex-wrap:wrap;gap:8px}.badge{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#0c1320;font-weight:750}.badge strong{color:var(--hot)}.grid{display:grid;grid-template-columns:minmax(260px,.75fr) minmax(0,1.25fr);gap:14px}.panel{padding:16px;min-width:0}label{display:block;font-weight:800;margin:0 0 7px}select,textarea,button{width:100%;border:1px solid var(--line);border-radius:13px;background:#090f19;color:var(--text);font:inherit}select,button{min-height:48px;padding:10px}textarea{min-height:360px;padding:13px;resize:vertical;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.88rem}button{cursor:pointer;font-weight:900;background:#18263a}button.primary{background:var(--hot);color:#06110e;border-color:transparent}.actions button{width:auto;flex:1 1 170px}pre{white-space:pre-wrap;overflow:auto;background:#070b12;border:1px solid var(--line);border-radius:14px;padding:13px;max-height:420px;color:#dbe8ff}.meta{display:grid;gap:8px;margin:14px 0}.meta div{padding:10px;border:1px solid var(--line);border-radius:12px;background:#0c1320}.ok{color:var(--hot)}.error{color:var(--bad)}.boundary{color:var(--warn);font-weight:750}@media(max-width:780px){.shell{padding:10px}.grid{grid-template-columns:1fr}.hero,.panel{border-radius:16px}.hero{padding:17px}textarea{min-height:330px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<section class="hero">
+<h1>JM EveryBody v2</h1>
+<p>Every registered coding body now has an official current native specification. Select a body, inspect its grammar family and commands, edit its native source, then run parser → AST → semantics → portable lowering → runtime → trace → Ding.</p>
+<div class="badges"><span class="badge"><strong id="count">…</strong> current native bodies</span><span class="badge"><strong>13</strong> grammar families</span><span class="badge"><strong>4</strong> recovered historical subsets</span><span class="badge"><strong>0</strong> invented historical claims</span></div>
+</section>
+<div class="grid">
+<section class="panel">
+<label for="body">Coding body</label><select id="body"></select>
+<div class="meta" id="meta"></div>
+<h2>Body-native specification</h2><pre id="spec"></pre>
+</section>
+<section class="panel">
+<label for="source">Current canonical-native v2 source</label><textarea id="source" spellcheck="false"></textarea>
+<div class="actions"><button class="primary" id="run">Run native proof</button><button id="restore">Restore body fixture</button></div>
+<h2>Receipt</h2><pre id="result">Choose a body and run its native proof.</pre>
+<p class="boundary">Current canonical completion is authoritative for present builds. Historical-source recovery remains a separate evidence axis.</p>
+</section>
+</div>
+</main>
+<script type="module">
+import { loadFederatedRegistry } from './registry-loader.mjs';
+import { canonicalNativeSpec, compileCanonicalNative, fixtureCanonicalNativeSource } from './canonical-native-v2.mjs';
+import { EXACT_HISTORICAL_NATIVE_IDS } from './native-router-v2.mjs';
+const registry=await loadFederatedRegistry();
+const bodySelect=document.querySelector('#body');const source=document.querySelector('#source');const meta=document.querySelector('#meta');const specBox=document.querySelector('#spec');const result=document.querySelector('#result');
+document.querySelector('#count').textContent=registry.bodies.length;
+for(const body of [...registry.bodies].sort((a,b)=>a.name.localeCompare(b.name))){const option=document.createElement('option');option.value=body.id;option.textContent=`${body.name} · ${body.id}`;bodySelect.append(option)}
+function active(){return registry.bodies.find(body=>body.id===bodySelect.value)}
+function load(){const body=active();const spec=canonicalNativeSpec(body);source.value=fixtureCanonicalNativeSource(body);meta.innerHTML=`<div><b>Family:</b> ${spec.family}</div><div><b>Kind:</b> ${body.kind}</div><div><b>Current degree:</b> 10 / 10</div><div><b>Historical adapter:</b> ${EXACT_HISTORICAL_NATIVE_IDS.includes(body.id)?'exact recovered subset':'separate/unrecovered'}</div><div><b>Law:</b> ${body.law}</div>`;specBox.textContent=JSON.stringify(spec,null,2);result.textContent='Fixture loaded. Press Run native proof.';result.className=''}
+bodySelect.addEventListener('change',load);document.querySelector('#restore').addEventListener('click',load);document.querySelector('#run').addEventListener('click',()=>{const body=active();const receipt=compileCanonicalNative(body.id,source.value,registry);result.textContent=JSON.stringify(receipt,null,2);result.className=receipt.ok?'ok':'error'});bodySelect.value='quadze';load();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
   "public_crown": "JMISJUSTME — The Owned Web Estate",
   "public_crown_version": "1.0",
   "repository": "JMisJustMe/JM-cading-lab",
-  "status": "OWNED_WEB_ESTATE_V1_LIVE_WITH_CAUSE_MUST_PASS_DRAFT_MOUNT",
+  "status": "OWNED_WEB_ESTATE_V1_LIVE_WITH_CAUSE_MUST_PASS_MOUNTED",
   "active_keeper": "JM Web Estate / Living Front Door",
   "keeper_line": "One owned doorway. Many sovereign rooms.",
   "laws": [
@@ -63,7 +63,7 @@
     {
       "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
       "path": "theory/cause-must-pass/00_OPEN_FIRST.html",
-      "state": "MOUNTED_ON_DRAFT_BRANCH_PENDING_MAIN_RELEASE"
+      "state": "LIVE_ON_MAIN"
     }
   ],
   "registered_departments": [
@@ -132,7 +132,7 @@
     },
     {
       "body": "Theory Wing",
-      "state": "CURRENT_BEST_PUBLIC_BODY_MOUNTED_ON_DRAFT_BRANCH",
+      "state": "CURRENT_BEST_PUBLIC_BODY_LIVE_ON_MAIN",
       "route": "theory/cause-must-pass/00_OPEN_FIRST.html",
       "registry": "registry/theory-wing.json",
       "crown_card": "theory/cause-must-pass/CROWN_CARD.json"
@@ -216,6 +216,7 @@
     "build_receipt": "theory/cause-must-pass/BUILD_RECEIPT.md",
     "crown_status": "COMPLETE_THEORY_BODY_OPEN_APPLICATION",
     "claim_route_position": 8,
+    "main_release": "LIVE",
     "source_custody": "OWNER_CONTROLLED_LIBRARY_PACKAGE",
     "owner_library_path": "/JM Estate/Theory Wing/Cause Must Pass/",
     "boundary": "Complete bounded framework; universal empirical validity is not claimed."

@@ -3,6 +3,7 @@ name: Validate Cause Must Pass Mount
 on:
   push:
     branches:
+      - main
       - agent/cause-must-pass-mount-v1-0
     paths:
       - 'theory/cause-must-pass/**'
@@ -53,14 +54,15 @@ jobs:
           checks = {
               'complete body status': card.get('crown_status') == 'COMPLETE_THEORY_BODY_OPEN_APPLICATION',
               'position 8': card.get('claim_route', {}).get('position') == 8,
+              'main release live': card.get('main_release') == 'LIVE',
               'universal validity not claimed': card.get('completion', {}).get('universal_empirical_validity') == 'NOT_CLAIMED',
               'formula visible': 'K_t --[R_t under B_t]--&gt; P_t' in page,
               'crown law visible': 'CAUSE MUST PASS.' in page,
               'return route visible': '../../index.html' in page,
               'theory mount listed': any(x.get('id') == 'cause-must-pass' for x in theory.get('current_best_mounts', [])),
-              'estate route listed': any(x.get('path') == 'theory/cause-must-pass/00_OPEN_FIRST.html' for x in estate.get('live_github_routes', [])),
+              'estate route live': any(x.get('path') == 'theory/cause-must-pass/00_OPEN_FIRST.html' and x.get('state') == 'LIVE_ON_MAIN' for x in estate.get('live_github_routes', [])),
               'library custody recorded': manifest.get('owner_controlled_package', {}).get('status') == 'MOUNTED_IN_CHATGPT_LIBRARY',
-              'release boundary visible': 'draft pull request' in receipt.lower(),
+              'release receipt visible': 'merged to `main`' in receipt.lower(),
           }
           failed = [name for name, ok in checks.items() if not ok]
           if failed:

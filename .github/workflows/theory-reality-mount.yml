@@ -1,0 +1,80 @@
+name: Validate Theory for Reality Mount
+
+on:
+  push:
+    branches:
+      - crown-register-reality-mount-v0-1
+    paths:
+      - 'theory/reality/**'
+      - 'registry/theory-wing.json'
+      - 'registry/estate-map.json'
+      - 'README.md'
+      - 'docs/STATUS.md'
+      - '.github/workflows/theory-reality-mount.yml'
+  pull_request:
+    paths:
+      - 'theory/reality/**'
+      - 'registry/theory-wing.json'
+      - 'registry/estate-map.json'
+      - 'README.md'
+      - 'docs/STATUS.md'
+      - '.github/workflows/theory-reality-mount.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-mount:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON, routes and public boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          required = [
+              Path('theory/reality/00_OPEN_FIRST.html'),
+              Path('theory/reality/CROWN_CARD.json'),
+              Path('theory/reality/BUILD_RECEIPT.md'),
+              Path('registry/theory-wing.json'),
+              Path('registry/estate-map.json'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          if missing:
+              raise SystemExit('Missing mount files: ' + ', '.join(missing))
+
+          card = json.loads(Path('theory/reality/CROWN_CARD.json').read_text(encoding='utf-8'))
+          theory = json.loads(Path('registry/theory-wing.json').read_text(encoding='utf-8'))
+          estate = json.loads(Path('registry/estate-map.json').read_text(encoding='utf-8'))
+          page = Path('theory/reality/00_OPEN_FIRST.html').read_text(encoding='utf-8')
+          receipt = Path('theory/reality/BUILD_RECEIPT.md').read_text(encoding='utf-8')
+
+          checks = {
+              'working crown': card.get('crown_status') == 'WORKING_CROWN_OPEN_REALITY_INQUIRY',
+              'position 8': card.get('claim_route', {}).get('position') == 8,
+              'no universal claim': card.get('proof', {}).get('universal_empirical_validity') == 'NOT_CLAIMED',
+              'T/S open': card.get('proof', {}).get('native_t_s_decoding') == 'OPEN',
+              'theory mount listed': any(x.get('id') == 'jm-original-theory-for-reality' for x in theory.get('current_best_mounts', [])),
+              'estate route listed': any(x.get('path') == 'theory/reality/00_OPEN_FIRST.html' for x in estate.get('live_github_routes', [])),
+              'source custody visible': 'owner-controlled' in page.lower() and 'private' in page.lower(),
+              'protected formula visible': 'Everything becomes -T+B×S' in page,
+              'EL-Literalism visible': 'EL-LITERALISM' in page,
+              'release gate visible': 'draft pull request' in receipt.lower(),
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit('Failed mount gates: ' + ', '.join(failed))
+          print(json.dumps({'passed': len(checks), 'failed': 0, 'checks': checks}, indent=2))
+          PY
+      - name: HTML source sanity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('theory/reality/00_OPEN_FIRST.html').read_text(encoding='utf-8').lower()
+          for token in ['<!doctype html>', '<title>', '</html>']:
+              if token not in text:
+                  raise SystemExit('Missing HTML token: ' + token)
+          print('Theory mount HTML sanity passed')
+          PY

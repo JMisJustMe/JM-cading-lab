@@ -1,0 +1,72 @@
+name: Apply Accessibility Sweep v0.5
+
+on:
+  push:
+    branches:
+      - accessibility-full-sweep-v0-5
+    paths:
+      - 'tools/accessibility_payload_root.py'
+      - 'tools/accessibility_payload_games_index.py'
+      - 'tools/accessibility_payload_games_app.py'
+      - '.github/workflows/apply-accessibility-v05.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    if: ${{ !contains(github.event.head_commit.message, '[accessibility payload applied]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out accessibility branch
+        uses: actions/checkout@v4
+        with:
+          ref: accessibility-full-sweep-v0-5
+          fetch-depth: 0
+
+      - name: Apply compressed accessibility bodies
+        run: |
+          python tools/accessibility_payload_root.py
+          python tools/accessibility_payload_games_index.py
+          python tools/accessibility_payload_games_app.py
+
+      - name: Validate JavaScript and JSON
+        run: |
+          node --check estate-accessibility.js
+          node --check games-beyond/app.js
+          node --check games-beyond/sw.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for p in [
+              'games-beyond/payload-manifest.json',
+              'games-beyond/registry.json',
+              'games-beyond/accessibility-report-v0-5.json',
+              'games-beyond/manifest.webmanifest',
+          ]:
+              json.loads(Path(p).read_text(encoding='utf-8'))
+          root=Path('index.html').read_text(encoding='utf-8')
+          house=Path('games-beyond/index.html').read_text(encoding='utf-8')
+          app=Path('games-beyond/app.js').read_text(encoding='utf-8')
+          required_root=['estate-accessibility.css','estate-accessibility.js','estateContrast','estateText','estateMotion']
+          required_house=['ACCESS','accessibilityReport','contrastToggle','textToggle','motionToggle','roomDialog','bodyFrame']
+          required_app=['builtInExpected','fullTarget','applyAccessibilityLayer','auditAllBodies','pack.bodies.push']
+          missing=[x for x in required_root if x not in root]+[x for x in required_house if x not in house]+[x for x in required_app if x not in app]
+          if missing:
+              raise SystemExit('Missing accessibility routes: '+', '.join(missing))
+          if '21 BUILT-IN' not in house or '23 FULL' not in house:
+              raise SystemExit('Mount boundary labels missing')
+          print('Accessibility payload validation passed')
+          PY
+
+      - name: Commit applied accessible bodies
+        run: |
+          git config user.name 'JM Accessibility Builder'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html games-beyond/index.html games-beyond/app.js
+          if git diff --cached --quiet; then
+            echo 'No accessibility payload changes to commit.'
+          else
+            git commit -m 'Apply full accessibility sweep v0.5 [accessibility payload applied]'
+            git push origin HEAD:accessibility-full-sweep-v0-5
+          fi

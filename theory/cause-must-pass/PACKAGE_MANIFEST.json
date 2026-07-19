@@ -1,0 +1,42 @@
+{
+  "schema": "jm.theory.package-manifest/1.0",
+  "id": "cause-must-pass",
+  "version": "1.0",
+  "created": "2026-07-19",
+  "source_authority": "Theodore Benjamin Scott / JM",
+  "owner_library_path": "/JM Estate/Theory Wing/Cause Must Pass/",
+  "public_mount": {
+    "route": "theory/cause-must-pass/00_OPEN_FIRST.html",
+    "kind": "PUBLIC_SAFE_CURRENT_BEST_READING_BODY"
+  },
+  "owner_controlled_package": {
+    "status": "MOUNTED_IN_CHATGPT_LIBRARY",
+    "files": [
+      {
+        "name": "00_OPEN_FIRST_CAUSE_MUST_PASS_v1_0.html",
+        "sha256": "6ed5d1095fd0699f42d9d9de41b6cff8c038aec11d39a4753ce4549aecf0ec32"
+      },
+      {
+        "name": "CAUSE_MUST_PASS_Completion_Edition_v1_0.docx",
+        "sha256": "f53a86dc92668d15490ce81b5f3b200abafd5a51f5cdb896e3c00e9f2c30e287"
+      },
+      {
+        "name": "CAUSE_MUST_PASS_Completion_Edition_v1_0.pdf",
+        "sha256": "61a7ce9064136311197fec579a680982a683cb053eb76dd78db38c6095327c22"
+      },
+      {
+        "name": "CAUSE_MUST_PASS_v1_0_ZIONFOLDER.zip",
+        "sha256": "1c7c1cf3114d5dd642f040e1b7209096664c39ffb0ade2731ea9ad6deaf194ea"
+      }
+    ]
+  },
+  "github_binary_boundary": "The GitHub connector mount records the full package and publishes the bounded HTML route. Word, PDF and Zionfolder binaries remain in the owner-controlled Library rather than being falsely claimed as committed to this branch.",
+  "recovery_order": [
+    "public OPEN_FIRST route",
+    "Crown Card",
+    "Package Manifest",
+    "Build Receipt",
+    "owner-controlled Library package",
+    "Zionfolder checksum"
+  ]
+}

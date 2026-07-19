@@ -32,7 +32,7 @@ GitHub provides the public corridor, source/version history, registry and Pages 
 
 ## Current status
 
-- CAUSE MUST PASS: **complete bounded theory body mounted on this draft branch**
+- CAUSE MUST PASS: **complete bounded theory body live on `main`**
 - Cause-Passage formula, ten laws, working test, resistance test and receipt: **mounted**
 - Full HTML, Word, PDF and Zionfolder package: **mounted in owner-controlled JM Estate Library**
 - Universal empirical validity: **not claimed**

@@ -1,0 +1,63 @@
+{
+  "schema": "JM.AccessibilitySweep/0.5",
+  "createdAt": "2026-07-19T03:07:45.263171+00:00",
+  "scope": {
+    "staticAuditedInPayload": 15,
+    "staticAuditedExactPublicFile": 1,
+    "runtimeAuditedOnMount": 5,
+    "publicBuiltInTotal": 21,
+    "fullHouseAfterImport": 23,
+    "fullImportBodies": [
+      "jmstudios-source-rebegin",
+      "jmstudios-actual-crown"
+    ]
+  },
+  "claimBoundary": "Public build runs a 21-body sweep immediately and a 23-body sweep after the supplied Eco/Estate full-house import. Automated static preflight plus runtime assistance is not a WCAG certification and does not claim every game mechanic is usable with every assistive technology.",
+  "hostFixes": [
+    "skip links and landmarks",
+    "visible focus",
+    "keyboard route navigation",
+    "focus return for dialogs",
+    "named search and form controls",
+    "live load/proof announcements",
+    "text scaling",
+    "high contrast",
+    "reduced motion",
+    "in-house titled iframe",
+    "runtime labels for unnamed controls where derivable",
+    "canvas naming and fallback summary",
+    "exportable body-by-body report"
+  ],
+  "bodies": [
+    {"id":"fourfold-arena","name":"FOURFOLD Arena","version":"v0.17 Living Bodies","grade":"C","issueCount":4,"issueCodes":["IMAGE_ALT","ZOOM_RESTRICTION"]},
+    {"id":"tboys-core-clash","name":"T-Boys Core Clash","version":"v0.1 Final Graft","grade":"C","issueCount":8,"issueCodes":["HTML_LANG","MAIN_LANDMARK","CANVAS_NAME","FORM_NAME","REDUCED_MOTION"]},
+    {"id":"rim-route","name":"JM Rim Route","version":"v0.8.2","grade":"B","issueCount":2,"issueCodes":["MAIN_LANDMARK","ZOOM_RESTRICTION"]},
+    {"id":"crewbound-arena","name":"Crewbound Arena","version":"v0.5","grade":"B","issueCount":2,"issueCodes":["MAIN_LANDMARK","ZOOM_RESTRICTION"]},
+    {"id":"house-siege","name":"JM House Siege","version":"v1.3","grade":"B","issueCount":3,"issueCodes":["MAIN_LANDMARK","REDUCED_MOTION","ZOOM_RESTRICTION"]},
+    {"id":"western-sniper","name":"JM Western Sniper PvP","version":"v0.5","grade":"B","issueCount":2,"issueCodes":["REDUCED_MOTION","ZOOM_RESTRICTION"]},
+    {"id":"dead-reckon","name":"Dead Reckon","version":"v0.9","grade":"B","issueCount":2,"issueCodes":["REDUCED_MOTION","ZOOM_RESTRICTION"]},
+    {"id":"cardbored","name":"cardBORED","version":"v0.4","grade":"B","issueCount":1,"issueCodes":["ZOOM_RESTRICTION"]},
+    {"id":"gameforge","name":"GameForge","version":"v3.16","grade":"C","issueCount":9,"issueCodes":["HTML_LANG","MAIN_LANDMARK","H1","CANVAS_NAME","FORM_NAME","REDUCED_MOTION"]},
+    {"id":"glyphplay","name":"GlyphPlay B1","version":"v29.1","grade":"C","issueCount":4,"issueCodes":["BUTTON_NAME","REDUCED_MOTION"]},
+    {"id":"glyphforge","name":"GlyphForge","version":"v68.2","grade":"B","issueCount":3,"issueCodes":["CANVAS_NAME","REDUCED_MOTION"]},
+    {"id":"game-native-core","name":"JM Game Native Core","version":"v0.2","grade":"B","issueCount":2,"issueCodes":["REDUCED_MOTION","ZOOM_RESTRICTION"]},
+    {"id":"gamecore","name":"JM GameCore","version":"v0.2I-A","grade":"C","issueCount":5,"issueCodes":["CANVAS_NAME","REDUCED_MOTION","ZOOM_RESTRICTION"]},
+    {"id":"combound","name":"JM Combound","version":"v0.7","grade":"B","issueCount":2,"issueCodes":["MAIN_LANDMARK","ZOOM_RESTRICTION"]},
+    {"id":"quadze","name":"Quadze Real Estate","version":"v0.6 Bow-Lock","grade":"B","issueCount":1,"issueCodes":["CANVAS_NAME"]},
+    {"id":"playform","name":"PLAYFORM","version":"v0.1","grade":"A","issueCount":0,"issueCodes":[]},
+    {"id":"jmstudios-source-rebegin","name":"JMStudios","version":"B0.8.2 Original Source Patch Merge","grade":"B","issueCount":2,"issueCodes":["IFRAME_TITLE","ZOOM_RESTRICTION"]},
+    {"id":"jmstudios-actual-crown","name":"JMStudios","version":"B0.8.3 Actual Room Link Scan Repair","grade":"B","issueCount":2,"issueCodes":["IFRAME_TITLE","ZOOM_RESTRICTION"]}
+  ],
+  "runtimeBodies": [
+    {"id":"futarized","name":"FUTARIZED","version":"v1.2","category":"Playable Games","role":"Game-of-Game / playable manual / earned convergence","stage":"STAGE-READY","path":"bodies/futarized-v1-2.html"},
+    {"id":"fight-clash","name":"Fight Clash Chameleon","version":"v0.4 Open Ring","category":"Playable Games","role":"Open-ring fighting body / SideLane line","stage":"STAGE-READY","path":"bodies/fight-clash-v0-4.html"},
+    {"id":"aiming-run","name":"Aiming Run","version":"v0.1A","category":"Loops & Reusable Organs","role":"Movement-pressure aiming game / proof body","stage":"STAGE-READY","path":"bodies/aiming-run-v0-1a.html"},
+    {"id":"drag-aim","name":"Drag & Aim Loop Kernel","version":"v0.9.9","category":"Loops & Reusable Organs","role":"Reusable touch / pull / release / trajectory organ","stage":"STAGE-READY","path":"bodies/drag-aim-loop-kernel-v0-9-9.html"},
+    {"id":"loopit-boundary","name":"Loopit / GlyphPlay / GameForge Boundary","version":"Eco/Estate Rejoin Node","category":"Governance & Receipts","role":"External-vs-creator-owned playable boundary proof","stage":"FROZEN","path":"bodies/loopit-glyphplay-gameforge-boundary-rejoin-node.html"}
+  ],
+  "notes": {
+    "grades": "A/B/C are internal preflight bands, not WCAG conformance levels.",
+    "runtime": "The public House re-runs the audit after all built-in bodies mount and after the full Eco/Estate import.",
+    "source": "Runtime assistance is applied to an opening copy; stored exact source is preserved."
+  }
+}

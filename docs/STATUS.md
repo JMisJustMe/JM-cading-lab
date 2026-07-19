@@ -2,9 +2,9 @@
 
 ## Crown route
 
-**JMISJUSTME — The Owned Web Estate v1.0** is the repository root and primary public doorway.
+**JMISJUSTME — The Owned Web Estate v1.0** remains the repository root and primary public doorway.
 
-State: `FOUNDATION_SWEEP_BUILT_AND_DEVICE_QA_PASSED`
+State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_DRAFT_MOUNT`
 
 ## Live public houses
 
@@ -16,8 +16,20 @@ State: `FOUNDATION_SWEEP_BUILT_AND_DEVICE_QA_PASSED`
 - Legacy Estate Bridge
 - Estate, Games and Theory registries
 
-## Preserved boundary
+## Draft-mounted public body
 
-Publicly registered does not mean every protected source body is publicly mounted. Zionfolders, historical originals, large multimedia bodies, private materials, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
+- **CAUSE MUST PASS — Relation, Passage and Physical Consequence**
+- Current best: `Completion Edition v1.0`
+- Status: `COMPLETE_THEORY_BODY_OPEN_APPLICATION`
+- Route: `../theory/cause-must-pass/00_OPEN_FIRST.html`
+- Claim route: `8 — Ding / Receipt / Public Mount`
+- Position 9 is held for field application, counterexample pressure and deliberate main release.
+- Universal empirical validity is not claimed.
 
-See `JM_WEB_ESTATE_V1_RECEIPT.md` for the exact test receipt.
+## Preserved custody boundary
+
+The complete interactive HTML, Word edition, PDF edition, Zionfolder and checksum are mounted in the owner-controlled ChatGPT Library at `/JM Estate/Theory Wing/Cause Must Pass/`.
+
+Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private notes, source vaults, large multimedia bodies, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
+
+The historical foundation receipt remains at `JM_WEB_ESTATE_V1_RECEIPT.md`. The Cause Must Pass mount has its own scoped receipt at `../theory/cause-must-pass/BUILD_RECEIPT.md`.

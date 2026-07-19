@@ -4,7 +4,7 @@
 
 **JMISJUSTME — The Owned Web Estate v1.0** remains the repository root and primary public doorway.
 
-State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_DRAFT_MOUNT`
+State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_MOUNTED`
 
 ## Live public houses
 
@@ -16,14 +16,15 @@ State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_DRAFT_MOUNT`
 - Legacy Estate Bridge
 - Estate, Games and Theory registries
 
-## Draft-mounted public body
+## Live public theory body
 
 - **CAUSE MUST PASS — Relation, Passage and Physical Consequence**
 - Current best: `Completion Edition v1.0`
 - Status: `COMPLETE_THEORY_BODY_OPEN_APPLICATION`
 - Route: `../theory/cause-must-pass/00_OPEN_FIRST.html`
 - Claim route: `8 — Ding / Receipt / Public Mount`
-- Position 9 is held for field application, counterexample pressure and deliberate main release.
+- Main release: `LIVE`
+- Position 9 is held for field application and counterexample pressure.
 - Universal empirical validity is not claimed.
 
 ## Preserved custody boundary

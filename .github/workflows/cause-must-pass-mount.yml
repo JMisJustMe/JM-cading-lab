@@ -1,0 +1,79 @@
+name: Validate Cause Must Pass Mount
+
+on:
+  push:
+    branches:
+      - agent/cause-must-pass-mount-v1-0
+    paths:
+      - 'theory/cause-must-pass/**'
+      - 'registry/theory-wing.json'
+      - 'registry/estate-map.json'
+      - 'README.md'
+      - 'docs/STATUS.md'
+      - '.github/workflows/cause-must-pass-mount.yml'
+  pull_request:
+    paths:
+      - 'theory/cause-must-pass/**'
+      - 'registry/theory-wing.json'
+      - 'registry/estate-map.json'
+      - 'README.md'
+      - 'docs/STATUS.md'
+      - '.github/workflows/cause-must-pass-mount.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-mount:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate mount body, formula, routes and boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          required = [
+              Path('theory/cause-must-pass/00_OPEN_FIRST.html'),
+              Path('theory/cause-must-pass/CROWN_CARD.json'),
+              Path('theory/cause-must-pass/PACKAGE_MANIFEST.json'),
+              Path('theory/cause-must-pass/BUILD_RECEIPT.md'),
+              Path('registry/theory-wing.json'),
+              Path('registry/estate-map.json'),
+          ]
+          missing = [str(p) for p in required if not p.is_file()]
+          if missing:
+              raise SystemExit('Missing mount files: ' + ', '.join(missing))
+          card = json.loads(required[1].read_text(encoding='utf-8'))
+          manifest = json.loads(required[2].read_text(encoding='utf-8'))
+          theory = json.loads(required[4].read_text(encoding='utf-8'))
+          estate = json.loads(required[5].read_text(encoding='utf-8'))
+          page = required[0].read_text(encoding='utf-8')
+          receipt = required[3].read_text(encoding='utf-8')
+          checks = {
+              'complete body status': card.get('crown_status') == 'COMPLETE_THEORY_BODY_OPEN_APPLICATION',
+              'position 8': card.get('claim_route', {}).get('position') == 8,
+              'universal validity not claimed': card.get('completion', {}).get('universal_empirical_validity') == 'NOT_CLAIMED',
+              'formula visible': 'K_t --[R_t under B_t]--&gt; P_t' in page,
+              'crown law visible': 'CAUSE MUST PASS.' in page,
+              'return route visible': '../../index.html' in page,
+              'theory mount listed': any(x.get('id') == 'cause-must-pass' for x in theory.get('current_best_mounts', [])),
+              'estate route listed': any(x.get('path') == 'theory/cause-must-pass/00_OPEN_FIRST.html' for x in estate.get('live_github_routes', [])),
+              'library custody recorded': manifest.get('owner_controlled_package', {}).get('status') == 'MOUNTED_IN_CHATGPT_LIBRARY',
+              'release boundary visible': 'draft pull request' in receipt.lower(),
+          }
+          failed = [name for name, ok in checks.items() if not ok]
+          if failed:
+              raise SystemExit('Failed mount gates: ' + ', '.join(failed))
+          print(json.dumps({'passed': len(checks), 'failed': 0, 'checks': checks}, indent=2))
+          PY
+      - name: HTML source sanity
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('theory/cause-must-pass/00_OPEN_FIRST.html').read_text(encoding='utf-8').lower()
+          for token in ['<!doctype html>', '<title>', '</html>']:
+              if token not in text:
+                  raise SystemExit('Missing HTML token: ' + token)
+          print('Cause Must Pass mount HTML sanity passed')
+          PY

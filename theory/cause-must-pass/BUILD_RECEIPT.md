@@ -8,7 +8,8 @@ CURRENT BEST: Completion Edition v1.0
 STATUS: Complete Theory Body / Open Application
 CROWN LAW: CAUSE MUST PASS.
 0–9: 8 — Ding / Receipt / Public Mount
-9: held for field application, counterexample pressure and deliberate main release
+9: held for field application and counterexample pressure
+MAIN RELEASE: LIVE
 ```
 
 ## Persistent owner-controlled mount
@@ -52,6 +53,7 @@ K_t --[R_t under B_t]--> P_t -> ΔS_t -> Q_t -> T_t -> {K, R, B}_(t+1)
 - Cause-Passage Test: complete.
 - Resistance Test: complete.
 - Publication package: complete.
+- Public mount: live on `main`.
 - Wider field application and counterexample pressure: open.
 - Universal empirical validity: not claimed.
 
@@ -59,8 +61,8 @@ K_t --[R_t under B_t]--> P_t -> ΔS_t -> Q_t -> T_t -> {K, R, B}_(t+1)
 
 The public page is not a decorative shell. It carries the complete bounded framework, formula, laws, test, guardrails and completion state. The full Word, PDF and Zionfolder binaries remain owner-controlled in the Library and are not falsely represented as committed through a text-only GitHub connector route.
 
-## Release gate
+## Release receipt
 
-This branch may open as a draft pull request. Merge to `main` remains a deliberate public-release action after route and boundary review.
+Draft pull request `#19` passed the automated mount gate and was merged to `main` on 19 July 2026. The registry, return route, source-custody manifest and public reading body are now mounted in the JM Estate public corridor.
 
 > **The estate should remember. The chat should think.**

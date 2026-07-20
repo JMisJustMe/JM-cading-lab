@@ -6,6 +6,7 @@ import datetime as dt
 import json
 import os
 import re
+import shutil
 import time
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -15,6 +16,7 @@ BASE = "https://jmisjustme-estate.pages.dev/"
 OUT = Path("cloudflare-estate")
 MARKER = '<script defer src="/assets/estate-head-consumer-v021.js"></script>'
 ROUTES = ["navigator", "apps", "theory", "lyrics", "recovery"]
+LYRICS_MARKERS = ["JM Lyrics & Music House", "JM LyricStudio", "1,065", "The Exiled Times"]
 
 
 def fetch(url: str, required: bool = True) -> bytes:
@@ -36,46 +38,12 @@ def write(rel: str, data: bytes) -> None:
 
 def mirror_live() -> None:
     if OUT.exists():
-        import shutil
         shutil.rmtree(OUT)
     (OUT / "assets").mkdir(parents=True)
     (OUT / "data").mkdir(parents=True)
-    root = fetch(BASE)
-    text = root.decode("utf-8", "replace")
-    write("index.html", root)
-    refs = set(re.findall(r'''(?:src|href)=["']([^"']+)["']''', text, flags=re.I))
-    for ref in sorted(refs):
-        if ref.startswith(("data:", "mailto:", "tel:", "#")):
-            continue
-        full = urljoin(BASE, ref)
-        parsed = urlparse(full)
-        if parsed.netloc != urlparse(BASE).netloc:
-            continue
-        path = parsed.path.lstrip("/")
-        if not path or path.endswith("/"):
-            continue
-        data = fetch(full, required=False)
-        if data:
-            write(path, data)
-    for path in [
-        "404.html", "manifest.webmanifest", "robots.txt", "sitemap.xml",
-        "assets/jm-mark.svg", "data/estate-canonical-site.json",
-        "data/estate-public.json", "data/installed-districts-public.json",
-        "data/installed-private.schema.json", "data/source-chambers.schema.json",
-        "data/storage-policy.json",
-    ]:
-        data = fetch(urljoin(BASE, path), required=False)
-        if data:
-            write(path, data)
+    write("index.html", fetch(BASE))
     for route in ROUTES:
         write(f"{route}/index.html", fetch(urljoin(BASE, f"{route}/")))
-    for path in [
-        "navigator/stringline.json", "navigator/JM3232_NAVIGATOR_REGISTRY.json",
-        "recovery/JM3232_NAVIGATOR_REGISTRY.json",
-    ]:
-        data = fetch(urljoin(BASE, path), required=False)
-        if data:
-            write(path, data)
 
 
 def decode_subset() -> dict:
@@ -101,7 +69,6 @@ def inject(path: Path) -> None:
 
 
 def build() -> None:
-    import shutil
     mirror_live()
     shutil.rmtree(OUT / "lyrics", ignore_errors=True)
     shutil.copytree("lyrics", OUT / "lyrics")
@@ -110,13 +77,14 @@ def build() -> None:
     shutil.copy2("estate-head-public/index.html", OUT / "estate-head/index.html")
     shutil.copy2("estate-head-public/estate-head-consumer-v021.js", OUT / "assets/estate-head-consumer-v021.js")
     (OUT / "data/estate-head-public-v0.2.1.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+
     current = json.loads(Path("registry/estate-head-public-current.json").read_text())
-    current["deployment_state"] = "PUBLIC_CONSUMED"
-    current["public_subset_path"] = "/data/estate-head-public-v0.2.1.json"
-    current["public_head_route"] = "/estate-head/"
+    current.update({"deployment_state":"PUBLIC_CONSUMED","public_subset_path":"/data/estate-head-public-v0.2.1.json","public_head_route":"/estate-head/"})
     (OUT / "data/estate-head-public-current.json").write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n")
+
     for rel in ["index.html", *[f"{r}/index.html" for r in ROUTES]]:
         inject(OUT / rel)
+
     (OUT / "_headers").write_text("""/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -132,18 +100,20 @@ def build() -> None:
   Cache-Control: no-cache
 """)
     (OUT / "_redirects").write_text("/* /index.html 200\n")
-    (OUT / "sw.js").write_text("""const CACHE='jm-independent-estate-head-v021-2';
+    (OUT / "sw.js").write_text("""const CACHE='jm-independent-estate-head-v021-3';
 const CORE=['./','./index.html','./navigator/','./apps/','./theory/','./lyrics/','./recovery/','./estate-head/','./assets/estate-head-consumer-v021.js','./data/estate-head-public-current.json','./data/estate-head-public-v0.2.1.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./index.html'))))});
 """)
+
     assert "JM ESTATE HEAD v0.2.1" in (OUT / "estate-head/index.html").read_text()
-    assert "JM LyricStudio v0.5.1" in (OUT / "lyrics/index.html").read_text()
-    assert "121 tap-open entries" in (OUT / "lyrics/index.html").read_text()
+    lyrics_text = (OUT / "lyrics/index.html").read_text()
+    for marker in LYRICS_MARKERS:
+        assert marker in lyrics_text, f"Current Lyrics House marker missing: {marker}"
     for rel in ["index.html", *[f"{r}/index.html" for r in ROUTES]]:
         assert MARKER in (OUT / rel).read_text()
-    print("LyricStudio + Estate Head deployment body PASS")
+    print("Current Lyrics House + Estate Head deployment body PASS")
 
 
 def get_text(path: str, stamp: str) -> str:
@@ -160,9 +130,8 @@ def prove() -> None:
         if (
             "JM ESTATE HEAD v0.2.1" in head
             and '"deployment_state": "PUBLIC_CONSUMED"' in current
-            and all("/assets/estate-head-consumer-v021.js" in page for page in pages.values())
-            and "JM LyricStudio v0.5.1" in pages["lyrics"]
-            and "121 tap-open entries" in pages["lyrics"]
+            and all(MARKER in page for page in pages.values())
+            and all(marker in pages["lyrics"] for marker in LYRICS_MARKERS)
         ):
             print("Canonical Cloudflare Estate Head consumption PASS")
             return
@@ -177,32 +146,29 @@ def receipt() -> None:
     current = json.loads(current_path.read_text())
     now = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     current.update({
-        "deployment_state": "PUBLIC_CONSUMED",
-        "public_subset_path": "/data/estate-head-public-v0.2.1.json",
-        "public_head_route": "https://jmisjustme-estate.pages.dev/estate-head/",
-        "deployed_at_utc": now,
-        "source_commit": os.environ.get("GITHUB_SHA", ""),
-        "workflow_run": os.environ.get("GITHUB_RUN_ID", ""),
+        "deployment_state":"PUBLIC_CONSUMED",
+        "public_subset_path":"/data/estate-head-public-v0.2.1.json",
+        "public_head_route":"https://jmisjustme-estate.pages.dev/estate-head/",
+        "deployed_at_utc":now,
+        "source_commit":os.environ.get("GITHUB_SHA", ""),
+        "workflow_run":os.environ.get("GITHUB_RUN_ID", ""),
     })
     current_path.write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n")
     receipt = {
-        "schema": "JM.CloudflareEstateHeadReceipt/0.2.1", "status": "SUCCESS",
-        "project": "jmisjustme-estate", "canonical_route": current["public_head_route"],
-        "source_commit": current["source_commit"], "workflow_run": current["workflow_run"],
-        "deployed_at_utc": now, "public_subset_version": "v0.2.1",
-        "canonical_bodies": 61, "project_heads": 11,
-        "gap_snapshot": {"OPEN": 35, "PARTIAL": 20, "RESOLVED": 1},
-        "consumer_routes_proven": ["/", "/navigator/", "/apps/", "/theory/", "/lyrics/", "/recovery/"],
-        "private_owner_fields_published": False, "manual_upload_required": False,
+        "schema":"JM.CloudflareEstateHeadReceipt/0.2.1","status":"SUCCESS","project":"jmisjustme-estate",
+        "canonical_route":current["public_head_route"],"source_commit":current["source_commit"],"workflow_run":current["workflow_run"],
+        "deployed_at_utc":now,"public_subset_version":"v0.2.1","canonical_bodies":61,"project_heads":11,
+        "gap_snapshot":{"OPEN":35,"PARTIAL":20,"RESOLVED":1},
+        "consumer_routes_proven":["/","/navigator/","/apps/","/theory/","/lyrics/","/recovery/"],
+        "private_owner_fields_published":False,"manual_upload_required":False,
     }
     Path("registry/cloudflare-estate-head-deploy-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n")
     lyric = {
-        "schema": "JM.CloudflareLyricStudioReceipt/0.5.1", "status": "SUCCESS",
-        "project": "jmisjustme-estate", "canonical_route": urljoin(BASE, "lyrics/"),
-        "source_commit": current["source_commit"], "workflow_run": current["workflow_run"],
-        "deployed_at_utc": now, "body": "JM LyricStudio v0.5.1 — First-Party Estate",
-        "entries": 121, "live_title_proven": True, "app_back_control_proven": True,
-        "estate_head_consumer_proven": True, "manual_upload_required": False,
+        "schema":"JM.CloudflareLyricsHouseReceipt/1.0","status":"SUCCESS","project":"jmisjustme-estate",
+        "canonical_route":urljoin(BASE, "lyrics/"),"source_commit":current["source_commit"],"workflow_run":current["workflow_run"],
+        "deployed_at_utc":now,"body":"JM Lyrics & Music House — Whole-Estate Public Door","preserved_units":1065,
+        "protected_routes":4,"lyricstudio_present":True,"exiled_times_present":True,
+        "estate_head_consumer_proven":True,"manual_upload_required":False,
     }
     Path("registry/cloudflare-lyrics-deploy-receipt.json").write_text(json.dumps(lyric, indent=2) + "\n")
     print("Receipts written")

@@ -10,6 +10,11 @@ on:
       - "navigator/stringline.json"
       - "registry/estate-classification-authority-v1.0.json"
       - "registry/estate-classification-integrity-receipt-v1.0.json"
+      - "registry/estate-head-public-v0.2.1.json"
+      - "registry/source-to-living-governance-policy-v1.0.json"
+      - "registry/source-to-living-governance-register-v1.0.json"
+      - "registry/source-to-living-governance-receipt-v1.0.json"
+      - "governance/enforce_source_to_living.py"
       - "governance/verify_estate_classification.py"
       - "governance/JM_ESTATE_CLASSIFICATION_INTEGRITY_AUDIT_v1_0.md"
       - ".github/workflows/audit-estate-classification.yml"
@@ -19,6 +24,11 @@ on:
       - "games-beyond/**"
       - "navigator/stringline.json"
       - "registry/estate-classification-authority-v1.0.json"
+      - "registry/estate-head-public-v0.2.1.json"
+      - "registry/source-to-living-governance-policy-v1.0.json"
+      - "registry/source-to-living-governance-register-v1.0.json"
+      - "registry/source-to-living-governance-receipt-v1.0.json"
+      - "governance/enforce_source_to_living.py"
       - "governance/verify_estate_classification.py"
 
 permissions:
@@ -26,13 +36,14 @@ permissions:
 
 jobs:
   classify:
-    name: Legacy gate routed through current classification authority
+    name: Classification authority plus six-stage promotion gate
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v6
       - name: Run the shared Estate classification verifier
         shell: bash
         run: |
           set -euo pipefail
+          python3 governance/enforce_source_to_living.py check --root .
           python3 governance/verify_estate_classification.py --root .

@@ -1,139 +1,77 @@
 {
   "name": "JM Theory Wing",
-  "status": "CURRENT_BEST_PUBLIC_BODY_LIVE_ON_MAIN",
-  "role": "Theory district inside the JM Estate; not governance, not archive-only, and not one flattened document.",
-  "source_note": "The public registry mounts bounded current bodies and retrieval handles. Historical raw sources, private notes and full Zionfolders remain separately preserved and are not falsely claimed as fully committed.",
+  "version": "v0.4-project-source-census-public",
+  "status": "JM_THEORY_MULTIHUB_V0_4_LIVE_ON_MAIN",
+  "role": "The public Theory Wing front door and searchable multihub. Projects remain trunks; their child theories remain independently readable.",
+  "route": "theory/",
+  "public_url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+  "source_note": "The public mount carries compact readable routes, processing grades and source boundaries. Full owner-controlled source corpora and Zionfolders remain separately preserved.",
+  "proof": {
+    "readable_routes": 297,
+    "new_project_source_routes": 256,
+    "bringing_it_all_together_children": 76,
+    "first_stage_jungle_children": 187,
+    "districts": 19,
+    "completed_scoped_bodies": 13,
+    "body_card_rows_inspected": 360,
+    "processing_grades": {"T1": 68, "T2": 154, "T3": 28, "T4": 6},
+    "payload_parts": 7,
+    "decoded_json_bytes": 386039,
+    "decoded_json_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5"
+  },
   "current_best_mounts": [
+    {
+      "id": "jm-theory-multihub-v0-4",
+      "name": "JM Theory Multihub — Project Source Census",
+      "route": "theory/",
+      "current_best": "v0.4 Project Source Census Public Edition",
+      "crown_status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
+      "main_release": "LIVE",
+      "public_boundary": "297 readable routes are mounted with processing grades. Project-source presence does not automatically claim completion or empirical validity."
+    },
     {
       "id": "cause-must-pass",
       "name": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
       "route": "theory/cause-must-pass/00_OPEN_FIRST.html",
-      "crown_card": "theory/cause-must-pass/CROWN_CARD.json",
-      "package_manifest": "theory/cause-must-pass/PACKAGE_MANIFEST.json",
-      "build_receipt": "theory/cause-must-pass/BUILD_RECEIPT.md",
       "current_best": "Completion Edition v1.0",
       "crown_status": "COMPLETE_THEORY_BODY_OPEN_APPLICATION",
-      "claim_route_position": 8,
-      "claim_route_label": "Ding / Receipt / Public Mount",
-      "position_9": "HELD_FOR_FIELD_APPLICATION_AND_COUNTEREXAMPLE_PRESSURE",
       "main_release": "LIVE",
-      "public_boundary": "The bounded framework is complete. Universal empirical validity is not claimed; full package binaries remain owner-controlled in the JM Estate Library."
+      "public_boundary": "The bounded framework is complete. Universal empirical validity is not claimed."
     }
+  ],
+  "project_trunks": [
+    {"id": "bringing-it-all-together", "name": "Bringing It All Together", "children": 76, "state": "MOUNTED_WITH_CHILD_ROUTES"},
+    {"id": "first-stage-jungle", "name": "First Stage / Step Into / Out of the Jungle", "children": 187, "state": "MOUNTED_WITH_CHILD_ROUTES"}
   ],
   "districts": [
-    {
-      "name": "Core Participation and Human Systems",
-      "bodies": [
-        "MMMBBB",
-        "Whole Human Participation",
-        "Contact Field",
-        "Interactor Interacting",
-        "HOSF",
-        "Recoverable Participation"
-      ]
-    },
-    {
-      "name": "Truth, Proof and Validation",
-      "bodies": [
-        "VTS",
-        "DGYAK",
-        "Code Ding",
-        "Cold Ding",
-        "TraceBox",
-        "Empiramid",
-        "TRY IT NOW"
-      ]
-    },
-    {
-      "name": "Language, Meaning and Symbolic Syntax",
-      "bodies": [
-        "FlowTalk",
-        "BTG",
-        "MAP",
-        "SpalkTalk",
-        "SpelkTalk",
-        "Speakuals",
-        "Mark-Level Syntax",
-        "Prefix and RootWord Theory"
-      ]
-    },
-    {
-      "name": "Game and Play Theories",
-      "bodies": [
-        "PLAYFORM",
-        "GlyphPlay",
-        "GameForge",
-        "GlyphForge",
-        "JM GameCore",
-        "128 Hand",
-        "Route Catch",
-        "Touch-Control Lab",
-        "GameFeel Doctor"
-      ]
-    },
-    {
-      "name": "Story, World and Character Theories",
-      "bodies": [
-        "Humanimals",
-        "PlayZone",
-        "T-Boys / 4T Clash",
-        "The Seventh Pillar",
-        "Observer's Door",
-        "Embedded World Engine"
-      ]
-    },
-    {
-      "name": "Music, Lyrics and Performance",
-      "bodies": [
-        "Lyrics as Breath-System",
-        "Pocket-Body Translation",
-        "SeedFlow",
-        "Rapathon",
-        "PieceMaker",
-        "Mouth / Body / Breath / Timing Calibration"
-      ]
-    },
-    {
-      "name": "Contact, Physics and Transformation",
-      "bodies": [
-        "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
-        "Physics Probing",
-        "Contact Transformation",
-        "A-to-B / B-to-A Testing",
-        "Pressure = Force / Area Learning Route",
-        "Micro-Transmutation Law"
-      ]
-    },
-    {
-      "name": "Device, OS and Production",
-      "bodies": [
-        "FTR",
-        "RouteOS",
-        "RootOS",
-        "JjmM",
-        "GripRoute",
-        "Ama-Pro",
-        "Phone-to-Laptop Handoff"
-      ]
-    },
-    {
-      "name": "Public Methods and Transfer",
-      "bodies": [
-        "Container Theory",
-        "Container Method",
-        "Open the Container",
-        "Tin Theory",
-        "Theory-to-Product Router"
-      ]
-    }
+    {"name":"Core Participation and Human Systems","count":6,"bodies":["MMMBBB","Whole Human Participation","Contact Field","Interactor Interacting","HOSF","Recoverable Participation"]},
+    {"name":"Truth, Proof and Validation","count":7,"bodies":["VTS","DGYAK","Code Ding","Cold Ding","TraceBox","Empiramid","TRY IT NOW"]},
+    {"name":"Language, Meaning and Symbolic Syntax","count":8,"bodies":["FlowTalk","BTG","MAP","SpalkTalk","SpelkTalk","Speakuals","Mark-Level Syntax","Prefix and RootWord Theory"]},
+    {"name":"Game and Play Theories","count":9,"bodies":["PLAYFORM","GlyphPlay","GameForge","GlyphForge","JM GameCore","128 Hand","Route Catch","Touch-Control Lab","GameFeel Doctor"]},
+    {"name":"Story, World and Character Theories","count":6,"bodies":["Humanimals","PlayZone","T-Boys / 4T Clash","The Seventh Pillar","Observer's Door","Embedded World Engine"]},
+    {"name":"Music, Lyrics and Performance","count":6,"bodies":["Lyrics as Breath-System","Pocket-Body Translation","SeedFlow","Rapathon","PieceMaker","Mouth / Body / Breath / Timing Calibration"]},
+    {"name":"Contact, Physics and Transformation","count":6,"bodies":["CAUSE MUST PASS — Relation, Passage and Physical Consequence","Physics Probing","Contact Transformation","A-to-B / B-to-A Testing","Pressure = Force / Area Learning Route","Micro-Transmutation Law"]},
+    {"name":"Device, OS and Production","count":7,"bodies":["FTR","RouteOS","RootOS","JjmM","GripRoute","Ama-Pro","Phone-to-Laptop Handoff"]},
+    {"name":"Public Methods and Transfer","count":5,"bodies":["Container Theory","Container Method","Open the Container","Tin Theory","Theory-to-Product Router"]},
+    {"name":"Convergence, Re-entry and Living Project Trunks","count":4,"bodies":["Bringing It All Together","First Stage / Step Into / Out of the Jungle","Latest / Source Reconciliation Pass v0.1","The Approach Stance"]},
+    {"name":"Recent Completed Theory Bodies","count":12,"bodies":["Medium-Dependency Law: Route–Role–Response","The Contact, Causation & Claimed Authority Register","Actual Mental Health","When Stone and Scroll Speak","BRAIDGE Brain Return","Relational Passage Theory","The Whole Human Record","The Me Theme","The Model and the Thing","Higher Transfiguration","Fair Fare or Far Fare","Original Theory for Reality"]},
+    {"name":"Immediate Recent Theory Census — July 2026","count":12,"bodies":["Original Theory for Reality","BRAIDGE Brain Return","Relational Passage Theory","The Whole Human Record","The Me Theme","The Model and the Thing","Higher Transfiguration","Fair Fare or Far Fare","Observer and Observation Paradox","Legaliving — Exemplar Family","Numerology and System Mapping","Mental Illness as Superpower"]},
+    {"name":"Bringing It All Together — Full Project Theory Census","count":76,"bodies":["Worthy Mount / Master Chat","BenefitMerge Theory","JM Project All-Together Register","Known-Field Completion Sweep / Connected Project Scan","Latest / Source Reconciliation Pass","Founding Idea","MMMBBB","VTS / VTSDGY","FlowTalk","BTG - Bridging The Gap","HOSF / HOS","Seventh Pillar"]},
+    {"name":"First Stage / Jungle — Full Theory and Governance Census","count":187,"bodies":["Contact Field Theory","Interactors Interacting","Trinary-at-least","Fakaka / FCC — Focus, Contact, Carry","SpalkTalk","SpelkTalk","Speakuals","EyesOn / EyesOn-Spotcheck","Mark-Level Syntax Theory","Prefix / RootWord Theory","TheOry / Theosophising","UIzing + Theorifying Stage"]},
+    {"name":"Project Source Census — First House / Language / Attention","count":9,"bodies":["SpalkTalk","SpelkTalk","Speakuals","EyesOn / EyesOn-Spotcheck","FlowTalk and MAP","Mark-Level Syntax Theory","Prefix / RootWord Theory","Name / Mask Theory","The Palace / Place-to-Lace"]},
+    {"name":"Project Source Census — Contact / Participation / Relation","count":8,"bodies":["Contact Field Theory","Interactors Interacting","Trinary-at-least","Fakaka / FCC — Focus, Contact, Carry","MMM-BBB and Whole Human Participation","Theory of Mind","Theory of Body","Habituation ≠ Validation"]},
+    {"name":"Project Source Census — Cading / Quadze / Runtime","count":9,"bodies":["Coding / Codeing / Cading","Codifying / Kocodifying","Quadze / Multi-State Mark Theory","JM Codifying Field Schema","Cading","CadenVM / RouteVM","Parser","Runtime","Core IR"]},
+    {"name":"Project Source Census — Proof / Register / Recovery","count":8,"bodies":["TraceBox / Ding Theory","Theory Estate Register","Evidence Ledger","Zionfolder Theory","Title-Level Theory Intake Patch","Known-Field Completion Sweep / Connected Project Scan","Latest / Source Reconciliation Pass","Grip-Ground Connector"]},
+    {"name":"Project Source Census — Title-Level Chats Awaiting Deep Read","count":69,"bodies":["Solipsism and Theory of Mind","Mini Lab Concept","Self-Mastery Contact Field — Mind, I, Awakening & Route-Mastery","FTR / Ama-Pro / Geo-Computer / MaterialRoute Sync Lane","TBS Game Overview","Purification and Imagination","Environment-First Logic / Faulty Basis Repatch","JM Ecosystem Explained","Bat Detectors Explained","JM Bodyhouse","Jentil Meshing Theory","Library Auto-Save vs Manual"]}
   ],
   "locks": [
+    "A project trunk is no longer allowed to stand in for its children.",
+    "A title earns retrieval, not a completed-body crown.",
     "Freeze the branches. Keep the root alive.",
     "The full theory preserves the depth. The simple method carries the use.",
     "Pattern is an invitation to check, not permission to believe.",
     "Theory is a human contact attempt with reality, not reality itself.",
-    "Do not treat a visible title as full content.",
-    "Cause must pass."
+    "No Ding, no claim."
   ],
-  "github_next": "Field-test the live Cause Must Pass body through actual cases, preserve owner-controlled package custody, and add further one-body pages only when current-best source and public boundary are verified."
+  "next": "Continue source extraction and current-best comparison without rebuilding already mounted routes."
 }

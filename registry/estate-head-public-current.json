@@ -21,14 +21,14 @@
     "owner_gate": "MOUNTED",
     "repository_wide_enforcement": "NEXT"
   },
-  "deployment_state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
+  "deployment_state": "PUBLIC_CONSUMED",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
   "public_head_route": "https://jmisjustme-estate.pages.dev/estate-head/",
   "public_subset_path": "https://jmisjustme-estate.pages.dev/data/estate-head-public-v0.2.1.json",
   "deployed_at_utc": "2026-07-20T17:35:22Z",
   "source_commit": "d009741c906ddf38e20c8211a26b6a508acc2baf",
   "workflow_run": "29764188614",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption, public-House consumption, Cloudflare deployment and canonical-host proof are live.",
   "public_consumers": [
     "registry/estate-map.json",
     "estate-app.js",
@@ -45,7 +45,7 @@
     "coding-estate/everybody/00_OPEN_FIRST.html",
     "cading.html"
   ],
-  "deployment_receipt": "registry/estate-head-public-consumption-receipt.json",
+  "deployment_receipt": "registry/cloudflare-estate-head-deploy-receipt.json",
   "carrier": {
     "format": "checksum-verified segmented JSON",
     "segments": 4,
@@ -134,5 +134,10 @@
       "state": "LIVE_GOVERNED_APPS_HOUSE"
     }
   ],
-  "house_consumption_receipt": "registry/estate-head-house-consumption-receipt.json"
+  "house_consumption_receipt": "registry/estate-head-house-consumption-receipt.json",
+  "cloudflare_live_proof": {
+    "deployment": "PASS",
+    "canonical_host": "PASS",
+    "receipt": "registry/cloudflare-estate-head-deploy-receipt.json"
+  }
 }

@@ -1,0 +1,92 @@
+name: Patch Theory Mobile Tab Clearance
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/patch-theory-mobile-tab-clearance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-theory-mobile-clearance-patch
+  cancel-in-progress: false
+
+jobs:
+  patch:
+    name: Patch the live-preserving Theory rail
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out current Estate source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Apply the v0.5 mobile reader clearance patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('.github/workflows/deploy-cloudflare-estate-live-preserving.yml')
+          text = path.read_text()
+          marker = 'jm-theory-mobile-reader-clearance-v1'
+
+          if marker not in text:
+              old = "          write('theory/index.html', theory)\n"
+              new = """          theory_text = re.sub(r'<style id=\"jm-theory-mobile-reader-clearance-v1\">.*?</style>', '', theory_text, flags=re.I | re.S)
+          theory_clearance = r'''
+          <style id="jm-theory-mobile-reader-clearance-v1">
+          @media(max-width:760px){
+            #readerContent{min-height:0;overflow:hidden}
+            .reader-head,.reader-tabs{flex:0 0 auto}
+            .reader-tabs{position:relative;z-index:3;min-height:62px;align-items:center;padding:.72rem 1rem .95rem;background:#10141b}
+            .reader-tab{display:inline-flex;align-items:center;min-height:40px}
+            .reader-body{flex:1 1 auto;min-height:0;margin-top:10px;position:relative;z-index:1}
+          }
+          </style>
+          '''
+          theory_text = re.sub(r'</head>', theory_clearance + '\n</head>', theory_text, count=1, flags=re.I)
+          write('theory/index.html', theory_text.encode('utf-8'))
+"""
+              if old not in text:
+                  raise SystemExit('Theory write anchor was not found; refusing an ungrounded patch.')
+              text = text.replace(old, new, 1)
+
+          text = text.replace(
+              "const CACHE='jm-independent-estate-2026-07-20-navigator-stringline-1';",
+              "const CACHE='jm-independent-estate-2026-07-20-theory-tabs-clearance-1';"
+          )
+
+          verify_anchor = '          grep -q "Human Pattern Calibration" cloudflare-estate/theory/index.html\n'
+          verify_line = '          grep -q "jm-theory-mobile-reader-clearance-v1" cloudflare-estate/theory/index.html\n'
+          if verify_line not in text:
+              if verify_anchor not in text:
+                  raise SystemExit('Theory verification anchor was not found.')
+              text = text.replace(verify_anchor, verify_anchor + verify_line, 1)
+
+          live_anchor = '              && grep -q "Human Pattern Calibration" "$RUNNER_TEMP/live-theory.html" \\\n'
+          live_line = '              && grep -q "jm-theory-mobile-reader-clearance-v1" "$RUNNER_TEMP/live-theory.html" \\\n'
+          if live_line not in text:
+              if live_anchor not in text:
+                  raise SystemExit('Canonical Theory proof anchor was not found.')
+              text = text.replace(live_anchor, live_anchor + live_line, 1)
+
+          path.write_text(text)
+          PY
+
+          git config user.name "JM Estate Mobile Repair Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/workflows/deploy-cloudflare-estate-live-preserving.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Lower Theory source pane below mobile reader tabs"
+          git pull --rebase origin main
+          git push origin main

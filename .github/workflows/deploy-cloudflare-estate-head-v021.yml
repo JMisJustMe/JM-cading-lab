@@ -1,3 +1,4 @@
+# Settled-state trigger: checksum-segmented carrier + current Lyrics House proof
 name: Deploy Estate Head v0.2.1 to Cloudflare
 
 on:
@@ -86,21 +87,21 @@ jobs:
 
       - name: Prove the Estate Head on the canonical host
         if: steps.build.outputs.exit_code == '0'
-        run: python3 scripts/deploy_estate_head_public.py prove
+        run: python3 scripts/deploy_estate_head_public_resilient.py prove
 
       - name: Write and commit successful deployment receipts
         if: steps.build.outputs.exit_code == '0'
         run: |
           set -euo pipefail
           git pull --rebase origin main
-          python3 scripts/deploy_estate_head_public.py receipt
+          python3 scripts/deploy_estate_head_public_resilient.py receipt
           git config user.name "JM Estate Deployment Rail"
           git config user.email "actions@users.noreply.github.com"
           git add registry/estate-head-public-v0.2.1.json registry/estate-head-public-current.json registry/cloudflare-estate-head-deploy-receipt.json registry/cloudflare-lyrics-deploy-receipt.json
           git diff --cached --quiet || git commit -m "Record Estate Head v0.2.1 Cloudflare consumption"
           for attempt in $(seq 1 30); do
             git pull --rebase origin main
-            git push origin HEAD:main && exit 0
+            git push origin main && exit 0
             sleep 1
           done
           exit 1

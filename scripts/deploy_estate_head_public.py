@@ -2,9 +2,7 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import datetime as dt
-import gzip
 import json
 import os
 import re
@@ -42,7 +40,6 @@ def mirror_live() -> None:
         shutil.rmtree(OUT)
     (OUT / "assets").mkdir(parents=True)
     (OUT / "data").mkdir(parents=True)
-
     root = fetch(BASE)
     text = root.decode("utf-8", "replace")
     write("index.html", root)
@@ -60,7 +57,6 @@ def mirror_live() -> None:
         data = fetch(full, required=False)
         if data:
             write(path, data)
-
     for path in [
         "404.html", "manifest.webmanifest", "robots.txt", "sitemap.xml",
         "assets/jm-mark.svg", "data/estate-canonical-site.json",
@@ -71,7 +67,6 @@ def mirror_live() -> None:
         data = fetch(urljoin(BASE, path), required=False)
         if data:
             write(path, data)
-
     for route in ROUTES:
         write(f"{route}/index.html", fetch(urljoin(BASE, f"{route}/")))
     for path in [
@@ -84,8 +79,8 @@ def mirror_live() -> None:
 
 
 def decode_subset() -> dict:
-    payload = Path("estate-head-public/estate-head-public-v0.2.1.json.gz.b64").read_text().strip()
-    data = json.loads(gzip.decompress(base64.b64decode(payload)))
+    from deploy_estate_head_public_readable import readable_subset
+    data = readable_subset()
     assert data["meta"]["version"] == "v0.2.1"
     assert len(data["bodies"]) == 61
     assert len(data["project_heads"]) == 11
@@ -115,16 +110,13 @@ def build() -> None:
     shutil.copy2("estate-head-public/index.html", OUT / "estate-head/index.html")
     shutil.copy2("estate-head-public/estate-head-consumer-v021.js", OUT / "assets/estate-head-consumer-v021.js")
     (OUT / "data/estate-head-public-v0.2.1.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
-
     current = json.loads(Path("registry/estate-head-public-current.json").read_text())
     current["deployment_state"] = "PUBLIC_CONSUMED"
     current["public_subset_path"] = "/data/estate-head-public-v0.2.1.json"
     current["public_head_route"] = "/estate-head/"
     (OUT / "data/estate-head-public-current.json").write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n")
-
     for rel in ["index.html", *[f"{r}/index.html" for r in ROUTES]]:
         inject(OUT / rel)
-
     (OUT / "_headers").write_text("""/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -140,7 +132,7 @@ def build() -> None:
   Cache-Control: no-cache
 """)
     (OUT / "_redirects").write_text("/* /index.html 200\n")
-    (OUT / "sw.js").write_text("""const CACHE='jm-independent-estate-head-v021-1';
+    (OUT / "sw.js").write_text("""const CACHE='jm-independent-estate-head-v021-2';
 const CORE=['./','./index.html','./navigator/','./apps/','./theory/','./lyrics/','./recovery/','./estate-head/','./assets/estate-head-consumer-v021.js','./data/estate-head-public-current.json','./data/estate-head-public-v0.2.1.json'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

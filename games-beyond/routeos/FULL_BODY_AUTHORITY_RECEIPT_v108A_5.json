@@ -1,0 +1,25 @@
+{
+  "schema": "JM.RouteOSFullBodyAuthority/1.0",
+  "status": "FULL_KEEPER_RECOVERED_PUBLIC_MOUNT_PENDING",
+  "canonical_keeper": {
+    "filename": "00_OPEN_FIRST_ROUTEOS_v108A_5_PRO_FLOW_CLARITY_RESPONSE_POLISH.html",
+    "version": "v108A.5",
+    "size_bytes": 607213,
+    "sha256": "6e96b001fc0d990f449de21be8b98e566cf353c486c7ae93ad12d81049fecbe2",
+    "source": "JM Library exact file"
+  },
+  "preserved_earlier_anchor": {
+    "filename": "00_OPEN_FIRST_ROUTEOS_v108A_0_CRAFT_POLISH_PASS.html",
+    "version": "v108A.0",
+    "size_bytes": 580743,
+    "sha256": "d817e7388dc8e51987920a459768b9e17d939ba535606ce0ff13214426464fe6"
+  },
+  "derived_public_part": {
+    "path": "games-beyond/routeos/runtime/index.html",
+    "version": "v0.8",
+    "authority": "DERIVED_SHARED_PART_ONLY",
+    "must_not_replace_or_outrank": "canonical_keeper"
+  },
+  "governing_law": "Preserve the complete standalone body untouched first; mount that exact body; then derive usable and shared parts. A derivative may never replace, outrank or masquerade as the full body.",
+  "public_truth": "The current public v0.8 runtime is not the canonical RouteOS keeper. Byte-for-byte GitHub mounting of v108A.5 remains incomplete."
+}

@@ -1,0 +1,4276 @@
+{
+  "schema": "JM.SourceToLivingGovernanceRegister/1.0",
+  "version": "v1.0",
+  "effective_date": "2026-07-20",
+  "owner_authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "crown": "No body moves outward by name or version alone. Source, finding, audit, current-best decision, crown scope and living route must all pass.",
+  "stage_order": [
+    "Source Ledger",
+    "Latest Body Finder",
+    "Source-Body Auditor",
+    "Current Best Register",
+    "Crown Register",
+    "Living Register"
+  ],
+  "scope": {
+    "estate_head_version": "v0.2.1",
+    "body_count": 61,
+    "project_head_count": 11,
+    "governed_record_count": 72,
+    "stage_receipt_count": 432,
+    "public_promotions_guarded": 27,
+    "not_full_census_crowned": true
+  },
+  "source_digests": {
+    "registry/estate-head-public-v0.2.1.json": "4003b5b0a32998ca2221b868c5dfc0492d7f0baecdd84c59a2b817fa1ed56bc9",
+    "registry/estate-classification-authority-v1.0.json": "74629f9991ed27851ab76e36f18914ff3b6a39758a3a8d1741093b303e509ee1",
+    "navigator/stringline.json": "f9bbfc6370f494927546434cd0947413dd2ce574bd33c2d63298d7036741b8a7",
+    "registry/source-to-living-governance-policy-v1.0.json": "fc75a64882006c8f9e7344f0ddf896c4f86b4fb9e2d932c7f75c7ade26380f95"
+  },
+  "classification_authority": {
+    "status": "PASS",
+    "entry_count": 18,
+    "required_chain": [
+      "Source Ledger",
+      "Latest Body Finder",
+      "Source-Body Auditor",
+      "Current Best Register",
+      "Crown Register",
+      "Living Register"
+    ],
+    "failure_policy": "Block source acceptance when a prohibited reduction, stale frozen anchor or missing flagship seat is detected."
+  },
+  "stringline_governance": {
+    "status": "PASS",
+    "version": "v0.1.8 QUADZE v4 authority reconciliation seed",
+    "required_ids": [
+      "source-ledger",
+      "latest-body-finder",
+      "source-body-auditor",
+      "current-best-register",
+      "crown-register",
+      "living-register"
+    ]
+  },
+  "body_passports": [
+    {
+      "id": "EH-001",
+      "house": "H00",
+      "name": "JM ESTATE HEAD",
+      "version": "v0.2.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-001",
+          "record_kind": "BODY",
+          "source_label": "JM ESTATE HEAD",
+          "evidence": "v0.2 package plus live public authority contract, root projection, guarded deployment rail and integrity diagnostics"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM ESTATE HEAD — v0.2.1",
+          "version_label": "v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "v0.2 package plus live public authority contract, root projection, guarded deployment rail and integrity diagnostics",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Working-crown",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "v0.2 package plus live public authority contract, root projection, guarded deployment rail and integrity diagnostics",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "WORKING_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "integrity-guarded",
+            "not-full-census-crowned",
+            "public-authority-contracted",
+            "public-subset-ready",
+            "recovery-wave-1",
+            "working-crown"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Complete Cloudflare proof and continue the wider census without exposing owner-source fields.",
+          "connections": [
+            "JM Command Register",
+            "Gap Governance Breach Register",
+            "Project Heads",
+            "JM Stringline",
+            "Living Library",
+            "Canonical Website"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-002",
+      "house": "H00",
+      "name": "JM Command Register — TBS Panel",
+      "version": "v0.1 / Delta 004.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-002",
+          "record_kind": "BODY",
+          "source_label": "JM Command Register — TBS Panel",
+          "evidence": "Android-local OneBody repair; embedded JSON; chooser and export actions"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Command Register — TBS Panel — v0.1 / Delta 004.1",
+          "version_label": "v0.1 / Delta 004.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Android-local OneBody repair; embedded JSON; chooser and export actions",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Android-local OneBody repair; embedded JSON; chooser and export actions",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "WORKING_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "current-best",
+            "direct-library",
+            "working-crown"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Remain inherited chooser organ under Estate Head rather than becoming a competing house.",
+          "connections": [
+            "Estate OS",
+            "Current Best Register",
+            "Crown Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-003",
+      "house": "H00",
+      "name": "JM Estate Master Inventory",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-003",
+          "record_kind": "BODY",
+          "source_label": "JM Estate Master Inventory",
+          "evidence": "Frozen estate-wide map dated 13 July 2026"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate Master Inventory — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Frozen estate-wide map dated 13 July 2026",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Frozen estate-wide map dated 13 July 2026",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "frozen-anchor"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as the frozen historical floor; Estate Head records later movement additively.",
+          "connections": [
+            "Root Zionfolder",
+            "House Register",
+            "Gap Map"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-004",
+      "house": "H00",
+      "name": "Project Head Chat System",
+      "version": "v0.1 architecture",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-004",
+          "record_kind": "BODY",
+          "source_label": "Project Head Chat System",
+          "evidence": "Named and connected to JM Stringline and Navigator build route"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Project Head Chat System — v0.1 architecture",
+          "version_label": "v0.1 architecture",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Named and connected to JM Stringline and Navigator build route",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Named and connected to JM Stringline and Navigator build route",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "architecture-active"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Give each major project a governed Project Head card linked to canonical source, current body and next action.",
+          "connections": [
+            "JM Stringline",
+            "JM3232 Navigator",
+            "Estate Head"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AU-001",
+      "house": "H01",
+      "name": "JM ESTATE H01 — Source & Creator Body",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AU-001",
+          "record_kind": "BODY",
+          "source_label": "JM ESTATE H01 — Source & Creator Body",
+          "evidence": "12 identity/route cards; source and AI build-bench separation installed"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM ESTATE H01 — Source & Creator Body — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "12 identity/route cards; source and AI build-bench separation installed",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "12 identity/route cards; source and AI build-bench separation installed",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "source-reconciled",
+            "house-installed"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as identity authority beneath public Author Body wording.",
+          "connections": [
+            "Author Master Body",
+            "Estate Law Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AU-002",
+      "house": "H01",
+      "name": "Author Master Body",
+      "version": "v0.3",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AU-002",
+          "record_kind": "BODY",
+          "source_label": "Author Master Body",
+          "evidence": "Public page, bio/press/collab set, private source profile, creator menu and evidence register"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Author Master Body — v0.3",
+          "version_label": "v0.3",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Public page, bio/press/collab set, private source profile, creator menu and evidence register",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Public page, bio/press/collab set, private source profile, creator menu and evidence register",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "source-supported",
+            "public-private-split"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount the public About page into the canonical website and keep private source biography owner-side.",
+          "connections": [
+            "H01 Source Body",
+            "Source to Body",
+            "Public Website"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AU-003",
+      "house": "H01",
+      "name": "JM Stringline / TBS",
+      "version": "v0.1.3 current naming/adoption line",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AU-003",
+          "record_kind": "BODY",
+          "source_label": "JM Stringline / TBS",
+          "evidence": "Agreed method, crown line and repository adoption ledger governing cross-body continuity."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Stringline / TBS — v0.1.3 current naming/adoption line",
+          "version_label": "v0.1.3 current naming/adoption line",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Agreed method, crown line and repository adoption ledger governing cross-body continuity.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Agreed method, crown line and repository adoption ledger governing cross-body continuity.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "method-established"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as the project-to-project continuation protocol.",
+          "connections": [
+            "Structured Single-Stringling",
+            "Project Heads",
+            "Navigator"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-001",
+      "house": "H02",
+      "name": "JM Theory Multihub — Readable Source",
+      "version": "v0.5",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-001",
+          "record_kind": "BODY",
+          "source_label": "JM Theory Multihub — Readable Source",
+          "evidence": "Full-body readable source package, receipt, SHA256 and Zionfolder"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Theory Multihub — Readable Source — v0.5",
+          "version_label": "v0.5",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Full-body readable source package, receipt, SHA256 and Zionfolder",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Full-body readable source package, receipt, SHA256 and Zionfolder",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "readable-source",
+            "deployment-check"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/theory/",
+          "next_action": "Verify v0.5 deployment at the canonical /theory/ door and keep full bodies present, not summary-only shells.",
+          "connections": [
+            "Theory Wing",
+            "Recovery House",
+            "Public Website"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-002",
+      "house": "H02",
+      "name": "CAUSE MUST PASS",
+      "version": "v1 complete body",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-002",
+          "record_kind": "BODY",
+          "source_label": "CAUSE MUST PASS",
+          "evidence": "Completed theory with governed claim route"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "CAUSE MUST PASS — v1 complete body",
+          "version_label": "v1 complete body",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Completed theory with governed claim route",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Completed theory with governed claim route",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "complete"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/theory/",
+          "next_action": "Prepare a public-readable edition without reducing the complete body.",
+          "connections": [
+            "Claim Audit",
+            "Contact & Causation Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-003",
+      "house": "H02",
+      "name": "Medium-Dependency Law: Route–Role–Response",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-003",
+          "record_kind": "BODY",
+          "source_label": "Medium-Dependency Law: Route–Role–Response",
+          "evidence": "Polished Zionfolder; Air, Electricity and Magnetism anchors"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Medium-Dependency Law: Route–Role–Response — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Polished Zionfolder; Air, Electricity and Magnetism anchors",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Polished Zionfolder; Air, Electricity and Magnetism anchors",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "polished-package"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount into the Theory Multihub evidence route.",
+          "connections": [
+            "Air Route",
+            "Electricity Route",
+            "Magnetism Route"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-004",
+      "house": "H02",
+      "name": "JM Contact, Causation & Claimed Authority Register",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-004",
+          "record_kind": "BODY",
+          "source_label": "JM Contact, Causation & Claimed Authority Register",
+          "evidence": "Finished claim-separation and audit body with universal Claim TraceBox"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Contact, Causation & Claimed Authority Register — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Finished claim-separation and audit body with universal Claim TraceBox",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Finished claim-separation and audit body with universal Claim TraceBox",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "polished-package",
+            "risk-governed"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as shared claim governor across theory and public wording.",
+          "connections": [
+            "CAUSE MUST PASS",
+            "Claim TraceBox",
+            "Quadze"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-005",
+      "house": "H02",
+      "name": "When Stone and Scroll Speak",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-005",
+          "record_kind": "BODY",
+          "source_label": "When Stone and Scroll Speak",
+          "evidence": "Completed translation and authority body"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "When Stone and Scroll Speak — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Completed translation and authority body",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Completed translation and authority body",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "complete-body"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Attach publication metadata and public excerpt route.",
+          "connections": [
+            "Authority Register",
+            "Translation Law"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-006",
+      "house": "H02",
+      "name": "Addictive Dismissal",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-006",
+          "record_kind": "BODY",
+          "source_label": "Addictive Dismissal",
+          "evidence": "Frozen keeper law and completed theory body"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Addictive Dismissal — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Frozen keeper law and completed theory body",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Frozen keeper law and completed theory body",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "frozen"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount as a public short-form essay and link to full body.",
+          "connections": [
+            "Claim Governance",
+            "Behavioural Routes"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-007",
+      "house": "H02",
+      "name": "Handprint Systems",
+      "version": "complete manuscript",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-007",
+          "record_kind": "BODY",
+          "source_label": "Handprint Systems",
+          "evidence": "Complete conceptual systems manuscript listed in Root Estate anchors"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Handprint Systems — complete manuscript",
+          "version_label": "complete manuscript",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Complete conceptual systems manuscript listed in Root Estate anchors",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Complete conceptual systems manuscript listed in Root Estate anchors",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "complete-manuscript"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Create reader edition and publication route.",
+          "connections": [
+            "Systems Theory",
+            "Source to Body"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-008",
+      "house": "H02",
+      "name": "The Seventh Pillar",
+      "version": "complete manuscript",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-008",
+          "record_kind": "BODY",
+          "source_label": "The Seventh Pillar",
+          "evidence": "Complete Futarian novel listed as a frozen anchor"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "The Seventh Pillar — complete manuscript",
+          "version_label": "complete manuscript",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Complete Futarian novel listed as a frozen anchor",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Complete Futarian novel listed as a frozen anchor",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "complete-manuscript"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Editorial pass, cover route and release decision.",
+          "connections": [
+            "Futarian world",
+            "Books"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-009",
+      "house": "H02",
+      "name": "VOTE → VAULT",
+      "version": "v2.0.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-009",
+          "record_kind": "BODY",
+          "source_label": "VOTE → VAULT",
+          "evidence": "Completed publication/theory body"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "VOTE → VAULT — v2.0.0",
+          "version_label": "v2.0.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Completed publication/theory body",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Completed publication/theory body",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "packaged"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Select outward essay/booklet format.",
+          "connections": [
+            "Authority",
+            "Human Systems"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-010",
+      "house": "H02",
+      "name": "Source to Body — The Complete Body Foundry",
+      "version": "v0.5 Real Reader Campaign & UK Publication Route",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-010",
+          "record_kind": "BODY",
+          "source_label": "Source to Body — The Complete Body Foundry",
+          "evidence": "Campaign machinery complete: 12-reader/four-lens plan; 78-page private beta edition; 7-page workbook; HTML/mobile/PDF/a11y checks passed; live reader results not claimed"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Source to Body — The Complete Body Foundry — v0.5 Real Reader Campaign & UK Publication Route",
+          "version_label": "v0.5 Real Reader Campaign & UK Publication Route",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Campaign machinery complete: 12-reader/four-lens plan; 78-page private beta edition; 7-page workbook; HTML/mobile/PDF/a11y checks passed; live reader results not claimed",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Campaign machinery complete: 12-reader/four-lens plan; 78-page private beta edition; 7-page workbook; HTML/mobile/PDF/a11y checks passed; live reader results not claimed",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "campaign-machinery-complete",
+            "live-results-not-claimed",
+            "publication-route-checked"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Run the real-reader campaign; v0.6 must be earned through the defined response and revision gate.",
+          "connections": [
+            "Author Master Body",
+            "Theory Multihub",
+            "Publications",
+            "Reader Campaign"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-001",
+      "house": "H03",
+      "name": "Cading Canon",
+      "version": "v0.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-001",
+          "record_kind": "BODY",
+          "source_label": "Cading Canon",
+          "evidence": "Language-body syntax and route logic established; universal runtime not claimed"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Cading Canon — v0.1",
+          "version_label": "v0.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Language-body syntax and route logic established; universal runtime not claimed",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Language-body syntax and route logic established; universal runtime not claimed",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "language-body",
+            "blocked-from-universal-claim"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Converge parser/runtime/emitter lineage around one current technical specification.",
+          "connections": [
+            "CadenVM",
+            "CodeHand",
+            "THEO",
+            "JM Game Native Core"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-002",
+      "house": "H03",
+      "name": "JM32-1DA Final Complete Release",
+      "version": "v1.0.2",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-002",
+          "record_kind": "BODY",
+          "source_label": "JM32-1DA Final Complete Release",
+          "evidence": "Android PASS and QA 41/41"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM32-1DA Final Complete Release — v1.0.2",
+          "version_label": "v1.0.2",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Android PASS and QA 41/41",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Android PASS and QA 41/41",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "android-pass",
+            "frozen-anchor"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as governance runtime anchor; do not overextend proof beyond its tested scope.",
+          "connections": [
+            "Cading",
+            "Governance Runtime"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-003",
+      "house": "H03",
+      "name": "THEO Proof Tool",
+      "version": "v0.2A",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-003",
+          "record_kind": "BODY",
+          "source_label": "THEO Proof Tool",
+          "evidence": "Strict organ parser and runnable proof-tool floor"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "THEO Proof Tool — v0.2A",
+          "version_label": "v0.2A",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Strict organ parser and runnable proof-tool floor",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Strict organ parser and runnable proof-tool floor",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "runnable-proof"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Attach exact grammar coverage and test corpus to the current technical register.",
+          "connections": [
+            "TheoC Contract",
+            "TheoC IR",
+            "PrimeBody Parser"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-004",
+      "house": "H03",
+      "name": "CodeHand RouteOS",
+      "version": "v1.0 / viewport repair v0.3.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-004",
+          "record_kind": "BODY",
+          "source_label": "CodeHand RouteOS",
+          "evidence": "Completed engine cycle with Android/operator proof"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "CodeHand RouteOS — v1.0 / viewport repair v0.3.1",
+          "version_label": "v1.0 / viewport repair v0.3.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Completed engine cycle with Android/operator proof",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Completed engine cycle with Android/operator proof",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "android-proof",
+            "frozen-anchor"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Extract reusable operator, viewport and receipt organs into shared runtime modules.",
+          "connections": [
+            "Cading",
+            "Route Receipt Game",
+            "JM Game Native Core"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-005",
+      "house": "H03",
+      "name": "JM GAME NATIVE CORE + Apps & Tools Plus",
+      "version": "v0.2",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-005",
+          "record_kind": "BODY",
+          "source_label": "JM GAME NATIVE CORE + Apps & Tools Plus",
+          "evidence": "Editable PrimeBody source governed a ten-step FOURFOLD queue; typed IR/runtime; C++ compatible adapter; 44 app/tool bodies executed"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM GAME NATIVE CORE + Apps & Tools Plus — v0.2",
+          "version_label": "v0.2",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Editable PrimeBody source governed a ten-step FOURFOLD queue; typed IR/runtime; C++ compatible adapter; 44 app/tool bodies executed",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Editable PrimeBody source governed a ten-step FOURFOLD queue; typed IR/runtime; C++ compatible adapter; 44 app/tool bodies executed",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "host-proof",
+            "android-contact-pending",
+            "blocked-from-overclaim"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Complete Android contact and consolidate exact source-to-host boundaries.",
+          "connections": [
+            "FOURFOLD",
+            "THEO",
+            "C++ Adapter",
+            "Apps & Tools Native Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-006",
+      "house": "H03",
+      "name": "CadenVM / CadenPad",
+      "version": "v0.10 lineage",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-006",
+          "record_kind": "BODY",
+          "source_label": "CadenVM / CadenPad",
+          "evidence": "Parser/VM/editor ladder with Android Ding and SavePack stages"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "CadenVM / CadenPad — v0.10 lineage",
+          "version_label": "v0.10 lineage",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Parser/VM/editor ladder with Android Ding and SavePack stages",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Parser/VM/editor ladder with Android Ding and SavePack stages",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "active-convergence"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Nominate one current VM spec and archive superseded experimental branches.",
+          "connections": [
+            "Cading",
+            "RouteCore",
+            "Emitter Stack"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CD-007",
+      "house": "H03",
+      "name": "Quadze",
+      "version": "v1.2",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CD-007",
+          "record_kind": "BODY",
+          "source_label": "Quadze",
+          "evidence": "Specified-body Ding for route composition and semantic preservation"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Quadze — v1.2",
+          "version_label": "v1.2",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Specified-body Ding for route composition and semantic preservation",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Specified-body Ding for route composition and semantic preservation",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "specified-body-ding"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Keep as semantic composition governor across theory, coding and tools.",
+          "connections": [
+            "Claim TraceBox",
+            "Genre Forge",
+            "Theory Audit"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-001",
+      "house": "H04",
+      "name": "Games&Beyond — Accessible Full House",
+      "version": "v0.5",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-001",
+          "record_kind": "BODY",
+          "source_label": "Games&Beyond — Accessible Full House",
+          "evidence": "Public editable/playable house with direct open, edit, restore, export, proof and receipt facilities"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Games&Beyond — Accessible Full House — v0.5",
+          "version_label": "v0.5",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Public editable/playable house with direct open, edit, restore, export, proof and receipt facilities",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Public",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Public editable/playable house with direct open, edit, restore, export, proof and receipt facilities",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "public-house",
+            "about-21-built-bodies"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Make this house obey Estate Head canonical versions and shared release pipeline.",
+          "connections": [
+            "Public Website",
+            "Games House",
+            "GitHub Corridor"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-002",
+      "house": "H04",
+      "name": "FOURFOLD — The Field Remembers Force",
+      "version": "v0.15.1 lineage",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-002",
+          "record_kind": "BODY",
+          "source_label": "FOURFOLD — The Field Remembers Force",
+          "evidence": "Playable touch physics, roster/ability experiments, Android and child play-testing"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "FOURFOLD — The Field Remembers Force — v0.15.1 lineage",
+          "version_label": "v0.15.1 lineage",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Playable touch physics, roster/ability experiments, Android and child play-testing",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Playable touch physics, roster/ability experiments, Android and child play-testing",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "device-tested",
+            "not-final-release"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Consolidate current-best controls, roster, arenas, menus and release-ready shared game shell.",
+          "connections": [
+            "JM Game Native Core",
+            "PLAYFORM",
+            "Movement Personality"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-003",
+      "house": "H04",
+      "name": "128 Hand",
+      "version": "v0.7.4 active / v0.5.1 frozen anchor",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-003",
+          "record_kind": "BODY",
+          "source_label": "128 Hand",
+          "evidence": "Portrait proof, football and two-hand fighting control iterations"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "128 Hand — v0.7.4 active / v0.5.1 frozen anchor",
+          "version_label": "v0.7.4 active / v0.5.1 frozen anchor",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Portrait proof, football and two-hand fighting control iterations",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Portrait proof, football and two-hand fighting control iterations",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "frozen-floor",
+            "active-line"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Resolve touch movement route and nominate the canonical two-hand fighting body.",
+          "connections": [
+            "Games House",
+            "Touch Controls"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-004",
+      "house": "H04",
+      "name": "cardBORED",
+      "version": "v0.4",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-004",
+          "record_kind": "BODY",
+          "source_label": "cardBORED",
+          "evidence": "Playable card-duel laboratory with multiple design passes"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "cardBORED — v0.4",
+          "version_label": "v0.4",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Playable card-duel laboratory with multiple design passes",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Playable card-duel laboratory with multiple design passes",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "lab"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Reduce luck dominance and decide whether the lab becomes a sovereign release body.",
+          "connections": [
+            "LG",
+            "TCG Lab",
+            "FUTARIZED"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-005",
+      "house": "H04",
+      "name": "Rim Route",
+      "version": "v0.5",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-005",
+          "record_kind": "BODY",
+          "source_label": "Rim Route",
+          "evidence": "v0.3 device anchor and v0.5 character-contact mount"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Rim Route — v0.5",
+          "version_label": "v0.5",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "v0.3 device anchor and v0.5 character-contact mount",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "v0.3 device anchor and v0.5 character-contact mount",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "device-anchor"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Polish into a compact public release candidate.",
+          "connections": [
+            "Route Catch",
+            "Movement Systems"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-006",
+      "house": "H04",
+      "name": "Route Catch",
+      "version": "v0.2A",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-006",
+          "record_kind": "BODY",
+          "source_label": "Route Catch",
+          "evidence": "Android proof and screen-fit repair"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Route Catch — v0.2A",
+          "version_label": "v0.2A",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Android proof and screen-fit repair",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Android proof and screen-fit repair",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "android-proof",
+            "first-ignition"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Complete public-facing polish or deliberately replace as first ignition.",
+          "connections": [
+            "Command Register",
+            "Rim Route"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-007",
+      "house": "H04",
+      "name": "Western / Sniper PvP",
+      "version": "active 3D transition",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-007",
+          "record_kind": "BODY",
+          "source_label": "Western / Sniper PvP",
+          "evidence": "Touch movement/aim route, destructible cover and quick-round testing"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Western / Sniper PvP — active 3D transition",
+          "version_label": "active 3D transition",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Touch movement/aim route, destructible cover and quick-round testing",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Touch movement/aim route, destructible cover and quick-round testing",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "3d-active",
+            "not-final"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Complete actual coded 3D implementation and preserve original aiming route plus alternative method.",
+          "connections": [
+            "Aiming Run",
+            "Drag & Aim Kernel"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-008",
+      "house": "H04",
+      "name": "Boxing / Ring-Out",
+      "version": "active prototype line",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-008",
+          "record_kind": "BODY",
+          "source_label": "Boxing / Ring-Out",
+          "evidence": "Touch-first 1v1 movement, block, push, grab, hold and kick iterations"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Boxing / Ring-Out — active prototype line",
+          "version_label": "active prototype line",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Touch-first 1v1 movement, block, push, grab, hold and kick iterations",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Touch-first 1v1 movement, block, push, grab, hold and kick iterations",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "touch-first"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Unify touchscreen-first controls, mobile button coverage and presentation polish.",
+          "connections": [
+            "Combat Kernel",
+            "128 Hand"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-009",
+      "house": "H04",
+      "name": "Basketball",
+      "version": "level 5 line",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-009",
+          "record_kind": "BODY",
+          "source_label": "Basketball",
+          "evidence": "Playable body and positive child play-test"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Basketball — level 5 line",
+          "version_label": "level 5 line",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Playable body and positive child play-test",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Playable body and positive child play-test",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "child-tested"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Extract why it tested well and extend levels through the shared progression shell.",
+          "connections": [
+            "Games House",
+            "Progression"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-010",
+      "house": "H04",
+      "name": "FUTARIZED",
+      "version": "v1.1 OneBody",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-010",
+          "record_kind": "BODY",
+          "source_label": "FUTARIZED",
+          "evidence": "Six-stage foundation and active mechanic restoration/rework"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "FUTARIZED — v1.1 OneBody",
+          "version_label": "v1.1 OneBody",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Six-stage foundation and active mechanic restoration/rework",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Six-stage foundation and active mechanic restoration/rework",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "onebody-current"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Continue from v1.1 without cloning other engines; restore aim/drag then clarify route and card stages.",
+          "connections": [
+            "Card Systems",
+            "Drag/Aim",
+            "World Engine"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AP-001",
+      "house": "H05",
+      "name": "JM Non-Game Apps House",
+      "version": "v1.0 OneBody",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AP-001",
+          "record_kind": "BODY",
+          "source_label": "JM Non-Game Apps House",
+          "evidence": "OneBody house with full-body viewer and no dead launch-button requirement"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Non-Game Apps House — v1.0 OneBody",
+          "version_label": "v1.0 OneBody",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "OneBody house with full-body viewer and no dead launch-button requirement",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "OneBody house with full-body viewer and no dead launch-button requirement",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "onebody"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount into canonical website as owner-governed Apps House with public/private split.",
+          "connections": [
+            "Living Notebook",
+            "Estate Librarian",
+            "LyricStudio"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AP-002",
+      "house": "H05",
+      "name": "JM Living Notebook / Estate Operating Tool",
+      "version": "v1.5B",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AP-002",
+          "record_kind": "BODY",
+          "source_label": "JM Living Notebook / Estate Operating Tool",
+          "evidence": "360 described body-card seed; 755 embedded Deep-All rows; notes/tasks/receipts/review and crown queues; bulk intake; app/game connection; JSON export/import"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Living Notebook / Estate Operating Tool — v1.5B",
+          "version_label": "v1.5B",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "360 described body-card seed; 755 embedded Deep-All rows; notes/tasks/receipts/review and crown queues; bulk intake; app/game connection; JSON export/import",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "360 described body-card seed; 755 embedded Deep-All rows; notes/tasks/receipts/review and crown queues; bulk intake; app/game connection; JSON export/import",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "current-hub",
+            "360-described-cards",
+            "755-deep-all-rows",
+            "offline"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Add an Estate Head adapter: export candidate cards into Recovery first, then promote only after source/current-best/crown checks.",
+          "connections": [
+            "Living Library",
+            "Estate Head",
+            "Deep-All",
+            "Estate Librarian"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AP-003",
+      "house": "H05",
+      "name": "JM Estate Librarian",
+      "version": "QUADZE-grade v2.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AP-003",
+          "record_kind": "BODY",
+          "source_label": "JM Estate Librarian",
+          "evidence": "Full offline compact estate search/classification/recovery utility"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate Librarian — QUADZE-grade v2.0",
+          "version_label": "QUADZE-grade v2.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Full offline compact estate search/classification/recovery utility",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Full offline compact estate search/classification/recovery utility",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "offline",
+            "recovery-tool"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Feed recovered result cards into Estate Head holding chamber and canonical register.",
+          "connections": [
+            "Living Library",
+            "Latest Body Finder",
+            "Source Auditor"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AP-004",
+      "house": "H05",
+      "name": "JM LyricStudio",
+      "version": "v0.5.1 First-Party Website Mount",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AP-004",
+          "record_kind": "BODY",
+          "source_label": "JM LyricStudio",
+          "evidence": "Native /lyrics/ mount; Back/home controls; session restoration"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM LyricStudio — v0.5.1 First-Party Website Mount",
+          "version_label": "v0.5.1 First-Party Website Mount",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Native /lyrics/ mount; Back/home controls; session restoration",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Public",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Native /lyrics/ mount; Back/home controls; session restoration",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "first-party-mount",
+            "session-restore"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+          "next_action": "Connect canonical lyric sources and protect unreleased/private bodies.",
+          "connections": [
+            "Lyrics House",
+            "Teleprompter",
+            "Website"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AP-005",
+      "house": "H05",
+      "name": "JM Advanced Game Generator — Playable Proof Pack",
+      "version": "v0.2",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AP-005",
+          "record_kind": "BODY",
+          "source_label": "JM Advanced Game Generator — Playable Proof Pack",
+          "evidence": "Playable proof pack created 20 July 2026"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Advanced Game Generator — Playable Proof Pack — v0.2",
+          "version_label": "v0.2",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Playable proof pack created 20 July 2026",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Playable proof pack created 20 July 2026",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "recent-package"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Register exact generated bodies and decide whether this becomes a Games House production organ.",
+          "connections": [
+            "Genre Forge",
+            "Games House"
+          ]
+        }
+      }
+    },
+    {
+      "id": "LY-001",
+      "house": "H06",
+      "name": "B. Lyrikz Source & Lyric Archive",
+      "version": "active recovery line",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "LY-001",
+          "record_kind": "BODY",
+          "source_label": "B. Lyrikz Source & Lyric Archive",
+          "evidence": "Longstanding lyric/performance corpus and named creator route"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "B. Lyrikz Source & Lyric Archive — active recovery line",
+          "version_label": "active recovery line",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Longstanding lyric/performance corpus and named creator route",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Longstanding lyric/performance corpus and named creator route",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "source-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Index canonical lyrics, versions, privacy and release state inside LyricStudio.",
+          "connections": [
+            "LyricStudio",
+            "Author Body",
+            "FlowTalk"
+          ]
+        }
+      }
+    },
+    {
+      "id": "LY-002",
+      "house": "H06",
+      "name": "Pocket-Body Translation / Corridor Mapping",
+      "version": "v1 method line",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "LY-002",
+          "record_kind": "BODY",
+          "source_label": "Pocket-Body Translation / Corridor Mapping",
+          "evidence": "Corridor Mapping outperformed heavy Slash Mapping in mouth/performance tests"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Pocket-Body Translation / Corridor Mapping — v1 method line",
+          "version_label": "v1 method line",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Corridor Mapping outperformed heavy Slash Mapping in mouth/performance tests",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Corridor Mapping outperformed heavy Slash Mapping in mouth/performance tests",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "mouth-tested",
+            "practical-first"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Finish “What Is The Ethos?” as the first screen-safe Corridor-Mapped performance body.",
+          "connections": [
+            "Approach Learning",
+            "FlowTalk",
+            "LyricStudio"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WB-001",
+      "house": "H07",
+      "name": "JMISJUSTME — The Living Estate",
+      "version": "v1.14.0-CF4",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "WB-001",
+          "record_kind": "BODY",
+          "source_label": "JMISJUSTME — The Living Estate",
+          "evidence": "Independent Cloudflare Pages estate with native theory, lyrics and recovery routes"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JMISJUSTME — The Living Estate — v1.14.0-CF4",
+          "version_label": "v1.14.0-CF4",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Independent Cloudflare Pages estate with native theory, lyrics and recovery routes",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Public",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Independent Cloudflare Pages estate with native theory, lyrics and recovery routes",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "canonical-public-door"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/",
+          "next_action": "Make the live site read canonical state from Estate Head; remove version drift and old-body resurfacing.",
+          "connections": [
+            "Theory Multihub",
+            "LyricStudio",
+            "Recovery House",
+            "Games Corridor"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WB-002",
+      "house": "H07",
+      "name": "GitHub JM-cading-lab",
+      "version": "connected corridor",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "WB-002",
+          "record_kind": "BODY",
+          "source_label": "GitHub JM-cading-lab",
+          "evidence": "Live Pages corridors for Games&Beyond and coding/public experiments"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "GitHub JM-cading-lab — connected corridor",
+          "version_label": "connected corridor",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Live Pages corridors for Games&Beyond and coding/public experiments",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Public",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Live Pages corridors for Games&Beyond and coding/public experiments",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "corridor-not-crown"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Keep as deployment rail and public corridor, not the identity of the sovereign website.",
+          "connections": [
+            "Cloudflare Estate",
+            "Games&Beyond"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WB-003",
+      "house": "H07",
+      "name": "Recovery House",
+      "version": "v1.14.0-CF4 route",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "WB-003",
+          "record_kind": "BODY",
+          "source_label": "Recovery House",
+          "evidence": "Native /recovery/ route installed in the independent estate"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Recovery House — v1.14.0-CF4 route",
+          "version_label": "v1.14.0-CF4 route",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Native /recovery/ route installed in the independent estate",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Public",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Native /recovery/ route installed in the independent estate",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "public-recovery-door"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/recovery/",
+          "next_action": "Connect unresolved bodies and supersession trails from Estate Head.",
+          "connections": [
+            "Living Library",
+            "Estate Librarian"
+          ]
+        }
+      }
+    },
+    {
+      "id": "OS-001",
+      "house": "H08",
+      "name": "JM Estate OS / TBS",
+      "version": "v0.2.x lineage",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "OS-001",
+          "record_kind": "BODY",
+          "source_label": "JM Estate OS / TBS",
+          "evidence": "Main command-surface carrier with mounted Command Register"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate OS / TBS — v0.2.x lineage",
+          "version_label": "v0.2.x lineage",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Main command-surface carrier with mounted Command Register",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Main command-surface carrier with mounted Command Register",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "main-command-carrier"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Treat Estate Head as its governing head organ; preserve body/house separation.",
+          "connections": [
+            "Command Register",
+            "Estate Head",
+            "JMStudios"
+          ]
+        }
+      }
+    },
+    {
+      "id": "OS-002",
+      "house": "H08",
+      "name": "JM3232 Navigator + JM Stringline",
+      "version": "Navigator v0.1.1 + Stringline v0.1.3",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "OS-002",
+          "record_kind": "BODY",
+          "source_label": "JM3232 Navigator + JM Stringline",
+          "evidence": "Mobile-first shell, real URL launching, route persistence direction and repository adoption state."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM3232 Navigator + JM Stringline — Navigator v0.1.1 + Stringline v0.1.3",
+          "version_label": "Navigator v0.1.1 + Stringline v0.1.3",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Mobile-first shell, real URL launching, route persistence direction and repository adoption state.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Mobile-first shell, real URL launching, route persistence direction and repository adoption state.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "37-of-37",
+            "upgrade-safe",
+            "url-launch-proof",
+            "not-final-browser"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount Estate Head public subset as its native estate index; continue Stringmarks, route receipts and owned-route persistence.",
+          "connections": [
+            "Estate Head",
+            "Project Heads",
+            "Non-Game Apps House",
+            "Radius Lexicon",
+            "TraceBox"
+          ]
+        }
+      }
+    },
+    {
+      "id": "OS-003",
+      "house": "H08",
+      "name": "JMStudios",
+      "version": "B0.8.3",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "OS-003",
+          "record_kind": "BODY",
+          "source_label": "JMStudios",
+          "evidence": "Actual crown route and current launcher anchor; 13 rooms"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JMStudios — B0.8.3",
+          "version_label": "B0.8.3",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Actual crown route and current launcher anchor; 13 rooms",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Actual crown route and current launcher anchor; 13 rooms",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "launcher-anchor"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use as craft room beneath Estate Head rather than competing command centre.",
+          "connections": [
+            "Estate OS",
+            "Games",
+            "Apps"
+          ]
+        }
+      }
+    },
+    {
+      "id": "CM-001",
+      "house": "H09",
+      "name": "JM Providings Architecture",
+      "version": "v0.1 active preparation",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "CM-001",
+          "record_kind": "BODY",
+          "source_label": "JM Providings Architecture",
+          "evidence": "Interactive/visual menu route and legal UK offerings conversation underway"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Providings Architecture — v0.1 active preparation",
+          "version_label": "v0.1 active preparation",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Interactive/visual menu route and legal UK offerings conversation underway",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Interactive/visual menu route and legal UK offerings conversation underway",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "commercialisable",
+            "not-operating-machine-yet"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Finish offer names, boundaries, step-by-step fulfilment, prices, disclaimers, public sales pages, booking and payment route.",
+          "connections": [
+            "Author Body",
+            "Website",
+            "Evidence Menu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AR-001",
+      "house": "H10",
+      "name": "JM Living Library — Estate-Wide Recursive Source Census ×32×10",
+      "version": "declared programme",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AR-001",
+          "record_kind": "BODY",
+          "source_label": "JM Living Library — Estate-Wide Recursive Source Census ×32×10",
+          "evidence": "Scope, 32 structural routes × 10 passes and recovery chain formally established"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Living Library — Estate-Wide Recursive Source Census ×32×10 — declared programme",
+          "version_label": "declared programme",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Scope, 32 structural routes × 10 passes and recovery chain formally established",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Scope, 32 structural routes × 10 passes and recovery chain formally established",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "COMPLETE_SCOPED_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "estate-wide",
+            "not-complete"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Run the census through a stable Estate Head schema; do not claim completion before universal register evidence exists.",
+          "connections": [
+            "Estate Librarian",
+            "Root Zionfolder",
+            "Recovery House",
+            "Estate Head"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AR-002",
+      "house": "H10",
+      "name": "JM Estate Root Zionfolder",
+      "version": "v1.0",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AR-002",
+          "record_kind": "BODY",
+          "source_label": "JM Estate Root Zionfolder",
+          "evidence": "15 houses, 16 frozen anchors, inventory, registers, gap map, re-entry WAY, manifest, receipt and verified checksums"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate Root Zionfolder — v1.0",
+          "version_label": "v1.0",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "15 houses, 16 frozen anchors, inventory, registers, gap map, re-entry WAY, manifest, receipt and verified checksums",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "15 houses, 16 frozen anchors, inventory, registers, gap map, re-entry WAY, manifest, receipt and verified checksums",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "sha256-verified",
+            "frozen-root"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Remain the frozen root floor beneath later Estate Head state changes.",
+          "connections": [
+            "Master Inventory",
+            "House Register",
+            "Gap Map"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AR-003",
+      "house": "H10",
+      "name": "Periodic Zionfolder / Checkpoint Law",
+      "version": "active estate law",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AR-003",
+          "record_kind": "BODY",
+          "source_label": "Periodic Zionfolder / Checkpoint Law",
+          "evidence": "Repeated manifests, freeze receipts and SHA256 packages across the estate"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Periodic Zionfolder / Checkpoint Law — active estate law",
+          "version_label": "active estate law",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Repeated manifests, freeze receipts and SHA256 packages across the estate",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Repeated manifests, freeze receipts and SHA256 packages across the estate",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "governance-law"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Create a checkpoint after each substantial Estate Head census wave without embedding unnecessary large media.",
+          "connections": [
+            "OPEN_FIRST",
+            "Checksums",
+            "Re-entry"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-005",
+      "house": "H00",
+      "name": "JM Estate Gap Governance Breach Register",
+      "version": "v0.2-WORKING-REBASED",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-005",
+          "record_kind": "BODY",
+          "source_label": "JM Estate Gap Governance Breach Register",
+          "evidence": "56 named gaps classified; 10 system breaches; RouteOS corrected and CI regression guarded"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate Gap Governance Breach Register — v0.2-WORKING-REBASED",
+          "version_label": "v0.2-WORKING-REBASED",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "56 named gaps classified; 10 system breaches; RouteOS corrected and CI regression guarded",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "56 named gaps classified; 10 system breaches; RouteOS corrected and CI regression guarded",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "working-audit",
+            "56-gap-map",
+            "routeos-protected"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Use the repair order as the compulsory recovery queue and update counts from classification state rather than presentation.",
+          "connections": [
+            "Estate Head",
+            "Recovery House",
+            "Source Ledger",
+            "Current Best Register",
+            "Crown Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-011",
+      "house": "H04",
+      "name": "RouteOS / AmaCore",
+      "version": "v108A.5 full keeper authority / Flagship 001",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-011",
+          "record_kind": "BODY",
+          "source_label": "RouteOS / AmaCore",
+          "evidence": "Recovered full package authority, runnable console-platform route and classification regression protection."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "RouteOS / AmaCore — v108A.5 full keeper authority / Flagship 001",
+          "version_label": "v108A.5 full keeper authority / Flagship 001",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Recovered full package authority, runnable console-platform route and classification regression protection.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Recovered full package authority, runnable console-platform route and classification regression protection.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "flagship-001",
+            "sovereign-gaming-os",
+            "classification-protected",
+            "keeper-reconfirmation-open"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Reconfirm the exact v108A.5 keeper body while preserving the sovereign gaming-OS classification and regression gate.",
+          "connections": [
+            "Games&Beyond",
+            "AmaCore",
+            "Coding cross-link",
+            "Estate OS",
+            "Accomplishments Hall"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-006",
+      "house": "H00",
+      "name": "JM Estate Head Public Authority Contract",
+      "version": "v0.2.1",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-006",
+          "record_kind": "BODY",
+          "source_label": "JM Estate Head Public Authority Contract",
+          "evidence": "Versioned public-safe contract records 61 bodies, 11 Project Heads, gap snapshot, Stringline state and private-source boundary."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Estate Head Public Authority Contract — v0.2.1",
+          "version_label": "v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Versioned public-safe contract records 61 bodies, 11 Project Heads, gap snapshot, Stringline state and private-source boundary.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Versioned public-safe contract records 61 bodies, 11 Project Heads, gap snapshot, Stringline state and private-source boundary.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "public-safe",
+            "versioned-authority",
+            "privacy-boundary"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/estate-head/",
+          "next_action": "Keep public consumers reading the current contract while owner-source detail remains private.",
+          "connections": [
+            "Estate Head",
+            "Living Estate",
+            "Public Subset",
+            "Source Authority Pipeline"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-007",
+      "house": "H00",
+      "name": "JM Source Authority Pipeline",
+      "version": "v1.0 / six-stage owner gate",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-007",
+          "record_kind": "BODY",
+          "source_label": "JM Source Authority Pipeline",
+          "evidence": "Six-stage source-authority route with owner gate mounted in the current public authority contract."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Source Authority Pipeline — v1.0 / six-stage owner gate",
+          "version_label": "v1.0 / six-stage owner gate",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Six-stage source-authority route with owner gate mounted in the current public authority contract.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Six-stage source-authority route with owner gate mounted in the current public authority contract.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "six-stage",
+            "owner-gate",
+            "governance"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Extend repository-wide enforcement without mistaking owner approval for universal proof.",
+          "connections": [
+            "Source Ledger",
+            "Auditor",
+            "Current Best Register",
+            "Crown Register"
+          ]
+        }
+      }
+    },
+    {
+      "id": "EH-008",
+      "house": "H00",
+      "name": "Estate Head Public Consumer",
+      "version": "v0.2.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "EH-008",
+          "record_kind": "BODY",
+          "source_label": "Estate Head Public Consumer",
+          "evidence": "Shared public consumer and root projection organs exist with validation and sovereign-House fallback laws."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Estate Head Public Consumer — v0.2.1",
+          "version_label": "v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Shared public consumer and root projection organs exist with validation and sovereign-House fallback laws.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Shared public consumer and root projection organs exist with validation and sovereign-House fallback laws.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "shared-consumer",
+            "non-flattening",
+            "repository-mounted"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Keep one public authority route while allowing each House to retain its own design and detail.",
+          "connections": [
+            "Living Estate",
+            "Public Houses",
+            "Service Worker"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AU-004",
+      "house": "H01",
+      "name": "JM Stringline Adoption Ledger",
+      "version": "v0.1.3",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AU-004",
+          "record_kind": "BODY",
+          "source_label": "JM Stringline Adoption Ledger",
+          "evidence": "Repository adoption state records eight Games&Beyond project bodies under the current Stringline route."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Stringline Adoption Ledger — v0.1.3",
+          "version_label": "v0.1.3",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Repository adoption state records eight Games&Beyond project bodies under the current Stringline route.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Repository adoption state records eight Games&Beyond project bodies under the current Stringline route.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "adoption-ledger",
+            "continuity"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Carry project-head continuity additively across further Houses.",
+          "connections": [
+            "JM Stringline / TBS",
+            "Project Heads",
+            "Games&Beyond"
+          ]
+        }
+      }
+    },
+    {
+      "id": "TH-011",
+      "house": "H02",
+      "name": "JM Theory Full-Body Expansion",
+      "version": "v0.7",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "TH-011",
+          "record_kind": "BODY",
+          "source_label": "JM Theory Full-Body Expansion",
+          "evidence": "Theory Wing registry and full-body vault expansion were committed as distinct full bodies rather than summary-only cards."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "JM Theory Full-Body Expansion — v0.7",
+          "version_label": "v0.7",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Theory Wing registry and full-body vault expansion were committed as distinct full bodies rather than summary-only cards.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Packaged",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Theory Wing registry and full-body vault expansion were committed as distinct full bodies rather than summary-only cards.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PACKAGED_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "full-body-expansion",
+            "theory-wing"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/theory/",
+          "next_action": "Keep manuscript bodies distinct from project-source census routes and verify each public door.",
+          "connections": [
+            "Theory Multihub",
+            "Full-Body Vault",
+            "CAUSE MUST PASS"
+          ]
+        }
+      }
+    },
+    {
+      "id": "GM-012",
+      "house": "H04",
+      "name": "RouteOS v108A.5 Full Package Authority",
+      "version": "v108A.5",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "GM-012",
+          "record_kind": "BODY",
+          "source_label": "RouteOS v108A.5 Full Package Authority",
+          "evidence": "Full keeper recovery, authority record and flagship mount were committed after the earlier Apps misclassification was corrected."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "RouteOS v108A.5 Full Package Authority — v108A.5",
+          "version_label": "v108A.5",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Full keeper recovery, authority record and flagship mount were committed after the earlier Apps misclassification was corrected.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Frozen",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Full keeper recovery, authority record and flagship mount were committed after the earlier Apps misclassification was corrected.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "FROZEN_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "full-keeper",
+            "flagship-001",
+            "classification-protected"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/games-beyond/routeos/",
+          "next_action": "Preserve RouteOS as a sovereign console-platform body and keep exact keeper checks active.",
+          "connections": [
+            "RouteOS / AmaCore",
+            "Games&Beyond",
+            "Classification Authority"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WB-004",
+      "house": "H07",
+      "name": "Estate Head Cloudflare Deployment Rail",
+      "version": "v0.2.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "WB-004",
+          "record_kind": "BODY",
+          "source_label": "Estate Head Cloudflare Deployment Rail",
+          "evidence": "Build, deploy, live-proof and outcome-observer workflows exist; failed builds block deployment and leave diagnostics."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Estate Head Cloudflare Deployment Rail — v0.2.1",
+          "version_label": "v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Build, deploy, live-proof and outcome-observer workflows exist; failed builds block deployment and leave diagnostics.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Active",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Build, deploy, live-proof and outcome-observer workflows exist; failed builds block deployment and leave diagnostics.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "ACTIVE_WORKING_BODY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "deployment-rail",
+            "failure-blocking",
+            "not-yet-live-crowned"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Earn SUCCESS only after the canonical host returns the public head, subset and consumer markers.",
+          "connections": [
+            "Cloudflare Pages",
+            "Estate Head Public Consumer",
+            "Outcome Observer"
+          ]
+        }
+      }
+    },
+    {
+      "id": "AR-004",
+      "house": "H10",
+      "name": "Estate Head Deployment Outcome & Diagnostic Register",
+      "version": "v0.2.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "AR-004",
+          "record_kind": "BODY",
+          "source_label": "Estate Head Deployment Outcome & Diagnostic Register",
+          "evidence": "Observer and in-repository diagnostic receipts caught the corrupted gzip carrier before Cloudflare deployment."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Estate Head Deployment Outcome & Diagnostic Register — v0.2.1",
+          "version_label": "v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Observer and in-repository diagnostic receipts caught the corrupted gzip carrier before Cloudflare deployment.",
+          "audit_basis": [
+            "proof",
+            "status",
+            "flags",
+            "public boundary"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "Proven",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Observer and in-repository diagnostic receipts caught the corrupted gzip carrier before Cloudflare deployment.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "PROVEN_AUTHORITY",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "diagnostic",
+            "failure-receipt",
+            "recovery-proof"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Preserve failure receipts alongside the eventual success receipt rather than erasing the repair trail.",
+          "connections": [
+            "Recovery House",
+            "Deployment Rail",
+            "Integrity Checks"
+          ]
+        }
+      }
+    }
+  ],
+  "project_head_passports": [
+    {
+      "id": "PH-ESTATE",
+      "house": "H00",
+      "name": "Estate & Command Head",
+      "current": "JM ESTATE HEAD v0.2.1",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-ESTATE",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Estate & Command Head",
+          "evidence": "Many bodies, not one flattened blob; The estate should remember. The chat should think."
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Estate & Command Head — JM ESTATE HEAD v0.2.1",
+          "version_label": "JM ESTATE HEAD v0.2.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Many bodies, not one flattened blob; The estate should remember. The chat should think.",
+          "audit_basis": [
+            "Many bodies, not one flattened blob",
+            "The estate should remember. The chat should think."
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Many bodies, not one flattened blob; The estate should remember. The chat should think.",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/",
+          "next_action": "Complete guarded Cloudflare consumption, then continue recovery waves from the versioned public/owner split.",
+          "connections": [
+            "Many bodies, not one flattened blob",
+            "The estate should remember. The chat should think."
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-AUTHOR",
+      "house": "H01",
+      "name": "Author / Source Head",
+      "current": "Author Master Body v0.3",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-AUTHOR",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Author / Source Head",
+          "evidence": "Theodore is source and final intended-meaning authority; AI is the build bench"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Author / Source Head — Author Master Body v0.3",
+          "version_label": "Author Master Body v0.3",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Theodore is source and final intended-meaning authority; AI is the build bench",
+          "audit_basis": [
+            "Theodore is source and final intended-meaning authority",
+            "AI is the build bench"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Theodore is source and final intended-meaning authority; AI is the build bench",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount public About page and keep private source profile owner-side.",
+          "connections": [
+            "Theodore is source and final intended-meaning authority",
+            "AI is the build bench"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-THEORY",
+      "house": "H02",
+      "name": "Theory Head",
+      "current": "JM Theory Multihub v0.5 + Source to Body Book Foundry v0.5",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-THEORY",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Theory Head",
+          "evidence": "Full bodies, not summary shells; No claim outruns its evidence"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Theory Head — JM Theory Multihub v0.5 + Source to Body Book Foundry v0.5",
+          "version_label": "JM Theory Multihub v0.5 + Source to Body Book Foundry v0.5",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Full bodies, not summary shells; No claim outruns its evidence",
+          "audit_basis": [
+            "Full bodies, not summary shells",
+            "No claim outruns its evidence"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Full bodies, not summary shells; No claim outruns its evidence",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/theory/",
+          "next_action": "Verify public v0.5 deployment and attach public reader routes.",
+          "connections": [
+            "Full bodies, not summary shells",
+            "No claim outruns its evidence"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-CODING",
+      "house": "H03",
+      "name": "Coding Head",
+      "current": "JM Coding Estate + JM Game Native Core v0.2",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-CODING",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Coding Head",
+          "evidence": "Use actual JM coding bodies every time; Hosted proof is not universal native proof"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Coding Head — JM Coding Estate + JM Game Native Core v0.2",
+          "version_label": "JM Coding Estate + JM Game Native Core v0.2",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Use actual JM coding bodies every time; Hosted proof is not universal native proof",
+          "audit_basis": [
+            "Use actual JM coding bodies every time",
+            "Hosted proof is not universal native proof"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Use actual JM coding bodies every time; Hosted proof is not universal native proof",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Nominate one current parser/IR/runtime/emitter spine.",
+          "connections": [
+            "Use actual JM coding bodies every time",
+            "Hosted proof is not universal native proof"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-GAMES",
+      "house": "H04",
+      "name": "Games & Beyond Head",
+      "current": "Games&Beyond House v0.5 + RouteOS Flagship 001",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-GAMES",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Games & Beyond Head",
+          "evidence": "Touchscreen innate; buttons backup; Every character speaks through movement"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Games & Beyond Head — Games&Beyond House v0.5 + RouteOS Flagship 001",
+          "version_label": "Games&Beyond House v0.5 + RouteOS Flagship 001",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Touchscreen innate; buttons backup; Every character speaks through movement",
+          "audit_basis": [
+            "Touchscreen innate; buttons backup",
+            "Every character speaks through movement"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Touchscreen innate; buttons backup; Every character speaks through movement",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/",
+          "next_action": "Unify controls, shell, assets, version selection and release pipeline.",
+          "connections": [
+            "Touchscreen innate; buttons backup",
+            "Every character speaks through movement"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-APPS",
+      "house": "H05",
+      "name": "Apps & Tools Head",
+      "current": "JM Non-Game Apps House v1.0 OneBody",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-APPS",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Apps & Tools Head",
+          "evidence": "No dead buttons; Standalone outside ChatGPT"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Apps & Tools Head — JM Non-Game Apps House v1.0 OneBody",
+          "version_label": "JM Non-Game Apps House v1.0 OneBody",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "No dead buttons; Standalone outside ChatGPT",
+          "audit_basis": [
+            "No dead buttons",
+            "Standalone outside ChatGPT"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "No dead buttons; Standalone outside ChatGPT",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/apps/",
+          "next_action": "Connect Apps House and Living Notebook exports to the Estate Head Recovery intake schema.",
+          "connections": [
+            "No dead buttons",
+            "Standalone outside ChatGPT"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-LYRICS",
+      "house": "H06",
+      "name": "Lyrics & Music Head",
+      "current": "JM LyricStudio v0.5.1 + Corridor Mapping",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-LYRICS",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Lyrics & Music Head",
+          "evidence": "Do not grid JM. Route JM.; Practical first; theory only when it helps movement"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Lyrics & Music Head — JM LyricStudio v0.5.1 + Corridor Mapping",
+          "version_label": "JM LyricStudio v0.5.1 + Corridor Mapping",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Do not grid JM. Route JM.; Practical first; theory only when it helps movement",
+          "audit_basis": [
+            "Do not grid JM. Route JM.",
+            "Practical first; theory only when it helps movement"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Do not grid JM. Route JM.; Practical first; theory only when it helps movement",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+          "next_action": "Index lyric canon and finish “What Is The Ethos?” performance body.",
+          "connections": [
+            "Do not grid JM. Route JM.",
+            "Practical first; theory only when it helps movement"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-WEB",
+      "house": "H07",
+      "name": "Website & Public Doors Head",
+      "current": "JMISJUSTME Living Estate + Estate Head v0.2.1 deployment rail",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-WEB",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Website & Public Doors Head",
+          "evidence": "Cloudflare is the canonical external website; GitHub is corridor/mirror, not website identity"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Website & Public Doors Head — JMISJUSTME Living Estate + Estate Head v0.2.1 deployment rail",
+          "version_label": "JMISJUSTME Living Estate + Estate Head v0.2.1 deployment rail",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Cloudflare is the canonical external website; GitHub is corridor/mirror, not website identity",
+          "audit_basis": [
+            "Cloudflare is the canonical external website",
+            "GitHub is corridor/mirror, not website identity"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Cloudflare is the canonical external website; GitHub is corridor/mirror, not website identity",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/",
+          "next_action": "Earn a canonical-host success receipt without exposing owner-source fields.",
+          "connections": [
+            "Cloudflare is the canonical external website",
+            "GitHub is corridor/mirror, not website identity"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-OS",
+      "house": "H08",
+      "name": "OS / Navigator Head",
+      "current": "JM3232 Navigator v0.1.1 + JM Stringline v0.1.3 + RouteOS v108A.5 authority",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-OS",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "OS / Navigator Head",
+          "evidence": "Owned estate routes inside; external pages through device browser; Soft ignition is not a literal kernel"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "OS / Navigator Head — JM3232 Navigator v0.1.1 + JM Stringline v0.1.3 + RouteOS v108A.5 authority",
+          "version_label": "JM3232 Navigator v0.1.1 + JM Stringline v0.1.3 + RouteOS v108A.5 authority",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Owned estate routes inside; external pages through device browser; Soft ignition is not a literal kernel",
+          "audit_basis": [
+            "Owned estate routes inside; external pages through device browser",
+            "Soft ignition is not a literal kernel"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Owned estate routes inside; external pages through device browser; Soft ignition is not a literal kernel",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Mount Estate Head public subset inside Navigator; continue Stringmarks and TraceBox route receipts.",
+          "connections": [
+            "Owned estate routes inside; external pages through device browser",
+            "Soft ignition is not a literal kernel"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-COMMERCE",
+      "house": "H09",
+      "name": "Commercial Providings Head",
+      "current": "Providings Architecture v0.1",
+      "promoted_public": false,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-COMMERCE",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Commercial Providings Head",
+          "evidence": "Providing preferred over service; Legal and evidence-bounded wording"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Commercial Providings Head — Providings Architecture v0.1",
+          "version_label": "Providings Architecture v0.1",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_OWNER_REGISTRATION",
+          "proof": "Providing preferred over service; Legal and evidence-bounded wording",
+          "audit_basis": [
+            "Providing preferred over service",
+            "Legal and evidence-bounded wording"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Providing preferred over service; Legal and evidence-bounded wording",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "OWNER_SIDE_REGISTERED",
+          "public_route": "",
+          "next_action": "Complete fulfilment, pricing, disclaimer, booking and payment bodies.",
+          "connections": [
+            "Providing preferred over service",
+            "Legal and evidence-bounded wording"
+          ]
+        }
+      }
+    },
+    {
+      "id": "PH-RECOVERY",
+      "house": "H10",
+      "name": "Living Library & Recovery Head",
+      "current": "Gap Governance Breach Register v0.2 + ×32×10 census programme",
+      "promoted_public": true,
+      "promotion_gate": "PASS",
+      "stages": {
+        "source_ledger": {
+          "state": "RECORDED",
+          "record_id": "PH-RECOVERY",
+          "record_kind": "PROJECT_HEAD",
+          "source_label": "Living Library & Recovery Head",
+          "evidence": "Restore before rewrite; No universal census claim before evidence"
+        },
+        "latest_body_finder": {
+          "state": "IDENTIFIED",
+          "current_label": "Living Library & Recovery Head — Gap Governance Breach Register v0.2 + ×32×10 census programme",
+          "version_label": "Gap Governance Breach Register v0.2 + ×32×10 census programme",
+          "law": "A higher version number does not supersede missing behaviour or proof."
+        },
+        "source_body_auditor": {
+          "state": "PASS_PUBLIC_PROMOTION",
+          "proof": "Restore before rewrite; No universal census claim before evidence",
+          "audit_basis": [
+            "Restore before rewrite",
+            "No universal census claim before evidence"
+          ],
+          "private_owner_fields_present": false
+        },
+        "current_best_register": {
+          "state": "RECORDED",
+          "decision": "PROJECT_HEAD_CURRENT",
+          "scope": "current public-contract entry; not an automatic universal source crown",
+          "basis": "Restore before rewrite; No universal census claim before evidence",
+          "version_number_coronation": false
+        },
+        "crown_register": {
+          "state": "REGISTERED_WITHOUT_FINAL_CROWN",
+          "claim_scope": "evidence-bounded public/owner authority lane",
+          "flags": [
+            "project-head",
+            "locks-preserved"
+          ]
+        },
+        "living_register": {
+          "state": "PUBLIC_LIVE_OR_ROUTED",
+          "public_route": "https://jmisjustme-estate.pages.dev/recovery/",
+          "next_action": "Work the seven-step repair order; promote no gap directly into a House without the pre-mount gate.",
+          "connections": [
+            "Restore before rewrite",
+            "No universal census claim before evidence"
+          ]
+        }
+      }
+    }
+  ],
+  "gate": {
+    "status": "PASS_REPOSITORY_WIDE_SIX_STAGE_GOVERNANCE",
+    "all_records_have_six_stages": true,
+    "public_promotions_require_source_and_proof": true,
+    "private_owner_fields_published": false,
+    "version_number_coronation": false,
+    "law": "Promotion is a governed passage, not a version-number shortcut."
+  },
+  "boundary": "This gate governs the 61-body, 11-Project-Head Estate Head public contract and its connected classification/Stringline sources. It is repository-wide promotion enforcement for the current public authority, not a claim that every historical private ZIP, chat export or Library file has completed the wider byte-for-byte census."
+}

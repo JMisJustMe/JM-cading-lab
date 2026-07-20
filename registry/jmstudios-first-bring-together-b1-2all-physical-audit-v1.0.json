@@ -1,0 +1,63 @@
+{
+  "schema": "JM.JMStudiosFirstBringTogetherAudit/1.0",
+  "status": "FIRST_WHOLE_BRING_TOGETHER_PHYSICALLY_CONFIRMED",
+  "audited_at_utc": "2026-07-20T19:20:00Z",
+  "owner_authority": "Theodore Benjamin Scott / JM",
+  "identity": {
+    "source_authority": "JM Studios B1.2ALL.1 — Tunneledoor Android Safe Launcher",
+    "source_filename": "OPEN_FIRST_JM_STUDIOS_B1_2ALL_1_TUNNELDOOR.html",
+    "source_bytes": 4468952,
+    "source_sha256": "40a1d92fd1e63dec25200a3b9b0c7e0e242fc6495e0b51b3bf21f334216eba3f",
+    "internal_app_version": "B1.2ALL.1_TUNNELDOOR",
+    "inventoried_files": 200,
+    "embedded_payloads": 42,
+    "javascript_syntax": "PASS",
+    "rooms": {
+      "games": 21,
+      "music_lyrics": 3,
+      "ailatheo": 17,
+      "mailman_archive": 99,
+      "ftr_runtime": 49,
+      "jm_studio_core": 66,
+      "source_support": 124,
+      "everything": 200,
+      "misc": 3
+    }
+  },
+  "large_preservation_carrier": {
+    "filename": "JM_STUDIOS_PRIMARY_VERBATIM_NEW_CHAT_PACKAGE__B1_2ALL_16I.zip",
+    "outer_bytes": 208929252,
+    "outer_sha256": "9c9c5b5a1fd74469ba64d210038bfad6c7db54e09a8e896c6138053c4dcee3ab",
+    "zip_layers_tested": 26,
+    "recursive_members": 328,
+    "recursive_expanded_bytes": 936316790,
+    "recursive_expanded_decimal_gb": 0.93631679,
+    "maximum_nested_depth": 4,
+    "archive_integrity": "PASS"
+  },
+  "continuity_proof": [
+    {
+      "filename": "01_OPEN_ROUTE__B1_2ALL_7__JM_STUDIOS_TUNNELDOOR.html",
+      "bytes": 4469350,
+      "sha256": "736faf4f4836f1954ba58bd03e91d0927ee46c038e386c315f7c1bc5e991be00",
+      "internal_app_version": "B1.2ALL.1_TUNNELDOOR",
+      "inventoried_files": 200,
+      "embedded_payloads": 42,
+      "ruling": "CONTINUITY_AND_HANDOFF_WRAPPER_NOT_REPLACEMENT_SOURCE"
+    },
+    {
+      "filename": "01_OPEN_ROUTE__B1_2ALL_15__JM_STUDIOS_LAW_GATED_NAVIGATION_RECOVERY.html",
+      "bytes": 10224980,
+      "sha256": "c88f0fd35a2ec54452345ca221fec1fbbda5fef80a22647a9ea931697611852d",
+      "internal_app_version": "B1.2ALL.1_TUNNELDOOR",
+      "inventoried_files": 200,
+      "embedded_payloads": 42,
+      "ruling": "LATER_REPAIR_AND_RECOVERY_WRAPPER_NOT_REPLACEMENT_SOURCE"
+    }
+  ],
+  "ruling": "The owner's remembered first proper whole bring-together is physically recovered. B1.2ALL.1 is the source authority; B1.2ALL.7 through B1.2ALL.16I are continuity, repair, transport and preservation layers around the same internal 200-file / 42-payload body.",
+  "lineage_separation": "JMStudios B0.8.2/B0.8.3 is a separate smaller source-anchor and repair-continuation lineage. It must not be used as the identity of the near-1GB first whole bring-together.",
+  "size_boundary": "The remembered near-1GB size is supported by 936,316,790 recursively expanded bytes across nested preservation layers. That total includes deliberately duplicated delivery routes; the outer downloadable ZIP is 208,929,252 bytes.",
+  "device_boundary": "Fresh Android contact was not repeated in this audit.",
+  "privacy_boundary": "This public audit records identity, hashes, counts and bounded findings. It does not publish the private raw body or nested payload contents."
+}

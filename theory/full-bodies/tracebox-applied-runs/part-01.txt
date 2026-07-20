@@ -1,0 +1,121 @@
+TraceBox / RouteBox v5 — Applied Runs
+
+Source body recovered from Gmail message 19e4ab5bf697ae62.
+
+Applied Runs Mode
+
+Use the engine across domains and prove it can travel.
+
+Current rule:
+
+Do not expand the engine yet. Run the engine.
+
+---
+
+Proof Test 001 — Physical Device
+
+Press → shaped route → lift / slide → visible state → trace
+
+DOMAIN: Physical Device
+SCENARIO: First readable state-change prototype
+INTENTION: Make one visible state-change
+INPUT: Press / squeeze / tap
+SPACE: Inside main route
+TIME: After trigger
+HEIGHT-VIEW: High
+GATES: Inside / After / Open / Output
+OPERATOR: Lift / Slide
+EXPECTED STATE: Clean Activation
+EXPECTED OUTPUT: Marker moves / tab slides / flap lifts
+OBSERVATION: Passive View
+
+If input enters an open inside route after the trigger, and output is allowed, the expected result is Clean Activation.
+
+Trace:
+
+PRESS entered Inside route at After timing. The route was Open. The system was in Output role. The operator was Lift / Slide. Therefore state became Clean Activation. Output became visible movement. Trace clarity was High.
+
+What it proves:
+
+Arranged space-time can turn human input into visible state-change.
+
+---
+
+Proof Test 002 — GlyphPlay / Game Engine Run
+
+A player tries to move through a locked gate before collecting the key.
+
+DOMAIN: GlyphPlay / Game Engine
+INTENTION: Move player through gate
+INPUT: Swipe / tap move
+SPACE: Inside arena route
+TIME: Before unlock trigger
+HEIGHT-VIEW: Mid
+GATES: Inside / Before / Closed / Output
+OPERATOR: Block
+EXPECTED STATE: Blocked Output
+EXPECTED OUTPUT: Gate stays closed / player rebounds / blocked feedback appears
+OBSERVATION: Passive View
+
+Inside / Before / Closed / Output → Blocked Output.
+
+Trace:
+
+SWIPE entered Inside route at Before timing. The route was Closed. The system was in Output role. The operator was Block. Therefore state became Blocked Output. Output became Gate Remains Closed. Trace clarity was Mid.
+
+What this proves:
+
+GlyphPlay is the screen-world version of TraceBox.
+
+Input enters field → gate checks condition → operator acts → state changes → feedback appears.
+
+If the player does not understand why the gate stayed closed, Height-View is too low.
+
+Correction: add a visible locked symbol, key indicator, route line or trace bubble.
+
+Keeper:
+
+A game failure becomes fair when the route is readable.
+
+---
+
+Proof Test 003 — Human / Language Run
+
+Someone says something important too early, before the other person is ready to receive it.
+
+DOMAIN: Human Interaction / Language
+INTENTION: Communicate truth clearly
+INPUT: Spoken phrase
+SPACE: Inside relationship/context route
+TIME: Before safe trigger
+HEIGHT-VIEW: Low / Mid
+GATES: Inside / Before / Open / Output
+OPERATOR: Release
+EXPECTED STATE: Premature Release
+EXPECTED OUTPUT: Message lands badly / misunderstanding / defensive reaction
+OBSERVATION: Social Observation + Language Observation
+
+Inside / Before / Open / Output → Premature Release.
+
+The message was not necessarily wrong. The timing and gate made it land wrong.
+
+Keeper:
+
+Meaning is not only what was said. Meaning is what the phrase became inside the route.
+
+Correction:
+
+Raise Height-View. Check timing, whether the listener is in input mode, whether the route is open or merely exposed, and whether the message should be stored first.
+
+Better run:
+
+INPUT: Hold / wait
+GATES: Inside / Before / Closed / Input
+OPERATOR: Store
+STATE: Stored Potential
+OUTPUT: Message held until route is safer
+
+Keeper:
+
+Stored Potential is not failure. It is meaning waiting for the right route.
+

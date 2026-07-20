@@ -1,0 +1,47 @@
+name: Deploy Canonical Cloudflare Estate
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cloudflare-estate/**"
+      - ".github/workflows/deploy-cloudflare-estate.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  validate-and-deploy:
+    name: Validate and deploy jmisjustme-estate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out Estate source
+        uses: actions/checkout@v6
+
+      - name: Verify required public doors
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f cloudflare-estate/index.html
+          test -f cloudflare-estate/theory/index.html
+          test -f cloudflare-estate/lyrics/index.html
+          test -f cloudflare-estate/recovery/index.html
+          grep -q "JMISJUSTME" cloudflare-estate/index.html
+          echo "Canonical Estate source gates passed."
+
+      - name: Deploy existing Cloudflare Pages project
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

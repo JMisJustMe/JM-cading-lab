@@ -1,13 +1,13 @@
 {
-  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.2",
+  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.3",
   "status": "completed",
   "conclusion": "success",
   "classification": "CENSUS_GATE_PASS_2_PACKAGES_2_PARTIAL_BODIES",
-  "run_id": "29769474748",
-  "head_sha": "26b0c5deb7c5453a310117adfcb517d5dd2fab5a",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769474748",
-  "updated_at": "2026-07-20T18:50:37Z",
-  "recorded_at_utc": "2026-07-20T18:50:45Z",
+  "run_id": "29769554563",
+  "head_sha": "98a53b8fbc75b5dd4ec46c61ebbcbd8cb3d53723",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769554563",
+  "updated_at": "2026-07-20T18:51:44Z",
+  "recorded_at_utc": "2026-07-20T18:51:54Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
@@ -25,7 +25,7 @@
     "JMStudios B0.8.2 / B0.8.3",
     "JM Zionfolder OS v1.1.1 Scroll Spine Fix"
   ],
-  "next_gate": "Locate B0.8.3, Zionfolder v1.1.1 ZIP and both Zionfolder repair-donor bodies",
+  "next_gate": "Locate JMStudios B0.8.3 and the Zionfolder v1.1.1 ZIP archive",
   "steps": [
     {
       "job": "Prove packages and hold unlocated continuations",
@@ -53,5 +53,5 @@
       "conclusion": "success"
     }
   ],
-  "boundary": "A partial physical body confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated."
+  "boundary": "A partial physical body or donor-chain confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated."
 }

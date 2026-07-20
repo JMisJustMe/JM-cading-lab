@@ -1,17 +1,34 @@
 {
-  "schema": "JM.CloudflareLyricStudioReceipt/0.5.1",
+  "schema": "JM.CloudflareLyricsHouseReceipt/1.0",
   "status": "SUCCESS",
   "project": "jmisjustme-estate",
   "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
-  "source_commit": "bed27f58bee7d6cf1b9c604facdab5ab9d5be83c",
-  "workflow_run": "29760509262",
-  "proved_at_utc": "2026-07-20T16:39:36Z",
-  "body": "JM LyricStudio v0.5.1 — First-Party Estate",
-  "entries": 121,
-  "deployment_step": "SUCCESS",
-  "canonical_live_proof": "SUCCESS",
-  "live_title_proven": true,
-  "app_back_control_proven": true,
+  "source_commit": "d009741c906ddf38e20c8211a26b6a508acc2baf",
+  "workflow_run": "29764188614",
+  "deployed_at_utc": "2026-07-20T17:35:22Z",
+  "body": "JM Lyrics & Music House — Whole-Estate Public Door",
+  "structural_proof": {
+    "house_identity": true,
+    "lyricstudio_present": true,
+    "working_writing_desk": true,
+    "local_save_control": true,
+    "text_export_control": true,
+    "public_private_source_boundary": true,
+    "the_exiled_times_preserved": true,
+    "estate_head_consumer_proven": true
+  },
+  "public_projection_counts": {
+    "structured_owner_units_referenced": 1065,
+    "expansion_bodies_indexed": 108,
+    "protected_routes": 4
+  },
+  "private_lyric_corpus_published": false,
   "manual_upload_required": false,
-  "receipt_note": "The workflow receipt step lost a concurrent main-branch race after both deployment and canonical-host proof had already succeeded; this durable receipt records the observed proven outcome."
+  "prior_proof_lineage": {
+    "source_commit": "bed27f58bee7d6cf1b9c604facdab5ab9d5be83c",
+    "workflow_run": "29760509262",
+    "body": "JM LyricStudio v0.5.1 — First-Party Estate",
+    "entries": 121,
+    "proved_at_utc": "2026-07-20T16:39:36Z"
+  }
 }

@@ -1,6 +1,6 @@
 name: Apply Registry-Derived Cloudflare Apps Verifier
 
-# Observed retry: repair must prove and commit against the latest Estate head.
+# Observed retry: prove once, then rebase/push safely across parallel Estate commits.
 on:
   push:
     branches:
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 7
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v6
         with:
@@ -53,7 +53,7 @@ jobs:
               raise SystemExit('Stale 40-room deployment assertions remain.')
           print('Registry-derived deployment verifier source PASS.')
           PY
-      - name: Commit the repaired deployment rail
+      - name: Commit the repaired deployment rail safely
         shell: bash
         run: |
           set -euo pipefail
@@ -62,5 +62,14 @@ jobs:
           git add .github/workflows/deploy-cloudflare-estate-live-preserving.yml
           git diff --cached --quiet && exit 0
           git commit -m "Derive Cloudflare Apps proof from the actual registry"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Parallel main update caught on attempt ${attempt}; retrying safely."
+            sleep 2
+          done
+          echo "Unable to fast-forward repaired verifier after five safe retries." >&2
+          exit 1

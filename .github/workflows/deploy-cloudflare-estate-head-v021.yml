@@ -1,0 +1,57 @@
+name: Deploy Estate Head v0.2.1 to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "estate-head-public/**"
+      - "scripts/deploy_estate_head_public.py"
+      - ".github/workflows/deploy-cloudflare-estate-head-v021.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-lyrics-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  deploy:
+    name: Preserve live Estate and install shared Estate Head
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out current Estate source
+        uses: actions/checkout@v6
+
+      - name: Build and validate the live-preserving package
+        run: python3 scripts/deploy_estate_head_public.py build
+
+      - name: Deploy the existing Cloudflare Pages project
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove the Estate Head on the canonical host
+        run: python3 scripts/deploy_estate_head_public.py prove
+
+      - name: Write and commit successful deployment receipts
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          python3 scripts/deploy_estate_head_public.py receipt
+          git config user.name "JM Estate Deployment Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/estate-head-public-v0.2.1.json registry/estate-head-public-current.json registry/cloudflare-estate-head-deploy-receipt.json registry/cloudflare-lyrics-deploy-receipt.json
+          git diff --cached --quiet || git commit -m "Record Estate Head v0.2.1 Cloudflare consumption"
+          for attempt in $(seq 1 5); do
+            git push origin main && exit 0
+            git pull --rebase origin main
+            sleep 2
+          done
+          exit 1

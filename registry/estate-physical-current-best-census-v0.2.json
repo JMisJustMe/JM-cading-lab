@@ -1,0 +1,65 @@
+{
+  "schema": "JM.EstatePhysicalCurrentBestCensus/0.2",
+  "name": "Estate-Wide Physical Current-Best Census v0.2",
+  "status": "IN_PROGRESS_FIRST_SCOPE_2_OF_4",
+  "opened_at_utc": "2026-07-20T18:12:00Z",
+  "updated_at_utc": "2026-07-20T18:25:00Z",
+  "owner_authority": "Theodore Benjamin Scott / JM",
+  "method": "Source Ledger → Latest Body Finder → Source-Body Auditor → Current Best Register → Crown Register → Living Register",
+  "crown": "No new shells. No version-number coronation. Inspect the actual packages.",
+  "first_scope": [
+    {
+      "id": "multimedia-unit-v230",
+      "name": "JM Estate Multimedia Unit v2.3.0 S³",
+      "role": "Operating front room",
+      "status": "PHYSICAL_PACKAGE_CONFIRMED",
+      "package": "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE_ZIONFOLDER.zip",
+      "package_bytes": 37284419,
+      "fresh_proof": {
+        "archive_integrity": "PASS",
+        "externally_hashed_files": 21,
+        "embedded_rooms": "PASS_8_OF_8_BYTE_IDENTICAL",
+        "javascript_syntax": "PASS_16_OF_16",
+        "standalone_solo_matches_package": "PASS"
+      },
+      "custody_defect": "The original BUILD_RECEIPT_AND_MANIFEST contains a stale self-hash for its own manifest file. The remaining governed file records match. The original is preserved and corrected externally.",
+      "ruling": "CURRENT_OPERATING_FRONT_ROOM_AUTHORITY_CONFIRMED",
+      "private_custody": "/JM_Estate/Zionfolders/Operating_Houses/Physical_Current_Best_Census_v0_2/First_Pair/"
+    },
+    {
+      "id": "altogether-v202",
+      "name": "Altogether Assembly / JM Estate OS v2.0.2",
+      "role": "Assembly crown",
+      "status": "PHYSICAL_PACKAGE_CONFIRMED",
+      "package": "JM_ESTATE_ALTOGETHER_CURRENT_CROWN_v2_0_2_ZIONFOLDER.zip",
+      "package_bytes": 82961,
+      "fresh_proof": {
+        "archive_integrity": "PASS",
+        "externally_hashed_files": 10,
+        "javascript_syntax": "PASS",
+        "mounted_body_descriptions": 53,
+        "houses": 27,
+        "full_body_fields_populated": "PASS_53_OF_53"
+      },
+      "ruling": "CURRENT_ASSEMBLY_CROWN_AUTHORITY_CONFIRMED",
+      "boundary": "Mounted descriptions are assembly fuel and do not replace artifact-level proof for the described bodies.",
+      "private_custody": "/JM_Estate/Zionfolders/Operating_Houses/Physical_Current_Best_Census_v0_2/First_Pair/"
+    },
+    {
+      "id": "jmstudios-b082-b083",
+      "name": "JMStudios B0.8.2 / B0.8.3",
+      "role": "Creative-house source anchor and continuation",
+      "status": "PHYSICAL_PACKAGE_SEARCH_ACTIVE"
+    },
+    {
+      "id": "zionfolder-os-v111",
+      "name": "JM Zionfolder OS v1.1.1 Scroll Spine Fix",
+      "role": "Frozen/current workspace OS",
+      "status": "PHYSICAL_PACKAGE_SEARCH_ACTIVE"
+    }
+  ],
+  "first_pair_ruling": "Multimedia operates the front room. Altogether selects, assembles and exports bodies. They connect; they do not collapse.",
+  "first_pair_private_keeper": "OPERATING_HOUSES_CURRENT_BEST_CENSUS_v0_2_FIRST_PAIR_ZIONFOLDER.zip",
+  "first_pair_private_path": "/JM_Estate/Zionfolders/Operating_Houses/Physical_Current_Best_Census_v0_2/First_Pair/",
+  "boundary": "Two of four first-scope bodies are physically confirmed. Fresh phone contact was not repeated for either body in this pass. The wider census remains open."
+}

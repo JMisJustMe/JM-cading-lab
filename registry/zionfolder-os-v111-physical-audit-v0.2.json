@@ -1,18 +1,22 @@
 {
-  "schema": "JM.ZionfolderOSPhysicalAudit/0.2",
-  "status": "PARTIAL_PHYSICAL_CONFIRMATION",
-  "audited_at_utc": "2026-07-20T18:40:00Z",
+  "schema": "JM.ZionfolderOSPhysicalAudit/0.2.1",
+  "status": "DIRECT_BODY_AND_DONOR_CHAIN_CONFIRMED_PACKAGE_HELD",
+  "audited_at_utc": "2026-07-20T18:52:00Z",
   "body": "JM Zionfolder OS v1.1.1 Scroll Spine Fix",
   "direct_body": {
     "filename": "jm-zionfolder-os-v1_1_1.html",
-    "physical_state": "EXACT_HTML_RECOVERED_FROM_TWO_LIBRARY_TRANSCRIPT_CARRIERS",
-    "independent_carriers": 2,
-    "matching_copies": 4,
-    "byte_identity": "PASS_4_OF_4",
-    "bytes": 182691,
-    "sha256": "f58785d5ef58a6d58ae04e0d028d99030ff77f3c67554d4ae145432db82a859d",
+    "physical_state": "EXACT_RAW_LIBRARY_HTML_CONFIRMED",
+    "bytes": 182692,
+    "sha256": "ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4",
     "title": "JM Zionfolder OS v1.1.1",
     "javascript_syntax": "PASS_1_OF_1",
+    "transcript_correlations": {
+      "independent_carriers": 2,
+      "matching_extracted_copies": 4,
+      "extracted_bytes_without_terminal_newline": 182691,
+      "extracted_sha256": "f58785d5ef58a6d58ae04e0d028d99030ff77f3c67554d4ae145432db82a859d",
+      "relation_to_raw_file": "PASS_IDENTICAL_AFTER_TRAILING_WHITESPACE_NORMALISATION"
+    },
     "interface_counts": {
       "buttons": 134,
       "inputs": 16,
@@ -42,25 +46,38 @@
   "frozen_package": {
     "filename": "jm-zionfolder-os-v1_1_1.zip",
     "historical_state": "NAMED_FROZEN_BASELINE",
-    "physical_state": "ZIP_BYTES_NOT_LOCATED_IN_CURRENT_GITHUB_OR_LIBRARY_SWEEP",
+    "physical_state": "ZIP_BYTES_NOT_LOCATED_IN_CURRENT_GITHUB_OR_INDEXED_LIBRARY_SWEEP",
     "package_crown_state": "HELD_PENDING_ARCHIVE_BYTES"
   },
   "repair_donors": [
     {
       "body": "JM Zionfolder OS v0.8.7",
+      "filename": "jm-zionfolder-os-v0_8_7.html",
       "role": "Guide-state repair donor",
-      "physical_audit": "PENDING"
+      "physical_state": "EXACT_RAW_LIBRARY_HTML_CONFIRMED",
+      "bytes": 103962,
+      "sha256": "4388f288476b9ecf767f80b1e1d52c3334dcca14e14669bea0029a710ec0fe4c",
+      "javascript_syntax": "PASS_1_OF_1",
+      "repair_evidence": "selectedGuideAction route is present; viewing Relations is separated from running the chosen guide action; the body records that state must not mutate merely by being viewed.",
+      "ruling": "PHYSICAL_REPAIR_DONOR_CONFIRMED"
     },
     {
       "body": "JM Zionfolder OS v0.6.2",
+      "filename": "jm-zionfolder-os-v0_6_2.html",
       "role": "Empty Script Gate repair donor",
-      "physical_audit": "PENDING"
+      "physical_state": "EXACT_RAW_LIBRARY_HTML_CONFIRMED",
+      "bytes": 63062,
+      "sha256": "b3290f6bee629bc65ea2599a3d392b0635013400e048be8490897127a33ce95a",
+      "javascript_syntax": "PASS_1_OF_1",
+      "repair_evidence": "The empty-script branch emits an intentional jm-block receipt and preserves the law that no empty execution gets false proof.",
+      "ruling": "PHYSICAL_REPAIR_DONOR_CONFIRMED"
     }
   ],
+  "donor_trace_ruling": "Both named repair donors are now physically confirmed. Their defining repair routes remain present in the v1.1.1 line alongside the later Stable Spine and Scroll Spine work.",
   "supersession_guard": "The separately recovered v0.5.3 body may not supersede the frozen v1.1.1 Scroll Spine Fix merely because it is available as a standalone payload.",
-  "current_best_ruling": "v1.1.1 is physically confirmed as the frozen direct workspace-OS body. The ZIP package and repair-donor chain remain uncrowned until their bytes are located and audited.",
+  "current_best_ruling": "v1.1.1 is physically confirmed as the frozen direct workspace-OS body, with both named repair donors physically traced. Only the frozen ZIP archive remains held.",
   "claim_boundary": "This is a local sovereign workspace OS prototype for Zionfolder logic, not an Android, hardware or native phone operating system.",
   "device_boundary": "Fresh phone contact was not repeated in this audit.",
-  "next_action": "Locate the v1.1.1 ZIP bytes and physically audit the v0.8.7 and v0.6.2 donor bodies against the recovered v1.1.1 direct HTML.",
-  "boundary": "This record publishes hashes, counts and bounded audit findings only. It does not publish the private raw Zionfolder body."
+  "next_action": "Locate the v1.1.1 ZIP bytes and compare its contained direct HTML against the proven raw v1.1.1 hash.",
+  "boundary": "This record publishes hashes, counts and bounded audit findings only. It does not publish the private raw Zionfolder bodies."
 }

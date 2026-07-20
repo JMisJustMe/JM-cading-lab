@@ -1,0 +1,49 @@
+name: Promote Source-to-Living Governance Live
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "governance/promote_source_to_living_live.py"
+      - ".github/workflows/promote-source-to-living-governance-live.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: promote-source-to-living-governance-live
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Reconcile source contract and regenerate governance outputs
+        run: |
+          set -euo pipefail
+          python3 governance/promote_source_to_living_live.py
+          python3 governance/enforce_source_to_living.py write --root .
+          python3 governance/enforce_source_to_living.py check --root .
+          python3 governance/verify_estate_classification.py --root .
+
+      - name: Commit one coherent source and register state
+        run: |
+          set -euo pipefail
+          git config user.name "JM Source-to-Living Reconciler"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/estate-head-public-v0.2.1.json registry/source-to-living-governance-register-v1.0.json registry/source-to-living-governance-receipt-v1.0.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Reconcile Estate Head with live six-stage governance"
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

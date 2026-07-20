@@ -1,0 +1,83 @@
+name: Audit Estate Head Public Contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/estate-head-public-current.json"
+      - "registry/estate-gap-governance-breach-v0.2.json"
+      - "registry/estate-head-games-beyond-canonical-v0.2.json"
+      - "navigator/stringline.json"
+      - ".github/workflows/audit-estate-head-public-contract.yml"
+  pull_request:
+    paths:
+      - "registry/estate-head-public-current.json"
+      - "registry/estate-gap-governance-breach-v0.2.json"
+      - "registry/estate-head-games-beyond-canonical-v0.2.json"
+      - "navigator/stringline.json"
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Keep owner Head, Stringline and public contract aligned
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate current public contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          errors=[]
+          current=json.loads(Path('registry/estate-head-public-current.json').read_text())
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          annex=json.loads(Path('registry/estate-head-games-beyond-canonical-v0.2.json').read_text())
+          gaps=json.loads(Path('registry/estate-gap-governance-breach-v0.2.json').read_text())
+
+          if current.get('current_public_subset_version')!='v0.2.1':
+              errors.append('Current Estate Head public contract is not v0.2.1')
+          if current.get('body_count')!=61:
+              errors.append('Estate Head v0.2.1 body count drift')
+          if current.get('project_head_count')!=11:
+              errors.append('Project Head count drift')
+
+          gap_states=Counter(x.get('state') for x in gaps.get('body_gaps',[]))
+          expected_gap={'OPEN':35,'PARTIAL':20,'RESOLVED':1}
+          if dict(gap_states)!=expected_gap:
+              errors.append(f'Live gap register drift: {dict(gap_states)}')
+          if current.get('gap_snapshot')!=expected_gap:
+              errors.append('Public contract gap snapshot drift')
+
+          projects={x.get('id'):x for x in stringline.get('seed_project_strings',[])}
+          games=projects.get('games-beyond',{})
+          game_ids={x.get('id') for x in games.get('bodies',[])}
+          required={'games-house','routeos-platform','glyphplay','gameforge','glyphforge','playform','tboys-core-clash','gamecore'}
+          if game_ids!=required:
+              errors.append(f'Games&Beyond Stringline mismatch: {sorted(game_ids)}')
+          if current.get('stringline',{}).get('games_beyond_project_body_count')!=len(required):
+              errors.append('Public contract Stringline body count drift')
+          if annex.get('status')!='MAIN_STRINGLINE_CONSUMED':
+              errors.append('Games&Beyond canonical annex is not consumed')
+
+          pipeline=current.get('source_authority_pipeline',{})
+          if pipeline.get('stages')!=6 or pipeline.get('owner_gate')!='MOUNTED':
+              errors.append('Source-authority pipeline contract weakened')
+          if current.get('deployment_state') not in {'PUBLIC_CONSUMPTION_NEXT','PUBLIC_CONSUMED'}:
+              errors.append('Unknown public deployment state')
+
+          forbidden={'owner_mount','owner_registry_sha256','private_source_paths','owner_notes','raw_gap_evidence'}
+          if forbidden & set(current):
+              errors.append('Private owner field leaked into public contract')
+
+          if errors:
+              print('\n'.join('ERROR: '+e for e in errors))
+              raise SystemExit(1)
+          print('Estate Head public contract PASS: v0.2.1; 61 bodies; 56 gaps; 8 Games&Beyond bodies; six-stage owner gate mounted.')
+          PY

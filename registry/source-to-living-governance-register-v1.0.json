@@ -22,7 +22,7 @@
     "not_full_census_crowned": true
   },
   "source_digests": {
-    "registry/estate-head-public-v0.2.1.json": "4003b5b0a32998ca2221b868c5dfc0492d7f0baecdd84c59a2b817fa1ed56bc9",
+    "registry/estate-head-public-v0.2.1.json": "502e7b941eb5ad2c5e1a1a993c41a1feaaef20a9f8e525af5ceb19cab1bc7683",
     "registry/estate-classification-authority-v1.0.json": "74629f9991ed27851ab76e36f18914ff3b6a39758a3a8d1741093b303e509ee1",
     "navigator/stringline.json": "f9bbfc6370f494927546434cd0947413dd2ce574bd33c2d63298d7036741b8a7",
     "registry/source-to-living-governance-policy-v1.0.json": "fc75a64882006c8f9e7344f0ddf896c4f86b4fb9e2d932c7f75c7ade26380f95"
@@ -3229,8 +3229,8 @@
     {
       "id": "EH-007",
       "house": "H00",
-      "name": "JM Source Authority Pipeline",
-      "version": "v1.0 / six-stage owner gate",
+      "name": "JM Source Authority Pipeline — Repository-Wide Gate",
+      "version": "v1.0 / six-stage repository enforcement",
       "promoted_public": false,
       "promotion_gate": "PASS",
       "stages": {
@@ -3238,18 +3238,18 @@
           "state": "RECORDED",
           "record_id": "EH-007",
           "record_kind": "BODY",
-          "source_label": "JM Source Authority Pipeline",
-          "evidence": "Six-stage source-authority route with owner gate mounted in the current public authority contract."
+          "source_label": "JM Source Authority Pipeline — Repository-Wide Gate",
+          "evidence": "Repository-wide gate passed 61 body passports, 11 Project Head passports and 432 ordered stage receipts; 27 public promotions are guarded without publishing private owner fields."
         },
         "latest_body_finder": {
           "state": "IDENTIFIED",
-          "current_label": "JM Source Authority Pipeline — v1.0 / six-stage owner gate",
-          "version_label": "v1.0 / six-stage owner gate",
+          "current_label": "JM Source Authority Pipeline — Repository-Wide Gate — v1.0 / six-stage repository enforcement",
+          "version_label": "v1.0 / six-stage repository enforcement",
           "law": "A higher version number does not supersede missing behaviour or proof."
         },
         "source_body_auditor": {
           "state": "PASS_OWNER_REGISTRATION",
-          "proof": "Six-stage source-authority route with owner gate mounted in the current public authority contract.",
+          "proof": "Repository-wide gate passed 61 body passports, 11 Project Head passports and 432 ordered stage receipts; 27 public promotions are guarded without publishing private owner fields.",
           "audit_basis": [
             "proof",
             "status",
@@ -3262,7 +3262,7 @@
           "state": "RECORDED",
           "decision": "Proven",
           "scope": "current public-contract entry; not an automatic universal source crown",
-          "basis": "Six-stage source-authority route with owner gate mounted in the current public authority contract.",
+          "basis": "Repository-wide gate passed 61 body passports, 11 Project Head passports and 432 ordered stage receipts; 27 public promotions are guarded without publishing private owner fields.",
           "version_number_coronation": false
         },
         "crown_register": {
@@ -3271,18 +3271,24 @@
           "flags": [
             "six-stage",
             "owner-gate",
-            "governance"
+            "repository-wide-enforced",
+            "72-governed-records",
+            "432-stage-receipts",
+            "no-version-number-coronation"
           ]
         },
         "living_register": {
           "state": "OWNER_SIDE_REGISTERED",
           "public_route": "",
-          "next_action": "Extend repository-wide enforcement without mistaking owner approval for universal proof.",
+          "next_action": "Begin Estate-Wide Physical Current-Best Census v0.2 through the same six-stage route; update counts deliberately when new governed records are admitted.",
           "connections": [
             "Source Ledger",
-            "Auditor",
+            "Latest Body Finder",
+            "Source-Body Auditor",
             "Current Best Register",
-            "Crown Register"
+            "Crown Register",
+            "Living Register",
+            "Repository Governance Gate"
           ]
         }
       }

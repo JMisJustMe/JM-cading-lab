@@ -2,14 +2,16 @@
   "meta": {
     "title": "JM ESTATE HEAD",
     "version": "v0.2.1",
-    "edition": "Live Public Authority + Recovery/Deployment Delta",
+    "edition": "Live Public Authority + Repository-Wide Six-Stage Governance",
     "created": "2026-07-20",
     "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
     "status": "WORKING-CROWN / PUBLIC-AUTHORITY-CONTRACTED / NOT-FULL-CENSUS-CROWNED",
     "keeper": "Many bodies. One living line. None erased.",
     "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
     "public_schema": "jm-estate-public-subset-v0.2.1",
-    "rebuild_note": "Rebuilt from the verified v0.2 public subset plus eight repository-proven v0.2.1 delta bodies after the original compressed carrier failed integrity validation."
+    "rebuild_note": "Rebuilt from the verified v0.2 public subset plus eight repository-proven v0.2.1 delta bodies after the original compressed carrier failed integrity validation.",
+    "governance_state": "PASS_REPOSITORY_WIDE_SIX_STAGE_GOVERNANCE",
+    "governance_receipt": "registry/source-to-living-governance-receipt-v1.0.json"
   },
   "houses": [
     {
@@ -1107,22 +1109,28 @@
     {
       "id": "EH-007",
       "house": "H00",
-      "name": "JM Source Authority Pipeline",
-      "version": "v1.0 / six-stage owner gate",
+      "name": "JM Source Authority Pipeline — Repository-Wide Gate",
+      "version": "v1.0 / six-stage repository enforcement",
       "status": "Proven",
-      "proof": "Six-stage source-authority route with owner gate mounted in the current public authority contract.",
+      "proof": "Repository-wide gate passed 61 body passports, 11 Project Head passports and 432 ordered stage receipts; 27 public promotions are guarded without publishing private owner fields.",
       "public": "",
-      "next": "Extend repository-wide enforcement without mistaking owner approval for universal proof.",
+      "next": "Begin Estate-Wide Physical Current-Best Census v0.2 through the same six-stage route; update counts deliberately when new governed records are admitted.",
       "connections": [
         "Source Ledger",
-        "Auditor",
+        "Latest Body Finder",
+        "Source-Body Auditor",
         "Current Best Register",
-        "Crown Register"
+        "Crown Register",
+        "Living Register",
+        "Repository Governance Gate"
       ],
       "flags": [
         "six-stage",
         "owner-gate",
-        "governance"
+        "repository-wide-enforced",
+        "72-governed-records",
+        "432-stage-receipts",
+        "no-version-number-coronation"
       ]
     },
     {

@@ -8,6 +8,7 @@ on:
       - "theory/**"
       - "lyrics/**"
       - "recovery/**"
+      - "navigator/**"
       - "registry/jm3232-navigator.json"
       - ".github/workflows/deploy-cloudflare-estate-package.yml"
   workflow_dispatch:
@@ -102,11 +103,12 @@ jobs:
             #jm-current-doors details{background:rgba(17,12,27,.96);color:#fff;border:1px solid rgba(255,211,109,.38);border-radius:18px;box-shadow:0 18px 54px rgba(0,0,0,.45);overflow:hidden}
             #jm-current-doors summary{cursor:pointer;list-style:none;padding:13px 16px;color:#ffd36d}
             #jm-current-doors summary::-webkit-details-marker{display:none}
-            #jm-current-doors nav{display:grid;gap:7px;padding:0 10px 10px;min-width:190px}
+            #jm-current-doors nav{display:grid;gap:7px;padding:0 10px 10px;min-width:210px}
             #jm-current-doors a{display:block;text-decoration:none;color:#fff;background:#21182f;border-radius:12px;padding:11px 12px}
           </style>
           <aside id="jm-current-doors" aria-label="Current Estate doors">
             <details><summary>Current doors&nbsp; ↗</summary><nav>
+              <a href="./navigator/">JM3232 Navigator + Stringline</a>
               <a href="./theory/">Theory Multihub v0.4</a>
               <a href="./lyrics/">Lyrics &amp; Music House</a>
               <a href="./recovery/">Lost, Loose &amp; Unseated</a>
@@ -125,6 +127,8 @@ jobs:
             Cache-Control: no-cache
           /assets/*
             Cache-Control: public, max-age=31536000, immutable
+          /navigator/*
+            Cache-Control: no-cache
           /theory/*
             Cache-Control: no-cache
           /lyrics/*
@@ -138,8 +142,8 @@ jobs:
           EOF
 
           cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-2026-07-20-auto-2';
-          const CORE=['./','./index.html','./theory/','./lyrics/','./recovery/'];
+          const CACHE='jm-independent-estate-2026-07-20-auto-3';
+          const CORE=['./','./index.html','./navigator/','./navigator/stringline.json','./theory/','./lyrics/','./recovery/'];
           self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
           self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
           self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))))});
@@ -149,22 +153,24 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf cloudflare-estate/theory cloudflare-estate/lyrics cloudflare-estate/recovery
+          rm -rf cloudflare-estate/theory cloudflare-estate/lyrics cloudflare-estate/recovery cloudflare-estate/navigator
           cp -a theory cloudflare-estate/theory
           cp -a lyrics cloudflare-estate/lyrics
           cp -a recovery cloudflare-estate/recovery
+          cp -a navigator cloudflare-estate/navigator
           cp registry/jm3232-navigator.json cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
+          cp registry/jm3232-navigator.json cloudflare-estate/navigator/JM3232_NAVIGATOR_REGISTRY.json
 
           cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
           {
             "schema": "JM.CloudflareEstateDeployment/1.0",
-            "version": "v1.14.1-auto-bootstrap",
+            "version": "v1.15.0-navigator-stringline",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_rail": "JMisJustMe/JM-cading-lab",
-            "rooms": ["theory", "lyrics", "recovery"],
-            "navigator_registry": "recovery/JM3232_NAVIGATOR_REGISTRY.json",
-            "boundary": "The standing independent Cloudflare house is preserved as the shell; current sovereign rooms are overlaid from the owned GitHub source rail."
+            "rooms": ["navigator", "theory", "lyrics", "recovery"],
+            "navigator_registry": "navigator/JM3232_NAVIGATOR_REGISTRY.json",
+            "boundary": "The standing independent Cloudflare house is preserved as the shell; current sovereign rooms are overlaid from the owned GitHub source rail. JM3232 v0.1 is a browser-experience shell using the device browser for external rendering, not a claimed custom web engine."
           }
           EOF
 
@@ -173,14 +179,19 @@ jobs:
         run: |
           set -euo pipefail
           test -f cloudflare-estate/index.html
+          test -f cloudflare-estate/navigator/index.html
+          test -f cloudflare-estate/navigator/stringline.json
+          test -f cloudflare-estate/navigator/JM3232_NAVIGATOR_REGISTRY.json
           test -f cloudflare-estate/theory/index.html
           test -f cloudflare-estate/lyrics/index.html
           test -f cloudflare-estate/recovery/index.html
           test -f cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
           grep -q "JMISJUSTME" cloudflare-estate/index.html
           grep -q "Current doors" cloudflare-estate/index.html
+          grep -q "JM3232 NAVIGATOR" cloudflare-estate/navigator/index.html
+          grep -q "Many bodies. One living line. None erased." cloudflare-estate/navigator/stringline.json
           grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
-          echo "Canonical independent Estate deployment gates passed."
+          echo "Canonical independent Estate plus Navigator/Stringline gates passed."
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -204,7 +215,7 @@ jobs:
             "source_commit": "${GITHUB_SHA}",
             "workflow_run": "${GITHUB_RUN_ID}",
             "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "rooms": ["theory", "lyrics", "recovery"],
+            "rooms": ["navigator", "theory", "lyrics", "recovery"],
             "manual_upload_required": false
           }
           EOF

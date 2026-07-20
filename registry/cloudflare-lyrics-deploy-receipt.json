@@ -1,0 +1,17 @@
+{
+  "schema": "JM.CloudflareLyricStudioReceipt/0.5.1",
+  "status": "SUCCESS",
+  "project": "jmisjustme-estate",
+  "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+  "source_commit": "bed27f58bee7d6cf1b9c604facdab5ab9d5be83c",
+  "workflow_run": "29760509262",
+  "proved_at_utc": "2026-07-20T16:39:36Z",
+  "body": "JM LyricStudio v0.5.1 — First-Party Estate",
+  "entries": 121,
+  "deployment_step": "SUCCESS",
+  "canonical_live_proof": "SUCCESS",
+  "live_title_proven": true,
+  "app_back_control_proven": true,
+  "manual_upload_required": false,
+  "receipt_note": "The workflow receipt step lost a concurrent main-branch race after both deployment and canonical-host proof had already succeeded; this durable receipt records the observed proven outcome."
+}

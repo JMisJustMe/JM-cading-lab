@@ -1,0 +1,61 @@
+name: Mount Estate Head into public Houses
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - registry/estate-head-public-current.json
+      - scripts/mount_estate_head_house_consumers.py
+      - .github/workflows/mount-estate-head-house-consumers-v021.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-head-public-house-consumers
+  cancel-in-progress: false
+
+jobs:
+  mount-houses:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Mount shared authority consumer
+        run: python3 scripts/mount_estate_head_house_consumers.py
+
+      - name: Validate every public House
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          contract=json.loads(Path('registry/estate-head-public-current.json').read_text())
+          estate=json.loads(Path('registry/estate-map.json').read_text())
+          receipt=json.loads(Path('registry/estate-head-house-consumption-receipt.json').read_text())
+          assert contract['deployment_state']=='PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY'
+          assert len(contract['public_house_consumers'])==9
+          assert receipt['public_house_consumers']==contract['public_house_consumers']
+          assert estate['estate_head_public_authority']['boundary']==contract['boundary']
+          for page in contract['public_house_consumers']:
+              assert 'data-jm-estate-head-consumer' in Path(page).read_text(), page
+          print('Nine public House consumers: PASS')
+          PY
+          node --check estate-head-public-consumer.js
+          node --check estate-app.js
+
+      - name: Commit public House authority mount
+        run: |
+          if git diff --quiet; then
+            echo 'Public House authority mount already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add registry/estate-head-public-current.json registry/estate-map.json registry/estate-head-house-consumption-receipt.json estate-head-public-consumer.js docs/JM_ESTATE_HEAD_HOUSE_CONSUMPTION_RECEIPT.md apps/index.html games-beyond/index.html games-beyond/routeos/index.html theory/index.html lyrics/index.html recovery/index.html author/index.html coding-estate/everybody/00_OPEN_FIRST.html cading.html
+          git commit -m 'Mount Estate Head authority into every public House'
+          git push origin HEAD:main

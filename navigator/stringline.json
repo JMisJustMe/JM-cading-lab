@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.5 RouteOS full-keeper recovery seed",
+  "version": "v0.1.6 BUILD 050 Latest Source reconciliation seed",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -412,7 +412,7 @@
       "headChat": "Estate Governance Project Head",
       "headRecord": "Source-to-Living Authority Chain",
       "status": "STANDING",
-      "keeper": "The chain carries authority in stages. A known role is not the same as a recovered standalone package.",
+      "keeper": "A later host does not supersede a body it dropped. Recover the organ, preserve the host, then carry its live state forward.",
       "bodies": [
         {
           "id": "source-ledger",
@@ -424,16 +424,22 @@
         {
           "id": "latest-body-finder",
           "name": "Latest Body Finder",
-          "type": "Candidate/version finder",
-          "role": "BUILD 050 ancestor is known; exact standalone package retrieval remains open",
-          "status": "STRANDED"
+          "type": "BUILD 050 current-best discovery organ",
+          "role": "Recovered from Retrieval Engine v0.4; working organ routed into Current Best and Crown decisions",
+          "status": "MOUNTED",
+          "physicalHost": "JM Estate Retrieval Engine v0.4",
+          "currentHost": "Living Notebook / Registers & Governance chain",
+          "standaloneClaim": "NOT_CLAIMED"
         },
         {
           "id": "source-body-auditor",
           "name": "Source-Body Auditor",
-          "type": "Source/body relation auditor",
-          "role": "BUILD 050 family is known; exact standalone package retrieval remains open",
-          "status": "STRANDED"
+          "type": "BUILD 050 source/claim proof organ",
+          "role": "Recovered from Retrieval Engine v0.4; active proof organ routed through Source Ledger, Build Gate and Crown checks",
+          "status": "PROVEN",
+          "physicalHost": "JM Estate Retrieval Engine v0.4",
+          "currentHost": "Build Gate + Source Ledger + Registers & Governance chain",
+          "standaloneClaim": "NOT_CLAIMED"
         },
         {
           "id": "current-best-register",

@@ -1,0 +1,28 @@
+{
+  "schema": "JM.Build050LatestSourceMountReceipt/1.0",
+  "status": "PASS",
+  "recorded_at_utc": "2026-07-20T17:22:23Z",
+  "pass": "Latest / Source Reconciliation Pass v0.1",
+  "physical_host_authority": "JM Estate Retrieval Engine v0.4",
+  "private_keeper": "BUILD050_LATEST_SOURCE_RECONCILIATION_v0_1_ZIONFOLDER.zip",
+  "organs": {
+    "Latest Body Finder": "MOUNTED_WORKING_ORGAN",
+    "Source-Body Auditor": "PROVEN_ACTIVE_PROOF_ORGAN"
+  },
+  "later_branch_guard": {
+    "v0.5.1": "VALID_BRANCH_BUT_BOTH_ORGANS_OMITTED",
+    "v0.6": "VALID_BRANCH_BUT_BOTH_ORGANS_OMITTED"
+  },
+  "standalone_app_claim": "NOT_CLAIMED",
+  "remaining_exact_package_retrieval": [
+    "Portal Engine"
+  ],
+  "checks": {
+    "apps_projection": "PASS",
+    "apps_count_derivation": "PASS",
+    "stringline_mount": "PASS",
+    "classification_authority": "PASS",
+    "integrity_receipt": "PASS",
+    "javascript_syntax": "PASS"
+  }
+}

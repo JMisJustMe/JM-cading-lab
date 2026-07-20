@@ -1,0 +1,141 @@
+name: Apply BUILD 050 Latest Source Reconciliation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_build050_latest_source_reconciliation.py"
+      - "registry/build050-latest-source-reconciliation-authority.json"
+      - ".github/workflows/apply-build050-latest-source-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-build050-latest-source-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Apply recovered organ authority
+        run: python3 governance/apply_build050_latest_source_reconciliation.py
+      - name: Prove reconciliation state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool registry/build050-latest-source-reconciliation-authority.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-classification-integrity-receipt-v1.0.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 <<'PY'
+          from collections import Counter
+          import json,re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          latest=next(row for row in rows if row[0]=='Latest Body Finder')
+          auditor=next(row for row in rows if row[0]=='Source-Body Auditor')
+          assert latest == ['Latest Body Finder','BUILD 050 · v0.4 installed working organ','Registers & Governance','routed']
+          assert auditor == ['Source-Body Auditor','BUILD 050 · v0.4 installed active proof organ','Registers & Governance','routed']
+          assert 'exact standalone package retrieval' not in latest[1]
+          assert 'exact standalone package retrieval' not in auditor[1]
+          registered={row[0] for row in rows if row[3]=='registered'}
+          assert registered == {'Portal Engine'}, registered
+
+          counts=Counter(row[3] for row in rows)
+          expected={'room_count':len(rows),'full_plus_preserved':counts['full_current']+counts['full_alt'],'routed':counts['routed'],'source_needed':counts['registered'],'preparation':counts['prep']}
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          assert shown==expected,(shown,expected)
+          assert expected == {'room_count':44,'full_plus_preserved':29,'routed':11,'source_needed':1,'preparation':2}, expected
+          assert '<b>11</b><span>routed organs</span>' in text
+          assert '<b>1 + 2</b><span>package-retrieval + preparation</span>' in text
+          assert 'Open recovered governance route' in text
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          projects={project['id']:project for project in stringline['seed_project_strings']}
+          registers=projects['registers-governance']
+          bodies={body['id']:body for body in registers['bodies']}
+          assert bodies['latest-body-finder']['status']=='MOUNTED'
+          assert bodies['source-body-auditor']['status']=='PROVEN'
+          assert bodies['latest-body-finder']['standaloneClaim']=='NOT_CLAIMED'
+          assert bodies['source-body-auditor']['standaloneClaim']=='NOT_CLAIMED'
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          chain=next(body for body in authority['bodies'] if body.get('id')=='registers-governance-chain')
+          assert chain['package_retrieval_open']==[]
+          assert chain['severity']=='RECOVERED_AND_REMOUNTED'
+
+          integrity=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          assert integrity['status']=='PASS_BUILD050_ORGANS_RECOVERED'
+          assert integrity['remaining_exact_package_retrieval']==['Portal Engine standalone package']
+          assert integrity['proof']['retrieval_engine_v04_html_index_agreement']=='PASS_91_OF_91'
+
+          scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
+          Path('/tmp/apps-build050.js').write_text(scripts[-1],encoding='utf-8')
+          print({'stats':expected,'registered':sorted(registered),'stringline':stringline['version']})
+          PY
+          node --check /tmp/apps-build050.js
+      - name: Write BUILD 050 mount receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.Build050LatestSourceMountReceipt/1.0',
+            'status':'PASS',
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'pass':'Latest / Source Reconciliation Pass v0.1',
+            'physical_host_authority':'JM Estate Retrieval Engine v0.4',
+            'private_keeper':'BUILD050_LATEST_SOURCE_RECONCILIATION_v0_1_ZIONFOLDER.zip',
+            'organs':{
+              'Latest Body Finder':'MOUNTED_WORKING_ORGAN',
+              'Source-Body Auditor':'PROVEN_ACTIVE_PROOF_ORGAN'
+            },
+            'later_branch_guard':{
+              'v0.5.1':'VALID_BRANCH_BUT_BOTH_ORGANS_OMITTED',
+              'v0.6':'VALID_BRANCH_BUT_BOTH_ORGANS_OMITTED'
+            },
+            'standalone_app_claim':'NOT_CLAIMED',
+            'remaining_exact_package_retrieval':['Portal Engine'],
+            'checks':{
+              'apps_projection':'PASS',
+              'apps_count_derivation':'PASS',
+              'stringline_mount':'PASS',
+              'classification_authority':'PASS',
+              'integrity_receipt':'PASS',
+              'javascript_syntax':'PASS'
+            }
+          }
+          Path('registry/build050-latest-source-reconciliation-mount-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - name: Commit reconciliation safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Latest Source Reconciliation Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json registry/build050-latest-source-reconciliation-mount-receipt.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Remount BUILD 050 Latest Body Finder and Source-Body Auditor"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

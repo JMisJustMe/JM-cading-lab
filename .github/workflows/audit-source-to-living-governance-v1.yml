@@ -1,0 +1,140 @@
+name: Audit Source-to-Living Governance v1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/estate-head-public-v0.2.1.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "registry/source-to-living-governance-policy-v1.0.json"
+      - "navigator/stringline.json"
+      - "apps/**"
+      - "games-beyond/**"
+      - "theory/**"
+      - "lyrics/**"
+      - "recovery/**"
+      - "author/**"
+      - "coding-estate/**"
+      - "index.html"
+      - "cading.html"
+      - "governance/enforce_source_to_living.py"
+      - "governance/verify_estate_classification.py"
+      - ".github/workflows/audit-source-to-living-governance-v1.yml"
+  pull_request:
+    paths:
+      - "registry/estate-head-public-v0.2.1.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "registry/source-to-living-governance-policy-v1.0.json"
+      - "navigator/stringline.json"
+      - "apps/**"
+      - "games-beyond/**"
+      - "theory/**"
+      - "lyrics/**"
+      - "recovery/**"
+      - "author/**"
+      - "coding-estate/**"
+      - "index.html"
+      - "cading.html"
+      - "governance/enforce_source_to_living.py"
+      - "governance/verify_estate_classification.py"
+      - ".github/workflows/audit-source-to-living-governance-v1.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: source-to-living-governance-v1
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  push-gate:
+    if: github.event_name != 'pull_request'
+    name: Materialise and prove all six-stage passports
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build registers and run both governance gates
+        id: gate
+        shell: bash
+        run: |
+          set +e
+          mkdir -p registry
+          {
+            python3 governance/enforce_source_to_living.py write --root .
+            python3 governance/enforce_source_to_living.py check --root .
+            python3 governance/verify_estate_classification.py --root .
+          } 2>&1 | tee registry/source-to-living-governance-diagnostic-v1.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Write exact gate outcome
+        shell: bash
+        env:
+          GATE_EXIT: ${{ steps.gate.outputs.exit_code }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          code=int(os.environ.get('GATE_EXIT','1'))
+          log_path=Path('registry/source-to-living-governance-diagnostic-v1.log')
+          lines=log_path.read_text(encoding='utf-8',errors='replace').splitlines() if log_path.exists() else []
+          receipt={
+            'schema':'JM.SourceToLivingGovernanceOutcome/1.0',
+            'status':'completed',
+            'conclusion':'success' if code==0 else 'failure',
+            'source_commit':os.environ.get('GITHUB_SHA',''),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID',''),
+            'gate_exit_code':code,
+            'register':'registry/source-to-living-governance-register-v1.0.json',
+            'receipt':'registry/source-to-living-governance-receipt-v1.0.json',
+            'diagnostic_tail':lines[-120:],
+          }
+          Path('registry/source-to-living-governance-outcome-v1.0.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit register, receipt and outcome
+        shell: bash
+        env:
+          GATE_EXIT: ${{ steps.gate.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          git config user.name "JM Source-to-Living Governance Gate"
+          git config user.email "actions@users.noreply.github.com"
+          if [ "$GATE_EXIT" = "0" ]; then
+            git add registry/source-to-living-governance-register-v1.0.json registry/source-to-living-governance-receipt-v1.0.json
+          fi
+          git add registry/source-to-living-governance-outcome-v1.0.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record repository-wide source-to-living governance outcome"
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1
+
+      - name: Block failed promotion
+        if: steps.gate.outputs.exit_code != '0'
+        run: exit 1
+
+  pull-request-gate:
+    if: github.event_name == 'pull_request'
+    name: Require fresh six-stage passports before merge
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check committed governance register and classification truth
+        run: |
+          set -euo pipefail
+          python3 governance/enforce_source_to_living.py check --root .
+          python3 governance/verify_estate_classification.py --root .

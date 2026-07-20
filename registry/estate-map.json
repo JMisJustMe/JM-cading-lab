@@ -401,7 +401,11 @@
       "version": "v1.0",
       "stages": 6,
       "owner_gate": "MOUNTED",
-      "repository_wide_enforcement": "NEXT"
+      "repository_wide_enforcement": "LIVE_72_RECORDS_432_STAGE_RECEIPTS",
+      "governance_gate": ".github/workflows/audit-source-to-living-governance-v1.yml",
+      "governance_register": "registry/source-to-living-governance-register-v1.0.json",
+      "governance_receipt": "registry/source-to-living-governance-receipt-v1.0.json",
+      "public_promotions_guarded": 27
     },
     "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
     "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",

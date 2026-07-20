@@ -1,6 +1,6 @@
 {
   "schema": "JM.EstateHeadPublicConsumptionReceipt/1.0",
-  "generated_at": "2026-07-20T17:38:16+00:00",
+  "generated_at": "2026-07-20T18:37:41+00:00",
   "authority_contract": "registry/estate-head-public-current.json",
   "authority_snapshot": {
     "schema": "JM.EstateHeadPublicCurrent/1.0",
@@ -23,10 +23,14 @@
       "version": "v1.0",
       "stages": 6,
       "owner_gate": "MOUNTED",
-      "repository_wide_enforcement": "NEXT"
+      "repository_wide_enforcement": "LIVE_72_RECORDS_432_STAGE_RECEIPTS",
+      "governance_gate": ".github/workflows/audit-source-to-living-governance-v1.yml",
+      "governance_register": "registry/source-to-living-governance-register-v1.0.json",
+      "governance_receipt": "registry/source-to-living-governance-receipt-v1.0.json",
+      "public_promotions_guarded": 27
     },
     "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption, public-House consumption, Cloudflare deployment and canonical-host proof are live."
+    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository, public-House and Cloudflare edge consumption are live and separately receipt-proven; the wider private byte-for-byte census remains uncrowned."
   },
   "consumers": [
     "registry/estate-map.json",

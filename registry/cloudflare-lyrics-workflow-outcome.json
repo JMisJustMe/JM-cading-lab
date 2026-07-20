@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareLyricStudioWorkflowOutcome/0.5.1",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29760509262",
-  "head_sha": "bed27f58bee7d6cf1b9c604facdab5ab9d5be83c",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29760509262",
-  "updated_at": "2026-07-20T16:39:36Z",
-  "recorded_at_utc": "2026-07-20T16:39:47Z",
+  "run_id": "29763658303",
+  "head_sha": "c6cf16347f10d041ca4734658662604313f9d4f1",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763658303",
+  "updated_at": "2026-07-20T17:26:26Z",
+  "recorded_at_utc": "2026-07-20T17:26:35Z",
   "steps": [
     {
       "job": "Preserve live Estate and deploy LyricStudio",
@@ -31,22 +31,22 @@
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Verify the LyricStudio deployment body",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Prove LyricStudio on the canonical host",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Write successful LyricStudio deployment receipt",
-      "conclusion": "failure"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",

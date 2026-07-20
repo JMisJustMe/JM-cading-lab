@@ -1,0 +1,165 @@
+name: Apply QUADZE MultiHub v4 Authority Reconciliation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_quadze_multihub_v4_reconciliation.py"
+      - "registry/quadze-multihub-v4-authority.json"
+      - "governance/verify_estate_classification.py"
+      - ".github/workflows/apply-quadze-multihub-v4-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-quadze-multihub-v4-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+
+      - name: Apply QUADZE v4 authority split
+        run: python3 governance/apply_quadze_multihub_v4_reconciliation.py
+
+      - name: Prove the recovered authority through the shared verifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/verify_estate_classification.py --root .
+          python3 -m json.tool registry/quadze-multihub-v4-authority.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-classification-integrity-receipt-v1.0.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 <<'PY'
+          from collections import Counter
+          import json,re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          quadze=next(row for row in rows if row[0]=='JM QUADZE MultiHub OneBody OS')
+          assert quadze == [
+            'JM QUADZE MultiHub OneBody OS',
+            'v4.1 SOLO · v4.0 full APK-ready source',
+            'Operating Houses',
+            'full_current'
+          ], quadze
+          counts=Counter(row[3] for row in rows)
+          expected={'room_count':44,'full_plus_preserved':29,'routed':12,'source_needed':0,'preparation':2}
+          actual={'room_count':len(rows),'full_plus_preserved':counts['full_current']+counts['full_alt'],'routed':counts['routed'],'source_needed':counts['registered'],'preparation':counts['prep']}
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          assert actual==expected,(actual,expected)
+          assert shown==expected,(shown,expected)
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          assert stringline['version']=='v0.1.8 QUADZE v4 authority reconciliation seed'
+          projects={project['id']:project for project in stringline['seed_project_strings']}
+          operating={body['id']:body for body in projects['operating-houses']['bodies']}
+          body=operating['quadze-multihub']
+          assert body['status']=='FROZEN'
+          assert body['fullSourceAuthority']=='v4.0 APK-ready source'
+          assert body['soloAuthority']=='v4.1 SOLO'
+          assert body['v4NativeApk']=='NOT_BUILT_NOT_CLAIMED'
+          assert body['publicPayload']=='NOT_PUBLISHED'
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          a=next(body for body in authority['bodies'] if body.get('id')=='quadze-multihub-v10')
+          assert a['severity']=='RECOVERED_AND_RECONCILED_V4_AUTHORITY'
+          assert a['v4_native_apk']=='NOT_BUILT_NOT_CLAIMED'
+          assert a['solo_projection_authority'].startswith('v4.1 SOLO')
+
+          source=json.loads(Path('registry/quadze-multihub-v4-authority.json').read_text())
+          assert source['status']=='EXACT_PACKAGES_RECOVERED_AND_INDEPENDENTLY_REVALIDATED'
+          assert source['independent_revalidation']['v4_0_build_receipt_and_manifest']=='PASS_394_OF_394'
+          assert source['independent_revalidation']['v4_1_corrected_manifest']=='PASS_398_OF_398'
+          assert source['independent_revalidation']['v4_1_solo_headless_mobile']=='PASS'
+          assert source['independent_revalidation']['v4_1_solo_headless_desktop']=='PASS'
+
+          integrity=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          assert integrity['status']=='PASS_QUADZE_V4_AUTHORITY_RECOVERED'
+          assert integrity['remaining_exact_package_retrieval']==[]
+          assert not any('JM QUADZE MultiHub later v4.x' in item for item in integrity['watch_items'])
+          assert integrity['proof']['quadze_v41_solo_headless_qa']=='PASS_2_VIEWPORTS'
+          assert integrity['proof']['quadze_v4_native_apk_boundary']=='NOT_BUILT_NOT_CLAIMED'
+
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',text,re.I|re.S)
+          Path('/tmp/apps-quadze-v4.js').write_text(scripts[-1],encoding='utf-8')
+          print({'quadze':quadze,'stats':actual,'stringline':stringline['version']})
+          PY
+          node --check /tmp/apps-quadze-v4.js
+
+      - name: Write QUADZE recovery mount receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.QuadzeMultiHubV4MountReceipt/1.0',
+            'status':'PASS',
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'name':'JM QUADZE MultiHub OneBody OS',
+            'authority_lanes':{
+              'full_apk_ready_source':'v4.0',
+              'solo_direct_open':'v4.1 SOLO',
+              'signed_lineage_apk':'v3.0 — device install unproved',
+              'v4_native_apk':'NOT_BUILT_NOT_CLAIMED'
+            },
+            'private_library_path':'/JM_Estate/Zionfolders/Operating_Houses/QUADZE_MultiHub_v4_1/',
+            'private_files':[
+              'JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY_ZIONFOLDER.zip',
+              'JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO_APK_READY_ZIONFOLDER.zip',
+              'QUADZE_MULTIHUB_V4_1_AUTHORITY_RECONCILIATION_v1_0_ZIONFOLDER.zip'
+            ],
+            'public_payload':'NOT_PUBLISHED',
+            'checks':{
+              'v4_0_zip_integrity':'PASS',
+              'v4_1_zip_integrity':'PASS',
+              'v4_0_build_manifest':'PASS_394_OF_394',
+              'v4_1_corrected_manifest':'PASS_398_OF_398',
+              'v4_1_solo_static':'PASS_29_OF_29',
+              'v4_1_solo_headless':'PASS_2_VIEWPORTS',
+              'apps_projection':'PASS',
+              'stringline_mount':'PASS',
+              'central_classification_verifier':'PASS',
+              'apps_javascript':'PASS'
+            },
+            'custody_defect':'ORIGINAL_STALE_SHA256_PRESERVED_AND_CORRECTED_EXTERNALLY',
+            'device_boundary':'SEPARATE_DING_NOT_REPROVED',
+            'crown':'The full body carries the Estate. The SOLO body carries the door. The lineage APK carries proof—not a false v4 crown.'
+          }
+          Path('registry/quadze-multihub-v4-mount-receipt.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+          PY
+
+      - name: Commit the recovered QUADZE authority safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Latest Source Reconciliation Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json registry/quadze-multihub-v4-mount-receipt.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Recover QUADZE MultiHub v4 full-source and SOLO authorities"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Parallel main update caught on attempt ${attempt}; retrying safely."
+            sleep 2
+          done
+          exit 1

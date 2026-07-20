@@ -3,11 +3,11 @@
   "status": "completed",
   "conclusion": "success",
   "classification": "CENSUS_GATE_PASS_2_PACKAGES_2_PARTIAL_BODIES",
-  "run_id": "29769554563",
-  "head_sha": "98a53b8fbc75b5dd4ec46c61ebbcbd8cb3d53723",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769554563",
-  "updated_at": "2026-07-20T18:51:44Z",
-  "recorded_at_utc": "2026-07-20T18:51:54Z",
+  "run_id": "29769790851",
+  "head_sha": "3fafd7c5a5d17eadc673fccc63accab0a34de9be",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769790851",
+  "updated_at": "2026-07-20T18:55:00Z",
+  "recorded_at_utc": "2026-07-20T18:55:11Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
@@ -40,6 +40,11 @@
     {
       "job": "Prove packages and hold unlocated continuations",
       "name": "Verify Census v0.2 specialist package state",
+      "conclusion": "success"
+    },
+    {
+      "job": "Prove packages and hold unlocated continuations",
+      "name": "Verify held-item identities and exit criteria",
       "conclusion": "success"
     },
     {

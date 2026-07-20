@@ -1,4 +1,4 @@
-name: Deploy First-Party LyricStudio
+name: Deploy Working Lyrics House
 
 on:
   push:
@@ -10,16 +10,16 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: jmisjustme-estate-lyrics-production
+  group: jmisjustme-estate-lyrics-working
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
   deployments: write
 
 jobs:
   deploy:
-    name: Preserve live Estate and deploy LyricStudio
+    name: Preserve live Estate, interaction-test and deploy Lyrics House
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -34,88 +34,65 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
-          mkdir -p cloudflare-estate/assets cloudflare-estate/data
-
+          mkdir -p cloudflare-estate
           python3 <<'PY'
+          from collections import deque
           from pathlib import Path
           from urllib.parse import urljoin, urlparse
           from urllib.request import Request, urlopen
           import os, re
 
-          base = os.environ['ESTATE_BASE']
-          out = Path('cloudflare-estate')
+          base=os.environ['ESTATE_BASE']
+          host=urlparse(base).netloc
+          out=Path('cloudflare-estate')
+          queue=deque([''])
+          seen=set()
+          seeds=['navigator/','apps/','theory/','author/','recovery/','404.html','manifest.webmanifest','robots.txt','sitemap.xml','sw.js','_headers','_redirects']
+          queue.extend(seeds)
 
-          def fetch(path: str, required: bool = True) -> bytes:
-              url = urljoin(base, path)
+          def fetch(path, required=False):
+              url=urljoin(base,path)
               try:
-                  req = Request(url, headers={'User-Agent': 'JM-LyricStudio-Deploy/0.5.1'})
-                  with urlopen(req, timeout=30) as response:
-                      return response.read()
+                  req=Request(url,headers={'User-Agent':'JM-Lyrics-Working-Deploy/1.0'})
+                  with urlopen(req,timeout=25) as response:
+                      return response.read(),response.headers.get_content_type()
               except Exception:
-                  if required:
-                      raise
-                  return b''
+                  if required: raise
+                  return b'', ''
 
-          def write(path: str, data: bytes) -> None:
-              target = out / path
-              target.parent.mkdir(parents=True, exist_ok=True)
+          def target_for(path,ctype):
+              clean=urlparse('/'+path).path.lstrip('/')
+              if not clean: return out/'index.html'
+              if clean.endswith('/'): return out/clean/'index.html'
+              if ctype=='text/html' and '.' not in Path(clean).name: return out/clean/'index.html'
+              return out/clean
+
+          while queue and len(seen)<250:
+              path=queue.popleft()
+              key=urlparse('/'+path).path.lstrip('/')
+              if key in seen: continue
+              seen.add(key)
+              data,ctype=fetch(key,required=(key==''))
+              if not data: continue
+              target=target_for(key,ctype)
+              target.parent.mkdir(parents=True,exist_ok=True)
               target.write_bytes(data)
-
-          root = fetch('')
-          root_text = root.decode('utf-8', 'replace')
-          write('index.html', root)
-
-          refs = set(re.findall(r'''(?:src|href)=["']([^"']+)["']''', root_text, flags=re.I))
-          for ref in sorted(refs):
-              if ref.startswith(('data:', 'mailto:', 'tel:', '#')):
-                  continue
-              parsed = urlparse(urljoin(base, ref))
-              if parsed.netloc != urlparse(base).netloc:
-                  continue
-              path = parsed.path.lstrip('/')
-              if not path or path.endswith('/'):
-                  continue
-              data = fetch(path, required=False)
-              if data:
-                  write(path, data)
-
-          for path in [
-              '404.html',
-              'manifest.webmanifest',
-              'robots.txt',
-              'sitemap.xml',
-              'assets/jm-mark.svg',
-              'data/estate-canonical-site.json',
-              'data/estate-public.json',
-              'data/installed-districts-public.json',
-              'data/installed-private.schema.json',
-              'data/source-chambers.schema.json',
-              'data/storage-policy.json',
-          ]:
-              data = fetch(path, required=False)
-              if data:
-                  write(path, data)
-
-          for route in ['navigator', 'apps', 'theory', 'recovery']:
-              write(f'{route}/index.html', fetch(f'{route}/'))
-
-          for path in [
-              'navigator/stringline.json',
-              'navigator/JM3232_NAVIGATOR_REGISTRY.json',
-              'recovery/JM3232_NAVIGATOR_REGISTRY.json',
-          ]:
-              data = fetch(path, required=False)
-              if data:
-                  write(path, data)
+              if ctype=='text/html':
+                  text=data.decode('utf-8','replace')
+                  for ref in re.findall(r'''(?:src|href)=["']([^"']+)["']''',text,re.I):
+                      if ref.startswith(('data:','mailto:','tel:','#','javascript:')): continue
+                      parsed=urlparse(urljoin(base,ref))
+                      if parsed.netloc!=host: continue
+                      candidate=parsed.path.lstrip('/')
+                      if candidate not in seen: queue.append(candidate)
           PY
 
-      - name: Overlay the verified first-party LyricStudio
+      - name: Overlay restored working Lyrics House
         shell: bash
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate/lyrics
           cp -a lyrics cloudflare-estate/lyrics
-
           cat > cloudflare-estate/_headers <<'EOF'
           /*
             X-Content-Type-Options: nosniff
@@ -125,37 +102,66 @@ jobs:
           /assets/*
             Cache-Control: public, max-age=31536000, immutable
           /lyrics/*
-            Cache-Control: no-cache
+            Cache-Control: no-store
           EOF
-
           cat > cloudflare-estate/_redirects <<'EOF'
           /* /index.html 200
           EOF
 
-          cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-lyricstudio-v051-2';
-          const CORE=['./','./index.html','./navigator/','./apps/','./theory/','./lyrics/','./recovery/'];
-          self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
-          self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
-          self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./index.html'))))});
-          EOF
-
-      - name: Verify the LyricStudio deployment body
+      - name: Prove page completion and JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
-          test -s cloudflare-estate/index.html
-          test -s cloudflare-estate/navigator/index.html
-          test -s cloudflare-estate/apps/index.html
-          test -s cloudflare-estate/theory/index.html
-          test -s cloudflare-estate/lyrics/index.html
-          test -s cloudflare-estate/recovery/index.html
-          grep -q "JM LyricStudio v0.5.1" cloudflare-estate/lyrics/index.html
-          grep -q "121 tap-open entries" cloudflare-estate/lyrics/index.html
-          grep -q 'id="back"' cloudflare-estate/lyrics/index.html
-          grep -q "Teleprompter" cloudflare-estate/lyrics/index.html
-          grep -q "Studio" cloudflare-estate/lyrics/index.html
-          echo "Live-preserving LyricStudio deployment body passed."
+          file=cloudflare-estate/lyrics/index.html
+          test -s "$file"
+          grep -q "JM Lyrics & Music House — Whole-Estate Public Door" "$file"
+          grep -q 'data-view="desk"' "$file"
+          grep -q 'id="save"' "$file"
+          grep -q 'id="export"' "$file"
+          grep -q 'id="clear"' "$file"
+          grep -q '</script>' "$file"
+          grep -q '</html>' "$file"
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          text=Path('cloudflare-estate/lyrics/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script[^>]*>(.*?)</script>',text,re.I|re.S)
+          assert scripts, 'No executable script found'
+          Path('/tmp/lyrics-runtime.js').write_text('\n'.join(scripts),encoding='utf-8')
+          PY
+          node --check /tmp/lyrics-runtime.js
+
+      - name: Click-test the real controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lyrics-smoke
+          cd /tmp/lyrics-smoke
+          npm init -y >/dev/null 2>&1
+          npm install --silent jsdom@24
+          node <<'JS'
+          const fs=require('fs');
+          const {JSDOM}=require('jsdom');
+          const html=fs.readFileSync(process.env.GITHUB_WORKSPACE+'/cloudflare-estate/lyrics/index.html','utf8');
+          const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://jmisjustme-estate.pages.dev/lyrics/',beforeParse(window){window.scrollTo=()=>{};window.confirm=()=>true;}});
+          const {document,localStorage,Event}=dom.window;
+          const deskButton=document.querySelector('[data-view="desk"]');
+          if(!deskButton) throw new Error('Desk button missing');
+          deskButton.click();
+          const desk=document.querySelector('[data-panel="desk"]');
+          if(!desk.classList.contains('active')) throw new Error('Desk button did not activate its panel');
+          const title=document.querySelector('#pieceTitle');
+          const text=document.querySelector('#lyricText');
+          title.value='Runtime smoke'; text.value='Buttons are connected.';
+          title.dispatchEvent(new Event('input',{bubbles:true}));
+          text.dispatchEvent(new Event('input',{bubbles:true}));
+          document.querySelector('#save').click();
+          const saved=JSON.parse(localStorage.getItem('jm-lyrics-public-desk-v1'));
+          if(saved?.title!=='Runtime smoke'||saved?.text!=='Buttons are connected.') throw new Error('Save button did not write the draft');
+          document.querySelector('[data-view="receipt"]').click();
+          if(!document.querySelector('[data-panel="receipt"]').classList.contains('active')) throw new Error('Proof button did not activate its panel');
+          console.log('LYRICS HOUSE INTERACTION PASS');
+          JS
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -165,50 +171,23 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove LyricStudio on the canonical host
+      - name: Prove the working body on the canonical host
         shell: bash
         run: |
           set -euo pipefail
           proved=0
-          for attempt in $(seq 1 40); do
+          for attempt in $(seq 1 45); do
             curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/lyrics/?lyricstudio-proof=${GITHUB_RUN_ID}-${attempt}" \
+              "https://jmisjustme-estate.pages.dev/lyrics/?working-proof=${GITHUB_RUN_ID}-${attempt}" \
               > "$RUNNER_TEMP/live-lyrics.html" || true
-            if grep -q "JM LyricStudio v0.5.1" "$RUNNER_TEMP/live-lyrics.html" \
-              && grep -q "121 tap-open entries" "$RUNNER_TEMP/live-lyrics.html" \
-              && grep -q 'id="back"' "$RUNNER_TEMP/live-lyrics.html"; then
+            if grep -q "JM Lyrics & Music House — Whole-Estate Public Door" "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q 'data-view="desk"' "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q 'id="save"' "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q '</html>' "$RUNNER_TEMP/live-lyrics.html"; then
               proved=1
               break
             fi
             sleep 2
           done
           test "$proved" -eq 1
-          echo "JM LyricStudio v0.5.1 is live on the canonical host."
-
-      - name: Write successful LyricStudio deployment receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p registry
-          cat > registry/cloudflare-lyrics-deploy-receipt.json <<EOF
-          {
-            "schema": "JM.CloudflareLyricStudioReceipt/0.5.1",
-            "status": "SUCCESS",
-            "project": "jmisjustme-estate",
-            "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
-            "source_commit": "${GITHUB_SHA}",
-            "workflow_run": "${GITHUB_RUN_ID}",
-            "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "body": "JM LyricStudio v0.5.1 — First-Party Estate",
-            "entries": 121,
-            "live_title_proven": true,
-            "app_back_control_proven": true,
-            "manual_upload_required": false
-          }
-          EOF
-          git config user.name "JM Estate Deployment Rail"
-          git config user.email "actions@users.noreply.github.com"
-          git add registry/cloudflare-lyrics-deploy-receipt.json
-          git diff --cached --quiet || git commit -m "Record LyricStudio Cloudflare deployment success"
-          git pull --rebase origin main
-          git push origin main
+          echo "WORKING LYRICS HOUSE LIVE PROOF PASS"

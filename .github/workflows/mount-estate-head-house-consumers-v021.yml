@@ -1,3 +1,4 @@
+# Trigger receipt: public-House authority mount
 name: Mount Estate Head into public Houses
 
 on:
@@ -25,10 +26,8 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-
       - name: Mount shared authority consumer
         run: python3 scripts/mount_estate_head_house_consumers.py
-
       - name: Validate every public House
         run: |
           python3 - <<'PY'
@@ -47,7 +46,6 @@ jobs:
           PY
           node --check estate-head-public-consumer.js
           node --check estate-app.js
-
       - name: Commit public House authority mount
         run: |
           if git diff --quiet; then

@@ -10,7 +10,9 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
+import time
 from pathlib import Path
 
 MODULE_PATH = Path(__file__).with_name("deploy_estate_head_public.py")
@@ -106,8 +108,81 @@ def resilient_mirror_live() -> None:
     base.write("data/estate-head-mirror-ledger.json", (json.dumps(receipt, indent=2) + "\n").encode())
 
 
+def lyrics_house_pass(text: str) -> bool:
+    identity = "JM Lyrics & Music House" in text or "LYRICS &amp; MUSIC HOUSE" in text
+    working_desk = 'id="lyricText"' in text and 'id="save"' in text and 'id="export"' in text
+    boundary = "Public-source boundary" in text or "Public projection does not impersonate" in text
+    return identity and working_desk and boundary
+
+
+def resilient_build() -> None:
+    resilient_mirror_live()
+    shutil.rmtree(base.OUT / "lyrics", ignore_errors=True)
+    shutil.copytree("lyrics", base.OUT / "lyrics")
+    data = decode_segmented_subset()
+    (base.OUT / "estate-head").mkdir(parents=True, exist_ok=True)
+    shutil.copy2("estate-head-public/index.html", base.OUT / "estate-head/index.html")
+    shutil.copy2("estate-head-public/estate-head-consumer-v021.js", base.OUT / "assets/estate-head-consumer-v021.js")
+    (base.OUT / "data/estate-head-public-v0.2.1.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+    current = json.loads(Path("registry/estate-head-public-current.json").read_text())
+    current["deployment_state"] = "PUBLIC_CONSUMED"
+    current["public_subset_path"] = "/data/estate-head-public-v0.2.1.json"
+    current["public_head_route"] = "/estate-head/"
+    (base.OUT / "data/estate-head-public-current.json").write_text(json.dumps(current, ensure_ascii=False, indent=2) + "\n")
+    for rel in ["index.html", *[f"{route}/index.html" for route in base.ROUTES]]:
+        base.inject(base.OUT / rel)
+    (base.OUT / "_headers").write_text("""/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(self), geolocation=()
+  Cache-Control: no-cache
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/data/estate-head-*
+  Cache-Control: no-cache
+/estate-head/*
+  Cache-Control: no-cache
+/lyrics/*
+  Cache-Control: no-cache
+""")
+    (base.OUT / "_redirects").write_text("/* /index.html 200\n")
+    (base.OUT / "sw.js").write_text("""const CACHE='jm-independent-estate-head-v021-3';
+const CORE=['./','./index.html','./navigator/','./apps/','./theory/','./lyrics/','./recovery/','./estate-head/','./assets/estate-head-consumer-v021.js','./data/estate-head-public-current.json','./data/estate-head-public-v0.2.1.json'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./index.html'))))});
+""")
+    assert "JM ESTATE HEAD v0.2.1" in (base.OUT / "estate-head/index.html").read_text()
+    lyric_text = (base.OUT / "lyrics/index.html").read_text()
+    assert lyrics_house_pass(lyric_text), "Lyrics House structural proof failed"
+    for rel in ["index.html", *[f"{route}/index.html" for route in base.ROUTES]]:
+        assert base.MARKER in (base.OUT / rel).read_text()
+    print("Lyrics House structure + Estate Head deployment body PASS")
+
+
+def resilient_prove() -> None:
+    run = os.environ.get("GITHUB_RUN_ID", "local")
+    for attempt in range(1, 46):
+        stamp = f"{run}-{attempt}"
+        head = base.get_text("estate-head/", stamp)
+        current = base.get_text("data/estate-head-public-current.json", stamp)
+        pages = {route: base.get_text(f"{route}/", stamp) for route in ["apps", "theory", "lyrics", "recovery"]}
+        if (
+            "JM ESTATE HEAD v0.2.1" in head
+            and '"deployment_state": "PUBLIC_CONSUMED"' in current
+            and all("/assets/estate-head-consumer-v021.js" in page for page in pages.values())
+            and lyrics_house_pass(pages["lyrics"])
+        ):
+            print("Canonical Cloudflare Estate Head consumption PASS")
+            return
+        time.sleep(2)
+    raise SystemExit("Canonical Estate Head proof did not pass")
+
+
 base.decode_subset = decode_segmented_subset
 base.mirror_live = resilient_mirror_live
+base.build = resilient_build
+base.prove = resilient_prove
 
 if __name__ == "__main__":
     base.main()

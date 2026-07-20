@@ -1,0 +1,47 @@
+{
+  "schema": "JM.NavigatorQAReceipt/1.0",
+  "name": "JM3232 Navigator + JM Stringline v0.1.1 QA Receipt",
+  "generated_at_utc": "2026-07-20T15:30:33Z",
+  "source_paths": [
+    "navigator/index.html",
+    "navigator/stringline.json"
+  ],
+  "environment": {
+    "browser": "Headless Chromium through Chrome DevTools Protocol",
+    "mobile_viewport": "412x915",
+    "desktop_viewport": "1440x900"
+  },
+  "assistant_side_results": {
+    "interaction_layout_checks": {
+      "passed": 31,
+      "failed": 0
+    },
+    "non_destructive_migration_checks": {
+      "passed": 6,
+      "failed": 0
+    },
+    "total": {
+      "passed": 37,
+      "failed": 0
+    }
+  },
+  "proved_organs": [
+    "external URL normalization and opening call",
+    "tabs, close, history, bookmark-from-history and receipts",
+    "Stringline alias and all bottom navigation views",
+    "body intake, rendering and local persistence",
+    "About dialog, clear-history and clear-receipts controls",
+    "mobile and desktop horizontal-fit checks",
+    "no runtime exceptions during the sweep",
+    "seed upgrade while preserving a user-added body",
+    "seed upgrade while preserving a local-only project",
+    "official metadata refresh and Apps project insertion",
+    "Back trail without duplicate history"
+  ],
+  "device_contact": {
+    "platform": "Android",
+    "user_result": "Pressing Go loaded Google",
+    "status": "CONFIRMED"
+  },
+  "boundary": "This receipt proves the tested browser-experience and local-first Stringline functions. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK."
+}

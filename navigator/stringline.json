@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1 executable seed",
+  "version": "v0.1.1 proof and migration seed",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -13,73 +13,176 @@
     "Thread the bodies; do not flatten them. Make one line of access, not one mass of sameness."
   ],
   "levels": [
-    {"id":"body","name":"Body","meaning":"A sovereign chat, file, app, game, theory, build or other work-body."},
-    {"id":"stringdoor","name":"Stringdoor","meaning":"A governed entrance determining what may pass into or out of a body."},
-    {"id":"thread","name":"Thread","meaning":"A recognised relationship between two or more bodies."},
-    {"id":"project-string","name":"Project String","meaning":"The structured continuity joining all relevant project bodies."},
-    {"id":"project-head-pair","name":"Project Head Pair","meaning":"Head Chat plus Head Record: living thought joined to stable project memory."},
-    {"id":"estate-string","name":"Estate String","meaning":"The governed relationship between separate project strings."},
-    {"id":"estate-head-pair","name":"JM Estate Head Pair","meaning":"Estate Head Chat plus Estate Head Record."}
+    {
+      "id": "body",
+      "name": "Body",
+      "meaning": "A sovereign chat, file, app, game, theory, build or other work-body."
+    },
+    {
+      "id": "stringdoor",
+      "name": "Stringdoor",
+      "meaning": "A governed entrance determining what may pass into or out of a body."
+    },
+    {
+      "id": "thread",
+      "name": "Thread",
+      "meaning": "A recognised relationship between two or more bodies."
+    },
+    {
+      "id": "project-string",
+      "name": "Project String",
+      "meaning": "The structured continuity joining all relevant project bodies."
+    },
+    {
+      "id": "project-head-pair",
+      "name": "Project Head Pair",
+      "meaning": "Head Chat plus Head Record: living thought joined to stable project memory."
+    },
+    {
+      "id": "estate-string",
+      "name": "Estate String",
+      "meaning": "The governed relationship between separate project strings."
+    },
+    {
+      "id": "estate-head-pair",
+      "name": "JM Estate Head Pair",
+      "meaning": "Estate Head Chat plus Estate Head Record."
+    }
   ],
   "authority_classes": [
-    {"id":"source","name":"Source truth","meaning":"What the original body actually contains or claimed."},
-    {"id":"accepted","name":"Accepted truth","meaning":"What the project has reviewed and mounted."},
-    {"id":"operating","name":"Operating truth","meaning":"What currently governs action."}
+    {
+      "id": "source",
+      "name": "Source truth",
+      "meaning": "What the original body actually contains or claimed."
+    },
+    {
+      "id": "accepted",
+      "name": "Accepted truth",
+      "meaning": "What the project has reviewed and mounted."
+    },
+    {
+      "id": "operating",
+      "name": "Operating truth",
+      "meaning": "What currently governs action."
+    }
   ],
-  "lifecycle_states": ["SEED","THREADING","STANDING","PROVEN","MOUNTED","FROZEN","SUPERSEDED","ARCHIVED","STRANDED"],
+  "lifecycle_states": [
+    "SEED",
+    "THREADING",
+    "STANDING",
+    "PROVEN",
+    "MOUNTED",
+    "FROZEN",
+    "SUPERSEDED",
+    "ARCHIVED",
+    "STRANDED"
+  ],
   "seed_project_strings": [
     {
-      "id":"estate-public",
-      "name":"Website / Public Estate",
-      "headChat":"Own Website Creation",
-      "headRecord":"JM Independent Estate Record",
-      "status":"STANDING",
-      "keeper":"The public door must not impersonate the private whole.",
-      "bodies":[
-        {"id":"estate-root","name":"JMISJUSTME Living Estate","type":"Website","role":"Canonical public house","status":"PROVEN","route":"../"},
-        {"id":"navigator","name":"JM3232 Navigator","type":"Tool / browser shell","role":"Internet and Estate passage instrument","status":"THREADING","route":"./"}
+      "id": "estate-public",
+      "name": "Website / Public Estate",
+      "headChat": "Own Website Creation",
+      "headRecord": "JM Independent Estate Record",
+      "status": "STANDING",
+      "keeper": "The public door must not impersonate the private whole.",
+      "bodies": [
+        {
+          "id": "estate-root",
+          "name": "JMISJUSTME Living Estate",
+          "type": "Website",
+          "role": "Canonical public house",
+          "status": "PROVEN",
+          "route": "../"
+        },
+        {
+          "id": "navigator",
+          "name": "JM3232 Navigator",
+          "type": "Tool / browser shell",
+          "role": "Internet and Estate passage instrument",
+          "status": "THREADING",
+          "route": "./"
+        }
       ]
     },
     {
-      "id":"games-beyond",
-      "name":"Games&Beyond",
-      "headChat":"Games&Beyond Project Head",
-      "headRecord":"Games&Beyond House Record",
-      "status":"STANDING",
-      "keeper":"One front door. Many sovereign game rooms.",
-      "bodies":[
-        {"id":"games-house","name":"Games&Beyond House","type":"Game estate","role":"Public game-house route","status":"STANDING","route":"https://jmisjustme.github.io/JM-cading-lab/games-beyond/"}
+      "id": "games-beyond",
+      "name": "Games&Beyond",
+      "headChat": "Games&Beyond Project Head",
+      "headRecord": "Games&Beyond House Record",
+      "status": "STANDING",
+      "keeper": "One front door. Many sovereign game rooms.",
+      "bodies": [
+        {
+          "id": "games-house",
+          "name": "Games&Beyond House",
+          "type": "Game estate",
+          "role": "Public game-house route",
+          "status": "STANDING",
+          "route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+        }
       ]
     },
     {
-      "id":"theory",
-      "name":"Theory Estate",
-      "headChat":"Theory Hub",
-      "headRecord":"Theory Multihub Record",
-      "status":"STANDING",
-      "keeper":"Preserve the occurrence. Separate the claims. Trace every route.",
-      "bodies":[
-        {"id":"theory-hub","name":"Theory Multihub","type":"Theory house","role":"Public theory route","status":"PROVEN","route":"../theory/"}
+      "id": "non-game-apps",
+      "name": "Non-Game Apps",
+      "headChat": "Non-game Apps Organization",
+      "headRecord": "Non-Game Apps House Record",
+      "status": "STANDING",
+      "keeper": "All the apps share one front door while their bodies remain sovereign.",
+      "bodies": [
+        {
+          "id": "apps-house",
+          "name": "Non-Game Apps House",
+          "type": "App estate",
+          "role": "Public-safe catalogue and corridor for registered non-game apps",
+          "status": "PROVEN",
+          "route": "../apps/"
+        }
       ]
     },
     {
-      "id":"coding-os",
-      "name":"Coding / OS Estate",
-      "headChat":"Coding / OS Project Head",
-      "headRecord":"JM Coding Estate Record",
-      "status":"THREADING",
-      "keeper":"Use my actual coding bodies every single time.",
-      "bodies":[]
+      "id": "theory",
+      "name": "Theory Estate",
+      "headChat": "Theory Hub",
+      "headRecord": "Theory Multihub Record",
+      "status": "STANDING",
+      "keeper": "Preserve the occurrence. Separate the claims. Trace every route.",
+      "bodies": [
+        {
+          "id": "theory-hub",
+          "name": "Theory Multihub",
+          "type": "Theory house",
+          "role": "Public theory route",
+          "status": "PROVEN",
+          "route": "../theory/"
+        }
+      ]
     },
     {
-      "id":"lyrics",
-      "name":"Lyrics & Music",
-      "headChat":"Lyrics Project Head",
-      "headRecord":"B. Lyrikz Canon Record",
-      "status":"STANDING",
-      "keeper":"I know what I know. Let’s get on with the show.",
-      "bodies":[
-        {"id":"lyrics-house","name":"Lyrics & Music House","type":"Music house","role":"Public lyric route","status":"PROVEN","route":"../lyrics/"}
+      "id": "coding-os",
+      "name": "Coding / OS Estate",
+      "headChat": "Coding / OS Project Head",
+      "headRecord": "JM Coding Estate Record",
+      "status": "THREADING",
+      "keeper": "Use my actual coding bodies every single time.",
+      "bodies": []
+    },
+    {
+      "id": "lyrics",
+      "name": "Lyrics & Music",
+      "headChat": "Lyrics Project Head",
+      "headRecord": "B. Lyrikz Canon Record",
+      "status": "STANDING",
+      "keeper": "I know what I know. Let’s get on with the show.",
+      "bodies": [
+        {
+          "id": "lyrics-house",
+          "name": "Lyrics & Music House",
+          "type": "Music house",
+          "role": "Public lyric route",
+          "status": "PROVEN",
+          "route": "../lyrics/"
+        }
       ]
     }
   ],

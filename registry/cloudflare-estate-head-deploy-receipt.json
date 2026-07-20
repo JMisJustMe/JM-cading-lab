@@ -1,0 +1,42 @@
+{
+  "schema": "JM.CloudflareEstateHeadReceipt/0.2.1",
+  "status": "SUCCESS",
+  "project": "jmisjustme-estate",
+  "canonical_route": "https://jmisjustme-estate.pages.dev/estate-head/",
+  "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
+  "public_subset_path": "https://jmisjustme-estate.pages.dev/data/estate-head-public-v0.2.1.json",
+  "source_commit": "d009741c906ddf38e20c8211a26b6a508acc2baf",
+  "workflow_run": "29764188614",
+  "deployed_at_utc": "2026-07-20T17:35:22Z",
+  "public_subset_version": "v0.2.1",
+  "canonical_bodies": 61,
+  "project_heads": 11,
+  "gap_snapshot": {
+    "OPEN": 35,
+    "PARTIAL": 20,
+    "RESOLVED": 1
+  },
+  "consumer_routes_proven": [
+    "/",
+    "/navigator/",
+    "/apps/",
+    "/theory/",
+    "/lyrics/",
+    "/recovery/",
+    "/estate-head/"
+  ],
+  "proof_steps": {
+    "build": "SUCCESS",
+    "cloudflare_pages_deploy": "SUCCESS",
+    "canonical_host_proof": "SUCCESS"
+  },
+  "carrier": {
+    "format": "four-part checksum-verified JSON",
+    "sha256": "7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676",
+    "body_count_verified": 61,
+    "project_head_count_verified": 11
+  },
+  "private_owner_fields_published": false,
+  "manual_upload_required": false,
+  "receipt_note": "The deployment and canonical-host proof passed. The original workflow failed only while committing receipts because a build diagnostic file was unstaged; this sealed receipt records the already-proven live outcome."
+}

@@ -19,12 +19,7 @@ namespace JM.AdvancedGenerator.TBoys
         private TBCoreTarget bluefinCore;
         private TBCoreTarget crimsonCore;
         private LineRenderer aimLine;
-        private Material blueMaterial;
-        private Material crimsonMaterial;
-        private Material boardMaterial;
-        private Material bumperMaterial;
-        private Material hazardMaterial;
-        private Material powerMaterial;
+        private Material routeMaterial;
 
         private int selectedIndex;
         private int aimContactId = int.MinValue;
@@ -41,7 +36,9 @@ namespace JM.AdvancedGenerator.TBoys
         private float bannerUntil;
         private bool chemistryDinged;
 
-        private TBBody SelectedBody => bluefin.Count == 0 ? null : bluefin[Mathf.Clamp(selectedIndex, 0, bluefin.Count - 1)];
+        private TBBody SelectedBody => bluefin.Count == 0
+            ? null
+            : bluefin[Mathf.Clamp(selectedIndex, 0, bluefin.Count - 1)];
 
         private void Start()
         {
@@ -107,12 +104,12 @@ namespace JM.AdvancedGenerator.TBoys
             roundResolving = false;
             chemistryDinged = false;
 
-            blueMaterial = JMRuntimeFactory.CreateMaterial("TB_Bluefin", new Color(0.08f, 0.58f, 1f), 0.16f, 0.68f);
-            crimsonMaterial = JMRuntimeFactory.CreateMaterial("TB_Crimson", new Color(1f, 0.18f, 0.24f), 0.14f, 0.64f);
-            boardMaterial = JMRuntimeFactory.CreateMaterial("TB_Board", new Color(0.055f, 0.11f, 0.22f), 0.08f, 0.46f);
-            bumperMaterial = JMRuntimeFactory.CreateMaterial("TB_Bumper", new Color(1f, 0.76f, 0.12f), 0.32f, 0.76f);
-            hazardMaterial = JMRuntimeFactory.CreateMaterial("TB_Hold", new Color(0.53f, 0.18f, 0.82f), 0.08f, 0.62f);
-            powerMaterial = JMRuntimeFactory.CreateMaterial("TB_Route", new Color(0.38f, 0.95f, 1f), 0.14f, 0.86f);
+            Material blueMaterial = JMRuntimeFactory.CreateMaterial("TB_Bluefin", new Color(0.08f, 0.58f, 1f), 0.16f, 0.68f);
+            Material crimsonMaterial = JMRuntimeFactory.CreateMaterial("TB_Crimson", new Color(1f, 0.18f, 0.24f), 0.14f, 0.64f);
+            Material boardMaterial = JMRuntimeFactory.CreateMaterial("TB_Board", new Color(0.055f, 0.11f, 0.22f), 0.08f, 0.46f);
+            Material bumperMaterial = JMRuntimeFactory.CreateMaterial("TB_Bumper", new Color(1f, 0.76f, 0.12f), 0.32f, 0.76f);
+            Material hazardMaterial = JMRuntimeFactory.CreateMaterial("TB_Hold", new Color(0.53f, 0.18f, 0.82f), 0.08f, 0.62f);
+            routeMaterial = JMRuntimeFactory.CreateMaterial("TB_Route", new Color(0.38f, 0.95f, 1f), 0.14f, 0.86f);
 
             JMRuntimeFactory.CreatePrimitive(
                 "Core Clash Board",
@@ -131,11 +128,11 @@ namespace JM.AdvancedGenerator.TBoys
             JMRuntimeFactory.AddBoundary("TB Blue End", new Vector3(0f, 0.5f, -8.45f), new Vector3(9.6f, 1.4f, 0.25f), worldRoot.transform);
             JMRuntimeFactory.AddBoundary("TB Crimson End", new Vector3(0f, 0.5f, 8.45f), new Vector3(9.6f, 1.4f, 0.25f), worldRoot.transform);
 
-            CreateBumper("Left Bumper", new Vector3(-2.65f, 0.34f, 0.15f), new Vector3(0.78f, 0.50f, 0.78f));
-            CreateBumper("Right Bumper", new Vector3(2.65f, 0.34f, -0.15f), new Vector3(0.78f, 0.50f, 0.78f));
-            CreateBumper("Upper Gate", new Vector3(0f, 0.34f, 3.0f), new Vector3(1.12f, 0.50f, 0.52f));
-            CreateBumper("Lower Gate", new Vector3(0f, 0.34f, -3.0f), new Vector3(1.12f, 0.50f, 0.52f));
-            CreateHoldHazard();
+            CreateBumper("Left Bumper", new Vector3(-2.65f, 0.34f, 0.15f), new Vector3(0.78f, 0.50f, 0.78f), bumperMaterial);
+            CreateBumper("Right Bumper", new Vector3(2.65f, 0.34f, -0.15f), new Vector3(0.78f, 0.50f, 0.78f), bumperMaterial);
+            CreateBumper("Upper Gate", new Vector3(0f, 0.34f, 3.0f), new Vector3(1.12f, 0.50f, 0.52f), bumperMaterial);
+            CreateBumper("Lower Gate", new Vector3(0f, 0.34f, -3.0f), new Vector3(1.12f, 0.50f, 0.52f), bumperMaterial);
+            CreateHoldHazard(hazardMaterial);
 
             bluefinCore = CreateCore("Bluefin Core", "BLUEFIN", new Vector3(0f, 0.32f, -7.15f), blueMaterial);
             crimsonCore = CreateCore("Crimson Core", "CRIMSON", new Vector3(0f, 0.32f, 7.15f), crimsonMaterial);
@@ -153,7 +150,6 @@ namespace JM.AdvancedGenerator.TBoys
                     "BLUEFIN",
                     blueWords[index],
                     new Vector3(xPositions[index], 0.24f, -5.25f),
-                    blueMaterial,
                     index));
 
                 crimson.Add(CreateBody(
@@ -161,7 +157,6 @@ namespace JM.AdvancedGenerator.TBoys
                     "CRIMSON",
                     crimsonWords[index],
                     new Vector3(xPositions[3 - index], 0.24f, 5.25f),
-                    crimsonMaterial,
                     index));
             }
 
@@ -174,7 +169,7 @@ namespace JM.AdvancedGenerator.TBoys
             aimLine.positionCount = 2;
             aimLine.startWidth = 0.075f;
             aimLine.endWidth = 0.025f;
-            aimLine.sharedMaterial = powerMaterial;
+            aimLine.sharedMaterial = routeMaterial;
             aimLine.enabled = false;
 
             SelectCrew(0);
@@ -188,38 +183,37 @@ namespace JM.AdvancedGenerator.TBoys
                 PrimitiveType.Cube,
                 position,
                 scale,
-                powerMaterial,
+                routeMaterial,
                 worldRoot.transform);
         }
 
-        private void CreateBumper(string displayName, Vector3 position, Vector3 scale)
+        private void CreateBumper(string displayName, Vector3 position, Vector3 scale, Material material)
         {
             GameObject bumper = JMRuntimeFactory.CreatePrimitive(
                 displayName,
                 PrimitiveType.Cylinder,
                 position,
                 scale,
-                bumperMaterial,
+                material,
                 worldRoot.transform);
             bumper.tag = "Respawn";
         }
 
-        private void CreateHoldHazard()
+        private void CreateHoldHazard(Material material)
         {
             GameObject hazard = JMRuntimeFactory.CreatePrimitive(
                 "Hold Hazard",
                 PrimitiveType.Cylinder,
                 new Vector3(0f, 0.15f, 0f),
                 new Vector3(1.05f, 0.16f, 1.05f),
-                hazardMaterial,
+                material,
                 worldRoot.transform);
             Collider collider = hazard.GetComponent<Collider>();
             if (collider != null)
             {
                 collider.isTrigger = true;
             }
-            TBSlowHazard slow = hazard.AddComponent<TBSlowHazard>();
-            slow.Initialize(this, 0.93f);
+            hazard.AddComponent<TBSlowHazard>().Initialize(this, 0.93f);
         }
 
         private TBCoreTarget CreateCore(string displayName, string teamId, Vector3 position, Material material)
@@ -241,7 +235,6 @@ namespace JM.AdvancedGenerator.TBoys
             string teamId,
             string movementWord,
             Vector3 position,
-            Material material,
             int index)
         {
             Color tint = teamId == "BLUEFIN"
@@ -396,28 +389,30 @@ namespace JM.AdvancedGenerator.TBoys
 
         private void UpdateAim(Vector2 screenPosition)
         {
-            if (!aiming || sceneCamera == null)
+            if (!aiming || sceneCamera == null || SelectedBody == null)
             {
                 return;
             }
 
             Ray ray = sceneCamera.ScreenPointToRay(screenPosition);
             Plane boardPlane = new Plane(Vector3.up, new Vector3(0f, 0.24f, 0f));
-            if (boardPlane.Raycast(ray, out float distance))
+            if (!boardPlane.Raycast(ray, out float distance))
             {
-                Vector3 point = ray.GetPoint(distance);
-                aimPoint = new Vector3(
-                    Mathf.Clamp(point.x, -4.3f, 4.3f),
-                    0.24f,
-                    Mathf.Clamp(point.z, -7.8f, 7.8f));
-                Vector3 drag = SelectedBody.transform.position - aimPoint;
-                host?.SubmitIntent(JMGameIntent.Create(
-                    JMIntentType.AimVector,
-                    new Vector2(drag.x, drag.z),
-                    Mathf.Clamp01(drag.magnitude / 4.8f),
-                    SelectedBody.CharacterId,
-                    "TBProofRuntime"));
+                return;
             }
+
+            Vector3 point = ray.GetPoint(distance);
+            aimPoint = new Vector3(
+                Mathf.Clamp(point.x, -4.3f, 4.3f),
+                0.24f,
+                Mathf.Clamp(point.z, -7.8f, 7.8f));
+            Vector3 drag = SelectedBody.transform.position - aimPoint;
+            host?.SubmitIntent(JMGameIntent.Create(
+                JMIntentType.AimVector,
+                new Vector2(drag.x, drag.z),
+                Mathf.Clamp01(drag.magnitude / 4.8f),
+                SelectedBody.CharacterId,
+                "TBProofRuntime"));
         }
 
         private void ReleaseLaunch()
@@ -441,10 +436,6 @@ namespace JM.AdvancedGenerator.TBoys
             if (SelectedBody.MovementWord == "BRACE")
             {
                 speed *= 0.82f;
-            }
-            else if (SelectedBody.MovementWord == "SHOCK")
-            {
-                speed *= 1.12f;
             }
 
             host?.SubmitIntent(JMGameIntent.Create(
@@ -547,8 +538,7 @@ namespace JM.AdvancedGenerator.TBoys
 
             Vector3 direction = target - rivalBody.transform.position;
             direction.y = 0f;
-            direction = direction.normalized;
-            direction = Quaternion.Euler(0f, Random.Range(-8f, 8f), 0f) * direction;
+            direction = Quaternion.Euler(0f, Random.Range(-8f, 8f), 0f) * direction.normalized;
             float speed = Random.Range(6.8f, 10.3f);
             rivalBody.Launch(direction * speed, false);
             host?.TraceBox.Record(
@@ -641,7 +631,9 @@ namespace JM.AdvancedGenerator.TBoys
             yield return new WaitForSeconds(1.65f);
             if (playerRounds >= 2 || rivalRounds >= 2)
             {
-                string winner = playerRounds >= 2 ? "PROVE YOUR FORTY · BLUEFIN" : "CRIMSON CLAIMS THE BOARD";
+                string winner = playerRounds >= 2
+                    ? "PROVE YOUR FORTY · BLUEFIN"
+                    : "CRIMSON CLAIMS THE BOARD";
                 host?.TraceBox.Record("JM.TBOYS.4T_CLASH", "match.end", winner);
                 ShowBanner(winner, 2f);
                 yield return new WaitForSeconds(1.15f);
@@ -660,15 +652,35 @@ namespace JM.AdvancedGenerator.TBoys
 
             if (usedCrew.Count < 4)
             {
-                host?.SubmitIntent(JMGameIntent.Create(JMIntentType.PowerTrigger, value: usedCrew.Count, text: "HOLD", source: "TBProofRuntime"));
+                host?.SubmitIntent(JMGameIntent.Create(
+                    JMIntentType.PowerTrigger,
+                    value: usedCrew.Count,
+                    text: "HOLD",
+                    source: "TBProofRuntime"));
                 ShowBanner("4T NEEDS ALL FOUR · " + usedCrew.Count + "/4", 0.8f);
                 return;
             }
 
             powerArmed = true;
-            host?.SubmitIntent(JMGameIntent.Create(JMIntentType.PowerTrigger, value: 4f, text: "ARMED", source: "TBProofRuntime"));
+            host?.SubmitIntent(JMGameIntent.Create(
+                JMIntentType.PowerTrigger,
+                value: 4f,
+                text: "ARMED",
+                source: "TBProofRuntime"));
             usedCrew.Clear();
             ShowBanner("4T BURST ARMED", 1.0f);
+        }
+
+        private void ProcessKeyboard()
+        {
+            if (JMContactReader.WasKeyPressed(JMIntentType.PowerTrigger))
+            {
+                Trigger4TPower();
+            }
+            if (JMContactReader.WasKeyPressed(JMIntentType.Reset))
+            {
+                RequestReset("keyboard reset");
+            }
         }
 
         private void RequestReset(string reason)
@@ -701,79 +713,54 @@ namespace JM.AdvancedGenerator.TBoys
 
         private void OnGUI()
         {
-            float scale = Mathf.Clamp(Screen.width / 900f, 0.72f, 1.15f);
-            GUIStyle titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(24f * scale),
-                fontStyle = FontStyle.Bold,
-                alignment = TextAnchor.UpperCenter,
-                normal = { textColor = new Color(0.40f, 0.94f, 1f) }
-            };
-            GUIStyle hudStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(16f * scale),
-                fontStyle = FontStyle.Bold,
-                normal = { textColor = Color.white }
-            };
-            GUIStyle helpStyle = new GUIStyle(GUI.skin.label)
-            {
-                fontSize = Mathf.RoundToInt(13f * scale),
-                alignment = TextAnchor.MiddleCenter,
-                wordWrap = true,
-                normal = { textColor = new Color(0.82f, 0.91f, 1f) }
-            };
-            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button)
-            {
-                fontSize = Mathf.RoundToInt(14f * scale),
-                fontStyle = FontStyle.Bold
-            };
+            int oldLabelSize = GUI.skin.label.fontSize;
+            int oldButtonSize = GUI.skin.button.fontSize;
+            GUI.skin.label.fontSize = Mathf.Clamp(Mathf.RoundToInt(Screen.width / 46f), 13, 24);
+            GUI.skin.button.fontSize = Mathf.Clamp(Mathf.RoundToInt(Screen.width / 58f), 12, 20);
 
-            GUI.Box(new Rect(10f, 10f, Screen.width - 20f, 82f * scale), GUIContent.none);
-            GUI.Label(new Rect(18f, 14f, Screen.width - 36f, 31f * scale), "T-BOYS: 4T CLASH · CORE SEASON PROOF", titleStyle);
-            GUI.Label(new Rect(20f, 49f * scale, Screen.width * 0.48f, 28f * scale), $"BLUEFIN CORE {bluefinCore?.CurrentHealth ?? 0f:0} · {playerRounds}", hudStyle);
-            GUI.Label(new Rect(Screen.width * 0.53f, 49f * scale, Screen.width * 0.44f, 28f * scale), $"CRIMSON CORE {crimsonCore?.CurrentHealth ?? 0f:0} · {rivalRounds}", hudStyle);
-
-            GUI.Box(new Rect(12f, 94f * scale, Screen.width - 24f, 36f * scale), GUIContent.none);
+            GUILayout.BeginArea(new Rect(8f, 8f, Screen.width - 16f, 112f), GUI.skin.box);
+            GUILayout.Label("T-BOYS: 4T CLASH · CORE SEASON PROOF");
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("BLUEFIN CORE " + (bluefinCore != null ? bluefinCore.CurrentHealth.ToString("0") : "0") + " · " + playerRounds);
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("CRIMSON CORE " + (crimsonCore != null ? crimsonCore.CurrentHealth.ToString("0") : "0") + " · " + rivalRounds);
+            GUILayout.EndHorizontal();
             string turn = turnState == 0 ? "YOUR ROUTE" : turnState == 1 ? "FIELD MOVING" : "RIVAL ROUTE";
-            GUI.Label(
-                new Rect(20f, 98f * scale, Screen.width - 40f, 28f * scale),
-                $"BENCH CHEMISTRY {Mathf.Min(usedCrew.Count, 3)}/3 · 4T {usedCrew.Count}/4 · {turn}",
-                helpStyle);
+            GUILayout.Label("BENCH CHEMISTRY " + Mathf.Min(usedCrew.Count, 3) + "/3 · 4T " + usedCrew.Count + "/4 · " + turn);
+            GUILayout.EndArea();
 
-            float buttonY = Screen.height - 77f * scale;
-            float gap = 5f;
-            float buttonWidth = (Screen.width - 20f - gap * 5f) / 6f;
+            float bottomHeight = Mathf.Clamp(Screen.height * 0.15f, 92f, 142f);
+            GUILayout.BeginArea(new Rect(8f, Screen.height - bottomHeight - 8f, Screen.width - 16f, bottomHeight), GUI.skin.box);
+            GUILayout.Label("TAP A T-BOY · DRAG BACK · REFINE ROUTE · RELEASE");
+            GUILayout.BeginHorizontal();
             for (int index = 0; index < 4; index++)
             {
                 string label = bluefin.Count > index
                     ? bluefin[index].CharacterId + "\n" + bluefin[index].MovementWord
                     : "T" + (index + 1);
-                if (GUI.Button(new Rect(10f + (buttonWidth + gap) * index, buttonY, buttonWidth, 61f * scale), label, buttonStyle))
+                if (GUILayout.Button(label, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)))
                 {
                     SelectCrew(index);
                 }
             }
-
-            if (GUI.Button(new Rect(10f + (buttonWidth + gap) * 4f, buttonY, buttonWidth, 61f * scale), powerArmed ? "4T\nARMED" : "4T\nPOWER", buttonStyle))
+            if (GUILayout.Button(powerArmed ? "4T\nARMED" : "4T\nPOWER", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)))
             {
                 Trigger4TPower();
             }
-            if (GUI.Button(new Rect(10f + (buttonWidth + gap) * 5f, buttonY, buttonWidth, 61f * scale), "RESET", buttonStyle))
+            if (GUILayout.Button("RESET", GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)))
             {
                 RequestReset("onscreen reset");
             }
-
-            GUI.Box(new Rect(12f, Screen.height - 128f * scale, Screen.width - 24f, 42f * scale), GUIContent.none);
-            GUI.Label(
-                new Rect(18f, Screen.height - 125f * scale, Screen.width - 36f, 36f * scale),
-                "TAP A T-BOY · TOUCH / DRAG BACK · REFINE ROUTE · RELEASE · USE ALL FOUR TO ARM 4T",
-                helpStyle);
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
 
             if (Time.time < bannerUntil)
             {
-                GUI.Box(new Rect(Screen.width * 0.20f, Screen.height * 0.18f, Screen.width * 0.60f, 66f * scale), GUIContent.none);
-                GUI.Label(new Rect(Screen.width * 0.20f, Screen.height * 0.18f + 12f, Screen.width * 0.60f, 44f * scale), banner, titleStyle);
+                GUI.Box(new Rect(Screen.width * 0.18f, Screen.height * 0.18f, Screen.width * 0.64f, 62f), banner);
             }
+
+            GUI.skin.label.fontSize = oldLabelSize;
+            GUI.skin.button.fontSize = oldButtonSize;
         }
     }
 }

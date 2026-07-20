@@ -46,7 +46,7 @@ jobs:
           PY
           node --check estate-head-public-consumer.js
           node --check estate-app.js
-      - name: Commit public House authority mount
+      - name: Commit and safely rebase governed House mount
         run: |
           if git diff --quiet; then
             echo 'Public House authority mount already current.'
@@ -56,4 +56,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add registry/estate-head-public-current.json registry/estate-map.json registry/estate-head-house-consumption-receipt.json estate-head-public-consumer.js docs/JM_ESTATE_HEAD_HOUSE_CONSUMPTION_RECEIPT.md apps/index.html games-beyond/index.html games-beyond/routeos/index.html theory/index.html lyrics/index.html recovery/index.html author/index.html coding-estate/everybody/00_OPEN_FIRST.html cading.html
           git commit -m 'Mount Estate Head authority into every public House'
-          git push origin HEAD:main
+          for attempt in 1 2 3; do
+            git pull --rebase origin main || { git rebase --abort || true; exit 1; }
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Push moved during attempt ${attempt}; retrying from newest main."
+            sleep 2
+          done
+          echo 'Could not publish without overwriting concurrent work.'
+          exit 1

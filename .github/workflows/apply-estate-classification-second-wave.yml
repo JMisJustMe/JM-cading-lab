@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - "governance/apply_estate_classification_integrity_v1_1.py"
-      - "governance/apply_apps_house_stat_integrity.py"
       - ".github/workflows/apply-estate-classification-second-wave.yml"
   workflow_dispatch:
 
@@ -78,7 +77,7 @@ jobs:
           print({'rooms':len(rows),'stats':expected,'stringline':stringline['version']})
           PY
           node --check /tmp/apps-second-wave.js
-      - name: Update classification receipt
+      - name: Update classification receipt without downgrading later passes
         shell: bash
         run: |
           set -euo pipefail
@@ -88,8 +87,9 @@ jobs:
           from pathlib import Path
           path=Path('registry/estate-classification-integrity-receipt-v1.0.json')
           receipt=json.loads(path.read_text())
-          receipt['schema']='JM.EstateClassificationIntegrityReceipt/1.1'
-          receipt['status']='PASS_SECOND_WAVE'
+          if receipt.get('status') != 'PASS_RETRIEVAL_TRUTH':
+              receipt['schema']='JM.EstateClassificationIntegrityReceipt/1.1'
+              receipt['status']='PASS_SECOND_WAVE'
           receipt['updated_at_utc']=datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
           for item in [
             'CadenVM v0.10 frozen/current Android-proven workspace',

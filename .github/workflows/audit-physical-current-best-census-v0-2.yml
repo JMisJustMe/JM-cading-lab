@@ -1,0 +1,33 @@
+name: Audit Physical Current-Best Census v0.2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/physical-current-best-census-v0.2.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "apps/index.html"
+      - "governance/verify_physical_current_best_census_v0_2.py"
+      - ".github/workflows/audit-physical-current-best-census-v0-2.yml"
+  pull_request:
+    paths:
+      - "registry/physical-current-best-census-v0.2.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "apps/index.html"
+      - "governance/verify_physical_current_best_census_v0_2.py"
+      - ".github/workflows/audit-physical-current-best-census-v0-2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  census-gate:
+    name: Hold crowns until physical package proof passes
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check out current Estate
+        uses: actions/checkout@v6
+      - name: Verify Census v0.2 Batch 1
+        run: python3 governance/verify_physical_current_best_census_v0_2.py --root .

@@ -1,0 +1,127 @@
+name: Apply Estate Classification Second Wave
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_estate_classification_integrity_v1_1.py"
+      - ".github/workflows/apply-estate-classification-second-wave.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-estate-classification-second-wave
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Apply second-wave authority corrections
+        run: |
+          python3 governance/apply_estate_classification_integrity_v1_1.py
+          python3 governance/apply_apps_house_stat_integrity.py
+      - name: Validate second-wave bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 <<'PY'
+          from collections import Counter
+          import json, re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          names=[row[0] for row in rows]
+          required=[
+            ('CadenVM / CadenPad','v0.10 Frozen'),
+            ('TraceBox / RouteBox','v5.2 Standalone PWA'),
+            ('BodyVault','v0.4.2 TRUE NO-INTERPRETER'),
+            ('OWNMADE','v1.3 PWA Project + File Dock'),
+            ('Gold Mode Coding Hub','v0.9.5.1 Mobile Hotfix'),
+            ('JM Theory Multihub','v0.5 Readable Source Package'),
+          ]
+          for name,version in required:
+              assert any(row[0]==name and version in row[1] and row[3]=='full_current' for row in rows),(name,version)
+          assert any(row[0]=='JM QUADZE MultiHub SOLO' and 'v1.0 mounted' in row[1] for row in rows)
+
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          c=Counter(row[3] for row in rows)
+          expected={'room_count':len(rows),'full_plus_preserved':c['full_current']+c['full_alt'],'routed':c['routed'],'source_needed':c['registered'],'preparation':c['prep']}
+          assert shown==expected,(shown,expected)
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          projects={project['id']:project for project in stringline['seed_project_strings']}
+          assert 'utilities-incubator' in projects
+          coding_ids={body['id'] for body in projects['coding-os']['bodies']}
+          assert {'gold-mode-coding-hub','cadenvm-v010','tracebox-v52'} <= coding_ids
+          assert any(body.get('id')=='theory-readable-v05' for body in projects['theory']['bodies'])
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          authority_ids={body['id'] for body in authority['bodies']}
+          assert {'cadenvm','tracebox-routebox','bodyvault','ownmade','theory-readable-v05','quadze-multihub-v10'} <= authority_ids
+
+          scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
+          Path('/tmp/apps-second-wave.js').write_text(scripts[-1],encoding='utf-8')
+          print({'rooms':len(rows),'stats':expected,'stringline':stringline['version']})
+          PY
+          node --check /tmp/apps-second-wave.js
+      - name: Update classification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json, re
+          from datetime import datetime, timezone
+          from pathlib import Path
+          path=Path('registry/estate-classification-integrity-receipt-v1.0.json')
+          receipt=json.loads(path.read_text())
+          receipt['schema']='JM.EstateClassificationIntegrityReceipt/1.1'
+          receipt['status']='PASS_SECOND_WAVE'
+          receipt['updated_at_utc']=datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z')
+          for item in [
+            'CadenVM v0.10 frozen/current Android-proven workspace',
+            'TraceBox / RouteBox v5.2 standalone PWA',
+            'BodyVault v0.4.2 TRUE NO-INTERPRETER',
+            'OWNMADE v1.3 PWA Project + File Dock',
+            'Gold Mode Coding Hub v0.9.5.1 frontier',
+            'JM Theory Multihub v0.5 readable-source package lane'
+          ]:
+              if item not in receipt['corrected_public_bodies']:
+                  receipt['corrected_public_bodies'].append(item)
+          receipt['watch_items']=[
+            'RouteOS complete v108A.5 physical keeper confirmation',
+            'JM QUADZE MultiHub later v4.x memory claim exact package retrieval'
+          ]
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          receipt['counts']['non_game_app_rooms']=len(rows)
+          receipt['counts']['stringline_projects']=len(stringline['seed_project_strings'])
+          receipt['proof']['second_wave_source_status']='PASS'
+          receipt['proof']['derived_stats_after_second_wave']='PASS'
+          path.write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+          PY
+      - name: Commit second-wave corrected bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Classification Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json governance/JM_ESTATE_CLASSIFICATION_INTEGRITY_AUDIT_v1_0.md
+          git diff --cached --quiet && exit 0
+          git commit -m "Correct second-wave estate source status and current anchors"
+          git pull --rebase origin main
+          git push origin HEAD:main

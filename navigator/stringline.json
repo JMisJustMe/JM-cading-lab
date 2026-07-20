@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.1 proof and migration seed",
+  "version": "v0.1.2 classification-integrity seed",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -10,7 +10,8 @@
   "governing_lines": [
     "The estate remembers. The chat thinks.",
     "The Head Chat thinks. The Head Record remembers. Together they govern the string.",
-    "Thread the bodies; do not flatten them. Make one line of access, not one mass of sameness."
+    "Thread the bodies; do not flatten them. Make one line of access, not one mass of sameness.",
+    "A body may serve many houses. It keeps one governing identity unless JM deliberately changes it."
   ],
   "levels": [
     {
@@ -110,7 +111,7 @@
       "headChat": "Games&Beyond Project Head",
       "headRecord": "Games&Beyond House Record",
       "status": "STANDING",
-      "keeper": "One front door. Many sovereign game rooms.",
+      "keeper": "One front door. Many sovereign game rooms. Platform bodies keep their governing achievement.",
       "bodies": [
         {
           "id": "games-house",
@@ -119,6 +120,14 @@
           "role": "Public game-house route",
           "status": "STANDING",
           "route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+        },
+        {
+          "id": "routeos-platform",
+          "name": "RouteOS",
+          "type": "Gaming platform / console OS / cartridge ecosystem",
+          "role": "Flagship JM console-platform body with cartridge standard and First-Party SDK",
+          "status": "MOUNTED",
+          "route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/"
         }
       ]
     },
@@ -160,12 +169,135 @@
     },
     {
       "id": "coding-os",
-      "name": "Coding / OS Estate",
-      "headChat": "Coding / OS Project Head",
-      "headRecord": "JM Coding Estate Record",
+      "name": "Coding Estate",
+      "headChat": "Coding Estate Project Head",
+      "headRecord": "JM Coding Estate Current-Best Record",
       "status": "THREADING",
-      "keeper": "Use my actual coding bodies every single time.",
-      "bodies": []
+      "keeper": "Use my actual coding bodies every single time. Hosting does not swallow identity.",
+      "bodies": [
+        {
+          "id": "coding-estate-public",
+          "name": "JM Coding Estate",
+          "type": "Coding house / runtimes / compilers",
+          "role": "Public coding-estate integration route",
+          "status": "STANDING",
+          "route": "https://jmisjustme.github.io/JM-cading-lab/coding-estate/integration/00_OPEN_FIRST.html"
+        },
+        {
+          "id": "gold-mode-coding-hub",
+          "name": "Gold Mode Coding Hub",
+          "type": "Coding house",
+          "role": "Current public card claims v0.9.4; exact package reconfirmation remains open",
+          "status": "THREADING"
+        }
+      ]
+    },
+    {
+      "id": "operating-houses",
+      "name": "Operating Houses & Launchers",
+      "headChat": "Operating Houses Project Head",
+      "headRecord": "Operating Houses Current-Best Map",
+      "status": "STANDING",
+      "keeper": "Connect does not mean merge. Front room, assembly, creative house and carrier remain separate roles.",
+      "bodies": [
+        {
+          "id": "multimedia-unit",
+          "name": "JM Estate Multimedia Unit",
+          "type": "Operating front room",
+          "role": "v2.3.0 S³ current operating front-room authority",
+          "status": "PROVEN"
+        },
+        {
+          "id": "altogether-estate-os",
+          "name": "Altogether Assembly / JM Estate OS",
+          "type": "Assembly crown",
+          "role": "v2.0.2 search, selection, assembly packets and full-body export",
+          "status": "PROVEN"
+        },
+        {
+          "id": "estate-os-delta",
+          "name": "JM Estate OS",
+          "type": "Additive carrier lineage",
+          "role": "v0.2.1 TBS Delta 002 active additive-carrier lineage",
+          "status": "MOUNTED"
+        },
+        {
+          "id": "jmstudios",
+          "name": "JMStudios",
+          "type": "Creative house",
+          "role": "B0.8.2 source anchor + B0.8.3 continuation",
+          "status": "MOUNTED"
+        }
+      ]
+    },
+    {
+      "id": "recovery-delivery",
+      "name": "Builders, Recovery & Delivery",
+      "headChat": "Builders and Recovery Project Head",
+      "headRecord": "Current-Best and Delivery Register",
+      "status": "STANDING",
+      "keeper": "A newer version does not automatically own source, device-proof, frozen-anchor and operating crowns.",
+      "bodies": [
+        {
+          "id": "zionfolder-os",
+          "name": "JM Zionfolder OS",
+          "type": "Workspace OS",
+          "role": "v1.1.1 Scroll Spine Fix frozen/current workspace anchor",
+          "status": "FROZEN"
+        },
+        {
+          "id": "benefitmerge-v01",
+          "name": "BenefitMerge",
+          "type": "Device-proven recovery body",
+          "role": "v0.1 Android READ 316/985",
+          "status": "PROVEN"
+        },
+        {
+          "id": "benefitmerge-v02",
+          "name": "BenefitMerge",
+          "type": "Newest PWA build",
+          "role": "v0.2 installation pending",
+          "status": "THREADING"
+        },
+        {
+          "id": "bodyvault",
+          "name": "BodyVault",
+          "type": "Vault / recovery",
+          "role": "v0.4.2 TRUE NO-INTERPRETER current vault anchor",
+          "status": "FROZEN"
+        }
+      ]
+    },
+    {
+      "id": "ftr-devices",
+      "name": "FTR / Devices & Adaptive Interaction",
+      "headChat": "FTR / Ama-Pro Project Head",
+      "headRecord": "Adaptive Interaction Infrastructure Record",
+      "status": "THREADING",
+      "keeper": "GripRoute improves the phone route. Ama-Pro is the native gaming route. AmaCore carries device operating logic.",
+      "bodies": [
+        {
+          "id": "ftr-griproute",
+          "name": "GripRoute",
+          "type": "Adaptive phone-route infrastructure",
+          "role": "Improves phone control and route contact",
+          "status": "MOUNTED"
+        },
+        {
+          "id": "ama-pro",
+          "name": "Ama-Pro",
+          "type": "Native gaming-route device system",
+          "role": "Physical body + software body + route concept",
+          "status": "THREADING"
+        },
+        {
+          "id": "amacore",
+          "name": "AmaCore",
+          "type": "OS/device infrastructure",
+          "role": "FTR operating logic and device negotiation core",
+          "status": "THREADING"
+        }
+      ]
     },
     {
       "id": "lyrics",
@@ -186,5 +318,5 @@
       ]
     }
   ],
-  "boundary": "This seed defines and powers a local-first Stringline interface. It does not claim cross-chat platform embedding, a custom rendering engine, universal parser completion, or autonomous access to every estate body."
+  "boundary": "This seed powers local-first Stringline navigation and classification authority. Public projections may summarize private bodies, but they may not replace governing identity, source authority or proof-lane distinctions."
 }

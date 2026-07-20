@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07101c">
-<meta name="description" content="Games&Beyond — the accessible JM Games House with twenty-three sovereign mounted rooms.">
+<meta name="description" content="Games&Beyond — the accessible JM Games House with 24 sovereign mounted rooms.">
 <link rel="manifest" href="manifest.webmanifest">
-<title>Games&Beyond — Accessible Full House v0.5</title>
+<title>Games&Beyond — Accessible Full House v0.5.1</title>
 <style>
 :root{color-scheme:dark;--bg:#050811;--panel:#0b1321;--panel2:#111d31;--line:#385273;--ink:#f8f9ff;--muted:#b6c2d5;--gold:#ffd86b;--cyan:#7cecff;--green:#8af3ae;--red:#ff8aa5;--orange:#ffb167;--focus:#fff3a6;--scale:1;--ui:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
 *{box-sizing:border-box}html{font-size:calc(16px * var(--scale));scroll-behavior:smooth}html.reduced-motion{scroll-behavior:auto}html.reduced-motion *,html.reduced-motion *:before,html.reduced-motion *:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}html.high-contrast{--bg:#000;--panel:#050505;--panel2:#101010;--line:#fff;--ink:#fff;--muted:#fff;--gold:#ff0;--cyan:#0ff;--green:#0f0;--red:#ff6b9c;--focus:#fff}
@@ -20,7 +20,7 @@ html,body{margin:0;min-height:100%;max-width:100%;overflow-x:hidden;background:v
 <a class="skip" href="#main">Skip to Games&amp;Beyond content</a>
 <a class="skip" href="#houseNav" style="left:210px">Skip to House navigation</a>
 <div class="app">
-<header class="top"><a class="brand" href="../" aria-label="Return to the JM Estate"><div class="mark" aria-hidden="true">G&amp;B</div><div><b>Games&amp;Beyond</b><small>Accessible House v0.5 · 21 built-in · 23 full</small></div></a><div id="status" class="status" role="status" aria-live="polite">BOOTING</div></header>
+<header class="top"><a class="brand" href="../" aria-label="Return to the JM Estate"><div class="mark" aria-hidden="true">G&amp;B</div><div><b>Games&amp;Beyond</b><small>Accessible House v0.5.1 · 22 built-in · 24 full</small></div></a><div id="status" class="status" role="status" aria-live="polite">BOOTING</div></header>
 <nav id="houseNav" class="nav" aria-label="Games and Beyond sections" role="tablist">
 <button class="active" data-view="house" role="tab" aria-selected="true" aria-controls="view-house">HOUSE</button>
 <button data-view="rooms" role="tab" aria-selected="false" aria-controls="view-rooms">ROOMS</button>
@@ -30,7 +30,7 @@ html,body{margin:0;min-height:100%;max-width:100%;overflow-x:hidden;background:v
 </nav>
 <main id="main" tabindex="-1">
 <section id="view-house" class="view" data-view="house" role="tabpanel" aria-labelledby="houseHeading">
-<div class="hero"><h1 id="houseHeading">One front door.<strong>The accessible living House.</strong></h1><p>Twenty-one exact bodies enter directly through the public route. Import the supplied Eco/Estate full-house backup to add the two exact JMStudios roles and complete the twenty-three-body House. Exact source stays exact; accessibility help is applied by the House at runtime and recorded separately.</p><div class="law">Preserve the body. Improve the contact. Never rename adaptation as original source.</div><div class="heroActions"><button id="enterBtn" class="btn gold" disabled>ENTER THE ROOMS</button><button id="reloadBtn" class="btn cyan">RELOAD HOUSE</button><a class="btn" href="../">JM ESTATE</a></div></div>
+<div class="hero"><h1 id="houseHeading">One front door.<strong>The accessible living House.</strong></h1><p>22 exact bodies enter directly through the public route, including the sovereign RouteOS flagship room. Import the supplied Eco/Estate full-house backup to add the two exact JMStudios roles and complete the 24-body House. Exact source stays exact; accessibility help is applied by the House at runtime and recorded separately.</p><div class="law">Preserve the body. Improve the contact. Never rename adaptation as original source.</div><div class="heroActions"><a class="btn green" href="routeos/">ROUTEOS FLAGSHIP</a><button id="enterBtn" class="btn gold" disabled>ENTER THE ROOMS</button><button id="reloadBtn" class="btn cyan">RELOAD HOUSE</button><a class="btn" href="../">JM ESTATE</a></div></div>
 <div class="stats" aria-label="House statistics"><div class="stat"><span>Full target</span><b id="expectedStat">23</b></div><div class="stat"><span>Mounted</span><b id="mountedStat">0</b></div><div class="stat"><span>Edited</span><b id="editedStat">0</b></div><div class="stat"><span>Receipts</span><b id="receiptStat">0</b></div></div>
 <section class="panel" aria-labelledby="intakeHeading"><div class="panelHead"><div><h2 id="intakeHeading">House intake</h2><p id="loadText" aria-live="polite">Preparing the fidelity-preserved public package…</p></div><b id="loadPct">0%</b></div><div id="loadProgress" class="progress" role="progressbar" aria-label="House loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="loadBar"></i></div></section>
 <section class="panel" aria-labelledby="recentHeading"><div class="panelHead"><div><h2 id="recentHeading">Recently opened</h2><p>Your local House remembers contact without changing protected source.</p></div></div><div id="recentRooms" class="roomRail" aria-live="polite" style="margin-top:9px"><div class="empty">Rooms appear after the package passes its gate.</div></div></section>

@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.0';
+const $=id=>document.getElementById(id), $$=q=>[...document.querySelectorAll(q)], NOW=()=>new Date().toISOString(), RELEASE='0.5.1-classification-integrity';
 let db,manifest,pack,selected=null,filter='all',protectedBodies=new Map(),recent=JSON.parse(localStorage.getItem('jm-gb-recent-v05')||'[]'),lastFocus=null,lastAudit=null;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const bytes=n=>n<1024?`${n} B`:n<1048576?`${(n/1024).toFixed(1)} KB`:`${(n/1048576).toFixed(1)} MB`;

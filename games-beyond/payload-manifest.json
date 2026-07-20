@@ -1,7 +1,7 @@
 {
   "schema": "JM.GamesBeyondPayload/0.5-accessible-bridge",
   "format": "lzma-alone+base64",
-  "release": "0.5.0",
+  "release": "0.5.1-classification-integrity",
   "parts": 1,
   "partPattern": "GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt",
   "compressedBytes": 703685,
@@ -10,9 +10,9 @@
   "compressedSha256": "260b92091399d7c4a277596874f2614cd9f87ba35abe84581714a10b661a5028",
   "rawSha256": "0cd9fe7d67ef544dcc9108cd9a7d16333782ce3bde5a515ae3889db1bddcf2c5",
   "payloadBodyCount": 15,
-  "builtInBodyCount": 21,
-  "bodyCount": 21,
-  "fullTargetCount": 23,
+  "builtInBodyCount": 22,
+  "bodyCount": 22,
+  "fullTargetCount": 24,
   "bodyIdsBuiltIn": [
     "fourfold-arena",
     "tboys-core-clash",
@@ -34,7 +34,8 @@
     "aiming-run",
     "drag-aim",
     "loopit-boundary",
-    "playform"
+    "playform",
+    "routeos-platform"
   ],
   "extraBodies": [
     {
@@ -91,6 +92,16 @@
       "stage": "FROZEN",
       "path": "bodies/playform-v0-1.html",
       "sourceStatus": "Exact recovered locked v0.1 source embedded in a clearly labelled browser implementation."
+    },
+    {
+      "id": "routeos-platform",
+      "name": "RouteOS",
+      "version": "v103 → v108A.5 Evidence Ladder",
+      "category": "Gaming Systems & Console Platforms",
+      "role": "JM gaming platform, console OS, cartridge ecosystem and First-Party SDK",
+      "stage": "GOVERNING FLAGSHIP ROOM",
+      "path": "routeos/index.html",
+      "sourceStatus": "Governing evidence/navigation room. v103 documented anchor, v108A.0 mounted body and v108A.5 validation are preserved without claiming an unreconfirmed complete v108A.5 playable keeper."
     }
   ],
   "fullImportAdds": [
@@ -110,5 +121,5 @@
     "boundary": "Static preflight and runtime assistance are not a WCAG conformance certification. Exact source bodies remain unmodified in custody.",
     "version": "0.5"
   },
-  "mountBoundary": "Twenty-one bodies are built into the public route. Importing the supplied Eco/Estate v0.4 full-house JSON adds the two exact JMStudios roles, producing the complete twenty-three-body local House."
+  "mountBoundary": "22 bodies are built into the public route, including the sovereign RouteOS gaming-platform room. Importing the supplied Eco/Estate full-house JSON adds the 2 exact JMStudios roles, producing the complete 24-body local House."
 }

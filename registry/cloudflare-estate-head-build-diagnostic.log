@@ -5,8 +5,9 @@ ROUTE /apps/: live PASS (15998 bytes)
 ROUTE /theory/: live PASS (358065 bytes)
 ROUTE /lyrics/: live PASS (15455 bytes)
 ROUTE /recovery/: live PASS (11955 bytes)
+ESTATE HEAD CARRIER: segmented JSON PASS · sha256 7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676 · 61 bodies · 11 Project Heads
 Traceback (most recent call last):
-  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py", line 87, in <module>
+  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py", line 113, in <module>
     base.main()
   File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py", line 215, in main
     globals()[args.mode]()

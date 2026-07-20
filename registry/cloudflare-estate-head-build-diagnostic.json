@@ -1,9 +1,9 @@
 {
   "schema": "JM.CloudflareEstateHeadBuildDiagnostic/0.2.1",
   "status": "BUILD_FAILED_DEPLOYMENT_BLOCKED",
-  "source_commit": "36e780d9b78e0a6bffd76ac2106d8339e529f4a6",
-  "workflow_run": "29763912782",
-  "recorded_at_utc": "2026-07-20T17:30:15Z",
+  "source_commit": "00446fa639cc98ec80d4b1c4fec85b1f61a1dd6e",
+  "workflow_run": "29763956092",
+  "recorded_at_utc": "2026-07-20T17:30:49Z",
   "log_tail": [
     "ROUTE /: live donor PASS",
     "ROOT ASSETS: 4 live references preserved",
@@ -12,8 +12,9 @@
     "ROUTE /theory/: live PASS (358065 bytes)",
     "ROUTE /lyrics/: live PASS (15455 bytes)",
     "ROUTE /recovery/: live PASS (11955 bytes)",
+    "ESTATE HEAD CARRIER: segmented JSON PASS \u00b7 sha256 7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676 \u00b7 61 bodies \u00b7 11 Project Heads",
     "Traceback (most recent call last):",
-    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py\", line 87, in <module>",
+    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py\", line 113, in <module>",
     "    base.main()",
     "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 215, in main",
     "    globals()[args.mode]()",

@@ -1,0 +1,62 @@
+{
+  "schema": "JM.RouteOSRecoveryAuthority/1.0",
+  "status": "RECOVERED_AND_INDEPENDENTLY_REVALIDATED",
+  "recorded_at_utc": "2026-07-20T17:08:00Z",
+  "body": "RouteOS v108A.5 — Pro Flow + Interaction Clarity Polish",
+  "primary_seat": "Games & Beyond / Gaming Systems / RouteOS Console Platform",
+  "governing_identity": "JM gaming platform, console OS and cartridge ecosystem",
+  "package_authority": {
+    "name": "ROUTEOS_v108A_5_PRO_FLOW_CLARITY_RESPONSE_POLISH_MAX10.zip",
+    "original_created_at_utc": "2026-06-16T13:30:16.266052Z",
+    "top_level_files": 10,
+    "ruling": "COMPLETE_TEN_FILE_PACKAGE_AUTHORITY"
+  },
+  "owner_custody": {
+    "private_zionfolder": "/JM_Estate/Zionfolders/RouteOS/v108A.5_Recovered_Full_Keeper/",
+    "keeper": "ROUTEOS_v108A_5_FULL_STANDALONE_KEEPER_CORRECTED.zip",
+    "public_payload_policy": "EVIDENCE_AND_NAVIGATION_ONLY_PRIVATE_FULL_SOURCE_REMAINS_OWNER_SIDE"
+  },
+  "derivative_ruling": {
+    "name_at_discovery": "ROUTEOS_v108A_5_FULL_STANDALONE_KEEPER.zip",
+    "contents": [
+      "00_OPEN_FIRST_ROUTEOS_v108A_5_PRO_FLOW_CLARITY_RESPONSE_POLISH.html",
+      "KEEPER_RECEIPT.txt"
+    ],
+    "html_sha_matches_package_authority": true,
+    "classification": "HTML_ONLY_DERIVATIVE_NOT_FULL",
+    "prohibited_claim": "complete v108A.5 PWA package authority"
+  },
+  "independent_revalidation": {
+    "original_sha256_file": "PASS",
+    "package_files": 10,
+    "outer_plus_runtime_buttons": 260,
+    "static_button_ids": 165,
+    "html_ids": 464,
+    "duplicate_ids": 0,
+    "literal_dom_references": 398,
+    "missing_dom_targets": 0,
+    "file_inputs": 9,
+    "outer_javascript": "PASS",
+    "runtime_javascript": "PASS_X2",
+    "service_worker_javascript": "PASS",
+    "manifest_json": "PASS",
+    "package_manifest_json": "PASS",
+    "icons_and_cache_targets": "PRESENT",
+    "route_signal": "PRESENT",
+    "response_feedback": "PRESENT",
+    "adaptive_camera_easing": "PRESENT",
+    "hud_idle_quieting": "PRESENT",
+    "field_pulse_feedback": "PRESENT"
+  },
+  "authority_lanes": {
+    "source_and_package_custody": "PROVEN",
+    "static_and_runtime_wiring": "PROVEN",
+    "complete_pwa_shell": "PROVEN",
+    "phone_field_contact_for_v108A_5": "NOT_REPROVED_IN_THIS_RECOVERY_PASS",
+    "native_android_store_release": "NOT_CLAIMED",
+    "online_multiplayer": "NOT_CLAIMED",
+    "physical_ama_pro_hardware": "NOT_CLAIMED"
+  },
+  "crown": "The body was not rebuilt. It was found, proved, and returned to its rightful seat.",
+  "boundary": "This record proves exact package custody and independent source-level revalidation. It preserves the original device-contact boundary and does not publish the private full payload."
+}

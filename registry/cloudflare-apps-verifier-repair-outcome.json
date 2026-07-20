@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareAppsVerifierRepairOutcome/1.0",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29759755318",
-  "head_sha": "f975f9c1ad47c84039406eb004b97c706c0d02b1",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759755318",
-  "updated_at": "2026-07-20T16:29:03Z",
-  "recorded_at_utc": "2026-07-20T16:29:12Z",
+  "run_id": "29759864918",
+  "head_sha": "1161dd379c273db469ccaddfae97008f0dca09f9",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759864918",
+  "updated_at": "2026-07-20T16:30:20Z",
+  "recorded_at_utc": "2026-07-20T16:30:31Z",
   "steps": [
     {
       "job": "repair",
@@ -20,22 +20,7 @@
     },
     {
       "job": "repair",
-      "name": "Re-enter latest main",
-      "conclusion": "success"
-    },
-    {
-      "job": "repair",
-      "name": "Replace stale deployment assertions",
-      "conclusion": "success"
-    },
-    {
-      "job": "repair",
-      "name": "Prove verifier source before committing",
-      "conclusion": "success"
-    },
-    {
-      "job": "repair",
-      "name": "Commit the repaired deployment rail safely",
+      "name": "Atomically transform the latest deployment workflow",
       "conclusion": "failure"
     },
     {

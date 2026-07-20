@@ -35,23 +35,27 @@ namespace JM.AdvancedGenerator
     public static class JMContactReader
     {
         private static readonly Dictionary<int, Vector2> PreviousPositions = new Dictionary<int, Vector2>();
+        private static readonly HashSet<int> ChromeBlockedContacts = new HashSet<int>();
         private static bool mouseWasPressed;
         private static Vector2 previousMousePosition;
 
         public static void Read(List<JMContact> destination)
         {
             destination.Clear();
+            bool inputSystemContact = false;
 
 #if ENABLE_INPUT_SYSTEM
-            if (ReadInputSystem(destination))
-            {
-                return;
-            }
+            inputSystemContact = ReadInputSystem(destination);
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
-            ReadLegacy(destination);
+            if (!inputSystemContact)
+            {
+                ReadLegacy(destination);
+            }
 #endif
+
+            FilterInterfaceChrome(destination);
         }
 
         public static float ReadHorizontalAxis()
@@ -124,6 +128,35 @@ namespace JM.AdvancedGenerator
             return false;
         }
 
+        private static void FilterInterfaceChrome(List<JMContact> destination)
+        {
+            float bottomChrome = Mathf.Min(150f, Screen.height * 0.18f);
+            float topChrome = Mathf.Min(135f, Screen.height * 0.17f);
+
+            for (int index = destination.Count - 1; index >= 0; index--)
+            {
+                JMContact contact = destination[index];
+                bool inChrome = contact.position.y <= bottomChrome
+                    || contact.position.y >= Screen.height - topChrome;
+
+                if (contact.phase == JMContactPhase.Began && inChrome)
+                {
+                    ChromeBlockedContacts.Add(contact.id);
+                }
+
+                if (!ChromeBlockedContacts.Contains(contact.id))
+                {
+                    continue;
+                }
+
+                destination.RemoveAt(index);
+                if (contact.phase == JMContactPhase.Ended || contact.phase == JMContactPhase.Canceled)
+                {
+                    ChromeBlockedContacts.Remove(contact.id);
+                }
+            }
+        }
+
 #if ENABLE_INPUT_SYSTEM
         private static bool ReadInputSystem(List<JMContact> destination)
         {
@@ -132,7 +165,8 @@ namespace JM.AdvancedGenerator
             {
                 foreach (var touch in Touchscreen.current.touches)
                 {
-                    if (!touch.press.isPressed && touch.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.None)
+                    UnityEngine.InputSystem.TouchPhase inputPhase = touch.phase.ReadValue();
+                    if (!touch.press.isPressed && inputPhase == UnityEngine.InputSystem.TouchPhase.None)
                     {
                         continue;
                     }
@@ -140,7 +174,7 @@ namespace JM.AdvancedGenerator
                     int id = touch.touchId.ReadValue();
                     Vector2 position = touch.position.ReadValue();
                     Vector2 previous = PreviousPositions.TryGetValue(id, out Vector2 stored) ? stored : position;
-                    JMContactPhase phase = ConvertPhase(touch.phase.ReadValue());
+                    JMContactPhase phase = ConvertPhase(inputPhase);
                     destination.Add(new JMContact(id, position, position - previous, phase));
                     found = true;
 

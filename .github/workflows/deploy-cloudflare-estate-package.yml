@@ -1,0 +1,59 @@
+name: Deploy Canonical Cloudflare Estate Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "cloudflare-estate-package/**"
+      - ".github/workflows/deploy-cloudflare-estate-package.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  validate-and-deploy:
+    name: Rebuild, validate and deploy jmisjustme-estate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Check out Estate source
+        uses: actions/checkout@v6
+
+      - name: Rebuild canonical Estate from protected package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate
+          mkdir -p cloudflare-estate
+          cat cloudflare-estate-package/part-* > "$RUNNER_TEMP/jm-estate-v1.14.tar.xz.b64"
+          base64 --decode "$RUNNER_TEMP/jm-estate-v1.14.tar.xz.b64" > "$RUNNER_TEMP/jm-estate-v1.14.tar.xz"
+          tar -xJf "$RUNNER_TEMP/jm-estate-v1.14.tar.xz" -C cloudflare-estate --strip-components=1
+
+      - name: Verify required public doors
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f cloudflare-estate/index.html
+          test -f cloudflare-estate/theory/index.html
+          test -f cloudflare-estate/lyrics/index.html
+          test -f cloudflare-estate/recovery/index.html
+          test -f cloudflare-estate/DEPLOY_MANIFEST.json
+          grep -q "JMISJUSTME" cloudflare-estate/index.html
+          grep -q "v1.14.0" cloudflare-estate/DEPLOY_MANIFEST.json
+          echo "Canonical Estate v1.14 package gates passed."
+
+      - name: Deploy existing Cloudflare Pages project
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

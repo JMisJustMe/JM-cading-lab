@@ -31,7 +31,7 @@ namespace JM.AdvancedGenerator.Editor
             AssetDatabase.Refresh();
             EditorSceneManager.OpenScene(WesternScenePath, OpenSceneMode.Single);
 
-            Debug.Log("JM SCENE BUILD DING · data assets and both proof scenes created.");
+            Debug.Log("JM SCENE BUILD DING · governed data and two playable generated proof scenes created.");
         }
 
         private static void BuildScene<TAdapter>(string path, string sceneName)
@@ -44,7 +44,17 @@ namespace JM.AdvancedGenerator.Editor
             var adapter = hostObject.AddComponent<TAdapter>();
             var host = hostObject.AddComponent<JMGameHost>();
             host.AssignAdapter(adapter);
-            EditorUtility.SetDirty(host);
+
+            if (typeof(TAdapter) == typeof(WesternSniperAdapter))
+            {
+                hostObject.AddComponent<WSProofRuntime>();
+            }
+            else if (typeof(TAdapter) == typeof(TBoysCoreClashAdapter))
+            {
+                hostObject.AddComponent<TBProofRuntime>();
+            }
+
+            EditorUtility.SetDirty(hostObject);
 
             var cameraObject = new GameObject("Main Camera");
             var camera = cameraObject.AddComponent<Camera>();
@@ -68,7 +78,7 @@ namespace JM.AdvancedGenerator.Editor
             traceBox.Record(
                 adapter.GameId,
                 "scene.manufactured",
-                sceneName + " · placeholder marker is not gameplay");
+                sceneName + " · runtime replaces temporary proof marker on Play");
 
             if (!EditorSceneManager.SaveScene(scene, path))
             {

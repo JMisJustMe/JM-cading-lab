@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29764078588",
-  "head_sha": "20a8a5269ccaf64431b62faa09316ec2c4a1e38d",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764078588",
-  "updated_at": "2026-07-20T17:34:47Z",
-  "recorded_at_utc": "2026-07-20T17:34:58Z",
+  "run_id": "29764188614",
+  "head_sha": "d009741c906ddf38e20c8211a26b6a508acc2baf",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764188614",
+  "updated_at": "2026-07-20T17:35:22Z",
+  "recorded_at_utc": "2026-07-20T17:35:38Z",
   "steps": [
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -41,12 +41,12 @@
     {
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Prove the Estate Head on the canonical host",
-      "conclusion": "failure"
+      "conclusion": "success"
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Write and commit successful deployment receipts",
-      "conclusion": "skipped"
+      "conclusion": "failure"
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -60,11 +60,24 @@
     }
   ],
   "failed_log_tail": [
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t\ufeff2026-07-20T17:33:03.9285376Z ##[group]Run python3 scripts/deploy_estate_head_public.py prove",
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9285876Z ^[[36;1mpython3 scripts/deploy_estate_head_public.py prove^[[0m",
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9349510Z shell: /usr/bin/bash -e {0}",
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9349783Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:34:44.3389740Z Canonical Estate Head proof did not pass",
-    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:34:44.3503132Z ##[error]Process completed with exit code 1."
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t\ufeff2026-07-20T17:35:18.9157466Z ##[group]Run set -euo pipefail",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9157818Z ^[[36;1mset -euo pipefail^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9158073Z ^[[36;1mgit pull --rebase origin main^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9158464Z ^[[36;1mpython3 scripts/deploy_estate_head_public_resilient.py receipt^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9158915Z ^[[36;1mgit config user.name \"JM Estate Deployment Rail\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9159319Z ^[[36;1mgit config user.email \"actions@users.noreply.github.com\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9160259Z ^[[36;1mgit add registry/estate-head-public-v0.2.1.json registry/estate-head-public-current.json registry/cloudflare-estate-head-deploy-receipt.json registry/cloudflare-lyrics-deploy-receipt.json^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9161297Z ^[[36;1mgit diff --cached --quiet || git commit -m \"Record Estate Head v0.2.1 Cloudflare consumption\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9162072Z ^[[36;1mfor attempt in $(seq 1 30); do^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9162360Z ^[[36;1m  git pull --rebase origin main^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9162655Z ^[[36;1m  git push origin main && exit 0^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9162957Z ^[[36;1m  sleep 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9163170Z ^[[36;1mdone^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9163365Z ^[[36;1mexit 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9221679Z shell: /usr/bin/bash -e {0}",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9221947Z ##[endgroup]",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9328118Z error: cannot pull with rebase: You have unstaged changes.",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9330450Z error: Please commit or stash them.",
+    "Preserve live Estate and install shared Estate Head\tWrite and commit successful deployment receipts\t2026-07-20T17:35:18.9345572Z ##[error]Process completed with exit code 128."
   ]
 }

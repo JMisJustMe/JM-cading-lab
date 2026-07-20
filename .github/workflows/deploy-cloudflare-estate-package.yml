@@ -1,14 +1,14 @@
-name: Deploy Canonical Cloudflare Estate Package
+name: Deploy Canonical Cloudflare Estate
 
 on:
   push:
     branches:
       - main
     paths:
-      - "cloudflare-estate-package/**"
       - "theory/**"
       - "lyrics/**"
       - "recovery/**"
+      - "registry/jm3232-navigator.json"
       - ".github/workflows/deploy-cloudflare-estate-package.yml"
   workflow_dispatch:
 
@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   validate-and-deploy:
-    name: Rebuild, validate and deploy jmisjustme-estate
+    name: Preserve, overlay and deploy jmisjustme-estate
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -30,20 +30,145 @@ jobs:
       - name: Check out Estate source
         uses: actions/checkout@v6
 
-      - name: Rebuild canonical Estate from shell and current rooms
+      - name: Recover the currently standing canonical house
         shell: bash
+        env:
+          ESTATE_BASE: https://jmisjustme-estate.pages.dev
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
-          mkdir -p cloudflare-estate
-          cat cloudflare-estate-package/shell-part-* > "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz.b64"
-          base64 --decode "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz.b64" > "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz"
-          tar -xJf "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz" -C cloudflare-estate
+          mkdir -p cloudflare-estate/assets cloudflare-estate/data
+
+          python3 <<'PY'
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          import re
+
+          base = "https://jmisjustme-estate.pages.dev/"
+          out = Path("cloudflare-estate")
+
+          def fetch(path: str, required: bool = True) -> bytes:
+              url = urljoin(base, path)
+              try:
+                  req = Request(url, headers={"User-Agent": "JM-Estate-GitHub-Deployment/1.0"})
+                  with urlopen(req, timeout=30) as response:
+                      return response.read()
+              except Exception:
+                  if required:
+                      raise
+                  return b""
+
+          def write(path: str, data: bytes) -> None:
+              target = out / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+
+          index = fetch("")
+          html = index.decode("utf-8")
+
+          refs = set(re.findall(r'''(?:src|href)=["']([^"']+)["']''', html, flags=re.I))
+          for ref in sorted(refs):
+              if ref.startswith(("data:", "mailto:", "tel:", "#")):
+                  continue
+              parsed = urlparse(urljoin(base, ref))
+              if parsed.netloc != urlparse(base).netloc:
+                  continue
+              path = parsed.path.lstrip("/")
+              if not path or path.endswith("/"):
+                  continue
+              write(path, fetch(path))
+
+          for path in [
+              "404.html",
+              "manifest.webmanifest",
+              "robots.txt",
+              "sitemap.xml",
+              "assets/jm-mark.svg",
+              "data/estate-canonical-site.json",
+              "data/estate-public.json",
+              "data/installed-districts-public.json",
+              "data/installed-private.schema.json",
+              "data/source-chambers.schema.json",
+              "data/storage-policy.json",
+          ]:
+              data = fetch(path, required=False)
+              if data:
+                  write(path, data)
+
+          doors = r'''
+          <style id="jm-current-doors-style">
+            #jm-current-doors{position:fixed;right:14px;bottom:88px;z-index:99999;font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif}
+            #jm-current-doors details{background:rgba(17,12,27,.96);color:#fff;border:1px solid rgba(255,211,109,.38);border-radius:18px;box-shadow:0 18px 54px rgba(0,0,0,.45);overflow:hidden}
+            #jm-current-doors summary{cursor:pointer;list-style:none;padding:13px 16px;color:#ffd36d}
+            #jm-current-doors summary::-webkit-details-marker{display:none}
+            #jm-current-doors nav{display:grid;gap:7px;padding:0 10px 10px;min-width:190px}
+            #jm-current-doors a{display:block;text-decoration:none;color:#fff;background:#21182f;border-radius:12px;padding:11px 12px}
+          </style>
+          <aside id="jm-current-doors" aria-label="Current Estate doors">
+            <details><summary>Current doors&nbsp; ↗</summary><nav>
+              <a href="./theory/">Theory Multihub v0.4</a>
+              <a href="./lyrics/">Lyrics &amp; Music House</a>
+              <a href="./recovery/">Lost, Loose &amp; Unseated</a>
+            </nav></details>
+          </aside>
+          '''
+          html = re.sub(r"</body>", doors + "\n</body>", html, count=1, flags=re.I)
+          write("index.html", html.encode("utf-8"))
+          PY
+
+          cat > cloudflare-estate/_headers <<'EOF'
+          /*
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: strict-origin-when-cross-origin
+            Permissions-Policy: camera=(), microphone=(self), geolocation=()
+            Cache-Control: no-cache
+          /assets/*
+            Cache-Control: public, max-age=31536000, immutable
+          /theory/*
+            Cache-Control: no-cache
+          /lyrics/*
+            Cache-Control: no-cache
+          /recovery/*
+            Cache-Control: no-cache
+          EOF
+
+          cat > cloudflare-estate/_redirects <<'EOF'
+          /* /index.html 200
+          EOF
+
+          cat > cloudflare-estate/sw.js <<'EOF'
+          const CACHE='jm-independent-estate-2026-07-20-auto-1';
+          const CORE=['./','./index.html','./theory/','./lyrics/','./recovery/'];
+          self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+          self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+          self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))))});
+          EOF
+
+      - name: Overlay the current sovereign rooms
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate/theory cloudflare-estate/lyrics cloudflare-estate/recovery
           cp -a theory cloudflare-estate/theory
           cp -a lyrics cloudflare-estate/lyrics
           cp -a recovery cloudflare-estate/recovery
+          cp registry/jm3232-navigator.json cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
 
-      - name: Verify required public doors
+          cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
+          {
+            "schema": "JM.CloudflareEstateDeployment/1.0",
+            "version": "v1.14.1-auto-bootstrap",
+            "project": "jmisjustme-estate",
+            "canonical_host": "jmisjustme-estate.pages.dev",
+            "source_rail": "JMisJustMe/JM-cading-lab",
+            "rooms": ["theory", "lyrics", "recovery"],
+            "navigator_registry": "recovery/JM3232_NAVIGATOR_REGISTRY.json",
+            "boundary": "The standing independent Cloudflare house is preserved as the shell; current sovereign rooms are overlaid from the owned GitHub source rail."
+          }
+          EOF
+
+      - name: Verify the deployment body
         shell: bash
         run: |
           set -euo pipefail
@@ -51,13 +176,13 @@ jobs:
           test -f cloudflare-estate/theory/index.html
           test -f cloudflare-estate/lyrics/index.html
           test -f cloudflare-estate/recovery/index.html
-          test -f cloudflare-estate/DEPLOY_MANIFEST.json
+          test -f cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
           grep -q "JMISJUSTME" cloudflare-estate/index.html
-          grep -q "v1.14.0" cloudflare-estate/DEPLOY_MANIFEST.json
+          grep -q "Current doors" cloudflare-estate/index.html
           grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
-          echo "Canonical Estate shell plus current rooms passed."
+          echo "Canonical independent Estate deployment gates passed."
 
-      - name: Deploy existing Cloudflare Pages project
+      - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

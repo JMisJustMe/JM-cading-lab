@@ -1,0 +1,30 @@
+{
+  "schema": "JM.RouteOSRunnableRuntimeValidation/1.0",
+  "status": "PASS_STATIC_AND_SYNTAX",
+  "validated_at_utc": "2026-07-20T16:18:48Z",
+  "runtime": "games-beyond/routeos/runtime/index.html",
+  "runtime_bytes": 35560,
+  "html_ids": 52,
+  "duplicate_ids": 0,
+  "missing_required_controls": [],
+  "preloaded_cartridges": [
+    "Pulse Orbit",
+    "Seed Runner",
+    "Rebound Route"
+  ],
+  "organs": {
+    "console_home": "PASS",
+    "cartridge_bay": "PASS",
+    "play_canvas": "PASS",
+    "quick_resume": "PASS",
+    "save_vault": "PASS",
+    "profiles": "PASS",
+    "cartridge_import_export": "PASS",
+    "lifecycle_receipts": "PASS",
+    "touch_controls": "PASS_STATIC"
+  },
+  "javascript_syntax": "PASS",
+  "launcher": "PASS",
+  "service_worker": "PASS",
+  "boundary": "Static structure and JavaScript syntax gate. Final feel and touch contact remain device proof."
+}

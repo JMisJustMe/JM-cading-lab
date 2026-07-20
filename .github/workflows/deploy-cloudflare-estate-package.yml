@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - "cloudflare-estate-package/**"
+      - "theory/**"
+      - "lyrics/**"
+      - "recovery/**"
       - ".github/workflows/deploy-cloudflare-estate-package.yml"
   workflow_dispatch:
 
@@ -27,15 +30,18 @@ jobs:
       - name: Check out Estate source
         uses: actions/checkout@v6
 
-      - name: Rebuild canonical Estate from protected package
+      - name: Rebuild canonical Estate from shell and current rooms
         shell: bash
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
           mkdir -p cloudflare-estate
-          cat cloudflare-estate-package/part-* > "$RUNNER_TEMP/jm-estate-v1.14.tar.xz.b64"
-          base64 --decode "$RUNNER_TEMP/jm-estate-v1.14.tar.xz.b64" > "$RUNNER_TEMP/jm-estate-v1.14.tar.xz"
-          tar -xJf "$RUNNER_TEMP/jm-estate-v1.14.tar.xz" -C cloudflare-estate --strip-components=1
+          cat cloudflare-estate-package/shell-part-* > "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz.b64"
+          base64 --decode "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz.b64" > "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz"
+          tar -xJf "$RUNNER_TEMP/jm-estate-shell-v1.14.tar.xz" -C cloudflare-estate
+          cp -a theory cloudflare-estate/theory
+          cp -a lyrics cloudflare-estate/lyrics
+          cp -a recovery cloudflare-estate/recovery
 
       - name: Verify required public doors
         shell: bash
@@ -48,7 +54,8 @@ jobs:
           test -f cloudflare-estate/DEPLOY_MANIFEST.json
           grep -q "JMISJUSTME" cloudflare-estate/index.html
           grep -q "v1.14.0" cloudflare-estate/DEPLOY_MANIFEST.json
-          echo "Canonical Estate v1.14 package gates passed."
+          grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
+          echo "Canonical Estate shell plus current rooms passed."
 
       - name: Deploy existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3

@@ -1,0 +1,72 @@
+name: Audit Estate Gap Governance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/estate-gap-governance-breach-v0.2.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "apps/**"
+      - "games-beyond/**"
+      - ".github/workflows/audit-estate-gap-governance.yml"
+  pull_request:
+    paths:
+      - "registry/estate-gap-governance-breach-v0.2.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "apps/**"
+      - "games-beyond/**"
+
+permissions:
+  contents: read
+
+jobs:
+  gap-governance:
+    name: Preserve named gaps until receipted resolution
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run gap-governance gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import hashlib, json, re
+          from collections import Counter
+          from pathlib import Path
+          errors=[]
+          data=json.loads(Path('registry/estate-gap-governance-breach-v0.2.json').read_text())
+          gaps=data.get('body_gaps',[])
+          ids=[str(x.get('id','')).strip() for x in gaps]
+          names=[str(x.get('name','')).strip() for x in gaps]
+          states=[x.get('state') for x in gaps]
+          fingerprint=hashlib.sha256('\n'.join(sorted(ids)).encode()).hexdigest()
+          if data.get('keeper')!='Nothing goes to Other. It goes to Recovery until classified.': errors.append('Recovery keeper law changed')
+          if len(gaps)!=56: errors.append(f'Expected 56 named gaps, found {len(gaps)}')
+          if fingerprint!='a293004b84d6d86818d1a4d19e467a7d0cd250ebbe8cdafcf9c9c32797c0afb6': errors.append('Historical named-gap ID set changed')
+          if len(ids)!=len(set(ids)) or len(names)!=len(set(names)): errors.append('Duplicate gap ID or name')
+          if set(states)-{'OPEN','PARTIAL','MISSEATED','RESOLVED'}: errors.append('Unsupported body-gap state')
+          actual=dict(Counter(states))
+          if actual!=data.get('counts',{}).get('current_classification'): errors.append(f'Count drift: actual={actual}')
+          if any(str(x.get('domain','')).strip().lower()=='other' for x in gaps): errors.append('Body dumped into Other')
+          routeos=next((x for x in gaps if x.get('id')=='JM-APP-001-ROUTEOS'),None)
+          if not routeos or routeos.get('state')!='RESOLVED': errors.append('RouteOS correction receipt missing')
+          system=data.get('system_breaches',[])
+          if len(system)!=10 or any(x.get('state') not in {'OPEN','PARTIAL','RESOLVED'} for x in system): errors.append('System breach register invalid')
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          auth={x.get('id'):x for x in authority.get('bodies',[])}
+          if auth.get('routeos',{}).get('severity')!='CRITICAL_CORRECTED': errors.append('RouteOS authority weakened')
+          manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          if not any(x.get('id')=='routeos-platform' for x in manifest.get('extraBodies',[])): errors.append('RouteOS missing from Games&Beyond')
+          if not Path('games-beyond/routeos/index.html').exists(): errors.append('RouteOS flagship room missing')
+          apps=Path('apps/index.html').read_text()
+          m=re.search(r'const APPS=(\[.*?\]);\s*const LABELS=',apps,re.S)
+          if not m: errors.append('Apps registry unreadable')
+          else:
+              rows=json.loads(m.group(1))
+              if any(row[0]=='RouteOS' for row in rows): errors.append('RouteOS returned to Non-Game Apps')
+              if any(str(row[2]).strip().lower()=='other' for row in rows): errors.append('Apps House uses forbidden Other category')
+          if errors:
+              print('\n'.join('ERROR: '+e for e in errors)); raise SystemExit(1)
+          print(f'Gap governance PASS: 56 named gaps preserved; states={actual}; RouteOS guarded; no Other dumping.')
+          PY

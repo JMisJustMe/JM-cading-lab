@@ -1,0 +1,51 @@
+name: Audit Apps House Registry Counts
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/index.html"
+      - ".github/workflows/audit-apps-house-stats.yml"
+  pull_request:
+    paths:
+      - "apps/index.html"
+
+permissions:
+  contents: read
+
+jobs:
+  counts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v6
+      - name: Compare visible figures with the actual Apps registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from collections import Counter
+          import json, re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          counts=Counter(row[3] for row in rows)
+          expected={
+              'room_count':len(rows),
+              'full_plus_preserved':counts['full_current']+counts['full_alt'],
+              'routed':counts['routed'],
+              'source_needed':counts['registered'],
+              'preparation':counts['prep'],
+          }
+          assert shown==expected,f'Embedded stat receipt mismatch: {shown} != {expected}'
+          assert f"{expected['room_count']} non-game rooms" in text
+          assert f'<b>{expected["room_count"]}</b><span>registered non-game rooms</span>' in text
+          assert f'<b>{expected["full_plus_preserved"]}</b><span>full + preserved bodies</span>' in text
+          assert f'<b>{expected["routed"]}</b><span>routed organs</span>' in text
+          assert f'<b>{expected["source_needed"]} + {expected["preparation"]}</b><span>source-needed + preparation</span>' in text
+          assert f'["all","All {expected["room_count"]}"]' in text
+          print('Apps House count integrity PASS',expected)
+          PY

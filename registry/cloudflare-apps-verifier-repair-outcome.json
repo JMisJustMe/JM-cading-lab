@@ -1,0 +1,52 @@
+{
+  "schema": "JM.CloudflareAppsVerifierRepairOutcome/1.0",
+  "status": "completed",
+  "conclusion": "failure",
+  "run_id": "29759657964",
+  "head_sha": "c4ed922ed0cc1a926133b9e3cb8fcc7f595ae6ad",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759657964",
+  "updated_at": "2026-07-20T16:27:28Z",
+  "recorded_at_utc": "2026-07-20T16:27:37Z",
+  "steps": [
+    {
+      "job": "repair",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Re-enter latest main",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Replace stale deployment assertions",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Prove verifier source before committing",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Commit the repaired deployment rail",
+      "conclusion": "failure"
+    },
+    {
+      "job": "repair",
+      "name": "Post Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "repair",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ]
+}

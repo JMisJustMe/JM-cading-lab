@@ -19,7 +19,11 @@
     "version": "v1.0",
     "stages": 6,
     "owner_gate": "MOUNTED",
-    "repository_wide_enforcement": "NEXT"
+    "repository_wide_enforcement": "LIVE_72_RECORDS_432_STAGE_RECEIPTS",
+    "governance_gate": ".github/workflows/audit-source-to-living-governance-v1.yml",
+    "governance_register": "registry/source-to-living-governance-register-v1.0.json",
+    "governance_receipt": "registry/source-to-living-governance-receipt-v1.0.json",
+    "public_promotions_guarded": 27
   },
   "deployment_state": "PUBLIC_CONSUMED",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
@@ -28,7 +32,7 @@
   "deployed_at_utc": "2026-07-20T17:42:52Z",
   "source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
   "workflow_run": "29764657985",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository, public-House and Cloudflare edge consumption are live and separately receipt-proven; the wider private byte-for-byte census remains uncrowned.",
   "public_consumers": [
     "registry/estate-map.json",
     "estate-app.js",
@@ -139,5 +143,16 @@
     "deployment": "PASS",
     "canonical_host": "PASS",
     "receipt": "registry/cloudflare-estate-head-deploy-receipt.json"
+  },
+  "source_to_living_governance": {
+    "status": "PASS_REPOSITORY_WIDE_SIX_STAGE_GOVERNANCE",
+    "governed_records": 72,
+    "body_passports": 61,
+    "project_head_passports": 11,
+    "stage_receipts": 432,
+    "public_promotions_guarded": 27,
+    "private_owner_fields_published": false,
+    "version_number_coronation": false,
+    "receipt": "registry/source-to-living-governance-receipt-v1.0.json"
   }
 }

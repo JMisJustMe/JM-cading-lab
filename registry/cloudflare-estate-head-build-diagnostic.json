@@ -1,9 +1,9 @@
 {
   "schema": "JM.CloudflareEstateHeadBuildDiagnostic/0.2.1",
   "status": "BUILD_FAILED_DEPLOYMENT_BLOCKED",
-  "source_commit": "e7407636abda94db47f64743aa3a2eac4f2f2fd4",
-  "workflow_run": "29763446903",
-  "recorded_at_utc": "2026-07-20T17:23:01Z",
+  "source_commit": "468516a54c9a4b0a77960162cadd3191ceb02097",
+  "workflow_run": "29763587176",
+  "recorded_at_utc": "2026-07-20T17:25:06Z",
   "log_tail": [
     "ROUTE /: live donor PASS",
     "ROOT ASSETS: 4 live references preserved",
@@ -22,10 +22,10 @@
     "           ^^^^^^^^^^^^^^^",
     "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 88, in decode_subset",
     "    data = json.loads(gzip.decompress(base64.b64decode(payload)))",
-    "                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "  File \"/usr/lib/python3.12/gzip.py\", line 632, in decompress",
-    "    decompressed = do.decompress(data[fp.tell():])",
-    "                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "zlib.error: Error -3 while decompressing data: invalid distance too far back"
+    "                                      ^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/usr/lib/python3.12/base64.py\", line 88, in b64decode",
+    "    return binascii.a2b_base64(s, strict_mode=validate)",
+    "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "binascii.Error: Invalid base64-encoded string: number of data characters (15085) cannot be 1 more than a multiple of 4"
   ]
 }

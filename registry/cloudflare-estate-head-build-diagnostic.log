@@ -1,0 +1,22 @@
+ROUTE /: live donor PASS
+ROOT ASSETS: 4 live references preserved
+ROUTE /navigator/: live PASS (30799 bytes)
+ROUTE /apps/: live PASS (15998 bytes)
+ROUTE /theory/: live PASS (358065 bytes)
+ROUTE /lyrics/: live PASS (8018 bytes)
+ROUTE /recovery/: live PASS (11955 bytes)
+Traceback (most recent call last):
+  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py", line 87, in <module>
+    base.main()
+  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py", line 223, in main
+    globals()[args.mode]()
+  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py", line 113, in build
+    data = decode_subset()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py", line 88, in decode_subset
+    data = json.loads(gzip.decompress(base64.b64decode(payload)))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/gzip.py", line 632, in decompress
+    decompressed = do.decompress(data[fp.tell():])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+zlib.error: Error -3 while decompressing data: invalid distance too far back

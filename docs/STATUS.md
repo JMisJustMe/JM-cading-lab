@@ -2,19 +2,40 @@
 
 ## Crown route
 
-**JMISJUSTME — The Owned Web Estate v1.0** remains the repository root and primary public doorway.
+**JMISJUSTME — The Owned Web Estate v1.2** remains the repository root and primary public doorway.
 
-State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_MOUNTED`
+State: `LIVE_WITH_THEORY_V0_4_LYRICS_HOUSE_AND_RECOVERY_GATE`
 
-## Live public houses
+## Current public deployment batch
+
+- **JM Theory Multihub v0.4 — Project Source Census** remains the current Theory Wing front door with 297 readable routes, 256 project-source routes and 19 districts.
+- **JM Lyrics & Music House — Whole-Estate Public Door** is live as a public-safe working projection built from JM LyricStudio v0.5 and JM Lyric Estate v0.6.
+- **Lost, Loose & Unseated Bodies — Recovery Gate** is live as the permanent straggler intake, status, import/export and declared-gap route.
+
+## Live public houses and routes
 
 - Root Web Estate
 - Games & Beyond — JM Games House
 - JM EveryBody — Coding compatibility and maximisation fabric
 - Cading Lab
 - Fresh App Lab
+- Theory Multihub v0.4
+- CAUSE MUST PASS dedicated body
+- Lyrics & Music House
+- Lost, Loose & Unseated recovery gate
 - Legacy Estate Bridge
-- Estate, Games and Theory registries
+- Estate, Games, Theory and Lyrics registries
+
+## Lyrics source selection and boundary
+
+The public Lyrics House is governed by:
+
+- `JM LyricStudio v0.5 — Whole-Estate Mount`
+- `JM Lyric Estate v0.6 — Clickable Body Index`
+- `LyricStudio v2.0 Direct` retained as a distinct branch
+- `Lyric Estate v0.4 — Exiled Times Two-Version Lock` retained as a protected donor and anchor
+
+The complete private lyric corpora are not silently published. The live route provides branch passports, current-estate counts and a working local-first writing / teleprompter / pocket / export surface.
 
 ## Live public theory body
 
@@ -29,8 +50,8 @@ State: `FOUNDATION_LIVE_WITH_CAUSE_MUST_PASS_MOUNTED`
 
 ## Preserved custody boundary
 
-The complete interactive HTML, Word edition, PDF edition, Zionfolder and checksum are mounted in the owner-controlled ChatGPT Library at `/JM Estate/Theory Wing/Cause Must Pass/`.
+The complete CAUSE MUST PASS interactive HTML, Word edition, PDF edition, Zionfolder and checksum remain mounted in the owner-controlled ChatGPT Library at `/JM Estate/Theory Wing/Cause Must Pass/`.
 
-Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private notes, source vaults, large multimedia bodies, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
+Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private lyrics, source vaults, large multimedia bodies, Zionfolders, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
 
-The historical foundation receipt remains at `JM_WEB_ESTATE_V1_RECEIPT.md`. The Cause Must Pass mount has its own scoped receipt at `../theory/cause-must-pass/BUILD_RECEIPT.md`.
+The historical foundation receipt remains at `JM_WEB_ESTATE_V1_RECEIPT.md`. The Cause Must Pass mount retains its scoped receipt at `../theory/cause-must-pass/BUILD_RECEIPT.md`.

@@ -1,12 +1,70 @@
 {
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
-  "conclusion": "cancelled",
-  "run_id": "29764108406",
-  "head_sha": "773776a85bd8b8ed9ea8d0509e5b2b89eb6cd977",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764108406",
-  "updated_at": "2026-07-20T17:34:22Z",
-  "recorded_at_utc": "2026-07-20T17:34:32Z",
-  "steps": [],
-  "failed_log_tail": []
+  "conclusion": "failure",
+  "run_id": "29764078588",
+  "head_sha": "20a8a5269ccaf64431b62faa09316ec2c4a1e38d",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764078588",
+  "updated_at": "2026-07-20T17:34:47Z",
+  "recorded_at_utc": "2026-07-20T17:34:58Z",
+  "steps": [
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Check out current Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Build and validate the live-preserving package",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Commit exact build diagnostic on failure",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Stop before Cloudflare after failed build",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Deploy the existing Cloudflare Pages project",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Prove the Estate Head on the canonical host",
+      "conclusion": "failure"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Write and commit successful deployment receipts",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Post Check out current Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "failed_log_tail": [
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t\ufeff2026-07-20T17:33:03.9285376Z ##[group]Run python3 scripts/deploy_estate_head_public.py prove",
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9285876Z ^[[36;1mpython3 scripts/deploy_estate_head_public.py prove^[[0m",
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9349510Z shell: /usr/bin/bash -e {0}",
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:33:03.9349783Z ##[endgroup]",
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:34:44.3389740Z Canonical Estate Head proof did not pass",
+    "Preserve live Estate and install shared Estate Head\tProve the Estate Head on the canonical host\t2026-07-20T17:34:44.3503132Z ##[error]Process completed with exit code 1."
+  ]
 }

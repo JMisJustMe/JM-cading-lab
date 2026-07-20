@@ -18,12 +18,12 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: main
-      - name: Record exact Estate Head deployment outcome and failed log
+      - name: Record workflow result separately from live Estate state
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
           STATUS: ${{ github.event.workflow_run.status }}
-          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           RUN_URL: ${{ github.event.workflow_run.html_url }}
           UPDATED_AT: ${{ github.event.workflow_run.updated_at }}
@@ -43,31 +43,79 @@ jobs:
           jobs=json.loads(Path(os.environ['RUNNER_TEMP'],'jobs.json').read_text())
           failed_log=Path(os.environ['RUNNER_TEMP'],'failed.log').read_text(errors='replace').splitlines()
           steps=[]
+          by_name={}
           for job in jobs.get('jobs',[]):
               for step in job.get('steps',[]):
-                  steps.append({'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')})
-          receipt={
-              'schema':'JM.CloudflareEstateHeadOutcome/0.2.1',
+                  row={'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')}
+                  steps.append(row)
+                  by_name[row['name']]=row['conclusion']
+
+          receipt_path=Path('registry/cloudflare-estate-head-deploy-receipt.json')
+          prior_receipt={}
+          if receipt_path.exists():
+              try:
+                  prior_receipt=json.loads(receipt_path.read_text())
+              except Exception:
+                  prior_receipt={}
+          prior_live=prior_receipt.get('status')=='SUCCESS' and prior_receipt.get('proof_steps',{}).get('canonical_host_proof')=='SUCCESS'
+          deploy=by_name.get('Deploy the existing Cloudflare Pages project with transient retry') or by_name.get('Deploy the existing Cloudflare Pages project')
+          proof=by_name.get('Prove the Estate Head on the canonical host')
+          receipt_step=by_name.get('Write and commit successful deployment receipts')
+
+          if deploy=='success' and proof=='success':
+              estate_conclusion='success'
+              live_state='CURRENT_RUN_DEPLOYED_AND_CANONICAL_HOST_PROVEN'
+              classification='LIVE_PROVEN'
+              if receipt_step not in (None,'success'):
+                  classification='LIVE_PROVEN_RECEIPT_ADMINISTRATION_INCOMPLETE'
+          elif prior_live:
+              estate_conclusion='success'
+              live_state='LAST_PROVEN_DEPLOYMENT_REMAINS_LIVE'
+              classification='LATEST_REDEPLOY_ATTEMPT_FAILED_LIVE_ESTATE_UNCHANGED'
+          else:
+              estate_conclusion='failure'
+              live_state='NO_PROVEN_LIVE_DEPLOYMENT'
+              classification='DEPLOYMENT_NOT_PROVEN'
+
+          outcome={
+              'schema':'JM.CloudflareEstateHeadOutcome/0.2.2',
               'status':os.environ['STATUS'],
-              'conclusion':os.environ['CONCLUSION'],
+              'conclusion':estate_conclusion,
+              'classification':classification,
+              'live_estate_state':live_state,
+              'workflow_conclusion':os.environ['WORKFLOW_CONCLUSION'],
               'run_id':os.environ['RUN_ID'],
               'head_sha':os.environ['HEAD_SHA'],
               'run_url':os.environ['RUN_URL'],
               'updated_at':os.environ['UPDATED_AT'],
               'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+              'deployment_step':deploy,
+              'canonical_host_proof_step':proof,
+              'receipt_step':receipt_step,
+              'prior_proven_receipt':{
+                  'present':prior_live,
+                  'source_commit':prior_receipt.get('source_commit'),
+                  'workflow_run':prior_receipt.get('workflow_run'),
+                  'canonical_route':prior_receipt.get('canonical_route'),
+              },
               'steps':steps,
               'failed_log_tail':failed_log[-160:],
+              'boundary':'A failed redeployment attempt does not erase a previously proven live deployment. Workflow status and live Estate status are recorded separately.'
           }
           Path('registry').mkdir(exist_ok=True)
-          Path('registry/cloudflare-estate-head-outcome.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          Path('registry/cloudflare-estate-head-outcome.json').write_text(json.dumps(outcome,indent=2)+'\n')
           PY
-      - name: Commit observed outcome
+      - name: Commit observed outcome without overwriting concurrent work
         run: |
           set -euo pipefail
           git config user.name "JM Estate Head Deployment Observer"
           git config user.email "actions@users.noreply.github.com"
           git add registry/cloudflare-estate-head-outcome.json
           git diff --cached --quiet && exit 0
-          git commit -m "Record Estate Head v0.2.1 Cloudflare outcome"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "Record classified Estate Head Cloudflare outcome"
+          for attempt in $(seq 1 30); do
+            git pull --rebase origin main
+            git push origin HEAD:main && exit 0
+            sleep 1
+          done
+          exit 1

@@ -3,11 +3,11 @@
   "workflow": "Apply Estate Classification Second Wave",
   "status": "completed",
   "conclusion": "success",
-  "run_id": "29758744875",
-  "head_sha": "b359a04fccc5f340babd55f48de305a1d20f4ff0",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29758744875",
-  "updated_at": "2026-07-20T16:14:53Z",
-  "recorded_at_utc": "2026-07-20T16:15:02Z",
+  "run_id": "29759013028",
+  "head_sha": "0166aac0e007bb50033ffce65a5e2ed9b6acfdb1",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759013028",
+  "updated_at": "2026-07-20T16:18:25Z",
+  "recorded_at_utc": "2026-07-20T16:18:36Z",
   "steps": [
     {
       "job": "apply",
@@ -36,7 +36,7 @@
     },
     {
       "job": "apply",
-      "name": "Update classification receipt",
+      "name": "Update classification receipt without downgrading later passes",
       "conclusion": "success"
     },
     {

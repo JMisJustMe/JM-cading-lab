@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29763110781",
-  "head_sha": "5a6ddce0581f8148c68b87c5709f10d863788798",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763110781",
-  "updated_at": "2026-07-20T17:17:53Z",
-  "recorded_at_utc": "2026-07-20T17:18:05Z",
+  "run_id": "29763132768",
+  "head_sha": "280e8db317ae231addff9ff549ba4354517766c4",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763132768",
+  "updated_at": "2026-07-20T17:18:12Z",
+  "recorded_at_utc": "2026-07-20T17:18:25Z",
   "steps": [
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -21,6 +21,16 @@
     {
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Build and validate the live-preserving package",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Commit exact build diagnostic on failure",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Stop before Cloudflare after failed build",
       "conclusion": "failure"
     },
     {
@@ -50,32 +60,10 @@
     }
   ],
   "failed_log_tail": [
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t\ufeff2026-07-20T17:17:44.7188814Z ##[group]Run python3 scripts/deploy_estate_head_public_resilient.py build",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:44.7190841Z ^[[36;1mpython3 scripts/deploy_estate_head_public_resilient.py build^[[0m",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:44.7278999Z shell: /usr/bin/bash -e {0}",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:44.7280061Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1378402Z ROUTE /: live donor PASS",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1379652Z ROOT ASSETS: 4 live references preserved",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1380396Z ROUTE /navigator/: live PASS (30799 bytes)",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1381109Z ROUTE /apps/: live PASS (15998 bytes)",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1381722Z ROUTE /theory/: live PASS (358065 bytes)",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1382324Z ROUTE /lyrics/: live PASS (8018 bytes)",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1383023Z ROUTE /recovery/: live PASS (11955 bytes)",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1919296Z Traceback (most recent call last):",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1921037Z   File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py\", line 87, in <module>",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1922375Z     base.main()",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1923636Z   File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 223, in main",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1924802Z     globals()[args.mode]()",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1925872Z   File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 113, in build",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1926844Z     data = decode_subset()",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1927237Z            ^^^^^^^^^^^^^^^",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1928395Z   File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 88, in decode_subset",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1929324Z     data = json.loads(gzip.decompress(base64.b64decode(payload)))",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1929865Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1930646Z   File \"/usr/lib/python3.12/gzip.py\", line 632, in decompress",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1931538Z     decompressed = do.decompress(data[fp.tell():])",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1932175Z                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.1932781Z zlib.error: Error -3 while decompressing data: invalid distance too far back",
-    "Preserve live Estate and install shared Estate Head\tBuild and validate the live-preserving package\t2026-07-20T17:17:46.2100441Z ##[error]Process completed with exit code 1."
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t\ufeff2026-07-20T17:18:09.4808190Z ##[group]Run exit 1",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:18:09.4808455Z ^[[36;1mexit 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:18:09.4865257Z shell: /usr/bin/bash -e {0}",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:18:09.4865527Z ##[endgroup]",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:18:09.4955391Z ##[error]Process completed with exit code 1."
   ]
 }

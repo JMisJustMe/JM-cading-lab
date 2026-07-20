@@ -21,13 +21,13 @@
     "owner_gate": "MOUNTED",
     "repository_wide_enforcement": "NEXT"
   },
-  "deployment_state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
+  "deployment_state": "PUBLIC_CONSUMED",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
   "public_head_route": "https://jmisjustme-estate.pages.dev/estate-head/",
-  "public_subset_path": "https://jmisjustme-estate.pages.dev/data/estate-head-public-v0.2.1.json",
-  "deployed_at_utc": "2026-07-20T17:35:22Z",
-  "source_commit": "d009741c906ddf38e20c8211a26b6a508acc2baf",
-  "workflow_run": "29764188614",
+  "public_subset_path": "/data/estate-head-public-v0.2.1.json",
+  "deployed_at_utc": "2026-07-20T17:42:52Z",
+  "source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
+  "workflow_run": "29764657985",
   "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
   "public_consumers": [
     "registry/estate-map.json",

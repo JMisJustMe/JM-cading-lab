@@ -34,13 +34,13 @@ namespace JM.AdvancedGenerator.Editor
             where TAdapter : MonoBehaviour, IJMGameAdapter
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            scene.name = sceneName;
 
             var hostObject = new GameObject("JMGameHost");
             var traceBox = hostObject.AddComponent<JMTraceBox>();
             var adapter = hostObject.AddComponent<TAdapter>();
             var host = hostObject.AddComponent<JMGameHost>();
             host.AssignAdapter(adapter);
+            EditorUtility.SetDirty(host);
 
             var cameraObject = new GameObject("Main Camera");
             var camera = cameraObject.AddComponent<Camera>();

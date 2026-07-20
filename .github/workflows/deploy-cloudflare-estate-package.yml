@@ -1,4 +1,4 @@
-name: Diagnose Canonical Theory Rollback
+name: Restore Canonical Theory Body
 
 on:
   push:
@@ -16,15 +16,16 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  rollback:
+    name: Find and restore exact pre-regression Theory body
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
 
     steps:
       - name: Check out Estate source
         uses: actions/checkout@v6
 
-      - name: Inspect Cloudflare production deployment history
+      - name: Find the exact preserved production deployment
         shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -32,106 +33,138 @@ jobs:
           PROJECT_NAME: jmisjustme-estate
           REGRESSION_CUTOFF: "2026-07-20T13:08:12Z"
         run: |
-          set -u
-          mkdir -p registry
+          set -euo pipefail
           python3 <<'PY'
-          import json, os, traceback
+          import json, os
           from datetime import datetime
           from pathlib import Path
-          from urllib.parse import urljoin
+          from urllib.parse import urlencode, urljoin
           from urllib.request import Request, urlopen
-          from urllib.error import HTTPError, URLError
 
-          out = {
-              'schema': 'JM.CloudflareRollbackDiagnostic/1.0',
-              'status': 'DIAGNOSTIC_COMPLETE',
-              'project': os.environ.get('PROJECT_NAME'),
-              'cutoff': os.environ.get('REGRESSION_CUTOFF'),
-              'listing_success': False,
-              'deployment_count': 0,
-              'pre_cutoff_successful_production_count': 0,
-              'candidates': [],
-              'exact_match_deployment_id': None,
-              'errors': [],
-          }
+          account = os.environ['CLOUDFLARE_ACCOUNT_ID']
+          token = os.environ['CLOUDFLARE_API_TOKEN']
+          project = os.environ['PROJECT_NAME']
+          cutoff = datetime.fromisoformat(os.environ['REGRESSION_CUTOFF'].replace('Z', '+00:00'))
 
-          try:
-              account = os.environ['CLOUDFLARE_ACCOUNT_ID']
-              token = os.environ['CLOUDFLARE_API_TOKEN']
-              project = os.environ['PROJECT_NAME']
-              endpoint = f'https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}/deployments?per_page=100'
-              req = Request(endpoint, headers={
-                  'Authorization': f'Bearer {token}',
-                  'Content-Type': 'application/json',
-                  'User-Agent': 'JM-Estate-Rollback-Diagnostic/1.0',
-              })
-              with urlopen(req, timeout=30) as response:
-                  payload = json.loads(response.read().decode('utf-8', 'replace'))
-              out['listing_success'] = bool(payload.get('success'))
-              out['deployment_count'] = len(payload.get('result', []))
-              if not payload.get('success'):
-                  out['errors'].append({'stage': 'list', 'message': str(payload.get('errors', 'unknown Cloudflare API error'))[:1000]})
-              else:
-                  cutoff = datetime.fromisoformat(os.environ['REGRESSION_CUTOFF'].replace('Z', '+00:00'))
-                  rows = []
-                  for deployment in payload.get('result', []):
-                      try:
-                          created = datetime.fromisoformat(deployment['created_on'].replace('Z', '+00:00'))
-                      except Exception:
-                          continue
-                      stage = deployment.get('latest_stage') or {}
-                      if deployment.get('environment') == 'production' and stage.get('status') == 'success' and created < cutoff:
-                          rows.append((created, deployment))
-                  rows.sort(key=lambda item: item[0], reverse=True)
-                  out['pre_cutoff_successful_production_count'] = len(rows)
+          endpoint = (
+              f'https://api.cloudflare.com/client/v4/accounts/{account}/pages/projects/{project}/deployments?'
+              + urlencode({'page': 1, 'per_page': 25})
+          )
+          req = Request(endpoint, headers={
+              'Authorization': f'Bearer {token}',
+              'Content-Type': 'application/json',
+              'User-Agent': 'JM-Estate-Exact-Body-Rollback/1.1',
+          })
+          with urlopen(req, timeout=30) as response:
+              payload = json.loads(response.read().decode('utf-8', 'replace'))
+          if not payload.get('success'):
+              raise SystemExit(f"Cloudflare deployment listing failed: {payload}")
 
-                  for created, deployment in rows[:20]:
-                      item = {
-                          'id': deployment.get('id'),
-                          'created_on': deployment.get('created_on'),
-                          'url': deployment.get('url'),
-                          'trigger_type': (deployment.get('deployment_trigger') or {}).get('type'),
-                          'title_match': False,
-                          'content_match': False,
-                          'fetch_status': 'NOT_ATTEMPTED',
-                      }
-                      base = deployment.get('url') or ''
-                      if base:
-                          theory_url = urljoin(base.rstrip('/') + '/', 'theory/')
-                          try:
-                              theory_req = Request(theory_url, headers={'User-Agent': 'JM-Estate-Rollback-Diagnostic/1.0'})
-                              with urlopen(theory_req, timeout=30) as response:
-                                  body = response.read().decode('utf-8', 'replace')
-                              item['fetch_status'] = 'SUCCESS'
-                              item['title_match'] = 'Project Source Census Edition' in body
-                              item['content_match'] = 'Human Pattern Calibration' in body
-                              if item['title_match'] and item['content_match'] and out['exact_match_deployment_id'] is None:
-                                  out['exact_match_deployment_id'] = deployment.get('id')
-                          except HTTPError as exc:
-                              item['fetch_status'] = f'HTTP_{exc.code}'
-                          except Exception as exc:
-                              item['fetch_status'] = type(exc).__name__
-                      out['candidates'].append(item)
-          except HTTPError as exc:
-              body = ''
+          candidates = []
+          for deployment in payload.get('result', []):
+              created = datetime.fromisoformat(deployment['created_on'].replace('Z', '+00:00'))
+              stage = deployment.get('latest_stage') or {}
+              if deployment.get('environment') == 'production' and stage.get('status') == 'success' and created < cutoff:
+                  candidates.append((created, deployment))
+          candidates.sort(key=lambda item: item[0], reverse=True)
+
+          target = None
+          for created, deployment in candidates:
+              base = deployment.get('url') or ''
+              if not base:
+                  continue
+              theory_url = urljoin(base.rstrip('/') + '/', 'theory/')
               try:
-                  body = exc.read().decode('utf-8', 'replace')
-              except Exception:
-                  pass
-              out['errors'].append({'stage': 'list_http', 'status': exc.code, 'message': body[:1000]})
-          except Exception as exc:
-              out['errors'].append({'stage': 'unexpected', 'type': type(exc).__name__, 'message': str(exc)[:1000]})
+                  theory_req = Request(theory_url, headers={'User-Agent': 'JM-Estate-Exact-Body-Rollback/1.1'})
+                  with urlopen(theory_req, timeout=30) as response:
+                      body = response.read().decode('utf-8', 'replace')
+              except Exception as exc:
+                  print(f"Skipped {deployment['id']} ({theory_url}): {exc}")
+                  continue
+              title_match = 'Project Source Census Edition' in body
+              content_match = 'Human Pattern Calibration' in body
+              print(f"Checked {deployment['id']} from {deployment['created_on']}: title={title_match}, content={content_match}")
+              if title_match and content_match:
+                  target = deployment
+                  break
 
-          Path('registry/cloudflare-theory-rollback-diagnostic.json').write_text(json.dumps(out, indent=2), encoding='utf-8')
-          print(json.dumps(out, indent=2))
+          if target is None:
+              raise SystemExit('No pre-regression production deployment in the latest 25 contains the exact Project Source Census Edition body.')
+
+          with Path(os.environ['GITHUB_ENV']).open('a') as f:
+              f.write(f"ROLLBACK_DEPLOYMENT_ID={target['id']}\n")
+              f.write(f"ROLLBACK_DEPLOYMENT_CREATED={target['created_on']}\n")
+              f.write(f"ROLLBACK_DEPLOYMENT_URL={target.get('url', '')}\n")
+          print(f"Exact target selected: {target['id']} from {target['created_on']}")
           PY
 
-      - name: Commit diagnostic receipt
+      - name: Roll the canonical production project back
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PROJECT_NAME: jmisjustme-estate
+        run: |
+          set -euo pipefail
+          endpoint="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}/deployments/${ROLLBACK_DEPLOYMENT_ID}/rollback"
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{}' \
+            "$endpoint" > "$RUNNER_TEMP/rollback.json"
+
+          python3 <<'PY'
+          import json, os
+          from pathlib import Path
+          payload = json.loads(Path(os.environ['RUNNER_TEMP'], 'rollback.json').read_text())
+          if not payload.get('success'):
+              raise SystemExit(f"Cloudflare rollback failed: {payload}")
+          print('Cloudflare accepted the production rollback.')
+          PY
+
+      - name: Prove the exact newer Theory body is canonical again
         shell: bash
         run: |
           set -euo pipefail
+          proved=0
+          for attempt in $(seq 1 40); do
+            curl --fail --silent --show-error --location \
+              "https://jmisjustme-estate.pages.dev/theory/?exact-rollback-proof=${GITHUB_RUN_ID}-${attempt}" \
+              > "$RUNNER_TEMP/live-theory.html" || true
+            if grep -q "Project Source Census Edition" "$RUNNER_TEMP/live-theory.html" \
+              && grep -q "Human Pattern Calibration" "$RUNNER_TEMP/live-theory.html"; then
+              proved=1
+              break
+            fi
+            sleep 2
+          done
+          test "$proved" -eq 1
+          echo "Exact Project Source Census Edition is live on the canonical host."
+
+      - name: Record exact rollback proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cat > registry/cloudflare-theory-rollback-receipt.json <<EOF
+          {
+            "schema": "JM.CloudflareTheoryRollbackReceipt/1.1",
+            "status": "SUCCESS",
+            "project": "jmisjustme-estate",
+            "canonical_host": "jmisjustme-estate.pages.dev",
+            "restored_deployment_id": "${ROLLBACK_DEPLOYMENT_ID}",
+            "restored_deployment_created_at": "${ROLLBACK_DEPLOYMENT_CREATED}",
+            "restored_title_proof": "JM Theory Multihub — Project Source Census Edition",
+            "content_proof": "Human Pattern Calibration",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "proved_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "regression": "Older repository v0.4 Theory body overwrote the newer canonical body.",
+            "next_action": "Restore the live-preserving automatic deployment workflow before any further Estate push."
+          }
+          EOF
           git config user.name "JM Estate Recovery Rail"
           git config user.email "actions@users.noreply.github.com"
-          git add registry/cloudflare-theory-rollback-diagnostic.json
-          git diff --cached --quiet || git commit -m "Record Cloudflare Theory rollback diagnostic"
+          git add registry/cloudflare-theory-rollback-receipt.json
+          git commit -m "Record exact Theory production rollback"
           git push

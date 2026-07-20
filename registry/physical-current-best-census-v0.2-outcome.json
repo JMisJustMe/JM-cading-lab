@@ -1,13 +1,13 @@
 {
   "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.3",
   "status": "completed",
-  "conclusion": "success",
-  "classification": "CENSUS_GATE_PASS_2_PACKAGES_2_PARTIAL_BODIES",
-  "run_id": "29769790851",
-  "head_sha": "3fafd7c5a5d17eadc673fccc63accab0a34de9be",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769790851",
-  "updated_at": "2026-07-20T18:55:00Z",
-  "recorded_at_utc": "2026-07-20T18:55:11Z",
+  "conclusion": "failure",
+  "classification": "CENSUS_GATE_FAILED",
+  "run_id": "29769986678",
+  "head_sha": "18f3bc173f76c891cc86080dc7217ce3c91f9205",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769986678",
+  "updated_at": "2026-07-20T18:58:24Z",
+  "recorded_at_utc": "2026-07-20T18:58:37Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
@@ -45,7 +45,7 @@
     {
       "job": "Prove packages and hold unlocated continuations",
       "name": "Verify held-item identities and exit criteria",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     {
       "job": "Prove packages and hold unlocated continuations",

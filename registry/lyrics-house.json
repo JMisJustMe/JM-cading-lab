@@ -1,0 +1,53 @@
+{
+  "schema": "JM.LyricsHouse/1.0",
+  "generated": "2026-07-20",
+  "name": "JM Lyrics & Music House",
+  "route": "lyrics/",
+  "status": "PUBLIC_SAFE_WORKING_PROJECTION_LIVE",
+  "keeper_line": "I don’t need something to believe in, when I know what I know. That’s enough for me then to get even, so let’s get on with the show.",
+  "current_crown_pair": [
+    {
+      "name": "JM LyricStudio",
+      "version": "v0.5 Whole-Estate Mount",
+      "role": "whole-estate archive, writing studio, protected-source reader and performance route",
+      "owner_source_file": "OPEN_FIRST_JM_LYRICSTUDIO_v0_5_WHOLE_ESTATE_MOUNT.html",
+      "owner_source_size": 5623250,
+      "owner_source_sha256": "9b6c2c5acc18363839b50b8e6e0ac9c4d32057323c440d4bee79a4f890bfb950"
+    },
+    {
+      "name": "JM Lyric Estate",
+      "version": "v0.6 Clickable Body Index",
+      "role": "clickable catalogue, full internal-body routing, source and duplicate relation ledger",
+      "owner_source_file": "OPEN_FIRST_JM_LYRIC_ESTATE_v0_6_CLICKABLE_BODY_INDEX.html",
+      "owner_source_size": 3312472,
+      "owner_source_sha256": "2d760e30f89f393bdfb0dd8b6e948e13789d71abb3edd445f71798026595d1bc"
+    }
+  ],
+  "protected_branches": [
+    {
+      "name": "LyricStudio Direct",
+      "version": "v2.0 Direct branch",
+      "status": "DISTINCT_BRANCH_RETAINED",
+      "owner_source_file": "OPEN_FIRST_JM_LYRICSTUDIO_v2_0_DIRECT.html",
+      "owner_source_size": 1730999,
+      "owner_source_sha256": "da38c7863b2fea25e2b9287ae1fac46f9c67cb45f01544dc9a739f9ffe062bec"
+    },
+    {
+      "name": "The Exiled Times",
+      "version": "v0.4 Two-Version Lock",
+      "status": "PROTECTED_DONOR_AND_ANCHOR",
+      "owner_source_file": "OPEN_FIRST_JM_LYRIC_ESTATE_v0_4_EXILED_TIMES_TWO_VERSION_LOCK.html",
+      "owner_source_size": 2800584,
+      "owner_source_sha256": "a30434c1958e4971dad19631f3f31984dd9874073f9fe2ea66d389e9c60e05b6"
+    }
+  ],
+  "estate_counts": {
+    "structured_units": 1065,
+    "deduped_reading_units": 940,
+    "exact_duplicate_groups": 67,
+    "version_2_expansion_bodies": 108,
+    "source_bodies": 6
+  },
+  "public_organs": ["body architecture", "branch passport", "local-first writing desk", "teleprompter / pocket display", "text export", "recovery-gate link"],
+  "boundary": "The public route is a working projection built from the current crown pair. It does not publish or impersonate the complete private lyric corpus."
+}

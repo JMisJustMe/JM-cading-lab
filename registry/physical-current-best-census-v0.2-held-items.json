@@ -1,9 +1,20 @@
 {
-  "schema": "JM.PhysicalCurrentBestHeldItems/0.2",
-  "status": "TWO_TARGETS_HELD_AND_GOVERNED",
-  "recorded_at_utc": "2026-07-20T18:58:00Z",
+  "schema": "JM.PhysicalCurrentBestHeldItems/0.2.1",
+  "status": "TWO_TARGETS_HELD_AND_GOVERNED_CONNECTED_SWEEP_COMPLETE",
+  "recorded_at_utc": "2026-07-20T19:03:00Z",
   "owner_authority": "Theodore Benjamin Scott / JM",
   "law": "A remembered name, later wrapper, donor, transcript, card or higher version cannot impersonate the missing physical body.",
+  "connected_source_sweep": {
+    "status": "COMPLETE_NO_EXACT_BYTES_FOUND",
+    "surfaces": [
+      "GitHub repository and named branches",
+      "ChatGPT File Library title and content index",
+      "governed Estate carrier payload registries",
+      "AI Wisebase knowledge base"
+    ],
+    "result": "Wisebase returned JMSTUDIOSB0_8 donor-estate architecture and general governance references, but no exact JMStudios B0.8.3 body. It returned no relevant Zionfolder v1.1.1 ZIP, manifest, checksum or custody evidence.",
+    "scope_boundary": "This connected-source sweep does not include unindexed phone storage, laptop downloads, deleted attachments, external drives or owner folders not mounted into the connected tools."
+  },
   "targets": [
     {
       "id": "jmstudios-b083-physical-body",
@@ -16,7 +27,13 @@
         "GitHub default branch and named branches",
         "ChatGPT File Library exact-title search",
         "ChatGPT File Library content search",
-        "29.5 MB JM Non-Game Apps House carrier payload registry"
+        "29.5 MB JM Non-Game Apps House carrier payload registry",
+        "AI Wisebase iterative retrieval"
+      ],
+      "search_findings": [
+        "B0.8.3 persists as a registered latest repair/polish continuation and current-crown lineage statement.",
+        "Wisebase recognises JMSTUDIOSB0_8 as a donor estate/house rather than yielding an exact B0.8.3 file.",
+        "No accessible connected source returned bytes that can satisfy the physical-body gate."
       ],
       "positive_identity_markers": [
         "explicit B0.8.3 identity in the body itself",
@@ -35,7 +52,8 @@
         "B0.8.2 Link Polish v0.2 by itself",
         "Current Best register prose",
         "Estate Master Inventory prose",
-        "Apps House card or unbacked payload row"
+        "Apps House card or unbacked payload row",
+        "Wisebase donor-estate description without physical bytes"
       ],
       "exit_criteria": [
         "exact bytes located and hashed",
@@ -58,7 +76,13 @@
         "GitHub repository",
         "ChatGPT File Library exact-title search",
         "ChatGPT File Library content search",
-        "Zionfolder build-history transcripts"
+        "Zionfolder build-history transcripts",
+        "AI Wisebase iterative retrieval"
+      ],
+      "search_findings": [
+        "The historical archive name and frozen-baseline role are preserved in the build-history transcript.",
+        "Raw v1.1.1 HTML and both named repair-donor HTML bodies were recovered separately.",
+        "Wisebase returned no relevant ZIP, package manifest, checksum or custody record."
       ],
       "proven_direct_body": {
         "filename": "jm-zionfolder-os-v1_1_1.html",
@@ -89,7 +113,8 @@
         "v0.8.7 donor ZIP",
         "v0.6.2 donor ZIP",
         "v0.5.3 body or payload",
-        "a newly reconstructed ZIP presented as the historical frozen archive"
+        "a newly reconstructed ZIP presented as the historical frozen archive",
+        "Wisebase or transcript reference without archive bytes"
       ],
       "exit_criteria": [
         "historical archive bytes located and SHA256 recorded",
@@ -104,5 +129,5 @@
   ],
   "held_count": 2,
   "resolved_count": 0,
-  "boundary": "This register governs recovery. It does not claim the two items are absent from the owner's wider phone, laptop, exports or unindexed storage; only that their exact bytes were not located in the accessible GitHub and indexed Library sweep."
+  "boundary": "This register governs recovery. It does not claim the two items are absent from the owner's wider phone, laptop, exports or unindexed storage; only that their exact bytes were not located in the accessible GitHub, indexed Library, governed carrier or Wisebase sweep."
 }

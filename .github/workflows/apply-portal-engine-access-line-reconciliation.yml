@@ -1,0 +1,158 @@
+name: Apply Portal Engine Access-Line Reconciliation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_portal_engine_access_line_reconciliation.py"
+      - "registry/portal-engine-access-line-authority.json"
+      - "governance/verify_estate_classification.py"
+      - ".github/workflows/apply-portal-engine-access-line-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-portal-engine-access-line-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+
+      - name: Apply Portal access-line authority
+        run: python3 governance/apply_portal_engine_access_line_reconciliation.py
+
+      - name: Prove the complete recovered state through the shared authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/verify_estate_classification.py --root .
+          python3 -m json.tool registry/portal-engine-access-line-authority.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-classification-integrity-receipt-v1.0.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 <<'PY'
+          from collections import Counter
+          import json,re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          portal=next(row for row in rows if row[0]=='Portal Engine')
+          assert portal == [
+            'Portal Engine',
+            'Estate OS v0.3.1 + TBS Delta 004.1 · access identity recovered',
+            'Operating Houses',
+            'routed'
+          ], portal
+          registered=[row for row in rows if row[3]=='registered']
+          assert registered == [], registered
+          counts=Counter(row[3] for row in rows)
+          expected={'room_count':44,'full_plus_preserved':29,'routed':12,'source_needed':0,'preparation':2}
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          actual={'room_count':len(rows),'full_plus_preserved':counts['full_current']+counts['full_alt'],'routed':counts['routed'],'source_needed':counts['registered'],'preparation':counts['prep']}
+          assert actual==expected,(actual,expected)
+          assert shown==expected,(shown,expected)
+          assert '<b>12</b><span>routed organs</span>' in text
+          assert '<b>0 + 2</b><span>package-retrieval + preparation</span>' in text
+          assert 'Enter Living Estate access layer' in text
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          assert stringline['version']=='v0.1.7 Portal access-line reconciliation seed'
+          projects={project['id']:project for project in stringline['seed_project_strings']}
+          operating={body['id']:body for body in projects['operating-houses']['bodies']}
+          portal_body=operating['portal-engine']
+          assert portal_body['status']=='PROVEN'
+          assert portal_body['physicalCarrier']=='JM Estate OS v0.3.1 Safe Room Store Fix'
+          assert portal_body['commandSurface']=='JM Command Register v0.1 — TBS Panel / Delta 004.1'
+          assert portal_body['truthBoundary']=='TBS Delta 004.2R'
+          assert portal_body['standaloneClaim']=='NOT_CLAIMED'
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          portal_authority=next(body for body in authority['bodies'] if body.get('id')=='portal-engine-access-line')
+          assert portal_authority['severity']=='RECOVERED_AND_REMOUNTED'
+          assert portal_authority['standalone_package_claim']=='NOT_CLAIMED'
+
+          integrity=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          assert integrity['status']=='PASS_PORTAL_ACCESS_LINE_RECOVERED'
+          assert integrity['remaining_exact_package_retrieval']==[]
+          assert integrity['proof']['portal_access_line_headless_qa']=='PASS_7_OF_7'
+          assert integrity['proof']['tbs_delta_0042_original_script_defect']=='FOUND_AND_PRESERVED'
+          assert integrity['proof']['tbs_delta_0042r_repair']=='PASS_2_VIEWPORTS'
+
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',text,re.I|re.S)
+          Path('/tmp/apps-portal.js').write_text(scripts[-1],encoding='utf-8')
+          print({'portal':portal,'stats':actual,'stringline':stringline['version']})
+          PY
+          node --check /tmp/apps-portal.js
+
+      - name: Write Portal mount receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from datetime import datetime,timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.PortalEngineAccessLineMountReceipt/1.0',
+            'status':'PASS',
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'name':'Portal Engine Access Line',
+            'identity':'Portal Engine',
+            'physical_carrier':'JM Estate OS v0.3.1 Safe Room Store Fix',
+            'command_surface':'JM Command Register v0.1 — TBS Panel / Delta 004.1',
+            'truth_boundary':'TBS Delta 004.2R',
+            'identity_anchor':'JM Estate Retrieval Engine v0.4',
+            'mature_lineage':'JM Estate Retrieval Engine v0.6 — Estate OS / Portal Engine INSTALLED / HOLD',
+            'private_keeper':'PORTAL_ENGINE_ACCESS_LINE_RECONCILIATION_v1_0_ZIONFOLDER.zip',
+            'private_library_path':'/JM_Estate/Zionfolders/Operating_Houses/Portal_Engine_Access_Line/',
+            'public_payload':'NOT_PUBLISHED',
+            'public_projection':'ROUTED_OPERATING_HOUSES_ACCESS_IDENTITY',
+            'standalone_package_claim':'NOT_CLAIMED',
+            'headless_qa':'PASS_7_OF_7',
+            'apps_stats':{'rooms':44,'full_plus_preserved':29,'routed':12,'package_retrieval':0,'preparation':2},
+            'checks':{
+              'central_classification_verifier':'PASS',
+              'apps_projection':'PASS',
+              'apps_javascript':'PASS',
+              'stringline_mount':'PASS',
+              'authority_register':'PASS',
+              'integrity_receipt':'PASS',
+              'original_004_2_preserved':'PASS',
+              '004_2R_repair_separated':'PASS'
+            },
+            'crown':'Portal does not own the rooms. Portal makes the rooms reachable.'
+          }
+          Path('registry/portal-engine-access-line-mount-receipt.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n')
+          PY
+
+      - name: Commit the recovered Portal line safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Latest Source Reconciliation Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json registry/portal-engine-access-line-mount-receipt.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Recover Portal Engine as the Estate OS access identity"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            echo "Parallel main update caught on attempt ${attempt}; retrying safely."
+            sleep 2
+          done
+          exit 1

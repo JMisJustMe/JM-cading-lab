@@ -1,0 +1,55 @@
+{
+  "schema": "JM.Build050LatestSourceReconciliationAuthority/1.0",
+  "status": "RECOVERED_SHARED_OPERATING_ORGANS",
+  "recorded_at_utc": "2026-07-20T17:24:00Z",
+  "pass": "Latest / Source Reconciliation Pass v0.1",
+  "crown": "The tools were not missing. Their strongest host had been left behind by later branches.",
+  "physical_host_authority": {
+    "name": "JM Estate Retrieval Engine v0.4",
+    "html": "00_OPEN_FIRST_JM_ESTATE_RETRIEVAL_ENGINE_v0_4.html",
+    "index": "02_RETRIEVAL_INDEX.json",
+    "card_count": 91,
+    "unique_ids": 91,
+    "html_index_id_match": "PASS",
+    "javascript_syntax": "PASS"
+  },
+  "organs": [
+    {
+      "id": "JM-APP-006-LATEST-BODY-FINDER",
+      "name": "Latest Body Finder",
+      "build_identity": "BUILD 050 — Latest Body Finder",
+      "role": "Find the latest/current-best source body across versions and stop version fog.",
+      "v0_4_state": "INSTALLED",
+      "current_state": "RECOVERED_WORKING_ORGAN",
+      "current_seat": "Registers & Governance / Retrieval Engine + Living Notebook lineage",
+      "next_connection": "Current Best Register and Crown Register",
+      "standalone_package_claim": "NOT_CLAIMED"
+    },
+    {
+      "id": "JM-APP-007-SOURCE-AUDITOR",
+      "name": "Source-Body Auditor",
+      "build_identity": "BUILD 050 — Source-Body Auditor",
+      "role": "Audit whether a source body exists and whether output claims match it.",
+      "v0_4_state": "INSTALLED",
+      "current_state": "RECOVERED_ACTIVE_PROOF_ORGAN",
+      "current_seat": "Registers & Governance / Build Gate + Source Ledger + Crown chain",
+      "next_connection": "JM Build Gate and safe patching",
+      "standalone_package_claim": "NOT_CLAIMED"
+    }
+  ],
+  "lineage_comparison": {
+    "v0.3": "Both exact organ cards present as registered bodies.",
+    "v0.4": "Both exact organ cards present and marked INSTALLED; complete 91-card index agreement.",
+    "v0.5.1": "Later centric branch with 79 cards; both exact organs omitted.",
+    "v0.6": "Latest retrieval branch with 40 cards; both exact organs omitted.",
+    "living_notebook_v1.5B": "Current proven operating/register environment carrying queues, receipts, body cards, Deep-All and export/import."
+  },
+  "authority_ruling": "Retrieval Engine v0.4 owns physical organ-host authority. Living Notebook v1.5B owns current operating-environment authority. v0.5.1 and v0.6 remain valid later branches but cannot supersede bodies they dropped.",
+  "private_custody": {
+    "library_path": "/JM_Estate/Zionfolders/Registers_Governance/BUILD050_Latest_Source_Reconciliation/",
+    "keeper": "BUILD050_LATEST_SOURCE_RECONCILIATION_v0_1_ZIONFOLDER.zip",
+    "full_payload_public": false
+  },
+  "public_projection": "Routed operating organs; private recovery payload remains owner-side.",
+  "boundary": "This record does not invent separate standalone app packages. It restores two existing sovereign organs to the governance chain through their strongest confirmed shared host."
+}

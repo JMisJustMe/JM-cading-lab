@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# Retrigger marker: 2026-07-20T16:08Z — observed second-wave run.
+
 import json
 import re
 from pathlib import Path

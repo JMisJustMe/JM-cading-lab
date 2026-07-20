@@ -3,7 +3,7 @@
   "public_crown": "JMISJUSTME — The Owned Web Estate",
   "public_crown_version": "1.0",
   "repository": "JMisJustMe/JM-cading-lab",
-  "status": "OWNED_WEB_ESTATE_V1_LIVE_WITH_CAUSE_MUST_PASS_MOUNTED",
+  "status": "OWNED_WEB_ESTATE_V1_LIVE_WITH_THEORY_MULTIHUB_V0_4",
   "active_keeper": "JM Web Estate / Living Front Door",
   "keeper_line": "One owned doorway. Many sovereign rooms.",
   "laws": [
@@ -18,72 +18,27 @@
     "OPEN": "direct-open HTML",
     "LIGHT": "minimum continuation package",
     "FULL_ARCHIVE": "complete Zionfolder with OPEN and LIGHT nested where applicable",
-    "S3": [
-      "SOLO",
-      "SERVE",
-      "STORE"
-    ]
+    "S3": ["SOLO", "SERVE", "STORE"]
   },
   "live_github_routes": [
-    {
-      "body": "JMISJUSTME — The Owned Web Estate",
-      "path": "index.html",
-      "state": "LIVE_CROWN_ROOT"
-    },
-    {
-      "body": "Cading Lab",
-      "path": "cading.html",
-      "state": "LIVE"
-    },
-    {
-      "body": "JM EveryBody v2 — Current Canonical-Native Completion",
-      "path": "coding-estate/everybody/00_OPEN_FIRST.html",
-      "state": "CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE"
-    },
-    {
-      "body": "JM EveryBody v2 — Native Workbench",
-      "path": "coding-estate/everybody/canonical-native-v2.html",
-      "state": "LIVE_OPEN_FIRST_WORKBENCH"
-    },
-    {
-      "body": "Fresh App Lab",
-      "path": "fresh-app-lab/",
-      "state": "LIVE"
-    },
-    {
-      "body": "Estate Bridge",
-      "path": "estate/index.html",
-      "state": "LEGACY_LIVE"
-    },
-    {
-      "body": "Games&Beyond — The JM Games House",
-      "path": "games-beyond/index.html",
-      "state": "EDITABLE_HOST_FOUNDATION"
-    },
-    {
-      "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
-      "path": "theory/cause-must-pass/00_OPEN_FIRST.html",
-      "state": "LIVE_ON_MAIN"
-    }
+    {"body":"JMISJUSTME — The Owned Web Estate","path":"index.html","state":"LIVE_CROWN_ROOT"},
+    {"body":"Cading Lab","path":"cading.html","state":"LIVE"},
+    {"body":"JM EveryBody v2 — Current Canonical-Native Completion","path":"coding-estate/everybody/00_OPEN_FIRST.html","state":"CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE"},
+    {"body":"JM EveryBody v2 — Native Workbench","path":"coding-estate/everybody/canonical-native-v2.html","state":"LIVE_OPEN_FIRST_WORKBENCH"},
+    {"body":"Fresh App Lab","path":"fresh-app-lab/","state":"LIVE"},
+    {"body":"Estate Bridge","path":"estate/index.html","state":"LEGACY_LIVE"},
+    {"body":"Games&Beyond — The JM Games House","path":"games-beyond/index.html","state":"EDITABLE_HOST_FOUNDATION"},
+    {"body":"JM Theory Multihub v0.4 — Project Source Census","path":"theory/index.html","state":"CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR"},
+    {"body":"CAUSE MUST PASS — Relation, Passage and Physical Consequence","path":"theory/cause-must-pass/00_OPEN_FIRST.html","state":"DEDICATED_COMPLETE_BODY_LIVE"}
   ],
   "registered_departments": [
     {
       "body": "Owned Web Estate",
       "state": "V1_PUBLIC_FOUNDATION_LIVE",
       "route": "index.html",
-      "capabilities": [
-        "living front door",
-        "estate search",
-        "PWA",
-        "offline shell",
-        "owner room",
-        "receipt export"
-      ]
+      "capabilities": ["living front door", "estate search", "PWA", "offline shell", "owner room", "receipt export"]
     },
-    {
-      "body": "Coding / Cading",
-      "state": "CONNECTED"
-    },
+    {"body":"Coding / Cading","state":"CONNECTED"},
     {
       "body": "JM EveryBody",
       "state": "V2_CURRENT_CANONICAL_NATIVE_COMPLETE",
@@ -94,65 +49,29 @@
       "grammar_families": 13,
       "canonical_conformance_checks": 500,
       "target_lanes_passed": 13,
-      "exact_historical_native_adapters": [
-        "quadze",
-        "cading",
-        "mmzg",
-        "speakuals"
-      ],
+      "exact_historical_native_adapters": ["quadze", "cading", "mmzg", "speakuals"],
       "boundary": "Current native specification complete for all registered bodies; recovered historical evidence remains separately labelled."
     },
-    {
-      "body": "Games House",
-      "state": "EDITABLE_HOST_AND_REGISTRY_CONNECTED",
-      "route": "games-beyond/"
-    },
-    {
-      "body": "Game Engines",
-      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
-      "host": "Games&Beyond"
-    },
-    {
-      "body": "Playable Games",
-      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
-      "host": "Games&Beyond"
-    },
-    {
-      "body": "Loops and Reusable Organs",
-      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
-      "host": "Games&Beyond"
-    },
-    {
-      "body": "Apps and Tools",
-      "state": "MOUNTED_IN_v4_CROWN"
-    },
-    {
-      "body": "JM LyricStudio",
-      "state": "MOUNTED_IN_v4_CROWN"
-    },
+    {"body":"Games House","state":"EDITABLE_HOST_AND_REGISTRY_CONNECTED","route":"games-beyond/"},
+    {"body":"Game Engines","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
+    {"body":"Playable Games","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
+    {"body":"Loops and Reusable Organs","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
+    {"body":"Apps and Tools","state":"MOUNTED_IN_v4_CROWN"},
+    {"body":"JM LyricStudio","state":"MOUNTED_IN_v4_CROWN"},
     {
       "body": "Theory Wing",
-      "state": "CURRENT_BEST_PUBLIC_BODY_LIVE_ON_MAIN",
-      "route": "theory/cause-must-pass/00_OPEN_FIRST.html",
+      "state": "V0_4_PROJECT_SOURCE_CENSUS_LIVE",
+      "route": "theory/",
       "registry": "registry/theory-wing.json",
-      "crown_card": "theory/cause-must-pass/CROWN_CARD.json"
+      "current_best": "theory/index.html",
+      "dedicated_complete_body": "theory/cause-must-pass/00_OPEN_FIRST.html",
+      "readable_routes": 297,
+      "districts": 19
     },
-    {
-      "body": "Books / Author / Lexicon",
-      "state": "MOUNTED_IN_v4_CROWN"
-    },
-    {
-      "body": "Receipts and Proof",
-      "state": "CONNECTED"
-    },
-    {
-      "body": "Zionfolders / FLL",
-      "state": "OWNER_CONTROLLED_ARCHIVE"
-    },
-    {
-      "body": "Universal Edit",
-      "state": "LINEAGE_PRESERVED"
-    }
+    {"body":"Books / Author / Lexicon","state":"MOUNTED_IN_v4_CROWN"},
+    {"body":"Receipts and Proof","state":"CONNECTED"},
+    {"body":"Zionfolders / FLL","state":"OWNER_CONTROLLED_ARCHIVE"},
+    {"body":"Universal Edit","state":"LINEAGE_PRESERVED"}
   ],
   "jm_everybody": {
     "name": "JM EveryBody — Sovereign Compatibility, Maximisation & Current-Native Fabric",
@@ -161,11 +80,7 @@
     "route": "coding-estate/everybody/",
     "open_first": "coding-estate/everybody/00_OPEN_FIRST.html",
     "native_workbench": "coding-estate/everybody/canonical-native-v2.html",
-    "registry": [
-      "coding-estate/everybody/body-registry.json",
-      "coding-estate/everybody/body-registry-extension-01.json",
-      "coding-estate/everybody/body-registry-extension-02.json"
-    ],
+    "registry": ["coding-estate/everybody/body-registry.json", "coding-estate/everybody/body-registry-extension-01.json", "coding-estate/everybody/body-registry-extension-02.json"],
     "status": "CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE",
     "recovered_entries": 100,
     "current_native_specifications": 100,
@@ -173,27 +88,8 @@
     "grammar_families": 13,
     "canonical_conformance_checks": 500,
     "final_estate_count_claimed": false,
-    "target_lanes_passed": [
-      "JavaScript",
-      "TypeScript",
-      "WebAssembly",
-      "C++98",
-      "C++03",
-      "C++11",
-      "C++14",
-      "C++17",
-      "C++20",
-      "C++23",
-      "C++26 draft",
-      "Rust 2021",
-      "Rust 2024"
-    ],
-    "historical_native_frontends_tested": [
-      "Quadze",
-      "Cading",
-      "MMZG / MorseMinus ZeroGrip",
-      "Speakuals"
-    ],
+    "target_lanes_passed": ["JavaScript", "TypeScript", "WebAssembly", "C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23", "C++26 draft", "Rust 2021", "Rust 2024"],
+    "historical_native_frontends_tested": ["Quadze", "Cading", "MMZG / MorseMinus ZeroGrip", "Speakuals"],
     "source_boundary": "Every member body retains current native authority through v2. Historical source evidence is separate, and missing historical grammar is not invented."
   },
   "games_house": {
@@ -206,6 +102,22 @@
     "storage": "IndexedDB local mounted copies",
     "source_boundary": "Owner-controlled source files and Zionfolders remain preserved separately.",
     "android": "route-ready-not-compiled"
+  },
+  "theory_multihub": {
+    "name": "JM Theory Multihub — Project Source Census",
+    "version": "0.4",
+    "keeper_line": "A project trunk is no longer allowed to stand in for its children.",
+    "route": "theory/",
+    "registry": "registry/theory-wing.json",
+    "status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
+    "readable_routes": 297,
+    "new_project_source_routes": 256,
+    "bringing_it_all_together_children": 76,
+    "first_stage_jungle_children": 187,
+    "districts": 19,
+    "completed_scoped_bodies": 13,
+    "payload_parts": 7,
+    "boundary": "Project-source presence earns a readable route and processing grade, not automatic completion or empirical crown."
   },
   "cause_must_pass": {
     "name": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
@@ -228,11 +140,7 @@
     "exact_source_packs": 27,
     "apk_state": "APK_READY_SOURCE",
     "play_store_state": "NOT_SIGNED_NOT_PUBLISHED",
-    "lineage": [
-      "JM_QUADZE_MULTIHUB_ALL_IN_ONE_v1_0",
-      "JM_QUADZE_ONEBODY_OS_FULL_v3_0",
-      "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE"
-    ],
+    "lineage": ["JM_QUADZE_MULTIHUB_ALL_IN_ONE_v1_0", "JM_QUADZE_ONEBODY_OS_FULL_v3_0", "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE"],
     "github_state": "REGISTERED_FOR_SOURCE_NORMALISATION_AND_DEPLOYMENT",
     "target_strategy": "JM coding and Quadze remain source-side; GDevelop becomes an optional downstream export target rather than the language ceiling."
   },

@@ -9,6 +9,8 @@ on:
       - "games-beyond/**"
       - "navigator/stringline.json"
       - "registry/estate-classification-authority-v1.0.json"
+      - "registry/estate-classification-integrity-receipt-v1.0.json"
+      - "governance/verify_estate_classification.py"
       - "governance/JM_ESTATE_CLASSIFICATION_INTEGRITY_AUDIT_v1_0.md"
       - ".github/workflows/audit-estate-classification.yml"
   pull_request:
@@ -17,97 +19,20 @@ on:
       - "games-beyond/**"
       - "navigator/stringline.json"
       - "registry/estate-classification-authority-v1.0.json"
+      - "governance/verify_estate_classification.py"
 
 permissions:
   contents: read
 
 jobs:
   classify:
-    name: Block flattening, stale crowns and missing sovereign seats
+    name: Legacy gate routed through current classification authority
     runs-on: ubuntu-latest
     timeout-minutes: 6
-
     steps:
-      - name: Check out Estate source
-        uses: actions/checkout@v6
-
-      - name: Run classification gate
+      - uses: actions/checkout@v6
+      - name: Run the shared Estate classification verifier
         shell: bash
         run: |
           set -euo pipefail
-          python3 <<'PY'
-          import json, re
-          from pathlib import Path
-
-          errors = []
-          apps_text = Path('apps/index.html').read_text(encoding='utf-8')
-          match = re.search(r'const APPS=(\[.*?\]);\s*const LABELS=', apps_text, re.S)
-          if not match:
-              errors.append('Non-Game Apps registry is unreadable')
-              rows = []
-          else:
-              rows = json.loads(match.group(1))
-
-          def present(name, version=None, category=None):
-              return any(
-                  row[0] == name
-                  and (version is None or version in row[1])
-                  and (category is None or row[2] == category)
-                  for row in rows
-              )
-
-          if present('RouteOS'):
-              errors.append('RouteOS returned to the literal Non-Game Apps registry')
-          if 'RouteOS has returned to its sovereign gaming-platform seat' not in apps_text:
-              errors.append('RouteOS flagship bridge is missing from Apps House')
-          if not present('JM Zionfolder OS', 'v1.1.1'):
-              errors.append('JM Zionfolder OS frozen/current anchor is not v1.1.1')
-          if 'JM Estate OS / TBS Command Shell' in [row[0] for row in rows]:
-              errors.append('Estate OS family has been collapsed into the old combined card')
-          if not present('Altogether Assembly / JM Estate OS', 'v2.0.2'):
-              errors.append('Altogether / Estate OS v2.0.2 assembly crown is missing')
-          if not present('JM Estate OS', 'v0.2.1'):
-              errors.append('JM Estate OS v0.2.1 additive-carrier lineage is missing')
-          if not present('Command Register / Command Panel', 'v0.1'):
-              errors.append('Command surface is missing as its own role')
-          if not present('JMStudios', 'B0.8.2') or not present('JMStudios', 'B0.8.3'):
-              errors.append('JMStudios source anchor and continuation are not preserved together')
-          if not present('FTR / Ama-Pro / GripRoute Adaptive Interaction Engine', category='FTR / Devices & Adaptive Interaction'):
-              errors.append('FTR / Ama-Pro / GripRoute has lost its adaptive-interaction seat')
-          if not present('JM File Grabber'):
-              errors.append('JM File Grabber intake body is missing')
-          if not present('BenefitMerge', 'v0.1 Android proof'):
-              errors.append('BenefitMerge v0.1 Android proof lane is missing')
-          if not present('BenefitMerge', 'v0.2 PWA build'):
-              errors.append('BenefitMerge v0.2 PWA build lane is missing')
-
-          manifest = json.loads(Path('games-beyond/payload-manifest.json').read_text())
-          if not any(body.get('id') == 'routeos-platform' for body in manifest.get('extraBodies', [])):
-              errors.append('Games&Beyond is missing the sovereign RouteOS body')
-          expected = manifest.get('payloadBodyCount', 0) + len(manifest.get('extraBodies', []))
-          if manifest.get('builtInBodyCount') != expected or manifest.get('bodyCount') != expected:
-              errors.append('Games&Beyond built-in count does not match payload + extra bodies')
-          if len(manifest.get('bodyIdsBuiltIn', [])) != expected:
-              errors.append('Games&Beyond built-in ID count is inconsistent')
-          if not Path('games-beyond/routeos/index.html').exists():
-              errors.append('RouteOS flagship room file is missing')
-
-          stringline = json.loads(Path('navigator/stringline.json').read_text())
-          projects = {project['id']: project for project in stringline.get('seed_project_strings', [])}
-          if 'games-beyond' not in projects or not any(body.get('id') == 'routeos-platform' for body in projects['games-beyond'].get('bodies', [])):
-              errors.append('Stringline does not seat RouteOS under Games&Beyond')
-          for project_id in ('operating-houses', 'recovery-delivery', 'ftr-devices'):
-              if project_id not in projects:
-                  errors.append(f'Stringline project missing: {project_id}')
-
-          authority = json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
-          authority_ids = {body['id'] for body in authority.get('bodies', [])}
-          for required in ('routeos', 'zionfolder-os', 'estate-os-family', 'jmstudios', 'benefitmerge', 'ftr-ama-pro-griproute'):
-              if required not in authority_ids:
-                  errors.append(f'Classification authority missing: {required}')
-
-          if errors:
-              print('\n'.join(f'ERROR: {error}' for error in errors))
-              raise SystemExit(1)
-          print(f'Classification integrity PASS: {len(rows)} non-game rooms; RouteOS sovereign; authority lanes preserved.')
-          PY
+          python3 governance/verify_estate_classification.py --root .

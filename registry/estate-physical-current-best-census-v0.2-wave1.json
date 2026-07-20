@@ -1,0 +1,58 @@
+{
+  "schema": "JM.EstatePhysicalCurrentBestCensus/0.2-wave1",
+  "date": "2026-07-20",
+  "status": "WAVE_1_PHYSICAL_VALIDATION_COMPLETE",
+  "records": [
+    {
+      "id": "multimedia-unit-v2.3.0-s3",
+      "name": "JM Estate Multimedia Unit",
+      "version": "v2.3.0 S3",
+      "authority_lane": "STANDALONE_OPERATING_FRONT_ROOM",
+      "state": "PHYSICALLY_VALIDATED_CURRENT_BEST",
+      "bytes": 15795685,
+      "sha256": "6446bf28210e907fb2a41102df9a0942c853f10a69902a9f5907c6b11514ea0f",
+      "room_count": 8,
+      "javascript_syntax": "PASS",
+      "boundary": "Delivery routes do not prove store publication; OS-like application proof does not prove a native operating system."
+    },
+    {
+      "id": "altogether-assembly-v2.0.2",
+      "name": "Altogether Assembly / JM Estate OS",
+      "version": "v2.0.2",
+      "authority_lane": "HOSTED_COMPLETE_BODY_ASSEMBLY_CROWN",
+      "state": "PHYSICALLY_EXTRACTED_AND_VALIDATED",
+      "bytes": 80118,
+      "sha256": "620910386c24025061ee55f1fdd850882243ba311f25e2bc631765304c44286b",
+      "host": "JM Estate Multimedia Unit v2.3.0 S3",
+      "javascript_syntax": "PASS",
+      "boundary": "Hosted complete-body authority is proved; original independent standalone-package authority is not claimed."
+    },
+    {
+      "id": "zionfolder-os-v1.1.1",
+      "name": "JM Zionfolder OS",
+      "version": "v1.1.1 Scroll Spine Fix",
+      "authority_lane": "STANDALONE_FROZEN_WORKSPACE_OS",
+      "state": "PHYSICALLY_VALIDATED_CURRENT_BEST",
+      "bytes": 182692,
+      "sha256": "ef0192a67f7c503dfbaba348d3b5e1f5e4b14732d279012a5f2ec63653b21db4",
+      "javascript_syntax": "PASS",
+      "duplicate_static_dom_ids": [],
+      "boundary": "Working local operating environment; not Android or native hardware OS proof."
+    },
+    {
+      "id": "jmstudios-source-line",
+      "name": "JMStudios",
+      "authority_lane": "DEFERRED_SOURCE_CUSTODY_NOT_MISSING",
+      "state": "DEFERRED",
+      "boundary": "B0.8.2 and B0.8.3 remain a separate source and continuation lineage; B1.2ALL.1 remains the physically confirmed first whole bring-together."
+    }
+  ],
+  "counts": {
+    "physically_validated": 3,
+    "deferred": 1,
+    "standalone_authorities": 2,
+    "hosted_complete_body_authorities": 1
+  },
+  "next_wave": "Operating-house interaction and source-path receipts",
+  "full_census_crowned": false
+}

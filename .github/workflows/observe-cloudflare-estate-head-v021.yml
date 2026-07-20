@@ -13,12 +13,12 @@ permissions:
 jobs:
   record:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v6
         with:
           ref: main
-      - name: Record exact Estate Head deployment outcome
+      - name: Record exact Estate Head deployment outcome and log tail
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
@@ -38,11 +38,32 @@ jobs:
           import json, os
           from datetime import datetime, timezone
           from pathlib import Path
+          from urllib.request import Request, urlopen
+
           jobs=json.loads(Path(os.environ['RUNNER_TEMP'],'jobs.json').read_text())
           steps=[]
+          log_tails=[]
+          token=os.environ['GH_TOKEN']
+          repository=os.environ['GITHUB_REPOSITORY']
           for job in jobs.get('jobs',[]):
               for step in job.get('steps',[]):
                   steps.append({'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')})
+              try:
+                  request=Request(
+                      f"https://api.github.com/repos/{repository}/actions/jobs/{job['id']}/logs",
+                      headers={
+                          'Accept':'application/vnd.github+json',
+                          'Authorization':f'Bearer {token}',
+                          'X-GitHub-Api-Version':'2022-11-28',
+                          'User-Agent':'JM-EstateHead-Observer/0.2.1',
+                      },
+                  )
+                  with urlopen(request, timeout=40) as response:
+                      text=response.read().decode('utf-8','replace')
+                  lines=text.splitlines()
+                  log_tails.append({'job':job.get('name'),'job_id':job.get('id'),'tail':lines[-120:]})
+              except Exception as exc:
+                  log_tails.append({'job':job.get('name'),'job_id':job.get('id'),'log_error':str(exc)})
           receipt={
               'schema':'JM.CloudflareEstateHeadOutcome/0.2.1',
               'status':os.environ['STATUS'],
@@ -53,6 +74,7 @@ jobs:
               'updated_at':os.environ['UPDATED_AT'],
               'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
               'steps':steps,
+              'log_tails':log_tails,
           }
           Path('registry').mkdir(exist_ok=True)
           Path('registry/cloudflare-estate-head-outcome.json').write_text(json.dumps(receipt,indent=2)+'\n')

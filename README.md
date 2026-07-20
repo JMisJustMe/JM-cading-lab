@@ -5,6 +5,7 @@ GitHub Pages public corridor for the JM Estate.
 ## Open-first routes
 
 - `index.html` — root public door
+- `author/index.html` — **Theodore Benjamin Scott / JM — Author Public Page v0.3**
 - `theory/cause-must-pass/00_OPEN_FIRST.html` — **CAUSE MUST PASS — Complete Theory Body / Open Application**
 - `estate/index.html` — JM Estate GitHub Bridge
 - `coding-estate/everybody/00_OPEN_FIRST.html` — **JM EveryBody v2.0 — 100-Body Current-Native Completion**
@@ -16,6 +17,7 @@ GitHub Pages public corridor for the JM Estate.
 ## Registries
 
 - `registry/estate-map.json` — central Estate map
+- `author/author-public.json` — public author route, evidence states and privacy boundary
 - `registry/theory-wing.json` — Theory Wing district map and current-best mount
 - `theory/cause-must-pass/CROWN_CARD.json` — Cause Must Pass Crown Register retrieval handle
 - `theory/cause-must-pass/PACKAGE_MANIFEST.json` — package custody, hashes and recovery route
@@ -32,6 +34,9 @@ GitHub provides the public corridor, source/version history, registry and Pages 
 
 ## Current status
 
+- Author Public Page v0.3: **live public human/source entrance**
+- Author creator menu, evidence spine, bio toolkit and direct Estate navigation: **mounted**
+- Private Theodore Source Biography: **owner-controlled / not uploaded**
 - CAUSE MUST PASS: **complete bounded theory body live on `main`**
 - Cause-Passage formula, ten laws, working test, resistance test and receipt: **mounted**
 - Full HTML, Word, PDF and Zionfolder package: **mounted in owner-controlled JM Estate Library**

@@ -1,0 +1,44 @@
+{
+  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2",
+  "status": "completed",
+  "conclusion": "success",
+  "classification": "OPENING_GATE_PASS",
+  "run_id": "29768002061",
+  "head_sha": "9ee4eaaa688e78dc2b69e6ab5fc833ce886b6884",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768002061",
+  "updated_at": "2026-07-20T18:30:06Z",
+  "recorded_at_utc": "2026-07-20T18:30:14Z",
+  "batch": "operating-houses-01",
+  "targets": 4,
+  "physical_crowns_granted": 0,
+  "physical_crowns_held": 4,
+  "next_gate": "Source-Body Auditor exact package inspection",
+  "steps": [
+    {
+      "job": "Hold crowns until physical package proof passes",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "Hold crowns until physical package proof passes",
+      "name": "Check out current Estate",
+      "conclusion": "success"
+    },
+    {
+      "job": "Hold crowns until physical package proof passes",
+      "name": "Verify Census v0.2 Batch 1",
+      "conclusion": "success"
+    },
+    {
+      "job": "Hold crowns until physical package proof passes",
+      "name": "Post Check out current Estate",
+      "conclusion": "success"
+    },
+    {
+      "job": "Hold crowns until physical package proof passes",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "boundary": "A successful opening gate proves the census structure and anti-shortcut controls. It does not prove any target package current-best or grant a physical crown."
+}

@@ -1,12 +1,24 @@
 {
-  "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
+  "schema": "JM.CloudflareEstateHeadOutcome/0.2.2",
   "status": "completed",
-  "conclusion": "failure",
-  "run_id": "29764472677",
-  "head_sha": "246225155d4a839b9c67814084a60d832ef90aac",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764472677",
-  "updated_at": "2026-07-20T17:40:12Z",
-  "recorded_at_utc": "2026-07-20T17:40:24Z",
+  "conclusion": "success",
+  "classification": "LIVE_PROVEN",
+  "live_estate_state": "CURRENT_RUN_DEPLOYED_AND_CANONICAL_HOST_PROVEN",
+  "workflow_conclusion": "success",
+  "run_id": "29764657985",
+  "head_sha": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764657985",
+  "updated_at": "2026-07-20T17:42:56Z",
+  "recorded_at_utc": "2026-07-20T17:43:06Z",
+  "deployment_step": "success",
+  "canonical_host_proof_step": "success",
+  "receipt_step": "success",
+  "prior_proven_receipt": {
+    "present": false,
+    "source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
+    "workflow_run": "29764657985",
+    "canonical_route": "https://jmisjustme-estate.pages.dev/estate-head/"
+  },
   "steps": [
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -35,18 +47,18 @@
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "failure"
+      "name": "Deploy the existing Cloudflare Pages project with transient retry",
+      "conclusion": "success"
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Prove the Estate Head on the canonical host",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Write and commit successful deployment receipts",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -59,51 +71,6 @@
       "conclusion": "success"
     }
   ],
-  "failed_log_tail": [
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t\ufeff2026-07-20T17:39:03.5998912Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6001093Z ##[group]Run cloudflare/wrangler-action@v3",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6001395Z with:",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6001851Z   apiToken: ***",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6002141Z   accountId: ***",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6002530Z   command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6005302Z   gitHubToken: ***",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6005526Z   quiet: false",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6005729Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6881210Z ##[group]\ud83d\udd0d Checking for existing Wrangler installation",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:03.6934273Z [command]/usr/local/bin/npx --no-install wrangler --version",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.3886902Z npm error npx canceled due to missing packages and no YES option: [\"wrangler@4.112.0\"]",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.3892446Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-07-20T17_39_04_032Z-debug-0.log",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.4388513Z \u26a0\ufe0f Wrangler not found or version is incompatible. Installing...",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.4389846Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.4391337Z ##[group]\ud83d\udce5 Installing Wrangler",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:08.4405948Z [command]/usr/local/bin/npm i wrangler@3.90.0",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:14.4411366Z npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:14.6278765Z npm warn deprecated rollup-plugin-inject@3.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-inject.",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9684855Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9685746Z added 70 packages in 9s",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9686470Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9686864Z 11 packages are looking for funding",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9687649Z   run `npm fund` for details",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9918452Z \u2705 Wrangler installed",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9919821Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:17.9934636Z [command]/usr/local/bin/npx --no-install wrangler --version",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:18.7536487Z 3.90.0",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:18.7965238Z ##[group]\ud83d\ude80 Running Wrangler Commands",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:39:18.7981793Z [command]/usr/local/bin/npx wrangler pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7089061Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7589630Z ^[[31m\u2718 ^[[41;31m[^[[41;97mERROR^[[41;31m]^[[0m ^[[1mReceived a malformed response from the API^[[0m",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7590778Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7590939Z   <!DOCTYPE html>",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7591479Z   <!--[if lt IE 7]> <html class=\"no-js ie6 oldie\" lang=\"en-US\"> <![endif]-->",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7592106Z   <!--[if I... (length = 7429)",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7592408Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7593061Z   GET /accounts/***/pages/projects/jmisjustme-estate -> 520 <none>",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7593456Z   ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7594272Z   If you think this is a bug, please open an issue at: ^[[4mhttps://github.com/cloudflare/workers-sdk/issues/new/choose^[[0m",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7595112Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7595126Z ",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7841237Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7863828Z ##[error]The process '/usr/local/bin/npx' failed with exit code 1",
-    "Preserve live Estate and install shared Estate Head\tDeploy the existing Cloudflare Pages project\t2026-07-20T17:40:09.7873713Z ##[error]\ud83d\udea8 Action failed"
-  ]
+  "failed_log_tail": [],
+  "boundary": "A failed redeployment attempt does not erase a previously proven live deployment. Workflow status and live Estate status are recorded separately."
 }

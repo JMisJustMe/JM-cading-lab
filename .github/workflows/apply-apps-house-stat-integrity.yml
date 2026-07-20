@@ -1,0 +1,74 @@
+name: Apply Apps House Stat Integrity
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_apps_house_stat_integrity.py"
+      - ".github/workflows/apply-apps-house-stat-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-apps-house-stat-integrity
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Derive every visible count from the actual registry
+        run: python3 governance/apply_apps_house_stat_integrity.py
+      - name: Prove count and script integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json, re
+          from collections import Counter
+          from pathlib import Path
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          c=Counter(row[3] for row in rows)
+          expected={
+            'room_count':len(rows),
+            'full_plus_preserved':c['full_current']+c['full_alt'],
+            'routed':c['routed'],
+            'source_needed':c['registered'],
+            'preparation':c['prep'],
+          }
+          assert shown==expected,(shown,expected)
+          for value,label in [
+            (expected['room_count'],'registered non-game rooms'),
+            (expected['full_plus_preserved'],'full + preserved bodies'),
+            (expected['routed'],'routed organs'),
+          ]:
+            assert f'<b>{value}</b><span>{label}</span>' in text
+          assert f"<b>{expected['source_needed']} + {expected['preparation']}</b><span>source-needed + preparation</span>" in text
+          scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
+          Path('/tmp/apps-stat-proof.js').write_text(scripts[-1],encoding='utf-8')
+          print(expected)
+          PY
+          node --check /tmp/apps-stat-proof.js
+      - name: Commit repaired stat body
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Apps House Integrity Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Derive Apps House counts from the corrected registry"
+          git pull --rebase origin main
+          git push origin HEAD:main

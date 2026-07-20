@@ -1,0 +1,113 @@
+name: Apply RouteOS v108A.5 Full Keeper Recovery
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_routeos_v108a5_recovery.py"
+      - "registry/routeos-v108a5-recovery-authority.json"
+      - ".github/workflows/apply-routeos-v108a5-recovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-routeos-v108a5-recovery
+  cancel-in-progress: false
+
+jobs:
+  mount:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Mount recovered RouteOS authority
+        run: python3 governance/apply_routeos_v108a5_recovery.py
+      - name: Prove the mounted recovery state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool registry/routeos-v108a5-recovery-authority.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 -m json.tool games-beyond/payload-manifest.json >/dev/null
+          python3 -m json.tool registry/estate-classification-integrity-receipt-v1.0.json >/dev/null
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+          page=Path('games-beyond/routeos/index.html').read_text(encoding='utf-8')
+          required=[
+            'v108A.5 complete ten-file package recovered',
+            'PACKAGE_AUTHORITY = ORIGINAL_MAX10_RECOVERED_AND_REVALIDATED',
+            'DEVICE_CONTACT = SEPARATE_LANE_NOT_REPROVED',
+          ]
+          missing=[item for item in required if item not in page]
+          if missing: raise SystemExit(f'RouteOS public evidence missing: {missing}')
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          routeos=next(body for body in authority['bodies'] if body.get('id')=='routeos')
+          assert routeos['package_authority']=='ROUTEOS_v108A_5_PRO_FLOW_CLARITY_RESPONSE_POLISH_MAX10.zip'
+          assert routeos['severity']=='CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED'
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          games=next(project for project in stringline['seed_project_strings'] if project.get('id')=='games-beyond')
+          body=next(body for body in games['bodies'] if body.get('id')=='routeos-platform')
+          assert body['status']=='FROZEN'
+          assert body['packageAuthority']=='ORIGINAL_MAX10_RECOVERED_PRIVATE_OWNER_CUSTODY'
+          manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          mounted=next(body for body in manifest['extraBodies'] if body.get('id')=='routeos-platform')
+          assert 'physically recovered' in mounted['sourceStatus']
+          integrity=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          assert integrity['status']=='PASS_ROUTEOS_FULL_KEEPER_RECOVERED'
+          assert integrity['proof']['routeos_v108a5_exact_package_recovery']=='PASS'
+          print('RouteOS recovery mount PASS')
+          PY
+      - name: Write mount receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.RouteOSRecoveryMountReceipt/1.0',
+            'status':'PASS',
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'package_authority':'ROUTEOS_v108A_5_PRO_FLOW_CLARITY_RESPONSE_POLISH_MAX10.zip',
+            'private_keeper':'ROUTEOS_v108A_5_FULL_STANDALONE_KEEPER_CORRECTED.zip',
+            'public_payload':'NOT_PUBLISHED',
+            'public_evidence_room':'games-beyond/routeos/index.html',
+            'stringline_status':'FROZEN',
+            'checks':{
+              'public_boundary_repaired':'PASS',
+              'authority_register_promoted':'PASS',
+              'stringline_promoted':'PASS',
+              'games_manifest_promoted':'PASS',
+              'integrity_watch_closed':'PASS'
+            },
+            'device_boundary':'PHONE_FIELD_CONTACT_REMAINS_SEPARATE'
+          }
+          Path('registry/routeos-v108a5-recovery-mount-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+      - name: Commit recovered authority safely
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Latest Source Reconciliation Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add games-beyond/routeos/index.html games-beyond/payload-manifest.json navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json registry/routeos-v108a5-recovery-mount-receipt.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Mount recovered RouteOS v108A.5 full package authority"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

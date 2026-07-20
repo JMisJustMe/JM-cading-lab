@@ -1,0 +1,74 @@
+name: Audit Games Beyond Canonical Seating
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/estate-head-games-beyond-canonical-v0.2.json"
+      - "games-beyond/payload-manifest.json"
+      - "games-beyond/routeos/index.html"
+      - "navigator/stringline.json"
+      - ".github/workflows/audit-games-beyond-canonical-seating.yml"
+  pull_request:
+    paths:
+      - "registry/estate-head-games-beyond-canonical-v0.2.json"
+      - "games-beyond/payload-manifest.json"
+      - "navigator/stringline.json"
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-seating:
+    name: Keep public game foundations canonically seated
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+      - name: Compare canonical annex and public manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          errors=[]
+          annex=json.loads(Path('registry/estate-head-games-beyond-canonical-v0.2.json').read_text())
+          manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          required={
+              'routeos-platform','glyphplay','gameforge','glyphforge',
+              'playform','tboys-core-clash','gamecore'
+          }
+          annex_bodies={x.get('id'):x for x in annex.get('bodies',[])}
+          public_ids=set(manifest.get('bodyIdsBuiltIn',[]))
+
+          missing_annex=required-set(annex_bodies)
+          missing_public=required-public_ids
+          if missing_annex: errors.append('Canonical annex missing: '+', '.join(sorted(missing_annex)))
+          if missing_public: errors.append('Public Games&Beyond manifest missing: '+', '.join(sorted(missing_public)))
+          if annex.get('house',{}).get('project_string')!='games-beyond':
+              errors.append('Annex is not attached to Games&Beyond project string')
+          if annex_bodies.get('routeos-platform',{}).get('type')!='Gaming platform / console OS / cartridge ecosystem':
+              errors.append('RouteOS governing identity weakened')
+          if annex_bodies.get('playform',{}).get('type')!='Playable Expression Framework / sister system':
+              errors.append('PLAYFORM sister-system identity flattened')
+          if 'SplitShadow' not in annex_bodies.get('tboys-core-clash',{}).get('governing_role',''):
+              errors.append('T-Boys ancestry boundary missing')
+          if not Path('games-beyond/routeos/index.html').exists():
+              errors.append('RouteOS flagship room missing')
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          projects={x.get('id'):x for x in stringline.get('seed_project_strings',[])}
+          games=projects.get('games-beyond',{})
+          current={x.get('id') for x in games.get('bodies',[])}
+          consumed=required.issubset(current)
+          expected_status='MAIN_STRINGLINE_CONSUMED' if consumed else 'GOVERNING_ANNEX_PENDING_MAIN_ESTATE_HEAD_CONSUMPTION'
+          if annex.get('status')!=expected_status:
+              errors.append(f'Annex status drift: expected {expected_status}')
+
+          if errors:
+              print('\n'.join('ERROR: '+x for x in errors))
+              raise SystemExit(1)
+          print('Games&Beyond canonical seating PASS: 7 governing bodies aligned; main Stringline consumption='+str(consumed))
+          PY

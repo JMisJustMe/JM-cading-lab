@@ -1,69 +1,12 @@
 {
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
-  "conclusion": "failure",
-  "run_id": "29763797687",
-  "head_sha": "120d1816193f5b24dd16276572dabc37865fd627",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763797687",
-  "updated_at": "2026-07-20T17:29:22Z",
-  "recorded_at_utc": "2026-07-20T17:29:35Z",
-  "steps": [
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Set up job",
-      "conclusion": "success"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Check out current Estate source",
-      "conclusion": "success"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Build and validate the live-preserving package",
-      "conclusion": "success"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Commit exact build diagnostic on failure",
-      "conclusion": "success"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Stop before Cloudflare after failed build",
-      "conclusion": "failure"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "skipped"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Prove the Estate Head on the canonical host",
-      "conclusion": "skipped"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Write and commit successful deployment receipts",
-      "conclusion": "skipped"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Post Check out current Estate source",
-      "conclusion": "success"
-    },
-    {
-      "job": "Preserve live Estate and install shared Estate Head",
-      "name": "Complete job",
-      "conclusion": "success"
-    }
-  ],
-  "failed_log_tail": [
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t\ufeff2026-07-20T17:28:26.9644776Z ##[group]Run exit 1",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9645057Z ^[[36;1mexit 1^[[0m",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9701347Z shell: /usr/bin/bash -e {0}",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9701616Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9783709Z ##[error]Process completed with exit code 1."
-  ]
+  "conclusion": "cancelled",
+  "run_id": "29763857799",
+  "head_sha": "f96b1dead2ca58abcde1e9d3b6674427442fb182",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763857799",
+  "updated_at": "2026-07-20T17:29:39Z",
+  "recorded_at_utc": "2026-07-20T17:29:51Z",
+  "steps": [],
+  "failed_log_tail": []
 }

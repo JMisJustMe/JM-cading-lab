@@ -45,7 +45,7 @@ jobs:
           assert f'<b>{expected["room_count"]}</b><span>registered non-game rooms</span>' in text
           assert f'<b>{expected["full_plus_preserved"]}</b><span>full + preserved bodies</span>' in text
           assert f'<b>{expected["routed"]}</b><span>routed organs</span>' in text
-          assert f'<b>{expected["source_needed"]} + {expected["preparation"]}</b><span>source-needed + preparation</span>' in text
+          assert f'<b>{expected["source_needed"]} + {expected["preparation"]}</b><span>package-retrieval + preparation</span>' in text
           assert f'["all","All {expected["room_count"]}"]' in text
           print('Apps House count integrity PASS',expected)
           PY

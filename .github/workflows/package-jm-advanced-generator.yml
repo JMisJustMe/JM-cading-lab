@@ -15,8 +15,6 @@ on:
 permissions:
   contents: write
 
-actions:
-
 concurrency:
   group: "jm-advanced-generator-package"
   cancel-in-progress: true

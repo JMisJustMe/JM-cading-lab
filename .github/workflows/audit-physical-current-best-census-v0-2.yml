@@ -6,20 +6,24 @@ on:
     branches: [main]
     paths:
       - "registry/estate-physical-current-best-census-v0.2.json"
+      - "registry/physical-current-best-census-v0.2-held-items.json"
       - "registry/jmstudios-b082-b083-physical-audit-v0.2.json"
       - "registry/zionfolder-os-v111-physical-audit-v0.2.json"
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/index.html"
       - "governance/verify_physical_current_best_census_v0_2.py"
+      - "governance/verify_physical_current_best_held_items_v0_2.py"
       - ".github/workflows/audit-physical-current-best-census-v0-2.yml"
   pull_request:
     paths:
       - "registry/estate-physical-current-best-census-v0.2.json"
+      - "registry/physical-current-best-census-v0.2-held-items.json"
       - "registry/jmstudios-b082-b083-physical-audit-v0.2.json"
       - "registry/zionfolder-os-v111-physical-audit-v0.2.json"
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/index.html"
       - "governance/verify_physical_current_best_census_v0_2.py"
+      - "governance/verify_physical_current_best_held_items_v0_2.py"
       - ".github/workflows/audit-physical-current-best-census-v0-2.yml"
   workflow_dispatch:
 
@@ -36,3 +40,5 @@ jobs:
         uses: actions/checkout@v6
       - name: Verify Census v0.2 specialist package state
         run: python3 governance/verify_physical_current_best_census_v0_2.py --root .
+      - name: Verify held-item identities and exit criteria
+        run: python3 governance/verify_physical_current_best_held_items_v0_2.py --root .

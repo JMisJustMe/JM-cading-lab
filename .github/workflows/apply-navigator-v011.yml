@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "navigator/releases/v0.1.1.patch"
+      - "navigator/releases/apply_v0_1_1.py"
       - ".github/workflows/apply-navigator-v011.yml"
   workflow_dispatch:
 
@@ -18,7 +19,7 @@ concurrency:
 
 jobs:
   apply:
-    name: Apply tested Navigator patch without flattening parallel work
+    name: Apply tested Navigator transform without flattening parallel work
     runs-on: ubuntu-latest
     timeout-minutes: 8
 
@@ -29,20 +30,15 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Re-enter latest main before patching
+      - name: Re-enter latest main before transforming
         shell: bash
         run: git pull --rebase origin main
 
-      - name: Apply v0.1.1 patch once
+      - name: Apply v0.1.1 format-independent transform
         shell: bash
         run: |
           set -euo pipefail
-          if grep -q "JM3232 Navigator v0.1.1" navigator/index.html; then
-            echo "Navigator v0.1.1 is already applied."
-          else
-            git apply --check navigator/releases/v0.1.1.patch
-            git apply navigator/releases/v0.1.1.patch
-          fi
+          python3 navigator/releases/apply_v0_1_1.py
 
       - name: Validate executable source and Stringline seed
         shell: bash

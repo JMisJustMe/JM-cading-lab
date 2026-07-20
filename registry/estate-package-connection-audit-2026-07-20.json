@@ -1,0 +1,72 @@
+{
+  "schema": "JM.EstatePackageConnectionAudit/1.0",
+  "audited_at": "2026-07-20",
+  "scope": "Current canonical Cloudflare Estate, its five deployed public rooms, and the source/package evidence currently seated in JMisJustMe/JM-cading-lab.",
+  "overall_state": "PUBLIC_CONNECTIONS_PROVEN__PACKAGE_PARITY_INCOMPLETE",
+  "crown_line": "Many bodies. One living line. None erased.",
+  "confirmed": [
+    {
+      "body": "Canonical JMISJUSTME Estate",
+      "state": "DEPLOYED_AND_AUTOMATED",
+      "evidence": "Cloudflare deployment receipt v1.4 reports SUCCESS, manual_upload_required false, and five live rooms: navigator, apps, theory, lyrics and recovery."
+    },
+    {
+      "body": "JM Theory Multihub current public body",
+      "state": "LIVE_PRESERVED_AND_MOBILE_CLEARANCE_PROVEN",
+      "evidence": "The automatic rail preserves the non-v0.4 Cloudflare body and the v1.4 receipt records the mobile reader clearance as PROVEN."
+    },
+    {
+      "body": "JM3232 Navigator + JM Stringline v0.1",
+      "state": "SOURCE_SEATED_AND_PUBLIC_SHELL_PROVEN",
+      "evidence": "Navigator HTML, Stringline JSON and registry exist in the repository; the deployment receipt describes an executable browser-experience shell and local-first Stringline."
+    },
+    {
+      "body": "Non-Game Apps House",
+      "state": "PUBLIC_SAFE_CATALOGUE_CONNECTED",
+      "evidence": "Forty registered app rooms share one public door. The House explicitly keeps private embedded bodies, source hashes and the Owner OneBody owner-side."
+    },
+    {
+      "body": "Lyrics House and Recovery Gate",
+      "state": "PUBLIC_ROUTES_CONNECTED",
+      "evidence": "Both rooms are included in the successful five-room canonical deployment and are overlaid from the owned GitHub source rail."
+    }
+  ],
+  "package_gaps": [
+    {
+      "body": "JM Theory Multihub v0.5 source package",
+      "state": "IN_PROGRESS",
+      "evidence": "Only payload parts 1, 2 and 3 of a declared 16-part source payload are currently evidenced as seated in GitHub.",
+      "required_before_full_package_claim": [
+        "Seat payload parts 4 through 16",
+        "Reconstruct the complete source body",
+        "Validate size/content markers",
+        "Write manifest and checksums",
+        "Produce package receipt"
+      ]
+    },
+    {
+      "body": "JM3232 Navigator v0.1",
+      "state": "LIVE_SHELL_NOT_STANDALONE_PACKAGE_PROVEN",
+      "evidence": "The source and public route are proven, but a standalone Zionfolder/SavePack with manifest and checksums is not yet evidenced; no APK or custom rendering engine is claimed."
+    },
+    {
+      "body": "Non-Game Apps House",
+      "state": "CATALOGUE_NOT_FULL_40_BODY_PACKAGE",
+      "evidence": "The public House deliberately lists and routes forty rooms without publishing every private payload. Twenty-one are described as full owner bodies, while other rooms are routed, registered, source-needed or preparation states."
+    },
+    {
+      "body": "Estate-wide package parity",
+      "state": "NOT_YET_AUDITED_TO_COMPLETION",
+      "evidence": "A full per-room manifest/checksum/Zionfolder parity pass across every public and owner-side body has not yet been completed in this build chamber."
+    }
+  ],
+  "safe_claim_now": "The canonical public Estate is connected, automatically deployed and proven across Navigator, Apps, Theory, Lyrics and Recovery. Several bodies remain deliberately public-safe projections or live source bodies rather than fully reconstructed standalone packages.",
+  "unsafe_claim_now": "Every body in the Estate is fully packaged, checksum-verified and source-parity complete.",
+  "next_gate": [
+    "Complete and verify the sixteen-part Theory v0.5 source seating",
+    "Create a standalone Navigator v0.1 Zionfolder/SavePack with manifest and checksums",
+    "Run a room-by-room package parity audit for Apps, Lyrics, Recovery and the wider Estate",
+    "Only then upgrade the overall state to FULL_PACKAGE_PARITY_PROVEN"
+  ],
+  "ui_policy": "Cosmetic polishing may continue when isolated and reversible, but it must not delay, replace or inflate package-custody work. The compact Theory header is approved as a later isolated polish after this audit is acknowledged."
+}

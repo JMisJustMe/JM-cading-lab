@@ -1,0 +1,76 @@
+name: Validate RouteOS Runnable Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "games-beyond/routeos/runtime/index.html"
+      - "games-beyond/routeos-runtime-launch-v0-8.js"
+      - "games-beyond/sw.js"
+      - ".github/workflows/validate-routeos-runtime.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Extract and validate runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import re
+          from collections import Counter
+          from pathlib import Path
+
+          runtime = Path('games-beyond/routeos/runtime/index.html').read_text(encoding='utf-8')
+          launcher = Path('games-beyond/routeos-runtime-launch-v0-8.js').read_text(encoding='utf-8')
+          sw = Path('games-beyond/sw.js').read_text(encoding='utf-8')
+
+          scripts = re.findall(r'<script>(.*?)</script>', runtime, re.S)
+          assert scripts, 'Runtime script missing'
+          Path('/tmp/routeos-runtime.js').write_text(scripts[-1], encoding='utf-8')
+
+          ids = re.findall(r'\bid="([^"]+)"', runtime)
+          dupes = [item for item,count in Counter(ids).items() if count > 1]
+          assert not dupes, f'Duplicate IDs: {dupes}'
+
+          required_ids = {
+              'openBay','quickResume','openVault','cartGrid','game','pauseBtn','saveBtn',
+              'suspendBtn','resetBtn','homeBtn','playerName','savePlayer','captureSave',
+              'exportVault','importVault','cartImport','exportSample','receiptBox','scanBtn'
+          }
+          missing = sorted(required_ids - set(ids))
+          assert not missing, f'Missing required controls: {missing}'
+
+          required_text = [
+              'RouteOS Console Home','Pulse Orbit','Seed Runner','Rebound Route',
+              'JMCartridgePackage','JMConsolePlayerSaveVault','RouteOSQuickResume',
+              "receipt('BOOT'", "receipt('READY'", "receipt('PLAY'", "receipt('SUSPEND'",
+              "receipt('RESUME'", "receipt('SAVE'", "receipt('EXIT'"
+          ]
+          absent = [item for item in required_text if item not in runtime]
+          assert not absent, f'Missing runtime organs: {absent}'
+
+          assert "const RUNTIME='routeos/runtime/'" in launcher
+          assert 'LAUNCH RUNNABLE ROUTEOS' in launcher
+          assert 'routeos/runtime/index.html' in sw
+          assert "games-beyond-v0-8-routeos-runtime-r1" in sw
+
+          print({
+              'runtime_bytes': len(runtime.encode('utf-8')),
+              'html_ids': len(ids),
+              'duplicate_ids': len(dupes),
+              'preloaded_cartridges': 3,
+              'launcher': 'PASS',
+              'service_worker': 'PASS'
+          })
+          PY
+          node --check /tmp/routeos-runtime.js
+          node --check games-beyond/routeos-runtime-launch-v0-8.js
+          node --check games-beyond/sw.js

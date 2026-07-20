@@ -1,0 +1,92 @@
+{
+  "schema": "JM.QuadzeMultiHubV4Authority/1.0",
+  "status": "EXACT_PACKAGES_RECOVERED_AND_INDEPENDENTLY_REVALIDATED",
+  "recorded_at_utc": "2026-07-20T17:58:00Z",
+  "name": "JM QUADZE MultiHub OneBody OS",
+  "primary_seat": "Operating Houses & Launchers / MultiHub OS",
+  "governing_identity": "one-body operating house carrying JM coding bodies, game engines, rooms, editable workspace and preserved source packs",
+  "authority_lanes": {
+    "full_apk_ready_source": {
+      "version": "v4.0.0",
+      "package": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY_ZIONFOLDER.zip",
+      "bytes": 162369175,
+      "sha256": "bd82739163e74a76acb84d8a83e33cf3ca447075e061139dc2cf349ac94223a5",
+      "archive_files": 395,
+      "manifest_governed_payload_files": 394,
+      "mounted_entries": 29,
+      "source_packs_preserved": 27,
+      "state": "APK_READY_SOURCE_NOT_A_COMPILED_V4_APK"
+    },
+    "solo_direct_open": {
+      "version": "v4.1 SOLO",
+      "package": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO_APK_READY_ZIONFOLDER.zip",
+      "bytes": 201356400,
+      "sha256": "b57d35d7e7bbfa9f8c9d754ad9c9763eb3761515e5e4b6b4a90b22376ff78777",
+      "solo_file": "00_OPEN_FIRST_JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO.html",
+      "solo_bytes": 56651010,
+      "solo_sha256": "458d752e773b68a5ef39cab728485511f944b9d209444b09acf7a175feda45a9",
+      "registered_entries": 29,
+      "embedded_rooms": 29,
+      "fetch_required": false,
+      "state": "DIRECT_OPEN_FETCH_FREE_PROJECTION_AUTHORITY"
+    },
+    "signed_lineage_apk": {
+      "version": "v3.0.0",
+      "bytes": 43989217,
+      "sha256": "82436cc178257086c4464d971e550c7738ea4f4b68a9b603b3528222e854f7ba",
+      "signed": true,
+      "device_installed": false,
+      "state": "LINEAGE_PROOF_NOT_A_V4_APK"
+    },
+    "v4_native_apk": "NOT_BUILT_NOT_CLAIMED",
+    "play_store_bundle": "NOT_BUILT_NOT_CLAIMED",
+    "user_device_contact": "NOT_REPROVED_IN_THIS_RECOVERY_PASS"
+  },
+  "lineage_comparison": {
+    "v4_0_archive_files": 395,
+    "v4_1_archive_files": 398,
+    "identical_common_files": 394,
+    "changed_common_files": [
+      "README_OPEN_FIRST.md"
+    ],
+    "v4_1_additions": [
+      "00_OPEN_FIRST_JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO.html",
+      "SOLO_EMBEDDED_BUILD_RECEIPT.json",
+      "www/solo.html"
+    ],
+    "internal_root": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0",
+    "ruling": "v4.1 is the complete v4.0 package plus a SOLO projection layer; it does not erase or rename v4.0 full-source authority."
+  },
+  "independent_revalidation": {
+    "v4_0_zip_integrity": "PASS",
+    "v4_1_zip_integrity": "PASS",
+    "v4_0_build_receipt_and_manifest": "PASS_394_OF_394",
+    "v4_1_corrected_manifest": "PASS_398_OF_398",
+    "v4_1_solo_static": "PASS_29_OF_29",
+    "v4_1_solo_script_syntax": "PASS",
+    "v4_1_solo_headless_mobile": "PASS",
+    "v4_1_solo_headless_desktop": "PASS",
+    "solo_search_open_back_home_export": "PASS",
+    "mobile_overflow_px": 0,
+    "desktop_overflow_px": 0,
+    "runtime_errors": 0,
+    "console_errors": 0
+  },
+  "custody_defects_preserved": [
+    "SHA256SUMS.txt is stale or incomplete in v4.0 and inherited unchanged by v4.1.",
+    "v4.1 inherits the v4.0 BUILD_RECEIPT_AND_MANIFEST and therefore does not govern its changed README or three SOLO additions.",
+    "The v4.1 internal root remains named JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0.",
+    "The retained APK is v3 lineage proof and must not be presented as a v4 APK."
+  ],
+  "recovery_action": "Original giant ZIPs remain untouched. A corrected 398-file manifest, independent QA and role-separated authority Zionfolder are mounted beside them.",
+  "private_custody": {
+    "library_path": "/JM_Estate/Zionfolders/Operating_Houses/QUADZE_MultiHub_v4_1/",
+    "v4_0_original": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY_ZIONFOLDER.zip",
+    "v4_1_original": "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO_APK_READY_ZIONFOLDER.zip",
+    "reconciliation_keeper": "QUADZE_MULTIHUB_V4_1_AUTHORITY_RECONCILIATION_v1_0_ZIONFOLDER.zip",
+    "public_payload": false
+  },
+  "public_projection": "Public-safe Operating Houses card and Stringline authority only; the private 162 MB and 201 MB payloads remain owner-side.",
+  "crown": "The full body carries the Estate. The SOLO body carries the door. The lineage APK carries proof—not a false v4 crown.",
+  "boundary": "This proves package custody, archive integrity, corrected manifests and browser-side SOLO operation. Physical user-device installation remains a separate Ding."
+}

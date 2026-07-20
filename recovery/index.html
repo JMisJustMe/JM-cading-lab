@@ -16,7 +16,8 @@ const KEY='jm-estate-straggler-register-v1';
 const seed=[
 {id:'seed-1',name:'Invisible / unopened chat transcripts',kind:'Chat',state:'SOURCE GAP',where:'Unsourced chats outside current context, census, export or Library body',note:'Never pretend these were read. Recover through surfaced chat, export, census, receipt or overlap evidence.',createdAt:'2026-07-20T00:00:00Z'},
 {id:'seed-2',name:'Active game-chat changes ahead of installed files',kind:'Game',state:'VERIFYING',where:'Immediate game chats ↔ private Owner Estate files',note:'Reconcile physical body → active chat state → protected anchor → current public-safe crown.',createdAt:'2026-07-20T00:00:00Z'},
-{id:'seed-3',name:'Private full bodies awaiting public-safe projection',kind:'HTML / App',state:'PROTECTED ANCHOR',where:'Owner Estate / Zionfolders / large OneBodies',note:'Keep full source private until deliberately projected; public route must not impersonate the full body.',createdAt:'2026-07-20T00:00:00Z'}
+{id:'seed-3',name:'Private full bodies awaiting public-safe projection',kind:'HTML / App',state:'PROTECTED ANCHOR',where:'Owner Estate / Zionfolders / large OneBodies',note:'Keep full source private until deliberately projected; public route must not impersonate the full body.',createdAt:'2026-07-20T00:00:00Z'},
+{id:'seed-4',name:'JM3232 Navigator v0.1 / Unified Browser',kind:'Coding / Tool',state:'KNOWN / NOT SURFACED',where:'JM3232 specification ↔ Radius Lexicon ↔ RootWord Realness Engine ↔ registry/jm3232-navigator.json',note:'Recovered and seated as a specified product route. Build the executable mobile-first browser shell; do not claim a custom rendering engine or runtime Ding before proof.',createdAt:'2026-07-20T12:00:00Z'}
 ];
 let data;try{data=JSON.parse(localStorage.getItem(KEY)||'null')||seed}catch{data=seed}
 const $=s=>document.querySelector(s),esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

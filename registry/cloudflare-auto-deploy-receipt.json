@@ -1,22 +1,16 @@
 {
-  "schema": "JM.CloudflareAutoDeployReceipt/1.3",
+  "schema": "JM.CloudflareAutoDeployReceipt/1.4",
   "status": "SUCCESS",
   "project": "jmisjustme-estate",
   "canonical_host": "jmisjustme-estate.pages.dev",
-  "source_commit": "a50b6dc7b37690686a98196d16b98bab1b1ae5f1",
-  "workflow_run": "29748526912",
-  "proved_at_utc": "2026-07-20T13:58:30Z",
+  "source_commit": "6e1bb50d564b76604b08b7c352069b72bdfc74e4",
+  "workflow_run": "29750449464",
+  "deployed_at_utc": "2026-07-20T14:24:25Z",
   "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
-  "navigator_route": "https://jmisjustme-estate.pages.dev/navigator/",
   "navigator_proof": "EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE",
-  "stringline_proof": "Many bodies. One living line. None erased.",
   "apps_registry_count": 40,
   "apps_boundary": "PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE",
   "theory_policy": "PRESERVE_PRE_REGRESSION_F6336B93_BODY",
-  "deployment_step": "SUCCESS",
-  "canonical_live_proof_step": "SUCCESS",
-  "automatic_receipt_step": "FAILED_AFTER_LIVE_PROOF",
-  "receipt_reconstruction": "This receipt was written from the inspected GitHub Actions job after assembly, source gates, Cloudflare deployment and canonical-live proof all passed. Only the final automated receipt-writing step failed.",
-  "manual_upload_required": false,
-  "boundary": "This proves JM3232 Navigator v0.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK."
+  "theory_mobile_reader_clearance": "PROVEN",
+  "manual_upload_required": false
 }

@@ -1,52 +1,54 @@
 {
-  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.1",
+  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.2",
   "status": "completed",
   "conclusion": "success",
-  "classification": "CENSUS_GATE_PASS_2_OF_4_PHYSICAL_PACKAGES_CONFIRMED",
-  "run_id": "29768955318",
-  "head_sha": "1c9142d9bd871a4ac6bc96dc561e71a138d676cf",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768955318",
-  "updated_at": "2026-07-20T18:43:26Z",
-  "recorded_at_utc": "2026-07-20T18:43:36Z",
+  "classification": "CENSUS_GATE_PASS_2_PACKAGES_0_PARTIAL_BODIES",
+  "run_id": "29769030041",
+  "head_sha": "1ba5c9b8a1798293dd2c4ff3d5edb37289c87fd4",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769030041",
+  "updated_at": "2026-07-20T18:44:27Z",
+  "recorded_at_utc": "2026-07-20T18:44:36Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
-  "physical_package_searches_active": 2,
-  "confirmed": [
+  "partial_physical_bodies_confirmed": 0,
+  "package_or_continuation_searches_held": 2,
+  "package_confirmed": [
     "JM Estate Multimedia Unit v2.3.0 S\u00b3",
     "Altogether Assembly / JM Estate OS v2.0.2"
   ],
+  "partial_confirmed": [],
   "held": [
     "JMStudios B0.8.2 / B0.8.3",
     "JM Zionfolder OS v1.1.1 Scroll Spine Fix"
   ],
-  "next_gate": "Inspect the held targets exact physical packages",
+  "next_gate": "Locate B0.8.3, Zionfolder v1.1.1 ZIP and both Zionfolder repair-donor bodies",
   "steps": [
     {
-      "job": "Prove first pair and hold remaining package crowns",
+      "job": "Prove packages and hold unlocated continuations",
       "name": "Set up job",
       "conclusion": "success"
     },
     {
-      "job": "Prove first pair and hold remaining package crowns",
+      "job": "Prove packages and hold unlocated continuations",
       "name": "Check out current Estate",
       "conclusion": "success"
     },
     {
-      "job": "Prove first pair and hold remaining package crowns",
-      "name": "Verify Census v0.2 first-pair state",
+      "job": "Prove packages and hold unlocated continuations",
+      "name": "Verify Census v0.2 specialist package state",
       "conclusion": "success"
     },
     {
-      "job": "Prove first pair and hold remaining package crowns",
+      "job": "Prove packages and hold unlocated continuations",
       "name": "Post Check out current Estate",
       "conclusion": "success"
     },
     {
-      "job": "Prove first pair and hold remaining package crowns",
+      "job": "Prove packages and hold unlocated continuations",
       "name": "Complete job",
       "conclusion": "success"
     }
   ],
-  "boundary": "A successful gate proves only the package authorities explicitly recorded in the canonical census. Active searches remain uncrowned; fresh phone contact remains a separate Ding where stated."
+  "boundary": "A partial physical body confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated."
 }

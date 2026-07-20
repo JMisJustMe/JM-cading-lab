@@ -1,6 +1,6 @@
 {
   "schema": "JM.EstateHeadPublicConsumptionReceipt/1.0",
-  "generated_at": "2026-07-20T17:37:08+00:00",
+  "generated_at": "2026-07-20T17:38:16+00:00",
   "authority_contract": "registry/estate-head-public-current.json",
   "authority_snapshot": {
     "schema": "JM.EstateHeadPublicCurrent/1.0",
@@ -26,7 +26,7 @@
       "repository_wide_enforcement": "NEXT"
     },
     "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Cloudflare canonical-host consumption is live and proven."
+    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption, public-House consumption, Cloudflare deployment and canonical-host proof are live."
   },
   "consumers": [
     "registry/estate-map.json",

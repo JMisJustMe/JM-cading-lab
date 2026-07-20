@@ -1,0 +1,34 @@
+{
+  "schema": "JM.QuadzeMultiHubV4MountReceipt/1.0",
+  "status": "PASS",
+  "recorded_at_utc": "2026-07-20T18:07:17Z",
+  "name": "JM QUADZE MultiHub OneBody OS",
+  "authority_lanes": {
+    "full_apk_ready_source": "v4.0",
+    "solo_direct_open": "v4.1 SOLO",
+    "signed_lineage_apk": "v3.0 — device install unproved",
+    "v4_native_apk": "NOT_BUILT_NOT_CLAIMED"
+  },
+  "private_library_path": "/JM_Estate/Zionfolders/Operating_Houses/QUADZE_MultiHub_v4_1/",
+  "private_files": [
+    "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_0_APK_READY_ZIONFOLDER.zip",
+    "JM_QUADZE_MULTIHUB_ONEBODY_OS_v4_1_SOLO_APK_READY_ZIONFOLDER.zip",
+    "QUADZE_MULTIHUB_V4_1_AUTHORITY_RECONCILIATION_v1_0_ZIONFOLDER.zip"
+  ],
+  "public_payload": "NOT_PUBLISHED",
+  "checks": {
+    "v4_0_zip_integrity": "PASS",
+    "v4_1_zip_integrity": "PASS",
+    "v4_0_build_manifest": "PASS_394_OF_394",
+    "v4_1_corrected_manifest": "PASS_398_OF_398",
+    "v4_1_solo_static": "PASS_29_OF_29",
+    "v4_1_solo_headless": "PASS_2_VIEWPORTS",
+    "apps_projection": "PASS",
+    "stringline_mount": "PASS",
+    "central_classification_verifier": "PASS",
+    "apps_javascript": "PASS"
+  },
+  "custody_defect": "ORIGINAL_STALE_SHA256_PRESERVED_AND_CORRECTED_EXTERNALLY",
+  "device_boundary": "SEPARATE_DING_NOT_REPROVED",
+  "crown": "The full body carries the Estate. The SOLO body carries the door. The lineage APK carries proof—not a false v4 crown."
+}

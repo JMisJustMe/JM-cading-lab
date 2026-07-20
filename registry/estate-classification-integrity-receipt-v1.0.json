@@ -1,6 +1,6 @@
 {
-  "schema": "JM.EstateClassificationIntegrityReceipt/1.5",
-  "status": "PASS_PORTAL_ACCESS_LINE_RECOVERED",
+  "schema": "JM.EstateClassificationIntegrityReceipt/1.6",
+  "status": "PASS_QUADZE_V4_AUTHORITY_RECOVERED",
   "generated_at_utc": "2026-07-20T15:51:28Z",
   "corrected_public_bodies": [
     "RouteOS primary seat and flagship Games&Beyond room",
@@ -15,15 +15,14 @@
     "OWNMADE v1.3 PWA Project + File Dock",
     "Gold Mode Coding Hub v0.9.5.1 frontier",
     "JM Theory Multihub v0.5 readable-source package lane",
-    "Portal Engine access identity recovered through Estate OS / TBS carrier line"
+    "Portal Engine access identity recovered through Estate OS / TBS carrier line",
+    "JM QUADZE MultiHub v4.0 full-source and v4.1 SOLO authority split recovered"
   ],
   "preserved_parallel_bodies": [
     "JM Theory Multihub public/private/package lanes",
     "JM LyricStudio v0.5 estate mount and v2.0 direct branch"
   ],
-  "watch_items": [
-    "JM QUADZE MultiHub later v4.x memory claim exact package retrieval"
-  ],
+  "watch_items": [],
   "counts": {
     "non_game_app_rooms": 44,
     "games_beyond_built_in": 22,
@@ -55,7 +54,18 @@
     "tbs_delta_0041_inline_command": "PASS",
     "tbs_delta_0042_original_script_defect": "FOUND_AND_PRESERVED",
     "tbs_delta_0042r_repair": "PASS_2_VIEWPORTS",
-    "portal_access_line_headless_qa": "PASS_7_OF_7"
+    "portal_access_line_headless_qa": "PASS_7_OF_7",
+    "quadze_v40_zip_integrity": "PASS",
+    "quadze_v41_zip_integrity": "PASS",
+    "quadze_v40_build_manifest": "PASS_394_OF_394",
+    "quadze_v41_corrected_manifest": "PASS_398_OF_398",
+    "quadze_v41_solo_static": "PASS_29_OF_29",
+    "quadze_v41_solo_script_syntax": "PASS",
+    "quadze_v41_solo_headless_qa": "PASS_2_VIEWPORTS",
+    "quadze_v41_solo_interactions": "PASS_SEARCH_OPEN_BACK_HOME_EXPORT",
+    "quadze_inherited_checksum_defect": "FOUND_PRESERVED_AND_CORRECTED_EXTERNALLY",
+    "quadze_v3_lineage_apk_hash": "PASS",
+    "quadze_v4_native_apk_boundary": "NOT_BUILT_NOT_CLAIMED"
   },
   "boundary": "This correction governs the connected public source and retrieved authority evidence. It is not a claim that every private historical body has completed a byte-for-byte audit.",
   "updated_at_utc": "2026-07-20T16:18:21Z",
@@ -65,5 +75,6 @@
   "remaining_exact_package_retrieval": [],
   "routeos_recovery_record": "registry/routeos-v108a5-recovery-authority.json",
   "build050_recovery_record": "registry/build050-latest-source-reconciliation-authority.json",
-  "portal_recovery_record": "registry/portal-engine-access-line-authority.json"
+  "portal_recovery_record": "registry/portal-engine-access-line-authority.json",
+  "quadze_recovery_record": "registry/quadze-multihub-v4-authority.json"
 }

@@ -1,0 +1,43 @@
+{
+  "schema": "JM.SourceToLivingGovernancePolicy/1.0",
+  "version": "v1.0",
+  "effective_date": "2026-07-20",
+  "owner_authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "crown": "No body moves outward by name or version alone. Source, finding, audit, current-best decision, crown scope and living route must all pass.",
+  "stage_order": [
+    "Source Ledger",
+    "Latest Body Finder",
+    "Source-Body Auditor",
+    "Current Best Register",
+    "Crown Register",
+    "Living Register"
+  ],
+  "estate_head_version": "v0.2.1",
+  "expected_counts": {
+    "bodies": 61,
+    "project_heads": 11
+  },
+  "allowed_public_hosts": [
+    "jmisjustme-estate.pages.dev",
+    "jmisjustme.github.io",
+    "github.com"
+  ],
+  "promotion_rules": [
+    "Every promoted public record must have an ID, house, name/current label, evidence, bounded status and next action.",
+    "Every public route must be absolute HTTPS and must not contain embedded credentials or fragments.",
+    "A higher version number never crowns itself.",
+    "Public projection may not expose owner notes, local custody paths, private source paths or personal-contact fields.",
+    "The six-stage passport governs the public-contract entry; it does not silently claim universal source supremacy.",
+    "New bodies or Project Heads must update the expected count deliberately rather than slipping past the gate."
+  ],
+  "source_files": [
+    "registry/estate-head-public-v0.2.1.json",
+    "registry/estate-classification-authority-v1.0.json",
+    "navigator/stringline.json"
+  ],
+  "outputs": [
+    "registry/source-to-living-governance-register-v1.0.json",
+    "registry/source-to-living-governance-receipt-v1.0.json"
+  ],
+  "boundary": "This gate governs the 61-body, 11-Project-Head Estate Head public contract and its connected classification/Stringline sources. It is repository-wide promotion enforcement for the current public authority, not a claim that every historical private ZIP, chat export or Library file has completed the wider byte-for-byte census."
+}

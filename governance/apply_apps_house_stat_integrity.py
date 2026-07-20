@@ -7,7 +7,7 @@ from pathlib import Path
 
 path = Path('apps/index.html')
 text = path.read_text(encoding='utf-8')
-match = re.search(r'const APPS=(\[.*?\]);\s*const LABELS=', text, re.S)
+match = re.search(r'const APPS=(\[.*?\]);\s*(?:const APP_STAT_COUNTS=\{.*?\};\s*)?const LABELS=', text, re.S)
 if not match:
     raise SystemExit('Apps registry not found')
 rows = json.loads(match.group(1))
@@ -24,7 +24,7 @@ replacements = [
         f'<div class="stat"><b>{room_count}</b><span>registered non-game rooms</span></div>',
     ),
     (
-        r'<div class="stat"><b>\d+</b><span>full owner bodies</span></div>',
+        r'<div class="stat"><b>\d+</b><span>(?:full owner|full \+ preserved) bodies</span></div>',
         f'<div class="stat"><b>{full_count}</b><span>full + preserved bodies</span></div>',
     ),
     (
@@ -40,6 +40,19 @@ for pattern, replacement in replacements:
     text, changed = re.subn(pattern, replacement, text, count=1)
     if changed != 1:
         raise SystemExit(f'Stat marker failed: {pattern}')
+
+text = re.sub(
+    r'Whole-Estate public door · \d+(?: non-game)? rooms · RouteOS flagship bridged',
+    f'Whole-Estate public door · {room_count} non-game rooms · RouteOS flagship bridged',
+    text,
+    count=1,
+)
+text = re.sub(
+    r'const FILTERS=\[\["all","All \d+"\]',
+    f'const FILTERS=[["all","All {room_count}"]',
+    text,
+    count=1,
+)
 
 receipt = {
     'room_count': room_count,

@@ -1,0 +1,108 @@
+name: Adopt Games Beyond Canonical Annex
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/estate-head-games-beyond-canonical-v0.2.json"
+      - ".github/workflows/adopt-games-beyond-canonical-annex.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: adopt-games-beyond-canonical-annex
+  cancel-in-progress: false
+
+jobs:
+  adopt:
+    name: Thread canonical Games Beyond bodies into Stringline
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Adopt annex without flattening existing bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          annex_path=Path('registry/estate-head-games-beyond-canonical-v0.2.json')
+          stringline_path=Path('navigator/stringline.json')
+          annex=json.loads(annex_path.read_text())
+          stringline=json.loads(stringline_path.read_text())
+          projects={x.get('id'):x for x in stringline.get('seed_project_strings',[])}
+          games=projects.get('games-beyond')
+          if not games:
+              raise SystemExit('Games&Beyond project string is missing')
+
+          existing={x.get('id'):x for x in games.setdefault('bodies',[])}
+          for body in annex.get('bodies',[]):
+              body_id=body['id']
+              mapped={
+                  'id': body_id,
+                  'name': body['name'],
+                  'type': body['type'],
+                  'role': body['governing_role'],
+                  'status': body['status'],
+                  'route': body.get('public_route','')
+              }
+              if body_id in existing:
+                  existing[body_id].update({k:v for k,v in mapped.items() if v!=''})
+              else:
+                  games['bodies'].append(mapped)
+                  existing[body_id]=mapped
+
+          required={x['id'] for x in annex.get('bodies',[])}
+          current={x.get('id') for x in games.get('bodies',[])}
+          if not required.issubset(current):
+              raise SystemExit('Annex adoption incomplete')
+
+          stringline['version']='v0.1.3 Games&Beyond canonical-annex adoption'
+          stringline['generated']='2026-07-20'
+          annex['status']='MAIN_STRINGLINE_CONSUMED'
+          annex['next']='Update the owner-side Estate Head record from this canonical annex, then issue six individual resolution receipts.'
+          annex['stringline_consumption']={
+              'state':'CONSUMED',
+              'project_string':'games-beyond',
+              'body_count':len(games.get('bodies',[])),
+              'required_annex_ids':sorted(required)
+          }
+
+          stringline_path.write_text(json.dumps(stringline,indent=2,ensure_ascii=False)+'\n')
+          annex_path.write_text(json.dumps(annex,indent=2,ensure_ascii=False)+'\n')
+          PY
+      - name: Validate adopted state
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path('registry/estate-head-games-beyond-canonical-v0.2.json').read_text())
+          s=json.loads(Path('navigator/stringline.json').read_text())
+          p=next(x for x in s['seed_project_strings'] if x['id']=='games-beyond')
+          required={x['id'] for x in a['bodies']}
+          current={x['id'] for x in p['bodies']}
+          assert required <= current
+          assert a['status']=='MAIN_STRINGLINE_CONSUMED'
+          assert len(current)==len(p['bodies'])
+          print('Annex adoption validated:',len(required),'annex bodies;',len(current),'total project bodies')
+          PY
+      - name: Commit adopted Stringline state
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- navigator/stringline.json registry/estate-head-games-beyond-canonical-v0.2.json; then
+            echo "Canonical annex already consumed."
+            exit 0
+          fi
+          git config user.name "JM Estate Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add navigator/stringline.json registry/estate-head-games-beyond-canonical-v0.2.json
+          git commit -m "Consume Games Beyond canonical annex in Stringline"
+          git push origin HEAD:main

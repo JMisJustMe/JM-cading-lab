@@ -8,13 +8,14 @@ on:
       - completed
 
 permissions:
+  actions: read
   contents: write
 
 jobs:
   record:
-    name: Preserve deployment conclusion and run identity
+    name: Preserve deployment conclusion and inspect proof steps
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
 
     steps:
       - name: Check out current Estate head
@@ -22,9 +23,10 @@ jobs:
         with:
           ref: main
 
-      - name: Write durable workflow outcome receipt
+      - name: Inspect the completed deployment run and write receipts
         shell: bash
         env:
+          GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
           RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
           RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
@@ -38,33 +40,91 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p registry
-          cat > registry/cloudflare-navigator-workflow-outcome.json <<EOF
-          {
-            "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.0",
-            "workflow": "Deploy Live-Preserving Cloudflare Estate",
-            "status": "${STATUS}",
-            "conclusion": "${CONCLUSION}",
-            "run_id": "${RUN_ID}",
-            "run_number": "${RUN_NUMBER}",
-            "run_attempt": "${RUN_ATTEMPT}",
-            "head_sha": "${HEAD_SHA}",
-            "head_branch": "${HEAD_BRANCH}",
-            "event": "${EVENT_NAME}",
-            "run_url": "${RUN_URL}",
-            "updated_at": "${UPDATED_AT}",
-            "recorded_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "boundary": "This receipt records the GitHub Actions conclusion. Canonical-live proof remains governed by the deployment workflow's own content gates and success receipt."
-          }
-          EOF
+          curl --fail --silent --show-error --location \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100" \
+            > "$RUNNER_TEMP/jobs.json"
 
-      - name: Commit receipt without flattening parallel work
+          python3 <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          payload = json.loads(Path(os.environ['RUNNER_TEMP'], 'jobs.json').read_text())
+          jobs = payload.get('jobs', [])
+          target = next((j for j in jobs if j.get('name') == 'Preserve exact Theory, mount Navigator and Apps, deploy Estate'), None)
+          if target is None:
+              target = jobs[0] if jobs else {'steps': []}
+
+          steps = {s.get('name'): s.get('conclusion') for s in target.get('steps', [])}
+          required = [
+              'Assemble the canonical Estate body',
+              'Overlay sovereign public rooms',
+              'Verify the assembled deployment body',
+              'Deploy the existing Cloudflare Pages project',
+              'Prove Navigator, Apps and preserved Theory on the canonical host',
+          ]
+          proven = all(steps.get(name) == 'success' for name in required)
+          recorded = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+
+          outcome = {
+              'schema': 'JM.CloudflareNavigatorWorkflowOutcome/1.1',
+              'workflow': 'Deploy Live-Preserving Cloudflare Estate',
+              'status': os.environ['STATUS'],
+              'conclusion': os.environ['CONCLUSION'],
+              'deployment_proven': proven,
+              'proof_steps': {name: steps.get(name, 'missing') for name in required},
+              'receipt_step': steps.get('Write successful five-room deployment receipt', 'missing'),
+              'run_id': os.environ['RUN_ID'],
+              'run_number': os.environ['RUN_NUMBER'],
+              'run_attempt': os.environ['RUN_ATTEMPT'],
+              'head_sha': os.environ['HEAD_SHA'],
+              'head_branch': os.environ['HEAD_BRANCH'],
+              'event': os.environ['EVENT_NAME'],
+              'run_url': os.environ['RUN_URL'],
+              'updated_at': os.environ['UPDATED_AT'],
+              'recorded_at_utc': recorded,
+              'boundary': 'The overall Actions conclusion and the substantive deployment proof are recorded separately so a bookkeeping push cannot erase a successful live proof.'
+          }
+          Path('registry/cloudflare-navigator-workflow-outcome.json').write_text(json.dumps(outcome, indent=2) + '\n')
+
+          if proven:
+              receipt = {
+                  'schema': 'JM.CloudflareAutoDeployReceipt/1.3',
+                  'status': 'SUCCESS',
+                  'project': 'jmisjustme-estate',
+                  'canonical_host': 'jmisjustme-estate.pages.dev',
+                  'source_commit': os.environ['HEAD_SHA'],
+                  'workflow_run': os.environ['RUN_ID'],
+                  'proved_at_utc': os.environ['UPDATED_AT'],
+                  'rooms': ['navigator', 'apps', 'theory', 'lyrics', 'recovery'],
+                  'navigator_route': 'https://jmisjustme-estate.pages.dev/navigator/',
+                  'navigator_proof': 'EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE',
+                  'stringline_proof': 'Many bodies. One living line. None erased.',
+                  'apps_registry_count': 40,
+                  'apps_boundary': 'PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE',
+                  'theory_policy': 'PRESERVE_PRE_REGRESSION_F6336B93_BODY',
+                  'deployment_step': 'SUCCESS',
+                  'canonical_live_proof_step': 'SUCCESS',
+                  'workflow_conclusion': os.environ['CONCLUSION'],
+                  'receipt_step': steps.get('Write successful five-room deployment receipt', 'missing'),
+                  'receipt_reconciliation': 'Written by the independent Stringline observer from inspected step evidence.',
+                  'manual_upload_required': False,
+                  'boundary': 'This proves JM3232 Navigator v0.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK.'
+              }
+              Path('registry/cloudflare-auto-deploy-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          PY
+
+      - name: Commit receipts without flattening parallel work
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "JM Stringline Deployment Observer"
           git config user.email "actions@users.noreply.github.com"
-          git add registry/cloudflare-navigator-workflow-outcome.json
+          git add registry/cloudflare-navigator-workflow-outcome.json registry/cloudflare-auto-deploy-receipt.json
           git diff --cached --quiet && exit 0
-          git commit -m "Record Cloudflare Navigator deployment outcome"
+          git commit -m "Record and reconcile Cloudflare Navigator deployment outcome"
           git pull --rebase origin main
           git push origin HEAD:main

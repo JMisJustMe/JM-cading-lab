@@ -11,24 +11,35 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: routeos-runnable-runtime-validation
+  cancel-in-progress: false
 
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
       - name: Extract and validate runtime
         shell: bash
         run: |
           set -euo pipefail
           python3 <<'PY'
-          import re
+          import json, re
           from collections import Counter
+          from datetime import datetime, timezone
           from pathlib import Path
 
-          runtime = Path('games-beyond/routeos/runtime/index.html').read_text(encoding='utf-8')
+          runtime_path = Path('games-beyond/routeos/runtime/index.html')
+          runtime = runtime_path.read_text(encoding='utf-8')
           launcher = Path('games-beyond/routeos-runtime-launch-v0-8.js').read_text(encoding='utf-8')
           sw = Path('games-beyond/sw.js').read_text(encoding='utf-8')
 
@@ -62,15 +73,49 @@ jobs:
           assert 'routeos/runtime/index.html' in sw
           assert "games-beyond-v0-8-routeos-runtime-r1" in sw
 
-          print({
-              'runtime_bytes': len(runtime.encode('utf-8')),
-              'html_ids': len(ids),
-              'duplicate_ids': len(dupes),
-              'preloaded_cartridges': 3,
-              'launcher': 'PASS',
-              'service_worker': 'PASS'
-          })
+          receipt = {
+              'schema':'JM.RouteOSRunnableRuntimeValidation/1.0',
+              'status':'PASS_STATIC_AND_SYNTAX',
+              'validated_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+              'runtime':'games-beyond/routeos/runtime/index.html',
+              'runtime_bytes':len(runtime.encode('utf-8')),
+              'html_ids':len(ids),
+              'duplicate_ids':len(dupes),
+              'missing_required_controls':missing,
+              'preloaded_cartridges':['Pulse Orbit','Seed Runner','Rebound Route'],
+              'organs':{
+                  'console_home':'PASS','cartridge_bay':'PASS','play_canvas':'PASS',
+                  'quick_resume':'PASS','save_vault':'PASS','profiles':'PASS',
+                  'cartridge_import_export':'PASS','lifecycle_receipts':'PASS',
+                  'touch_controls':'PASS_STATIC'
+              },
+              'javascript_syntax':'CHECKED_BY_NODE_NEXT_STEP',
+              'launcher':'PASS',
+              'service_worker':'PASS',
+              'boundary':'Static structure and JavaScript syntax gate. Final feel and touch contact remain device proof.'
+          }
+          Path('games-beyond/routeos/runtime/VALIDATION_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+"\n",encoding='utf-8')
+          print(receipt)
           PY
           node --check /tmp/routeos-runtime.js
           node --check games-beyond/routeos-runtime-launch-v0-8.js
           node --check games-beyond/sw.js
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('games-beyond/routeos/runtime/VALIDATION_RECEIPT.json')
+          data=json.loads(p.read_text())
+          data['javascript_syntax']='PASS'
+          p.write_text(json.dumps(data,indent=2)+"\n")
+          PY
+      - name: Commit durable validation receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "RouteOS Runtime Proof Gate"
+          git config user.email "actions@users.noreply.github.com"
+          git add games-beyond/routeos/runtime/VALIDATION_RECEIPT.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record RouteOS runnable runtime validation PASS"
+          git pull --rebase origin main
+          git push origin HEAD:main

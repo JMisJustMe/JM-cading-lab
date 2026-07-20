@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.6 BUILD 050 Latest Source reconciliation seed",
+  "version": "v0.1.7 Portal access-line reconciliation seed",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -270,7 +270,7 @@
       "headChat": "Operating Houses Project Head",
       "headRecord": "Operating Houses Current-Best Map",
       "status": "STANDING",
-      "keeper": "Connect does not mean merge. Front room, assembly, creative house and carrier remain separate roles.",
+      "keeper": "Portal makes the rooms reachable. Estate OS carries them. TBS commands the route. None replaces the others.",
       "bodies": [
         {
           "id": "multimedia-unit",
@@ -299,6 +299,20 @@
           "type": "Creative house",
           "role": "B0.8.2 source anchor + B0.8.3 continuation",
           "status": "MOUNTED"
+        },
+        {
+          "id": "portal-engine",
+          "name": "Portal Engine",
+          "type": "Central access identity / Estate router",
+          "role": "Recovered access identity carried by JM Estate OS v0.3.1 and operated through TBS Delta 004.1",
+          "status": "PROVEN",
+          "physicalCarrier": "JM Estate OS v0.3.1 Safe Room Store Fix",
+          "commandSurface": "JM Command Register v0.1 — TBS Panel / Delta 004.1",
+          "truthBoundary": "TBS Delta 004.2R",
+          "identityAnchor": "JM Estate Retrieval Engine v0.4",
+          "matureLineage": "JM Estate Retrieval Engine v0.6 — Estate OS / Portal Engine INSTALLED / HOLD",
+          "standaloneClaim": "NOT_CLAIMED",
+          "publicRoute": "../"
         }
       ]
     },

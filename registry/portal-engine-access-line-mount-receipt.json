@@ -1,0 +1,36 @@
+{
+  "schema": "JM.PortalEngineAccessLineMountReceipt/1.0",
+  "status": "PASS",
+  "recorded_at_utc": "2026-07-20T17:48:30Z",
+  "name": "Portal Engine Access Line",
+  "identity": "Portal Engine",
+  "physical_carrier": "JM Estate OS v0.3.1 Safe Room Store Fix",
+  "command_surface": "JM Command Register v0.1 — TBS Panel / Delta 004.1",
+  "truth_boundary": "TBS Delta 004.2R",
+  "identity_anchor": "JM Estate Retrieval Engine v0.4",
+  "mature_lineage": "JM Estate Retrieval Engine v0.6 — Estate OS / Portal Engine INSTALLED / HOLD",
+  "private_keeper": "PORTAL_ENGINE_ACCESS_LINE_RECONCILIATION_v1_0_ZIONFOLDER.zip",
+  "private_library_path": "/JM_Estate/Zionfolders/Operating_Houses/Portal_Engine_Access_Line/",
+  "public_payload": "NOT_PUBLISHED",
+  "public_projection": "ROUTED_OPERATING_HOUSES_ACCESS_IDENTITY",
+  "standalone_package_claim": "NOT_CLAIMED",
+  "headless_qa": "PASS_7_OF_7",
+  "apps_stats": {
+    "rooms": 44,
+    "full_plus_preserved": 29,
+    "routed": 12,
+    "package_retrieval": 0,
+    "preparation": 2
+  },
+  "checks": {
+    "central_classification_verifier": "PASS",
+    "apps_projection": "PASS",
+    "apps_javascript": "PASS",
+    "stringline_mount": "PASS",
+    "authority_register": "PASS",
+    "integrity_receipt": "PASS",
+    "original_004_2_preserved": "PASS",
+    "004_2R_repair_separated": "PASS"
+  },
+  "crown": "Portal does not own the rooms. Portal makes the rooms reachable."
+}

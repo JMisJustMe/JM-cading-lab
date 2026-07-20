@@ -1,0 +1,65 @@
+name: Apply Registry-Derived Cloudflare Apps Verifier
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/repair_cloudflare_apps_registry_verifier.py"
+      - ".github/workflows/apply-cloudflare-apps-registry-verifier.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-cloudflare-apps-verifier-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Replace stale deployment assertions
+        run: python3 governance/repair_cloudflare_apps_registry_verifier.py
+      - name: Prove verifier source before committing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/deploy-cloudflare-estate-live-preserving.yml').read_text(encoding='utf-8')
+          required=[
+              'v1.17.0-estate-classification-integrity',
+              'Apps registry proof PASS',
+              'RouteOS has returned to its sovereign gaming-platform seat',
+              'Exact package retrieval',
+              'package-retrieval + preparation',
+              '"apps_registry_count": ${APP_COUNT}',
+              'JM.CloudflareAutoDeployReceipt/1.5',
+          ]
+          missing=[item for item in required if item not in text]
+          if missing:
+              raise SystemExit(f'Missing repaired deployment organs: {missing}')
+          if 'grep -q "40 rooms"' in text or '"apps_registry_count": 40' in text:
+              raise SystemExit('Stale 40-room deployment assertions remain.')
+          print('Registry-derived deployment verifier source PASS.')
+          PY
+      - name: Commit the repaired deployment rail
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Deployment Integrity Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add .github/workflows/deploy-cloudflare-estate-live-preserving.yml
+          git diff --cached --quiet && exit 0
+          git commit -m "Derive Cloudflare Apps proof from the actual registry"
+          git pull --rebase origin main
+          git push origin HEAD:main

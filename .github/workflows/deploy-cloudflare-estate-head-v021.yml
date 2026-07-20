@@ -6,6 +6,7 @@ on:
     paths:
       - "estate-head-public/**"
       - "scripts/deploy_estate_head_public.py"
+      - "scripts/deploy_estate_head_public_resilient.py"
       - ".github/workflows/deploy-cloudflare-estate-head-v021.yml"
   workflow_dispatch:
 
@@ -25,9 +26,11 @@ jobs:
     steps:
       - name: Check out current Estate source
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Build and validate the live-preserving package
-        run: python3 scripts/deploy_estate_head_public.py build
+        run: python3 scripts/deploy_estate_head_public_resilient.py build
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -49,9 +52,9 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add registry/estate-head-public-v0.2.1.json registry/estate-head-public-current.json registry/cloudflare-estate-head-deploy-receipt.json registry/cloudflare-lyrics-deploy-receipt.json
           git diff --cached --quiet || git commit -m "Record Estate Head v0.2.1 Cloudflare consumption"
-          for attempt in $(seq 1 5); do
-            git push origin main && exit 0
+          for attempt in $(seq 1 30); do
             git pull --rebase origin main
-            sleep 2
+            git push origin main && exit 0
+            sleep 1
           done
           exit 1

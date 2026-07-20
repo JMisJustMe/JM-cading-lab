@@ -1,0 +1,15 @@
+{
+  "schema": "JM.EstateHeadDeployTrigger/0.2.1",
+  "requested_at_utc": "2026-07-20T17:10:00Z",
+  "target": "https://jmisjustme-estate.pages.dev/estate-head/",
+  "purpose": "Trigger the already-installed Estate Head v0.2.1 Cloudflare rail and require canonical live-host proof.",
+  "required_proofs": [
+    "public Estate Head route",
+    "PUBLIC_CONSUMED current contract",
+    "Apps shared consumer",
+    "Theory shared consumer",
+    "Lyrics shared consumer",
+    "Recovery shared consumer",
+    "private owner fields absent"
+  ]
+}

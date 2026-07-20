@@ -2,8 +2,8 @@
   "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.2",
   "workflow": "Deploy Live-Preserving Cloudflare Estate",
   "status": "completed",
-  "conclusion": "success",
-  "deployment_proven": true,
+  "conclusion": "failure",
+  "deployment_proven": false,
   "proof_steps": {
     "assemble": {
       "name": "Assemble the canonical Estate body",
@@ -15,27 +15,26 @@
     },
     "verify": {
       "name": "Verify the assembled deployment body",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     "deploy": {
       "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     "live_proof": {
       "name": "Prove Navigator, Apps and repaired Theory on the canonical host",
-      "conclusion": "success"
+      "conclusion": "skipped"
     }
   },
-  "receipt_step": "success",
-  "run_id": "29755608132",
-  "run_number": "9",
+  "receipt_step": "skipped",
+  "run_id": "29759003661",
+  "run_number": "10",
   "run_attempt": "1",
-  "head_sha": "c7c49c8e639a34bc7337bcbf427e27c820477e24",
+  "head_sha": "be873fe3e33b50b2b96d089dc6ac9deb3d547e21",
   "head_branch": "main",
   "event": "push",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29755608132",
-  "updated_at": "2026-07-20T15:32:50Z",
-  "recorded_at_utc": "2026-07-20T15:34:00Z",
-  "correction": "The prior observer expected the older phrase 'preserved Theory'. The successful workflow used the updated phrase 'repaired Theory'. All five substantive proof organs and the receipt step passed.",
-  "boundary": "This records the successful v0.1.1 canonical deployment. The observer is now wording-proof through governed aliases."
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759003661",
+  "updated_at": "2026-07-20T16:18:21Z",
+  "recorded_at_utc": "2026-07-20T16:18:31Z",
+  "boundary": "Proof organs are matched by governed aliases, so harmless wording changes cannot turn a successful deployment into a false missing result."
 }

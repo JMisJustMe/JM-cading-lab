@@ -2,16 +2,16 @@
 
 ## What this package is
 
-A compile-ready adapter spine for the first two advanced-engine proofs:
+An **import-ready, compile-pending adapter spine** for the first two advanced-engine proofs:
 
 - `WS_Dustfall_Proof01` — Western Sniper advanced regeneration
 - `TB_CoreClash_Proof01` — T-Boys first full-product generation proof
 
-It does not pretend the games are already rebuilt. It prepares the correct ownership boundary, intent route, TraceBox contact and sovereign adapters before the Unity laptop session begins.
+It does not pretend the games are already rebuilt or that Unity has already compiled the package. It prepares the ownership boundary, intent route, TraceBox contact, governed data assets and sovereign adapters before the first laptop compile contact.
 
 ## Target editor
 
-Prepared for the user's working Unity 6 editor route. The code deliberately avoids a hard dependency on the optional Input System package at this stage; touch, controller and mouse contacts will feed the common `JMGameIntent` route later.
+Prepared for the user's working Unity 6 editor route. The code deliberately avoids a hard dependency on the optional Input System package at this stage; touch, controller and mouse contacts will feed the common `JMGameIntent` route after the source spine passes compilation.
 
 ## Import route
 
@@ -24,6 +24,7 @@ Assets/
 └── JM/
     ├── Core/
     │   ├── IJMGameAdapter.cs
+    │   ├── JMGameBodyDefinition.cs
     │   ├── JMGameHost.cs
     │   ├── JMGameIntent.cs
     │   ├── JMProofSnapshot.cs
@@ -36,6 +37,15 @@ Assets/
         └── JMProofSceneBuilder.cs
 ```
 
+The Editor builder creates:
+
+```text
+Assets/JM/Data/WesternSniper_v0_1.asset
+Assets/JM/Data/TBoys4TClash_v0_1.asset
+Assets/JM/Scenes/WS_Dustfall_Proof01.unity
+Assets/JM/Scenes/TB_CoreClash_Proof01.unity
+```
+
 ## First laptop path
 
 1. Open the intended Unity project.
@@ -43,20 +53,32 @@ Assets/
 3. Wait for compilation to finish.
 4. Confirm the Console has no red errors.
 5. Use **JM → Build Advanced Proof Scenes**.
-6. Open `Assets/JM/Scenes/WS_Dustfall_Proof01.unity`.
-7. Press Play.
-8. Confirm the Console records a Western Sniper adapter boot trace.
-9. Open `TB_CoreClash_Proof01.unity` and repeat.
+6. Confirm the two data assets and two scenes were created.
+7. Open `Assets/JM/Scenes/WS_Dustfall_Proof01.unity`.
+8. Press Play.
+9. Confirm the Console records a Western Sniper adapter boot trace.
+10. Open `TB_CoreClash_Proof01.unity` and repeat.
 
-## What this first Ding proves
+## What this first Ding would prove
 
 - Unity compiles the JM adapter architecture.
 - Both games mount through the same host without sharing game-specific behaviour.
+- Character and arena identities exist as editable governed data assets.
 - TraceBox records boot/contact/proof events.
 - The two named proof scenes can be manufactured consistently.
 
-## What it does not prove
+## What is currently proven
 
+- source contracts are mounted in GitHub
+- separate adapters exist
+- shared intent and TraceBox organs exist
+- the scene/data builder has received a source-level sanity repair
+- the package has an exact use/test path
+
+## What is not yet proven
+
+- Unity compilation
+- generated scene contact on the user's editor
 - final gameplay
 - final physics
 - final art
@@ -64,8 +86,8 @@ Assets/
 - networking
 - production performance
 
-Those enter after the source spine itself passes.
+Those enter only after actual editor contact.
 
 ## Keeper
 
-> Shared host. Separate adapters. Different games stay different.
+> Shared host. Separate adapters. Different games stay different. No Ding before compile contact.

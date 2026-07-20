@@ -1,0 +1,66 @@
+{
+  "schema": "JM.ZionfolderOSPhysicalAudit/0.2",
+  "status": "PARTIAL_PHYSICAL_CONFIRMATION",
+  "audited_at_utc": "2026-07-20T18:40:00Z",
+  "body": "JM Zionfolder OS v1.1.1 Scroll Spine Fix",
+  "direct_body": {
+    "filename": "jm-zionfolder-os-v1_1_1.html",
+    "physical_state": "EXACT_HTML_RECOVERED_FROM_TWO_LIBRARY_TRANSCRIPT_CARRIERS",
+    "independent_carriers": 2,
+    "matching_copies": 4,
+    "byte_identity": "PASS_4_OF_4",
+    "bytes": 182691,
+    "sha256": "f58785d5ef58a6d58ae04e0d028d99030ff77f3c67554d4ae145432db82a859d",
+    "title": "JM Zionfolder OS v1.1.1",
+    "javascript_syntax": "PASS_1_OF_1",
+    "interface_counts": {
+      "buttons": 134,
+      "inputs": 16,
+      "textareas": 4,
+      "selects": 1,
+      "identified_elements": 173
+    },
+    "operating_organs_observed": [
+      "boot",
+      "bodies",
+      "routes",
+      "relations",
+      "state",
+      "trace",
+      "Dings and receipts",
+      "repair",
+      "audit",
+      "vault",
+      "export and import",
+      "back and forward route return",
+      "data room",
+      "stable spine",
+      "freeze state"
+    ],
+    "ruling": "PHYSICAL_DIRECT_WORKSPACE_OS_BODY_CONFIRMED"
+  },
+  "frozen_package": {
+    "filename": "jm-zionfolder-os-v1_1_1.zip",
+    "historical_state": "NAMED_FROZEN_BASELINE",
+    "physical_state": "ZIP_BYTES_NOT_LOCATED_IN_CURRENT_GITHUB_OR_LIBRARY_SWEEP",
+    "package_crown_state": "HELD_PENDING_ARCHIVE_BYTES"
+  },
+  "repair_donors": [
+    {
+      "body": "JM Zionfolder OS v0.8.7",
+      "role": "Guide-state repair donor",
+      "physical_audit": "PENDING"
+    },
+    {
+      "body": "JM Zionfolder OS v0.6.2",
+      "role": "Empty Script Gate repair donor",
+      "physical_audit": "PENDING"
+    }
+  ],
+  "supersession_guard": "The separately recovered v0.5.3 body may not supersede the frozen v1.1.1 Scroll Spine Fix merely because it is available as a standalone payload.",
+  "current_best_ruling": "v1.1.1 is physically confirmed as the frozen direct workspace-OS body. The ZIP package and repair-donor chain remain uncrowned until their bytes are located and audited.",
+  "claim_boundary": "This is a local sovereign workspace OS prototype for Zionfolder logic, not an Android, hardware or native phone operating system.",
+  "device_boundary": "Fresh phone contact was not repeated in this audit.",
+  "next_action": "Locate the v1.1.1 ZIP bytes and physically audit the v0.8.7 and v0.6.2 donor bodies against the recovered v1.1.1 direct HTML.",
+  "boundary": "This record publishes hashes, counts and bounded audit findings only. It does not publish the private raw Zionfolder body."
+}

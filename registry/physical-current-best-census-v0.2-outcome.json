@@ -3,11 +3,11 @@
   "status": "completed",
   "conclusion": "success",
   "classification": "OPENING_GATE_PASS",
-  "run_id": "29768130523",
-  "head_sha": "091813b56ef5d071e990615419aba1a3715dac0a",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768130523",
-  "updated_at": "2026-07-20T18:31:54Z",
-  "recorded_at_utc": "2026-07-20T18:32:03Z",
+  "run_id": "29768146993",
+  "head_sha": "b704746c72f9a3db91e47b72bbeffacf36b95b27",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768146993",
+  "updated_at": "2026-07-20T18:32:04Z",
+  "recorded_at_utc": "2026-07-20T18:32:13Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_crowns_granted": 0,
@@ -15,27 +15,27 @@
   "next_gate": "Source-Body Auditor exact package inspection",
   "steps": [
     {
-      "job": "Hold crowns until physical package proof passes",
+      "job": "Prove first pair and hold remaining package crowns",
       "name": "Set up job",
       "conclusion": "success"
     },
     {
-      "job": "Hold crowns until physical package proof passes",
+      "job": "Prove first pair and hold remaining package crowns",
       "name": "Check out current Estate",
       "conclusion": "success"
     },
     {
-      "job": "Hold crowns until physical package proof passes",
-      "name": "Verify Census v0.2 Batch 1",
+      "job": "Prove first pair and hold remaining package crowns",
+      "name": "Verify Census v0.2 first-pair state",
       "conclusion": "success"
     },
     {
-      "job": "Hold crowns until physical package proof passes",
+      "job": "Prove first pair and hold remaining package crowns",
       "name": "Post Check out current Estate",
       "conclusion": "success"
     },
     {
-      "job": "Hold crowns until physical package proof passes",
+      "job": "Prove first pair and hold remaining package crowns",
       "name": "Complete job",
       "conclusion": "success"
     }

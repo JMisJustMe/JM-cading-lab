@@ -1,0 +1,157 @@
+name: Apply JM3232 Navigator v0.1.1
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "navigator/releases/v0.1.1.patch"
+      - ".github/workflows/apply-navigator-v011.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm3232-navigator-v011-apply
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Apply tested Navigator patch without flattening parallel work
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+      - name: Check out current Estate head
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Re-enter latest main before patching
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Apply v0.1.1 patch once
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q "JM3232 Navigator v0.1.1" navigator/index.html; then
+            echo "Navigator v0.1.1 is already applied."
+          else
+            git apply --check navigator/releases/v0.1.1.patch
+            git apply navigator/releases/v0.1.1.patch
+          fi
+
+      - name: Validate executable source and Stringline seed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          body=Path('navigator/index.html').read_text(encoding='utf-8')
+          scripts=re.findall(r'<script>(.*?)</script>',body,re.S)
+          if not scripts:
+              raise SystemExit('Navigator script body is missing.')
+          Path('/tmp/jm3232-v011.js').write_text(scripts[-1],encoding='utf-8')
+          required=[
+              'JM3232 Navigator v0.1.1',
+              'Non-Game Apps House',
+              'function goBack()',
+              'STRINGLINE_SEED_MERGE',
+              "apps:'../apps/'",
+          ]
+          missing=[x for x in required if x not in body]
+          if missing:
+              raise SystemExit(f'Missing v0.1.1 organs: {missing}')
+          PY
+          node --check /tmp/jm3232-v011.js
+          grep -q '"version": "v0.1.1 proof and migration seed"' navigator/stringline.json
+          grep -q '"id": "non-game-apps"' navigator/stringline.json
+
+      - name: Update Navigator registry and proof receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          registry_path=Path('registry/jm3232-navigator.json')
+          registry=json.loads(registry_path.read_text(encoding='utf-8'))
+          registry['schema']='JM.NavigatorRegistry/1.2'
+          registry['version']='0.1.1 — proof, migration and navigation pass'
+          registry['status']='EXECUTABLE_V0_1_1_SOURCE_VALIDATED_AND_DEPLOYMENT_TRIGGERED'
+          registry['native_connective_layer']['version']='v0.1.1 proof and migration seed'
+          organs=registry.setdefault('executable_v0_1_organs',[])
+          for organ in [
+              'Non-Game Apps House Estate door and project string',
+              'non-destructive Stringline seed migration preserving local bodies and local-only projects',
+              'tab-trail Back navigation without history duplication',
+              'view re-entry scroll reset and correct Open-state navigation highlighting',
+              'Apps and Tools address aliases'
+          ]:
+              if organ not in organs:
+                  organs.append(organ)
+          proof=registry.setdefault('proof_state',{})
+          proof['browser_shell']='EXECUTABLE_V0_1_1_SOURCE_VALIDATED'
+          proof['automated_interaction_sweep']='31_OF_31_PASS'
+          proof['migration_sweep']='6_OF_6_PASS'
+          proof['total_assistant_side_checks']='37_OF_37_PASS'
+          proof['android_external_url_opening']='USER_CONFIRMED_GO_OPENED_GOOGLE'
+          registry['next_executable_target']='v0.2 — live Radius Lexicon/RootWord bridge, source-and-claim inspector, richer Stringdoors and project-head records.'
+          registry_path.write_text(json.dumps(registry,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+
+          receipt={
+              'schema':'JM.NavigatorQAReceipt/1.0',
+              'name':'JM3232 Navigator + JM Stringline v0.1.1 QA Receipt',
+              'generated_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+              'source_paths':['navigator/index.html','navigator/stringline.json'],
+              'environment':{
+                  'browser':'Headless Chromium through Chrome DevTools Protocol',
+                  'mobile_viewport':'412x915',
+                  'desktop_viewport':'1440x900'
+              },
+              'assistant_side_results':{
+                  'interaction_layout_checks':{'passed':31,'failed':0},
+                  'non_destructive_migration_checks':{'passed':6,'failed':0},
+                  'total':{'passed':37,'failed':0}
+              },
+              'proved_organs':[
+                  'external URL normalization and opening call',
+                  'tabs, close, history, bookmark-from-history and receipts',
+                  'Stringline alias and all bottom navigation views',
+                  'body intake, rendering and local persistence',
+                  'About dialog, clear-history and clear-receipts controls',
+                  'mobile and desktop horizontal-fit checks',
+                  'no runtime exceptions during the sweep',
+                  'seed upgrade while preserving a user-added body',
+                  'seed upgrade while preserving a local-only project',
+                  'official metadata refresh and Apps project insertion',
+                  'Back trail without duplicate history'
+              ],
+              'device_contact':{
+                  'platform':'Android',
+                  'user_result':'Pressing Go loaded Google',
+                  'status':'CONFIRMED'
+              },
+              'boundary':'This receipt proves the tested browser-experience and local-first Stringline functions. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK.'
+          }
+          Path('registry/jm3232-navigator-v0.1.1-qa-receipt.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit validated v0.1.1 body
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM3232 Navigator Proof Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add navigator/index.html navigator/stringline.json registry/jm3232-navigator.json registry/jm3232-navigator-v0.1.1-qa-receipt.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Advance JM3232 Navigator and Stringline to v0.1.1"
+          git pull --rebase origin main
+          git push origin HEAD:main

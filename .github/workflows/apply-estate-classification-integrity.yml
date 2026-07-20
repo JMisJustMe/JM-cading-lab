@@ -1,0 +1,145 @@
+name: Apply Estate Classification Integrity
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_estate_classification_integrity_v1.py"
+      - "governance/JM_ESTATE_CLASSIFICATION_INTEGRITY_AUDIT_v1_0.md"
+      - "registry/estate-classification-authority-v1.0.json"
+      - ".github/workflows/apply-estate-classification-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-estate-classification-integrity
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    name: Correct public seats and install authority routes
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out latest Estate head
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Re-enter latest main
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Apply classification integrity transform
+        shell: bash
+        run: python3 governance/apply_estate_classification_integrity_v1.py
+
+      - name: Validate corrected bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool games-beyond/payload-manifest.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 <<'PY'
+          import json, re
+          from pathlib import Path
+
+          apps = Path('apps/index.html').read_text(encoding='utf-8')
+          match = re.search(r'const APPS=(\[.*?\]);\s*const LABELS=', apps, re.S)
+          if not match:
+              raise SystemExit('Apps registry not found')
+          rows = json.loads(match.group(1))
+          Path('/tmp/apps-inline.js').write_text(re.findall(r'<script>(.*?)</script>', apps, re.S)[-1], encoding='utf-8')
+
+          names = [row[0] for row in rows]
+          assert 'RouteOS' not in names
+          assert ['JM Zionfolder OS', 'v1.1.1 Scroll Spine Fix', 'Estate & Recovery', 'full_current'] in rows
+          assert any(row[0] == 'Altogether Assembly / JM Estate OS' and 'v2.0.2' in row[1] for row in rows)
+          assert any(row[0] == 'JM Estate OS' and 'v0.2.1' in row[1] for row in rows)
+          assert any(row[0] == 'JMStudios' and 'B0.8.2' in row[1] and 'B0.8.3' in row[1] for row in rows)
+          assert any(row[0] == 'FTR / Ama-Pro / GripRoute Adaptive Interaction Engine' and row[2] == 'FTR / Devices & Adaptive Interaction' for row in rows)
+          assert any(row[0] == 'BenefitMerge' and 'v0.1 Android proof' in row[1] for row in rows)
+          assert any(row[0] == 'BenefitMerge' and 'v0.2 PWA build' in row[1] for row in rows)
+          assert 'RouteOS has returned to its sovereign gaming-platform seat' in apps
+
+          manifest = json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          assert any(body.get('id') == 'routeos-platform' for body in manifest['extraBodies'])
+          assert manifest['builtInBodyCount'] == manifest['payloadBodyCount'] + len(manifest['extraBodies'])
+          assert manifest['bodyCount'] == manifest['builtInBodyCount']
+          assert manifest['fullTargetCount'] == manifest['builtInBodyCount'] + len(manifest['fullImportAdds'])
+          assert len(manifest['bodyIdsBuiltIn']) == manifest['builtInBodyCount']
+
+          stringline = json.loads(Path('navigator/stringline.json').read_text())
+          projects = {project['id']: project for project in stringline['seed_project_strings']}
+          assert any(body.get('id') == 'routeos-platform' for body in projects['games-beyond']['bodies'])
+          assert {'operating-houses', 'recovery-delivery', 'ftr-devices'} <= set(projects)
+          PY
+          node --check /tmp/apps-inline.js
+          node --check games-beyond/app.js
+          grep -q "RouteOS — JM Gaming Platform" games-beyond/routeos/index.html
+          grep -q "ROUTEOS FLAGSHIP" games-beyond/index.html
+
+      - name: Write correction receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json, re
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          apps = Path('apps/index.html').read_text(encoding='utf-8')
+          rows = json.loads(re.search(r'const APPS=(\[.*?\]);\s*const LABELS=', apps, re.S).group(1))
+          manifest = json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          stringline = json.loads(Path('navigator/stringline.json').read_text())
+          receipt = {
+              'schema': 'JM.EstateClassificationIntegrityReceipt/1.0',
+              'status': 'PASS',
+              'generated_at_utc': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
+              'corrected_public_bodies': [
+                  'RouteOS primary seat and flagship Games&Beyond room',
+                  'JM Zionfolder OS v1.1.1 frozen/current anchor',
+                  'Altogether / Estate OS / Command Surface role split',
+                  'JMStudios B0.8.2 source anchor + B0.8.3 continuation',
+                  'FTR / Ama-Pro / GripRoute adaptive-interaction seat',
+                  'JM File Grabber and BenefitMerge parallel proof/build lanes'
+              ],
+              'preserved_parallel_bodies': ['JM Theory Multihub public/private/package lanes', 'JM LyricStudio v0.5 estate mount and v2.0 direct branch'],
+              'watch_items': ['Gold Mode Coding Hub v0.9.4 exact package confirmation', 'RouteOS complete v108A.5 physical keeper confirmation'],
+              'counts': {
+                  'non_game_app_rooms': len(rows),
+                  'games_beyond_built_in': manifest['builtInBodyCount'],
+                  'games_beyond_full_target': manifest['fullTargetCount'],
+                  'stringline_projects': len(stringline['seed_project_strings'])
+              },
+              'proof': {
+                  'apps_registry_parse': 'PASS',
+                  'routeos_absent_from_literal_apps': 'PASS',
+                  'routeos_flagship_room': 'PASS',
+                  'games_manifest_arithmetic': 'PASS',
+                  'apps_inline_javascript': 'PASS',
+                  'games_javascript': 'PASS',
+                  'stringline_authority_routes': 'PASS'
+              },
+              'boundary': 'This correction governs the connected public source and retrieved authority evidence. It is not a claim that every private historical body has completed a byte-for-byte audit.'
+          }
+          Path('registry/estate-classification-integrity-receipt-v1.0.json').write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n')
+          PY
+
+      - name: Commit corrected Estate bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Classification Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html games-beyond/index.html games-beyond/app.js games-beyond/payload-manifest.json navigator/stringline.json registry/estate-classification-integrity-receipt-v1.0.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Correct estate classifications and mount sovereign RouteOS room"
+          git pull --rebase origin main
+          git push origin HEAD:main

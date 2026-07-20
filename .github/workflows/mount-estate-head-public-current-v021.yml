@@ -1,0 +1,62 @@
+name: Mount Estate Head public authority
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - registry/estate-head-public-current.json
+      - scripts/mount_estate_head_public.py
+      - .github/workflows/mount-estate-head-public-current-v021.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-head-public-authority
+  cancel-in-progress: false
+
+jobs:
+  mount:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Mount the current public authority contract
+        run: python3 scripts/mount_estate_head_public.py
+
+      - name: Validate public projection
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          contract=json.loads(Path('registry/estate-head-public-current.json').read_text())
+          estate=json.loads(Path('registry/estate-map.json').read_text())
+          receipt=json.loads(Path('registry/estate-head-public-consumption-receipt.json').read_text())
+          assert contract['deployment_state']=='PUBLIC_CONSUMPTION_LIVE_IN_REPOSITORY'
+          assert estate['estate_head_public_authority']['version']==contract['current_public_subset_version']
+          assert receipt['authority_snapshot']['body_count']==contract['body_count']
+          assert 'estate-head-public-current.json' in Path('estate-app.js').read_text()
+          assert 'JM_EST_HEAD_PUBLIC_AUTHORITY_V021' in Path('estate-app.js').read_text()
+          assert 'estate-head-public-current.json' in Path('sw.js').read_text()
+          assert './apps/' in Path('estate-app.js').read_text()
+          print('Estate Head public projection: PASS')
+          PY
+          node --check estate-app.js
+
+      - name: Commit governed public projection
+        run: |
+          if git diff --quiet; then
+            echo 'Estate Head projection already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add registry/estate-head-public-current.json registry/estate-map.json registry/estate-head-public-consumption-receipt.json estate-app.js index.html sw.js docs/JM_ESTATE_HEAD_PUBLIC_CONSUMPTION_RECEIPT.md
+          git commit -m 'Mount Estate Head public authority into live estate'
+          git push origin HEAD:main

@@ -1,0 +1,81 @@
+{
+  "schema": "JM.EstateHead.GamesBeyondCanonical/0.2",
+  "effective_date": "2026-07-20",
+  "owner_authority": "Theodore Benjamin Scott / JM",
+  "status": "GOVERNING_ANNEX_PENDING_MAIN_ESTATE_HEAD_CONSUMPTION",
+  "house": {
+    "id": "H04",
+    "project_string": "games-beyond",
+    "name": "Games & Beyond",
+    "keeper": "One front door. Many sovereign game rooms. Platform bodies keep their governing achievement.",
+    "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+  },
+  "bodies": [
+    {
+      "id": "routeos-platform",
+      "name": "RouteOS",
+      "type": "Gaming platform / console OS / cartridge ecosystem",
+      "governing_role": "Flagship JM console-platform body with cartridge standard and First-Party SDK",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/"
+    },
+    {
+      "id": "glyphplay",
+      "name": "GlyphPlay",
+      "type": "Game engine / playable expression system",
+      "governing_role": "JM game-authoring and playable-expression engine; cartridge-producing bridge into RouteOS",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    },
+    {
+      "id": "gameforge",
+      "name": "GameForge",
+      "type": "Game engine / creator forge",
+      "governing_role": "Game construction, arena and creator-export engine with RouteOS cartridge-production relationship",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    },
+    {
+      "id": "glyphforge",
+      "name": "GlyphForge",
+      "type": "Game asset and glyph-forging engine",
+      "governing_role": "Asset, glyph and visual-body production route supporting sovereign game bodies",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    },
+    {
+      "id": "playform",
+      "name": "PLAYFORM",
+      "type": "Playable Expression Framework / sister system",
+      "governing_role": "Distinct playable-expression framework preserved as a sister system rather than flattened into another engine",
+      "status": "FROZEN",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    },
+    {
+      "id": "tboys-core-clash",
+      "name": "T-Boys / Core Clash",
+      "type": "Playable game and world lineage",
+      "governing_role": "Main active game/world body carrying SplitShadow, Let's Go and LightLites ancestry without erasing those sources",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    },
+    {
+      "id": "gamecore",
+      "name": "JM GameCore",
+      "type": "Game-computer runtime and world-logic body",
+      "governing_role": "Transforms RouteOS world modules through KicPlay input, GameForge physics, Cading tokens and TraceBox routes",
+      "status": "MOUNTED",
+      "public_route": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/"
+    }
+  ],
+  "gap_state": {
+    "glyphplay": "PARTIAL_CANONICAL_ANNEX_CREATED",
+    "gameforge": "PARTIAL_CANONICAL_ANNEX_CREATED",
+    "glyphforge": "PARTIAL_CANONICAL_ANNEX_CREATED",
+    "playform": "PARTIAL_CANONICAL_ANNEX_CREATED",
+    "tboys-core-clash": "PARTIAL_CANONICAL_ANNEX_CREATED",
+    "gamecore": "PARTIAL_CANONICAL_ANNEX_CREATED"
+  },
+  "next": "Make navigator/stringline.json and the main Estate Head record consume this annex; then issue six individual resolution receipts.",
+  "boundary": "The annex canonically seats public bodies already present in Games&Beyond. It does not crown unresolved current-best versions or claim that ancestor bodies such as SplitShadow, Let's Go and LightLites are fully recovered."
+}

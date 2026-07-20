@@ -1,0 +1,52 @@
+{
+  "schema": "JM.RemainingRetrievalTruthOutcome/1.0",
+  "status": "completed",
+  "conclusion": "failure",
+  "run_id": "29758629068",
+  "head_sha": "ae54dc6dd0a9d82de09ce9b1dbfefe84a12f72b8",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29758629068",
+  "updated_at": "2026-07-20T16:13:14Z",
+  "recorded_at_utc": "2026-07-20T16:13:23Z",
+  "steps": [
+    {
+      "job": "apply",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "apply",
+      "name": "Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "apply",
+      "name": "Re-enter latest main",
+      "conclusion": "success"
+    },
+    {
+      "job": "apply",
+      "name": "Apply retrieval-truth distinction",
+      "conclusion": "failure"
+    },
+    {
+      "job": "apply",
+      "name": "Validate final public catalogue state",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "apply",
+      "name": "Commit retrieval-truth correction",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "apply",
+      "name": "Post Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "apply",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ]
+}

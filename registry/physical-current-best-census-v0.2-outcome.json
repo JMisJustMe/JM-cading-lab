@@ -1,13 +1,13 @@
 {
   "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.2",
   "status": "completed",
-  "conclusion": "failure",
-  "classification": "CENSUS_GATE_FAILED",
-  "run_id": "29769344959",
-  "head_sha": "e58b9364324e684aa799a587187887b8e788f266",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769344959",
-  "updated_at": "2026-07-20T18:48:47Z",
-  "recorded_at_utc": "2026-07-20T18:48:56Z",
+  "conclusion": "success",
+  "classification": "CENSUS_GATE_PASS_2_PACKAGES_2_PARTIAL_BODIES",
+  "run_id": "29769474748",
+  "head_sha": "26b0c5deb7c5453a310117adfcb517d5dd2fab5a",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769474748",
+  "updated_at": "2026-07-20T18:50:37Z",
+  "recorded_at_utc": "2026-07-20T18:50:45Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
@@ -40,7 +40,7 @@
     {
       "job": "Prove packages and hold unlocated continuations",
       "name": "Verify Census v0.2 specialist package state",
-      "conclusion": "failure"
+      "conclusion": "success"
     },
     {
       "job": "Prove packages and hold unlocated continuations",

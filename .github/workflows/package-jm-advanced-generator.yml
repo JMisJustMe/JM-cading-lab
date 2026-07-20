@@ -1,0 +1,99 @@
+name: Package JM Advanced Game Generator
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "games-beyond/generation-packs/unity/JMAdvancedGenerator/**"
+      - "games-beyond/generation-packs/JM_ADVANCED_GAME_GENERATOR_DUAL_TRACK_v0_1.md"
+      - "games-beyond/generation-packs/WESTERN_SNIPER_ADVANCED_REGENERATION_PACK_v0_1.md"
+      - "games-beyond/generation-packs/TBOYS_4T_CLASH_ADVANCED_GENERATION_PACK_v0_1.md"
+      - "games-beyond/generation-packs/JM_ADVANCED_GENERATOR_PLAYABLE_SOURCE_RECEIPT_v0_2.md"
+      - ".github/workflows/package-jm-advanced-generator.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "jm-advanced-generator-package"
+  cancel-in-progress: true
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current Estate source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build one-download JM Unity proof pack
+        shell: bash
+        run: |
+          set -euo pipefail
+          PACK="JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2"
+          STAGE="$RUNNER_TEMP/$PACK"
+          OUT="games-beyond/downloads"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE/GENERATION_CONTRACTS" "$OUT"
+
+          cp -R games-beyond/generation-packs/unity/JMAdvancedGenerator/Assets "$STAGE/"
+          cp games-beyond/generation-packs/unity/JMAdvancedGenerator/README_OPEN_FIRST.md "$STAGE/OPEN_FIRST.md"
+          cp games-beyond/generation-packs/JM_ADVANCED_GENERATOR_PLAYABLE_SOURCE_RECEIPT_v0_2.md "$STAGE/BUILD_RECEIPT.md"
+          cp games-beyond/generation-packs/JM_ADVANCED_GAME_GENERATOR_DUAL_TRACK_v0_1.md "$STAGE/GENERATION_CONTRACTS/"
+          cp games-beyond/generation-packs/WESTERN_SNIPER_ADVANCED_REGENERATION_PACK_v0_1.md "$STAGE/GENERATION_CONTRACTS/"
+          cp games-beyond/generation-packs/TBOYS_4T_CLASH_ADVANCED_GENERATION_PACK_v0_1.md "$STAGE/GENERATION_CONTRACTS/"
+
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os, zipfile
+
+          pack = "JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2"
+          stage = Path(os.environ["RUNNER_TEMP"]) / pack
+          out = Path("games-beyond/downloads")
+          archive = out / f"{pack}.zip"
+
+          manifest = {
+              "schema": "JM.AdvancedGenerator.Package/0.2",
+              "status": "PLAYABLE_SOURCE_COMPILE_PENDING",
+              "files": []
+          }
+          for path in sorted(stage.rglob("*")):
+              if path.is_file():
+                  data = path.read_bytes()
+                  manifest["files"].append({
+                      "path": str(path.relative_to(stage)),
+                      "bytes": len(data),
+                      "sha256": hashlib.sha256(data).hexdigest()
+                  })
+          (stage / "PACKAGE_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+          if archive.exists():
+              archive.unlink()
+          with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+              for path in sorted(stage.rglob("*")):
+                  if path.is_file():
+                      zf.write(path, Path(pack) / path.relative_to(stage))
+
+          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+          (out / f"{pack}.sha256").write_text(f"{digest}  {archive.name}\n", encoding="utf-8")
+          print(f"Built {archive} ({archive.stat().st_size} bytes)")
+          print(f"SHA-256 {digest}")
+          PY
+
+      - name: Commit package when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Packager"
+          git config user.email "actions@users.noreply.github.com"
+          git add games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.zip
+          git add games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.sha256
+          if git diff --cached --quiet; then
+            echo "Package already current."
+            exit 0
+          fi
+          git commit -m "Package JM advanced generator playable proof v0.2 [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

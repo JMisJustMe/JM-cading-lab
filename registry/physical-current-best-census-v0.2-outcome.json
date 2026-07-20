@@ -2,22 +2,25 @@
   "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.2",
   "status": "completed",
   "conclusion": "success",
-  "classification": "CENSUS_GATE_PASS_2_PACKAGES_0_PARTIAL_BODIES",
-  "run_id": "29769030041",
-  "head_sha": "1ba5c9b8a1798293dd2c4ff3d5edb37289c87fd4",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769030041",
-  "updated_at": "2026-07-20T18:44:27Z",
-  "recorded_at_utc": "2026-07-20T18:44:36Z",
+  "classification": "CENSUS_GATE_PASS_2_PACKAGES_2_PARTIAL_BODIES",
+  "run_id": "29769070143",
+  "head_sha": "586b9c35d2d076ee0f0c76a2f576d0137eae06c8",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29769070143",
+  "updated_at": "2026-07-20T18:44:56Z",
+  "recorded_at_utc": "2026-07-20T18:45:04Z",
   "batch": "operating-houses-01",
   "targets": 4,
   "physical_packages_confirmed": 2,
-  "partial_physical_bodies_confirmed": 0,
+  "partial_physical_bodies_confirmed": 2,
   "package_or_continuation_searches_held": 2,
   "package_confirmed": [
     "JM Estate Multimedia Unit v2.3.0 S\u00b3",
     "Altogether Assembly / JM Estate OS v2.0.2"
   ],
-  "partial_confirmed": [],
+  "partial_confirmed": [
+    "JMStudios B0.8.2 / B0.8.3",
+    "JM Zionfolder OS v1.1.1 Scroll Spine Fix"
+  ],
   "held": [
     "JMStudios B0.8.2 / B0.8.3",
     "JM Zionfolder OS v1.1.1 Scroll Spine Fix"

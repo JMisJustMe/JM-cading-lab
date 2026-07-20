@@ -1,11 +1,62 @@
 {
   "schema": "JM.CloudflareLyricStudioWorkflowOutcome/0.5.1",
   "status": "completed",
-  "conclusion": "cancelled",
-  "run_id": "29759949753",
-  "head_sha": "d9bd5110792094936ab2a4db40e8b586cb3c5134",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29759949753",
-  "updated_at": "2026-07-20T16:31:15Z",
-  "recorded_at_utc": "2026-07-20T16:31:28Z",
-  "steps": []
+  "conclusion": "failure",
+  "run_id": "29760088153",
+  "head_sha": "a566b4b7adb65ce88a6ecd382580f7d154a1e8b0",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29760088153",
+  "updated_at": "2026-07-20T16:35:35Z",
+  "recorded_at_utc": "2026-07-20T16:35:50Z",
+  "steps": [
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Check out Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Preserve the currently standing Estate",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Overlay the verified first-party LyricStudio",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Verify the LyricStudio deployment body",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Deploy the existing Cloudflare Pages project",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Prove LyricStudio on the canonical host",
+      "conclusion": "failure"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Write successful LyricStudio deployment receipt",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Post Check out Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and deploy LyricStudio",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ]
 }

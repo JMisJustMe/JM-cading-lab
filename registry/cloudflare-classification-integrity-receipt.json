@@ -1,19 +1,17 @@
 {
-  "schema": "JM.CloudflareClassificationIntegrityReceipt/2.0",
+  "schema": "JM.CloudflareClassificationIntegrityReceipt/2.1",
   "status": "SUCCESS",
   "project": "jmisjustme-estate",
   "canonical_host": "jmisjustme-estate.pages.dev",
-  "source_commit": "8450005ffae7849725f821c31a7bc0304425ba1d",
-  "workflow_run": "29760349420",
-  "deployed_at_utc": "2026-07-20T16:37:14Z",
+  "source_commit": "c3fd6f8aa0b69e099bd5ea8fa6b24fe9ab04cf48",
+  "workflow_run": "29764892967",
+  "deployed_at_utc": "2026-07-20T17:46:09Z",
   "apps_registry_count": 44,
+  "routed_organs": 11,
+  "exact_package_retrieval": 1,
+  "portal_public_state": "registered",
+  "stringline": "v0.1.6 BUILD 050 Latest Source reconciliation seed",
   "routeos_primary_seat": "Games&Beyond / RouteOS sovereign room",
-  "stringline": "v0.1.4 classification-integrity + governance-chain seed",
-  "remaining_exact_package_retrieval": [
-    "Portal Engine",
-    "Latest Body Finder",
-    "Source-Body Auditor"
-  ],
-  "live_proof": "PASS",
+  "live_proof": "PASS_SHARED_VERIFIER",
   "manual_upload_required": false
 }

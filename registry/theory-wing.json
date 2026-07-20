@@ -1,69 +1,67 @@
 {
   "name": "JM Theory Wing",
-  "version": "v0.8-all-37-public",
-  "status": "JM_THEORY_MULTIHUB_V0_8_ALL_37_FULL_BODIES_LIVE_ON_MAIN",
-  "role": "The public Theory Wing front door. Thirty-seven actual full bodies are mounted in the Full-Body reader; the 297-route project census remains a separate retrieval and grading system.",
+  "version": "v0.8.3-source-depth-corrected",
+  "status": "JM_THEORY_MULTIHUB_SOURCE_DEPTH_CORRECTED_LIVE_ON_MAIN",
+  "role": "The public Theory Wing front door. Thirteen verified full/canonical manuscripts or established bodies and twenty-four shaped collection standalones are available. The 297-route project census remains a separate retrieval and grading system.",
   "route": "theory/",
   "public_url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
-  "all_full_bodies_route": "theory/full-bodies/all-37.html",
-  "all_full_bodies_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/all-37.html",
-  "full_body_vault_route": "theory/full-bodies/",
-  "full_body_vault_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/",
-  "source_note": "The all-37 reader selects the twenty-four numbered collection manuscripts and thirteen specifically named recent/canonical bodies from the existing verified seven-part public Theory Wing payload. It refuses to render a crown unless the exact body count is thirty-seven.",
+  "body_library_route": "theory/full-bodies/all-37.html",
+  "body_library_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/all-37.html",
+  "vault_route": "theory/full-bodies/",
+  "vault_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/",
+  "source_note": "The earlier all-37 public crown used the compact seven-part v0.4 census payload (50,428 base64 characters). The Estate Full-Body First v0.5 body carries a separate larger payload (302,340 base64 characters). The public library now labels the twenty-four numbered collection entries as shaped standalones until the larger source layer is migrated.",
   "proof": {
-    "public_full_bodies": 37,
-    "estate_full_bodies": 37,
-    "collection_standalones": 24,
-    "recent_canonical_full_bodies": 13,
-    "census_cards_excluded_from_full_body_count": 260,
+    "verified_full_or_canonical_public_bodies": 13,
+    "shaped_collection_standalones": 24,
+    "established_body_routes": 37,
+    "raw_or_full_source_migration_pending_where_declared": true,
+    "census_cards_excluded_from_body_route_count": 260,
     "readable_census_routes": 297,
+    "compact_public_payload_parts": 7,
+    "compact_public_payload_base64_length": 50428,
+    "estate_v0_5_full_payload_parts": 8,
+    "estate_v0_5_full_payload_base64_length": 302340,
     "gmail_sources_promoted_v0_7": 6,
-    "new_project_source_routes": 256,
     "bringing_it_all_together_children": 76,
     "first_stage_jungle_children": 187,
-    "districts": 19,
-    "body_card_rows_inspected": 360,
-    "processing_grades": {"T1": 68, "T2": 154, "T3": 28, "T4": 6},
-    "payload_parts": 7,
-    "payload_base64_length": 50428,
-    "census_decoded_json_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5"
+    "districts": 19
   },
   "current_best_mounts": [
     {
-      "id": "jm-theory-multihub-v0-8",
-      "name": "JM Theory Multihub — All 37 Full Bodies",
+      "id": "jm-theory-multihub-v0-8-3",
+      "name": "JM Theory Multihub — Source Depth Corrected",
       "route": "theory/",
-      "current_best": "v0.8 All 37 Public",
+      "current_best": "v0.8.3 Source-Depth Correction",
       "crown_status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
       "main_release": "LIVE",
-      "public_boundary": "Thirty-seven actual full bodies; 297 census routes preserved separately; 260 cards excluded from the manuscript count."
+      "public_boundary": "Thirteen verified full/canonical bodies plus twenty-four shaped standalones. No thirty-seven-full-source crown."
     },
     {
-      "id": "jm-theory-all-37-reader-v0-8",
-      "name": "JM Theory — All 37 Full Bodies",
+      "id": "jm-theory-37-body-library-v0-8-3",
+      "name": "JM Theory — 37-Body Library / Source Depth",
       "route": "theory/full-bodies/all-37.html",
-      "current_best": "v0.8 Exact-Count Full-Body Reader",
-      "crown_status": "CURRENT_PUBLIC_ALL_FULL_BODY_READER",
+      "current_best": "v0.8.3 Honest Source-Depth Reader",
+      "crown_status": "CURRENT_PUBLIC_BODY_LIBRARY",
       "main_release": "LIVE",
-      "public_boundary": "The reader must resolve exactly 24 collection bodies plus 13 recent/canonical bodies or it displays an error and applies no crown."
+      "public_boundary": "Collection entries are badged SHAPED STANDALONE; verified recent/canonical entries are badged FULL / CANONICAL BODY."
     },
     {
-      "id": "jm-theory-full-body-vault-v0-8",
-      "name": "JM Theory Full-Body Vault",
+      "id": "jm-theory-full-body-vault-v0-8-3",
+      "name": "JM Theory 37-Body Vault",
       "route": "theory/full-bodies/",
-      "current_best": "v0.8 37-Body Public Vault",
-      "crown_status": "CURRENT_PUBLIC_FULL_BODY_VAULT",
+      "current_best": "v0.8.3 Source-Depth Corrected Vault",
+      "crown_status": "CURRENT_PUBLIC_SOURCE_DEPTH_VAULT",
       "main_release": "LIVE",
-      "public_boundary": "Direct source doors are preserved alongside the all-37 reader."
+      "public_boundary": "The body’s own source boundary outranks package-level labels."
     },
     {
       "id": "jm-theory-project-source-census-v0-4",
       "name": "JM Theory Project Source Census",
       "route": "theory/#library",
-      "current_best": "v0.4 Project Source Census retained under v0.8",
+      "current_best": "v0.4 Project Source Census retained",
       "crown_status": "RETRIEVAL_AND_PROCESSING_GRADE_SYSTEM",
       "main_release": "LIVE",
-      "public_boundary": "A census route is not automatically a full theory body."
+      "public_boundary": "A census route is not automatically a theory body."
     },
     {
       "id": "cause-must-pass",
@@ -75,12 +73,14 @@
       "public_boundary": "The bounded framework is complete. Universal empirical validity is not claimed."
     }
   ],
-  "full_body_population": {
-    "collection": {
+  "population": {
+    "shaped_collection_standalones": {
       "count": 24,
-      "selection": "Numbered records 01 through 24 with collection/standalone source evidence and substantial mounted body text."
+      "source_layer": "BODY_STANDALONES",
+      "boundary": "Independently readable preservation/manuscript bodies. Where a body declares that fuller source remains in the Estate, it is not labelled as the raw/full source.",
+      "deeper_declared_layer": "EXTRACTED_SOURCE_TEXT"
     },
-    "recent_canonical": {
+    "verified_recent_canonical": {
       "count": 13,
       "titles": [
         "CAUSE MUST PASS",
@@ -99,26 +99,14 @@
       ]
     }
   },
-  "v0_7_promoted_sources": [
-    {"name":"TraceBox / RouteBox v5 — Complete Print-Off Version","gmail_message_id":"19e4aa737948c5cc","parts":4,"route":"theory/full-bodies/reader-parts.html?base=tracebox-routebox-v5&parts=4"},
-    {"name":"Black Box → TraceBox / RouteBox","gmail_message_id":"19e4b1944db3e15d","parts":3,"route":"theory/full-bodies/reader-parts.html?base=black-box-tracebox&parts=3"},
-    {"name":"Interactor Interacting / Formation Through Interaction","gmail_message_id":"19e56463c142d987","parts":4,"route":"theory/full-bodies/reader-parts.html?base=interactor-interacting&parts=4"},
-    {"name":"JM Native Logic Compiler v1.0","gmail_message_id":"19e63ec600bcbe7f","parts":5,"route":"theory/full-bodies/reader-parts.html?base=jm-native-logic-compiler&parts=5"},
-    {"name":"Omitted / Under-said Original Logic Layers","gmail_message_id":"19e63e77cc13d9ff","parts":1,"route":"theory/full-bodies/reader-parts.html?base=jm-original-logic-layers&parts=1"},
-    {"name":"TraceBox / RouteBox v5 — Applied Runs","gmail_message_id":"19e4ab5bf697ae62","parts":3,"route":"theory/full-bodies/reader-parts.html?base=tracebox-applied-runs&parts=3"}
-  ],
-  "project_trunks": [
-    {"id": "bringing-it-all-together", "name": "Bringing It All Together", "children": 76, "state": "MOUNTED_WITH_CHILD_ROUTES"},
-    {"id": "first-stage-jungle", "name": "First Stage / Step Into / Out of the Jungle", "children": 187, "state": "MOUNTED_WITH_CHILD_ROUTES"}
-  ],
   "locks": [
     "Full bodies first. Census cards second.",
     "The body is where the door says it is.",
+    "The body’s own boundary outranks the package label.",
+    "A shaped standalone is not automatically the raw source.",
     "A project trunk is no longer allowed to stand in for its children.",
     "A title earns retrieval, not a completed-body crown.",
-    "Pattern is an invitation to check, not permission to believe.",
-    "Theory is a human contact attempt with reality, not reality itself.",
     "No Ding, no claim."
   ],
-  "next": "Device-contact the all-37 reader; continue promoting any of the 260 census routes only when their fullest source body is recovered."
+  "next": "Migrate the actual v0.5 Full-Body First eight-part payload or the EXTRACTED_SOURCE_TEXT layer to the public repository, then promote only the bodies whose deeper source is genuinely present."
 }

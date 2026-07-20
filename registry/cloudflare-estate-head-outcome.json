@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29763587176",
-  "head_sha": "468516a54c9a4b0a77960162cadd3191ceb02097",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763587176",
-  "updated_at": "2026-07-20T17:25:11Z",
-  "recorded_at_utc": "2026-07-20T17:25:20Z",
+  "run_id": "29763797687",
+  "head_sha": "120d1816193f5b24dd16276572dabc37865fd627",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763797687",
+  "updated_at": "2026-07-20T17:29:22Z",
+  "recorded_at_utc": "2026-07-20T17:29:35Z",
   "steps": [
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -60,10 +60,10 @@
     }
   ],
   "failed_log_tail": [
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t\ufeff2026-07-20T17:25:08.1370169Z ##[group]Run exit 1",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:25:08.1370427Z ^[[36;1mexit 1^[[0m",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:25:08.1434150Z shell: /usr/bin/bash -e {0}",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:25:08.1434423Z ##[endgroup]",
-    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:25:08.1528408Z ##[error]Process completed with exit code 1."
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t\ufeff2026-07-20T17:28:26.9644776Z ##[group]Run exit 1",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9645057Z ^[[36;1mexit 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9701347Z shell: /usr/bin/bash -e {0}",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9701616Z ##[endgroup]",
+    "Preserve live Estate and install shared Estate Head\tStop before Cloudflare after failed build\t2026-07-20T17:28:26.9783709Z ##[error]Process completed with exit code 1."
   ]
 }

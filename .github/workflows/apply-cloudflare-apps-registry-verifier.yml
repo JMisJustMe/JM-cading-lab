@@ -1,6 +1,6 @@
 name: Apply Registry-Derived Cloudflare Apps Verifier
 
-# Observed retry: prove once, then rebase/push safely across parallel Estate commits.
+# Fetch latest target, transform it, prove it, then atomically update only that file.
 on:
   push:
     branches:
@@ -25,19 +25,37 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: main
-          fetch-depth: 0
-      - name: Re-enter latest main
-        run: git pull --rebase origin main
-      - name: Replace stale deployment assertions
-        run: python3 governance/repair_cloudflare_apps_registry_verifier.py
-      - name: Prove verifier source before committing
+      - name: Atomically transform the latest deployment workflow
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           python3 <<'PY'
+          import base64
+          import json
+          import os
+          import subprocess
+          import time
           from pathlib import Path
-          text=Path('.github/workflows/deploy-cloudflare-estate-live-preserving.yml').read_text(encoding='utf-8')
-          required=[
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          repo = os.environ['GITHUB_REPOSITORY']
+          token = os.environ['GH_TOKEN']
+          target = '.github/workflows/deploy-cloudflare-estate-live-preserving.yml'
+          api = f'https://api.github.com/repos/{repo}/contents/{target}'
+          local = Path(target)
+          local.parent.mkdir(parents=True, exist_ok=True)
+
+          headers = {
+              'Accept': 'application/vnd.github+json',
+              'Authorization': f'Bearer {token}',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'User-Agent': 'JM-Registry-Derived-Cloudflare-Verifier/1.0',
+          }
+
+          required = [
               'v1.17.0-estate-classification-integrity',
               'Apps registry proof PASS',
               'RouteOS has returned to its sovereign gaming-platform seat',
@@ -46,30 +64,47 @@ jobs:
               '"apps_registry_count": ${APP_COUNT}',
               'JM.CloudflareAutoDeployReceipt/1.5',
           ]
-          missing=[item for item in required if item not in text]
-          if missing:
-              raise SystemExit(f'Missing repaired deployment organs: {missing}')
-          if 'grep -q "40 rooms"' in text or '"apps_registry_count": 40' in text:
-              raise SystemExit('Stale 40-room deployment assertions remain.')
-          print('Registry-derived deployment verifier source PASS.')
+
+          for attempt in range(1, 6):
+              get = Request(api + '?ref=main', headers=headers)
+              with urlopen(get, timeout=30) as response:
+                  current = json.loads(response.read().decode('utf-8'))
+              source = base64.b64decode(current['content']).decode('utf-8')
+              local.write_text(source, encoding='utf-8')
+
+              subprocess.run(
+                  ['python3', 'governance/repair_cloudflare_apps_registry_verifier.py'],
+                  check=True,
+              )
+              transformed = local.read_text(encoding='utf-8')
+              missing = [item for item in required if item not in transformed]
+              if missing:
+                  raise SystemExit(f'Missing repaired deployment organs: {missing}')
+              if 'grep -q "40 rooms"' in transformed or '"apps_registry_count": 40' in transformed:
+                  raise SystemExit('Stale 40-room deployment assertions remain.')
+
+              if transformed == source:
+                  print('Latest deployment workflow is already registry-derived and proved.')
+                  break
+
+              payload = json.dumps({
+                  'message': 'Derive Cloudflare Apps proof from the actual registry',
+                  'content': base64.b64encode(transformed.encode('utf-8')).decode('ascii'),
+                  'sha': current['sha'],
+                  'branch': 'main',
+              }).encode('utf-8')
+              put_headers = {**headers, 'Content-Type': 'application/json'}
+              put = Request(api, data=payload, headers=put_headers, method='PUT')
+              try:
+                  with urlopen(put, timeout=30) as response:
+                      result = json.loads(response.read().decode('utf-8'))
+                  print('Atomic verifier update committed:', result['commit']['sha'])
+                  break
+              except HTTPError as error:
+                  if error.code not in (409, 422) or attempt == 5:
+                      raise
+                  print(f'Latest target changed during attempt {attempt}; refetching safely.')
+                  time.sleep(2)
+          else:
+              raise SystemExit('Atomic deployment verifier update exhausted its retries.')
           PY
-      - name: Commit the repaired deployment rail safely
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "JM Estate Deployment Integrity Rail"
-          git config user.email "actions@users.noreply.github.com"
-          git add .github/workflows/deploy-cloudflare-estate-live-preserving.yml
-          git diff --cached --quiet && exit 0
-          git commit -m "Derive Cloudflare Apps proof from the actual registry"
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            echo "Parallel main update caught on attempt ${attempt}; retrying safely."
-            sleep 2
-          done
-          echo "Unable to fast-forward repaired verifier after five safe retries." >&2
-          exit 1

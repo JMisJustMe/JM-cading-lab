@@ -1,12 +1,110 @@
 {
   "schema": "JM.CloudflareEstateHeadOutcome/0.2.1",
   "status": "completed",
-  "conclusion": "cancelled",
-  "run_id": "29763857799",
-  "head_sha": "f96b1dead2ca58abcde1e9d3b6674427442fb182",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763857799",
-  "updated_at": "2026-07-20T17:29:39Z",
-  "recorded_at_utc": "2026-07-20T17:29:51Z",
-  "steps": [],
-  "failed_log_tail": []
+  "conclusion": "failure",
+  "run_id": "29763870115",
+  "head_sha": "873e73f38f8edbcc8fc2b6e66f3637624d8d175c",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763870115",
+  "updated_at": "2026-07-20T17:29:50Z",
+  "recorded_at_utc": "2026-07-20T17:30:00Z",
+  "steps": [
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Check out current Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Build and validate the live-preserving package",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Commit exact build diagnostic on failure",
+      "conclusion": "failure"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Stop before Cloudflare after failed build",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Deploy the existing Cloudflare Pages project",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Prove the Estate Head on the canonical host",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Write and commit successful deployment receipts",
+      "conclusion": "skipped"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Post Check out current Estate source",
+      "conclusion": "success"
+    },
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ],
+  "failed_log_tail": [
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t\ufeff2026-07-20T17:29:42.5933256Z ##[group]Run set -euo pipefail",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5933766Z ^[[36;1mset -euo pipefail^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5934108Z ^[[36;1mpython3 - <<'PY'^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5934427Z ^[[36;1mimport json, os^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5934825Z ^[[36;1mfrom datetime import datetime, timezone^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5935243Z ^[[36;1mfrom pathlib import Path^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5935788Z ^[[36;1mlog=Path('registry/cloudflare-estate-head-build-diagnostic.log').read_text(errors='replace')^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5936328Z ^[[36;1mreceipt={^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5936724Z ^[[36;1m  'schema':'JM.CloudflareEstateHeadBuildDiagnostic/0.2.1',^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5937241Z ^[[36;1m  'status':'BUILD_FAILED_DEPLOYMENT_BLOCKED',^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5937984Z ^[[36;1m  'source_commit':os.environ.get('GITHUB_SHA',''),^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5938930Z ^[[36;1m  'workflow_run':os.environ.get('GITHUB_RUN_ID',''),^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5939697Z ^[[36;1m  'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5940437Z ^[[36;1m  'log_tail':log.splitlines()[-120:],^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5940851Z ^[[36;1m}^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5941375Z ^[[36;1mPath('registry/cloudflare-estate-head-build-diagnostic.json').write_text(json.dumps(receipt,indent=2)+'\\n')^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5941962Z ^[[36;1mPY^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5942314Z ^[[36;1mgit config user.name \"JM Estate Deployment Diagnostic\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5942845Z ^[[36;1mgit config user.email \"actions@users.noreply.github.com\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5943538Z ^[[36;1mgit add registry/cloudflare-estate-head-build-diagnostic.log registry/cloudflare-estate-head-build-diagnostic.json^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5944245Z ^[[36;1mgit commit -m \"Record Estate Head Cloudflare build diagnostic\"^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5944690Z ^[[36;1mfor attempt in $(seq 1 30); do^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5945052Z ^[[36;1m  git pull --rebase origin main^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5945440Z ^[[36;1m  git push origin HEAD:main && exit 0^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5945975Z ^[[36;1m  sleep 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5946303Z ^[[36;1mdone^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5946605Z ^[[36;1mexit 1^[[0m",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5985703Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.5986190Z ##[endgroup]",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.6576532Z [main 5e0df9c] Record Estate Head Cloudflare build diagnostic",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:42.6577331Z  2 files changed, 15 insertions(+), 27 deletions(-)",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0560096Z From https://github.com/JMisJustMe/JM-cading-lab",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0562360Z  * branch            main       -> FETCH_HEAD",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0563601Z    873e73f..b0c8299  main       -> origin/main",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0800108Z Auto-merging registry/cloudflare-estate-head-build-diagnostic.json",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0801869Z Rebasing (1/1)",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0802824Z CONFLICT (content): Merge conflict in registry/cloudflare-estate-head-build-diagnostic.json",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0804146Z Auto-merging registry/cloudflare-estate-head-build-diagnostic.log",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0805311Z error: could not apply 5e0df9c... Record Estate Head Cloudflare build diagnostic",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0806341Z hint: Resolve all conflicts manually, mark them as resolved with",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0807330Z hint: \"git add/rm <conflicted_files>\", then run \"git rebase --continue\".",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0808628Z hint: You can instead skip this commit: run \"git rebase --skip\".",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0809656Z hint: To abort and get back to the state before \"git rebase\", run \"git rebase --abort\".",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0815114Z hint: Disable this message with \"git config set advice.mergeConflict false\"",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0816025Z Could not apply 5e0df9c... # Record Estate Head Cloudflare build diagnostic",
+    "Preserve live Estate and install shared Estate Head\tCommit exact build diagnostic on failure\t2026-07-20T17:29:43.0839218Z ##[error]Process completed with exit code 1."
+  ]
 }

@@ -2,59 +2,64 @@
   "schema": "JM.CloudflareClassificationIntegrityOutcome/2.0",
   "status": "completed",
   "conclusion": "success",
-  "run_id": "29760349420",
-  "head_sha": "8450005ffae7849725f821c31a7bc0304425ba1d",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29760349420",
-  "updated_at": "2026-07-20T16:37:17Z",
-  "recorded_at_utc": "2026-07-20T16:37:29Z",
+  "run_id": "29764892967",
+  "head_sha": "c3fd6f8aa0b69e099bd5ea8fa6b24fe9ab04cf48",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29764892967",
+  "updated_at": "2026-07-20T17:46:13Z",
+  "recorded_at_utc": "2026-07-20T17:46:26Z",
   "steps": [
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Set up job",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Check out latest Estate source",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
+      "name": "Prove source classification before assembly",
+      "conclusion": "success"
+    },
+    {
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Mirror the currently standing canonical Estate",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Overlay corrected owned source bodies",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
-      "name": "Prove the assembled Estate before deployment",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
+      "name": "Prove the assembled public Estate",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Deploy the classification-corrected Estate",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
-      "name": "Prove corrected Apps and Stringline on the canonical host",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
+      "name": "Prove the central authority on the canonical host",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
-      "name": "Write successful classification-integrity deployment receipt",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
+      "name": "Write successful central-authority deployment receipt",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Post Check out latest Estate source",
       "conclusion": "success"
     },
     {
-      "job": "Mirror live Estate, overlay corrected bodies, prove and deploy",
+      "job": "Mirror live Estate, overlay owned truth, prove and deploy",
       "name": "Complete job",
       "conclusion": "success"
     }

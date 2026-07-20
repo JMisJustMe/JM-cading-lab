@@ -27,12 +27,56 @@ jobs:
       - name: Check out current Estate source
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Build and validate the live-preserving package
-        run: python3 scripts/deploy_estate_head_public_resilient.py build
+        id: build
+        shell: bash
+        run: |
+          set +e
+          mkdir -p registry
+          python3 scripts/deploy_estate_head_public_resilient.py build 2>&1 | tee registry/cloudflare-estate-head-build-diagnostic.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=${code}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit exact build diagnostic on failure
+        if: steps.build.outputs.exit_code != '0'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          log=Path('registry/cloudflare-estate-head-build-diagnostic.log').read_text(errors='replace')
+          receipt={
+            'schema':'JM.CloudflareEstateHeadBuildDiagnostic/0.2.1',
+            'status':'BUILD_FAILED_DEPLOYMENT_BLOCKED',
+            'source_commit':os.environ.get('GITHUB_SHA',''),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID',''),
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'log_tail':log.splitlines()[-120:],
+          }
+          Path('registry/cloudflare-estate-head-build-diagnostic.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+          git config user.name "JM Estate Deployment Diagnostic"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-estate-head-build-diagnostic.log registry/cloudflare-estate-head-build-diagnostic.json
+          git commit -m "Record Estate Head Cloudflare build diagnostic"
+          for attempt in $(seq 1 30); do
+            git pull --rebase origin main
+            git push origin HEAD:main && exit 0
+            sleep 1
+          done
+          exit 1
+
+      - name: Stop before Cloudflare after failed build
+        if: steps.build.outputs.exit_code != '0'
+        run: exit 1
 
       - name: Deploy the existing Cloudflare Pages project
+        if: steps.build.outputs.exit_code == '0'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -41,9 +85,11 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prove the Estate Head on the canonical host
+        if: steps.build.outputs.exit_code == '0'
         run: python3 scripts/deploy_estate_head_public.py prove
 
       - name: Write and commit successful deployment receipts
+        if: steps.build.outputs.exit_code == '0'
         run: |
           set -euo pipefail
           git pull --rebase origin main
@@ -54,7 +100,7 @@ jobs:
           git diff --cached --quiet || git commit -m "Record Estate Head v0.2.1 Cloudflare consumption"
           for attempt in $(seq 1 30); do
             git pull --rebase origin main
-            git push origin main && exit 0
+            git push origin HEAD:main && exit 0
             sleep 1
           done
           exit 1

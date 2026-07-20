@@ -5,7 +5,6 @@ on:
     branches:
       - main
     paths:
-      - "theory/**"
       - "lyrics/**"
       - "recovery/**"
       - "registry/jm3232-navigator.json"
@@ -22,7 +21,7 @@ permissions:
 
 jobs:
   validate-and-deploy:
-    name: Preserve, overlay and deploy jmisjustme-estate
+    name: Preserve live Theory, overlay current rooms and deploy
     runs-on: ubuntu-latest
     timeout-minutes: 12
 
@@ -32,12 +31,10 @@ jobs:
 
       - name: Recover the currently standing canonical house
         shell: bash
-        env:
-          ESTATE_BASE: https://jmisjustme-estate.pages.dev
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
-          mkdir -p cloudflare-estate/assets cloudflare-estate/data
+          mkdir -p cloudflare-estate/assets cloudflare-estate/data cloudflare-estate/theory
 
           python3 <<'PY'
           from pathlib import Path
@@ -51,7 +48,7 @@ jobs:
           def fetch(path: str, required: bool = True) -> bytes:
               url = urljoin(base, path)
               try:
-                  req = Request(url, headers={"User-Agent": "JM-Estate-GitHub-Deployment/1.0"})
+                  req = Request(url, headers={"User-Agent": "JM-Estate-GitHub-Deployment/1.1"})
                   with urlopen(req, timeout=30) as response:
                       return response.read()
               except Exception:
@@ -96,6 +93,10 @@ jobs:
               if data:
                   write(path, data)
 
+          # Preserve the exact currently standing Theory body. Do not replace it
+          # with an older repository copy merely because another room changed.
+          write("theory/index.html", fetch("theory/"))
+
           doors = r'''
           <style id="jm-current-doors-style">
             #jm-current-doors{position:fixed;right:14px;bottom:88px;z-index:99999;font:700 14px/1.2 system-ui,-apple-system,Segoe UI,sans-serif}
@@ -107,7 +108,7 @@ jobs:
           </style>
           <aside id="jm-current-doors" aria-label="Current Estate doors">
             <details><summary>Current doors&nbsp; ↗</summary><nav>
-              <a href="./theory/">Theory Multihub v0.4</a>
+              <a href="./theory/">Theory Multihub</a>
               <a href="./lyrics/">Lyrics &amp; Music House</a>
               <a href="./recovery/">Lost, Loose &amp; Unseated</a>
             </nav></details>
@@ -138,7 +139,7 @@ jobs:
           EOF
 
           cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-2026-07-20-auto-2';
+          const CACHE='jm-independent-estate-2026-07-20-auto-3';
           const CORE=['./','./index.html','./theory/','./lyrics/','./recovery/'];
           self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
           self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
@@ -149,22 +150,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf cloudflare-estate/theory cloudflare-estate/lyrics cloudflare-estate/recovery
-          cp -a theory cloudflare-estate/theory
+          rm -rf cloudflare-estate/lyrics cloudflare-estate/recovery
           cp -a lyrics cloudflare-estate/lyrics
           cp -a recovery cloudflare-estate/recovery
           cp registry/jm3232-navigator.json cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
 
           cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
           {
-            "schema": "JM.CloudflareEstateDeployment/1.0",
-            "version": "v1.14.1-auto-bootstrap",
+            "schema": "JM.CloudflareEstateDeployment/1.1",
+            "version": "v1.14.2-live-theory-preservation",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_rail": "JMisJustMe/JM-cading-lab",
             "rooms": ["theory", "lyrics", "recovery"],
             "navigator_registry": "recovery/JM3232_NAVIGATOR_REGISTRY.json",
-            "boundary": "The standing independent Cloudflare house is preserved as the shell; current sovereign rooms are overlaid from the owned GitHub source rail."
+            "boundary": "Theory is preserved from the currently standing canonical deployment until its newer full source is independently seated. Lyrics and Recovery are overlaid from GitHub."
           }
           EOF
 
@@ -172,15 +172,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -f cloudflare-estate/index.html
-          test -f cloudflare-estate/theory/index.html
-          test -f cloudflare-estate/lyrics/index.html
-          test -f cloudflare-estate/recovery/index.html
-          test -f cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
+          test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/theory/index.html
+          test -s cloudflare-estate/lyrics/index.html
+          test -s cloudflare-estate/recovery/index.html
+          test -s cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
           grep -q "JMISJUSTME" cloudflare-estate/index.html
           grep -q "Current doors" cloudflare-estate/index.html
           grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
-          echo "Canonical independent Estate deployment gates passed."
+          echo "Canonical Estate body passed with live Theory preserved."
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -197,7 +197,7 @@ jobs:
           mkdir -p registry
           cat > registry/cloudflare-auto-deploy-receipt.json <<EOF
           {
-            "schema": "JM.CloudflareAutoDeployReceipt/1.0",
+            "schema": "JM.CloudflareAutoDeployReceipt/1.1",
             "status": "SUCCESS",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
@@ -205,6 +205,7 @@ jobs:
             "workflow_run": "${GITHUB_RUN_ID}",
             "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "rooms": ["theory", "lyrics", "recovery"],
+            "theory_policy": "PRESERVE_LIVE_CANONICAL_BODY",
             "manual_upload_required": false
           }
           EOF

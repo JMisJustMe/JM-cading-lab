@@ -1,0 +1,18 @@
+{
+  "schema": "JM.CloudflareRollbackDiagnostic/1.0",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "project": "jmisjustme-estate",
+  "cutoff": "2026-07-20T13:08:12Z",
+  "listing_success": false,
+  "deployment_count": 0,
+  "pre_cutoff_successful_production_count": 0,
+  "candidates": [],
+  "exact_match_deployment_id": null,
+  "errors": [
+    {
+      "stage": "list_http",
+      "status": 400,
+      "message": "{\n  \"result\": null,\n  \"success\": false,\n  \"errors\": [\n    {\n      \"code\": 8000024,\n      \"message\": \"Invalid list options provided. Review the `page` or `per_page` parameter.\"\n    }\n  ],\n  \"messages\": []\n}\n"
+    }
+  ]
+}

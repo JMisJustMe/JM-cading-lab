@@ -9,6 +9,8 @@ on:
       - "navigator/**"
       - "registry/estate-classification-authority-v1.0.json"
       - "registry/estate-classification-integrity-receipt-v1.0.json"
+      - "registry/portal-engine-access-line-authority.json"
+      - "governance/verify_estate_classification.py"
       - ".github/workflows/deploy-cloudflare-estate-classification-integrity.yml"
   workflow_dispatch:
 
@@ -22,7 +24,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Mirror live Estate, overlay corrected bodies, prove and deploy
+    name: Mirror live Estate, overlay owned truth, prove and deploy
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -33,10 +35,11 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Prove source classification before assembly
+        run: python3 governance/verify_estate_classification.py --root .
+
       - name: Mirror the currently standing canonical Estate
         shell: bash
-        env:
-          ESTATE_BASE: https://jmisjustme-estate.pages.dev/
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
@@ -51,8 +54,6 @@ jobs:
           base = 'https://jmisjustme-estate.pages.dev/'
           host = urlparse(base).netloc
           out = Path('cloudflare-estate')
-          out.mkdir(parents=True, exist_ok=True)
-
           seeds = [
               '/', '/author/', '/navigator/', '/navigator/stringline.json', '/apps/',
               '/theory/', '/lyrics/', '/recovery/', '/manifest.webmanifest', '/sw.js',
@@ -60,17 +61,14 @@ jobs:
           ]
           queue = deque(urljoin(base, seed) for seed in seeds)
           seen = set()
-          saved = 0
-          total_bytes = 0
-          max_urls = 1800
-          max_bytes = 260 * 1024 * 1024
+          saved = total_bytes = 0
 
           def target_path(url, content_type):
               path = urlparse(url).path
               if not path or path.endswith('/'):
-                  path = path + 'index.html'
+                  path += 'index.html'
               elif 'text/html' in content_type and '.' not in Path(path).name:
-                  path = path + '/index.html'
+                  path += '/index.html'
               return out / path.lstrip('/')
 
           def enqueue(raw, current):
@@ -84,7 +82,7 @@ jobs:
               if normalized not in seen:
                   queue.append(normalized)
 
-          while queue and len(seen) < max_urls and total_bytes < max_bytes:
+          while queue and len(seen) < 1800 and total_bytes < 260 * 1024 * 1024:
               url = queue.popleft()
               parsed = urlparse(url)
               url = parsed._replace(query='', fragment='').geturl()
@@ -92,7 +90,7 @@ jobs:
                   continue
               seen.add(url)
               try:
-                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Mirror/1.0'})
+                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Mirror/2.1'})
                   with urlopen(req, timeout=25) as response:
                       data = response.read()
                       content_type = response.headers.get_content_type()
@@ -100,13 +98,11 @@ jobs:
               except Exception as exc:
                   print('SKIP', url, type(exc).__name__)
                   continue
-
               target = target_path(url, content_type)
               target.parent.mkdir(parents=True, exist_ok=True)
               target.write_bytes(data)
               saved += 1
               total_bytes += len(data)
-
               if content_type in ('text/html', 'text/css', 'application/javascript', 'text/javascript'):
                   try:
                       text = data.decode(charset, 'replace')
@@ -126,7 +122,7 @@ jobs:
           required = ['index.html', 'theory/index.html', 'lyrics/index.html', 'recovery/index.html']
           missing = [path for path in required if not (out / path).exists()]
           if missing:
-              raise SystemExit(f'Live mirror missing required standing rooms: {missing}')
+              raise SystemExit(f'Live mirror missing standing rooms: {missing}')
           print({'saved_files': saved, 'bytes': total_bytes, 'seen_urls': len(seen)})
           PY
 
@@ -142,7 +138,6 @@ jobs:
             rm -rf cloudflare-estate/author
             cp -a author cloudflare-estate/author
           fi
-
           cat > cloudflare-estate/_headers <<'EOF'
           /*
             X-Content-Type-Options: nosniff
@@ -156,83 +151,34 @@ jobs:
           /navigator/*
             Cache-Control: no-cache
           EOF
-
           cat > cloudflare-estate/_redirects <<'EOF'
           /* /index.html 200
           EOF
 
-      - name: Prove the assembled Estate before deployment
+      - name: Prove the assembled public Estate
         shell: bash
         run: |
           set -euo pipefail
+          python3 governance/verify_estate_classification.py --root cloudflare-estate --public-only
           python3 <<'PY'
-          from collections import Counter
-          import json, re
+          import json
           from pathlib import Path
-
-          root = Path('cloudflare-estate')
-          required = [
-              'index.html', 'apps/index.html', 'navigator/index.html',
-              'navigator/stringline.json', 'theory/index.html',
-              'lyrics/index.html', 'recovery/index.html'
-          ]
-          missing = [path for path in required if not (root / path).is_file() or (root / path).stat().st_size == 0]
-          if missing:
-              raise SystemExit(f'Assembled Estate missing: {missing}')
-
-          apps_text = (root / 'apps/index.html').read_text(encoding='utf-8')
-          rows_match = re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', apps_text, re.S)
-          stats_match = re.search(r'const APP_STAT_COUNTS=(\{.*?\});', apps_text, re.S)
-          if not rows_match or not stats_match:
-              raise SystemExit('Apps registry or embedded stat receipt is unreadable.')
-          rows = json.loads(rows_match.group(1))
-          shown = json.loads(stats_match.group(1))
-          counts = Counter(row[3] for row in rows)
-          expected = {
-              'room_count': len(rows),
-              'full_plus_preserved': counts['full_current'] + counts['full_alt'],
-              'routed': counts['routed'],
-              'source_needed': counts['registered'],
-              'preparation': counts['prep'],
-          }
-          if shown != expected:
-              raise SystemExit(f'Apps stat mismatch: {shown} != {expected}')
-          if any(row[0] == 'RouteOS' for row in rows):
-              raise SystemExit('RouteOS regressed into the Non-Game Apps registry.')
-          retrieval = {row[0] for row in rows if row[3] == 'registered'}
-          if retrieval != {'Portal Engine', 'Latest Body Finder', 'Source-Body Auditor'}:
-              raise SystemExit(f'Unexpected retrieval set: {sorted(retrieval)}')
-          for marker in (
-              'RouteOS has returned to its sovereign gaming-platform seat',
-              'Exact package retrieval',
-              'package-retrieval + preparation',
-          ):
-              if marker not in apps_text:
-                  raise SystemExit(f'Apps marker missing: {marker}')
-
-          stringline = json.loads((root / 'navigator/stringline.json').read_text(encoding='utf-8'))
-          projects = {project['id']: project for project in stringline['seed_project_strings']}
-          for project_id in ('games-beyond', 'coding-os', 'operating-houses', 'recovery-delivery', 'ftr-devices', 'utilities-incubator', 'registers-governance'):
-              if project_id not in projects:
-                  raise SystemExit(f'Stringline project missing: {project_id}')
-          if not any(body.get('id') == 'routeos-platform' for body in projects['games-beyond'].get('bodies', [])):
-              raise SystemExit('RouteOS is not seated in Games&Beyond Stringline.')
-
-          theory = (root / 'theory/index.html').read_text(encoding='utf-8', errors='replace')
+          root=Path('cloudflare-estate')
+          required=['index.html','apps/index.html','navigator/index.html','navigator/stringline.json','theory/index.html','lyrics/index.html','recovery/index.html']
+          missing=[path for path in required if not (root/path).is_file() or (root/path).stat().st_size==0]
+          if missing: raise SystemExit(f'Assembled Estate missing: {missing}')
+          theory=(root/'theory/index.html').read_text(encoding='utf-8',errors='replace')
           if 'JM Theory Multihub v0.4 — Touch Repair' in theory:
-              raise SystemExit('Refusing to deploy the known regressed Theory Touch Repair body.')
-
-          manifest = {
-              'schema': 'JM.CloudflareEstateDeployment/2.0',
-              'version': 'v2.0-classification-integrity-live-mirror',
-              'project': 'jmisjustme-estate',
-              'rooms': ['apps', 'navigator', 'theory', 'lyrics', 'recovery', 'author-if-present'],
-              'apps_registry_count': len(rows),
-              'apps_stats': expected,
-              'stringline_version': stringline.get('version'),
-              'policy': 'Mirror the current live Estate first; overlay only corrected owned bodies; block identity, count and retrieval regressions.'
+              raise SystemExit('Refusing known regressed Theory Touch Repair body')
+          stringline=json.loads((root/'navigator/stringline.json').read_text())
+          manifest={
+            'schema':'JM.CloudflareEstateDeployment/2.1',
+            'version':'v2.1-central-classification-authority',
+            'project':'jmisjustme-estate',
+            'stringline_version':stringline.get('version'),
+            'policy':'Mirror the standing Estate, overlay owned source, then prove the same central classification authority used by GitHub gates.'
           }
-          (root / 'DEPLOY_MANIFEST.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          (root/'DEPLOY_MANIFEST.json').write_text(json.dumps(manifest,indent=2)+'\n')
           print(manifest)
           PY
 
@@ -244,67 +190,65 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove corrected Apps and Stringline on the canonical host
+      - name: Prove the central authority on the canonical host
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf "$RUNNER_TEMP/live-estate"
+          mkdir -p "$RUNNER_TEMP/live-estate/apps" "$RUNNER_TEMP/live-estate/navigator" "$RUNNER_TEMP/live-estate/theory"
           proved=0
           for attempt in $(seq 1 45); do
-            curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/apps/?integrity-proof=${GITHUB_RUN_ID}-${attempt}" \
-              > "$RUNNER_TEMP/live-apps.html" || true
-            curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/navigator/stringline.json?integrity-proof=${GITHUB_RUN_ID}-${attempt}" \
-              > "$RUNNER_TEMP/live-stringline.json" || true
-            curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/theory/?integrity-proof=${GITHUB_RUN_ID}-${attempt}" \
-              > "$RUNNER_TEMP/live-theory.html" || true
-            if grep -q "NON-GAME APPS HOUSE" "$RUNNER_TEMP/live-apps.html" \
-              && grep -q "RouteOS has returned to its sovereign gaming-platform seat" "$RUNNER_TEMP/live-apps.html" \
-              && grep -q "Exact package retrieval" "$RUNNER_TEMP/live-apps.html" \
-              && grep -q "package-retrieval + preparation" "$RUNNER_TEMP/live-apps.html" \
-              && grep -q "v0.1.4 classification-integrity + governance-chain seed" "$RUNNER_TEMP/live-stringline.json" \
-              && ! grep -q "JM Theory Multihub v0.4 — Touch Repair" "$RUNNER_TEMP/live-theory.html"; then
+            curl --fail --silent --show-error --location "https://jmisjustme-estate.pages.dev/apps/?authority=${GITHUB_RUN_ID}-${attempt}" > "$RUNNER_TEMP/live-estate/apps/index.html" || true
+            curl --fail --silent --show-error --location "https://jmisjustme-estate.pages.dev/navigator/stringline.json?authority=${GITHUB_RUN_ID}-${attempt}" > "$RUNNER_TEMP/live-estate/navigator/stringline.json" || true
+            curl --fail --silent --show-error --location "https://jmisjustme-estate.pages.dev/theory/?authority=${GITHUB_RUN_ID}-${attempt}" > "$RUNNER_TEMP/live-estate/theory/index.html" || true
+            if python3 governance/verify_estate_classification.py --root "$RUNNER_TEMP/live-estate" --public-only \
+              && ! grep -q "JM Theory Multihub v0.4 — Touch Repair" "$RUNNER_TEMP/live-estate/theory/index.html"; then
               proved=1
               break
             fi
             sleep 2
           done
           test "$proved" -eq 1
-          echo "Classification-corrected Apps and Stringline are live; standing Theory remains non-regressed."
+          echo "Canonical Apps and Stringline pass the shared classification authority."
 
-      - name: Write successful classification-integrity deployment receipt
+      - name: Write successful central-authority deployment receipt
         shell: bash
         run: |
           set -euo pipefail
           python3 <<'PY'
-          import json, re
-          from datetime import datetime, timezone
+          import json,re
+          from collections import Counter
+          from datetime import datetime,timezone
           from pathlib import Path
-          text = Path('apps/index.html').read_text(encoding='utf-8')
-          rows = json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', text, re.S).group(1))
-          receipt = {
-              'schema': 'JM.CloudflareClassificationIntegrityReceipt/2.0',
-              'status': 'SUCCESS',
-              'project': 'jmisjustme-estate',
-              'canonical_host': 'jmisjustme-estate.pages.dev',
-              'source_commit': '${{ github.sha }}',
-              'workflow_run': '${{ github.run_id }}',
-              'deployed_at_utc': datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
-              'apps_registry_count': len(rows),
-              'routeos_primary_seat': 'Games&Beyond / RouteOS sovereign room',
-              'stringline': 'v0.1.4 classification-integrity + governance-chain seed',
-              'remaining_exact_package_retrieval': ['Portal Engine', 'Latest Body Finder', 'Source-Body Auditor'],
-              'live_proof': 'PASS',
-              'manual_upload_required': False,
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          counts=Counter(row[3] for row in rows)
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          portal=next(row for row in rows if row[0]=='Portal Engine')
+          receipt={
+            'schema':'JM.CloudflareClassificationIntegrityReceipt/2.1',
+            'status':'SUCCESS',
+            'project':'jmisjustme-estate',
+            'canonical_host':'jmisjustme-estate.pages.dev',
+            'source_commit':'${{ github.sha }}',
+            'workflow_run':'${{ github.run_id }}',
+            'deployed_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+            'apps_registry_count':len(rows),
+            'routed_organs':counts['routed'],
+            'exact_package_retrieval':counts['registered'],
+            'portal_public_state':portal[3],
+            'stringline':stringline.get('version'),
+            'routeos_primary_seat':'Games&Beyond / RouteOS sovereign room',
+            'live_proof':'PASS_SHARED_VERIFIER',
+            'manual_upload_required':False
           }
-          Path('registry/cloudflare-classification-integrity-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          Path('registry/cloudflare-classification-integrity-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
           PY
           git config user.name "JM Classification-Integrity Deployment Rail"
           git config user.email "actions@users.noreply.github.com"
           git add registry/cloudflare-classification-integrity-receipt.json
           git diff --cached --quiet && exit 0
-          git commit -m "Record classification-integrity Cloudflare deployment success"
+          git commit -m "Record central-authority Cloudflare deployment success"
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main

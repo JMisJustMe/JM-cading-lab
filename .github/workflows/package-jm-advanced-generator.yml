@@ -15,6 +15,8 @@ on:
 permissions:
   contents: write
 
+actions:
+
 concurrency:
   group: "jm-advanced-generator-package"
   cancel-in-progress: true
@@ -78,9 +80,29 @@ jobs:
 
           digest = hashlib.sha256(archive.read_bytes()).hexdigest()
           (out / f"{pack}.sha256").write_text(f"{digest}  {archive.name}\n", encoding="utf-8")
+          metadata = {
+              "schema": "JM.AdvancedGenerator.PackageRun/0.2",
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "commit": os.environ["GITHUB_SHA"],
+              "archive": archive.name,
+              "bytes": archive.stat().st_size,
+              "sha256": digest
+          }
+          (out / f"{pack}.run.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
           print(f"Built {archive} ({archive.stat().st_size} bytes)")
           print(f"SHA-256 {digest}")
           PY
+
+      - name: Upload verifiable package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2
+          path: |
+            games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.zip
+            games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.sha256
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Commit package when changed
         shell: bash
@@ -90,6 +112,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.zip
           git add games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.sha256
+          git add games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.run.json
           if git diff --cached --quiet; then
             echo "Package already current."
             exit 0

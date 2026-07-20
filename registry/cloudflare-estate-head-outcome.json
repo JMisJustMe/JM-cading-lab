@@ -5,8 +5,8 @@
   "run_id": "29762735260",
   "head_sha": "689d7922dba73cddf9ce5bb378d6cab3bd012d08",
   "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29762735260",
-  "updated_at": "2026-07-20T17:12:00Z",
-  "recorded_at_utc": "2026-07-20T17:12:11Z",
+  "updated_at": "2026-07-20T17:15:12Z",
+  "recorded_at_utc": "2026-07-20T17:15:21Z",
   "steps": [
     {
       "job": "Preserve live Estate and install shared Estate Head",
@@ -47,6 +47,13 @@
       "job": "Preserve live Estate and install shared Estate Head",
       "name": "Complete job",
       "conclusion": "success"
+    }
+  ],
+  "log_tails": [
+    {
+      "job": "Preserve live Estate and install shared Estate Head",
+      "job_id": 88421696823,
+      "log_error": "HTTP Error 401: Server failed to authenticate the request. Please refer to the information in the www-authenticate header."
     }
   ]
 }

@@ -204,12 +204,13 @@
     },
     {
       "body": "Estate Head & Command",
-      "state": "PUBLIC_AUTHORITY_LIVE",
+      "state": "PUBLIC_HOUSE_AUTHORITY_LIVE",
       "route": "registry/estate-head-public-current.json",
       "current_public_subset_version": "v0.2.1",
       "body_count": 61,
       "project_head_count": 11,
-      "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption is live; Cloudflare edge publication is claimed only after a separate live-door verification."
+      "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+      "public_house_consumers": 9
     }
   ],
   "author_master_body": {
@@ -403,9 +404,20 @@
       "repository_wide_enforcement": "NEXT"
     },
     "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption is live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
     "contract": "registry/estate-head-public-current.json",
-    "consumption_state": "LIVE",
-    "projection_rule": "Public state inherits from the Estate Head contract; sovereign House registries retain domain detail."
+    "consumption_state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
+    "projection_rule": "Each public House reads the shared authority contract while retaining sovereign design, detail and fallback behaviour.",
+    "public_house_consumers": [
+      "apps/index.html",
+      "games-beyond/index.html",
+      "games-beyond/routeos/index.html",
+      "theory/index.html",
+      "lyrics/index.html",
+      "recovery/index.html",
+      "author/index.html",
+      "coding-estate/everybody/00_OPEN_FIRST.html",
+      "cading.html"
+    ]
   }
 }

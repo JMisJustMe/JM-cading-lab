@@ -161,5 +161,5 @@ function esc(s){return String(s||"").replaceAll("&","&amp;").replaceAll("<","&lt
 function render(){stageCards.innerHTML=STAGES.map(s=>`<div class="card"><h3>${s[0]} — ${s[1]} ✅</h3><p>${s[2]}</p></div>`).join("");dictionary.innerHTML=OPS.map(o=>`<tr><td><code>${esc(o[0])}</code></td><td>${esc(o[1])}</td><td>${esc(o[2])}</td><td>${esc(o[3])}</td><td>${esc(o[4])}</td></tr>`).join("");runLine();runFeed();runMulti();runTests();bridge();receipt()}
 render();
 </script>
-</body>
+<script src="./estate-head-public-consumer.js" data-jm-estate-head-consumer></script></body>
 </html>

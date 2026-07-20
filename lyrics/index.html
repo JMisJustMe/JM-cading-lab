@@ -55,5 +55,5 @@ document.querySelector('#save').addEventListener('click',()=>{localStorage.setIt
 document.querySelector('#export').addEventListener('click',()=>{const body=`${title.value||'Untitled'}\n\n${text.value}\n`;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([body],{type:'text/plain'}));a.download=(title.value||'JM_LYRIC_WORKING_PIECE').replace(/[^a-z0-9-_]+/gi,'_')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);status.textContent='Text export created.'});
 document.querySelector('#clear').addEventListener('click',()=>{if(confirm('Clear this public writing desk?')){title.value='';text.value='';localStorage.removeItem(KEY);syncMode();status.textContent='Desk cleared.'}});syncMode();
 </script>
-</body>
+<script src="../estate-head-public-consumer.js" data-jm-estate-head-consumer></script></body>
 </html>

@@ -1,56 +1,10 @@
 {
-  "schema": "JM.EstateHeadPublicCurrent/1.0",
-  "current_public_subset_version": "v0.2.1",
-  "effective_date": "2026-07-20",
-  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "schema": "JM.EstateHeadHouseConsumptionReceipt/1.0",
+  "generated_at": "2026-07-20T17:37:08+00:00",
+  "contract_version": "v0.2.1",
   "body_count": 61,
   "project_head_count": 11,
-  "gap_snapshot": {
-    "OPEN": 35,
-    "PARTIAL": 20,
-    "RESOLVED": 1
-  },
-  "stringline": {
-    "version": "v0.1.3",
-    "games_beyond_project_body_count": 8,
-    "adoption_commit": "1ef6ea9e9c762ba750f52ec8426280c408b96a58"
-  },
-  "source_authority_pipeline": {
-    "version": "v1.0",
-    "stages": 6,
-    "owner_gate": "MOUNTED",
-    "repository_wide_enforcement": "NEXT"
-  },
-  "deployment_state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
-  "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-  "public_head_route": "https://jmisjustme-estate.pages.dev/estate-head/",
-  "public_subset_path": "https://jmisjustme-estate.pages.dev/data/estate-head-public-v0.2.1.json",
-  "deployed_at_utc": "2026-07-20T17:35:22Z",
-  "source_commit": "d009741c906ddf38e20c8211a26b6a508acc2baf",
-  "workflow_run": "29764188614",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
-  "public_consumers": [
-    "registry/estate-map.json",
-    "estate-app.js",
-    "index.html",
-    "sw.js",
-    "estate-head-public-consumer.js",
-    "apps/index.html",
-    "games-beyond/index.html",
-    "games-beyond/routeos/index.html",
-    "theory/index.html",
-    "lyrics/index.html",
-    "recovery/index.html",
-    "author/index.html",
-    "coding-estate/everybody/00_OPEN_FIRST.html",
-    "cading.html"
-  ],
-  "deployment_receipt": "registry/estate-head-public-consumption-receipt.json",
-  "carrier": {
-    "format": "checksum-verified segmented JSON",
-    "segments": 4,
-    "sha256": "7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676"
-  },
+  "consumer_script": "estate-head-public-consumer.js",
   "public_house_consumers": [
     "apps/index.html",
     "games-beyond/index.html",
@@ -134,5 +88,6 @@
       "state": "LIVE_GOVERNED_APPS_HOUSE"
     }
   ],
-  "house_consumption_receipt": "registry/estate-head-house-consumption-receipt.json"
+  "state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
+  "boundary": "This proves repository and House integration. Cloudflare edge publication requires separate live verification."
 }

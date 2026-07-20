@@ -1,0 +1,47 @@
+{
+  "schema": "JM.PortalEngineAccessLineAuthority/1.0",
+  "status": "RECOVERED_AS_ESTATE_OS_ACCESS_IDENTITY",
+  "recorded_at_utc": "2026-07-20T17:38:00Z",
+  "name": "Portal Engine",
+  "original_id": "JM-APP-002-PORTAL-ENGINE",
+  "governing_identity": "Central access layer for locating, mounting, opening and continuing JM bodies.",
+  "primary_seat": "Operating Houses & Launchers / Estate OS access layer",
+  "not_a_separate_standalone_package": true,
+  "authority_lanes": {
+    "identity_anchor": "JM Estate Retrieval Engine v0.4 — exact Portal Engine card marked INSTALLED",
+    "mature_lineage_record": "JM Estate Retrieval Engine v0.6 — Estate OS / Portal Engine marked INSTALLED / HOLD, starter-source-mounted",
+    "physical_access_carrier": "JM Estate OS v0.3.1 Safe Room Store Fix",
+    "command_surface": "JM Command Register v0.1 — TBS Panel / Delta 004",
+    "android_safe_command_mount": "TBS Delta 004.1",
+    "source_pull_boundary": "TBS Delta 004.2R repaired truth board",
+    "change_risk_map": "JM Estate Operating Mode v1.7 — foundation/router, full ripple check"
+  },
+  "physical_access_proof": {
+    "carried_rooms": 19,
+    "search": "PASS",
+    "preview": "PASS",
+    "queue": "PASS",
+    "same_body_open": "PASS",
+    "mobile_412x915": "PASS",
+    "desktop_1440x900": "PASS",
+    "horizontal_overflow": "0 px"
+  },
+  "tbs_004_2_correction": {
+    "original_preserved": true,
+    "original_problem": "Literal newlines inside single-quoted JavaScript strings caused a syntax failure; long path text caused mobile horizontal overflow.",
+    "repaired_body": "00_OPEN_FIRST_TBS_DELTA_004_2R_BODY_SLOT_REVEAL_SCRIPT_REPAIR.html",
+    "script_syntax": "PASS",
+    "ten_slots_render": "PASS",
+    "filters_and_export_drawer": "PASS",
+    "mobile_fit": "PASS"
+  },
+  "private_custody": {
+    "library_path": "/JM_Estate/Zionfolders/Operating_Houses/Portal_Engine_Access_Line/",
+    "keeper": "PORTAL_ENGINE_ACCESS_LINE_RECONCILIATION_v1_0_ZIONFOLDER.zip",
+    "full_payload_public": false
+  },
+  "public_projection": "Routed Operating Houses access identity; the public card opens the Living Estate rather than exposing the private carrier payload.",
+  "ruling": "Portal Engine is a sovereign access identity carried by Estate OS/TBS. The Apps House exposes a routed bridge and must not demand or invent a separate standalone Portal package.",
+  "crown": "Portal does not own the rooms. Portal makes the rooms reachable.",
+  "boundary": "This authority does not collapse JM Estate OS, the Command Register, TBS or Portal Engine into one identity. It preserves their roles and their physical connections."
+}

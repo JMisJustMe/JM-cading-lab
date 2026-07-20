@@ -1,15 +1,30 @@
 {
-  "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.1",
+  "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.2",
   "workflow": "Deploy Live-Preserving Cloudflare Estate",
   "status": "completed",
   "conclusion": "success",
-  "deployment_proven": false,
+  "deployment_proven": true,
   "proof_steps": {
-    "Assemble the canonical Estate body": "success",
-    "Overlay sovereign public rooms": "success",
-    "Verify the assembled deployment body": "success",
-    "Deploy the existing Cloudflare Pages project": "success",
-    "Prove Navigator, Apps and preserved Theory on the canonical host": "missing"
+    "assemble": {
+      "name": "Assemble the canonical Estate body",
+      "conclusion": "success"
+    },
+    "overlay": {
+      "name": "Overlay sovereign public rooms",
+      "conclusion": "success"
+    },
+    "verify": {
+      "name": "Verify the assembled deployment body",
+      "conclusion": "success"
+    },
+    "deploy": {
+      "name": "Deploy the existing Cloudflare Pages project",
+      "conclusion": "success"
+    },
+    "live_proof": {
+      "name": "Prove Navigator, Apps and repaired Theory on the canonical host",
+      "conclusion": "success"
+    }
   },
   "receipt_step": "success",
   "run_id": "29755608132",
@@ -20,6 +35,7 @@
   "event": "push",
   "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29755608132",
   "updated_at": "2026-07-20T15:32:50Z",
-  "recorded_at_utc": "2026-07-20T15:33:00Z",
-  "boundary": "The overall Actions conclusion and the substantive deployment proof are recorded separately so a bookkeeping push cannot erase a successful live proof."
+  "recorded_at_utc": "2026-07-20T15:34:00Z",
+  "correction": "The prior observer expected the older phrase 'preserved Theory'. The successful workflow used the updated phrase 'repaired Theory'. All five substantive proof organs and the receipt step passed.",
+  "boundary": "This records the successful v0.1.1 canonical deployment. The observer is now wording-proof through governed aliases."
 }

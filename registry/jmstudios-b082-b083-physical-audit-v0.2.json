@@ -1,0 +1,50 @@
+{
+  "schema": "JM.JMStudiosPhysicalAudit/0.2",
+  "status": "PARTIAL_PHYSICAL_CONFIRMATION",
+  "audited_at_utc": "2026-07-20T18:40:00Z",
+  "body_family": "JMStudios B0.8.2 / B0.8.3",
+  "source_anchor": {
+    "name": "JMStudios Original Source Patch Merge B0.8.2 Crown",
+    "filename": "00_OPEN_FIRST_JMSTUDIOS_ORIGINAL_SOURCE_PATCH_MERGE_B0_8_2_CROWN.html",
+    "physical_state": "EXACT_RAW_HTML_CONFIRMED",
+    "bytes": 6469894,
+    "sha256": "b033ab12aee459b6a388732a2b3ab7952c21d035d0fb0cd741f1db36da01406f",
+    "title": "JM Studios Estate B0.8.2 Crown — Original Source Patch Merge",
+    "embedded_rooms": 13,
+    "substantive_rooms": 7,
+    "redirect_rooms": 6,
+    "decoded_room_bytes": 4834801,
+    "room_hash_set_sha256": "71dab2f6363aadb0459a77502fe4efa024aae210eda858df3e5cc41fb595d13f",
+    "javascript_syntax": "PASS_13_OF_13_EXECUTABLE_ROOM_SCRIPTS_PLUS_LAUNCHER",
+    "ruling": "PHYSICAL_SOURCE_REBEGIN_ANCHOR_CONFIRMED"
+  },
+  "source_preserving_patch": {
+    "name": "JMStudios B0.8.2 Crown Link Polish v0.2 No-Link Safe Patch",
+    "filename": "00_OPEN_FIRST_JMSTUDIOS_B0_8_2_CROWN_LINK_POLISH_PASS_v0_2_NO_LINK_SAFE_PATCH-1.html",
+    "physical_state": "EXACT_EMBEDDED_HTML_CONFIRMED_IN_GOVERNED_ESTATE_CARRIER",
+    "bytes": 6476910,
+    "sha256": "b3f46d28478c0064ea18f8da4a128c75702f09984717a4dc26d7155235790890",
+    "embedded_rooms": 13,
+    "room_payload_relation": "PASS_13_OF_13_BYTE_IDENTICAL_TO_SOURCE_ANCHOR",
+    "room_hash_set_sha256": "71dab2f6363aadb0459a77502fe4efa024aae210eda858df3e5cc41fb595d13f",
+    "javascript_syntax": "PASS",
+    "repair_scope": "Top-document safe viewer, embedded-room primary route, Max Room and clearly bounded original-path fallbacks",
+    "ruling": "PROVEN_SOURCE_PRESERVING_PATCH_NOT_REPLACEMENT_CROWN"
+  },
+  "continuation": {
+    "name": "JMStudios B0.8.3 Actual Crown Route",
+    "classified_role": "Later repair / polish continuation",
+    "physical_state": "EXACT_BODY_NOT_LOCATED_IN_CURRENT_GITHUB_OR_LIBRARY_SWEEP",
+    "crown_state": "HELD_PENDING_PHYSICAL_BODY",
+    "wrong_turn_guard": "JMStudios v0.9 Original Latest Start Router remains parked and may not supersede B0.8.2 or impersonate B0.8.3."
+  },
+  "custody_findings": [
+    "Seven embedded-room declared byte counts are stale; decoded room payloads exceed the stored declarations by 4,823 bytes in total.",
+    "The source anchor and link-polish patch nevertheless carry the same 13 decoded room payloads and identical room-hash set.",
+    "Six rooms are explicit redirect/stub lineage doors rather than full embedded working rooms.",
+    "Fresh Android contact was not repeated in this audit."
+  ],
+  "current_best_ruling": "B0.8.2 is physically confirmed as the source rebegin anchor. Its v0.2 link-polish body is a proven source-preserving patch. B0.8.3 remains the classified later continuation but receives no physical crown until its actual body is located and audited.",
+  "next_action": "Locate and inspect the exact B0.8.3 continuation body; then compare its repaired behaviour against the B0.8.2 source anchor without replacing the source route.",
+  "boundary": "This record publishes hashes, counts and bounded audit findings only. It does not publish the private raw JMStudios body or claim fresh device contact."
+}

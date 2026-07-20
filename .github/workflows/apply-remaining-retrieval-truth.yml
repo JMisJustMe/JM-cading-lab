@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "governance/apply_remaining_retrieval_truth.py"
+      - "governance/apply_apps_house_stat_integrity.py"
       - ".github/workflows/apply-remaining-retrieval-truth.yml"
   workflow_dispatch:
 

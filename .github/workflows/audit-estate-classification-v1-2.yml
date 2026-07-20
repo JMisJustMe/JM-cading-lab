@@ -1,0 +1,126 @@
+name: Audit Estate Classification Integrity v1.2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**"
+      - "games-beyond/**"
+      - "navigator/stringline.json"
+      - "registry/estate-classification-authority-v1.0.json"
+      - "registry/estate-classification-integrity-receipt-v1.0.json"
+      - ".github/workflows/audit-estate-classification-v1-2.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - "games-beyond/**"
+      - "navigator/stringline.json"
+      - "registry/estate-classification-authority-v1.0.json"
+
+permissions:
+  contents: read
+
+jobs:
+  integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prove seats, versions, plurality and retrieval truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from collections import Counter
+          import json,re
+          from pathlib import Path
+
+          failures=[]
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          match=re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S)
+          if not match:
+              raise SystemExit('Apps registry unreadable')
+          rows=json.loads(match.group(1))
+
+          def has(name, fragment=None, category=None, status=None):
+              return any(
+                  row[0]==name
+                  and (fragment is None or fragment in row[1])
+                  and (category is None or row[2]==category)
+                  and (status is None or row[3]==status)
+                  for row in rows
+              )
+
+          required=[
+              ('JM Zionfolder OS','v1.1.1 Scroll Spine Fix','Estate & Recovery','full_current'),
+              ('BenefitMerge','v0.1 Android proof','Builders, Recovery & Delivery','full_current'),
+              ('BenefitMerge','v0.2 PWA build','Builders, Recovery & Delivery','full_current'),
+              ('Altogether Assembly / JM Estate OS','v2.0.2','Operating Houses','full_current'),
+              ('JM Estate OS','v0.2.1','Operating Houses','full_current'),
+              ('Command Register / Command Panel','v0.1','Registers & Governance','routed'),
+              ('JMStudios','B0.8.2 source anchor','Operating Houses','routed'),
+              ('FTR / Ama-Pro / GripRoute Adaptive Interaction Engine','Ama-Pro native gaming route','FTR / Devices & Adaptive Interaction','full_current'),
+              ('CadenVM / CadenPad','v0.10 Frozen','Coding & Proof','full_current'),
+              ('TraceBox / RouteBox','v5.2 Standalone PWA','Coding & Proof','full_current'),
+              ('BodyVault','v0.4.2 TRUE NO-INTERPRETER','Estate & Recovery','full_current'),
+              ('OWNMADE','v1.3 PWA Project + File Dock','Utilities & Incubator','full_current'),
+              ('Gold Mode Coding Hub','v0.9.5.1 Mobile Hotfix','Coding & Proof','full_current'),
+              ('JM Theory Multihub','v0.5 Readable Source Package','Theory & Books','full_current'),
+              ('JM QUADZE MultiHub SOLO','v1.0 mounted SOLO / SERVE / STORE body','Operating Houses','full_current'),
+          ]
+          for item in required:
+              if not has(*item): failures.append('Missing or demoted: '+item[0]+' / '+item[1])
+
+          if has('RouteOS'):
+              failures.append('RouteOS returned to literal Non-Game Apps registry')
+          if 'RouteOS has returned to its sovereign gaming-platform seat' not in text:
+              failures.append('RouteOS governed bridge missing')
+
+          registered=[row for row in rows if row[3]=='registered']
+          if {row[0] for row in registered}!={'Portal Engine','Latest Body Finder','Source-Body Auditor'}:
+              failures.append('Unexpected exact-package retrieval set')
+          if not all('exact standalone package retrieval' in row[1] for row in registered):
+              failures.append('Retrieval rows are not explicit about standalone package state')
+          if 'registered:"Exact package retrieval"' not in text or '["registered","Package retrieval"]' not in text:
+              failures.append('Public retrieval label regressed')
+
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          c=Counter(row[3] for row in rows)
+          expected={'room_count':len(rows),'full_plus_preserved':c['full_current']+c['full_alt'],'routed':c['routed'],'source_needed':c['registered'],'preparation':c['prep']}
+          if shown!=expected: failures.append('Apps counts are not registry-derived')
+          if 'package-retrieval + preparation' not in text: failures.append('Visible retrieval stat wording regressed')
+
+          manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
+          routeos=any(body.get('id')=='routeos-platform' for body in manifest.get('extraBodies',[])) or 'routeos-platform' in manifest.get('bodyIdsBuiltIn',[])
+          if not routeos: failures.append('Games&Beyond manifest lost RouteOS platform body')
+          if not Path('games-beyond/routeos/index.html').exists(): failures.append('RouteOS sovereign room missing')
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          projects={project['id']:project for project in stringline.get('seed_project_strings',[])}
+          for project_id in ('games-beyond','coding-os','operating-houses','recovery-delivery','ftr-devices','utilities-incubator','registers-governance'):
+              if project_id not in projects: failures.append('Stringline project missing: '+project_id)
+          if 'games-beyond' in projects and not any(body.get('id')=='routeos-platform' for body in projects['games-beyond'].get('bodies',[])):
+              failures.append('RouteOS is not seated in Games&Beyond Stringline')
+          if 'theory' in projects and not any(body.get('id')=='theory-readable-v05' for body in projects['theory'].get('bodies',[])):
+              failures.append('Theory v0.5 readable-source lane missing from Stringline')
+          if 'registers-governance' in projects:
+              ids={body['id'] for body in projects['registers-governance'].get('bodies',[])}
+              expected_ids={'source-ledger','latest-body-finder','source-body-auditor','current-best-register','crown-register','living-register'}
+              if not expected_ids<=ids: failures.append('Governance chain incomplete in Stringline')
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          authority_ids={body.get('id') for body in authority.get('bodies',[])}
+          required_authority={'routeos','zionfolder-os','estate-os-family','jmstudios','benefitmerge','ftr-ama-pro-griproute','cadenvm','tracebox-routebox','bodyvault','ownmade','theory-readable-v05','quadze-multihub-v10','registers-governance-chain'}
+          missing=required_authority-authority_ids
+          if missing: failures.append('Authority entries missing: '+','.join(sorted(missing)))
+
+          receipt=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          if receipt.get('status')!='PASS_RETRIEVAL_TRUTH': failures.append('Final integrity receipt is not PASS_RETRIEVAL_TRUTH')
+          if len(receipt.get('remaining_exact_package_retrieval',[]))!=3: failures.append('Final retrieval list must contain exactly three current packages')
+
+          if failures:
+              print('\n'.join('ERROR: '+failure for failure in failures))
+              raise SystemExit(1)
+          print({'status':'PASS','non_game_rooms':len(rows),'full_plus_preserved':expected['full_plus_preserved'],'retrieval_packages':len(registered),'stringline_projects':len(projects)})
+          PY

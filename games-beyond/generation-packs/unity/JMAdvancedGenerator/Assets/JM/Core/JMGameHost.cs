@@ -1,9 +1,19 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace JM.AdvancedGenerator
 {
+    [Serializable]
+    internal sealed class JMProofEnvelope
+    {
+        public string schema = "JM.Unity.GameProof/0.1";
+        public string exportedAtUtc = string.Empty;
+        public JMProofSnapshot proof = new JMProofSnapshot();
+        public List<JMTraceEvent> trace = new List<JMTraceEvent>();
+    }
+
     public sealed class JMGameHost : MonoBehaviour
     {
         [Tooltip("A MonoBehaviour that implements IJMGameAdapter.")]
@@ -21,6 +31,11 @@ namespace JM.AdvancedGenerator
         {
             traceBox ??= GetComponent<JMTraceBox>();
             traceBox ??= gameObject.AddComponent<JMTraceBox>();
+
+            if (GetComponent<JMProofPanel>() == null)
+            {
+                gameObject.AddComponent<JMProofPanel>();
+            }
 
             adapterBehaviour ??= FindAdapterBehaviour();
             adapter = adapterBehaviour as IJMGameAdapter;
@@ -66,7 +81,14 @@ namespace JM.AdvancedGenerator
             proof.scene = SceneManager.GetActiveScene().name;
             proof.createdAtUtc = DateTime.UtcNow.ToString("O");
             traceBox.Record(GameId, "proof.export", proof.status + " · " + proof.summary);
-            return JsonUtility.ToJson(proof, prettyPrint);
+
+            var envelope = new JMProofEnvelope
+            {
+                exportedAtUtc = DateTime.UtcNow.ToString("O"),
+                proof = proof,
+                trace = new List<JMTraceEvent>(traceBox.Events)
+            };
+            return JsonUtility.ToJson(envelope, prettyPrint);
         }
 
         public void AssignAdapter(MonoBehaviour behaviour)

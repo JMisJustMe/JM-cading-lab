@@ -1,9 +1,9 @@
 {
   "schema": "JM.CloudflareEstateHeadBuildDiagnostic/0.2.1",
   "status": "BUILD_FAILED_DEPLOYMENT_BLOCKED",
-  "source_commit": "ee1e357d76182cb34d3c2f5f6273f6b7e5fdd08f",
-  "workflow_run": "29763840239",
-  "recorded_at_utc": "2026-07-20T17:29:28Z",
+  "source_commit": "36e780d9b78e0a6bffd76ac2106d8339e529f4a6",
+  "workflow_run": "29763912782",
+  "recorded_at_utc": "2026-07-20T17:30:15Z",
   "log_tail": [
     "ROUTE /: live donor PASS",
     "ROOT ASSETS: 4 live references preserved",
@@ -15,17 +15,11 @@
     "Traceback (most recent call last):",
     "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public_resilient.py\", line 87, in <module>",
     "    base.main()",
-    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 223, in main",
+    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 215, in main",
     "    globals()[args.mode]()",
-    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 113, in build",
-    "    data = decode_subset()",
-    "           ^^^^^^^^^^^^^^^",
-    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 88, in decode_subset",
-    "    data = json.loads(gzip.decompress(base64.b64decode(payload)))",
-    "                                      ^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "  File \"/usr/lib/python3.12/base64.py\", line 88, in b64decode",
-    "    return binascii.a2b_base64(s, strict_mode=validate)",
-    "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
-    "binascii.Error: Invalid base64-encoded string: number of data characters (15085) cannot be 1 more than a multiple of 4"
+    "  File \"/home/runner/work/JM-cading-lab/JM-cading-lab/scripts/deploy_estate_head_public.py\", line 142, in build",
+    "    assert \"JM LyricStudio v0.5.1\" in (OUT / \"lyrics/index.html\").read_text()",
+    "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "AssertionError"
   ]
 }

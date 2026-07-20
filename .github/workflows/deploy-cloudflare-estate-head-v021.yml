@@ -23,7 +23,7 @@ jobs:
   deploy:
     name: Preserve live Estate and install shared Estate Head
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 25
     steps:
       - name: Check out current Estate source
         uses: actions/checkout@v6
@@ -76,14 +76,28 @@ jobs:
         if: steps.build.outputs.exit_code != '0'
         run: exit 1
 
-      - name: Deploy the existing Cloudflare Pages project
+      - name: Deploy the existing Cloudflare Pages project with transient retry
         if: steps.build.outputs.exit_code == '0'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 6); do
+            echo "Cloudflare deployment attempt ${attempt}/6"
+            if npx --yes wrangler@3.90.0 pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main; then
+              echo "Cloudflare Pages deployment PASS"
+              exit 0
+            fi
+            if [ "$attempt" -lt 6 ]; then
+              delay=$((attempt * 12))
+              echo "Cloudflare API did not complete; retrying in ${delay}s without changing the package."
+              sleep "$delay"
+            fi
+          done
+          echo "Cloudflare Pages deployment failed after six guarded attempts. Existing proven live deployment remains untouched."
+          exit 1
 
       - name: Prove the Estate Head on the canonical host
         if: steps.build.outputs.exit_code == '0'

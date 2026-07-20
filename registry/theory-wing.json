@@ -1,51 +1,66 @@
 {
   "name": "JM Theory Wing",
-  "version": "v0.7-full-bodies-first-public",
-  "status": "JM_THEORY_MULTIHUB_V0_7_LIVE_ON_MAIN",
-  "role": "The public Theory Wing front door. Full bodies are mounted in the Full-Body Vault; the 297-route project census remains a separate retrieval and grading system.",
+  "version": "v0.8-all-37-public",
+  "status": "JM_THEORY_MULTIHUB_V0_8_ALL_37_FULL_BODIES_LIVE_ON_MAIN",
+  "role": "The public Theory Wing front door. Thirty-seven actual full bodies are mounted in the Full-Body reader; the 297-route project census remains a separate retrieval and grading system.",
   "route": "theory/",
   "public_url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
+  "all_full_bodies_route": "theory/full-bodies/all-37.html",
+  "all_full_bodies_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/all-37.html",
   "full_body_vault_route": "theory/full-bodies/",
   "full_body_vault_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/",
-  "source_note": "The public vault contains actual source-backed bodies. Census presence is not counted as a full-body mount. The private Estate Full-Body First edition remains the larger preserved body.",
+  "source_note": "The all-37 reader selects the twenty-four numbered collection manuscripts and thirteen specifically named recent/canonical bodies from the existing verified seven-part public Theory Wing payload. It refuses to render a crown unless the exact body count is thirty-seven.",
   "proof": {
-    "public_full_bodies": 12,
+    "public_full_bodies": 37,
     "estate_full_bodies": 37,
-    "gmail_sources_promoted_v0_7": 6,
+    "collection_standalones": 24,
+    "recent_canonical_full_bodies": 13,
+    "census_cards_excluded_from_full_body_count": 260,
     "readable_census_routes": 297,
+    "gmail_sources_promoted_v0_7": 6,
     "new_project_source_routes": 256,
     "bringing_it_all_together_children": 76,
     "first_stage_jungle_children": 187,
     "districts": 19,
     "body_card_rows_inspected": 360,
     "processing_grades": {"T1": 68, "T2": 154, "T3": 28, "T4": 6},
-    "census_payload_parts": 7,
+    "payload_parts": 7,
+    "payload_base64_length": 50428,
     "census_decoded_json_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5"
   },
   "current_best_mounts": [
     {
-      "id": "jm-theory-multihub-v0-7",
-      "name": "JM Theory Multihub — Full Bodies First",
+      "id": "jm-theory-multihub-v0-8",
+      "name": "JM Theory Multihub — All 37 Full Bodies",
       "route": "theory/",
-      "current_best": "v0.7 Full-Body Expansion",
+      "current_best": "v0.8 All 37 Public",
       "crown_status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
       "main_release": "LIVE",
-      "public_boundary": "Twelve actual public body doors; thirty-seven full bodies preserved in the private Estate; 297 census routes kept separate."
+      "public_boundary": "Thirty-seven actual full bodies; 297 census routes preserved separately; 260 cards excluded from the manuscript count."
     },
     {
-      "id": "jm-theory-full-body-vault-v0-7",
+      "id": "jm-theory-all-37-reader-v0-8",
+      "name": "JM Theory — All 37 Full Bodies",
+      "route": "theory/full-bodies/all-37.html",
+      "current_best": "v0.8 Exact-Count Full-Body Reader",
+      "crown_status": "CURRENT_PUBLIC_ALL_FULL_BODY_READER",
+      "main_release": "LIVE",
+      "public_boundary": "The reader must resolve exactly 24 collection bodies plus 13 recent/canonical bodies or it displays an error and applies no crown."
+    },
+    {
+      "id": "jm-theory-full-body-vault-v0-8",
       "name": "JM Theory Full-Body Vault",
       "route": "theory/full-bodies/",
-      "current_best": "v0.7 Source-Backed Public Vault",
+      "current_best": "v0.8 37-Body Public Vault",
       "crown_status": "CURRENT_PUBLIC_FULL_BODY_VAULT",
       "main_release": "LIVE",
-      "public_boundary": "A body enters the public count only when its source-backed reading door is mounted."
+      "public_boundary": "Direct source doors are preserved alongside the all-37 reader."
     },
     {
       "id": "jm-theory-project-source-census-v0-4",
       "name": "JM Theory Project Source Census",
       "route": "theory/#library",
-      "current_best": "v0.4 Project Source Census retained under v0.7",
+      "current_best": "v0.4 Project Source Census retained under v0.8",
       "crown_status": "RETRIEVAL_AND_PROCESSING_GRADE_SYSTEM",
       "main_release": "LIVE",
       "public_boundary": "A census route is not automatically a full theory body."
@@ -60,6 +75,30 @@
       "public_boundary": "The bounded framework is complete. Universal empirical validity is not claimed."
     }
   ],
+  "full_body_population": {
+    "collection": {
+      "count": 24,
+      "selection": "Numbered records 01 through 24 with collection/standalone source evidence and substantial mounted body text."
+    },
+    "recent_canonical": {
+      "count": 13,
+      "titles": [
+        "CAUSE MUST PASS",
+        "Medium-Dependency Law: Route–Role–Response",
+        "Contact, Causation & Claimed Authority Register",
+        "Actual Mental Health",
+        "When Stone and Scroll Speak",
+        "BRAIDGE Brain Return",
+        "Relational Passage Theory",
+        "The Whole Human Record",
+        "The Me Theme",
+        "The Model and the Thing",
+        "Higher Transfiguration",
+        "Fair Fare or Far Fare",
+        "Original Theory for Reality"
+      ]
+    }
+  },
   "v0_7_promoted_sources": [
     {"name":"TraceBox / RouteBox v5 — Complete Print-Off Version","gmail_message_id":"19e4aa737948c5cc","parts":4,"route":"theory/full-bodies/reader-parts.html?base=tracebox-routebox-v5&parts=4"},
     {"name":"Black Box → TraceBox / RouteBox","gmail_message_id":"19e4b1944db3e15d","parts":3,"route":"theory/full-bodies/reader-parts.html?base=black-box-tracebox&parts=3"},
@@ -72,27 +111,6 @@
     {"id": "bringing-it-all-together", "name": "Bringing It All Together", "children": 76, "state": "MOUNTED_WITH_CHILD_ROUTES"},
     {"id": "first-stage-jungle", "name": "First Stage / Step Into / Out of the Jungle", "children": 187, "state": "MOUNTED_WITH_CHILD_ROUTES"}
   ],
-  "districts": [
-    {"name":"Core Participation and Human Systems","count":6,"bodies":["MMMBBB","Whole Human Participation","Contact Field","Interactor Interacting","HOSF","Recoverable Participation"]},
-    {"name":"Truth, Proof and Validation","count":7,"bodies":["VTS","DGYAK","Code Ding","Cold Ding","TraceBox","Empiramid","TRY IT NOW"]},
-    {"name":"Language, Meaning and Symbolic Syntax","count":8,"bodies":["FlowTalk","BTG","MAP","SpalkTalk","SpelkTalk","Speakuals","Mark-Level Syntax","Prefix and RootWord Theory"]},
-    {"name":"Game and Play Theories","count":9,"bodies":["PLAYFORM","GlyphPlay","GameForge","GlyphForge","JM GameCore","128 Hand","Route Catch","Touch-Control Lab","GameFeel Doctor"]},
-    {"name":"Story, World and Character Theories","count":6,"bodies":["Humanimals","PlayZone","T-Boys / 4T Clash","The Seventh Pillar","Observer's Door","Embedded World Engine"]},
-    {"name":"Music, Lyrics and Performance","count":6,"bodies":["Lyrics as Breath-System","Pocket-Body Translation","SeedFlow","Rapathon","PieceMaker","Mouth / Body / Breath / Timing Calibration"]},
-    {"name":"Contact, Physics and Transformation","count":6,"bodies":["CAUSE MUST PASS","Physics Probing","Contact Transformation","A-to-B / B-to-A Testing","Pressure = Force / Area Learning Route","Micro-Transmutation Law"]},
-    {"name":"Device, OS and Production","count":7,"bodies":["FTR","RouteOS","RootOS","JjmM","GripRoute","Ama-Pro","Phone-to-Laptop Handoff"]},
-    {"name":"Public Methods and Transfer","count":5,"bodies":["Container Theory","Container Method","Open the Container","Tin Theory","Theory-to-Product Router"]},
-    {"name":"Convergence, Re-entry and Living Project Trunks","count":4,"bodies":["Bringing It All Together","First Stage / Step Into / Out of the Jungle","Latest / Source Reconciliation Pass v0.1","The Approach Stance"]},
-    {"name":"Recent Completed Theory Bodies","count":12,"bodies":["Medium-Dependency Law: Route–Role–Response","Contact, Causation & Claimed Authority Register","Actual Mental Health","When Stone and Scroll Speak","BRAIDGE Brain Return","Relational Passage Theory","The Whole Human Record","The Me Theme","The Model and the Thing","Higher Transfiguration","Fair Fare or Far Fare","Original Theory for Reality"]},
-    {"name":"Immediate Recent Theory Census — July 2026","count":12,"bodies":["Original Theory for Reality","BRAIDGE Brain Return","Relational Passage Theory","The Whole Human Record","The Me Theme","The Model and the Thing","Higher Transfiguration","Fair Fare or Far Fare","Observer and Observation Paradox","Legaliving — Exemplar Family","Numerology and System Mapping","Mental Illness as Superpower"]},
-    {"name":"Bringing It All Together — Full Project Theory Census","count":76,"bodies":["Worthy Mount / Master Chat","BenefitMerge Theory","JM Project All-Together Register","Known-Field Completion Sweep","Latest / Source Reconciliation Pass","Founding Idea","MMMBBB","VTS / VTSDGY","FlowTalk","BTG","HOSF / HOS","Seventh Pillar"]},
-    {"name":"First Stage / Jungle — Full Theory and Governance Census","count":187,"bodies":["Contact Field Theory","Interactors Interacting","Trinary-at-least","Fakaka / FCC","SpalkTalk","SpelkTalk","Speakuals","EyesOn","Mark-Level Syntax Theory","Prefix / RootWord Theory","TheOry / Theosophising","UIzing + Theorifying Stage"]},
-    {"name":"Project Source Census — First House / Language / Attention","count":9,"bodies":["SpalkTalk","SpelkTalk","Speakuals","EyesOn","FlowTalk and MAP","Mark-Level Syntax Theory","Prefix / RootWord Theory","Name / Mask Theory","The Palace / Place-to-Lace"]},
-    {"name":"Project Source Census — Contact / Participation / Relation","count":8,"bodies":["Contact Field Theory","Interactors Interacting","Trinary-at-least","Fakaka / FCC","MMM-BBB and Whole Human Participation","Theory of Mind","Theory of Body","Habituation ≠ Validation"]},
-    {"name":"Project Source Census — Cading / Quadze / Runtime","count":9,"bodies":["Coding / Codeing / Cading","Codifying / Kocodifying","Quadze / Multi-State Mark Theory","JM Codifying Field Schema","Cading","CadenVM / RouteVM","Parser","Runtime","Core IR"]},
-    {"name":"Project Source Census — Proof / Register / Recovery","count":8,"bodies":["TraceBox / Ding Theory","Theory Estate Register","Evidence Ledger","Zionfolder Theory","Title-Level Theory Intake Patch","Known-Field Completion Sweep","Latest / Source Reconciliation Pass","Grip-Ground Connector"]},
-    {"name":"Project Source Census — Title-Level Chats Awaiting Deep Read","count":69,"bodies":["Solipsism and Theory of Mind","Mini Lab Concept","Self-Mastery Contact Field","FTR / Ama-Pro / Geo-Computer / MaterialRoute Sync Lane","TBS Game Overview","Purification and Imagination","Environment-First Logic","JM Ecosystem Explained","Bat Detectors Explained","JM Bodyhouse","Jentil Meshing Theory","Library Auto-Save vs Manual"]}
-  ],
   "locks": [
     "Full bodies first. Census cards second.",
     "The body is where the door says it is.",
@@ -102,5 +120,5 @@
     "Theory is a human contact attempt with reality, not reality itself.",
     "No Ding, no claim."
   ],
-  "next": "Promote the remaining twenty-five Estate full bodies from their fullest source bodies without inflating the census count."
+  "next": "Device-contact the all-37 reader; continue promoting any of the 260 census routes only when their fullest source body is recovered."
 }

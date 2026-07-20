@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "apps/**"
+      - "navigator/**"
       - "lyrics/**"
       - "recovery/**"
       - "registry/jm3232-navigator.json"
@@ -22,7 +23,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Preserve exact Theory, mount Apps and deploy Estate
+    name: Preserve exact Theory, mount Navigator and Apps, deploy Estate
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -52,7 +53,7 @@ jobs:
 
           def fetch_url(url: str, required: bool = True) -> bytes:
               try:
-                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Preserving-Deploy/1.0'})
+                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Preserving-Deploy/1.1'})
                   with urlopen(req, timeout=30) as response:
                       return response.read()
               except Exception:
@@ -118,11 +119,12 @@ jobs:
             #jm-current-doors details{background:rgba(17,12,27,.96);color:#fff;border:1px solid rgba(255,211,109,.38);border-radius:18px;box-shadow:0 18px 54px rgba(0,0,0,.45);overflow:hidden}
             #jm-current-doors summary{cursor:pointer;list-style:none;padding:13px 16px;color:#ffd36d}
             #jm-current-doors summary::-webkit-details-marker{display:none}
-            #jm-current-doors nav{display:grid;gap:7px;padding:0 10px 10px;min-width:215px}
+            #jm-current-doors nav{display:grid;gap:7px;padding:0 10px 10px;min-width:230px}
             #jm-current-doors a{display:block;text-decoration:none;color:#fff;background:#21182f;border-radius:12px;padding:11px 12px}
           </style>
           <aside id="jm-current-doors" aria-label="Current Estate doors">
             <details><summary>Current doors&nbsp; ↗</summary><nav>
+              <a href="./navigator/">JM3232 Navigator + Stringline</a>
               <a href="./apps/">Non-Game Apps House</a>
               <a href="./theory/">Theory Multihub</a>
               <a href="./lyrics/">Lyrics &amp; Music House</a>
@@ -142,6 +144,8 @@ jobs:
             Cache-Control: no-cache
           /assets/*
             Cache-Control: public, max-age=31536000, immutable
+          /navigator/*
+            Cache-Control: no-cache
           /apps/*
             Cache-Control: no-cache
           /theory/*
@@ -157,8 +161,8 @@ jobs:
           EOF
 
           cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-2026-07-20-apps-1';
-          const CORE=['./','./index.html','./apps/','./theory/','./lyrics/','./recovery/'];
+          const CACHE='jm-independent-estate-2026-07-20-navigator-stringline-1';
+          const CORE=['./','./index.html','./navigator/','./navigator/stringline.json','./apps/','./theory/','./lyrics/','./recovery/'];
           self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
           self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
           self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r}).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))))});
@@ -168,24 +172,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf cloudflare-estate/apps cloudflare-estate/lyrics cloudflare-estate/recovery
+          rm -rf cloudflare-estate/navigator cloudflare-estate/apps cloudflare-estate/lyrics cloudflare-estate/recovery
+          cp -a navigator cloudflare-estate/navigator
           cp -a apps cloudflare-estate/apps
           cp -a lyrics cloudflare-estate/lyrics
           cp -a recovery cloudflare-estate/recovery
+          cp registry/jm3232-navigator.json cloudflare-estate/navigator/JM3232_NAVIGATOR_REGISTRY.json
           cp registry/jm3232-navigator.json cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
 
           cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
           {
-            "schema": "JM.CloudflareEstateDeployment/1.2",
-            "version": "v1.15.0-non-game-apps-house",
+            "schema": "JM.CloudflareEstateDeployment/1.3",
+            "version": "v1.16.0-navigator-stringline",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_rail": "JMisJustMe/JM-cading-lab",
-            "rooms": ["apps", "theory", "lyrics", "recovery"],
+            "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
             "apps_registry_count": 40,
             "theory_source": "preserved Cloudflare deployment f6336b93",
-            "navigator_registry": "recovery/JM3232_NAVIGATOR_REGISTRY.json",
-            "boundary": "The Apps House is a public-safe catalogue. Private embedded app payloads remain owner-side. The exact pre-regression Theory body is preserved while Apps, Lyrics and Recovery are overlaid from GitHub."
+            "navigator_registry": "navigator/JM3232_NAVIGATOR_REGISTRY.json",
+            "stringline_seed": "navigator/stringline.json",
+            "boundary": "JM3232 v0.1 is a real browser-experience shell using the device browser for external rendering, not a claimed custom web engine. The exact pre-regression Theory body is preserved while Navigator, Apps, Lyrics and Recovery are overlaid from GitHub."
           }
           EOF
 
@@ -194,19 +201,25 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/navigator/index.html
+          test -s cloudflare-estate/navigator/stringline.json
+          test -s cloudflare-estate/navigator/JM3232_NAVIGATOR_REGISTRY.json
           test -s cloudflare-estate/apps/index.html
           test -s cloudflare-estate/theory/index.html
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
           grep -q "JMISJUSTME" cloudflare-estate/index.html
-          grep -q "Non-Game Apps House" cloudflare-estate/index.html
+          grep -q "JM3232 Navigator + Stringline" cloudflare-estate/index.html
+          grep -q "JM3232 NAVIGATOR" cloudflare-estate/navigator/index.html
+          grep -q "Explore outward. String inward." cloudflare-estate/navigator/index.html
+          grep -q "Many bodies. One living line. None erased." cloudflare-estate/navigator/stringline.json
           grep -q "NON-GAME APPS HOUSE" cloudflare-estate/apps/index.html
           grep -q "40 rooms" cloudflare-estate/apps/index.html
           grep -q "Human Pattern Calibration" cloudflare-estate/theory/index.html
           ! grep -q "JM Theory Multihub v0.4 — Touch Repair" cloudflare-estate/theory/index.html
           grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
-          echo "Four-room Estate deployment body passed all source gates."
+          echo "Five-room Estate deployment body passed all source gates."
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -216,19 +229,28 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove Apps and preserved Theory on the canonical host
+      - name: Prove Navigator, Apps and preserved Theory on the canonical host
         shell: bash
         run: |
           set -euo pipefail
           proved=0
           for attempt in $(seq 1 40); do
             curl --fail --silent --show-error --location \
+              "https://jmisjustme-estate.pages.dev/navigator/?navigator-proof=${GITHUB_RUN_ID}-${attempt}" \
+              > "$RUNNER_TEMP/live-navigator.html" || true
+            curl --fail --silent --show-error --location \
+              "https://jmisjustme-estate.pages.dev/navigator/stringline.json?stringline-proof=${GITHUB_RUN_ID}-${attempt}" \
+              > "$RUNNER_TEMP/live-stringline.json" || true
+            curl --fail --silent --show-error --location \
               "https://jmisjustme-estate.pages.dev/apps/?apps-proof=${GITHUB_RUN_ID}-${attempt}" \
               > "$RUNNER_TEMP/live-apps.html" || true
             curl --fail --silent --show-error --location \
               "https://jmisjustme-estate.pages.dev/theory/?theory-proof=${GITHUB_RUN_ID}-${attempt}" \
               > "$RUNNER_TEMP/live-theory.html" || true
-            if grep -q "NON-GAME APPS HOUSE" "$RUNNER_TEMP/live-apps.html" \
+            if grep -q "JM3232 NAVIGATOR" "$RUNNER_TEMP/live-navigator.html" \
+              && grep -q "Explore outward. String inward." "$RUNNER_TEMP/live-navigator.html" \
+              && grep -q "Many bodies. One living line. None erased." "$RUNNER_TEMP/live-stringline.json" \
+              && grep -q "NON-GAME APPS HOUSE" "$RUNNER_TEMP/live-apps.html" \
               && grep -q "Human Pattern Calibration" "$RUNNER_TEMP/live-theory.html" \
               && ! grep -q "JM Theory Multihub v0.4 — Touch Repair" "$RUNNER_TEMP/live-theory.html"; then
               proved=1
@@ -237,23 +259,24 @@ jobs:
             sleep 2
           done
           test "$proved" -eq 1
-          echo "Apps House and preserved Theory are live on the canonical host."
+          echo "Navigator, Apps House and preserved Theory are live on the canonical host."
 
-      - name: Write successful four-room deployment receipt
+      - name: Write successful five-room deployment receipt
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p registry
           cat > registry/cloudflare-auto-deploy-receipt.json <<EOF
           {
-            "schema": "JM.CloudflareAutoDeployReceipt/1.2",
+            "schema": "JM.CloudflareAutoDeployReceipt/1.3",
             "status": "SUCCESS",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_commit": "${GITHUB_SHA}",
             "workflow_run": "${GITHUB_RUN_ID}",
             "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-            "rooms": ["apps", "theory", "lyrics", "recovery"],
+            "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
+            "navigator_proof": "EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE",
             "apps_registry_count": 40,
             "apps_boundary": "PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE",
             "theory_policy": "PRESERVE_PRE_REGRESSION_F6336B93_BODY",
@@ -263,5 +286,5 @@ jobs:
           git config user.name "JM Estate Deployment Rail"
           git config user.email "actions@users.noreply.github.com"
           git add registry/cloudflare-auto-deploy-receipt.json
-          git diff --cached --quiet || git commit -m "Record Apps House Cloudflare deployment success"
+          git diff --cached --quiet || git commit -m "Record Navigator and Stringline Cloudflare deployment success"
           git push

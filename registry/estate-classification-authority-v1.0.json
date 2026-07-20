@@ -230,6 +230,30 @@
       "confirmed_package": "v1.0 SOLO 15.9 MB + SERVE PWA + STORE debug APK assembly/signature pass; install pending",
       "ruling": "CURRENT PUBLIC PACKAGE IDENTIFIED; LATER v4.x MEMORY CLAIM REQUIRES EXACT PACKAGE RETRIEVAL",
       "severity": "WATCH"
+    },
+    {
+      "id": "registers-governance-chain",
+      "name": "Source-to-Living Governance Chain",
+      "primary_seat": "Registers & Governance",
+      "governing_identity": "staged authority chain from source identification to live-state carriage",
+      "chain": [
+        "Source Ledger",
+        "Latest Body Finder",
+        "Source-Body Auditor",
+        "Current Best Register",
+        "Crown Register",
+        "Living Register"
+      ],
+      "package_retrieval_open": [
+        "Latest Body Finder BUILD 050 ancestor",
+        "Source-Body Auditor BUILD 050 family"
+      ],
+      "ruling": "KNOWN GOVERNING BODIES; EXACT STANDALONE PACKAGES NOT YET RECOVERED",
+      "prohibited_reductions": [
+        "blank source-needed ideas",
+        "fully recovered standalone tools without package evidence"
+      ],
+      "severity": "HONEST_RETRIEVAL_STATE"
     }
   ],
   "systemic_guard": {

@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.3 Games&Beyond canonical-annex adoption",
+  "version": "v0.1.4 classification-integrity + governance-chain seed",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -401,6 +401,58 @@
           "type": "Playable PWA mini-studio machine",
           "role": "v1.3 Project Board + File Reader + Image Gallery + Search Hub + preserved studio tools",
           "status": "PROVEN"
+        }
+      ]
+    },
+    {
+      "id": "registers-governance",
+      "name": "Registers & Governance Chain",
+      "headChat": "Estate Governance Project Head",
+      "headRecord": "Source-to-Living Authority Chain",
+      "status": "STANDING",
+      "keeper": "The chain carries authority in stages. A known role is not the same as a recovered standalone package.",
+      "bodies": [
+        {
+          "id": "source-ledger",
+          "name": "Source Ledger",
+          "type": "Source authority register",
+          "role": "Records what sources exist and where they came from",
+          "status": "MOUNTED"
+        },
+        {
+          "id": "latest-body-finder",
+          "name": "Latest Body Finder",
+          "type": "Candidate/version finder",
+          "role": "BUILD 050 ancestor is known; exact standalone package retrieval remains open",
+          "status": "STRANDED"
+        },
+        {
+          "id": "source-body-auditor",
+          "name": "Source-Body Auditor",
+          "type": "Source/body relation auditor",
+          "role": "BUILD 050 family is known; exact standalone package retrieval remains open",
+          "status": "STRANDED"
+        },
+        {
+          "id": "current-best-register",
+          "name": "Current Best Register",
+          "type": "Operating-authority register",
+          "role": "Selects safest/current-best body after source and audit checks",
+          "status": "MOUNTED"
+        },
+        {
+          "id": "crown-register",
+          "name": "Crown Register",
+          "type": "Claim/crown governor",
+          "role": "Separates working, frozen, open, blocked and earned crowns",
+          "status": "MOUNTED"
+        },
+        {
+          "id": "living-register",
+          "name": "Living Register",
+          "type": "Live state carrier",
+          "role": "Carries forward approved state without inflating it",
+          "status": "THREADING"
         }
       ]
     }

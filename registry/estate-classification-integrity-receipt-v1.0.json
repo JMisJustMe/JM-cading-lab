@@ -1,6 +1,6 @@
 {
-  "schema": "JM.EstateClassificationIntegrityReceipt/1.1",
-  "status": "PASS_SECOND_WAVE",
+  "schema": "JM.EstateClassificationIntegrityReceipt/1.2",
+  "status": "PASS_RETRIEVAL_TRUTH",
   "generated_at_utc": "2026-07-20T15:51:28Z",
   "corrected_public_bodies": [
     "RouteOS primary seat and flagship Games&Beyond room",
@@ -28,7 +28,7 @@
     "non_game_app_rooms": 44,
     "games_beyond_built_in": 22,
     "games_beyond_full_target": 24,
-    "stringline_projects": 10
+    "stringline_projects": 11
   },
   "proof": {
     "apps_registry_parse": "PASS",
@@ -39,8 +39,15 @@
     "games_javascript": "PASS",
     "stringline_authority_routes": "PASS",
     "second_wave_source_status": "PASS",
-    "derived_stats_after_second_wave": "PASS"
+    "derived_stats_after_second_wave": "PASS",
+    "remaining_registered_rows_individually_audited": "PASS",
+    "known_body_vs_recovered_package_distinction": "PASS"
   },
   "boundary": "This correction governs the connected public source and retrieved authority evidence. It is not a claim that every private historical body has completed a byte-for-byte audit.",
-  "updated_at_utc": "2026-07-20T16:07:23Z"
+  "updated_at_utc": "2026-07-20T16:07:23Z",
+  "remaining_exact_package_retrieval": [
+    "Portal Engine standalone package",
+    "Latest Body Finder BUILD 050 standalone package",
+    "Source-Body Auditor BUILD 050 standalone package"
+  ]
 }

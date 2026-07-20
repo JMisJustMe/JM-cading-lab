@@ -1,18 +1,49 @@
 {
-  "schema": "JM.CloudflareRollbackDiagnostic/1.0",
+  "schema": "JM.CloudflareRollbackDiagnostic/1.1",
   "status": "DIAGNOSTIC_COMPLETE",
-  "project": "jmisjustme-estate",
-  "cutoff": "2026-07-20T13:08:12Z",
-  "listing_success": false,
-  "deployment_count": 0,
-  "pre_cutoff_successful_production_count": 0,
-  "candidates": [],
-  "exact_match_deployment_id": null,
-  "errors": [
+  "listing_success": true,
+  "deployment_count": 7,
+  "candidates": [
     {
-      "stage": "list_http",
-      "status": 400,
-      "message": "{\n  \"result\": null,\n  \"success\": false,\n  \"errors\": [\n    {\n      \"code\": 8000024,\n      \"message\": \"Invalid list options provided. Review the `page` or `per_page` parameter.\"\n    }\n  ],\n  \"messages\": []\n}\n"
+      "id": "91ad9066-cd15-4972-beff-2875d4110695",
+      "created_on": "2026-07-20T13:08:10.499869Z",
+      "url": "https://91ad9066.jmisjustme-estate.pages.dev",
+      "trigger_type": "ad_hoc",
+      "fetch_status": "SUCCESS",
+      "title_match": false,
+      "content_match": false,
+      "title_excerpt": "<title>JM Theory Multihub v0.4 \u2014 Touch Repair</title>"
+    },
+    {
+      "id": "95b711da-969e-4e41-a1b3-4f492fbcdef6",
+      "created_on": "2026-07-20T13:05:13.162422Z",
+      "url": "https://95b711da.jmisjustme-estate.pages.dev",
+      "trigger_type": "ad_hoc",
+      "fetch_status": "SUCCESS",
+      "title_match": false,
+      "content_match": false,
+      "title_excerpt": "<title>JM Theory Multihub v0.4 \u2014 Touch Repair</title>"
+    },
+    {
+      "id": "f6336b93-6b9c-4090-a709-1f0a68d3fbe5",
+      "created_on": "2026-07-20T09:06:33.913028Z",
+      "url": "https://f6336b93.jmisjustme-estate.pages.dev",
+      "trigger_type": "ad_hoc",
+      "fetch_status": "SUCCESS",
+      "title_match": false,
+      "content_match": true,
+      "title_excerpt": "<title>JM Theory Multihub</title>"
+    },
+    {
+      "id": "4a25d666-9662-4201-bca3-aa7accb17664",
+      "created_on": "2026-07-20T01:58:34.436224Z",
+      "url": "https://4a25d666.jmisjustme-estate.pages.dev",
+      "trigger_type": "ad_hoc",
+      "fetch_status": "HTTP_404",
+      "title_match": false,
+      "content_match": false
     }
-  ]
+  ],
+  "exact_match_deployment_id": null,
+  "errors": []
 }

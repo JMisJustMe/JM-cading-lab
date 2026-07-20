@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "governance/apply_estate_classification_integrity_v1_1.py"
+      - "governance/apply_apps_house_stat_integrity.py"
       - ".github/workflows/apply-estate-classification-second-wave.yml"
   workflow_dispatch:
 
@@ -44,7 +45,6 @@ jobs:
 
           text=Path('apps/index.html').read_text(encoding='utf-8')
           rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
-          names=[row[0] for row in rows]
           required=[
             ('CadenVM / CadenPad','v0.10 Frozen'),
             ('TraceBox / RouteBox','v5.2 Standalone PWA'),

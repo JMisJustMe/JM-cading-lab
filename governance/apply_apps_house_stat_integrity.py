@@ -32,8 +32,8 @@ replacements = [
         f'<div class="stat"><b>{routed_count}</b><span>routed organs</span></div>',
     ),
     (
-        r'<div class="stat"><b>\d+ \+ \d+</b><span>source-needed \+ preparation</span></div>',
-        f'<div class="stat"><b>{recovery_count} + {prep_count}</b><span>source-needed + preparation</span></div>',
+        r'<div class="stat"><b>\d+ \+ \d+</b><span>(?:source-needed|package-retrieval) \+ preparation</span></div>',
+        f'<div class="stat"><b>{recovery_count} + {prep_count}</b><span>package-retrieval + preparation</span></div>',
     ),
 ]
 for pattern, replacement in replacements:

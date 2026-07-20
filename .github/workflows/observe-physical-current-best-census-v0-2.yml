@@ -44,25 +44,23 @@ jobs:
           census=json.loads(Path('registry/estate-physical-current-best-census-v0.2.json').read_text())
           scope=census.get('first_scope',[])
           packages=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_CONFIRMED']
-          partial=[item for item in scope if item.get('status') in {
+          partial_statuses={
               'SOURCE_ANCHOR_BODY_CONFIRMED_CONTINUATION_SEARCH_ACTIVE',
               'DIRECT_HTML_BODY_CONFIRMED_ZIP_AND_DONOR_SEARCH_ACTIVE',
-          }]
+              'DIRECT_HTML_AND_DONOR_CHAIN_CONFIRMED_ZIP_SEARCH_ACTIVE',
+          }
+          partial=[item for item in scope if item.get('status') in partial_statuses]
           held=[item for item in scope if item.get('status')!='PHYSICAL_PACKAGE_CONFIRMED']
           steps=[]
           for job in jobs.get('jobs',[]):
               for step in job.get('steps',[]):
                   steps.append({'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')})
           passed=os.environ['CONCLUSION']=='success'
-          classification=(
-              f"CENSUS_GATE_PASS_{len(packages)}_PACKAGES_{len(partial)}_PARTIAL_BODIES"
-              if passed else 'CENSUS_GATE_FAILED'
-          )
           receipt={
-              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2.2',
+              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2.3',
               'status':os.environ['STATUS'],
               'conclusion':os.environ['CONCLUSION'],
-              'classification':classification,
+              'classification':f"CENSUS_GATE_PASS_{len(packages)}_PACKAGES_{len(partial)}_PARTIAL_BODIES" if passed else 'CENSUS_GATE_FAILED',
               'run_id':os.environ['RUN_ID'],
               'head_sha':os.environ['HEAD_SHA'],
               'run_url':os.environ['RUN_URL'],
@@ -76,9 +74,9 @@ jobs:
               'package_confirmed':[item.get('name') for item in packages],
               'partial_confirmed':[item.get('name') for item in partial],
               'held':[item.get('name') for item in held],
-              'next_gate':'Locate B0.8.3, Zionfolder v1.1.1 ZIP and both Zionfolder repair-donor bodies',
+              'next_gate':'Locate JMStudios B0.8.3 and the Zionfolder v1.1.1 ZIP archive',
               'steps':steps,
-              'boundary':'A partial physical body confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated.'
+              'boundary':'A partial physical body or donor-chain confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated.'
           }
           Path('registry/physical-current-best-census-v0.2-outcome.json').write_text(json.dumps(receipt,indent=2)+'\n')
           PY

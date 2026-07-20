@@ -55,7 +55,7 @@ jobs:
             (expected['routed'],'routed organs'),
           ]:
             assert f'<b>{value}</b><span>{label}</span>' in text
-          assert f"<b>{expected['source_needed']} + {expected['preparation']}</b><span>source-needed + preparation</span>" in text
+          assert f"<b>{expected['source_needed']} + {expected['preparation']}</b><span>package-retrieval + preparation</span>" in text
           scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
           Path('/tmp/apps-stat-proof.js').write_text(scripts[-1],encoding='utf-8')
           print(expected)

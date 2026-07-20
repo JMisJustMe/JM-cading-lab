@@ -41,27 +41,34 @@ jobs:
           from pathlib import Path
 
           jobs=json.loads(Path(os.environ['RUNNER_TEMP'],'jobs.json').read_text())
+          census=json.loads(Path('registry/estate-physical-current-best-census-v0.2.json').read_text())
+          scope=census.get('first_scope',[])
+          confirmed=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_CONFIRMED']
+          active=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_SEARCH_ACTIVE']
           steps=[]
           for job in jobs.get('jobs',[]):
               for step in job.get('steps',[]):
                   steps.append({'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')})
+          passed=os.environ['CONCLUSION']=='success'
           receipt={
-              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2',
+              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2.1',
               'status':os.environ['STATUS'],
               'conclusion':os.environ['CONCLUSION'],
-              'classification':'OPENING_GATE_PASS' if os.environ['CONCLUSION']=='success' else 'OPENING_GATE_FAILED',
+              'classification':f"CENSUS_GATE_PASS_{len(confirmed)}_OF_{len(scope)}_PHYSICAL_PACKAGES_CONFIRMED" if passed else 'CENSUS_GATE_FAILED',
               'run_id':os.environ['RUN_ID'],
               'head_sha':os.environ['HEAD_SHA'],
               'run_url':os.environ['RUN_URL'],
               'updated_at':os.environ['UPDATED_AT'],
               'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
               'batch':'operating-houses-01',
-              'targets':4,
-              'physical_crowns_granted':0,
-              'physical_crowns_held':4,
-              'next_gate':'Source-Body Auditor exact package inspection',
+              'targets':len(scope),
+              'physical_packages_confirmed':len(confirmed),
+              'physical_package_searches_active':len(active),
+              'confirmed':[item.get('name') for item in confirmed],
+              'held':[item.get('name') for item in active],
+              'next_gate':'Inspect the held targets exact physical packages',
               'steps':steps,
-              'boundary':'A successful opening gate proves the census structure and anti-shortcut controls. It does not prove any target package current-best or grant a physical crown.'
+              'boundary':'A successful gate proves only the package authorities explicitly recorded in the canonical census. Active searches remain uncrowned; fresh phone contact remains a separate Ding where stated.'
           }
           Path('registry/physical-current-best-census-v0.2-outcome.json').write_text(json.dumps(receipt,indent=2)+'\n')
           PY

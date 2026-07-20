@@ -1,0 +1,69 @@
+name: Inspect Canonical LyricStudio Route
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/inspect-cloudflare-lyrics.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Fetch and classify canonical Lyrics route
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          curl --fail --silent --show-error --location \
+            "https://jmisjustme-estate.pages.dev/lyrics/?state-proof=${GITHUB_RUN_ID}" \
+            > "$RUNNER_TEMP/live-lyrics.html"
+
+          python3 <<'PY'
+          import json, os, re
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          body=Path(os.environ['RUNNER_TEMP'],'live-lyrics.html').read_text(encoding='utf-8',errors='replace')
+          match=re.search(r'<title>(.*?)</title>',body,re.I|re.S)
+          title=re.sub(r'\s+',' ',match.group(1)).strip() if match else ''
+          state={
+            'schema':'JM.CloudflareLiveLyricStudioState/0.5.1',
+            'status':'FETCHED',
+            'canonical_route':'https://jmisjustme-estate.pages.dev/lyrics/',
+            'title':title,
+            'byte_length':len(body.encode('utf-8')),
+            'contains_lyricstudio_v051':'JM LyricStudio v0.5.1' in body,
+            'contains_121_entries':'121 tap-open entries' in body,
+            'contains_back_control':'id="back"' in body,
+            'contains_teleprompter':'Teleprompter' in body,
+            'contains_studio':'Studio' in body,
+            'contains_old_lyrics_house':'JM Lyrics & Music House' in body,
+            'workflow_run':os.environ['GITHUB_RUN_ID'],
+            'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
+          }
+          Path('registry/cloudflare-lyrics-live-state.json').write_text(json.dumps(state,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(state,indent=2))
+          PY
+
+      - name: Commit canonical Lyrics state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM LyricStudio Live Inspector"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-lyrics-live-state.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record current canonical LyricStudio state"
+          git pull --rebase origin main
+          git push origin HEAD:main

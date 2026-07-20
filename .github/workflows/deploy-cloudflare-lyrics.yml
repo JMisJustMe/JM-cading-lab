@@ -1,0 +1,214 @@
+name: Deploy First-Party LyricStudio
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "lyrics/**"
+      - ".github/workflows/deploy-cloudflare-lyrics.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  deploy:
+    name: Preserve live Estate and deploy LyricStudio
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out Estate source
+        uses: actions/checkout@v6
+
+      - name: Preserve the currently standing Estate
+        shell: bash
+        env:
+          ESTATE_BASE: https://jmisjustme-estate.pages.dev/
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate
+          mkdir -p cloudflare-estate/assets cloudflare-estate/data
+
+          python3 <<'PY'
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          import os, re
+
+          base = os.environ['ESTATE_BASE']
+          out = Path('cloudflare-estate')
+
+          def fetch(path: str, required: bool = True) -> bytes:
+              url = urljoin(base, path)
+              try:
+                  req = Request(url, headers={'User-Agent': 'JM-LyricStudio-Deploy/0.5.1'})
+                  with urlopen(req, timeout=30) as response:
+                      return response.read()
+              except Exception:
+                  if required:
+                      raise
+                  return b''
+
+          def write(path: str, data: bytes) -> None:
+              target = out / path
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+
+          root = fetch('')
+          root_text = root.decode('utf-8', 'replace')
+          write('index.html', root)
+
+          refs = set(re.findall(r'''(?:src|href)=["']([^"']+)["']''', root_text, flags=re.I))
+          for ref in sorted(refs):
+              if ref.startswith(('data:', 'mailto:', 'tel:', '#')):
+                  continue
+              parsed = urlparse(urljoin(base, ref))
+              if parsed.netloc != urlparse(base).netloc:
+                  continue
+              path = parsed.path.lstrip('/')
+              if not path or path.endswith('/'):
+                  continue
+              data = fetch(path, required=False)
+              if data:
+                  write(path, data)
+
+          for path in [
+              '404.html',
+              'manifest.webmanifest',
+              'robots.txt',
+              'sitemap.xml',
+              'assets/jm-mark.svg',
+              'data/estate-canonical-site.json',
+              'data/estate-public.json',
+              'data/installed-districts-public.json',
+              'data/installed-private.schema.json',
+              'data/source-chambers.schema.json',
+              'data/storage-policy.json',
+          ]:
+              data = fetch(path, required=False)
+              if data:
+                  write(path, data)
+
+          for route in ['navigator', 'apps', 'theory', 'recovery']:
+              write(f'{route}/index.html', fetch(f'{route}/'))
+
+          for path in [
+              'navigator/stringline.json',
+              'navigator/JM3232_NAVIGATOR_REGISTRY.json',
+              'recovery/JM3232_NAVIGATOR_REGISTRY.json',
+          ]:
+              data = fetch(path, required=False)
+              if data:
+                  write(path, data)
+          PY
+
+      - name: Overlay the verified first-party LyricStudio
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate/lyrics
+          cp -a lyrics cloudflare-estate/lyrics
+
+          cat > cloudflare-estate/_headers <<'EOF'
+          /*
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: strict-origin-when-cross-origin
+            Permissions-Policy: camera=(), microphone=(self), geolocation=()
+            Cache-Control: no-cache
+          /assets/*
+            Cache-Control: public, max-age=31536000, immutable
+          /lyrics/*
+            Cache-Control: no-cache
+          EOF
+
+          cat > cloudflare-estate/_redirects <<'EOF'
+          /* /index.html 200
+          EOF
+
+          cat > cloudflare-estate/sw.js <<'EOF'
+          const CACHE='jm-independent-estate-lyricstudio-v051-1';
+          const CORE=['./','./index.html','./navigator/','./apps/','./theory/','./lyrics/','./recovery/'];
+          self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
+          self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+          self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match(event.request).then(response=>response||caches.match('./index.html'))))});
+          EOF
+
+      - name: Verify the LyricStudio deployment body
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/navigator/index.html
+          test -s cloudflare-estate/apps/index.html
+          test -s cloudflare-estate/theory/index.html
+          test -s cloudflare-estate/lyrics/index.html
+          test -s cloudflare-estate/recovery/index.html
+          grep -q "JM LyricStudio v0.5.1" cloudflare-estate/lyrics/index.html
+          grep -q "121 tap-open entries" cloudflare-estate/lyrics/index.html
+          grep -q 'id="back"' cloudflare-estate/lyrics/index.html
+          grep -q "Teleprompter" cloudflare-estate/lyrics/index.html
+          grep -q "Studio" cloudflare-estate/lyrics/index.html
+          echo "Live-preserving LyricStudio deployment body passed."
+
+      - name: Deploy the existing Cloudflare Pages project
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove LyricStudio on the canonical host
+        shell: bash
+        run: |
+          set -euo pipefail
+          proved=0
+          for attempt in $(seq 1 40); do
+            curl --fail --silent --show-error --location \
+              "https://jmisjustme-estate.pages.dev/lyrics/?lyricstudio-proof=${GITHUB_RUN_ID}-${attempt}" \
+              > "$RUNNER_TEMP/live-lyrics.html" || true
+            if grep -q "JM LyricStudio v0.5.1" "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q "121 tap-open entries" "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q 'id="back"' "$RUNNER_TEMP/live-lyrics.html"; then
+              proved=1
+              break
+            fi
+            sleep 2
+          done
+          test "$proved" -eq 1
+          echo "JM LyricStudio v0.5.1 is live on the canonical host."
+
+      - name: Write successful LyricStudio deployment receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cat > registry/cloudflare-lyrics-deploy-receipt.json <<EOF
+          {
+            "schema": "JM.CloudflareLyricStudioReceipt/0.5.1",
+            "status": "SUCCESS",
+            "project": "jmisjustme-estate",
+            "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+            "source_commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "body": "JM LyricStudio v0.5.1 — First-Party Estate",
+            "entries": 121,
+            "live_title_proven": true,
+            "app_back_control_proven": true,
+            "manual_upload_required": false
+          }
+          EOF
+          git config user.name "JM Estate Deployment Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-lyrics-deploy-receipt.json
+          git diff --cached --quiet || git commit -m "Record LyricStudio Cloudflare deployment success"
+          git pull --rebase origin main
+          git push origin main

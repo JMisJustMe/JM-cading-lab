@@ -1,4 +1,4 @@
-# Settled-state trigger: checksum-segmented carrier + current Lyrics House proof
+# Settled-state route: checksum-segmented carrier + structural Lyrics House proof
 name: Deploy Estate Head v0.2.1 to Cloudflare
 
 on:
@@ -93,6 +93,8 @@ jobs:
         if: steps.build.outputs.exit_code == '0'
         run: |
           set -euo pipefail
+          git restore --worktree registry/cloudflare-estate-head-build-diagnostic.log registry/cloudflare-estate-head-build-diagnostic.json 2>/dev/null || true
+          rm -rf cloudflare-estate
           git pull --rebase origin main
           python3 scripts/deploy_estate_head_public_resilient.py receipt
           git config user.name "JM Estate Deployment Rail"

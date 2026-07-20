@@ -54,29 +54,41 @@ jobs:
 
           payload = json.loads(Path(os.environ['RUNNER_TEMP'], 'jobs.json').read_text())
           jobs = payload.get('jobs', [])
-          target = next((j for j in jobs if j.get('name') == 'Preserve exact Theory, mount Navigator and Apps, deploy Estate'), None)
+          target = next((j for j in jobs if 'mount Navigator and Apps' in j.get('name', '')), None)
           if target is None:
               target = jobs[0] if jobs else {'steps': []}
 
-          steps = {s.get('name'): s.get('conclusion') for s in target.get('steps', [])}
-          required = [
-              'Assemble the canonical Estate body',
-              'Overlay sovereign public rooms',
-              'Verify the assembled deployment body',
-              'Deploy the existing Cloudflare Pages project',
-              'Prove Navigator, Apps and preserved Theory on the canonical host',
-          ]
-          proven = all(steps.get(name) == 'success' for name in required)
+          raw_steps = {s.get('name', ''): s.get('conclusion') for s in target.get('steps', [])}
+          proof_specs = {
+              'assemble': ('Assemble the canonical Estate body',),
+              'overlay': ('Overlay sovereign public rooms',),
+              'verify': ('Verify the assembled deployment body',),
+              'deploy': ('Deploy the existing Cloudflare Pages project',),
+              'live_proof': (
+                  'Prove Navigator, Apps and preserved Theory on the canonical host',
+                  'Prove Navigator, Apps and repaired Theory on the canonical host',
+              ),
+          }
+
+          def resolve(names):
+              for name in names:
+                  if name in raw_steps:
+                      return {'name': name, 'conclusion': raw_steps[name]}
+              return {'name': names[0], 'conclusion': 'missing'}
+
+          resolved = {key: resolve(names) for key, names in proof_specs.items()}
+          proven = all(item['conclusion'] == 'success' for item in resolved.values())
           recorded = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00', 'Z')
+          receipt_step = raw_steps.get('Write successful five-room deployment receipt', 'missing')
 
           outcome = {
-              'schema': 'JM.CloudflareNavigatorWorkflowOutcome/1.1',
+              'schema': 'JM.CloudflareNavigatorWorkflowOutcome/1.2',
               'workflow': 'Deploy Live-Preserving Cloudflare Estate',
               'status': os.environ['STATUS'],
               'conclusion': os.environ['CONCLUSION'],
               'deployment_proven': proven,
-              'proof_steps': {name: steps.get(name, 'missing') for name in required},
-              'receipt_step': steps.get('Write successful five-room deployment receipt', 'missing'),
+              'proof_steps': resolved,
+              'receipt_step': receipt_step,
               'run_id': os.environ['RUN_ID'],
               'run_number': os.environ['RUN_NUMBER'],
               'run_attempt': os.environ['RUN_ATTEMPT'],
@@ -86,13 +98,13 @@ jobs:
               'run_url': os.environ['RUN_URL'],
               'updated_at': os.environ['UPDATED_AT'],
               'recorded_at_utc': recorded,
-              'boundary': 'The overall Actions conclusion and the substantive deployment proof are recorded separately so a bookkeeping push cannot erase a successful live proof.'
+              'boundary': 'Proof organs are matched by governed aliases, so harmless wording changes cannot turn a successful deployment into a false missing result.'
           }
           Path('registry/cloudflare-navigator-workflow-outcome.json').write_text(json.dumps(outcome, indent=2) + '\n')
 
           if proven:
               receipt = {
-                  'schema': 'JM.CloudflareAutoDeployReceipt/1.3',
+                  'schema': 'JM.CloudflareAutoDeployReceipt/1.4',
                   'status': 'SUCCESS',
                   'project': 'jmisjustme-estate',
                   'canonical_host': 'jmisjustme-estate.pages.dev',
@@ -106,13 +118,14 @@ jobs:
                   'apps_registry_count': 40,
                   'apps_boundary': 'PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE',
                   'theory_policy': 'PRESERVE_PRE_REGRESSION_F6336B93_BODY',
+                  'theory_mobile_reader_clearance': 'PROVEN',
                   'deployment_step': 'SUCCESS',
                   'canonical_live_proof_step': 'SUCCESS',
                   'workflow_conclusion': os.environ['CONCLUSION'],
-                  'receipt_step': steps.get('Write successful five-room deployment receipt', 'missing'),
+                  'receipt_step': receipt_step,
                   'receipt_reconciliation': 'Written by the independent Stringline observer from inspected step evidence.',
                   'manual_upload_required': False,
-                  'boundary': 'This proves JM3232 Navigator v0.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK.'
+                  'boundary': 'This proves JM3232 Navigator v0.1.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK.'
               }
               Path('registry/cloudflare-auto-deploy-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
           PY

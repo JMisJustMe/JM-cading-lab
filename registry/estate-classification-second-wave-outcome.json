@@ -2,12 +2,12 @@
   "schema": "JM.EstateClassificationSecondWaveOutcome/1.0",
   "workflow": "Apply Estate Classification Second Wave",
   "status": "completed",
-  "conclusion": "failure",
-  "run_id": "29758002824",
-  "head_sha": "f87ecd90114d84b26f12c067630bdcdb7eafe6b0",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29758002824",
-  "updated_at": "2026-07-20T16:04:44Z",
-  "recorded_at_utc": "2026-07-20T16:04:54Z",
+  "conclusion": "success",
+  "run_id": "29758198915",
+  "head_sha": "94da423d8814a236422db07b630d5ce2972eb619",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29758198915",
+  "updated_at": "2026-07-20T16:07:27Z",
+  "recorded_at_utc": "2026-07-20T16:07:37Z",
   "steps": [
     {
       "job": "apply",
@@ -27,22 +27,22 @@
     {
       "job": "apply",
       "name": "Apply second-wave authority corrections",
-      "conclusion": "failure"
+      "conclusion": "success"
     },
     {
       "job": "apply",
       "name": "Validate second-wave bodies",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     {
       "job": "apply",
       "name": "Update classification receipt",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     {
       "job": "apply",
       "name": "Commit second-wave corrected bodies",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     {
       "job": "apply",

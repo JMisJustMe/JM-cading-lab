@@ -1,9 +1,9 @@
 {
   "estate": "JM Estate",
   "public_crown": "JMISJUSTME — The Owned Web Estate",
-  "public_crown_version": "1.0",
+  "public_crown_version": "1.2",
   "repository": "JMisJustMe/JM-cading-lab",
-  "status": "OWNED_WEB_ESTATE_V1_LIVE_WITH_THEORY_MULTIHUB_V0_4",
+  "status": "OWNED_WEB_ESTATE_V1_2_LIVE_WITH_THEORY_LYRICS_AND_RECOVERY",
   "active_keeper": "JM Web Estate / Living Front Door",
   "keeper_line": "One owned doorway. Many sovereign rooms.",
   "laws": [
@@ -29,12 +29,14 @@
     {"body":"Estate Bridge","path":"estate/index.html","state":"LEGACY_LIVE"},
     {"body":"Games&Beyond — The JM Games House","path":"games-beyond/index.html","state":"EDITABLE_HOST_FOUNDATION"},
     {"body":"JM Theory Multihub v0.4 — Project Source Census","path":"theory/index.html","state":"CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR"},
-    {"body":"CAUSE MUST PASS — Relation, Passage and Physical Consequence","path":"theory/cause-must-pass/00_OPEN_FIRST.html","state":"DEDICATED_COMPLETE_BODY_LIVE"}
+    {"body":"CAUSE MUST PASS — Relation, Passage and Physical Consequence","path":"theory/cause-must-pass/00_OPEN_FIRST.html","state":"DEDICATED_COMPLETE_BODY_LIVE"},
+    {"body":"JM Lyrics & Music House — Whole-Estate Public Door","path":"lyrics/index.html","state":"PUBLIC_SAFE_WORKING_PROJECTION_LIVE"},
+    {"body":"Lost, Loose & Unseated Bodies — Recovery Gate","path":"recovery/index.html","state":"PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE"}
   ],
   "registered_departments": [
     {
       "body": "Owned Web Estate",
-      "state": "V1_PUBLIC_FOUNDATION_LIVE",
+      "state": "V1_2_PUBLIC_FOUNDATION_LIVE",
       "route": "index.html",
       "capabilities": ["living front door", "estate search", "PWA", "offline shell", "owner room", "receipt export"]
     },
@@ -57,7 +59,8 @@
     {"body":"Playable Games","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
     {"body":"Loops and Reusable Organs","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
     {"body":"Apps and Tools","state":"MOUNTED_IN_v4_CROWN"},
-    {"body":"JM LyricStudio","state":"MOUNTED_IN_v4_CROWN"},
+    {"body":"JM Lyrics & Music House","state":"PUBLIC_SAFE_WORKING_PROJECTION_LIVE","route":"lyrics/","registry":"registry/lyrics-house.json"},
+    {"body":"Lost, Loose & Unseated Bodies","state":"PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE","route":"recovery/"},
     {
       "body": "Theory Wing",
       "state": "V0_4_PROJECT_SOURCE_CENSUS_LIVE",
@@ -118,6 +121,26 @@
     "completed_scoped_bodies": 13,
     "payload_parts": 7,
     "boundary": "Project-source presence earns a readable route and processing grade, not automatic completion or empirical crown."
+  },
+  "lyrics_house": {
+    "name": "JM Lyrics & Music House",
+    "version": "1.0 public-safe projection",
+    "route": "lyrics/",
+    "registry": "registry/lyrics-house.json",
+    "status": "PUBLIC_SAFE_WORKING_PROJECTION_LIVE",
+    "current_crown_pair": ["JM LyricStudio v0.5 — Whole-Estate Mount", "JM Lyric Estate v0.6 — Clickable Body Index"],
+    "protected_branches": ["LyricStudio v2.0 Direct", "Lyric Estate v0.4 — Exiled Times Two-Version Lock"],
+    "public_working_organs": ["local writing desk", "teleprompter / pocket display", "text export", "branch passports"],
+    "boundary": "The complete private lyric corpus remains owner-controlled and is not silently published by this route."
+  },
+  "recovery_gate": {
+    "name": "Lost, Loose & Unseated Bodies",
+    "version": "1.0",
+    "route": "recovery/",
+    "status": "PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE",
+    "formula": "Lost or scattered body → Correlating Overlap → Candidate → Verify → Mount → Current Best or declared Gap",
+    "organs": ["local intake", "state filtering", "status transitions", "JSON export", "JSON merge import"],
+    "boundary": "Tracking proves custody of the gap, not recovery, completeness or crown."
   },
   "cause_must_pass": {
     "name": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",

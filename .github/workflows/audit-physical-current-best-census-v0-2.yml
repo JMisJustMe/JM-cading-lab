@@ -1,4 +1,4 @@
-# Final reconciled trigger: canonical 2-of-4 first-pair state
+# Specialist package gate: packages, direct bodies and held continuations
 name: Audit Physical Current-Best Census v0.2
 
 on:
@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - "registry/estate-physical-current-best-census-v0.2.json"
+      - "registry/jmstudios-b082-b083-physical-audit-v0.2.json"
+      - "registry/zionfolder-os-v111-physical-audit-v0.2.json"
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/index.html"
       - "governance/verify_physical_current_best_census_v0_2.py"
@@ -13,6 +15,8 @@ on:
   pull_request:
     paths:
       - "registry/estate-physical-current-best-census-v0.2.json"
+      - "registry/jmstudios-b082-b083-physical-audit-v0.2.json"
+      - "registry/zionfolder-os-v111-physical-audit-v0.2.json"
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/index.html"
       - "governance/verify_physical_current_best_census_v0_2.py"
@@ -24,11 +28,11 @@ permissions:
 
 jobs:
   census-gate:
-    name: Prove first pair and hold remaining package crowns
+    name: Prove packages and hold unlocated continuations
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
       - name: Check out current Estate
         uses: actions/checkout@v6
-      - name: Verify Census v0.2 first-pair state
+      - name: Verify Census v0.2 specialist package state
         run: python3 governance/verify_physical_current_best_census_v0_2.py --root .

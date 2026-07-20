@@ -2,7 +2,7 @@
   "schema": "JM.EstateHead.GamesBeyondCanonical/0.2",
   "effective_date": "2026-07-20",
   "owner_authority": "Theodore Benjamin Scott / JM",
-  "status": "GOVERNING_ANNEX_PENDING_MAIN_ESTATE_HEAD_CONSUMPTION",
+  "status": "MAIN_STRINGLINE_CONSUMED",
   "house": {
     "id": "H04",
     "project_string": "games-beyond",
@@ -76,6 +76,20 @@
     "tboys-core-clash": "PARTIAL_CANONICAL_ANNEX_CREATED",
     "gamecore": "PARTIAL_CANONICAL_ANNEX_CREATED"
   },
-  "next": "Make navigator/stringline.json and the main Estate Head record consume this annex; then issue six individual resolution receipts.",
-  "boundary": "The annex canonically seats public bodies already present in Games&Beyond. It does not crown unresolved current-best versions or claim that ancestor bodies such as SplitShadow, Let's Go and LightLites are fully recovered."
+  "next": "Update the owner-side Estate Head record from this canonical annex, then issue six individual resolution receipts.",
+  "boundary": "The annex canonically seats public bodies already present in Games&Beyond. It does not crown unresolved current-best versions or claim that ancestor bodies such as SplitShadow, Let's Go and LightLites are fully recovered.",
+  "stringline_consumption": {
+    "state": "CONSUMED",
+    "project_string": "games-beyond",
+    "body_count": 8,
+    "required_annex_ids": [
+      "gamecore",
+      "gameforge",
+      "glyphforge",
+      "glyphplay",
+      "playform",
+      "routeos-platform",
+      "tboys-core-clash"
+    ]
+  }
 }

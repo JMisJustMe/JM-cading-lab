@@ -1,0 +1,70 @@
+name: Record Cloudflare Navigator Deployment Outcome
+
+on:
+  workflow_run:
+    workflows:
+      - "Deploy Live-Preserving Cloudflare Estate"
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    name: Preserve deployment conclusion and run identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out current Estate head
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Write durable workflow outcome receipt
+        shell: bash
+        env:
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_NUMBER: ${{ github.event.workflow_run.run_number }}
+          RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          STATUS: ${{ github.event.workflow_run.status }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          EVENT_NAME: ${{ github.event.workflow_run.event }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          UPDATED_AT: ${{ github.event.workflow_run.updated_at }}
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cat > registry/cloudflare-navigator-workflow-outcome.json <<EOF
+          {
+            "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.0",
+            "workflow": "Deploy Live-Preserving Cloudflare Estate",
+            "status": "${STATUS}",
+            "conclusion": "${CONCLUSION}",
+            "run_id": "${RUN_ID}",
+            "run_number": "${RUN_NUMBER}",
+            "run_attempt": "${RUN_ATTEMPT}",
+            "head_sha": "${HEAD_SHA}",
+            "head_branch": "${HEAD_BRANCH}",
+            "event": "${EVENT_NAME}",
+            "run_url": "${RUN_URL}",
+            "updated_at": "${UPDATED_AT}",
+            "recorded_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "boundary": "This receipt records the GitHub Actions conclusion. Canonical-live proof remains governed by the deployment workflow's own content gates and success receipt."
+          }
+          EOF
+
+      - name: Commit receipt without flattening parallel work
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Stringline Deployment Observer"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-navigator-workflow-outcome.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record Cloudflare Navigator deployment outcome"
+          git pull --rebase origin main
+          git push origin HEAD:main

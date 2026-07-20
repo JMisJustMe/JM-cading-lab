@@ -2,11 +2,11 @@
   "schema": "JM.CloudflareLyricStudioWorkflowOutcome/0.5.1",
   "status": "completed",
   "conclusion": "failure",
-  "run_id": "29760088153",
-  "head_sha": "a566b4b7adb65ce88a6ecd382580f7d154a1e8b0",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29760088153",
-  "updated_at": "2026-07-20T16:35:35Z",
-  "recorded_at_utc": "2026-07-20T16:35:50Z",
+  "run_id": "29760509262",
+  "head_sha": "bed27f58bee7d6cf1b9c604facdab5ab9d5be83c",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29760509262",
+  "updated_at": "2026-07-20T16:39:36Z",
+  "recorded_at_utc": "2026-07-20T16:39:47Z",
   "steps": [
     {
       "job": "Preserve live Estate and deploy LyricStudio",
@@ -41,12 +41,12 @@
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Prove LyricStudio on the canonical host",
-      "conclusion": "failure"
+      "conclusion": "success"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",
       "name": "Write successful LyricStudio deployment receipt",
-      "conclusion": "skipped"
+      "conclusion": "failure"
     },
     {
       "job": "Preserve live Estate and deploy LyricStudio",

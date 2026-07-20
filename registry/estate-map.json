@@ -3,8 +3,8 @@
   "public_crown": "JMISJUSTME — The Owned Web Estate",
   "public_crown_version": "1.3",
   "repository": "JMisJustMe/JM-cading-lab",
-  "status": "OWNED_WEB_ESTATE_V1_3_LIVE_WITH_AUTHOR_THEORY_LYRICS_AND_RECOVERY",
-  "active_keeper": "JM Web Estate / Living Front Door",
+  "status": "OWNED_WEB_ESTATE_V1_3_LIVE_WITH_ESTATE_HEAD_AUTHORITY",
+  "active_keeper": "JM Estate Head governed Living Front Door",
   "keeper_line": "One owned doorway. Many sovereign rooms.",
   "laws": [
     "Connect does not mean merge",
@@ -12,37 +12,116 @@
     "Keeper before API",
     "Proof before packaging",
     "Recover before rebuild",
-    "No Ding, No Claim"
+    "No Ding, No Claim",
+    "Estate Head public authority governs public current-state labels"
   ],
   "delivery_routes": {
     "OPEN": "direct-open HTML",
     "LIGHT": "minimum continuation package",
     "FULL_ARCHIVE": "complete Zionfolder with OPEN and LIGHT nested where applicable",
-    "S3": ["SOLO", "SERVE", "STORE"]
+    "S3": [
+      "SOLO",
+      "SERVE",
+      "STORE"
+    ]
   },
   "live_github_routes": [
-    {"body":"JMISJUSTME — The Owned Web Estate","path":"index.html","state":"LIVE_CROWN_ROOT"},
-    {"body":"Theodore Benjamin Scott / JM — Author & Source Creator","path":"author/index.html","state":"AUTHOR_PUBLIC_PAGE_V0_3_LIVE"},
-    {"body":"Cading Lab","path":"cading.html","state":"LIVE"},
-    {"body":"JM EveryBody v2 — Current Canonical-Native Completion","path":"coding-estate/everybody/00_OPEN_FIRST.html","state":"CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE"},
-    {"body":"JM EveryBody v2 — Native Workbench","path":"coding-estate/everybody/canonical-native-v2.html","state":"LIVE_OPEN_FIRST_WORKBENCH"},
-    {"body":"Fresh App Lab","path":"fresh-app-lab/","state":"LIVE"},
-    {"body":"Estate Bridge","path":"estate/index.html","state":"LEGACY_LIVE"},
-    {"body":"Games&Beyond — The JM Games House","path":"games-beyond/index.html","state":"EDITABLE_HOST_FOUNDATION"},
-    {"body":"JM Theory Multihub v0.4 — Project Source Census","path":"theory/index.html","state":"CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR"},
-    {"body":"CAUSE MUST PASS — Relation, Passage and Physical Consequence","path":"theory/cause-must-pass/00_OPEN_FIRST.html","state":"DEDICATED_COMPLETE_BODY_LIVE"},
-    {"body":"JM Lyrics & Music House — Whole-Estate Public Door","path":"lyrics/index.html","state":"PUBLIC_SAFE_WORKING_PROJECTION_LIVE"},
-    {"body":"Lost, Loose & Unseated Bodies — Recovery Gate","path":"recovery/index.html","state":"PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE"}
+    {
+      "body": "JMISJUSTME — The Owned Web Estate",
+      "path": "index.html",
+      "state": "LIVE_CROWN_ROOT_ESTATE_HEAD_GOVERNED"
+    },
+    {
+      "body": "Theodore Benjamin Scott / JM — Author & Source Creator",
+      "path": "author/index.html",
+      "state": "AUTHOR_PUBLIC_PAGE_V0_3_LIVE"
+    },
+    {
+      "body": "Cading Lab",
+      "path": "cading.html",
+      "state": "LIVE"
+    },
+    {
+      "body": "JM EveryBody v2 — Current Canonical-Native Completion",
+      "path": "coding-estate/everybody/00_OPEN_FIRST.html",
+      "state": "CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE"
+    },
+    {
+      "body": "JM EveryBody v2 — Native Workbench",
+      "path": "coding-estate/everybody/canonical-native-v2.html",
+      "state": "LIVE_OPEN_FIRST_WORKBENCH"
+    },
+    {
+      "body": "Fresh App Lab",
+      "path": "fresh-app-lab/",
+      "state": "LIVE"
+    },
+    {
+      "body": "Estate Bridge",
+      "path": "estate/index.html",
+      "state": "LEGACY_LIVE"
+    },
+    {
+      "body": "Games&Beyond — The JM Games House",
+      "path": "games-beyond/index.html",
+      "state": "LIVE_SOVEREIGN_GAMES_HOUSE"
+    },
+    {
+      "body": "JM Theory Multihub v0.4 — Project Source Census",
+      "path": "theory/index.html",
+      "state": "LIVE_FULL_BODY_CORRECTION_37_BODIES_297_CENSUS_ROUTES"
+    },
+    {
+      "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
+      "path": "theory/cause-must-pass/00_OPEN_FIRST.html",
+      "state": "DEDICATED_COMPLETE_BODY_LIVE"
+    },
+    {
+      "body": "JM Lyrics & Music House — Whole-Estate Public Door",
+      "path": "lyrics/index.html",
+      "state": "LIVE_FIRST_PARTY_LYRICSTUDIO_V0_5_1"
+    },
+    {
+      "body": "Lost, Loose & Unseated Bodies — Recovery Gate",
+      "path": "recovery/index.html",
+      "state": "PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE"
+    },
+    {
+      "body": "JM Estate Head — Public Authority",
+      "path": "registry/estate-head-public-current.json",
+      "state": "LIVE_PUBLIC_CONTRACT_V0_2_1"
+    },
+    {
+      "body": "JM Non-Game Apps House",
+      "path": "apps/index.html",
+      "state": "LIVE_GOVERNED_APPS_HOUSE"
+    }
   ],
   "registered_departments": [
     {
       "body": "Owned Web Estate",
       "state": "V1_3_PUBLIC_FOUNDATION_LIVE",
       "route": "index.html",
-      "capabilities": ["living front door", "estate search", "PWA", "offline shell", "author route", "owner room", "receipt export"]
+      "capabilities": [
+        "living front door",
+        "estate search",
+        "PWA",
+        "offline shell",
+        "author route",
+        "owner room",
+        "receipt export"
+      ]
     },
-    {"body":"Author / User / Creator","state":"AUTHOR_PUBLIC_PAGE_V0_3_LIVE","route":"author/","registry":"author/author-public.json"},
-    {"body":"Coding / Cading","state":"CONNECTED"},
+    {
+      "body": "Author / User / Creator",
+      "state": "AUTHOR_PUBLIC_PAGE_V0_3_LIVE",
+      "route": "author/",
+      "registry": "author/author-public.json"
+    },
+    {
+      "body": "Coding / Cading",
+      "state": "CONNECTED"
+    },
     {
       "body": "JM EveryBody",
       "state": "V2_CURRENT_CANONICAL_NATIVE_COMPLETE",
@@ -53,16 +132,50 @@
       "grammar_families": 13,
       "canonical_conformance_checks": 500,
       "target_lanes_passed": 13,
-      "exact_historical_native_adapters": ["quadze", "cading", "mmzg", "speakuals"],
+      "exact_historical_native_adapters": [
+        "quadze",
+        "cading",
+        "mmzg",
+        "speakuals"
+      ],
       "boundary": "Current native specification complete for all registered bodies; recovered historical evidence remains separately labelled."
     },
-    {"body":"Games House","state":"EDITABLE_HOST_AND_REGISTRY_CONNECTED","route":"games-beyond/"},
-    {"body":"Game Engines","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
-    {"body":"Playable Games","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
-    {"body":"Loops and Reusable Organs","state":"REGISTERED_FOR_LOCAL_OWNER_MOUNTING","host":"Games&Beyond"},
-    {"body":"Apps and Tools","state":"MOUNTED_IN_v4_CROWN"},
-    {"body":"JM Lyrics & Music House","state":"PUBLIC_SAFE_WORKING_PROJECTION_LIVE","route":"lyrics/","registry":"registry/lyrics-house.json"},
-    {"body":"Lost, Loose & Unseated Bodies","state":"PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE","route":"recovery/"},
+    {
+      "body": "Games House",
+      "state": "EDITABLE_HOST_AND_REGISTRY_CONNECTED",
+      "route": "games-beyond/"
+    },
+    {
+      "body": "Game Engines",
+      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
+      "host": "Games&Beyond"
+    },
+    {
+      "body": "Playable Games",
+      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
+      "host": "Games&Beyond"
+    },
+    {
+      "body": "Loops and Reusable Organs",
+      "state": "REGISTERED_FOR_LOCAL_OWNER_MOUNTING",
+      "host": "Games&Beyond"
+    },
+    {
+      "body": "Apps and Tools",
+      "state": "PUBLIC_GOVERNED_HOUSE_LIVE",
+      "route": "apps/"
+    },
+    {
+      "body": "JM Lyrics & Music House",
+      "state": "PUBLIC_SAFE_WORKING_PROJECTION_LIVE",
+      "route": "lyrics/",
+      "registry": "registry/lyrics-house.json"
+    },
+    {
+      "body": "Lost, Loose & Unseated Bodies",
+      "state": "PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE",
+      "route": "recovery/"
+    },
     {
       "body": "Theory Wing",
       "state": "V0_4_PROJECT_SOURCE_CENSUS_LIVE",
@@ -73,10 +186,31 @@
       "readable_routes": 297,
       "districts": 19
     },
-    {"body":"Books / Author / Lexicon","state":"AUTHOR_PUBLIC_ROUTE_LIVE"},
-    {"body":"Receipts and Proof","state":"CONNECTED"},
-    {"body":"Zionfolders / FLL","state":"OWNER_CONTROLLED_ARCHIVE"},
-    {"body":"Universal Edit","state":"LINEAGE_PRESERVED"}
+    {
+      "body": "Books / Author / Lexicon",
+      "state": "AUTHOR_PUBLIC_ROUTE_LIVE"
+    },
+    {
+      "body": "Receipts and Proof",
+      "state": "CONNECTED"
+    },
+    {
+      "body": "Zionfolders / FLL",
+      "state": "OWNER_CONTROLLED_ARCHIVE"
+    },
+    {
+      "body": "Universal Edit",
+      "state": "LINEAGE_PRESERVED"
+    },
+    {
+      "body": "Estate Head & Command",
+      "state": "PUBLIC_AUTHORITY_LIVE",
+      "route": "registry/estate-head-public-current.json",
+      "current_public_subset_version": "v0.2.1",
+      "body_count": 61,
+      "project_head_count": 11,
+      "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. The website is not claimed to consume v0.2.1 until a deployment receipt proves it."
+    }
   ],
   "author_master_body": {
     "name": "Theodore Benjamin Scott / JM — Author Public Page",
@@ -85,8 +219,26 @@
     "registry": "author/author-public.json",
     "status": "PUBLIC_ESTATE_MOUNT_LIVE",
     "keeper_line": "Theodore’s real work is not only the projects. It is the route between the projects.",
-    "creator_routes": ["Author / Source Creator", "Verbalist", "Lyricist — B. Lyrikz", "Theorist", "Game & Interaction Designer", "World & Character Builder", "Tool & App Creator", "Cading Route Builder", "Archive Architect", "AI-Era Source Governance"],
-    "public_organs": ["website-ready About page", "creator menu", "evidence register", "bio toolkit", "estate navigation bridge", "AI/authorship boundary"],
+    "creator_routes": [
+      "Author / Source Creator",
+      "Verbalist",
+      "Lyricist — B. Lyrikz",
+      "Theorist",
+      "Game & Interaction Designer",
+      "World & Character Builder",
+      "Tool & App Creator",
+      "Cading Route Builder",
+      "Archive Architect",
+      "AI-Era Source Governance"
+    ],
+    "public_organs": [
+      "website-ready About page",
+      "creator menu",
+      "evidence register",
+      "bio toolkit",
+      "estate navigation bridge",
+      "AI/authorship boundary"
+    ],
     "source_package": "AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3",
     "boundary": "The public author face is mounted. The Private Theodore Source Biography remains owner-controlled and is not uploaded or silently exposed."
   },
@@ -97,7 +249,11 @@
     "route": "coding-estate/everybody/",
     "open_first": "coding-estate/everybody/00_OPEN_FIRST.html",
     "native_workbench": "coding-estate/everybody/canonical-native-v2.html",
-    "registry": ["coding-estate/everybody/body-registry.json", "coding-estate/everybody/body-registry-extension-01.json", "coding-estate/everybody/body-registry-extension-02.json"],
+    "registry": [
+      "coding-estate/everybody/body-registry.json",
+      "coding-estate/everybody/body-registry-extension-01.json",
+      "coding-estate/everybody/body-registry-extension-02.json"
+    ],
     "status": "CURRENT_CANONICAL_NATIVE_100_OF_100_COMPLETE",
     "recovered_entries": 100,
     "current_native_specifications": 100,
@@ -105,8 +261,27 @@
     "grammar_families": 13,
     "canonical_conformance_checks": 500,
     "final_estate_count_claimed": false,
-    "target_lanes_passed": ["JavaScript", "TypeScript", "WebAssembly", "C++98", "C++03", "C++11", "C++14", "C++17", "C++20", "C++23", "C++26 draft", "Rust 2021", "Rust 2024"],
-    "historical_native_frontends_tested": ["Quadze", "Cading", "MMZG / MorseMinus ZeroGrip", "Speakuals"],
+    "target_lanes_passed": [
+      "JavaScript",
+      "TypeScript",
+      "WebAssembly",
+      "C++98",
+      "C++03",
+      "C++11",
+      "C++14",
+      "C++17",
+      "C++20",
+      "C++23",
+      "C++26 draft",
+      "Rust 2021",
+      "Rust 2024"
+    ],
+    "historical_native_frontends_tested": [
+      "Quadze",
+      "Cading",
+      "MMZG / MorseMinus ZeroGrip",
+      "Speakuals"
+    ],
     "source_boundary": "Every member body retains current native authority through v2. Historical source evidence is separate, and missing historical grammar is not invented."
   },
   "games_house": {
@@ -142,9 +317,20 @@
     "route": "lyrics/",
     "registry": "registry/lyrics-house.json",
     "status": "PUBLIC_SAFE_WORKING_PROJECTION_LIVE",
-    "current_crown_pair": ["JM LyricStudio v0.5 — Whole-Estate Mount", "JM Lyric Estate v0.6 — Clickable Body Index"],
-    "protected_branches": ["LyricStudio v2.0 Direct", "Lyric Estate v0.4 — Exiled Times Two-Version Lock"],
-    "public_working_organs": ["local writing desk", "teleprompter / pocket display", "text export", "branch passports"],
+    "current_crown_pair": [
+      "JM LyricStudio v0.5 — Whole-Estate Mount",
+      "JM Lyric Estate v0.6 — Clickable Body Index"
+    ],
+    "protected_branches": [
+      "LyricStudio v2.0 Direct",
+      "Lyric Estate v0.4 — Exiled Times Two-Version Lock"
+    ],
+    "public_working_organs": [
+      "local writing desk",
+      "teleprompter / pocket display",
+      "text export",
+      "branch passports"
+    ],
     "boundary": "The complete private lyric corpus remains owner-controlled and is not silently published by this route."
   },
   "recovery_gate": {
@@ -153,7 +339,13 @@
     "route": "recovery/",
     "status": "PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE",
     "formula": "Lost or scattered body → Correlating Overlap → Candidate → Verify → Mount → Current Best or declared Gap",
-    "organs": ["local intake", "state filtering", "status transitions", "JSON export", "JSON merge import"],
+    "organs": [
+      "local intake",
+      "state filtering",
+      "status transitions",
+      "JSON export",
+      "JSON merge import"
+    ],
     "boundary": "Tracking proves custody of the gap, not recovery, completeness or crown."
   },
   "cause_must_pass": {
@@ -177,10 +369,43 @@
     "exact_source_packs": 27,
     "apk_state": "APK_READY_SOURCE",
     "play_store_state": "NOT_SIGNED_NOT_PUBLISHED",
-    "lineage": ["JM_QUADZE_MULTIHUB_ALL_IN_ONE_v1_0", "JM_QUADZE_ONEBODY_OS_FULL_v3_0", "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE"],
+    "lineage": [
+      "JM_QUADZE_MULTIHUB_ALL_IN_ONE_v1_0",
+      "JM_QUADZE_ONEBODY_OS_FULL_v3_0",
+      "JM_ESTATE_MULTIMEDIA_UNIT_v2_3_0_UNIVERSAL_EDITABLE"
+    ],
     "github_state": "REGISTERED_FOR_SOURCE_NORMALISATION_AND_DEPLOYMENT",
     "target_strategy": "JM coding and Quadze remain source-side; GDevelop becomes an optional downstream export target rather than the language ceiling."
   },
   "web_estate_receipt": "docs/JM_WEB_ESTATE_V1_RECEIPT.md",
-  "current_public_status": "docs/STATUS.md"
+  "current_public_status": "docs/STATUS.md",
+  "estate_head_public_authority": {
+    "schema": "JM.EstateHeadPublicCurrent/1.0",
+    "version": "v0.2.1",
+    "effective_date": "2026-07-20",
+    "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+    "body_count": 61,
+    "project_head_count": 11,
+    "gap_snapshot": {
+      "OPEN": 35,
+      "PARTIAL": 20,
+      "RESOLVED": 1
+    },
+    "stringline": {
+      "version": "v0.1.3",
+      "games_beyond_project_body_count": 8,
+      "adoption_commit": "1ef6ea9e9c762ba750f52ec8426280c408b96a58"
+    },
+    "source_authority_pipeline": {
+      "version": "v1.0",
+      "stages": 6,
+      "owner_gate": "MOUNTED",
+      "repository_wide_enforcement": "NEXT"
+    },
+    "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
+    "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. The website is not claimed to consume v0.2.1 until a deployment receipt proves it.",
+    "contract": "registry/estate-head-public-current.json",
+    "consumption_state": "LIVE",
+    "projection_rule": "Public state inherits from the Estate Head contract; sovereign House registries retain domain detail."
+  }
 }

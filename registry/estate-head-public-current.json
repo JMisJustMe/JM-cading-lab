@@ -21,7 +21,14 @@
     "owner_gate": "MOUNTED",
     "repository_wide_enforcement": "NEXT"
   },
-  "deployment_state": "PUBLIC_CONSUMPTION_NEXT",
+  "deployment_state": "PUBLIC_CONSUMPTION_LIVE_IN_REPOSITORY",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. The website is not claimed to consume v0.2.1 until a deployment receipt proves it."
+  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository consumption is live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+  "public_consumers": [
+    "registry/estate-map.json",
+    "estate-app.js",
+    "index.html",
+    "sw.js"
+  ],
+  "deployment_receipt": "registry/estate-head-public-consumption-receipt.json"
 }

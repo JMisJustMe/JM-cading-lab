@@ -77,8 +77,8 @@ let previewUrl = null;
 
 async function loadRegistries(){
   const safeFetch = async path => { const r=await fetch(path,{cache:'no-store'}); if(!r.ok) throw new Error(path); return r.json(); };
-  const [estate,games,theory] = await Promise.allSettled([
-    safeFetch('./registry/estate-map.json'),safeFetch('./games-beyond/registry.json'),safeFetch('./registry/theory-wing.json')
+  const [estate,games,theory,authority] = await Promise.allSettled([
+    safeFetch('./registry/estate-map.json'),safeFetch('./games-beyond/registry.json'),safeFetch('./registry/theory-wing.json'),safeFetch('./registry/estate-head-public-current.json')
   ]);
   if(estate.status==='fulfilled'){
     state.data.estate.laws=estate.value.laws||state.data.estate.laws;
@@ -86,7 +86,25 @@ async function loadRegistries(){
   }
   if(games.status==='fulfilled') state.data.games=games.value.registered_bodies||state.data.games;
   if(theory.status==='fulfilled') state.data.theory=theory.value.districts||state.data.theory;
+  if(authority.status==='fulfilled') state.data.estate.publicAuthority=authority.value;
 }
+
+// JM_EST_HEAD_PUBLIC_AUTHORITY_V021
+function applyEstateHeadPublicAuthority(){
+  const contract=state.data.estate.publicAuthority;if(!contract)return;
+  const houseRoutes={
+    'games-house':{path:'./games-beyond/',state:'LIVE SOVEREIGN HOUSE'},
+    'coding-house':{path:'./coding-estate/everybody/',state:'CURRENT CANONICAL-NATIVE FABRIC'},
+    'tools-house':{path:'./apps/',state:'LIVE GOVERNED APPS HOUSE'},
+    'theory-house':{path:'./theory/',state:'37 FULL BODIES · 297 CENSUS ROUTES'},
+    'studio-house':{path:'./lyrics/',state:'LYRICSTUDIO v0.5.1 LIVE'}
+  };
+  HOUSES.forEach(h=>{const patch=houseRoutes[h.id];if(patch)Object.assign(h,patch)});
+  const title=document.querySelector('.current-work h3');if(title)title.textContent=`JM Estate Head ${contract.current_public_subset_version} — Live Public Authority`;
+  const copy=document.querySelector('.current-work p');if(copy)copy.textContent=`${contract.body_count} public-contract bodies · ${contract.project_head_count} Project Heads · Stringline ${contract.stringline?.version||'active'} · private source routes remain owner-side.`;
+  document.documentElement.dataset.estateHeadAuthority=contract.current_public_subset_version;
+}
+
 
 function guessKind(name){const text=normalise(name);if(text.includes('game'))return'Games';if(text.includes('cad')||text.includes('coding'))return'Coding';if(text.includes('app'))return'Tools';if(text.includes('theory'))return'Theory';return'Estate'}
 function routeTo(name,push=true){
@@ -215,7 +233,7 @@ async function mountFiles(files){
   try{saveMounted();toast('Local HTML body mounted on this device.')}catch(error){state.mounted=[];localStorage.removeItem('jm-estate-mounted');renderOwner();toast('This body is too large for localStorage. Use Games & Beyond IndexedDB mounting for larger bodies.',true)}
 }
 function buildReceipt(){
-  return {schema:'JM.WebEstateReceipt/1.0',generatedAt:new Date().toISOString(),publicRoute:location.href.split('#')[0],network:navigator.onLine?'ONLINE':'OFFLINE',viewport:{width:innerWidth,height:innerHeight,pixelRatio:devicePixelRatio},userAgent:navigator.userAgent,estate:{version:'1.0',liveRoutes:state.data.estate.routes.length,registeredGames:state.data.games.length,theoryDistricts:state.data.theory.length,laws:state.data.estate.laws},localOwnerState:{favourites:[...state.favourites],recent:state.recent.map(({id,name,at})=>({id,name,at})),mountedBodies:state.mounted.map(({id,name,fileName,bytes,at})=>({id,name,fileName,bytes,at})),notesPresent:Boolean($('#ownerNotes').value.trim())},truthBoundary:'This receipt describes the public web shell and this browser’s local state. It does not claim every protected Estate source has been uploaded.'};
+  return {schema:'JM.WebEstateReceipt/1.3',generatedAt:new Date().toISOString(),publicRoute:location.href.split('#')[0],network:navigator.onLine?'ONLINE':'OFFLINE',viewport:{width:innerWidth,height:innerHeight,pixelRatio:devicePixelRatio},userAgent:navigator.userAgent,estate:{version:'1.3',publicAuthority:state.data.estate.publicAuthority||null,liveRoutes:state.data.estate.routes.length,registeredGames:state.data.games.length,theoryDistricts:state.data.theory.length,laws:state.data.estate.laws},localOwnerState:{favourites:[...state.favourites],recent:state.recent.map(({id,name,at})=>({id,name,at})),mountedBodies:state.mounted.map(({id,name,fileName,bytes,at})=>({id,name,fileName,bytes,at})),notesPresent:Boolean($('#ownerNotes').value.trim())},truthBoundary:'This receipt describes the public web shell and this browser’s local state. It does not claim every protected Estate source has been uploaded.'};
 }
 function exportReceipt(){
   const receipt=buildReceipt();const text=JSON.stringify(receipt,null,2);$('#receiptPreview').textContent=text;
@@ -266,7 +284,7 @@ async function init(){
   renderFeatureDoors();renderContinue();renderFilters();renderDirectory();renderLibrary();renderCommand();renderOwner();wireEvents();registerPWA();updateNetwork();
   $('#storageSupport').textContent='Device-only local storage ready. Larger bodies should use Games & Beyond IndexedDB mounting.';
   routeTo(location.hash.slice(1)||'estate',false);
-  await loadRegistries();
+  await loadRegistries();applyEstateHeadPublicAuthority();
   $('#liveRouteCount').textContent=state.data.estate.routes.length;$('#gameBodyCount').textContent=state.data.games.length;
   renderFeatureDoors();renderContinue();renderDirectory();renderLibrary();renderCommand();renderOwner();
 }

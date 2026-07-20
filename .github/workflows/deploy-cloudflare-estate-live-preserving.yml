@@ -53,7 +53,7 @@ jobs:
 
           def fetch_url(url: str, required: bool = True) -> bytes:
               try:
-                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Preserving-Deploy/1.1'})
+                  req = Request(url, headers={'User-Agent': 'JM-Estate-Live-Preserving-Deploy/1.2'})
                   with urlopen(req, timeout=30) as response:
                       return response.read()
               except Exception:
@@ -109,7 +109,49 @@ jobs:
               raise SystemExit('Preserved Theory candidate failed the content proof gate.')
           if 'JM Theory Multihub v0.4 — Touch Repair' in theory_text:
               raise SystemExit('Refusing to deploy the regressed Touch Repair Theory body.')
-          write('theory/index.html', theory)
+
+          theory_text = re.sub(
+              r'<style id="jm-theory-mobile-reader-clearance-v1">.*?</style>',
+              '',
+              theory_text,
+              flags=re.I | re.S
+          )
+          theory_clearance = r'''
+          <style id="jm-theory-mobile-reader-clearance-v1">
+          @media(max-width:760px){
+            #readerContent{min-height:0;overflow:hidden}
+            .reader-head,.reader-tabs{flex:0 0 auto}
+            .reader-tabs{
+              position:relative;
+              z-index:3;
+              min-height:62px;
+              align-items:center;
+              padding:.72rem 1rem .95rem;
+              background:#10141b
+            }
+            .reader-tab{
+              display:inline-flex;
+              align-items:center;
+              min-height:40px
+            }
+            .reader-body{
+              flex:1 1 auto;
+              min-height:0;
+              margin-top:10px;
+              position:relative;
+              z-index:1
+            }
+          }
+          </style>
+          '''
+          theory_text = re.sub(
+              r'</head>',
+              theory_clearance + '\n</head>',
+              theory_text,
+              count=1,
+              flags=re.I
+          )
+          write('theory/index.html', theory_text.encode('utf-8'))
 
           html = re.sub(r'<style id="jm-current-doors-style">.*?</style>', '', html, flags=re.I | re.S)
           html = re.sub(r'<aside id="jm-current-doors".*?</aside>', '', html, flags=re.I | re.S)
@@ -161,7 +203,7 @@ jobs:
           EOF
 
           cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-2026-07-20-navigator-stringline-1';
+          const CACHE='jm-independent-estate-2026-07-20-theory-tabs-clearance-1';
           const CORE=['./','./index.html','./navigator/','./navigator/stringline.json','./apps/','./theory/','./lyrics/','./recovery/'];
           self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
           self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
@@ -182,17 +224,18 @@ jobs:
 
           cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
           {
-            "schema": "JM.CloudflareEstateDeployment/1.3",
-            "version": "v1.16.0-navigator-stringline",
+            "schema": "JM.CloudflareEstateDeployment/1.4",
+            "version": "v1.16.1-theory-mobile-tabs-clearance",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_rail": "JMisJustMe/JM-cading-lab",
             "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
             "apps_registry_count": 40,
             "theory_source": "preserved Cloudflare deployment f6336b93",
+            "theory_mobile_repair": "reader tabs retained above source-body pane with 10px clearance",
             "navigator_registry": "navigator/JM3232_NAVIGATOR_REGISTRY.json",
             "stringline_seed": "navigator/stringline.json",
-            "boundary": "JM3232 v0.1 is a real browser-experience shell using the device browser for external rendering, not a claimed custom web engine. The exact pre-regression Theory body is preserved while Navigator, Apps, Lyrics and Recovery are overlaid from GitHub."
+            "boundary": "The exact non-v0.4 Theory body is preserved. This release only adds mobile reader-tab clearance before the embedded source pane."
           }
           EOF
 
@@ -217,9 +260,10 @@ jobs:
           grep -q "NON-GAME APPS HOUSE" cloudflare-estate/apps/index.html
           grep -q "40 rooms" cloudflare-estate/apps/index.html
           grep -q "Human Pattern Calibration" cloudflare-estate/theory/index.html
+          grep -q "jm-theory-mobile-reader-clearance-v1" cloudflare-estate/theory/index.html
           ! grep -q "JM Theory Multihub v0.4 — Touch Repair" cloudflare-estate/theory/index.html
           grep -q "JM3232 Navigator" cloudflare-estate/recovery/index.html
-          echo "Five-room Estate deployment body passed all source gates."
+          echo "Five-room Estate plus Theory mobile clearance passed all source gates."
 
       - name: Deploy the existing Cloudflare Pages project
         uses: cloudflare/wrangler-action@v3
@@ -229,7 +273,7 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove Navigator, Apps and preserved Theory on the canonical host
+      - name: Prove Navigator, Apps and repaired Theory on the canonical host
         shell: bash
         run: |
           set -euo pipefail
@@ -252,6 +296,7 @@ jobs:
               && grep -q "Many bodies. One living line. None erased." "$RUNNER_TEMP/live-stringline.json" \
               && grep -q "NON-GAME APPS HOUSE" "$RUNNER_TEMP/live-apps.html" \
               && grep -q "Human Pattern Calibration" "$RUNNER_TEMP/live-theory.html" \
+              && grep -q "jm-theory-mobile-reader-clearance-v1" "$RUNNER_TEMP/live-theory.html" \
               && ! grep -q "JM Theory Multihub v0.4 — Touch Repair" "$RUNNER_TEMP/live-theory.html"; then
               proved=1
               break
@@ -259,7 +304,7 @@ jobs:
             sleep 2
           done
           test "$proved" -eq 1
-          echo "Navigator, Apps House and preserved Theory are live on the canonical host."
+          echo "Navigator, Apps House and repaired Theory are live on the canonical host."
 
       - name: Write successful five-room deployment receipt
         shell: bash
@@ -268,7 +313,7 @@ jobs:
           mkdir -p registry
           cat > registry/cloudflare-auto-deploy-receipt.json <<EOF
           {
-            "schema": "JM.CloudflareAutoDeployReceipt/1.3",
+            "schema": "JM.CloudflareAutoDeployReceipt/1.4",
             "status": "SUCCESS",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
@@ -280,11 +325,13 @@ jobs:
             "apps_registry_count": 40,
             "apps_boundary": "PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE",
             "theory_policy": "PRESERVE_PRE_REGRESSION_F6336B93_BODY",
+            "theory_mobile_reader_clearance": "PROVEN",
             "manual_upload_required": false
           }
           EOF
           git config user.name "JM Estate Deployment Rail"
           git config user.email "actions@users.noreply.github.com"
           git add registry/cloudflare-auto-deploy-receipt.json
-          git diff --cached --quiet || git commit -m "Record Navigator and Stringline Cloudflare deployment success"
-          git push
+          git diff --cached --quiet || git commit -m "Record Theory mobile reader clearance deployment success"
+          git pull --rebase origin main
+          git push origin main

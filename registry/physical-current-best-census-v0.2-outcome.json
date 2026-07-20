@@ -1,18 +1,26 @@
 {
-  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2",
+  "schema": "JM.PhysicalCurrentBestCensusOutcome/0.2.1",
   "status": "completed",
   "conclusion": "success",
-  "classification": "OPENING_GATE_PASS",
-  "run_id": "29768146993",
-  "head_sha": "b704746c72f9a3db91e47b72bbeffacf36b95b27",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768146993",
-  "updated_at": "2026-07-20T18:32:04Z",
-  "recorded_at_utc": "2026-07-20T18:32:13Z",
+  "classification": "CENSUS_GATE_PASS_2_OF_4_PHYSICAL_PACKAGES_CONFIRMED",
+  "run_id": "29768261080",
+  "head_sha": "f7e2bb6d76e78febae81c2f7238331cf3e574a20",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29768261080",
+  "updated_at": "2026-07-20T18:33:43Z",
+  "recorded_at_utc": "2026-07-20T18:33:53Z",
   "batch": "operating-houses-01",
   "targets": 4,
-  "physical_crowns_granted": 0,
-  "physical_crowns_held": 4,
-  "next_gate": "Source-Body Auditor exact package inspection",
+  "physical_packages_confirmed": 2,
+  "physical_package_searches_active": 2,
+  "confirmed": [
+    "JM Estate Multimedia Unit v2.3.0 S\u00b3",
+    "Altogether Assembly / JM Estate OS v2.0.2"
+  ],
+  "held": [
+    "JMStudios B0.8.2 / B0.8.3",
+    "JM Zionfolder OS v1.1.1 Scroll Spine Fix"
+  ],
+  "next_gate": "Inspect the held targets exact physical packages",
   "steps": [
     {
       "job": "Prove first pair and hold remaining package crowns",
@@ -40,5 +48,5 @@
       "conclusion": "success"
     }
   ],
-  "boundary": "A successful opening gate proves the census structure and anti-shortcut controls. It does not prove any target package current-best or grant a physical crown."
+  "boundary": "A successful gate proves only the package authorities explicitly recorded in the canonical census. Active searches remain uncrowned; fresh phone contact remains a separate Ding where stated."
 }

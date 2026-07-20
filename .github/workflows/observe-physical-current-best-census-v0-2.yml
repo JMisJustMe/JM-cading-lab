@@ -43,18 +43,26 @@ jobs:
           jobs=json.loads(Path(os.environ['RUNNER_TEMP'],'jobs.json').read_text())
           census=json.loads(Path('registry/estate-physical-current-best-census-v0.2.json').read_text())
           scope=census.get('first_scope',[])
-          confirmed=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_CONFIRMED']
-          active=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_SEARCH_ACTIVE']
+          packages=[item for item in scope if item.get('status')=='PHYSICAL_PACKAGE_CONFIRMED']
+          partial=[item for item in scope if item.get('status') in {
+              'SOURCE_ANCHOR_BODY_CONFIRMED_CONTINUATION_SEARCH_ACTIVE',
+              'DIRECT_HTML_BODY_CONFIRMED_ZIP_AND_DONOR_SEARCH_ACTIVE',
+          }]
+          held=[item for item in scope if item.get('status')!='PHYSICAL_PACKAGE_CONFIRMED']
           steps=[]
           for job in jobs.get('jobs',[]):
               for step in job.get('steps',[]):
                   steps.append({'job':job.get('name'),'name':step.get('name'),'conclusion':step.get('conclusion')})
           passed=os.environ['CONCLUSION']=='success'
+          classification=(
+              f"CENSUS_GATE_PASS_{len(packages)}_PACKAGES_{len(partial)}_PARTIAL_BODIES"
+              if passed else 'CENSUS_GATE_FAILED'
+          )
           receipt={
-              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2.1',
+              'schema':'JM.PhysicalCurrentBestCensusOutcome/0.2.2',
               'status':os.environ['STATUS'],
               'conclusion':os.environ['CONCLUSION'],
-              'classification':f"CENSUS_GATE_PASS_{len(confirmed)}_OF_{len(scope)}_PHYSICAL_PACKAGES_CONFIRMED" if passed else 'CENSUS_GATE_FAILED',
+              'classification':classification,
               'run_id':os.environ['RUN_ID'],
               'head_sha':os.environ['HEAD_SHA'],
               'run_url':os.environ['RUN_URL'],
@@ -62,13 +70,15 @@ jobs:
               'recorded_at_utc':datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace('+00:00','Z'),
               'batch':'operating-houses-01',
               'targets':len(scope),
-              'physical_packages_confirmed':len(confirmed),
-              'physical_package_searches_active':len(active),
-              'confirmed':[item.get('name') for item in confirmed],
-              'held':[item.get('name') for item in active],
-              'next_gate':'Inspect the held targets exact physical packages',
+              'physical_packages_confirmed':len(packages),
+              'partial_physical_bodies_confirmed':len(partial),
+              'package_or_continuation_searches_held':len(held),
+              'package_confirmed':[item.get('name') for item in packages],
+              'partial_confirmed':[item.get('name') for item in partial],
+              'held':[item.get('name') for item in held],
+              'next_gate':'Locate B0.8.3, Zionfolder v1.1.1 ZIP and both Zionfolder repair-donor bodies',
               'steps':steps,
-              'boundary':'A successful gate proves only the package authorities explicitly recorded in the canonical census. Active searches remain uncrowned; fresh phone contact remains a separate Ding where stated.'
+              'boundary':'A partial physical body confirmation does not equal a full package or continuation crown. Fresh phone contact remains a separate Ding where stated.'
           }
           Path('registry/physical-current-best-census-v0.2-outcome.json').write_text(json.dumps(receipt,indent=2)+'\n')
           PY

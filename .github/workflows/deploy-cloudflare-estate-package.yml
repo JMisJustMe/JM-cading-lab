@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   deployments: write
 
 jobs:
@@ -138,7 +138,7 @@ jobs:
           EOF
 
           cat > cloudflare-estate/sw.js <<'EOF'
-          const CACHE='jm-independent-estate-2026-07-20-auto-1';
+          const CACHE='jm-independent-estate-2026-07-20-auto-2';
           const CORE=['./','./index.html','./theory/','./lyrics/','./recovery/'];
           self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
           self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
@@ -189,3 +189,27 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Write the successful deployment receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cat > registry/cloudflare-auto-deploy-receipt.json <<EOF
+          {
+            "schema": "JM.CloudflareAutoDeployReceipt/1.0",
+            "status": "SUCCESS",
+            "project": "jmisjustme-estate",
+            "canonical_host": "jmisjustme-estate.pages.dev",
+            "source_commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "rooms": ["theory", "lyrics", "recovery"],
+            "manual_upload_required": false
+          }
+          EOF
+          git config user.name "JM Estate Deployment Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-auto-deploy-receipt.json
+          git diff --cached --quiet || git commit -m "Record successful automatic Cloudflare Estate deployment"
+          git push

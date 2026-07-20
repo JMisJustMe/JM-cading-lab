@@ -1,5 +1,6 @@
 name: Apply Registry-Derived Cloudflare Apps Verifier
 
+# Observed retry: repair must prove and commit against the latest Estate head.
 on:
   push:
     branches:

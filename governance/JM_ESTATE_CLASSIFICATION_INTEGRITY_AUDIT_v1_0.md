@@ -110,3 +110,15 @@ The repository classification workflow must fail when a known prohibited reducti
 > **A body may serve many houses. It keeps one governing identity unless JM deliberately changes it.**
 
 > **Bridge the organ. Preserve the body. Trace the crown.**
+
+## Second-wave findings
+
+The deeper source-status pass found additional understatements after the first correction:
+
+- **CadenVM / CadenPad:** v0.10 is frozen and Android-proven; the public `v0.9+` wording was stale.
+- **TraceBox / RouteBox:** v5.2 standalone PWA exists; `Source needed` was incorrect.
+- **BodyVault:** v0.4.2 TRUE NO-INTERPRETER is the current vault anchor; `Mount direction` was incorrect.
+- **OWNMADE:** v1.3 PWA Project + File Dock exists; `Source needed` was incorrect.
+- **Gold Mode Coding Hub:** the frontier reaches v0.9.5.1 Mobile Hotfix while preserving the full v0.9.4 hub.
+- **JM Theory Multihub:** v0.5 Readable Source is a real package lane and must stand beside, not behind, the public reader.
+- **JM QUADZE MultiHub:** the exact retrieved public package is v1.0 across SOLO/SERVE/STORE routes. A later v4.x memory claim remains a retrieval watch item rather than being silently crowned or erased.

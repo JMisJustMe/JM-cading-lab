@@ -84,7 +84,6 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
         ("OWNMADE", "v1.3 PWA Project + File Dock", "Utilities & Incubator", "full_current"),
         ("Gold Mode Coding Hub", "v0.9.5.1 Mobile Hotfix", "Coding & Proof", "full_current"),
         ("JM Theory Multihub", "v0.5 Readable Source Package", "Theory & Books", "full_current"),
-        ("JM QUADZE MultiHub SOLO", "v1.0 mounted SOLO / SERVE / STORE body", "Operating Houses", "full_current"),
         ("Latest Body Finder", "BUILD 050", "Registers & Governance", "routed"),
         ("Source-Body Auditor", "BUILD 050", "Registers & Governance", "routed"),
     ]
@@ -104,7 +103,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
     portal = row_for(rows, "Portal Engine")
     registered = {row[0] for row in rows if row[3] == "registered"}
     if portal[3] == "registered":
-        phase = "BUILD050_PRE_PORTAL"
+        portal_phase = "BUILD050_PRE_PORTAL"
         if "exact standalone package retrieval" not in portal[1]:
             fail("pre-recovery Portal row lacks its explicit package-retrieval boundary")
         if registered != {"Portal Engine"}:
@@ -112,7 +111,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
         if stats != {"room_count": 44, "full_plus_preserved": 29, "routed": 11, "source_needed": 1, "preparation": 2}:
             fail(f"pre-recovery Apps state mismatch: {stats}")
     elif portal[3] == "routed":
-        phase = "PORTAL_ACCESS_LINE_RECOVERED"
+        portal_phase = "PORTAL_ACCESS_LINE_RECOVERED"
         if "Estate OS v0.3.1" not in portal[1] or "TBS Delta 004.1" not in portal[1]:
             fail("recovered Portal row does not identify its physical carrier and command route")
         if portal[2] != "Operating Houses":
@@ -123,6 +122,21 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
             fail(f"Portal-recovered Apps state mismatch: {stats}")
     else:
         fail(f"Portal Engine has an unsupported public status: {portal[3]}")
+
+    quadze_rows = [row for row in rows if row[0] in {"JM QUADZE MultiHub SOLO", "JM QUADZE MultiHub OneBody OS"}]
+    if len(quadze_rows) != 1:
+        fail(f"expected one QUADZE MultiHub public row, found {len(quadze_rows)}")
+    quadze = quadze_rows[0]
+    if quadze[0] == "JM QUADZE MultiHub SOLO":
+        quadze_phase = "QUADZE_V1_PUBLIC_ANCESTOR"
+        if "v1.0 mounted SOLO / SERVE / STORE body" not in quadze[1] or quadze[2:] != ["Operating Houses", "full_current"]:
+            fail("QUADZE v1 ancestor card has drifted")
+    else:
+        quadze_phase = "QUADZE_V4_AUTHORITY_RECOVERED"
+        if "v4.1 SOLO" not in quadze[1] or "v4.0 full APK-ready source" not in quadze[1]:
+            fail("QUADZE v4 card does not preserve the full-source / SOLO authority split")
+        if quadze[2:] != ["Operating Houses", "full_current"]:
+            fail("QUADZE v4 has lost its Operating Houses seat or current-body state")
 
     stringline_path = root / "navigator/stringline.json"
     if not stringline_path.is_file():
@@ -144,15 +158,27 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
     if governance.get("source-body-auditor", {}).get("status") != "PROVEN":
         fail("Source-Body Auditor is not proven in Stringline")
 
-    if phase == "PORTAL_ACCESS_LINE_RECOVERED":
-        portal_bodies = {body["id"]: body for body in projects["operating-houses"].get("bodies", [])}
-        portal_body = portal_bodies.get("portal-engine")
+    if portal_phase == "PORTAL_ACCESS_LINE_RECOVERED":
+        operating_bodies = {body["id"]: body for body in projects["operating-houses"].get("bodies", [])}
+        portal_body = operating_bodies.get("portal-engine")
         if not portal_body or portal_body.get("status") != "PROVEN":
             fail("Portal Engine is not proven in the Operating Houses Stringline")
         if portal_body.get("standaloneClaim") != "NOT_CLAIMED":
             fail("Portal Engine standalone-package boundary is missing")
-        if "v0.1.7 Portal access-line reconciliation" not in stringline.get("version", ""):
+        if quadze_phase == "QUADZE_V1_PUBLIC_ANCESTOR" and "v0.1.7 Portal access-line reconciliation" not in stringline.get("version", ""):
             fail("Stringline has not advanced to the Portal reconciliation seed")
+        if quadze_phase == "QUADZE_V4_AUTHORITY_RECOVERED":
+            quadze_body = operating_bodies.get("quadze-multihub")
+            if not quadze_body or quadze_body.get("status") != "FROZEN":
+                fail("QUADZE v4 is not frozen in the Operating Houses Stringline")
+            if quadze_body.get("fullSourceAuthority") != "v4.0 APK-ready source":
+                fail("QUADZE full-source authority is not v4.0")
+            if quadze_body.get("soloAuthority") != "v4.1 SOLO":
+                fail("QUADZE SOLO authority is not v4.1")
+            if quadze_body.get("v4NativeApk") != "NOT_BUILT_NOT_CLAIMED":
+                fail("QUADZE v4 APK boundary is missing")
+            if "v0.1.8 QUADZE v4 authority reconciliation" not in stringline.get("version", ""):
+                fail("Stringline has not advanced to the QUADZE v4 reconciliation seed")
 
     if not public_only:
         authority_path = root / "registry/estate-classification-authority-v1.0.json"
@@ -170,12 +196,12 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
         if missing_authority:
             fail("classification authority entries missing: " + ", ".join(sorted(missing_authority)))
         integrity = json.loads(integrity_path.read_text(encoding="utf-8"))
-        if phase == "BUILD050_PRE_PORTAL":
+        if portal_phase == "BUILD050_PRE_PORTAL":
             if integrity.get("status") != "PASS_BUILD050_ORGANS_RECOVERED":
                 fail("pre-Portal integrity receipt crown is wrong")
             if integrity.get("remaining_exact_package_retrieval") != ["Portal Engine standalone package"]:
                 fail("pre-Portal retrieval list is wrong")
-        else:
+        elif quadze_phase == "QUADZE_V1_PUBLIC_ANCESTOR":
             if "portal-engine-access-line" not in authority_ids:
                 fail("Portal access-line authority entry is missing")
             if integrity.get("status") != "PASS_PORTAL_ACCESS_LINE_RECOVERED":
@@ -184,10 +210,21 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
                 fail("Portal recovery should close the exact-package retrieval list")
             if integrity.get("proof", {}).get("portal_access_line_headless_qa") != "PASS_7_OF_7":
                 fail("Portal headless interaction proof is missing")
+        else:
+            quadze_authority = next(body for body in authority.get("bodies", []) if body.get("id") == "quadze-multihub-v10")
+            if quadze_authority.get("severity") != "RECOVERED_AND_RECONCILED_V4_AUTHORITY":
+                fail("QUADZE v4 authority entry is not recovered and reconciled")
+            if integrity.get("status") != "PASS_QUADZE_V4_AUTHORITY_RECOVERED":
+                fail("QUADZE v4 integrity receipt crown is wrong")
+            if integrity.get("proof", {}).get("quadze_v41_solo_headless_qa") != "PASS_2_VIEWPORTS":
+                fail("QUADZE v4.1 SOLO headless proof is missing")
+            if any("QUADZE MultiHub later v4.x" in item for item in integrity.get("watch_items", [])):
+                fail("QUADZE v4 recovery watch item was not closed")
 
     return {
         "status": "PASS",
-        "phase": phase,
+        "portal_phase": portal_phase,
+        "quadze_phase": quadze_phase,
         "apps_stats": stats,
         "stringline_version": stringline.get("version"),
         "stringline_projects": len(projects),

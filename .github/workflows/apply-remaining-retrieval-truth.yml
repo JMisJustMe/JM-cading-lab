@@ -1,0 +1,88 @@
+name: Apply Remaining Retrieval Truth
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "governance/apply_remaining_retrieval_truth.py"
+      - ".github/workflows/apply-remaining-retrieval-truth.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-remaining-retrieval-truth
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Re-enter latest main
+        run: git pull --rebase origin main
+      - name: Apply retrieval-truth distinction
+        run: |
+          python3 governance/apply_remaining_retrieval_truth.py
+          python3 governance/apply_apps_house_stat_integrity.py
+      - name: Validate final public catalogue state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-classification-integrity-receipt-v1.0.json >/dev/null
+          python3 <<'PY'
+          from collections import Counter
+          import json,re
+          from pathlib import Path
+
+          text=Path('apps/index.html').read_text(encoding='utf-8')
+          rows=json.loads(re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',text,re.S).group(1))
+          registered=[row for row in rows if row[3]=='registered']
+          assert len(registered)==3,registered
+          assert {row[0] for row in registered}=={'Portal Engine','Latest Body Finder','Source-Body Auditor'}
+          assert all('exact standalone package retrieval' in row[1] for row in registered)
+          assert 'registered:"Exact package retrieval"' in text
+          assert '["registered","Package retrieval"]' in text
+          assert 'package-retrieval + preparation' in text
+
+          shown=json.loads(re.search(r'const APP_STAT_COUNTS=(\{.*?\});',text,re.S).group(1))
+          c=Counter(row[3] for row in rows)
+          expected={'room_count':len(rows),'full_plus_preserved':c['full_current']+c['full_alt'],'routed':c['routed'],'source_needed':c['registered'],'preparation':c['prep']}
+          assert shown==expected
+
+          stringline=json.loads(Path('navigator/stringline.json').read_text())
+          projects={project['id']:project for project in stringline['seed_project_strings']}
+          assert 'registers-governance' in projects
+          ids={body['id'] for body in projects['registers-governance']['bodies']}
+          assert {'source-ledger','latest-body-finder','source-body-auditor','current-best-register','crown-register','living-register'} <= ids
+
+          authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
+          assert any(body.get('id')=='registers-governance-chain' for body in authority['bodies'])
+          receipt=json.loads(Path('registry/estate-classification-integrity-receipt-v1.0.json').read_text())
+          assert receipt['status']=='PASS_RETRIEVAL_TRUTH'
+          assert len(receipt['remaining_exact_package_retrieval'])==3
+
+          scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
+          Path('/tmp/apps-retrieval-truth.js').write_text(scripts[-1],encoding='utf-8')
+          print({'registered':registered,'stats':shown,'projects':len(projects)})
+          PY
+          node --check /tmp/apps-retrieval-truth.js
+      - name: Commit retrieval-truth correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Classification Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add apps/index.html navigator/stringline.json registry/estate-classification-authority-v1.0.json registry/estate-classification-integrity-receipt-v1.0.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Distinguish known bodies from unrecovered standalone packages"
+          git pull --rebase origin main
+          git push origin HEAD:main

@@ -1,0 +1,212 @@
+--- a/navigator/index.html
++++ b/navigator/index.html
+@@ -5,7 +5,7 @@
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="theme-color" content="#070b14">
+ <meta name="description" content="JM3232 Navigator — a Stringline-governed Internet and Estate explorer.">
+-<title>JM3232 Navigator — JM Stringline</title>
++<title>JM3232 Navigator v0.1.1 — JM Stringline</title>
+ <style>
+ :root{
+   color-scheme:dark;
+@@ -233,7 +233,7 @@
+ </dialog>
+ 
+ <dialog id="aboutDialog">
+-  <div class="dialoghead"><div><strong>JM3232 Navigator v0.1</strong><div class="meta">First executable Stringline shell</div></div><button id="closeAbout" aria-label="Close">×</button></div>
++  <div class="dialoghead"><div><strong>JM3232 Navigator v0.1.1</strong><div class="meta">Proof, migration and navigation pass</div></div><button id="closeAbout" aria-label="Close">×</button></div>
+   <p><strong>Navigator explores the bodies. Stringline connects the bodies. Trace receipts preserve the route.</strong></p>
+   <p class="meta">This build provides a JM-authored browser experience shell using the device browser for external rendering. It does not claim a custom engine, platform-level chat embedding, universal parser completion or an APK.</p>
+   <p class="meta">Data is local-first in this browser profile. Export a SavePack for custody beyond this device.</p>
+@@ -254,17 +254,18 @@
+ 
+   const doors=[
+     {name:'Living Estate',note:'Canonical independent public house',route:'../',internal:true},
++    {name:'Non-Game Apps House',note:'All registered non-game apps through one public door',route:'../apps/',internal:true},
+     {name:'Theory Multihub',note:'Theory bodies and full reading routes',route:'../theory/',internal:true},
+     {name:'Lyrics & Music House',note:'B. Lyrikz canon and teleprompter routes',route:'../lyrics/',internal:true},
+     {name:'Lost, Loose & Unseated',note:'Permanent straggler recovery gate',route:'../recovery/',internal:true},
+     {name:'Games&Beyond',note:'Public games house corridor',route:'https://jmisjustme.github.io/JM-cading-lab/games-beyond/',internal:false}
+   ];
+-
+   const defaultNav={
+     tabs:[{id:'home',title:'Navigator',url:'jm://home',internal:true}],
+-    activeTab:'home',history:[],bookmarks:doors.slice(0,4).map((d,i)=>({id:'seed-bookmark-'+i,title:d.name,url:d.route,createdAt:'2026-07-20T00:00:00Z'}))
++    activeTab:'home',trail:['home'],history:[],bookmarks:doors.slice(0,5).map((d,i)=>({id:'seed-bookmark-'+i,title:d.name,url:d.route,createdAt:'2026-07-20T00:00:00Z'}))
+   };
+   let nav=load(KEYS.state,defaultNav);
++  nav.trail=Array.isArray(nav.trail)&&nav.trail.length?nav.trail:[nav.activeTab||'home'];
+   let receipts=load(KEYS.receipts,[]);
+   let stringline={projects:[],lifecycle:['SEED','THREADING','STANDING','PROVEN','MOUNTED','FROZEN','SUPERSEDED','ARCHIVED','STRANDED']};
+ 
+@@ -284,7 +285,7 @@
+     if(!q)return {kind:'empty'};
+     const lower=q.toLowerCase();
+     const aliases={
+-      home:'../',estate:'../',theory:'../theory/',lyrics:'../lyrics/',music:'../lyrics/',
++      home:'../',estate:'../',apps:'../apps/',tools:'../apps/',theory:'../theory/',lyrics:'../lyrics/',music:'../lyrics/',
+       recovery:'../recovery/',stragglers:'../recovery/',navigator:'./',stringline:'jm://stringline',
+       games:'https://jmisjustme.github.io/JM-cading-lab/games-beyond/'
+     };
+@@ -308,38 +309,49 @@
+     if(door)return door.name;
+     try{return new URL(url,location.href).hostname}catch{return url}
+   }
++  function rememberTab(id){
++    nav.trail=Array.isArray(nav.trail)?nav.trail:[];
++    if(nav.trail.at(-1)!==id)nav.trail.push(id);
++    nav.trail=nav.trail.slice(-80);
++  }
+   function openRoute(raw,title){
+     const parsed=normalizeInput(raw);
+     if(parsed.kind==='empty')return;
+-    if(parsed.kind==='command'&&parsed.value==='jm://stringline'){showView('stringline');return}
++    if(parsed.kind==='command'&&parsed.value==='jm://stringline'){showView('stringline',true);return}
+     const url=parsed.value;
+     const internal=isInternal(url);
+     const tab={id:uid('tab'),title:titleFor(url,title||parsed.title),url,internal,openedAt:now()};
+-    nav.tabs.push(tab);nav.activeTab=tab.id;
++    nav.tabs.push(tab);nav.activeTab=tab.id;rememberTab(tab.id);
+     nav.history.unshift({id:uid('history'),title:tab.title,url,internal,at:now()});
+-    nav.history=nav.history.slice(0,250);persist();renderAll();
+-    receipt('OPEN_ROUTE',`${tab.title} → ${url}`,tab.id);
++    nav.history=nav.history.slice(0,250);persist();renderAll();receipt('OPEN_ROUTE',`${tab.title} → ${url}`,tab.id);
+     if(internal){
+       $('#previewFrame').src=url;
+       $('#previewNote').innerHTML=`Viewing an internal Estate route: <code>${esc(url)}</code>`;
+-      showView('preview',false);
++      showView('preview',true);
+     }else{
+       const opened=window.open(url,'_blank','noopener,noreferrer');
+-      showView('home',false);
++      showView('home',true);
+       toast(opened?'Opened through device browser; route retained.':'Pop-up blocked. Tap Go again or allow new tabs.');
+     }
+   }
+-  function activateTab(id){
++  function activateTab(id,track=true){
+     const tab=nav.tabs.find(t=>t.id===id);if(!tab)return;
+-    nav.activeTab=id;persist();renderTabs();
+-    if(tab.url==='jm://home'){showView('home');return}
+-    if(tab.internal){$('#previewFrame').src=tab.url;showView('preview')}
+-    else{toast('External route retained. Tap the tab again to reopen.');window.open(tab.url,'_blank','noopener,noreferrer')}
++    nav.activeTab=id;if(track)rememberTab(id);persist();renderTabs();
++    if(tab.url==='jm://home'){showView('home',true);return}
++    if(tab.internal){$('#previewFrame').src=tab.url;showView('preview',true)}
++    else{showView('home',true);toast('External route retained. Tap its tab again to reopen.');if(track)window.open(tab.url,'_blank','noopener,noreferrer')}
++  }
++  function goBack(){
++    nav.trail=Array.isArray(nav.trail)?nav.trail:[];
++    while(nav.trail.length&&nav.trail.at(-1)===nav.activeTab)nav.trail.pop();
++    let id;
++    while(nav.trail.length&&!nav.tabs.some(t=>t.id===(id=nav.trail.at(-1))))nav.trail.pop();
++    activateTab(id||'home',false);
+   }
+   function closeTab(id){
+     const i=nav.tabs.findIndex(t=>t.id===id);if(i<0||nav.tabs.length===1)return;
+-    nav.tabs.splice(i,1);
+-    if(nav.activeTab===id)nav.activeTab=nav.tabs[Math.max(0,i-1)].id;
++    nav.tabs.splice(i,1);nav.trail=(nav.trail||[]).filter(x=>x!==id);
++    if(nav.activeTab===id){nav.activeTab=nav.tabs[Math.max(0,i-1)].id;rememberTab(nav.activeTab)}
+     persist();renderTabs();receipt('CLOSE_TAB',id,id);
+   }
+   function addBookmark(title,url){
+@@ -347,10 +359,11 @@
+     nav.bookmarks.unshift({id:uid('bookmark'),title:titleFor(url,title),url,createdAt:now()});
+     persist();renderBookmarks();receipt('BOOKMARK',`${titleFor(url,title)} → ${url}`);toast('Door saved.');
+   }
+-  function showView(name,updateNav=true){
+-    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+name));
+-    if(updateNav)document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
+-    else document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===name));
++  function showView(name,reset=false){
++    const target=$('#view-'+name);
++    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v===target));
++    document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(name==='preview'?'home':name)));
++    if(reset&&target)target.scrollTop=0;
+     if(name==='stringline')renderStringline();
+     if(name==='history')renderHistory();
+     if(name==='bookmarks')renderBookmarks();
+@@ -360,7 +373,7 @@
+     $('#tabs').innerHTML=nav.tabs.map(t=>`<div class="tab ${t.id===nav.activeTab?'active':''}" data-tab="${esc(t.id)}"><span>${esc(t.title)}</span><button data-close="${esc(t.id)}" aria-label="Close ${esc(t.title)}">×</button></div>`).join('')+'<button class="newtab" id="newTab" aria-label="New tab">+</button>';
+     document.querySelectorAll('[data-tab]').forEach(t=>t.onclick=e=>{if(!e.target.closest('[data-close]'))activateTab(t.dataset.tab)});
+     document.querySelectorAll('[data-close]').forEach(b=>b.onclick=e=>{e.stopPropagation();closeTab(b.dataset.close)});
+-    $('#newTab').onclick=()=>{const tab={id:uid('tab'),title:'New route',url:'jm://home',internal:true};nav.tabs.push(tab);nav.activeTab=tab.id;persist();renderTabs();showView('home');$('#addressInput').focus()};
++    $('#newTab').onclick=()=>{const tab={id:uid('tab'),title:'New route',url:'jm://home',internal:true};nav.tabs.push(tab);nav.activeTab=tab.id;rememberTab(tab.id);persist();renderTabs();showView('home',true);$('#addressInput').focus()};
+   }
+   function renderDoors(){
+     $('#quickDoors').innerHTML=doors.map(d=>`<a class="door" href="${esc(d.route)}" data-open="${esc(d.route)}" data-title="${esc(d.name)}"><span><strong>${esc(d.name)}</strong><small>${esc(d.note)}</small></span><b>↗</b></a>`).join('');
+@@ -398,21 +411,30 @@
+ 
+   async function hydrateStringline(){
+     const local=load(KEYS.stringline,null);
+-    if(local?.projects?.length){stringline=local;renderAll();return}
+     try{
+       const res=await fetch('./stringline.json',{cache:'no-store'});
+       if(!res.ok)throw new Error('seed unavailable');
+       const seed=await res.json();
+-      stringline={projects:seed.seed_project_strings||[],lifecycle:seed.lifecycle_states||stringline.lifecycle};
+-      persist();renderAll();receipt('STRINGLINE_IGNITION','Loaded JM Stringline v0.1 executable seed.');
++      const mergeBodies=(official=[],owned=[])=>{
++        const map=new Map(official.map(b=>[b.id,b]));
++        owned.forEach(b=>map.set(b.id||b.name,{...(map.get(b.id)||{}),...b}));
++        return[...map.values()];
++      };
++      const official=seed.seed_project_strings||[],owned=local?.projects||[],ownedMap=new Map(owned.map(p=>[p.id,p]));
++      const projects=official.map(p=>{const prior=ownedMap.get(p.id);ownedMap.delete(p.id);return prior?{...prior,...p,bodies:mergeBodies(p.bodies,prior.bodies)}:p});
++      projects.push(...ownedMap.values());
++      const changed=local?.seedVersion!==seed.version;
++      stringline={projects,lifecycle:[...new Set([...(seed.lifecycle_states||[]),...(local?.lifecycle||[])])],seedVersion:seed.version};
++      persist();renderAll();
++      receipt(local?.projects?.length?(changed?'STRINGLINE_SEED_MERGE':'STRINGLINE_REENTRY'):'STRINGLINE_IGNITION',local?.projects?.length?(changed?`Merged ${seed.version} without erasing local bodies.`:'Restored local Stringline body.'):`Loaded ${seed.version}.`);
+     }catch{
+-      stringline={projects:[],lifecycle:stringline.lifecycle};renderAll();toast('Stringline seed could not load; local shell remains available.');
++      stringline=local?.projects?.length?local:{projects:[],lifecycle:stringline.lifecycle};
++      renderAll();toast('Stringline seed could not load; preserved local body remains available.');
+     }
+   }
+-
+   $('#addressForm').onsubmit=e=>{e.preventDefault();openRoute($('#addressInput').value);$('#addressInput').select()};
+-  $('#backBtn').onclick=()=>{if(nav.history[1])openRoute(nav.history[1].url,nav.history[1].title);else showView('home')};
+-  document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
++  $('#backBtn').onclick=goBack;
++  document.querySelectorAll('.navbtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view,true));
+   $('#moreBtn').onclick=()=>$('#aboutDialog').showModal();
+   $('#closeAbout').onclick=()=>$('#aboutDialog').close();
+   $('#addBodyBtn').onclick=()=>{$('#bodyForm').reset();$('#bodyDialog').showModal()};
+--- a/navigator/stringline.json
++++ b/navigator/stringline.json
+@@ -2,7 +2,7 @@
+   "schema": "JM.Stringline/1.0",
+   "generated": "2026-07-20",
+   "name": "JM Stringline",
+-  "version": "v0.1 executable seed",
++  "version": "v0.1.1 proof and migration seed",
+   "method": "Structured Single-Stringling",
+   "tbs": "Threading Bodies Steadily",
+   "crown": "Many bodies. One living line. None erased.",
+@@ -122,6 +122,24 @@
+         }
+       ]
+     },
++    {
++      "id": "non-game-apps",
++      "name": "Non-Game Apps",
++      "headChat": "Non-game Apps Organization",
++      "headRecord": "Non-Game Apps House Record",
++      "status": "STANDING",
++      "keeper": "All the apps share one front door while their bodies remain sovereign.",
++      "bodies": [
++        {
++          "id": "apps-house",
++          "name": "Non-Game Apps House",
++          "type": "App estate",
++          "role": "Public-safe catalogue and corridor for registered non-game apps",
++          "status": "PROVEN",
++          "route": "../apps/"
++        }
++      ]
++    },
+     {
+       "id": "theory",
+       "name": "Theory Estate",

@@ -1,0 +1,19 @@
+{
+  "name": "JM Theory Multihub Public Payload",
+  "version": "v0.4-project-source-census-public",
+  "parts": [
+    {"file":"part-01.txt","chars":7500,"sha256":"58d57836b67ffbc218ce08f0876c36e390709bf0df746f96c21e3218f0aaa973"},
+    {"file":"part-02.txt","chars":7500,"sha256":"9fb2d151d985dfdbe00927c70a64067affe08310d7f84232de80b61f919272fd"},
+    {"file":"part-03.txt","chars":7500,"sha256":"2b3ed74d830d4f16735d610d1daf6505bb173c24edb780d0032f724c7ec315fd"},
+    {"file":"part-04.txt","chars":7500,"sha256":"6ef9f85b85be58a8b9337f58feb285fc241965b536b7ada3211eb5b91901bb07"},
+    {"file":"part-05.txt","chars":7500,"sha256":"2782eee0d6314ba32ab42f0364420cd079211b3b2fe90509e593331388d467c7"},
+    {"file":"part-06.txt","chars":7500,"sha256":"0732e42ddf0fe6c9839b2d6d618bfa2f89fd5c3343c33ac465e763e0b6dbdff4"},
+    {"file":"part-07.txt","chars":5428,"sha256":"1fb9bb4f9ea3445b2709f32910160b33e020ab9a36dc918bdc67eefca39bf536"}
+  ],
+  "joined_base64_chars": 50428,
+  "decoded_json_bytes": 386039,
+  "decoded_json_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5",
+  "readable_routes": 297,
+  "districts": 19,
+  "boundary": "Compact public route payload; full owner-controlled source corpora and Zionfolders remain preserved separately."
+}

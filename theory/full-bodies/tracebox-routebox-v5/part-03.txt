@@ -1,0 +1,129 @@
+11. The v5 Run Sheet
+
+Use this to test anything through TraceBox.
+
+TRACEBOX / ROUTEBOX v5 RUN
+
+DOMAIN:
+SCENARIO:
+INTENTION:
+INPUT:
+
+WORLD-BODY:
+- Space:
+- Time:
+- Height-View:
+
+GATES:
+- Inside / Outside:
+- Before / After:
+- Open / Closed:
+- Input / Output:
+
+OPERATOR:
+EXPECTED STATE:
+EXPECTED OUTPUT:
+
+OBSERVATION:
+ACTUAL RESULT:
+MATCH / DRIFT / BREAK:
+
+STATE FAMILY:
+TRACE:
+MEMORY:
+RESET:
+RECOVERY:
+NEXT TEST:
+ECOSYSTEM LINK:
+
+---
+
+12. Trace Formula
+
+Every run should produce a trace.
+
+[Input] entered [Inside/Outside] route at [Before/After] timing.
+The route was [Open/Closed].
+The system was in [Input/Output] role.
+The operator was [Operator].
+Therefore state became [State Name].
+Output became [Output].
+Trace clarity was [Low/Mid/High].
+Observation was [Observation Type].
+Memory/Reset status: [Memory/Reset].
+Recovery note: [What can be understood or corrected].
+
+Keeper:
+
+Trace turns state into recoverable meaning.
+
+---
+
+13. Physical Device Translation
+
+The model can translate into a physical device later.
+
+Space — board, chamber, slot, tube, rail
+Time — sequence, delay, hold, reset cycle
+Height-View — labels, transparent window, overview panel
+Inside / Outside — main route / branch route
+Before / After — trigger timing / result timing
+Open / Closed — gate, flap, valve, latch
+Input / Output — receiving side / result side
+Force — press, squeeze, push
+Lift — rising flap or marker
+Slide — moving tab
+Drag — friction / resistance
+Hold — latch / stored pressure
+Release — vent / unlock / open
+Signal — copper, LED, buzzer, sensor
+Trace — visible state path / log
+
+Important correction:
+
+The device is not powered by air, water, or EM at root.
+It is powered by arranged space-time.
+Air, water, EM, pressure, force, lift, slide, and drag are behaviours inside that arrangement.
+
+---
+
+14. Ecosystem Uses
+
+TraceBox can model:
+
+Physical Device
+
+body input → shaped route → movement → state → trace
+
+GlyphPlay
+
+player input → rule/gate → object state → feedback
+
+Human Interaction
+
+intention enters situation → timing/boundary/openness shape outcome
+
+Language / Meaning
+
+word enters context → meaning changes through timing, gate, and trace
+
+AI / Translucent Box
+
+prompt enters system → output needs trace/recovery, not blind trust
+
+Humanimals
+
+body-world sensing → animal perception → hidden route becomes readable
+
+FTR
+
+tool routes body limitation, signal, environment, and practical action
+
+Music / Voice
+
+breath, pressure, rhythm, body, language, and meaning become performance
+
+Public Output
+
+idea enters audience route → clarity, reaction, correction, release
+

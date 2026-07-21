@@ -1,0 +1,53 @@
+{
+  "schema": "JM.RecentChatConvergenceReceipt/1.0",
+  "created_utc": "2026-07-21T23:34:53.895328+00:00",
+  "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED",
+  "files": [
+    {
+      "path": "games-beyond/recent-direction/index.html",
+      "bytes": 7179,
+      "sha256": "d78bafc6212e6d77df321eb55ac85e4ea0cf0e2866e5db28f0e35473f32d67a2"
+    },
+    {
+      "path": "recent/index.html",
+      "bytes": 9774,
+      "sha256": "f6ad34503da0da5481b94b0bc72b17a2a18c74ceef215bfa1adb96d721e87745"
+    },
+    {
+      "path": "recent/recent-convergence-v1.0.json",
+      "bytes": 6404,
+      "sha256": "1d340d8874df1692880f02fe93fad2562b79ec1361db1c5d6f37aade825fbb60"
+    },
+    {
+      "path": "registry/recent-chat-convergence-v1.0.json",
+      "bytes": 6404,
+      "sha256": "1d340d8874df1692880f02fe93fad2562b79ec1361db1c5d6f37aade825fbb60"
+    },
+    {
+      "path": "theory/biohouse-nervous-signal-route/index.html",
+      "bytes": 7959,
+      "sha256": "6b469470cfe133b27ecf1238fff1bc0adaa2b6ca325181c9d2ba94acb440cc02"
+    },
+    {
+      "path": "theory/biohouse-nervous-signal-route/v1.0.html",
+      "bytes": 18060,
+      "sha256": "7e964d6596804f0677c48ef9dd50cfd98e1f4baa0d2663afe910f3eabef27675"
+    },
+    {
+      "path": "theory/reality-route-ethos/index.html",
+      "bytes": 7438,
+      "sha256": "d91d7dea858ea0f6b365f6ead63f3490428697b463e8866172f394687f891c54"
+    },
+    {
+      "path": "theory/trasta/index.html",
+      "bytes": 7696,
+      "sha256": "fc4bdea2b38e4d221fc32bdc830a9029795dd143f0ff5a92fc8007078549c5a4"
+    }
+  ],
+  "checks": {
+    "json_parse": true,
+    "source_v1_0_exact_copy": true,
+    "private_owner_routes_published": false,
+    "active_products_falsely_crowned": false
+  }
+}

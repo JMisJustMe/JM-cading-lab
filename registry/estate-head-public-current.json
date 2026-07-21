@@ -1,10 +1,11 @@
 {
-  "schema": "JM.EstateHeadPublicCurrent/1.0",
-  "current_public_subset_version": "v0.2.1",
-  "effective_date": "2026-07-20",
+  "schema": "JM.EstateHeadPublicCurrent/1.1",
+  "current_public_subset_version": "v0.3.0",
+  "effective_date": "2026-07-22",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "body_count": 61,
   "project_head_count": 11,
+  "body_count_boundary": "The governed passport totals remain 61 bodies and 11 Project Heads. Recent convergence projections route current outcomes publicly without inventing new passport counts.",
   "gap_snapshot": {
     "OPEN": 35,
     "PARTIAL": 20,
@@ -25,14 +26,28 @@
     "governance_receipt": "registry/source-to-living-governance-receipt-v1.0.json",
     "public_promotions_guarded": 27
   },
-  "deployment_state": "PUBLIC_HOUSE_CONSUMPTION_LIVE_IN_REPOSITORY",
+  "recent_convergence": {
+    "version": "v1.0",
+    "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED",
+    "current_lanes_represented": 12,
+    "new_public_projection_routes": 5,
+    "foundational_body_count_unchanged": true,
+    "registry": "registry/recent-chat-convergence-v1.0.json",
+    "portable_contract": "recent/recent-convergence-v1.0.json",
+    "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
+    "public_house": "recent/index.html"
+  },
+  "deployment_state": "PUBLIC_HOUSE_AND_RECENT_CONVERGENCE_CONSUMPTION_LIVE_IN_REPOSITORY",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
-  "public_head_route": "https://jmisjustme-estate.pages.dev/estate-head/",
-  "public_subset_path": "/data/estate-head-public-v0.2.1.json",
-  "deployed_at_utc": "2026-07-20T17:42:52Z",
-  "source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
-  "workflow_run": "29764657985",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
+  "github_pages_door": "https://jmisjustme.github.io/JM-cading-lab/",
+  "public_head_route": "registry/estate-head-public-current.json",
+  "public_subset_path": "/registry/estate-head-public-current.json",
+  "last_verified_cloudflare_contract_version": "v0.2.1",
+  "last_verified_cloudflare_deployed_at_utc": "2026-07-20T17:42:52Z",
+  "last_verified_cloudflare_source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
+  "last_verified_cloudflare_workflow_run": "29764657985",
+  "current_repository_convergence_commit": "c1f8387963212e3750ad7a0cb7c87436ae6b40c8",
+  "boundary": "Public contract only. No private source routes, owner notes, custody paths, raw gap evidence or private lyric corpus are included. Recent-chat representation is complete at the public routing and claim-boundary level; active games, apps, commercial inventories, JMStudio custody and private source packages remain labelled by their actual state. Cloudflare edge verification for v0.3.0 remains separate from repository publication.",
   "public_consumers": [
     "registry/estate-map.json",
     "estate-app.js",
@@ -42,9 +57,15 @@
     "apps/index.html",
     "games-beyond/index.html",
     "games-beyond/routeos/index.html",
+    "games-beyond/recent-direction/index.html",
     "theory/index.html",
+    "theory/biohouse-nervous-signal-route/index.html",
+    "theory/biohouse-nervous-signal-route/v1.0.html",
+    "theory/trasta/index.html",
+    "theory/reality-route-ethos/index.html",
     "lyrics/index.html",
     "recovery/index.html",
+    "recent/index.html",
     "author/index.html",
     "coding-estate/everybody/00_OPEN_FIRST.html",
     "cading.html"
@@ -53,15 +74,21 @@
   "carrier": {
     "format": "checksum-verified segmented JSON",
     "segments": 4,
-    "sha256": "7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676"
+    "sha256": "7dcfadf6b9e17dc0621194bd33a6ea9dd95bbcd35fa41d6e3db32b6f4c312676",
+    "boundary": "Carrier checksum belongs to the last segmented v0.2.1 Cloudflare carrier. The repository current contract is this file."
   },
   "public_house_consumers": [
     "apps/index.html",
     "games-beyond/index.html",
     "games-beyond/routeos/index.html",
+    "games-beyond/recent-direction/index.html",
     "theory/index.html",
+    "theory/biohouse-nervous-signal-route/index.html",
+    "theory/trasta/index.html",
+    "theory/reality-route-ethos/index.html",
     "lyrics/index.html",
     "recovery/index.html",
+    "recent/index.html",
     "author/index.html",
     "coding-estate/everybody/00_OPEN_FIRST.html",
     "cading.html"
@@ -108,9 +135,14 @@
       "state": "LIVE_SOVEREIGN_GAMES_HOUSE"
     },
     {
-      "body": "JM Theory Multihub v0.4 — Project Source Census",
+      "body": "JM Games — Current Direction Ledger",
+      "path": "games-beyond/recent-direction/index.html",
+      "state": "LIVE_DIRECTION_CONTRACT_UNFINISHED_PRODUCTS_NOT_CROWNED"
+    },
+    {
+      "body": "JM Theory Multihub v0.9 — Source Depth + Recent Convergence",
       "path": "theory/index.html",
-      "state": "LIVE_FULL_BODY_CORRECTION_37_BODIES_297_CENSUS_ROUTES"
+      "state": "LIVE_15_VERIFIED_24_SHAPED_297_CENSUS_ROUTES"
     },
     {
       "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
@@ -118,9 +150,24 @@
       "state": "DEDICATED_COMPLETE_BODY_LIVE"
     },
     {
+      "body": "JM BIOHOUSE — Nervous Signal Route v1.1",
+      "path": "theory/biohouse-nervous-signal-route/index.html",
+      "state": "EXACT_V1_0_SOURCE_PLUS_ADDITIVE_V1_1_LIVE"
+    },
+    {
+      "body": "TraSta — Trace–Stance",
+      "path": "theory/trasta/index.html",
+      "state": "SCOPED_TRACE_METHOD_LIVE"
+    },
+    {
+      "body": "Reality, Route & Meaning Ethos",
+      "path": "theory/reality-route-ethos/index.html",
+      "state": "COMPLETED_ETHOS_SYNTHESIS_LIVE"
+    },
+    {
       "body": "JM Lyrics & Music House — Whole-Estate Public Door",
       "path": "lyrics/index.html",
-      "state": "LIVE_FIRST_PARTY_LYRICSTUDIO_V0_5_1"
+      "state": "LIVE_FIRST_PARTY_LYRICSTUDIO_V0_5_1_INTERACTION_REPAIR_ACTIVE"
     },
     {
       "body": "Lost, Loose & Unseated Bodies — Recovery Gate",
@@ -128,21 +175,34 @@
       "state": "PERMANENT_STRAGGLER_RECOVERY_GATE_LIVE"
     },
     {
+      "body": "JM Estate — Recent Chat Convergence",
+      "path": "recent/index.html",
+      "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
+    },
+    {
       "body": "JM Estate Head — Public Authority",
       "path": "registry/estate-head-public-current.json",
-      "state": "LIVE_PUBLIC_CONTRACT_V0_2_1"
+      "state": "LIVE_PUBLIC_CONTRACT_V0_3_0"
     },
     {
       "body": "JM Non-Game Apps House",
       "path": "apps/index.html",
-      "state": "LIVE_GOVERNED_APPS_HOUSE"
+      "state": "LIVE_GOVERNED_40_ROOM_PUBLIC_SAFE_CATALOGUE"
     }
   ],
   "house_consumption_receipt": "registry/estate-head-house-consumption-receipt.json",
   "cloudflare_live_proof": {
-    "deployment": "PASS",
-    "canonical_host": "PASS",
-    "receipt": "registry/cloudflare-estate-head-deploy-receipt.json"
+    "last_verified_contract_version": "v0.2.1",
+    "last_verified_deployment": "PASS",
+    "last_verified_canonical_host": "PASS",
+    "last_verified_receipt": "registry/cloudflare-estate-head-deploy-receipt.json",
+    "current_v0_3_0_edge_verification": "PENDING_SEPARATE_LIVE_DOOR_CONTACT"
+  },
+  "github_pages_publication": {
+    "source": "main",
+    "legacy_branch": "gh-pages",
+    "workflow": ".github/workflows/deploy-github-pages.yml",
+    "state": "SOURCE_ALIGNMENT_ACTIVE_EDGE_CONTACT_SEPARATE"
   },
   "source_to_living_governance": {
     "status": "PASS_REPOSITORY_WIDE_SIX_STAGE_GOVERNANCE",
@@ -153,6 +213,7 @@
     "public_promotions_guarded": 27,
     "private_owner_fields_published": false,
     "version_number_coronation": false,
+    "recent_projection_layer_does_not_mutate_passport_counts": true,
     "receipt": "registry/source-to-living-governance-receipt-v1.0.json"
   }
 }

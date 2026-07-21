@@ -1,0 +1,118 @@
+name: Verify Recent Convergence Live Doors
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-recent-convergence-live.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recent-convergence-live-proof
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current Estate
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Require public contact with every converged door
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://jmisjustme.github.io/JM-cading-lab"
+          paths=(
+            "/"
+            "/recent/"
+            "/theory/biohouse-nervous-signal-route/"
+            "/theory/biohouse-nervous-signal-route/v1.0.html"
+            "/theory/trasta/"
+            "/theory/reality-route-ethos/"
+            "/games-beyond/recent-direction/"
+          )
+          expects=(
+            "JMISJUSTME"
+            "The Estate"
+            "Attention, Suggestion"
+            "Nervous Signal Route v1.0"
+            "Trust the trace"
+            "Reality is not"
+            "More game"
+          )
+
+          passed=0
+          for attempt in $(seq 1 24); do
+            passed=1
+            for i in "${!paths[@]}"; do
+              url="${base}${paths[$i]}?live-proof=${GITHUB_RUN_ID}-${attempt}"
+              body="$(curl --fail --silent --show-error --location --max-time 25 \
+                -H 'Cache-Control: no-cache' "$url" || true)"
+              if [[ "$body" != *"${expects[$i]}"* ]]; then
+                echo "CONTACT MISS: ${paths[$i]} expected ${expects[$i]}"
+                passed=0
+              else
+                echo "CONTACT PASS: ${paths[$i]}"
+              fi
+            done
+            if [[ "$passed" == "1" ]]; then
+              break
+            fi
+            sleep 10
+          done
+
+          if [[ "$passed" != "1" ]]; then
+            echo "Public recent-convergence contact did not pass."
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          base = 'https://jmisjustme.github.io/JM-cading-lab'
+          checks = [
+              ('/', 'JMISJUSTME'),
+              ('/recent/', 'The Estate'),
+              ('/theory/biohouse-nervous-signal-route/', 'Attention, Suggestion'),
+              ('/theory/biohouse-nervous-signal-route/v1.0.html', 'Nervous Signal Route v1.0'),
+              ('/theory/trasta/', 'Trust the trace'),
+              ('/theory/reality-route-ethos/', 'Reality is not'),
+              ('/games-beyond/recent-direction/', 'More game')
+          ]
+          receipt = {
+              'schema': 'JM.RecentChatConvergenceLiveDoorReceipt/1.0',
+              'verified_utc': datetime.now(timezone.utc).isoformat(),
+              'state': 'PASS_GITHUB_PAGES_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS',
+              'source_trigger_commit': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'host': base,
+              'checks': [
+                  {'url': base + path, 'expected_marker': marker, 'contact': 'PASS'}
+                  for path, marker in checks
+              ],
+              'private_owner_fields_published': False,
+              'claim_boundary': 'This receipt proves HTTP contact and expected body markers on GitHub Pages. It does not prove completion of active products or the separate Cloudflare v0.3.0 deployment.'
+          }
+          Path('registry/recent-chat-convergence-live-door-receipt-v1.0.json').write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
+          PY
+          python3 -m json.tool registry/recent-chat-convergence-live-door-receipt-v1.0.json >/dev/null
+
+      - name: Seal live-contact receipt
+        shell: bash
+        run: |
+          git config user.name "JM Estate Live Proof Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/recent-chat-convergence-live-door-receipt-v1.0.json
+          git commit -m "Seal recent convergence live-door proof [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

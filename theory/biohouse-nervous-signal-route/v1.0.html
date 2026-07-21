@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07131b">
+<title>JM BIOHOUSE — Nervous Signal Route v1.0</title>
+<style>
+:root {
+  --bg:#07131b; --panel:#0d1d27; --panel2:#112733; --line:#2b5266;
+  --text:#edf7fb; --muted:#a9c0cc; --accent:#72e3c1; --accent2:#78aef7;
+  --warn:#ffd166; --shadow:0 16px 40px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#061019,#0b1b24 45%,#07131b);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:10;background:rgba(7,19,27,.94);backdrop-filter:blur(14px);border-bottom:1px solid rgba(114,227,193,.2)}
+.top{max-width:1180px;margin:auto;padding:14px 16px 10px;display:flex;gap:12px;align-items:center}
+.brand{font-weight:900;letter-spacing:.02em;white-space:nowrap}
+.brand span{color:var(--accent)}
+.search{margin-left:auto;display:flex;gap:8px;align-items:center;width:min(420px,58vw)}
+.search input{width:100%;border:1px solid var(--line);border-radius:14px;padding:11px 13px;background:#081821;color:var(--text);font-size:16px}
+.nav{max-width:1180px;margin:auto;padding:0 16px 12px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{flex:0 0 auto;border:1px solid var(--line);background:#0c202b;color:var(--muted);border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+.nav-btn.active{background:var(--accent);color:#061019;border-color:var(--accent)}
+main{max-width:1180px;margin:auto;padding:18px 16px 80px}
+.panel{display:none;animation:fade .2s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hero{background:radial-gradient(circle at top right,rgba(120,174,247,.18),transparent 40%),linear-gradient(135deg,#102a36,#0a1922);padding:24px;border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+h1{font-size:clamp(2.1rem,8vw,4.7rem);line-height:.95;margin:18px 0 12px}
+h1 span{color:var(--accent)}
+h2{font-size:clamp(1.8rem,6vw,3rem);margin:8px 0 18px}
+h3{margin:0 0 8px;color:var(--accent)}
+.lead{font-size:1.15rem;color:var(--muted)}
+.pill{display:inline-block;margin:0 6px 6px 0;padding:7px 10px;border-radius:999px;background:rgba(114,227,193,.1);border:1px solid rgba(114,227,193,.35);color:var(--accent);font-size:.85rem;font-weight:800}
+blockquote{margin:18px 0;padding:16px 18px;border-left:4px solid var(--accent);background:rgba(114,227,193,.07);border-radius:0 16px 16px 0;font-size:1.08rem}
+.route{padding:16px;border:1px solid rgba(120,174,247,.35);background:rgba(120,174,247,.08);border-radius:16px;line-height:1.65;font-weight:800;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0}
+article{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 22px rgba(0,0,0,.15)}
+article p{margin:0;color:var(--muted);line-height:1.55}
+.flow{display:grid;gap:7px;max-width:650px}
+.flow div{padding:13px 16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;font-weight:850}
+.flow b{text-align:center;color:var(--accent2)}
+.table-wrap{overflow:auto;border-radius:16px;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:720px;background:var(--panel)}
+th,td{text-align:left;padding:13px;border-bottom:1px solid #244452;vertical-align:top}
+th{background:#112c39;color:var(--accent)}
+.laws{padding-left:22px;line-height:1.75}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cards button{min-height:58px;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:15px;font-weight:850;font-size:1rem;cursor:pointer}
+.cards button:active{transform:scale(.98)}
+.status{color:var(--muted)}
+.ding{margin:20px 0;padding:18px;border-radius:18px;border:1px solid rgba(255,209,102,.55);background:rgba(255,209,102,.11);color:var(--warn);font-size:1.15rem;font-weight:900}
+.hidden-by-search{display:none!important}
+footer{max-width:1180px;margin:auto;padding:24px 16px 60px;color:var(--muted);border-top:1px solid rgba(114,227,193,.15)}
+@media(max-width:700px){
+  .top{align-items:flex-start;flex-wrap:wrap}
+  .search{order:3;width:100%;margin-left:0}
+  .grid{grid-template-columns:1fr}
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero{padding:19px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand">JM <span>BIOHOUSE</span></div>
+    <div class="search"><input id="searchInput" type="search" placeholder="Search this body…" aria-label="Search"></div>
+  </div>
+  <nav class="nav" aria-label="Project sections"><button class="nav-btn active" data-target="home">Home</button>
+<button class="nav-btn" data-target="map">Core Map</button>
+<button class="nav-btn" data-target="architecture">Architecture</button>
+<button class="nav-btn" data-target="senses">Senses & Action</button>
+<button class="nav-btn" data-target="autonomic">Autonomic</button>
+<button class="nav-btn" data-target="meaning">Meaning</button>
+<button class="nav-btn" data-target="trace">Trace & Ding</button>
+<button class="nav-btn" data-target="tool">Tool Card</button>
+<button class="nav-btn" data-target="placement">Placement</button>
+<button class="nav-btn" data-target="receipt">Receipt</button></nav>
+</header>
+<main><section id="home" class="panel active" data-search="home">
+        <div class="hero">
+          <span class="pill">BIOHOUSE core subject</span>
+          <span class="pill">v1.0 frozen</span>
+          <span class="pill">mobile-first</span>
+          <h1>JM BIOHOUSE<br><span>Nervous Signal Route</span></h1>
+          <p class="lead">Contact, carriage, readiness, response and return.</p>
+          <blockquote>The nervous system is routed contact becoming coordinated readiness and response, carried through a living body, shaped by history and context, and corrected through feedback.</blockquote>
+          <div class="route">Condition → Contact → Conversion → Carriage → Weighting → Readiness → Response → Trace → Return → Adaptation</div>
+        </div>
+        <div class="grid">
+          <article><h3>Brain-centred</h3><p>The brain remains central without becoming a solitary ruler.</p></article>
+          <article><h3>Body-carried</h3><p>The body supplies signals, conditions, limits, action and return.</p></article>
+          <article><h3>Field-facing</h3><p>Environment, history, language and expectation alter readiness.</p></article>
+          <article><h3>Trace-governed</h3><p>TraceBox reveals the route. Ding bounds the claim.</p></article>
+        </div>
+    </section>
+<section id="map" class="panel" data-search="core map">
+        <h2>Complete nervous route</h2>
+        <div class="flow">
+          <div>External or internal condition</div><b>↓</b>
+          <div>Contact</div><b>↓</b>
+          <div>Biological conversion</div><b>↓</b>
+          <div>Signal carriage</div><b>↓</b>
+          <div>Local and wider weighting</div><b>↓</b>
+          <div>Orientation / readiness</div><b>↓</b>
+          <div>Response or inhibition</div><b>↓</b>
+          <div>Body–environment change</div><b>↓</b>
+          <div>Feedback</div><b>↓</b>
+          <div>Memory / adaptation / route rewriting</div>
+        </div>
+        <h3>Foundation</h3>
+        <p><strong>Brain-centred. Body-carried. Environment-facing. Recursively coordinated.</strong></p>
+        <p>The nervous system is a living coordination body, not a brain issuing orders to a passive body.</p>
+    </section>
+<section id="architecture" class="panel" data-search="architecture">
+        <h2>Architecture</h2>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Classical body</th><th>Main office</th><th>JM access-read</th></tr></thead>
+          <tbody>
+            <tr><td>Central nervous system</td><td>Brain and spinal cord</td><td>Central Signal Body</td></tr>
+            <tr><td>Peripheral nervous system</td><td>Nerves outside brain and cord</td><td>Outer Signal Roads</td></tr>
+            <tr><td>Sensory / afferent route</td><td>Information towards CNS</td><td>Contact-In Route</td></tr>
+            <tr><td>Motor / efferent route</td><td>Influence away from CNS</td><td>Answer-Out Route</td></tr>
+            <tr><td>Autonomic system</td><td>Internal regulation</td><td>Body-State Roads</td></tr>
+            <tr><td>Enteric nervous system</td><td>Local digestive circuits</td><td>Gut-Local Signal Body</td></tr>
+            <tr><td>Neuron</td><td>Receives and carries influence</td><td>Signal Cell / Sparkcell</td></tr>
+            <tr><td>Glial cells</td><td>Support and regulate neural conditions</td><td>Signal Support Mesh</td></tr>
+            <tr><td>Synapse</td><td>Cell-to-cell signalling point</td><td>Signal Crossing</td></tr>
+            <tr><td>Myelin</td><td>Supports efficient conduction</td><td>Speedwrap</td></tr>
+            <tr><td>Neuroplasticity</td><td>Experience-dependent route change</td><td>Route Rewriting</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Stance Stack and Signal Stem</h3>
+        <p><strong>Stance Stack</strong> = vertebral column. <strong>Signal Stem</strong> = spinal cord. <strong>Signal Lines</strong> = spinal nerves. <strong>Soft Spacers</strong> = discs.</p>
+        <blockquote>The spinal cord is neither a passive cable nor a separate miniature person. It is a processing passage.</blockquote>
+    </section>
+<section id="senses" class="panel" data-search="senses & action">
+        <h2>Senses, readiness and action</h2>
+        <div class="grid">
+          <article><h3>Exteroception</h3><p>Light, sound, touch, temperature, smell and taste.</p></article>
+          <article><h3>Proprioception</h3><p>The body carries an internal map of position through ongoing signal.</p></article>
+          <article><h3>Vestibular sense</h3><p>Balance is coordinated correction, not one isolated sense.</p></article>
+          <article><h3>Interoception</h3><p>Internal signal may become available clearly, vaguely, late, intensely or not consciously at all.</p></article>
+        </div>
+        <h3>Motor route</h3>
+        <div class="route">Desired result → Action selection → Motor planning → Motor command → Carriage → Muscle recruitment → Movement → Feedback → Correction</div>
+        <blockquote>Intention participates. The nervous system routes. The body carries. Conditions constrain. Feedback corrects.</blockquote>
+    </section>
+<section id="autonomic" class="panel" data-search="autonomic">
+        <h2>Autonomic orientation</h2>
+        <p>The autonomic system participates in heart rate, blood-vessel tone, breathing conditions, digestion, sweating, pupils, glands, bladder and bowel regulation, sexual responses, mobilisation and restoration.</p>
+        <div class="grid">
+          <article><h3>Mobilisation Roads</h3><p>Sympathetic influence.</p></article>
+          <article><h3>Restore-and-Maintain Roads</h3><p>Parasympathetic influence.</p></article>
+          <article><h3>Gut-Local Signal Body</h3><p>Enteric nervous circuits.</p></article>
+          <article><h3>Vagus route</h3><p>Major brainstem–organ communication route, not the entire brain–body bond.</p></article>
+        </div>
+        <blockquote>Distinct autonomic routes can oppose, cooperate, alternate and remain simultaneously active.</blockquote>
+    </section>
+<section id="meaning" class="panel" data-search="meaning">
+        <h2>Signal, meaning and learned readiness</h2>
+        <blockquote>Signal does not arrive already wearing its final explanation.</blockquote>
+        <div class="route">Signal + body state + history + context + attention + expectation → action-relevant meaning</div>
+        <h3>Learned readiness</h3>
+        <div class="route">Past contact → Stored route bias → Current cue → Predicted condition → Preparation → Response → Consequence → Updated route</div>
+        <p><strong>Prediction is not prophecy. It is a readiness structure.</strong></p>
+        <h3>Metaphor</h3>
+        <p><strong>M(X) ≠ X</strong>, while encounter with M(X) may alter the organism’s relation to X.</p>
+    </section>
+<section id="trace" class="panel" data-search="trace & ding">
+        <h2>TraceBox × Ding</h2>
+        <div class="grid">
+          <article><h3>TraceBox</h3><p>Air dye around the thing. It makes entry, pressure, route, wake, break and recovery readable.</p></article>
+          <article><h3>Ding</h3><p>Declares what completion would count as and permits only the scoped claim that the trace earns.</p></article>
+          <article><h3>BUGG</h3><p>Names a break or mismatch and preserves the repair route.</p></article>
+          <article><h3>Claim boundary</h3><p>The claim remains no larger than the trace and state-change support.</p></article>
+        </div>
+        <div class="route">MARK → SIGNAL → ROUTE → STATE CHANGE → TRACE → DING / BUGG → RECEIPT → CLAIM BOUNDARY</div>
+        <ul class="laws">
+          <li>No route = no state-change claim.</li>
+          <li>No trace = no trustworthy claim.</li>
+          <li>No Ding = no completion claim.</li>
+        </ul>
+    </section>
+<section id="tool" class="panel" data-search="tool card">
+        <h2>Nervous Body Tool Card</h2>
+        <div class="cards">
+          <button data-copy="Thing: What structure, sensation or process is being discussed?">Thing</button>
+          <button data-copy="Condition: What is happening internally or externally?">Condition</button>
+          <button data-copy="Contact: What met what?">Contact</button>
+          <button data-copy="Signal: What information or pressure became available?">Signal</button>
+          <button data-copy="Route: Through which structures did it travel?">Route</button>
+          <button data-copy="Weighting: What increased, inhibited or redirected influence?">Weighting</button>
+          <button data-copy="Readiness: What became more or less available?">Readiness</button>
+          <button data-copy="Response: What movement, feeling, secretion or inhibition occurred?">Response</button>
+          <button data-copy="Trace: What measurably or experientially changed?">Trace</button>
+          <button data-copy="Meaning: What was the experience interpreted as?">Meaning</button>
+          <button data-copy="Claim: Observed, reported, supported, inferred, speculative or unknown?">Claim</button>
+          <button data-copy="Ding: What scoped conclusion has actually been earned?">Ding</button>
+          <button data-copy="Recovery: What correction, support or next test is available?">Recovery</button>
+        </div>
+        <p id="copyStatus" class="status">Tap a card to copy its prompt.</p>
+    </section>
+<section id="placement" class="panel" data-search="placement">
+        <h2>Estate placement</h2>
+        <div class="flow">
+          <div>ElLit</div><b>↓</b>
+          <div>Legaliving</div><b>↓</b>
+          <div>UNBOX</div><b>↓</b>
+          <div>MMMBBB / Whole Human Participation</div><b>↓</b>
+          <div>Nervous Signal Route</div><b>↓</b>
+          <div>BRAIDGE</div><b>↓</b>
+          <div>TraceBox</div><b>↓</b>
+          <div>Ding</div><b>↓</b>
+          <div>BTG / HOSF / FTR</div>
+        </div>
+        <blockquote>No body swallows the others. UNBOX remains an operator, not a new crown.</blockquote>
+    </section>
+<section id="receipt" class="panel" data-search="receipt">
+        <h2>Freeze receipt</h2>
+        <p><strong>Created UTC:</strong> 2026-07-21T09:16:24+00:00</p>
+        <p><strong>Status:</strong> FROZEN / SCOPED COMPLETE / OPERABLE</p>
+        <ul class="laws">
+          <li>Complete core nervous route.</li>
+          <li>Anatomical, sensory, motor and autonomic foundations.</li>
+          <li>Meaning, prediction, plasticity and contextual participation.</li>
+          <li>UNBOX placement without new crown.</li>
+          <li>TraceBox × Ding proof governance.</li>
+          <li>Medical and claim boundaries preserved.</li>
+          <li>Erroneous personal chest case removed.</li>
+        </ul>
+        <div class="ding">🔔 DING — complete enough to freeze, package and operate.</div>
+        <blockquote>The nervous system is the living route through which contact becomes readiness, response becomes consequence, and consequence returns to reshape the next contact.</blockquote>
+    </section></main>
+<footer>
+  <strong>JM BIOHOUSE — Nervous Signal Route v1.0</strong><br>
+  OPEN_FIRST offline body • Created 2026-07-21T09:16:24+00:00<br>
+  No personal chest case. No diagnostic use. No Ding beyond stated scope.
+</footer>
+<script>
+const navButtons=[...document.querySelectorAll('.nav-btn')];
+const panels=[...document.querySelectorAll('.panel')];
+function openPanel(id){
+  panels.forEach(p=>p.classList.toggle('active',p.id===id));
+  navButtons.forEach(b=>b.classList.toggle('active',b.dataset.target===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+navButtons.forEach(b=>b.addEventListener('click',()=>openPanel(b.dataset.target)));
+
+document.querySelectorAll('[data-copy]').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const text=btn.dataset.copy;
+    try{await navigator.clipboard.writeText(text);document.getElementById('copyStatus').textContent='Copied: '+text;}
+    catch(e){document.getElementById('copyStatus').textContent=text;}
+  });
+});
+
+const search=document.getElementById('searchInput');
+search.addEventListener('input',()=>{
+  const q=search.value.trim().toLowerCase();
+  if(!q){
+    panels.forEach(p=>p.classList.remove('hidden-by-search'));
+    return;
+  }
+  panels.forEach(p=>p.classList.toggle('hidden-by-search',!p.innerText.toLowerCase().includes(q)));
+  const hit=panels.find(p=>!p.classList.contains('hidden-by-search'));
+  if(hit) openPanel(hit.id);
+});
+</script>
+</body>
+</html>

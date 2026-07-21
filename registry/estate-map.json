@@ -1,10 +1,10 @@
 {
   "estate": "JM Estate",
   "public_crown": "JMISJUSTME — The Owned Web Estate",
-  "public_crown_version": "1.3",
+  "public_crown_version": "1.4",
   "repository": "JMisJustMe/JM-cading-lab",
-  "status": "OWNED_WEB_ESTATE_V1_3_LIVE_WITH_ESTATE_HEAD_AUTHORITY",
-  "active_keeper": "JM Estate Head governed Living Front Door",
+  "status": "OWNED_WEB_ESTATE_V1_4_LIVE_WITH_RECENT_CONVERGENCE_AND_ESTATE_HEAD_V0_3_0",
+  "active_keeper": "JM Estate Head v0.3.0 governed Living Front Door",
   "keeper_line": "One owned doorway. Many sovereign rooms.",
   "laws": [
     "Connect does not mean merge",
@@ -67,9 +67,9 @@
       "state": "LIVE_SOVEREIGN_GAMES_HOUSE"
     },
     {
-      "body": "JM Theory Multihub v0.4 — Project Source Census",
+      "body": "JM Theory Multihub v0.9 — Source Depth + Recent Convergence",
       "path": "theory/index.html",
-      "state": "LIVE_FULL_BODY_CORRECTION_37_BODIES_297_CENSUS_ROUTES"
+      "state": "LIVE_15_VERIFIED_24_SHAPED_297_CENSUS_ROUTES"
     },
     {
       "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
@@ -89,12 +89,37 @@
     {
       "body": "JM Estate Head — Public Authority",
       "path": "registry/estate-head-public-current.json",
-      "state": "LIVE_PUBLIC_CONTRACT_V0_2_1"
+      "state": "LIVE_PUBLIC_CONTRACT_V0_3_0"
     },
     {
       "body": "JM Non-Game Apps House",
       "path": "apps/index.html",
       "state": "LIVE_GOVERNED_APPS_HOUSE"
+    },
+    {
+      "body": "JM Estate — Recent Chat Convergence",
+      "path": "recent/index.html",
+      "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
+    },
+    {
+      "body": "JM Games — Current Direction Ledger",
+      "path": "games-beyond/recent-direction/index.html",
+      "state": "LIVE_DIRECTION_CONTRACT_UNFINISHED_PRODUCTS_NOT_CROWNED"
+    },
+    {
+      "body": "JM BIOHOUSE — Nervous Signal Route v1.1",
+      "path": "theory/biohouse-nervous-signal-route/index.html",
+      "state": "EXACT_V1_0_SOURCE_PLUS_ADDITIVE_V1_1_LIVE"
+    },
+    {
+      "body": "TraSta — Trace–Stance",
+      "path": "theory/trasta/index.html",
+      "state": "SCOPED_TRACE_METHOD_LIVE"
+    },
+    {
+      "body": "Reality, Route & Meaning Ethos",
+      "path": "theory/reality-route-ethos/index.html",
+      "state": "COMPLETED_ETHOS_SYNTHESIS_LIVE"
     }
   ],
   "registered_departments": [
@@ -178,13 +203,16 @@
     },
     {
       "body": "Theory Wing",
-      "state": "V0_4_PROJECT_SOURCE_CENSUS_LIVE",
+      "state": "V0_9_SOURCE_DEPTH_CORRECTED_WITH_RECENT_CONVERGENCE",
       "route": "theory/",
       "registry": "registry/theory-wing.json",
       "current_best": "theory/index.html",
       "dedicated_complete_body": "theory/cause-must-pass/00_OPEN_FIRST.html",
       "readable_routes": 297,
-      "districts": 19
+      "districts": 19,
+      "verified_full_or_canonical_public_bodies": 15,
+      "shaped_collection_standalones": 24,
+      "scoped_public_methods": 1
     },
     {
       "body": "Books / Author / Lexicon",
@@ -204,13 +232,24 @@
     },
     {
       "body": "Estate Head & Command",
-      "state": "PUBLIC_HOUSE_AUTHORITY_LIVE",
+      "state": "PUBLIC_HOUSE_AUTHORITY_V0_3_0_LIVE_IN_REPOSITORY",
       "route": "registry/estate-head-public-current.json",
-      "current_public_subset_version": "v0.2.1",
+      "current_public_subset_version": "v0.3.0",
       "body_count": 61,
       "project_head_count": 11,
       "boundary": "Public contract only. No private source routes, owner notes, custody paths or raw gap evidence are included. Repository and public-House consumption are live; Cloudflare edge publication is claimed only after a separate live-door verification.",
-      "public_house_consumers": 9
+      "public_house_consumers": 14,
+      "recent_lanes_represented": 12
+    },
+    {
+      "body": "Recent Chat Convergence",
+      "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED",
+      "route": "recent/",
+      "registry": "registry/recent-chat-convergence-v1.0.json",
+      "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
+      "represented_lanes": 12,
+      "new_public_projection_routes": 5,
+      "boundary": "Public representation is current; unresolved production and private custody remain explicitly unresolved."
     }
   ],
   "author_master_body": {
@@ -294,23 +333,32 @@
     "status": "EDITABLE_HOST_FOUNDATION",
     "storage": "IndexedDB local mounted copies",
     "source_boundary": "Owner-controlled source files and Zionfolders remain preserved separately.",
-    "android": "route-ready-not-compiled"
+    "android": "route-ready-not-compiled",
+    "recent_direction": "games-beyond/recent-direction/",
+    "recent_direction_state": "PUBLIC_DIRECTION_LEDGER_LIVE_PRODUCTS_REMAIN_SEPARATELY_GRADED"
   },
   "theory_multihub": {
     "name": "JM Theory Multihub — Project Source Census",
-    "version": "0.4",
+    "version": "0.9.0 recent convergence",
     "keeper_line": "A project trunk is no longer allowed to stand in for its children.",
     "route": "theory/",
     "registry": "registry/theory-wing.json",
-    "status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
+    "status": "CURRENT_PUBLIC_THEORY_WING_WITH_SOURCE_DEPTH_AND_RECENT_CONVERGENCE",
     "readable_routes": 297,
     "new_project_source_routes": 256,
     "bringing_it_all_together_children": 76,
     "first_stage_jungle_children": 187,
     "districts": 19,
-    "completed_scoped_bodies": 13,
+    "completed_scoped_bodies": 15,
     "payload_parts": 7,
-    "boundary": "Project-source presence earns a readable route and processing grade, not automatic completion or empirical crown."
+    "boundary": "Project-source presence earns a readable route and processing grade, not automatic completion or empirical crown.",
+    "shaped_collection_standalones": 24,
+    "scoped_public_methods": 1,
+    "recent_routes": [
+      "theory/biohouse-nervous-signal-route/",
+      "theory/trasta/",
+      "theory/reality-route-ethos/"
+    ]
   },
   "lyrics_house": {
     "name": "JM Lyrics & Music House",
@@ -423,5 +471,15 @@
       "coding-estate/everybody/00_OPEN_FIRST.html",
       "cading.html"
     ]
+  },
+  "recent_convergence": {
+    "version": "1.0",
+    "route": "recent/",
+    "registry": "registry/recent-chat-convergence-v1.0.json",
+    "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
+    "represented_lanes": 12,
+    "public_projection_routes": 5,
+    "foundational_passport_counts_unchanged": true,
+    "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
   }
 }

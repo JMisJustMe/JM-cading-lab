@@ -1,19 +1,21 @@
 {
   "name": "JM Theory Wing",
-  "version": "v0.8.3-source-depth-corrected",
-  "status": "JM_THEORY_MULTIHUB_SOURCE_DEPTH_CORRECTED_LIVE_ON_MAIN",
-  "role": "The public Theory Wing front door. Thirteen verified full/canonical manuscripts or established bodies and twenty-four shaped collection standalones are available. The 297-route project census remains a separate retrieval and grading system.",
+  "version": "v0.9.0-recent-convergence",
+  "status": "JM_THEORY_MULTIHUB_SOURCE_DEPTH_CORRECTED_WITH_RECENT_CONVERGENCE_LIVE_ON_MAIN",
+  "role": "The public Theory Wing front door. Fifteen verified full/canonical manuscripts or established bodies, twenty-four shaped collection standalones and one scoped public method are now available. The 297-route project census remains a separate retrieval and grading system.",
   "route": "theory/",
   "public_url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
   "body_library_route": "theory/full-bodies/all-37.html",
   "body_library_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/all-37.html",
   "vault_route": "theory/full-bodies/",
   "vault_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/",
-  "source_note": "The earlier all-37 public crown used the compact seven-part v0.4 census payload (50,428 base64 characters). The Estate Full-Body First v0.5 body carries a separate larger payload (302,340 base64 characters). The public library now labels the twenty-four numbered collection entries as shaped standalones until the larger source layer is migrated.",
+  "source_note": "The earlier all-37 public crown used the compact seven-part v0.4 census payload (50,428 base64 characters). The Estate Full-Body First v0.5 body carries a separate larger payload (302,340 base64 characters). The public library labels the twenty-four numbered collection entries as shaped standalones until the larger source layer is migrated. The July 22 convergence adds exact BIOHOUSE v1.0 custody, its additive v1.1 projection, the completed Reality–Route ethos and the scoped TraSta method without altering the 37-body library count.",
   "proof": {
-    "verified_full_or_canonical_public_bodies": 13,
+    "verified_full_or_canonical_public_bodies": 15,
     "shaped_collection_standalones": 24,
-    "established_body_routes": 37,
+    "established_body_routes_in_37_library": 37,
+    "recent_convergence_public_routes": 3,
+    "scoped_public_methods": 1,
     "raw_or_full_source_migration_pending_where_declared": true,
     "census_cards_excluded_from_body_route_count": 260,
     "readable_census_routes": 297,
@@ -28,13 +30,13 @@
   },
   "current_best_mounts": [
     {
-      "id": "jm-theory-multihub-v0-8-3",
-      "name": "JM Theory Multihub — Source Depth Corrected",
+      "id": "jm-theory-multihub-v0-9-0",
+      "name": "JM Theory Multihub — Source Depth Corrected + Recent Convergence",
       "route": "theory/",
-      "current_best": "v0.8.3 Source-Depth Correction",
+      "current_best": "v0.9.0 Recent Convergence",
       "crown_status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
       "main_release": "LIVE",
-      "public_boundary": "Thirteen verified full/canonical bodies plus twenty-four shaped standalones. No thirty-seven-full-source crown."
+      "public_boundary": "Fifteen verified full/canonical bodies plus twenty-four shaped standalones and one scoped method. No thirty-seven-full-source crown."
     },
     {
       "id": "jm-theory-37-body-library-v0-8-3",
@@ -71,6 +73,34 @@
       "crown_status": "COMPLETE_THEORY_BODY_OPEN_APPLICATION",
       "main_release": "LIVE",
       "public_boundary": "The bounded framework is complete. Universal empirical validity is not claimed."
+    },
+    {
+      "id": "jm-biohouse-nervous-signal-route-v1-1",
+      "name": "JM BIOHOUSE — Nervous Signal Route",
+      "route": "theory/biohouse-nervous-signal-route/",
+      "source_route": "theory/biohouse-nervous-signal-route/v1.0.html",
+      "current_best": "v1.1 additive extension over exact frozen v1.0",
+      "crown_status": "FROZEN_SOURCE_PLUS_SCOPED_EXTENSION_LIVE",
+      "main_release": "LIVE",
+      "public_boundary": "Exact v1.0 remains intact. v1.1 adds attention, suggestion, experience and governed influence without diagnostic or unlimited-control claims."
+    },
+    {
+      "id": "trasta-v0-1",
+      "name": "TraSta — Trace–Stance",
+      "route": "theory/trasta/",
+      "current_best": "v0.1 scoped method",
+      "crown_status": "SCOPED_TRACE_METHOD_LIVE",
+      "main_release": "LIVE",
+      "public_boundary": "Occurrence, timing and overlap are preserved; prediction, mechanism and metaphysical explanation remain separately graded."
+    },
+    {
+      "id": "reality-route-meaning-ethos-v1",
+      "name": "Reality, Route & Meaning Ethos",
+      "route": "theory/reality-route-ethos/",
+      "current_best": "v1.0 completed ethos synthesis",
+      "crown_status": "COMPLETED_ETHOS_SYNTHESIS_LIVE",
+      "main_release": "LIVE",
+      "public_boundary": "Underdetermination supports model/thing non-identity and provisional claim discipline; it does not confirm every specific JM framework."
     }
   ],
   "population": {
@@ -81,7 +111,7 @@
       "deeper_declared_layer": "EXTRACTED_SOURCE_TEXT"
     },
     "verified_recent_canonical": {
-      "count": 13,
+      "count": 15,
       "titles": [
         "CAUSE MUST PASS",
         "Medium-Dependency Law: Route–Role–Response",
@@ -95,18 +125,32 @@
         "The Model and the Thing",
         "Higher Transfiguration",
         "Fair Fare or Far Fare",
-        "Original Theory for Reality"
+        "Original Theory for Reality",
+        "JM BIOHOUSE — Nervous Signal Route",
+        "Reality, Route & Meaning Ethos"
       ]
+    },
+    "scoped_methods": {
+      "count": 1,
+      "titles": ["TraSta — Trace–Stance"],
+      "boundary": "A method body is not silently counted as a full theory manuscript."
     }
+  },
+  "recent_convergence": {
+    "version": "v1.0",
+    "registry": "registry/recent-chat-convergence-v1.0.json",
+    "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
+    "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
   },
   "locks": [
     "Full bodies first. Census cards second.",
     "The body is where the door says it is.",
     "The body’s own boundary outranks the package label.",
     "A shaped standalone is not automatically the raw source.",
+    "A scoped method is not automatically a theory manuscript.",
     "A project trunk is no longer allowed to stand in for its children.",
     "A title earns retrieval, not a completed-body crown.",
     "No Ding, no claim."
   ],
-  "next": "Migrate the actual v0.5 Full-Body First eight-part payload or the EXTRACTED_SOURCE_TEXT layer to the public repository, then promote only the bodies whose deeper source is genuinely present."
+  "next": "Continue the actual v0.5 Full-Body First or EXTRACTED_SOURCE_TEXT migration for the twenty-four declared deeper sources. Keep the Bandler/Dawkins/NLP influence question as an open stress test rather than manufacturing a new foundation."
 }

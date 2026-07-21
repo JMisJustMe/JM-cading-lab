@@ -1,0 +1,47 @@
+{
+  "schema": "JM.RecentChatConvergenceLiveDoorReceipt/1.0",
+  "verified_utc": "2026-07-21T23:51:49.169280+00:00",
+  "state": "PASS_GITHUB_PAGES_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS",
+  "source_trigger_commit": "c8f81fe668633d0b82192c20ed0ff0b09014bbb5",
+  "run_id": "29878452963",
+  "host": "https://jmisjustme.github.io/JM-cading-lab",
+  "checks": [
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/",
+      "expected_marker": "JMISJUSTME",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/recent/",
+      "expected_marker": "The Estate",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/theory/biohouse-nervous-signal-route/",
+      "expected_marker": "Attention, Suggestion",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/theory/biohouse-nervous-signal-route/v1.0.html",
+      "expected_marker": "Nervous Signal Route v1.0",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/theory/trasta/",
+      "expected_marker": "Trust the trace",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/theory/reality-route-ethos/",
+      "expected_marker": "Reality is not",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/recent-direction/",
+      "expected_marker": "More game",
+      "contact": "PASS"
+    }
+  ],
+  "private_owner_fields_published": false,
+  "claim_boundary": "This receipt proves HTTP contact and expected body markers on GitHub Pages. It does not prove completion of active products or the separate Cloudflare v0.3.0 deployment."
+}

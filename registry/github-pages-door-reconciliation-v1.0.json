@@ -1,0 +1,21 @@
+{
+  "schema": "JM.GitHubPagesDoorReconciliation/1.0",
+  "effective_date": "2026-07-22",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "problem": "The GitHub Pages project URL retained a stale Cading-era deployment while the repository root and Cloudflare canonical door carried the current JM Estate.",
+  "resolution": {
+    "main_root": "Current JMISJUSTME Accessible Owned Web Estate",
+    "github_actions_workflow": ".github/workflows/deploy-github-pages.yml",
+    "workflow_source": "main",
+    "workflow_artifact_path": ".",
+    "legacy_branch": "gh-pages",
+    "legacy_branch_alignment": "MIRRORED_TO_CURRENT_MAIN",
+    "jekyll_processing": "DISABLED_BY_EXISTING_DOT_NOJEKYLL"
+  },
+  "state": "SOURCE_AND_PUBLISHING_ROUTES_ALIGNED",
+  "claim_boundary": "Repository source, Actions deployment route and gh-pages branch are aligned. Public edge-live status must be verified separately from the served GitHub Pages URL before it is crowned live.",
+  "cading_preservation": "Cading remains preserved at /cading.html and no longer owns the Estate root.",
+  "canonical_cloudflare_door": "https://jmisjustme-estate.pages.dev/",
+  "github_pages_door": "https://jmisjustme.github.io/JM-cading-lab/"
+}

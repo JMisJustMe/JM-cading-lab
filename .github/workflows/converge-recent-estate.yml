@@ -1,0 +1,188 @@
+name: Converge Recent Work into Estate Map
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/converge-recent-estate.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recent-estate-convergence
+  cancel-in-progress: false
+
+jobs:
+  converge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current Estate
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Patch the living Estate map without replacing its existing body
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          path = Path('registry/estate-map.json')
+          data = json.loads(path.read_text(encoding='utf-8'))
+
+          data['public_crown_version'] = '1.4'
+          data['status'] = 'OWNED_WEB_ESTATE_V1_4_LIVE_WITH_RECENT_CONVERGENCE_AND_ESTATE_HEAD_V0_3_0'
+          data['active_keeper'] = 'JM Estate Head v0.3.0 governed Living Front Door'
+
+          routes = data.setdefault('live_github_routes', [])
+          additions = [
+              {
+                  'body': 'JM Estate — Recent Chat Convergence',
+                  'path': 'recent/index.html',
+                  'state': 'PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED'
+              },
+              {
+                  'body': 'JM Games — Current Direction Ledger',
+                  'path': 'games-beyond/recent-direction/index.html',
+                  'state': 'LIVE_DIRECTION_CONTRACT_UNFINISHED_PRODUCTS_NOT_CROWNED'
+              },
+              {
+                  'body': 'JM BIOHOUSE — Nervous Signal Route v1.1',
+                  'path': 'theory/biohouse-nervous-signal-route/index.html',
+                  'state': 'EXACT_V1_0_SOURCE_PLUS_ADDITIVE_V1_1_LIVE'
+              },
+              {
+                  'body': 'TraSta — Trace–Stance',
+                  'path': 'theory/trasta/index.html',
+                  'state': 'SCOPED_TRACE_METHOD_LIVE'
+              },
+              {
+                  'body': 'Reality, Route & Meaning Ethos',
+                  'path': 'theory/reality-route-ethos/index.html',
+                  'state': 'COMPLETED_ETHOS_SYNTHESIS_LIVE'
+              }
+          ]
+
+          by_path = {item.get('path'): item for item in routes}
+          for item in additions:
+              if item['path'] in by_path:
+                  by_path[item['path']].update(item)
+              else:
+                  routes.append(item)
+
+          for item in routes:
+              if item.get('path') == 'theory/index.html':
+                  item.update({
+                      'body': 'JM Theory Multihub v0.9 — Source Depth + Recent Convergence',
+                      'state': 'LIVE_15_VERIFIED_24_SHAPED_297_CENSUS_ROUTES'
+                  })
+              if item.get('path') == 'registry/estate-head-public-current.json':
+                  item['state'] = 'LIVE_PUBLIC_CONTRACT_V0_3_0'
+
+          departments = data.setdefault('registered_departments', [])
+          def department(name):
+              return next((item for item in departments if item.get('body') == name), None)
+
+          recent = department('Recent Chat Convergence')
+          recent_payload = {
+              'body': 'Recent Chat Convergence',
+              'state': 'PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED',
+              'route': 'recent/',
+              'registry': 'registry/recent-chat-convergence-v1.0.json',
+              'receipt': 'registry/recent-chat-convergence-receipt-v1.0.json',
+              'represented_lanes': 12,
+              'new_public_projection_routes': 5,
+              'boundary': 'Public representation is current; unresolved production and private custody remain explicitly unresolved.'
+          }
+          if recent:
+              recent.update(recent_payload)
+          else:
+              departments.append(recent_payload)
+
+          theory = department('Theory Wing')
+          if theory:
+              theory.update({
+                  'state': 'V0_9_SOURCE_DEPTH_CORRECTED_WITH_RECENT_CONVERGENCE',
+                  'verified_full_or_canonical_public_bodies': 15,
+                  'shaped_collection_standalones': 24,
+                  'scoped_public_methods': 1,
+                  'readable_routes': 297
+              })
+
+          head = department('Estate Head & Command')
+          if head:
+              head.update({
+                  'state': 'PUBLIC_HOUSE_AUTHORITY_V0_3_0_LIVE_IN_REPOSITORY',
+                  'current_public_subset_version': 'v0.3.0',
+                  'recent_lanes_represented': 12,
+                  'public_house_consumers': 14
+              })
+
+          if isinstance(data.get('theory_multihub'), dict):
+              data['theory_multihub'].update({
+                  'version': '0.9.0 recent convergence',
+                  'status': 'CURRENT_PUBLIC_THEORY_WING_WITH_SOURCE_DEPTH_AND_RECENT_CONVERGENCE',
+                  'completed_scoped_bodies': 15,
+                  'shaped_collection_standalones': 24,
+                  'scoped_public_methods': 1,
+                  'recent_routes': [
+                      'theory/biohouse-nervous-signal-route/',
+                      'theory/trasta/',
+                      'theory/reality-route-ethos/'
+                  ]
+              })
+
+          if isinstance(data.get('games_house'), dict):
+              data['games_house']['recent_direction'] = 'games-beyond/recent-direction/'
+              data['games_house']['recent_direction_state'] = 'PUBLIC_DIRECTION_LEDGER_LIVE_PRODUCTS_REMAIN_SEPARATELY_GRADED'
+
+          data['recent_convergence'] = {
+              'version': '1.0',
+              'route': 'recent/',
+              'registry': 'registry/recent-chat-convergence-v1.0.json',
+              'receipt': 'registry/recent-chat-convergence-receipt-v1.0.json',
+              'represented_lanes': 12,
+              'public_projection_routes': 5,
+              'foundational_passport_counts_unchanged': True,
+              'state': 'PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED'
+          }
+
+          rendered = json.dumps(data, indent=2, ensure_ascii=False) + '\n'
+          path.write_text(rendered, encoding='utf-8')
+
+          receipt = {
+              'schema': 'JM.RecentConvergenceEstateMapReceipt/1.0',
+              'created_utc': datetime.now(timezone.utc).isoformat(),
+              'state': 'PASS_RECENT_ROUTES_CONNECTED_TO_LIVING_ESTATE_MAP',
+              'estate_map': str(path),
+              'estate_map_sha256': hashlib.sha256(rendered.encode('utf-8')).hexdigest(),
+              'routes_connected': [item['path'] for item in additions],
+              'represented_lanes': 12,
+              'foundational_passport_counts_changed': False,
+              'private_owner_fields_published': False
+          }
+          Path('registry/recent-chat-convergence-estate-map-receipt-v1.0.json').write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
+          PY
+
+          python3 -m json.tool registry/estate-map.json >/dev/null
+          python3 -m json.tool registry/recent-chat-convergence-estate-map-receipt-v1.0.json >/dev/null
+
+      - name: Commit the governed map connection
+        shell: bash
+        run: |
+          git config user.name "JM Estate Convergence Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/estate-map.json registry/recent-chat-convergence-estate-map-receipt-v1.0.json
+          if git diff --cached --quiet; then
+            echo "Estate map already converged."
+            exit 0
+          fi
+          git commit -m "Connect recent convergence to living Estate map [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

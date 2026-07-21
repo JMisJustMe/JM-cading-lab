@@ -1,0 +1,197 @@
+name: Route Recent Convergence Through Central Classification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/route-recent-convergence-through-classification.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recent-convergence-classification
+  cancel-in-progress: false
+
+jobs:
+  route:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current Estate
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extend the governing classification authority additively
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          authority_path = Path('registry/estate-classification-authority-v1.0.json')
+          authority = json.loads(authority_path.read_text(encoding='utf-8'))
+          authority['effective_date'] = '2026-07-22'
+          authority['status'] = 'GOVERNING_SECOND_WAVE_WITH_RECENT_CONVERGENCE'
+
+          bodies = authority.setdefault('bodies', [])
+          by_id = {body.get('id'): body for body in bodies}
+
+          theory = by_id.get('theory-multihub')
+          if theory:
+              theory.update({
+                  'current_public_frontier': 'v0.9.0 recent convergence',
+                  'verified_full_or_canonical_public_bodies': 15,
+                  'shaped_collection_standalones': 24,
+                  'scoped_public_methods': 1,
+                  'recent_public_routes': [
+                      '/theory/biohouse-nervous-signal-route/',
+                      '/theory/trasta/',
+                      '/theory/reality-route-ethos/'
+                  ],
+                  'recent_ruling': 'SOURCE_DEPTH_PRESERVED_AND_RECENT_OUTCOMES_CONNECTED_WITHOUT_RECOUNTING_THE_37_BODY_LIBRARY'
+              })
+
+          additions = [
+              {
+                  'id': 'recent-chat-convergence',
+                  'name': 'JM Estate — Recent Chat Convergence',
+                  'primary_seat': 'Estate Head / Cross-House Current-State Projection',
+                  'governing_identity': 'public-safe route connecting recent authoritative chat outcomes without flattening sovereign bodies',
+                  'operating_authority': 'v1.0 — 12 represented lanes / 5 public projection routes',
+                  'public_route': '/recent/',
+                  'registry': 'registry/recent-chat-convergence-v1.0.json',
+                  'receipt': 'registry/recent-chat-convergence-final-receipt-v1.0.json',
+                  'prohibited_reductions': [
+                      'claim that public representation makes every active product complete',
+                      'publication of private owner custody routes',
+                      'replacement of sovereign source bodies by summary cards'
+                  ],
+                  'ruling': 'CURRENT_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED',
+                  'severity': 'PUBLIC_PROJECTION_AUTHORITY'
+              },
+              {
+                  'id': 'biohouse-nervous-signal-route',
+                  'name': 'JM BIOHOUSE — Nervous Signal Route',
+                  'primary_seat': 'Theory Estate / BIOHOUSE / Whole Human Participation',
+                  'governing_identity': 'nervous contact, carriage, readiness, response, return and governed attention/suggestion route',
+                  'source_anchor': 'v1.0 frozen exact HTML body',
+                  'current_public_frontier': 'v1.1 additive Attention, Suggestion & Governed Influence extension',
+                  'source_route': '/theory/biohouse-nervous-signal-route/v1.0.html',
+                  'public_route': '/theory/biohouse-nervous-signal-route/',
+                  'prohibited_reductions': [
+                      'rewrite of the frozen v1.0 source',
+                      'medical diagnosis or treatment instruction',
+                      'unlimited mind-over-reality claim'
+                  ],
+                  'ruling': 'EXACT_FROZEN_SOURCE_PLUS_SCOPED_ADDITIVE_EXTENSION',
+                  'severity': 'FROZEN_SOURCE_AND_LIVE_EXTENSION'
+              },
+              {
+                  'id': 'trasta-trace-stance',
+                  'name': 'TraSta — Trace–Stance',
+                  'primary_seat': 'Theory Estate / Proof, Claims & Diagnostics',
+                  'governing_identity': 'method for preserving timing and uncanny overlap while separating occurrence, prediction, mechanism and metaphysical explanation',
+                  'operating_authority': 'v0.1 scoped public method',
+                  'public_route': '/theory/trasta/',
+                  'prohibited_reductions': [
+                      'prediction theatre',
+                      'cold reading, placebo or coincidence used as automatic case explanations',
+                      'method body counted as a full theory manuscript'
+                  ],
+                  'ruling': 'SCOPED_TRACE_METHOD_LIVE_NO_THEORY_MANUSCRIPT_CROWN',
+                  'severity': 'SCOPED_METHOD_AUTHORITY'
+              },
+              {
+                  'id': 'reality-route-meaning-ethos',
+                  'name': 'Reality, Route & Meaning Ethos',
+                  'primary_seat': 'Theory Estate / Claim Governance',
+                  'governing_identity': 'reality–representation non-identity, routed human access, participatory meaning and self-applying claim discipline',
+                  'operating_authority': 'v1.0 completed ethos synthesis',
+                  'public_route': '/theory/reality-route-ethos/',
+                  'prohibited_reductions': [
+                      'underdetermination treated as confirmation of every JM theory',
+                      'model or label treated as identical to the thing',
+                      'ethos exempted from its own standards'
+                  ],
+                  'ruling': 'COMPLETED_KEEPER_BODY_WITH_OPEN_INFLUENCE_STRESS_TEST',
+                  'severity': 'COMPLETED_PUBLIC_BODY'
+              },
+              {
+                  'id': 'games-current-direction',
+                  'name': 'JM Games — Current Direction Ledger',
+                  'primary_seat': 'Games & Beyond / Product Direction',
+                  'governing_identity': 'PvP-first, active 3v3, deeper rosters and attacks, movement-speaking characters, intuitive touch and production-grade 2.5D/3D direction',
+                  'operating_authority': 'July 2026 cross-chat design contract',
+                  'public_route': '/games-beyond/recent-direction/',
+                  'prohibited_reductions': [
+                      'direction ledger labelled as a finished game',
+                      'earlier visual route erased instead of frozen as a donor template',
+                      'Unity source progress renamed compiled or Android-proven gameplay'
+                  ],
+                  'ruling': 'CURRENT_DESIGNED_DIRECTION_MOUNTED_PRODUCTS_SEPARATELY_GRADED',
+                  'severity': 'ACTIVE_DESIGN_CONTRACT'
+              }
+          ]
+
+          for addition in additions:
+              current = by_id.get(addition['id'])
+              if current:
+                  current.update(addition)
+              else:
+                  bodies.append(addition)
+                  by_id[addition['id']] = addition
+
+          authority['recent_convergence'] = {
+              'version': 'v1.0',
+              'estate_head_public_subset': 'v0.3.0',
+              'estate_map': 'v1.4',
+              'theory_wing': 'v0.9.0-recent-convergence',
+              'represented_lanes': 12,
+              'public_projection_routes': 5,
+              'foundational_passport_counts_changed': False,
+              'private_owner_fields_published': False,
+              'registry': 'registry/recent-chat-convergence-v1.0.json',
+              'final_receipt': 'registry/recent-chat-convergence-final-receipt-v1.0.json',
+              'state': 'DING_RECENT_CHAT_CONVERGENCE_COMPLETE_ON_GITHUB_PAGES_CLOUDFLARE_PROOF_NEXT'
+          }
+
+          rendered = json.dumps(authority, indent=2, ensure_ascii=False) + '\n'
+          authority_path.write_text(rendered, encoding='utf-8')
+
+          receipt = {
+              'schema': 'JM.RecentChatConvergenceClassificationReceipt/1.0',
+              'created_utc': datetime.now(timezone.utc).isoformat(),
+              'state': 'PASS_RECENT_CONVERGENCE_ROUTED_THROUGH_CENTRAL_CLASSIFICATION_AUTHORITY',
+              'authority_file': str(authority_path),
+              'authority_sha256': hashlib.sha256(rendered.encode('utf-8')).hexdigest(),
+              'body_ids_added_or_updated': [item['id'] for item in additions],
+              'represented_lanes': 12,
+              'foundational_passport_counts_changed': False,
+              'private_owner_fields_published': False,
+              'next_automatic_route': '.github/workflows/deploy-cloudflare-estate-classification-integrity.yml'
+          }
+          Path('registry/recent-chat-convergence-classification-receipt-v1.0.json').write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
+          PY
+
+          python3 -m json.tool registry/estate-classification-authority-v1.0.json >/dev/null
+          python3 -m json.tool registry/recent-chat-convergence-classification-receipt-v1.0.json >/dev/null
+
+      - name: Commit the governing classification update
+        shell: bash
+        run: |
+          git config user.name "JM Estate Classification Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/estate-classification-authority-v1.0.json registry/recent-chat-convergence-classification-receipt-v1.0.json
+          if git diff --cached --quiet; then
+            echo "Central classification already carries recent convergence."
+            exit 0
+          fi
+          git commit -m "Route recent convergence through central classification authority"
+          git pull --rebase origin main
+          git push origin HEAD:main

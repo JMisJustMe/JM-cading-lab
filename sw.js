@@ -1,14 +1,16 @@
-const CACHE='jm-web-estate-v1.4.2-route-repair';
+const CACHE='jm-web-estate-v1.5.0-freestanding-apk-foundation';
 const CORE=[
   './',
   './index.html',
   './estate.css',
   './estate-accessibility.css',
   './estate-accessibility.js',
-  './estate-app.js','./author-home-door.js',
+  './estate-app.js',
+  './author-home-door.js',
   './manifest.webmanifest',
   './icon.svg',
   './404.html',
+  './platform/jm-platform-contract.json',
   './registry/estate-map.json',
   './registry/estate-head-public-current.json',
   './registry/theory-wing.json',

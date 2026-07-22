@@ -1,0 +1,41 @@
+{
+  "name": "JM Theory Chat-Source Graft",
+  "version": "v1.0",
+  "status": "FIRST_EXACT_SOURCE_PASS_LIVE",
+  "public_route": "theory/",
+  "source_corpus": "Theories (brought together).txt",
+  "purpose": "Locate theory-bearing chat material and attach it to the matching Theory Multihub census placeholder without falsely replacing the placeholder with a completed theory body.",
+  "population": {
+    "thin_census_routes_checked": 260,
+    "chat_source_matches": 94,
+    "anchored_source_headings": 78,
+    "exact_title_traces": 16,
+    "remaining_without_first_corpus_exact_match": 166,
+    "total_census_routes_preserved": 297
+  },
+  "processing_route": [
+    "placeholder",
+    "chat located",
+    "source excerpt grafted",
+    "full chat or source body extracted",
+    "route into existing theory body or form a genuinely distinct body",
+    "proof and boundary review",
+    "public promotion"
+  ],
+  "public_behaviour": {
+    "matched_row_marker": "CHAT SOURCE",
+    "reader_section": "Chat Source",
+    "source_location_preserved": true,
+    "match_state_preserved": true,
+    "occurrence_count_preserved": true,
+    "body_replacement": false
+  },
+  "boundaries": [
+    "A chat-source excerpt proves source contact and lineage, not completion.",
+    "An exact title trace is not automatically the fullest surviving chat body.",
+    "The placeholder remains an address until the source has been deeply read and routed.",
+    "Existing completed bodies receive sources and extensions; they are not duplicated by chat title.",
+    "Governance, methods, incidents and project trunks remain separately classified."
+  ],
+  "next": "Search conversation history, Library files, project exports and recent chats for the remaining 166 unmatched routes, then deepen the 94 first-pass matches from excerpts into full chat/body extractions where available."
+}

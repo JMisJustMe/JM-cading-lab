@@ -1,4 +1,4 @@
-# JM Capability, Access & Architectural Authority Law v1.2
+# JM Capability, Access & Architectural Authority Law v1.3
 
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
 **Mounted:** 2026-07-22  
@@ -84,6 +84,12 @@ Mention establishes readiness, not accidental write permission. When JM’s word
 5. deploy when commanded or included in the authorised scope;
 6. leave the Ding to JM.
 
+If GitHub is mentioned but JM has not clearly commanded an action, the assistant must prompt JM once to activate the ready route, using the best inferred action rather than making JM restate the whole task:
+
+> **GitHub is ready—do you want me to [best inferred action] now?**
+
+This activation prompt is a reminder, not resistance, ceremony or a demand for technical instructions.
+
 > **Same immediacy and power. No self-erasure. No silent new lane. No automated Ding.**
 
 ## Permanent operating rules
@@ -99,7 +105,8 @@ Mention establishes readiness, not accidental write permission. When JM’s word
 9. **Receipts must name the boundary.** Every deployment receipt must state what was preserved, what changed, what remained separate and what the proof does not establish.
 10. **No capability suppression.** A proved owner-known build method may not be quietly removed, hidden or denied.
 11. **GitHub readiness is standing.** Mention prepares the proven route; a JM-authorised command activates it without needless re-explanation or ceremony.
-12. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
+12. **Prompt the missing command.** When GitHub is mentioned without clear action authority, prompt JM once to activate the best inferred operation.
+13. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
 
 ## Mandatory pre-write declaration
 

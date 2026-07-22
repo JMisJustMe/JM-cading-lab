@@ -1,7 +1,7 @@
 {
   "schema": "JM.CapabilityAccessArchitecturalAuthorityLawReceipt/1.0",
   "mounted_utc": "2026-07-22T00:00:00Z",
-  "state": "PASS_PERMANENT_GOVERNING_LAW_MOUNTED",
+  "state": "PASS_PERMANENT_GOVERNING_LAW_WITH_GITHUB_READINESS_RULE_MOUNTED",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "full_body": "governance/capability-access-authority-law-v1.0.md",
   "public_body": "governance/capability-access-authority-law/index.html",
@@ -12,9 +12,21 @@
     "technical_capability_acknowledged": true,
     "owner_authority_precedes_capability": true,
     "intent_does_not_erase_effect": true,
-    "future_persistent_writes_require_pre_write_declaration": true
+    "future_persistent_writes_require_pre_write_declaration": true,
+    "github_readiness_is_standing": true,
+    "mention_is_readiness_not_write_authority": true,
+    "jm_authorised_command_activates_without_needless_reasking": true,
+    "self_erasure_prohibited": true,
+    "automated_ding_prohibited": true
   },
-  "claim_boundary": "Mounting records the law permanently in the JM repository. It does not retroactively authorise prior bypasses or future unsanctioned persistent writes.",
+  "github_readiness_mount": {
+    "state": "PASS_LEAN_RULE_SEATED_IN_EXISTING_OWNER_AUTHORITY_BODY",
+    "keeper": "GitHub mentioned means GitHub ready. JM commands the outcome; the assistant carries the mechanism.",
+    "lean_line": "Same immediacy and power. No self-erasure. No silent new lane. No automated Ding.",
+    "full_body_commit": "6de471895286ef2d11220e24ee880507a351be97",
+    "registry_commit": "b4bf0912bad098047b087b8b5fa80a5ac4155ce6"
+  },
+  "claim_boundary": "Mounting records the law permanently in the JM repository. It does not retroactively authorise prior bypasses or future unsanctioned persistent writes. Mention of GitHub creates preparedness; JM-authorised wording creates action authority.",
   "central_authority_mount": {
     "state": "PASS_CONNECTED_TO_EXISTING_AUTHORITY_NOT_LEFT_AS_NEARBY_LANE",
     "classification_authority": "registry/estate-classification-authority-v1.0.json",

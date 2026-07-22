@@ -1,0 +1,52 @@
+{
+  "schema": "JM.RecentChatConvergenceCloudflareLiveReceipt/1.0",
+  "verified_utc": "2026-07-22T00:01:46.620846+00:00",
+  "state": "PASS_CANONICAL_CLOUDFLARE_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS",
+  "source_trigger_commit": "409b9ad38bca7b5f0480ad09fe070719defa3480",
+  "run_id": "29878950181",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "checks": [
+    {
+      "url": "https://jmisjustme-estate.pages.dev/",
+      "expected_marker": "JMISJUSTME",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/recent/",
+      "expected_marker": "The Estate",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/theory/biohouse-nervous-signal-route/",
+      "expected_marker": "Attention, Suggestion",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/theory/biohouse-nervous-signal-route/v1.0.html",
+      "expected_marker": "Nervous Signal Route v1.0",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/theory/trasta/",
+      "expected_marker": "Trust the trace",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/theory/reality-route-ethos/",
+      "expected_marker": "Reality is not",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/games-beyond/recent-direction/",
+      "expected_marker": "More game",
+      "contact": "PASS"
+    },
+    {
+      "url": "https://jmisjustme-estate.pages.dev/registry/estate-head-public-current.json",
+      "expected_marker": "v0.3.0",
+      "contact": "PASS"
+    }
+  ],
+  "private_owner_fields_published": false,
+  "claim_boundary": "HTTP contact and expected body markers are proved on the canonical Cloudflare host. Active product completion remains separately graded."
+}

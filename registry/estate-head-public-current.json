@@ -37,7 +37,7 @@
     "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
     "public_house": "recent/index.html"
   },
-  "deployment_state": "PUBLIC_HOUSE_AND_RECENT_CONVERGENCE_CONSUMPTION_LIVE_IN_REPOSITORY",
+  "deployment_state": "PUBLIC_HOUSE_AND_RECENT_CONVERGENCE_LIVE_ON_GITHUB_PAGES_AND_CANONICAL_CLOUDFLARE",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
   "github_pages_door": "https://jmisjustme.github.io/JM-cading-lab/",
   "public_head_route": "registry/estate-head-public-current.json",
@@ -47,7 +47,7 @@
   "last_verified_cloudflare_source_commit": "ddb54e306d09819d5e6f27e091aa9240a75af0d8",
   "last_verified_cloudflare_workflow_run": "29764657985",
   "current_repository_convergence_commit": "c1f8387963212e3750ad7a0cb7c87436ae6b40c8",
-  "boundary": "Public contract only. No private source routes, owner notes, custody paths, raw gap evidence or private lyric corpus are included. Recent-chat representation is complete at the public routing and claim-boundary level; active games, apps, commercial inventories, JMStudio custody and private source packages remain labelled by their actual state. Cloudflare edge verification for v0.3.0 remains separate from repository publication.",
+  "boundary": "Public contract only. No private source routes, owner notes, custody paths, raw gap evidence or private lyric corpus are included. Recent-chat representation is complete at the public routing and claim-boundary level; active games, apps, commercial inventories, JMStudio custody and private source packages remain labelled by their actual state. Canonical Cloudflare contact for v0.3.0 is separately proved by the current live receipt.",
   "public_consumers": [
     "registry/estate-map.json",
     "estate-app.js",
@@ -196,7 +196,10 @@
     "last_verified_deployment": "PASS",
     "last_verified_canonical_host": "PASS",
     "last_verified_receipt": "registry/cloudflare-estate-head-deploy-receipt.json",
-    "current_v0_3_0_edge_verification": "PENDING_SEPARATE_LIVE_DOOR_CONTACT"
+    "current_v0_3_0_edge_verification": "PASS",
+    "current_verified_contract_version": "v0.3.0",
+    "current_verified_utc": "2026-07-22T00:01:46.620846+00:00",
+    "current_receipt": "registry/recent-chat-convergence-cloudflare-live-receipt-v1.0.json"
   },
   "github_pages_publication": {
     "source": "main",

@@ -1,8 +1,8 @@
 {
-  "schema": "JM.RecentChatConvergenceFinalReceipt/1.0",
+  "schema": "JM.RecentChatConvergenceFinalReceipt/1.1",
   "effective_date": "2026-07-22",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
-  "state": "DING_RECENT_CHAT_CONVERGENCE_COMPLETE",
+  "state": "DING_RECENT_CHAT_CONVERGENCE_COMPLETE_ON_GITHUB_PAGES_AND_CANONICAL_CLOUDFLARE",
   "scope_completed": "Current public-safe representation of identified July 20–22 games, apps, theories, BIOHOUSE, TraSta, website, lyrics, monetisation, JMStudio and storage lanes.",
   "mounted_artifacts": 9,
   "represented_lanes": 12,
@@ -11,20 +11,24 @@
     "estate_map": "v1.4",
     "estate_head_public_subset": "v0.3.0",
     "theory_wing": "v0.9.0-recent-convergence",
-    "recent_convergence": "v1.0"
+    "recent_convergence": "v1.0",
+    "central_classification_authority": "GOVERNING_SECOND_WAVE_WITH_RECENT_CONVERGENCE"
   },
   "proofs": {
     "artifact_checksum_receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
     "estate_map_receipt": "registry/recent-chat-convergence-estate-map-receipt-v1.0.json",
-    "live_door_receipt": "registry/recent-chat-convergence-live-door-receipt-v1.0.json",
-    "live_door_state": "PASS_GITHUB_PAGES_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS",
+    "classification_receipt": "registry/recent-chat-convergence-classification-receipt-v1.0.json",
+    "github_pages_live_receipt": "registry/recent-chat-convergence-live-door-receipt-v1.0.json",
+    "github_pages_live_state": "PASS_GITHUB_PAGES_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS",
+    "canonical_cloudflare_live_receipt": "registry/recent-chat-convergence-cloudflare-live-receipt-v1.0.json",
+    "canonical_cloudflare_live_state": "PASS_CANONICAL_CLOUDFLARE_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS",
     "exact_biohouse_v1_0_preserved": true,
     "private_owner_fields_published": false,
     "foundational_passport_counts_changed": false
   },
   "completion_boundary": {
-    "complete": "Every identified recent lane has a public route, classification, authority, state and claim boundary; the living Estate map and Estate Head consume the convergence; GitHub Pages contact passed.",
-    "not_claimed": "Active games, all app payloads, full monetisation inventory, unresolved lyric interactions, JMStudio exact custody, private Zionfolders or Cloudflare v0.3.0 contact are not falsely crowned complete."
+    "complete": "Every identified recent lane has a public route, classification, authority, state and claim boundary; the living Estate map, central classification authority and Estate Head consume the convergence; GitHub Pages and canonical Cloudflare live contact both passed.",
+    "not_claimed": "Active games, all app payloads, full monetisation inventory, unresolved lyric interactions, JMStudio exact custody or private Zionfolders are not falsely crowned complete. They are represented by their actual active, partial or owner-controlled state."
   },
   "keeper": "The recent work is no longer absent. Complete bodies are mounted; active bodies are visible as active; private bodies remain private; none are flattened."
 }

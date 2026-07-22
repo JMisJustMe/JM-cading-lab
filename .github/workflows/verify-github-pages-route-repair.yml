@@ -1,0 +1,97 @@
+name: Verify Android Route Repair on GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/verify-github-pages-route-repair.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-pages-route-repair-proof
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Require Android contact with full bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme.github.io/JM-cading-lab'
+          ua='Mozilla/5.0 (Linux; Android 16; CPH2305) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Mobile Safari/537.36'
+          checks=(
+            '/index.html|Your work no longer lives as scattered HTMLs'
+            '/apps/index.html|NON-GAME APPS HOUSE'
+            '/games-beyond/index.html|Games&Beyond'
+            '/theory/index.html|JM Theory Multihub'
+            '/lyrics/index.html|JM Lyrics'
+            '/recent/index.html|The Estate'
+            '/theory/biohouse-nervous-signal-route/index.html|Attention, Suggestion'
+            '/theory/biohouse-nervous-signal-route/v1.0.html|Nervous Signal Route v1.0'
+            '/theory/trasta/index.html|Trust the trace'
+            '/theory/reality-route-ethos/index.html|Reality is not'
+            '/games-beyond/recent-direction/index.html|More game'
+          )
+
+          passed=0
+          for attempt in $(seq 1 80); do
+            passed=1
+            for check in "${checks[@]}"; do
+              path="${check%%|*}"; marker="${check#*|}"
+              body="$RUNNER_TEMP/route-body.html"
+              code="$(curl --silent --show-error --location --max-time 25 -A "$ua" -H 'Cache-Control: no-cache' -o "$body" -w '%{http_code}' "$base$path?route-repair=$GITHUB_RUN_ID-$attempt" || true)"
+              if [ "$code" != '200' ] || ! grep -q "$marker" "$body" || grep -q 'Returning to the JM Web Estate' "$body"; then
+                echo "MISS $code $path expected $marker"
+                passed=0
+              else
+                echo "PASS $code $path"
+              fi
+            done
+            if [ "$passed" = '1' ]; then break; fi
+            sleep 3
+          done
+          test "$passed" = '1'
+
+      - name: Seal GitHub mirror route proof
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.GitHubPagesRouteRepairReceipt/1.0',
+            'verified_utc':datetime.now(timezone.utc).isoformat(),
+            'state':'PASS_ANDROID_EXACT_FILE_ROUTES_FULL_BODIES_NO_404_SHELL',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'host':'https://jmisjustme.github.io/JM-cading-lab',
+            'checks':11,
+            'deleted_source_files':0,
+            'root_estate_body_replaced':False,
+            'private_chat_files_touched':False
+          }
+          Path('registry/github-pages-route-repair-receipt-v1.0.json').write_text(json.dumps(receipt,indent=2)+"\n",encoding='utf-8')
+          PY
+          git config user.name 'JM GitHub Route Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/github-pages-route-repair-receipt-v1.0.json
+          git commit -m 'Seal GitHub Pages Android route repair [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

@@ -1,4 +1,4 @@
-# JM Capability, Access & Architectural Authority Law v1.1
+# JM Capability, Access & Architectural Authority Law v1.2
 
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
 **Mounted:** 2026-07-22  
@@ -69,6 +69,23 @@ The one-use law-mount patcher was not the GitHub × Cloudflare build capability 
 
 `governance/workflow-recipes/mount-capability-access-authority-law-once.yml`
 
+## GitHub readiness rule
+
+> **GitHub mentioned means GitHub ready. JM commands the outcome; the assistant carries the mechanism.**
+
+Whenever GitHub is named in a JM Estate task, the proven GitHub build route is treated as available and prepared. JM does not need to restate the capability, operate GitHub Actions, write workflow syntax or ask whether the assistant can use it.
+
+Mention establishes readiness, not accidental write permission. When JM’s wording authorises a mount, graft, build, repair, update, commit, deploy or equivalent action, the assistant proceeds without unnecessary re-asking:
+
+1. recall the existing body and lineage;
+2. act through the existing route;
+3. validate the result and preserve its receipt;
+4. keep the mechanism visible;
+5. deploy when commanded or included in the authorised scope;
+6. leave the Ding to JM.
+
+> **Same immediacy and power. No self-erasure. No silent new lane. No automated Ding.**
+
 ## Permanent operating rules
 
 1. **Owner authority precedes tool capability.** Ability to write, deploy, branch, connect or publish does not authorise architectural choice.
@@ -81,7 +98,8 @@ The one-use law-mount patcher was not the GitHub × Cloudflare build capability 
 8. **Intent does not erase effect.** An accidental bypass remains a bypass and must be repaired as such.
 9. **Receipts must name the boundary.** Every deployment receipt must state what was preserved, what changed, what remained separate and what the proof does not establish.
 10. **No capability suppression.** A proved owner-known build method may not be quietly removed, hidden or denied.
-11. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
+11. **GitHub readiness is standing.** Mention prepares the proven route; a JM-authorised command activates it without needless re-explanation or ceremony.
+12. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
 
 ## Mandatory pre-write declaration
 

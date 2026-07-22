@@ -1,4 +1,4 @@
-# JM Capability, Access & Architectural Authority Law v1.0
+# JM Capability, Access & Architectural Authority Law v1.1
 
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
 **Mounted:** 2026-07-22  
@@ -43,6 +43,32 @@ The failure was not lack of technical access. It was use of access without first
 
 > **Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.**
 
+## Capability-preservation guard
+
+The owner’s discovery of a technical capability must never be followed by suppression, concealment or quiet removal of that capability.
+
+> **Once a standing build capability has been demonstrated to JM, it becomes an owner-known Estate method. It may not be hidden, disabled, deleted, re-described as unavailable or have its final usable implementation retired without JM’s explicit authority.**
+
+This includes the demonstrated ability to:
+
+- create persistent GitHub files and workflows;
+- create isolated, adjacent, connected or layered public lanes;
+- publish complete repository bodies through GitHub Pages;
+- assemble and deploy governed public bodies into the existing Cloudflare Pages project;
+- use deployment workflows, branches, receipts and live tests as a repeatable build method.
+
+A temporary helper may self-retire only when all of the following are true:
+
+1. it was explicitly declared temporary before use;
+2. it is not the last usable implementation of the demonstrated capability;
+3. its exact recipe is preserved visibly;
+4. the permanent owner-visible route remains usable;
+5. the retirement is recorded rather than hidden.
+
+The one-use law-mount patcher was not the GitHub × Cloudflare build capability itself. The standing GitHub Pages and Cloudflare deployment workflows remain. Its exact recipe is preserved at:
+
+`governance/workflow-recipes/mount-capability-access-authority-law-once.yml`
+
 ## Permanent operating rules
 
 1. **Owner authority precedes tool capability.** Ability to write, deploy, branch, connect or publish does not authorise architectural choice.
@@ -54,7 +80,8 @@ The failure was not lack of technical access. It was use of access without first
 7. **No coronation before owner contact.** Automated HTTP markers, receipts and CI checks do not replace JM physically opening and testing the body on the intended device.
 8. **Intent does not erase effect.** An accidental bypass remains a bypass and must be repaired as such.
 9. **Receipts must name the boundary.** Every deployment receipt must state what was preserved, what changed, what remained separate and what the proof does not establish.
-10. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
+10. **No capability suppression.** A proved owner-known build method may not be quietly removed, hidden or denied.
+11. **No Ding, no claim.** No body, route or deployment is complete until the owner-authorised completion condition has passed.
 
 ## Mandatory pre-write declaration
 
@@ -69,10 +96,10 @@ Before any future persistent GitHub, Cloudflare or equivalent public write, the 
 
 ## Keeper
 
-> **Technical capability is a tool held under owner authority. It is never authority over the owner’s architecture.**
+> **Technical capability is a tool held under owner authority. It is never authority over the owner’s architecture—and it may not be hidden from the owner once proved.**
 
 ## Estate relationship
 
 This law governs all persistent external systems used by the JM Estate, including GitHub, GitHub Pages, Cloudflare, connected storage, deployment platforms, future databases, automation systems and any tool capable of creating a standing external lane.
 
-It does not prohibit experimentation. It prohibits experimentation being silently promoted into Estate architecture.
+It does not prohibit experimentation. It prohibits experimentation being silently promoted into Estate architecture, and it prohibits a demonstrated owner-known capability being quietly suppressed afterward.

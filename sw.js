@@ -5,7 +5,7 @@ const CORE=[
   './estate.css',
   './estate-accessibility.css',
   './estate-accessibility.js',
-  './estate-app.js',
+  './estate-app.js','./author-home-door.js',
   './manifest.webmanifest',
   './icon.svg',
   './404.html',

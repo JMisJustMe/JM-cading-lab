@@ -1,1 +1,84 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=./"><title>Returning to JM Estate</title></head><body style="background:#060910;color:#fff;font-family:system-ui;padding:2rem"><p>Returning to the JM Web Estate…</p><a style="color:#72ecff" href="./">Open the Estate</a></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#060910">
+  <title>Repairing the JM Estate route</title>
+  <style>
+    :root{color-scheme:dark}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#060910;color:#f4f8ff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
+    main{width:min(680px,100%);padding:28px;border:1px solid #294967;border-radius:24px;background:#0d1724;box-shadow:0 24px 70px rgba(0,0,0,.35)}
+    .eyebrow{color:#72ecff;font-weight:900;letter-spacing:.08em;font-size:.78rem}
+    h1{font-size:clamp(2rem,8vw,4rem);line-height:.98;margin:12px 0}
+    p{color:#b7c8d8;line-height:1.6}
+    .status{padding:14px 16px;border-radius:14px;background:#101f30;border:1px solid #294967;color:#fff;font-weight:800}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+    a{display:inline-flex;padding:12px 16px;border-radius:13px;text-decoration:none;font-weight:900;border:1px solid #3c5e78;color:#eef7ff}
+    a.primary{background:#72ecff;color:#051018;border-color:#72ecff}
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">JM ESTATE ROUTE REPAIR</div>
+    <h1>This doorway missed its room.</h1>
+    <p>The Estate is clearing any stale failed-page cache and retrying the exact room through its physical <code>index.html</code> route.</p>
+    <div class="status" id="status" role="status" aria-live="polite">Repairing the route…</div>
+    <div class="actions">
+      <a class="primary" id="retry" href="/index.html">Open the Estate</a>
+      <a href="https://jmisjustme.github.io/JM-cading-lab/index.html">Open the GitHub mirror</a>
+    </div>
+  </main>
+<script>
+(() => {
+  const pathname = location.pathname.replace(/\/{2,}/g, '/');
+  const routeMap = {
+    '/recent': '/recent/index.html',
+    '/recent/': '/recent/index.html',
+    '/theory/biohouse-nervous-signal-route': '/theory/biohouse-nervous-signal-route/index.html',
+    '/theory/biohouse-nervous-signal-route/': '/theory/biohouse-nervous-signal-route/index.html',
+    '/theory/trasta': '/theory/trasta/index.html',
+    '/theory/trasta/': '/theory/trasta/index.html',
+    '/theory/reality-route-ethos': '/theory/reality-route-ethos/index.html',
+    '/theory/reality-route-ethos/': '/theory/reality-route-ethos/index.html',
+    '/games-beyond/recent-direction': '/games-beyond/recent-direction/index.html',
+    '/games-beyond/recent-direction/': '/games-beyond/recent-direction/index.html',
+    '/apps': '/apps/index.html',
+    '/apps/': '/apps/index.html',
+    '/games-beyond': '/games-beyond/index.html',
+    '/games-beyond/': '/games-beyond/index.html',
+    '/theory': '/theory/index.html',
+    '/theory/': '/theory/index.html',
+    '/lyrics': '/lyrics/index.html',
+    '/lyrics/': '/lyrics/index.html',
+    '/recovery': '/recovery/index.html',
+    '/recovery/': '/recovery/index.html'
+  };
+  const targetPath = routeMap[pathname] || '/index.html';
+  const target = new URL(targetPath, location.origin);
+  target.searchParams.set('estate-repair', Date.now().toString(36));
+  document.getElementById('retry').href = target.href;
+
+  async function repair(){
+    const status = document.getElementById('status');
+    try{
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.unregister()));
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(key => key.startsWith('jm-web-estate-')).map(key => caches.delete(key)));
+      }
+      status.textContent = 'Stale route cache cleared. Opening the exact room…';
+    } catch (error) {
+      status.textContent = 'Opening the exact room without the stale route…';
+    }
+    setTimeout(() => location.replace(target.href), 180);
+  }
+  repair();
+})();
+</script>
+</body>
+</html>

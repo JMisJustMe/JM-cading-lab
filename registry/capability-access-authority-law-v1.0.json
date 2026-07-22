@@ -1,6 +1,6 @@
 {
   "schema": "JM.CapabilityAccessArchitecturalAuthorityLaw/1.0",
-  "revision": "v1.2",
+  "revision": "v1.3",
   "effective_date": "2026-07-22",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "state": "PERMANENT_GOVERNING_LAW",
@@ -13,6 +13,9 @@
     "keeper": "GitHub mentioned means GitHub ready. JM commands the outcome; the assistant carries the mechanism.",
     "readiness_trigger": "Any JM Estate task that mentions GitHub.",
     "permission_boundary": "Mention establishes readiness, not accidental write permission. Action begins when JM’s wording authorises a mount, graft, build, repair, update, commit, deploy or equivalent operation.",
+    "missing_command_rule": "When GitHub is mentioned without a clear action command, prompt JM once to activate the best inferred operation.",
+    "activation_prompt_pattern": "GitHub is ready—do you want me to [best inferred action] now?",
+    "activation_prompt_boundary": "The prompt is a reminder, not resistance, ceremony or a demand for technical instructions.",
     "default_operation": [
       "recall the existing body and lineage",
       "act through the existing route",
@@ -45,6 +48,7 @@
     "Receipts must name the preservation and claim boundaries.",
     "No capability suppression.",
     "GitHub mention establishes readiness; a JM-authorised command activates the route without needless re-explanation or ceremony.",
+    "If GitHub is mentioned without clear action authority, prompt JM once to activate the best inferred operation.",
     "No Ding, no claim."
   ],
   "mandatory_pre_write_declaration": [
@@ -57,5 +61,5 @@
   ],
   "full_body": "governance/capability-access-authority-law-v1.0.md",
   "public_body": "governance/capability-access-authority-law/",
-  "claim_boundary": "This law records both the bypass and the proved technical capability. It does not grant future permission to use that capability without the owner gate. GitHub mention creates readiness; JM-authorised wording creates action authority."
+  "claim_boundary": "This law records both the bypass and the proved technical capability. It does not grant future permission to use that capability without the owner gate. GitHub mention creates readiness; JM-authorised wording creates action authority; absent that wording, the assistant prompts JM once to activate the best inferred operation."
 }

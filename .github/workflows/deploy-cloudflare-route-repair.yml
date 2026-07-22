@@ -1,0 +1,317 @@
+name: Deploy Android-Safe JM Estate Route Repair
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-cloudflare-route-repair.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out preserved Estate source
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Prove source keepers before delivery repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s index.html
+          test -s estate-app.js
+          test -s estate.css
+          test -s 404.html
+          test -s sw.js
+          test -s apps/index.html
+          test -s games-beyond/index.html
+          test -s theory/index.html
+          test -s lyrics/index.html
+          test -s recent/index.html
+          test -s theory/biohouse-nervous-signal-route/index.html
+          test -s theory/biohouse-nervous-signal-route/v1.0.html
+          test -s theory/trasta/index.html
+          test -s theory/reality-route-ethos/index.html
+          test -s games-beyond/recent-direction/index.html
+          grep -q 'Your work no longer lives as scattered HTMLs' index.html
+          grep -q 'JM ESTATE ROUTE REPAIR' 404.html
+          grep -q 'jm-web-estate-v1.4.2-route-repair' sw.js
+
+      - name: Mirror the currently standing canonical Estate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate
+          mkdir -p cloudflare-estate
+          python3 <<'PY'
+          from collections import deque
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse, urldefrag
+          from urllib.request import Request, urlopen
+          import re
+
+          base='https://jmisjustme-estate.pages.dev/'
+          host=urlparse(base).netloc
+          out=Path('cloudflare-estate')
+          seeds=[
+            '/', '/index.html', '/apps/', '/games-beyond/', '/theory/', '/lyrics/',
+            '/recovery/', '/author/', '/navigator/', '/estate/', '/fresh-app-lab/',
+            '/coding-estate/everybody/', '/cading.html', '/manifest.webmanifest',
+            '/sw.js', '/robots.txt', '/sitemap.xml', '/404.html'
+          ]
+          queue=deque(urljoin(base,seed) for seed in seeds)
+          seen=set(); saved=0; total=0
+
+          def target_path(url,content_type):
+            path=urlparse(url).path
+            if not path or path.endswith('/'):
+              path += 'index.html'
+            elif 'text/html' in content_type and '.' not in Path(path).name:
+              path += '/index.html'
+            return out/path.lstrip('/')
+
+          def enqueue(raw,current):
+            if not raw or raw.startswith(('data:','mailto:','tel:','javascript:','#')):
+              return
+            clean,_=urldefrag(urljoin(current,raw))
+            parsed=urlparse(clean)
+            if parsed.scheme not in ('http','https') or parsed.netloc!=host:
+              return
+            normalized=parsed._replace(query='',fragment='').geturl()
+            if normalized not in seen:
+              queue.append(normalized)
+
+          while queue and len(seen)<2400 and total<320*1024*1024:
+            url=queue.popleft()
+            parsed=urlparse(url)
+            url=parsed._replace(query='',fragment='').geturl()
+            if url in seen: continue
+            seen.add(url)
+            try:
+              req=Request(url,headers={'User-Agent':'JM-Estate-Route-Repair-Mirror/1.0','Cache-Control':'no-cache'})
+              with urlopen(req,timeout=25) as response:
+                data=response.read()
+                content_type=response.headers.get_content_type()
+                charset=response.headers.get_content_charset() or 'utf-8'
+            except Exception as exc:
+              print('SKIP',url,type(exc).__name__)
+              continue
+            target=target_path(url,content_type)
+            target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(data)
+            saved+=1; total+=len(data)
+            if content_type in ('text/html','text/css','application/javascript','text/javascript'):
+              try: text=data.decode(charset,'replace')
+              except LookupError: text=data.decode('utf-8','replace')
+              if content_type=='text/html':
+                for raw in re.findall(r'''(?:href|src|action)=["']([^"']+)["']''',text,flags=re.I): enqueue(raw,url)
+                for srcset in re.findall(r'''srcset=["']([^"']+)["']''',text,flags=re.I):
+                  for item in srcset.split(','): enqueue(item.strip().split()[0],url)
+              for raw in re.findall(r'''url\((?:["']?)([^)"']+)''',text,flags=re.I): enqueue(raw.strip(),url)
+              for raw in re.findall(r'''(?:importScripts|fetch)\(["']([^"']+)["']''',text): enqueue(raw,url)
+
+          required=['index.html','apps/index.html','games-beyond/index.html','theory/index.html','lyrics/index.html']
+          missing=[p for p in required if not (out/p).is_file()]
+          if missing: raise SystemExit(f'Standing mirror missing required rooms: {missing}')
+          print({'saved_files':saved,'bytes':total,'seen_urls':len(seen)})
+          PY
+
+      - name: Overlay preserved full shell and exact repaired rooms
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for file in index.html estate-app.js estate-accessibility.js estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js robots.txt sitemap.xml 404.html cading.html; do
+            if [ -f "$file" ]; then cp "$file" cloudflare-estate/; fi
+          done
+
+          for room in apps games-beyond theory lyrics recovery recent author coding-estate; do
+            if [ -d "$room" ]; then
+              rm -rf "cloudflare-estate/$room"
+              cp -a "$room" "cloudflare-estate/$room"
+            fi
+          done
+
+          mkdir -p cloudflare-estate/registry
+          cp registry/estate-map.json cloudflare-estate/registry/estate-map.json
+          cp registry/estate-head-public-current.json cloudflare-estate/registry/estate-head-public-current.json
+          cp registry/theory-wing.json cloudflare-estate/registry/theory-wing.json
+          cp registry/recent-chat-convergence-v1.0.json cloudflare-estate/registry/recent-chat-convergence-v1.0.json
+          cp registry/recent-chat-convergence-final-receipt-v1.0.json cloudflare-estate/registry/recent-chat-convergence-final-receipt-v1.0.json
+
+          cat > cloudflare-estate/_headers <<'EOF'
+          /*
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: strict-origin-when-cross-origin
+            Permissions-Policy: camera=(), microphone=(self), geolocation=()
+            Cache-Control: no-cache, must-revalidate
+          /sw.js
+            Cache-Control: no-store, no-cache, must-revalidate
+            Service-Worker-Allowed: /
+          /404.html
+            Cache-Control: no-store, no-cache, must-revalidate
+            Clear-Site-Data: "cache"
+          /recent/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /theory/biohouse-nervous-signal-route/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /theory/trasta/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /theory/reality-route-ethos/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /games-beyond/recent-direction/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          EOF
+
+          cat > cloudflare-estate/_redirects <<'EOF'
+          /recent /recent/index.html 200
+          /recent/ /recent/index.html 200
+          /apps /apps/index.html 200
+          /apps/ /apps/index.html 200
+          /games-beyond /games-beyond/index.html 200
+          /games-beyond/ /games-beyond/index.html 200
+          /theory /theory/index.html 200
+          /theory/ /theory/index.html 200
+          /lyrics /lyrics/index.html 200
+          /lyrics/ /lyrics/index.html 200
+          /recovery /recovery/index.html 200
+          /recovery/ /recovery/index.html 200
+          /theory/biohouse-nervous-signal-route /theory/biohouse-nervous-signal-route/index.html 200
+          /theory/biohouse-nervous-signal-route/ /theory/biohouse-nervous-signal-route/index.html 200
+          /theory/trasta /theory/trasta/index.html 200
+          /theory/trasta/ /theory/trasta/index.html 200
+          /theory/reality-route-ethos /theory/reality-route-ethos/index.html 200
+          /theory/reality-route-ethos/ /theory/reality-route-ethos/index.html 200
+          /games-beyond/recent-direction /games-beyond/recent-direction/index.html 200
+          /games-beyond/recent-direction/ /games-beyond/recent-direction/index.html 200
+          EOF
+
+      - name: Prove assembled files are full bodies, not the 404 shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          checks=(
+            'index.html|Your work no longer lives as scattered HTMLs'
+            'apps/index.html|NON-GAME APPS HOUSE'
+            'games-beyond/index.html|Games&Beyond'
+            'theory/index.html|JM Theory Multihub'
+            'lyrics/index.html|JM Lyrics'
+            'recent/index.html|The Estate'
+            'theory/biohouse-nervous-signal-route/index.html|Attention, Suggestion'
+            'theory/biohouse-nervous-signal-route/v1.0.html|Nervous Signal Route v1.0'
+            'theory/trasta/index.html|Trust the trace'
+            'theory/reality-route-ethos/index.html|Reality is not'
+            'games-beyond/recent-direction/index.html|More game'
+          )
+          for check in "${checks[@]}"; do
+            path="${check%%|*}"; marker="${check#*|}"
+            test -s "cloudflare-estate/$path"
+            grep -q "$marker" "cloudflare-estate/$path"
+            ! grep -q 'Returning to the JM Web Estate' "cloudflare-estate/$path"
+          done
+
+      - name: Deploy repaired Estate to canonical Cloudflare door
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove Android and exact-file contact on the canonical door
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          ua='Mozilla/5.0 (Linux; Android 16; CPH2305) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Mobile Safari/537.36'
+          checks=(
+            '/index.html|Your work no longer lives as scattered HTMLs'
+            '/apps/index.html|NON-GAME APPS HOUSE'
+            '/games-beyond/index.html|Games&Beyond'
+            '/theory/index.html|JM Theory Multihub'
+            '/lyrics/index.html|JM Lyrics'
+            '/recent/index.html|The Estate'
+            '/recent/|The Estate'
+            '/theory/biohouse-nervous-signal-route/index.html|Attention, Suggestion'
+            '/theory/biohouse-nervous-signal-route/|Attention, Suggestion'
+            '/theory/biohouse-nervous-signal-route/v1.0.html|Nervous Signal Route v1.0'
+            '/theory/trasta/index.html|Trust the trace'
+            '/theory/trasta/|Trust the trace'
+            '/theory/reality-route-ethos/index.html|Reality is not'
+            '/games-beyond/recent-direction/index.html|More game'
+          )
+
+          passed=0
+          for attempt in $(seq 1 45); do
+            passed=1
+            for check in "${checks[@]}"; do
+              path="${check%%|*}"; marker="${check#*|}"
+              body_file="$RUNNER_TEMP/body.html"
+              code="$(curl --silent --show-error --location --max-time 25 -A "$ua" -H 'Cache-Control: no-cache' -o "$body_file" -w '%{http_code}' "$base$path?android-route-proof=$GITHUB_RUN_ID-$attempt" || true)"
+              if [ "$code" != '200' ] || ! grep -q "$marker" "$body_file" || grep -q 'Returning to the JM Web Estate' "$body_file"; then
+                echo "MISS $code $path expected: $marker"
+                passed=0
+              else
+                echo "PASS $code $path"
+              fi
+            done
+            if [ "$passed" = '1' ]; then break; fi
+            sleep 3
+          done
+          test "$passed" = '1'
+
+      - name: Seal route-repair receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.PublicRouteRepairReceipt/1.0',
+            'verified_utc':datetime.now(timezone.utc).isoformat(),
+            'state':'PASS_ANDROID_EXACT_FILE_AND_DIRECTORY_ROUTES_NO_404_SHELL',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'canonical_host':'https://jmisjustme-estate.pages.dev',
+            'preservation':{
+              'deleted_repository_files':0,
+              'root_index_rewritten_by_convergence':False,
+              'existing_source_bodies_deleted':False
+            },
+            'repairs':[
+              'absolute 404 recovery',
+              'stale JM service-worker cache clearance',
+              'failed responses excluded from cache',
+              'explicit directory-to-index routes',
+              'Android WebView marker proof'
+            ],
+            'claim_boundary':'This receipt proves public delivery and route recovery. It does not convert partial or active project bodies into complete payloads.'
+          }
+          Path('registry/public-route-repair-receipt-v1.0.json').write_text(json.dumps(receipt,indent=2)+"\n",encoding='utf-8')
+          PY
+          git config user.name 'JM Public Route Repair Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/public-route-repair-receipt-v1.0.json
+          git commit -m 'Seal Android-safe public route repair [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

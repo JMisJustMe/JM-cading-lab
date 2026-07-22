@@ -2,7 +2,7 @@
   "schema": "JM.EstateClassificationAuthority/1.0",
   "effective_date": "2026-07-22",
   "owner_authority": "Theodore Benjamin Scott / JM",
-  "status": "GOVERNING_SECOND_WAVE_WITH_RECENT_CONVERGENCE",
+  "status": "GOVERNING_SECOND_WAVE_WITH_RECENT_CONVERGENCE_AND_OWNER_AUTHORITY_LAW",
   "crown": "Classify by the body's governing achievement, not by one reusable organ or the folder in which a copy was found.",
   "laws": [
     "A secondary use may create a bridge, but it may not replace the body's primary seat.",
@@ -10,7 +10,11 @@
     "Parallel branches remain parallel when their behaviour, purpose or proof lanes differ.",
     "A public-safe catalogue may summarize a body, but it may not demote or rename the body's governing achievement.",
     "Current-best claims require a source route, role, proof lane and recovery route.",
-    "No flagship accomplishment may be reduced to a weak card while its evidence ladder remains buried elsewhere."
+    "No flagship accomplishment may be reduced to a weak card while its evidence ladder remains buried elsewhere.",
+    "Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.",
+    "Owner authority precedes tool capability.",
+    "Connection to a platform is not continuation of the owner’s previous creation on that platform.",
+    "No coronation before owner-side physical contact."
   ],
   "authority_lanes": [
     "source_anchor",
@@ -387,6 +391,34 @@
       ],
       "ruling": "CURRENT_DESIGNED_DIRECTION_MOUNTED_PRODUCTS_SEPARATELY_GRADED",
       "severity": "ACTIVE_DESIGN_CONTRACT"
+    },
+    {
+      "id": "capability-access-architectural-authority-law",
+      "name": "JM Capability, Access & Architectural Authority Law",
+      "primary_seat": "Registers & Governance / Owner Authority / External Persistent Systems",
+      "governing_identity": "permanent owner-authority gate governing persistent writes, deployments, branches, public routes and standing external lanes",
+      "trigger_case": "GitHub × Cloudflare lineage bypass and recovery",
+      "full_body": "governance/capability-access-authority-law-v1.0.md",
+      "public_route": "/governance/capability-access-authority-law/",
+      "registry": "registry/capability-access-authority-law-v1.0.json",
+      "receipt": "registry/capability-access-authority-law-receipt-v1.0.json",
+      "crown_law": "Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.",
+      "mandatory_pre_write_declaration": [
+        "existing_authoritative_body",
+        "existing_deployment_lineage",
+        "proposed_action",
+        "owner_authority",
+        "non_overwrite_boundary",
+        "physical_proof_condition"
+      ],
+      "prohibited_reductions": [
+        "technical access treated as architectural permission",
+        "automated route proof treated as owner coronation",
+        "new adjacent lane silently presented as continuation",
+        "lack of deceptive intent used to erase the practical bypass"
+      ],
+      "ruling": "PERMANENT_GOVERNING_OWNER_AUTHORITY_GATE",
+      "severity": "CROWN_GOVERNANCE_LAW"
     }
   ],
   "systemic_guard": {
@@ -408,5 +440,25 @@
     "registry": "registry/recent-chat-convergence-v1.0.json",
     "final_receipt": "registry/recent-chat-convergence-final-receipt-v1.0.json",
     "state": "DING_RECENT_CHAT_CONVERGENCE_COMPLETE_ON_GITHUB_PAGES_CLOUDFLARE_PROOF_NEXT"
+  },
+  "owner_authority_gate": {
+    "version": "v1.0",
+    "state": "PERMANENT_GOVERNING_LAW_MOUNTED",
+    "crown_law": "Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.",
+    "keeper": "Technical capability is a tool held under owner authority. It is never authority over the owner’s architecture.",
+    "full_body": "governance/capability-access-authority-law-v1.0.md",
+    "public_route": "/governance/capability-access-authority-law/",
+    "registry": "registry/capability-access-authority-law-v1.0.json",
+    "receipt": "registry/capability-access-authority-law-receipt-v1.0.json",
+    "applies_to": [
+      "GitHub",
+      "GitHub Pages",
+      "Cloudflare",
+      "connected storage",
+      "deployment platforms",
+      "databases",
+      "automation systems",
+      "any tool capable of creating a standing external lane"
+    ]
   }
 }

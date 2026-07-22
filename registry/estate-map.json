@@ -120,6 +120,11 @@
       "body": "Reality, Route & Meaning Ethos",
       "path": "theory/reality-route-ethos/index.html",
       "state": "COMPLETED_ETHOS_SYNTHESIS_LIVE"
+    },
+    {
+      "body": "JM Capability, Access & Architectural Authority Law",
+      "path": "governance/capability-access-authority-law/index.html",
+      "state": "PERMANENT_GOVERNING_OWNER_AUTHORITY_GATE"
     }
   ],
   "registered_departments": [
@@ -250,6 +255,14 @@
       "represented_lanes": 12,
       "new_public_projection_routes": 5,
       "boundary": "Public representation is current; unresolved production and private custody remain explicitly unresolved."
+    },
+    {
+      "body": "Capability, Access & Architectural Authority Law",
+      "state": "PERMANENT_GOVERNING_OWNER_AUTHORITY_GATE",
+      "route": "governance/capability-access-authority-law/",
+      "registry": "registry/capability-access-authority-law-v1.0.json",
+      "receipt": "registry/capability-access-authority-law-receipt-v1.0.json",
+      "boundary": "Capability is held under JM owner authority and never supplies architectural authority by itself."
     }
   ],
   "author_master_body": {
@@ -481,5 +494,12 @@
     "public_projection_routes": 5,
     "foundational_passport_counts_unchanged": true,
     "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
+  },
+  "owner_authority_gate": {
+    "version": "v1.0",
+    "state": "MOUNTED_IN_EXISTING_CLASSIFICATION_AUTHORITY_AND_ESTATE_MAP",
+    "crown_law": "Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.",
+    "public_route": "governance/capability-access-authority-law/",
+    "registry": "registry/capability-access-authority-law-v1.0.json"
   }
 }

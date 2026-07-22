@@ -14,5 +14,12 @@
     "intent_does_not_erase_effect": true,
     "future_persistent_writes_require_pre_write_declaration": true
   },
-  "claim_boundary": "Mounting records the law permanently in the JM repository. It does not retroactively authorise prior bypasses or future unsanctioned persistent writes."
+  "claim_boundary": "Mounting records the law permanently in the JM repository. It does not retroactively authorise prior bypasses or future unsanctioned persistent writes.",
+  "central_authority_mount": {
+    "state": "PASS_CONNECTED_TO_EXISTING_AUTHORITY_NOT_LEFT_AS_NEARBY_LANE",
+    "classification_authority": "registry/estate-classification-authority-v1.0.json",
+    "estate_map": "registry/estate-map.json",
+    "mounted_utc": "2026-07-22T01:14:15.194677+00:00",
+    "temporary_mount_workflow_retired": true
+  }
 }

@@ -1,0 +1,335 @@
+name: Deploy Recent Convergence to Canonical Cloudflare Estate
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-cloudflare-recent-convergence.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  deploy:
+    name: Preserve standing Estate, overlay recent authority, deploy and prove
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out current Estate source
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Prove current source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/verify_estate_classification.py --root .
+          python3 -m json.tool registry/recent-chat-convergence-v1.0.json >/dev/null
+          python3 -m json.tool registry/recent-chat-convergence-final-receipt-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-head-public-current.json >/dev/null
+          python3 -m json.tool registry/estate-map.json >/dev/null
+          test -s theory/biohouse-nervous-signal-route/index.html
+          test -s theory/biohouse-nervous-signal-route/v1.0.html
+          test -s theory/trasta/index.html
+          test -s theory/reality-route-ethos/index.html
+          test -s games-beyond/recent-direction/index.html
+          test -s recent/index.html
+
+      - name: Mirror the standing canonical Estate
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate
+          mkdir -p cloudflare-estate
+          python3 <<'PY'
+          from collections import deque
+          from pathlib import Path
+          from urllib.parse import urljoin, urlparse, urldefrag
+          from urllib.request import Request, urlopen
+          import re
+
+          base = 'https://jmisjustme-estate.pages.dev/'
+          host = urlparse(base).netloc
+          out = Path('cloudflare-estate')
+          seeds = [
+              '/', '/author/', '/navigator/', '/navigator/stringline.json', '/apps/',
+              '/games-beyond/', '/theory/', '/lyrics/', '/recovery/', '/estate/',
+              '/fresh-app-lab/', '/coding-estate/everybody/', '/cading.html',
+              '/manifest.webmanifest', '/sw.js', '/robots.txt', '/sitemap.xml', '/404.html'
+          ]
+          queue = deque(urljoin(base, seed) for seed in seeds)
+          seen = set()
+          saved = total_bytes = 0
+
+          def target_path(url, content_type):
+              path = urlparse(url).path
+              if not path or path.endswith('/'):
+                  path += 'index.html'
+              elif 'text/html' in content_type and '.' not in Path(path).name:
+                  path += '/index.html'
+              return out / path.lstrip('/')
+
+          def enqueue(raw, current):
+              if not raw or raw.startswith(('data:', 'mailto:', 'tel:', 'javascript:', '#')):
+                  return
+              clean, _ = urldefrag(urljoin(current, raw))
+              parsed = urlparse(clean)
+              if parsed.scheme not in ('http', 'https') or parsed.netloc != host:
+                  return
+              normalized = parsed._replace(query='', fragment='').geturl()
+              if normalized not in seen:
+                  queue.append(normalized)
+
+          while queue and len(seen) < 2200 and total_bytes < 300 * 1024 * 1024:
+              url = queue.popleft()
+              parsed = urlparse(url)
+              url = parsed._replace(query='', fragment='').geturl()
+              if url in seen:
+                  continue
+              seen.add(url)
+              try:
+                  req = Request(url, headers={'User-Agent': 'JM-Estate-Recent-Convergence-Mirror/1.0'})
+                  with urlopen(req, timeout=25) as response:
+                      data = response.read()
+                      content_type = response.headers.get_content_type()
+                      charset = response.headers.get_content_charset() or 'utf-8'
+              except Exception as exc:
+                  print('SKIP', url, type(exc).__name__)
+                  continue
+              target = target_path(url, content_type)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              target.write_bytes(data)
+              saved += 1
+              total_bytes += len(data)
+              if content_type in ('text/html', 'text/css', 'application/javascript', 'text/javascript'):
+                  try:
+                      text = data.decode(charset, 'replace')
+                  except LookupError:
+                      text = data.decode('utf-8', 'replace')
+                  if content_type == 'text/html':
+                      for raw in re.findall(r'''(?:href|src|action)=["']([^"']+)["']''', text, flags=re.I):
+                          enqueue(raw, url)
+                      for srcset in re.findall(r'''srcset=["']([^"']+)["']''', text, flags=re.I):
+                          for item in srcset.split(','):
+                              enqueue(item.strip().split()[0], url)
+                  for raw in re.findall(r'''url\((?:["']?)([^)"']+)''', text, flags=re.I):
+                      enqueue(raw.strip(), url)
+                  for raw in re.findall(r'''(?:importScripts|fetch)\(["']([^"']+)["']''', text):
+                      enqueue(raw, url)
+
+          required = ['index.html', 'theory/index.html', 'lyrics/index.html', 'recovery/index.html']
+          missing = [path for path in required if not (out / path).exists()]
+          if missing:
+              raise SystemExit(f'Standing mirror missing required rooms: {missing}')
+          print({'saved_files': saved, 'bytes': total_bytes, 'seen_urls': len(seen)})
+          PY
+
+      - name: Overlay current public shell and recent convergence authority
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for file in \
+            index.html estate-app.js estate-accessibility.js estate.css estate-accessibility.css \
+            icon.svg manifest.webmanifest sw.js robots.txt sitemap.xml 404.html cading.html; do
+            if [ -f "$file" ]; then cp "$file" cloudflare-estate/; fi
+          done
+
+          rm -rf cloudflare-estate/recent
+          cp -a recent cloudflare-estate/recent
+
+          mkdir -p cloudflare-estate/theory
+          for room in biohouse-nervous-signal-route trasta reality-route-ethos; do
+            rm -rf "cloudflare-estate/theory/$room"
+            cp -a "theory/$room" "cloudflare-estate/theory/$room"
+          done
+
+          mkdir -p cloudflare-estate/games-beyond
+          rm -rf cloudflare-estate/games-beyond/recent-direction
+          cp -a games-beyond/recent-direction cloudflare-estate/games-beyond/recent-direction
+
+          mkdir -p cloudflare-estate/registry
+          for file in \
+            estate-map.json estate-head-public-current.json theory-wing.json \
+            recent-chat-convergence-v1.0.json recent-chat-convergence-receipt-v1.0.json \
+            recent-chat-convergence-estate-map-receipt-v1.0.json \
+            recent-chat-convergence-live-door-receipt-v1.0.json \
+            recent-chat-convergence-final-receipt-v1.0.json \
+            recent-chat-convergence-classification-receipt-v1.0.json; do
+            cp "registry/$file" "cloudflare-estate/registry/$file"
+          done
+
+          cat > cloudflare-estate/_headers <<'EOF'
+          /*
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: strict-origin-when-cross-origin
+            Permissions-Policy: camera=(), microphone=(self), geolocation=()
+            Cache-Control: no-cache
+          /assets/*
+            Cache-Control: public, max-age=31536000, immutable
+          /recent/*
+            Cache-Control: no-cache
+          /theory/biohouse-nervous-signal-route/*
+            Cache-Control: no-cache
+          /theory/trasta/*
+            Cache-Control: no-cache
+          /theory/reality-route-ethos/*
+            Cache-Control: no-cache
+          /games-beyond/recent-direction/*
+            Cache-Control: no-cache
+          /registry/estate-head-public-current.json
+            Cache-Control: no-cache
+          EOF
+
+          cat > cloudflare-estate/_redirects <<'EOF'
+          /* /index.html 200
+          EOF
+
+      - name: Prove assembled convergence before deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool cloudflare-estate/registry/estate-head-public-current.json >/dev/null
+          python3 -m json.tool cloudflare-estate/registry/estate-map.json >/dev/null
+          grep -q 'JMISJUSTME' cloudflare-estate/index.html
+          grep -q 'The Estate' cloudflare-estate/recent/index.html
+          grep -q 'Attention, Suggestion' cloudflare-estate/theory/biohouse-nervous-signal-route/index.html
+          grep -q 'Nervous Signal Route v1.0' cloudflare-estate/theory/biohouse-nervous-signal-route/v1.0.html
+          grep -q 'Trust the trace' cloudflare-estate/theory/trasta/index.html
+          grep -q 'Reality is not' cloudflare-estate/theory/reality-route-ethos/index.html
+          grep -q 'More game' cloudflare-estate/games-beyond/recent-direction/index.html
+          grep -q 'v0.3.0' cloudflare-estate/registry/estate-head-public-current.json
+          grep -q 'recent/index.html' cloudflare-estate/registry/estate-map.json
+
+      - name: Deploy recent convergence to canonical Cloudflare Estate
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove canonical live contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://jmisjustme-estate.pages.dev"
+          paths=(
+            "/"
+            "/recent/"
+            "/theory/biohouse-nervous-signal-route/"
+            "/theory/biohouse-nervous-signal-route/v1.0.html"
+            "/theory/trasta/"
+            "/theory/reality-route-ethos/"
+            "/games-beyond/recent-direction/"
+            "/registry/estate-head-public-current.json"
+          )
+          expects=(
+            "JMISJUSTME"
+            "The Estate"
+            "Attention, Suggestion"
+            "Nervous Signal Route v1.0"
+            "Trust the trace"
+            "Reality is not"
+            "More game"
+            "v0.3.0"
+          )
+
+          passed=0
+          for attempt in $(seq 1 45); do
+            passed=1
+            for i in "${!paths[@]}"; do
+              url="${base}${paths[$i]}?recent-convergence=${GITHUB_RUN_ID}-${attempt}"
+              body="$(curl --fail --silent --show-error --location --max-time 25 -H 'Cache-Control: no-cache' "$url" || true)"
+              if [[ "$body" != *"${expects[$i]}"* ]]; then
+                echo "CANONICAL MISS: ${paths[$i]} expected ${expects[$i]}"
+                passed=0
+              else
+                echo "CANONICAL PASS: ${paths[$i]}"
+              fi
+            done
+            if [[ "$passed" == "1" ]]; then break; fi
+            sleep 3
+          done
+          test "$passed" -eq 1
+
+      - name: Seal canonical convergence receipt and current Estate Head
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          verified = datetime.now(timezone.utc).isoformat()
+          base = 'https://jmisjustme-estate.pages.dev'
+          checks = [
+              ('/', 'JMISJUSTME'),
+              ('/recent/', 'The Estate'),
+              ('/theory/biohouse-nervous-signal-route/', 'Attention, Suggestion'),
+              ('/theory/biohouse-nervous-signal-route/v1.0.html', 'Nervous Signal Route v1.0'),
+              ('/theory/trasta/', 'Trust the trace'),
+              ('/theory/reality-route-ethos/', 'Reality is not'),
+              ('/games-beyond/recent-direction/', 'More game'),
+              ('/registry/estate-head-public-current.json', 'v0.3.0')
+          ]
+          receipt_path = Path('registry/recent-chat-convergence-cloudflare-live-receipt-v1.0.json')
+          receipt = {
+              'schema': 'JM.RecentChatConvergenceCloudflareLiveReceipt/1.0',
+              'verified_utc': verified,
+              'state': 'PASS_CANONICAL_CLOUDFLARE_LIVE_CONTACT_ALL_RECENT_CONVERGENCE_DOORS',
+              'source_trigger_commit': os.environ.get('GITHUB_SHA'),
+              'run_id': os.environ.get('GITHUB_RUN_ID'),
+              'host': base,
+              'checks': [
+                  {'url': base + path, 'expected_marker': marker, 'contact': 'PASS'}
+                  for path, marker in checks
+              ],
+              'private_owner_fields_published': False,
+              'claim_boundary': 'HTTP contact and expected body markers are proved on the canonical Cloudflare host. Active product completion remains separately graded.'
+          }
+          receipt_path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          head_path = Path('registry/estate-head-public-current.json')
+          head = json.loads(head_path.read_text(encoding='utf-8'))
+          proof = head.setdefault('cloudflare_live_proof', {})
+          proof.update({
+              'current_verified_contract_version': 'v0.3.0',
+              'current_v0_3_0_edge_verification': 'PASS',
+              'current_verified_utc': verified,
+              'current_receipt': str(receipt_path)
+          })
+          head['deployment_state'] = 'PUBLIC_HOUSE_AND_RECENT_CONVERGENCE_LIVE_ON_GITHUB_PAGES_AND_CANONICAL_CLOUDFLARE'
+          head['boundary'] = head.get('boundary', '').replace(
+              ' Cloudflare edge verification for v0.3.0 remains separate from repository publication.',
+              ' Canonical Cloudflare contact for v0.3.0 is separately proved by the current live receipt.'
+          )
+          head_path.write_text(json.dumps(head, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          PY
+
+          python3 -m json.tool registry/recent-chat-convergence-cloudflare-live-receipt-v1.0.json >/dev/null
+          python3 -m json.tool registry/estate-head-public-current.json >/dev/null
+
+          git config user.name "JM Recent Convergence Cloudflare Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/recent-chat-convergence-cloudflare-live-receipt-v1.0.json registry/estate-head-public-current.json
+          git commit -m "Seal canonical recent convergence deployment success"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          echo "Canonical deployment passed; receipt push lost five parallel races." >&2
+          exit 1

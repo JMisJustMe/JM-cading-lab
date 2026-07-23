@@ -26,12 +26,13 @@ jobs:
         continue-on-error: true
         working-directory: android/JMFileGrabberVisualang-v0.4
         run: |
-          mkdir -p ../../../dist
+          mkdir -p ../../dist
           python3 - <<'PY'
           import base64, gzip, hashlib, json, traceback
           from pathlib import Path
 
           root = Path('.')
+          diagnostic_path = Path('../../dist/restore_diagnostic.json')
           diag = {'cwd': str(root.resolve()), 'parts': {}}
           try:
               java_path = root / 'source/MainActivity.java.gz.b64'
@@ -74,10 +75,10 @@ jobs:
                   'exception': str(exc),
                   'traceback': traceback.format_exc(),
               })
-              Path('../../../dist/restore_diagnostic.json').write_text(json.dumps(diag, indent=2))
+              diagnostic_path.write_text(json.dumps(diag, indent=2))
               raise
           else:
-              Path('../../../dist/restore_diagnostic.json').write_text(json.dumps(diag, indent=2))
+              diagnostic_path.write_text(json.dumps(diag, indent=2))
               print(json.dumps(diag, indent=2))
           PY
       - name: Upload exact-source diagnostic

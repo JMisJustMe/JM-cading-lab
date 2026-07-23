@@ -146,9 +146,11 @@ public class MainActivity extends Activity {
             runOnUiThread(() -> {
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType((mime == null || mime.isBlank()) ? "application/octet-stream" : mime);
+                boolean mimeMissing = mime == null || mime.trim().isEmpty();
+                boolean nameMissing = filename == null || filename.trim().isEmpty();
+                intent.setType(mimeMissing ? "application/octet-stream" : mime);
                 intent.putExtra(Intent.EXTRA_TITLE,
-                        (filename == null || filename.isBlank()) ? "JM_MULTIHUB_EXPORT.txt" : filename);
+                        nameMissing ? "JM_MULTIHUB_EXPORT.txt" : filename);
                 startActivityForResult(intent, REQ_SAVE_TEXT);
             });
         }

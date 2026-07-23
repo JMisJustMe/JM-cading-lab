@@ -1,11 +1,12 @@
 {
-  "audit_id": "JM_THEORY_SOURCE_BODY_INTEGRITY_v0_20",
+  "audit_id": "JM_THEORY_SOURCE_BODY_INTEGRITY_v0_20_1",
   "date": "2026-07-23",
   "scope": "Earlier 37-body source library and current Theory Multihub reader mapping",
   "result": {
+    "decoded_census_routes": 297,
     "earlier_source_library_routes": 37,
     "correct_source_bodies_located": 37,
-    "bodies_from_preserved_source_carrier": 35,
+    "bodies_from_preserved_census_payload": 35,
     "dedicated_completion_body_routes": 1,
     "library_master_recoveries": 1,
     "preserved_publication_drafts": 24,
@@ -29,21 +30,22 @@
       "state": "STABLE_ID_TITLE_BODY_SHA_CHECKED"
     }
   },
-  "integrity_tests": [
-    "37 unique stable IDs",
-    "37 expected titles matched",
-    "37 non-empty bodies above minimum depth",
-    "37 unique SHA-256 body hashes",
-    "24 publication drafts retained",
-    "Phone-Realms contains its realm-interface body",
-    "Phone-Realms excludes the mediumship-audit opening",
-    "The Contact, Causation & Claimed Authority Register retains its mediumship body",
-    "Source fullness remains distinct from completed/canonical status"
-  ],
+  "integrity_tests": {
+    "census_route_count": 297,
+    "expected_titles_matched": 37,
+    "minimum_body_characters": 993,
+    "unique_stable_ids": 37,
+    "unique_sha256_body_hashes": 37,
+    "publication_drafts_retained": 24,
+    "phone_realms_contains_realm_interface": true,
+    "phone_realms_excludes_mediumship_opening": true,
+    "contact_authority_retains_mediumship_body": true
+  },
   "deployment": {
     "github_source": "SEATED",
     "estate_head_stale_v0_8_3_rewind": "REMOVED",
-    "v0_20_integrity_loader": "SEATED",
+    "direct_payload_integrity_loader": "source-body-integrity-v12.js",
+    "direct_payload_loader_state": "SEATED_AND_SYNTAX_CHECKED",
     "pages_rebuild_marker": "PUSHED",
     "public_propagation": "NOT_YET_UNIFORMLY_CONFIRMED"
   },

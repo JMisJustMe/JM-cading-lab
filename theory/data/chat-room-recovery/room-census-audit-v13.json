@@ -6,7 +6,7 @@
   "current_checkpoint": {
     "mounted_rooms": 42,
     "meaning": "Exact rooms mounted in the earlier visible-room pass; not the total accessible ChatGPT room population.",
-    "duplicate_rule": "Do not add a room again merely because it appears in another screenshot, export or project view."
+    "duplicate_rule": "Do not add a room again merely because it appears in another screenshot, export, renamed route or project view."
   },
   "evidence_checked_this_pass": [
     "Four supplied Android ChatGPT sidebar screenshots",
@@ -19,18 +19,13 @@
     {
       "room_id": "room-census-043",
       "visible_title": "JM Bemotion Family — From E…",
+      "aliases": ["Discussing a rest experience"],
       "resolved_body": "JM BEMOTION FAMILY — Emotion-Driven x Bemotion-Giving through TheOverlap S.C.O.T.T.",
       "classification": "FULL-BODY SOURCE-CHAT ENTRANCE / PUBLIC ROUTE SEATING OPEN",
       "body_status": "Complete at agreed internal framework and package scope; READY FOR JM DING; not self-crowned",
-      "library_evidence": [
-        "01_JM_BEMOTION_FAMILY_ONEBODY_v1_0.md",
-        "02_JM_BEMOTION_FAMILY_READING_EDITION_v1_0.docx",
-        "03_JM_BEMOTION_FAMILY_READING_EDITION_v1_0.pdf",
-        "11_JM_BEMOTION_FAMILY_ESTATE_MOUNT_RECEIPT_v1_0.md",
-        "12_JM_BEMOTION_FAMILY_LIVING_REGISTER_v1_0.json"
-      ],
+      "source_evidence": "Library OneBody, DOCX/PDF reading editions, estate-mount receipt and living register",
       "keeper": "Emotion gives motion. Being gives that motion form. What being repeatedly gives form helps fund what emotion becomes next.",
-      "boundary": "The body is located and package-proven inside its declared scope. JM Ding and public route seating remain separate decisions."
+      "boundary": "The body is located and package-proven inside its declared scope. JM Ding and public route seating remain separate decisions. The earlier chat title is retained as lineage, not counted as a second room without evidence of a separate conversation."
     },
     {
       "room_id": "room-census-044",
@@ -38,8 +33,49 @@
       "title_state": "SCREEN-OBSCURED / PROVISIONAL READING",
       "classification": "TITLE-LEVEL CHAT ROUTE / EXACT SOURCE RETRIEVAL OPEN",
       "body_status": "No body crown; exact title and source chat still require retrieval.",
+      "source_evidence": "Android sidebar screenshot",
       "keeper": "A visible partial title earns intake and retrieval, not invented completion.",
       "boundary": "Do not merge this with WORDS ARE DATA CONSTRAINERS, RootWord Realness Engine or another word-body without exact-source comparison."
+    },
+    {
+      "room_id": "room-census-045",
+      "visible_title": "Theo Theosophises Theories Chat",
+      "resolved_body": "Theosophising / Meaning Systems Hub",
+      "classification": "THEORY COMMAND ROOM / INDEX-AND-OUTPUT ROUTER",
+      "body_status": "Active established branch; do not restart",
+      "source_evidence": "Theories (brought together).txt — explicit chat lock and function",
+      "keeper": "Everything belongs in the index. Not everything belongs in the same container.",
+      "boundary": "This room connects Music, Games and FTR when useful but does not collapse into those branches."
+    },
+    {
+      "room_id": "room-census-046",
+      "visible_title": "JM / Jentil Meshing — Brick Wall Source Dock",
+      "resolved_body": "JM / Jentil Meshing source-structure layer",
+      "classification": "COMPLETE INDEXED SOURCE VAULT / SUBJECT-GOVERNANCE BRIDGE",
+      "body_status": "Finished source dock; preserve, classify and route rather than reopen",
+      "source_evidence": "Theories (brought together).txt — Final Chat Name and Finish Lock",
+      "keeper": "Strength is not fullness. Strength is governed relationship.",
+      "boundary": "Science-honest analogy and structure logic remain source material; metaphor is not silently promoted to proof."
+    },
+    {
+      "room_id": "room-census-047",
+      "visible_title": "Self-Mastery Contact Field — Mind, I, Awakening & Route-Mastery",
+      "resolved_body": "Self-Mastery / Mind-Logic node with FlowTalk and JM32 governance underlay",
+      "classification": "ACTIVE HUMAN-SUPPORT THEORY ROOM / GOVERNED RE-ENTRY NODE",
+      "body_status": "ACTIVE / GOVERNANCE BODY / NEEDS EXPORT",
+      "source_evidence": "Theories (brought together).txt — exact chat name, outputs, status and Cold Ding summary",
+      "keeper": "SOUND-SEED ≠ FINAL MEANING. CAN-BE ≠ IS.",
+      "boundary": "Do not restart or expand it as a generic theory room; preserve the self-mastery route and its language/governance supports."
+    },
+    {
+      "room_id": "room-census-048",
+      "visible_title": "RootWord Realness Engine",
+      "resolved_body": "Root Words — Realness Engine Lane",
+      "classification": "LANGUAGE THEORY / ROOT-ACTION / PROOF-BUILD ROOM",
+      "body_status": "Named and purpose-locked; source-body comparison still open",
+      "source_evidence": "Library chat transcript — exact chat naming and purpose lock",
+      "keeper": "Root words first. Realness proves the route.",
+      "boundary": "Root Words is the subject, Root Actions is the body-link and Realness Engine is the proof machine; support and interoperability do not force merger."
     }
   ],
   "next_sources": [
@@ -54,7 +90,7 @@
     "Every accessible room receives a stable title or explicit partial-title marker",
     "Every room receives a role classification",
     "Every theory-bearing room is compared with its strongest surviving body",
-    "Only genuine duplicates are merged; formation rooms remain traceable",
+    "Only genuine duplicates are merged; formation rooms and renamed lineage remain traceable",
     "Mounted-room total is published only after source coverage and deduplication receipts pass"
   ]
 }

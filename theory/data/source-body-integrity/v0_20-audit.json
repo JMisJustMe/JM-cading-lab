@@ -1,0 +1,51 @@
+{
+  "audit_id": "JM_THEORY_SOURCE_BODY_INTEGRITY_v0_20",
+  "date": "2026-07-23",
+  "scope": "Earlier 37-body source library and current Theory Multihub reader mapping",
+  "result": {
+    "earlier_source_library_routes": 37,
+    "correct_source_bodies_located": 37,
+    "bodies_from_preserved_source_carrier": 35,
+    "dedicated_completion_body_routes": 1,
+    "library_master_recoveries": 1,
+    "preserved_publication_drafts": 24,
+    "full_canonical_bodies_after_repair": 18,
+    "phone_realms_mapping_repaired": true
+  },
+  "special_routes": {
+    "cause_must_pass": {
+      "custody": "Dedicated Completion Edition v1.0 body and public route",
+      "state": "COMPLETE"
+    },
+    "original_theory_for_reality": {
+      "custody": "JM_ORIGINAL_THEORY_FOR_REALITY_FULL_BODY_v1_0A.html Library master",
+      "state": "COMPLETE_WITHIN_DECLARED_BODY",
+      "boundary": "Universal empirical law and exhaustive account of reality are not claimed"
+    },
+    "phone_realms": {
+      "expected_id": "21",
+      "expected_body_marker": "realm-interface",
+      "forbidden_cross_body_marker": "supplied mediumship recording",
+      "state": "STABLE_ID_TITLE_BODY_SHA_CHECKED"
+    }
+  },
+  "integrity_tests": [
+    "37 unique stable IDs",
+    "37 expected titles matched",
+    "37 non-empty bodies above minimum depth",
+    "37 unique SHA-256 body hashes",
+    "24 publication drafts retained",
+    "Phone-Realms contains its realm-interface body",
+    "Phone-Realms excludes the mediumship-audit opening",
+    "The Contact, Causation & Claimed Authority Register retains its mediumship body",
+    "Source fullness remains distinct from completed/canonical status"
+  ],
+  "deployment": {
+    "github_source": "SEATED",
+    "estate_head_stale_v0_8_3_rewind": "REMOVED",
+    "v0_20_integrity_loader": "SEATED",
+    "pages_rebuild_marker": "PUSHED",
+    "public_propagation": "NOT_YET_UNIFORMLY_CONFIRMED"
+  },
+  "governing_boundary": "On the estate, mounted in the current reader, and complete/canonical are three separate custody states."
+}

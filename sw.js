@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.2-route-repair';
+const CACHE='jm-web-estate-v1.4.3-maintenance';
 const CORE=[
   './',
   './index.html',
@@ -13,6 +13,9 @@ const CORE=[
   './registry/estate-head-public-current.json',
   './registry/theory-wing.json',
   './games-beyond/registry.json',
+  './author/',
+  './author/index.html',
+  './author/author-public.json',
   './recent/index.html',
   './theory/biohouse-nervous-signal-route/index.html',
   './theory/biohouse-nervous-signal-route/v1.0.html',

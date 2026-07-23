@@ -40,3 +40,4 @@ jobs:
           name: JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG_APK
           path: dist/*
           if-no-files-found: error
+          retention-days: 90

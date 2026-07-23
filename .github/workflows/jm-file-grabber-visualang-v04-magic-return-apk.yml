@@ -21,16 +21,35 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
-      - name: Restore exact magic-return sources
+      - name: Restore and verify exact magic-return sources
         working-directory: android/JMFileGrabberVisualang-v0.4
         run: |
-          base64 -d source/MainActivity.java.gz.b64 | gzip -d > app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java
-          cat source/index.part00.b64 source/index.part01.b64 source/index.part02.b64 source/index.part03.b64 source/index.part04.b64 | base64 -d | gzip -d > app/src/main/assets/index.html
-      - name: Verify exact magic-return sources
-        working-directory: android/JMFileGrabberVisualang-v0.4
-        run: |
-          test "$(sha256sum app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java | cut -d' ' -f1)" = "a2c4d0cc0c39b9fb691ba2bccc3c3585e9be04caaa66ad336a3372382a898dd6"
-          test "$(sha256sum app/src/main/assets/index.html | cut -d' ' -f1)" = "f578278ee50fbce6b38d28f2fa4db69202a2a2b9e9af4eb0cfbac78c00d8ff47"
+          python3 - <<'PY'
+          import base64, gzip, hashlib
+          from pathlib import Path
+
+          root = Path('.')
+          java_b64 = (root / 'source/MainActivity.java.gz.b64').read_text().strip()
+          html_b64 = ''.join(
+              (root / f'source/index.part{i:02d}.b64').read_text().strip()
+              for i in range(5)
+          )
+
+          java = gzip.decompress(base64.b64decode(java_b64, validate=True))
+          html = gzip.decompress(base64.b64decode(html_b64, validate=True))
+
+          expected_java = 'a2c4d0cc0c39b9fb691ba2bccc3c3585e9be04caaa66ad336a3372382a898dd6'
+          expected_html = 'f578278ee50fbce6b38d28f2fa4db69202a2a2b9e9af4eb0cfbac78c00d8ff47'
+          actual_java = hashlib.sha256(java).hexdigest()
+          actual_html = hashlib.sha256(html).hexdigest()
+          print('MainActivity.java', len(java), actual_java)
+          print('index.html', len(html), actual_html)
+          if actual_java != expected_java or actual_html != expected_html:
+              raise SystemExit('Exact-source SHA-256 verification failed')
+
+          (root / 'app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java').write_bytes(java)
+          (root / 'app/src/main/assets/index.html').write_bytes(html)
+          PY
       - name: Build debug APK
         working-directory: android/JMFileGrabberVisualang-v0.4
         run: gradle --no-daemon :app:assembleDebug

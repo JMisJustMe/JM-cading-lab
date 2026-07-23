@@ -1,0 +1,105 @@
+name: JM Living MultiHub v6.0A — build field APK
+
+on:
+  push:
+    branches:
+      - agent/jm-living-multihub-v6-0a-apk
+    paths:
+      - ".github/workflows/jm-living-multihub-v6-0a-apk.yml"
+      - "apps/living-multihub/android/**"
+      - "apps/living-multihub/update/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jm-living-multihub-v6-0a-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-field-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current field branch
+        uses: actions/checkout@v4
+
+      - name: Verify the source gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f apps/living-multihub/android/app/src/main/assets/index.html
+          test -f apps/living-multihub/android/app/src/main/java/com/jm/livingmultihub/MainActivity.java
+          test -f apps/living-multihub/update/field-manifest.json
+          python3 -m json.tool apps/living-multihub/update/field-manifest.json >/dev/null
+          grep -q "OWNMADE FUTURE COMPUTER 04" apps/living-multihub/android/app/src/main/assets/index.html
+          grep -q "JM.Cading.ContactIR/1.0" apps/living-multihub/android/app/src/main/assets/index.html
+          grep -q "JMReceiveNativeFolder" apps/living-multihub/android/app/src/main/java/com/jm/livingmultihub/MainActivity.java
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform 35
+        shell: bash
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Compile debug APK
+        working-directory: apps/living-multihub/android
+        run: gradle --no-daemon assembleDebug
+
+      - name: Build TraceBox delivery body
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=/tmp/jm-living-multihub-v6-0a
+          mkdir -p "$OUT"
+          cp apps/living-multihub/android/app/build/outputs/apk/debug/app-debug.apk \
+            "$OUT/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk"
+          sha256sum "$OUT/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk" \
+            > "$OUT/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk.sha256"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging \
+            "$OUT/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk" \
+            > "$OUT/APK_BADGING.txt"
+          grep -q "package: name='com.jm.livingmultihub' versionCode='6001' versionName='6.0A-field'" \
+            "$OUT/APK_BADGING.txt"
+          cat > "$OUT/GITHUB_ACTIONS_APK_RECEIPT.txt" <<EOF
+          JM Living MultiHub v6.0A — GitHub Actions field APK receipt
+          Workflow run: $GITHUB_RUN_ID
+          Workflow SHA: $GITHUB_SHA
+          Package: com.jm.livingmultihub
+          Version: 6.0A-field / 6001
+          Build: PASS — debug APK compiled and package identity verified
+          Source gate: Estate Head v0.2.8 / Theory v0.20.1 / mounted rooms / File Grabber / actual Cading contact
+          Signing boundary: debug field lineage; production update signing key not crowned
+          Physical Android install and phone Ding: PENDING user device proof
+          EOF
+          (cd apps/living-multihub && zip -qr "$OUT/JM_LIVING_MULTIHUB_v6_0A_FIELD_SOURCE.zip" android update)
+
+      - name: Upload field APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_LIVING_MULTIHUB_v6_0A_FIELD_APK
+          path: |
+            /tmp/jm-living-multihub-v6-0a/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk
+            /tmp/jm-living-multihub-v6-0a/JM_LIVING_MULTIHUB_v6_0A_FIELD.apk.sha256
+            /tmp/jm-living-multihub-v6-0a/APK_BADGING.txt
+            /tmp/jm-living-multihub-v6-0a/GITHUB_ACTIONS_APK_RECEIPT.txt
+          if-no-files-found: error
+
+      - name: Upload field source
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_LIVING_MULTIHUB_v6_0A_FIELD_SOURCE
+          path: /tmp/jm-living-multihub-v6-0a/JM_LIVING_MULTIHUB_v6_0A_FIELD_SOURCE.zip
+          if-no-files-found: error

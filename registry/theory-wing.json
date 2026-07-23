@@ -1,15 +1,15 @@
 {
   "name": "JM Theory Wing",
-  "version": "v0.10.0-chat-source-graft",
-  "status": "JM_THEORY_MULTIHUB_CHAT_SOURCE_GRAFT_V1_LIVE_ON_MAIN",
-  "role": "The public Theory Wing front door. Fifteen verified full/canonical manuscripts or established bodies, twenty-four shaped collection standalones, one scoped public method and a 297-route project census are preserved. Ninety-four census placeholders now carry a first-pass additive chat-source trace.",
+  "version": "v0.11.0-chat-source-graft-v2",
+  "status": "JM_THEORY_MULTIHUB_CHAT_SOURCE_GRAFT_V2_LIVE_ON_MAIN",
+  "role": "The public Theory Wing front door. Fifteen verified full/canonical manuscripts or established bodies, twenty-four shaped collection standalones, one scoped public method and a 297-route project census are preserved. One hundred and fifteen census placeholders now carry additive chat-source evidence.",
   "route": "theory/",
   "public_url": "https://jmisjustme.github.io/JM-cading-lab/theory/",
   "body_library_route": "theory/full-bodies/all-37.html",
   "body_library_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/all-37.html",
   "vault_route": "theory/full-bodies/",
   "vault_url": "https://jmisjustme.github.io/JM-cading-lab/theory/full-bodies/",
-  "source_note": "The public Theory Wing preserves the source-depth correction: twenty-four numbered collection entries remain shaped standalones until their deeper EXTRACTED_SOURCE_TEXT layer is migrated. Chat-Source Graft v1 checks the 260 thin census routes against Theories (brought together).txt and additively attaches recovered source excerpts to 94 matching placeholders without replacing them or claiming completion.",
+  "source_note": "The public Theory Wing preserves the source-depth correction: twenty-four numbered collection entries remain shaped standalones until their deeper EXTRACTED_SOURCE_TEXT layer is migrated. Chat-Source Graft v2 preserves the first 94 matches from Theories (brought together).txt and adds 21 verified source contacts from the Jungle/Copilot export shelf. All excerpts are additive and do not replace placeholders or claim completion.",
   "proof": {
     "verified_full_or_canonical_public_bodies": 15,
     "shaped_collection_standalones": 24,
@@ -18,16 +18,21 @@
     "scoped_public_methods": 1,
     "raw_or_full_source_migration_pending_where_declared": true,
     "thin_census_routes_checked_for_chat_sources": 260,
-    "chat_source_matches": 94,
-    "anchored_chat_source_headings": 78,
-    "exact_title_chat_traces": 16,
-    "remaining_without_first_corpus_exact_match": 166,
+    "chat_source_matches": 115,
+    "first_corpus_matches": 94,
+    "second_export_new_matches": 21,
+    "anchored_chat_source_headings": 85,
+    "exact_title_or_passage_traces": 30,
+    "remaining_without_verified_source_match": 145,
     "census_cards_excluded_from_body_route_count": 260,
     "readable_census_routes": 297,
     "compact_public_payload_parts": 7,
     "compact_public_payload_base64_length": 50428,
     "estate_v0_5_full_payload_parts": 8,
     "estate_v0_5_full_payload_base64_length": 302340,
+    "chat_graft_v2_delta_parts": 4,
+    "chat_graft_v2_delta_base64_length": 23904,
+    "chat_graft_v2_decoded_json_sha256": "0459e67f0d725b892e80af00ab5e310b3ecc628575706834f5b480d3931da1ce",
     "gmail_sources_promoted_v0_7": 6,
     "bringing_it_all_together_children": 76,
     "first_stage_jungle_children": 187,
@@ -35,13 +40,13 @@
   },
   "current_best_mounts": [
     {
-      "id": "jm-theory-multihub-v0-10-0",
-      "name": "JM Theory Multihub — Chat Source Graft",
+      "id": "jm-theory-multihub-v0-11-0",
+      "name": "JM Theory Multihub — Chat Source Graft v2",
       "route": "theory/",
-      "current_best": "v0.10.0 Chat Source Graft v1",
+      "current_best": "v0.11.0 Chat Source Graft v2",
       "crown_status": "CURRENT_PUBLIC_THEORY_WING_FRONT_DOOR",
       "main_release": "LIVE",
-      "public_boundary": "Ninety-four placeholders carry additive chat-source evidence. An excerpt proves lineage and contact, not a completed theory body."
+      "public_boundary": "One hundred and fifteen placeholders carry additive chat-source evidence. An excerpt proves lineage and contact, not a completed theory body."
     },
     {
       "id": "jm-theory-37-body-library-v0-8-3",
@@ -62,10 +67,10 @@
       "public_boundary": "The body’s own source boundary outranks package-level labels."
     },
     {
-      "id": "jm-theory-project-source-census-v0-10",
+      "id": "jm-theory-project-source-census-v0-11",
       "name": "JM Theory Project Source Census + Chat Sources",
       "route": "theory/#library",
-      "current_best": "v0.10 additive chat-source layer over v0.4 census",
+      "current_best": "v0.11 cumulative chat-source layer over v0.4 census",
       "crown_status": "RETRIEVAL_SOURCE_AND_PROCESSING_GRADE_SYSTEM",
       "main_release": "LIVE",
       "public_boundary": "A census route may carry chat-source evidence without becoming a completed theory body."
@@ -148,16 +153,27 @@
     "state": "PASS_PUBLIC_REPRESENTATION_COMPLETE_BOUNDARIES_PRESERVED"
   },
   "chat_source_graft": {
-    "version": "v1.0",
-    "registry": "registry/theory-chat-source-graft-v1.json",
-    "payload": "theory/data/chat-graft-v1.b64",
-    "consumer": "theory/chat-graft.js",
-    "source_corpus": "Theories (brought together).txt",
-    "matched_placeholders": 94,
-    "anchored_source_headings": 78,
-    "exact_title_traces": 16,
-    "state": "FIRST_EXACT_SOURCE_PASS_LIVE",
-    "boundary": "The source excerpt is additive. It does not overwrite the placeholder body or silently crown completion."
+    "version": "v2.0",
+    "receipt": "registry/theory-chat-source-graft-v2-receipt.json",
+    "base_payload": "theory/data/chat-graft-v1.b64",
+    "delta_payload_parts": [
+      "theory/data/chat-graft-v2/part-01.txt",
+      "theory/data/chat-graft-v2/part-02.txt",
+      "theory/data/chat-graft-v2/part-03.txt",
+      "theory/data/chat-graft-v2/part-04.txt"
+    ],
+    "consumer": "theory/chat-graft-v2.js",
+    "source_corpora": [
+      "Theories (brought together).txt",
+      "wip gathering copilot chats surrounding e building coding, gaming engine and general os when i could be focused.md",
+      "Pasted text(150).txt / exact duplicate shelf 150–153"
+    ],
+    "matched_placeholders": 115,
+    "first_corpus_matches": 94,
+    "second_export_new_matches": 21,
+    "remaining_placeholders": 145,
+    "state": "SECOND_EXACT_SOURCE_PASS_LIVE",
+    "boundary": "The source excerpt is additive. It does not overwrite the placeholder body, establish fullest-source status or silently crown completion."
   },
   "locks": [
     "Full bodies first. Census cards second.",
@@ -170,5 +186,5 @@
     "A title earns retrieval, not a completed-body crown.",
     "No Ding, no claim."
   ],
-  "next": "Search conversation history, Library files, project exports and recent chats for the remaining 166 unmatched routes. Deepen the 94 first-pass chat-source excerpts into full chat/body extractions where available, routing them into existing bodies before forming anything new."
+  "next": "Search individual ChatGPT exports, Library documents, Wisebase and wider project packages for the remaining 145 placeholders. Deepen the 115 source contacts into fullest chat/body extractions where available, routing them into existing authoritative homes before forming anything new."
 }

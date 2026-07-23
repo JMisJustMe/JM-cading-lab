@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - "android/JMFileGrabberVisualang-v0.3/**"
+      - "android/JMFileGrabberVisualang-v0.4/**"
       - ".github/workflows/jm-file-grabber-visualang-v04-magic-return-apk.yml"
   workflow_dispatch:
 
@@ -22,17 +22,17 @@ jobs:
         with:
           gradle-version: "8.9"
       - name: Verify exact magic-return sources
-        working-directory: android/JMFileGrabberVisualang-v0.3
+        working-directory: android/JMFileGrabberVisualang-v0.4
         run: |
           test "$(sha256sum app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java | cut -d' ' -f1)" = "a2c4d0cc0c39b9fb691ba2bccc3c3585e9be04caaa66ad336a3372382a898dd6"
           test "$(sha256sum app/src/main/assets/index.html | cut -d' ' -f1)" = "f578278ee50fbce6b38d28f2fa4db69202a2a2b9e9af4eb0cfbac78c00d8ff47"
       - name: Build debug APK
-        working-directory: android/JMFileGrabberVisualang-v0.3
+        working-directory: android/JMFileGrabberVisualang-v0.4
         run: gradle --no-daemon :app:assembleDebug
       - name: Rename and checksum
         run: |
           mkdir -p dist
-          cp android/JMFileGrabberVisualang-v0.3/app/build/outputs/apk/debug/app-debug.apk dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.apk
+          cp android/JMFileGrabberVisualang-v0.4/app/build/outputs/apk/debug/app-debug.apk dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.apk
           sha256sum dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.apk | tee dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.sha256
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4

@@ -5,6 +5,11 @@ on:
     paths:
       - "android/JMFileGrabberVisualang-v0.4-source.zip.b64"
       - ".github/workflows/jm-file-grabber-visualang-v04-magic-return-apk.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "android/JMFileGrabberVisualang-v0.4-source.zip.b64"
+      - ".github/workflows/jm-file-grabber-visualang-v04-magic-return-apk.yml"
   workflow_dispatch:
 
 jobs:

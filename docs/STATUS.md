@@ -2,31 +2,48 @@
 
 ## Crown route
 
-**JMISJUSTME — The Owned Web Estate v1.3** remains the repository root and primary public doorway.
+**JMISJUSTME — The Owned Web Estate** remains the repository root and canonical public doorway.
 
-State: `LIVE_WITH_AUTHOR_V0_3_THEORY_V0_4_LYRICS_HOUSE_AND_RECOVERY_GATE`
+- Canonical public door: `https://jmisjustme-estate.pages.dev/`
+- GitHub Pages mirror: `https://jmisjustme.github.io/JM-cading-lab/`
+- Current public authority contract: `v0.3.0`
+- Current shell maintenance cache: `v1.4.3-maintenance`
+- State: `LIVE_PUBLIC_AUTHORITY_V0_3_0_WITH_AUTHOR_OFFLINE_CACHE_AND_MOBILE_POLISH`
 
-## Current public deployment batch
+## Current governed public field
 
-- **Theodore Benjamin Scott / JM — Author Public Page v0.3** is mounted as the public human/source entrance to the Estate, with a creator menu, evidence register, reusable bios, AI/authorship boundary and direct routes into the sovereign Estate rooms.
-- **JM Theory Multihub v0.4 — Project Source Census** remains the current Theory Wing front door with 297 readable routes, 256 project-source routes and 19 districts.
-- **JM Lyrics & Music House — Whole-Estate Public Door** remains a public-safe working projection built from JM LyricStudio v0.5 and JM Lyric Estate v0.6.
-- **Lost, Loose & Unseated Bodies — Recovery Gate** remains the permanent straggler intake, status, import/export and declared-gap route.
+The current public authority contract records:
 
-## Live public houses and routes
+- **61 governed body passports**
+- **11 Project Head passports**
+- **72 governed records**
+- **432 six-stage receipts**
+- **27 guarded public promotions**
+- **12 recently represented lanes**
+- **5 recent public projection routes**
+
+These are governed public-route totals, not a claim that the complete private Estate has been published.
+
+## Current public houses and routes
 
 - Root Web Estate
 - Theodore Benjamin Scott / JM — Author & Source Creator
-- Games & Beyond — JM Games House
-- JM EveryBody — Coding compatibility and maximisation fabric
+- JM Non-Game Apps House — 40-room public-safe catalogue
+- Games & Beyond — sovereign Games House
+- JM Games — Current Direction Ledger
+- JM EveryBody — current canonical-native coding fabric
 - Cading Lab
 - Fresh App Lab
-- Theory Multihub v0.4
+- JM Theory Multihub v0.9
 - CAUSE MUST PASS dedicated body
-- Lyrics & Music House
+- JM BIOHOUSE — Nervous Signal Route v1.1
+- TraSta — Trace–Stance
+- Reality, Route & Meaning Ethos
+- JM Lyrics & Music House
 - Lost, Loose & Unseated recovery gate
+- JM Estate — Recent Chat Convergence
+- JM Estate Head — Public Authority
 - Legacy Estate Bridge
-- Estate, Author, Games, Theory and Lyrics registries
 
 ## Author source selection and boundary
 
@@ -35,11 +52,21 @@ The public Author route is governed by `AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3` and 
 - Theodore Benjamin Scott / JM is the human source and intended-meaning authority.
 - AI is the build bench and implementation collaborator, not the source-author.
 - The public About page, creator menu, evidence spine and bio toolkit are mounted.
+- The visible homepage Author door is live.
+- The Author page and public author registry are included in the first offline cache.
 - The Private Theodore Source Biography remains owner-controlled and is not uploaded or silently exposed.
 - The author page introduces and routes to Estate bodies; it does not absorb or replace them.
+
+## Current maintenance patch
+
+The current maintenance pass completed three bounded repairs:
+
+1. aligned this public status with the current Estate Head authority contract;
+2. added `/author/`, `author/index.html` and `author/author-public.json` to the service-worker core cache;
+3. hid the Android accessibility-bar scrollbar while preserving horizontal swipe access and 44px touch targets.
 
 ## Preserved custody boundary
 
 The complete AUTHOR MASTER BODY v0.3 Zionfolder, including the private source profile and v0.2 restore anchor, remains owner-controlled.
 
-Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private biography, private lyrics, source vaults, large multimedia bodies, Zionfolders, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
+Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private biography, private lyrics, source vaults, owner notes, large multimedia bodies, Zionfolders, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.

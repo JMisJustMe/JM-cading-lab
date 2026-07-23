@@ -3,8 +3,10 @@ name: Build Signuances APK
 on:
   pull_request:
     paths:
-      - 'signuances-apk-source.b64.part*'
+      - 'signuances-apk-skeleton.zip.b64.part*'
+      - 'signuances-html.xz.b64.part*'
       - '.github/workflows/build-signuances-apk.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,9 +24,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat signuances-apk-source.b64.part* | base64 --decode > /tmp/signuances-apk-source.zip
+
+          cat signuances-apk-skeleton.zip.b64.part* | base64 --decode > /tmp/signuances-apk-skeleton.zip
+          echo 'e8e76e2adfa3313ae472bc7f0086f9c8a135e394d2e69c51377d859dd82bb539  /tmp/signuances-apk-skeleton.zip' | sha256sum -c -
           mkdir -p signuances-apk
-          unzip -q /tmp/signuances-apk-source.zip -d signuances-apk
+          unzip -q /tmp/signuances-apk-skeleton.zip -d signuances-apk
+          rm -f signuances-apk/.github-workflow.yml
+
+          cat signuances-html.xz.b64.part* | base64 --decode > /tmp/signuances.html.xz
+          echo 'addde0faadfe715a6bcd2487febd1a8da0de55709ce9714ce90e77f01ac981cf  /tmp/signuances.html.xz' | sha256sum -c -
+          xz -dc /tmp/signuances.html.xz > signuances-apk/app/src/main/assets/index.html
+          echo 'fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631  signuances-apk/app/src/main/assets/index.html' | sha256sum -c -
           test -s signuances-apk/app/src/main/assets/index.html
 
       - name: Set up Java 17
@@ -42,6 +52,7 @@ jobs:
         shell: bash
         working-directory: signuances-apk
         run: |
+          set -euo pipefail
           yes | sdkmanager --licenses >/dev/null || true
           sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
 
@@ -85,14 +96,17 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee APK_BADGING_REPORT.txt
           cp "$APK" Signuances_v1_0_0.apk
           sha256sum Signuances_v1_0_0.apk signuances-release-v1.jks > APK_SHA256SUMS.txt
+          sha256sum app/src/main/assets/index.html > FROZEN_WEB_BODY_SHA256.txt
           cat > APK_INSTALL_README.txt <<'TXT'
           SIGNUANCES ANDROID v1.0.0
 
           Install Signuances_v1_0_0.apk by opening it on Android and allowing installation from the file source when prompted.
 
+          The APK contains the exact frozen Signuances HTML v1.0.0 body and does not request internet permission.
+
           Keep signuances-release-v1.jks and signuances-signing.properties private. They are required to sign future APK updates that install over this release.
 
-          The password is also provided separately in signuances-keystore-password.txt.
+          The password is provided separately in signuances-keystore-password.txt.
           TXT
 
       - name: Upload signed APK and private maintenance bundle
@@ -106,6 +120,7 @@ jobs:
             signuances-apk/APK_SIGNING_REPORT.txt
             signuances-apk/APK_BADGING_REPORT.txt
             signuances-apk/APK_SHA256SUMS.txt
+            signuances-apk/FROZEN_WEB_BODY_SHA256.txt
             signuances-apk/APK_INSTALL_README.txt
             signuances-apk/signuances-release-v1.jks
             signuances-apk/signuances-keystore-password.txt

@@ -1,12 +1,7 @@
 name: Build JM File Grabber Visualang v0.4 Magic Return APK
 on:
   push:
-    branches: ["build/file-grabber-visualang-v0-4-magic-run"]
-    paths:
-      - "android/JMFileGrabberVisualang-v0.3/**"
-      - ".github/workflows/jm-file-grabber-visualang-v04-magic-return-apk.yml"
-  pull_request:
-    branches: ["main"]
+    branches: ["build/file-grabber-visualang-v0-4-final-run"]
     paths:
       - "android/JMFileGrabberVisualang-v0.3/**"
       - ".github/workflows/jm-file-grabber-visualang-v04-magic-return-apk.yml"
@@ -26,11 +21,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
-      - name: Apply exact magic-return overlays
+      - name: Verify exact magic-return sources
         working-directory: android/JMFileGrabberVisualang-v0.3
         run: |
-          base64 -d overlays/MainActivity.java.gz.b64 | gzip -d > app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java
-          base64 -d overlays/index.html.gz.b64 | gzip -d > app/src/main/assets/index.html
           test "$(sha256sum app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java | cut -d' ' -f1)" = "a2c4d0cc0c39b9fb691ba2bccc3c3585e9be04caaa66ad336a3372382a898dd6"
           test "$(sha256sum app/src/main/assets/index.html | cut -d' ' -f1)" = "f578278ee50fbce6b38d28f2fa4db69202a2a2b9e9af4eb0cfbac78c00d8ff47"
       - name: Build debug APK

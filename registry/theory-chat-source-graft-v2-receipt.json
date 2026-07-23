@@ -1,0 +1,80 @@
+{
+  "name": "JM Theory Chat Source Graft v2 Receipt",
+  "version": "v2.0",
+  "date": "2026-07-23",
+  "status": "MOUNTED_ON_MAIN",
+  "purpose": "Add verified theory-bearing chat passages to existing census placeholders without replacing the placeholder, duplicating the theory or claiming completion.",
+  "population": {
+    "thin_census_placeholders_checked": 260,
+    "v1_matches_preserved": 94,
+    "v2_new_matches": 21,
+    "cumulative_matches": 115,
+    "remaining_open": 145,
+    "anchored_source_headings": 85,
+    "exact_title_or_passage_traces": 30
+  },
+  "v2_new_routes": [
+    "Bringing It All Together",
+    "Latest / Source Reconciliation Pass v0.1",
+    "Trinary-at-least",
+    "Grip-Ground Connector",
+    "Maintainable Help Law",
+    "JM Codifying Field Schema",
+    "Evidence Ledger",
+    "JM Project All-Together Register",
+    "Known-Field Completion Sweep / Connected Project Scan",
+    "Latest / Source Reconciliation Pass",
+    "BowAndTied",
+    "Language Estate",
+    "Core IR",
+    "JM Estate",
+    "Estate Map",
+    "Hosting Map",
+    "Body Cards",
+    "User Contact Proves Reality",
+    "BUGG Law",
+    "Candidate Runtime",
+    "Names of God"
+  ],
+  "sources": [
+    {
+      "name": "Theories (brought together).txt",
+      "role": "v1 base corpus",
+      "matches": 94
+    },
+    {
+      "name": "wip gathering copilot chats surrounding e building coding, gaming engine and general os when i could be focused.md",
+      "role": "Jungle/Copilot source export",
+      "matches_added": 21
+    },
+    {
+      "name": "Pasted text(150).txt through Pasted text(153).txt",
+      "role": "Exact duplicate export shelf used for cross-checking",
+      "sha256": "601cc67c7ef95c3b017cf28d3e3f610965e3eb9cb79e562d32184aa8dd7da758"
+    }
+  ],
+  "payload": {
+    "base": "theory/data/chat-graft-v1.b64",
+    "delta_parts": [
+      "theory/data/chat-graft-v2/part-01.txt",
+      "theory/data/chat-graft-v2/part-02.txt",
+      "theory/data/chat-graft-v2/part-03.txt",
+      "theory/data/chat-graft-v2/part-04.txt"
+    ],
+    "delta_base64_length": 23904,
+    "delta_records": 21,
+    "cumulative_records": 115,
+    "decoded_json_sha256": "0459e67f0d725b892e80af00ab5e310b3ecc628575706834f5b480d3931da1ce",
+    "consumer": "theory/chat-graft-v2.js"
+  },
+  "proof_route": [
+    "Load the 297-route census payload",
+    "Load and decode the 94-record v1 graft",
+    "Join and decode the four-part 21-record v2 delta",
+    "Require exactly 115 unique source-backed record IDs",
+    "Add CHAT SOURCE to matched rows",
+    "Show the recovered passage, source location and boundary inside the existing route"
+  ],
+  "boundary": "A source match proves contact, lineage and retrieval value. It does not establish that the excerpt is the fullest surviving source, that every title occurrence belongs to one theory, or that the placeholder is now a completed theory manuscript.",
+  "next": "Sweep the remaining 145 routes across individual ChatGPT exports, Wisebase, Library files and wider project packages; deepen matched excerpts into fuller source bodies where recoverable."
+}

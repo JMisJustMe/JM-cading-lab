@@ -1,0 +1,112 @@
+name: Build Signuances APK
+
+on:
+  pull_request:
+    paths:
+      - 'signuances-apk-source.b64.part*'
+      - '.github/workflows/build-signuances-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Reconstruct frozen Android carrier source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat signuances-apk-source.b64.part* | base64 --decode > /tmp/signuances-apk-source.zip
+          mkdir -p signuances-apk
+          unzip -q /tmp/signuances-apk-source.zip -d signuances-apk
+          test -s signuances-apk/app/src/main/assets/index.html
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Install Android SDK packages
+        shell: bash
+        working-directory: signuances-apk
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - name: Generate private release signing identity
+        shell: bash
+        working-directory: signuances-apk
+        run: |
+          set -euo pipefail
+          SIGNING_PASSWORD="$(openssl rand -hex 24)"
+          keytool -genkeypair -v \
+            -keystore signuances-release-v1.jks \
+            -storepass "$SIGNING_PASSWORD" \
+            -keypass "$SIGNING_PASSWORD" \
+            -alias signuances \
+            -keyalg RSA -keysize 4096 -validity 10000 \
+            -dname 'CN=Signuances, OU=JM Estate, O=JMisJustMe, L=Local, C=GB'
+          printf '%s' "$SIGNING_PASSWORD" > signuances-keystore-password.txt
+          printf 'alias=signuances\nstorePassword=%s\nkeyPassword=%s\n' "$SIGNING_PASSWORD" "$SIGNING_PASSWORD" > signuances-signing.properties
+          chmod 600 signuances-release-v1.jks signuances-keystore-password.txt signuances-signing.properties
+
+      - name: Build signed release APK
+        shell: bash
+        working-directory: signuances-apk
+        run: |
+          set -euo pipefail
+          SIGNING_PASSWORD="$(cat signuances-keystore-password.txt)"
+          gradle --no-daemon --stacktrace :app:assembleRelease \
+            -PSIGNUANCES_STORE_FILE=signuances-release-v1.jks \
+            -PSIGNUANCES_STORE_PASSWORD="$SIGNING_PASSWORD" \
+            -PSIGNUANCES_KEY_ALIAS=signuances \
+            -PSIGNUANCES_KEY_PASSWORD="$SIGNING_PASSWORD"
+
+      - name: Verify package and signing
+        shell: bash
+        working-directory: signuances-apk
+        run: |
+          set -euo pipefail
+          APK='app/build/outputs/apk/release/app-release.apk'
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" | tee APK_SIGNING_REPORT.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" | tee APK_BADGING_REPORT.txt
+          cp "$APK" Signuances_v1_0_0.apk
+          sha256sum Signuances_v1_0_0.apk signuances-release-v1.jks > APK_SHA256SUMS.txt
+          cat > APK_INSTALL_README.txt <<'TXT'
+          SIGNUANCES ANDROID v1.0.0
+
+          Install Signuances_v1_0_0.apk by opening it on Android and allowing installation from the file source when prompted.
+
+          Keep signuances-release-v1.jks and signuances-signing.properties private. They are required to sign future APK updates that install over this release.
+
+          The password is also provided separately in signuances-keystore-password.txt.
+          TXT
+
+      - name: Upload signed APK and private maintenance bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: signuances-android-v1.0.0
+          retention-days: 1
+          if-no-files-found: error
+          path: |
+            signuances-apk/Signuances_v1_0_0.apk
+            signuances-apk/APK_SIGNING_REPORT.txt
+            signuances-apk/APK_BADGING_REPORT.txt
+            signuances-apk/APK_SHA256SUMS.txt
+            signuances-apk/APK_INSTALL_README.txt
+            signuances-apk/signuances-release-v1.jks
+            signuances-apk/signuances-keystore-password.txt
+            signuances-apk/signuances-signing.properties

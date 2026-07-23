@@ -21,6 +21,11 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.9"
+      - name: Restore exact magic-return sources
+        working-directory: android/JMFileGrabberVisualang-v0.4
+        run: |
+          base64 -d source/MainActivity.java.gz.b64 | gzip -d > app/src/main/java/com/jmisjustme/filegrabbervisualang/MainActivity.java
+          base64 -d source/index.html.gz.b64 | gzip -d > app/src/main/assets/index.html
       - name: Verify exact magic-return sources
         working-directory: android/JMFileGrabberVisualang-v0.4
         run: |

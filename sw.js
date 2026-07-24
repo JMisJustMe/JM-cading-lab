@@ -1,11 +1,13 @@
-const CACHE='jm-web-estate-v1.4.3-maintenance';
+const CACHE='jm-web-estate-v1.4.4-author-current';
 const CORE=[
   './',
   './index.html',
   './estate.css',
   './estate-accessibility.css',
   './estate-accessibility.js',
-  './estate-app.js','./author-home-door.js',
+  './estate-app.js',
+  './author-home-door.js',
+  './estate-head-public-consumer.js',
   './manifest.webmanifest',
   './icon.svg',
   './404.html',

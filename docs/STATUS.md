@@ -7,8 +7,8 @@
 - Canonical public door: `https://jmisjustme-estate.pages.dev/`
 - GitHub Pages mirror: `https://jmisjustme.github.io/JM-cading-lab/`
 - Current public authority contract: `v0.3.0`
-- Current shell maintenance cache: `v1.4.3-maintenance`
-- State: `LIVE_PUBLIC_AUTHORITY_V0_3_0_WITH_AUTHOR_OFFLINE_CACHE_AND_MOBILE_POLISH`
+- Current shell maintenance cache: `v1.4.4-author-current`
+- State: `LIVE_PUBLIC_AUTHORITY_V0_3_0_WITH_DYNAMIC_AUTHOR_CURRENT_WORK_PROJECTION`
 
 ## Current governed public field
 
@@ -53,17 +53,22 @@ The public Author route is governed by `AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3` and 
 - AI is the build bench and implementation collaborator, not the source-author.
 - The public About page, creator menu, evidence spine and bio toolkit are mounted.
 - The visible homepage Author door is live.
-- The Author page and public author registry are included in the first offline cache.
+- The Author page now builds a live **What Theodore / JM is building now** panel from `registry/estate-head-public-current.json`.
+- The panel shows governed counts, selected current public routes, authority version, effective date, represented lanes and guarded promotions.
+- The Author page, public author registry and Estate authority consumer are included in the first offline cache.
+- When the public authority contract is unavailable, the page keeps its sovereign biography and explicitly refuses to invent current counts.
 - The Private Theodore Source Biography remains owner-controlled and is not uploaded or silently exposed.
 - The author page introduces and routes to Estate bodies; it does not absorb or replace them.
 
-## Current maintenance patch
+## Current maintenance and continuity patches
 
-The current maintenance pass completed three bounded repairs:
+The latest bounded repairs and extensions are:
 
 1. aligned this public status with the current Estate Head authority contract;
 2. added `/author/`, `author/index.html` and `author/author-public.json` to the service-worker core cache;
-3. hid the Android accessibility-bar scrollbar while preserving horizontal swipe access and 44px touch targets.
+3. hid the Android accessibility-bar scrollbar while preserving horizontal swipe access and 44px touch targets;
+4. added the governed Author current-work projection without replacing the v0.3 source biography;
+5. added `estate-head-public-consumer.js` to the first offline cache.
 
 ## Preserved custody boundary
 

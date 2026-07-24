@@ -1,17 +1,66 @@
 {
-  "schema": "JM.AuthorPublicRegistry/1.0",
+  "schema": "JM.AuthorPublicRegistry/1.1",
   "name": "Theodore Benjamin Scott / JM — Author Public Page",
   "author_source": "Theodore Benjamin Scott / JM / JM32 / JMISJUSTME / JM TheOlogist / B. Lyrikz",
   "version": "0.3",
-  "mount_state": "PUBLIC_ESTATE_MOUNT_LIVE",
+  "public_mount_revision": "0.3.1-live-current",
+  "mount_state": "PUBLIC_ESTATE_MOUNT_LIVE_WITH_GOVERNED_CURRENT_WORK_PANEL",
   "route": "author/",
   "mounted_date": "2026-07-20",
+  "current_panel_added": "2026-07-24",
   "keeper_line": "Theodore’s real work is not only the projects. It is the route between the projects.",
   "boundary": "AI is the build bench. Theodore is the source creator.",
-  "containers": {"public": "Mounted here", "private": "Owner-controlled; not uploaded", "estate_work_profile": "Connected through sovereign Estate rooms and registries"},
-  "creator_routes": ["Author / Source Creator", "Verbalist", "Lyricist — B. Lyrikz", "Theorist", "Game & Interaction Designer", "World & Character Builder", "Tool & App Creator", "Cading Route Builder", "Archive Architect", "AI-Era Source Governance"],
-  "public_evidence_states": {"human_source_authority": "ESTABLISHED", "verbalist_lyricist": "STRONGLY_SUPPORTED", "theorist_participation_thinker": "STRONGLY_SUPPORTED", "game_world_builder": "STRONGLY_SUPPORTED", "cading_route_builder": "SUPPORTED_WITH_PROOF_STATE_SEPARATION", "recoverability_architect": "STRONGLY_SUPPORTED"},
-  "direct_estate_routes": {"estate": "../", "theory": "../theory/", "games": "../games-beyond/", "coding": "../coding-estate/everybody/", "lyrics": "../lyrics/", "apps_tools": "../fresh-app-lab/", "recovery": "../recovery/"},
+  "containers": {
+    "public": "Mounted here",
+    "private": "Owner-controlled; not uploaded",
+    "estate_work_profile": "Connected through sovereign Estate rooms and registries"
+  },
+  "creator_routes": [
+    "Author / Source Creator",
+    "Verbalist",
+    "Lyricist — B. Lyrikz",
+    "Theorist",
+    "Game & Interaction Designer",
+    "World & Character Builder",
+    "Tool & App Creator",
+    "Cading Route Builder",
+    "Archive Architect",
+    "AI-Era Source Governance"
+  ],
+  "public_evidence_states": {
+    "human_source_authority": "ESTABLISHED",
+    "verbalist_lyricist": "STRONGLY_SUPPORTED",
+    "theorist_participation_thinker": "STRONGLY_SUPPORTED",
+    "game_world_builder": "STRONGLY_SUPPORTED",
+    "cading_route_builder": "SUPPORTED_WITH_PROOF_STATE_SEPARATION",
+    "recoverability_architect": "STRONGLY_SUPPORTED"
+  },
+  "live_current_work_panel": {
+    "state": "LIVE_GOVERNED_DYNAMIC_PROJECTION",
+    "consumer": "../estate-head-public-consumer.js",
+    "authority_contract": "../registry/estate-head-public-current.json",
+    "shows": [
+      "governed body passport count",
+      "Project Head passport count",
+      "governed record count",
+      "six-stage receipt count",
+      "selected current public routes",
+      "current authority version and effective date",
+      "recent represented lanes",
+      "guarded public promotions"
+    ],
+    "offline": "FIRST_CACHE_READY",
+    "fallback": "Sovereign Author page remains readable and refuses to invent current counts when the authority contract is unavailable."
+  },
+  "direct_estate_routes": {
+    "estate": "../",
+    "theory": "../theory/",
+    "games": "../games-beyond/",
+    "coding": "../coding-estate/everybody/",
+    "lyrics": "../lyrics/",
+    "apps_tools": "../fresh-app-lab/",
+    "recovery": "../recovery/"
+  },
   "source_anchor": "AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3 (owner-controlled package)",
-  "claim_boundary": "Public-facing author body and evidence menu; not an exhaustive personal biography or a claim that every Estate source body is public."
+  "claim_boundary": "Public-facing author body and governed current-work projection; not an exhaustive personal biography or a claim that every Estate source body is public."
 }

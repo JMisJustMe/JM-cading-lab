@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090b">
+<title>JM Estate Compass</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#08090b;color:#eef3f6}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 20%,#102d36,#08090b 48%)}
+main{width:min(620px,100%);border:1px solid #283039;background:#101318;padding:28px;box-shadow:0 20px 70px #0008}
+small{font:700 11px ui-monospace,monospace;letter-spacing:.16em;color:#15c8ff}h1{margin:12px 0;font-size:clamp(28px,7vw,52px);line-height:1}p{color:#b9c3c8;line-height:1.55}
+button{width:100%;min-height:54px;margin-top:18px;border:1px solid #15c8ff;background:#09232b;color:#eef3f6;font-weight:800;letter-spacing:.08em}
+.note{margin-top:16px;border-left:3px solid #ffb91f;padding:10px 12px;background:#ffb91f12;color:#d8c58e;font-size:13px}
+</style>
+</head>
+<body><main>
+<small>CLEAN ANDROID HOST · v1.2</small>
+<h1>JM Estate Compass</h1>
+<p>The Android body is installed. Mount the playable-and-editable Compass HTML from your device once; the app then keeps its own working copy.</p>
+<button onclick="AndroidCompass.chooseBody()">CHOOSE COMPASS BODY</button>
+<div class="note">No private Estate body is stored in the public Android source. The body stays on this device.</div>
+</main></body></html>

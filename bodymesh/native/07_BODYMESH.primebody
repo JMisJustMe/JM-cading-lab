@@ -1,0 +1,91 @@
+primebody JM.BodyMesh/1.0 {
+  authority "Theodore Benjamin Scott / JM / JMISJUSTME"
+  state "TEST-RUN / NO WHOLE-ESTATE CROWN"
+
+  require NativeSource {
+    files >= 7
+    bodies [Cading, Kading, JMLogic, FlowTalk, RouteCode, Quadze, PrimeBody]
+    traceBody TraceBox
+    hostAuthority false
+  }
+
+  require SourceBody {
+    id text
+    name text
+    sourceKind text
+    sourceRoute text
+    evidenceLevel oneof [full-body, file-receipt, public-projection, continuity, title-only, source-gap]
+    state text
+    strongestForm text
+    dingState oneof [proved, passed, pending, hold, rejected, unknown]
+    lineage text
+    gaps text
+  }
+
+  require CommonBodyHouse {
+    id text
+    name text
+    commonThread text
+    components count >= 2
+    distinctContributions visible
+    mustStaySeparate visible
+    combinedRoute text
+    reverseSourceRoutes complete
+    houseState oneof [candidate, test-ready, passed, held, split, rejected]
+  }
+
+  require GranderBody {
+    id text
+    name text
+    sourceHouse text
+    addedCapability text
+    components traceable
+    reverseTrace complete
+    proofGate text
+    replacesComponents false
+    state oneof [test-run, implementation-ready, testing, held, passed, rejected]
+  }
+
+  require RebuildReceipt {
+    id text
+    bodyId text
+    previousForm text
+    candidateForm text
+    sourceChatOrPackage text
+    files text
+    hashes text
+    changed text
+    tests text
+    deviceDing text
+    lineagePreserved true
+    rejectedBranches text
+    houseImpact text
+    byproductImpact text
+  }
+
+  gate NameFit {
+    avoidedSoundConflict false
+  }
+
+  gate HouseFit {
+    commonFunctionProof true
+    identitySafety true
+    distinctContributionProof true
+    reverseSourceRoute true
+  }
+
+  gate CurrentBest {
+    sourceProof true
+    receiptPassed true
+    lineagePreserved true
+    candidateOutperformsCurrent true
+  }
+
+  gate Completion {
+    nativeSourcePass true
+    sourceBackPass true
+    hostQA optional
+    ownerDeviceDing separate
+    wholeEstateCrown false
+  }
+}

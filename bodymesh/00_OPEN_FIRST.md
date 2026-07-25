@@ -1,9 +1,9 @@
 # JM BodyMesh
 
 **Independent Estate Backup & Common-Body Lab**  
-**Version:** v0.1 test run  
+**Version:** v0.1 founding pass  
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
-**State:** native source seated; source-level test pass; host and device Ding pending
+**State:** native source seated; founding source pass established; host and device Ding pending
 
 ## Open order
 
@@ -17,6 +17,7 @@
 8. `native/08_BODYMESH.tracebox`
 9. `data/09_BODYMESH_TEST_RUN_v0.1.json`
 10. `receipts/10_TEST_RUN_RECEIPT_v0.1.json`
+11. `11_BODYMESH_BASE_SAVE_v0.1.md`
 
 ## Purpose
 
@@ -28,13 +29,17 @@ It receives those bodies as sources, keeps each source and identity traceable, f
 
 **recover body > test strongest form > find shared function > keep differences > make Common-Body House > compile big byproduct > trace back to source and receipt**
 
-## Test run
+## Founding pass
 
-The first pass seats:
+The first pass is retained as serious estate work rather than discarded as a mock test. Its test files remain named as lineage evidence, but their collective status is now **BodyMesh Founding Pass v0.1**.
 
+It seats:
+
+- 8 native source bodies
 - 8 source lanes
 - 6 Common-Body Houses
 - 6 big byproducts
+- 1 governing base save
 
 The first houses are:
 
@@ -54,13 +59,15 @@ The first houses are:
 - A title is a door handle, not the body.
 - A higher version number is not a crown.
 - Not found is a source gap, not proof of absence.
+- New names should avoid R/W-heavy sound patterns where possible; established source names remain exact.
 - No Ding, no completion claim.
 
 ## Current Ding
 
 - Correct sound-fit name: **PASS**
 - Native source stack: **PASS**
-- Source-level common-body test: **PASS**
+- Founding common-body source pass: **PASS**
+- Governing base save: **PASS**
 - Host app: **PENDING**
 - Phone/device test: **PENDING**
 - Whole estate: **NOT CLAIMED**

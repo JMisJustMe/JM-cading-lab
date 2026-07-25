@@ -1,0 +1,101 @@
+app JMBodyMeshApp {
+  entity SourceBody {
+    field id: text = ""
+    field name: text = ""
+    field sourceKind: text = ""
+    field sourceRoute: text = ""
+    field evidenceLevel: text = ""
+    field state: text = ""
+    field strongestForm: text = ""
+    field dingState: text = ""
+    field lineage: text = ""
+    field gaps: text = ""
+  }
+
+  entity CommonBodyHouse {
+    field id: text = ""
+    field name: text = ""
+    field commonThread: text = ""
+    field components: text = ""
+    field distinctContributions: text = ""
+    field mustStaySeparate: text = ""
+    field combinedRoute: text = ""
+    field proofGate: text = ""
+    field state: text = "candidate"
+  }
+
+  entity GranderBody {
+    field id: text = ""
+    field name: text = ""
+    field sourceHouse: text = ""
+    field components: text = ""
+    field addedCapability: text = ""
+    field reverseTrace: text = ""
+    field proofGate: text = ""
+    field state: text = "test-run"
+  }
+
+  entity RebuildReceipt {
+    field id: text = ""
+    field bodyId: text = ""
+    field previousForm: text = ""
+    field candidateForm: text = ""
+    field files: text = ""
+    field hashes: text = ""
+    field tests: text = ""
+    field deviceDing: text = "pending"
+    field lineagePreserved: number = 0
+    field promotionState: text = "compare"
+  }
+
+  state AppState {
+    field phase: text = "Q0"
+    field sourceId: text = ""
+    field bodyId: text = ""
+    field houseId: text = ""
+    field byproductId: text = ""
+    field receiptId: text = ""
+    field trace: text = "native-source-seating"
+    field ding: text = "test-run-not-crowned"
+    field holdReason: text = ""
+    field rejectReason: text = ""
+  }
+
+  route MainBody {
+    on start {
+      phase "Q1"
+      symbolise "native-stack" with "Cading+Kading+JMLogic+FlowTalk+RouteCode+Quadze+PrimeBody+TraceBox"
+      ding "bodymesh-native-start"
+    }
+    on source {
+      phase "Q2"
+      symbolise "source" with AppState.sourceId
+      ding "bodymesh-source-visible"
+    }
+    on body {
+      phase "Q3"
+      symbolise "body" with AppState.bodyId
+      ding "bodymesh-body-visible"
+    }
+    on house {
+      phase "Q4"
+      symbolise "house" with AppState.houseId
+      ding "bodymesh-house-visible"
+    }
+    on byproduct {
+      phase "Q5"
+      symbolise "byproduct" with AppState.byproductId
+      ding "bodymesh-byproduct-visible"
+    }
+    on reverse {
+      phase "Q6"
+      symbolise "source-back" with AppState.sourceId
+      ding "bodymesh-reverse-visible"
+    }
+    on receipt {
+      phase "Z0"
+      symbolise "receipt" with AppState.receiptId
+      ding "bodymesh-test-run-receipt"
+    }
+  }
+}

@@ -1,9 +1,10 @@
 {
-  "schema": "JM.BodyMesh.Receipt/0.1",
-  "name": "JM BodyMesh v0.1 Test Run Receipt",
+  "schema": "JM.BodyMesh.Receipt/0.2",
+  "name": "JM BodyMesh v0.1 Founding Pass Receipt",
   "date": "2026-07-26",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
-  "result": "PASS_NATIVE_SOURCE_AND_SOURCE_LEVEL_TEST",
+  "result": "PASS_NATIVE_SOURCE_AND_FOUNDING_SOURCE_BODY",
+  "status_correction": "The original test-run files are retained as lineage, but their collective body is promoted to BodyMesh Founding Pass v0.1 because they seat serious native source, six common-body houses and six usable descendant directions.",
   "correction_chain": [
     {
       "step": "wrong draft",
@@ -31,7 +32,7 @@
       ]
     },
     {
-      "step": "test data emitted beneath native authority",
+      "step": "founding body data emitted beneath native authority",
       "state": "PASS",
       "evidence": "data/09_BODYMESH_TEST_RUN_v0.1.json"
     },
@@ -39,21 +40,27 @@
       "step": "OPEN_FIRST",
       "state": "PASS",
       "evidence": "00_OPEN_FIRST.md"
+    },
+    {
+      "step": "governing base save",
+      "state": "PASS",
+      "evidence": "11_BODYMESH_BASE_SAVE_v0.1.md"
     }
   ],
-  "test_counts": {
+  "founding_counts": {
     "native_source_bodies": 8,
     "source_lanes": 8,
     "common_body_houses": 6,
-    "big_byproducts": 6
+    "big_byproducts": 6,
+    "governing_base_saves": 1
   },
-  "common_body_tests": [
-    {"name":"Contact & Aim","state":"TEST READY","big_byproduct":"JM ContactBody System"},
-    {"name":"Signal & Expression","state":"TEST READY","big_byproduct":"JM Multi-Signal Link"},
-    {"name":"Shape & Motion","state":"TEST READY","big_byproduct":"JM ShapeMotion System"},
-    {"name":"Continuity & Backup","state":"ACTIVE TEST","big_byproduct":"JM Backup Comeback System"},
-    {"name":"Game Build","state":"AWAITS REBUILT BODY INTAKE","big_byproduct":"JM Game Build Stack"},
-    {"name":"Contact & Change","state":"NEEDS LIVE CASES","big_byproduct":"JM Contact-to-Change System"}
+  "common_body_pass": [
+    {"name":"Contact & Aim","state":"FOUNDING BODY","big_byproduct":"JM ContactBody System"},
+    {"name":"Signal & Expression","state":"FOUNDING BODY","big_byproduct":"JM Multi-Signal Link"},
+    {"name":"Shape & Motion","state":"FOUNDING BODY","big_byproduct":"JM ShapeMotion System"},
+    {"name":"Continuity & Backup","state":"ACTIVE FOUNDING BODY","big_byproduct":"JM Backup Comeback System"},
+    {"name":"Game Build","state":"FOUNDING INTAKE BODY / AWAITS REBUILT BODY RECEIPTS","big_byproduct":"JM Game Build Stack"},
+    {"name":"Contact & Change","state":"FOUNDING BODY / NEEDS LIVE CASES","big_byproduct":"JM Contact-to-Change System"}
   ],
   "pending": [
     "wider estate ingestion",
@@ -70,6 +77,6 @@
     "No device-proof claim",
     "No claim that every component name or strongest form has completed exact-source comparison"
   ],
-  "next_action": "Ingest wider estate sources and accept significant production-chat rebuild receipts through the native current-best gate.",
-  "keeper": "The native bodies govern. The carrier follows."
+  "next_action": "Continue estate intake and accept significant production-chat rebuild receipts through the native current-best gate without treating the founding pass as disposable.",
+  "keeper": "The native bodies govern. The carrier follows. The founding bodies remain alive."
 }

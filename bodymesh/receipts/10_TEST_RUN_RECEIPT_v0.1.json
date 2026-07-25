@@ -1,0 +1,75 @@
+{
+  "schema": "JM.BodyMesh.Receipt/0.1",
+  "name": "JM BodyMesh v0.1 Test Run Receipt",
+  "date": "2026-07-26",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "result": "PASS_NATIVE_SOURCE_AND_SOURCE_LEVEL_TEST",
+  "correction_chain": [
+    {
+      "step": "wrong draft",
+      "state": "REJECTED",
+      "evidence": "bodyweave/data/bodyweave-test-run-v0.1.json",
+      "reason": "Wrong sound-fit name and JSON-first authority."
+    },
+    {
+      "step": "sound-fit name",
+      "state": "PASS",
+      "evidence": "JM BodyMesh — Independent Estate Backup & Common-Body Lab"
+    },
+    {
+      "step": "native coding authority",
+      "state": "PASS",
+      "evidence": [
+        "native/01_BODYMESH.cading",
+        "native/02_BODY_MAP.kading",
+        "native/03_BODY_RULES.jmlogic",
+        "native/04_BODY_CONTACT.flowtalk",
+        "native/05_BODY_ACTION.routecode",
+        "native/06_BODY_APP.quadze",
+        "native/07_BODYMESH.primebody",
+        "native/08_BODYMESH.tracebox"
+      ]
+    },
+    {
+      "step": "test data emitted beneath native authority",
+      "state": "PASS",
+      "evidence": "data/09_BODYMESH_TEST_RUN_v0.1.json"
+    },
+    {
+      "step": "OPEN_FIRST",
+      "state": "PASS",
+      "evidence": "00_OPEN_FIRST.md"
+    }
+  ],
+  "test_counts": {
+    "native_source_bodies": 8,
+    "source_lanes": 8,
+    "common_body_houses": 6,
+    "big_byproducts": 6
+  },
+  "common_body_tests": [
+    {"name":"Contact & Aim","state":"TEST READY","big_byproduct":"JM ContactBody System"},
+    {"name":"Signal & Expression","state":"TEST READY","big_byproduct":"JM Multi-Signal Link"},
+    {"name":"Shape & Motion","state":"TEST READY","big_byproduct":"JM ShapeMotion System"},
+    {"name":"Continuity & Backup","state":"ACTIVE TEST","big_byproduct":"JM Backup Comeback System"},
+    {"name":"Game Build","state":"AWAITS REBUILT BODY INTAKE","big_byproduct":"JM Game Build Stack"},
+    {"name":"Contact & Change","state":"NEEDS LIVE CASES","big_byproduct":"JM Contact-to-Change System"}
+  ],
+  "pending": [
+    "wider estate ingestion",
+    "exact current-best comparison for every component",
+    "host app emitted from the native stack",
+    "browser QA",
+    "phone/device Ding",
+    "significant rebuilt-body intake from the production chat",
+    "whole-estate coverage"
+  ],
+  "claims_not_made": [
+    "No whole-estate completion claim",
+    "No public release crown",
+    "No device-proof claim",
+    "No claim that every component name or strongest form has completed exact-source comparison"
+  ],
+  "next_action": "Ingest wider estate sources and accept significant production-chat rebuild receipts through the native current-best gate.",
+  "keeper": "The native bodies govern. The carrier follows."
+}

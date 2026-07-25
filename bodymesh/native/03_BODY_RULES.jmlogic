@@ -1,0 +1,86 @@
+logic JMBodyMeshRules {
+  rule NativeBodiesFirst priority 120 {
+    when Build.nativeSourceCount < 7
+    then "hold-host-build"
+  }
+
+  rule NoHostAsAuthority priority 115 {
+    when Build.hostLanguageInAuthority == 1
+    then "reject-host-first"
+  }
+
+  rule SoundFitName priority 110 {
+    when Body.nameHasAvoidedSoundConflict == 1
+    then "rename-before-build"
+  }
+
+  rule SourceGapBlocksCrown priority 105 {
+    when Body.evidenceLevel == "door-or-gap"
+    then "hold-crown"
+  }
+
+  rule FullBodyBeforeCompilation priority 100 {
+    when Body.fullBodyRecovered == 0
+    then "intake-only"
+  }
+
+  rule MeshWithoutMerge priority 95 {
+    when House.identitySafety == 0
+    then "reject-house-collapse"
+  }
+
+  rule CommonThreadNeedsFunction priority 90 {
+    when House.commonThreadIsOnlySimilarity == 1
+    then "hold-house"
+  }
+
+  rule DistinctContributionRequired priority 85 {
+    when House.distinctContributionsVisible == 0
+    then "hold-compile"
+  }
+
+  rule ReverseTraceRequired priority 80 {
+    when GranderBody.reverseSourceRoute == 0
+    then "reject-byproduct"
+  }
+
+  rule LineageBeforeCurrentBest priority 75 {
+    when Candidate.lineagePreserved == 0
+    then "reject-current-best-promotion"
+  }
+
+  rule ReceiptBeforeVersion priority 70 {
+    when Candidate.versionHigher == 1 and Candidate.receiptPassed == 0
+    then "hold-high-version"
+  }
+
+  rule DeviceDingSeparate priority 65 {
+    when Candidate.deviceDing == 0
+    then "label-device-proof-pending"
+  }
+
+  rule SignificantRebuildIntake priority 60 {
+    when Candidate.significantProgress == 1
+    then "compare-source-body-house-byproduct"
+  }
+
+  rule ExistingBodyNotReplaced priority 55 {
+    when GranderBody.replacesComponents == 1
+    then "reject-descendant-replacement"
+  }
+
+  rule EstateDonorNotOwner priority 50 {
+    when Build.estateSourceUsed == 1
+    then "cite-donor-and-keep-independent-body"
+  }
+
+  rule FirstStageNoReset priority 45 {
+    when Build.requiresReturnToGroundZero == 1
+    then "repair-reentry-route"
+  }
+
+  rule NoDingNoClaim priority 1 {
+    when Build.dingPassed == 0
+    then "no-completion-claim"
+  }
+}

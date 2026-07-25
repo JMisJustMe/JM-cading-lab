@@ -1,0 +1,79 @@
+flow JMBodyMeshContact {
+  step Enter {
+    say "Open the native source before any host shell."
+    goto Source
+  }
+
+  step Source {
+    say "Name the chat, Project, file, package, app, game, tool, theory or receipt."
+    if Intake.sourceFound == 1 goto Body
+    if Intake.sourceFound == 0 goto Gap
+  }
+
+  step Gap {
+    say "Not found is a source gap, not proof of absence."
+    set Intake.state = "retrieval-open"
+    ding "source-gap-kept-honest"
+  }
+
+  step Body {
+    say "Recover the strongest available body and preserve all earlier lineage."
+    if Intake.fullBody == 1 goto House
+    if Intake.fullBody == 0 goto Door
+  }
+
+  step Door {
+    say "A title is a door handle, not the whole body."
+    set Intake.state = "door-only"
+    ding "door-body-distinction-kept"
+  }
+
+  step House {
+    say "Name the shared function and each body's unique contribution."
+    if House.sharedFunctionProof == 1 goto Difference
+    if House.sharedFunctionProof == 0 goto HoldHouse
+  }
+
+  step HoldHouse {
+    say "Similarity alone does not earn a Common-Body House."
+    hold
+  }
+
+  step Difference {
+    say "State what must remain separate before compiling anything larger."
+    if House.identitySafe == 1 goto Compile
+    if House.identitySafe == 0 goto HoldHouse
+  }
+
+  step Compile {
+    say "Build an additional descendant body, never a replacement for its components."
+    if Grander.reverseTrace == 1 goto Receipt
+    if Grander.reverseTrace == 0 goto HoldCompile
+  }
+
+  step HoldCompile {
+    say "No source-back route, no compiled byproduct."
+    hold
+  }
+
+  step Receipt {
+    say "Trace the larger body back through its house, each component, each source and each Ding."
+    ding "bodymesh-test-route-complete"
+  }
+
+  step RebuildIntake {
+    say "Compare significant progress from the production chat against the current strongest form."
+    if Candidate.proofBetter == 1 goto Promote
+    goto KeepLineage
+  }
+
+  step Promote {
+    say "Promote the candidate only after source, tests, lineage and Ding state are visible."
+    ding "candidate-current-best-earned"
+  }
+
+  step KeepLineage {
+    say "Keep the candidate as useful lineage without forcing a crown."
+    ding "candidate-lineage-kept"
+  }
+}

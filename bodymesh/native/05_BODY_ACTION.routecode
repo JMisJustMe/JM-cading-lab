@@ -1,0 +1,80 @@
+route JMBodyMeshAction {
+  on intake(sourceId: text) {
+    set App.phase = "SOURCE"
+    set App.sourceId = sourceId
+    set App.trace = "source-intake"
+    ding "bodymesh-source-intake"
+  }
+
+  on recover(bodyId: text) {
+    set App.phase = "BODY"
+    set App.bodyId = bodyId
+    set App.trace = "body-recovery"
+    ding "bodymesh-body-recovered"
+  }
+
+  on classify(bodyId: text, houseId: text) {
+    set App.phase = "HOUSE"
+    set App.bodyId = bodyId
+    set App.houseId = houseId
+    set App.trace = "house-candidate"
+    ding "bodymesh-house-candidate"
+  }
+
+  on separate(bodyId: text, boundary: text) {
+    set App.boundary = boundary
+    set App.trace = "identity-boundary"
+    ding "bodymesh-separation-kept"
+  }
+
+  on compile(houseId: text, byproductId: text) {
+    set App.phase = "BYPRODUCT"
+    set App.houseId = houseId
+    set App.byproductId = byproductId
+    set App.trace = "grander-body-test"
+    ding "bodymesh-test-compile"
+  }
+
+  on reverseTrace(byproductId: text) {
+    set App.phase = "REVERSE"
+    set App.byproductId = byproductId
+    set App.trace = "byproduct-to-source"
+    ding "bodymesh-reverse-trace"
+  }
+
+  on receiveRebuild(receiptId: text) {
+    set App.phase = "REBUILD_INTAKE"
+    set App.receiptId = receiptId
+    set App.trace = "significant-progress-intake"
+    ding "bodymesh-rebuild-received"
+  }
+
+  on promote(bodyId: text, candidateId: text) {
+    set App.phase = "CURRENT_BEST_COMPARE"
+    set App.bodyId = bodyId
+    set App.candidateId = candidateId
+    set App.trace = "promotion-gate"
+    ding "bodymesh-promotion-checked"
+  }
+
+  on hold(reason: text) {
+    set App.phase = "HOLD"
+    set App.holdReason = reason
+    set App.trace = "honest-hold"
+    hold
+  }
+
+  on reject(reason: text) {
+    set App.phase = "REJECTED"
+    set App.rejectReason = reason
+    set App.trace = "rejected-route-kept"
+    ding "bodymesh-rejection-receipt"
+  }
+
+  on export(kind: text) {
+    set App.phase = "EXPORT"
+    set App.exportKind = kind
+    set App.trace = "native-source-export"
+    ding "bodymesh-export-ready"
+  }
+}

@@ -6,7 +6,7 @@ Theodore Benjamin Scott / JM / JMISJUSTME
 
 ## Status
 
-**FOUNDING PASS / ACTIVE ESTATE BACKUP BODY / NO WHOLE-ESTATE CROWN**
+**FOUNDING INTAKE PASS / ACTIVE ESTATE BACKUP BODY / ACTUAL BYPRODUCT BUILD OPEN / NO WHOLE-ESTATE CROWN**
 
 ## Governing correction
 
@@ -30,7 +30,7 @@ BodyMesh exists as a separate backup, source witness and common-body build route
 1. **Source Estate** — chats, Projects, Library files, Wisebase documents, GitHub source, OPEN_FIRST carriers, packages and receipts.
 2. **Body Register** — each distinct creation, alias, state, strongest form, authority and source route.
 3. **Common-Body Houses** — related bodies connected by an evidenced function while identities remain visible.
-4. **Big Byproducts** — additional systems, engines, tools, houses, apps, books or other descendants made possible by housed bodies together.
+4. **Big Byproducts** — additional systems, engines, tools, houses, apps, books or other descendants actually compiled from housed bodies.
 
 ## Two-way trace
 
@@ -67,7 +67,11 @@ A common house or big byproduct is earned only when:
 - each component gives a distinct contribution;
 - differences and boundaries remain visible;
 - current-best comparison is performed;
-- reverse trace reaches every source body and receipt.
+- reverse trace reaches every source body and receipt;
+- the joined descendant actually exists in an operational form;
+- the descendant performs a capability that the family map alone cannot perform.
+
+A family map, candidate name, schema, compile gate or architectural description is not yet a byproduct.
 
 The descendant is additional. It does not replace its component bodies.
 
@@ -77,28 +81,49 @@ The other production chat builds and upgrades the organs. BodyMesh recovers, ver
 
 Significant progress enters through source, version, proof and receipt, then passes the native current-best gate before promotion.
 
-## Founding-pass promotion
+## Founding intake result
 
-The first BodyMesh files began as a test run but are serious enough to retain as the **BodyMesh Founding Pass v0.1**.
+The first BodyMesh files are retained as the **BodyMesh Founding Intake Pass v0.1**.
 
-The pass seats:
+The pass established:
 
 - 8 native source bodies;
 - 8 first source lanes;
-- 6 Common-Body Houses;
-- 6 first big byproducts;
+- 6 Common-Body House maps;
+- 6 candidate descendant directions;
 - OPEN_FIRST and a source receipt.
 
-The first houses are Contact & Aim, Signal & Expression, Shape & Motion, Continuity & Backup, Game Build, and Contact & Change.
+It did **not** build six big byproducts.
 
-The first big byproducts are JM ContactBody System, JM Multi-Signal Link, JM ShapeMotion System, JM Backup Comeback System, JM Game Build Stack, and JM Contact-to-Change System.
+The mapped houses are Contact & Aim, Signal & Expression, Shape & Motion, Continuity & Backup, Game Build, and Contact & Change.
+
+The candidate descendants are JM ContactBody System, JM Multi-Signal Link, JM ShapeMotion System, JM Backup Comeback System, JM Game Build Stack, and JM Contact-to-Change System.
+
+**Operational descendants built in this pass: 0.**
+
+## First actual compilation target
+
+The first real BodyMesh compilation target is **JM OneGame Engine**.
+
+It must receive, compare and preserve GameForge, GlyphPlay, GlyphForge, JM Game Native Core, Kading Game Estate Engine, RouteOS, TraceBox / Ding and relevant rebuilt-body receipts from the production chat.
+
+It is not complete until it leaves:
+
+- native JM source bodies;
+- a component and adapter manifest;
+- a shared game/body contract;
+- an executable compile and run path;
+- at least one playable proof scene;
+- OPEN_FIRST;
+- a source-to-component-to-descendant receipt;
+- runtime QA and later device Ding.
 
 ## Proof boundary
 
-Established: name correction, native coding stack, founding source pass, OPEN_FIRST, source receipt and this base save.
+Established: name correction, native coding stack, source lanes, common-house mapping, candidate descendant directions, OPEN_FIRST, source receipt and this base save.
 
-Pending: wider estate intake, exact current-best comparison for every component, emitted standalone app, browser QA, phone/device Ding and whole-estate coverage.
+Pending: the first actual compiled byproduct, wider estate intake, exact current-best comparison for every component, emitted standalone app, browser QA, phone/device Ding and whole-estate coverage.
 
 ## Keeper
 
-**The native bodies govern. The carrier follows. The components remain alive inside every larger body they earn.**
+**Housing proves relation. A byproduct is proved only when the joined body exists and works.**

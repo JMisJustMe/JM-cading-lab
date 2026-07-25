@@ -1,0 +1,66 @@
+module JMBodyMesh {
+  body Identity {
+    id: text = "JM-BODYMESH-001"
+    name: text = "JM BodyMesh"
+    role: text = "Independent Estate Backup and Common-Body Lab"
+    owner: text = "Theodore Benjamin Scott / JM / JMISJUSTME"
+    state: text = "TEST-RUN / NO WHOLE-ESTATE CROWN"
+  }
+
+  func sourceWeight(sourceProof: number, bodyProof: number, dingProof: number, gaps: number) -> number {
+    let score: number = sourceProof * 4 + bodyProof * 3 + dingProof * 2 - gaps * 5
+    return score
+  }
+
+  func canHouse(sharedFunction: number, identitySafe: number, sourceBackRoute: number) -> number {
+    if sharedFunction == 1 {
+      if identitySafe == 1 {
+        if sourceBackRoute == 1 {
+          ding "common-body-house-ready"
+          return 1
+        }
+      }
+    }
+    hold "house-needs-proof"
+    return 0
+  }
+
+  func canCompile(componentCount: number, commonThread: number, distinctContributions: number, reverseTrace: number) -> number {
+    if componentCount >= 2 {
+      if commonThread == 1 {
+        if distinctContributions == 1 {
+          if reverseTrace == 1 {
+            ding "grander-body-test-ready"
+            return 1
+          }
+        }
+      }
+    }
+    hold "compile-not-earned"
+    return 0
+  }
+
+  func acceptCandidate(currentScore: number, candidateScore: number, lineageKept: number) -> number {
+    if lineageKept == 0 {
+      hold "lineage-missing"
+      return 0
+    }
+    if candidateScore > currentScore {
+      ding "candidate-becomes-current-best"
+      return 1
+    }
+    hold "candidate-kept-as-lineage"
+    return 0
+  }
+
+  func main() -> number {
+    let houseGate: number = canHouse(1, 1, 1)
+    let compileGate: number = canCompile(2, 1, 1, 1)
+    if houseGate + compileGate == 2 {
+      ding "jm-bodymesh-native-source-seated"
+      return 1
+    }
+    hold "jm-bodymesh-source-incomplete"
+    return 0
+  }
+}

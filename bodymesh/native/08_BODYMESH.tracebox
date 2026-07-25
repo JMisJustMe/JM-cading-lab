@@ -1,0 +1,54 @@
+tracebox JMBodyMeshTrace {
+  identity "JM-BODYMESH-001"
+  name "JM BodyMesh"
+  version "v0.1-test-run"
+  authority "Theodore Benjamin Scott / JM / JMISJUSTME"
+
+  trace NativeSourceSeat {
+    before "JSON host-first draft existed"
+    contact "User corrected sound-fit and native-coding authority"
+    after "BodyWeave rejected; BodyMesh native stack seated"
+    evidence [
+      "01_BODYMESH.cading",
+      "02_BODY_MAP.kading",
+      "03_BODY_RULES.jmlogic",
+      "04_BODY_CONTACT.flowtalk",
+      "05_BODY_ACTION.routecode",
+      "06_BODY_APP.quadze",
+      "07_BODYMESH.primebody",
+      "08_BODYMESH.tracebox"
+    ]
+    state "PASS_NATIVE_SOURCE_SEATED"
+    boundary "No HTML, PWA, APK or whole-estate completion Ding yet"
+  }
+
+  trace HouseCompileGate {
+    input "two or more distinct bodies"
+    route "shared function + distinct contribution + separation + reverse source"
+    outputs ["accept", "hold", "split", "reject"]
+    passWhen "all four house proofs are visible"
+    failWhen "similarity or convenience is the only link"
+  }
+
+  trace GranderBodyGate {
+    input "accepted Common-Body House"
+    route "compile added capability without replacing components"
+    passWhen "new capability and proof gate are explicit"
+    failWhen "components become hidden or source-back route breaks"
+  }
+
+  trace RebuildIntakeGate {
+    input "significant progress from production chat"
+    route "source receipt → current-best comparison → body update → house update → byproduct pressure test"
+    passWhen "source, files, tests, lineage and Ding state are present"
+    failWhen "higher version number is the only evidence"
+  }
+
+  ding "native-source-seated" status PASS
+  ding "name-fit-corrected" status PASS
+  ding "host-output" status PENDING
+  ding "device-proof" status PENDING
+  ding "whole-estate-complete" status NOT_CLAIMED
+
+  keeper "Mesh does not mean merge. Compilation does not erase composition."
+}

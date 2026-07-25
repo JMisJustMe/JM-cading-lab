@@ -1,0 +1,70 @@
+flow SourceToBodyMesh {
+  from SourceRecord
+  to BodyRecord
+  map {
+    set id = SourceRecord.id
+    set name = SourceRecord.name
+    set source = SourceRecord.source
+    set sourceKind = SourceRecord.sourceKind
+    set sourceState = SourceRecord.sourceState
+    set strongestForm = SourceRecord.strongestForm
+    set proof = SourceRecord.proof
+    set dingState = SourceRecord.dingState
+    set lineage = SourceRecord.lineage
+    set gaps = SourceRecord.gaps
+    if SourceRecord.fullBody == 1 { set evidenceLevel = "full-body" }
+    if SourceRecord.fullBody == 0 { set evidenceLevel = "door-or-gap" }
+    ding "source-body-mapped"
+  }
+}
+
+flow BodyToCommonHouse {
+  from BodyRecord
+  to CommonBodyHouse
+  map {
+    set bodyId = BodyRecord.id
+    set bodyName = BodyRecord.name
+    set houseId = BodyRecord.houseId
+    set uniqueContribution = BodyRecord.uniqueContribution
+    set commonFunction = BodyRecord.commonFunction
+    set mustStaySeparate = BodyRecord.mustStaySeparate
+    set reverseSource = BodyRecord.source
+    if BodyRecord.commonFunctionProof == 1 { set housePermission = 1 }
+    if BodyRecord.commonFunctionProof == 0 { set housePermission = 0 }
+    ding "body-house-map-checked"
+  }
+}
+
+flow HouseToGranderBody {
+  from CommonBodyHouse
+  to GranderBody
+  map {
+    set id = CommonBodyHouse.byproductId
+    set sourceHouse = CommonBodyHouse.id
+    set commonThread = CommonBodyHouse.commonThread
+    set components = CommonBodyHouse.components
+    set differences = CommonBodyHouse.mustStaySeparate
+    set combinedRoute = CommonBodyHouse.combinedRoute
+    set proofGate = CommonBodyHouse.proofGate
+    set reverseComponents = CommonBodyHouse.components
+    if CommonBodyHouse.houseProof == 1 { set compileState = "test-ready" }
+    if CommonBodyHouse.houseProof == 0 { set compileState = "hold" }
+    ding "house-byproduct-map-checked"
+  }
+}
+
+flow RebuildIntakeToCurrentBest {
+  from RebuildReceipt
+  to BodyRecord
+  map {
+    set candidateForm = RebuildReceipt.candidateForm
+    set candidateProof = RebuildReceipt.proof
+    set candidateDing = RebuildReceipt.dingState
+    set candidateFiles = RebuildReceipt.files
+    set candidateHashes = RebuildReceipt.hashes
+    set rejectedBranches = RebuildReceipt.rejectedBranches
+    set lineagePreserved = RebuildReceipt.lineagePreserved
+    if RebuildReceipt.currentBestEarned == 1 { set strongestForm = RebuildReceipt.candidateForm }
+    ding "rebuild-intake-compared"
+  }
+}

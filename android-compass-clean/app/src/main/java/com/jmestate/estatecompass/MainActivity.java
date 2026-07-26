@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -39,6 +41,7 @@ import java.util.Locale;
 
 public final class MainActivity extends Activity {
     private static final int REQUEST_IMPORT_BODY = 1201;
+    private static final int REQUEST_WEB_FILE_CHOOSER = 1202;
     private static final long MAX_BODY_BYTES = 128L * 1024L * 1024L;
     private static final int HTML_PROBE_BYTES = 64 * 1024;
     private static final String BODY_FILE = "jm-estate-compass-mounted.html";
@@ -49,6 +52,7 @@ public final class MainActivity extends Activity {
 
     private WebView webView;
     private TextView bodyLabel;
+    private ValueCallback<Uri[]> webFileCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +104,7 @@ public final class MainActivity extends Activity {
         bodyLabel.setTextColor(Color.rgb(238, 243, 246));
         bodyLabel.setTextSize(13);
         bodyLabel.setSingleLine(true);
-        bodyLabel.setText("JM Estate Compass · v1.2.1");
+        bodyLabel.setText("JM Estate Compass · v1.2.2");
         bar.addView(bodyLabel, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
         Button bodyButton = new Button(this);
@@ -132,6 +136,43 @@ public final class MainActivity extends Activity {
         webView.setBackgroundColor(Color.rgb(8, 9, 11));
         webView.addJavascriptInterface(new CompassBridge(), "AndroidCompass");
         WebView.setWebContentsDebuggingEnabled(false);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(
+                    WebView view,
+                    ValueCallback<Uri[]> filePathCallback,
+                    FileChooserParams fileChooserParams) {
+                if (webFileCallback != null) {
+                    webFileCallback.onReceiveValue(null);
+                }
+                webFileCallback = filePathCallback;
+
+                final Intent chooserIntent;
+                try {
+                    chooserIntent = fileChooserParams.createIntent();
+                    chooserIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                } catch (Exception error) {
+                    webFileCallback = null;
+                    Toast.makeText(
+                            MainActivity.this,
+                            "File chooser could not be prepared.",
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+
+                try {
+                    startActivityForResult(chooserIntent, REQUEST_WEB_FILE_CHOOSER);
+                    return true;
+                } catch (ActivityNotFoundException error) {
+                    webFileCallback = null;
+                    Toast.makeText(
+                            MainActivity.this,
+                            "No file picker is available on this device.",
+                            Toast.LENGTH_LONG).show();
+                    return false;
+                }
+            }
+        });
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
@@ -323,6 +364,16 @@ public final class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_WEB_FILE_CHOOSER) {
+            Uri[] results = WebChromeClient.FileChooserParams.parseResult(resultCode, data);
+            if (webFileCallback != null) {
+                webFileCallback.onReceiveValue(results);
+                webFileCallback = null;
+            }
+            return;
+        }
+
         if (requestCode == REQUEST_IMPORT_BODY && resultCode == RESULT_OK && data != null && data.getData() != null) {
             importBody(data.getData());
         }
@@ -336,6 +387,10 @@ public final class MainActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (webFileCallback != null) {
+            webFileCallback.onReceiveValue(null);
+            webFileCallback = null;
+        }
         if (webView != null) {
             webView.removeJavascriptInterface("AndroidCompass");
             webView.destroy();

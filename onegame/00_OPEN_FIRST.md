@@ -1,68 +1,58 @@
-# JM OneGame Engine v0.1
+# JM OneGame Engine — Current Branch
 
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
-**Classification:** First operational JM BodyMesh descendant  
-**State:** Browser/source Ding PASS · phone/device Ding pending · APK not yet emitted · no public crown
+**Current:** v0.2 Visualang Form Studio  
+**Lineage:** v0.1 first operational BodyMesh descendant → v0.2 guided visual authoring body  
+**State:** Browser/source Ding PASS · phone/device Ding pending · APK pending · no public crown
 
-## What exists
+## Current route
 
-JM OneGame Engine is a working mobile-first browser game-maker and runtime compiled through JM coding bodies before its HTML carrier.
+Open:
 
-It can:
+`onegame/v0.2/00_OPEN_FIRST.md`
 
-- make and edit game entities;
-- run three distinct game identities: Aim Clash, Glyph Run and Route Catch;
-- preserve separate game verbs and outcomes through shared engine organs;
-- use a persistent Living Cursor;
-- separate ordinary aim from hold-to-grab;
-- create editable ContactBodies;
-- create real `dotdotdeliverance` FROM → TO route bodies;
-- expose X-Form inspection;
-- save and load projects;
-- export project JSON;
-- emit a standalone playable HTML body;
-- retain TraceBox receipts and run its own proof bench.
+The v0.2 body operates through:
 
-## Native authoring order
+**INTENTION → BODY → RELATION → FORM → BEHAVIOUR → CONTACT → EVIDENCE → TRACE → PLAY**
 
-1. Cading
-2. Kading
-3. JMLogic
-4. FlowTalk
-5. RouteCode
-6. Quadze
-7. RouteOS
-8. GameCore
-9. Visualang PLAY
-10. Living Cursor / Contact Engine
-11. HTML carrier
+It preserves the v0.1 joined engine and adds:
 
-## Component donors
+- separately addressable organs;
+- functional GripCube form operations;
+- shared FORM / BLUEPRINT / X-FORM state;
+- Body / Logic / State inspection;
+- guided first-use contact;
+- Living Cursor, ContactBodies and `dotdotdeliverance`;
+- visible play consequences and TraceBox recovery;
+- project and standalone playable export.
 
-GameForge · GlyphPlay · GlyphForge · JM GAME NATIVE CORE · Kading Game Estate Engine · JM Visualang v0.1 · LDML v0.2.3 PLAY · X-Form · JM Living Cursor & ContactBody System · RouteOS · TraceBox / Ding.
+## Current proof
 
-## Proof
-
-- Internal proof bench: **17/17** at mobile and desktop sizes.
-- Browser interaction QA: **28/28**.
-- Real QA actions: entity made; ContactBody pinned; `dotdotdeliverance` route completed; second game identity played; project exported; standalone playable emitted and loaded without page or console errors.
+- Internal proof: **20/20** at mobile and desktop.
+- Browser interaction QA: **42/42** total.
 - Viewports: **390×844** and **1440×1000**.
-- No document horizontal overflow in either tested viewport.
+- Page errors: **0**.
+- Console errors: **0**.
+- Horizontal overflow: **0**.
 
 ## Custody
 
-The complete carrier, separate native files, tests, screenshots, manifest and receipts are stored in ChatGPT Library:
+ChatGPT Library:
 
-`/JM BodyMesh/OneGame Engine v0.1/`
+`/JM BodyMesh/OneGame Engine v0.2/`
 
-Primary package:
+Zionfolder:
 
-`JM_ONEGAME_ENGINE_v0_1_ZIONFOLDER.zip`
+`JM_ONEGAME_ENGINE_v0_2_ZIONFOLDER.zip`
 
-Primary carrier:
+SHA-256:
 
-`00_OPEN_FIRST_JM_ONEGAME_ENGINE_v0_1.html`
+`381eca1aec643af6618dd924f9d672f81499ff18be4150d8753ed4cb6cd542e4`
+
+## v0.1 preservation
+
+v0.1 remains the first operational OneGame proof and is not overwritten. It proved the joined engine, three distinct game identities, Living Cursor / ContactBody operation and standalone export.
 
 ## Boundary
 
-This is an operational browser byproduct. Android finger feel, APK emission, device Ding and public-release crown remain open.
+v0.2 is a working browser/source body. JM phone feel, Android packaging, APK Ding and public release remain open field gates.

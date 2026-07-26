@@ -1,13 +1,14 @@
 {
-  "schema": "JM.AuthorPublicRegistry/1.1",
+  "schema": "JM.AuthorPublicRegistry/1.2",
   "name": "Theodore Benjamin Scott / JM — Author Public Page",
   "author_source": "Theodore Benjamin Scott / JM / JM32 / JMISJUSTME / JM TheOlogist / B. Lyrikz",
   "version": "0.3",
-  "public_mount_revision": "0.3.1-live-current",
-  "mount_state": "PUBLIC_ESTATE_MOUNT_LIVE_WITH_GOVERNED_CURRENT_WORK_PANEL",
+  "public_mount_revision": "0.3.2-press-pack",
+  "mount_state": "PUBLIC_ESTATE_MOUNT_LIVE_WITH_CURRENT_WORK_AND_PRESS_PACK",
   "route": "author/",
   "mounted_date": "2026-07-20",
   "current_panel_added": "2026-07-24",
+  "press_pack_added": "2026-07-26",
   "keeper_line": "Theodore’s real work is not only the projects. It is the route between the projects.",
   "boundary": "AI is the build bench. Theodore is the source creator.",
   "containers": {
@@ -52,6 +53,28 @@
     "offline": "FIRST_CACHE_READY",
     "fallback": "Sovereign Author page remains readable and refuses to invent current counts when the authority contract is unavailable."
   },
+  "press_book_collaboration_pack": {
+    "version": "0.1",
+    "state": "PUBLIC_COPY_READY_PACK_LIVE",
+    "route": "press-kit/",
+    "page": "press-kit/index.html",
+    "text_edition": "press-kit/press-kit.txt",
+    "registry": "press-kit/press-kit-public.json",
+    "contains": [
+      "approved creator titles",
+      "10, 25, 50 and 100-word biographies",
+      "long public biography",
+      "book-jacket wording",
+      "podcast, event and panel introductions",
+      "collaborator profile",
+      "AI and authorship disclosure",
+      "evidence highlights",
+      "live governed public-field figures",
+      "copy-all and print routes"
+    ],
+    "offline": "FIRST_CACHE_READY",
+    "privacy_boundary": "No private biography, family detail, owner notes, raw custody path or unpublished corpus is included."
+  },
   "direct_estate_routes": {
     "estate": "../",
     "theory": "../theory/",
@@ -59,8 +82,9 @@
     "coding": "../coding-estate/everybody/",
     "lyrics": "../lyrics/",
     "apps_tools": "../fresh-app-lab/",
-    "recovery": "../recovery/"
+    "recovery": "../recovery/",
+    "press_kit": "press-kit/"
   },
   "source_anchor": "AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3 (owner-controlled package)",
-  "claim_boundary": "Public-facing author body and governed current-work projection; not an exhaustive personal biography or a claim that every Estate source body is public."
+  "claim_boundary": "Public-facing author body, governed current-work projection and public press pack; not an exhaustive personal biography or a claim that every Estate source body is public."
 }

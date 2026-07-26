@@ -1,0 +1,68 @@
+{
+  "schema": "JM.OneGame.Manifest/0.1",
+  "name": "JM OneGame Engine",
+  "version": "0.1",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "classification": "first operational JM BodyMesh descendant",
+  "status": "OPERATIONAL_BROWSER_BYPRODUCT / BROWSER_DING_PASS / PHONE_DING_PENDING",
+  "custody": {
+    "library_folder": "/JM BodyMesh/OneGame Engine v0.1/",
+    "zionfolder": "JM_ONEGAME_ENGINE_v0_1_ZIONFOLDER.zip",
+    "open_first": "00_OPEN_FIRST_JM_ONEGAME_ENGINE_v0_1.html"
+  },
+  "native_bodies": [
+    "Cading",
+    "Kading",
+    "JMLogic",
+    "FlowTalk",
+    "RouteCode",
+    "Quadze",
+    "RouteOS",
+    "GameCore",
+    "Visualang PLAY",
+    "Living Cursor / Contact Engine"
+  ],
+  "donors": [
+    "GameForge",
+    "GlyphPlay",
+    "GlyphForge",
+    "JM GAME NATIVE CORE",
+    "Kading Game Estate Engine",
+    "JM Visualang v0.1",
+    "LDML v0.2.3 PLAY",
+    "X-Form",
+    "JM Living Cursor & ContactBody System",
+    "RouteOS",
+    "TraceBox / Ding"
+  ],
+  "capabilities": [
+    "three distinct playable game identities",
+    "scene maker and entity editor",
+    "persistent Living Cursor",
+    "hold-to-grab",
+    "editable ContactBodies",
+    "dotdotdeliverance FROM-to-TO routes",
+    "X-Form inspector",
+    "fixed-step simulation",
+    "local save and load with memory fallback",
+    "project JSON export",
+    "standalone playable HTML export",
+    "TraceBox receipts and self-test"
+  ],
+  "proof": {
+    "internal_self_test": "17/17 mobile and desktop",
+    "browser_interaction_qa": "28/28",
+    "viewports": ["390x844", "1440x1000"],
+    "contactbody_created": true,
+    "dotdotdeliverance_route_created": true,
+    "standalone_playable_emitted_and_loaded": true,
+    "page_errors": 0,
+    "console_errors": 0
+  },
+  "boundary": {
+    "browser_source_ding": "PASS",
+    "phone_device_ding": "PENDING",
+    "apk": "NOT YET EMITTED",
+    "public_crown": "NOT CLAIMED"
+  }
+}

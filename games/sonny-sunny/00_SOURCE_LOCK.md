@@ -1,14 +1,34 @@
-# Sonny / Sunny Game-Design Lens — Source Lock v0.1
+# Sonny / Sunny Game-Design Lens — Source Lock v0.2
 
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
 **Date:** 2026-07-26  
-**State:** NEW DESIGN LENS / SOURCE CORRECTION / NOT AN OLD-MECHANIC CLAIM
+**State:** NEW DESIGN LENS / SOURCE CORRECTION / CURRENT-BEST QUALITY FLOOR APPLIED
 
 ## Source correction
 
 The word **“Sonny”** arose from a typo in the phrase **“so my”**.
 
 Therefore the earlier interpretation that an original character or rule named Sonny attacked the opposition and destroyed or spent himself is withdrawn. That was not recovered source evidence and must not be retained as historical game canon.
+
+## Governing quality floor
+
+This body is governed by:
+
+`governance/CURRENT_BEST_QUALITY_FLOOR.md`
+
+> **Nothing starts below Theodore's strongest proven quality equivalent.**
+
+A flagship, prototype or vertical slice may narrow scope, but it must not silently lower the strongest relevant proven gameplay, action, character, story, visual, UI, coding-body, control, performance or proof quality already demonstrated in FOURFOLD, T-Boys, SS or another donor body.
+
+Before implementation, the build must:
+
+1. recover the relevant donor bodies;
+2. identify their strongest current-best versions and proofs;
+3. declare the quality floor by dimension;
+4. restore or exceed that floor inside the narrower flagship scope;
+5. preserve any unresolved source gap instead of replacing it with a weak guess.
+
+JM Duo Clash v0.1 does not define the flagship quality floor. It is retained as a regression/test receipt because it began below the relevant proven equivalents and skipped the JM-native authoring gate.
 
 ## Why the accidental word remains valuable
 
@@ -58,7 +78,8 @@ The current flagship direction is one deep 2-v-2 PvP action game derived from FO
 - Clash Flow as one-hand semi-assisted enactment;
 - Clash Manual as direct two-thumb enactment;
 - meaningful attacks, damage, defence, assists, tags, arena consequence and emergent battle story;
-- no shallow engine-demo loop accepted as game-quality proof.
+- no shallow engine-demo loop accepted as game-quality proof;
+- no new slice beginning below the strongest relevant proven quality equivalents.
 
 The game must be built as a game first, then reusable organs may be extracted into the engine after transfer is proven through another game.
 
@@ -86,6 +107,7 @@ A slice does not pass merely because it launches or records collisions.
 
 It must show evidence that:
 
+- its declared quality floor was restored or exceeded;
 - the first playable seconds communicate what is exciting;
 - attacks have satisfying anticipation, contact and consequence;
 - character and partner roles are visibly different;
@@ -97,4 +119,4 @@ It must show evidence that:
 
 ## Keeper
 
-> **Sonny tests whether the game has play power. Sunny tests whether its logic has light. Visualang must carry both into contact.**
+> **Start at the strongest proven quality. Sonny tests whether the game has play power. Sunny tests whether its logic has light. Visualang must carry both into contact.**

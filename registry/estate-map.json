@@ -37,6 +37,11 @@
       "state": "AUTHOR_PUBLIC_PAGE_V0_3_LIVE"
     },
     {
+      "body": "Theodore Benjamin Scott / JM — Press, Book & Collaboration Pack",
+      "path": "author/press-kit/index.html",
+      "state": "PUBLIC_PRESS_BOOK_COLLABORATION_PACK_V0_1_LIVE"
+    },
+    {
       "body": "Cading Lab",
       "path": "cading.html",
       "state": "LIVE"
@@ -263,6 +268,13 @@
       "registry": "registry/capability-access-authority-law-v1.0.json",
       "receipt": "registry/capability-access-authority-law-receipt-v1.0.json",
       "boundary": "Capability is held under JM owner authority and never supplies architectural authority by itself."
+    },
+    {
+      "body": "Author Press / Book / Collaboration Pack",
+      "state": "PUBLIC_COPY_READY_PROJECTION_LIVE",
+      "route": "author/press-kit/",
+      "registry": "author/press-kit/press-kit-public.json",
+      "boundary": "Author projection route; does not mutate governed body or Project Head passport totals."
     }
   ],
   "author_master_body": {
@@ -290,7 +302,10 @@
       "evidence register",
       "bio toolkit",
       "estate navigation bridge",
-      "AI/authorship boundary"
+      "AI/authorship boundary",
+      "press / book / collaboration pack",
+      "copy-ready text edition",
+      "print / save-PDF route"
     ],
     "source_package": "AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3",
     "boundary": "The public author face is mounted. The Private Theodore Source Biography remains owner-controlled and is not uploaded or silently exposed."

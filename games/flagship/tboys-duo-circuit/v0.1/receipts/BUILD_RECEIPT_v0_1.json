@@ -1,0 +1,42 @@
+{
+  "schema": "JM.TBoysDuoCircuit.BuildReceipt/0.1",
+  "title": "T-Boys: Clash Corps — Duo Circuit",
+  "date": "2026-07-26",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "mode": "CRAFTIK",
+  "qualityFloor": "CURRENT_BEST_EQUIVALENT_APPLIED",
+  "carrier": "Phaser 3.90 CDN + TypeScript 5.8 compiled JS + Vite source contract + DOM HUD",
+  "cast": {
+    "blue": ["Aero", "Nova"],
+    "red": ["Raze", "Grit"]
+  },
+  "mannerImplemented": ["Flick Clash"],
+  "mannerHeld": ["Clash Flow", "Clash Manual"],
+  "nativeBodies": 10,
+  "headlessSimulationQA": {"passed": 12, "failed": 0, "total": 12},
+  "staticQA": {"passed": 22, "failed": 0, "total": 22},
+  "claims": {
+    "sourceDing": true,
+    "staticDing": true,
+    "headlessSimulationDing": true,
+    "browserGameplayDing": false,
+    "phoneFeelDing": false,
+    "sonnyRecipientDing": false,
+    "apkDing": false
+  },
+  "boundaries": [
+    "Phaser binary is loaded from official cdnjs and is not yet vendored locally.",
+    "Chromium gameplay inspection did not complete in this build environment.",
+    "Owner phone feel and observed recipient playtest remain required.",
+    "Flow and Manual are held until the Flick battle earns contact proof."
+  ],
+  "nextRoute": [
+    "owner opens standalone",
+    "phone Flick test",
+    "repair/tune from contact",
+    "earn Flick Ding",
+    "translate same combat truth into Flow",
+    "translate same combat truth into Manual"
+  ],
+  "zionfolderSha256": "99913d07fa10a94379b2efdce73cb9cb1b58cf6ce7c5627ba30cef30dfc3635a"
+}

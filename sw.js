@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.4-author-current';
+const CACHE='jm-web-estate-v1.4.5-author-press-kit';
 const CORE=[
   './',
   './index.html',
@@ -18,6 +18,10 @@ const CORE=[
   './author/',
   './author/index.html',
   './author/author-public.json',
+  './author/press-kit/',
+  './author/press-kit/index.html',
+  './author/press-kit/press-kit.txt',
+  './author/press-kit/press-kit-public.json',
   './recent/index.html',
   './theory/biohouse-nervous-signal-route/index.html',
   './theory/biohouse-nervous-signal-route/v1.0.html',

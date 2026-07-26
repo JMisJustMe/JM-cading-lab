@@ -1,0 +1,33 @@
+{
+  "game": "T-Boys: Clash Corps — Estate Clash",
+  "version": "0.2.1",
+  "date": "2026-07-26",
+  "state": "MOVEMENT_ATTACK_GRAFT_CANDIDATE",
+  "graphicsFloor": "OWNER_ACCEPTED_BEGINNING_PLACE",
+  "grafts": [
+    "analog arena steering",
+    "tap-to-engage quick combat",
+    "three-hit quick chains",
+    "hold-charge heavy",
+    "root-motion attacks",
+    "direct skill/evade drag",
+    "hold-self guard",
+    "partner tag/assist gestures",
+    "target marker",
+    "hit-stop and impact effects",
+    "bench partner protection"
+  ],
+  "proof": {
+    "javascriptSyntax": "PASS",
+    "sourceGates": "16/16",
+    "deterministicContracts": "12/12",
+    "ownerAndroid": "PENDING",
+    "gameplayDing": false
+  },
+  "boundaries": [
+    "No claim of final movement feel",
+    "No claim of final attack balance",
+    "No APK Ding",
+    "Backup buttons retained but non-primary"
+  ]
+}

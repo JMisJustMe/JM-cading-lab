@@ -1,0 +1,19 @@
+T-BOYS DUO CIRCUIT — JMLOGIC DELTA v0.1.2
+
+DAMAGE OWNERSHIP
+- During an ordinary committed action, damage ownership stays with the team whose turn/action is live.
+- The attacker does not take hidden recoil or self-damage merely because post-collision velocity becomes lower than the recipient's velocity.
+- Recoil, counter and sacrifice damage require an explicit named rule, visible warning and trace.
+- One attacker may damage one defender once per committed action; repeated overlap/jitter is contact-only unless a named multi-hit route authorises more.
+- Ordinary clean-hit damage is capped below full-health KO; Break Window may exceed the ordinary cap but cannot silently one-shot a full fighter.
+
+ASSIST ROUTE GUARD
+- ASSIST resolves only to a living rival.
+- An allied, dead or missing requested target is rejected and replaced by the nearest valid rival.
+- The partner receives a short friendly-pass window so the relay cannot home into, collide with or be redirected by its own active teammate.
+- When the active teammate blocks the direct line, the assist route bends around the ally before committing toward the rival.
+
+HANDOFF
+- Single HTML first.
+- Zionfolder backup second.
+- Owner contact decides Ding.

@@ -7,8 +7,8 @@
 - Canonical public door: `https://jmisjustme-estate.pages.dev/`
 - GitHub Pages mirror: `https://jmisjustme.github.io/JM-cading-lab/`
 - Current public authority contract: `v0.3.0`
-- Current shell maintenance cache: `v1.4.4-author-current`
-- State: `LIVE_PUBLIC_AUTHORITY_V0_3_0_WITH_DYNAMIC_AUTHOR_CURRENT_WORK_PROJECTION`
+- Current shell maintenance cache: `v1.4.5-author-press-kit`
+- State: `LIVE_PUBLIC_AUTHORITY_V0_3_0_WITH_DYNAMIC_AUTHOR_AND_PUBLIC_PRESS_PACK`
 
 ## Current governed public field
 
@@ -28,6 +28,7 @@ These are governed public-route totals, not a claim that the complete private Es
 
 - Root Web Estate
 - Theodore Benjamin Scott / JM — Author & Source Creator
+- Theodore Benjamin Scott / JM — Press, Book & Collaboration Pack
 - JM Non-Game Apps House — 40-room public-safe catalogue
 - Games & Beyond — sovereign Games House
 - JM Games — Current Direction Ledger
@@ -53,22 +54,26 @@ The public Author route is governed by `AUTHOR_MASTER_BODY_ZIONFOLDER_v0_3` and 
 - AI is the build bench and implementation collaborator, not the source-author.
 - The public About page, creator menu, evidence spine and bio toolkit are mounted.
 - The visible homepage Author door is live.
-- The Author page now builds a live **What Theodore / JM is building now** panel from `registry/estate-head-public-current.json`.
-- The panel shows governed counts, selected current public routes, authority version, effective date, represented lanes and guarded promotions.
-- The Author page, public author registry and Estate authority consumer are included in the first offline cache.
-- When the public authority contract is unavailable, the page keeps its sovereign biography and explicitly refuses to invent current counts.
+- The Author page builds a live **What Theodore / JM is building now** panel from `registry/estate-head-public-current.json`.
+- The Author page now links to a dedicated **Press, Book & Collaboration Pack v0.1**.
+- The pack contains approved creator titles, 10/25/50/100-word biographies, a long public biography, book-jacket wording, event and podcast introductions, a collaborator profile, AI/authorship disclosure, evidence highlights and live governed public figures.
+- The pack provides copy-all, individual copy, text-edition and print/save-PDF routes.
+- The Author page, public author registry, Press Pack page, text edition, Press Pack registry and Estate authority consumer are included in the first offline cache.
+- When the public authority contract is unavailable, the sovereign public wording remains readable and no current figures are invented.
 - The Private Theodore Source Biography remains owner-controlled and is not uploaded or silently exposed.
-- The author page introduces and routes to Estate bodies; it does not absorb or replace them.
+- The author page and Press Pack introduce and route to Estate bodies; they do not absorb or replace them.
 
 ## Current maintenance and continuity patches
 
 The latest bounded repairs and extensions are:
 
 1. aligned this public status with the current Estate Head authority contract;
-2. added `/author/`, `author/index.html` and `author/author-public.json` to the service-worker core cache;
+2. added the Author route and registry to the service-worker core cache;
 3. hid the Android accessibility-bar scrollbar while preserving horizontal swipe access and 44px touch targets;
 4. added the governed Author current-work projection without replacing the v0.3 source biography;
-5. added `estate-head-public-consumer.js` to the first offline cache.
+5. added `estate-head-public-consumer.js` to the first offline cache;
+6. mounted the Press, Book & Collaboration Pack and connected it through the Author navigation and Estate-door list;
+7. added the Press Pack page, text edition and public registry to the first offline cache.
 
 ## Preserved custody boundary
 

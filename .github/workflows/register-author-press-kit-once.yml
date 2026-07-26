@@ -1,0 +1,79 @@
+name: Register Author Press Kit Once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/register-author-press-kit-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Register bounded Author projection
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+
+          route = {
+              'body': 'Theodore Benjamin Scott / JM — Press, Book & Collaboration Pack',
+              'path': 'author/press-kit/index.html',
+              'state': 'PUBLIC_PRESS_BOOK_COLLABORATION_PACK_V0_1_LIVE'
+          }
+
+          estate_path = Path('registry/estate-map.json')
+          estate = json.loads(estate_path.read_text(encoding='utf-8'))
+          routes = estate.setdefault('live_github_routes', [])
+          if not any(item.get('path') == route['path'] for item in routes):
+              author_index = next((i for i,item in enumerate(routes) if item.get('path') == 'author/index.html'), 0)
+              routes.insert(author_index + 1, route)
+          departments = estate.setdefault('registered_departments', [])
+          if not any(item.get('route') == 'author/press-kit/' for item in departments if isinstance(item, dict)):
+              departments.append({
+                  'body': 'Author Press / Book / Collaboration Pack',
+                  'state': 'PUBLIC_COPY_READY_PROJECTION_LIVE',
+                  'route': 'author/press-kit/',
+                  'registry': 'author/press-kit/press-kit-public.json',
+                  'boundary': 'Author projection route; does not mutate governed body or Project Head passport totals.'
+              })
+          author = estate.setdefault('author_master_body', {})
+          organs = author.setdefault('public_organs', [])
+          for organ in ['press / book / collaboration pack', 'copy-ready text edition', 'print / save-PDF route']:
+              if organ not in organs:
+                  organs.append(organ)
+          estate_path.write_text(json.dumps(estate, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          head_path = Path('registry/estate-head-public-current.json')
+          head = json.loads(head_path.read_text(encoding='utf-8'))
+          routes = head.setdefault('public_house_routes', [])
+          if not any(item.get('path') == route['path'] for item in routes):
+              author_index = next((i for i,item in enumerate(routes) if item.get('path') == 'author/index.html'), 0)
+              routes.insert(author_index + 1, route)
+          for key in ('public_consumers', 'public_house_consumers'):
+              consumers = head.setdefault(key, [])
+              if route['path'] not in consumers:
+                  consumers.append(route['path'])
+          head['boundary'] = head.get('boundary', '') + ' The Author Press Pack is a public projection route and does not mutate the governed 61-body / 11-Project-Head passport totals.'
+          head_path.write_text(json.dumps(head, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+
+          Path('.github/workflows/register-author-press-kit-once.yml').unlink()
+
+      - name: Commit registration
+        run: |
+          git config user.name "JM Estate Registry"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/estate-map.json registry/estate-head-public-current.json .github/workflows/register-author-press-kit-once.yml
+          if git diff --cached --quiet; then
+            echo "No changes required."
+            exit 0
+          fi
+          git commit -m "Register Author press kit as bounded public projection"
+          git push origin main

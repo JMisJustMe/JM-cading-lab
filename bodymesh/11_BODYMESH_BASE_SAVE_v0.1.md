@@ -6,7 +6,7 @@ Theodore Benjamin Scott / JM / JMISJUSTME
 
 ## Status
 
-**ACTIVE ESTATE BACKUP BODY / FIRST OPERATIONAL DESCENDANT IN ACTIVE DEVELOPMENT / NO WHOLE-ESTATE CROWN**
+**ACTIVE ESTATE BACKUP BODY / FIRST OPERATIONAL DESCENDANT IN ACTIVE DEVELOPMENT / ONEGAME v0.3 PHONE-FIT BRANCH PASSED / NO WHOLE-ESTATE CROWN**
 
 ## Governing correction
 
@@ -34,9 +34,9 @@ BodyMesh exists as a separate backup, source witness and common-body build route
 
 ## Two-way trace
 
-**SOURCE > BODY > HOUSE > BIG BYPRODUCT**
+**SOURCE → BODY → HOUSE → BIG BYPRODUCT**
 
-**BIG BYPRODUCT > COMPONENT > SOURCE > RECEIPT**
+**BIG BYPRODUCT → COMPONENT → SOURCE → RECEIPT**
 
 ## Native build authority
 
@@ -77,6 +77,8 @@ A family map, candidate name, schema, compile gate or architectural description 
 
 The descendant is additional. It does not replace its component bodies.
 
+A later branch that deepens the same descendant does not create a new descendant count.
+
 ## Production-chat link
 
 The other production chat builds and upgrades the organs. BodyMesh recovers, verifies, houses, relates and assembles the organism.
@@ -107,85 +109,131 @@ It receives and preserves contributions from GameForge, GlyphPlay, GlyphForge, J
 
 Its JM-native authoring stack is:
 
-**Cading > Kading > JMLogic > FlowTalk > RouteCode > Quadze > RouteOS > GameCore > Visualang PLAY > Living Cursor / Contact Engine > emitted carrier**
+**Cading → Kading → JMLogic → FlowTalk → RouteCode → Quadze → RouteOS → GameCore → Visualang PLAY → Living Cursor / Contact Engine → emitted carrier**
 
 ### v0.1 — engine proof
 
-v0.1 crossed the family map into a working engine. It:
+v0.1 crossed the family map into a working engine. It created and edited entities, retained distinct game identities, used Living Cursor / ContactBody routes, saved projects and emitted a standalone playable.
 
-- created and edited game entities;
-- ran Aim Clash, Glyph Run and Route Catch as distinct identities;
-- used a persistent Living Cursor;
-- separated aim from hold-to-grab;
-- pinned editable ContactBodies;
-- completed `dotdotdeliverance` routes;
-- exposed X-Form;
-- saved and exported projects;
-- emitted a standalone playable.
-
-Proof: internal 17/17 at mobile and desktop; browser QA 28/28; no page, console or horizontal-overflow failures.
+Proof: internal 17/17 at mobile and desktop; browser QA 28/28.
 
 Custody: `/JM BodyMesh/OneGame Engine v0.1/`
 
 ### v0.2 — Visualang Form Studio
 
-v0.2 preserves v0.1 and adds a guided visual authoring body.
+v0.2 preserved v0.1 and added:
 
-Its governing route is:
-
-**INTENTION → BODY → RELATION → FORM → BEHAVIOUR → CONTACT → EVIDENCE → TRACE → PLAY**
-
-It adds:
-
-- separately addressable body organs;
-- functional GripCube operations: add, remove, stretch, rotate, join, split, carve, mirror, group and colour/state;
+- separately addressable organs;
+- functional GripCube operations;
 - shared FORM / BLUEPRINT / X-FORM state;
 - Body / Logic / State inspection;
-- guided first-use contact;
-- play consequences for goal, damage, blocking and collection;
-- TraceBox recovery;
+- guided Visualang authorship;
+- play consequences and TraceBox recovery;
 - local save/load, project JSON and standalone playable export.
+
+Proof: internal 20/20 at 390×844 and 1440×1000; browser QA 42/42; page errors 0; console errors 0; horizontal overflow 0.
+
+JM phone screenshots then established Android browser launch, FORM, PLAY, Living Cursor, grab/movement and TRACE execution for v0.2. Natural feel remained a separate owner gate.
+
+Custody: `/JM BodyMesh/OneGame Engine v0.2/`
+
+GitHub: `onegame/v0.2/00_OPEN_FIRST.md`
+
+### v0.3 — Phone Fit & Easy Use
+
+v0.3 preserves v0.1 and v0.2, then adds:
+
+- truthful lifted-cursor targeting: the visible cursor and executed target now coincide;
+- editable thumb-fit and precision contact profiles;
+- side offset, aim lift, hold delay and nudge-step controls;
+- one-hand nudge, centre and scene-FIT routes;
+- unmistakable CREATE / SHAPE / LOGIC / PLAY / TRACE / EXPORT states;
+- snap-centred mobile rails with retained position;
+- FlowTalk/Tongueview human-readable trace lines;
+- expandable exact TraceBox receipts beneath each readable line;
+- autosave and contact-profile memory;
+- a nine-step seeded first-use route from selection/contact through play, trace, project export and playable export;
+- mobile containment repair for the hidden oversized world and clipped header/control bodies.
 
 Proof:
 
-- internal proof **20/20** at 390×844 and 1440×1000;
-- browser interaction QA **42/42** total;
+- internal proof **29/29** at 390×844;
+- internal proof **29/29** at 1440×1000;
+- full browser interaction QA **58/58**;
+- real automated route completed: select → aim → grab → release → play → goal → trace → save → project export → playable export;
 - page errors 0;
 - console errors 0;
-- horizontal overflow 0;
-- project export PASS;
-- standalone playable export PASS.
+- horizontal overflow 0.
 
 Custody:
 
-`/JM BodyMesh/OneGame Engine v0.2/`
+`/JM BodyMesh/OneGame Engine v0.3/`
 
 GitHub:
 
-`onegame/v0.2/00_OPEN_FIRST.md`
+`onegame/v0.3/00_OPEN_FIRST.md`
 
 Zionfolder SHA-256:
 
-`381eca1aec643af6618dd924f9d672f81499ff18be4150d8753ed4cb6cd542e4`
+`10a8175b915a71366ca81aa1e11b5c36dd1fada2ebf6ccc8475af4a269d1a142`
 
 ## Current BodyMesh result
 
-- Founding intake passes: 1.
-- Common-Body House maps: 6.
-- Candidate descendant directions retained: 6.
-- Operational descendants: **1**.
-- Preserved OneGame branches: **2**.
-- Standalone operational engine carriers: **2**.
-- Standalone playable exports proven: **2**.
-- Browser/source Dings: **2**.
-- Phone/device Dings: **0**.
+- Founding intake passes: **1**
+- Common-Body House maps: **6**
+- Candidate descendant directions retained: **6**
+- Operational descendants: **1**
+- Preserved OneGame branches: **3**
+- Standalone operational engine carriers: **3**
+- Standalone playable exports proven: **3**
+- Browser/source Dings: **3**
+- Android execution proofs: **1**
+- v0.3 owner-feel Dings: **0**
+- APK Dings: **0**
+
+## Governing build cycle
+
+**ONEGAME PROFESSIONAL FLOOR**
+→ **TOOL / APP COMMON-BODY DESCENDANT**
+→ **RETURN TO ONEGAME WITH NEW ORGANS**
+→ **DEEPEN GAME CREATION, PLAY, CONTACT, PROOF AND DELIVERY**
+→ **MOVE TO THE NEXT COMMON-BODY DESCENDANT**
+→ **RETURN AGAIN WHERE THE ESTATE EARNS IT**
+
+Moving to the tool/app descendant does not mean OneGame is finished forever, parked without return or replaced.
+
+Returning to OneGame does not mean rebuilding from First Stage.
+
+**Preserve the strongest branch. Add what the next body proved. Test the joined result. Continue.**
 
 ## Proof boundary
 
-Established: BodyMesh governance; native foundation; family mapping; first operational descendant; OneGame v0.1 engine proof; OneGame v0.2 Visualang Form Studio; project and playable exports; browser QA; Library/Zionfolder custody; source-back mounts.
+Established:
 
-Pending: JM phone contact and feel, Android packaging, APK Ding, public-release decision, wider estate intake, exact current-best comparison for future components and whole-estate coverage.
+- BodyMesh naming and governance;
+- native foundation;
+- family mapping;
+- first operational descendant;
+- OneGame v0.1 joined engine;
+- OneGame v0.2 Visualang Form Studio and Android execution;
+- OneGame v0.3 phone-fit/contact-truth branch;
+- project and playable exports;
+- browser QA;
+- Library/Zionfolder custody;
+- source-back mounts.
+
+Pending:
+
+- JM natural-feel/use judgement on v0.3;
+- full blank-body-to-finished-game professional route;
+- deeper multi-game authoring adapters;
+- Android packaging and APK Ding;
+- public-release decision;
+- first professional tool/app descendant;
+- wider estate intake;
+- exact current-best comparison for future components;
+- whole-estate coverage.
 
 ## Keeper
 
-**Housing proves relation. JM OneGame proves that a BodyMesh descendant can continue growing into a clearer and more powerful body without erasing its source, components or earlier proof.**
+**Perfect enough to stand. Move far enough to learn. Return strong enough to deepen.**

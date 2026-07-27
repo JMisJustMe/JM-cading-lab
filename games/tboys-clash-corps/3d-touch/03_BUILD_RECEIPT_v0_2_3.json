@@ -1,0 +1,30 @@
+{
+  "body": "T-Boys Estate Clash",
+  "version": "0.2.3",
+  "graft": "JM Screen Logic / moving portrait viewport",
+  "source": "v0.2.2 direct fight graft",
+  "changes": [
+    "arena expanded beyond the phone viewport",
+    "soft active-fighter camera follow",
+    "movement lead",
+    "selected-rival engagement bias",
+    "dynamic combat zoom",
+    "offscreen target and partner indicators",
+    "camera authority transfers after tag",
+    "moving light focus",
+    "world-zone labels"
+  ],
+  "staticQA": "20/20",
+  "headlessScreenLogicQA": "15/15",
+  "delivery": [
+    "separate standalone HTML",
+    "same-version fully packaged Zionfolder"
+  ],
+  "boundaries": [
+    "WebGL phone runtime not tested in build container",
+    "owner camera-feel Ding pending",
+    "phone performance Ding pending",
+    "combat readability during long-distance travel pending"
+  ],
+  "keeper": "The screen is not the world. It is the moving contact window through which the player enters the world."
+}

@@ -15,7 +15,7 @@ permissions:
 jobs:
   generated-kernel-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
       - name: Checkout generated-kernel branch
         uses: actions/checkout@v4

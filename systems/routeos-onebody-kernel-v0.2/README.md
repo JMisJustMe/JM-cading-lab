@@ -13,3 +13,7 @@ This is the next bounded gate after **ROUTEOS KERNEL HARD-BODY DING: PASS**.
 - The kernel floor is inherited from the proven v0.1A machine-proof commit.
 - CadenVM is preserved as compiler/runtime lineage; this gate lowers directly into the proven native user ABI.
 - No compiler-to-kernel Ding is claimed until the generated body boots and runs under independent GRUB/QEMU proof.
+
+## Current gate
+
+Readable source and local static/provenance verification are complete. GitHub Actions is the independent GRUB/QEMU authority for the machine receipt.

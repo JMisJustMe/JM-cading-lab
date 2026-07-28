@@ -33,17 +33,30 @@ jobs:
       - name: Install open proof carriers
         shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            clang lld binutils grub-pc-bin grub-common xorriso qemu-system-x86
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+          command -v grub-mkrescue
+          command -v xorriso
+          command -v qemu-system-x86_64
+          grub-mkrescue --version
+          xorriso -version | head -n 2
+          qemu-system-x86_64 --version | head -n 1
 
       - name: Build and run GRUB to QEMU proof
+        id: hard_body
+        continue-on-error: true
         shell: bash
         run: |
-          set -euo pipefail
-          cd .routeos-proof/routeos-kernel-v0.1A
-          chmod +x build.sh tests/*.sh tests/*.py
-          ./tests/run_qemu_proof.sh
+          set -o pipefail
+          ROOT=.routeos-proof/routeos-kernel-v0.1A
+          chmod +x "$ROOT"/build.sh "$ROOT"/tests/*.sh "$ROOT"/tests/*.py
+          "$ROOT/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-proof/PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
 
       - name: Freeze machine-run receipt
         if: always()
@@ -53,12 +66,28 @@ jobs:
           ROOT=.routeos-proof/routeos-kernel-v0.1A
           mkdir -p hard-body-receipt
           for f in \
+            .routeos-proof/PROOF_RUN.log \
             "$ROOT/proof/QEMU_BOOT_TRACE.txt" \
             "$ROOT/build/routeos-kernel.elf" \
             "$ROOT/build/routeos-kernel.iso"; do
             if [[ -f "$f" ]]; then cp "$f" hard-body-receipt/; fi
           done
-          sha256sum hard-body-receipt/* > hard-body-receipt/SHA256SUMS.txt 2>/dev/null || true
+          {
+            echo "hard_body_step_outcome=${{ steps.hard_body.outcome }}"
+            echo "hard_body_exit_status=${{ steps.hard_body.outputs.exit_status }}"
+            echo
+            echo "--- tool paths ---"
+            command -v grub-mkrescue || true
+            command -v xorriso || true
+            command -v qemu-system-x86_64 || true
+            echo
+            echo "--- grub platform files ---"
+            find /usr/lib/grub -maxdepth 2 -type f \( -name 'eltorito.img' -o -name 'modinfo.sh' \) -print 2>/dev/null || true
+            echo
+            echo "--- build tree ---"
+            find "$ROOT/build" -maxdepth 4 -printf '%y %s %p\n' 2>/dev/null | sort || true
+          } > hard-body-receipt/ENVIRONMENT_AND_BUILD_TREE.txt
+          (cd hard-body-receipt && sha256sum * > SHA256SUMS.txt) || true
 
       - name: Upload hard-body receipt
         if: always()
@@ -66,4 +95,10 @@ jobs:
         with:
           name: routeos-kernel-v0.1A-hard-body-receipt
           path: hard-body-receipt
-          if-no-files-found: warn
+          if-no-files-found: error
+
+      - name: Enforce hard-body result
+        if: always()
+        shell: bash
+        run: |
+          test '${{ steps.hard_body.outcome }}' = 'success'

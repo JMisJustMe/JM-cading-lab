@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/routeos-kernel-hard-body-v0-1a
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:

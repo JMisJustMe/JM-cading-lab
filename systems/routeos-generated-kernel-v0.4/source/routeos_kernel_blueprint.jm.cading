@@ -1,0 +1,63 @@
+# RouteOS Generated Kernel Gate v0.4
+module jm.routeos.kernel.generated
+family: RouteOS Generated Kernel / Hard-Body Offices
+owner: Theodore Benjamin Scott / JM / JMISJUSTME
+version: 0.4.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body RouteCore Native
+body RouteOS
+body IgnitionBody
+body CoreState
+body MemoryBody
+body InterruptBody
+body RouteScheduler
+body PermissionGate
+body FaultHold
+body RecoveryBody
+body DeviceRoute
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+func kernel:
+  emit OFFICE IGNITIONBODY MULTIBOOT2_LONG_MODE
+  emit OFFICE CORESTATE CPL0_GDT_TSS_IDT
+  emit OFFICE MEMORYBODY ALLOCATE_RELEASE
+  emit OFFICE INTERRUPTBODY UD_TIMER_SYSCALL
+  emit OFFICE ROUTESCHEDULER PIT_ROUND_ROBIN
+  emit OFFICE PERMISSIONGATE INT_0X80
+  emit OFFICE FAULTHOLD BLOCK_FAULT_OWNER
+  emit OFFICE RECOVERYBODY CONTINUE_SAFE_BODY
+  emit DEVICE SERIAL COM1 0x3F8
+  emit MEMORY HEAP_BLOCKS 16
+  emit MEMORY HEAP_BLOCK_SIZE 256
+  emit TIMER PIT_HZ 100
+  emit TIMER TRACE_QUANTUM 25
+  emit SYSCALL TRACE_READ 1
+  emit SYSCALL YIELD 2
+  emit SYSCALL ROUTE_STATE 3
+  emit USER_SLOT 1 0x02000000 0x02001000 0x02002000
+  emit USER_SLOT 2 0x02004000 0x02005000 0x02006000
+  expect GENERATED_BOOT_ASSEMBLY
+  expect GENERATED_KERNEL_C
+  expect GENERATED_LINKER_LAYOUT
+  expect TWO_GENERATED_USER_BODIES
+  expect GRUB_QEMU_MACHINE_RECEIPT
+  return SEALED
+end
+
+map Cading -> Kernel OneBody IR
+map Kernel OneBody IR -> RouteOS Native Kernel Backend
+route firmware -> IgnitionBody -> CoreState -> MemoryBody -> InterruptBody -> RouteScheduler -> PermissionGate -> FaultHold -> RecoveryBody -> DeviceRoute
+entity GeneratedRouteOSKernel
+state blueprint-ready
+phase Q0-Q4
+ding generated-after-machine-proof

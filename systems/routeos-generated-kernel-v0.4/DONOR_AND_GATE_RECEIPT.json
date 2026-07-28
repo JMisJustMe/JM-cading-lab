@@ -1,0 +1,23 @@
+{
+  "body": "RouteOS Generated Kernel Gate v0.4",
+  "status": "LOCAL GENERATION + STATIC PASS / INDEPENDENT MACHINE RUN OPEN",
+  "base_commit": "4933803144a2a81b17c267b1fe08d5e066e87a15",
+  "route": "JM kernel blueprint -> Cading parser -> Kernel OneBody IR -> generated boot assembly + kernel C + linker layout -> two generated user bodies -> GRUB/QEMU",
+  "kernel_blueprint_sha256": "0a5b3f002938b939dacafdcffe76c18ad5ecdbc046f969676ea00f4ed93885f0",
+  "kernel_onebody_sha256": "f2f83a83217f87a8d8aa7a8ad1cf083ca3be33c402fabc1ce5643352cb04234a",
+  "generated_boot_sha256": "0aa388381f3fa6613005abde4e10f11b56b26526a9d0e77cdc4b5750e6ea3bb2",
+  "generated_kernel_c_sha256": "160528d36950979c2fba0b021485eba37335664fd224a40711a1ab67132d6c3e",
+  "generated_linker_sha256": "418b0572abf01025db8812d180ae05135bfabf411795be79a6fb7f0ed9dcee09",
+  "local_elf_sha256": "5cf8361720deee08a6685963dc800cef5fd6f3b94a78d67c3c65cdcddfefdc22",
+  "local_gates": [
+    "JM kernel blueprint parse PASS",
+    "Kernel OneBody IR PASS",
+    "generated boot assembly PASS",
+    "generated kernel C PASS",
+    "generated linker layout PASS",
+    "no maintained target kernel source PASS",
+    "generated-kernel provenance embedded in ELF PASS",
+    "two generated user bodies retained PASS"
+  ],
+  "open_gate": "Independent generated-kernel GRUB/QEMU machine receipt"
+}

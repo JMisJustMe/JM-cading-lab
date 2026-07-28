@@ -1,0 +1,87 @@
+name: RouteOS Generated Kernel Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-generated-kernel-v0-4
+  pull_request:
+    branches:
+      - agent/routeos-two-generated-bodies-v0-3
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generated-kernel-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout generated-kernel branch
+        uses: actions/checkout@v4
+
+      - name: Assert no maintained target kernel source
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-generated-kernel-v0.4
+          test ! -e "$ROOT/kernel/routeos_kernel.c"
+          test ! -e "$ROOT/arch/x86_64/boot.S"
+          test ! -e "$ROOT/linker.ld"
+
+      - name: Install open proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils nodejs grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+          node --version
+          clang --version | head -n 1
+          grub-mkrescue --version
+          qemu-system-x86_64 --version | head -n 1
+
+      - name: Generate kernel and run machine proof
+        id: generated_kernel
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          ROOT=systems/routeos-generated-kernel-v0.4
+          chmod +x "$ROOT"/build.sh "$ROOT"/compiler/*.mjs "$ROOT"/tests/*.sh "$ROOT"/tests/*.py
+          "$ROOT/tests/run_qemu_proof.sh" 2>&1 | tee GENERATED_KERNEL_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze generated-kernel receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-generated-kernel-v0.4
+          mkdir -p generated-kernel-receipt/generated_kernel generated-kernel-receipt/generated_users generated-kernel-receipt/source
+          for f in GENERATED_KERNEL_PROOF_RUN.log "$ROOT/proof/QEMU_BOOT_TRACE.txt" "$ROOT/build/routeos-kernel.elf" "$ROOT/build/routeos-generated-kernel.iso"; do
+            [[ -f "$f" ]] && cp "$f" generated-kernel-receipt/
+          done
+          cp "$ROOT"/source/*.jm.cading generated-kernel-receipt/source/
+          cp "$ROOT"/build/generated_kernel/* generated-kernel-receipt/generated_kernel/ 2>/dev/null || true
+          cp "$ROOT"/build/generated_users/* generated-kernel-receipt/generated_users/ 2>/dev/null || true
+          printf 'generated_kernel_outcome=%s\ngenerated_kernel_exit_status=%s\nhead_sha=%s\n' \
+            '${{ steps.generated_kernel.outcome }}' '${{ steps.generated_kernel.outputs.exit_status }}' "$GITHUB_SHA" \
+            > generated-kernel-receipt/WORKFLOW_RECEIPT.txt
+          (cd generated-kernel-receipt && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+
+      - name: Upload generated-kernel receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-generated-kernel-v0.4-receipt
+          path: generated-kernel-receipt
+          if-no-files-found: error
+
+      - name: Enforce generated-kernel Ding
+        if: always()
+        shell: bash
+        run: test '${{ steps.generated_kernel.outcome }}' = 'success'

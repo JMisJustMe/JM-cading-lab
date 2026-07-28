@@ -1,0 +1,66 @@
+name: RouteOS Two Generated Bodies Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-two-generated-bodies-v0-3
+  pull_request:
+    branches:
+      - agent/onebody-routeos-kernel-v0-2
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  two-generated-bodies-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout two-body branch
+        uses: actions/checkout@v4
+      - name: Install open proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils nodejs grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+          node --version
+          clang --version | head -n 1
+          grub-mkrescue --version
+          qemu-system-x86_64 --version | head -n 1
+      - name: Build and run both generated CPL3 bodies
+        id: two_bodies
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          ROOT=systems/routeos-two-generated-bodies-v0.3
+          chmod +x "$ROOT"/build.sh "$ROOT"/compiler/lower_routeos_user.mjs "$ROOT"/tests/*.sh "$ROOT"/tests/*.py
+          "$ROOT/tests/run_qemu_proof.sh" 2>&1 | tee TWO_GENERATED_BODIES_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Freeze two-generated-bodies receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-two-generated-bodies-v0.3
+          mkdir -p two-generated-bodies-receipt/generated two-generated-bodies-receipt/source
+          for f in TWO_GENERATED_BODIES_PROOF_RUN.log "$ROOT/proof/QEMU_BOOT_TRACE.txt" "$ROOT/build/routeos-kernel.elf" "$ROOT/build/routeos-kernel.iso"; do [[ -f "$f" ]] && cp "$f" two-generated-bodies-receipt/; done
+          cp "$ROOT"/source/*.jm.cading two-generated-bodies-receipt/source/
+          cp "$ROOT"/build/generated/* two-generated-bodies-receipt/generated/ 2>/dev/null || true
+          printf 'two_bodies_outcome=%s\ntwo_bodies_exit_status=%s\nhead_sha=%s\n' '${{ steps.two_bodies.outcome }}' '${{ steps.two_bodies.outputs.exit_status }}' "$GITHUB_SHA" > two-generated-bodies-receipt/WORKFLOW_RECEIPT.txt
+          (cd two-generated-bodies-receipt && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+      - name: Upload two-generated-bodies receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-two-generated-bodies-v0.3-receipt
+          path: two-generated-bodies-receipt
+          if-no-files-found: error
+      - name: Enforce two-generated-bodies Ding
+        if: always()
+        shell: bash
+        run: test '${{ steps.two_bodies.outcome }}' = 'success'

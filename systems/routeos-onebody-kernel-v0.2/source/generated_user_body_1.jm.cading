@@ -1,0 +1,39 @@
+# OneBody -> RouteOS Kernel Gate v0.2
+# First generated CPL3 execution body.
+module jm.routeos.generated.userbody1
+family: RouteOS Generated User Body 1
+owner: Theodore Benjamin Scott / JM / JMISJUSTME
+version: 0.2.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body CadenVM
+body CodeHand
+body RouteOS
+body RouteCore Native
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+func run:
+  emit TRACE_READ
+  expect PERMISSIONGATE PASS
+  emit ROUTE_STATE 1
+  expect ROUTEOS STATE_CHANGED
+  emit YIELD
+  return LOOP
+end
+
+map Cading -> OneBody IR
+map OneBody IR -> RouteOS Native User ABI
+route run -> int_0x80 -> PermissionGate -> RouteOS state -> user_body
+entity GeneratedUserBody1
+state ready
+phase Q0-Q3
+ding generated-after-machine-proof

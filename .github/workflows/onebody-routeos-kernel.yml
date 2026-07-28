@@ -1,0 +1,91 @@
+name: OneBody to RouteOS Kernel Proof
+
+on:
+  push:
+    branches:
+      - agent/onebody-routeos-kernel-v0-2
+  pull_request:
+    branches:
+      - agent/routeos-kernel-hard-body-v0-1a
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  onebody-kernel-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout generated-body branch
+        uses: actions/checkout@v4
+
+      - name: Install open proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils nodejs grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+          node --version
+          clang --version | head -n 1
+          grub-mkrescue --version
+          qemu-system-x86_64 --version | head -n 1
+
+      - name: Build and run generated CPL3 body
+        id: generated_body
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          ROOT=systems/routeos-onebody-kernel-v0.2
+          chmod +x "$ROOT"/build.sh "$ROOT"/compiler/lower_routeos_user.mjs "$ROOT"/tests/*.sh "$ROOT"/tests/*.py
+          "$ROOT/tests/run_qemu_proof.sh" 2>&1 | tee ONEBODY_ROUTEOS_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze compiler-to-kernel receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-onebody-kernel-v0.2
+          mkdir -p onebody-routeos-receipt/generated
+          for f in \
+            ONEBODY_ROUTEOS_PROOF_RUN.log \
+            "$ROOT/proof/QEMU_BOOT_TRACE.txt" \
+            "$ROOT/build/routeos-kernel.elf" \
+            "$ROOT/build/routeos-kernel.iso" \
+            "$ROOT/source/generated_user_body_1.jm.cading" \
+            "$ROOT/build/generated/generated_user_body_1.S" \
+            "$ROOT/build/generated/generated_user_body_1.onebody.json" \
+            "$ROOT/build/generated/generated_user_body_1.lowering_receipt.json"; do
+            if [[ -f "$f" ]]; then
+              case "$f" in
+                *build/generated/*) cp "$f" onebody-routeos-receipt/generated/ ;;
+                *) cp "$f" onebody-routeos-receipt/ ;;
+              esac
+            fi
+          done
+          {
+            echo "generated_body_outcome=${{ steps.generated_body.outcome }}"
+            echo "generated_body_exit_status=${{ steps.generated_body.outputs.exit_status }}"
+            echo "head_sha=${GITHUB_SHA}"
+          } > onebody-routeos-receipt/WORKFLOW_RECEIPT.txt
+          (cd onebody-routeos-receipt && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+
+      - name: Upload compiler-to-kernel receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onebody-routeos-kernel-v0.2-receipt
+          path: onebody-routeos-receipt
+          if-no-files-found: error
+
+      - name: Enforce generated-body Ding
+        if: always()
+        shell: bash
+        run: |
+          test '${{ steps.generated_body.outcome }}' = 'success'

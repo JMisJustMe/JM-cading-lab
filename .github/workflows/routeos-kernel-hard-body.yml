@@ -1,0 +1,66 @@
+name: RouteOS Kernel Hard-Body Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-hard-body-v0-1a
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qemu-hard-body-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout proof branch
+        uses: actions/checkout@v4
+
+      - name: Restore v0.1A source carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-proof
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 \
+            > .routeos-proof/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-proof/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-proof/source.tar.gz -C .routeos-proof
+
+      - name: Install open proof carriers
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common xorriso qemu-system-x86
+
+      - name: Build and run GRUB to QEMU proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .routeos-proof/routeos-kernel-v0.1A
+          chmod +x build.sh tests/*.sh tests/*.py
+          ./tests/run_qemu_proof.sh
+
+      - name: Freeze machine-run receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=.routeos-proof/routeos-kernel-v0.1A
+          mkdir -p hard-body-receipt
+          for f in \
+            "$ROOT/proof/QEMU_BOOT_TRACE.txt" \
+            "$ROOT/build/routeos-kernel.elf" \
+            "$ROOT/build/routeos-kernel.iso"; do
+            if [[ -f "$f" ]]; then cp "$f" hard-body-receipt/; fi
+          done
+          sha256sum hard-body-receipt/* > hard-body-receipt/SHA256SUMS.txt 2>/dev/null || true
+
+      - name: Upload hard-body receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-v0.1A-hard-body-receipt
+          path: hard-body-receipt
+          if-no-files-found: warn

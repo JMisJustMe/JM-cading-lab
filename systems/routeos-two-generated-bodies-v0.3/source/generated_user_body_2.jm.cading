@@ -1,0 +1,40 @@
+# Two Generated Bodies Gate v0.3
+module jm.routeos.generated.userbody2
+family: RouteOS Generated User Body 2 / Deliberate Fault Route
+owner: Theodore Benjamin Scott / JM / JMISJUSTME
+version: 0.3.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body CadenVM
+body CodeHand
+body RouteOS
+body RouteCore Native
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+func run:
+  emit TRACE_READ
+  expect PERMISSIONGATE PASS
+  emit ROUTE_STATE 2
+  expect ROUTEOS STATE_CHANGED
+  emit FAULT_UD_AFTER 3
+  expect FAULTHOLD OWNS BODY 2
+  emit YIELD
+  return LOOP
+end
+
+map Cading -> OneBody IR
+map OneBody IR -> RouteOS Native User ABI
+route run -> int_0x80 -> PermissionGate -> RouteOS state -> deliberate_fault -> FaultHold -> RecoveryBody
+entity GeneratedUserBody2
+state ready
+phase Q0-Q3
+ding generated-after-machine-proof

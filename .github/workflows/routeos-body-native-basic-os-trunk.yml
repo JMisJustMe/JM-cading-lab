@@ -1,0 +1,90 @@
+name: RouteOS Body-Native Basic OS Trunk Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-body-native-basic-os-trunk-v0-7
+  pull_request:
+    branches:
+      - agent/routeos-sovereign-html-cartridge-adapter-v0-6
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  body-native-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout v0.7 custody branch
+        uses: actions/checkout@v4
+
+      - name: Install C and browser proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang python3-pip
+          python3 -m pip install --disable-pip-version-check playwright
+          python3 -m playwright install chromium --with-deps
+
+      - name: Reconstruct exact source body
+        shell: bash
+        run: |
+          set -euo pipefail
+          CUSTODY=systems/routeos-body-native-basic-os-trunk-v0.7
+          WORK="$RUNNER_TEMP/routeos-v0.7"
+          mkdir -p "$WORK"
+          cat "$CUSTODY"/source_bundle.part* > "$WORK/routeos_body_native_v07_source_bundle.tar.gz"
+          echo 'e7d91f6a4677e96494abd6199584925455043b8ceb3838f708851081455c5e54  '"$WORK/routeos_body_native_v07_source_bundle.tar.gz" | sha256sum -c -
+          mkdir -p "$WORK/source"
+          tar -xzf "$WORK/routeos_body_native_v07_source_bundle.tar.gz" -C "$WORK/source"
+          chmod +x "$WORK/source/run_proof.sh" "$WORK/source/build.py" "$WORK/source/compiler/compile_offices.py" "$WORK/source/tests"/*.py
+          echo "WORK=$WORK" >> "$GITHUB_ENV"
+
+      - name: Generate nine bodies and prove both target metals
+        id: proof
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          "$WORK/source/run_proof.sh" 2>&1 | tee ROUTEOS_V0_7_BODY_NATIVE_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze independent body-native receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=routeos-v0.7-body-native-receipt
+          SRC="$WORK/source"
+          mkdir -p "$OUT/sources" "$OUT/generated/ir" "$OUT/generated/js" "$OUT/generated/c" "$OUT/proof"
+          cp ROUTEOS_V0_7_BODY_NATIVE_PROOF_RUN.log "$OUT/" 2>/dev/null || true
+          cp "$SRC"/README.md "$SRC"/CLAIM_BOUNDARY.md "$SRC"/DONOR_AND_ROUTE_MAP.md "$OUT/" 2>/dev/null || true
+          cp "$SRC"/sources/*.jm.cading "$OUT/sources/" 2>/dev/null || true
+          cp "$SRC"/generated/office_manifest.json "$OUT/generated/" 2>/dev/null || true
+          cp "$SRC"/generated/ir/* "$OUT/generated/ir/" 2>/dev/null || true
+          cp "$SRC"/generated/js/* "$OUT/generated/js/" 2>/dev/null || true
+          cp "$SRC"/generated/c/* "$OUT/generated/c/" 2>/dev/null || true
+          cp "$SRC"/build_out/BUILD_RECEIPT.json "$SRC"/build_out/C_NATIVE_PROOF_TRACE.txt "$OUT/proof/" 2>/dev/null || true
+          cp "$SRC"/proof/BROWSER_PROOF_RECEIPT.json "$SRC"/proof/BROWSER_PROOF_TRACE.txt "$SRC"/proof/FULL_PROOF_TRACE.txt "$OUT/proof/" 2>/dev/null || true
+          cp "$SRC"/build_out/00_OPEN_FIRST_ROUTEOS_v0_7_BODY_NATIVE_BASIC_OS_TRUNK.html "$OUT/" 2>/dev/null || true
+          cp "$WORK/routeos_body_native_v07_source_bundle.tar.gz" "$OUT/" 2>/dev/null || true
+          printf 'proof_outcome=%s\nproof_exit_status=%s\nhead_sha=%s\n' '${{ steps.proof.outcome }}' '${{ steps.proof.outputs.exit_status }}' "$GITHUB_SHA" > "$OUT/WORKFLOW_RECEIPT.txt"
+          (cd "$OUT" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+
+      - name: Upload independent v0.7 receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-body-native-basic-os-trunk-v0.7-receipt
+          path: routeos-v0.7-body-native-receipt
+          if-no-files-found: error
+
+      - name: Enforce body-native Ding
+        if: always()
+        shell: bash
+        run: test '${{ steps.proof.outcome }}' = 'success'

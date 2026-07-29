@@ -1,0 +1,62 @@
+name: RouteOS Sovereign HTML Cartridge Adapter Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-sovereign-html-cartridge-adapter-v0-6
+  pull_request:
+    branches:
+      - agent/routeos-contact-action-v0-5
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sovereign-html-adapter-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout adapter branch
+        uses: actions/checkout@v4
+      - name: Install browser proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check playwright
+          python3 -m playwright install chromium --with-deps
+      - name: Rebuild exact packages and run browser proof
+        id: adapter_proof
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          ROOT=systems/routeos-sovereign-html-cartridge-adapter-v0.6
+          chmod +x "$ROOT/run_proof.sh" "$ROOT/tests/browser_proof.py"
+          "$ROOT/run_proof.sh" 2>&1 | tee SOVEREIGN_HTML_ADAPTER_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Freeze adapter receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-sovereign-html-cartridge-adapter-v0.6
+          mkdir -p sovereign-html-adapter-receipt/source_bodies sovereign-html-adapter-receipt/rebuild_out
+          for f in SOVEREIGN_HTML_ADAPTER_PROOF_RUN.log "$ROOT/BROWSER_PROOF_RECEIPT.json" "$ROOT/README.md" "$ROOT/ADAPTER_CONTRACT.md" "$ROOT/03_JM_SOVEREIGN_HTML_CARTRIDGE_ADAPTER_v0_1.js"; do [[ -f "$f" ]] && cp "$f" sovereign-html-adapter-receipt/; done
+          cp "$ROOT"/source_bodies/* sovereign-html-adapter-receipt/source_bodies/
+          cp "$ROOT"/build_out/* sovereign-html-adapter-receipt/rebuild_out/ 2>/dev/null || true
+          printf 'adapter_outcome=%s\nadapter_exit_status=%s\nhead_sha=%s\n' '${{ steps.adapter_proof.outcome }}' '${{ steps.adapter_proof.outputs.exit_status }}' "$GITHUB_SHA" > sovereign-html-adapter-receipt/WORKFLOW_RECEIPT.txt
+          (cd sovereign-html-adapter-receipt && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+      - name: Upload adapter receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-sovereign-html-cartridge-adapter-v0.6-receipt
+          path: sovereign-html-adapter-receipt
+          if-no-files-found: error
+      - name: Enforce adapter Ding
+        if: always()
+        shell: bash
+        run: test '${{ steps.adapter_proof.outcome }}' = 'success'

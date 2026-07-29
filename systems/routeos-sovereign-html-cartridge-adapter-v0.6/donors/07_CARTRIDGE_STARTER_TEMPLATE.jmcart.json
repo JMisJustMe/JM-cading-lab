@@ -1,0 +1,95 @@
+{
+  "recordType": "JMCartridgePackage",
+  "standard": "JM-CARTRIDGE/1.0",
+  "manifest": {
+    "id": "creator.example-cartridge",
+    "title": "Example Cartridge",
+    "version": "0.1.0",
+    "publisher": "Creator",
+    "trust": "UNTRUSTED",
+    "description": "Edit, validate and install through RouteOS Cartridge Library.",
+    "icon": "＋",
+    "accent": "violet",
+    "entry": "runtime",
+    "runtimeApi": "JM-CARTRIDGE-SDK/1.0",
+    "playerCount": {
+      "min": 1,
+      "max": 1
+    },
+    "offline": true,
+    "permissions": [
+      "runtime.action",
+      "runtime.state",
+      "save.write",
+      "trace.write"
+    ],
+    "requiredActions": [
+      "STEER",
+      "FIRE",
+      "HOME",
+      "PAUSE"
+    ],
+    "optionalActions": [
+      "AIM",
+      "DASH",
+      "CARD",
+      "RECOVER"
+    ],
+    "requiredAnalog": [
+      "STEER"
+    ],
+    "saveNamespace": "creator.example-cartridge",
+    "saveVersion": "1",
+    "tags": [
+      "starter"
+    ]
+  },
+  "runtime": {
+    "baseCartridge": "blank-world",
+    "scenePatch": {
+      "title": "Example Cartridge",
+      "rules": {
+        "shotSpeed": 12,
+        "bounce": 0.8,
+        "card": "shield"
+      },
+      "player": {
+        "x": 120,
+        "y": 270
+      },
+      "roomNames": [
+        "START",
+        "TEST",
+        "CORRECT",
+        "KEEP"
+      ],
+      "packageData": {
+        "uses": 0
+      },
+      "addObjects": [
+        {
+          "type": "coin",
+          "x": 460,
+          "y": 270
+        }
+      ]
+    },
+    "hooks": {
+      "LIFECYCLE:PLAY": [
+        {
+          "type": "PACKAGE_DATA_ADD",
+          "key": "uses",
+          "amount": 1
+        },
+        {
+          "type": "DING",
+          "text": "EXAMPLE LIVE"
+        }
+      ]
+    }
+  },
+  "integrity": {
+    "algorithm": "FNV1A32",
+    "value": "d89c88a4"
+  }
+}

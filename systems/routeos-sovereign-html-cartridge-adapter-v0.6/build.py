@@ -21,7 +21,10 @@ def canonical(pkg):
 def source_bytes(pkg):
     filename=pkg['runtime']['source']['filename']
     if filename.endswith('TBOYS_CORE_CLASH_DIRECT_COMMAND_v0_3_JM_NATIVE.html'):
-        data=gzip.decompress((ROOT/'source_bodies'/f'{filename}.gz').read_bytes())
+        parts=sorted((ROOT/'source_bodies').glob(f'{filename}.gz.b64.part*'))
+        if not parts: raise SystemExit('HOLD compressed source chunks missing')
+        packed=base64.b64decode(''.join(x.read_text().strip() for x in parts),validate=True)
+        data=gzip.decompress(packed)
         expected=(ROOT/'source_bodies'/f'{filename}.sha256').read_text().split()[0]
         actual=hashlib.sha256(data).hexdigest()
         if actual!=expected: raise SystemExit(f'HOLD compressed source SHA mismatch {actual}')

@@ -44,11 +44,16 @@ public final class MainActivity extends Activity {
     private static final int REQUEST_WEB_FILE_CHOOSER = 1202;
     private static final long MAX_BODY_BYTES = 128L * 1024L * 1024L;
     private static final int HTML_PROBE_BYTES = 64 * 1024;
+
     private static final String BODY_FILE = "jm-estate-compass-mounted.html";
     private static final String PREVIOUS_BODY_FILE = "jm-estate-compass-previous.html";
     private static final String INCOMING_BODY_FILE = "jm-estate-compass-incoming.html";
     private static final String BODY_ORIGIN = "https://jm-estate.local/";
     private static final String BODY_URL = BODY_ORIGIN + "index.html";
+
+    private static final String ROUTEOS_PACKAGE = "com.jmisjustme.routeos.gameestate";
+    private static final String ROUTEOS_SCHEME = "jmrouteos";
+    private static final String ROUTEOS_HOST = "cartridge";
 
     private WebView webView;
     private TextView bodyLabel;
@@ -60,7 +65,9 @@ public final class MainActivity extends Activity {
         configureSystemBars();
         buildUi();
         configureWebView();
-        if (!importFromIntent(getIntent())) loadMountedOrBootstrap();
+        if (!importFromIntent(getIntent())) {
+            loadMountedOrBootstrap();
+        }
     }
 
     @Override
@@ -98,14 +105,19 @@ public final class MainActivity extends Activity {
         bar.setGravity(Gravity.CENTER_VERTICAL);
         bar.setPadding(dp(12), 0, dp(8), 0);
         bar.setBackgroundColor(Color.rgb(16, 19, 24));
-        root.addView(bar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(52)));
+        root.addView(bar, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp(52)));
 
         bodyLabel = new TextView(this);
         bodyLabel.setTextColor(Color.rgb(238, 243, 246));
         bodyLabel.setTextSize(13);
         bodyLabel.setSingleLine(true);
-        bodyLabel.setText("JM Estate Compass · v1.2.2");
-        bar.addView(bodyLabel, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        bodyLabel.setText("JM Estate Compass · v1.3.2");
+        bar.addView(bodyLabel, new LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f));
 
         Button bodyButton = new Button(this);
         bodyButton.setText("BODY");
@@ -117,7 +129,10 @@ public final class MainActivity extends Activity {
         bar.addView(bodyButton, new LinearLayout.LayoutParams(dp(88), dp(48)));
 
         webView = new WebView(this);
-        root.addView(webView, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
+        root.addView(webView, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                0,
+                1f));
         setContentView(root);
     }
 
@@ -136,6 +151,7 @@ public final class MainActivity extends Activity {
         webView.setBackgroundColor(Color.rgb(8, 9, 11));
         webView.addJavascriptInterface(new CompassBridge(), "AndroidCompass");
         WebView.setWebContentsDebuggingEnabled(false);
+
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public boolean onShowFileChooser(
@@ -173,9 +189,12 @@ public final class MainActivity extends Activity {
                 }
             }
         });
+
         webView.setWebViewClient(new WebViewClient() {
             @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            public WebResourceResponse shouldInterceptRequest(
+                    WebView view,
+                    WebResourceRequest request) {
                 Uri uri = request.getUrl();
                 if ("jm-estate.local".equals(uri.getHost())
                         && ("/".equals(uri.getPath()) || "/index.html".equals(uri.getPath()))) {
@@ -195,10 +214,21 @@ public final class MainActivity extends Activity {
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+            public boolean shouldOverrideUrlLoading(
+                    WebView view,
+                    WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase(Locale.ROOT);
-                if ((scheme.equals("http") || scheme.equals("https")) && !"jm-estate.local".equals(uri.getHost())) {
+                String scheme = uri.getScheme() == null
+                        ? ""
+                        : uri.getScheme().toLowerCase(Locale.ROOT);
+
+                if (ROUTEOS_SCHEME.equals(scheme)) {
+                    openRouteOSUri(uri);
+                    return true;
+                }
+
+                if (("http".equals(scheme) || "https".equals(scheme))
+                        && !"jm-estate.local".equals(uri.getHost())) {
                     openExternal(uri);
                     return true;
                 }
@@ -211,14 +241,21 @@ public final class MainActivity extends Activity {
         PopupMenu menu = new PopupMenu(this, anchor);
         menu.getMenu().add("Import or replace Compass body");
         menu.getMenu().add("Reload mounted body");
-        if (previousBodyFile().isFile()) menu.getMenu().add("Restore previous Compass body");
+        if (previousBodyFile().isFile()) {
+            menu.getMenu().add("Restore previous Compass body");
+        }
         menu.getMenu().add("Remove mounted body");
         menu.setOnMenuItemClickListener(item -> {
             String title = item.getTitle().toString();
-            if (title.startsWith("Import")) chooseBody();
-            else if (title.startsWith("Reload")) loadMountedOrBootstrap();
-            else if (title.startsWith("Restore")) restorePreviousBody();
-            else confirmReset();
+            if (title.startsWith("Import")) {
+                chooseBody();
+            } else if (title.startsWith("Reload")) {
+                loadMountedOrBootstrap();
+            } else if (title.startsWith("Restore")) {
+                restorePreviousBody();
+            } else {
+                confirmReset();
+            }
             return true;
         });
         menu.show();
@@ -228,12 +265,18 @@ public final class MainActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"text/html", "application/xhtml+xml", "text/plain"});
+        intent.putExtra(
+                Intent.EXTRA_MIME_TYPES,
+                new String[]{"text/html", "application/xhtml+xml", "text/plain"});
         startActivityForResult(intent, REQUEST_IMPORT_BODY);
     }
 
     private boolean importFromIntent(Intent intent) {
-        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction()) || intent.getData() == null) return false;
+        if (intent == null
+                || !Intent.ACTION_VIEW.equals(intent.getAction())
+                || intent.getData() == null) {
+            return false;
+        }
         importBody(intent.getData());
         return true;
     }
@@ -257,19 +300,26 @@ public final class MainActivity extends Activity {
                     Toast.LENGTH_LONG).show();
         } catch (Exception error) {
             incoming.delete();
-            Toast.makeText(this, "Body not mounted: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Body not mounted: " + error.getMessage(),
+                    Toast.LENGTH_LONG).show();
             loadMountedOrBootstrap();
         }
     }
 
-    private ImportReceipt streamBodyToPrivateStorage(Uri uri, File destination) throws Exception {
+    private ImportReceipt streamBodyToPrivateStorage(
+            Uri uri,
+            File destination) throws Exception {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         ByteArrayOutputStream probe = new ByteArrayOutputStream(HTML_PROBE_BYTES);
         long total = 0;
 
         try (InputStream in = getContentResolver().openInputStream(uri);
              FileOutputStream out = new FileOutputStream(destination)) {
-            if (in == null) throw new IOException("The selected file could not be opened.");
+            if (in == null) {
+                throw new IOException("The selected file could not be opened.");
+            }
             byte[] buffer = new byte[64 * 1024];
             int count;
             while ((count = in.read(buffer)) != -1) {
@@ -287,11 +337,14 @@ public final class MainActivity extends Activity {
             out.getFD().sync();
         }
 
-        String opening = probe.toString(StandardCharsets.UTF_8.name()).toLowerCase(Locale.ROOT);
+        String opening = probe.toString(StandardCharsets.UTF_8.name())
+                .toLowerCase(Locale.ROOT);
         if (!opening.contains("<html") && !opening.contains("<!doctype html")) {
             throw new IOException("The selected file is not an HTML body.");
         }
-        if (total == 0) throw new IOException("The selected body is empty.");
+        if (total == 0) {
+            throw new IOException("The selected body is empty.");
+        }
         return new ImportReceipt(total, hex(digest.digest()));
     }
 
@@ -301,11 +354,15 @@ public final class MainActivity extends Activity {
         previous.delete();
         if (mounted.isFile() && !mounted.renameTo(previous)) {
             copyFile(mounted, previous);
-            if (!mounted.delete()) throw new IOException("The current body could not be rotated safely.");
+            if (!mounted.delete()) {
+                throw new IOException("The current body could not be rotated safely.");
+            }
         }
         if (!incoming.renameTo(mounted)) {
             copyFile(incoming, mounted);
-            if (!incoming.delete()) incoming.deleteOnExit();
+            if (!incoming.delete()) {
+                incoming.deleteOnExit();
+            }
         }
     }
 
@@ -313,30 +370,50 @@ public final class MainActivity extends Activity {
         File mounted = mountedBodyFile();
         File previous = previousBodyFile();
         if (!previous.isFile()) {
-            Toast.makeText(this, "No previous body is available.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "No previous body is available.",
+                    Toast.LENGTH_LONG).show();
             return;
         }
+
         File swap = new File(getFilesDir(), "jm-estate-compass-swap.html");
         swap.delete();
         try {
-            if (mounted.isFile() && !mounted.renameTo(swap)) copyFile(mounted, swap);
-            if (!previous.renameTo(mounted)) copyFile(previous, mounted);
+            if (mounted.isFile() && !mounted.renameTo(swap)) {
+                copyFile(mounted, swap);
+            }
+            if (!previous.renameTo(mounted)) {
+                copyFile(previous, mounted);
+            }
             previous.delete();
-            if (swap.isFile() && !swap.renameTo(previous)) copyFile(swap, previous);
+            if (swap.isFile() && !swap.renameTo(previous)) {
+                copyFile(swap, previous);
+            }
             swap.delete();
-            getPreferences(MODE_PRIVATE).edit().putString("mounted_name", "Restored previous Compass body").apply();
+            getPreferences(MODE_PRIVATE).edit()
+                    .putString("mounted_name", "Restored previous Compass body")
+                    .apply();
             loadMountedOrBootstrap();
-            Toast.makeText(this, "Previous Compass body restored.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Previous Compass body restored.",
+                    Toast.LENGTH_LONG).show();
         } catch (IOException error) {
-            Toast.makeText(this, "Previous body not restored: " + error.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "Previous body not restored: " + error.getMessage(),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
     private void loadMountedOrBootstrap() {
         File body = mountedBodyFile();
         if (body.isFile()) {
-            String name = getPreferences(MODE_PRIVATE).getString("mounted_name", BODY_FILE);
-            long size = getPreferences(MODE_PRIVATE).getLong("mounted_bytes", body.length());
+            String name = getPreferences(MODE_PRIVATE)
+                    .getString("mounted_name", BODY_FILE);
+            long size = getPreferences(MODE_PRIVATE)
+                    .getLong("mounted_bytes", body.length());
             bodyLabel.setText("JM Estate Compass · " + name + " · " + readableBytes(size));
             webView.stopLoading();
             webView.clearCache(true);
@@ -358,7 +435,44 @@ public final class MainActivity extends Activity {
                     incomingBodyFile().delete();
                     getPreferences(MODE_PRIVATE).edit().clear().apply();
                     loadMountedOrBootstrap();
-                }).show();
+                })
+                .show();
+    }
+
+    private void openRouteOSUri(Uri uri) {
+        if (uri == null
+                || !ROUTEOS_SCHEME.equalsIgnoreCase(uri.getScheme())
+                || !ROUTEOS_HOST.equalsIgnoreCase(uri.getHost())) {
+            Toast.makeText(this, "RouteOS route is invalid.", Toast.LENGTH_LONG).show();
+            return;
+        }
+        openRouteOSCartridgeNative(uri.getLastPathSegment());
+    }
+
+    private void openRouteOSCartridgeNative(String cartridgeId) {
+        if (cartridgeId == null
+                || cartridgeId.isEmpty()
+                || !cartridgeId.matches("[A-Za-z0-9._-]{1,120}")) {
+            Toast.makeText(this, "Cartridge route is invalid.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        Uri route = new Uri.Builder()
+                .scheme(ROUTEOS_SCHEME)
+                .authority(ROUTEOS_HOST)
+                .appendPath(cartridgeId)
+                .build();
+        Intent intent = new Intent(Intent.ACTION_VIEW, route);
+        intent.setPackage(ROUTEOS_PACKAGE);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException error) {
+            Toast.makeText(
+                    this,
+                    "Install or update JM RouteOS Game Estate to open this cartridge.",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -374,15 +488,21 @@ public final class MainActivity extends Activity {
             return;
         }
 
-        if (requestCode == REQUEST_IMPORT_BODY && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == REQUEST_IMPORT_BODY
+                && resultCode == RESULT_OK
+                && data != null
+                && data.getData() != null) {
             importBody(data.getData());
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -402,7 +522,10 @@ public final class MainActivity extends Activity {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, uri));
         } catch (ActivityNotFoundException error) {
-            Toast.makeText(this, "No browser can open this link.", Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                    this,
+                    "No browser can open this link.",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -419,12 +542,21 @@ public final class MainActivity extends Activity {
     }
 
     private String displayName(Uri uri) {
-        try (Cursor cursor = getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+        try (Cursor cursor = getContentResolver().query(
+                uri,
+                new String[]{OpenableColumns.DISPLAY_NAME},
+                null,
+                null,
+                null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if (index >= 0) return cursor.getString(index);
+                if (index >= 0) {
+                    return cursor.getString(index);
+                }
             }
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+            // The fallback path below is sufficient for providers without metadata.
+        }
         String last = uri.getLastPathSegment();
         return last == null ? BODY_FILE : last;
     }
@@ -434,21 +566,29 @@ public final class MainActivity extends Activity {
              FileOutputStream out = new FileOutputStream(destination)) {
             byte[] buffer = new byte[64 * 1024];
             int count;
-            while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
+            while ((count = in.read(buffer)) != -1) {
+                out.write(buffer, 0, count);
+            }
             out.getFD().sync();
         }
     }
 
     private static String hex(byte[] bytes) {
         StringBuilder result = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) result.append(String.format(Locale.ROOT, "%02x", b));
+        for (byte value : bytes) {
+            result.append(String.format(Locale.ROOT, "%02x", value));
+        }
         return result.toString();
     }
 
     private static String readableBytes(long bytes) {
-        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
         double kib = bytes / 1024.0;
-        if (kib < 1024) return String.format(Locale.ROOT, "%.1f KiB", kib);
+        if (kib < 1024) {
+            return String.format(Locale.ROOT, "%.1f KiB", kib);
+        }
         return String.format(Locale.ROOT, "%.1f MiB", kib / 1024.0);
     }
 
@@ -470,6 +610,11 @@ public final class MainActivity extends Activity {
         @JavascriptInterface
         public void chooseBody() {
             runOnUiThread(MainActivity.this::chooseBody);
+        }
+
+        @JavascriptInterface
+        public void openRouteOSCartridge(String cartridgeId) {
+            runOnUiThread(() -> openRouteOSCartridgeNative(cartridgeId));
         }
     }
 }

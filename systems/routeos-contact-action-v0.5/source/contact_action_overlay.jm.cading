@@ -1,0 +1,50 @@
+# RouteOS Contact-to-Action Convergence Overlay v0.5
+module jm.routeos.kernel.contact-action.overlay
+family: Auto-Gate + RouteOS + KicPlay OS / Contact-to-Action Kernel Overlay
+owner: Theodore Benjamin Scott / JM / JMISJUSTME
+version: 0.5.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body Auto-Gate / Boring OS
+body RouteOS
+body KicPlay OS
+body INOUT-16
+body RouteScheduler
+body PermissionGate
+body FaultHold
+body RecoveryBody
+body DeviceRoute
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+func contact:
+  emit OFFICE AUTOGATE FIRST_CONTACT_AUTHORITY_QUARANTINE
+  emit OFFICE ROUTESCHEDULER REUSE_EXISTING_PIT_ROUND_ROBIN
+  emit OFFICE KICPLAY INPUT_TO_ACTION_BODY_ACTIVATION
+  emit OFFICE DEVICEROUTE PS2_KEYBOARD_IRQ1
+  emit DEVICE KEYBOARD PS2 0x60
+  emit MEMORY CONTACT_LEDGER_CAPACITY 16
+  expect BASE_GENERATED_KERNEL_V0_4
+  expect AUTO_GATE_FIRST_CONTACT
+  expect KICPLAY_INPUT_TO_ACTION
+  expect INOUT16_ORIGIN_PROCESSING_EXPRESSION_RECOVERY
+  expect NO_ERASURE_CONTACT_LEDGER
+  expect EXISTING_ROUTESCHEDULER_CONTINUATION
+  return SEALED
+end
+
+map contact overlay -> generated RouteOS kernel v0.4
+map keyboard contact -> Auto-Gate / Boring OS -> RouteOS -> KicPlay OS
+route Origin -> Processing -> Expression -> Recovery
+entity ContactActionConvergenceOverlay
+state contact-ready
+phase Q0-Q5
+ding generated-after-machine-proof

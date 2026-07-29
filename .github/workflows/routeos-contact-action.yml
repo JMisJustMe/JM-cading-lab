@@ -1,0 +1,71 @@
+name: RouteOS Contact-to-Action Proof
+
+on:
+  push:
+    branches:
+      - agent/routeos-contact-action-v0-5
+  pull_request:
+    branches:
+      - agent/routeos-generated-kernel-v0-4
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contact-action-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout contact-action branch
+        uses: actions/checkout@v4
+      - name: Assert no maintained target kernel source
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-contact-action-v0.5
+          test ! -e "$ROOT/kernel/routeos_kernel.c"
+          test ! -e "$ROOT/arch/x86_64/boot.S"
+          test ! -e "$ROOT/linker.ld"
+      - name: Install open proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils nodejs grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+      - name: Generate kernel and prove contact-to-action route
+        id: contact_action
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          ROOT=systems/routeos-contact-action-v0.5
+          chmod +x "$ROOT"/build.sh "$ROOT"/compiler/*.mjs "$ROOT"/tests/*.sh "$ROOT"/tests/*.py
+          "$ROOT/tests/run_qemu_proof.sh" 2>&1 | tee ROUTEOS_CONTACT_ACTION_PROOF_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Freeze contact-action receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-contact-action-v0.5
+          mkdir -p contact-action-receipt/generated_kernel contact-action-receipt/generated_users contact-action-receipt/source
+          for f in ROUTEOS_CONTACT_ACTION_PROOF_RUN.log "$ROOT/proof/QEMU_BOOT_TRACE.txt" "$ROOT/build/routeos-kernel.elf" "$ROOT/build/routeos-contact-action.iso"; do [[ -f "$f" ]] && cp "$f" contact-action-receipt/; done
+          cp "$ROOT"/source/*.jm.cading contact-action-receipt/source/
+          cp "$ROOT"/build/generated_kernel/* contact-action-receipt/generated_kernel/ 2>/dev/null || true
+          cp "$ROOT"/build/generated_users/* contact-action-receipt/generated_users/ 2>/dev/null || true
+          printf 'contact_action_outcome=%s\ncontact_action_exit_status=%s\nhead_sha=%s\n' '${{ steps.contact_action.outcome }}' '${{ steps.contact_action.outputs.exit_status }}' "$GITHUB_SHA" > contact-action-receipt/WORKFLOW_RECEIPT.txt
+          (cd contact-action-receipt && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+      - name: Upload contact-action receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-contact-action-v0.5-receipt
+          path: contact-action-receipt
+          if-no-files-found: error
+      - name: Enforce contact-to-action Ding
+        if: always()
+        shell: bash
+        run: test '${{ steps.contact_action.outcome }}' = 'success'

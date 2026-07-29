@@ -1,0 +1,162 @@
+[
+  {
+    "output": "04_TBOYS_CORE_CLASH_v0_3_SOVEREIGN_HTML_CARTRIDGE.jmcart.json",
+    "package": {
+      "recordType": "JMCartridgePackage",
+      "standard": "JM-CARTRIDGE/1.0",
+      "manifest": {
+        "id": "jm.sovereign.tboys-core-clash-v0-3",
+        "title": "T-Boys: Core Clash — Direct Command",
+        "version": "0.3.0",
+        "publisher": "Theodore Benjamin Scott / JM / JMISJUSTME",
+        "trust": "FIRST_PARTY",
+        "description": "Exact preserved JM T-Boys HTML game body mounted through the sovereign adapter.",
+        "icon": "⚔",
+        "accent": "cyan",
+        "entry": "runtime",
+        "runtimeApi": "JM-CARTRIDGE-SDK/1.0",
+        "playerCount": {
+          "min": 1,
+          "max": 2
+        },
+        "offline": true,
+        "permissions": [
+          "runtime.action",
+          "runtime.state",
+          "save.read",
+          "save.write",
+          "profile.read",
+          "capability.read",
+          "trace.write"
+        ],
+        "requiredActions": [
+          "HOME",
+          "PAUSE"
+        ],
+        "optionalActions": [
+          "STEER",
+          "FIRE",
+          "AIM",
+          "DASH",
+          "CARD",
+          "RECOVER"
+        ],
+        "requiredAnalog": [],
+        "saveNamespace": "jm.sovereign.tboys-core-clash-v0-3",
+        "saveVersion": "1",
+        "tags": [
+          "sovereign-html",
+          "source-preserved",
+          "routeos-adapter"
+        ]
+      },
+      "runtime": {
+        "baseCartridge": "sovereign-html-adapter",
+        "adapterStandard": "JM-SOVEREIGN-HTML-CARTRIDGE/0.1",
+        "source": {
+          "filename": "00_OPEN_FIRST_TBOYS_CORE_CLASH_DIRECT_COMMAND_v0_3_JM_NATIVE.html",
+          "encoding": "base64",
+          "sha256": "b4e75e41f5f65ade5a438f49987e7cf61ee5c658fdbc7a69c7e75b3365b4d95b",
+          "bytes": 48473
+        },
+        "sandbox": {
+          "mode": "FIRST_PARTY_SAME_ORIGIN",
+          "tokens": [
+            "allow-scripts",
+            "allow-same-origin"
+          ]
+        },
+        "bridge": {
+          "events": [
+            "jm-console-action",
+            "jm-console-input-profile",
+            "jm-console-hold",
+            "jm-console-resume"
+          ],
+          "saveVault": "exact-touched-key-values",
+          "quickResume": "same-live-frame"
+        }
+      }
+    }
+  },
+  {
+    "output": "05_SAVE_PROBE_SOVEREIGN_HTML_CARTRIDGE.jmcart.json",
+    "package": {
+      "recordType": "JMCartridgePackage",
+      "standard": "JM-CARTRIDGE/1.0",
+      "manifest": {
+        "id": "jm.sovereign.save-probe",
+        "title": "JM Sovereign Save Probe",
+        "version": "0.1.0",
+        "publisher": "Theodore Benjamin Scott / JM / JMISJUSTME",
+        "trust": "FIRST_PARTY",
+        "description": "Small first-party proof body for exact touched-key Save Vault verification.",
+        "icon": "◇",
+        "accent": "cyan",
+        "entry": "runtime",
+        "runtimeApi": "JM-CARTRIDGE-SDK/1.0",
+        "playerCount": {
+          "min": 1,
+          "max": 2
+        },
+        "offline": true,
+        "permissions": [
+          "runtime.action",
+          "runtime.state",
+          "save.read",
+          "save.write",
+          "profile.read",
+          "capability.read",
+          "trace.write"
+        ],
+        "requiredActions": [
+          "HOME",
+          "PAUSE"
+        ],
+        "optionalActions": [
+          "STEER",
+          "FIRE",
+          "AIM",
+          "DASH",
+          "CARD",
+          "RECOVER"
+        ],
+        "requiredAnalog": [],
+        "saveNamespace": "jm.sovereign.save-probe",
+        "saveVersion": "1",
+        "tags": [
+          "sovereign-html",
+          "source-preserved",
+          "routeos-adapter"
+        ]
+      },
+      "runtime": {
+        "baseCartridge": "sovereign-html-adapter",
+        "adapterStandard": "JM-SOVEREIGN-HTML-CARTRIDGE/0.1",
+        "source": {
+          "filename": "JM_SOVEREIGN_SAVE_PROBE_v0_1.html",
+          "encoding": "base64",
+          "sha256": "a574414dee7f3c21829712efb5b3f01d7b08af8a0c21de94f3679e2ff55f2063",
+          "bytes": 1502
+        },
+        "sandbox": {
+          "mode": "FIRST_PARTY_SAME_ORIGIN",
+          "tokens": [
+            "allow-scripts",
+            "allow-same-origin"
+          ]
+        },
+        "bridge": {
+          "events": [
+            "jm-console-action",
+            "jm-console-input-profile",
+            "jm-console-hold",
+            "jm-console-resume"
+          ],
+          "saveVault": "exact-touched-key-values",
+          "quickResume": "same-live-frame"
+        }
+      }
+    }
+  }
+]

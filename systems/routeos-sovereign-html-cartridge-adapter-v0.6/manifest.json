@@ -1,0 +1,33 @@
+{
+  "recordType": "JM.SovereignHTMLCartridgeAdapter.Manifest/0.1",
+  "version": "0.1.0",
+  "builtAt": "2026-07-29T00:39:49.812993+00:00",
+  "donors": {
+    "routeOS": "v103.0",
+    "cartridgeStandard": "JM-CARTRIDGE/1.0",
+    "gameConsole": "v0.3 shared runtime contract",
+    "proofBody": "00_OPEN_FIRST_TBOYS_CORE_CLASH_DIRECT_COMMAND_v0_3_JM_NATIVE.html"
+  },
+  "sourceHashes": {
+    "routeOSOpenFirst": "9c60245a0fae7d9a2a3a58117a6ac1cde31611b35fc8fa81e222930dc6258cd8",
+    "cartridgeSDK": "6becf79d0955aafc6a960dd3854664b60bda50cf1fa973230c1721ee8921fd52",
+    "saveProbeBody": "a574414dee7f3c21829712efb5b3f01d7b08af8a0c21de94f3679e2ff55f2063",
+    "tboysBody": "b4e75e41f5f65ade5a438f49987e7cf61ee5c658fdbc7a69c7e75b3365b4d95b"
+  },
+  "packages": [
+    {
+      "id": "jm.sovereign.tboys-core-clash-v0-3",
+      "sourceSha256": "b4e75e41f5f65ade5a438f49987e7cf61ee5c658fdbc7a69c7e75b3365b4d95b",
+      "integrity": "da43c983"
+    },
+    {
+      "id": "jm.sovereign.save-probe",
+      "sourceSha256": "a574414dee7f3c21829712efb5b3f01d7b08af8a0c21de94f3679e2ff55f2063",
+      "integrity": "8de570da"
+    }
+  ],
+  "claimBoundary": "First-party hosted browser adapter; not native kernel HTML execution and not an untrusted arbitrary-JavaScript lane.",
+  "generatedHashes": {
+    "openFirstSha256": "c0f8082d197ed80f808ea258e9e431558cbfc945436494cd5548599d19c9634f"
+  }
+}

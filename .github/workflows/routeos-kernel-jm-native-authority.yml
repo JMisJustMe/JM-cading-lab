@@ -1,0 +1,65 @@
+name: RouteOS JM-Native Source Authority
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-v0-2a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-source-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout v0.2A authority branch
+        uses: actions/checkout@v4
+
+      - name: Verify frozen hard-body parent carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64' | sha256sum -c -
+
+      - name: Prove deterministic JM lowering
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$ROOT/tools/jmroutec.py" \
+            "$ROOT/source/routeos_kernel.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+
+      - name: Run source-authority tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Freeze authority hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          mkdir -p jm-native-authority-receipt
+          cp "$ROOT/proof/JM_SOURCE_AUTHORITY_RECEIPT.md" jm-native-authority-receipt/
+          sha256sum \
+            "$ROOT/source/routeos_kernel.jmroute" \
+            "$ROOT/tools/jmroutec.py" \
+            "$ROOT/generated/routeos_authority.h" \
+            "$ROOT/generated/routeos_authority.json" \
+            > jm-native-authority-receipt/SHA256SUMS.txt
+
+      - name: Upload JM authority receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.2A-source-authority
+          path: jm-native-authority-receipt
+          if-no-files-found: error

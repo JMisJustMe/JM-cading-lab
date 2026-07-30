@@ -15,11 +15,33 @@
   "USER_DATA_SELECTOR": "USER_DATA_SELECTOR",
   "VERSION": "v0.9A",
   "frame_fields": [
-    "r15", "r14", "r13", "r12", "r11", "r10", "r9", "r8",
-    "rsi", "rdi", "rbp", "rdx", "rcx", "rbx", "rax",
-    "vector", "error", "rip", "cs", "rflags", "rsp", "ss"
+    "r15",
+    "r14",
+    "r13",
+    "r12",
+    "r11",
+    "r10",
+    "r9",
+    "r8",
+    "rsi",
+    "rdi",
+    "rbp",
+    "rdx",
+    "rcx",
+    "rbx",
+    "rax",
+    "vector",
+    "error",
+    "rip",
+    "cs",
+    "rflags",
+    "rsp",
+    "ss"
   ],
-  "offices": ["BodyRegistry", "UserBoundary"],
+  "offices": [
+    "BodyRegistry",
+    "UserBoundary"
+  ],
   "source_sha256": "c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f",
   "states": {
     "BODY_BLOCKED": 2,
@@ -27,7 +49,19 @@
     "BODY_RUNNING": 1
   },
   "users": [
-    {"code": "USER1_CODE", "id": 1, "stack_page": "USER1_STACK_PAGE", "stack_top": "USER1_STACK_TOP", "token": 1},
-    {"code": "USER2_CODE", "id": 2, "stack_page": "USER2_STACK_PAGE", "stack_top": "USER2_STACK_TOP", "token": 2}
+    {
+      "code": "USER1_CODE",
+      "id": 1,
+      "stack_page": "USER1_STACK_PAGE",
+      "stack_top": "USER1_STACK_TOP",
+      "token": 1
+    },
+    {
+      "code": "USER2_CODE",
+      "id": 2,
+      "stack_page": "USER2_STACK_PAGE",
+      "stack_top": "USER2_STACK_TOP",
+      "token": 2
+    }
   ]
 }

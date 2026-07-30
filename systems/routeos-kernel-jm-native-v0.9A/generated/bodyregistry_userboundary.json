@@ -1,0 +1,33 @@
+{
+  "BLOB_END": "routeos_user_blob_end",
+  "BLOB_START": "routeos_user_blob_start",
+  "BODY_COUNT": "2",
+  "CURRENT_BODY_INITIAL": "-1",
+  "FRAME_RFLAGS": "0x202",
+  "MACHINE_PARENT": "fd62b04fc9e0efeb958aba96b73eba072860e0c4",
+  "PAGE_SIZE": "4096",
+  "PAGE_USER_FLAG": "0x4",
+  "PROOF_PARENT": "e25f338d0d0025bdf9d00d502a832702082eda71",
+  "RELOAD_CR3": "routeos_reload_cr3",
+  "TICKS_INITIAL": "0",
+  "TOKEN_REGISTER": "r12",
+  "USER_CODE_SELECTOR": "USER_CODE_SELECTOR",
+  "USER_DATA_SELECTOR": "USER_DATA_SELECTOR",
+  "VERSION": "v0.9A",
+  "frame_fields": [
+    "r15", "r14", "r13", "r12", "r11", "r10", "r9", "r8",
+    "rsi", "rdi", "rbp", "rdx", "rcx", "rbx", "rax",
+    "vector", "error", "rip", "cs", "rflags", "rsp", "ss"
+  ],
+  "offices": ["BodyRegistry", "UserBoundary"],
+  "source_sha256": "c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f",
+  "states": {
+    "BODY_BLOCKED": 2,
+    "BODY_READY": 0,
+    "BODY_RUNNING": 1
+  },
+  "users": [
+    {"code": "USER1_CODE", "id": 1, "stack_page": "USER1_STACK_PAGE", "stack_top": "USER1_STACK_TOP", "token": 1},
+    {"code": "USER2_CODE", "id": 2, "stack_page": "USER2_STACK_PAGE", "stack_top": "USER2_STACK_TOP", "token": 2}
+  ]
+}

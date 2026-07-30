@@ -18,6 +18,6 @@ The final assembly frame-entry/`iretq` carrier remains outside the claim.
 
 ## Required machine order
 
-`IgnitionBody → authority → MemoryBody → DescriptorBody → InterruptRoute → BodyRegistry → UserBoundary → registry receipt → RouteScheduler → PermissionGate → FaultHold → RecoveryBody`.
+`IgnitionBody → authority → MemoryBody → DescriptorBody → BodyRegistry → UserBoundary → InterruptRoute → interrupt receipt → registry receipt → RouteScheduler → PermissionGate → FaultHold → RecoveryBody`.
 
 A PASS proves ten named JM-generated operational offices. It does not prove generated assembly entry, page-table storage construction, ISR stubs or user-code bytes.

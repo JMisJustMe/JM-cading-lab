@@ -24,7 +24,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64' | sha256sum -c -
+          mkdir -p .routeos-proof
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 \
+            > .routeos-proof/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-proof/source.tar.gz' | sha256sum -c -
 
       - name: Prove deterministic JM lowering
         shell: bash

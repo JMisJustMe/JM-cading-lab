@@ -20,6 +20,9 @@ param(
 
     [string]$RepoRoot,
 
+    [ValidateRange(1024, 536870912)]
+    [long]$MaxBytes = 33554432,
+
     [switch]$AllowOverwrite,
 
     [switch]$AllowDuplicate
@@ -47,6 +50,27 @@ function Convert-ToRoutePath {
     return ($PathValue -replace '\\', '/').Trim('/')
 }
 
+function Resolve-JMChildPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Root,
+
+        [Parameter(Mandatory = $true)]
+        [string]$RelativePath
+    )
+
+    $rootFull = [IO.Path]::GetFullPath($Root)
+    $candidate = [IO.Path]::GetFullPath((Join-Path $rootFull $RelativePath))
+    $trimChars = [char[]]@([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)
+    $rootPrefix = $rootFull.TrimEnd($trimChars) + [IO.Path]::DirectorySeparatorChar
+
+    if (-not $candidate.StartsWith($rootPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'The selected office resolves outside the repository. No files were written.'
+    }
+
+    return $candidate
+}
+
 $repo = Resolve-JMRepoRoot -ExplicitRoot $RepoRoot
 
 if ($Source -match '^content://') {
@@ -63,12 +87,23 @@ $officePath = switch ($Office) {
         if (-not $CustomOfficePath) {
             throw '-CustomOfficePath is required when -Office custom is used.'
         }
-        Convert-ToRoutePath $CustomOfficePath
+        if ([IO.Path]::IsPathRooted($CustomOfficePath)) {
+            throw 'Custom office paths must be repository-relative.'
+        }
+
+        $normalizedOffice = Convert-ToRoutePath $CustomOfficePath
+        if ([string]::IsNullOrWhiteSpace($normalizedOffice) -or
+            $normalizedOffice -match '(^|/)\.{1,2}($|/)' -or
+            $normalizedOffice -match '[:*?"<>|]') {
+            throw 'Custom office path contains an unsafe or unsupported segment.'
+        }
+
+        $normalizedOffice
     }
 }
 
 $routePath = Convert-ToRoutePath (Join-Path $officePath $Slug)
-$targetDir = Join-Path $repo ($routePath -replace '/', [IO.Path]::DirectorySeparatorChar)
+$targetDir = Resolve-JMChildPath -Root $repo -RelativePath $routePath
 $targetHtml = Join-Path $targetDir 'index.html'
 $tempSource = $null
 $sourceKind = 'local_file'
@@ -92,8 +127,16 @@ try {
         throw 'The supplied source must be one HTML file, not a folder.'
     }
 
+    if ($sourceKind -eq 'local_file' -and $sourceItem.Extension -notin @('.html', '.htm')) {
+        throw 'The supplied local source must be an .html or .htm file.'
+    }
+
+    $sourceBytes = [long]$sourceItem.Length
+    if ($sourceBytes -gt $MaxBytes) {
+        throw ("Source is {0:N0} bytes, above the {1:N0}-byte intake ceiling. Reduce the body or pass an explicit larger -MaxBytes value after review." -f $sourceBytes, $MaxBytes)
+    }
+
     $sourceHash = (Get-FileHash -LiteralPath $resolvedSource -Algorithm SHA256).Hash
-    $sourceBytes = $sourceItem.Length
 
     if (-not $AllowDuplicate) {
         $existingMatch = Get-ChildItem -LiteralPath $repo -Filter 'index.html' -File -Recurse -ErrorAction SilentlyContinue |
@@ -106,12 +149,19 @@ try {
 
         if ($existingMatch) {
             $relative = Convert-ToRoutePath ($existingMatch.FullName.Substring($repo.Length).TrimStart('\', '/'))
-            $existingRoute = $relative -replace '/index\.html$', '/'
+            $existingRoute = if ($relative -eq 'index.html') { '' } else { $relative -replace '/index\.html$', '/' }
+            $stableExistingRoute = if ($existingRoute) {
+                "https://jmisjustme-estate.pages.dev/$existingRoute"
+            }
+            else {
+                'https://jmisjustme-estate.pages.dev/'
+            }
+
             Write-Host 'No copy created: an exact byte-identical permanent body already exists.'
             Write-Host ("Existing file: {0}" -f $relative)
-            Write-Host ("Stable route: https://jmisjustme-estate.pages.dev/{0}" -f $existingRoute)
+            Write-Host ("Stable route: {0}" -f $stableExistingRoute)
             Write-Host ("SHA-256: {0}" -f $sourceHash)
-            exit 0
+            return
         }
     }
 
@@ -143,6 +193,7 @@ try {
         source_reference = $sourceReference
         byte_count = $sourceBytes
         sha256 = $sourceHash
+        intake_ceiling_bytes = $MaxBytes
         imported_at_utc = $now
         status = 'STAGED_NOT_PUBLISHED'
         laws = @(
@@ -158,7 +209,7 @@ try {
     $manifestPath = Join-Path $targetDir 'body-manifest.json'
     $manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
 
-    $receiptDir = Join-Path $repo 'receipts/body-intake'
+    $receiptDir = Resolve-JMChildPath -Root $repo -RelativePath 'receipts/body-intake'
     New-Item -ItemType Directory -Path $receiptDir -Force | Out-Null
     $receiptName = '{0}-{1}.json' -f $Slug, (Get-Date -Format 'yyyyMMdd-HHmmss')
     $receiptPath = Join-Path $receiptDir $receiptName

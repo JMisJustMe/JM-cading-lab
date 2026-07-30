@@ -1,0 +1,133 @@
+name: Test permanent HTML body pipeline
+
+on:
+  push:
+    branches:
+      - jm/permanent-body-pipeline-v0-1
+    paths:
+      - tools/Promote-JMHtmlBody.ps1
+      - .github/workflows/test-permanent-html-body-pipeline.yml
+  pull_request:
+    paths:
+      - tools/Promote-JMHtmlBody.ps1
+      - docs/JM_PERMANENT_BODY_PIPELINE_v0_1.md
+      - .github/workflows/test-permanent-html-body-pipeline.yml
+
+permissions:
+  contents: read
+
+jobs:
+  windows-powershell:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Run governed intake acceptance tests
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $tool = Join-Path $env:GITHUB_WORKSPACE 'tools\Promote-JMHtmlBody.ps1'
+          $root = Join-Path $env:RUNNER_TEMP 'jm-html-pipeline-test'
+          if (Test-Path -LiteralPath $root) {
+              Remove-Item -LiteralPath $root -Recurse -Force
+          }
+          New-Item -ItemType Directory -Path $root -Force | Out-Null
+
+          $source = Join-Path $env:RUNNER_TEMP 'jm-source-body.html'
+          $html = '<!doctype html><html><head><meta charset="utf-8"><title>JM Test Body</title></head><body><button id="proof">Proof</button></body></html>'
+          [IO.File]::WriteAllText($source, $html, [Text.UTF8Encoding]::new($false))
+
+          & $tool `
+            -Source $source `
+            -Slug 'test-body' `
+            -Office 'apps' `
+            -BodyName 'JM Test Body' `
+            -Version 'v0.1-test' `
+            -RepoRoot $root
+
+          $target = Join-Path $root 'apps\test-body\index.html'
+          $manifestPath = Join-Path $root 'apps\test-body\body-manifest.json'
+          $receiptDir = Join-Path $root 'receipts\body-intake'
+
+          if (-not (Test-Path -LiteralPath $target)) { throw 'Canonical HTML target was not created.' }
+          if (-not (Test-Path -LiteralPath $manifestPath)) { throw 'Manifest was not created.' }
+          if (-not (Test-Path -LiteralPath $receiptDir)) { throw 'Receipt directory was not created.' }
+
+          $sourceHash = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+          $targetHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+          if ($sourceHash -ne $targetHash) { throw 'HTML bytes were not preserved.' }
+
+          $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+          if ($manifest.sha256 -ne $sourceHash) { throw 'Manifest hash does not match the HTML.' }
+          if ($manifest.repository_path -ne 'apps/test-body/index.html') { throw 'Manifest repository path is incorrect.' }
+          if ($manifest.status -ne 'STAGED_NOT_PUBLISHED') { throw 'Manifest crossed the publication boundary.' }
+
+          $receipts = @(Get-ChildItem -LiteralPath $receiptDir -Filter 'test-body-*.json' -File)
+          if ($receipts.Count -ne 1) { throw 'Expected exactly one small intake receipt.' }
+          $receipt = Get-Content -LiteralPath $receipts[0].FullName -Raw | ConvertFrom-Json
+          if ($receipt.sha256 -ne $sourceHash) { throw 'Receipt hash does not match the HTML.' }
+          if ($receipt.remote_changes_made -ne $false) { throw 'Receipt incorrectly claims a remote change.' }
+
+          $duplicateOutput = (& $tool `
+            -Source $source `
+            -Slug 'duplicate-body' `
+            -Office 'apps' `
+            -BodyName 'Duplicate Test Body' `
+            -RepoRoot $root 6>&1 | Out-String)
+
+          if (Test-Path -LiteralPath (Join-Path $root 'apps\duplicate-body')) {
+              throw 'A byte-identical duplicate body was created.'
+          }
+          if ($duplicateOutput -notmatch 'No copy created') {
+              throw 'Duplicate avoidance did not return its existing-body result.'
+          }
+
+          $contentRejected = $false
+          try {
+              & $tool `
+                -Source 'content://android-provider/temporary-body' `
+                -Slug 'android-handle' `
+                -Office 'apps' `
+                -BodyName 'Android Handle' `
+                -RepoRoot $root
+          }
+          catch {
+              $contentRejected = $_.Exception.Message -match 'content://'
+          }
+          if (-not $contentRejected) { throw 'Android content handle was not rejected.' }
+
+          $traversalRejected = $false
+          try {
+              & $tool `
+                -Source $source `
+                -Slug 'outside-body' `
+                -Office 'custom' `
+                -CustomOfficePath '..\outside' `
+                -BodyName 'Outside Body' `
+                -RepoRoot $root
+          }
+          catch {
+              $traversalRejected = $_.Exception.Message -match 'unsafe|outside|relative'
+          }
+          if (-not $traversalRejected) { throw 'Repository path traversal was not rejected.' }
+
+          $largeSource = Join-Path $env:RUNNER_TEMP 'jm-large-body.html'
+          [IO.File]::WriteAllText($largeSource, ('x' * 2048), [Text.UTF8Encoding]::new($false))
+          $sizeRejected = $false
+          try {
+              & $tool `
+                -Source $largeSource `
+                -Slug 'large-body' `
+                -Office 'apps' `
+                -BodyName 'Large Body' `
+                -RepoRoot $root `
+                -MaxBytes 1024
+          }
+          catch {
+              $sizeRejected = $_.Exception.Message -match 'intake ceiling'
+          }
+          if (-not $sizeRejected) { throw 'Oversized intake was not rejected.' }
+
+          Write-Host 'PASS: governed permanent HTML body pipeline acceptance tests.'

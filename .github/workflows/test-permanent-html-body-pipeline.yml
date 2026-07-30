@@ -17,18 +17,18 @@ permissions:
   contents: read
 
 jobs:
-  windows-powershell:
-    runs-on: windows-latest
+  powershell-acceptance:
+    runs-on: ubuntu-latest
     steps:
       - name: Check out source
         uses: actions/checkout@v4
 
       - name: Run governed intake acceptance tests
-        shell: powershell
+        shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
 
-          $tool = Join-Path $env:GITHUB_WORKSPACE 'tools\Promote-JMHtmlBody.ps1'
+          $tool = Join-Path $env:GITHUB_WORKSPACE 'tools/Promote-JMHtmlBody.ps1'
           $root = Join-Path $env:RUNNER_TEMP 'jm-html-pipeline-test'
           if (Test-Path -LiteralPath $root) {
               Remove-Item -LiteralPath $root -Recurse -Force
@@ -47,9 +47,10 @@ jobs:
             -Version 'v0.1-test' `
             -RepoRoot $root
 
-          $target = Join-Path $root 'apps\test-body\index.html'
-          $manifestPath = Join-Path $root 'apps\test-body\body-manifest.json'
-          $receiptDir = Join-Path $root 'receipts\body-intake'
+          $targetDir = Join-Path (Join-Path $root 'apps') 'test-body'
+          $target = Join-Path $targetDir 'index.html'
+          $manifestPath = Join-Path $targetDir 'body-manifest.json'
+          $receiptDir = Join-Path (Join-Path $root 'receipts') 'body-intake'
 
           if (-not (Test-Path -LiteralPath $target)) { throw 'Canonical HTML target was not created.' }
           if (-not (Test-Path -LiteralPath $manifestPath)) { throw 'Manifest was not created.' }
@@ -77,7 +78,8 @@ jobs:
             -BodyName 'Duplicate Test Body' `
             -RepoRoot $root 6>&1 | Out-String)
 
-          if (Test-Path -LiteralPath (Join-Path $root 'apps\duplicate-body')) {
+          $duplicateDir = Join-Path (Join-Path $root 'apps') 'duplicate-body'
+          if (Test-Path -LiteralPath $duplicateDir) {
               throw 'A byte-identical duplicate body was created.'
           }
           if ($duplicateOutput -notmatch 'No copy created') {
@@ -104,7 +106,7 @@ jobs:
                 -Source $source `
                 -Slug 'outside-body' `
                 -Office 'custom' `
-                -CustomOfficePath '..\outside' `
+                -CustomOfficePath '../outside' `
                 -BodyName 'Outside Body' `
                 -RepoRoot $root
           }

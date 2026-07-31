@@ -52,14 +52,47 @@ jobs:
           assert all(item['status']=='QEMU_BODY_KERNEL_CARRIER_PASS' for item in m['receipts'])
           print('JM_100_QEMU_BODY_KERNELS_GATE_PASS')
           PY
-      - name: Seal machine artifact
+      - name: Build OneContainer above the 100 proven kernels
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/onecontainer_factory.py \
+            --qemu-root dist/qemu-100 --out dist/onecontainer
+      - name: Verify 100 selections and 99 identity-preserving handoffs
+        run: |
+          python - <<'PY'
+          import json, subprocess, sys
+          from pathlib import Path
+          root=Path('dist/onecontainer')
+          m=json.loads((root/'ONECONTAINER_MANIFEST.json').read_text())
+          assert m['body_count']==100
+          assert m['unique_kernel_hashes']==100
+          assert m['unique_namespaces']==100
+          assert m['selection_count']==100
+          assert m['handoff_count']==99
+          assert m['all_selection_passed'] is True
+          assert m['all_handoffs_preserve_identity'] is True
+          assert m['status']=='ONECONTAINER_100_SELECTION_AND_HANDOFF_PASS_NOT_SINGLE_BOOT_IMAGE_CROWN'
+          registry=json.loads((root/'REGISTRY.json').read_text())
+          for item in registry['bodies']:
+            result=subprocess.run([sys.executable,str(root/'select.py'),'--root',str(root),'--body',item['body_id']],capture_output=True,text=True)
+            assert result.returncode==0,(item['body_id'],result.stderr,result.stdout)
+            selected=json.loads(result.stdout)
+            assert selected['kernel_sha256']==item['kernel_sha256']
+          print('JM_EVERYKERNEL_ONECONTAINER_SELECTION_HANDOFF_GATE_PASS')
+          PY
+      - name: Seal machine and container artifacts
         run: |
           tar -czf JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz -C dist qemu-100
           sha256sum JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz | tee JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
+          sha256sum dist/JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar | tee JM_EVERYKERNEL_ONECONTAINER_v0.4.0.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_100_QEMU_BODY_KERNELS_v0.3.0
+          name: JM_100_QEMU_KERNELS_ONECONTAINER_v0.4.0
           path: |
             JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz
             JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
             dist/qemu-100/QEMU_100_BODY_KERNEL_MANIFEST.json
+            dist/JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar
+            JM_EVERYKERNEL_ONECONTAINER_v0.4.0.sha256
+            dist/onecontainer/ONECONTAINER_MANIFEST.json
+            dist/onecontainer/REGISTRY.json
+            dist/onecontainer/HANDOFFS.json

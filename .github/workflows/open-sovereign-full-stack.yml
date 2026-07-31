@@ -1,0 +1,77 @@
+name: Open Sovereign Full-Stack Factory
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/body-registry*.json"
+      - "coding-estate/everybody/sovereign-census/**"
+      - "coding-estate/everybody/full-stack/**"
+      - ".github/workflows/open-sovereign-full-stack.yml"
+  push:
+    branches:
+      - "agent/everybody-full-stack-parity-v0-1"
+    paths:
+      - "coding-estate/everybody/body-registry*.json"
+      - "coding-estate/everybody/sovereign-census/**"
+      - "coding-estate/everybody/full-stack/**"
+      - ".github/workflows/open-sovereign-full-stack.yml"
+
+jobs:
+  open-factory:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test open census adapter
+        run: |
+          python -m unittest \
+            coding-estate/everybody/sovereign-census/tests/test_sovereign_census.py \
+            coding-estate/everybody/sovereign-census/tests/test_open_sovereign_factory.py \
+            -v
+
+      - name: Generate all currently admitted bodies
+        run: |
+          python coding-estate/everybody/full-stack/tools/open_sovereign_factory.py \
+            --repo . \
+            --out build/JM_OPEN_SOVEREIGN_FULL_STACK
+
+      - name: Verify open count and Body 101 package
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/JM_OPEN_SOVEREIGN_FULL_STACK")
+          receipt = json.loads((root / "BUILD_RECEIPT.json").read_text(encoding="utf-8"))
+          manifests = list((root / "bodies").glob("*/manifest.json"))
+          assert len(manifests) >= 101, len(manifests)
+          jagged = root / "bodies/jaggedmirror"
+          assert (jagged / "manifest.json").is_file()
+          assert (jagged / "grammar/body.ebnf").is_file()
+          assert (jagged / "fixtures/proof.jmbody").is_file()
+          assert (jagged / "kernel/body_kernel.jmroute").is_file()
+          assert (jagged / "kernel/body_kernel_office.c").is_file()
+          assert (jagged / "interop/contract.json").is_file()
+          print({"generated_bodies": len(manifests), "receipt_status": receipt.get("status")})
+          PY
+
+      - name: Seal open factory artifact
+        run: |
+          tar -C build -czf build/JM_OPEN_SOVEREIGN_FULL_STACK.tar.gz JM_OPEN_SOVEREIGN_FULL_STACK
+          sha256sum build/JM_OPEN_SOVEREIGN_FULL_STACK.tar.gz > build/JM_OPEN_SOVEREIGN_FULL_STACK.tar.gz.sha256
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_OPEN_SOVEREIGN_FULL_STACK
+          path: |
+            build/JM_OPEN_SOVEREIGN_FULL_STACK.tar.gz
+            build/JM_OPEN_SOVEREIGN_FULL_STACK.tar.gz.sha256
+          if-no-files-found: error

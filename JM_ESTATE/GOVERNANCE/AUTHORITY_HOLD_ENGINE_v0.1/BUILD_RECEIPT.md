@@ -1,7 +1,7 @@
 # JM AUTHORITY HOLD ENGINE v0.1 — BUILD RECEIPT
 
 **Build date:** 31 July 2026  
-**Status:** WORKING FIRST EMBODIMENT  
+**Status:** WORKING FIRST EMBODIMENT · STANDING CI GATE  
 **Repository:** `JMisJustMe/JM-cading-lab`  
 **Branch:** `main`  
 **Canonical source:** `JM_ESTATE/GOVERNANCE/THE_INSTRUCTION_HANDOFF_v1.0/`  
@@ -25,7 +25,8 @@ The v0.1 embodiment includes:
 - an interactive responsive phone/laptop interface;
 - original-probe, valid-release, higher-boundary and courtesy re-entry scenarios;
 - an installable/offline PWA shell;
-- a direct folder front door plus `OPEN_FIRST.html`.
+- a direct folder front door plus `OPEN_FIRST.html`;
+- a repository-level GitHub Actions gate for syntax and all handoff tests.
 
 ## Validation
 
@@ -55,6 +56,17 @@ The test suite covers:
 
 The published `core.mjs` and `core.test.mjs` Git blob SHAs matched the locally validated files.
 
+## Standing validation gate
+
+`.github/workflows/authority-hold-engine.yml` now reruns:
+
+```text
+node --check core.mjs
+node --test core.test.mjs
+```
+
+when the engine folder or its workflow changes on pushes and pull requests, and it may also be run manually. The workflow definition was locally parsed successfully before mounting.
+
 ## Publication chain
 
 | Body | Commit SHA |
@@ -67,6 +79,8 @@ The published `core.mjs` and `core.test.mjs` Git blob SHAs matched the locally v
 | Offline service worker | `5428cb1af9ffc60dcd52c492b084810bf1c5d3d5` |
 | App icon | `da3329f7759e55ed20ad536938ac568b9056fe03` |
 | Direct `index.html` front door | `2820f49a88d335c2e65b08f64f4bde947432555a` |
+| Standing GitHub Actions gate | `7594445d6daf65d2ef7dd72f2ef77a432ac8b64f` |
+| CI-sealed build receipt | recorded by the commit containing this file |
 
 ## Verified content identities
 

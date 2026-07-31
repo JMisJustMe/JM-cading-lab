@@ -1,0 +1,65 @@
+name: JM 100 QEMU Body Kernels
+
+on:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/semantic-depth/**'
+      - '.github/workflows/everybody-100-qemu-body-kernels.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/semantic-depth/**'
+      - '.github/workflows/everybody-100-qemu-body-kernels.yml'
+  workflow_dispatch:
+
+jobs:
+  qemu-100:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install QEMU carrier
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86
+      - name: Test 100 distinct kernel images
+        run: python -m unittest coding-estate/everybody/semantic-depth/tests/test_qemu_kernel_factory.py -v
+      - name: Build and boot all 100 separate kernels
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/qemu_kernel_factory.py \
+            --repo . --out dist/qemu-100
+      - name: Verify all machine receipts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/qemu-100')
+          m=json.loads((root/'QEMU_100_BODY_KERNEL_MANIFEST.json').read_text())
+          assert m['body_count']==100
+          assert m['unique_kernel_hashes']==100
+          assert m['unique_compiler_namespaces']==100
+          assert m['all_qemu_passed'] is True
+          assert m['status']=='QEMU_100_BODY_KERNEL_CARRIER_PASS_NOT_NATIVE_TOOLCHAIN_CROWN'
+          assert len(list(root.glob('*/kernel.elf')))==100
+          assert len(list(root.glob('*/qemu.log')))==100
+          assert len(list(root.glob('*/MACHINE_RECEIPT.json')))==100
+          assert all(item['status']=='QEMU_BODY_KERNEL_CARRIER_PASS' for item in m['receipts'])
+          print('JM_100_QEMU_BODY_KERNELS_GATE_PASS')
+          PY
+      - name: Seal machine artifact
+        run: |
+          tar -czf JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz -C dist qemu-100
+          sha256sum JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz | tee JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_100_QEMU_BODY_KERNELS_v0.3.0
+          path: |
+            JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz
+            JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
+            dist/qemu-100/QEMU_100_BODY_KERNEL_MANIFEST.json

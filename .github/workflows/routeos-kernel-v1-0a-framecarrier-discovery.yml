@@ -1,0 +1,59 @@
+name: RouteOS v1.0A FrameCarrier Discovery
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-framecarrier-v1-0a]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover-frame-carriers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore frozen v0.1A source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .framecarrier-discovery
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 > .framecarrier-discovery/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .framecarrier-discovery/source.tar.gz' | sha256sum -c -
+          tar -xzf .framecarrier-discovery/source.tar.gz -C .framecarrier-discovery
+      - name: Inventory assembly and build contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=.framecarrier-discovery/routeos-kernel-v0.1A
+          find "$ROOT" -type f -printf '%P\n' | sort | tee .framecarrier-discovery/FILE_INVENTORY.txt
+          {
+            echo '===== ASSEMBLY FILES ====='
+            while IFS= read -r f; do
+              echo "===== FILE: ${f#$ROOT/} ====="
+              cat "$f"
+              echo
+            done < <(find "$ROOT" -type f \( -name '*.S' -o -name '*.s' -o -name '*.asm' \) | sort)
+            echo '===== BUILD FILES ====='
+            for f in "$ROOT"/build.sh "$ROOT"/Makefile "$ROOT"/linker.ld; do
+              if [[ -f "$f" ]]; then
+                echo "===== FILE: ${f#$ROOT/} ====="
+                cat "$f"
+                echo
+              fi
+            done
+          } | tee .framecarrier-discovery/FRAME_CARRIER_SOURCE.txt
+          grep -RInE 'iretq|isr|interrupt|routeos_enter|frame|pushq|popq|syscall|timer' "$ROOT" \
+            | tee .framecarrier-discovery/FRAME_CARRIER_MATCHES.txt || true
+      - name: Upload exact carrier source
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-v1.0A-framecarrier-discovery
+          path: |
+            .framecarrier-discovery/FILE_INVENTORY.txt
+            .framecarrier-discovery/FRAME_CARRIER_SOURCE.txt
+            .framecarrier-discovery/FRAME_CARRIER_MATCHES.txt
+            .framecarrier-discovery/routeos-kernel-v0.1A
+          if-no-files-found: error

@@ -3,7 +3,7 @@ import hashlib, json, re
 from pathlib import Path
 from typing import Any
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 EXPECTED_BODY_COUNT=100
 REGISTRIES=(
  "coding-estate/everybody/body-registry.json",
@@ -33,7 +33,7 @@ def load_bodies(repo:Path)->list[dict[str,Any]]:
  if len(bodies)!=EXPECTED_BODY_COUNT: raise ValueError(f"expected {EXPECTED_BODY_COUNT}, found {len(bodies)}")
  return sorted(bodies,key=lambda item:item["id"])
 
-def cap_verb(capability:str)->str: return "cap-"+slug(capability)
+def cap_verb(capability:str,ordinal:int)->str: return f"cap-{slug(capability)}-{ordinal:02d}"
 def capability_mode(capability:str,kind:str)->str:
  text=f"{capability} {kind}".lower()
  rules=(
@@ -58,9 +58,9 @@ def profile(body:dict[str,Any])->dict[str,Any]:
  caps=[str(item) for item in body.get("caps",[])] or ["identity"]
  effects=[]
  for ordinal,cap in enumerate(caps,1):
-  effects.append({"ordinal":ordinal,"capability":cap,"verb":cap_verb(cap),"mode":capability_mode(cap,str(body["kind"])),"state_key":f"{slug(cap)}-{ordinal}","token":int(sha({"body":body["id"],"cap":cap})[:8],16)})
+  effects.append({"ordinal":ordinal,"capability":cap,"verb":cap_verb(cap,ordinal),"mode":capability_mode(cap,str(body["kind"])),"state_key":f"{slug(cap)}-{ordinal:02d}","token":int(sha({"body":body["id"],"capability":cap,"ordinal":ordinal})[:8],16)})
  identity={key:body[key] for key in ("id","name","kind","law","registry_source")}
- return {"schema":"jm.body-specific-semantic-profile/0.2","factory_version":VERSION,"body":identity,"namespace":f"jm.body.{body['id']}","source_prefix":f"{slug(str(body['id']))}::","law_sha256":sha(body["law"]),"identity_sha256":sha(identity),"semantic_signature":sha({"identity":identity,"effects":effects}),"capability_effects":effects,"targets":body.get("targets",[]),"needs":body.get("needs",[]),"claim_boundary":"Body-specific current-canon semantics executed in an isolated process through a shared Python carrier; exact historical syntax, self-hosting and machine-kernel crown remain open."}
+ return {"schema":"jm.body-specific-semantic-profile/0.2.1","factory_version":VERSION,"body":identity,"namespace":f"jm.body.{body['id']}","source_prefix":f"{slug(str(body['id']))}::","law_sha256":sha(body["law"]),"identity_sha256":sha(identity),"semantic_signature":sha({"identity":identity,"effects":effects}),"capability_effects":effects,"targets":body.get("targets",[]),"needs":body.get("needs",[]),"claim_boundary":"Body-specific current-canon semantics executed in an isolated process through a shared Python carrier; exact historical syntax, self-hosting and machine-kernel crown remain open."}
 
 def proof_source(current:dict[str,Any])->str:
  body_id=current["body"]["id"]
@@ -81,15 +81,15 @@ def parse(current:dict[str,Any],source:str)->dict[str,Any]:
   raw=line[len(current["source_prefix"]):]; verb,sep,payload_text=raw.partition(" ")
   if verb not in allowed: raise ValueError(f"line {number}: unsupported body verb {verb}")
   nodes.append({"verb":verb,"payload":json.loads(payload_text) if sep else {},"source_line":number})
- return {"schema":"jm.body-specific-ast/0.2","body_id":body_id,"semantic_signature":current["semantic_signature"],"nodes":nodes,"source_sha256":sha(source)}
+ return {"schema":"jm.body-specific-ast/0.2.1","body_id":body_id,"semantic_signature":current["semantic_signature"],"nodes":nodes,"source_sha256":sha(source)}
 
 def lower(current:dict[str,Any],ast:dict[str,Any])->dict[str,Any]:
  effect_map={item["verb"]:item for item in current["capability_effects"]}; instructions=[]
  for node in ast["nodes"]:
   verb=node["verb"]
   if verb in effect_map:
-   effect=effect_map[verb]; opcode=f"{current['namespace']}.{effect['mode']}.{slug(effect['capability'])}"; effect_name=effect["mode"]
+   effect=effect_map[verb]; opcode=f"{current['namespace']}.{effect['mode']}.{slug(effect['capability'])}.{effect['ordinal']:02d}"; effect_name=effect["mode"]
   else:
    opcode=f"{current['namespace']}.control.{verb}"; effect_name=verb
   instructions.append({"opcode":opcode,"verb":verb,"effect":effect_name,"payload":node["payload"],"source_line":node["source_line"]})
- return {"schema":"jm.body-specific-ir/0.2","body_id":current["body"]["id"],"namespace":current["namespace"],"semantic_signature":current["semantic_signature"],"instructions":instructions,"ast_sha256":sha(ast)}
+ return {"schema":"jm.body-specific-ir/0.2.1","body_id":current["body"]["id"],"namespace":current["namespace"],"semantic_signature":current["semantic_signature"],"instructions":instructions,"ast_sha256":sha(ast)}

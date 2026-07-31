@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT=Path(__file__).resolve().parents[5]
+ROOT=Path(__file__).resolve().parents[4]
 MODULE_PATH=ROOT/"coding-estate/everybody/functioning-bodies/tools/functioning_body_factory.py"
 SPEC=importlib.util.spec_from_file_location("functioning_body_factory",MODULE_PATH)
 assert SPEC and SPEC.loader

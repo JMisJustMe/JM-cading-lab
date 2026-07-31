@@ -1,0 +1,128 @@
+name: Test JM Android Forge v1.4
+
+on:
+  pull_request:
+    paths:
+      - 'apps/jm-android-forge/**'
+      - 'tools/Start-JMAndroidForge.ps1'
+      - 'tools/Build-JMAndroidForgeApk.ps1'
+      - '.github/workflows/test-jm-android-forge-v1-4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  laptop-workshop:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Parse PowerShell bodies
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $files = @(
+            'tools/Start-JMAndroidForge.ps1',
+            'tools/Build-JMAndroidForgeApk.ps1'
+          )
+          foreach ($file in $files) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file), [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors.Count) {
+              $errors | Format-List | Out-String | Write-Error
+            }
+          }
+
+      - name: Check laptop workshop contract
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $html = Get-Content 'apps/jm-android-forge/index.html' -Raw
+          $required = @(
+            'JM Android Forge v1.4',
+            'showDirectoryPicker',
+            'Build APK',
+            '/api/status',
+            '/api/build',
+            'Ctrl+Shift+B',
+            'BROWSER FALLBACK',
+            'DIRECT LAPTOP FOLDER'
+          )
+          foreach ($needle in $required) {
+            if (-not $html.Contains($needle)) { throw "Missing workshop contract: $needle" }
+          }
+          if ($html -match 'https://cdn\.|node_modules|npm install') {
+            throw 'Workshop introduced an unapproved package or CDN dependency.'
+          }
+
+      - name: Exercise local bridge status
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'forge-output'
+          New-Item -ItemType Directory -Path $out -Force | Out-Null
+          $proc = Start-Process powershell.exe -PassThru -WindowStyle Hidden -ArgumentList @(
+            '-NoProfile','-ExecutionPolicy','Bypass','-File',
+            (Resolve-Path 'tools/Start-JMAndroidForge.ps1'),
+            '-RepoRoot',(Resolve-Path '.'),
+            '-OutputRoot',$out,
+            '-Port','3232','-NoBrowser'
+          )
+          try {
+            $status = $null
+            for ($i = 0; $i -lt 30 -and -not $status; $i++) {
+              Start-Sleep -Milliseconds 500
+              try { $status = Invoke-RestMethod 'http://127.0.0.1:3232/api/status' -TimeoutSec 2 } catch { }
+            }
+            if (-not $status) { throw 'Local bridge did not answer.' }
+            if (-not $status.bridge) { throw 'Bridge did not identify itself.' }
+            if ($status.install_performed) { throw 'Bridge claimed an automatic installation.' }
+          }
+          finally {
+            if ($proc -and -not $proc.HasExited) { Stop-Process -Id $proc.Id -Force }
+          }
+
+      - name: Build and verify a real APK
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $sample = Join-Path $env:RUNNER_TEMP 'jm-forge-sample'
+          $out = Join-Path $env:RUNNER_TEMP 'jm-forge-apk'
+          New-Item -ItemType Directory -Path $sample,$out -Force | Out-Null
+          @'
+          <!doctype html><html><head><meta charset="utf-8"><title>JM Forge Acceptance</title></head><body><button id="proof">Proof</button><script>document.querySelector('#proof').onclick=()=>document.body.dataset.pass='true';</script></body></html>
+          '@ | Set-Content -LiteralPath (Join-Path $sample 'index.html') -Encoding UTF8
+
+          $lines = @(& 'tools/Build-JMAndroidForgeApk.ps1' `
+            -SourceDirectory $sample `
+            -ProjectName 'JM Forge Acceptance' `
+            -PackageName 'com.jmisjustme.forgeacceptance' `
+            -VersionName '1.4-test' `
+            -VersionCode 14 `
+            -OutputRoot $out 2>&1)
+          $lines | ForEach-Object { Write-Host $_ }
+          $jsonLine = $lines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
+          if (-not $jsonLine) { throw 'Builder returned no JSON result.' }
+          $result = $jsonLine | ConvertFrom-Json
+          if (-not $result.success) { throw 'Builder did not report success.' }
+          if (-not (Test-Path -LiteralPath $result.apk)) { throw 'APK file is missing.' }
+          if (-not (Test-Path -LiteralPath $result.receipt)) { throw 'Build receipt is missing.' }
+          $actual = (Get-FileHash -LiteralPath $result.apk -Algorithm SHA256).Hash
+          if ($actual -ne $result.sha256) { throw 'APK hash does not match the result.' }
+          $receipt = Get-Content -LiteralPath $result.receipt -Raw | ConvertFrom-Json
+          if ($receipt.outcome -ne 'PASS') { throw 'Receipt is not PASS.' }
+          if ($receipt.automatic_install_to_device) { throw 'Builder claimed automatic device installation.' }
+
+      - name: Confirm no repository build debris
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $forbidden = @('node_modules','build','.gradle')
+          foreach ($name in $forbidden) {
+            $hit = Get-ChildItem -LiteralPath . -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $name -and $_.FullName -notmatch '[\\/]\.git[\\/]' } | Select-Object -First 1
+            if ($hit) { throw "Build debris found in repository: $($hit.FullName)" }
+          }

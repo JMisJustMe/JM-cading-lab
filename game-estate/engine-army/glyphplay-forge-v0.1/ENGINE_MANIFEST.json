@@ -1,0 +1,53 @@
+{
+  "schema": "jm.glyphplay-forge.engine-manifest/0.1",
+  "id": "JM_GLYPHPLAY_FORGE_v0_1",
+  "name": "JM GlyphPlay Forge",
+  "version": "0.1.0",
+  "status": "FIRST_EDITABLE_BODY_ACTIVE_NOT_CROWNED",
+  "entry": "00_OPEN_FIRST_GLYPHPLAY_FORGE_v0_1.html",
+  "source_chunks": [
+    "source/chunks/part-01.b64",
+    "source/chunks/part-02.b64",
+    "source/chunks/part-03.b64",
+    "source/chunks/part-04.b64",
+    "source/chunks/part-05.b64",
+    "source/chunks/part-06.b64"
+  ],
+  "source_chunk_count": 6,
+  "source_encoded_length": 21480,
+  "legacy_oversized_carrier": "IGNORED_AFTER_TRANSFER_CORRUPTION",
+  "materializer": "tools/materialize.py",
+  "html_sha256": "7ac7170e4b8a22941b946d187e82461904baedea033ede0b5e19930112f2c591",
+  "surfaces": ["phone", "laptop"],
+  "dimension_floor": "2.5D",
+  "rooms": ["Forge", "PLAYFORM", "Coding Bodies", "Source", "Package"],
+  "body_profiles": ["cading", "quadze", "recorp", "flowtalk", "formeula", "contactcode"],
+  "capabilities": [
+    "entity_authoring",
+    "direct_canvas_drag",
+    "touch_and_keyboard_playtest",
+    "playform_validation",
+    "body_specific_rebuild_templates",
+    "rule_script_editing",
+    "project_json_editing",
+    "local_save_load",
+    "json_import_export",
+    "self_contained_editable_html_export",
+    "trace_and_receipt_generation",
+    "undo_redo"
+  ],
+  "laws": [
+    "Restore before rewrite",
+    "Shared organs do not erase sovereign capability",
+    "A Playform is not real until it produces an observable repeatable loop",
+    "Phone and laptop are both genuine editing surfaces",
+    "No Ding No Claim"
+  ],
+  "open_gates": [
+    "current-best GlyphPlay exact source selection",
+    "full independent glyph grammar parser and playable IR",
+    "native target emitters",
+    "APK build and real device proof",
+    "engine-by-engine Game Engine Army completion"
+  ]
+}

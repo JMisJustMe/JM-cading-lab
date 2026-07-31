@@ -1,0 +1,99 @@
+name: RouteOS JM-Generated AssemblyEntry FrameCarrier
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-assemblyentry-framecarrier-v1-0a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-assemblyentry-framecarrier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v1.0A branch with frozen lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Verify source and replace handwritten assembly seam
+        run: bash systems/routeos-kernel-jm-native-v1.0A/tools/ci_prepare_assemblyframe.sh
+
+      - name: Build and run generated frame carrier in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v10a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v10a/JM_ASSEMBLYENTRY_FRAMECARRIER_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v1.0A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V10=systems/routeos-kernel-jm-native-v1.0A
+          KERNEL=.routeos-v10a/routeos-kernel-v0.1A
+          RECEIPT=.routeos-v10a/ASSEMBLYENTRY_FRAMECARRIER_INTEGRATION_RECEIPT.json
+          mkdir -p assemblyentry-framecarrier-v10a-receipt
+          ASSEMBLY_PATH=""
+          if [[ -f "$RECEIPT" ]]; then
+            ASSEMBLY_PATH="$(python3 -c 'import json; print(json.load(open(".routeos-v10a/ASSEMBLYENTRY_FRAMECARRIER_INTEGRATION_RECEIPT.json"))["assembly_source_path"])')"
+          fi
+          for f in .routeos-v10a/*_INTEGRATION_RECEIPT.json \
+            .routeos-v10a/JM_ASSEMBLYENTRY_FRAMECARRIER_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$V10/source/assemblyentry_framecarrier.jmroute" \
+            "$V10/generated/assemblyentry_framecarrier.S" "$V10/generated/assemblyentry_framecarrier.json" \
+            "$ASSEMBLY_PATH"; do
+            [[ -n "$f" && -f "$f" ]] && cp "$f" assemblyentry-framecarrier-v10a-receipt/
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_anchor=a05b26b3901460cfa5623cbb3063d961a9952214" \
+            "assemblyentry_framecarrier_source_sha256=7a2dd8c8c6a4f49cbce92fa72e7f0790c0eb187460442cdedd302f72653134a4" \
+            > assemblyentry-framecarrier-v10a-receipt/GATE_STATUS.txt
+          (cd assemblyentry-framecarrier-v10a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.0A AssemblyEntry FrameCarrier receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.0A-assemblyentry-framecarrier-receipt
+          path: assemblyentry-framecarrier-v10a-receipt
+          if-no-files-found: error
+
+      - name: Enforce generated assembly operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          V10=systems/routeos-kernel-jm-native-v1.0A
+          KERNEL=.routeos-v10a/routeos-kernel-v0.1A
+          RECEIPT=.routeos-v10a/ASSEMBLYENTRY_FRAMECARRIER_INTEGRATION_RECEIPT.json
+          ASSEMBLY_PATH="$(python3 -c 'import json; print(json.load(open(".routeos-v10a/ASSEMBLYENTRY_FRAMECARRIER_INTEGRATION_RECEIPT.json"))["assembly_source_path"])')"
+          python3 "$V10/tools/ci_enforce_assemblyframe.py" \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$ASSEMBLY_PATH" \
+            "$V10/generated/assemblyentry_framecarrier.json" \
+            "$RECEIPT"
+          echo 'JM_GENERATED_ASSEMBLYENTRY_FRAMECARRIER DING: PASS'

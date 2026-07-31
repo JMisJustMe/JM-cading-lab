@@ -26,7 +26,7 @@ Set-StrictMode -Version Latest
 function Get-HighestAndroidDirectory {
     param(
         [Parameter(Mandatory = $true)][string]$Parent,
-        [Parameter(Mandatory = $true)][string]$Prefix
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$Prefix
     )
 
     if (-not (Test-Path -LiteralPath $Parent)) { return $null }
@@ -75,12 +75,10 @@ if (-not (Get-Item -LiteralPath $source).PSIsContainer) {
 
 $indexHtml = Join-Path $source 'index.html'
 if (-not (Test-Path -LiteralPath $indexHtml)) {
-    $candidate = Get-ChildItem -LiteralPath $source -File -Filter '*.html' | Select-Object -First 1
-    if (-not $candidate) { throw 'No HTML entry file was found.' }
-    Copy-Item -LiteralPath $candidate.FullName -Destination $indexHtml
+    throw 'One-click APK build requires index.html at the project root.'
 }
 
-$sourceFiles = Get-ChildItem -LiteralPath $source -File -Recurse
+$sourceFiles = @(Get-ChildItem -LiteralPath $source -File -Recurse)
 $sourceBytes = [long](($sourceFiles | Measure-Object -Property Length -Sum).Sum)
 if ($sourceBytes -gt $MaxBytes) {
     throw ("Project is {0:N0} bytes, above the governed {1:N0}-byte build ceiling." -f $sourceBytes, $MaxBytes)
@@ -142,7 +140,9 @@ $dexOut = Join-Path $runRoot 'dex'
 New-Item -ItemType Directory -Path $assets,$javaRoot,$classes,$dexOut -Force | Out-Null
 
 try {
-    Copy-Item -LiteralPath (Join-Path $source '*') -Destination $assets -Recurse -Force
+    Get-ChildItem -LiteralPath $source -Force | ForEach-Object {
+        Copy-Item -LiteralPath $_.FullName -Destination $assets -Recurse -Force
+    }
 
     $packagePath = $PackageName -replace '\.', [IO.Path]::DirectorySeparatorChar
     $javaPackageDir = Join-Path $javaRoot $packagePath

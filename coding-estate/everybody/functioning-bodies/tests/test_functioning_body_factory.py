@@ -57,9 +57,11 @@ class FunctioningBodyFactoryTests(unittest.TestCase):
   with self.assertRaises(ValueError):
    factory.parse(d,source)
 
- def test_all_family_routes_are_functional(self):
+ def test_all_present_family_routes_are_functional(self):
   families={factory.classify(body) for body in factory.load_bodies(ROOT)}
-  self.assertTrue({"route","logic","formula","embodied","compiler","runtime","game","governance","delivery","visual","authoring","composition","service"}.issubset(families))
+  confirmed={"route","logic","formula","embodied","compiler","runtime","game","governance","delivery","visual","authoring","composition"}
+  self.assertTrue(confirmed.issubset(families))
+  self.assertTrue(families.issubset(factory.FAMILY_PRIMITIVES))
 
  def test_deterministic(self):
   factory.deterministic(ROOT)

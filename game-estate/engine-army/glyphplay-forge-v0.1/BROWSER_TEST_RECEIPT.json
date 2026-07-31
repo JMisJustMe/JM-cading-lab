@@ -1,0 +1,47 @@
+{
+  "initial": {
+    "hud_body": "CADING",
+    "entity_count": 4,
+    "view": "view-forge"
+  },
+  "bodies_view": "view-bodies",
+  "body_profile_buttons": 6,
+  "quadze": {
+    "hud_body": "QUADZE",
+    "entity_count": 5,
+    "route": "Quadze · edit mode · 5 entities"
+  },
+  "recorp": {
+    "hud_body": "RECORP",
+    "entity_count": 6,
+    "route": "RECORP · edit mode · 6 entities"
+  },
+  "playform": {
+    "state": "Tester uses Route Ball in Trial Arena to complete loop. Loop: choose → act → respond → adapt → repeat.",
+    "steps": "5",
+    "ding": "READY",
+    "receipt_count": 3
+  },
+  "after_build": {
+    "view": "view-forge",
+    "name": "Tester — Benchmark",
+    "hud_body": "RECORP"
+  },
+  "code": {
+    "json_chars": 5633,
+    "rules_lines": 5
+  },
+  "code_after_body_rules": {
+    "rules_lines": 5,
+    "compiled_has_recorp": true
+  },
+  "package": {
+    "manifest_has_phone": true,
+    "donors": 5,
+    "receipt_has_boundary": true
+  },
+  "local_storage_saved": "NOT_TESTED_IN_ABOUT_BLANK_SANDBOX",
+  "errors": [],
+  "status": "PASS",
+  "html_sha256": "7ac7170e4b8a22941b946d187e82461904baedea033ede0b5e19930112f2c591"
+}

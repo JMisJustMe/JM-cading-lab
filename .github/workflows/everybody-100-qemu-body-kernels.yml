@@ -28,8 +28,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y qemu-system-x86
-      - name: Test 100 distinct kernel images
-        run: python -m unittest coding-estate/everybody/semantic-depth/tests/test_qemu_kernel_factory.py -v
+      - name: Test semantic depth and 100 distinct kernel images
+        run: python -m unittest discover -s coding-estate/everybody/semantic-depth/tests -v
+      - name: Generate all 100 semantic-depth isolated runtimes
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/semantic_depth_factory.py \
+            --repo . --out dist/semantic-depth --deterministic
       - name: Build and boot all 100 separate kernels
         run: |
           python coding-estate/everybody/semantic-depth/tools/qemu_kernel_factory.py \
@@ -79,20 +83,51 @@ jobs:
             assert selected['kernel_sha256']==item['kernel_sha256']
           print('JM_EVERYKERNEL_ONECONTAINER_SELECTION_HANDOFF_GATE_PASS')
           PY
-      - name: Seal machine and container artifacts
+      - name: Freeze current constructible completion scope
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/completion_freeze_factory.py \
+            --semantic-root dist/semantic-depth \
+            --qemu-root dist/qemu-100 \
+            --container-root dist/onecontainer \
+            --out dist/current-scope-freeze
+      - name: Verify freeze boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=json.loads(Path('dist/current-scope-freeze/CURRENT_SCOPE_FREEZE_RECEIPT.json').read_text())
+          assert f['body_count']==100
+          assert f['all_current_constructible_gates_passed'] is True
+          assert f['unique_semantic_signatures']==100
+          assert f['unique_kernel_hashes']==100
+          assert f['unique_compiler_namespaces']==100
+          assert f['final_crown'] is False
+          assert f['status']=='CURRENT_CONSTRUCTIBLE_SCOPE_FROZEN_EXTERNAL_AUTHORITY_GATES_OPEN'
+          assert all(len(item['earned'])==9 for item in f['bodies'])
+          assert all(len(item['open_external_or_authority_gates'])==7 for item in f['bodies'])
+          print('JM_100_CURRENT_CONSTRUCTIBLE_SCOPE_FREEZE_PASS')
+          PY
+      - name: Seal machine, container and freeze artifacts
         run: |
           tar -czf JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz -C dist qemu-100
+          tar -czf JM_100_SEMANTIC_DEPTH_v0.2.1.tar.gz -C dist semantic-depth
           sha256sum JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz | tee JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
+          sha256sum JM_100_SEMANTIC_DEPTH_v0.2.1.tar.gz | tee JM_100_SEMANTIC_DEPTH_v0.2.1.sha256
           sha256sum dist/JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar | tee JM_EVERYKERNEL_ONECONTAINER_v0.4.0.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_100_QEMU_KERNELS_ONECONTAINER_v0.4.0
+          name: JM_100_CURRENT_SCOPE_FREEZE_v1.0
           path: |
             JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz
             JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
+            JM_100_SEMANTIC_DEPTH_v0.2.1.tar.gz
+            JM_100_SEMANTIC_DEPTH_v0.2.1.sha256
             dist/qemu-100/QEMU_100_BODY_KERNEL_MANIFEST.json
+            dist/semantic-depth/SEMANTIC_DEPTH_MANIFEST.json
             dist/JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar
             JM_EVERYKERNEL_ONECONTAINER_v0.4.0.sha256
             dist/onecontainer/ONECONTAINER_MANIFEST.json
             dist/onecontainer/REGISTRY.json
             dist/onecontainer/HANDOFFS.json
+            dist/current-scope-freeze/CURRENT_SCOPE_FREEZE_RECEIPT.json
+            dist/current-scope-freeze/COMPLETION_BOUNDARY.md

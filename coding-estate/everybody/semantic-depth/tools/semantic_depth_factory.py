@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse,json,shutil,subprocess,sys,tempfile
 from pathlib import Path
 from typing import Any
+sys.path.insert(0,str(Path(__file__).resolve().parent))
 try:
  from .semantic_core import EXPECTED_BODY_COUNT,load_bodies,lower,parse,profile,proof_source,sha,stable
  from .semantic_runtime import execute,receipt

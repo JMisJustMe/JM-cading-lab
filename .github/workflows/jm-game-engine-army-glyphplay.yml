@@ -1,0 +1,59 @@
+name: JM Game Engine Army — GlyphPlay Forge v0.1
+
+on:
+  push:
+    branches:
+      - agent/jm-game-engine-army-v0-1
+    paths:
+      - 'game-estate/engine-army/glyphplay-forge-v0.1/**'
+      - '.github/workflows/jm-game-engine-army-glyphplay.yml'
+  pull_request:
+    paths:
+      - 'game-estate/engine-army/glyphplay-forge-v0.1/**'
+      - '.github/workflows/jm-game-engine-army-glyphplay.yml'
+  workflow_dispatch:
+
+jobs:
+  verify-glyphplay-forge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Materialise and verify engine body
+        run: python game-estate/engine-army/glyphplay-forge-v0.1/tests/verify_glyphplay.py
+      - name: Verify body-trial and packaging contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('game-estate/engine-army/glyphplay-forge-v0.1')
+          manifest=json.loads((root/'ENGINE_MANIFEST.json').read_text())
+          build=json.loads((root/'BUILD_RECEIPT.json').read_text())
+          browser=json.loads((root/'BROWSER_TEST_RECEIPT.json').read_text())
+          assert manifest['status']=='FIRST_EDITABLE_BODY_ACTIVE_NOT_CROWNED'
+          assert manifest['surfaces']==['phone','laptop']
+          assert manifest['dimension_floor']=='2.5D'
+          assert len(manifest['body_profiles'])==6
+          assert {'cading','quadze','recorp'}.issubset(manifest['body_profiles'])
+          assert build['status']=='FIRST_EDITABLE_BODY_BUILD_PASS_NOT_CROWNED'
+          assert browser['status']=='PASS'
+          assert browser['quadze']['hud_body']=='QUADZE'
+          assert browser['recorp']['hud_body']=='RECORP'
+          assert browser['playform']['ding']=='READY'
+          print('JM_GLYPHPLAY_FORGE_v0_1_GATE_PASS')
+          PY
+      - name: Seal source package
+        run: |
+          tar -czf JM_GLYPHPLAY_FORGE_v0_1_SOURCE.tar.gz -C game-estate/engine-army glyphplay-forge-v0.1
+          sha256sum JM_GLYPHPLAY_FORGE_v0_1_SOURCE.tar.gz | tee JM_GLYPHPLAY_FORGE_v0_1_SOURCE.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_GLYPHPLAY_FORGE_v0_1_SOURCE
+          path: |
+            JM_GLYPHPLAY_FORGE_v0_1_SOURCE.tar.gz
+            JM_GLYPHPLAY_FORGE_v0_1_SOURCE.sha256

@@ -19,16 +19,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Mount v1.2A OneBody source tree
+      - name: Mount v1.2A OneBody source tree and ABI correction
         shell: bash
         run: |
           set -euo pipefail
           BODY=systems/routeos-kernel-jm-native-v1.2A/routeos-v1.2A-body.tar.gz.b64
+          FIX=systems/routeos-kernel-jm-native-v1.2A/routeos-v1.2A-pre-idt-correction.tar.gz.b64
           echo '5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  '$BODY | sha256sum -c -
           base64 -d "$BODY" > /tmp/routeos-v1.2A-body.tar.gz
           echo '0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/routeos-v1.2A-body.tar.gz' | sha256sum -c -
           tar -xzf /tmp/routeos-v1.2A-body.tar.gz -C .
+          echo '6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  '$FIX | sha256sum -c -
+          base64 -d "$FIX" > /tmp/routeos-v1.2A-pre-idt-correction.tar.gz
+          echo '9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/routeos-v1.2A-pre-idt-correction.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v1.2A-pre-idt-correction.tar.gz -C .
           test -f systems/routeos-kernel-jm-native-v1.2A/source/userprogram_linkroute_imagecarrier.jmroute
+          grep -F 'KERNEL_SIMD_POLICY general-registers-only' systems/routeos-kernel-jm-native-v1.2A/source/userprogram_linkroute_imagecarrier.jmroute
       - name: Install open machine-proof carriers
         run: |
           sudo apt-get update
@@ -71,7 +77,7 @@ jobs:
             "machine_step_outcome=${{ steps.machine.outcome }}" \
             "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
             "frozen_parent=b4e8299597c7c00e8f9f9200254f02dda49362ed" \
-            "imagecarrier_source_sha256=2ede3de63d966bcc066927bb709be7e24e7540a9ef4b948d267d79dfd64f9362" \
+            "imagecarrier_source_sha256=1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1" \
             > userprogram-linkroute-imagecarrier-v12a-receipt/GATE_STATUS.txt
           (cd userprogram-linkroute-imagecarrier-v12a-receipt && sha256sum * > SHA256SUMS.txt) || true
       - name: Upload v1.2A UserProgram LinkRoute ImageCarrier receipt
@@ -93,7 +99,7 @@ jobs:
             "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
             .routeos-v12a/USERPROGRAM_LINKROUTE_IMAGECARRIER_INTEGRATION_RECEIPT.json
           ELF="$KERNEL/build/routeos-kernel.elf"
-          for hash in 2ede3de63d966bcc066927bb709be7e24e7540a9ef4b948d267d79dfd64f9362 \
+          for hash in 1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1 \
             b02be640fe482dc36633084e0e4601533ea3ed3b38892d723ab37f2bfc98a638 \
             50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914 \
             c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f \

@@ -14,7 +14,12 @@ EXPECTED = "7ac7170e4b8a22941b946d187e82461904baedea033ede0b5e19930112f2c591"
 
 def main() -> int:
     encoded = "".join(SOURCE.read_text(encoding="utf-8").split())
-    payload = gzip.decompress(base64.b64decode(encoded))
+    encoded += "=" * (-len(encoded) % 4)
+    try:
+        compressed = base64.b64decode(encoded, validate=True)
+        payload = gzip.decompress(compressed)
+    except Exception as exc:
+        raise SystemExit(f"GlyphPlay source carrier decode held: {exc}") from exc
     actual = hashlib.sha256(payload).hexdigest()
     if actual != EXPECTED:
         raise SystemExit(f"GlyphPlay source carrier mismatch: {actual} != {EXPECTED}")

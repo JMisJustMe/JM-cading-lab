@@ -1,0 +1,18 @@
+{
+  "name": "JM Authority Hold Engine",
+  "short_name": "Authority Hold",
+  "description": "Test instruction persistence, authority handoffs, release routes and trace receipts.",
+  "start_url": "./OPEN_FIRST.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080b13",
+  "theme_color": "#0b1020",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

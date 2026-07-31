@@ -3,6 +3,8 @@ name: RouteOS v1.0A FrameCarrier Discovery
 on:
   push:
     branches: [agent/routeos-kernel-jm-native-framecarrier-v1-0a]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:

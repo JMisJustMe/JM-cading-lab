@@ -1,0 +1,59 @@
+name: JM 100 Semantic Depth
+
+on:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/semantic-depth/**'
+      - '.github/workflows/everybody-100-semantic-depth.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/semantic-depth/**'
+      - '.github/workflows/everybody-100-semantic-depth.yml'
+  workflow_dispatch:
+
+jobs:
+  semantic-depth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test all 100 semantic-depth bodies
+        run: python -m unittest discover -s coding-estate/everybody/semantic-depth/tests -v
+      - name: Generate all 100 isolated runtimes
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/semantic_depth_factory.py \
+            --repo . --out dist/semantic-depth --deterministic
+      - name: Verify depth gate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/semantic-depth')
+          m=json.loads((root/'SEMANTIC_DEPTH_MANIFEST.json').read_text())
+          assert m['body_count']==100
+          assert m['unique_namespaces']==100
+          assert m['unique_semantic_signatures']==100
+          assert m['all_capabilities_executed']
+          assert m['all_fault_recovery_passed']
+          assert m['all_isolated_processes_passed']
+          assert len(list((root/'bodies').glob('*/runtime/runner.py')))==100
+          assert len(list((root/'bodies').glob('*/runtime/isolated-process-receipt.json')))==100
+          print('JM_100_SEMANTIC_DEPTH_GATE_PASS')
+          PY
+      - name: Seal semantic-depth artifact
+        run: |
+          tar -czf JM_100_SEMANTIC_DEPTH_v0.2.0.tar.gz -C dist semantic-depth
+          sha256sum JM_100_SEMANTIC_DEPTH_v0.2.0.tar.gz | tee JM_100_SEMANTIC_DEPTH_v0.2.0.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_100_SEMANTIC_DEPTH_v0.2.0
+          path: |
+            JM_100_SEMANTIC_DEPTH_v0.2.0.tar.gz
+            JM_100_SEMANTIC_DEPTH_v0.2.0.sha256
+            dist/semantic-depth/SEMANTIC_DEPTH_MANIFEST.json

@@ -19,28 +19,42 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Mount v1.2A OneBody source tree and ABI correction
+
+      - name: Mount v1.2A OneBody and correction overlays
         shell: bash
         run: |
           set -euo pipefail
-          BODY=systems/routeos-kernel-jm-native-v1.2A/routeos-v1.2A-body.tar.gz.b64
-          FIX=systems/routeos-kernel-jm-native-v1.2A/routeos-v1.2A-pre-idt-correction.tar.gz.b64
-          echo '5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  '$BODY | sha256sum -c -
+          ROOT=systems/routeos-kernel-jm-native-v1.2A
+          BODY="$ROOT/routeos-v1.2A-body.tar.gz.b64"
+          ABI="$ROOT/routeos-v1.2A-pre-idt-correction.tar.gz.b64"
+          PROOF="$ROOT/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64"
+
+          echo "5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  $BODY" | sha256sum -c -
           base64 -d "$BODY" > /tmp/routeos-v1.2A-body.tar.gz
           echo '0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/routeos-v1.2A-body.tar.gz' | sha256sum -c -
           tar -xzf /tmp/routeos-v1.2A-body.tar.gz -C .
-          echo '6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  '$FIX | sha256sum -c -
-          base64 -d "$FIX" > /tmp/routeos-v1.2A-pre-idt-correction.tar.gz
+
+          echo "6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  $ABI" | sha256sum -c -
+          base64 -d "$ABI" > /tmp/routeos-v1.2A-pre-idt-correction.tar.gz
           echo '9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/routeos-v1.2A-pre-idt-correction.tar.gz' | sha256sum -c -
           tar -xzf /tmp/routeos-v1.2A-pre-idt-correction.tar.gz -C .
-          test -f systems/routeos-kernel-jm-native-v1.2A/source/userprogram_linkroute_imagecarrier.jmroute
-          grep -F 'KERNEL_SIMD_POLICY general-registers-only' systems/routeos-kernel-jm-native-v1.2A/source/userprogram_linkroute_imagecarrier.jmroute
+
+          echo "8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98  $PROOF" | sha256sum -c -
+          base64 -d "$PROOF" > /tmp/routeos-v1.2A-symbol-range-proof-correction.tar.gz
+          echo 'e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff  /tmp/routeos-v1.2A-symbol-range-proof-correction.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v1.2A-symbol-range-proof-correction.tar.gz -C .
+
+          grep -F 'KERNEL_SIMD_POLICY general-registers-only' "$ROOT/source/userprogram_linkroute_imagecarrier.jmroute"
+          grep -F "symbol_address('routeos_user_blob_end')" "$ROOT/tools/ci_enforce_imagecarrier.py"
+
       - name: Install open machine-proof carriers
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
       - name: Verify and rebuild complete generated stack
         run: bash systems/routeos-kernel-jm-native-v1.2A/tools/ci_prepare_imagecarrier.sh
+
       - name: Build and run nineteen-office JM kernel in QEMU
         id: machine
         continue-on-error: true
@@ -53,6 +67,7 @@ jobs:
           status=${PIPESTATUS[0]}
           echo "exit_status=$status" >> "$GITHUB_OUTPUT"
           exit "$status"
+
       - name: Freeze v1.2A construction receipt
         if: always()
         shell: bash
@@ -60,7 +75,8 @@ jobs:
           set -euo pipefail
           V12=systems/routeos-kernel-jm-native-v1.2A
           KERNEL=.routeos-v12a/routeos-kernel-v0.1A
-          mkdir -p userprogram-linkroute-imagecarrier-v12a-receipt
+          OUT=userprogram-linkroute-imagecarrier-v12a-receipt
+          mkdir -p "$OUT"
           if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
             nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v12a/JM_IMAGECARRIER_SYMBOLS.txt
             objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v12a/JM_IMAGECARRIER_DISASSEMBLY.txt
@@ -70,23 +86,27 @@ jobs:
             "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
             "$KERNEL/kernel/routeos_kernel.c" "$KERNEL/kernel/routeos_authority.h" "$KERNEL/arch/x86_64/boot.S" \
             "$KERNEL/build.sh" "$KERNEL/jm-generated-v1.2A"/* \
-            "$V12/source/userprogram_linkroute_imagecarrier.jmroute" "$V12/generated"/*; do
-            [[ -f "$f" ]] && cp "$f" userprogram-linkroute-imagecarrier-v12a-receipt/
+            "$V12/source/userprogram_linkroute_imagecarrier.jmroute" "$V12/generated"/* \
+            "$V12/proof/SYMBOL_RANGE_PROOF_CORRECTION.md"; do
+            [[ -f "$f" ]] && cp "$f" "$OUT/"
           done
           printf '%s\n' \
             "machine_step_outcome=${{ steps.machine.outcome }}" \
             "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
             "frozen_parent=b4e8299597c7c00e8f9f9200254f02dda49362ed" \
             "imagecarrier_source_sha256=1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1" \
-            > userprogram-linkroute-imagecarrier-v12a-receipt/GATE_STATUS.txt
-          (cd userprogram-linkroute-imagecarrier-v12a-receipt && sha256sum * > SHA256SUMS.txt) || true
-      - name: Upload v1.2A UserProgram LinkRoute ImageCarrier receipt
+            "proof_correction_sha256=eb2fe9d4f83b16f20a20dd853fef57ddf02dda2566ceeb77eea3b7af2425af26" \
+            > "$OUT/GATE_STATUS.txt"
+          (cd "$OUT" && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.2A receipt
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: routeos-kernel-jm-native-v1.2A-userprogram-linkroute-imagecarrier-receipt
           path: userprogram-linkroute-imagecarrier-v12a-receipt
           if-no-files-found: error
+
       - name: Enforce nineteen-office operational result
         if: always()
         shell: bash
@@ -99,7 +119,8 @@ jobs:
             "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
             .routeos-v12a/USERPROGRAM_LINKROUTE_IMAGECARRIER_INTEGRATION_RECEIPT.json
           ELF="$KERNEL/build/routeos-kernel.elf"
-          for hash in 1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1 \
+          for hash in \
+            1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1 \
             b02be640fe482dc36633084e0e4601533ea3ed3b38892d723ab37f2bfc98a638 \
             50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914 \
             c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f \

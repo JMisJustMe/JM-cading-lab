@@ -1,0 +1,37 @@
+name: JM Authority Hold Engine
+
+on:
+  push:
+    paths:
+      - "JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.1/**"
+      - ".github/workflows/authority-hold-engine.yml"
+  pull_request:
+    paths:
+      - "JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.1/**"
+      - ".github/workflows/authority-hold-engine.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Kernel and handoff tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.1
+    steps:
+      - name: Checkout estate
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check kernel syntax
+        run: node --check core.mjs
+
+      - name: Run authority handoff tests
+        run: node --test core.test.mjs

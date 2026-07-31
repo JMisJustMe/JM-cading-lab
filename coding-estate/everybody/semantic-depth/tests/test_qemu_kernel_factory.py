@@ -17,7 +17,7 @@ class QemuKernelFactoryTests(unittest.TestCase):
   bodies={item["id"]:item for item in factory.load_bodies(ROOT)}
   for name in ("cading","quadze","routeos","formeula","recorp"):
    current=factory.profile(bodies[name]);source=factory.kernel_source(current)
-   self.assertIn(f'JM_BODY_BOOT:{name}',source);self.assertIn(current["semantic_signature"],source);self.assertIn(current["namespace"]+".semantic-to-x86-v0.3",source)
+   self.assertIn(f'#define BODY_ID "{name}"',source);self.assertIn('puts("JM_BODY_BOOT:" BODY_ID)',source);self.assertIn(current["semantic_signature"],source);self.assertIn(current["namespace"]+".semantic-to-x86-v0.3",source)
  def test_distinct_sources(self):
   bodies=factory.load_bodies(ROOT);sources={factory.sha(factory.kernel_source(factory.profile(body))) for body in bodies};self.assertEqual(len(sources),100)
 

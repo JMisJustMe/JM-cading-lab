@@ -18,16 +18,16 @@ on:
 jobs:
   qemu-100:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install QEMU carrier
+      - name: Install QEMU and bootable-container carriers
         run: |
           sudo apt-get update
-          sudo apt-get install -y qemu-system-x86
+          sudo apt-get install -y qemu-system-x86 grub-pc-bin grub-common xorriso mtools
       - name: Test semantic depth and 100 distinct kernel images
         run: python -m unittest discover -s coding-estate/everybody/semantic-depth/tests -v
       - name: Generate all 100 semantic-depth isolated runtimes
@@ -83,12 +83,33 @@ jobs:
             assert selected['kernel_sha256']==item['kernel_sha256']
           print('JM_EVERYKERNEL_ONECONTAINER_SELECTION_HANDOFF_GATE_PASS')
           PY
+      - name: Build one bootable ISO containing all 100 kernels
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/bootable_onecontainer_factory.py \
+            --onecontainer-root dist/onecontainer --out dist/bootable-onecontainer
+      - name: Verify bootable OneContainer ISO
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/bootable-onecontainer')
+          r=json.loads((root/'BOOTABLE_ONECONTAINER_RECEIPT.json').read_text())
+          assert r['body_count']==100
+          assert r['menu_entry_count']==100
+          assert r['default_body']=='cading'
+          assert r['all_kernel_hashes_verified'] is True
+          assert r['all_kernels_multiboot_validated'] is True
+          assert r['status']=='BOOTABLE_ONECONTAINER_ISO_DEFAULT_MACHINE_PASS_ALL_100_ENTRIES_STATICALLY_VALIDATED'
+          assert (root/r['iso_path']).is_file()
+          print('JM_BOOTABLE_ONECONTAINER_100_KERNEL_ISO_PASS')
+          PY
       - name: Freeze current constructible completion scope
         run: |
           python coding-estate/everybody/semantic-depth/tools/completion_freeze_factory.py \
             --semantic-root dist/semantic-depth \
             --qemu-root dist/qemu-100 \
             --container-root dist/onecontainer \
+            --bootable-root dist/bootable-onecontainer \
             --out dist/current-scope-freeze
       - name: Verify freeze boundary
         run: |
@@ -103,7 +124,7 @@ jobs:
           assert f['unique_compiler_namespaces']==100
           assert f['final_crown'] is False
           assert f['status']=='CURRENT_CONSTRUCTIBLE_SCOPE_FROZEN_EXTERNAL_AUTHORITY_GATES_OPEN'
-          assert all(len(item['earned'])==9 for item in f['bodies'])
+          assert all(len(item['earned'])==10 for item in f['bodies'])
           assert all(len(item['open_external_or_authority_gates'])==7 for item in f['bodies'])
           print('JM_100_CURRENT_CONSTRUCTIBLE_SCOPE_FREEZE_PASS')
           PY
@@ -114,9 +135,10 @@ jobs:
           sha256sum JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz | tee JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
           sha256sum JM_100_SEMANTIC_DEPTH_v0.2.1.tar.gz | tee JM_100_SEMANTIC_DEPTH_v0.2.1.sha256
           sha256sum dist/JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar | tee JM_EVERYKERNEL_ONECONTAINER_v0.4.0.sha256
+          sha256sum dist/bootable-onecontainer/JM_EVERYKERNEL_ONECONTAINER_v0.5.0.iso | tee JM_EVERYKERNEL_ONECONTAINER_v0.5.0.iso.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_100_CURRENT_SCOPE_FREEZE_v1.0
+          name: JM_100_CURRENT_SCOPE_FREEZE_v1.1
           path: |
             JM_100_QEMU_BODY_KERNELS_v0.3.0.tar.gz
             JM_100_QEMU_BODY_KERNELS_v0.3.0.sha256
@@ -129,5 +151,9 @@ jobs:
             dist/onecontainer/ONECONTAINER_MANIFEST.json
             dist/onecontainer/REGISTRY.json
             dist/onecontainer/HANDOFFS.json
+            dist/bootable-onecontainer/JM_EVERYKERNEL_ONECONTAINER_v0.5.0.iso
+            JM_EVERYKERNEL_ONECONTAINER_v0.5.0.iso.sha256
+            dist/bootable-onecontainer/BOOTABLE_ONECONTAINER_RECEIPT.json
+            dist/bootable-onecontainer/ONECONTAINER_ISO_QEMU.log
             dist/current-scope-freeze/CURRENT_SCOPE_FREEZE_RECEIPT.json
             dist/current-scope-freeze/COMPLETION_BOUNDARY.md

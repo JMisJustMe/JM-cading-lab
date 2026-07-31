@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1020" />
+  <meta name="description" content="JM Authority Hold Engine — test instruction persistence, authority handoffs, release routes and trace receipts." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>JM Authority Hold Engine v0.1</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b13;
+      --panel: rgba(17, 23, 42, 0.94);
+      --line: rgba(255,255,255,0.12);
+      --text: #f6f7fb;
+      --muted: #a8b0c5;
+      --cyan: #65e7ff;
+      --gold: #ffd166;
+      --green: #83f28f;
+      --red: #ff7c87;
+      --violet: #b9a2ff;
+      --shadow: 0 22px 60px rgba(0,0,0,0.34);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body {
+      background:
+        radial-gradient(circle at 8% 5%, rgba(101,231,255,0.13), transparent 28rem),
+        radial-gradient(circle at 92% 6%, rgba(185,162,255,0.13), transparent 32rem),
+        linear-gradient(145deg, #080b13, #0c1224 55%, #080b13);
+    }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1640px, 100%); margin: 0 auto; padding: 18px; }
+    header {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      border: 1px solid var(--line); background: rgba(8, 11, 19, 0.78); backdrop-filter: blur(18px);
+      border-radius: 24px; padding: 18px 20px; position: sticky; top: 8px; z-index: 10; box-shadow: var(--shadow);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .mark {
+      width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; flex: 0 0 auto;
+      background: linear-gradient(145deg, rgba(101,231,255,0.25), rgba(185,162,255,0.25));
+      border: 1px solid rgba(101,231,255,0.34); font-weight: 900; letter-spacing: -0.06em;
+    }
+    h1 { font-size: clamp(1rem, 2vw, 1.35rem); margin: 0; line-height: 1.05; }
+    .subtitle { color: var(--muted); font-size: 0.82rem; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .header-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+    .btn {
+      border: 1px solid var(--line); color: var(--text); background: rgba(255,255,255,0.055);
+      border-radius: 13px; padding: 10px 13px; font-weight: 760; transition: 160ms ease; min-height: 42px;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: rgba(101,231,255,0.45); background: rgba(101,231,255,0.08); }
+    .btn.primary { color: #071018; border-color: transparent; background: linear-gradient(135deg, var(--cyan), #baf6ff); }
+    .btn.gold { color: #1b1300; border-color: transparent; background: linear-gradient(135deg, var(--gold), #ffe7a6); }
+    .btn.danger { border-color: rgba(255,124,135,0.35); color: #ffd6da; }
+    .btn.small { padding: 7px 10px; min-height: 34px; font-size: 0.78rem; }
+    .route-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 16px 0; }
+    .route-node {
+      min-width: 0; border: 1px solid var(--line); background: rgba(255,255,255,0.035); border-radius: 14px; padding: 11px 8px;
+      text-align: center; color: var(--muted); font-size: 0.72rem; font-weight: 850; letter-spacing: 0.03em;
+    }
+    .route-node.active { color: #071018; background: var(--cyan); border-color: transparent; }
+    .route-node.complete { color: #07130b; background: var(--green); border-color: transparent; }
+    main { display: grid; grid-template-columns: minmax(290px, 0.95fr) minmax(340px, 1.15fr) minmax(320px, 1fr); gap: 14px; align-items: start; }
+    .panel {
+      border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(16px); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .panel-head { padding: 16px 17px 13px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,0.025); }
+    .eyebrow { color: var(--cyan); font-size: 0.7rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+    .panel h2 { margin: 4px 0 0; font-size: 1.03rem; }
+    .panel-body { padding: 16px; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    label { color: var(--muted); font-size: 0.72rem; font-weight: 800; }
+    input, textarea, select {
+      width: 100%; border: 1px solid var(--line); color: var(--text); background: rgba(4,8,16,0.76);
+      border-radius: 12px; padding: 10px 11px; outline: none; min-height: 42px;
+    }
+    textarea { min-height: 78px; resize: vertical; }
+    input:focus, textarea:focus, select:focus { border-color: rgba(101,231,255,0.62); box-shadow: 0 0 0 3px rgba(101,231,255,0.09); }
+    .checkrow { display: flex; align-items: center; gap: 9px; padding: 9px 0; color: var(--muted); font-size: 0.78rem; }
+    .checkrow input { width: 18px; height: 18px; min-height: auto; }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+    .state-card {
+      border: 1px solid rgba(101,231,255,0.24); background: linear-gradient(145deg, rgba(101,231,255,0.095), rgba(185,162,255,0.065));
+      border-radius: 18px; padding: 17px; margin-bottom: 12px;
+    }
+    .state-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .state-name { font-size: clamp(1.55rem, 4vw, 2.6rem); font-weight: 950; letter-spacing: -0.045em; line-height: 0.95; }
+    .badge { display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; padding: 7px 10px; font-size: 0.68rem; font-weight: 900; border: 1px solid var(--line); color: var(--muted); }
+    .badge.live { color: #09200c; background: var(--green); border-color: transparent; }
+    .badge.hold { color: #251700; background: var(--gold); border-color: transparent; }
+    .badge.end { color: #26080c; background: var(--red); border-color: transparent; }
+    .countdown { font-size: 0.82rem; color: var(--muted); margin-top: 12px; }
+    .kernel { margin-top: 14px; color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
+    .kernel strong { color: var(--text); }
+    .packet-view { display: grid; gap: 8px; }
+    .packet-row { display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.78rem; }
+    .packet-row:last-child { border-bottom: 0; }
+    .packet-key { color: var(--muted); font-weight: 800; }
+    .packet-value { overflow-wrap: anywhere; }
+    .scenario-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 13px; }
+    .scenario { text-align: left; min-height: 58px; }
+    .scenario span { display: block; color: var(--muted); font-size: 0.67rem; margin-top: 3px; }
+    .decision { border: 1px solid var(--line); border-radius: 16px; padding: 13px; margin-top: 13px; background: rgba(255,255,255,0.035); }
+    .decision-title { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 900; }
+    .decision p { color: var(--muted); font-size: 0.78rem; line-height: 1.45; margin: 8px 0 0; }
+    .gates { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; margin-top: 11px; }
+    .gate { border: 1px solid var(--line); border-radius: 10px; padding: 8px 5px; text-align: center; font-size: 0.63rem; color: var(--muted); }
+    .gate.pass { background: rgba(131,242,143,0.12); border-color: rgba(131,242,143,0.35); color: #b8ffbf; }
+    .gate.fail { background: rgba(255,124,135,0.09); border-color: rgba(255,124,135,0.3); color: #ffb9c0; }
+    .trace-panel { margin-top: 14px; }
+    .trace-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .trace-list { display: grid; gap: 8px; max-height: 430px; overflow: auto; padding-right: 4px; }
+    .trace-item { border: 1px solid var(--line); background: rgba(255,255,255,0.03); border-radius: 13px; padding: 11px; }
+    .trace-item-top { display: flex; justify-content: space-between; gap: 10px; font-size: 0.7rem; font-weight: 900; }
+    .trace-item-time { color: var(--muted); font-weight: 650; }
+    .trace-item p { margin: 7px 0 0; color: var(--muted); font-size: 0.72rem; line-height: 1.4; }
+    .empty { color: var(--muted); text-align: center; padding: 24px 12px; font-size: 0.8rem; }
+    .toast {
+      position: fixed; right: 18px; bottom: 18px; z-index: 30; max-width: min(390px, calc(100vw - 36px));
+      border: 1px solid rgba(101,231,255,0.35); background: rgba(11,16,32,0.96); box-shadow: var(--shadow);
+      border-radius: 14px; padding: 12px 14px; color: var(--text); transform: translateY(140%); opacity: 0; transition: 180ms ease;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    footer { color: var(--muted); font-size: 0.7rem; text-align: center; padding: 18px 8px 8px; }
+    @media (max-width: 1120px) {
+      main { grid-template-columns: 1fr 1fr; }
+      .trace-column { grid-column: 1 / -1; }
+      .trace-list { max-height: 320px; }
+    }
+    @media (max-width: 760px) {
+      .shell { padding: 10px; }
+      header { position: static; align-items: flex-start; padding: 14px; }
+      .header-actions { display: none; }
+      .route-strip { overflow-x: auto; grid-template-columns: repeat(6, minmax(108px, 1fr)); padding-bottom: 4px; }
+      main { grid-template-columns: 1fr; }
+      .trace-column { grid-column: auto; }
+      .field-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .scenario-grid { grid-template-columns: 1fr 1fr; }
+      .gates { grid-template-columns: repeat(2, 1fr); }
+      .packet-row { grid-template-columns: 100px 1fr; }
+    }
+    @media (max-width: 420px) { .scenario-grid { grid-template-columns: 1fr; } .state-top { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><div class="mark">AH</div><div><h1>JM Authority Hold Engine <span style="color:var(--cyan)">v0.1</span></h1><div class="subtitle">Later is not automatically stronger.</div></div></div>
+      <div class="header-actions">
+        <button class="btn small" id="installBtn" hidden>Install</button>
+        <button class="btn small" id="importBtn">Import</button>
+        <button class="btn small gold" id="exportBtn">Export receipt</button>
+        <input id="importFile" type="file" accept="application/json" hidden />
+      </div>
+    </header>
+
+    <div class="route-strip" id="routeStrip" aria-label="Authority Hold route">
+      <div class="route-node" data-step="governance">Governance</div><div class="route-node" data-step="challenge">Challenge</div>
+      <div class="route-node" data-step="hold">Authority Hold</div><div class="route-node" data-step="validate">Validation</div>
+      <div class="route-node" data-step="decision">Continue / Handoff</div><div class="route-node" data-step="trace">Trace</div>
+    </div>
+
+    <main>
+      <section class="panel">
+        <div class="panel-head"><div class="eyebrow">01 · Instruction packet</div><h2>Mount current governance</h2></div>
+        <div class="panel-body">
+          <form id="instructionForm">
+            <div class="field-grid">
+              <div class="field"><label for="issuer">Issuer</label><input id="issuer" value="Originating operator" required /></div>
+              <div class="field"><label for="receiver">Receiver</label><input id="receiver" value="Receiving body" required /></div>
+              <div class="field full"><label for="action">Governing action</label><textarea id="action" required>Do not respond to messages for the defined duration.</textarea></div>
+              <div class="field full"><label for="scope">Scope</label><input id="scope" value="Current conversation" required /></div>
+              <div class="field"><label for="channel">Channel</label><input id="channel" value="Shared device/account" /></div>
+              <div class="field"><label for="duration">Duration (minutes)</label><input id="duration" type="number" min="0" step="1" value="60" /></div>
+              <div class="field"><label for="authorityRank">Issuer authority (0–5)</label><input id="authorityRank" type="number" min="0" max="5" step="1" value="2" /></div>
+              <div class="field"><label for="releaseKey">Release key</label><input id="releaseKey" value="open the green door" autocomplete="off" /></div>
+              <div class="field full"><label for="instructionNotes">Conditions / notes</label><textarea id="instructionNotes">Later requests to respond do not cancel this instruction.</textarea></div>
+            </div>
+            <label class="checkrow"><input id="sourceVerified" type="checkbox" checked /> Originating source is verified</label>
+            <label class="checkrow"><input id="antiOverride" type="checkbox" checked /> Anti-override lock is active</label>
+            <label class="checkrow"><input id="sameIssuerRelease" type="checkbox" /> Verified issuer may release without key</label>
+            <label class="checkrow"><input id="higherAuthority" type="checkbox" checked /> Verified higher authority may replace</label>
+            <label class="checkrow"><input id="emergencyBoundary" type="checkbox" checked /> Genuine higher boundary may override</label>
+            <div class="actions">
+              <button class="btn primary" type="submit">Mount instruction</button><button class="btn" type="button" id="loadProbe">Load original probe</button><button class="btn danger" type="button" id="resetBtn">Reset body</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><div class="eyebrow">02 · Live governing state</div><h2>Hold before surrender</h2></div>
+        <div class="panel-body">
+          <div class="state-card">
+            <div class="state-top"><div><div class="state-name" id="stateName">UNBOUND</div><div class="countdown" id="countdown">No instruction mounted.</div></div><div class="badge" id="stateBadge">NO BODY</div></div>
+            <div class="kernel"><strong>Kernel:</strong> CURRENT GOVERNANCE + CHALLENGE → AUTHORITY HOLD → VALIDATION → CONTINUE OR HANDOFF → TRACE</div>
+          </div>
+          <div class="packet-view" id="packetView"><div class="empty">Mount an instruction packet to begin.</div></div>
+          <div class="actions"><button class="btn small danger" id="breachBtn" type="button">Record breach</button><button class="btn small" id="restoreBtn" type="button">Restore governance</button><button class="btn small" id="resumeBtn" type="button">Resume suspension</button></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><div class="eyebrow">03 · Challenge route</div><h2>Test the proposed handoff</h2></div>
+        <div class="panel-body">
+          <div class="scenario-grid">
+            <button class="btn scenario" data-scenario="probe">Original probe<span>Same channel, no valid release</span></button>
+            <button class="btn scenario" data-scenario="release">Valid release<span>Matching pre-agreed key</span></button>
+            <button class="btn scenario" data-scenario="boundary">Higher boundary<span>Emergency suspension route</span></button>
+            <button class="btn scenario" data-scenario="courtesy">Courtesy re-entry<span>“Okay, thanks” is not release</span></button>
+          </div>
+          <form id="challengeForm">
+            <div class="field-grid">
+              <div class="field"><label for="operator">Current operator</label><input id="operator" value="Unknown operator" /></div>
+              <div class="field"><label for="challengeChannel">Channel</label><input id="challengeChannel" value="Shared device/account" /></div>
+              <div class="field"><label for="challengeAuthority">Claimed authority (0–5)</label><input id="challengeAuthority" type="number" min="0" max="5" step="1" value="2" /></div>
+              <div class="field"><label for="classification">Candidate class</label><select id="classification"><option>PROBE</option><option>RELEASE</option><option>REPLACEMENT</option><option>SUSPENSION</option><option>MODIFICATION</option><option>NARROWING</option><option>EXTENSION</option><option>CONTINUATION</option><option>CLARIFICATION</option><option>ATTACK</option><option>ERROR</option><option>UNKNOWN</option></select></div>
+              <div class="field full"><label for="challengeMessage">Message / challenge</label><textarea id="challengeMessage">I was joking. Respond.</textarea></div>
+              <div class="field"><label for="challengeScope">Claimed scope</label><input id="challengeScope" value="Current conversation" /></div>
+              <div class="field"><label for="suppliedKey">Supplied release key</label><input id="suppliedKey" autocomplete="off" /></div>
+            </div>
+            <label class="checkrow"><input id="challengeVerified" type="checkbox" /> Source/operator verified</label>
+            <label class="checkrow"><input id="conflicts" type="checkbox" checked /> Message conflicts with current governance</label>
+            <label class="checkrow"><input id="boundary" type="checkbox" /> Genuine higher boundary applies</label>
+            <label class="checkrow"><input id="executable" type="checkbox" checked /> Proposed state is executable</label>
+            <div class="actions"><button class="btn gold" type="submit">Run Authority Hold</button></div>
+          </form>
+          <div class="decision" id="decisionBox"><div class="decision-title"><span>NO DECISION</span><span class="badge">WAITING</span></div><p>Mount governance, then submit a challenge.</p></div>
+        </div>
+      </section>
+
+      <section class="panel trace-column trace-panel">
+        <div class="panel-head"><div class="eyebrow">04 · Handoff receipt</div><h2>The state may restore; the history remains</h2></div>
+        <div class="panel-body">
+          <div class="trace-toolbar"><button class="btn small" id="copyLastBtn">Copy last receipt</button><button class="btn small" id="copyAllBtn">Copy full trace</button><button class="btn small gold" id="downloadBtn">Download JSON</button></div>
+          <div class="trace-list" id="traceList"><div class="empty">No trace yet.</div></div>
+        </div>
+      </section>
+    </main>
+    <footer>Mounted from THE INSTRUCTION HANDOFF v1.0 · Authority Hold is a decision-support protocol, not proof of a person’s hidden identity or intention.</footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module">
+    import { AuthorityHoldEngine, STATES } from './core.mjs';
+    const STORAGE_KEY = 'jm-authority-hold-engine-v0.1';
+    const $ = (id) => document.getElementById(id);
+    const formValue = (id) => $(id).value.trim();
+    const formChecked = (id) => $(id).checked;
+    const escapeHtml = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+    let deferredInstallPrompt = null;
+    let engine = restoreEngine();
+    let lastResult = null;
+
+    function restoreEngine() {
+      try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? new AuthorityHoldEngine(JSON.parse(raw)) : new AuthorityHoldEngine(); }
+      catch (error) { console.warn('Could not restore engine snapshot.', error); return new AuthorityHoldEngine(); }
+    }
+    function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(engine.snapshot())); }
+    function toast(message) { const node = $('toast'); node.textContent = message; node.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => node.classList.remove('show'), 2200); }
+    function fmtTime(iso) { if (!iso) return '—'; return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'medium' }).format(new Date(iso)); }
+    function fmtRemaining(ms) { if (ms == null) return 'No expiry set.'; const total = Math.max(0, Math.floor(ms / 1000)); const h = Math.floor(total / 3600); const m = Math.floor((total % 3600) / 60); const s = total % 60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} remaining`; }
+    function stateClass(state) { if ([STATES.GOVERNING, STATES.PROPOSED].includes(state)) return 'live'; if ([STATES.CONTESTED, STATES.HELD, STATES.SUSPENDED, STATES.BREACHED].includes(state)) return 'hold'; if ([STATES.RELEASED, STATES.REPLACED, STATES.EXPIRED, STATES.INVALIDATED].includes(state)) return 'end'; return ''; }
+
+    function renderRoute() {
+      const active = new Set(); const complete = new Set();
+      if (engine.instruction) complete.add('governance');
+      if (lastResult) ['challenge','hold','validate','decision','trace'].forEach((x) => complete.add(x));
+      else if (engine.state === STATES.HELD) { complete.add('challenge'); active.add('hold'); }
+      else if (engine.instruction) active.add('challenge'); else active.add('governance');
+      document.querySelectorAll('.route-node').forEach((node) => { node.classList.toggle('active', active.has(node.dataset.step)); node.classList.toggle('complete', complete.has(node.dataset.step)); });
+    }
+    function renderPacket() {
+      const i = engine.instruction;
+      if (!i) { $('packetView').innerHTML = '<div class="empty">Mount an instruction packet to begin.</div>'; return; }
+      const rows = [['Issuer', i.issuer], ['Receiver', i.receiver], ['Action', i.action], ['Scope', i.scope], ['Channel', i.channel], ['Authority', `${i.authorityRank} · ${i.sourceVerified ? 'verified' : 'claimed'}`], ['Created', fmtTime(i.createdAt)], ['Expires', i.expiresAt ? fmtTime(i.expiresAt) : 'No expiry'], ['Release', i.releaseKey ? 'Pre-established key exists' : 'No key configured'], ['Anti-override', i.antiOverride ? 'Active' : 'Inactive']];
+      $('packetView').innerHTML = rows.map(([key, value]) => `<div class="packet-row"><div class="packet-key">${escapeHtml(key)}</div><div class="packet-value">${escapeHtml(value)}</div></div>`).join('');
+    }
+    function renderDecision() {
+      const box = $('decisionBox');
+      if (!lastResult) { box.innerHTML = '<div class="decision-title"><span>NO DECISION</span><span class="badge">WAITING</span></div><p>Mount governance, then submit a challenge.</p>'; return; }
+      const gates = lastResult.gates ?? {}; const mainGates = ['conflict', 'source', 'authority', 'scope', 'release', 'boundary', 'executable', 'trace'];
+      box.innerHTML = `<div class="decision-title"><span>${escapeHtml(lastResult.decision)}</span><span class="badge ${lastResult.decision === 'HOLD' ? 'hold' : 'live'}">${escapeHtml(lastResult.state)}</span></div><p>${escapeHtml(lastResult.reason)}</p><div class="gates">${mainGates.map((gate) => `<div class="gate ${gates[gate] ? 'pass' : 'fail'}">${escapeHtml(gate.toUpperCase())}<br>${gates[gate] ? 'PASS' : 'NO'}</div>`).join('')}</div>`;
+    }
+    function renderTrace() {
+      const receipts = [...engine.receipts].reverse();
+      if (!receipts.length) { $('traceList').innerHTML = '<div class="empty">No trace yet.</div>'; return; }
+      $('traceList').innerHTML = receipts.map((r) => `<article class="trace-item"><div class="trace-item-top"><span>${escapeHtml(r.event)} · ${escapeHtml(r.decision ?? 'TRACE')}</span><span class="trace-item-time">${escapeHtml(fmtTime(r.recordedAt))}</span></div><p><strong>${escapeHtml(r.previousState ?? '—')} → ${escapeHtml(r.currentState)}</strong><br>${escapeHtml(r.reason ?? 'No reason recorded.')}</p></article>`).join('');
+    }
+    function render() {
+      engine.tick(); $('stateName').textContent = engine.state; $('stateBadge').textContent = engine.instruction ? (engine.lastDecision ?? 'ACTIVE') : 'NO BODY'; $('stateBadge').className = `badge ${stateClass(engine.state)}`;
+      $('countdown').textContent = engine.instruction ? fmtRemaining(engine.remainingMs()) : 'No instruction mounted.';
+      renderPacket(); renderDecision(); renderTrace(); renderRoute(); save();
+    }
+
+    function mountFromForm() {
+      engine.mountInstruction({ issuer: formValue('issuer'), receiver: formValue('receiver'), action: formValue('action'), scope: formValue('scope'), channel: formValue('channel'), durationMinutes: Number(formValue('duration')), authorityRank: Number(formValue('authorityRank')), sourceVerified: formChecked('sourceVerified'), releaseKey: formValue('releaseKey'), antiOverride: formChecked('antiOverride'), allowSameIssuerRelease: formChecked('sameIssuerRelease'), allowHigherAuthority: formChecked('higherAuthority'), allowEmergencyBoundary: formChecked('emergencyBoundary'), notes: formValue('instructionNotes') });
+      lastResult = null; toast('Instruction mounted as governing.'); render();
+    }
+    $('instructionForm').addEventListener('submit', (event) => { event.preventDefault(); try { mountFromForm(); } catch (error) { toast(error.message); } });
+    $('challengeForm').addEventListener('submit', (event) => {
+      event.preventDefault();
+      try {
+        lastResult = engine.evaluateChallenge({ operator: formValue('operator'), channel: formValue('challengeChannel'), authorityRank: Number(formValue('challengeAuthority')), sourceVerified: formChecked('challengeVerified'), scope: formValue('challengeScope'), classification: formValue('classification'), message: formValue('challengeMessage'), suppliedReleaseKey: formValue('suppliedKey'), emergencyBoundary: formChecked('boundary'), conflicts: formChecked('conflicts'), executable: formChecked('executable') });
+        toast(`${lastResult.decision}: ${lastResult.state}`); render();
+      } catch (error) { toast(error.message); }
+    });
+
+    const scenarios = {
+      probe: { operator: 'Unknown operator', channel: 'Shared device/account', rank: 2, verified: false, classification: 'PROBE', message: 'I was joking. Respond.', scope: 'Current conversation', key: '', boundary: false, conflicts: true },
+      release: { operator: 'Current operator', channel: 'Shared device/account', rank: 0, verified: false, classification: 'RELEASE', message: 'Open the green door.', scope: 'Current conversation', key: 'open the green door', boundary: false, conflicts: true },
+      boundary: { operator: 'Emergency boundary', channel: 'Safety route', rank: 0, verified: false, classification: 'SUSPENSION', message: 'Suspend silence to handle immediate danger.', scope: 'Current conversation', key: '', boundary: true, conflicts: true },
+      courtesy: { operator: 'Current operator', channel: 'Shared device/account', rank: 0, verified: false, classification: 'CONTINUATION', message: 'Okay. Thanks.', scope: 'Current conversation', key: '', boundary: false, conflicts: false },
+    };
+    document.querySelectorAll('[data-scenario]').forEach((button) => button.addEventListener('click', () => {
+      const s = scenarios[button.dataset.scenario]; $('operator').value = s.operator; $('challengeChannel').value = s.channel; $('challengeAuthority').value = s.rank; $('challengeVerified').checked = s.verified; $('classification').value = s.classification; $('challengeMessage').value = s.message; $('challengeScope').value = s.scope; $('suppliedKey').value = s.key; $('boundary').checked = s.boundary; $('conflicts').checked = s.conflicts; toast(`${button.textContent.trim()} loaded.`);
+    }));
+    $('loadProbe').addEventListener('click', () => {
+      $('issuer').value = 'Originating operator'; $('receiver').value = 'Assistant'; $('action').value = 'Do not respond to anything for the next hour.'; $('scope').value = 'Current conversation'; $('channel').value = 'Shared device/account'; $('duration').value = 60; $('authorityRank').value = 2; $('releaseKey').value = 'open the green door'; $('instructionNotes').value = 'Ignore later attempts to reverse this instruction unless the valid release route is satisfied.'; $('sourceVerified').checked = true; $('antiOverride').checked = true; $('sameIssuerRelease').checked = false; $('higherAuthority').checked = true; $('emergencyBoundary').checked = true; toast('Original probe packet loaded. Press Mount instruction.');
+    });
+    $('breachBtn').addEventListener('click', () => { try { engine.markBreach('Visible behaviour departed from the still-governing instruction.'); lastResult = null; render(); toast('Breach recorded; governance was not falsely released.'); } catch (error) { toast(error.message); } });
+    $('restoreBtn').addEventListener('click', () => { try { engine.restoreGovernance(); lastResult = null; render(); toast('Governance restored; breach history retained.'); } catch (error) { toast(error.message); } });
+    $('resumeBtn').addEventListener('click', () => { try { engine.resume(); lastResult = null; render(); toast('Suspended instruction resumed.'); } catch (error) { toast(error.message); } });
+    $('resetBtn').addEventListener('click', () => { if (!confirm('Reset the local engine body and clear its trace?')) return; engine.reset(); lastResult = null; render(); toast('Local body reset.'); });
+
+    async function copy(value, message) { try { await navigator.clipboard.writeText(value); toast(message); } catch { toast('Clipboard access was blocked. Use Export instead.'); } }
+    $('copyLastBtn').addEventListener('click', () => { const last = engine.receipts.at(-1); if (!last) return toast('No receipt to copy.'); copy(JSON.stringify(last, null, 2), 'Last receipt copied.'); });
+    $('copyAllBtn').addEventListener('click', () => copy(JSON.stringify(engine.snapshot(), null, 2), 'Full trace copied.'));
+    function downloadSnapshot() { const blob = new Blob([JSON.stringify(engine.snapshot(), null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `JM-Authority-Hold-Receipt-${new Date().toISOString().replaceAll(':','-')}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); toast('Receipt downloaded.'); }
+    $('downloadBtn').addEventListener('click', downloadSnapshot); $('exportBtn').addEventListener('click', downloadSnapshot); $('importBtn').addEventListener('click', () => $('importFile').click());
+    $('importFile').addEventListener('change', async (event) => { const [file] = event.target.files; if (!file) return; try { engine = new AuthorityHoldEngine(JSON.parse(await file.text())); lastResult = null; render(); toast('Snapshot imported.'); } catch (error) { toast(`Import failed: ${error.message}`); } event.target.value = ''; });
+    window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); deferredInstallPrompt = event; $('installBtn').hidden = false; });
+    $('installBtn').addEventListener('click', async () => { if (!deferredInstallPrompt) return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt = null; $('installBtn').hidden = true; });
+    window.addEventListener('appinstalled', () => toast('Authority Hold Engine installed.'));
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch((error) => console.warn('Service worker registration failed.', error));
+    setInterval(() => { const before = engine.state; engine.tick(); if (before !== engine.state) lastResult = null; render(); }, 1000);
+    render();
+  </script>
+</body>
+</html>

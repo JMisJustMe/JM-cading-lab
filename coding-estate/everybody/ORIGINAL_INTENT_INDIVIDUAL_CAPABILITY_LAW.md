@@ -1,18 +1,22 @@
-# JM Original Intent — Individual Capability After Fusion
+# JM Original Intent — Strategic Convergence and Individual Capability
 
 Status: GOVERNING CORRECTION
 
 ## What originally happened
 
-The early coding estate did not begin as one generic language or one generic engine. The original intention was for the early coding bodies — including the Starter 13 lineage and Finger One / Finger Two — to become individually capable bodies.
+The early coding estate did not begin as one generic language or one generic engine. The original intention was for the early coding bodies — especially the Finger One / CodeHouse 13 lineage and the Finger Two hand — to become individually capable bodies.
 
-Over time, those bodies were increasingly fused into shared houses, runtimes, registries, bridges, compilers, VMs, game cores and delivery systems. That fusion produced useful shared machinery, but it happened before every originating body had been matured to the same independent technical standard.
+Their later convergence was deliberate.
+
+Theodore knowingly allowed the bodies to be brought together through shared houses, runtimes, registries, bridges, compilers, VMs, game cores and delivery systems because that route produced the same eventual destination: a powerful collective estate whose organs could later be returned to each sovereign body.
+
+Individual completion was deferred. It was not forgotten, accidentally prevented or abandoned.
 
 ## Governing interpretation
 
-The fusion is not to be undone or treated as waste.
+The convergence is not to be undone or treated as waste.
 
-It becomes the shared donor estate.
+It is the shared donor estate and the result of a chosen build route.
 
 Each original coding body must now inherit from that donor estate while retaining or recovering its own:
 
@@ -50,13 +54,13 @@ The EveryKernel lane remains valid:
 
 Shared machine glue is permitted. Shared source authority is not.
 
-## Recovery law
+## Restoration law
 
-The correction is not "go backwards and erase what was built."
+The route is not "go backwards and erase what was built."
 
 It is:
 
-> Preserve the fused donor body. Restore the sovereign bodies. Raise each one to the strongest appropriate standard. Then let them cooperate without losing identity.
+> Preserve the deliberately converged donor body. Raise the sovereign bodies individually from it. Then let them cooperate without losing identity.
 
 ## Game-engine parallel
 
@@ -70,10 +74,10 @@ This document records architectural intent and governs future implementation. It
 
 ## Keeper lines
 
-> Fusion created the factory. Recovery restores the workers.
+> Convergence was chosen. Individual completion was deferred, not abandoned.
+
+> The collective body reached the destination first; the sovereign bodies now inherit the route.
 
 > One estate does not require one body.
 
 > Shared organs do not erase sovereign capability.
-
-> It is not too late once the donor already exists; the donor is what makes the restoration possible.

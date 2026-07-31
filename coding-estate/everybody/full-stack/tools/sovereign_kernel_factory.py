@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Generate 100 body-authored kernel personalities and one identity-safe container.
 
-This stage is deliberately bounded. It proves that every kernel personality is
-produced from body-native source through that body's compiler namespace. It does
-not claim a QEMU boot Ding; separate boot images remain the next machine gate.
+This stage proves that every kernel personality is produced from body-native
+source through that body's compiler namespace. It does not claim a QEMU boot
+Ding; separate boot images remain the next machine gate.
 """
 from __future__ import annotations
 
@@ -13,7 +13,6 @@ import importlib.util
 import json
 import shutil
 import sys
-import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -49,8 +48,7 @@ def write_json(path: Path, value: Any) -> None:
 
 
 def load_compiler(path: Path, module_name: str):
-    package_dir = path.parent
-    sys.path.insert(0, str(package_dir))
+    sys.path.insert(0, str(path.parent))
     try:
         spec = importlib.util.spec_from_file_location(module_name, path)
         if spec is None or spec.loader is None:
@@ -62,21 +60,30 @@ def load_compiler(path: Path, module_name: str):
         sys.path.pop(0)
 
 
+def select_kernel_commands(manifest: dict[str, Any]) -> list[str]:
+    """Require family meaning and at least one declared body capability."""
+    selected: list[str] = []
+    groups = (
+        manifest.get("required_any", [])[:1],
+        manifest.get("family_commands", [])[:2],
+        manifest.get("capability_commands", [])[:1],
+    )
+    for group in groups:
+        for command in group:
+            if command not in selected and command not in {"LAW", "TRACE", "DING"}:
+                selected.append(command)
+    if not selected:
+        raise RuntimeError(f"body {manifest['body']['id']} has no kernel commands")
+    if manifest.get("capability_commands") and not any(
+        command in manifest["capability_commands"] for command in selected
+    ):
+        raise RuntimeError(f"body {manifest['body']['id']} kernel source omitted body capability")
+    return selected
+
+
 def body_kernel_source(manifest: dict[str, Any]) -> str:
     body = manifest["body"]
-    selected: list[str] = []
-    for command in [
-        *manifest.get("required_any", []),
-        *manifest.get("family_commands", []),
-        *manifest.get("capability_commands", []),
-    ]:
-        if command not in selected and command not in {"LAW", "TRACE", "DING"}:
-            selected.append(command)
-        if len(selected) == 3:
-            break
-    if not selected:
-        raise RuntimeError(f"body {body['id']} has no body-specific kernel commands")
-
+    selected = select_kernel_commands(manifest)
     lines = [
         f'NATIVE {body["id"]} {manifest["native_version"]}',
         f'LAW {json.dumps(body["law"], ensure_ascii=False)}',
@@ -120,18 +127,21 @@ def body_kernel_source(manifest: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def personality_wrapper(manifest: dict[str, Any], compile_receipt: dict[str, Any]) -> str:
+def c_symbol(body_id: str) -> str:
+    symbol = "".join(character if character.isalnum() else "_" for character in body_id).strip("_")
+    return f"body_{symbol}" if symbol and symbol[0].isdigit() else symbol
+
+
+def personality_wrapper(manifest: dict[str, Any], receipt: dict[str, Any]) -> str:
     body = manifest["body"]
-    symbol = "".join(character if character.isalnum() else "_" for character in body["id"]).strip("_")
-    if symbol and symbol[0].isdigit():
-        symbol = f"body_{symbol}"
+    symbol = c_symbol(body["id"])
     return f'''/* JM sovereign kernel personality. Separate boot image not yet claimed. */
 #include <stddef.h>
 #define JM_KERNEL_BODY_ID {json.dumps(body["id"])}
 #define JM_KERNEL_BODY_NAME {json.dumps(body["name"], ensure_ascii=False)}
 #define JM_KERNEL_BODY_LAW_SHA256 {json.dumps(manifest["law_sha256"])}
-#define JM_KERNEL_BODY_IR_SHA256 {json.dumps(compile_receipt["ir_sha256"])}
-#define JM_KERNEL_BODY_SOURCE_SHA256 {json.dumps(compile_receipt["source_sha256"])}
+#define JM_KERNEL_BODY_IR_SHA256 {json.dumps(receipt["ir_sha256"])}
+#define JM_KERNEL_BODY_SOURCE_SHA256 {json.dumps(receipt["source_sha256"])}
 struct jm_{symbol}_kernel_personality {{
     const char *body_id;
     const char *body_name;
@@ -146,7 +156,7 @@ static const struct jm_{symbol}_kernel_personality jm_{symbol}_personality = {{
     JM_KERNEL_BODY_LAW_SHA256,
     JM_KERNEL_BODY_IR_SHA256,
     JM_KERNEL_BODY_SOURCE_SHA256,
-    {compile_receipt["operation_count"]}u
+    {receipt["operation_count"]}u
 }};
 const void *jm_{symbol}_kernel_personality(void) {{ return &jm_{symbol}_personality; }}
 size_t jm_{symbol}_kernel_operation_count(void) {{ return jm_{symbol}_personality.operation_count; }}
@@ -160,8 +170,7 @@ def generate(full_stack_root: Path, out: Path) -> dict[str, Any]:
 
     entries: list[dict[str, Any]] = []
     for index, body_root in enumerate(body_roots):
-        manifest_path = body_root / "manifest.json"
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest = json.loads((body_root / "manifest.json").read_text(encoding="utf-8"))
         body = manifest["body"]
         body_id = body["id"]
         if body_root.name != body_id:
@@ -258,15 +267,10 @@ def generate(full_stack_root: Path, out: Path) -> dict[str, Any]:
             "status": "100_BODY_AUTHORED_KERNEL_PERSONALITIES_PASS",
             "kernel_count": len(entries),
             "container_sha256": sha_text(stable_json(container)),
-            "tree_sha256": "CALCULATED_AFTER_WRITE",
             "qemu_state": "OPEN_PER_KERNEL",
             "claim_boundary": "One hundred separate body-authored kernel personalities generated; separate boot-image and QEMU proof remains open.",
         },
     )
-    receipt_path = out / "BUILD_RECEIPT.json"
-    build_receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    build_receipt["tree_sha256"] = tree_digest(out)
-    write_json(receipt_path, build_receipt)
     return container
 
 

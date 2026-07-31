@@ -1,0 +1,108 @@
+name: RouteOS JM-Generated UserProgram LinkRoute ImageCarrier
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-imagecarrier-v1-2a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-userprogram-linkroute-imagecarrier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout v1.2A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Mount v1.2A OneBody source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          BODY=systems/routeos-kernel-jm-native-v1.2A/routeos-v1.2A-body.tar.gz.b64
+          echo '5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  '$BODY | sha256sum -c -
+          base64 -d "$BODY" > /tmp/routeos-v1.2A-body.tar.gz
+          echo '0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/routeos-v1.2A-body.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v1.2A-body.tar.gz -C .
+          test -f systems/routeos-kernel-jm-native-v1.2A/source/userprogram_linkroute_imagecarrier.jmroute
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.2A/tools/ci_prepare_imagecarrier.sh
+      - name: Build and run nineteen-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v12a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v12a/JM_USERPROGRAM_LINKROUTE_IMAGECARRIER_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Freeze v1.2A construction receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          KERNEL=.routeos-v12a/routeos-kernel-v0.1A
+          mkdir -p userprogram-linkroute-imagecarrier-v12a-receipt
+          if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
+            nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v12a/JM_IMAGECARRIER_SYMBOLS.txt
+            objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v12a/JM_IMAGECARRIER_DISASSEMBLY.txt
+            readelf -S "$KERNEL/build/routeos-kernel.elf" > .routeos-v12a/JM_IMAGECARRIER_SECTIONS.txt
+          fi
+          for f in .routeos-v12a/*_INTEGRATION_RECEIPT.json .routeos-v12a/JM_* \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$KERNEL/kernel/routeos_authority.h" "$KERNEL/arch/x86_64/boot.S" \
+            "$KERNEL/build.sh" "$KERNEL/jm-generated-v1.2A"/* \
+            "$V12/source/userprogram_linkroute_imagecarrier.jmroute" "$V12/generated"/*; do
+            [[ -f "$f" ]] && cp "$f" userprogram-linkroute-imagecarrier-v12a-receipt/
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_parent=b4e8299597c7c00e8f9f9200254f02dda49362ed" \
+            "imagecarrier_source_sha256=2ede3de63d966bcc066927bb709be7e24e7540a9ef4b948d267d79dfd64f9362" \
+            > userprogram-linkroute-imagecarrier-v12a-receipt/GATE_STATUS.txt
+          (cd userprogram-linkroute-imagecarrier-v12a-receipt && sha256sum * > SHA256SUMS.txt) || true
+      - name: Upload v1.2A UserProgram LinkRoute ImageCarrier receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.2A-userprogram-linkroute-imagecarrier-receipt
+          path: userprogram-linkroute-imagecarrier-v12a-receipt
+          if-no-files-found: error
+      - name: Enforce nineteen-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v12a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.2A/tools/ci_enforce_imagecarrier.py \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/arch/x86_64/boot.S" \
+            "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            .routeos-v12a/USERPROGRAM_LINKROUTE_IMAGECARRIER_INTEGRATION_RECEIPT.json
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          for hash in 2ede3de63d966bcc066927bb709be7e24e7540a9ef4b948d267d79dfd64f9362 \
+            b02be640fe482dc36633084e0e4601533ea3ed3b38892d723ab37f2bfc98a638 \
+            50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914 \
+            c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f \
+            680ba2c31be8dfa7b8ebde7ea518ca385c7faa3906f5ac8af8ecb7c52c4165ea \
+            e038b1549e6831de566ef2180a1b83a5c2071aa2b3951bb415e3c1002e4d0c22 \
+            2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00 \
+            847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8 \
+            13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c \
+            2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2; do
+            strings "$ELF" | grep -F "$hash"
+          done
+          echo 'JM_GENERATED_USERPROGRAM_LINKROUTE_IMAGECARRIER DING: PASS'

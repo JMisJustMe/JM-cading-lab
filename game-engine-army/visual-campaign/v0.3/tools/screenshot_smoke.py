@@ -5,12 +5,12 @@ import argparse
 import json
 import os
 import shutil
-import subprocess
 import struct
+import subprocess
 import threading
-import zlib
 import time
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+import zlib
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 
@@ -67,7 +67,7 @@ def png_visual_stats(path: Path) -> dict[str, float]:
     x0, x1 = int(width * .08), int(width * .92)
     y0, y1 = int(height * .18), int(height * .82)
     samples = colorful = luminous = 0
-    values = []
+    values: list[float] = []
     step = max(1, min(width, height) // 180)
     for y in range(y0, y1, step):
         row = rows[y]
@@ -98,7 +98,14 @@ def main() -> int:
     dist = args.dist.resolve()
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
-    chrome = os.environ.get("CHROME_PATH") or next((shutil.which(name) for name in ["google-chrome-stable", "google-chrome", "chromium", "chromium-browser"] if shutil.which(name)), None)
+    chrome = os.environ.get("CHROME_PATH") or next(
+        (
+            shutil.which(name)
+            for name in ["google-chrome-stable", "google-chrome", "chromium", "chromium-browser"]
+            if shutil.which(name)
+        ),
+        None,
+    )
     if not chrome:
         raise SystemExit("Chrome/Chromium not found; visual screenshot gate cannot run")
 
@@ -106,38 +113,129 @@ def main() -> int:
         def log_message(self, *_):
             pass
 
-    server = ThreadingHTTPServer(("127.0.0.1", 0), lambda *a, **k: Handler(*a, directory=str(dist), **k))
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        lambda *a, **k: Handler(*a, directory=str(dist), **k),
+    )
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     port = server.server_address[1]
     time.sleep(.25)
     receipt = json.loads((dist / "VISUAL_CAMPAIGN_RECEIPT.json").read_text(encoding="utf-8"))
-    targets = [(e["id"], f"engines/{e['file']}", [("android", "412,915")]) for e in receipt["engines"]]
-    targets.append(("army-launcher", receipt["portableLauncher"]["file"], [("desktop", "1440,900"), ("android", "412,915")]))
-    rows = []
+    targets = [
+        (e["id"], f"engines/{e['file']}", [("android", "412,915")])
+        for e in receipt["engines"]
+    ]
+    targets.append(
+        (
+            "army-launcher",
+            receipt["portableLauncher"]["file"],
+            [("desktop", "1440,900"), ("android", "412,915")],
+        )
+    )
+    rows: list[dict[str, object]] = []
+    failures: list[dict[str, object]] = []
     try:
         for name, relative, viewports in targets:
             for label, size in viewports:
                 url = f"http://127.0.0.1:{port}/{relative}"
                 png = out / f"{name}-{label}.png"
-                dom = subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", "--virtual-time-budget=2400", "--run-all-compositor-stages-before-draw", "--dump-dom", url], check=True, capture_output=True, text=True, timeout=35).stdout
-                if name != "army-launcher" and "jmvc-root" not in dom:
-                    raise RuntimeError(f"{name} did not execute visual runtime at {label} viewport")
-                subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", f"--window-size={size}", "--virtual-time-budget=2400", "--run-all-compositor-stages-before-draw", f"--screenshot={png}", url], check=True, capture_output=True, timeout=35)
-                if png.stat().st_size < 7000:
-                    raise RuntimeError(f"{png.name} is suspiciously small")
-                visual = png_visual_stats(png)
-                if name != "army-launcher" and visual["colorfulRatio"] < .006 and visual["luminousRatio"] < .012:
-                    raise RuntimeError(f"{png.name} has an empty central visual field: {visual}")
-                if visual["lumaStdDev"] < 5.5:
-                    raise RuntimeError(f"{png.name} is visually flat: {visual}")
-                rows.append({"engine": name, "viewport": label, "file": png.name, "bytes": png.stat().st_size, **visual})
+                row: dict[str, object] = {
+                    "engine": name,
+                    "viewport": label,
+                    "file": png.name,
+                }
+                try:
+                    dom = subprocess.run(
+                        [
+                            chrome,
+                            "--headless=new",
+                            "--disable-gpu",
+                            "--disable-dev-shm-usage",
+                            "--disable-background-networking",
+                            "--no-first-run",
+                            "--no-sandbox",
+                            "--hide-scrollbars",
+                            "--virtual-time-budget=2400",
+                            "--run-all-compositor-stages-before-draw",
+                            "--dump-dom",
+                            url,
+                        ],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                        timeout=35,
+                    ).stdout
+                    if name != "army-launcher" and "jmvc-root" not in dom:
+                        raise RuntimeError(
+                            f"{name} did not execute visual runtime at {label} viewport"
+                        )
+                    subprocess.run(
+                        [
+                            chrome,
+                            "--headless=new",
+                            "--disable-gpu",
+                            "--disable-dev-shm-usage",
+                            "--disable-background-networking",
+                            "--no-first-run",
+                            "--no-sandbox",
+                            "--hide-scrollbars",
+                            f"--window-size={size}",
+                            "--virtual-time-budget=2400",
+                            "--run-all-compositor-stages-before-draw",
+                            f"--screenshot={png}",
+                            url,
+                        ],
+                        check=True,
+                        capture_output=True,
+                        timeout=35,
+                    )
+                    row["bytes"] = png.stat().st_size
+                    if png.stat().st_size < 7000:
+                        raise RuntimeError(f"{png.name} is suspiciously small")
+                    visual = png_visual_stats(png)
+                    row.update(visual)
+                    errors: list[str] = []
+                    if (
+                        name != "army-launcher"
+                        and visual["colorfulRatio"] < .006
+                        and visual["luminousRatio"] < .012
+                    ):
+                        errors.append("empty-central-field")
+                    if visual["lumaStdDev"] < 5.5:
+                        errors.append("visually-flat")
+                    if errors:
+                        raise RuntimeError(",".join(errors))
+                    row["status"] = "PASS"
+                    rows.append(row)
+                except Exception as error:  # keep collecting every frame
+                    row["status"] = "FAIL"
+                    row["error"] = f"{type(error).__name__}: {error}"
+                    failures.append(row)
+                    rows.append(row)
+                    print(json.dumps(row, sort_keys=True), flush=True)
     finally:
         server.shutdown()
-    result = {"schema": "jm.game-engine-army.visual-screenshot-smoke/0.3", "status": "PASS", "captureCount": len(rows), "captures": rows}
-    (out / "SCREENSHOT_RECEIPT.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(result, indent=2))
-    return 0
+
+    result = {
+        "schema": "jm.game-engine-army.visual-screenshot-smoke/0.3.1",
+        "status": "PASS" if not failures else "FAIL",
+        "captureCount": len(rows),
+        "failureCount": len(failures),
+        "captures": rows,
+        "failures": failures,
+        "thresholds": {
+            "minimumPngBytes": 7000,
+            "minimumColorfulRatioUnlessLuminous": .006,
+            "minimumLuminousRatioUnlessColorful": .012,
+            "minimumLumaStdDev": 5.5,
+        },
+    }
+    (out / "SCREENSHOT_RECEIPT.json").write_text(
+        json.dumps(result, indent=2) + "\n", encoding="utf-8"
+    )
+    print(json.dumps(result, indent=2), flush=True)
+    return 0 if not failures else 1
 
 
 if __name__ == "__main__":

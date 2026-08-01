@@ -166,9 +166,9 @@ def main() -> int:
                         text=True,
                         timeout=35,
                     ).stdout
-                    if name != "army-launcher" and "jmvc-root" not in dom:
+                    if name != "army-launcher" and '<div id="jmvc-root"' not in dom:
                         raise RuntimeError(
-                            f"{name} did not execute visual runtime at {label} viewport"
+                            f"{name} did not render a live JM visual root at {label} viewport"
                         )
                     subprocess.run(
                         [

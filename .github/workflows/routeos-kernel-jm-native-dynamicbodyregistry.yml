@@ -1,0 +1,169 @@
+name: RouteOS JM-Generated Dynamic Body Registry v2.1A
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-dynamicbodyregistry-v2-1a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dynamic-body-registry-machine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify frozen parent and reconstruct v2.0A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor dde65a281dd3eddea36f165ff6549a6ea113e8c7 HEAD
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for spec in \
+            '5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec '$V12'/routeos-v1.2A-body.tar.gz.b64 0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316 /tmp/routeos-v12a-body.tgz' \
+            '6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730 '$V12'/routeos-v1.2A-pre-idt-correction.tar.gz.b64 9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3 /tmp/routeos-v12a-pre-idt.tgz' \
+            '8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98 '$V12'/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64 e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff /tmp/routeos-v12a-symbol-range.tgz'; do
+            set -- $spec
+            echo "$1  $2" | sha256sum -c -
+            base64 -d "$2" > "$4"
+            echo "$3  $4" | sha256sum -c -
+            tar -xzf "$4" -C .
+          done
+          test -x "$V12/tools/ci_prepare_imagecarrier.sh"
+
+          V20=systems/routeos-kernel-jm-native-v2.0A
+          C="$V20/carrier"
+          echo '587a27880a6b728891726b54112c9093bd841677df4e661ae871f16dbd4d8952  '"$C"'/routeos-v2.0A-source.part00.b64' | sha256sum -c -
+          echo '5a7273415623de8cb1cae07d2ea55a1e6e1308b7e0abe0225b072bf71384913a  '"$C"'/routeos-v2.0A-source.part01.b64' | sha256sum -c -
+          cat "$C"/routeos-v2.0A-source.part*.b64 > /tmp/routeos-v2.0A-source.tar.gz.b64
+          echo '39f5afba3f791fead75518b2e7a568e3b239fa7d4f66d415d07da26b22b1f7af  /tmp/routeos-v2.0A-source.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/routeos-v2.0A-source.tar.gz.b64 > /tmp/routeos-v2.0A-source.tar.gz
+          echo '5e1b9c7b1d62bb336961837fc4a2478ed8c7c85aa31c9b483b82054bb6420d26  /tmp/routeos-v2.0A-source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v2.0A-source.tar.gz
+          python3 "$V20/tools/observatorycontinuityc.py" "$V20/source/observatory_continuity.jmroute" --out-dir "$V20/generated" --check
+          python3 -m unittest discover -s "$V20/tests" -v
+
+          V21=systems/routeos-kernel-jm-native-v2.1A
+          C21="$V21/carrier"
+          echo '6b15d998f9fe5e4108bcde7c7f7e522b931669f3d52d620915e5e7b66ef3adcf  '"$C21"'/routeos-v2.1A-source.part00.b64' | sha256sum -c -
+          echo '28fcf0a100a69947e7081f31d6459772728a5d70f7b6f97411b6ec22c2e212d0  '"$C21"'/routeos-v2.1A-source.part01.b64' | sha256sum -c -
+          echo 'dfde2216a4efd956043e11401bb65afa7cb9a61e088986a4e476ae88c2500207  '"$C21"'/routeos-v2.1A-source.part02.b64' | sha256sum -c -
+          echo '1d863fbe536578daaa7f18ded69ebce4ef43a01c0d6453a54fb9ea74a38ae1e2  '"$C21"'/routeos-v2.1A-source.part03.b64' | sha256sum -c -
+          cat "$C21"/routeos-v2.1A-source.part*.b64 > /tmp/routeos-v2.1A-source.tar.gz.b64
+          echo '9790f6c1456744aa13e8cfc2be1232552430f0d9d2f25a8cbb205405c188a11f  /tmp/routeos-v2.1A-source.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/routeos-v2.1A-source.tar.gz.b64 > /tmp/routeos-v2.1A-source.tar.gz
+          echo '1776bbc467fc6b0a44b5f300d84b7b9228d2b19ad96a58fdda4f1049bd8069db  /tmp/routeos-v2.1A-source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v2.1A-source.tar.gz -C .
+          python3 "$V21/tools/dynamicbodyregistryc.py" "$V21/source/dynamic_body_registry.jmroute" --out-dir "$V21/generated" --check
+          python3 -m unittest discover -s "$V21/tests" -v
+
+      - name: Install machine, visual and package carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86 graphviz zip
+
+      - name: Rebuild frozen v2.0A and mount v2.1A
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash systems/routeos-kernel-jm-native-v2.0A/tools/ci_prepare_observatorycontinuity.sh
+          bash systems/routeos-kernel-jm-native-v2.1A/tools/ci_prepare_dynamicbodyregistry.sh
+
+      - name: Build and run QEMU registry proof
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          K=.routeos-v21a/routeos-kernel-v0.1A
+          TRACE=.routeos-v21a/QEMU_DYNAMICBODYREGISTRY_TRACE.txt
+          set -o pipefail
+          bash systems/routeos-kernel-jm-native-v2.1A/tools/run_dynamicbodyregistry_qemu.sh "$K" "$TRACE" 2>&1 | tee .routeos-v21a/JM_DYNAMICBODYREGISTRY_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Decode, render, package and capture receipts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v2.1A
+          K=.routeos-v21a/routeos-kernel-v0.1A
+          TRACE=.routeos-v21a/QEMU_DYNAMICBODYREGISTRY_TRACE.txt
+          DECODED=.routeos-v21a/DYNAMICBODYREGISTRY_TRACE.json
+          OBS=.routeos-v21a/registry-observatory
+          PKG=.routeos-v21a/JM_ROUTEOS_V2_1A_DYNAMICBODYREGISTRY_ZIONFOLDER
+          O=dynamicbodyregistry-v21a-receipt
+          mkdir -p "$O" "$OBS"
+          nm -n "$K/build/routeos-kernel.elf" > .routeos-v21a/DYNAMICBODYREGISTRY_SYMBOLS.txt
+          objdump -d "$K/build/routeos-kernel.elf" > .routeos-v21a/DYNAMICBODYREGISTRY_DISASSEMBLY.txt
+          python3 "$V/tools/decode_registry_trace.py" "$TRACE" --out "$DECODED"
+          python3 "$V/tools/render_registry.py" "$DECODED" "$V/generated/dynamic_body_registry.json" --out-dir "$OBS"
+          python3 "$V/tools/package_release.py" \
+            --kernel-dir "$K" \
+            --trace "$TRACE" \
+            --decoded "$DECODED" \
+            --symbols .routeos-v21a/DYNAMICBODYREGISTRY_SYMBOLS.txt \
+            --disassembly .routeos-v21a/DYNAMICBODYREGISTRY_DISASSEMBLY.txt \
+            --observatory "$OBS" \
+            --source-root "$V" \
+            --integration-receipt .routeos-v21a/DYNAMICBODYREGISTRY_INTEGRATION_RECEIPT.json \
+            --out-dir "$PKG"
+          cp .routeos-v21a/DYNAMICBODYREGISTRY_INTEGRATION_RECEIPT.json "$O/"
+          cp .routeos-v21a/JM_DYNAMICBODYREGISTRY_MACHINE_RUN.log "$O/"
+          cp .routeos-v21a/DYNAMICBODYREGISTRY_SYMBOLS.txt "$O/"
+          cp .routeos-v21a/DYNAMICBODYREGISTRY_DISASSEMBLY.txt "$O/"
+          cp "$DECODED" "$O/"
+          cp "$TRACE" "$O/"
+          cp "$K/build/routeos-kernel.elf" "$O/"
+          cp "$K/build/routeos-kernel.iso" "$O/"
+          cp "$K/kernel/routeos_kernel.c" "$O/"
+          cp "$V/source/dynamic_body_registry.jmroute" "$O/"
+          cp "$V/generated/"* "$O/"
+          cp -R "$OBS" "$O/"
+          printf 'machine_step_outcome=%s\nmachine_exit_status=%s\nfrozen_parent=%s\nsource_sha256=%s\n' \
+            '${{ steps.machine.outcome }}' '${{ steps.machine.outputs.exit_status }}' \
+            'dde65a281dd3eddea36f165ff6549a6ea113e8c7' \
+            '1ad11f7dbdf65ce9a2fa898f8ad096ecfdcb614e9ef988ea0fd5dbe732260a4f' \
+            > "$O/GATE_STATUS.txt"
+          (cd "$O" && find . -type f ! -name SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt)
+
+      - name: Upload v2.1A machine receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v2.1A-dynamicbodyregistry-receipt
+          path: dynamicbodyregistry-v21a-receipt
+
+      - name: Upload v2.1A Zionfolder
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v2.1A-zionfolder
+          path: |
+            .routeos-v21a/JM_ROUTEOS_V2_1A_DYNAMICBODYREGISTRY_ZIONFOLDER
+            .routeos-v21a/JM_ROUTEOS_V2_1A_DYNAMICBODYREGISTRY_ZIONFOLDER.zip
+
+      - name: Enforce registry machine result and visual handoff
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = success
+          K=.routeos-v21a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v2.1A/bootstrap/ci_enforce_dynamicbodyregistry.py \
+            .routeos-v21a/QEMU_DYNAMICBODYREGISTRY_TRACE.txt \
+            "$K/kernel/routeos_kernel.c" \
+            "$K/build/routeos-kernel.elf" \
+            .routeos-v21a/DYNAMICBODYREGISTRY_INTEGRATION_RECEIPT.json \
+            .routeos-v21a/DYNAMICBODYREGISTRY_TRACE.json \
+            .routeos-v21a/registry-observatory/index.html

@@ -1,0 +1,62 @@
+name: RouteOS JM-Generated Fault Class Recovery v2.2A
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fault-class-recovery-machine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify and expand v2.2A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v2.2A
+          C="$V/carrier/routeos-v2.2A-source.part00.b64"
+          echo '4e8938aee4c0eeefa6290269133d3cef8d50aaf7f345f8d7ac22782d4b665f5a  '"$C" | sha256sum -c -
+          cat "$V/carrier"/routeos-v2.2A-source.part*.b64 > /tmp/routeos-v2.2A-source.tar.gz.b64
+          echo '4e8938aee4c0eeefa6290269133d3cef8d50aaf7f345f8d7ac22782d4b665f5a  /tmp/routeos-v2.2A-source.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/routeos-v2.2A-source.tar.gz.b64 > /tmp/routeos-v2.2A-source.tar.gz
+          echo '78f820fba1916a4ff4e99459023a1a1259af7461b62dd3cd8d254ada40cc14c1  /tmp/routeos-v2.2A-source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/routeos-v2.2A-source.tar.gz -C .
+          python3 "$V/tools/faultclassrecoveryc.py" "$V/source/fault_class_recovery.jmroute" --out-dir "$V/generated" --check
+          python3 -m unittest discover -s "$V/tests" -v
+          bash -n "$V/tools/ci_full_faultclassrecovery.sh"
+
+      - name: Install machine, visual and package carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86 graphviz zip
+
+      - name: Reconstruct ancestry, boot QEMU, render and enforce
+        run: bash systems/routeos-kernel-jm-native-v2.2A/tools/ci_full_faultclassrecovery.sh
+
+      - name: Upload v2.2A machine receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v2.2A-faultclassrecovery-receipt
+          path: faultclassrecovery-v22a-receipt
+
+      - name: Upload v2.2A Zionfolder
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v2.2A-zionfolder
+          path: |
+            .routeos-v22a/JM_ROUTEOS_V2_2A_FAULTCLASSRECOVERY_ZIONFOLDER
+            .routeos-v22a/JM_ROUTEOS_V2_2A_FAULTCLASSRECOVERY_ZIONFOLDER.zip

@@ -1,0 +1,53 @@
+name: JM Game Engine Army Five Max Pushes v0.1
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/wave2/v0.1/**'
+      - '.github/workflows/game-engine-army-wave2-v0-1.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/wave2/v0.1/**'
+      - '.github/workflows/game-engine-army-wave2-v0-1.yml'
+
+jobs:
+  gate-and-seal:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reconstruct editable Five Max Pushes
+        run: |
+          mkdir -p /tmp/jm-wave2
+          cat game-engine-army/wave2/v0.1/package-parts/part-*.b64 | base64 -d > /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.1_ZIONFOLDER.zip
+          unzip -q /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.1_ZIONFOLDER.zip -d /tmp/jm-wave2
+      - name: Verify package digest
+        run: echo "f0169869a3b5b2951ef9ad56796c123696c17314fa45cb01d6d4c02a7dadf90e  /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.1_ZIONFOLDER.zip" | sha256sum -c -
+      - name: Run source-level semantic gates
+        run: python /tmp/jm-wave2/tools/test_wave2.py
+      - name: Run single-file delivery gates
+        run: python /tmp/jm-wave2/tools/test_wave2_dist.py
+      - name: Verify delivery hashes
+        run: |
+          cd /tmp/jm-wave2
+          python - <<'PY' > /tmp/wave2.sha
+          import json
+          receipt = json.load(open('dist/BUILD_RECEIPT.json', encoding='utf-8'))
+          for name, meta in receipt['files'].items():
+              print(meta['sha256'] + '  dist/' + name)
+          PY
+          sha256sum -c /tmp/wave2.sha
+      - name: Upload verified Five Max Pushes
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.1_ZIONFOLDER
+          path: |
+            /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.1_ZIONFOLDER.zip
+            /tmp/jm-wave2/dist/

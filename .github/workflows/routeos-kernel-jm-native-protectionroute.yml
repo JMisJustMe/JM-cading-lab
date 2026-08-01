@@ -31,12 +31,14 @@ jobs:
             "e39bb94a00ddd4b46ebf2cbcabd36bd6c090ec192d0c3d54a3b2f33a197b5824  $V14/generated/vectorroute.inc" \
             "2489b9a30311b023de78a12cc5e2912d7c982444c45f4929cf52ee9eb8f72302  $V14/generated/interruptcontroller.inc" \
             "a5eb4d25d272d2349fe64f2e01cf19e56409249740ca4a558bfd123e2c25aa7e  $V14/generated/usermap_bodyframe.inc" \
+            "772a54aa7c64ed9c25b94f6af901cf7cc0e01c2d65ca4c7f147f969288d9939f  $V14/generated/office_retention.inc" \
             "d6862304754cd3eff5f330751c965226f4bb5256ebaf7835f53469ae4def312a  $V14/generated/protectionroute.json" \
             "9d8e68f12cf35224ae8ba823fec772c17acf13158f8c85adb8d7fbe47ce001e4  $V14/tools/protectionroutec.py" \
-            "ea63934d7d7ed9dc22de2f65f8de17a03eaddd76de6801906ab85256e2d401df  $V14/tools/integrate_protectionroute.py" \
+            "82547917b4c31a056827db9fcf3a1353a7e2a06a068de3e5e51658c607f3428f  $V14/tools/integrate_protectionroute.py" \
             "7357551d7a8ac5257a3a6a2d6419d90db99716e38d80c021a0ed4b3da62539ce  $V14/tests/test_protectionroute.py" \
+            "4f9519ac53726df2d53cd14994d16e00edfac5fc8c2a86af18255e5b17b3987f  $V14/tests/test_protectionroute_retention.py" \
             "dee0461c04c241a11037ceb9dc17adc9161ed7fe082765907c796887f10e4fd9  $V14/tools/ci_prepare_protectionroute.sh" \
-            "e7503c1a0518ff4d93ee87b92e0b2fcd2f8463caa0376608cc06db7e98128f3b  $V14/tools/ci_enforce_protectionroute.py" | sha256sum -c -
+            "f474a07d06a1869b8d2f163ae81ddae43bb90efdb3258bf32018c16bbcc50ee1  $V14/tools/ci_enforce_protectionroute.py" | sha256sum -c -
           git merge-base --is-ancestor e6f037ac3f3d42c4b56218307b5f738f0c6a4b70 HEAD
 
           V12=systems/routeos-kernel-jm-native-v1.2A

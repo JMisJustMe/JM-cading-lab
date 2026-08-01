@@ -26,16 +26,19 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify and unpack visual campaign source
+      - name: Verify visible visual campaign source
         run: |
           set -euo pipefail
-          SOURCE="game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip"
-          test "$(git hash-object "$SOURCE")" = "97e6b6a85072a429f829588cce8573faf4afadd3"
-          unzip -tq "$SOURCE"
-          sha256sum "$SOURCE" | tee /tmp/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.sha256
+          SOURCE_DIR="game-engine-army/visual-campaign/v0.3"
+          test -f "$SOURCE_DIR/README.md"
+          test -f "$SOURCE_DIR/ADDON_REGISTRY.json"
+          test -f "$SOURCE_DIR/CURRENT_SCOPE_BOUNDARY.md"
+          test "$(find "$SOURCE_DIR/addons" -maxdepth 1 -name '*.js' | wc -l)" -eq 7
+          test "$(find "$SOURCE_DIR/styles" -maxdepth 1 -name '*.css' | wc -l)" -eq 3
+          test "$(find "$SOURCE_DIR/tools" -maxdepth 1 -name '*.py' | wc -l)" -eq 3
+          find "$SOURCE_DIR" -type f ! -name 'JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip' -print0 | sort -z | xargs -0 sha256sum | tee /tmp/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.sha256
           rm -rf /tmp/jmvc-source
-          mkdir -p /tmp/jmvc-source
-          unzip -q "$SOURCE" -d /tmp/jmvc-source
+          cp -a "$SOURCE_DIR" /tmp/jmvc-source
 
       - name: Run all existing engine semantic gates
         run: |

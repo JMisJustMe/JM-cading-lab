@@ -1,0 +1,358 @@
+name: RouteOS v2.2A Crown Governor
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a]
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: routeos-v22a-crown-governor
+  cancel-in-progress: true
+
+jobs:
+  govern-v22a-crown:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Wait for exact RouteOS matrix
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, subprocess, time
+
+          repo = os.environ['REPO']
+          sha = os.environ['HEAD_SHA']
+          expected = {
+              'RouteOS JM-Generated Fault Class Recovery v2.2A',
+              'RouteOS JM-Generated Dynamic Body Registry v2.1A',
+              'RouteOS JM-Generated Observatory Continuity v2.0A',
+              'RouteOS JM-Generated UserProgram LinkRoute ImageCarrier',
+              'RouteOS JM-Generated DispatchRoute',
+              'RouteOS JM-Generated PrimitiveRoute',
+              'RouteOS JM-Generated OrchestrationRoute',
+              'RouteOS JM-Generated PermissionGate',
+              'RouteOS JM-Generated BodyRegistry UserBoundary',
+              'RouteOS JM-Generated ProtectionRoute',
+              'RouteOS Kernel Hard-Body Proof',
+              'RouteOS JM-Generated EntryRoute',
+              'RouteOS JM-Native Boot Integration',
+              'RouteOS JM-Generated SerialRoute',
+              'RouteOS JM-Generated BootCarrier LongModeRoute',
+              'RouteOS JM-Generated IgnitionBody',
+              'RouteOS JM-Generated RouteScheduler',
+              'RouteOS JM-Generated FrameCarrier InterruptEntry',
+              'RouteOS JM-Generated MemoryBody',
+              'RouteOS JM-Generated KernelContractRoute',
+              'RouteOS JM-Native Source Authority',
+              'RouteOS JM-Generated FaultHold RecoveryBody',
+              'RouteOS JM-Generated DescriptorBody InterruptRoute',
+          }
+
+          def api(path):
+              return json.loads(subprocess.check_output(['gh', 'api', path], text=True))
+
+          for attempt in range(180):
+              payload = api(f'repos/{repo}/actions/runs?head_sha={sha}&per_page=100')
+              latest = {}
+              for run in payload.get('workflow_runs', []):
+                  name = run['name']
+                  if name in expected and name not in latest:
+                      latest[name] = run
+              failed = {
+                  name: run.get('conclusion')
+                  for name, run in latest.items()
+                  if run.get('status') == 'completed' and run.get('conclusion') != 'success'
+              }
+              if failed:
+                  raise SystemExit(f'RouteOS matrix HOLD: {failed}')
+              if expected <= latest.keys() and all(latest[n].get('conclusion') == 'success' for n in expected):
+                  decisive = latest['RouteOS JM-Generated Fault Class Recovery v2.2A']
+                  open('/tmp/fault_run_id', 'w').write(str(decisive['id']))
+                  open('/tmp/matrix.json', 'w').write(json.dumps({
+                      'head_sha': sha,
+                      'count': len(expected),
+                      'runs': {n: {'id': latest[n]['id'], 'conclusion': latest[n]['conclusion']} for n in sorted(expected)},
+                  }, indent=2, sort_keys=True))
+                  print(f'RouteOS v2.2A matrix PASS: {len(expected)}/{len(expected)}')
+                  break
+              missing = sorted(expected - latest.keys())
+              pending = sorted(n for n in expected & latest.keys() if latest[n].get('conclusion') != 'success')
+              print(f'waiting attempt={attempt} missing={missing} pending={pending}')
+              time.sleep(10)
+          else:
+              raise SystemExit('RouteOS matrix HOLD: timed out before complete success')
+          PY
+
+      - name: Download decisive machine and Zionfolder artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN_ID=$(cat /tmp/fault_run_id)
+          gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts?per_page=100" > /tmp/artifacts.json
+          python3 - <<'PY'
+          import json
+          data=json.load(open('/tmp/artifacts.json'))
+          wanted={
+            'routeos-kernel-jm-native-v2.2A-faultclassrecovery-receipt':'/tmp/receipt_meta.json',
+            'routeos-kernel-jm-native-v2.2A-zionfolder':'/tmp/zion_meta.json',
+          }
+          found={a['name']:a for a in data.get('artifacts',[])}
+          for name,out in wanted.items():
+              if name not in found: raise SystemExit(f'missing artifact {name}')
+              json.dump(found[name],open(out,'w'),indent=2,sort_keys=True)
+          PY
+          RECEIPT_ID=$(python3 -c "import json; print(json.load(open('/tmp/receipt_meta.json'))['id'])")
+          ZION_ID=$(python3 -c "import json; print(json.load(open('/tmp/zion_meta.json'))['id'])")
+          mkdir -p /tmp/v22_receipt /tmp/v22_zion
+          gh api "repos/$REPO/actions/artifacts/$RECEIPT_ID/zip" > /tmp/v22_receipt.zip
+          gh api "repos/$REPO/actions/artifacts/$ZION_ID/zip" > /tmp/v22_zion.zip
+          unzip -q /tmp/v22_receipt.zip -d /tmp/v22_receipt
+          unzip -q /tmp/v22_zion.zip -d /tmp/v22_zion
+
+      - name: Inspect executable authority and lifecycle
+        env:
+          HEAD_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          root=pathlib.Path('/tmp/v22_receipt')
+          def matches(*patterns):
+              found=[]
+              for pattern in patterns: found += list(root.rglob(pattern))
+              return sorted({p.resolve() for p in found if p.is_file()})
+          def one(label,*patterns):
+              found=matches(*patterns)
+              if not found: raise SystemExit(f'missing {label}: {patterns}')
+              if len(found)>1:
+                  preferred=[p for p in found if 'observatory' not in str(p).lower()]
+                  if len(preferred)==1: found=preferred
+              if len(found)!=1: raise SystemExit(f'ambiguous {label}: {found}')
+              return found[0]
+          def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          paths={
+              'jm_source': one('JM source','fault_class_recovery.jmroute'),
+              'generated_c': one('generated C','fault_class_recovery.inc'),
+              'authority_json': one('authority JSON','fault_class_recovery.json'),
+              'gp_assembly': one('GP assembly','general_protection_entry.S'),
+              'integrated_kernel_c': one('integrated kernel','routeos_kernel.c'),
+              'linked_elf': one('ELF','routeos-kernel.elf','*v2.2A*.elf'),
+              'boot_iso': one('ISO','routeos-kernel.iso','*v2.2A*.iso'),
+              'raw_trace': one('raw trace','*QEMU*TRACE*.txt','*FAULTCLASS*TRACE*.txt'),
+              'decoded_trace': one('decoded trace','*TRACE.json'),
+              'symbols': one('symbols','*SYMBOLS*.txt'),
+              'observatory_html': one('observatory','index.html'),
+              'lifecycle_svg': one('lifecycle SVG','*.svg'),
+          }
+          stable_keys=['jm_source','generated_c','authority_json','gp_assembly','integrated_kernel_c','linked_elf','lifecycle_svg']
+          stable={key:sha(paths[key]) for key in stable_keys}
+          timed={key:sha(paths[key]) for key in ['boot_iso','raw_trace','decoded_trace','observatory_html']}
+          trace=paths['raw_trace'].read_text(errors='replace')
+          decoded=json.loads(paths['decoded_trace'].read_text())
+          symbols=paths['symbols'].read_text(errors='replace')
+          names=[
+              'jm_generated_faultclassrecovery_announce',
+              'jm_generated_faultclass_classify',
+              'jm_generated_faultclass_reuse_retired_slot',
+              'jm_generated_faultclassroute',
+              'routeos_isr_gp',
+              'jm_generated_dynamicbodyregistry_announce',
+              'jm_generated_traceledger_record',
+              'jm_generated_recoverypolicy_fault',
+              'jm_generated_ignitionbody',
+          ]
+          addresses={}
+          for name in names:
+              m=re.search(rf'^([0-9a-fA-F]+)\s+\w\s+{re.escape(name)}$',symbols,re.M)
+              if not m: raise SystemExit(f'missing retained ELF office {name}')
+              addresses[name]='0x'+m.group(1).lstrip('0')
+          marker_counts={
+              'ud_classifications': trace.count('class=ILLEGAL_INSTRUCTION'),
+              'gp_classifications': trace.count('class=PRIVILEGE_VIOLATION'),
+              'slot_reuse': trace.count('[JMSLOT] reuse slot=3'),
+              'capacity_reject': trace.count('no_usable_slot=1'),
+              'body1_crossings': trace.count('USER BODY 1 -> SYSTEM CALL TRACE_READ'),
+              'body3_crossings': trace.count('USER BODY 3 -> SYSTEM CALL TRACE_READ'),
+              'body5_ud_fallbacks': trace.count('FAULTHOLD: USER BODY 5'),
+          }
+          if marker_counts['ud_classifications'] != 1 or marker_counts['gp_classifications'] != 1:
+              raise SystemExit(f'fault-class count drift: {marker_counts}')
+          if marker_counts['slot_reuse'] != 1 or marker_counts['capacity_reject'] != 1:
+              raise SystemExit(f'lifecycle count drift: {marker_counts}')
+          if marker_counts['body1_crossings'] < 1 or marker_counts['body3_crossings'] < 1 or marker_counts['body5_ud_fallbacks'] != 0:
+              raise SystemExit(f'continuation/fallback drift: {marker_counts}')
+          result={
+              'head_sha':os.environ['HEAD_SHA'],
+              'stable':stable,
+              'timed':timed,
+              'addresses':addresses,
+              'marker_counts':marker_counts,
+              'decoded_summary':{
+                  'health':decoded.get('health'),
+                  'capability':decoded.get('capability'),
+                  'event_count':len(decoded.get('events') or []),
+              },
+          }
+          json.dump(result,open('/tmp/inspection.json','w'),indent=2,sort_keys=True)
+          print(json.dumps(result,indent=2,sort_keys=True))
+          PY
+
+      - name: Freeze construction or anchor frozen head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.sha }}
+          BRANCH: agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a
+          ANCHOR: anchor/routeos-kernel-jm-native-v2-2a-faultclassrecovery-ding-pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v2.2A/proof
+          SEAL="$ROOT/FREEZE_LOCK_ANCHOR_v2.2A.md"
+          CONSTRUCTION="$ROOT/CONSTRUCTION_RECEIPT_v2.2A.json"
+          mkdir -p "$ROOT"
+          if [ ! -f "$SEAL" ]; then
+            cp /tmp/inspection.json "$CONSTRUCTION"
+            python3 - <<'PY'
+          import json, pathlib
+          inspection=json.load(open('/tmp/inspection.json'))
+          matrix=json.load(open('/tmp/matrix.json'))
+          receipt=json.load(open('/tmp/receipt_meta.json'))
+          zion=json.load(open('/tmp/zion_meta.json'))
+          lines=[
+            '# RouteOS JM-Native FaultClassRecoveryRoute v2.2A — Freeze Lock Seal','',
+            '## Crown state','',
+            '**ROUTEOS JM-NATIVE FAULTCLASSRECOVERYROUTE — v2.2A CONSTRUCTION DING PASS**','',
+            f"- frozen parent: `e47dcec3c0323a8c1c03e222860783b390c8b92c`",
+            f"- machine-tested construction head: `{inspection['head_sha']}`",
+            '- freeze head: the commit containing this seal',
+            '- draft pull request: `#82`',
+            '- merge authority: **not granted**','',
+            '## Construction machine proof','',
+            f"- complete RouteOS matrix: **{matrix['count']}/{matrix['count']} PASS**",
+            f"- decisive run: `{open('/tmp/fault_run_id').read().strip()}`",
+            f"- machine receipt artifact: `{receipt['id']}` — `{receipt.get('digest','')}`",
+            f"- Zionfolder artifact: `{zion['id']}` — `{zion.get('digest','')}`",
+            f"- unique decoded events: `{inspection['decoded_summary']['event_count']}`",
+            f"- Body 1 PermissionGate crossings: `{inspection['marker_counts']['body1_crossings']}`",
+            f"- Body 3 PermissionGate crossings: `{inspection['marker_counts']['body3_crossings']}`",
+            '- Body 5 UD2 fallback crossings: `0`','',
+            '## Stable authority hashes','',
+          ]
+          for key,value in inspection['stable'].items(): lines.append(f'- {key}: `{value}`')
+          lines += ['', '## Exact retained ELF offices','']
+          for key,value in inspection['addresses'].items(): lines.append(f'- `{key}` at `{value}`')
+          lines += ['', '## Earned route','',
+            '`Body 2 UD2 → #UD vector 6 → ILLEGAL_INSTRUCTION → quarantine/recovery → Body 4 retirement → slot 3 generation reuse → Body 5 CLI → #GP vector 13 → PRIVILEGE_VIOLATION → quarantine/recovery → capacity scan rejection → Bodies 1 and 3 continue`','',
+            '## Preserved correction provenance','',
+            'The first publication routes stopped before kernel construction because an oversized text carrier did not survive the connected write path byte-for-byte. The source was moved through GitHub content-addressed blobs, restored by SHA inside Actions, and independently verified as four parts, one joined base64 body and one decoded tar before this machine proof was admitted. No failed transport route is represented as executable authority.','',
+            '## Honest boundary','',
+            'This crown proves bounded classification and containment for real #UD/vector 6 and #GP/vector 13 faults inside the four-slot proof kernel, including a generation-tracked retired-slot reuse. It does not prove arbitrary exception recovery, instruction retry, dynamic virtual memory, executable-file loading, persistent process or trace storage, arbitrary process counts, filesystem, shell, networking, GUI compositor, SMP/APIC support, production certification or a general-purpose operating system.','',
+            'This sealed commit must pass the same complete matrix before the permanent anchor may be created. No merge is part of construction, freeze, validation or anchoring.',''
+          ]
+          pathlib.Path('systems/routeos-kernel-jm-native-v2.2A/proof/FREEZE_LOCK_ANCHOR_v2.2A.md').write_text('\n'.join(lines))
+          PY
+            git config user.name 'JM RouteOS Crown Governor'
+            git config user.email 'actions@users.noreply.github.com'
+            git add "$SEAL" "$CONSTRUCTION"
+            git commit -m 'Freeze RouteOS FaultClassRecoveryRoute v2.2A construction crown'
+            git push origin HEAD:"$BRANCH"
+            echo 'Construction sealed; frozen-head matrix launched.'
+            exit 0
+          fi
+
+          python3 - <<'PY'
+          import json
+          old=json.load(open('systems/routeos-kernel-jm-native-v2.2A/proof/CONSTRUCTION_RECEIPT_v2.2A.json'))
+          new=json.load(open('/tmp/inspection.json'))
+          if old['stable'] != new['stable']:
+              raise SystemExit(f'frozen stable-authority drift: old={old["stable"]} new={new["stable"]}')
+          json.dump({'construction':old,'frozen':new},open('/tmp/final_proof.json','w'),indent=2,sort_keys=True)
+          PY
+
+          CURRENT=$(gh api "repos/$REPO/git/ref/heads/$ANCHOR" --jq .object.sha 2>/dev/null || true)
+          if [ -z "$CURRENT" ]; then
+            gh api -X POST "repos/$REPO/git/refs" -f ref="refs/heads/$ANCHOR" -f sha="$HEAD_SHA" >/tmp/anchor.json
+          elif [ "$CURRENT" != "$HEAD_SHA" ]; then
+            echo "anchor drift: $CURRENT != $HEAD_SHA" >&2
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import json, pathlib
+          proof=json.load(open('/tmp/final_proof.json'))
+          matrix=json.load(open('/tmp/matrix.json'))
+          receipt=json.load(open('/tmp/receipt_meta.json'))
+          zion=json.load(open('/tmp/zion_meta.json'))
+          frozen=proof['frozen']; construction=proof['construction']
+          body=f'''## Crown
+
+**ROUTEOS JM-NATIVE FAULTCLASSRECOVERYROUTE — v2.2A MAX DING PASS**
+
+- Frozen parent: `e47dcec3c0323a8c1c03e222860783b390c8b92c`
+- Construction head: `{construction['head_sha']}`
+- Freeze and lock head: `{frozen['head_sha']}`
+- Permanent anchor: `anchor/routeos-kernel-jm-native-v2-2a-faultclassrecovery-ding-pass`
+- Complete construction matrix: **{matrix['count']}/{matrix['count']} PASS**
+- Complete frozen-head matrix: **{matrix['count']}/{matrix['count']} PASS**
+- Frozen decisive run: `{open('/tmp/fault_run_id').read().strip()}`
+- Frozen machine artifact: `{receipt['id']}` — `{receipt.get('digest','')}`
+- Frozen Zionfolder artifact: `{zion['id']}` — `{zion.get('digest','')}`
+
+## Machine route
+
+`Body 2 UD2 → #UD/vector 6 → ILLEGAL_INSTRUCTION → quarantine/recovery → Body 4 controlled retirement → slot 3 generation 1→2 reuse → Body 5 CLI → #GP/vector 13 → PRIVILEGE_VIOLATION → quarantine/recovery → state-scanned capacity rejection → Bodies 1 and 3 continue`
+
+## Frozen stability
+
+JM source, generated C, authority JSON, generated #GP assembly, integrated kernel C, linked ELF and lifecycle SVG remained byte-identical across construction and frozen-head proof. Timed QEMU trace counters and GRUB-packaged ISO may differ without changing fixed lifecycle authority.
+
+## Frozen continuation
+
+- Body 1 crossings: `{frozen['marker_counts']['body1_crossings']}`
+- Body 3 crossings: `{frozen['marker_counts']['body3_crossings']}`
+- Body 5 UD2 fallbacks: `0`
+- Unique decoded events: `{frozen['decoded_summary']['event_count']}`
+
+## Honest boundary
+
+This crown proves bounded classification and containment for real #UD and #GP hardware exceptions in this fixed four-slot proof kernel. It does not claim arbitrary exception recovery, instruction retry, dynamic virtual memory, executable-file loading, persistent storage/tracing, arbitrary process counts, filesystem, shell, networking, GUI compositor, SMP/APIC support, production certification or a general-purpose operating system.
+
+**PR remains open, draft and unmerged. No merge was performed or authorised.**'''
+          pathlib.Path('/tmp/pr_body.md').write_text(body)
+          PY
+          python3 - <<'PY'
+          import json
+          payload={'title':'Freeze RouteOS JM-Native FaultClassRecoveryRoute — v2.2A MAX DING PASS','body':open('/tmp/pr_body.md').read(),'draft':True}
+          open('/tmp/pr_patch.json','w').write(json.dumps(payload))
+          PY
+          gh api -X PATCH "repos/$REPO/pulls/82" --input /tmp/pr_patch.json >/tmp/pr_result.json
+          python3 - <<'PY'
+          import json
+          proof=json.load(open('/tmp/final_proof.json'))
+          comment={'body':'### v2.2A frozen-head receipt\n\n```json\n'+json.dumps(proof,indent=2,sort_keys=True)+'\n```'}
+          open('/tmp/comment.json','w').write(json.dumps(comment))
+          PY
+          gh api -X POST "repos/$REPO/issues/82/comments" --input /tmp/comment.json >/tmp/comment_result.json
+          echo 'ROUTEOS v2.2A CROWN GOVERNOR DING: FROZEN, ANCHORED, DRAFT, UNMERGED'

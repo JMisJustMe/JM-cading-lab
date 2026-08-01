@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GlyphPlay Sovereign Rebuild v0.1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="top">
+    <div class="brand"><b>GlyphPlay Sovereign Rebuild v0.1</b><small>2.5D creator-first engine · source-preserving donor rebuild</small></div>
+    <div class="status"><span class="pill">Mode <strong id="statusMode">EDIT</strong></span><span class="pill">Body <strong id="statusBody">GLYPHPLAY</strong></span><span class="pill">Receipt <strong id="statusReceipt">READY</strong></span></div>
+  </header>
+  <nav class="toolbar">
+    <button data-mode="EDIT" class="active">Edit</button><button data-mode="TEST">Test</button>
+    <select id="bodyLens" title="Coding-body trial"><option value="glyphplay">GlyphPlay Native</option><option value="cading">Cading Trial</option><option value="quadze">Quadze Trial</option><option value="recorp">RECORP Trial</option><option value="flowtalk">FlowTalk Trial</option><option value="formeula">FormeULA Trial</option><option value="contactcode">ContactCode Trial</option></select>
+    <button id="applyLens">Apply Body</button><button id="undoBtn">Undo</button><button id="redoBtn">Redo</button>
+    <button id="saveBtn">Save</button><button id="loadBtn">Load</button><button id="exportBtn">Export Project</button><button id="exportPlayableBtn">Export Playable</button><button id="lineageBtn">Lineage</button>
+    <input id="importFile" type="file" accept="application/json" hidden><button id="importBtn">Import</button><button id="resetBtn" class="danger">Reset</button>
+  </nav>
+  <main class="workspace">
+    <section class="panel left">
+      <div class="panelHead"><h3>Creator Forge</h3></div>
+      <div class="panelBody">
+        <div class="section"><div class="sectionTitle">Describe the game</div><textarea id="prompt" class="prompt">make a 2.5D route arena with a player, goal, enemies and coins</textarea><div class="grid2" style="margin-top:6px"><button class="smallBtn" id="generateBtn">Generate</button><button class="smallBtn" id="remixBtn">Remix</button></div></div>
+        <div class="section"><div class="sectionTitle">Build tools</div><div class="tools" id="toolGrid"></div></div>
+        <div class="section"><div class="sectionTitle">View</div><div class="grid2"><button class="smallBtn" id="rotLeft">Rotate ←</button><button class="smallBtn" id="rotRight">Rotate →</button><button class="smallBtn" id="zoomOut">Zoom −</button><button class="smallBtn" id="zoomIn">Zoom +</button></div></div>
+        <div class="section"><div class="sectionTitle">Body consequence</div><div id="bodyDescription" style="font-size:.8rem;color:var(--muted);line-height:1.45"></div></div>
+      </div>
+    </section>
+    <section class="panel stagePanel">
+      <div class="stageHead"><div><b id="projectName">GlyphPlay First Living Floor</b><div class="route" id="routeLine">source → contact → state → trace → receipt</div></div><div><button class="smallBtn" id="renameBtn">Rename</button></div></div>
+      <div class="canvasWrap" id="canvasWrap"><canvas id="world"></canvas><div class="hud"><span>HP <b id="hpHud">5</b></span><span>Score <b id="scoreHud">0</b></span><span>Progress <b id="progressHud">0/1</b></span><span>Tool <b id="toolHud">SELECT</b></span></div><div class="banner" id="banner"><div id="bannerText"></div></div></div>
+      <div class="stageFooter"><button data-step="0,-1">↑</button><button data-step="-1,0">←</button><button data-step="0,1">↓</button><button data-step="1,0">→</button><button id="actionBtn">ACT</button><button id="retryBtn">Retry</button><span style="color:var(--muted);font-size:.75rem;padding:9px">WASD/arrows · tap field to edit</span></div>
+    </section>
+    <section class="panel right">
+      <div class="panelHead"><h3>Inspector & Trace</h3></div>
+      <div class="panelBody">
+        <div class="section"><div class="sectionTitle">Selected entity</div><div id="inspectorEmpty" style="color:var(--muted);font-size:.8rem">Select an entity.</div><div id="inspector" hidden><div class="fieldRow"><label>Name</label><input id="entName"></div><div class="fieldRow"><label>Type</label><select id="entType"></select></div><div class="fieldRow"><label>X / Y</label><div class="grid2"><input id="entX" type="number"><input id="entY" type="number"></div></div><div class="fieldRow"><label>Height</label><input id="entZ" type="number" min="0" max="4"></div><div class="fieldRow"><label>HP</label><input id="entHp" type="number" min="0" max="99"></div><div class="grid2"><button class="smallBtn" id="duplicateBtn">Duplicate</button><button class="smallBtn danger" id="deleteBtn">Delete</button></div></div></div>
+        <div class="section"><div class="sectionTitle">Scene hierarchy</div><div id="entityList" class="entityList"></div></div>
+        <div class="section"><div class="sectionTitle">Route receipt</div><div id="receiptView" style="font-size:.76rem;color:var(--muted);line-height:1.5"></div></div>
+        <div class="section"><div class="sectionTitle">TraceBox</div><div id="trace" class="trace"></div></div>
+      </div>
+    </section>
+  </main>
+  <div class="dpad" id="dpad"><span></span><button data-step="0,-1">↑</button><span></span><button data-step="-1,0">←</button><button class="action" id="mobileAction">ACT</button><button data-step="1,0">→</button><span></span><button data-step="0,1">↓</button><span></span></div>
+</div>
+<div class="modal" id="modal"><div class="modalCard"><button class="close" id="closeModal">Close</button><h2>Source lineage</h2><pre id="lineageText"></pre></div></div>
+<script src="app-loader.js"></script>
+</body></html>

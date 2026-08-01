@@ -1,0 +1,40 @@
+name: T-Boys Combat Anchor v0.1
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/game-bodies/tboys/**'
+      - '.github/workflows/tboys-combat-anchor-v0-1.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/game-bodies/tboys/**'
+      - '.github/workflows/tboys-combat-anchor-v0-1.yml'
+  workflow_dispatch:
+
+jobs:
+  distinct-combat-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove T-Boys is not the generic GameForge route demo
+        run: python game-engine-army/game-bodies/tboys/v0.1/test_tboys_combat.py
+      - name: Seal standalone combat body
+        run: |
+          mkdir -p dist/tboys-combat-anchor-v0.1
+          cp game-engine-army/game-bodies/tboys/v0.1/OPEN_FIRST_TBOYS_COMBAT_ANCHOR_v0_1.html dist/tboys-combat-anchor-v0.1/
+          cp game-engine-army/game-bodies/tboys/v0.1/TBOYS_COMBAT_MANIFEST.json dist/tboys-combat-anchor-v0.1/
+          (cd dist && zip -qr TBOYS_COMBAT_ANCHOR_v0.1_ZIONFOLDER.zip tboys-combat-anchor-v0.1)
+          sha256sum dist/TBOYS_COMBAT_ANCHOR_v0.1_ZIONFOLDER.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TBOYS_COMBAT_ANCHOR_v0.1
+          path: dist/
+          retention-days: 90

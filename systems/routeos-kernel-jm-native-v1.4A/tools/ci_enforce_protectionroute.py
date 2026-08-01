@@ -6,6 +6,7 @@ from pathlib import Path
 
 trace, kernel, elf, receipt = map(Path, sys.argv[1:5])
 source = "50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14"
+retention_hash = "772a54aa7c64ed9c25b94f6af901cf7cc0e01c2d65ca4c7f147f969288d9939f"
 text = trace.read_text(errors="replace")
 code = kernel.read_text()
 record = json.loads(receipt.read_text())
@@ -30,6 +31,8 @@ for signature, count in record["handwritten_residue"].items():
     assert count == 0, (signature, count)
 assert len(record["removed_handwritten_sha256"]) == 4
 assert all(count == 1 for count in record["generated_marker_counts"].values())
+assert record["office_retention_contract_count"] == 1
+assert record["office_retention_contract_sha256"] == retention_hash
 
 for residue in [
     "static void gdt_install(void) {",
@@ -41,9 +44,6 @@ for residue in [
 ]:
     assert residue not in code, residue
 
-# These two helpers are intentionally permitted to inline. Their exact source is
-# locked by the generated-file hashes, while the five office boundaries below
-# must survive as independently addressable executable ELF symbols.
 for helper in [
     "static void jm_generated_vectorroute_set(uint8_t vector, void (*handler)(void), uint8_t attr) {",
     "static void jm_generated_usermaproute_mark(uint64_t address) {",
@@ -51,6 +51,11 @@ for helper in [
     assert helper in code, helper
 
 nm = subprocess.check_output(["nm", "-n", str(elf)], text=True)
+symbol_names = {
+    parts[-1]
+    for line in nm.splitlines()
+    if len(parts := line.split()) >= 3
+}
 for symbol in [
     "jm_generated_descriptorinstall",
     "jm_generated_vectorroute_install",
@@ -64,7 +69,7 @@ for symbol in [
     "jm_generated_usermaproute_source",
     "jm_generated_bodyframeinstall_source",
 ]:
-    assert symbol in nm, symbol
+    assert symbol in symbol_names, symbol
 
 strings = subprocess.check_output(["strings", str(elf)], text=True)
 assert source in strings

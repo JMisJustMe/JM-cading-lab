@@ -25,6 +25,8 @@ This package raises the nine current browser first floors without replacing thei
 10. Portable Launcher Pack — one direct-file launcher embedding all nine engines.
 11. Editable Engine Packages — nine separate direct-file HTML packages.
 12. PWA Pack — manifest, service worker and offline cache for HTTP/HTTPS hosting.
+13. First-Frame Scene Pack — nine engine-specific visual fields visible before interaction.
+14. Layout Rescue Pack — delayed resize recovery for direct-file and Android WebView timing.
 
 ## Current claim
 

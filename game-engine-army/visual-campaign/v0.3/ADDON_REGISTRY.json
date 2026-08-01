@@ -22,7 +22,9 @@
     {"id":"debug.frame-meter","category":"debug","name":"Frame and Quality Meter","targets":"all-nine","offline":true},
     {"id":"export.visual-receipt","category":"export","name":"Visual Settings Receipt Export","targets":"all-nine","offline":true},
     {"id":"delivery.portable-launcher","category":"delivery","name":"Embedded Nine-Engine Direct-File Launcher","targets":"army","offline":true},
-    {"id":"delivery.pwa","category":"delivery","name":"Installable HTTP/HTTPS PWA Package","targets":"army","offline":true,"requiresSecureContext":true}
+    {"id":"delivery.pwa","category":"delivery","name":"Installable HTTP/HTTPS PWA Package","targets":"army","offline":true,"requiresSecureContext":true},
+    {"id":"fx.engine-first-frame-scenes","category":"fx","name":"Nine Engine-Specific First-Frame Scenes","targets":"all-nine","offline":true},
+    {"id":"delivery.layout-rescue","category":"delivery","name":"Delayed Resize and Direct-File Layout Recovery","targets":"all-nine","offline":true}
   ],
   "claimBoundary": "The registry describes shipped browser add-ons. It does not claim authored commercial art, recorded audio, native GPU pipelines or device-certified performance."
 }

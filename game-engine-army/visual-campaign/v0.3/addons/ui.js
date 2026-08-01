@@ -26,5 +26,9 @@ $('#jmvc-theme').onchange=e=>NS.set('theme',e.target.value);$('#jmvc-particles')
 NS.on('settings',sync);sync();
 let previous='';function inspect(){const summary=NS.stateSummary();const text=(summary.label+' '+summary.detail).toUpperCase();$('#jmvc-signal').textContent=summary.label;$('#jmvc-fps').textContent=`${Math.round(NS.state.fps)} FPS · Q${NS.state.qualityTier}`;if(text!==previous){previous=text;let type='contact';if(/DING|WIN|PASS|COMPLETE|CROWN/.test(text))type='ding';else if(/FAULT|FAIL|REJECT|ERROR|HELD/.test(text))type='fault';else if(/RECOVER|RESTORE/.test(text))type='recovery';else if(/BUILD|COMPILE|ADAPT|VALID/.test(text))type='build';NS.state.lastSignal=summary.label;NS.emit('signal',{type,message:summary.detail});NS.audio?.cue(type);NS.fx?.signal(type);if(NS.settings.haptics&&navigator.vibrate){navigator.vibrate(type==='fault'?[35,35,70]:type==='ding'?[30,30,30,80]:18)}}requestAnimationFrame(inspect)}requestAnimationFrame(inspect);
 const observer=new MutationObserver(records=>{for(const record of records){const t=(record.target.textContent||'').toUpperCase();if(/DING|FAULT|RECOVERY|PASS|BUILD/.test(t)){const type=/DING|PASS/.test(t)?'ding':/FAULT/.test(t)?'fault':/RECOVERY/.test(t)?'recovery':'build';NS.emit('signal',{type,message:t.slice(0,120)});NS.audio?.cue(type);NS.fx?.signal(type)}}});observer.observe(document.body,{subtree:true,childList:true,characterData:true});
+function layoutRescue(){
+ try{window.dispatchEvent(new Event('resize'));window.GlyphPlayVisualOverhaul?.resize?.();window.GlyphPlayApp?.project?.();document.documentElement.dataset.jmvcLayout='ready'}catch(error){console.warn('JMVC layout rescue',error)}
+}
+requestAnimationFrame(layoutRescue);[120,480,1400].forEach(delay=>setTimeout(layoutRescue,delay));document.fonts?.ready?.then(layoutRescue);
 NS.state.ready=true;document.documentElement.dataset.jmvcReady='true';
 })();

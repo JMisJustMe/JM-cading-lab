@@ -6,10 +6,88 @@ import json
 import os
 import shutil
 import subprocess
+import struct
 import threading
+import zlib
 import time
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
+
+
+def png_visual_stats(path: Path) -> dict[str, float]:
+    data = path.read_bytes()
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise RuntimeError(f"{path.name} is not a PNG")
+    pos = 8
+    width = height = bit_depth = color_type = None
+    compressed = bytearray()
+    while pos + 12 <= len(data):
+        length = struct.unpack(">I", data[pos:pos + 4])[0]
+        kind = data[pos + 4:pos + 8]
+        payload = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if kind == b"IHDR":
+            width, height, bit_depth, color_type, _, _, _ = struct.unpack(">IIBBBBB", payload)
+        elif kind == b"IDAT":
+            compressed.extend(payload)
+        elif kind == b"IEND":
+            break
+    if bit_depth != 8 or color_type not in {2, 6}:
+        raise RuntimeError(f"{path.name}: unsupported PNG format depth={bit_depth} type={color_type}")
+    channels = 3 if color_type == 2 else 4
+    raw = zlib.decompress(bytes(compressed))
+    stride = width * channels
+    rows = []
+    offset = 0
+    prior = bytearray(stride)
+    for _ in range(height):
+        mode = raw[offset]
+        offset += 1
+        scan = bytearray(raw[offset:offset + stride])
+        offset += stride
+        for i in range(stride):
+            left = scan[i - channels] if i >= channels else 0
+            up = prior[i]
+            upper_left = prior[i - channels] if i >= channels else 0
+            if mode == 1:
+                scan[i] = (scan[i] + left) & 255
+            elif mode == 2:
+                scan[i] = (scan[i] + up) & 255
+            elif mode == 3:
+                scan[i] = (scan[i] + ((left + up) // 2)) & 255
+            elif mode == 4:
+                estimate = left + up - upper_left
+                dl, du, dul = abs(estimate - left), abs(estimate - up), abs(estimate - upper_left)
+                predictor = left if dl <= du and dl <= dul else up if du <= dul else upper_left
+                scan[i] = (scan[i] + predictor) & 255
+            elif mode != 0:
+                raise RuntimeError(f"{path.name}: unsupported PNG filter {mode}")
+        rows.append(scan)
+        prior = scan
+    x0, x1 = int(width * .08), int(width * .92)
+    y0, y1 = int(height * .18), int(height * .82)
+    samples = colorful = luminous = 0
+    values = []
+    step = max(1, min(width, height) // 180)
+    for y in range(y0, y1, step):
+        row = rows[y]
+        for x in range(x0, x1, step):
+            i = x * channels
+            r, g, b = row[i], row[i + 1], row[i + 2]
+            luma = .2126 * r + .7152 * g + .0722 * b
+            values.append(luma)
+            samples += 1
+            if max(r, g, b) - min(r, g, b) >= 22 and max(r, g, b) >= 42:
+                colorful += 1
+            if luma >= 36:
+                luminous += 1
+    mean = sum(values) / max(1, len(values))
+    variance = sum((value - mean) ** 2 for value in values) / max(1, len(values))
+    return {
+        "colorfulRatio": colorful / max(1, samples),
+        "luminousRatio": luminous / max(1, samples),
+        "lumaStdDev": variance ** .5,
+    }
 
 
 def main() -> int:
@@ -42,13 +120,18 @@ def main() -> int:
             for label, size in viewports:
                 url = f"http://127.0.0.1:{port}/{relative}"
                 png = out / f"{name}-{label}.png"
-                dom = subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", "--virtual-time-budget=900", "--dump-dom", url], check=True, capture_output=True, text=True, timeout=35).stdout
+                dom = subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", "--virtual-time-budget=2400", "--run-all-compositor-stages-before-draw", "--dump-dom", url], check=True, capture_output=True, text=True, timeout=35).stdout
                 if name != "army-launcher" and "jmvc-root" not in dom:
                     raise RuntimeError(f"{name} did not execute visual runtime at {label} viewport")
-                subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", f"--window-size={size}", "--virtual-time-budget=900", f"--screenshot={png}", url], check=True, capture_output=True, timeout=35)
+                subprocess.run([chrome, "--headless=new", "--disable-gpu", "--disable-dev-shm-usage", "--disable-background-networking", "--no-first-run", "--no-sandbox", "--hide-scrollbars", f"--window-size={size}", "--virtual-time-budget=2400", "--run-all-compositor-stages-before-draw", f"--screenshot={png}", url], check=True, capture_output=True, timeout=35)
                 if png.stat().st_size < 7000:
                     raise RuntimeError(f"{png.name} is suspiciously small")
-                rows.append({"engine": name, "viewport": label, "file": png.name, "bytes": png.stat().st_size})
+                visual = png_visual_stats(png)
+                if name != "army-launcher" and visual["colorfulRatio"] < .006 and visual["luminousRatio"] < .012:
+                    raise RuntimeError(f"{png.name} has an empty central visual field: {visual}")
+                if visual["lumaStdDev"] < 5.5:
+                    raise RuntimeError(f"{png.name} is visually flat: {visual}")
+                rows.append({"engine": name, "viewport": label, "file": png.name, "bytes": png.stat().st_size, **visual})
     finally:
         server.shutdown()
     result = {"schema": "jm.game-engine-army.visual-screenshot-smoke/0.3", "status": "PASS", "captureCount": len(rows), "captures": rows}

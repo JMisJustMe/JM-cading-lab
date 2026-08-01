@@ -28,10 +28,14 @@ jobs:
 
       - name: Verify and unpack visual campaign source
         run: |
-          echo "15193fb4e1d1b7edd2e69587cd8ef97ff49c92537ed5d16c2275331f6f675382  game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip" | sha256sum -c -
+          set -euo pipefail
+          SOURCE="game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip"
+          test "$(git hash-object "$SOURCE")" = "97e6b6a85072a429f829588cce8573faf4afadd3"
+          unzip -tq "$SOURCE"
+          sha256sum "$SOURCE" | tee /tmp/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.sha256
           rm -rf /tmp/jmvc-source
           mkdir -p /tmp/jmvc-source
-          unzip -q game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip -d /tmp/jmvc-source
+          unzip -q "$SOURCE" -d /tmp/jmvc-source
 
       - name: Run all existing engine semantic gates
         run: |

@@ -1,4 +1,4 @@
-name: GlyphPlay Sovereign Rebuild v0.1
+name: GlyphPlay Sovereign Rebuild + Visual Overhaul v0.2
 
 on:
   push:
@@ -24,51 +24,61 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Run GlyphPlay source and semantic gates
-        run: python game-engine-army/glyphplay/v0.1/tools/test_glyphplay_v0_1.py
-      - name: Build HTTP and single-file deliveries
+      - name: Run GlyphPlay semantic and visual gates
+        run: |
+          python game-engine-army/glyphplay/v0.1/tools/test_glyphplay_v0_1.py
+          python game-engine-army/glyphplay/v0.1/tools/test_visual_overhaul_v0_2.py
+      - name: Build HTTP and Android-safe single-file deliveries
         run: |
           python game-engine-army/glyphplay/v0.1/tools/build_glyphplay_v0_1.py \
             --source game-engine-army/glyphplay/v0.1 \
-            --out dist/glyphplay-sovereign-v0.1
-      - name: Verify deterministic delivery receipt
+            --out dist/glyphplay-visual-v0.2
+      - name: Verify deterministic visual delivery receipt
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          root=Path('dist/glyphplay-sovereign-v0.1')
+          root=Path('dist/glyphplay-visual-v0.2')
           receipt=json.loads((root/'BUILD_RECEIPT.json').read_text())
-          assert receipt['status']=='GLYPHPLAY_SOVEREIGN_REBUILD_STATIC_BUILD_PASS_BROWSER_CONTACT_OPEN'
+          assert receipt['status']=='GLYPHPLAY_VISUAL_OVERHAUL_STATIC_BUILD_PASS_BROWSER_AND_DEVICE_CONTACT_OPEN'
           assert receipt['source_part_count']==4
           assert len(receipt['body_trials'])==7
           assert receipt['donor_count']==7
           assert len(receipt['javascript_sha256'])==64
+          assert len(receipt['visual_css_sha256'])==64
+          assert len(receipt['visual_javascript_sha256'])==64
           assert len(receipt['single_file_sha256'])==64
+          assert len(receipt['visual_features'])>=9
           assert (root/receipt['single_file']).is_file()
-          assert (root/'index.html').is_file()
-          assert (root/'app.js').is_file()
-          print('GLYPHPLAY_SOVEREIGN_REBUILD_V0_1_BUILD_GATE_PASS')
+          assert (root/receipt['legacy_single_file']).is_file()
+          text=(root/receipt['single_file']).read_text(encoding='utf-8')
+          assert 'GlyphPlayVisualOverhaul' in text
+          assert '<script src="visual-overhaul.js"></script>' not in text
+          assert '<link rel="stylesheet" href="visual-overhaul.css">' not in text
+          assert 'type="module"' not in text
+          assert '<\\/script>' not in text
+          print('GLYPHPLAY_VISUAL_OVERHAUL_V0_2_BUILD_GATE_PASS')
           PY
       - name: Test HTTP source delivery
         run: |
-          cd dist/glyphplay-sovereign-v0.1
+          cd dist/glyphplay-visual-v0.2
           python -m http.server 8765 >/tmp/glyphplay-http.log 2>&1 &
           server=$!
           trap 'kill $server' EXIT
           sleep 1
-          curl --fail --silent http://127.0.0.1:8765/index.html | grep -q 'GlyphPlay Sovereign Rebuild v0.1'
-          curl --fail --silent http://127.0.0.1:8765/app.part1.txt | grep -q 'BODY_PROFILES'
-          curl --fail --silent http://127.0.0.1:8765/style.css | grep -q '2.5D\|canvasWrap'
-      - name: Seal Zionfolder
+          curl --fail --silent http://127.0.0.1:8765/index.html | grep -q 'Visual Overhaul v0.2'
+          curl --fail --silent http://127.0.0.1:8765/visual-overhaul.js | grep -q 'GlyphPlayVisualOverhaul'
+          curl --fail --silent http://127.0.0.1:8765/visual-overhaul.css | grep -q 'visualDock'
+      - name: Seal GlyphPlay visual Zionfolder
         run: |
           cd dist
-          zip -qr GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip glyphplay-sovereign-v0.1
-          sha256sum GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip | tee GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
+          zip -qr GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER.zip glyphplay-visual-v0.2
+          sha256sum GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER.zip | tee GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER.sha256
       - uses: actions/upload-artifact@v4
         with:
-          name: GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER
+          name: GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER
           path: |
-            dist/GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip
-            dist/GLYPHPLAY_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
-            dist/glyphplay-sovereign-v0.1/BUILD_RECEIPT.json
-            dist/glyphplay-sovereign-v0.1/OPEN_FIRST_GLYPHPLAY_SOVEREIGN_REBUILD_v0_1.html
+            dist/GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER.zip
+            dist/GLYPHPLAY_VISUAL_OVERHAUL_v0.2_ZIONFOLDER.sha256
+            dist/glyphplay-visual-v0.2/BUILD_RECEIPT.json
+            dist/glyphplay-visual-v0.2/OPEN_FIRST_GLYPHPLAY_VISUAL_OVERHAUL_v0_2.html

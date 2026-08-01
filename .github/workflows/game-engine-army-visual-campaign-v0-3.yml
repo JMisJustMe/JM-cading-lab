@@ -1,0 +1,138 @@
+name: JM Game Engine Army Visual Campaign v0.3
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/**'
+      - '.github/workflows/game-engine-army-visual-campaign-v0-3.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/**'
+      - '.github/workflows/game-engine-army-visual-campaign-v0-3.yml'
+  workflow_dispatch:
+
+jobs:
+  build-test-capture-and-seal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify and unpack visual campaign source
+        run: |
+          echo "15193fb4e1d1b7edd2e69587cd8ef97ff49c92537ed5d16c2275331f6f675382  game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip" | sha256sum -c -
+          rm -rf /tmp/jmvc-source
+          mkdir -p /tmp/jmvc-source
+          unzip -q game-engine-army/visual-campaign/v0.3/JMVC_VISUAL_CAMPAIGN_v0.3_SOURCE.zip -d /tmp/jmvc-source
+
+      - name: Run all existing engine semantic gates
+        run: |
+          set -e
+          python game-engine-army/glyphplay/v0.1/tools/test_glyphplay_v0_1.py
+          python game-engine-army/glyphplay/v0.1/tools/test_visual_overhaul_v0_2.py
+          python game-engine-army/gameforge/v0.1/tools/test_gameforge_v0_1.py
+          python game-engine-army/glyphforge/v0.1/tools/test_glyphforge_v0_1.py
+          python game-engine-army/playform/v0.1/tools/test_playform_v0_1.py
+          node game-engine-army/wave2/v0.2/tools/test_wave2.mjs
+
+      - name: Syntax-check every visual add-on
+        run: |
+          set -e
+          for file in /tmp/jmvc-source/addons/*.js; do
+            echo "CHECK $file"
+            node --check "$file"
+          done
+          python -m py_compile /tmp/jmvc-source/tools/*.py
+
+      - name: Build authoritative base engines
+        run: |
+          set -e
+          rm -rf /tmp/jmvc-base
+          mkdir -p /tmp/jmvc-base/{glyphplay,gameforge,glyphforge,playform,wave2}
+          python game-engine-army/glyphplay/v0.1/tools/build_glyphplay_v0_1.py \
+            --source game-engine-army/glyphplay/v0.1 \
+            --out /tmp/jmvc-base/glyphplay
+          python game-engine-army/gameforge/v0.1/tools/build_gameforge_v0_1.py \
+            --source game-engine-army/gameforge/v0.1 \
+            --out /tmp/jmvc-base/gameforge
+          python game-engine-army/glyphforge/v0.1/tools/build_glyphforge_v0_1.py \
+            --source game-engine-army/glyphforge/v0.1 \
+            --out /tmp/jmvc-base/glyphforge
+          python game-engine-army/playform/v0.1/tools/build_playform_v0_1.py \
+            --source game-engine-army/playform/v0.1 \
+            --out /tmp/jmvc-base/playform
+          python game-engine-army/wave2/v0.2/tools/build_wave2.py
+          cp game-engine-army/wave2/v0.2/dist/*.html /tmp/jmvc-base/wave2/
+
+      - name: Build nine visual packages, portable launcher and PWA
+        run: |
+          python /tmp/jmvc-source/tools/build_visual_campaign.py \
+            --base-root /tmp/jmvc-base \
+            --out dist/jm-game-engine-army-visual-v0.3
+
+      - name: Run visual package and add-on gates
+        run: |
+          python /tmp/jmvc-source/tools/test_visual_campaign.py \
+            --dist dist/jm-game-engine-army-visual-v0.3
+
+      - name: Capture every engine at Android size and the launcher at both sizes
+        run: |
+          python /tmp/jmvc-source/tools/screenshot_smoke.py \
+            --dist dist/jm-game-engine-army-visual-v0.3 \
+            --out dist/jm-game-engine-army-visual-v0.3/screenshots
+
+      - name: Prove deterministic rebuild
+        run: |
+          python /tmp/jmvc-source/tools/build_visual_campaign.py \
+            --base-root /tmp/jmvc-base \
+            --out /tmp/jmvc-rebuild
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          a=json.loads(Path('dist/jm-game-engine-army-visual-v0.3/VISUAL_CAMPAIGN_RECEIPT.json').read_text())
+          b=json.loads(Path('/tmp/jmvc-rebuild/VISUAL_CAMPAIGN_RECEIPT.json').read_text())
+          assert a['portableLauncher']==b['portableLauncher']
+          assert [(x['id'],x['sha256']) for x in a['engines']]==[(x['id'],x['sha256']) for x in b['engines']]
+          assert a['receiptSha256']==b['receiptSha256']
+          print('JM_VISUAL_CAMPAIGN_DETERMINISTIC_REBUILD_PASS')
+          PY
+
+      - name: Seal complete, PWA, SDK and nine engine packages
+        run: |
+          set -euo pipefail
+          REPO="$PWD"
+          ROOT="$REPO/dist/jm-game-engine-army-visual-v0.3"
+          SEALED="$REPO/dist/sealed"
+          rm -rf "$SEALED"
+          mkdir -p "$SEALED"
+          (cd "$ROOT" && zip -qr "$SEALED/JM_GAME_ENGINE_ARMY_VISUAL_CAMPAIGN_v0.3_COMPLETE.zip" .)
+          (cd "$ROOT/pwa" && zip -qr "$SEALED/JM_GAME_ENGINE_ARMY_VISUAL_CAMPAIGN_v0.3_PWA.zip" .)
+          (cd "$ROOT/editable-source" && zip -qr "$SEALED/JM_GAME_ENGINE_ARMY_VISUAL_ADDON_SDK_v0.3.zip" .)
+          cp "$ROOT/OPEN_FIRST_JM_GAME_ENGINE_ARMY_VISUAL_CAMPAIGN_v0_3.html" "$SEALED/"
+          for dir in "$ROOT"/packages/*; do
+            name=$(basename "$dir" | tr '[:lower:]-' '[:upper:]_')
+            (cd "$dir" && zip -qr "$SEALED/${name}_VISUAL_PACKAGE_v0.3.zip" .)
+          done
+          test "$(find "$SEALED" -maxdepth 1 -name '*_VISUAL_PACKAGE_v0.3.zip' | wc -l)" -eq 9
+          (cd "$SEALED" && sha256sum * > SHA256SUMS.txt)
+          test -s "$SEALED/SHA256SUMS.txt"
+
+      - name: Upload complete visual campaign
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_GAME_ENGINE_ARMY_VISUAL_CAMPAIGN_v0.3_COMPLETE
+          path: |
+            dist/sealed/
+            dist/jm-game-engine-army-visual-v0.3/VISUAL_CAMPAIGN_RECEIPT.json
+            dist/jm-game-engine-army-visual-v0.3/ADDON_REGISTRY.json
+            dist/jm-game-engine-army-visual-v0.3/SHA256SUMS.txt
+            dist/jm-game-engine-army-visual-v0.3/screenshots/
+          retention-days: 90

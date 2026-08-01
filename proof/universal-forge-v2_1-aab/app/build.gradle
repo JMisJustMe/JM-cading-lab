@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jm.universalforge.proof.v21'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.jm.universalforge.proof.v21'
+        minSdk 23
+        targetSdk 36
+        versionCode 210
+        versionName '2.1.0-proof'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(providers.gradleProperty('JM_STORE_FILE').getOrElse('proof-upload.jks'))
+            storePassword providers.gradleProperty('JM_STORE_PASSWORD').getOrElse('jm-proof-only')
+            keyAlias providers.gradleProperty('JM_KEY_ALIAS').getOrElse('jmproof')
+            keyPassword providers.gradleProperty('JM_KEY_PASSWORD').getOrElse('jm-proof-only')
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

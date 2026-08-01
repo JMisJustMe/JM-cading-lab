@@ -1,0 +1,1 @@
+Construction status: HOLD at source-carrier transport verification. Static source, generator, C, assembly and 9/9 adversarial suites remain green. Machine proof has not yet begun; no v2.2A DING is claimed.

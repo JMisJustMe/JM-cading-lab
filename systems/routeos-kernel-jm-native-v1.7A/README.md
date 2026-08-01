@@ -1,9 +1,11 @@
 # RouteOS Kernel JM-Native v1.7A — EntryRoute
 
-Status: **CONSTRUCTION**
+Status: **FROZEN — MAX DING pending frozen-head revalidation**
 
-Parent will be the frozen v1.6A DispatchRoute crown.
+Frozen parent: `989d204383ad7e3ea03c749aa0472d6f3c10b199`
 
-This lane removes the final handwritten C kernel-entry wrapper and generates the Multiboot argument-forwarding handoff into the inherited IgnitionBody. A split head/tail carrier keeps the source identity available after serial activation while preserving the assembly-visible global entry symbol.
+EntryRoute removes the final handwritten C kernel-entry wrapper and deterministically generates the fixed Multiboot magic/info handoff into the inherited IgnitionBody. Its split head/tail carriers preserve both runtime source identity and the assembly-visible global entry symbol.
 
-Claim boundary: the fixed two-argument C handoff used by this kernel; not arbitrary boot protocols or firmware entry paths.
+Construction proof: chained rebuild and QEMU PASS, five adversarial tests PASS, artifact ledger 28/28 PASS, machine exit 0, two exact ELF boundaries, one exact wrapper removal and safe post-recovery continuation.
+
+Claim boundary: the fixed two-argument C handoff used by this kernel; not arbitrary boot protocols, UEFI/firmware paths or alternate calling conventions.

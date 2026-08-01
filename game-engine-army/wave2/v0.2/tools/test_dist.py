@@ -21,4 +21,11 @@ for name,metadata in receipt['files'].items():
     assert 'https://' not in text and 'http://' not in text
     assert 'JM GameCore' in text or 'GameCore' in text
 
-print(json.dumps({'status':'PASS','files':receipt['files']},indent=2))
+    # Direct-file compatibility gate: these HTML bodies must open from phone or
+    # laptop storage without a module loader, interpreter service, or server.
+    assert '<script type="module">' not in text
+    assert '<\\/script>' not in text
+    assert '<script>' in text
+    assert '</script></body></html>' in text
+
+print(json.dumps({'status':'PASS','files':receipt['files'],'directFileCompatibility':'PASS'},indent=2))

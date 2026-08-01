@@ -1,0 +1,42 @@
+{
+  "body": "DynamicBodyRegistryRoute",
+  "version": "v2.1A",
+  "seed_bodies": 2,
+  "capacity": 4,
+  "page_size": 4096,
+  "registration_ticks": {
+    "body_3": 50,
+    "body_4": 100,
+    "capacity_reject": 150
+  },
+  "programs": [
+    {
+      "id": 1,
+      "name": "InheritedTraceYieldLoop",
+      "source": "routeos_user_blob",
+      "role": "safe_or_body2_fault_probe"
+    },
+    {
+      "id": 2,
+      "name": "RetireSelfProbe",
+      "source": "generated_machine_bytes",
+      "role": "retirement_probe"
+    }
+  ],
+  "slots": [
+    {"slot": 0, "code": 33554432, "stack_page": 33558528, "stack_top": 33562624, "program": 1, "phase": "seed"},
+    {"slot": 1, "code": 33570816, "stack_page": 33574912, "stack_top": 33579008, "program": 1, "phase": "seed"},
+    {"slot": 2, "code": 33587200, "stack_page": 33591296, "stack_top": 33595392, "program": 1, "phase": "tick_50"},
+    {"slot": 3, "code": 33603584, "stack_page": 33607680, "stack_top": 33611776, "program": 2, "phase": "tick_100"}
+  ],
+  "states": ["EMPTY", "READY", "RUNNING", "BLOCKED", "RETIRED"],
+  "events": {
+    "REGISTER": 11,
+    "RETIRE": 12,
+    "REGISTRY_REJECT": 13
+  },
+  "syscalls": {
+    "RETIRE_SELF": 3
+  },
+  "claim": "bounded runtime registration into four pre-reserved user slots"
+}

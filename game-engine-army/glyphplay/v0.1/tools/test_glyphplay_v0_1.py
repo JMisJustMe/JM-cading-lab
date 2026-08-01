@@ -5,7 +5,6 @@ import hashlib
 import json
 import re
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -63,7 +62,7 @@ class GlyphPlaySovereignRebuildTests(unittest.TestCase):
 
     def test_recovery_and_delivery_routes(self) -> None:
         for marker in [
-            "testBackup", "FaultHold", "RecoveryBody", "exportProject", "exportPlayable",
+            "testBackup", "FAULT HOLD", "RecoveryBody", "exportProject", "exportPlayable",
             "importProject", "localStorage", "undoStack", "redoStack", "receipt('DING'",
         ]:
             self.assertIn(marker, self.app)

@@ -78,7 +78,7 @@ jobs:
           curl -fL "$URL" -o "$RUNNER_TEMP/bundletool.jar"
           java -jar "$RUNNER_TEMP/bundletool.jar" version > "$RUNNER_TEMP/bundletool-version.txt"
 
-      - name: Seal full official build room
+      - name: Seal and split full official build room
         run: |
           set -euo pipefail
           KIT="$RUNNER_TEMP/jm-v3-build-room"
@@ -111,14 +111,41 @@ jobs:
           Private key included: NO
           Purpose: offline production compilation and validation of the exact owner-held v3 source body
           EOF
-          (cd "$RUNNER_TEMP" && tar -czf JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz jm-v3-build-room)
-          sha256sum "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz" > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_SHA256.txt"
+          FULL="$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz"
+          (cd "$RUNNER_TEMP" && tar -czf "$FULL" jm-v3-build-room)
+          sha256sum "$FULL" > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_SHA256.txt"
+          split -b 200M -d -a 2 "$FULL" "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-"
+          test -f "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-00"
+          test -f "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-01"
+          test -f "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-02"
+          sha256sum "$RUNNER_TEMP"/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-* > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_PARTS_SHA256.txt"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM
+          name: JM_UNIVERSAL_FORGE_v3_FULL_BUILD_ROOM_PART_00
+          path: ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-00
+          if-no-files-found: error
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_UNIVERSAL_FORGE_v3_FULL_BUILD_ROOM_PART_01
+          path: ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-01
+          if-no-files-found: error
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_UNIVERSAL_FORGE_v3_FULL_BUILD_ROOM_PART_02
+          path: ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.part-02
+          if-no-files-found: error
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_UNIVERSAL_FORGE_v3_FULL_BUILD_ROOM_MANIFEST
           path: |
-            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz
             ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_SHA256.txt
+            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_PARTS_SHA256.txt
           if-no-files-found: error
           retention-days: 7

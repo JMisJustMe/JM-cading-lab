@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GlyphForge Sovereign Rebuild v0.1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <div class="brand"><b>GlyphForge Sovereign Rebuild v0.1</b><small>asset body · control routing · adapter negotiation · visible consequence</small></div>
+  <div class="badges"><span class="pill">Target <strong id="topTarget">GLYPHPLAY</strong></span><span class="pill">Route <strong id="topRoute">READY</strong></span><span class="pill">Adapter <strong id="topAdapter">OPEN</strong></span></div>
+</header>
+<nav class="toolbar">
+  <button data-view="ASSET" class="active">Asset Forge</button><button data-view="ROUTE">Control Routes</button><button data-view="TEST">Live Test</button>
+  <button id="compileBtn" class="primary">Compile Adapter</button><button id="undoBtn">Undo</button><button id="redoBtn">Redo</button>
+  <button id="saveBtn">Save</button><button id="loadBtn">Load</button><button id="importBtn">Import</button><input id="importFile" type="file" accept="application/json" hidden>
+  <button id="exportBtn">Export Adapter</button><button id="demoBtn">Export Demo</button><button id="resetBtn" class="danger">Reset</button>
+</nav>
+<main class="workspace">
+  <section class="panel left">
+    <div class="panelHead"><h3>Asset Bodies</h3><button id="newAssetBtn">+ Asset</button></div>
+    <div class="panelBody">
+      <div class="section"><div class="sectionTitle">Library</div><div id="assetList" class="assetList"></div></div>
+      <div class="section"><div class="sectionTitle">Adapter target</div><select id="targetSelect" class="wide"></select><div id="targetLaw" class="copy"></div></div>
+      <div class="section"><div class="sectionTitle">Mode family</div><div class="modeGrid" id="modeGrid"></div></div>
+      <div class="section"><div class="sectionTitle">Tuning</div>
+        <label class="range">Power <b id="powerVal">72</b><input id="power" type="range" min="20" max="100" value="72"></label>
+        <label class="range">Deadzone <b id="deadVal">12</b><input id="deadzone" type="range" min="0" max="40" value="12"></label>
+        <label class="range">Bounce <b id="bounceVal">35</b><input id="bounce" type="range" min="0" max="90" value="35"></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel centre">
+    <div class="subnav"><button data-surface="PIXEL" class="active">Glyph Pixel Body</button><button data-surface="PREVIEW">2.5D Route Preview</button><button data-surface="NEGOTIATE">Capability Negotiation</button></div>
+    <div id="pixelSurface" class="surface active">
+      <div class="surfaceHead"><div><b id="assetTitle">Player Glyph</b><small id="assetMeta">player · 12×12</small></div><div class="row"><button id="clearGlyph">Clear</button><button id="mirrorGlyph">Mirror</button><button id="rotateGlyph">Rotate</button></div></div>
+      <div class="pixelStage"><canvas id="pixelCanvas" width="720" height="720"></canvas><div class="palette" id="palette"></div></div>
+      <div class="assetFields"><label>Name<input id="assetName"></label><label>Kind<select id="assetKind"></select></label><label>Glyph<input id="assetGlyph" maxlength="2"></label><button id="duplicateAsset">Duplicate</button><button id="deleteAsset" class="danger">Delete</button></div>
+    </div>
+    <div id="previewSurface" class="surface">
+      <div class="previewWrap" id="previewWrap"><canvas id="preview"></canvas><div class="hud"><span>Action <b id="actionHud">READY</b></span><span>Source <b id="sourceHud">NONE</b></span><span>Power <b id="shotHud">0%</b></span><span>Events <b id="eventHud">0</b></span></div><div class="pulse" id="pulse"></div></div>
+      <div class="previewControls"><button data-action="move-up">↑</button><button data-action="move-left">←</button><button data-action="move-down">↓</button><button data-action="move-right">→</button><button data-action="confirm">CONFIRM</button><button data-action="cancel">CANCEL</button><button data-action="fire">FIRE</button><button id="resetPreview">RESET</button></div>
+    </div>
+    <div id="negotiateSurface" class="surface">
+      <div class="surfaceHead"><div><b>Adapter Capability Contract</b><small>supported, required, missing and held conflicts</small></div><button id="autoNegotiate">Auto Negotiate</button></div>
+      <div id="capabilityMatrix" class="capabilityMatrix"></div>
+      <div class="negotiationFoot"><div id="negotiationStatus"></div><button id="simulateFault">Simulate Missing Capability</button><button id="recoverFault">RecoveryBody</button></div>
+    </div>
+  </section>
+
+  <section class="panel right">
+    <div class="panelHead"><h3>Route & Receipt</h3></div>
+    <div class="panelBody">
+      <div class="section"><div class="sectionTitle">Physical input → action</div><div id="routeMap" class="routeMap"></div><button id="repairRoutes" class="wideBtn">Repair Recommended Routes</button></div>
+      <div class="section"><div class="sectionTitle">Conflict gate</div><div id="conflicts" class="copy"></div></div>
+      <div class="section"><div class="sectionTitle">Adapter receipt</div><pre id="receipt" class="receipt">Compile to produce receipt.</pre></div>
+      <div class="section"><div class="sectionTitle">TraceBox</div><div id="trace" class="trace"></div></div>
+    </div>
+  </section>
+</main>
+<div class="mobilePad"><span></span><button data-action="move-up">↑</button><span></span><button data-action="move-left">←</button><button data-action="confirm">ACT</button><button data-action="move-right">→</button><span></span><button data-action="move-down">↓</button><span></span></div>
+</div>
+<script src="app-loader.js"></script>
+</body>
+</html>

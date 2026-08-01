@@ -250,6 +250,8 @@ jobs:
           root=Path('dist/jm-game-engine-army-visual-v0.3')
           freeze=json.loads((root/'CURRENT_SCOPE_FREEZE_RECEIPT.json').read_text())
           sbom=json.loads((root/'VISUAL_CAMPAIGN_SBOM.json').read_text())
+          shots=json.loads((root/'screenshots/SCREENSHOT_RECEIPT.json').read_text())
+          gallery=(root/'VISUAL_PROOF_GALLERY.html').read_text(encoding='utf-8')
           assert freeze['status']=='CURRENT_CONSTRUCTIBLE_VISUAL_SCOPE_FROZEN_EXTERNAL_DEVICE_AND_AUTHORING_GATES_OPEN'
           assert freeze['engineCount']==9 and freeze['addonCount']==22
           assert freeze['screenshotCount']==11 and freeze['screenshotFailureCount']==0
@@ -257,7 +259,9 @@ jobs:
           assert len(freeze['earnedGates'])==12 and len(freeze['openExternalGates'])==8
           assert sbom['engineIds'] and len(sbom['engineIds'])==9
           assert sbom['addonIds'] and len(sbom['addonIds'])==22
-          assert (root/'VISUAL_PROOF_GALLERY.html').stat().st_size > 5000
+          assert gallery.lower().startswith('<!doctype html>')
+          assert gallery.count('<article>')==11
+          assert all(shot['file'] in gallery for shot in shots['captures'])
           print('JM_VISUAL_CURRENT_SCOPE_FREEZE_RECEIPTS_PASS')
           PY
 

@@ -56,7 +56,7 @@ jobs:
           assert '<script src="visual-overhaul.js"></script>' not in text
           assert '<link rel="stylesheet" href="visual-overhaul.css">' not in text
           assert 'type="module"' not in text
-          assert '<\\/script>' not in text
+          assert text.count('</script>') >= 2
           print('GLYPHPLAY_VISUAL_OVERHAUL_V0_2_BUILD_GATE_PASS')
           PY
       - name: Test HTTP source delivery

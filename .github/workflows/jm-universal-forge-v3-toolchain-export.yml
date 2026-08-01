@@ -1,0 +1,106 @@
+name: JM Universal Forge v3 Official Toolchain Export
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/jm-universal-forge-v3-toolchain-export.yml'
+      - 'proof/universal-forge-v3-sovereign-production/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export-official-build-room:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install exact Android 36 lane
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Warm AGP 8.13.2 with an API 36 proof project
+        run: |
+          mkdir -p warm/app/src/main/java/com/jm/warm warm/app/src/main/res/values
+          cat > warm/settings.gradle <<'EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }
+          rootProject.name='JMForgeV3ToolchainWarm'; include ':app'
+          EOF
+          cat > warm/build.gradle <<'EOF'
+          plugins { id 'com.android.application' version '8.13.2' apply false }
+          EOF
+          cat > warm/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2g -Dfile.encoding=UTF-8
+          android.useAndroidX=true
+          EOF
+          cat > warm/app/build.gradle <<'EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'com.jm.warm'
+            compileSdk 36
+            defaultConfig { applicationId 'com.jm.warm'; minSdk 23; targetSdk 36; versionCode 1; versionName '1' }
+          }
+          EOF
+          cat > warm/app/src/main/AndroidManifest.xml <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:theme="@style/AppTheme"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
+          EOF
+          cat > warm/app/src/main/res/values/styles.xml <<'EOF'
+          <resources><style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar"/></resources>
+          EOF
+          cat > warm/app/src/main/java/com/jm/warm/MainActivity.java <<'EOF'
+          package com.jm.warm; public class MainActivity extends android.app.Activity { public void onCreate(android.os.Bundle b){super.onCreate(b);} }
+          EOF
+          gradle --no-daemon -p warm :app:assembleDebug
+
+      - name: Seal lean official build room
+        run: |
+          set -euo pipefail
+          KIT="$RUNNER_TEMP/jm-v3-build-room"
+          mkdir -p "$KIT/android-sdk/platforms" "$KIT/android-sdk/build-tools" "$KIT/android-sdk/licenses" "$KIT/gradle-home"
+          cp -a "$ANDROID_HOME/platforms/android-36" "$KIT/android-sdk/platforms/"
+          cp -a "$ANDROID_HOME/build-tools/36.0.0" "$KIT/android-sdk/build-tools/"
+          cp -a "$ANDROID_HOME/platform-tools" "$KIT/android-sdk/"
+          cp -a "$ANDROID_HOME/licenses/." "$KIT/android-sdk/licenses/"
+          GRADLE_BIN="$(readlink -f "$(command -v gradle)")"
+          GRADLE_ROOT="$(dirname "$(dirname "$GRADLE_BIN")")"
+          cp -a "$GRADLE_ROOT" "$KIT/gradle-8.13"
+          cp -a "$HOME/.gradle/caches" "$KIT/gradle-home/"
+          cp -a "$HOME/.gradle/native" "$KIT/gradle-home/" 2>/dev/null || true
+          cp -a "$HOME/.gradle/notifications" "$KIT/gradle-home/" 2>/dev/null || true
+          cat > "$KIT/BUILD_ROOM_RECEIPT.txt" <<EOF
+          JM Universal Forge v3 Official Build Room
+          Java: $(java -version 2>&1 | head -1)
+          Gradle: $(gradle --version | awk '/Gradle /{print $2; exit}')
+          Android platform: 36
+          Android build-tools: 36.0.0
+          AGP: 8.13.2 warmed
+          Source included: NO
+          Private key included: NO
+          Purpose: offline compilation of the exact owner-held v3 source body
+          EOF
+          (cd "$RUNNER_TEMP" && tar -czf JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz jm-v3-build-room)
+          sha256sum "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz" > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM_SHA256.txt"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM
+          path: |
+            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz
+            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM_SHA256.txt
+          if-no-files-found: error
+          retention-days: 7

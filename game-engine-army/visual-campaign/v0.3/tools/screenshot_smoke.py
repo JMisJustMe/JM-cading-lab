@@ -146,30 +146,31 @@ def main() -> int:
                     "file": png.name,
                 }
                 try:
-                    dom = subprocess.run(
-                        [
-                            chrome,
-                            "--headless=new",
-                            "--disable-gpu",
-                            "--disable-dev-shm-usage",
-                            "--disable-background-networking",
-                            "--no-first-run",
-                            "--no-sandbox",
-                            "--hide-scrollbars",
-                            "--virtual-time-budget=2400",
-                            "--run-all-compositor-stages-before-draw",
-                            "--dump-dom",
-                            url,
-                        ],
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                        timeout=35,
-                    ).stdout
-                    if name != "army-launcher" and '<div id="jmvc-root"' not in dom:
-                        raise RuntimeError(
-                            f"{name} did not render a live JM visual root at {label} viewport"
-                        )
+                    if name != "army-launcher":
+                        dom = subprocess.run(
+                            [
+                                chrome,
+                                "--headless=new",
+                                "--disable-gpu",
+                                "--disable-dev-shm-usage",
+                                "--disable-background-networking",
+                                "--no-first-run",
+                                "--no-sandbox",
+                                "--hide-scrollbars",
+                                "--virtual-time-budget=2400",
+                                "--run-all-compositor-stages-before-draw",
+                                "--dump-dom",
+                                url,
+                            ],
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            timeout=35,
+                        ).stdout
+                        if '<div id="jmvc-root"' not in dom:
+                            raise RuntimeError(
+                                f"{name} did not render a live JM visual root at {label} viewport"
+                            )
                     subprocess.run(
                         [
                             chrome,

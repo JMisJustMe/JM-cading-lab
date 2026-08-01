@@ -59,7 +59,7 @@ static void jm_generated_faultclass_receipt(uint32_t fault_class, uint32_t vecto
   serial_write(" action="); serial_write(action); serial_write("\n");
 }
 
-static bool jm_generated_faultclass_reuse_retired_slot(uint32_t program_id) {
+static bool __attribute__((noinline, used)) jm_generated_faultclass_reuse_retired_slot(uint32_t program_id) {
   const size_t slot = JM_FAULTCLASS_REUSED_SLOT;
   if (program_id != JM_FAULTCLASS_PROGRAM_PRIVILEGE ||
       slot >= JM_DYNAMICBODYREGISTRY_CAPACITY || bodies[slot].state != BODY_RETIRED) return false;

@@ -20,6 +20,11 @@ def fnv32(text: str) -> str:
     return f"{value:08x}"
 
 
+def normalized_name(value: str) -> str:
+    """Compare identity text without erasing the displayed typography."""
+    return value.replace("‑", "-").replace("–", "-").replace("—", "-")
+
+
 class GameForgeSovereignRebuildTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -47,8 +52,10 @@ class GameForgeSovereignRebuildTests(unittest.TestCase):
     def test_game_body_and_coding_body_shelves(self) -> None:
         self.assertEqual(len(self.manifest["gameBodies"]), 7)
         self.assertEqual(len(self.manifest["codingBodies"]), 6)
+        normalized_app = normalized_name(self.app)
         for name in self.manifest["gameBodies"] + self.manifest["codingBodies"]:
-            self.assertIn(name, self.app)
+            self.assertIn(normalized_name(name), normalized_app)
+        self.assertIn("T‑Boys", self.app)
         self.assertIn("Dragon Mirror", self.app)
         self.assertIn("Blank Forge Body", self.app)
 

@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Mount frozen v1.2A body and v1.3A SerialRoute
+      - name: Mount frozen v1.2A body and corrected v1.3A SerialRoute carrier
         shell: bash
         run: |
           set -euo pipefail
@@ -34,9 +34,19 @@ jobs:
             echo "$3  $4" | sha256sum -c -
             tar -xzf "$4" -C .
           done
+
           V13=systems/routeos-kernel-jm-native-v1.3A
-          echo "154dd249d15d7cb10ad4279377ca0957b10cfa13f9896dca31ccd0be9f49fa32  $V13/routeos-v1.3A-body.tar.gz.b64" | sha256sum -c -
-          base64 -d "$V13/routeos-v1.3A-body.tar.gz.b64" > /tmp/v13.tar.gz
+          PARTS="$V13/body-parts"
+          test -f "$V13/routeos-v1.3A-body.tar.gz.b64"
+          printf '%s\n' \
+            "31e1f2e79735995c430657251ac02eb196686ebfbdcb53cfad36018705d19cf5  $PARTS/part-00.b64" \
+            "347e6daa2bc632c8df612b9df810da3f4bf3b65e49133b4e270b686bf6b038b5  $PARTS/part-01.b64" \
+            "101fc1cfa245ce6f6b90ba46bac66b88bf863ea5ddf5ec1410cf44c7282ad919  $PARTS/part-02.b64" \
+            "236158a92b8266d821c2e6afdb2fede149ec10189291dc0b4891c49cf84d7a8b  $PARTS/part-03.b64" \
+            "84094467130d1d43da3258964117fff4ab259126859b55725319df351b7ef16c  $PARTS/part-04.b64" | sha256sum -c -
+          cat "$PARTS"/part-0*.b64 > /tmp/v13-canonical.b64
+          echo "154dd249d15d7cb10ad4279377ca0957b10cfa13f9896dca31ccd0be9f49fa32  /tmp/v13-canonical.b64" | sha256sum -c -
+          base64 -d /tmp/v13-canonical.b64 > /tmp/v13.tar.gz
           echo "2a5a9b5eb03875e2b2ceb65718a237f7ec19c5fbe7ad71a2551bf8de1432bda7  /tmp/v13.tar.gz" | sha256sum -c -
           tar -xzf /tmp/v13.tar.gz -C .
       - name: Install open machine-proof carriers

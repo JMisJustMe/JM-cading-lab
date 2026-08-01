@@ -144,7 +144,7 @@ jobs:
           set -euo pipefail
           test '${{ steps.machine.outcome }}' = success
           K=.routeos-v20a/routeos-kernel-v0.1A
-          python3 systems/routeos-kernel-jm-native-v2.0A/tools/ci_enforce_observatorycontinuity.py \
+          python3 systems/routeos-kernel-jm-native-v2.0A/bootstrap/ci_enforce_observatorycontinuity.py \
             "$K/proof/QEMU_BOOT_TRACE.txt" \
             "$K/kernel/routeos_kernel.c" \
             "$K/build/routeos-kernel.elf" \

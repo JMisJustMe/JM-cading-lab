@@ -90,11 +90,33 @@ jobs:
           python /tmp/jmvc-source/tools/test_visual_campaign.py \
             --dist dist/jm-game-engine-army-visual-v0.3
 
-      - name: Capture every engine at Android size and the launcher at both sizes
+      - name: Capture every engine at Android size and launcher at both sizes
+        id: screenshot_smoke
+        continue-on-error: true
         run: |
           python /tmp/jmvc-source/tools/screenshot_smoke.py \
             --dist dist/jm-game-engine-army-visual-v0.3 \
             --out dist/jm-game-engine-army-visual-v0.3/screenshots
+
+      - name: Upload screenshot diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_GAME_ENGINE_ARMY_VISUAL_CAMPAIGN_v0.3_SCREENSHOT_DIAGNOSTICS
+          path: |
+            dist/jm-game-engine-army-visual-v0.3/screenshots/
+          retention-days: 14
+
+      - name: Enforce screenshot quality floor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('dist/jm-game-engine-army-visual-v0.3/screenshots/SCREENSHOT_RECEIPT.json').read_text())
+          assert receipt['captureCount']==11, receipt
+          assert receipt['status']=='PASS' and receipt['failureCount']==0, json.dumps(receipt['failures'], indent=2)
+          print('JM_VISUAL_CAMPAIGN_ALL_ELEVEN_SCREENSHOTS_PASS')
+          PY
 
       - name: Prove deterministic rebuild
         run: |

@@ -16,7 +16,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file(providers.gradleProperty('JM_STORE_FILE').getOrElse('proof-upload.jks'))
+            storeFile rootProject.file(providers.gradleProperty('JM_STORE_FILE').getOrElse('proof-upload.jks'))
             storePassword providers.gradleProperty('JM_STORE_PASSWORD').getOrElse('jm-proof-only')
             keyAlias providers.gradleProperty('JM_KEY_ALIAS').getOrElse('jmproof')
             keyPassword providers.gradleProperty('JM_KEY_PASSWORD').getOrElse('jm-proof-only')

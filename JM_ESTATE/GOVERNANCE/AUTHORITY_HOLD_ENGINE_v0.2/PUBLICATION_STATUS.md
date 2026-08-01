@@ -1,5 +1,5 @@
 # Publication status
 
-**State:** SOURCE PUBLICATION ACTIVE
+**State:** READABLE SOURCE MOUNTED
 
-The v0.2 law extensions, field trials, and RouteOS bridge are mounted. The locally validated working source is being published through readable file objects. No completion claim is made until the remote source hashes and test body are verified.
+The v0.2 modular source, 19-test field suite, five-room PWA, hashes, receipts and standing CI gate are mounted as a versioned extension. The earlier opaque payload fault remains documented as provenance and was not accepted as completion.

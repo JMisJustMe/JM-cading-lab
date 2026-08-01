@@ -1,25 +1,30 @@
 # JM Authority Hold Engine v0.2 — Field Trials
 
-## Trial set
+The executable suite is `tests/core.test.mjs`.
 
-1. **Original shared-channel probe** — a later contradictory message from the same phone remains held when source and release are unverified.
-2. **Nested scope** — broad and narrow compatible packets govern together.
-3. **Conflicting mount** — a newer contradictory packet becomes a held candidate, not an automatic replacement.
-4. **Root delegation** — verified authority is granted within a bounded scope and rank.
-5. **Redelegation chain** — child authority cannot exceed the parent scope or rank.
-6. **Delegated replacement** — a verified chain can authorise a replacement while preserving both traces.
-7. **Emergency boundary** — a stronger boundary suspends governance without erasing it.
-8. **Breach and restoration** — behaviour may breach an instruction while governance and history remain distinguishable.
-9. **Signed receipt** — HMAC-SHA256 verifies an unchanged receipt and rejects tampering.
-10. **Replay reconstruction** — instruction and delegation state are rebuilt from the receipt ledger.
-11. **RouteOS bridge** — the live stack becomes a OneBody route envelope.
-
-## Validation result
+1. Scope normalisation.
+2. Parent/child scope containment.
+3. Symmetric scope overlap.
+4. Boundary-first priority.
+5. Verified instruction mounting.
+6. Compatible nested governance.
+7. Conflicting candidate hold.
+8. Unverified packet invalidation.
+9. Time expiry.
+10. Verified root delegation.
+11. Bounded child delegation.
+12. Parent-rank enforcement.
+13. Parent-scope enforcement.
+14. Same-channel identity failure.
+15. Release-key handoff.
+16. Verified higher-authority replacement.
+17. Stronger-boundary suspension.
+18. Signed receipt verification and tamper rejection.
+19. Replay reconstruction and RouteOS continuation.
 
 ```text
 19 tests
 19 passed
 0 failed
+surface gate PASS
 ```
-
-The trial suite is executable in `core.test.mjs` and is rerun by the repository workflow.

@@ -1,0 +1,35 @@
+name: Authority Hold Engine v0.2
+on:
+  push:
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.2/**'
+      - '.github/workflows/authority-hold-engine-v0.2.yml'
+  pull_request:
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.2/**'
+      - '.github/workflows/authority-hold-engine-v0.2.yml'
+  workflow_dispatch:
+jobs:
+  authority-hold-v02:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JM_ESTATE/GOVERNANCE/AUTHORITY_HOLD_ENGINE_v0.2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax gates
+        run: |
+          node --check core/*.mjs
+          node --check app.mjs
+          node --check sw.js
+      - name: Nineteen authority trials
+        run: node --test tests/core.test.mjs
+      - name: Phone and laptop surface gate
+        run: python3 surface_check.py
+      - name: Manifest and content identity
+        run: |
+          python3 -m json.tool manifest.webmanifest >/dev/null
+          sha256sum -c SHA256SUMS.txt

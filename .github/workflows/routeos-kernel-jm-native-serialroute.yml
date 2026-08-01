@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Mount frozen v1.2A body and corrected v1.3A SerialRoute carrier
+      - name: Mount frozen v1.2A body and verify readable v1.3A authority
         shell: bash
         run: |
           set -euo pipefail
@@ -34,27 +34,16 @@ jobs:
             echo "$3  $4" | sha256sum -c -
             tar -xzf "$4" -C .
           done
-
           V13=systems/routeos-kernel-jm-native-v1.3A
-          PARTS="$V13/body-parts"
-          test -f "$V13/routeos-v1.3A-body.tar.gz.b64"
           printf '%s\n' \
-            "31e1f2e79735995c430657251ac02eb196686ebfbdcb53cfad36018705d19cf5  $PARTS/part-00.b64" \
-            "347e6daa2bc632c8df612b9df810da3f4bf3b65e49133b4e270b686bf6b038b5  $PARTS/part-01.b64" \
-            "101fc1cfa245ce6f6b90ba46bac66b88bf863ea5ddf5ec1410cf44c7282ad919  $PARTS/part-02.b64" \
-            "3bcecea0faa0c3af81bc3791e07a7919bfe6ae12b9796274e2096f352a276a8d  $PARTS/part-03-00.b64" \
-            "a739e2edc3740948b883dded876379fd2808d0eddcdc4632d8053290df649060  $PARTS/part-03-01.b64" \
-            "8ad0c8d13ef171e2fc8360abe7522918ea0198e304a5915c624cc5cb24d196ea  $PARTS/part-03-02.b64" \
-            "dbf1efb6a511c3a2bfb8fcce0b4fc861238b714663cb292a5f46454796fed56c  $PARTS/part-03-03.b64" \
-            "8010262e27dda229bbf5c6dd9dbb27a671a4c06f76274ced6abf8bcd20a2ebac  $PARTS/part-03-04.b64" \
-            "11042bd512de550334c65ab8394dce44d932886f1629a8a97b5cf59a220d3fbc  $PARTS/part-03-05.b64" \
-            "84094467130d1d43da3258964117fff4ab259126859b55725319df351b7ef16c  $PARTS/part-04.b64" | sha256sum -c -
-          cat "$PARTS/part-00.b64" "$PARTS/part-01.b64" "$PARTS/part-02.b64" \
-            "$PARTS"/part-03-0*.b64 "$PARTS/part-04.b64" > /tmp/v13-canonical.b64
-          echo "154dd249d15d7cb10ad4279377ca0957b10cfa13f9896dca31ccd0be9f49fa32  /tmp/v13-canonical.b64" | sha256sum -c -
-          base64 -d /tmp/v13-canonical.b64 > /tmp/v13.tar.gz
-          echo "2a5a9b5eb03875e2b2ceb65718a237f7ec19c5fbe7ad71a2551bf8de1432bda7  /tmp/v13.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/v13.tar.gz -C .
+            "7a8f084140170c348bce0fac29e912ad9c7ea1b4a1772b1751d2ca9fbbf45190  $V13/source/serialroute.jmroute" \
+            "7c0a1b5ef42702a035832e9e375444206bb559d031c4810f316b54d9883aff14  $V13/generated/serialroute_office.inc" \
+            "f54dd057ee56c88603083617f8b76b09065d5671412912740def643a096eda06  $V13/generated/serialroute.json" \
+            "5a9ef6b34a2340d9a6caa1e8e9f5635e04d65f84eeeccaec43f0bc5cb8122157  $V13/tools/serialroutec.py" \
+            "ed93e74d59a440837b9c82b4c2d85dc573d3b7794dc7d942bd5c1b6aa96ffcad  $V13/tools/integrate_serialroute.py" \
+            "cc4dde372aeebf54ddae5d650835c162711c65b161f14ee76b6b2efd14c953ef  $V13/tests/test_serialroute.py" \
+            "6a5ee13fabceefeaa6c7cc5a34cb66ef0473ec191d30b6d6851283d55e781c17  $V13/tools/ci_prepare_serialroute.sh" \
+            "a6661b67a4f914921174456301964d6dfec56fb1930d68edd3aa8cbe78c38d19  $V13/tools/ci_enforce_serialroute.py" | sha256sum -c -
       - name: Install open machine-proof carriers
         run: |
           sudo apt-get update

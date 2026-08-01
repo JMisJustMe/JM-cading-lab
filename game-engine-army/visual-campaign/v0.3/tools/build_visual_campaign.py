@@ -45,6 +45,13 @@ def safe_name(value: str) -> str:
     return re.sub(r"[^A-Z0-9]+", "_", value.upper()).strip("_")
 
 
+def insert_before_final_closing(source: str, closing: str, insertion: str, engine_id: str) -> str:
+    index = source.lower().rfind(closing.lower())
+    if index < 0:
+        raise ValueError(f"{engine_id}: base HTML is missing final {closing}")
+    return source[:index] + insertion + source[index:]
+
+
 def inject(source: str, engine_id: str, name: str, role: str, package_id: str, css: str, javascript: str) -> str:
     if "</head>" not in source.lower() or "</body>" not in source.lower():
         raise ValueError(f"{engine_id}: base HTML is missing head/body terminators")
@@ -57,8 +64,12 @@ def inject(source: str, engine_id: str, name: str, role: str, package_id: str, c
     )
     boot = json.dumps({"id": engine_id, "name": name, "role": role, "package": package_id}, separators=(",", ":")).replace("<", "\\u003c")
     runtime = f'<script id="jmvc-visual-campaign-runtime">\nwindow.__JMVC_BOOT__={boot};\n{javascript}\n</script>\n'
-    source = re.sub(r"</head>", meta + "</head>", source, count=1, flags=re.I)
-    source = re.sub(r"</body>", runtime + "</body>", source, count=1, flags=re.I)
+    source = insert_before_final_closing(source, "</head>", meta, engine_id)
+    source = insert_before_final_closing(source, "</body>", runtime, engine_id)
+    runtime_index = source.rfind('id="jmvc-visual-campaign-runtime"')
+    final_body_index = source.lower().rfind("</body>")
+    if runtime_index < 0 or runtime_index > final_body_index:
+        raise ValueError(f"{engine_id}: visual runtime did not mount before final body close")
     return source
 
 
@@ -175,6 +186,7 @@ def main() -> int:
         "portableLauncher": {"file": launcher_path.name, "bytes": launcher_path.stat().st_size, "sha256": sha(launcher_path.read_bytes())},
         "pwa": {"entry": "pwa/index.html", "cacheFileCount": len(cache_files)},
         "sourceFiles": STYLE_ORDER + SCRIPT_ORDER,
+        "mountStrategy": "final-structural-closing-tags",
         "claimBoundary": "Strongest current browser visual/package layer. Direct Android profiling, authored art/audio, GPU/WebGL materials, native binaries, sustained projects and final crowns remain open.",
     }
     receipt["receiptSha256"] = sha(json.dumps(receipt, sort_keys=True, separators=(",", ":")).encode("utf-8"))

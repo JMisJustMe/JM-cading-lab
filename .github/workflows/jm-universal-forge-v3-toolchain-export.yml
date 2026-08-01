@@ -33,7 +33,7 @@ jobs:
         with:
           gradle-version: '8.13'
 
-      - name: Warm AGP 8.13.2 with an API 36 proof project
+      - name: Warm full AGP 8.13.2 release and lint lane
         run: |
           mkdir -p warm/app/src/main/java/com/jm/warm warm/app/src/main/res/values
           cat > warm/settings.gradle <<'EOF'
@@ -53,7 +53,10 @@ jobs:
           android {
             namespace 'com.jm.warm'
             compileSdk 36
+            buildToolsVersion '36.0.0'
             defaultConfig { applicationId 'com.jm.warm'; minSdk 23; targetSdk 36; versionCode 1; versionName '1' }
+            buildTypes { release { minifyEnabled false; shrinkResources false } }
+            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
           }
           EOF
           cat > warm/app/src/main/AndroidManifest.xml <<'EOF'
@@ -65,9 +68,17 @@ jobs:
           cat > warm/app/src/main/java/com/jm/warm/MainActivity.java <<'EOF'
           package com.jm.warm; public class MainActivity extends android.app.Activity { public void onCreate(android.os.Bundle b){super.onCreate(b);} }
           EOF
-          gradle --no-daemon -p warm :app:assembleDebug
+          gradle --no-daemon -p warm :app:assembleDebug :app:lintRelease :app:assembleRelease :app:bundleRelease
 
-      - name: Seal lean official build room
+      - name: Fetch official bundletool carrier
+        run: |
+          set -euo pipefail
+          URL="$(curl -fsSL https://api.github.com/repos/google/bundletool/releases/latest | jq -r '.assets[] | select(.name | test("bundletool-all.*\\.jar$")) | .browser_download_url' | head -1)"
+          test -n "$URL" && test "$URL" != "null"
+          curl -fL "$URL" -o "$RUNNER_TEMP/bundletool.jar"
+          java -jar "$RUNNER_TEMP/bundletool.jar" version > "$RUNNER_TEMP/bundletool-version.txt"
+
+      - name: Seal full official build room
         run: |
           set -euo pipefail
           KIT="$RUNNER_TEMP/jm-v3-build-room"
@@ -82,25 +93,32 @@ jobs:
           cp -a "$HOME/.gradle/caches" "$KIT/gradle-home/"
           cp -a "$HOME/.gradle/native" "$KIT/gradle-home/" 2>/dev/null || true
           cp -a "$HOME/.gradle/notifications" "$KIT/gradle-home/" 2>/dev/null || true
+          cp "$RUNNER_TEMP/bundletool.jar" "$KIT/bundletool.jar"
+          cp "$RUNNER_TEMP/bundletool-version.txt" "$KIT/bundletool-version.txt"
           cat > "$KIT/BUILD_ROOM_RECEIPT.txt" <<EOF
-          JM Universal Forge v3 Official Build Room
+          JM Universal Forge v3 Full Official Build Room
           Java: $(java -version 2>&1 | head -1)
           Gradle: $(gradle --version | awk '/Gradle /{print $2; exit}')
           Android platform: 36
           Android build-tools: 36.0.0
-          AGP: 8.13.2 warmed
+          AGP: 8.13.2
+          Debug lane warmed: YES
+          Release lane warmed: YES
+          Release lint warmed: YES
+          AAB lane warmed: YES
+          Bundletool: $(cat "$RUNNER_TEMP/bundletool-version.txt")
           Source included: NO
           Private key included: NO
-          Purpose: offline compilation of the exact owner-held v3 source body
+          Purpose: offline production compilation and validation of the exact owner-held v3 source body
           EOF
-          (cd "$RUNNER_TEMP" && tar -czf JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz jm-v3-build-room)
-          sha256sum "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz" > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM_SHA256.txt"
+          (cd "$RUNNER_TEMP" && tar -czf JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz jm-v3-build-room)
+          sha256sum "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz" > "$RUNNER_TEMP/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_SHA256.txt"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM
+          name: JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM
           path: |
-            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM.tar.gz
-            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_OFFICIAL_BUILD_ROOM_SHA256.txt
+            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM.tar.gz
+            ${{ runner.temp }}/JM_UNIVERSAL_FORGE_v3_FULL_OFFICIAL_BUILD_ROOM_SHA256.txt
           if-no-files-found: error
           retention-days: 7

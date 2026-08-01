@@ -1,0 +1,57 @@
+{
+  "body": "FaultClassRecoveryRoute",
+  "claim": "two hardware fault classes classified and contained across a generation-tracked retired-slot reuse",
+  "events": {
+    "CLASSIFY": 14,
+    "SLOT_REUSE": 15
+  },
+  "fault_classes": [
+    {
+      "id": 1,
+      "name": "ILLEGAL_INSTRUCTION",
+      "probe_body": 2,
+      "program": "UD2",
+      "vector": 6
+    },
+    {
+      "id": 2,
+      "name": "PRIVILEGE_VIOLATION",
+      "probe_body": 5,
+      "program": "CLI_UD2_FALLBACK",
+      "vector": 13
+    }
+  ],
+  "generation_tracking": true,
+  "parent": "e47dcec3c0323a8c1c03e222860783b390c8b92c",
+  "programs": [
+    {
+      "id": 1,
+      "name": "InheritedTraceYieldLoop"
+    },
+    {
+      "id": 2,
+      "name": "RetireSelfProbe"
+    },
+    {
+      "id": 3,
+      "name": "PrivilegeFaultProbe"
+    }
+  ],
+  "registry_capacity": 4,
+  "reject_code": 33619968,
+  "reject_stack_page": 33624064,
+  "reject_stack_top": 33628160,
+  "reused_code": 33603584,
+  "reused_slot": 3,
+  "reused_stack_page": 33607680,
+  "reused_stack_top": 33611776,
+  "seed_bodies": 2,
+  "slot_reuse": "retired",
+  "ticks": {
+    "body_3": 50,
+    "body_4": 100,
+    "body_5_reuse": 150,
+    "capacity_reject": 200
+  },
+  "version": "v2.2A"
+}

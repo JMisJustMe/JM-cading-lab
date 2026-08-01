@@ -33,8 +33,9 @@ This is runtime descriptor/frame registration into pre-reserved pages. It is not
 
 The connected repository write route has bounded request bodies, so the readable source body is transported in one checksum-locked archive while the governing JM source, machine gate and crown description remain directly readable.
 
-- base64 carrier SHA-256: `2a5e2dcbe0361873e0500cbfa16df636ed7d6695cd1b053ac0ec5429d8ed81b3`
-- decoded tar.gz SHA-256: `cbb703375e33a0e65d430884e537d28246106e1ad02685dc0d65ae4af2d166ff`
-- part 00 SHA-256: `7cfcf11fa1329d2a2893f5ecf52ecb008f792370b193fbf4ac0d49b25c3f0f86`
-- part 01 SHA-256: `0efaabae47a7527d8a5c2956e5e8309c5bd68d15967500cc6396aad506c7af65`
-- part 02 SHA-256: `bc4e079366de8968abd65a3bfd9ae591c962fd2688f8047fb1fb277a928ed224`
+- base64 carrier SHA-256: `9790f6c1456744aa13e8cfc2be1232552430f0d9d2f25a8cbb205405c188a11f`
+- decoded tar.gz SHA-256: `1776bbc467fc6b0a44b5f300d84b7b9228d2b19ad96a58fdda4f1049bd8069db`
+- part 00 SHA-256: `6b15d998f9fe5e4108bcde7c7f7e522b931669f3d52d620915e5e7b66ef3adcf`
+- part 01 SHA-256: `28fcf0a100a69947e7081f31d6459772728a5d70f7b6f97411b6ec22c2e212d0`
+- part 02 SHA-256: `dfde2216a4efd956043e11401bb65afa7cb9a61e088986a4e476ae88c2500207`
+- part 03 SHA-256: `1d863fbe536578daaa7f18ded69ebce4ef43a01c0d6453a54fb9ea74a38ae1e2`

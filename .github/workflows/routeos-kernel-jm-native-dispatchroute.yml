@@ -25,7 +25,7 @@ jobs:
         run: |
           set -euo pipefail
           printf '%s\n' \
-            "b129c9d253316248d021aad8fab11efcc0112b91a9246fe7b7ef1277f15ca64b  systems/routeos-kernel-jm-native-v1.6A/README.md" \
+            "7704a08ecf6c0f20b2600ef2b179090615c50fc88971aa203a4b8413b8a5f06e  systems/routeos-kernel-jm-native-v1.6A/README.md" \
             "83c74d882ccceaa812c0818e21519c7947acfdb2932f0b659e77bc79f2545693  systems/routeos-kernel-jm-native-v1.6A/generated/dispatchroute.inc" \
             "0ada972e3152f6ad8a3c1927065167f96091a00388221b2176b465877bd7cbcf  systems/routeos-kernel-jm-native-v1.6A/generated/dispatchroute.json" \
             "50a58585fab1ee1bbcd34e76ce99e4878c82a56118531144a5131f6f2c070a80  systems/routeos-kernel-jm-native-v1.6A/source/dispatchroute.jmroute" \

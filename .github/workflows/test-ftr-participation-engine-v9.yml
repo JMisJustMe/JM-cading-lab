@@ -1,0 +1,42 @@
+name: Test FTR Participation Engine v9
+
+on:
+  pull_request:
+    paths:
+      - "apps/jm-ftr-participation-engine/**"
+      - ".github/workflows/test-ftr-participation-engine-v9.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/jm-ftr-participation-engine/**"
+      - ".github/workflows/test-ftr-participation-engine-v9.yml"
+
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate governed JSON
+        run: |
+          python - <<'PY2'
+          import json, pathlib
+          root=pathlib.Path('apps/jm-ftr-participation-engine')
+          for p in root.rglob('*.json'):
+              json.loads(p.read_text(encoding='utf-8'))
+              print('JSON OK', p)
+          PY2
+      - name: Reconstruct and test exact runtime
+        run: node apps/jm-ftr-participation-engine/tests/static_acceptance_deploy_v9.mjs apps/jm-ftr-participation-engine
+      - name: Check service worker syntax
+        run: node --check apps/jm-ftr-participation-engine/sw.js
+      - name: HTTP transport smoke test
+        run: |
+          python -m http.server 8123 --directory . >/tmp/jm-ftr-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          sleep 2
+          curl --fail --silent --show-error http://127.0.0.1:8123/apps/jm-ftr-participation-engine/ | grep -F 'JM FTR PARTICIPATION ENGINE v9.0'
+          curl --fail --silent --show-error http://127.0.0.1:8123/apps/jm-ftr-participation-engine/payload/payload-000.b64 >/dev/null

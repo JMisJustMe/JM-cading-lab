@@ -1,0 +1,114 @@
+{
+  "schema": "JM.FTRGovernedSchemaBundle/9.0",
+  "files": {
+    "JM_AMA_PRO_DEVICE_PROFILE_SCHEMA_v2_0.json": {
+      "schema": "JM.AMAProDeviceProfile/2.0",
+      "required": ["deviceId", "sensorFamily", "transport", "rest", "strong", "sampleRate"],
+      "transports": ["digital_twin", "replay", "serial", "microphone", "pointer"],
+      "sensor_families": ["FSR / FORCE", "PRESSURE", "LOAD CELL", "FLEX / BEND", "CAPACITIVE TOUCH", "MICROPHONE / AIR", "MATERIAL / GEO", "IMU / MOTION", "THERMAL", "OTHER"],
+      "physical_confirmation": "Owner-controlled field; not inferred from transport."
+    },
+    "JM_AMA_PRO_PACKET_SCHEMA_v2_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM AMA-Pro Packet v2.0",
+      "type": "object",
+      "required": ["seq", "t", "device_id", "primary"],
+      "properties": {
+        "schema": {"const": "JM.AMAProPacket/2.0"},
+        "seq": {"type": "integer", "minimum": 1},
+        "t": {"type": "number", "minimum": 0},
+        "device_id": {"type": "string", "minLength": 1},
+        "primary": {"type": "number"},
+        "secondary": {"type": "number"},
+        "output": {"type": "number"},
+        "action": {"enum": ["SECOND", null]},
+        "heartbeat": {"type": "boolean"},
+        "fault": {"type": "string"}
+      },
+      "additionalProperties": true,
+      "claim_boundary": "A valid packet proves schema compliance, not a physical mechanism."
+    },
+    "JM_CODING_HOUSE_PROOF_RECEIPT_SCHEMA_v3_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM Coding House Proof Receipt v3.0",
+      "type": "object",
+      "required": ["schema", "id", "participant", "body", "binding", "classification", "result", "metrics", "previousHash", "chainHash", "claimBoundary"],
+      "properties": {
+        "schema": {"const": "JM.CodingHouseProofReceipt/3.0"},
+        "result": {"enum": ["PASS", "FAIL"]},
+        "physicalEligible": {"type": "boolean"},
+        "previousHash": {"type": "string"},
+        "chainHash": {"type": "string", "minLength": 64, "maxLength": 64}
+      }
+    },
+    "JM_FIVEFOLD_CROWN_SCHEMA_v9_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM Fivefold Beyond Maximum Crown",
+      "type": "object",
+      "required": ["schema", "class", "fingerprint", "physicalDing", "boundary"],
+      "properties": {
+        "schema": {"const": "JM.FivefoldBeyondMaximumCrown/9.0"},
+        "class": {"const": "FIVEFOLD_BEYOND_MAXIMUM_SOFTWARE_CROWN"},
+        "fingerprint": {"type": "string"},
+        "physicalDing": {"const": false},
+        "boundary": {"type": "string"}
+      }
+    },
+    "JM_FIVEFOLD_STAGE_RECEIPT_SCHEMA_v9_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM Fivefold Stage Receipt",
+      "type": "object",
+      "required": ["schema", "stage", "result", "metrics", "previousHash", "hash"],
+      "properties": {
+        "schema": {"const": "JM.FivefoldStageReceipt/9.0"},
+        "stage": {"enum": ["v4", "v5", "v6", "v7", "v8", "v9"]},
+        "result": {"type": "string"},
+        "metrics": {"type": "object"},
+        "boundary": {"type": "string"},
+        "previousHash": {"type": "string"},
+        "hash": {"type": "string", "minLength": 16}
+      }
+    },
+    "JM_MAXIMUM_FIELD_RECEIPT_SCHEMA_v2_0.json": {
+      "schema": "JM.MaximumFieldTrialReceipt/2.0",
+      "chain": "SHA-256(previousHash + canonicalReceipt)",
+      "required": ["id", "at", "sessionId", "classification", "source", "device", "protocol", "safety", "result", "metrics", "gates", "packetDigest", "previousHash", "chainHash"],
+      "candidate_boundary": "Only aggregate eligible live trials plus owner declaration may issue a physical candidate receipt."
+    },
+    "JM_PARTICIPATION_ROUTE_BODY_SCHEMA_v3_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM Participation Route Body v3.0",
+      "type": "object",
+      "required": ["schema", "id", "name", "slug", "office", "contact", "carrier", "threshold", "next", "output", "target", "recovery", "continuity", "route", "claimBoundary"],
+      "properties": {
+        "schema": {"const": "JM.ParticipationRouteBody/3.0"},
+        "id": {"type": "string"},
+        "name": {"type": "string", "minLength": 1},
+        "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "office": {"type": "string", "minLength": 1},
+        "contact": {"type": "string"},
+        "carrier": {"type": "string"},
+        "threshold": {"type": "number", "minimum": 1, "maximum": 100},
+        "next": {"type": "string", "minLength": 1},
+        "output": {"type": "string", "minLength": 1},
+        "target": {"type": "number", "minimum": 1, "maximum": 100},
+        "recovery": {"type": "string", "minLength": 1},
+        "continuity": {"type": "string", "minLength": 1},
+        "route": {"type": "array", "const": ["CONTACT", "STATE", "THRESHOLD", "ACTION", "OUTPUT", "RECOVERY", "CONTINUITY"]},
+        "claimBoundary": {"type": "string"}
+      }
+    },
+    "JM_ROUTE_DEVICE_BINDING_SCHEMA_v3_0.json": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "JM Route Device Binding v3.0",
+      "type": "object",
+      "required": ["schema", "id", "bodyId", "profileId", "deviceId", "sensorFamily", "transport", "calibration", "boundary"],
+      "properties": {
+        "schema": {"const": "JM.RouteDeviceBinding/3.0"},
+        "transport": {"enum": ["digital_twin", "replay", "serial", "microphone", "pointer"]},
+        "calibration": {"type": "object", "required": ["rest", "strong", "unit", "sampleRate"]},
+        "boundary": {"type": "string"}
+      }
+    }
+  }
+}

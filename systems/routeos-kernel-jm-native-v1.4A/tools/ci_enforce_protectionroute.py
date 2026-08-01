@@ -41,13 +41,20 @@ for residue in [
 ]:
     assert residue not in code, residue
 
+# These two helpers are intentionally permitted to inline. Their exact source is
+# locked by the generated-file hashes, while the five office boundaries below
+# must survive as independently addressable executable ELF symbols.
+for helper in [
+    "static void jm_generated_vectorroute_set(uint8_t vector, void (*handler)(void), uint8_t attr) {",
+    "static void jm_generated_usermaproute_mark(uint64_t address) {",
+]:
+    assert helper in code, helper
+
 nm = subprocess.check_output(["nm", "-n", str(elf)], text=True)
 for symbol in [
     "jm_generated_descriptorinstall",
-    "jm_generated_vectorroute_set",
     "jm_generated_vectorroute_install",
     "jm_generated_interruptcontroller_install",
-    "jm_generated_usermaproute_mark",
     "jm_generated_usermaproute_install",
     "jm_generated_bodyframeinstall",
     "jm_generated_protectionroute_user_install",

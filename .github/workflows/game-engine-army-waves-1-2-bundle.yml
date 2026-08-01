@@ -11,6 +11,7 @@ on:
     paths:
       - 'game-engine-army/**'
       - '.github/workflows/game-engine-army-waves-1-2-bundle.yml'
+  workflow_dispatch:
 
 jobs:
   rebuild-test-and-seal-nine:
@@ -33,10 +34,18 @@ jobs:
       - name: Build all Wave 1 standalone engines
         run: |
           set -e
-          for file in $(find game-engine-army/glyphplay/v0.1 game-engine-army/gameforge/v0.1 game-engine-army/glyphforge/v0.1 game-engine-army/playform/v0.1 -path '*/tools/build*.py' -type f | sort); do
-            echo "BUILD $file"
-            python "$file"
-          done
+          python game-engine-army/glyphplay/v0.1/tools/build_glyphplay_v0_1.py \
+            --source game-engine-army/glyphplay/v0.1 \
+            --out game-engine-army/glyphplay/v0.1/dist
+          python game-engine-army/gameforge/v0.1/tools/build_gameforge_v0_1.py \
+            --source game-engine-army/gameforge/v0.1 \
+            --out game-engine-army/gameforge/v0.1/dist
+          python game-engine-army/glyphforge/v0.1/tools/build_glyphforge_v0_1.py \
+            --source game-engine-army/glyphforge/v0.1 \
+            --out game-engine-army/glyphforge/v0.1/dist
+          python game-engine-army/playform/v0.1/tools/build_playform_v0_1.py \
+            --source game-engine-army/playform/v0.1 \
+            --out game-engine-army/playform/v0.1/dist
       - name: Run and build all five Wave 2 pushes
         run: |
           node game-engine-army/wave2/v0.2/tools/test_wave2.mjs
@@ -50,13 +59,13 @@ jobs:
         run: |
           cd game-engine-army/army-bundle/v0.1/dist
           find . -type f -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS.txt
-          zip -qr /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1.zip .
-          sha256sum /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1.zip > /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1.sha256
+          zip -qr /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1.zip .
+          sha256sum /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1.zip > /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1.sha256
       - name: Upload nine-body editable bundle
         uses: actions/upload-artifact@v4
         with:
-          name: JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1
+          name: JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1
           path: |
-            /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1.zip
-            /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.1.sha256
+            /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1.zip
+            /tmp/JM_GAME_ENGINE_ARMY_WAVES_1_2_EDITABLE_BUNDLE_v0.2.1.sha256
             game-engine-army/army-bundle/v0.1/dist/

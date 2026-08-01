@@ -1,0 +1,27 @@
+{
+  "schema": "jm.glyphforge-sovereign-rebuild/0.1",
+  "status": "FIRST_ADAPTER_AND_ASSET_FORGE_FLOOR_BUILD_NOT_FINAL_CROWN",
+  "engine": "GlyphForge",
+  "version": "Sovereign Rebuild v0.1",
+  "class": "asset, glyph, control-routing and adapter forge",
+  "surfaces": ["phone", "laptop"],
+  "rendering": "dependency-free 2.5D isometric adapter preview plus 12x12 pixel asset editor",
+  "adapterTargets": ["GlyphPlay", "GameForge", "JM GameCore", "Kading Game Estate Engine"],
+  "controlModes": ["Pull", "Pitch", "Fire", "Fling"],
+  "capabilities": [
+    "pixel asset editor", "asset library", "mirror/rotate/duplicate", "explicit action map",
+    "route conflict detection", "capability negotiation", "FaultHold/RecoveryBody",
+    "pull-pitch-fire-fling preview", "keyboard/touch/pointer convergence", "2.5D preview",
+    "deterministic adapter hash", "save/load", "round-trip adapter import/export",
+    "self-contained adapter demo", "trace/receipt"
+  ],
+  "donors": [
+    {
+      "file": "03_GAME_ENGINE__GLYPHFORGE__Forge_Routing_Repair.html",
+      "bytes": 44208,
+      "sha256": "12447b3eca56488824878be5eb6b71ea3298a9728de3946843a8b44c486d649d",
+      "role": "GlyphForge v67 touch/button routing current anchor"
+    }
+  ],
+  "claimBoundary": "This is GlyphForge first sovereign adapter-and-asset floor. It proves explicit control routing, asset editing, target negotiation and deterministic adapter delivery, not a final GPU asset pipeline or final engine crown."
+}

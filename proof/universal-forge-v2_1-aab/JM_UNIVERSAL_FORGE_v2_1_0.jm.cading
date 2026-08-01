@@ -1,0 +1,54 @@
+# JM Universal Forge v2.1.0 — Native & Store Forge proof lane
+module com.jm.universalforge.proof.v21
+family: JM Universal Forge
+owner: Theodore Benjamin Scott / JM
+version: 2.1.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body CadenVM
+body CodeHand
+body RouteOS
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+android:
+  package: com.jm.universalforge.proof.v21
+  appName: JM Universal Forge v2.1 Proof
+  versionName: 2.1.0-proof
+  versionCode: 210
+  minSdk: 23
+  targetSdk: 36
+  compileSdk: 36
+  capabilities: camera, microphone, location, notifications, files, install
+end
+
+flow nativeStore:
+  step sourceGate
+  step bodyRuntime53
+  step runtimePermissionGate
+  step oneBody
+  step officialGradleAab
+  step bundletoolValidate
+  step universalApkDerive
+  goto receipt
+end
+
+func nativeStoreForge(project, surface):
+  do preserve the same project body on phone and laptop
+  do request native permissions only through explicit user contact
+  do build a genuine signed Android App Bundle through official tools
+  do validate the bundle and derive an installable universal APK proof
+  expect all fourteen governing bodies
+  expect fifty-three executable body profiles
+  return AAB APK permission and TraceBox receipts
+end
+
+ding JM-authority-after-device-and-store-contact

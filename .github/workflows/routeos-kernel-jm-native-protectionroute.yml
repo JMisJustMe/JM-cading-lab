@@ -36,7 +36,7 @@ jobs:
             "ea63934d7d7ed9dc22de2f65f8de17a03eaddd76de6801906ab85256e2d401df  $V14/tools/integrate_protectionroute.py" \
             "7357551d7a8ac5257a3a6a2d6419d90db99716e38d80c021a0ed4b3da62539ce  $V14/tests/test_protectionroute.py" \
             "dee0461c04c241a11037ceb9dc17adc9161ed7fe082765907c796887f10e4fd9  $V14/tools/ci_prepare_protectionroute.sh" \
-            "560570dc422fbfbc49c3120495fa1ce5bf25147ae25dd1c5e4a6d75bd10624f7  $V14/tools/ci_enforce_protectionroute.py" | sha256sum -c -
+            "e7503c1a0518ff4d93ee87b92e0b2fcd2f8463caa0376608cc06db7e98128f3b  $V14/tools/ci_enforce_protectionroute.py" | sha256sum -c -
           git merge-base --is-ancestor e6f037ac3f3d42c4b56218307b5f738f0c6a4b70 HEAD
 
           V12=systems/routeos-kernel-jm-native-v1.2A

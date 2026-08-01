@@ -1,0 +1,24 @@
+{
+  "schema": "jm.glyphplay-sovereign-rebuild/0.1",
+  "status": "FIRST_LIVING_FLOOR_BUILD_NOT_FINAL_ENGINE_CROWN",
+  "engine": "GlyphPlay",
+  "version": "Sovereign Rebuild v0.1",
+  "surfaces": ["phone", "laptop"],
+  "rendering": "dependency-free 2.5D isometric canvas",
+  "capabilities": [
+    "edit", "test", "generate", "remix", "scene hierarchy", "inspector",
+    "body trials", "save/load", "import/export", "export playable", "undo/redo",
+    "fault/recovery", "trace/receipt"
+  ],
+  "bodyTrials": ["GlyphPlay", "Cading", "Quadze", "RECORP", "FlowTalk", "FormeULA", "ContactCode"],
+  "donors": [
+    {"file":"01_GAME_ENGINE__GLYPHPLAY__Creator_Stage_Movement.html","bytes":337098,"sha256":"6960d280e50889707c56c6b7b279818cce66b3ba8842abf2e8908b99f7d425a1"},
+    {"file":"glyphplay_engine_v27_6_visual_game_body_aim_dock_foundation.html","bytes":287815,"sha256":"b8aa0867c7ee8b0bd15264127295c806b22fd8b59aaa853223dd68a04d14a300"},
+    {"file":"glyphplay_engine_v9_4_android_game_creator.html","bytes":52042,"sha256":"2f3833d63da2f1c5843c0df75de1f780167bffae007e84b6278e0df9de08687a"},
+    {"file":"glyphplay.html","bytes":18156,"sha256":"92053dca782e5d461089918c5a2e2b6b2257275d380b7566e79ae04b7498b5c2"},
+    {"file":"02_GAME_ENGINE__GAMEFORGE__Multi_Game_Arcade.html","bytes":34738,"sha256":"b9ffff10993b65f91a72235d614ba7e4afee8fe9f959abbb7b4a44046e2120b6"},
+    {"file":"03_GAME_ENGINE__GLYPHFORGE__Forge_Routing_Repair.html","bytes":44208,"sha256":"12447b3eca56488824878be5eb6b71ea3298a9728de3946843a8b44c486d649d"},
+    {"file":"PLAYFORM_SISTER_SYSTEM_v0_1_EXACT_SOURCE_IMPLEMENTATION.html","bytes":20222,"sha256":"6a09d5b196e0c5c9ca344f9c113be83803df87646fbb37caf1c4f5fb11d500c0"}
+  ],
+  "claimBoundary": "This is the first sovereign rebuild floor. It restores and extends recovered functions but does not crown GlyphPlay as final or claim that every donor capability has already been remeshed."
+}

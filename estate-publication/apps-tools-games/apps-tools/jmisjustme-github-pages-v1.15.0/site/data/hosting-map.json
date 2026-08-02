@@ -1,0 +1,14 @@
+{
+  "schema": "JM.HostingMap/1.0",
+  "master": "host-neutral",
+  "routes": [
+    {"id":"master","name":"Standalone Master Body","role":"Portable source + PWA + one-file proof","state":"BUILT","kind":"core"},
+    {"id":"cloudflare","name":"Cloudflare","role":"Live public rail","state":"PROVEN","kind":"host"},
+    {"id":"infinityfree","name":"InfinityFree","role":"Freestanding host target","state":"PACKAGE_READY","kind":"host"},
+    {"id":"github","name":"GitHub","role":"Source custody + automation","state":"CONNECTED","kind":"source"},
+    {"id":"wix","name":"Wix","role":"Visual mirror / backup route","state":"HANDOFF_READY","kind":"mirror"},
+    {"id":"base44","name":"Base44","role":"Interactive backup / experiments","state":"HANDOFF_READY","kind":"mirror"},
+    {"id":"android","name":"Android","role":"WebView/PWA wrapper from same body","state":"SOURCE_READY","kind":"output"},
+    {"id":"domain","name":"Custom Domain","role":"Optional later address layer","state":"OPEN","kind":"address"}
+  ]
+}

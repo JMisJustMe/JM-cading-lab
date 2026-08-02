@@ -1,0 +1,13 @@
+{
+  "name": "JMISJUSTME — The Living Estate",
+  "short_name": "JM Estate",
+  "description": "Portable owner-controlled theories, lyrics, games, apps, code, books, visuals and recovery.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070812",
+  "theme_color": "#080914",
+  "orientation": "any",
+  "icons": [{"src":"./assets/jm-mark.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}],
+  "shortcuts": [{"name":"Estates","url":"./index.html#/estates"},{"name":"Living Library","url":"./index.html#/library"},{"name":"Owner Room","url":"./index.html#/owner"}]
+}

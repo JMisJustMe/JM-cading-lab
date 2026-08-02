@@ -1,0 +1,43 @@
+{
+  "version": "0.1",
+  "created": "2026-08-02",
+  "feeds": [
+    {
+      "id": "feed-001",
+      "title": "Recover Estate Intake Register",
+      "type": "recovery",
+      "text": "JMGAMECOREv02I_DONOR_ESTATE_INTAKE_REGISTER exists already; recover full register and route through Central Switchboard.",
+      "branch": "gamecore",
+      "rail": "Archive / Memory / Re-entry",
+      "claim": "KNOWN",
+      "status": "READY",
+      "priority": "HIGH",
+      "created": "2026-08-02"
+    },
+    {
+      "id": "feed-002",
+      "title": "LiveForge must remain bench",
+      "type": "governance",
+      "text": "LiveForge can build product bodies but must not replace Central Switchboard or flatten branches.",
+      "branch": "liveforge",
+      "rail": "Public / Product / QA",
+      "claim": "STRUCTURAL LOCK",
+      "status": "LOCKED",
+      "priority": "HIGH",
+      "created": "2026-08-02"
+    },
+    {
+      "id": "feed-003",
+      "title": "HTML persistence caution",
+      "type": "constraint",
+      "text": "Standalone downloaded HTML on Android may not preserve state reliably. Export JSON receipts; hosted/PWA/app shell is better for persistence.",
+      "branch": "jmisjustme",
+      "rail": "Public / Product / QA",
+      "claim": "KNOWN",
+      "status": "ACTIVE",
+      "priority": "MEDIUM",
+      "created": "2026-08-02"
+    }
+  ],
+  "receipts": []
+}

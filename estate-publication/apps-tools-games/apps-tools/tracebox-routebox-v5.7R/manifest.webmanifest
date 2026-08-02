@@ -1,0 +1,19 @@
+{
+  "name": "TraceBox / RouteBox v5.7R",
+  "short_name": "TraceBox",
+  "description": "Offline route-state, calibration and recovery cockpit for the JM Participation Computer / Translucent Box lane.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090b15",
+  "theme_color": "#69f0d0",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

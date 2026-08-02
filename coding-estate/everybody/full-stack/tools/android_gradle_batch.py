@@ -13,8 +13,13 @@ from typing import Any
 
 import android_gradle_factory as factory
 
-SCHEMA = "jm.everybody.android-gradle-batch/0.2"
+SCHEMA = "jm.everybody.android-gradle-batch/0.3"
 ERROR_TAIL_LINES = 120
+# The verified JM Android Forge donor uses AGP 8.7.3. Android's compatibility
+# floor for that plugin is API 35; the batch pins the generated carrier to the
+# matching API instead of silently combining the donor with unsupported API 36.
+DONOR_COMPILE_SDK = 35
+DONOR_TARGET_SDK = 35
 
 
 def file_sha256(path: Path) -> str:
@@ -88,11 +93,18 @@ def build_shard(repo: Path, out: Path, shard_index: int, shard_count: int) -> di
     if not gradle:
         raise SystemExit("Gradle executable not found; no Android build was claimed.")
 
+    # Override the generic carrier default at actual construction time so the
+    # emitted Gradle files, route manifests and receipts all agree on API 35.
+    factory.COMPILE_SDK = DONOR_COMPILE_SDK
+    factory.TARGET_SDK = DONOR_TARGET_SDK
+
     generated = out / "generated"
     if generated.exists():
         shutil.rmtree(generated)
     generated.mkdir(parents=True)
     factory_receipt = factory.generate(repo, generated)
+    if factory_receipt["sdk"]["compile"] != DONOR_COMPILE_SDK or factory_receipt["sdk"]["target"] != DONOR_TARGET_SDK:
+        raise SystemExit("Android donor SDK override did not reach the generated factory receipt")
 
     projects = sorted(generated.glob("bodies/*/android-gradle"), key=lambda path: path.parent.name)
     if len(projects) != 100:
@@ -118,6 +130,8 @@ def build_shard(repo: Path, out: Path, shard_index: int, shard_count: int) -> di
     for ordinal, project in enumerate(selected, 1):
         body_id = project.parent.name
         route = json.loads((project / "jmgradle.route.json").read_text(encoding="utf-8"))
+        if route["sdk"]["compile"] != DONOR_COMPILE_SDK or route["sdk"]["target"] != DONOR_TARGET_SDK:
+            raise SystemExit(f"generated SDK route mismatch for {body_id}: {route['sdk']}")
         print(f"[{ordinal}/{len(selected)}] JMGRADLE_BUILD_START:{body_id}", flush=True)
         result = run_gradle(gradle, project)
         stdout_path = logs_root / f"{body_id}.stdout.log"
@@ -180,12 +194,14 @@ def build_shard(repo: Path, out: Path, shard_index: int, shard_count: int) -> di
             continue
 
         receipt = {
-            "schema": "jm.android.body-apk-build/0.1",
+            "schema": "jm.android.body-apk-build/0.2",
             "status": "APK_CONSTRUCTED_IDENTITY_HELD",
             "body_id": body_id,
             "body_name": route["body_name"],
             "namespace": route["namespace"],
             "identity_sha256": route["identity_sha256"],
+            "compile_sdk": DONOR_COMPILE_SDK,
+            "target_sdk": DONOR_TARGET_SDK,
             "apk": apk_out.name,
             "apk_bytes": apk_out.stat().st_size,
             "apk_sha256": file_sha256(apk_out),
@@ -211,6 +227,8 @@ def build_shard(repo: Path, out: Path, shard_index: int, shard_count: int) -> di
         "selected_body_count": len(selected),
         "built_body_count": len(body_receipts),
         "failed_body_count": len(failures),
+        "compile_sdk": DONOR_COMPILE_SDK,
+        "target_sdk": DONOR_TARGET_SDK,
         "body_ids": [project.parent.name for project in selected],
         "built_body_ids": [item["body_id"] for item in body_receipts],
         "failures": failures,

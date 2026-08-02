@@ -1,0 +1,18 @@
+{
+  "name": "JM3232 Navigator Browser Bridge",
+  "version": "0.1",
+  "archetype": "interactive-decoupled",
+  "source_authority": "JM3232 Unified Browser v1.0 with preserved Navigator v0.1.1 routes",
+  "authority_split": {
+    "host_browser": ["reach", "open", "navigate", "download", "inspect"],
+    "jm3232_navigator": ["identify", "interpret", "route", "mark", "receipt", "preserve"]
+  },
+  "flow": ["request", "search", "fetch", "Stringdoor", "RootWord/Radius", "Stringmark or lineage", "Stringreceipt", "SavePack"],
+  "boundaries": [
+    "No custom Chromium/rendering engine claim.",
+    "No signed-in host authorisation performed here.",
+    "No HTTPS deployment or ChatGPT connection claimed.",
+    "Registration does not equal proof.",
+    "Mesh does not mean merge."
+  ]
+}

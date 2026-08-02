@@ -1,0 +1,75 @@
+name: JM 100 Sovereign Android APK Bodies
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
+      - .github/workflows/everybody-android-gradle-apks.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
+      - .github/workflows/everybody-android-gradle-apks.yml
+
+permissions:
+  contents: read
+
+jobs:
+  android-body-shard:
+    name: Android bodies shard ${{ matrix.shard }} of 10
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    steps:
+      - name: Check out exact body branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android API and build tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+
+      - name: Build body-owned APKs and Zion carriers
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_gradle_batch.py \
+            --repo-root . \
+            --out build/android-gradle-apks \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10
+
+      - name: Upload body APKs, Zion packages, logs and receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_BODY_APKS_SHARD_${{ matrix.shard }}_OF_10
+          path: build/android-gradle-apks/shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6

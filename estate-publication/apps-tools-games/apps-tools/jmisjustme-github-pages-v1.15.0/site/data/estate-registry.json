@@ -1,0 +1,45 @@
+{
+  "schema":"JM.StandaloneEstateRegistry/1.0",
+  "version":"1.15.0",
+  "owner":"Theodore Benjamin Scott",
+  "identity":"JMISJUSTME",
+  "generated":"2026-08-01",
+  "houses":[
+    {"id":"theory","name":"TheoPlus Theory Estate","description":"Living models, frameworks and theory bodies.","icon":"brain","accent":"violet","state":"public + owner depth","count":"150+ bodies","href":"https://jmisjustme-estate.pages.dev/theory/"},
+    {"id":"lyrics","name":"Lyrics & Spoken Word","description":"Songs, music identities, cadence, delivery and visual language.","icon":"music","accent":"gold","state":"public route","count":"98 lyrics + 242 screenshots","href":"https://jmisjustme-estate.pages.dev/lyrics/"},
+    {"id":"games","name":"Games & Playable Systems","description":"Game bodies, engines, controls, realism and testers.","icon":"game","accent":"green","state":"public + working apps","count":"22+ games","href":"https://jmisjustme-estate.pages.dev/games/"},
+    {"id":"apps","name":"App / Tool Estate","description":"Working build rooms, utilities and standalone products.","icon":"cube","accent":"cyan","state":"public + owner depth","count":"15+ tools","href":"https://jmisjustme-estate.pages.dev/apps/"},
+    {"id":"coding","name":"Coding / Cading Estate","description":"Languages, runtimes, syntax locks, source vaults and proof.","icon":"code","accent":"orange","state":"public + source custody","count":"20+ systems","href":"https://jmisjustme-estate.pages.dev/code/"},
+    {"id":"books","name":"Books & Authorship","description":"Book bodies, manuscripts, reflections and author routes.","icon":"book","accent":"pink","state":"owner depth / public handoff","count":"7 bodies","href":""},
+    {"id":"visuals","name":"Visual Worlds","description":"Visualang, game art, screenshots, concept sheets and identity.","icon":"spark","accent":"blue","state":"public + owner archive","count":"1000+ assets","href":"https://jmisjustme-estate.pages.dev/visuals/"},
+    {"id":"archive","name":"Archive / Lineage","description":"Frozen bodies, receipts, recovery map, versions and SavePacks.","icon":"archive","accent":"slate","state":"owner custody","count":"continuous","href":""}
+  ],
+  "publicDoors":[
+    {"name":"Main Living Estate","href":"https://jmisjustme-estate.pages.dev/","role":"Current Cloudflare live rail","state":"LIVE"},
+    {"name":"GameCore v0.2I Intake","href":"https://jm-gamecore-v0-2i-donor-estate-intake.pages.dev/","role":"Donor estate intake register","state":"LIVE"},
+    {"name":"GameCore v0.2H","href":"https://jm-gamecore-v0-2h-estate-propagation.pages.dev/","role":"Estate-wide propagation plan","state":"LIVE"},
+    {"name":"FTR Energy TraceBox","href":"https://jm-ftr-energy-tracebox.pages.dev/","role":"Physical energy visualisation","state":"LIVE"},
+    {"name":"Black Box","href":"https://jmisjustme.github.io/Blackbox-/","role":"GitHub Pages working app","state":"LIVE"},
+    {"name":"No-NA","href":"https://jmisjustme.github.io/JM-cading-lab/","role":"GitHub Pages app route","state":"LIVE"}
+  ],
+  "connections":[
+    {"id":"master","name":"Standalone Master Body","role":"Host-neutral source + PWA + OneBody","state":"BUILT"},
+    {"id":"cloudflare","name":"Cloudflare","role":"Current live public rail","state":"PROVEN"},
+    {"id":"infinityfree","name":"InfinityFree","role":"Freestanding host target","state":"PACKAGE_READY"},
+    {"id":"github","name":"GitHub","role":"Source custody, automation and mirror route","state":"CONNECTED"},
+    {"id":"wix","name":"Wix","role":"Visual mirror / future backup","state":"HANDOFF_READY"},
+    {"id":"base44","name":"Base44","role":"Interactive mirror / build route","state":"HANDOFF_READY"},
+    {"id":"android","name":"Android","role":"Native wrapper source from same body","state":"SOURCE_READY"},
+    {"id":"domain","name":"Optional custom domain","role":"Later address layer","state":"OPEN"}
+  ],
+  "proof":{
+    "cloudflare_live":"known",
+    "standalone_body":"built",
+    "pwa":"built",
+    "onebody":"built",
+    "host_adapters":"built",
+    "android_source":"built",
+    "signed_apk":"not built in current environment",
+    "private_backend":"not mounted"
+  }
+}

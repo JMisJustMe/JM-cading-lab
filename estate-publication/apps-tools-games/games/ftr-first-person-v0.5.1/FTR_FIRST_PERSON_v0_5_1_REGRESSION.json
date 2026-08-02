@@ -1,0 +1,19 @@
+{
+  "release": "FTR First-Person v0.5.1 True 360 Aim Deck",
+  "checks": {
+    "version_0_5_1": true,
+    "player_pitch_state": true,
+    "look_zone_yaw": true,
+    "look_zone_pitch": true,
+    "aim_deck_pitch": true,
+    "render_horizon_pitch": true,
+    "sprite_projection_pitch": true,
+    "screen_space_hit_test": true,
+    "context_menu_blocked": true,
+    "touch_move_blocked": true,
+    "bridge_look_xy": true,
+    "javascript_syntax": true
+  },
+  "passed": true,
+  "browser_visual_test": "not completed: local Chromium process stalled in this container; final mobile carrier proof is the user phone open"
+}

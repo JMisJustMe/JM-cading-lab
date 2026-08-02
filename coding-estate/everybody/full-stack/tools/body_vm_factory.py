@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import body_tooling_factory as tooling
+import body_vm_core as vm_core
 import full_stack_factory as stack
 
 SCHEMA = "jm.everybody.body-vm-factory/0.1"
@@ -111,7 +112,8 @@ def generate_body(out: Path, current: dict[str, Any], vm_core_text: str) -> dict
     if f"jm-{tooling.safe_distribution(body['id'])}-bytecode" not in pyproject:
         write(pyproject_path, add_scripts(pyproject, body["id"]))
 
-    opcode_map = __import__("body_vm_core").opcode_table(current)
+    opcode_map = vm_core.opcode_table(current)
+    opcode_authority_sha = vm_core.opcode_table_sha256(current)
     contract = {
         "schema": "jm.body.vm-contract/0.1",
         "vm_version": VM_VERSION,
@@ -122,7 +124,7 @@ def generate_body(out: Path, current: dict[str, Any], vm_core_text: str) -> dict
         "bytecode_magic": "JMB1",
         "bytecode_schema": "jm.body.bytecode/0.1",
         "opcode_table": opcode_map,
-        "opcode_table_sha256": sha(stable_json(opcode_map)),
+        "opcode_table_sha256": opcode_authority_sha,
         "services": {
             "bytecode_compiler": "IMPLEMENTED",
             "bytecode_verifier": "IMPLEMENTED",

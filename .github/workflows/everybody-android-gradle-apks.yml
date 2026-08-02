@@ -8,6 +8,7 @@ on:
     paths:
       - coding-estate/everybody/body-registry*.json
       - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
       - .github/workflows/everybody-android-gradle-apks.yml
@@ -15,9 +16,14 @@ on:
     paths:
       - coding-estate/everybody/body-registry*.json
       - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
       - .github/workflows/everybody-android-gradle-apks.yml
+
+concurrency:
+  group: jm-everybody-android-apks-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

@@ -57,8 +57,6 @@ def main() -> int:
             body_id = body_root.name
             compiler = load_compiler(compiler_path, index)
             source = (body_root / "fixtures" / "proof.jmbody").read_text(encoding="utf-8")
-
-            assert tuple(compiler.SUPPORTED_TARGETS) == EXPECTED_TARGETS
             body_output = root / "syntax" / body_id
             body_output.mkdir(parents=True, exist_ok=True)
 

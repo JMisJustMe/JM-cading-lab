@@ -1,4 +1,4 @@
-name: JM 100 Sovereign SDK Wheels
+name: JM 100 Sovereign SDK + VM Wheels
 
 on:
   workflow_dispatch:
@@ -11,7 +11,9 @@ on:
       - coding-estate/everybody/full-stack/tools/full_stack_factory.py
       - coding-estate/everybody/full-stack/tools/body_tooling_core.py
       - coding-estate/everybody/full-stack/tools/body_tooling_factory.py
-      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py
+      - coding-estate/everybody/full-stack/tools/body_vm_core.py
+      - coding-estate/everybody/full-stack/tools/body_vm_factory.py
+      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory_v0_2.py
       - .github/workflows/everybody-sdk-wheels.yml
   pull_request:
     paths:
@@ -20,20 +22,22 @@ on:
       - coding-estate/everybody/full-stack/tools/full_stack_factory.py
       - coding-estate/everybody/full-stack/tools/body_tooling_core.py
       - coding-estate/everybody/full-stack/tools/body_tooling_factory.py
-      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py
+      - coding-estate/everybody/full-stack/tools/body_vm_core.py
+      - coding-estate/everybody/full-stack/tools/body_vm_factory.py
+      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory_v0_2.py
       - .github/workflows/everybody-sdk-wheels.yml
 
 concurrency:
-  group: jm-everybody-sdk-wheels-${{ github.ref }}
+  group: jm-everybody-sdk-vm-wheels-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  build-100-sdk-wheels:
+  build-100-sdk-vm-wheels:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - name: Check out exact body branch
         uses: actions/checkout@v4
@@ -43,53 +47,63 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate all body compiler and tooling packages
+      - name: Generate all body compiler tooling and VM packages
         run: |
-          rm -rf build/everybody-sdk-source-v0.1 build/everybody-sdk-wheels-v0.1
+          rm -rf build/everybody-sdk-source-v0.2 build/everybody-sdk-wheels-v0.2
           python coding-estate/everybody/full-stack/tools/full_stack_factory.py \
             --repo-root . \
-            --out build/everybody-sdk-source-v0.1 \
+            --out build/everybody-sdk-source-v0.2 \
             --clean
           python coding-estate/everybody/full-stack/tools/body_tooling_factory.py \
             --repo-root . \
-            --out build/everybody-sdk-source-v0.1 \
+            --out build/everybody-sdk-source-v0.2 \
+            --augment-existing
+          python coding-estate/everybody/full-stack/tools/body_vm_factory.py \
+            --repo-root . \
+            --out build/everybody-sdk-source-v0.2 \
             --augment-existing
 
-      - name: Build, inspect and receipt all 100 wheels
+      - name: Build inspect and receipt all 100 SDK plus VM wheels
         run: |
-          python coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py \
-            --source build/everybody-sdk-source-v0.1 \
-            --out build/everybody-sdk-wheels-v0.1
+          python coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory_v0_2.py \
+            --source build/everybody-sdk-source-v0.2 \
+            --out build/everybody-sdk-wheels-v0.2
 
       - name: Verify master wheel receipt
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          root = Path("build/everybody-sdk-wheels-v0.1")
-          receipt = json.loads((root / "00_OPEN_FIRST_BODY_SDK_WHEEL_RECEIPT.json").read_text(encoding="utf-8"))
-          assert receipt["status"] == "100_BODY_INSTALLABLE_SDK_WHEELS_PASS"
+          root = Path("build/everybody-sdk-wheels-v0.2")
+          receipt = json.loads((root / "00_OPEN_FIRST_BODY_SDK_VM_WHEEL_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "100_BODY_INSTALLABLE_SDK_VM_WHEELS_PASS"
           assert receipt["body_count"] == 100
           assert receipt["unique_distributions"] == 100
           assert receipt["unique_wheel_hashes"] == 100
-          assert receipt["command_count"] == 300
+          assert receipt["commands_per_body"] == 5
+          assert receipt["command_count"] == 500
           assert len(list((root / "WHEELS").glob("*.whl"))) == 100
           assert len(list((root / "RECEIPTS").glob("*.json"))) == 100
-          print("100 wheels, 100 distributions, 300 installed command routes verified")
+          for body_id in ("cading", "quadze", "recorp", "routeos", "finger-one", "finger-two"):
+              entry = next(item for item in receipt["entries"] if item["body_id"] == body_id)
+              assert len(entry["commands"]) == 5
+              assert f"jm-{body_id}-bytecode" in entry["commands"]
+              assert f"jm-{body_id}-vm" in entry["commands"]
+          print("100 wheels, 100 distributions, 100 hosted VMs and 500 installed command routes verified")
           PY
 
       - name: Seal wheel delivery
         run: |
-          tar -czf JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz -C build everybody-sdk-wheels-v0.1
-          sha256sum JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz | tee JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.sha256
+          tar -czf JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2.tar.gz -C build everybody-sdk-wheels-v0.2
+          sha256sum JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2.tar.gz | tee JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2.sha256
 
-      - name: Upload sovereign SDK wheel estate
+      - name: Upload sovereign SDK plus VM wheel estate
         uses: actions/upload-artifact@v4
         with:
-          name: JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1
+          name: JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2
           path: |
-            JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz
-            JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.sha256
-            build/everybody-sdk-wheels-v0.1/00_OPEN_FIRST_BODY_SDK_WHEEL_RECEIPT.json
+            JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2.tar.gz
+            JM_EVERYBODY_SOVEREIGN_SDK_VM_WHEELS_v0.2.sha256
+            build/everybody-sdk-wheels-v0.2/00_OPEN_FIRST_BODY_SDK_VM_WHEEL_RECEIPT.json
           if-no-files-found: error
           compression-level: 0

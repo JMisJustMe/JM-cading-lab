@@ -12,7 +12,7 @@ from typing import Any
 
 import full_stack_factory as stack
 
-SCHEMA = "jm.everybody.android-gradle-factory/0.1"
+SCHEMA = "jm.everybody.android-gradle-factory/0.2"
 AGP_VERSION = "8.7.3"
 GRADLE_VERSION = "8.10.2"
 COMPILE_SDK = 36
@@ -37,7 +37,7 @@ def package_part(body_id: str) -> str:
     return part
 
 
-def java_string(value: str) -> str:
+def source_literal(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
@@ -61,35 +61,196 @@ def root_gradle() -> str:
 '''
 
 
-def app_gradle(namespace: str, body: dict[str, Any]) -> str:
-    return f'''plugins {{
+def app_gradle(namespace: str, current: dict[str, Any]) -> str:
+    body = current["body"]
+    main_path = "src/main/java/" + "/".join(namespace.split(".")) + "/MainActivity.java"
+    template = '''import org.gradle.api.tasks.bundling.Zip
+
+plugins {
     id("com.android.application")
-}}
+}
 
-android {{
-    namespace = "{namespace}"
-    compileSdk = {COMPILE_SDK}
+val jmBodyId = @@BODY_ID@@
+val jmBodyName = @@BODY_NAME@@
+val jmBodyLaw = @@BODY_LAW@@
+val jmIdentitySha256 = @@IDENTITY@@
+val jmBodyAsset = layout.projectDirectory.file("src/main/assets/body.json")
+val jmIndexAsset = layout.projectDirectory.file("src/main/assets/index.html")
+val jmMainActivity = layout.projectDirectory.file("@@MAIN_PATH@@")
+val jmBuildRoot = layout.buildDirectory.dir("jm")
 
-    defaultConfig {{
-        applicationId = "{namespace}"
-        minSdk = {MIN_SDK}
-        targetSdk = {TARGET_SDK}
+android {
+    namespace = @@NAMESPACE@@
+    compileSdk = @@COMPILE_SDK@@
+
+    defaultConfig {
+        applicationId = @@NAMESPACE@@
+        minSdk = @@MIN_SDK@@
+        targetSdk = @@TARGET_SDK@@
         versionCode = 1
-        versionName = "0.1-{body["id"]}"
-    }}
+        versionName = @@VERSION_NAME@@
+    }
 
-    buildTypes {{
-        release {{
+    buildTypes {
+        release {
             isMinifyEnabled = false
-        }}
-    }}
+        }
+    }
 
-    compileOptions {{
+    compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }}
-}}
+    }
+}
+
+tasks.register("doctor") {
+    group = "jmgradle"
+    description = "Check the body-owned Android build floor without installing anything."
+    doLast {
+        check(JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) { "Java 17 or newer is required." }
+        check(gradle.gradleVersion.startsWith("8.10")) { "JMGradle expects Gradle 8.10.x; found ${gradle.gradleVersion}." }
+        check(jmBodyAsset.asFile.exists()) { "Missing body identity asset." }
+        check(jmIndexAsset.asFile.exists()) { "Missing Android contact body." }
+        check(jmMainActivity.asFile.exists()) { "Missing body-owned MainActivity." }
+        println("JMGRADLE_DOCTOR:PASS:$jmBodyId")
+    }
+}
+
+tasks.register("verifyBodyIdentity") {
+    group = "jmgradle"
+    dependsOn("doctor")
+    inputs.file(jmBodyAsset)
+    doLast {
+        val text = jmBodyAsset.asFile.readText(Charsets.UTF_8)
+        check(text.contains("\\\"id\\\": \\\"$jmBodyId\\\"")) { "Body ID does not match Gradle project authority." }
+        check(text.contains(jmIdentitySha256)) { "Body identity hash is absent or mismatched." }
+        check(text.contains(jmBodyLaw)) { "Body governing law is absent or mismatched." }
+        println("JMGRADLE_IDENTITY:PASS:$jmBodyId")
+    }
+}
+
+tasks.register("compileBodySource") {
+    group = "jmgradle"
+    dependsOn("verifyBodyIdentity")
+    val output = layout.buildDirectory.file("jm/body-source.json")
+    inputs.file(jmBodyAsset)
+    outputs.file(output)
+    doLast {
+        val file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.writeText(jmBodyAsset.asFile.readText(Charsets.UTF_8), Charsets.UTF_8)
+        println("JMGRADLE_SOURCE:PASS:$jmBodyId")
+    }
+}
+
+tasks.register("lowerBodyIR") {
+    group = "jmgradle"
+    dependsOn("compileBodySource")
+    val output = layout.buildDirectory.file("jm/android-body-ir.json")
+    outputs.file(output)
+    doLast {
+        val file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """{"schema":"jm.android.body-ir/0.1","body_id":"$jmBodyId","namespace":@@NAMESPACE@@,"identity_sha256":"$jmIdentitySha256","state":"LOWERED_FOR_ANDROID"}""" + "\n",
+            Charsets.UTF_8,
+        )
+        println("JMGRADLE_LOWER:PASS:$jmBodyId")
+    }
+}
+
+tasks.register("emitAndroidCarrier") {
+    group = "jmgradle"
+    dependsOn("lowerBodyIR")
+    val output = layout.buildDirectory.file("jm/android-carrier-receipt.json")
+    inputs.files(jmIndexAsset, jmMainActivity)
+    outputs.file(output)
+    doLast {
+        check(jmIndexAsset.asFile.readText(Charsets.UTF_8).contains(jmBodyId)) { "HTML carrier lost body identity." }
+        check(jmMainActivity.asFile.readText(Charsets.UTF_8).contains(jmIdentitySha256)) { "Java carrier lost identity hash." }
+        val file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """{"schema":"jm.android.carrier-receipt/0.1","body_id":"$jmBodyId","identity_sha256":"$jmIdentitySha256","state":"ANDROID_CARRIER_EMITTED"}""" + "\n",
+            Charsets.UTF_8,
+        )
+        println("JMGRADLE_EMIT:PASS:$jmBodyId")
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn("emitAndroidCarrier")
+}
+
+tasks.register("verifyApkIdentity") {
+    group = "jmgradle"
+    dependsOn("assembleDebug")
+    val output = layout.buildDirectory.file("jm/apk-identity-receipt.json")
+    outputs.file(output)
+    doLast {
+        val apkDir = layout.buildDirectory.dir("outputs/apk/debug").get().asFile
+        val apks = apkDir.listFiles { file -> file.isFile && file.extension == "apk" }?.toList().orEmpty()
+        check(apks.size == 1) { "Expected one debug APK for $jmBodyId; found ${apks.size}." }
+        val apk = apks.single()
+        check(apk.length() > 0L) { "APK is empty." }
+        val file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """{"schema":"jm.android.apk-identity/0.1","body_id":"$jmBodyId","namespace":@@NAMESPACE@@,"apk":"${apk.relativeTo(projectDir).invariantSeparatorsPath}","bytes":${apk.length()},"automatic_install":false}""" + "\n",
+            Charsets.UTF_8,
+        )
+        println("JMGRADLE_APK_IDENTITY:PASS:$jmBodyId")
+    }
+}
+
+tasks.register("writeBuildReceipt") {
+    group = "jmgradle"
+    dependsOn("verifyApkIdentity")
+    val apkReceipt = layout.buildDirectory.file("jm/apk-identity-receipt.json")
+    val output = layout.buildDirectory.file("jm/build-receipt.json")
+    inputs.file(apkReceipt)
+    outputs.file(output)
+    doLast {
+        val file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """{"schema":"jm.android.gradle-build-receipt/0.1","body_id":"$jmBodyId","body_name":@@BODY_NAME@@,"identity_sha256":"$jmIdentitySha256","agp":"@@AGP@@","gradle":"${gradle.gradleVersion}","outcome":"APK_CONSTRUCTED_IDENTITY_HELD","automatic_install":false,"claim_boundary":"APK construction is not physical-device runtime proof."}""" + "\n",
+            Charsets.UTF_8,
+        )
+        println("JMGRADLE_RECEIPT:PASS:$jmBodyId")
+    }
+}
+
+tasks.register<Zip>("packageZion") {
+    group = "jmgradle"
+    dependsOn("writeBuildReceipt")
+    archiveFileName.set(@@ZIP_NAME@@)
+    destinationDirectory.set(layout.buildDirectory.dir("zion"))
+    from(layout.projectDirectory) {
+        exclude("build/**", ".gradle/**")
+    }
+    from(layout.buildDirectory.file("jm/build-receipt.json")) {
+        into("receipts")
+    }
+}
 '''
+    replacements = {
+        "@@BODY_ID@@": source_literal(body["id"]),
+        "@@BODY_NAME@@": source_literal(body["name"]),
+        "@@BODY_LAW@@": source_literal(body["law"]),
+        "@@IDENTITY@@": source_literal(current["identity_sha256"]),
+        "@@NAMESPACE@@": source_literal(namespace),
+        "@@VERSION_NAME@@": source_literal(f'0.2-{body["id"]}'),
+        "@@MAIN_PATH@@": main_path,
+        "@@COMPILE_SDK@@": str(COMPILE_SDK),
+        "@@MIN_SDK@@": str(MIN_SDK),
+        "@@TARGET_SDK@@": str(TARGET_SDK),
+        "@@AGP@@": AGP_VERSION,
+        "@@ZIP_NAME@@": source_literal(f'JM-{body["id"]}-Android-Zion.zip'),
+    }
+    for marker, value in replacements.items():
+        template = template.replace(marker, value)
+    return template
 
 
 def manifest(namespace: str, name: str) -> str:
@@ -131,10 +292,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public final class MainActivity extends Activity {{
-    public static final String JM_BODY_ID = {java_string(body["id"])};
-    public static final String JM_BODY_NAME = {java_string(body["name"])};
-    public static final String JM_BODY_LAW = {java_string(body["law"])};
-    public static final String JM_IDENTITY_SHA256 = {java_string(current["identity_sha256"])};
+    public static final String JM_BODY_ID = {source_literal(body["id"])};
+    public static final String JM_BODY_NAME = {source_literal(body["name"])};
+    public static final String JM_BODY_LAW = {source_literal(body["law"])};
+    public static final String JM_IDENTITY_SHA256 = {source_literal(current["identity_sha256"])};
 
     private WebView webView;
 
@@ -176,7 +337,7 @@ def index_html(current: dict[str, Any]) -> str:
 def jmgradle_route(current: dict[str, Any], namespace: str) -> dict[str, Any]:
     body = current["body"]
     return {
-        "schema": "jm.gradle.body-route/0.1",
+        "schema": "jm.gradle.body-route/0.2",
         "body_id": body["id"],
         "body_name": body["name"],
         "identity_sha256": current["identity_sha256"],
@@ -195,10 +356,12 @@ def jmgradle_route(current: dict[str, Any], namespace: str) -> dict[str, Any]:
             "writeBuildReceipt",
             "packageZion",
         ],
+        "task_implementation": "app/build.gradle.kts",
+        "prebuild_identity_gate": True,
         "shared_donor": "JM Android Forge / JMGradle",
         "source_authority": body["id"],
         "automatic_install": False,
-        "claim_boundary": "Generated Gradle project and identity carrier are proven here. APK build, signing, installation and physical-device runtime require their own receipts.",
+        "claim_boundary": "Generated Gradle project, executable JMGradle tasks and identity carrier are proven here. APK build, signing, installation and physical-device runtime require their own receipts.",
     }
 
 
@@ -221,7 +384,7 @@ def generate_body(out: Path, current: dict[str, Any]) -> dict[str, Any]:
 
     route = jmgradle_route(current, namespace)
     body_asset = {
-        "schema": "jm.android.body-identity/0.1",
+        "schema": "jm.android.body-identity/0.2",
         "body": body,
         "family": current["family"],
         "identity_sha256": current["identity_sha256"],
@@ -233,7 +396,7 @@ def generate_body(out: Path, current: dict[str, Any]) -> dict[str, Any]:
     write(root / "build.gradle.kts", root_gradle())
     write(root / "gradle.properties", "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=true\n")
     write(root / "gradle" / "wrapper" / "gradle-wrapper.properties", f"distributionUrl=https\\://services.gradle.org/distributions/gradle-{GRADLE_VERSION}-bin.zip\n")
-    write(root / "app" / "build.gradle.kts", app_gradle(namespace, body))
+    write(root / "app" / "build.gradle.kts", app_gradle(namespace, current))
     write(root / "app" / "src" / "main" / "AndroidManifest.xml", manifest(namespace, body["name"]))
     write(java_dir / "MainActivity.java", activity_java(namespace, current))
     write(assets / "index.html", index_html(current))
@@ -243,7 +406,7 @@ def generate_body(out: Path, current: dict[str, Any]) -> dict[str, Any]:
         root / "BUILD_BOUNDARY.md",
         "# Android/Gradle body carrier\n\n"
         f"Body: `{body['id']}`  \nNamespace: `{namespace}`\n\n"
-        "This project preserves body identity through a separate Gradle namespace and Android carrier. "
+        "This project preserves body identity through a separate Gradle namespace, executable JMGradle task route and Android carrier. "
         "The wrapper properties are present, but the binary Gradle wrapper JAR is deliberately not fabricated. "
         "Use Gradle 8.10.2 or graft the verified wrapper from JM Android Forge. "
         "A generated project is not an APK/device Ding.\n",
@@ -255,6 +418,7 @@ def generate_body(out: Path, current: dict[str, Any]) -> dict[str, Any]:
         "identity_sha256": current["identity_sha256"],
         "project_sha256": tree_digest(root),
         "route_sha256": sha(stable_json(route)),
+        "jmgradle_task_count": len(route["tasks"]),
     }
 
 
@@ -276,14 +440,16 @@ def generate(repo: Path, out: Path) -> dict[str, Any]:
         raise SystemExit("Android/Gradle body parity count or namespace uniqueness failed")
     receipt = {
         "schema": SCHEMA,
-        "status": "ANDROID_GRADLE_CARRIERS_GENERATED",
+        "status": "ANDROID_GRADLE_TASKED_CARRIERS_GENERATED",
         "body_count": len(receipts),
         "unique_namespaces": len(set(namespaces)),
+        "jmgradle_tasks_per_body": 9,
+        "jmgradle_task_routes": 900,
         "agp": AGP_VERSION,
         "gradle": GRADLE_VERSION,
         "sdk": {"compile": COMPILE_SDK, "min": MIN_SDK, "target": TARGET_SDK},
         "projects": receipts,
-        "claim_boundary": "100 identity-bound Gradle project carriers generated. APK, signing, installation and physical device proof remain separate gates.",
+        "claim_boundary": "100 identity-bound Gradle project carriers with executable JMGradle tasks generated. APK, signing, installation and physical device proof remain separate gates.",
     }
     write_json(out / "ANDROID_GRADLE_RECEIPT.json", receipt)
     return receipt

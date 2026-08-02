@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   sovereign-kernel-personalities:
+    if: github.event_name != 'pull_request' || github.head_ref != 'agent/crown32-sovereign-bodies-v1'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

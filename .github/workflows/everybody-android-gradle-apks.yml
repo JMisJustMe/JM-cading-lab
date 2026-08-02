@@ -9,7 +9,9 @@ on:
       - coding-estate/everybody/body-registry*.json
       - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
       - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_batch_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
       - .github/workflows/everybody-android-gradle-apks.yml
   pull_request:
@@ -17,7 +19,9 @@ on:
       - coding-estate/everybody/body-registry*.json
       - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
       - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_batch_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
       - .github/workflows/everybody-android-gradle-apks.yml
 
@@ -66,10 +70,10 @@ jobs:
         with:
           gradle-version: "8.10.2"
 
-      - name: Build body-owned APKs and Zion carriers
+      - name: Build body-owned APKs and Zion carriers through v0.4 repair
         id: body-build
         run: |
-          python coding-estate/everybody/full-stack/tools/android_gradle_batch.py \
+          python coding-estate/everybody/full-stack/tools/android_gradle_batch_v0_4.py \
             --repo-root . \
             --out build/android-gradle-apks \
             --shard-index ${{ matrix.shard }} \
@@ -79,7 +83,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: JM_ANDROID_BODY_APKS_SHARD_${{ matrix.shard }}_OF_10
+          name: JM_ANDROID_BODY_APKS_V0_4_SHARD_${{ matrix.shard }}_OF_10
           path: build/android-gradle-apks/shard-*-of-10/**
           if-no-files-found: error
           compression-level: 6
@@ -99,10 +103,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Download all ten body shards separately
+      - name: Download all ten v0.4 body shards separately
         uses: actions/download-artifact@v4
         with:
-          pattern: JM_ANDROID_BODY_APKS_SHARD_*_OF_10
+          pattern: JM_ANDROID_BODY_APKS_V0_4_SHARD_*_OF_10
           path: build/android-shards
           merge-multiple: false
 
@@ -115,7 +119,7 @@ jobs:
       - name: Upload master Android sovereign body army
         uses: actions/upload-artifact@v4
         with:
-          name: JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1
+          name: JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.4
           path: |
             build/android-100-master/JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1.zip
             build/android-100-master/JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1.sha256

@@ -33,6 +33,20 @@ def opcode_table(profile: dict[str, Any]) -> dict[str, int]:
     return {command: base + index for index, command in enumerate(commands)}
 
 
+def opcode_authority(profile: dict[str, Any]) -> dict[str, Any]:
+    """Bind the numeric layout to the sovereign body rather than hashing numbers alone."""
+    return {
+        "schema": "jm.body.opcode-authority/0.1",
+        "body_id": profile["body"]["id"],
+        "identity_sha256": profile["identity_sha256"],
+        "opcodes": opcode_table(profile),
+    }
+
+
+def opcode_table_sha256(profile: dict[str, Any]) -> str:
+    return hashlib.sha256(stable_json(opcode_authority(profile))).hexdigest()
+
+
 def reverse_opcode_table(profile: dict[str, Any]) -> dict[int, str]:
     return {value: key for key, value in opcode_table(profile).items()}
 
@@ -161,7 +175,7 @@ def verify(profile: dict[str, Any], bytecode: bytes) -> dict[str, Any]:
         "identity_sha256": decoded["identity_sha256"],
         "instruction_count": decoded["instruction_count"],
         "bytecode_sha256": decoded["bytecode_sha256"],
-        "opcode_table_sha256": hashlib.sha256(stable_json(opcode_table(profile))).hexdigest(),
+        "opcode_table_sha256": opcode_table_sha256(profile),
     }
 
 

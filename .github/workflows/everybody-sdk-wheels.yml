@@ -23,6 +23,10 @@ on:
       - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py
       - .github/workflows/everybody-sdk-wheels.yml
 
+concurrency:
+  group: jm-everybody-sdk-wheels-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

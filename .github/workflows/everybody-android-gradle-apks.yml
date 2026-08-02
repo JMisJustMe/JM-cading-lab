@@ -61,6 +61,7 @@ jobs:
           gradle-version: "8.10.2"
 
       - name: Build body-owned APKs and Zion carriers
+        id: body-build
         run: |
           python coding-estate/everybody/full-stack/tools/android_gradle_batch.py \
             --repo-root . \
@@ -69,6 +70,7 @@ jobs:
             --shard-count 10
 
       - name: Upload body APKs, Zion packages, logs and receipts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: JM_ANDROID_BODY_APKS_SHARD_${{ matrix.shard }}_OF_10

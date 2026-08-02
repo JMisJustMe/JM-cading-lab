@@ -1,0 +1,91 @@
+name: JM 100 Sovereign SDK Wheels
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/tools/full_stack_core.py
+      - coding-estate/everybody/full-stack/tools/full_stack_factory.py
+      - coding-estate/everybody/full-stack/tools/body_tooling_core.py
+      - coding-estate/everybody/full-stack/tools/body_tooling_factory.py
+      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py
+      - .github/workflows/everybody-sdk-wheels.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/tools/full_stack_core.py
+      - coding-estate/everybody/full-stack/tools/full_stack_factory.py
+      - coding-estate/everybody/full-stack/tools/body_tooling_core.py
+      - coding-estate/everybody/full-stack/tools/body_tooling_factory.py
+      - coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py
+      - .github/workflows/everybody-sdk-wheels.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build-100-sdk-wheels:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out exact body branch
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate all body compiler and tooling packages
+        run: |
+          rm -rf build/everybody-sdk-source-v0.1 build/everybody-sdk-wheels-v0.1
+          python coding-estate/everybody/full-stack/tools/full_stack_factory.py \
+            --repo-root . \
+            --out build/everybody-sdk-source-v0.1 \
+            --clean
+          python coding-estate/everybody/full-stack/tools/body_tooling_factory.py \
+            --repo-root . \
+            --out build/everybody-sdk-source-v0.1 \
+            --augment-existing
+
+      - name: Build, inspect and receipt all 100 wheels
+        run: |
+          python coding-estate/everybody/full-stack/tools/body_sdk_wheel_factory.py \
+            --source build/everybody-sdk-source-v0.1 \
+            --out build/everybody-sdk-wheels-v0.1
+
+      - name: Verify master wheel receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/everybody-sdk-wheels-v0.1")
+          receipt = json.loads((root / "00_OPEN_FIRST_BODY_SDK_WHEEL_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "100_BODY_INSTALLABLE_SDK_WHEELS_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["unique_distributions"] == 100
+          assert receipt["unique_wheel_hashes"] == 100
+          assert receipt["command_count"] == 300
+          assert len(list((root / "WHEELS").glob("*.whl"))) == 100
+          assert len(list((root / "RECEIPTS").glob("*.json"))) == 100
+          print("100 wheels, 100 distributions, 300 installed command routes verified")
+          PY
+
+      - name: Seal wheel delivery
+        run: |
+          tar -czf JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz -C build everybody-sdk-wheels-v0.1
+          sha256sum JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz | tee JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.sha256
+
+      - name: Upload sovereign SDK wheel estate
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1
+          path: |
+            JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.tar.gz
+            JM_EVERYBODY_SOVEREIGN_SDK_WHEELS_v0.1.sha256
+            build/everybody-sdk-wheels-v0.1/00_OPEN_FIRST_BODY_SDK_WHEEL_RECEIPT.json
+          if-no-files-found: error
+          compression-level: 0

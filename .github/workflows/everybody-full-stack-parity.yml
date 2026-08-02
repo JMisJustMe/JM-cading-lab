@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - agent/everybody-full-stack-parity-v0-1
+      - agent/crown32-sovereign-bodies-v1
     paths:
       - coding-estate/everybody/body-registry*.json
       - coding-estate/everybody/full-stack/**
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 50
     steps:
-      - name: Check out exact branch body
+      - name: Check out exact body branch
         uses: actions/checkout@v4
 
       - name: Set up Python

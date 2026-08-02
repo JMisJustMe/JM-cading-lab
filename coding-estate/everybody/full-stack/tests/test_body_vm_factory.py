@@ -68,7 +68,10 @@ def main() -> int:
             assert execution["status"] == "VM_EXECUTION_PASS"
             assert execution["body_id"] == body_id
             assert execution["identity_sha256"] == compiler.PROFILE["identity_sha256"]
-            assert execution["instruction_count"] == len(compiled["compile_receipt"]) * 0 + len(compiler.compile_source(fixture, "ir")["ir"]["operations"])
+            ir_result = compiler.compile_source(fixture, "ir")
+            assert ir_result["ok"]
+            expected_operations = len(ir_result["ir"]["operations"])
+            assert execution["instruction_count"] == expected_operations
             assert len(execution["trace"]) == execution["instruction_count"]
             assert execution["receipt_sha256"]
             bytecode_hashes.add(verification["bytecode_sha256"])
@@ -92,6 +95,7 @@ def main() -> int:
             assert contract["body_id"] == body_id
             assert contract["identity_sha256"] == compiler.PROFILE["identity_sha256"]
             assert len(contract["services"]) == 8
+            assert contract["opcode_table_sha256"] == verification["opcode_table_sha256"]
             assert manifest["vm_state"]["opcode_table_sha256"] == contract["opcode_table_sha256"]
             assert len(project["project"]["scripts"]) == 5
             assert f"jm-{body_id}-bytecode" in project["project"]["scripts"]

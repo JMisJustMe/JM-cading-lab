@@ -15,6 +15,10 @@ on:
       - coding-estate/everybody/full-stack/**
       - .github/workflows/everybody-full-stack-parity.yml
 
+concurrency:
+  group: jm-everybody-full-stack-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

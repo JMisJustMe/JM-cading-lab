@@ -26,6 +26,18 @@ REQUIRED_FILES = (
     "BUILD_BOUNDARY.md",
 )
 
+JM_TASKS = [
+    "doctor",
+    "verifyBodyIdentity",
+    "compileBodySource",
+    "lowerBodyIR",
+    "emitAndroidCarrier",
+    "assembleDebug",
+    "verifyApkIdentity",
+    "writeBuildReceipt",
+    "packageZion",
+]
+
 
 def write(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,9 +99,11 @@ def main() -> int:
         receipt = factory.generate(ROOT, first)
         factory.generate(ROOT, second)
 
-        assert receipt["status"] == "ANDROID_GRADLE_CARRIERS_GENERATED"
+        assert receipt["status"] == "ANDROID_GRADLE_TASKED_CARRIERS_GENERATED"
         assert receipt["body_count"] == 100
         assert receipt["unique_namespaces"] == 100
+        assert receipt["jmgradle_tasks_per_body"] == 9
+        assert receipt["jmgradle_task_routes"] == 900
         assert factory.tree_digest(first) == factory.tree_digest(second)
 
         project_roots = sorted(first.glob("bodies/*/android-gradle"))
@@ -109,17 +123,9 @@ def main() -> int:
             assert route["automatic_install"] is False
             assert route["agp"] == "8.7.3"
             assert route["gradle"] == "8.10.2"
-            assert route["tasks"] == [
-                "doctor",
-                "verifyBodyIdentity",
-                "compileBodySource",
-                "lowerBodyIR",
-                "emitAndroidCarrier",
-                "assembleDebug",
-                "verifyApkIdentity",
-                "writeBuildReceipt",
-                "packageZion",
-            ]
+            assert route["tasks"] == JM_TASKS
+            assert route["task_implementation"] == "app/build.gradle.kts"
+            assert route["prebuild_identity_gate"] is True
             namespace = route["namespace"]
             assert namespace not in namespaces
             namespaces.add(namespace)
@@ -135,6 +141,15 @@ def main() -> int:
             assert f'android:name="{namespace}.MainActivity"' in manifest
             assert f'rootProject.name = "JM-{body_id}-Android"' in settings
             assert "gradle-8.10.2-bin.zip" in wrapper
+            assert 'tasks.named("preBuild")' in app_gradle
+            assert 'dependsOn("assembleDebug")' in app_gradle
+            assert 'tasks.register<Zip>("packageZion")' in app_gradle
+            for task in JM_TASKS:
+                if task in {"assembleDebug", "packageZion"}:
+                    continue
+                assert f'tasks.register("{task}")' in app_gradle, (body_id, task)
+            assert "adb install" not in app_gradle.lower()
+            assert '"automatic_install":false' in app_gradle
 
             matches = list((root / "app/src/main/java").rglob("MainActivity.java"))
             assert len(matches) == 1
@@ -156,7 +171,7 @@ def main() -> int:
 
         class_files = list(compiled.rglob("MainActivity.class"))
         assert len(class_files) == 100
-        print("JM CROWN32 ANDROID/GRADLE: 100/100 PROJECTS + NAMESPACES + JMGRADLE ROUTES + JAVA CARRIERS PASS")
+        print("JM CROWN32 ANDROID/GRADLE: 100 PROJECTS + 100 NAMESPACES + 900 JMGRADLE TASK ROUTES + 100 JAVA CARRIERS PASS")
         print(f"TREE_SHA256={factory.tree_digest(first)}")
     return 0
 

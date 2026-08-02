@@ -21,7 +21,7 @@ permissions:
 jobs:
   full-stack-factory:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 50
     steps:
       - name: Check out exact branch body
         uses: actions/checkout@v4
@@ -48,6 +48,9 @@ jobs:
 
       - name: Run 100-body SDK language-service debugger proof
         run: python coding-estate/everybody/full-stack/tests/test_body_tooling_factory.py
+
+      - name: Build and inspect 100 installable sovereign SDK wheels
+        run: python coding-estate/everybody/full-stack/tests/test_body_sdk_packages.py
 
       - name: Run 100-body Android Gradle carrier proof
         run: python coding-estate/everybody/full-stack/tests/test_android_gradle_factory.py
@@ -98,7 +101,7 @@ jobs:
               assert (package / "debugger.py").is_file(), body_id
               assert (full / "bodies" / body_id / "tooling" / "contract.json").is_file(), body_id
               assert (android / "bodies" / body_id / "android-gradle" / "jmgradle.route.json").is_file(), body_id
-          print("100 bodies, 3,200 Crown32 gates, 900 tooling services and 100 Android/Gradle carriers present")
+          print("100 bodies, 3,200 Crown32 gates, 900 tooling services, 100 SDK package definitions and 100 Android/Gradle carriers present")
           PY
 
       - name: Seal generated packages

@@ -60,11 +60,11 @@ jobs:
         run: python coding-estate/everybody/full-stack/tests/test_body_sdk_packages.py
 
       - name: Run canonical 100-body Android Gradle carrier proof
-        run: python coding-estate/everybody/full-stack/tests/test_android_gradle_factory_v0_3.py
+        run: python coding-estate/everybody/full-stack/tests/test_android_gradle_factory_v0_4.py
 
       - name: Generate deliverable body packages
         run: |
-          rm -rf build/everybody-full-stack-v0.1 build/everybody-android-gradle-v0.3
+          rm -rf build/everybody-full-stack-v0.1 build/everybody-android-gradle-v0.4
           python coding-estate/everybody/full-stack/tools/full_stack_factory.py \
             --repo-root . \
             --out build/everybody-full-stack-v0.1 \
@@ -80,9 +80,9 @@ jobs:
           python coding-estate/everybody/full-stack/tools/crown32_factory.py \
             --repo-root . \
             --out build/everybody-full-stack-v0.1
-          python coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py \
+          python coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py \
             --repo-root . \
-            --out build/everybody-android-gradle-v0.3 \
+            --out build/everybody-android-gradle-v0.4 \
             --clean
 
       - name: Verify exact body count and named bodies
@@ -91,7 +91,7 @@ jobs:
           import json
           from pathlib import Path
           full = Path("build/everybody-full-stack-v0.1")
-          android = Path("build/everybody-android-gradle-v0.3")
+          android = Path("build/everybody-android-gradle-v0.4")
           federation = json.loads((full / "federation.json").read_text(encoding="utf-8"))
           crown32 = json.loads((full / "CROWN32_REGISTER.json").read_text(encoding="utf-8"))
           tooling = json.loads((full / "BODY_TOOLING_RECEIPT.json").read_text(encoding="utf-8"))
@@ -110,9 +110,11 @@ jobs:
           assert vm["command_records"] == 200
           assert android_receipt["body_count"] == 100
           assert android_receipt["unique_namespaces"] == 100
-          assert android_receipt["schema"] == "jm.everybody.android-gradle-factory/0.3"
+          assert android_receipt["schema"] == "jm.everybody.android-gradle-factory/0.4"
           assert android_receipt["sdk"] == {"compile": 35, "min": 24, "target": 35}
           assert android_receipt["build_tools"] == "35.0.0"
+          assert android_receipt["kotlin_receipt_writer"]["status"] == "REPAIRED"
+          assert android_receipt["kotlin_receipt_writer"]["repaired_write_routes"] == 400
           for body_id in ("cading", "quadze", "recorp", "routeos", "jmlogic", "flowtalk", "kading", "kocodifying", "formeula", "cadenvm", "wakeforge", "finger-one", "finger-two"):
               assert body_id in federation["body_ids"], body_id
               package = next((full / "bodies" / body_id / "sdk").glob("jm_*"))
@@ -124,30 +126,32 @@ jobs:
               assert route_path.is_file(), body_id
               route = json.loads(route_path.read_text(encoding="utf-8"))
               assert route["sdk"] == {"compile": 35, "min": 24, "target": 35}, body_id
-          print("100 bodies, 3,200 Crown32 gates, 900 tooling services, 800 VM services, 500 SDK command routes and 100 API-35 Android carriers present")
+              gradle = (android / "bodies" / body_id / "android-gradle" / "app" / "build.gradle.kts").read_text(encoding="utf-8")
+              assert gradle.count("System.lineSeparator()") == 4, body_id
+          print("100 bodies, 3,200 Crown32 gates, 900 tooling services, 800 VM services, 500 SDK commands and 400 repaired Kotlin write routes present")
           PY
 
       - name: Seal generated packages
         run: |
           tar -czf JM_EVERYBODY_FULL_STACK_FACTORY_v0.2.tar.gz -C build everybody-full-stack-v0.1
-          tar -czf JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.3.tar.gz -C build everybody-android-gradle-v0.3
+          tar -czf JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.4.tar.gz -C build everybody-android-gradle-v0.4
           sha256sum JM_EVERYBODY_FULL_STACK_FACTORY_v0.2.tar.gz | tee JM_EVERYBODY_FULL_STACK_FACTORY_v0.2.sha256
-          sha256sum JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.3.tar.gz | tee JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.3.sha256
+          sha256sum JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.4.tar.gz | tee JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.4.sha256
 
       - name: Upload generated full-stack packages and receipts
         uses: actions/upload-artifact@v4
         with:
-          name: JM_EVERYBODY_FULL_STACK_VM_TOOLING_AND_ANDROID_GRADLE_v0.3
+          name: JM_EVERYBODY_FULL_STACK_VM_TOOLING_AND_ANDROID_GRADLE_v0.4
           path: |
             JM_EVERYBODY_FULL_STACK_FACTORY_v0.2.tar.gz
             JM_EVERYBODY_FULL_STACK_FACTORY_v0.2.sha256
-            JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.3.tar.gz
-            JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.3.sha256
+            JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.4.tar.gz
+            JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.4.sha256
             build/everybody-full-stack-v0.1/BUILD_RECEIPT.json
             build/everybody-full-stack-v0.1/federation.json
             build/everybody-full-stack-v0.1/BODY_TOOLING_RECEIPT.json
             build/everybody-full-stack-v0.1/BODY_VM_RECEIPT.json
             build/everybody-full-stack-v0.1/CROWN32_REGISTER.json
             build/everybody-full-stack-v0.1/CROWN32_RECEIPT.json
-            build/everybody-android-gradle-v0.3/ANDROID_GRADLE_RECEIPT.json
+            build/everybody-android-gradle-v0.4/ANDROID_GRADLE_RECEIPT.json
           if-no-files-found: error

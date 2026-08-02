@@ -59,23 +59,9 @@ def parse(profile: dict[str, Any], source: str) -> dict[str, Any]:
             else:
                 header = {"body_id": parts[1], "version": parts[2], "line": line_number}
                 if parts[1] != body["id"]:
-                    diagnostics.append(
-                        {
-                            "code": "BODY_ID_MISMATCH",
-                            "line": line_number,
-                            "expected": body["id"],
-                            "actual": parts[1],
-                        }
-                    )
+                    diagnostics.append({"code": "BODY_ID_MISMATCH", "line": line_number, "expected": body["id"], "actual": parts[1]})
                 if parts[2] != profile["native_version"]:
-                    diagnostics.append(
-                        {
-                            "code": "VERSION_MISMATCH",
-                            "line": line_number,
-                            "expected": profile["native_version"],
-                            "actual": parts[2],
-                        }
-                    )
+                    diagnostics.append({"code": "VERSION_MISMATCH", "line": line_number, "expected": profile["native_version"], "actual": parts[2]})
             continue
 
         if ended:
@@ -107,9 +93,7 @@ def parse(profile: dict[str, Any], source: str) -> dict[str, Any]:
         diagnostics.append({"code": "ONE_DING_REQUIRED", "count": len(dings)})
     if not any(item["op"] in profile["required_any"] for item in statements):
         diagnostics.append({"code": "FAMILY_MEANING_NOT_PROVEN", "required_any": profile["required_any"]})
-    if profile["capability_commands"] and not any(
-        item["op"] in profile["capability_commands"] for item in statements
-    ):
+    if profile["capability_commands"] and not any(item["op"] in profile["capability_commands"] for item in statements):
         diagnostics.append({"code": "BODY_CAPABILITY_REQUIRED"})
 
     ast = {
@@ -148,10 +132,13 @@ def emit(profile: dict[str, Any], ir: dict[str, Any], target: str) -> str:
 
     body = profile["body"]
     payload = json.dumps(ir, ensure_ascii=False, sort_keys=True)
-    escaped_payload = json.dumps(payload)
+    # Keep JM arrows, marks and non-ASCII names as native UTF-8. JSON-style
+    # \uXXXX escapes are accepted by JavaScript/C JSON strings but are not valid
+    # Rust string escapes; one UTF-8 carrier avoids target-specific identity drift.
+    escaped_payload = json.dumps(payload, ensure_ascii=False)
     count = len(ir["operations"])
     symbol = body["id"].replace("-", "_").replace("'", "_")
-    escaped_body_id = json.dumps(body["id"])
+    escaped_body_id = json.dumps(body["id"], ensure_ascii=False)
 
     if target == "ir":
         return json.dumps(ir, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
@@ -240,7 +227,7 @@ def cli(profile: dict[str, Any]) -> int:
     body = profile["body"]
     parser = argparse.ArgumentParser(description=f'{body["name"]} independent generated compiler')
     parser.add_argument("source", type=Path)
-    parser.add_argument("--target", choices=SUPPORTED_TARGETS, default="ir")
+    parser.add_argument("--target", choices=list(SUPPORTED_TARGETS), default="ir")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
@@ -255,8 +242,5 @@ def cli(profile: dict[str, Any]) -> int:
         print(result["output"], end="")
     if args.receipt:
         args.receipt.parent.mkdir(parents=True, exist_ok=True)
-        args.receipt.write_text(
-            json.dumps(result["receipt"], ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-            encoding="utf-8",
-        )
+        args.receipt.write_text(json.dumps(result["receipt"], ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return 0

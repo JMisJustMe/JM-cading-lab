@@ -21,7 +21,7 @@ permissions:
 jobs:
   full-stack-factory:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
     steps:
       - name: Check out exact branch body
         uses: actions/checkout@v4
@@ -46,6 +46,9 @@ jobs:
       - name: Run 3,200-gate per-body Crown32 contract proof
         run: python coding-estate/everybody/full-stack/tests/test_crown32_factory.py
 
+      - name: Run 100-body SDK language-service debugger proof
+        run: python coding-estate/everybody/full-stack/tests/test_body_tooling_factory.py
+
       - name: Run 100-body Android Gradle carrier proof
         run: python coding-estate/everybody/full-stack/tests/test_android_gradle_factory.py
 
@@ -56,6 +59,10 @@ jobs:
             --repo-root . \
             --out build/everybody-full-stack-v0.1 \
             --clean
+          python coding-estate/everybody/full-stack/tools/body_tooling_factory.py \
+            --repo-root . \
+            --out build/everybody-full-stack-v0.1 \
+            --augment-existing
           python coding-estate/everybody/full-stack/tools/crown32_factory.py \
             --repo-root . \
             --out build/everybody-full-stack-v0.1
@@ -73,18 +80,25 @@ jobs:
           android = Path("build/everybody-android-gradle-v0.1")
           federation = json.loads((full / "federation.json").read_text(encoding="utf-8"))
           crown32 = json.loads((full / "CROWN32_REGISTER.json").read_text(encoding="utf-8"))
+          tooling = json.loads((full / "BODY_TOOLING_RECEIPT.json").read_text(encoding="utf-8"))
           android_receipt = json.loads((android / "ANDROID_GRADLE_RECEIPT.json").read_text(encoding="utf-8"))
           assert federation["body_count"] == 100
           assert len(set(federation["body_ids"])) == 100
           assert crown32["first_engineering_batch"] == 100
           assert crown32["gate_count_per_body"] == 32
           assert crown32["total_gate_records"] == 3200
+          assert tooling["body_count"] == 100
+          assert tooling["service_records"] == 900
           assert android_receipt["body_count"] == 100
           assert android_receipt["unique_namespaces"] == 100
-          for body_id in ("cading", "quadze", "recorp", "routeos", "jmlogic", "flowtalk", "kading", "kocodifying", "formeula", "cadenvm", "wakeforge"):
+          for body_id in ("cading", "quadze", "recorp", "routeos", "jmlogic", "flowtalk", "kading", "kocodifying", "formeula", "cadenvm", "wakeforge", "finger-one", "finger-two"):
               assert body_id in federation["body_ids"], body_id
+              package = next((full / "bodies" / body_id / "sdk").glob("jm_*"))
+              assert (package / "language_server.py").is_file(), body_id
+              assert (package / "debugger.py").is_file(), body_id
+              assert (full / "bodies" / body_id / "tooling" / "contract.json").is_file(), body_id
               assert (android / "bodies" / body_id / "android-gradle" / "jmgradle.route.json").is_file(), body_id
-          print("100 unique bodies, 3,200 Crown32 gates and 100 Android/Gradle carriers present")
+          print("100 bodies, 3,200 Crown32 gates, 900 tooling services and 100 Android/Gradle carriers present")
           PY
 
       - name: Seal generated packages
@@ -97,7 +111,7 @@ jobs:
       - name: Upload generated full-stack packages and receipts
         uses: actions/upload-artifact@v4
         with:
-          name: JM_EVERYBODY_FULL_STACK_AND_ANDROID_GRADLE_v0.1
+          name: JM_EVERYBODY_FULL_STACK_TOOLING_AND_ANDROID_GRADLE_v0.1
           path: |
             JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.tar.gz
             JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.sha256
@@ -105,6 +119,7 @@ jobs:
             JM_EVERYBODY_ANDROID_GRADLE_CARRIERS_v0.1.sha256
             build/everybody-full-stack-v0.1/BUILD_RECEIPT.json
             build/everybody-full-stack-v0.1/federation.json
+            build/everybody-full-stack-v0.1/BODY_TOOLING_RECEIPT.json
             build/everybody-full-stack-v0.1/CROWN32_REGISTER.json
             build/everybody-full-stack-v0.1/CROWN32_RECEIPT.json
             build/everybody-android-gradle-v0.1/ANDROID_GRADLE_RECEIPT.json

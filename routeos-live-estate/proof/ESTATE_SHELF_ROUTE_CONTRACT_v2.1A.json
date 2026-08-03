@@ -1,7 +1,7 @@
 {
   "body": "RouteOS Estate Shelf Route",
   "version": "v2.1A",
-  "status": "CONSTRUCTION",
+  "status": "FROZEN_LOCKED_PENDING_FROZEN_HEAD_REVALIDATION",
   "frozenParent": {
     "name": "RouteOS Five Crowns Live Estate v2.0A",
     "commit": "8cc8cb5143ec8fef766acf464ef860d00d4c0e36",
@@ -50,15 +50,52 @@
       "delivery"
     ]
   },
-  "sourceLineage": "proof/ESTATE_SHELF_ROUTE_SOURCE_LINEAGE_v2.1A.json",
-  "tests": {
-    "fiveCrownsSimulation": "required",
-    "estateRouterAdversarial": "required",
-    "staticAuthority": "required",
-    "androidReleaseBuild": "required",
-    "apkAssetInspection": "required",
-    "zipAlignment": "required"
+  "constructionReceipt": {
+    "head": "b045cd348f22b98092d0c51eeeed9086d347953c",
+    "workflowMatrix": "22/22 PASS",
+    "run": 30813150084,
+    "job": 91684398586,
+    "artifactId": 8855624181,
+    "artifactName": "routeos-estate-shelf-route-v2.1A-unsigned",
+    "artifactSizeBytes": 1036722,
+    "artifactDigest": "sha256:2277325fc09f28321a0ea02bfea8f6996e8a140f458b2b20202cd14300ae22a3",
+    "artifactChecksumEntries": "15/15 PASS",
+    "alignedApkSizeBytes": 44283,
+    "alignedApkSha256": "728907b360734f223742027cbea41969c5daf78310b0888cb71cd41123a6232b",
+    "fiveCrownsSimulation": "PASS",
+    "estateRouterAdversarial": "PASS",
+    "staticAuthority": "PASS",
+    "androidReleaseBuild": "PASS",
+    "apkAssetInspection": "PASS",
+    "zipAlignment": "PASS"
   },
+  "frozenSourceIdentity": {
+    "nativeHost": "0d9da137a324d9a709995599ca9f4f8d85503bce9e8a69379dc59c279af9d629",
+    "interface": "73c4c727b24904e304845e3c0a1f0015968b41d81edb252a36f08fde4d408d20",
+    "controller": "76cd249f095bea6ceb57186493a132cf81a8e87f0985af3b873a2664ca4583c3",
+    "router": "0242ffd2419eacf6090369d872f8a9b8b86e049b24d5e8ba365136743d94ac40",
+    "shelfCss": "feb37427629ed200367fda99c0e36b1c0720fbf3e90505bcd54cd63003d6945e",
+    "cartridgeRegistry": "b171c50c9b7789901a73f9dfa153e9ac3578be1f89a4db83a7079df364e53594",
+    "canonicalRegistry": "9a5c48c39bda0844e07ab43848405a67b0fdcb4f79e8a39e7848bec47581f27d",
+    "compatibilityMatrix": "16119062821fcf8c5431a406cf5ddfeaaff0e0093e1b5fb5f8c33909348a1e90",
+    "compassShelfBody": "bee8759b910b118c0258637ad21f96aadb9d011e9c93e17de98fd29cabad6e99",
+    "sourceLineage": "5a8006bebb13221d65d6c27bdeff208ec7fc74c5b636fee36e3e5012055752d9",
+    "routerTest": "43e6413c219e7fc1ebaed430d5f9b3d7ce6eed834dcbc99fe8d7b6d34c002f4b",
+    "shelfVerifier": "e12bc18b4252e5153e7cd774659bbdc99fb8e74a4acb9f3c1219899ec463838a"
+  },
+  "freezeLock": [
+    "The v2.1A Android host, multi-cartridge registry, shelf interface, Estate router carrier, recovered 100-body registry, compatibility matrix, Compass mount body, tests and APK workflow are the authoritative Estate Shelf Route body.",
+    "The package remains com.jmisjustme.routeos.gameestate and the registered routes remain jmrouteos://cartridge/five-crowns and jmrouteos://cartridge/estate-router under the v2.1A name.",
+    "The recovered canonical registry remains exactly 100 unique bodies across six source batches with zero batch proof failures.",
+    "Source Ledger, TraceBox and Dings remain mandatory organs in promoted plans, and no supreme body may be created.",
+    "IDENTITY_COLLAPSE, HOST_TAKEOVER, NO_DING, ALIAS_INFLATION and UNGOVERNED_GRAFT remain forbidden.",
+    "The mounted registry and compatibility files remain byte-identical to their recovered source identities; the adapted router may not be represented as the donor source.",
+    "The app remains offline and may not request Android internet permission under the v2.1A name.",
+    "The frozen v2.0A Live Estate, v1.9A kernel and every inherited RouteOS body remain independently authoritative.",
+    "Failed routes remain provenance only and may not be represented as authority.",
+    "Final DING requires this exact freeze head and its permanent anchor to pass the complete twenty-two-workflow matrix and produce a freshly audited APK artifact."
+  ],
+  "sourceLineage": "proof/ESTATE_SHELF_ROUTE_SOURCE_LINEAGE_v2.1A.json",
   "intendedPermanentAnchor": "anchor/routeos-estate-shelf-route-v2-1a-ding-pass",
   "claimBoundary": "This body proves an offline multi-cartridge host, a Compass-importable shelf and deterministic routing across the known canonical 100-body registry. It does not merge all bodies into one, prove every possible composition, install private Compass content automatically, boot the x86 kernel inside Android or replace QEMU evidence."
 }

@@ -29,6 +29,7 @@ BUILD_TOOLS = v0_3.BUILD_TOOLS
 _ORIGINAL_APP_GRADLE = base.app_gradle
 _BROKEN_LINE_ENDING = '+ "\n",'
 _FIXED_LINE_ENDING = '+ System.lineSeparator(),'
+_CHARSET_IMPORT = "import java.nio.charset.StandardCharsets\n"
 
 
 def corrected_app_gradle(namespace: str, current: dict[str, Any]) -> str:
@@ -39,16 +40,17 @@ def corrected_app_gradle(namespace: str, current: dict[str, Any]) -> str:
             f"expected four inherited broken Kotlin line endings, recovered {broken_count}"
         )
     rendered = rendered.replace(_BROKEN_LINE_ENDING, _FIXED_LINE_ENDING)
-    rendered = rendered.replace(
-        "Charsets.UTF_8",
-        "java.nio.charset.StandardCharsets.UTF_8",
-    )
+    rendered = rendered.replace("Charsets.UTF_8", "StandardCharsets.UTF_8")
+    if not rendered.startswith(_CHARSET_IMPORT):
+        rendered = _CHARSET_IMPORT + rendered
     if _BROKEN_LINE_ENDING in rendered:
         raise RuntimeError("Kotlin line-ending repair left a broken expression")
-    if "Charsets.UTF_8" in rendered.replace(
-        "java.nio.charset.StandardCharsets.UTF_8", ""
-    ):
+    if "java.nio.charset.StandardCharsets.UTF_8" in rendered:
+        raise RuntimeError("fully qualified charset reference conflicts with Gradle Kotlin DSL")
+    if "Charsets.UTF_8" in rendered.replace("StandardCharsets.UTF_8", ""):
         raise RuntimeError("unqualified Kotlin charset reference survived repair")
+    if rendered.count(_CHARSET_IMPORT.strip()) != 1:
+        raise RuntimeError("Kotlin charset import was not mounted exactly once")
     return rendered
 
 
@@ -76,7 +78,7 @@ def generate(repo: Path, out: Path) -> dict[str, Any]:
         "status": "REPAIRED",
         "inherited_fault": "PYTHON_NEWLINE_CONSUMED_INSIDE_KOTLIN_STRING",
         "replacement": "System.lineSeparator()",
-        "charset": "java.nio.charset.StandardCharsets.UTF_8",
+        "charset": "StandardCharsets.UTF_8 via java.nio.charset.StandardCharsets import",
         "repaired_writes_per_body": 4,
         "repaired_write_routes": 400,
     }

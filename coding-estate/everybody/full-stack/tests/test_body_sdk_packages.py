@@ -86,8 +86,12 @@ def main() -> int:
             created = set(wheels.glob("*.whl")) - before
             assert len(created) == 1, (body_id, sorted(path.name for path in created))
             wheel = created.pop()
-            package_dirs = [path.name for path in sdk_root.glob("jm_*") if path.is_dir()]
-            assert len(package_dirs) == 1
+            package_dirs = [
+                path.name
+                for path in sdk_root.glob("jm_*")
+                if path.is_dir() and (path / "__init__.py").is_file()
+            ]
+            assert len(package_dirs) == 1, (body_id, package_dirs)
             package = package_dirs[0]
             with zipfile.ZipFile(wheel) as archive:
                 names = set(archive.namelist())

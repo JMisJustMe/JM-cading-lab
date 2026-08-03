@@ -33,13 +33,13 @@ def text_sha256(value: str) -> str:
 
 def parse_total_pss(text: str) -> int:
     patterns = (
-        r"^\s*TOTAL PSS:\s*([0-9]+)\b",
-        r"^\s*TOTAL\s+([0-9]+)\s+",
+        r"^\s*TOTAL PSS:\s*([0-9][0-9,]*)\b",
+        r"^\s*TOTAL\s+([0-9][0-9,]*)\s+",
     )
     for pattern in patterns:
         match = re.search(pattern, text, flags=re.MULTILINE)
         if match:
-            value = int(match.group(1))
+            value = int(match.group(1).replace(",", ""))
             if value > 0:
                 return value
     raise ValueError("dumpsys meminfo did not expose a positive TOTAL PSS value")

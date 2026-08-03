@@ -1,0 +1,256 @@
+name: JM 100 Sovereign Android Bounded Soak
+run-name: "Crown32 Android bounded soak v0.9 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-bounded-soak-v0-9
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/ANDROID_V0_8_LIFECYCLE_ENDURANCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_lifecycle_endurance.py
+      - coding-estate/everybody/full-stack/tools/android_bounded_soak.py
+      - coding-estate/everybody/full-stack/tools/android_bounded_soak_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_bounded_soak.py
+      - .github/workflows/everybody-android-bounded-soak.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/ANDROID_V0_8_LIFECYCLE_ENDURANCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_lifecycle_endurance.py
+      - coding-estate/everybody/full-stack/tools/android_bounded_soak.py
+      - coding-estate/everybody/full-stack/tools/android_bounded_soak_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_bounded_soak.py
+      - .github/workflows/everybody-android-bounded-soak.yml
+
+concurrency:
+  group: jm-everybody-android-bounded-soak-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  JM_RUNTIME_LOCK: coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+  JM_V08_LOCK: coding-estate/everybody/full-stack/ANDROID_V0_8_LIFECYCLE_ENDURANCE_LOCK.json
+  JM_SYSTEM_IMAGE: system-images;android-35;google_apis;x86_64
+  JM_EXPECTED_API: "35"
+  JM_SOAK_CYCLES: "12"
+
+jobs:
+  bounded-soak-contract:
+    name: Bounded soak statistics, thresholds and federation proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact bounded-soak branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v0.8 lifecycle lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V0_8_LIFECYCLE_ENDURANCE_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_LIFECYCLE_ENDURANCE_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "0a0cfac07fd9acfca3cad3e1b8a92300c5c7c8af"
+          assert lock["runtime_api"] == 35
+          assert lock["body_count"] == 100
+          assert lock["launch_contact_proofs"] == 800
+          assert lock["force_stop_cycle_proofs"] == 300
+          assert lock["runtime_fault_free_proofs"] == 100
+          print("v0.8 lifecycle endurance federation lock preserved beneath bounded soak")
+          PY
+      - name: Prove bounded-soak percentiles, ceilings and 100-body federation contracts
+        run: python coding-estate/everybody/full-stack/tests/test_android_bounded_soak.py
+
+  cading-bounded-soak-smoke:
+    name: Cading 12-cycle bounded soak smoke
+    needs: bounded-soak-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_cading_bounded_soak_api35
+      JM_EMULATOR_LOG: build/cading-bounded-soak-emulator.log
+      JM_EMULATOR_PID: build/cading-bounded-soak-emulator.pid
+    steps:
+      - name: Check out exact bounded-soak branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 bounded-soak emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot proven API 35 Android emulator route
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Prove Cading 12-cycle bounded soak
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_bounded_soak.py \
+            --delivery build/runtime-source/delivery \
+            --out build/bounded-soak-smoke \
+            --adb "$(command -v adb)" \
+            --expected-api "$JM_EXPECTED_API" \
+            --cycles "$JM_SOAK_CYCLES" \
+            --body-id cading
+      - name: Upload Cading bounded-soak receipts and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_BOUNDED_SOAK_SMOKE_v0.9
+          path: |
+            build/bounded-soak-smoke/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/cading-bounded-soak-emulator.log
+            build/cading-bounded-soak-emulator.pid
+          if-no-files-found: warn
+
+  android-bounded-soak-shards:
+    name: Android bounded-soak shard ${{ matrix.shard }} of 5
+    needs: cading-bounded-soak-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_bounded_soak_api35_${{ matrix.shard }}
+      JM_EMULATOR_LOG: build/bounded-soak-emulator-${{ matrix.shard }}.log
+      JM_EMULATOR_PID: build/bounded-soak-emulator-${{ matrix.shard }}.pid
+    steps:
+      - name: Check out exact bounded-soak branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 bounded-soak emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot proven API 35 Android emulator route
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Prove 20 twelve-cycle bounded soak routes
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_bounded_soak.py \
+            --delivery build/runtime-source/delivery \
+            --out build/bounded-soak-shard-${{ matrix.shard }}-of-5 \
+            --adb "$(command -v adb)" \
+            --expected-api "$JM_EXPECTED_API" \
+            --cycles "$JM_SOAK_CYCLES" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 5
+      - name: Upload bounded-soak body receipts and emulator logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_BOUNDED_SOAK_SHARD_${{ matrix.shard }}_OF_5_v0.9
+          path: |
+            build/bounded-soak-shard-${{ matrix.shard }}-of-5/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/bounded-soak-emulator-${{ matrix.shard }}.log
+            build/bounded-soak-emulator-${{ matrix.shard }}.pid
+          if-no-files-found: error
+
+  android-bounded-soak-federation:
+    name: Seal 100-body Android bounded-soak federation
+    needs: android-bounded-soak-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out bounded-soak aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all five bounded-soak shard estates
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_BOUNDED_SOAK_SHARD_*_OF_5_v0.9
+          path: build/bounded-soak-shards
+          merge-multiple: false
+      - name: Verify and federate all 100 bounded-soak receipts
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_bounded_soak_aggregate.py \
+            --source build/bounded-soak-shards \
+            --out build/bounded-soak-master \
+            --expected-api "$JM_EXPECTED_API" \
+            --expected-bodies 100 \
+            --expected-shards 5 \
+            --cycles-per-body "$JM_SOAK_CYCLES"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/bounded-soak-master/JM_ANDROID_100_BOUNDED_SOAK_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_BOUNDED_SOAK_AND_PERFORMANCE_FEDERATION_PASS"
+          assert receipt["runtime_apis"] == [35]
+          assert receipt["body_count"] == 100
+          assert receipt["cycles_per_body"] == 12
+          assert receipt["install_proofs"] == 100
+          assert receipt["cold_start_proofs"] == 1200
+          assert receipt["memory_samples"] == 1200
+          assert receipt["fault_free_windows"] == 1200
+          assert receipt["runtime_fault_free_proofs"] == 100
+          print("100 bodies, 1,200 cold starts, 1,200 memory samples and 1,200 fault windows verified")
+          PY
+      - name: Seal bounded-soak receipt estate
+        run: |
+          tar -czf JM_ANDROID_100_BOUNDED_SOAK_RECEIPTS_v0.9.tar.gz -C build bounded-soak-master bounded-soak-shards
+          sha256sum JM_ANDROID_100_BOUNDED_SOAK_RECEIPTS_v0.9.tar.gz | tee JM_ANDROID_100_BOUNDED_SOAK_RECEIPTS_v0.9.sha256
+      - name: Upload 100-body bounded-soak federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_BOUNDED_SOAK_FEDERATION_v0.9
+          path: |
+            JM_ANDROID_100_BOUNDED_SOAK_RECEIPTS_v0.9.tar.gz
+            JM_ANDROID_100_BOUNDED_SOAK_RECEIPTS_v0.9.sha256
+            build/bounded-soak-master/JM_ANDROID_100_BOUNDED_SOAK_RECEIPT.json
+          if-no-files-found: error
+          compression-level: 0

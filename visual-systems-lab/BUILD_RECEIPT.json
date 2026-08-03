@@ -1,5 +1,5 @@
 {
-  "schema": "jm.visual-lab.build-receipt/0.4",
+  "schema": "jm.visual-lab.build-receipt/0.5",
   "body": "JM Estate — Visual Systems Lab",
   "version": "0.1.0",
   "state": "PASS_CLEAN_FRAME_REAL_VIEWPORT_PROOF",
@@ -36,5 +36,6 @@
     "android_toast_opacity_at_capture": 0,
     "trace_contacts": 8
   },
-  "claim_boundary": "Website/PWA body and Android source carrier passed. No compiled or signed APK/AAB is claimed."
+  "related_android_receipt": "visual-systems-lab/ANDROID_RECEIPT.json",
+  "claim_boundary": "This receipt proves the website/PWA visual and interaction body. The separately compiled final Android debug APK is proved in ANDROID_RECEIPT.json. Play Store release signing and AAB publication are not claimed."
 }

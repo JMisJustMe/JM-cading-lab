@@ -2,15 +2,13 @@
 """Contract and negative-gate tests for Android cross-runner reproducibility v1.2."""
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
-import shutil
 import sys
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
@@ -21,6 +19,7 @@ import android_cross_runner_build as build  # noqa: E402
 
 RUNNERS = ("ubuntu-24.04", "ubuntu-22.04")
 PRIVATE_SUFFIXES = (".p12", ".jks", ".keystore", ".pem", ".key", ".pk8")
+Mutator = Callable[[str, str, dict[str, Any], Path, Path], object]
 
 
 def sha256_bytes(value: bytes) -> str:
@@ -94,7 +93,7 @@ def create_runner_shard(
     shard: int,
     body_ids: list[str],
     *,
-    mutate: callable | None = None,
+    mutate: Mutator | None = None,
 ) -> None:
     root = source / f"JM_ANDROID_CROSS_RUNNER_{runner}_SHARD_{shard}_v1.2" / (
         f"cross-runner-{runner}-shard-{shard:02d}-of-02"
@@ -188,9 +187,7 @@ def create_runner_shard(
         "schema": "jm.everybody.android-cross-runner-build/1.2",
         "status": "ANDROID_CROSS_RUNNER_BUILD_SHARD_PASS",
         "runner_label": runner,
-        "runner": {
-            "os_release_sha256": sha256_bytes(runner.encode()),
-        },
+        "runner": {"os_release_sha256": sha256_bytes(runner.encode())},
         "toolchain": toolchain(),
         "shard_index": shard,
         "shard_count": 2,
@@ -212,7 +209,7 @@ def create_runner_shard(
     write_json(root / "BATCH_RECEIPT.json", batch)
 
 
-def create_fixture(source: Path, *, mutate: callable | None = None) -> list[str]:
+def create_fixture(source: Path, *, mutate: Mutator | None = None) -> list[str]:
     body_ids = ["alpha", "beta", "gamma", "delta"]
     shards = (body_ids[0::2], body_ids[1::2])
     for runner in RUNNERS:
@@ -221,7 +218,7 @@ def create_fixture(source: Path, *, mutate: callable | None = None) -> list[str]
     return body_ids
 
 
-def expect_failure(mutator: callable, phrase: str) -> None:
+def expect_failure(mutator: Mutator, phrase: str) -> None:
     with tempfile.TemporaryDirectory() as temporary:
         root = Path(temporary)
         source = root / "source"
@@ -275,7 +272,8 @@ def test_positive_federation() -> None:
         assert receipt["distinct_runner_os_identities"] == 2
         assert receipt["private_keys_in_delivery"] == 0
         delivery = out / "JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_v1.2"
-        assert sorted(path.stem for path in (delivery / "UNSIGNED_CANONICAL").glob("*.apk")) == body_ids
+        recovered = sorted(path.stem for path in (delivery / "UNSIGNED_CANONICAL").glob("*.apk"))
+        assert recovered == sorted(body_ids)
         assert not any(
             path.name.lower().endswith(PRIVATE_SUFFIXES)
             for path in delivery.rglob("*")

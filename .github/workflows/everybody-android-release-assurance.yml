@@ -1,0 +1,241 @@
+name: JM 100 Sovereign Android Release Assurance
+run-name: "Crown32 Android release assurance v1.1 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-release-assurance-v1-1
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_0_RELEASE_CANDIDATE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_assurance.py
+      - .github/workflows/everybody-android-release-assurance.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_0_RELEASE_CANDIDATE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_assurance.py
+      - .github/workflows/everybody-android-release-assurance.yml
+
+concurrency:
+  group: jm-everybody-android-release-assurance-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JM_BUILD_TOOLS: "35.0.0"
+
+jobs:
+  assurance-contract:
+    name: Reproducibility, manifest-surface and inventory contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact release-assurance branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v1.0 release-candidate lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V1_0_RELEASE_CANDIDATE_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_RELEASE_CANDIDATE_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "6a641cfbbe74aa2d3cbddadb0b48683c8f242615"
+          assert lock["body_count"] == 100
+          assert lock["release_apks"] == 100
+          assert lock["non_debuggable_apks"] == 100
+          assert lock["unique_sovereign_test_certificates"] == 100
+          assert lock["private_keys_in_delivery"] == 0
+          assert lock["runtime_fault_free_proofs"] == 100
+          assert lock["cading_same_certificate_upgrade"] is True
+          print("v1.0 release-candidate federation lock preserved beneath assurance")
+          PY
+      - name: Compile assurance bodies
+        run: |
+          python -m py_compile \
+            coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py \
+            coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py \
+            coding-estate/everybody/full-stack/tests/test_android_release_assurance.py
+      - name: Prove parsers, negative gates and 100-body assurance contracts
+        run: python coding-estate/everybody/full-stack/tests/test_android_release_assurance.py
+
+  cading-assurance-smoke:
+    name: Cading exact two-build release assurance smoke
+    needs: assurance-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Check out exact release-assurance branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17 and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install release inspection and signing tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Prove Cading unsigned and same-key signed byte reproducibility
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py \
+            --repo-root . \
+            --out build/release-assurance-smoke \
+            --body-id cading \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload Cading assurance receipt and canonical public APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_RELEASE_ASSURANCE_v1.1
+          path: build/release-assurance-smoke/assurance-smoke-cading/**
+          if-no-files-found: warn
+
+  assurance-shards:
+    name: Release assurance shard ${{ matrix.shard }} of 10
+    needs: cading-assurance-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Check out exact release-assurance branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17 and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install release inspection and signing tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Execute 20 clean builds and prove 10 exact release bodies
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py \
+            --repo-root . \
+            --out build/release-assurance \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10 \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload public canonical APKs and assurance receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_RELEASE_ASSURANCE_SHARD_${{ matrix.shard }}_OF_10_v1.1
+          path: build/release-assurance/assurance-shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6
+
+  assurance-federation:
+    name: Seal 100-body exact release reproducibility and inventory federation
+    needs: assurance-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out assurance aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all ten assurance shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_RELEASE_ASSURANCE_SHARD_*_OF_10_v1.1
+          path: build/assurance-shards
+          merge-multiple: false
+      - name: Verify all 100 reproducibility and software-inventory receipts
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py \
+            --source build/assurance-shards \
+            --out build/assurance-master \
+            --expected-bodies 100 \
+            --expected-shards 10
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/assurance-master/JM_ANDROID_100_RELEASE_ASSURANCE_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_EXACT_RELEASE_REPRODUCIBILITY_AND_INVENTORY_FEDERATION_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["clean_release_build_executions"] == 200
+          assert receipt["unsigned_byte_reproducibility_proofs"] == 100
+          assert receipt["same_key_signed_byte_reproducibility_proofs"] == 100
+          assert receipt["zipalign_proofs"] == 100
+          assert receipt["zero_permission_proofs"] == 100
+          assert receipt["single_exported_launcher_proofs"] == 100
+          assert receipt["software_inventory_receipts"] == 100
+          assert receipt["zero_native_payload_proofs"] == 100
+          assert receipt["zero_private_key_entry_proofs"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["unique_sovereign_test_certificates"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          print("200 clean builds, 100 exact reproducibility pairs and 100 software inventories verified")
+          PY
+      - name: Seal public release-assurance estate
+        run: |
+          tar -czf JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1.tar.gz -C build assurance-master
+          sha256sum JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1.tar.gz | tee JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1.sha256
+      - name: Upload 100-body release-assurance federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1
+          path: |
+            JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1.tar.gz
+            JM_ANDROID_100_RELEASE_ASSURANCE_FEDERATION_v1.1.sha256
+            build/assurance-master/JM_ANDROID_100_RELEASE_ASSURANCE_MASTER_RECEIPT.json
+            build/assurance-master/JM_ANDROID_100_RELEASE_ASSURANCE_v1.1.zip
+            build/assurance-master/JM_ANDROID_100_RELEASE_ASSURANCE_v1.1.sha256
+          if-no-files-found: error
+          compression-level: 0

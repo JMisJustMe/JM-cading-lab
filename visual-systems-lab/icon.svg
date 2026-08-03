@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="b" cx="70%" cy="20%"><stop stop-color="#17364b"/><stop offset="1" stop-color="#04090f"/></radialGradient>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d48e"/><stop offset=".5" stop-color="#c38a34"/><stop offset="1" stop-color="#f4dd9f"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="92" fill="url(#b)"/>
+  <path d="M74 128 128 74h256l54 54v256l-54 54H128l-54-54Z" fill="none" stroke="url(#g)" stroke-width="12"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#d5a54b" stroke-opacity=".3" stroke-width="7"/>
+  <circle cx="256" cy="256" r="94" fill="none" stroke="#d5a54b" stroke-opacity=".55" stroke-width="7" stroke-dasharray="26 16"/>
+  <path d="M136 256c42-72 78-108 120-108s78 36 120 108c-42 72-78 108-120 108s-78-36-120-108Z" fill="none" stroke="url(#g)" stroke-width="14"/>
+  <circle cx="256" cy="256" r="52" fill="#071019" stroke="url(#g)" stroke-width="12"/>
+  <text x="256" y="278" text-anchor="middle" font-family="Georgia,serif" font-size="62" font-weight="700" fill="#f2d48e">JM</text>
+</svg>

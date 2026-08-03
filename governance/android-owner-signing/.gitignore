@@ -1,0 +1,15 @@
+# Private Android signing material must never enter source control.
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.pem
+*.key
+*.pk8
+*.der
+*.cer
+*.crt
+*password*
+*secret*
+*_SIGNED.apk
+*_signed.apk

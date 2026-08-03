@@ -1,0 +1,247 @@
+name: JM 100 Sovereign Android API 24 Runtime Floor
+run-name: "Crown32 Android API24 runtime v0.7 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-api24-runtime-v0-7
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/ANDROID_V0_6_API35_RUNTIME_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot_floor.sh
+      - coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_api_floor_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_api_floor_runtime.py
+      - .github/workflows/everybody-android-api24-runtime.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/ANDROID_V0_6_API35_RUNTIME_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot_floor.sh
+      - coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_api_floor_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_api_floor_runtime.py
+      - .github/workflows/everybody-android-api24-runtime.yml
+
+concurrency:
+  group: jm-everybody-android-api24-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  JM_RUNTIME_LOCK: coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+  JM_API35_LOCK: coding-estate/everybody/full-stack/ANDROID_V0_6_API35_RUNTIME_LOCK.json
+  JM_SYSTEM_IMAGE: system-images;android-24;google_apis;x86_64
+  JM_EXPECTED_API: "24"
+
+jobs:
+  api24-receipt-proof:
+    name: API 24 floor receipt and federation proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact API 24 branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify inherited API 35 lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V0_6_API35_RUNTIME_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_API35_RUNTIME_FEDERATION_LOCKED"
+          assert lock["runtime_api"] == 35
+          assert lock["body_count"] == 100
+          assert lock["runtime_fault_free_proofs"] == 100
+          print("API 35 runtime federation lock preserved beneath API 24 floor route")
+          PY
+      - name: Prove API floor adapters and 100-body federation parser
+        run: python coding-estate/everybody/full-stack/tests/test_android_api_floor_runtime.py
+
+  cading-api24-smoke:
+    name: Cading exact API 24 install, launch, stop and reopen smoke
+    needs: api24-receipt-proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_cading_api24
+      JM_EMULATOR_LOG: build/cading-api24-emulator.log
+      JM_EMULATOR_PID: build/cading-api24-emulator.pid
+    steps:
+      - name: Check out exact API 24 branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install exact Android API 24 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot emulator and prove exact API 24
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot_floor.sh
+      - name: Install, launch, force-stop and reopen Cading on API 24
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py \
+            --delivery build/runtime-source/delivery \
+            --out build/api24-smoke \
+            --adb "$(command -v adb)" \
+            --expected-api 24 \
+            --body-id cading
+      - name: Upload Cading API 24 smoke receipt and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_API24_SMOKE_v0.7
+          path: |
+            build/api24-smoke/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/cading-api24-emulator.log
+            build/cading-api24-emulator.pid
+          if-no-files-found: warn
+
+  android-api24-shards:
+    name: Android API 24 runtime shard ${{ matrix.shard }} of 5
+    needs: cading-api24-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_api24_runtime_${{ matrix.shard }}
+      JM_EMULATOR_LOG: build/api24-emulator-${{ matrix.shard }}.log
+      JM_EMULATOR_PID: build/api24-emulator-${{ matrix.shard }}.pid
+    steps:
+      - name: Check out exact API 24 branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install exact Android API 24 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot emulator and prove exact API 24
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot_floor.sh
+      - name: Prove 20 sovereign body routes at minimum API floor
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_api_floor_runtime.py \
+            --delivery build/runtime-source/delivery \
+            --out build/api24-shard-${{ matrix.shard }}-of-5 \
+            --adb "$(command -v adb)" \
+            --expected-api 24 \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 5
+      - name: Upload API 24 body runtime receipts and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_API24_RUNTIME_SHARD_${{ matrix.shard }}_OF_5_v0.7
+          path: |
+            build/api24-shard-${{ matrix.shard }}-of-5/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/api24-emulator-${{ matrix.shard }}.log
+            build/api24-emulator-${{ matrix.shard }}.pid
+          if-no-files-found: error
+
+  android-api24-federation:
+    name: Seal 100-body Android API 24 minimum-floor federation
+    needs: android-api24-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out API floor aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all five API 24 runtime shard receipts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_API24_RUNTIME_SHARD_*_OF_5_v0.7
+          path: build/api24-shards
+          merge-multiple: false
+      - name: Verify and federate all 100 exact API 24 receipts
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_api_floor_aggregate.py \
+            --source build/api24-shards \
+            --out build/api24-master \
+            --expected-api 24 \
+            --expected-bodies 100 \
+            --expected-shards 5
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("build/api24-master/JM_ANDROID_100_API24_RUNTIME_RECEIPT.json")
+          receipt = json.loads(path.read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_API24_MINIMUM_FLOOR_INSTALL_LAUNCH_FORCE_STOP_REOPEN_FEDERATION_PASS"
+          assert receipt["runtime_apis"] == [24]
+          assert receipt["body_count"] == 100
+          assert receipt["api_floor_proofs"] == 100
+          assert receipt["install_proofs"] == 100
+          assert receipt["first_launch_proofs"] == 100
+          assert receipt["process_and_focus_proofs"] == 200
+          assert receipt["force_stop_exit_proofs"] == 100
+          assert receipt["relaunch_proofs"] == 100
+          assert receipt["runtime_fault_free_proofs"] == 100
+          print("100 exact API 24 minimum-floor install/open/stop/reopen proofs verified")
+          PY
+      - name: Seal API 24 runtime receipt estate
+        run: |
+          tar -czf JM_ANDROID_100_API24_RUNTIME_RECEIPTS_v0.7.tar.gz -C build api24-master api24-shards
+          sha256sum JM_ANDROID_100_API24_RUNTIME_RECEIPTS_v0.7.tar.gz | tee JM_ANDROID_100_API24_RUNTIME_RECEIPTS_v0.7.sha256
+      - name: Upload 100-body API 24 minimum-floor federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_API24_RUNTIME_FEDERATION_v0.7
+          path: |
+            JM_ANDROID_100_API24_RUNTIME_RECEIPTS_v0.7.tar.gz
+            JM_ANDROID_100_API24_RUNTIME_RECEIPTS_v0.7.sha256
+            build/api24-master/JM_ANDROID_100_API24_RUNTIME_RECEIPT.json
+          if-no-files-found: error
+          compression-level: 0

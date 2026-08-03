@@ -1,0 +1,23 @@
+{
+  "schema": "jm.everybody.android-api35-runtime-lock/0.1",
+  "status": "ANDROID_API35_RUNTIME_FEDERATION_LOCKED",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "source_branch": "agent/crown32-android-runtime-v0-6",
+  "source_head_sha": "51178dd06099d91491f15823304deb17dfdae535",
+  "source_workflow_run_id": 30780754287,
+  "source_artifact_id": 8843638737,
+  "source_artifact_name": "JM_ANDROID_100_EMULATOR_RUNTIME_FEDERATION_v0.6",
+  "source_artifact_sha256": "f629850b87bd8138adaee670d957f92b0a5b73b961f74baf0b88682c9452bb1a",
+  "sealed_runtime_receipts_sha256": "e6ffe009533f166b69cd7228915266f44fbee36e46e1158ae4755075b15ff2eb",
+  "master_status": "ANDROID_100_EMULATOR_INSTALL_LAUNCH_FORCE_STOP_REOPEN_FEDERATION_PASS",
+  "runtime_api": 35,
+  "body_count": 100,
+  "shard_count": 5,
+  "install_proofs": 100,
+  "first_launch_proofs": 100,
+  "process_and_focus_proofs": 200,
+  "force_stop_exit_proofs": 100,
+  "relaunch_proofs": 100,
+  "runtime_fault_free_proofs": 100,
+  "claim_boundary": "This lock records the earned API 35 runtime federation below the API 24 minimum-floor compatibility route. It does not imply minimum-SDK, physical-device or release-signing proof."
+}

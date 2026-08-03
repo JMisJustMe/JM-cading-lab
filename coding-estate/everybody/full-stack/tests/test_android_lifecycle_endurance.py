@@ -2,15 +2,91 @@
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools"
 sys.path.insert(0, str(TOOLS))
 
+import android_emulator_runtime as emulator_runtime  # noqa: E402
 import android_lifecycle_aggregate as aggregate  # noqa: E402
 import android_lifecycle_endurance as lifecycle  # noqa: E402
+
+
+def prove_logcat_snapshot_recovery() -> None:
+    command_log: list[list[str]] = []
+    snapshot_attempts = 0
+
+    def transient_run(
+        command: list[str],
+        *,
+        capture_output: bool,
+        text: bool,
+        timeout: int,
+        check: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        nonlocal snapshot_attempts
+        command_log.append(command)
+        if command[1:] == ["wait-for-device"]:
+            return subprocess.CompletedProcess(command, 0, "", "")
+        if command[1] == "logcat":
+            snapshot_attempts += 1
+            if snapshot_attempts < 3:
+                return subprocess.CompletedProcess(command, 255, "", "")
+            return subprocess.CompletedProcess(command, 0, "I/ActivityTaskManager: clean\n", "")
+        raise AssertionError(f"unexpected command in retry proof: {command}")
+
+    with patch.object(emulator_runtime.subprocess, "run", side_effect=transient_run), patch.object(
+        emulator_runtime.time,
+        "sleep",
+        return_value=None,
+    ):
+        result = emulator_runtime.run(
+            ["/sdk/adb", "logcat", "-d", "-v", "brief"],
+            timeout=60,
+        )
+
+    assert result.returncode == 0
+    assert snapshot_attempts == 3
+    assert sum(command[1:] == ["wait-for-device"] for command in command_log) == 2
+
+    hard_fail_commands: list[list[str]] = []
+
+    def permanent_failure(
+        command: list[str],
+        *,
+        capture_output: bool,
+        text: bool,
+        timeout: int,
+        check: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        hard_fail_commands.append(command)
+        if command[1:] == ["wait-for-device"]:
+            return subprocess.CompletedProcess(command, 0, "", "")
+        return subprocess.CompletedProcess(command, 255, "", "")
+
+    with patch.object(emulator_runtime.subprocess, "run", side_effect=permanent_failure), patch.object(
+        emulator_runtime.time,
+        "sleep",
+        return_value=None,
+    ):
+        try:
+            emulator_runtime.run(
+                ["/sdk/adb", "logcat", "-d", "-v", "brief"],
+                timeout=60,
+            )
+        except RuntimeError as error:
+            message = str(error)
+            assert "BOUNDED_RETRY_RECEIPT" in message
+            assert '"attempt": 4' in message
+        else:
+            raise AssertionError("permanent logcat snapshot failure was accepted")
+
+    assert sum(command[1] == "logcat" for command in hard_fail_commands) == 4
+    assert sum(command[1:] == ["wait-for-device"] for command in hard_fail_commands) == 3
 
 
 def main() -> int:
@@ -26,6 +102,8 @@ def main() -> int:
     assert lifecycle.FORCE_STOP_CYCLES == 3
     assert lifecycle.LAUNCH_CONTACTS_PER_BODY == 8
     assert lifecycle.ROTATION_CONTACTS_PER_BODY == 2
+    assert emulator_runtime.LOGCAT_SNAPSHOT_ATTEMPTS == 4
+    prove_logcat_snapshot_recovery()
 
     with tempfile.TemporaryDirectory(prefix="jm-lifecycle-aggregate-") as temp:
         source = Path(temp) / "shards"
@@ -118,7 +196,10 @@ def main() -> int:
         else:
             raise AssertionError("incomplete lifecycle route was accepted")
 
-    print("JM ANDROID LIFECYCLE: COMMA MEMORY PARSER + 5 SHARDS + 100 ENDURANCE RECEIPTS PASS")
+    print(
+        "JM ANDROID LIFECYCLE: LOGCAT RETRY + COMMA MEMORY PARSER + "
+        "5 SHARDS + 100 ENDURANCE RECEIPTS PASS"
+    )
     return 0
 
 

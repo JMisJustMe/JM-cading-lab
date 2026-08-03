@@ -1,5 +1,5 @@
 name: JM 100 Sovereign Android APK Bodies
-run-name: "Crown32 Android v0.4 @ ${{ github.sha }}"
+run-name: "Crown32 Android v0.5 @ ${{ github.sha }}"
 
 on:
   workflow_dispatch:
@@ -14,6 +14,9 @@ on:
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_apk_reseal.py
+      - coding-estate/everybody/full-stack/tests/test_android_apk_provenance.py
       - .github/workflows/everybody-android-gradle-apks.yml
   pull_request:
     paths:
@@ -24,6 +27,9 @@ on:
       - coding-estate/everybody/full-stack/tools/android_gradle_batch.py
       - coding-estate/everybody/full-stack/tools/android_gradle_batch_v0_4.py
       - coding-estate/everybody/full-stack/tools/android_gradle_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_apk_reseal.py
+      - coding-estate/everybody/full-stack/tests/test_android_apk_provenance.py
       - .github/workflows/everybody-android-gradle-apks.yml
 
 concurrency:
@@ -90,19 +96,38 @@ jobs:
           compression-level: 6
 
   android-100-federation:
-    name: Verify and seal all 100 Android body APKs
+    name: Verify manifest, signature and seal all 100 Android body APKs
     needs: android-body-shard
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
-      - name: Check out aggregate verifier
+      - name: Check out aggregate and provenance verifiers
         uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Set up Java 17 for apksigner
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android manifest and signature inspection tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "build-tools;35.0.0"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/aapt2"
+          test -x "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+
+      - name: Run Android manifest and signature parser regression proof
+        run: python coding-estate/everybody/full-stack/tests/test_android_apk_provenance.py
 
       - name: Download all ten v0.4 body shards separately
         uses: actions/download-artifact@v4
@@ -117,13 +142,37 @@ jobs:
             --source build/android-shards \
             --out build/android-100-master
 
-      - name: Upload master Android sovereign body army
+      - name: Verify compiled manifests and v2-plus signatures then reseal
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_apk_reseal.py \
+            --master-root build/android-100-master \
+            --aapt2 "$ANDROID_HOME/build-tools/35.0.0/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/35.0.0/apksigner"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/android-100-master")
+          receipt = json.loads((root / "JM_ANDROID_100_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_APK_CONSTRUCTION_MANIFEST_SIGNATURE_FEDERATION_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["compiled_manifest_proofs"] == 100
+          assert receipt["embedded_body_asset_proofs"] == 100
+          assert receipt["signed_apks"] == 100
+          assert receipt["v2_or_newer_signed_apks"] == 100
+          assert receipt["debuggable_apks"] == 100
+          assert receipt["unique_compiled_packages"] == 100
+          assert receipt["unique_launchable_activities"] == 100
+          print("100 compiled manifests, embedded identities and v2-plus debug signatures verified")
+          PY
+
+      - name: Upload provenance-sealed master Android sovereign body army
         uses: actions/upload-artifact@v4
         with:
-          name: JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.4
+          name: JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.5
           path: |
             build/android-100-master/JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1.zip
             build/android-100-master/JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1.sha256
             build/android-100-master/JM_ANDROID_100_MASTER_RECEIPT.json
+            build/android-100-master/JM_ANDROID_100_SOVEREIGN_BODY_APKS_v0.1/ANDROID_APK_PROVENANCE_RECEIPT.json
           if-no-files-found: error
           compression-level: 0

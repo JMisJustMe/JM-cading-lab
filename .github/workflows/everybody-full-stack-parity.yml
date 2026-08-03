@@ -66,6 +66,9 @@ jobs:
       - name: Run canonical 100-body Android Gradle carrier proof
         run: python coding-estate/everybody/full-stack/tests/test_android_gradle_factory_v0_4.py
 
+      - name: Run Android APK manifest and signature parser proof
+        run: python coding-estate/everybody/full-stack/tests/test_android_apk_provenance.py
+
       - name: Generate deliverable body packages
         run: |
           rm -rf build/everybody-full-stack-v0.1 build/everybody-android-gradle-v0.4

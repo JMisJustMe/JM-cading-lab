@@ -1,4 +1,5 @@
 name: JM 100 Sovereign SDK + VM Wheels
+run-name: "Crown32 SDK+VM wheels @ ${{ github.sha }}"
 
 on:
   workflow_dispatch:

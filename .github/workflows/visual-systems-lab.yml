@@ -34,6 +34,7 @@ jobs:
           node --check visual-runtime.js
           node --check app.js
           node --check build.mjs
+          node --check qa.mjs
       - name: JSON gates
         run: |
           node -e "for (const f of ['manifest.webmanifest','registry.json','package.json','capacitor.config.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('JSON PASS')"
@@ -53,3 +54,19 @@ jobs:
           test -f dist/visual-lab.cading
           test -f dist/manifest.webmanifest
           echo 'JM VISUAL LAB BUILD GATES PASS'
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Run desktop and Android viewport proof
+        run: |
+          python3 -m http.server 4173 >/tmp/jm-visual-lab-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          node qa.mjs
+      - name: Upload visual proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-visual-lab-browser-proof
+          path: visual-systems-lab/qa
+          if-no-files-found: warn

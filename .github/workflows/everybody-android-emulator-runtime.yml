@@ -55,7 +55,7 @@ jobs:
     name: Cading install, launch, force-stop and reopen smoke
     needs: runtime-parser-proof
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 35
     env:
       GH_TOKEN: ${{ github.token }}
       JM_AVD_NAME: jm_cading_api35
@@ -75,12 +75,18 @@ jobs:
           java-version: "17"
       - name: Set up Android command-line tools
         uses: android-actions/setup-android@v3
+      - name: Install API 35 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
       - name: Recover exact provenance-sealed v0.5 APK estate
         run: |
           python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
             --lock "$JM_RUNTIME_LOCK" \
             --out build/runtime-source
-      - name: Boot API 35 Android emulator
+      - name: Boot API 35 Android emulator with bounded diagnostics
         run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
       - name: Install, launch, force-stop and reopen Cading
         run: |
@@ -98,13 +104,14 @@ jobs:
             build/runtime-smoke/**
             build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
             build/cading-emulator.log
+            build/cading-emulator.pid
           if-no-files-found: warn
 
   android-emulator-shards:
     name: Android emulator runtime shard ${{ matrix.shard }} of 5
     needs: cading-emulator-smoke
     runs-on: ubuntu-latest
-    timeout-minutes: 75
+    timeout-minutes: 65
     strategy:
       fail-fast: false
       matrix:
@@ -128,12 +135,18 @@ jobs:
           java-version: "17"
       - name: Set up Android command-line tools
         uses: android-actions/setup-android@v3
+      - name: Install API 35 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
       - name: Recover exact provenance-sealed v0.5 APK estate
         run: |
           python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
             --lock "$JM_RUNTIME_LOCK" \
             --out build/runtime-source
-      - name: Boot API 35 Android emulator
+      - name: Boot API 35 Android emulator with bounded diagnostics
         run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
       - name: Prove 20 sovereign body install and reopen routes
         run: |
@@ -152,6 +165,7 @@ jobs:
             build/runtime-shard-${{ matrix.shard }}-of-5/**
             build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
             build/emulator-${{ matrix.shard }}.log
+            build/emulator-${{ matrix.shard }}.pid
           if-no-files-found: error
 
   android-emulator-federation:

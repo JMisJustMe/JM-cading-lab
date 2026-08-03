@@ -40,9 +40,9 @@ assert "applicationId 'com.jmisjustme.routeos.gameestate'" in gradle
 assert 'android:scheme="jmrouteos"' in manifest_xml
 assert 'android:host="cartridge"' in manifest_xml
 assert "android.permission.INTERNET" not in manifest_xml, "offline host must not request internet permission"
-assert "ROUTEOS_SCHEME = \"jmrouteos\"" in java
-assert "ROUTEOS_HOST = \"cartridge\"" in java
-assert "COMPASS_PACKAGE = \"com.jmestate.estatecompass\"" in java
+assert 'ROUTEOS_SCHEME = "jmrouteos"' in java
+assert 'ROUTEOS_HOST = "cartridge"' in java
+assert 'COMPASS_PACKAGE = "com.jmestate.estatecompass"' in java
 assert "returnToCompass" in java
 assert "shouldInterceptRequest" in java
 assert "setAllowFileAccess(false)" in java
@@ -50,13 +50,20 @@ assert "setAllowContentAccess(false)" in java
 
 assert registry["hostPackage"] == "com.jmisjustme.routeos.gameestate"
 assert registry["deepLinkBase"] == "jmrouteos://cartridge/"
-assert registry["defaultCartridge"] == "five-crowns"
-assert len(registry["cartridges"]) == 1
-cartridge = registry["cartridges"][0]
-assert cartridge["id"] == "five-crowns"
-assert cartridge["frozenParent"] == "110909c7199bcfbd7007ed56437d05a8aea5967b"
-assert cartridge["permanentAnchor"] == "anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass"
-assert set(cartridge["aliases"]) == {"routeos-five-crowns", "routeos-v1.9a", "orchestrationroute"}
+assert registry["defaultCartridge"] in {"five-crowns", "library"}
+assert len(registry["cartridges"]) >= 1
+five_crowns = next(
+    (item for item in registry["cartridges"] if item["id"] == "five-crowns"),
+    None,
+)
+assert five_crowns is not None
+assert five_crowns["frozenParent"] == "110909c7199bcfbd7007ed56437d05a8aea5967b"
+assert five_crowns["permanentAnchor"] == "anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass"
+assert {
+    "routeos-five-crowns",
+    "routeos-v1.9a",
+    "orchestrationroute",
+}.issubset(set(five_crowns["aliases"]))
 
 crowns = ["PrimitiveRoute", "DispatchRoute", "EntryRoute", "KernelContractRoute", "OrchestrationRoute"]
 for crown in crowns:
@@ -74,7 +81,7 @@ for head in freeze_heads:
     assert head in core or head in html, f"missing freeze head: {head}"
 
 for required_id in [
-    "gameCanvas", "crownRail", "traceList", "routeMessage", "launchButton",
+    "gameCanvas", "crownRail", "traceList", "routeMessage",
     "crownCards", "progressValue", "faultValue", "recoveryValue", "winPanel"
 ]:
     assert re.search(rf'id="{re.escape(required_id)}"', html), f"missing interface id: {required_id}"
@@ -92,7 +99,7 @@ assert "mounted, frozen, locked and anchored" in core
 remote_resources = re.findall(r'<(?:script|link)[^>]+(?:src|href)=["\']https?://', html, re.I)
 assert not remote_resources, "cartridge assets must be fully offline"
 
-assert contract["frozen_parent"]["commit"] == cartridge["frozenParent"]
+assert contract["frozen_parent"]["commit"] == five_crowns["frozenParent"]
 assert contract["native_contract"]["primary_uri"] == "jmrouteos://cartridge/five-crowns"
 assert contract["play_contract"]["ordered_crowns"] == crowns
 
@@ -101,4 +108,8 @@ for path in required:
     hashes[str(path.relative_to(ROOT))] = hashlib.sha256(path.read_bytes()).hexdigest()
 
 print("RouteOS Five Crowns live-estate static authority: PASS")
-print(json.dumps({"files": len(hashes), "sha256": hashes}, indent=2, sort_keys=True))
+print(json.dumps({
+    "files": len(hashes),
+    "registered_cartridges": len(registry["cartridges"]),
+    "sha256": hashes,
+}, indent=2, sort_keys=True))

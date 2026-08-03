@@ -1,25 +1,57 @@
-# JM RouteOS Game Estate v2.0A — Five Crowns Live Cartridge
+# JM RouteOS Game Estate v2.1A — Estate Shelf Route
 
-This is the missing native host behind the existing JM Estate Compass handoff:
+This is the next usable body above the frozen **Five Crowns Live Estate v2.0A**.
 
-`jmrouteos://cartridge/five-crowns`
+The Android host is no longer a one-cartridge doorway. It now carries a versioned, offline shelf with two real registered routes:
 
-The Android package is exactly:
+```text
+jmrouteos://cartridge/five-crowns
+jmrouteos://cartridge/estate-router
+```
 
-`com.jmisjustme.routeos.gameestate`
+The Android package remains exactly:
 
-The clean Compass host already routes that URI and package. Installing this app completes the doorway.
+```text
+com.jmisjustme.routeos.gameestate
+```
+
+That preserves the existing JM Estate Compass handoff while making the destination discoverable.
 
 ## What is usable
 
-- a real offline Android app rather than a proof document;
-- a cartridge library with a built-in Five Crowns module;
+### Five Crowns
+
 - touch, keyboard and D-pad movement;
-- ordered collection of PrimitiveRoute, DispatchRoute, EntryRoute, KernelContractRoute and OrchestrationRoute;
-- FaultHold and RecoveryBody represented as a recoverable gameplay law;
+- strict PrimitiveRoute → DispatchRoute → EntryRoute → KernelContractRoute → OrchestrationRoute progression;
+- FaultHold and RecoveryBody checkpoint law;
 - local progress persistence;
-- crown explanations, exact freeze heads, PR inspection links and final proof facts;
-- return route to JM Estate Compass when it is installed.
+- permanent-anchor finish state;
+- exact crown and proof explanations.
+
+### Sovereign Estate Router
+
+- canonical 100-body registry mounted from six repository-proven source batches;
+- natural-language build request routing;
+- search by body name, role, family and capability;
+- direct and adapter-required compatibility explanations;
+- mandatory Source Ledger, TraceBox and Dings injection;
+- no-supreme-body and identity-preservation laws;
+- copyable route receipts;
+- game, compiler, Estate OS and conversation quick routes.
+
+### Compass shelf body
+
+`compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html` is a self-contained HTML body that can be selected inside the clean JM Estate Compass host. It exposes both native routes without requiring the owner to remember package IDs or URI syntax.
+
+## Recovered source
+
+The registry and compatibility matrix are mounted byte-for-byte from:
+
+```text
+agent/sovereign-estate-integration-v1
+```
+
+The browser router is an explicit UMD/browser/CommonJS adaptation of `coding-estate/integration/router-core.mjs`. Its lineage record preserves the donor Git blob identities and mounted SHA-256 hashes.
 
 ## Build
 
@@ -36,36 +68,26 @@ Build the unsigned release APK:
 gradle --no-daemon -p routeos-live-estate :app:assembleRelease
 ```
 
-Run the proof checks:
+Run all local authority checks:
 
 ```bash
+node --check routeos-live-estate/app/src/main/assets/estate-router.js
+node --check routeos-live-estate/app/src/main/assets/app.js
 node routeos-live-estate/tools/test_simulation.js
+node routeos-live-estate/tools/test_estate_router.js
 python3 routeos-live-estate/tools/verify_live_estate.py
-```
-
-## Deep-link contract
-
-Primary:
-
-```text
-jmrouteos://cartridge/five-crowns
-```
-
-Aliases:
-
-```text
-jmrouteos://cartridge/routeos-five-crowns
-jmrouteos://cartridge/routeos-v1.9a
-jmrouteos://cartridge/orchestrationroute
+python3 routeos-live-estate/tools/verify_estate_shelf.py
 ```
 
 ## Frozen parent
 
-- Commit: `110909c7199bcfbd7007ed56437d05a8aea5967b`
-- Anchor: `anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass`
+- Commit: `8cc8cb5143ec8fef766acf464ef860d00d4c0e36`
+- Anchor: `anchor/routeos-five-crowns-live-estate-v2-0a-ding-pass`
+
+The v2.0A Live Estate and v1.9A kernel remain independently frozen and authoritative.
 
 ## Claim boundary
 
-This app makes the frozen RouteOS Five Crowns work playable, navigable and explainable. It does **not** run the x86 kernel inside Android, replace QEMU evidence, or claim that RouteOS is a general-purpose operating system.
+This body proves an offline multi-cartridge host, a real Compass-importable shelf, and deterministic routing across the known canonical 100-body registry.
 
-The playfield uses code-native vector rendering intentionally so the cartridge remains dependency-free, offline, deterministic and small. The visible interface follows the existing dark, luminous Compass/GlyphPlay estate language rather than inventing a separate product skin.
+It does **not** merge all JM bodies into one, prove every possible composition, install private Compass content automatically, boot the x86 kernel inside Android, replace the QEMU machine receipts, or claim that the whole Estate is finished.

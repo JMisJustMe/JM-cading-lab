@@ -1,0 +1,64 @@
+{
+  "body": "RouteOS Estate Shelf Route",
+  "version": "v2.1A",
+  "status": "CONSTRUCTION",
+  "frozenParent": {
+    "name": "RouteOS Five Crowns Live Estate v2.0A",
+    "commit": "8cc8cb5143ec8fef766acf464ef860d00d4c0e36",
+    "anchor": "anchor/routeos-five-crowns-live-estate-v2-0a-ding-pass"
+  },
+  "nativeContract": {
+    "package": "com.jmisjustme.routeos.gameestate",
+    "scheme": "jmrouteos",
+    "host": "cartridge",
+    "routes": [
+      "jmrouteos://cartridge/five-crowns",
+      "jmrouteos://cartridge/estate-router"
+    ],
+    "compassPackage": "com.jmestate.estatecompass",
+    "offline": true,
+    "internetPermission": false
+  },
+  "shelfContract": {
+    "registeredCartridges": 2,
+    "genericIdAndAliasResolution": true,
+    "compassMountBody": "compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html"
+  },
+  "estateRouterContract": {
+    "canonicalBodies": 100,
+    "sourceBatches": 6,
+    "sourceBatchFailures": 0,
+    "mandatoryOrgans": [
+      "source-ledger",
+      "tracebox",
+      "dings"
+    ],
+    "forbiddenLaws": [
+      "IDENTITY_COLLAPSE",
+      "HOST_TAKEOVER",
+      "NO_DING",
+      "ALIAS_INFLATION",
+      "UNGOVERNED_GRAFT"
+    ],
+    "noSupremeBody": true,
+    "routeFamilies": [
+      "game",
+      "compiler",
+      "os",
+      "conversation",
+      "proof",
+      "delivery"
+    ]
+  },
+  "sourceLineage": "proof/ESTATE_SHELF_ROUTE_SOURCE_LINEAGE_v2.1A.json",
+  "tests": {
+    "fiveCrownsSimulation": "required",
+    "estateRouterAdversarial": "required",
+    "staticAuthority": "required",
+    "androidReleaseBuild": "required",
+    "apkAssetInspection": "required",
+    "zipAlignment": "required"
+  },
+  "intendedPermanentAnchor": "anchor/routeos-estate-shelf-route-v2-1a-ding-pass",
+  "claimBoundary": "This body proves an offline multi-cartridge host, a Compass-importable shelf and deterministic routing across the known canonical 100-body registry. It does not merge all bodies into one, prove every possible composition, install private Compass content automatically, boot the x86 kernel inside Android or replace QEMU evidence."
+}

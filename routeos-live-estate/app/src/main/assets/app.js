@@ -2,21 +2,26 @@
   'use strict';
 
   const {
-    GRID, START, ANCHOR, CROWNS, HAZARDS, WALLS,
-    HAZARD_KEYS, WALL_KEYS, keyOf, Simulation
+    GRID, ANCHOR, CROWNS, HAZARDS, WALLS, Simulation
   } = window.RouteOSCore;
+  const EstateRouter = window.JMEstateRouter;
 
   const SAVE_KEY = 'jm.routeos.five-crowns.state.v2';
-  const VIEWS = ['library', 'play', 'crowns', 'proof'];
+  const ROUTER_QUERY_KEY = 'jm.routeos.estate-router.query.v1';
+  const VIEWS = ['library', 'play', 'router', 'crowns', 'proof'];
   const sim = new Simulation();
+
   let currentView = 'library';
   let manifest = null;
+  let estateRegistry = null;
+  let compatibility = null;
+  let currentPlan = null;
 
   const $ = selector => document.querySelector(selector);
   const $$ = selector => [...document.querySelectorAll(selector)];
 
   class Store {
-    static load() {
+    static loadGame() {
       try {
         const raw = localStorage.getItem(SAVE_KEY);
         return raw ? JSON.parse(raw) : null;
@@ -25,7 +30,7 @@
       }
     }
 
-    static save(snapshot) {
+    static saveGame(snapshot) {
       try {
         localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
       } catch (_) {
@@ -33,8 +38,16 @@
       }
     }
 
-    static clear() {
+    static clearGame() {
       try { localStorage.removeItem(SAVE_KEY); } catch (_) { /* no-op */ }
+    }
+
+    static loadQuery() {
+      try { return localStorage.getItem(ROUTER_QUERY_KEY) || ''; } catch (_) { return ''; }
+    }
+
+    static saveQuery(query) {
+      try { localStorage.setItem(ROUTER_QUERY_KEY, String(query)); } catch (_) { /* no-op */ }
     }
   }
 
@@ -85,7 +98,10 @@
       const oy = (usableHeight - boardH) / 2;
       const pulse = (Math.sin(this.frame / 22) + 1) / 2;
 
-      const bg = ctx.createRadialGradient(width * .5, height * .4, 20, width * .5, height * .5, Math.max(width, height));
+      const bg = ctx.createRadialGradient(
+        width * .5, height * .4, 20,
+        width * .5, height * .5, Math.max(width, height)
+      );
       bg.addColorStop(0, '#15253a');
       bg.addColorStop(.55, '#09121d');
       bg.addColorStop(1, '#05080d');
@@ -106,7 +122,9 @@
         for (let x = 0; x < GRID.cols; x += 1) {
           const px = x * tile;
           const py = y * tile;
-          ctx.fillStyle = (x + y) % 2 === 0 ? 'rgba(21,42,61,.62)' : 'rgba(14,31,47,.62)';
+          ctx.fillStyle = (x + y) % 2 === 0
+            ? 'rgba(21,42,61,.62)'
+            : 'rgba(14,31,47,.62)';
           ctx.fillRect(px + 1, py + 1, tile - 2, tile - 2);
           ctx.strokeStyle = 'rgba(103,191,230,.09)';
           ctx.strokeRect(px + .5, py + .5, tile - 1, tile - 1);
@@ -148,7 +166,9 @@
       const ay = ANCHOR.y * tile + tile / 2;
       ctx.save();
       ctx.translate(ax, ay);
-      ctx.strokeStyle = sim.collected.length === CROWNS.length ? '#8dffb8' : 'rgba(141,255,184,.35)';
+      ctx.strokeStyle = sim.collected.length === CROWNS.length
+        ? '#8dffb8'
+        : 'rgba(141,255,184,.35)';
       ctx.lineWidth = 3;
       ctx.beginPath();
       ctx.arc(0, 0, tile * .28 + pulse * 2, 0, Math.PI * 2);
@@ -216,26 +236,44 @@
     }
   }
 
-  function loadManifest() {
-    return fetch('cartridges.json')
-      .then(response => response.ok ? response.json() : Promise.reject(new Error('manifest unavailable')))
-      .then(value => { manifest = value; return value; })
-      .catch(() => null);
+  function loadJson(path) {
+    return fetch(path).then(response => {
+      if (!response.ok) throw new Error(`HTTP_${response.status}:${path}`);
+      return response.json();
+    });
+  }
+
+  async function loadAuthority() {
+    manifest = await loadJson('cartridges.json');
+
+    const meta = await loadJson('estate-registry/REGISTRY.json');
+    const parts = await Promise.all(meta.parts.map(relative =>
+      loadJson(`estate-registry/${relative}`)
+    ));
+    compatibility = await loadJson('estate-registry/COMPATIBILITY.json');
+    estateRegistry = EstateRouter.combineRegistryParts(meta, parts);
+
+    const estateValidation = EstateRouter.validateRegistry(estateRegistry);
+    const cartridgeValidation = EstateRouter.validateCartridgeRegistry(manifest);
+    if (!estateValidation.valid) throw new Error(estateValidation.failures.join(','));
+    if (!cartridgeValidation.valid) throw new Error(cartridgeValidation.failures.join(','));
   }
 
   function restoreState() {
-    const saved = Store.load();
+    const saved = Store.loadGame();
     if (saved) sim.restore(saved);
   }
 
   function saveState() {
-    Store.save(sim.snapshot());
+    Store.saveGame(sim.snapshot());
   }
 
   function setView(view) {
     if (!VIEWS.includes(view)) view = 'library';
     currentView = view;
-    $$('main > section[data-view]').forEach(section => section.hidden = section.dataset.view !== view);
+    $$('main > section[data-view]').forEach(section => {
+      section.hidden = section.dataset.view !== view;
+    });
     $$('[data-nav]').forEach(button => {
       const active = button.dataset.nav === view;
       button.classList.toggle('active', active);
@@ -245,7 +283,36 @@
     if (view === 'play') $('#gameCanvas').focus({ preventScroll: true });
   }
 
-  function renderUI() {
+  function openCartridge(id) {
+    const cartridge = EstateRouter.resolveCartridge(manifest, id);
+    if (!cartridge) {
+      setView('library');
+      return false;
+    }
+    const view = cartridge.view || 'library';
+    history.replaceState(null, '', `#${encodeURIComponent(cartridge.id)}`);
+    setView(view);
+    return true;
+  }
+
+  function renderLibrary() {
+    const shelf = $('#cartridgeShelf');
+    shelf.innerHTML = manifest.cartridges.map((cartridge, index) => `
+      <article class="cartridgeCard">
+        <div class="cartridgeGlyph">${index === 0 ? '♛' : '↯'}</div>
+        <div>
+          <h3>${escapeHtml(cartridge.title)}</h3>
+          <p>${escapeHtml(cartridge.description || '')}</p>
+        </div>
+        <button data-open-cartridge="${escapeHtml(cartridge.id)}">Open</button>
+      </article>
+    `).join('');
+
+    $('#registryStatus').textContent =
+      `${manifest.cartridges.length} mounted cartridges · ${estateRegistry.bodies.length} routed bodies · fully offline`;
+  }
+
+  function renderGameUI() {
     const next = sim.nextCrown();
     $('#routeMessage').textContent = sim.message;
     $('#progressValue').textContent = `${sim.collected.length}/5`;
@@ -254,10 +321,8 @@
     $('#moveValue').textContent = String(sim.moves);
     $('#nextValue').textContent = next ? next.name : sim.won ? 'Anchored' : 'Permanent anchor';
     $('#winPanel').hidden = !sim.won;
-    $('#continueLabel').textContent = sim.collected.length ? `Continue ${sim.collected.length}/5` : 'Play Five Crowns';
 
-    const rail = $('#crownRail');
-    rail.innerHTML = CROWNS.map((crown, index) => {
+    $('#crownRail').innerHTML = CROWNS.map((crown, index) => {
       const complete = sim.collected.includes(crown.id);
       const active = sim.collected.length === index;
       return `<li class="${complete ? 'complete' : ''} ${active ? 'active' : ''}">
@@ -266,28 +331,113 @@
       </li>`;
     }).join('');
 
-    $('#traceList').innerHTML = sim.trace.slice().reverse().map(entry => `<li>${escapeHtml(entry)}</li>`).join('');
+    $('#traceList').innerHTML = sim.trace
+      .slice()
+      .reverse()
+      .map(entry => `<li>${escapeHtml(entry)}</li>`)
+      .join('');
   }
 
   function applyMove(dx, dy) {
     if (currentView !== 'play') setView('play');
     sim.move(dx, dy);
     saveState();
-    renderUI();
+    renderGameUI();
   }
 
   function act() {
     sim.act();
     saveState();
-    renderUI();
+    renderGameUI();
   }
 
   function resetGame() {
     sim.reset();
-    Store.clear();
+    Store.clearGame();
     saveState();
-    renderUI();
+    renderGameUI();
     setView('play');
+  }
+
+  function renderCrowns() {
+    $('#crownCards').innerHTML = CROWNS.map((crown, index) => `
+      <article class="crownCard">
+        <div class="crownNumber">${index + 1}</div>
+        <div>
+          <h3>${crown.name} <span>${crown.version}</span></h3>
+          <p>${crown.meaning}</p>
+          <dl>
+            <div><dt>Proof</dt><dd>${crown.proof}</dd></div>
+            <div><dt>Freeze</dt><dd><code>${crown.freezeHead.slice(0, 12)}…</code></dd></div>
+          </dl>
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/pull/${crown.pr}">Inspect PR #${crown.pr}</a>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function planRouter(query) {
+    if (!estateRegistry) return;
+    const clean = String(query || '').trim();
+    if (!clean) return;
+    currentPlan = EstateRouter.planEstateRoute(clean, estateRegistry, { includeDelivery: true });
+    Store.saveQuery(clean);
+    renderRoutePlan(currentPlan);
+  }
+
+  function renderRoutePlan(plan) {
+    const byId = new Map(estateRegistry.bodies.map(body => [body.id, body]));
+    $('#routeTitle').textContent = plan.query;
+    $('#intentSummary').textContent = plan.intents.length
+      ? plan.intents.join(' · ')
+      : 'general route';
+
+    $('#plannedRoute').innerHTML = plan.route.map(item => `
+      <li>
+        <span class="routeOrder">${item.order}</span>
+        <span class="routeBody">
+          <b>${escapeHtml(item.name)}</b>
+          <small>${escapeHtml(item.role)}</small>
+        </span>
+        <span class="routeReason">${escapeHtml(item.reasons.join(' · '))}</span>
+      </li>
+    `).join('');
+
+    const links = [];
+    for (let index = 0; index < plan.route.length - 1; index += 1) {
+      const from = byId.get(plan.route[index].id);
+      const to = byId.get(plan.route[index + 1].id);
+      const relation = EstateRouter.compatibilityBetween(from, to, compatibility);
+      links.push(`<span class="${escapeHtml(relation.mode)}">${escapeHtml(from.name)} → ${escapeHtml(to.name)} · ${escapeHtml(relation.mode)}</span>`);
+    }
+    $('#compatibilityPath').innerHTML = links.join('');
+    $('#appliedLaws').innerHTML = plan.lawsApplied
+      .map(law => `<span>${escapeHtml(law)}</span>`)
+      .join('');
+  }
+
+  function routeReceiptText() {
+    if (!currentPlan) return '';
+    return [
+      `JM Sovereign Estate Route`,
+      `Query: ${currentPlan.query}`,
+      `Intents: ${currentPlan.intents.join(', ') || 'general'}`,
+      '',
+      ...currentPlan.route.map(item => `${item.order}. ${item.name} — ${item.role}`),
+      '',
+      `Laws: ${currentPlan.lawsApplied.join(', ')}`
+    ].join('\n');
+  }
+
+  function renderBodyResults(query = '') {
+    const bodies = EstateRouter.searchBodies(estateRegistry, query, 24);
+    $('#bodyResults').innerHTML = bodies.map(body => `
+      <article class="bodyResult">
+        <b>${escapeHtml(body.name)}</b>
+        <small>${escapeHtml(body.family)} · ${escapeHtml(body.category)}</small>
+        <p>${escapeHtml(body.role)}</p>
+      </article>
+    `).join('');
   }
 
   function escapeHtml(value) {
@@ -319,17 +469,26 @@
   }
 
   function bindControls() {
-    $$('[data-nav]').forEach(button => button.addEventListener('click', () => setView(button.dataset.nav)));
+    $$('[data-nav]').forEach(button => {
+      button.addEventListener('click', () => setView(button.dataset.nav));
+    });
+
+    document.addEventListener('click', event => {
+      const button = event.target.closest('[data-open-cartridge]');
+      if (button) openCartridge(button.dataset.openCartridge);
+    });
+
     $$('[data-move]').forEach(button => {
       button.addEventListener('click', () => {
         const [dx, dy] = button.dataset.move.split(',').map(Number);
         applyMove(dx, dy);
       });
     });
-    $$('[data-copy]').forEach(button => button.addEventListener('click', () => copyText(button.dataset.copy, button)));
 
-    $('#launchButton').addEventListener('click', () => setView('play'));
-    $('#continueButton').addEventListener('click', () => setView('play'));
+    $$('[data-copy]').forEach(button => {
+      button.addEventListener('click', () => copyText(button.dataset.copy, button));
+    });
+
     $('#actButton').addEventListener('click', act);
     $('#resetButton').addEventListener('click', resetGame);
     $('#resetProofButton').addEventListener('click', resetGame);
@@ -337,6 +496,16 @@
     $('#compassButton').addEventListener('click', () => {
       if (!nativeBridge('returnToCompass')) window.history.back();
     });
+
+    $('#planRouteButton').addEventListener('click', () => planRouter($('#routePrompt').value));
+    $('#copyRouteButton').addEventListener('click', event => copyText(routeReceiptText(), event.currentTarget));
+    $$('.quickPrompts [data-prompt]').forEach(button => {
+      button.addEventListener('click', () => {
+        $('#routePrompt').value = button.dataset.prompt;
+        planRouter(button.dataset.prompt);
+      });
+    });
+    $('#bodySearch').addEventListener('input', event => renderBodyResults(event.target.value));
 
     window.addEventListener('keydown', event => {
       if (currentView !== 'play') return;
@@ -356,37 +525,39 @@
     });
   }
 
-  function renderCrowns() {
-    $('#crownCards').innerHTML = CROWNS.map((crown, index) => `
-      <article class="crownCard">
-        <div class="crownNumber">${index + 1}</div>
-        <div>
-          <h3>${crown.name} <span>${crown.version}</span></h3>
-          <p>${crown.meaning}</p>
-          <dl><div><dt>Proof</dt><dd>${crown.proof}</dd></div><div><dt>Freeze</dt><dd><code>${crown.freezeHead.slice(0, 12)}…</code></dd></div></dl>
-          <a href="https://github.com/JMisJustMe/JM-cading-lab/pull/${crown.pr}">Inspect PR #${crown.pr}</a>
-        </div>
-      </article>`).join('');
-  }
-
   function initialCartridge() {
-    const id = decodeURIComponent(location.hash.replace(/^#/, '') || 'library');
-    const known = new Set(['five-crowns', 'routeos-five-crowns', 'routeos-v1.9a', 'orchestrationroute']);
-    setView(known.has(id.toLowerCase()) ? 'play' : 'library');
+    const id = decodeURIComponent(location.hash.replace(/^#/, '') || '');
+    if (id && openCartridge(id)) return;
+    setView('library');
   }
 
   async function start() {
-    await loadManifest();
+    try {
+      await loadAuthority();
+    } catch (error) {
+      $('#registryStatus').textContent = `Authority load failed: ${error.message}`;
+      throw error;
+    }
+
     restoreState();
+    renderLibrary();
     renderCrowns();
+    renderGameUI();
+    renderBodyResults();
+
+    $('#bodyCount').textContent = String(estateRegistry.bodies.length);
+    $('#batchCount').textContent = String(estateRegistry.loadedParts.length);
+    $('#failureCount').textContent = String(
+      Object.values(estateRegistry.proofByBatch).reduce((sum, proof) => sum + proof.failed, 0)
+    );
+
+    const savedQuery = Store.loadQuery();
+    if (savedQuery) $('#routePrompt').value = savedQuery;
+    planRouter($('#routePrompt').value);
+
     bindControls();
     new Renderer($('#gameCanvas'), sim);
-    renderUI();
     initialCartridge();
-
-    $('#registryStatus').textContent = manifest
-      ? `${manifest.cartridges.length} mounted cartridge · offline registry ready`
-      : 'Built-in cartridge ready · registry fallback active';
   }
 
   window.RouteOSEstateApp = {
@@ -398,12 +569,7 @@
       return false;
     },
     openCartridge(id) {
-      if (['five-crowns', 'routeos-five-crowns', 'routeos-v1.9a', 'orchestrationroute'].includes(String(id).toLowerCase())) {
-        setView('play');
-        return true;
-      }
-      setView('library');
-      return false;
+      return openCartridge(id);
     }
   };
 

@@ -1,35 +1,40 @@
 {
-  "schema": "jm.visual-lab.android-receipt/0.1",
+  "schema": "jm.visual-lab.android-receipt/0.2",
   "body": "JM Estate — Visual Systems Lab",
   "version": "0.1.0",
-  "state": "PASS_COMPILED_DEBUG_APK_PROOF",
-  "proved_at": "2026-08-03T01:54:48Z",
+  "state": "PASS_FINAL_SELF_CONSISTENT_DEBUG_APK",
+  "proved_at": "2026-08-03T02:01:03Z",
   "source_authority": "visual-lab.cading -> jm-core.js -> visual-runtime.js -> app.js",
   "carrier_route": "build.mjs -> dist -> Capacitor 7 Android -> Gradle assembleDebug",
   "proof_run": {
-    "workflow_run_id": 30777909950,
-    "proved_head_sha": "6b3f6b61eb2414a851c39c2d295b4d4a668c4aa2",
-    "workflow_merge_ref_sha": "68fa13684ebadfedc7fb6c29ae72e9b8a145e052",
-    "merged_route_commit": "ebffab72f272501b09ea3bcab374160de9b1ea40",
-    "artifact_id": 8842690632,
-    "artifact_digest": "sha256:0a81ef12c282fb3d0dc045ddcff4427eb03c27076f8b3f2bce63459a3dfc8291"
+    "workflow_run_id": 30778165747,
+    "proved_head_sha": "34de066c2eb72b65cab4b42b4be0fad2f4fc362c",
+    "workflow_merge_ref_sha": "a98ebb771f84f7d93fb80a941582782a6a53da53",
+    "merged_status_sync_commit": "a3d3892f49e4854447e0eb68c5b667f39c65e88d",
+    "artifact_id": 8842773915,
+    "artifact_digest": "sha256:f049090826c793b2e667f1ab91549c04d9ce7b7511844c10f8a739e338dd8968"
   },
   "apk": {
     "file": "JM-Visual-Lab-v0.1-debug.apk",
-    "bytes": 4080424,
-    "sha256": "b2b5df560223defc57d46be54dccc74a3c6cb5eac24b7165e0dbe8de8945c8af",
+    "bytes": 4081343,
+    "sha256": "8cbe61751d04b518d671a1c1358327654dc5de8e72f8a5d994581f9c6cd6d66e",
     "signature": "Android debug certificate / APK Signing Block present",
     "certificate_expiry": "2056-07-26",
     "archive_integrity": "PASS",
+    "internal_status": "DEBUG_APK_COMPILE_ROUTE_PROVED",
+    "internal_open_first": "WORKING FIRST BODY + WEBSITE/PWA + ANDROID DEBUG APK: PASS",
     "embedded_jm_assets": [
       "assets/public/visual-lab.cading",
       "assets/public/jm-core.js",
       "assets/public/visual-runtime.js",
       "assets/public/app.js",
-      "assets/public/index.html"
+      "assets/public/index.html",
+      "assets/public/ANDROID_STATUS.json",
+      "assets/public/00_OPEN_FIRST.html"
     ]
   },
   "passed_gates": [
+    "website and PWA browser proof",
     "governed OneBody web build",
     "Capacitor Android project generation",
     "Android manifest and Gradle wrapper present",
@@ -38,8 +43,9 @@
     "APK ZIP integrity test",
     "debug signature present",
     "JM source/runtime assets embedded",
+    "internal delivery status synchronized",
     "SHA-256 receipt",
     "downloadable workflow artifact"
   ],
-  "claim_boundary": "Real debug-signed installable APK passed. It is not a Play Store release-signed APK and not an AAB."
+  "claim_boundary": "Final self-consistent debug-signed installable APK passed. It is not a Play Store release-signed APK and not an AAB."
 }

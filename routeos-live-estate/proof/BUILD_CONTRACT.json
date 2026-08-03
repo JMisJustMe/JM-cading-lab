@@ -1,7 +1,7 @@
 {
   "body": "RouteOS Five Crowns Live Estate",
   "version": "v2.0A",
-  "status": "CONSTRUCTION",
+  "status": "FROZEN_LOCKED_PENDING_FROZEN_HEAD_REVALIDATION",
   "frozen_parent": {
     "name": "RouteOS JM-Native OrchestrationRoute v1.9A",
     "commit": "110909c7199bcfbd7007ed56437d05a8aea5967b",
@@ -12,7 +12,14 @@
     "scheme": "jmrouteos",
     "host": "cartridge",
     "primary_uri": "jmrouteos://cartridge/five-crowns",
-    "compass_package": "com.jmestate.estatecompass"
+    "aliases": [
+      "jmrouteos://cartridge/routeos-five-crowns",
+      "jmrouteos://cartridge/routeos-v1.9a",
+      "jmrouteos://cartridge/orchestrationroute"
+    ],
+    "compass_package": "com.jmestate.estatecompass",
+    "offline": true,
+    "internet_permission": false
   },
   "play_contract": {
     "ordered_crowns": [
@@ -22,8 +29,42 @@
       "KernelContractRoute",
       "OrchestrationRoute"
     ],
+    "safe_route_moves": 18,
     "fault_law": "Fault tiles return the player to the last mounted crown without erasing mounted progress.",
-    "finish_law": "The permanent anchor accepts the player only after all five crowns are mounted in order."
+    "finish_law": "The permanent anchor accepts the player only after all five crowns are mounted in order.",
+    "save_restore": true,
+    "touch_keyboard_dpad": true
   },
-  "claim_boundary": "This is an offline playable and inspectable representation of the frozen Five Crowns lineage. It does not emulate or boot the x86 kernel and does not replace the QEMU receipts."
+  "construction_receipt": {
+    "head": "6a7725ad39638f0c0f79cc34d79798a675603b18",
+    "workflow_matrix": "21/21 PASS",
+    "run": 30778626416,
+    "job": 91578815478,
+    "artifact_id": 8842900286,
+    "artifact_name": "routeos-five-crowns-live-estate-v2.0A-unsigned",
+    "artifact_size_bytes": 1010870,
+    "artifact_digest": "sha256:df7e7cd8a52843a9949c04f06a268994930bc7e388809a2a404fcb16f24e3132",
+    "artifact_checksum_entries": "11/11 PASS",
+    "aligned_apk_size_bytes": 24302,
+    "aligned_apk_sha256": "98adce89b58afd4cfe5bd70829d3ebdf69dea2dd60224481ecf707518a22d07a",
+    "simulation": "PASS",
+    "static_authority": "PASS",
+    "android_build": "PASS",
+    "package_inspection": "PASS",
+    "zipalign": "PASS"
+  },
+  "freeze_lock": [
+    "The v2.0A Android host, offline cartridge registry, HTML interface, simulation core, renderer/controller, static verifier, simulation proof and APK workflow are the authoritative Live Estate body.",
+    "The package remains com.jmisjustme.routeos.gameestate and the primary route remains jmrouteos://cartridge/five-crowns under the v2.0A name.",
+    "The crown order remains PrimitiveRoute, DispatchRoute, EntryRoute, KernelContractRoute and OrchestrationRoute.",
+    "FaultHold and RecoveryBody preserve mounted progress and return to the last crown checkpoint.",
+    "The permanent anchor may accept the player only after all five crowns mount in order.",
+    "The app remains offline and may not request Android internet permission under the v2.0A name.",
+    "The frozen v1.9A kernel parent and every inherited RouteOS workflow remain independently authoritative.",
+    "The app does not emulate or boot the x86 kernel and does not replace QEMU evidence.",
+    "Failed routes remain provenance only and may not be represented as authority.",
+    "Final DING requires this exact freeze head and its permanent anchor to pass the complete twenty-one-workflow matrix and produce a freshly audited APK artifact."
+  ],
+  "intended_permanent_anchor": "anchor/routeos-five-crowns-live-estate-v2-0a-ding-pass",
+  "claim_boundary": "This is an offline playable and inspectable representation of the frozen Five Crowns lineage. It does not emulate or boot the x86 kernel, replace the QEMU receipts, merge the entire JM Estate into one application, or claim a general-purpose operating system."
 }

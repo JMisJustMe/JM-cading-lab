@@ -1,0 +1,330 @@
+name: JM 100 Sovereign Android Cross-OS Reproducibility
+run-name: "Crown32 Android cross-OS reproducibility v1.3 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-cross-os-repro-v1-3
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_2_CROSS_RUNNER_LOCK.json
+      - coding-estate/everybody/full-stack/CROWN32_ANDROID_V1_3_OPEN_FIRST.md
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_os_repro.py
+      - .github/workflows/everybody-android-cross-os-repro.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_2_CROSS_RUNNER_LOCK.json
+      - coding-estate/everybody/full-stack/CROWN32_ANDROID_V1_3_OPEN_FIRST.md
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_os_repro.py
+      - .github/workflows/everybody-android-cross-os-repro.yml
+
+concurrency:
+  group: jm-everybody-android-cross-os-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JM_BUILD_TOOLS: "35.0.0"
+
+jobs:
+  cross-os-contract:
+    name: Cross-OS identity, toolchain and payload contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact cross-OS branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v1.2 cross-runner lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V1_2_CROSS_RUNNER_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "fb0301eb5056bd2c2dfafcd0c785bc17d1430b4b"
+          assert lock["body_count"] == 100
+          assert lock["independent_release_builds"] == 200
+          assert lock["distinct_runner_os_identities"] == 2
+          assert lock["unsigned_byte_identical_pairs"] == 100
+          assert lock["source_inventory_identical_pairs"] == 100
+          assert lock["unsigned_inventory_identical_pairs"] == 100
+          assert lock["normalized_signed_payload_equivalent_pairs"] == 100
+          assert lock["independent_test_certificates"] == 200
+          assert lock["private_keys_in_delivery"] == 0
+          print("v1.2 cross-runner lock preserved beneath cross-OS proof")
+          PY
+      - name: Compile cross-OS bodies
+        run: |
+          python -m py_compile \
+            coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py \
+            coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py \
+            coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py \
+            coding-estate/everybody/full-stack/tests/test_android_cross_os_repro.py
+      - name: Re-prove inherited cross-runner laws
+        run: python coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - name: Prove Linux-macOS family, logical-tool and platform-binary laws
+        run: python coding-estate/everybody/full-stack/tests/test_android_cross_os_repro.py
+
+  cading-cross-os-build:
+    name: Cading independent release on ${{ matrix.os }}
+    needs: cross-os-contract
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    steps:
+      - name: Check out exact cross-OS branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up exact Java 17 family and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17.0.16+8"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install pinned Android platform and build tools
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build Cading independently and expose public evidence
+        shell: bash
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            --repo-root . \
+            --out build/cading-cross-os \
+            --runner-label "${{ matrix.os }}" \
+            --body-id cading \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload Cading unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_CROSS_OS_${{ matrix.os }}_v1.3
+          path: build/cading-cross-os/cross-runner-smoke-${{ matrix.os }}-cading/**
+          if-no-files-found: error
+          compression-level: 6
+
+  cading-cross-os-compare:
+    name: Cading Linux ↔ macOS exact comparison
+    needs: cading-cross-os-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out cross-OS binder
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download both independent Cading builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_CADING_CROSS_OS_*_v1.3
+          path: build/cading-cross-os-source
+          merge-multiple: false
+      - name: Prove exact unsigned bytes and normalized signed payload across OS families
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py \
+            --source build/cading-cross-os-source \
+            --out build/cading-cross-os-master \
+            --expected-bodies 1 \
+            --expected-shards 1 \
+            --runner-a ubuntu-24.04 \
+            --runner-b macos-14
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/cading-cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_CROSS_OS_UNSIGNED_EXACT_AND_SIGNED_PAYLOAD_EQUIVALENCE_PASS"
+          assert receipt["body_count"] == 1
+          assert receipt["runner_count"] == 2
+          assert receipt["cross_os_family_count"] == 2
+          assert set(receipt["cross_os_families"].values()) == {"Linux/Ubuntu", "Darwin/macOS"}
+          assert receipt["independent_release_builds"] == 2
+          assert receipt["unsigned_byte_identical_pairs"] == 1
+          assert receipt["source_inventory_identical_pairs"] == 1
+          assert receipt["unsigned_inventory_identical_pairs"] == 1
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 1
+          assert receipt["independent_test_certificates"] == 2
+          assert receipt["platform_binary_fingerprint_count"] == 2
+          assert receipt["private_keys_in_delivery"] == 0
+          print("Cading Linux-macOS comparison gate earned")
+          PY
+      - name: Upload Cading paired cross-OS receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_CROSS_OS_PAIR_v1.3
+          path: |
+            build/cading-cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/cading-cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_v1.3.zip
+            build/cading-cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_v1.3.sha256
+          if-no-files-found: error
+
+  cross-os-shards:
+    name: ${{ matrix.os }} release shard ${{ matrix.shard }} of 10
+    needs: cading-cross-os-compare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Check out exact cross-OS branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up exact Java 17 family and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17.0.16+8"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install pinned Android platform and build tools
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build 10 sovereign releases independently on this operating system
+        shell: bash
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            --repo-root . \
+            --out build/cross-os \
+            --runner-label "${{ matrix.os }}" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10 \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload public unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CROSS_OS_${{ matrix.os }}_SHARD_${{ matrix.shard }}_OF_10_v1.3
+          path: build/cross-os/cross-runner-${{ matrix.os }}-shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6
+
+  cross-os-federation:
+    name: Seal 100-body Linux-macOS reproducibility federation
+    needs: cross-os-shards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out cross-OS binder
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all twenty independent operating-system shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_CROSS_OS_*_SHARD_*_OF_10_v1.3
+          path: build/cross-os-shards
+          merge-multiple: false
+      - name: Verify 100 paired bodies across Linux and macOS
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py \
+            --source build/cross-os-shards \
+            --out build/cross-os-master \
+            --expected-bodies 100 \
+            --expected-shards 10 \
+            --runner-a ubuntu-24.04 \
+            --runner-b macos-14
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_CROSS_OS_UNSIGNED_EXACT_AND_SIGNED_PAYLOAD_EQUIVALENCE_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["runner_count"] == 2
+          assert receipt["cross_os_family_count"] == 2
+          assert set(receipt["cross_os_families"].values()) == {"Linux/Ubuntu", "Darwin/macOS"}
+          assert receipt["independent_release_builds"] == 200
+          assert receipt["unsigned_byte_identical_pairs"] == 100
+          assert receipt["source_inventory_identical_pairs"] == 100
+          assert receipt["unsigned_inventory_identical_pairs"] == 100
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 100
+          assert receipt["v2_or_newer_signature_proofs"] == 200
+          assert receipt["independent_test_certificates"] == 200
+          assert receipt["platform_binary_fingerprint_count"] == 2
+          assert receipt["zero_permission_pair_proofs"] == 100
+          assert receipt["single_exported_launcher_pair_proofs"] == 100
+          assert receipt["zero_native_payload_pair_proofs"] == 100
+          assert receipt["zero_private_key_entry_pair_proofs"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          print("200 independent Linux-macOS builds and 100 exact cross-OS pairs verified")
+          PY
+      - name: Seal public cross-OS estate
+        run: |
+          tar -czf JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3.tar.gz -C build cross-os-master
+          sha256sum JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3.tar.gz | tee JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3.sha256
+      - name: Upload 100-body cross-OS federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3
+          path: |
+            JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3.tar.gz
+            JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_FEDERATION_v1.3.sha256
+            build/cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_v1.3.zip
+            build/cross-os-master/JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_v1.3.sha256
+          if-no-files-found: error
+          compression-level: 0

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07101a">
+  <title>JM RouteOS Game Estate · Five Crowns</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body data-view="library">
+  <div class="appShell">
+    <header class="topBar">
+      <button class="brandButton" id="libraryButton" aria-label="Open cartridge library">
+        <span class="brandMark" aria-hidden="true">R</span>
+        <span><b>JM RouteOS Game Estate</b><small>Five Crowns live cartridge · v2.0A</small></span>
+      </button>
+      <div class="topActions">
+        <button class="ghostButton" id="compassButton">Compass</button>
+        <button class="ghostButton" id="resetButton">Reset route</button>
+      </div>
+    </header>
+
+    <nav class="viewNav" aria-label="Cartridge sections">
+      <button data-nav="library">Library</button>
+      <button data-nav="play">Play</button>
+      <button data-nav="crowns">Five Crowns</button>
+      <button data-nav="proof">Proof</button>
+    </nav>
+
+    <main>
+      <section class="libraryView" data-view="library">
+        <div class="libraryHero">
+          <div class="heroCopy">
+            <h1>Use the RouteOS work.</h1>
+            <p>This cartridge turns the five frozen kernel crowns into a route you can move through, fault inside, recover from, finish, and explain.</p>
+            <div class="heroActions">
+              <button class="primaryButton" id="launchButton">Open Five Crowns</button>
+              <button class="secondaryButton" id="continueButton"><span id="continueLabel">Play Five Crowns</span></button>
+            </div>
+            <div class="registryLine" id="registryStatus">Loading offline cartridge registry…</div>
+          </div>
+
+          <div class="routePreview" aria-label="Five Crown route preview">
+            <div class="previewPath"></div>
+            <div class="previewCrown active"><span>1</span><b>Primitive</b></div>
+            <div class="previewCrown"><span>2</span><b>Dispatch</b></div>
+            <div class="previewCrown"><span>3</span><b>Entry</b></div>
+            <div class="previewCrown"><span>4</span><b>Contract</b></div>
+            <div class="previewCrown"><span>5</span><b>Orchestration</b></div>
+            <div class="previewAnchor"><span>✓</span><b>Anchor</b></div>
+          </div>
+        </div>
+
+        <div class="libraryStrip">
+          <article><b>Playable</b><span>Grid movement, touch controls, ordered crowns and a finish state.</span></article>
+          <article><b>Explainable</b><span>Each crown says what authority it took over and where its proof lives.</span></article>
+          <article><b>Recoverable</b><span>Fault tiles invoke FaultHold and RecoveryBody instead of erasing progress.</span></article>
+          <article><b>Estate-ready</b><span>Launches from <code>jmrouteos://cartridge/five-crowns</code>.</span></article>
+        </div>
+      </section>
+
+      <section class="playView" data-view="play" hidden>
+        <div class="playHeader">
+          <div>
+            <h2>Five Crowns route</h2>
+            <p id="routeMessage">Find PrimitiveRoute. Collect the five crowns in order.</p>
+          </div>
+          <div class="miniStats" aria-label="Game statistics">
+            <span><b id="progressValue">0/5</b><small>Crowns</small></span>
+            <span><b id="faultValue">0</b><small>Faults</small></span>
+            <span><b id="recoveryValue">0</b><small>Recoveries</small></span>
+            <span><b id="moveValue">0</b><small>Moves</small></span>
+          </div>
+        </div>
+
+        <div class="playGrid">
+          <aside class="routePanel">
+            <h3>Mount order</h3>
+            <ol id="crownRail" class="crownRail"></ol>
+            <div class="nextRoute"><small>Next route</small><b id="nextValue">PrimitiveRoute</b></div>
+          </aside>
+
+          <section class="canvasPanel">
+            <canvas id="gameCanvas" tabindex="0" aria-label="RouteOS Five Crowns playfield"></canvas>
+            <div class="canvasLegend">
+              <span><i class="legendPlayer"></i>JM</span>
+              <span><i class="legendCrown"></i>Crown</span>
+              <span><i class="legendFault"></i>Fault</span>
+              <span><i class="legendAnchor"></i>Anchor</span>
+            </div>
+            <div class="winPanel" id="winPanel" hidden>
+              <b>FIVE CROWNS DING</b>
+              <span>Mounted · Frozen · Locked · Anchored</span>
+              <button class="secondaryButton" id="resetProofButton">Run the route again</button>
+            </div>
+          </section>
+
+          <aside class="tracePanel">
+            <h3>TraceBox</h3>
+            <ol id="traceList" class="traceList"></ol>
+          </aside>
+        </div>
+
+        <div class="controlDeck" aria-label="Game controls">
+          <div class="dpad">
+            <span></span><button data-move="0,-1" aria-label="Move up">↑</button><span></span>
+            <button data-move="-1,0" aria-label="Move left">←</button><button class="actButton" id="actButton">ACT</button><button data-move="1,0" aria-label="Move right">→</button>
+            <span></span><button data-move="0,1" aria-label="Move down">↓</button><span></span>
+          </div>
+          <p>Keyboard: arrows or WASD · Space/Enter: scan route</p>
+        </div>
+      </section>
+
+      <section class="crownsView" data-view="crowns" hidden>
+        <div class="sectionIntro">
+          <h2>The five authority lifts</h2>
+          <p>These are not five decorative levels. Each one removed a handwritten authority island, generated a replacement, proved it in the inherited QEMU route, froze it, locked it and anchored it.</p>
+        </div>
+        <div class="crownCards" id="crownCards"></div>
+      </section>
+
+      <section class="proofView" data-view="proof" hidden>
+        <div class="sectionIntro proofIntro">
+          <h2>Final frozen authority</h2>
+          <p>The playable cartridge explains the work. These are the exact final claims it is allowed to represent.</p>
+        </div>
+
+        <div class="proofGrid">
+          <article class="proofBlock dominant">
+            <small>Final freeze head</small>
+            <code>110909c7199bcfbd7007ed56437d05a8aea5967b</code>
+            <button data-copy="110909c7199bcfbd7007ed56437d05a8aea5967b">Copy head</button>
+          </article>
+          <article class="proofBlock">
+            <small>Permanent anchor</small>
+            <code>anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass</code>
+            <button data-copy="anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass">Copy anchor</button>
+          </article>
+          <article class="proofMetric"><b>180/180</b><span>workflow results across ten matrices</span></article>
+          <article class="proofMetric"><b>20/20</b><span>final construction workflows</span></article>
+          <article class="proofMetric"><b>20/20</b><span>final frozen-head workflows</span></article>
+          <article class="proofMetric"><b>29/29</b><span>final artifact checksums on each head</span></article>
+          <article class="proofMetric"><b>0</b><span>machine exit on both final runs</span></article>
+          <article class="proofMetric"><b>68,889</b><span>safe post-recovery calls in final freeze</span></article>
+        </div>
+
+        <div class="proofLinks">
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/pull/78">Open final crowned PR #78</a>
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/tree/anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass">Open permanent anchor</a>
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/commit/110909c7199bcfbd7007ed56437d05a8aea5967b">Open exact freeze commit</a>
+        </div>
+
+        <div class="claimBoundary">
+          <h3>What this app proves—and what it does not</h3>
+          <p>It gives you a real, offline, playable and inspectable interface for the Five Crowns lineage. It does not boot the x86 kernel inside Android, replace the QEMU machine receipts, or claim that RouteOS is a general-purpose operating system. The kernel proof stays the kernel proof; this cartridge makes that proven work usable and understandable.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -48,7 +48,16 @@ def parse_aapt2_badging(text: str) -> dict[str, Any]:
     launchable = _required(
         r"^launchable-activity: name='([^']+)'", text, "launchable activity"
     )
-    min_sdk = int(_required(r"^sdkVersion:'([0-9]+)'", text, "minimum SDK"))
+    # AAPT2 renamed the historical `sdkVersion` badging label to
+    # `minSdkVersion`. Accept both official vocabularies while preserving the
+    # exact numeric floor check performed by the caller.
+    min_sdk = int(
+        _required(
+            r"^(?:minSdkVersion|sdkVersion):'([0-9]+)'",
+            text,
+            "minimum SDK",
+        )
+    )
     target_sdk = int(
         _required(r"^targetSdkVersion:'([0-9]+)'", text, "target SDK")
     )

@@ -1,0 +1,394 @@
+name: JM 100 Sovereign Android Release Candidate
+run-name: "Crown32 Android release candidate v1.0 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-release-candidate-v1-0
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_9_BOUNDED_SOAK_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_lifecycle_endurance.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_release_upgrade_smoke.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_final.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_candidate.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_candidate_final.py
+      - .github/workflows/everybody-android-release-candidate.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_9_BOUNDED_SOAK_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_apk_provenance.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_lifecycle_endurance.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_release_upgrade_smoke.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_final.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_candidate.py
+      - coding-estate/everybody/full-stack/tests/test_android_release_candidate_final.py
+      - .github/workflows/everybody-android-release-candidate.yml
+
+concurrency:
+  group: jm-everybody-android-release-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  JM_SYSTEM_IMAGE: system-images;android-35;google_apis;x86_64
+  JM_EXPECTED_API: "35"
+  JM_BUILD_TOOLS: "35.0.0"
+
+jobs:
+  release-contract:
+    name: Release construction, certificate and final-bind contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact release-candidate branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v0.9 bounded-soak lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V0_9_BOUNDED_SOAK_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_BOUNDED_SOAK_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "6b48aa84d331606b88d1d3352144aff997a06783"
+          assert lock["body_count"] == 100
+          assert lock["cycles_per_body"] == 12
+          assert lock["cold_start_proofs"] == 1200
+          assert lock["runtime_fault_free_proofs"] == 100
+          print("v0.9 bounded-soak federation lock preserved beneath release candidate")
+          PY
+      - name: Prove release parser, construction and federation contracts
+        run: |
+          python coding-estate/everybody/full-stack/tests/test_android_apk_provenance.py
+          python coding-estate/everybody/full-stack/tests/test_android_release_candidate.py
+          python coding-estate/everybody/full-stack/tests/test_android_release_candidate_final.py
+
+  cading-release-upgrade-smoke:
+    name: Cading same-certificate release rc1 to rc2 upgrade
+    needs: release-contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      JM_AVD_NAME: jm_cading_release_upgrade_api35
+      JM_EMULATOR_LOG: build/cading-release-upgrade-emulator.log
+      JM_EMULATOR_PID: build/cading-release-upgrade-emulator.pid
+    steps:
+      - name: Check out exact release-candidate branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 emulator and release build tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE" "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Boot proven API 35 Android emulator route
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Prove Cading release rc1 to rc2 same-certificate upgrade
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_upgrade_smoke.py \
+            --repo-root . \
+            --out build/cading-release-upgrade \
+            --adb "$(command -v adb)" \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload Cading release upgrade receipt and public APK proofs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_RELEASE_UPGRADE_v1.0
+          path: |
+            build/cading-release-upgrade/CADING_RELEASE_UPGRADE_RECEIPT.json
+            build/cading-release-upgrade/cading-release-rc1.apk
+            build/cading-release-upgrade/cading-release-rc2.apk
+            build/cading-release-upgrade-emulator.log
+          if-no-files-found: warn
+
+  release-build-shards:
+    name: Release build shard ${{ matrix.shard }} of 10
+    needs: cading-release-upgrade-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Check out exact release-candidate branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17 and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install release build, alignment and signing tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build, align, sovereign-test-sign and verify 10 release APKs
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py \
+            --repo-root . \
+            --out build/release-builds \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10 \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload public release APKs and receipts only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_RELEASE_BUILD_SHARD_${{ matrix.shard }}_OF_10_v1.0
+          path: build/release-builds/release-shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6
+
+  release-construction-federation:
+    name: Federate 100 non-debuggable sovereign-test-signed release APKs
+    needs: release-build-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out release aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all ten release-build shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_RELEASE_BUILD_SHARD_*_OF_10_v1.0
+          path: build/release-shards
+          merge-multiple: false
+      - name: Verify 100 release APKs, identities, certificates and zero private keys
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_release_candidate_aggregate.py \
+            --source build/release-shards \
+            --out build/release-master \
+            --expected-bodies 100 \
+            --expected-shards 10
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/release-master")
+          receipt = json.loads((root / "JM_ANDROID_100_RELEASE_CANDIDATE_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_RELEASE_CANDIDATE_CONSTRUCTION_PROVENANCE_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["release_apks"] == 100
+          assert receipt["non_debuggable_apks"] == 100
+          assert receipt["v2_or_newer_signed_apks"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["unique_sovereign_test_certificates"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          print("100 non-debuggable release APKs, 100 unique test certificates and zero private keys verified")
+          PY
+      - name: Upload runtime-ready 100-body release delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_RELEASE_CANDIDATE_BUILD_v1.0
+          path: build/release-master/**
+          if-no-files-found: error
+          compression-level: 0
+
+  release-runtime-shards:
+    name: Release runtime shard ${{ matrix.shard }} of 5
+    needs: release-construction-federation
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4]
+    env:
+      JM_AVD_NAME: jm_release_runtime_api35_${{ matrix.shard }}
+      JM_EMULATOR_LOG: build/release-runtime-emulator-${{ matrix.shard }}.log
+      JM_EMULATOR_PID: build/release-runtime-emulator-${{ matrix.shard }}.pid
+    steps:
+      - name: Check out exact release runtime tools
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 release-runtime emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+      - name: Download exact release-candidate APK delivery
+        uses: actions/download-artifact@v4
+        with:
+          name: JM_ANDROID_100_RELEASE_CANDIDATE_BUILD_v1.0
+          path: build/release-master
+      - name: Boot proven API 35 Android emulator route
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Install, launch, force-stop and reopen 20 release APKs
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_emulator_runtime.py \
+            --delivery build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_APKS_v1.0 \
+            --out build/release-runtime-shard-${{ matrix.shard }}-of-5 \
+            --adb "$(command -v adb)" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 5
+      - name: Upload release runtime receipts and emulator logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_RELEASE_RUNTIME_SHARD_${{ matrix.shard }}_OF_5_v1.0
+          path: |
+            build/release-runtime-shard-${{ matrix.shard }}-of-5/**
+            build/release-runtime-emulator-${{ matrix.shard }}.log
+          if-no-files-found: error
+
+  release-final-federation:
+    name: Seal 100-body release build, signing, runtime and upgrade federation
+    needs:
+      - cading-release-upgrade-smoke
+      - release-runtime-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Check out release final binders
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download exact 100-body release build
+        uses: actions/download-artifact@v4
+        with:
+          name: JM_ANDROID_100_RELEASE_CANDIDATE_BUILD_v1.0
+          path: build/release-master
+      - name: Download all five release runtime shard estates
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_RELEASE_RUNTIME_SHARD_*_OF_5_v1.0
+          path: build/release-runtime-shards
+          merge-multiple: false
+      - name: Download Cading same-certificate upgrade receipt
+        uses: actions/download-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_RELEASE_UPGRADE_v1.0
+          path: build/cading-upgrade
+      - name: Federate 100 release runtime receipts
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py \
+            --source build/release-runtime-shards \
+            --out build/release-runtime-master \
+            --expected-bodies 100 \
+            --expected-shards 5
+      - name: Bind release provenance, runtime and Cading upgrade
+        run: |
+          UPGRADE_RECEIPT="$(find build/cading-upgrade -name CADING_RELEASE_UPGRADE_RECEIPT.json -print -quit)"
+          test -n "$UPGRADE_RECEIPT"
+          python coding-estate/everybody/full-stack/tools/android_release_candidate_final.py \
+            --release-master build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_MASTER_RECEIPT.json \
+            --release-provenance build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_APKS_v1.0/ANDROID_APK_PROVENANCE_RECEIPT.json \
+            --runtime build/release-runtime-master/JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPT.json \
+            --upgrade "$UPGRADE_RECEIPT" \
+            --out build/release-final
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/release-final/JM_ANDROID_100_RELEASE_CANDIDATE_FINAL_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_RELEASE_CANDIDATE_BUILD_SIGN_RUNTIME_UPGRADE_FEDERATION_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["release_apks"] == 100
+          assert receipt["non_debuggable_apks"] == 100
+          assert receipt["v2_or_newer_signed_apks"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["unique_sovereign_test_certificates"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          assert receipt["install_proofs"] == 100
+          assert receipt["relaunch_proofs"] == 100
+          assert receipt["runtime_fault_free_proofs"] == 100
+          assert receipt["cading_same_certificate_upgrade"] is True
+          print("100 release APKs + 100 sovereign test certificates + 100 runtime routes + Cading upgrade verified")
+          PY
+      - name: Seal public release-candidate estate
+        run: |
+          mkdir -p build/release-package
+          cp build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_APKS_v1.0.zip build/release-package/
+          cp build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_APKS_v1.0.sha256 build/release-package/
+          cp build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_MASTER_RECEIPT.json build/release-package/
+          cp build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_APKS_v1.0/ANDROID_APK_PROVENANCE_RECEIPT.json build/release-package/
+          cp build/release-runtime-master/JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPT.json build/release-package/JM_ANDROID_100_RELEASE_RUNTIME_RECEIPT.json
+          cp build/release-final/JM_ANDROID_100_RELEASE_CANDIDATE_FINAL_RECEIPT.json build/release-package/
+          UPGRADE_RECEIPT="$(find build/cading-upgrade -name CADING_RELEASE_UPGRADE_RECEIPT.json -print -quit)"
+          cp "$UPGRADE_RECEIPT" build/release-package/
+          tar -czf JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0.tar.gz -C build release-package
+          sha256sum JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0.tar.gz | tee JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0.sha256
+      - name: Upload 100-body Android release-candidate federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0
+          path: |
+            JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0.tar.gz
+            JM_ANDROID_100_RELEASE_CANDIDATE_FEDERATION_v1.0.sha256
+            build/release-final/JM_ANDROID_100_RELEASE_CANDIDATE_FINAL_RECEIPT.json
+            build/release-master/JM_ANDROID_100_RELEASE_CANDIDATE_MASTER_RECEIPT.json
+            build/release-runtime-master/JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPT.json
+          if-no-files-found: error
+          compression-level: 0

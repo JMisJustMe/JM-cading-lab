@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - agent/routeos-estate-compass-doorway-v2-2a
+      - anchor/routeos-estate-compass-doorway-v2-2a-ding-pass
   pull_request:
     branches:
       - agent/routeos-estate-shelf-route-v2-1a
@@ -117,6 +118,8 @@ jobs:
           cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" artifact/apksigner.jar
           cp android-compass-live/README.md artifact/COMPASS_ROUTEOS_DOORWAY_README.md
           cp android-compass-live/proof/COMPASS_ROUTEOS_DOORWAY_CONTRACT_v2.2A.json artifact/
+          cp android-compass-live/proof/COMPASS_ROUTEOS_DOORWAY_CONSTRUCTION_RECEIPT_v2.2A.md artifact/
+          cp android-compass-live/proof/FREEZE_LOCK_ANCHOR_v2.2A.md artifact/
           cp android-compass-live/app/src/main/assets/estate-shelf.html artifact/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html
           cp .compass-doorway-proof/* artifact/
           printf '%s\n' \

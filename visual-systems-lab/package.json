@@ -5,8 +5,9 @@
   "description": "JM Estate Visual Systems Lab — PWA and Capacitor Android source route.",
   "scripts": {
     "serve": "npx serve .",
-    "cap:add:android": "npx cap add android",
-    "cap:sync": "npx cap sync android",
+    "build": "node build.mjs",
+    "cap:add:android": "npm run build && npx cap add android",
+    "cap:sync": "npm run build && npx cap sync android",
     "cap:open": "npx cap open android"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
   "jm_source_authority": {
     "seed": "visual-lab.cading",
     "runtime": ["jm-core.js", "visual-runtime.js", "app.js"],
+    "delivery_body": "build.mjs copies only the governed web body into dist before host sync",
     "host_boundary": "Capacitor packages the existing JM body; it does not replace its source authority."
   }
 }

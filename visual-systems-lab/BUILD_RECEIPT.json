@@ -1,0 +1,24 @@
+{
+  "schema": "jm.visual-lab.build-receipt/0.4",
+  "body": "JM Estate — Visual Systems Lab",
+  "version": "0.1.0",
+  "candidate_state": "AWAITING_CLEAN_FRAME_REAL_VIEWPORT_PROOF",
+  "source_route": "visual-lab.cading -> jm-core.js -> visual-runtime.js -> app.js",
+  "delivery_route": "build.mjs -> dist -> PWA / Capacitor Android host",
+  "gates": [
+    "JavaScript syntax",
+    "JSON parse",
+    "exact Cading source route",
+    "OneBody delivery build",
+    "actual 1440x900 desktop context",
+    "actual 412x915 Android touch context",
+    "all six route labels readable",
+    "protected visual crown size",
+    "mobile action and recovery bank",
+    "zero horizontal overflow",
+    "keyboard route and TraceBox contact",
+    "toast opacity equals zero before clean main-frame capture",
+    "clean main-field and trace screenshots"
+  ],
+  "claim_boundary": "Website/PWA body and Android source carrier only. No compiled or signed APK/AAB is claimed."
+}

@@ -45,7 +45,7 @@ jobs:
           test -f visual-lab.cading
           grep -q 'JM Estate — Visual Systems Lab' index.html
           grep -q 'No Ding, no claim' visual-lab.cading
-          grep -q 'visual-lab.cading' jm-core.js
+          grep -q './visual-lab.cading' app.js
       - name: OneBody delivery build
         run: |
           npm run build

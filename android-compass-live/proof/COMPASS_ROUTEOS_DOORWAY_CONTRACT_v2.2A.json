@@ -1,7 +1,7 @@
 {
   "body": "JM Estate Compass RouteOS Doorway",
   "version": "v2.2A",
-  "status": "CONSTRUCTION",
+  "status": "FROZEN_LOCKED_PENDING_ANCHOR_REVALIDATION",
   "frozenParent": {
     "name": "RouteOS Estate Shelf Route v2.1A",
     "commit": "2af4683bf2783901775e6b972ebbaded77e5a603",
@@ -22,27 +22,52 @@
       "jmrouteos://cartridge/estate-router"
     ]
   },
+  "constructionReceipt": {
+    "head": "a5faf22c9f874644bc51d5cedddb39250691f617",
+    "workflowRun": 30840310578,
+    "job": 91775468505,
+    "artifactId": 8866533218,
+    "artifactName": "routeos-estate-compass-doorway-v2.2A-unsigned",
+    "artifactSizeBytes": 1046183,
+    "artifactDigest": "sha256:65820df2ecefc5fd63f344c277b63ccd26e8c5a45c046d2f183a0293f25de1db",
+    "artifactChecksumEntries": "12/12 PASS",
+    "compassAlignedApkSizeBytes": 17414,
+    "compassAlignedApkSha256": "93765aa97820ea2a3b84850dd61b6709298d22285b4f617aef1d8f7e52f3fdfb",
+    "routeosAlignedApkSizeBytes": 44283,
+    "routeosAlignedApkSha256": "728907b360734f223742027cbea41969c5daf78310b0888cb71cd41123a6232b",
+    "shelfSha256": "bee8759b910b118c0258637ad21f96aadb9d011e9c93e17de98fd29cabad6e99",
+    "staticAuthority": "PASS",
+    "shelfByteIdentity": "PASS",
+    "compassReleaseBuild": "PASS",
+    "routeosReleaseBuild": "PASS",
+    "packageAndPermissionInspection": "PASS",
+    "apkAssetInspection": "PASS",
+    "zipAlignment": "PASS"
+  },
   "laws": [
-    "The frozen v2.1A shelf must remain byte-identical when mounted inside Compass.",
-    "The RouteOS doorway must be visible without requiring a mounted private Compass body.",
-    "The user must not need to remember a package name, URI scheme or cartridge identifier.",
+    "The frozen v2.1A shelf remains byte-identical when mounted inside Compass.",
+    "The RouteOS doorway remains visible without requiring a mounted private Compass body.",
+    "The user does not need to remember a package name, URI scheme or cartridge identifier.",
     "Compass and RouteOS remain separate Android packages and independently recoverable bodies.",
     "Imported Compass bodies remain replaceable, restorable and removable.",
     "No Android INTERNET permission may be added to either application.",
-    "No Ding may be claimed until static verification, both Android release builds, package inspection, asset inspection and zip alignment pass."
+    "The Compass APK and RouteOS APK remain independently buildable, inspectable and signable.",
+    "No later body may claim this v2.2A Ding unless it descends from the final freeze head and preserves the permanent anchor."
   ],
   "requiredProof": {
-    "frozenParentAncestry": "required",
-    "shelfByteIdentity": "required",
-    "visibleNativeControl": "required",
-    "directFiveCrownsRoute": "required",
-    "directEstateRouterRoute": "required",
-    "bodyMountRecovery": "required",
-    "compassReleaseBuild": "required",
-    "routeosReleaseBuild": "required",
-    "packageAndPermissionInspection": "required",
-    "apkAssetInspection": "required",
-    "zipAlignment": "required"
+    "frozenParentAncestry": "PASS",
+    "shelfByteIdentity": "PASS",
+    "visibleNativeControl": "PASS",
+    "directFiveCrownsRoute": "PASS",
+    "directEstateRouterRoute": "PASS",
+    "bodyMountRecovery": "PASS",
+    "compassReleaseBuild": "PASS",
+    "routeosReleaseBuild": "PASS",
+    "packageAndPermissionInspection": "PASS",
+    "apkAssetInspection": "PASS",
+    "zipAlignment": "PASS",
+    "anchorRevalidation": "pending"
   },
-  "claimBoundary": "This body proves a visible native Compass doorway and a paired build-and-inspection route for the frozen RouteOS shelf. It does not merge the applications, publish them, install owner content automatically or claim physical-device behaviour before device contact."
+  "intendedPermanentAnchor": "anchor/routeos-estate-compass-doorway-v2-2a-ding-pass",
+  "claimBoundary": "This body proves a visible native Compass doorway and a paired build-and-inspection route for the frozen RouteOS shelf. It does not merge the applications, publish them, install owner content automatically, include owner signing keys or claim physical-device behaviour before device contact."
 }

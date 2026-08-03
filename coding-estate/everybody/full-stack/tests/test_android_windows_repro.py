@@ -127,10 +127,15 @@ def test_batch_wrapper() -> None:
 
     with mock.patch.object(windows_build, "_ORIGINAL_RUN", fake_run):
         with mock.patch.object(windows_build.os, "name", "nt"):
-            windows_build.platform_safe_run(["C:/tools/gradle.bat", "--version"], timeout=17)
+            windows_build.platform_safe_run(
+                ["C:/Program Files/Android/gradle.bat", "--version"], timeout=17
+            )
         assert calls[-1][0][0].lower().endswith("cmd.exe")
-        assert calls[-1][0][1:4] == ["/d", "/s", "/c"]
-        assert "gradle.bat" in calls[-1][0][4]
+        assert calls[-1][0][1:4] == ["/d", "/c", "call"]
+        assert calls[-1][0][4:] == [
+            "C:/Program Files/Android/gradle.bat",
+            "--version",
+        ]
         assert calls[-1][1] == 17
 
         with mock.patch.object(windows_build.os, "name", "posix"):

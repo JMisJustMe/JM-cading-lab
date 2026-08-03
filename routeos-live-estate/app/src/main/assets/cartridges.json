@@ -1,0 +1,29 @@
+{
+  "schema": "jm.routeos.cartridge.registry.v1",
+  "hostPackage": "com.jmisjustme.routeos.gameestate",
+  "deepLinkBase": "jmrouteos://cartridge/",
+  "defaultCartridge": "five-crowns",
+  "cartridges": [
+    {
+      "id": "five-crowns",
+      "aliases": [
+        "routeos-five-crowns",
+        "routeos-v1.9a",
+        "orchestrationroute"
+      ],
+      "title": "RouteOS: Five Crowns Beyond Max",
+      "version": "2.0A",
+      "entry": "index.html#five-crowns",
+      "frozenParent": "110909c7199bcfbd7007ed56437d05a8aea5967b",
+      "permanentAnchor": "anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass",
+      "capabilities": [
+        "offline-play",
+        "touch-and-keyboard-input",
+        "fault-recovery-loop",
+        "proof-inspection",
+        "compass-return-route",
+        "local-progress"
+      ]
+    }
+  ]
+}

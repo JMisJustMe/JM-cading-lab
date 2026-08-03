@@ -10,6 +10,19 @@ from typing import Any
 
 CORE_COMMANDS = {"LAW", "TRACE", "DING"}
 
+TARGET_CONTRACTS = {
+    "ir": "JM body-specific intermediate representation",
+    "js": "ECMAScript module preserving JM body IR",
+    "ts": "TypeScript module preserving JM body IR and inferred type",
+    "c": "Portable C11 body-IR carrier",
+    "cpp": "Portable C++17 body-IR carrier",
+    "cplus": "JM C+ additive capability carrier with identity and permission hooks",
+    "cminus": "JM C- minimal auditable carrier preserving identity and consequence",
+    "rust": "Rust body-IR carrier",
+    "wat": "WebAssembly text body-operation carrier",
+}
+SUPPORTED_TARGETS = tuple(TARGET_CONTRACTS)
+
 
 def parse_value(text: str) -> Any:
     text = text.strip()
@@ -84,7 +97,7 @@ def parse(profile: dict[str, Any], source: str) -> dict[str, Any]:
         diagnostics.append({"code": "BODY_CAPABILITY_REQUIRED"})
 
     ast = {
-        "schema": "jm.everybody.full-stack-ast/0.1",
+        "schema": "jm.everybody.full-stack-ast/0.2",
         "body": body,
         "family": profile["family"],
         "statements": statements,
@@ -101,7 +114,7 @@ def lower_ir(profile: dict[str, Any], ast: dict[str, Any]) -> dict[str, Any]:
     body = profile["body"]
     operations = [item for item in ast["statements"] if item["op"] not in CORE_COMMANDS]
     return {
-        "schema": "jm.everybody.body-ir/0.1",
+        "schema": "jm.everybody.body-ir/0.2",
         "namespace": f'jm.body.{body["id"]}',
         "body": body,
         "family": profile["family"],
@@ -114,22 +127,74 @@ def lower_ir(profile: dict[str, Any], ast: dict[str, Any]) -> dict[str, Any]:
 
 
 def emit(profile: dict[str, Any], ir: dict[str, Any], target: str) -> str:
+    if target not in TARGET_CONTRACTS:
+        raise ValueError(f"unsupported target {target}")
+
     body = profile["body"]
     payload = json.dumps(ir, ensure_ascii=False, sort_keys=True)
-    escaped_payload = json.dumps(payload)
+    # Keep JM arrows, marks and non-ASCII names as native UTF-8. JSON-style
+    # \uXXXX escapes are accepted by JavaScript/C JSON strings but are not valid
+    # Rust string escapes; one UTF-8 carrier avoids target-specific identity drift.
+    escaped_payload = json.dumps(payload, ensure_ascii=False)
     count = len(ir["operations"])
     symbol = body["id"].replace("-", "_").replace("'", "_")
+    escaped_body_id = json.dumps(body["id"], ensure_ascii=False)
+
     if target == "ir":
         return json.dumps(ir, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if target == "js":
-        return f"export const JM_BODY_IR = {payload};\nexport function run() {{ return JM_BODY_IR.operations.length; }}\n"
+        return (
+            f"export const JM_BODY_IR = {payload};\n"
+            "export function run() { return JM_BODY_IR.operations.length; }\n"
+        )
+    if target == "ts":
+        return (
+            f"export const JM_BODY_IR = {payload} as const;\n"
+            "export type JMBodyIR = typeof JM_BODY_IR;\n"
+            "export function run(): number { return JM_BODY_IR.operations.length; }\n"
+        )
     if target == "c":
-        return f'#include <stddef.h>\nconst char jm_{symbol}_ir_json[] = {escaped_payload};\nsize_t jm_{symbol}_run(void) {{ return {count}u; }}\n'
+        return (
+            "#include <stddef.h>\n"
+            f"const char jm_{symbol}_ir_json[] = {escaped_payload};\n"
+            f"size_t jm_{symbol}_run(void) {{ return {count}u; }}\n"
+        )
+    if target == "cpp":
+        return (
+            "#include <cstddef>\n"
+            f"namespace jm::body::{symbol} {{\n"
+            f"inline constexpr const char ir_json[] = {escaped_payload};\n"
+            f"constexpr std::size_t run() noexcept {{ return {count}u; }}\n"
+            "}\n"
+        )
+    if target == "cplus":
+        return (
+            "#include <stddef.h>\n"
+            f"#define JM_CPLUS_BODY_ID {escaped_body_id}\n"
+            f"#define JM_CPLUS_OPERATION_COUNT {count}u\n"
+            f"const char jm_{symbol}_cplus_ir_json[] = {escaped_payload};\n"
+            f"struct jm_{symbol}_cplus_receipt {{ const char *body_id; size_t operations; int permission_gate; }};\n"
+            f"struct jm_{symbol}_cplus_receipt jm_{symbol}_cplus_run(int permission_gate) {{\n"
+            f"  struct jm_{symbol}_cplus_receipt receipt = {{ JM_CPLUS_BODY_ID, JM_CPLUS_OPERATION_COUNT, permission_gate ? 1 : 0 }};\n"
+            "  return receipt;\n"
+            "}\n"
+        )
+    if target == "cminus":
+        return (
+            "#include <stddef.h>\n"
+            f"static const char jm_{symbol}_cminus_body_id[] = {escaped_body_id};\n"
+            f"enum {{ JM_{symbol.upper()}_CMINUS_OPERATION_COUNT = {count} }};\n"
+            f"size_t jm_{symbol}_cminus_run(void) {{ return (size_t)JM_{symbol.upper()}_CMINUS_OPERATION_COUNT; }}\n"
+            f"const char *jm_{symbol}_cminus_identity(void) {{ return jm_{symbol}_cminus_body_id; }}\n"
+        )
     if target == "rust":
-        return f'pub const JM_BODY_IR_JSON: &str = {escaped_payload};\npub fn jm_{symbol}_run() -> usize {{ {count} }}\n'
+        return (
+            f"pub const JM_BODY_IR_JSON: &str = {escaped_payload};\n"
+            f"pub fn jm_{symbol}_run() -> usize {{ {count} }}\n"
+        )
     if target == "wat":
         return f'(module (func (export "run") (result i32) i32.const {count}))\n'
-    raise ValueError(f"unsupported target {target}")
+    raise AssertionError(target)
 
 
 def compile_source(profile: dict[str, Any], source: str, target: str = "ir") -> dict[str, Any]:
@@ -140,14 +205,17 @@ def compile_source(profile: dict[str, Any], source: str, target: str = "ir") -> 
     ir = lower_ir(profile, parsed["ast"])
     output = emit(profile, ir, target)
     receipt = {
-        "schema": "jm.everybody.full-stack-compile-receipt/0.1",
+        "schema": "jm.everybody.full-stack-compile-receipt/0.2",
         "ok": True,
         "body_id": body_id,
         "family": profile["family"],
         "target": target,
+        "backend_contract": TARGET_CONTRACTS[target],
         "identity_sha256": profile["identity_sha256"],
         "source_sha256": parsed["ast"]["source_sha256"],
-        "ir_sha256": hashlib.sha256(json.dumps(ir, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest(),
+        "ir_sha256": hashlib.sha256(
+            json.dumps(ir, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        ).hexdigest(),
         "output_sha256": hashlib.sha256(output.encode("utf-8")).hexdigest(),
         "operation_count": len(ir["operations"]),
         "claim_boundary": profile["claim_boundary"],
@@ -159,7 +227,7 @@ def cli(profile: dict[str, Any]) -> int:
     body = profile["body"]
     parser = argparse.ArgumentParser(description=f'{body["name"]} independent generated compiler')
     parser.add_argument("source", type=Path)
-    parser.add_argument("--target", choices=["ir", "js", "c", "rust", "wat"], default="ir")
+    parser.add_argument("--target", choices=list(SUPPORTED_TARGETS), default="ir")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()

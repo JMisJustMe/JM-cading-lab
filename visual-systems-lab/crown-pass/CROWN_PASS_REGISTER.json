@@ -1,0 +1,92 @@
+{
+  "schema": "jm.visual.crown-pass.register/0.1",
+  "name": "JM Visual Systems Lab — Crown Pass",
+  "status": "SPECIFICATION_AND_HTML_PLAN_MOUNTED_NOT_BUILT_NOT_CROWNED",
+  "baseline": {
+    "body": "JM Visual Systems Lab v0.1.0",
+    "state": "FROZEN_PROVED_RECOVERY_BODY",
+    "rule": "The Crown Pass extends the baseline and does not overwrite its proof custody."
+  },
+  "keeper": "Observant. Absorbent. Adaptive. The visual should reveal the route.",
+  "bodies": [
+    {
+      "name": "Crown Pass Build Specification v0.1",
+      "path": "visual-systems-lab/crown-pass/CROWN_PASS_BUILD_SPEC_v0.1.md",
+      "role": "Implementation contract assigning coding bodies, architecture, storage, fit, proof and delivery responsibilities.",
+      "status": "MOUNTED"
+    },
+    {
+      "name": "Crown Pass HTML Body Plan v0.1",
+      "path": "visual-systems-lab/crown-pass/CROWN_PASS_HTML_BODY_PLAN_v0.1.md",
+      "role": "Room-by-room HTML, graphics, state, contact, recovery and acceptance plan for all nine routes.",
+      "status": "MOUNTED"
+    },
+    {
+      "name": "Crown Pass Design Tokens",
+      "path": "visual-systems-lab/crown-pass/design-tokens.json",
+      "role": "Machine-readable colours, materials, depth, typography, spacing, contact, motion, notice and viewport tokens.",
+      "status": "MOUNTED"
+    },
+    {
+      "name": "Crown Pass Room Profiles",
+      "path": "visual-systems-lab/crown-pass/room-profiles.json",
+      "role": "Machine-readable room identity, behaviour, state, action, export and proof contracts.",
+      "status": "MOUNTED"
+    },
+    {
+      "name": "Crown Pass Proof Gates",
+      "path": "visual-systems-lab/crown-pass/proof-gates.json",
+      "role": "Static, viewport, behaviour, storage, export, visual and delivery gate matrix.",
+      "status": "MOUNTED"
+    },
+    {
+      "name": "Crown Pass Cading Seed",
+      "path": "visual-systems-lab/visual-crown-pass.cading",
+      "role": "Readable source declaration for routes, rooms, organs, fields, storage, exports, laws and Ding boundaries.",
+      "status": "MOUNTED"
+    }
+  ],
+  "codingBodies": [
+    "Cading",
+    "JMLogic",
+    "OneBody",
+    "RouteFrame",
+    "StateField",
+    "ContactBand",
+    "Visualang",
+    "JM Visual Interaction Runtime",
+    "JMVisualGraft",
+    "Living Cursor",
+    "GripCube / GripBody",
+    "TraceBox",
+    "Dings",
+    "Cold Ding Join",
+    "OneBody Delivery",
+    "Zionfolder"
+  ],
+  "rooms": ["portal","illusion","image","video","motion","forge","mum","story","vault"],
+  "nextBuildOrder": [
+    "shared viewport route state storage and session organs",
+    "shared visual primitives",
+    "Illusion Crown",
+    "Motion Crown",
+    "MUM Crown",
+    "Image Crown",
+    "Video Crown",
+    "Forge Crown",
+    "Story Crown",
+    "Vault Crown",
+    "Portal final assembly",
+    "web and PWA proof",
+    "exact-body Android debug APK"
+  ],
+  "structuralLocks": [
+    "CROWN PASS != COSMETIC RESKIN",
+    "SHARED BODY != FLATTENED BODY",
+    "DEPTH != DECORATION",
+    "MUM = COMPOSITION WITHOUT ERASURE",
+    "128 = WHOLE ACTUAL VISIBLE BODY",
+    "NO DING NO CLAIM"
+  ],
+  "claimBoundary": "This register proves the specification and implementation plan were mounted. It does not claim the Crown Pass HTML, PWA or APK has been built."
+}

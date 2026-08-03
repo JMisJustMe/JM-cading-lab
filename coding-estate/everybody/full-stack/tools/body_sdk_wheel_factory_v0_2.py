@@ -49,7 +49,17 @@ def metadata_from_wheel(path: Path) -> tuple[dict[str, str], str, str, set[str]]
         key, separator, value = line.partition(":")
         if separator and key in {"Name", "Version", "Summary", "Requires-Python"}:
             fields[key] = value.strip()
-    package_candidates = sorted({name.split("/", 1)[0] for name in names if name.startswith("jm_") and "/" in name})
+    package_candidates = sorted(
+        {
+            root
+            for name in names
+            if "/" in name
+            for root in (name.split("/", 1)[0],)
+            if root.startswith("jm_")
+            and not root.endswith(".dist-info")
+            and not root.endswith(".data")
+        }
+    )
     if len(package_candidates) != 1:
         raise ValueError(f"wheel {path.name} has ambiguous package roots {package_candidates}")
     return fields, entry_text, package_candidates[0], names

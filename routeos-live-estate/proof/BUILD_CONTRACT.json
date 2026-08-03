@@ -1,0 +1,29 @@
+{
+  "body": "RouteOS Five Crowns Live Estate",
+  "version": "v2.0A",
+  "status": "CONSTRUCTION",
+  "frozen_parent": {
+    "name": "RouteOS JM-Native OrchestrationRoute v1.9A",
+    "commit": "110909c7199bcfbd7007ed56437d05a8aea5967b",
+    "anchor": "anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass"
+  },
+  "native_contract": {
+    "package": "com.jmisjustme.routeos.gameestate",
+    "scheme": "jmrouteos",
+    "host": "cartridge",
+    "primary_uri": "jmrouteos://cartridge/five-crowns",
+    "compass_package": "com.jmestate.estatecompass"
+  },
+  "play_contract": {
+    "ordered_crowns": [
+      "PrimitiveRoute",
+      "DispatchRoute",
+      "EntryRoute",
+      "KernelContractRoute",
+      "OrchestrationRoute"
+    ],
+    "fault_law": "Fault tiles return the player to the last mounted crown without erasing mounted progress.",
+    "finish_law": "The permanent anchor accepts the player only after all five crowns are mounted in order."
+  },
+  "claim_boundary": "This is an offline playable and inspectable representation of the frozen Five Crowns lineage. It does not emulate or boot the x86 kernel and does not replace the QEMU receipts."
+}

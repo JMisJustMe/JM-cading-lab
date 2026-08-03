@@ -14,7 +14,7 @@ from typing import Any
 import android_api_floor_runtime as device_runtime
 import android_emulator_runtime as base
 
-SCHEMA = "jm.everybody.android-lifecycle-endurance/0.2"
+SCHEMA = "jm.everybody.android-lifecycle-endurance/0.3"
 FORCE_STOP_CYCLES = 3
 LAUNCH_CONTACTS_PER_BODY = 8
 ROTATION_CONTACTS_PER_BODY = 2
@@ -61,14 +61,143 @@ def clear_logcat(adb: Path) -> None:
     base.run([str(adb), "logcat", "-c"], timeout=30)
 
 
-def scan_runtime_window(adb: Path, package: str, *, label: str) -> dict[str, Any]:
-    """Inspect only the observation window after a recovery contact.
+def package_pid_output(adb: Path, package: str) -> str:
+    result = base.run(
+        [str(adb), "shell", "pidof", package],
+        timeout=30,
+        allow_failure=True,
+    )
+    return result.stdout.replace("\r", "").strip()
 
-    Intentional force-stop, process-kill and data-clear commands are followed by
-    ``clear_logcat`` before the recovery launch. This keeps Android's expected
-    lifecycle-management messages from being misclassified as spontaneous app
-    faults while preserving fatal-exception and ANR rejection after recovery.
+
+def wait_for_background_exit(
+    adb: Path,
+    package: str,
+    *,
+    timeout_seconds: int,
+) -> tuple[bool, str]:
+    deadline = time.monotonic() + timeout_seconds
+    last = ""
+    while time.monotonic() < deadline:
+        last = package_pid_output(adb, package)
+        if not last:
+            return True, last
+        time.sleep(0.5)
+    return False, last
+
+
+def background_kill_and_prove(adb: Path, package: str) -> dict[str, Any]:
+    """Apply Android's background-safe kill route without force-stop fallback.
+
+    ``am kill`` only applies once Android considers a process background-killable.
+    The route therefore backgrounds the app before this function, advances the UID
+    to idle, attempts a package-scoped background kill, and then applies Android's
+    safe-to-kill cached-process pressure as a bounded fallback. A surviving process
+    is a hard failure; it is never replaced with ``force-stop`` credit.
     """
+    before = package_pid_output(adb, package)
+    if not before:
+        raise RuntimeError(f"no live process existed before background kill for {package}")
+
+    commands: list[dict[str, Any]] = []
+    idle = base.run(
+        [str(adb), "shell", "am", "make-uid-idle", "--user", "current", package],
+        timeout=30,
+    )
+    commands.append(
+        {
+            "command": "am make-uid-idle --user current",
+            "stdout_sha256": text_sha256(idle.stdout),
+            "stderr_sha256": text_sha256(idle.stderr),
+        }
+    )
+    time.sleep(2)
+
+    targeted = base.run(
+        [str(adb), "shell", "am", "kill", "--user", "current", package],
+        timeout=30,
+    )
+    commands.append(
+        {
+            "command": "am kill --user current",
+            "stdout_sha256": text_sha256(targeted.stdout),
+            "stderr_sha256": text_sha256(targeted.stderr),
+        }
+    )
+    exited, remaining = wait_for_background_exit(
+        adb,
+        package,
+        timeout_seconds=8,
+    )
+    method = "PACKAGE_BACKGROUND_KILL"
+
+    if not exited:
+        safe_kill = base.run(
+            [str(adb), "shell", "am", "kill-all"],
+            timeout=30,
+        )
+        commands.append(
+            {
+                "command": "am kill-all",
+                "stdout_sha256": text_sha256(safe_kill.stdout),
+                "stderr_sha256": text_sha256(safe_kill.stderr),
+            }
+        )
+        exited, remaining = wait_for_background_exit(
+            adb,
+            package,
+            timeout_seconds=8,
+        )
+        method = "SAFE_CACHED_PROCESS_KILL"
+
+    if not exited:
+        second_idle = base.run(
+            [str(adb), "shell", "am", "make-uid-idle", "--user", "current", package],
+            timeout=30,
+        )
+        second_kill = base.run(
+            [str(adb), "shell", "am", "kill", "--user", "current", package],
+            timeout=30,
+        )
+        commands.extend(
+            [
+                {
+                    "command": "am make-uid-idle --user current (retry)",
+                    "stdout_sha256": text_sha256(second_idle.stdout),
+                    "stderr_sha256": text_sha256(second_idle.stderr),
+                },
+                {
+                    "command": "am kill --user current (retry)",
+                    "stdout_sha256": text_sha256(second_kill.stdout),
+                    "stderr_sha256": text_sha256(second_kill.stderr),
+                },
+            ]
+        )
+        exited, remaining = wait_for_background_exit(
+            adb,
+            package,
+            timeout_seconds=8,
+        )
+        method = "IDLE_PACKAGE_BACKGROUND_KILL_RETRY"
+
+    if not exited:
+        raise RuntimeError(
+            f"background process remained live after UID-idle/package-kill/safe-kill pressure "
+            f"for {package}: {remaining!r}"
+        )
+
+    return {
+        "status": "BACKGROUND_PROCESS_EXIT_PASS",
+        "method": method,
+        "pids_before": base.parse_pid(before),
+        "pids_before_sha256": text_sha256(before),
+        "process_exit_proof": True,
+        "commands": commands,
+    }
+
+
+def scan_runtime_window(adb: Path, package: str, *, label: str) -> dict[str, Any]:
+    """Inspect only the observation window after a recovery contact."""
     time.sleep(0.75)
     logcat = base.run(
         [str(adb), "logcat", "-d", "-v", "brief"],
@@ -169,6 +298,7 @@ def verify_one(
     observation_windows: list[dict[str, Any]] = []
     home_pids: list[int] = []
     home_pid_raw = ""
+    process_kill_receipt: dict[str, Any] = {}
 
     try:
         install = base.run([str(adb), "install", "-r", "-t", str(apk)], timeout=180)
@@ -232,9 +362,8 @@ def verify_one(
 
         phase = "process_kill"
         base.run([str(adb), "shell", "input", "keyevent", "3"], timeout=30)
-        time.sleep(0.75)
-        base.run([str(adb), "shell", "am", "kill", package], timeout=30)
-        base.wait_for_process_exit(adb, package)
+        time.sleep(1)
+        process_kill_receipt = background_kill_and_prove(adb, package)
         clear_logcat(adb)
 
         phase = "process_kill_relaunch"
@@ -319,7 +448,7 @@ def verify_one(
         observation_windows.append(final_window)
 
         receipt = {
-            "schema": "jm.body.android-lifecycle-endurance/0.2",
+            "schema": "jm.body.android-lifecycle-endurance/0.3",
             "status": "ANDROID_LIFECYCLE_ENDURANCE_AND_RECOVERY_PASS",
             "body_id": body_id,
             "package": package,
@@ -342,6 +471,7 @@ def verify_one(
             "home_return_proof": True,
             "back_relaunch_proof": True,
             "process_kill_exit_and_relaunch_proof": True,
+            "process_kill_receipt": process_kill_receipt,
             "data_clear_exit_and_relaunch_proof": True,
             "force_stop_cycle_count": len(force_cycles),
             "force_stop_cycles": force_cycles,
@@ -355,7 +485,8 @@ def verify_one(
             "runtime_faults": [],
             "claim_boundary": (
                 "The exact provenance-sealed APK survived cold start, portrait/landscape contact, "
-                "Home return, Back relaunch, background process kill/relaunch, data clear/relaunch, "
+                "Home return, Back relaunch, Android background UID-idle/safe-kill pressure and "
+                "relaunch, data clear/relaunch, "
                 f"{FORCE_STOP_CYCLES} force-stop/reopen cycles, memory inspection and isolated "
                 f"post-recovery crash/ANR scanning on Android API {expected_api}. Long-duration soak, "
                 "physical-device, sensor, release-signing and performance-threshold proof remain "
@@ -367,7 +498,7 @@ def verify_one(
         return receipt
     except Exception as exc:
         failure = {
-            "schema": "jm.body.android-lifecycle-endurance-failure/0.1",
+            "schema": "jm.body.android-lifecycle-endurance-failure/0.2",
             "status": "ANDROID_LIFECYCLE_ENDURANCE_FAULT_HOLD",
             "body_id": body_id,
             "package": package,
@@ -380,6 +511,7 @@ def verify_one(
             "rotation_contacts_completed": len(rotations),
             "force_stop_cycles_completed": len(force_cycles),
             "observation_windows_completed": len(observation_windows),
+            "process_kill_receipt": process_kill_receipt,
             "expected_runtime_api": expected_api,
             **device,
         }

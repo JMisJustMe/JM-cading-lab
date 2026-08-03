@@ -1,0 +1,22 @@
+{
+  "schema": "jm.visual-lab.build-receipt/0.1",
+  "body": "JM Estate — Visual Systems Lab",
+  "version": "0.1.0",
+  "candidate_state": "AWAITING_CURRENT_CI_AND_BROWSER_PROOF_GATES",
+  "source_route": "visual-lab.cading -> jm-core.js -> visual-runtime.js -> app.js",
+  "delivery_route": "build.mjs -> dist -> PWA / Capacitor Android host",
+  "gates": [
+    "JavaScript syntax",
+    "JSON parse",
+    "required body presence",
+    "Cading source loaded by app runtime",
+    "OneBody delivery build",
+    "Chromium runtime",
+    "1440x900 desktop viewport",
+    "412x915 Android viewport",
+    "keyboard route and contact",
+    "TraceBox contact receipt",
+    "screenshot artifact"
+  ],
+  "claim_boundary": "Receipt candidate only until the current GitHub Actions run passes. No compiled or signed APK/AAB claimed."
+}

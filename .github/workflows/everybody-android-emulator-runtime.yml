@@ -1,0 +1,223 @@
+name: JM 100 Sovereign Android Emulator Runtime
+run-name: "Crown32 Android runtime v0.6 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-runtime-v0-6
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_emulator_runtime.py
+      - .github/workflows/everybody-android-emulator-runtime.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_runtime_source.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - coding-estate/everybody/full-stack/tools/android_emulator_runtime.py
+      - coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_emulator_runtime.py
+      - .github/workflows/everybody-android-emulator-runtime.yml
+
+concurrency:
+  group: jm-everybody-android-emulator-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  JM_RUNTIME_LOCK: coding-estate/everybody/full-stack/ANDROID_V0_5_RUNTIME_SOURCE_LOCK.json
+  JM_SYSTEM_IMAGE: system-images;android-35;google_apis;x86_64
+
+jobs:
+  runtime-parser-proof:
+    name: Android emulator runtime parser and shard proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact runtime branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Prove launch, PID, fault and shard parsers
+        run: python coding-estate/everybody/full-stack/tests/test_android_emulator_runtime.py
+
+  cading-emulator-smoke:
+    name: Cading install, launch, force-stop and reopen smoke
+    needs: runtime-parser-proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_cading_api35
+      JM_EMULATOR_LOG: build/cading-emulator.log
+      JM_EMULATOR_PID: build/cading-emulator.pid
+    steps:
+      - name: Check out exact runtime branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot API 35 Android emulator with bounded diagnostics
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Install, launch, force-stop and reopen Cading
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_emulator_runtime.py \
+            --delivery build/runtime-source/delivery \
+            --out build/runtime-smoke \
+            --adb "$(command -v adb)" \
+            --body-id cading
+      - name: Upload Cading emulator smoke receipt and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_EMULATOR_SMOKE_v0.6
+          path: |
+            build/runtime-smoke/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/cading-emulator.log
+            build/cading-emulator.pid
+          if-no-files-found: warn
+
+  android-emulator-shards:
+    name: Android emulator runtime shard ${{ matrix.shard }} of 5
+    needs: cading-emulator-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4]
+    env:
+      GH_TOKEN: ${{ github.token }}
+      JM_AVD_NAME: jm_runtime_api35_${{ matrix.shard }}
+      JM_EMULATOR_LOG: build/emulator-${{ matrix.shard }}.log
+      JM_EMULATOR_PID: build/emulator-${{ matrix.shard }}.pid
+    steps:
+      - name: Check out exact runtime branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install API 35 emulator image
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "emulator" "$JM_SYSTEM_IMAGE"
+          test -x "$ANDROID_HOME/emulator/emulator"
+          sdkmanager --list_installed | grep -F "$JM_SYSTEM_IMAGE"
+      - name: Recover exact provenance-sealed v0.5 APK estate
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_runtime_source.py \
+            --lock "$JM_RUNTIME_LOCK" \
+            --out build/runtime-source
+      - name: Boot API 35 Android emulator with bounded diagnostics
+        run: bash coding-estate/everybody/full-stack/tools/android_emulator_boot.sh
+      - name: Prove 20 sovereign body install and reopen routes
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_emulator_runtime.py \
+            --delivery build/runtime-source/delivery \
+            --out build/runtime-shard-${{ matrix.shard }}-of-5 \
+            --adb "$(command -v adb)" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 5
+      - name: Upload body emulator runtime receipts and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_EMULATOR_RUNTIME_SHARD_${{ matrix.shard }}_OF_5_v0.6
+          path: |
+            build/runtime-shard-${{ matrix.shard }}-of-5/**
+            build/runtime-source/SOURCE_RECOVERY_RECEIPT.json
+            build/emulator-${{ matrix.shard }}.log
+            build/emulator-${{ matrix.shard }}.pid
+          if-no-files-found: error
+
+  android-emulator-federation:
+    name: Seal 100-body Android emulator runtime federation
+    needs: android-emulator-shards
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out runtime aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all five runtime shard receipts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_EMULATOR_RUNTIME_SHARD_*_OF_5_v0.6
+          path: build/runtime-shards
+          merge-multiple: false
+      - name: Verify and federate all 100 emulator runtime receipts
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_emulator_aggregate.py \
+            --source build/runtime-shards \
+            --out build/runtime-master \
+            --expected-bodies 100 \
+            --expected-shards 5
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/runtime-master/JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_EMULATOR_INSTALL_LAUNCH_FORCE_STOP_REOPEN_FEDERATION_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["install_proofs"] == 100
+          assert receipt["first_launch_proofs"] == 100
+          assert receipt["process_and_focus_proofs"] == 200
+          assert receipt["force_stop_exit_proofs"] == 100
+          assert receipt["relaunch_proofs"] == 100
+          assert receipt["runtime_fault_free_proofs"] == 100
+          print("100 emulator install, launch, force-stop, reopen and runtime-fault-free proofs verified")
+          PY
+      - name: Seal emulator runtime receipt estate
+        run: |
+          tar -czf JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPTS_v0.6.tar.gz -C build runtime-master runtime-shards
+          sha256sum JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPTS_v0.6.tar.gz | tee JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPTS_v0.6.sha256
+      - name: Upload 100-body emulator runtime federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_EMULATOR_RUNTIME_FEDERATION_v0.6
+          path: |
+            JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPTS_v0.6.tar.gz
+            JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPTS_v0.6.sha256
+            build/runtime-master/JM_ANDROID_100_EMULATOR_RUNTIME_RECEIPT.json
+          if-no-files-found: error
+          compression-level: 0

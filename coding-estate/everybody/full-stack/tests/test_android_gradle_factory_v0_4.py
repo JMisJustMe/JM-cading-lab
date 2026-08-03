@@ -31,7 +31,7 @@ def main() -> int:
             "status": "REPAIRED",
             "inherited_fault": "PYTHON_NEWLINE_CONSUMED_INSIDE_KOTLIN_STRING",
             "replacement": "System.lineSeparator()",
-            "charset": "java.nio.charset.StandardCharsets.UTF_8",
+            "charset": "StandardCharsets.UTF_8 via java.nio.charset.StandardCharsets import",
             "repaired_writes_per_body": 4,
             "repaired_write_routes": 400,
         }
@@ -46,7 +46,9 @@ def main() -> int:
             assert route["body_id"] == body_id
             assert route["sdk"] == {"compile": 35, "min": 24, "target": 35}
             assert gradle.count("System.lineSeparator()") == 4, body_id
-            assert gradle.count("java.nio.charset.StandardCharsets.UTF_8") >= 8, body_id
+            assert gradle.count("import java.nio.charset.StandardCharsets") == 1, body_id
+            assert gradle.count("StandardCharsets.UTF_8") >= 8, body_id
+            assert "java.nio.charset.StandardCharsets.UTF_8" not in gradle, body_id
             assert '+ "\n",' not in gradle, body_id
             assert not re.search(r'\+ "\s*\n\s*",', gradle), body_id
             lines = gradle.splitlines()

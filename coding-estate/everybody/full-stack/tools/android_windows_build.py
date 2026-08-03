@@ -14,6 +14,7 @@ _ORIGINAL_RUN = base.release.run
 _ORIGINAL_GENERATE = base.factory.generate
 TEXT_SUFFIXES = {
     ".gradle",
+    ".html",
     ".java",
     ".json",
     ".kt",

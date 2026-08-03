@@ -1,0 +1,82 @@
+name: JM Visual Systems Lab Android APK
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'visual-systems-lab/**'
+      - '.github/workflows/visual-systems-lab-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile-debug-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: visual-systems-lab
+    steps:
+      - name: Checkout Estate
+        uses: actions/checkout@v4
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Use Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Capacitor carrier
+        run: npm install --no-audit --no-fund
+
+      - name: Build governed JM web body
+        run: npm run build
+
+      - name: Generate Android native project
+        run: |
+          rm -rf android
+          npx cap add android
+          npx cap sync android
+          test -f android/gradlew
+          test -f android/app/src/main/AndroidManifest.xml
+
+      - name: Compile installable debug APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew --no-daemon --stacktrace assembleDebug
+
+      - name: Form APK proof package
+        run: |
+          mkdir -p apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk apk/JM-Visual-Lab-v0.1-debug.apk
+          test -s apk/JM-Visual-Lab-v0.1-debug.apk
+          unzip -t apk/JM-Visual-Lab-v0.1-debug.apk
+          sha256sum apk/JM-Visual-Lab-v0.1-debug.apk | tee apk/SHA256SUMS.txt
+          {
+            echo 'JM ESTATE — VISUAL SYSTEMS LAB v0.1'
+            echo 'ANDROID DEBUG APK: COMPILED'
+            echo "COMMIT: $GITHUB_SHA"
+            echo "WORKFLOW RUN: $GITHUB_RUN_ID"
+            echo "JAVA: $(java -version 2>&1 | head -n 1)"
+            echo "NODE: $(node --version)"
+            echo "APK BYTES: $(stat -c%s apk/JM-Visual-Lab-v0.1-debug.apk)"
+            echo 'BOUNDARY: debug-signed installable APK; not a Play Store release-signed APK/AAB.'
+          } | tee apk/ANDROID_BUILD_PROOF.txt
+
+      - name: Upload APK and proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-visual-lab-v0.1-android-debug-apk
+          path: visual-systems-lab/apk
+          if-no-files-found: error
+          retention-days: 90

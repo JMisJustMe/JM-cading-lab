@@ -1,0 +1,19 @@
+{
+  "schema": "jm.visual-lab.android-receipt/0.1",
+  "body": "JM Estate — Visual Systems Lab",
+  "version": "0.1.0",
+  "state": "AWAITING_COMPILED_DEBUG_APK_PROOF",
+  "source_authority": "visual-lab.cading -> jm-core.js -> visual-runtime.js -> app.js",
+  "carrier_route": "build.mjs -> dist -> Capacitor 7 Android -> Gradle assembleDebug",
+  "required_gates": [
+    "governed OneBody web build",
+    "Capacitor Android project generation",
+    "Android manifest and Gradle wrapper present",
+    "Gradle assembleDebug success",
+    "non-empty APK present",
+    "APK ZIP integrity test",
+    "SHA-256 receipt",
+    "downloadable workflow artifact"
+  ],
+  "claim_boundary": "A successful result will be a real debug-signed installable APK. It will not be a Play Store release-signed APK or AAB."
+}

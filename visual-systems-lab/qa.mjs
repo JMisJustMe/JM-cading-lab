@@ -4,7 +4,7 @@ import {mkdir,rm,writeFile} from 'node:fs/promises';
 await rm('qa',{recursive:true,force:true});
 await mkdir('qa',{recursive:true});
 const browser=await chromium.launch({headless:true});
-const report={schema:'jm.visual-lab.browser-proof/0.3',created_at:new Date().toISOString(),views:[],errors:[]};
+const report={schema:'jm.visual-lab.browser-proof/0.4',created_at:new Date().toISOString(),views:[],errors:[]};
 
 async function verify(name,viewport,{mobile=false}={}){
   const context=await browser.newContext({viewport,deviceScaleFactor:1,isMobile:mobile,hasTouch:mobile});
@@ -45,7 +45,9 @@ async function verify(name,viewport,{mobile=false}={}){
   await page.waitForSelector('#room-motion:not([hidden])');
   await page.click('#motionPause');
   await page.waitForFunction(()=>!document.querySelector('#toast').classList.contains('show'));
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(360);
+  const toastOpacity=await page.$eval('#toast',el=>Number.parseFloat(getComputedStyle(el).opacity));
+  if(toastOpacity>0.01)errors.push(`toast transition still visible at capture: opacity ${toastOpacity}`);
   await page.screenshot({path:`qa/${name}-main.png`,fullPage:false});
 
   await page.keyboard.press('t');
@@ -66,7 +68,7 @@ async function verify(name,viewport,{mobile=false}={}){
   if(final.trace<3)errors.push(`trace did not record contacts: ${final.trace}`);
   if(final.drawerOpen)errors.push('trace drawer did not close');
   if(final.overflowX>2)errors.push(`final horizontal overflow: ${final.overflowX}px`);
-  report.views.push({name,requestedViewport:viewport,mobile,initial,final,errors});
+  report.views.push({name,requestedViewport:viewport,mobile,initial,toastOpacity,final,errors});
   report.errors.push(...errors.map(error=>`${name}: ${error}`));
   await context.close();
 }
@@ -76,4 +78,4 @@ await verify('android-412x915',{width:412,height:915},{mobile:true});
 await browser.close();
 await writeFile('qa/report.json',JSON.stringify(report,null,2));
 if(report.errors.length){console.error(report.errors.join('\n'));process.exit(1)}
-console.log('JM VISUAL LAB BROWSER PROOF PASS',JSON.stringify(report.views.map(v=>({name:v.name,viewport:v.final.viewport,route:v.final.route,trace:v.final.trace}))));
+console.log('JM VISUAL LAB BROWSER PROOF PASS',JSON.stringify(report.views.map(v=>({name:v.name,viewport:v.final.viewport,route:v.final.route,trace:v.final.trace,toastOpacity:v.toastOpacity}))));

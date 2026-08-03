@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -63,6 +64,55 @@ def os_receipt(runner_label: str) -> dict[str, Any]:
         "os_release_sha256": text_sha256(os_release),
         "uname": uname,
         "uname_sha256": text_sha256(uname),
+    }
+
+
+def _first_match(pattern: str, value: str, label: str) -> str:
+    match = re.search(pattern, value, flags=re.MULTILINE)
+    if not match:
+        raise RuntimeError(f"could not recover normalized {label} from tool banner")
+    return match.group(1)
+
+
+def normalized_toolchain_receipt(
+    gradle: str,
+    *,
+    aapt2: Path,
+    apksigner: Path,
+    zipalign: Path,
+) -> dict[str, Any]:
+    """Separate logical tool identity from runner-specific banner/environment text."""
+    raw = assurance.toolchain_receipt(
+        gradle,
+        aapt2=aapt2,
+        apksigner=apksigner,
+        zipalign=zipalign,
+    )
+    gradle_version = _first_match(r"^Gradle\s+([^\s]+)", str(raw["gradle_version"]), "Gradle version")
+    java_version = _first_match(
+        r"version\s+[\"']([^\"']+)[\"']",
+        str(raw["java_version"]),
+        "Java version",
+    )
+    return {
+        "gradle_version": gradle_version,
+        "gradle_version_sha256": text_sha256(gradle_version),
+        "gradle_banner_sha256": raw["gradle_version_sha256"],
+        "java_version": java_version,
+        "java_version_sha256": text_sha256(java_version),
+        "java_banner_sha256": raw["java_version_sha256"],
+        "aapt2_version": raw["aapt2_version"],
+        "aapt2_sha256": raw["aapt2_sha256"],
+        "apksigner_version": raw["apksigner_version"],
+        "apksigner_sha256": raw["apksigner_sha256"],
+        "zipalign_sha256": raw["zipalign_sha256"],
+        "compile_sdk": raw["compile_sdk"],
+        "min_sdk": raw["min_sdk"],
+        "target_sdk": raw["target_sdk"],
+        "identity_law": (
+            "Normalized version identities and Android binary hashes are compared across runners; "
+            "runner-specific Gradle/Java banner hashes remain recorded but are not treated as tool drift."
+        ),
     }
 
 
@@ -264,7 +314,7 @@ def build_shard(
         (root / name).mkdir(parents=True)
 
     runner = os_receipt(runner_label)
-    toolchain = assurance.toolchain_receipt(
+    toolchain = normalized_toolchain_receipt(
         gradle,
         aapt2=aapt2,
         apksigner=apksigner,

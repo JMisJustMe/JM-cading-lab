@@ -1,0 +1,309 @@
+name: JM 100 Sovereign Android Cross-Runner Reproducibility
+run-name: "Crown32 Android cross-runner reproducibility v1.2 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-cross-runner-repro-v1-2
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_1_RELEASE_ASSURANCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - .github/workflows/everybody-android-cross-runner-repro.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_1_RELEASE_ASSURANCE_LOCK.json
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - .github/workflows/everybody-android-cross-runner-repro.yml
+
+concurrency:
+  group: jm-everybody-android-cross-runner-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JM_BUILD_TOOLS: "35.0.0"
+
+jobs:
+  cross-runner-contract:
+    name: Cross-runner pairing, drift and custody contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out exact cross-runner branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v1.1 release-assurance lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V1_1_RELEASE_ASSURANCE_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_RELEASE_ASSURANCE_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "84e3a37545085f7f8751ec1e9b3e966f52db4307"
+          assert lock["body_count"] == 100
+          assert lock["clean_release_build_executions"] == 200
+          assert lock["unsigned_byte_reproducibility_proofs"] == 100
+          assert lock["same_key_signed_byte_reproducibility_proofs"] == 100
+          assert lock["zero_permission_proofs"] == 100
+          assert lock["single_exported_launcher_proofs"] == 100
+          assert lock["zero_native_payload_proofs"] == 100
+          assert lock["zero_private_key_entry_proofs"] == 100
+          assert lock["private_keys_in_delivery"] == 0
+          print("v1.1 release-assurance lock preserved beneath cross-runner proof")
+          PY
+      - name: Compile cross-runner bodies
+        run: |
+          python -m py_compile \
+            coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py \
+            coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+      - name: Prove pairing, independent-certificate and negative drift gates
+        run: python coding-estate/everybody/full-stack/tests/test_android_cross_runner_repro.py
+
+  cading-cross-runner-build:
+    name: Cading independent release on ${{ matrix.os }}
+    needs: cross-runner-contract
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+    steps:
+      - name: Check out exact cross-runner branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17 and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install release inspection and signing tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build Cading independently and expose public evidence
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            --repo-root . \
+            --out build/cading-cross-runner \
+            --runner-label "${{ matrix.os }}" \
+            --body-id cading \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload Cading unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_CROSS_RUNNER_${{ matrix.os }}_v1.2
+          path: build/cading-cross-runner/cross-runner-smoke-${{ matrix.os }}-cading/**
+          if-no-files-found: error
+          compression-level: 6
+
+  cading-cross-runner-compare:
+    name: Cading Ubuntu 24.04 ↔ 22.04 exact comparison
+    needs: cading-cross-runner-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - name: Check out cross-runner aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download both independent Cading builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_CADING_CROSS_RUNNER_*_v1.2
+          path: build/cading-pair-source
+          merge-multiple: false
+      - name: Prove exact unsigned bytes and normalized signed payload
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py \
+            --source build/cading-pair-source \
+            --out build/cading-pair-master \
+            --expected-bodies 1 \
+            --expected-shards 1 \
+            --runner-a ubuntu-24.04 \
+            --runner-b ubuntu-22.04
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/cading-pair-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["body_count"] == 1
+          assert receipt["runner_count"] == 2
+          assert receipt["distinct_runner_os_identities"] == 2
+          assert receipt["independent_release_builds"] == 2
+          assert receipt["unsigned_byte_identical_pairs"] == 1
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 1
+          assert receipt["independent_test_certificates"] == 2
+          assert receipt["private_keys_in_delivery"] == 0
+          print("Cading cross-runner comparison gate earned")
+          PY
+      - name: Upload Cading paired cross-runner receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_CROSS_RUNNER_PAIR_v1.2
+          path: |
+            build/cading-pair-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/cading-pair-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_v1.2.zip
+            build/cading-pair-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_v1.2.sha256
+          if-no-files-found: error
+
+  cross-runner-shards:
+    name: ${{ matrix.os }} release shard ${{ matrix.shard }} of 10
+    needs: cading-cross-runner-compare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-22.04]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Check out exact cross-runner branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up Java 17 and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install release inspection and signing tools
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner"
+          test -x "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build 10 sovereign releases independently on this runner
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_build.py \
+            --repo-root . \
+            --out build/cross-runner \
+            --runner-label "${{ matrix.os }}" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10 \
+            --aapt2 "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" \
+            --apksigner "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" \
+            --zipalign "$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign"
+      - name: Upload public unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CROSS_RUNNER_${{ matrix.os }}_SHARD_${{ matrix.shard }}_OF_10_v1.2
+          path: build/cross-runner/cross-runner-${{ matrix.os }}-shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6
+
+  cross-runner-federation:
+    name: Seal 100-body Ubuntu cross-runner reproducibility federation
+    needs: cross-runner-shards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Check out cross-runner aggregator
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all twenty independent runner shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_CROSS_RUNNER_*_SHARD_*_OF_10_v1.2
+          path: build/cross-runner-shards
+          merge-multiple: false
+      - name: Verify 100 paired bodies across two Ubuntu generations
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py \
+            --source build/cross-runner-shards \
+            --out build/cross-runner-master \
+            --expected-bodies 100 \
+            --expected-shards 10 \
+            --runner-a ubuntu-24.04 \
+            --runner-b ubuntu-22.04
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/cross-runner-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_CROSS_RUNNER_UNSIGNED_EXACT_AND_SIGNED_PAYLOAD_EQUIVALENCE_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["runner_count"] == 2
+          assert receipt["distinct_runner_os_identities"] == 2
+          assert receipt["independent_release_builds"] == 200
+          assert receipt["unsigned_byte_identical_pairs"] == 100
+          assert receipt["source_inventory_identical_pairs"] == 100
+          assert receipt["unsigned_inventory_identical_pairs"] == 100
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 100
+          assert receipt["v2_or_newer_signature_proofs"] == 200
+          assert receipt["independent_test_certificates"] == 200
+          assert receipt["zero_permission_pair_proofs"] == 100
+          assert receipt["single_exported_launcher_pair_proofs"] == 100
+          assert receipt["zero_native_payload_pair_proofs"] == 100
+          assert receipt["zero_private_key_entry_pair_proofs"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          print("200 independent builds and 100 exact cross-runner release pairs verified")
+          PY
+      - name: Seal public cross-runner estate
+        run: |
+          tar -czf JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2.tar.gz -C build cross-runner-master
+          sha256sum JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2.tar.gz | tee JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2.sha256
+      - name: Upload 100-body cross-runner federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2
+          path: |
+            JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2.tar.gz
+            JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_FEDERATION_v1.2.sha256
+            build/cross-runner-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/cross-runner-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_v1.2.zip
+            build/cross-runner-master/JM_ANDROID_100_CROSS_RUNNER_REPRODUCIBILITY_v1.2.sha256
+          if-no-files-found: error
+          compression-level: 0

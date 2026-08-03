@@ -10,9 +10,9 @@ sys.path.insert(0, str(TOOLS))
 import android_apk_provenance as provenance  # noqa: E402
 
 
-def main() -> int:
-    badging = """package: name='com.jmisjustme.body.cading' versionCode='1' versionName='0.2-cading' compileSdkVersion='35' compileSdkVersionCodename='15'
-sdkVersion:'24'
+def assert_badging(minimum_label: str) -> None:
+    badging = f"""package: name='com.jmisjustme.body.cading' versionCode='1' versionName='0.2-cading' compileSdkVersion='35' compileSdkVersionCodename='15'
+{minimum_label}:'24'
 targetSdkVersion:'35'
 application-label:'Cading / Theomidul / zeze.nwona'
 application-debuggable
@@ -28,6 +28,13 @@ launchable-activity: name='com.jmisjustme.body.cading.MainActivity'  label='' ic
         "version_code": "1",
         "version_name": "0.2-cading",
     }
+
+
+def main() -> int:
+    # Current AAPT2 uses minSdkVersion. Preserve support for historical
+    # sdkVersion output because older build-tools remain valid donors.
+    assert_badging("minSdkVersion")
+    assert_badging("sdkVersion")
 
     signing = """Verifies
 Verified using v1 scheme (JAR signing): false
@@ -65,7 +72,7 @@ Signer #1 certificate SHA-256 digest: ABCDEF0123456789
     else:
         raise AssertionError("signature output without a certificate was accepted")
 
-    print("JM ANDROID APK PROVENANCE PARSERS: MANIFEST + V2 SIGNATURE OUTPUT PASS")
+    print("JM ANDROID APK PROVENANCE PARSERS: MODERN/LEGACY MANIFEST + V2 SIGNATURE OUTPUT PASS")
     return 0
 
 

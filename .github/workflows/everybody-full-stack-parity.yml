@@ -36,6 +36,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Python packaging toolchain
+        run: python -m pip install --upgrade pip setuptools wheel build
+
       - name: Set up Java 17 for Android carrier syntax proof
         uses: actions/setup-java@v4
         with:
@@ -129,6 +132,8 @@ jobs:
               assert route["sdk"] == {"compile": 35, "min": 24, "target": 35}, body_id
               gradle = (android / "bodies" / body_id / "android-gradle" / "app" / "build.gradle.kts").read_text(encoding="utf-8")
               assert gradle.count("System.lineSeparator()") == 4, body_id
+              assert gradle.count("import java.nio.charset.StandardCharsets") == 1, body_id
+              assert "java.nio.charset.StandardCharsets.UTF_8" not in gradle, body_id
           print("100 bodies, 3,200 Crown32 gates, 900 tooling services, 800 VM services, 500 SDK commands and 400 repaired Kotlin write routes present")
           PY
 

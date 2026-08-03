@@ -207,18 +207,15 @@ def aggregate(
         }
     )
     embedded = delivery / "JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_RECEIPT.json"
-    write_json(embedded, master)
+    embedded_master = dict(master)
+    embedded_master["delivery_zip_sha256"] = "RECORDED_IN_EXTERNAL_MASTER_RECEIPT"
+    write_json(embedded, embedded_master)
 
     target_zip = out / "JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_v1.3.zip"
     if target_zip.exists():
         target_zip.unlink()
     v12.deterministic_zip(delivery, target_zip)
     master["delivery_zip_sha256"] = v12.file_sha256(target_zip)
-    write_json(embedded, master)
-    target_zip.unlink()
-    v12.deterministic_zip(delivery, target_zip)
-    master["delivery_zip_sha256"] = v12.file_sha256(target_zip)
-    write_json(embedded, master)
 
     master_path = out / "JM_ANDROID_100_CROSS_OS_REPRODUCIBILITY_MASTER_RECEIPT.json"
     write_json(master_path, master)

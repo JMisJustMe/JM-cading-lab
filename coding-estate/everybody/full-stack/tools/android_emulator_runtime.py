@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 SCHEMA = "jm.everybody.android-emulator-runtime/0.1"
+LOGCAT_SNAPSHOT_ATTEMPTS = 4
 
 
 def write_json(path: Path, value: Any) -> None:
@@ -26,20 +27,75 @@ def text_sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def run(command: list[str], *, timeout: int = 120, allow_failure: bool = False) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(
-        command,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-        check=False,
+def is_logcat_snapshot(command: list[str]) -> bool:
+    """Return whether this is a read-only ``adb logcat -d`` observation."""
+    return len(command) >= 3 and command[1] == "logcat" and "-d" in command[2:]
+
+
+def run(
+    command: list[str],
+    *,
+    timeout: int = 120,
+    allow_failure: bool = False,
+) -> subprocess.CompletedProcess[str]:
+    """Run a command, recovering only transient ADB logcat snapshot failures.
+
+    Android platform-tools can occasionally return code 255 with no stdout or
+    stderr for an otherwise healthy ``adb logcat -d`` request. A failed read is
+    never treated as a clean fault window: the device route is re-established
+    and the snapshot is retried a bounded number of times. Every other command
+    keeps the original one-attempt behaviour.
+    """
+    attempts = (
+        LOGCAT_SNAPSHOT_ATTEMPTS
+        if is_logcat_snapshot(command) and not allow_failure
+        else 1
     )
-    if result.returncode != 0 and not allow_failure:
-        raise RuntimeError(
-            f"command failed ({result.returncode}): {' '.join(command)}\n"
-            f"STDOUT:\n{result.stdout[-5000:]}\nSTDERR:\n{result.stderr[-5000:]}"
+    result: subprocess.CompletedProcess[str] | None = None
+    failures: list[dict[str, Any]] = []
+
+    for attempt in range(1, attempts + 1):
+        result = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
         )
-    return result
+        if result.returncode == 0 or allow_failure:
+            return result
+
+        failures.append(
+            {
+                "attempt": attempt,
+                "returncode": result.returncode,
+                "stdout_sha256": text_sha256(result.stdout),
+                "stderr_sha256": text_sha256(result.stderr),
+            }
+        )
+        if attempt < attempts:
+            print(
+                f"JM_ANDROID_LOGCAT_SNAPSHOT_RETRY:{attempt}:{result.returncode}",
+                flush=True,
+            )
+            subprocess.run(
+                [command[0], "wait-for-device"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
+            time.sleep(0.5 * attempt)
+
+    assert result is not None
+    failure_suffix = ""
+    if attempts > 1:
+        failure_suffix = f"\nBOUNDED_RETRY_RECEIPT:\n{json.dumps(failures, sort_keys=True)}"
+    raise RuntimeError(
+        f"command failed ({result.returncode}): {' '.join(command)}\n"
+        f"STDOUT:\n{result.stdout[-5000:]}\nSTDERR:\n{result.stderr[-5000:]}"
+        f"{failure_suffix}"
+    )
 
 
 def parse_start_wait(text: str) -> dict[str, Any]:

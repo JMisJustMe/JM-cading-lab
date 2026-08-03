@@ -1,0 +1,50 @@
+name: JM Visual Systems Lab proof gates
+
+on:
+  push:
+    paths:
+      - 'visual-systems-lab/**'
+      - '.github/workflows/visual-systems-lab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: visual-systems-lab
+    steps:
+      - name: Checkout Estate
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax gates
+        run: |
+          node --check jm-core.js
+          node --check visual-runtime.js
+          node --check app.js
+          node --check build.mjs
+      - name: JSON gates
+        run: |
+          node -e "for (const f of ['manifest.webmanifest','registry.json','package.json','capacitor.config.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('JSON PASS')"
+      - name: Required body gates
+        run: |
+          test -f index.html
+          test -f 00_OPEN_FIRST.html
+          test -f visual-lab.cading
+          grep -q 'JM Estate — Visual Systems Lab' index.html
+          grep -q 'No Ding, no claim' visual-lab.cading
+          grep -q 'visual-lab.cading' jm-core.js
+      - name: OneBody delivery build
+        run: |
+          npm run build
+          test -f dist/index.html
+          test -f dist/app.js
+          test -f dist/visual-lab.cading
+          test -f dist/manifest.webmanifest
+          echo 'JM VISUAL LAB BUILD GATES PASS'

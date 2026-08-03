@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071019">
+  <meta name="description" content="JM Estate Visual Systems Lab — a living, installable visual workshop built through JM coding bodies.">
+  <meta name="application-name" content="JM Visual Lab">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>JM Estate — Visual Systems Lab</title>
+</head>
+<body>
+  <a class="skip-link" href="#world">Skip to visual field</a>
+  <canvas id="ambientCanvas" class="ambient-canvas" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div id="app" class="app-shell" data-motion="full">
+    <header class="identity-band">
+      <a class="brand" href="../" aria-label="Return to JM Estate">
+        <span class="brand-mark" aria-hidden="true"><b>JM</b><i>V</i></span>
+        <span><strong>VISUAL SYSTEMS LAB</strong><small>Observe · Absorb · Adapt · Create</small></span>
+      </a>
+      <div class="identity-actions">
+        <button id="motionToggle" class="icon-button" type="button" aria-pressed="false" title="Reduce motion">◌</button>
+        <button id="installButton" class="gold-button compact" type="button" hidden>INSTALL</button>
+        <button id="traceButton" class="icon-button" type="button" aria-expanded="false" aria-controls="traceDrawer" title="Open trace">⌁</button>
+      </div>
+    </header>
+
+    <main id="world" class="world-stage" tabindex="-1">
+      <section class="route-rail" aria-label="Visual routes">
+        <button class="route active" data-route="illusion" type="button"><span>01</span>ILLUSION</button>
+        <button class="route" data-route="image" type="button"><span>02</span>IMAGE</button>
+        <button class="route" data-route="video" type="button"><span>03</span>VIDEO</button>
+        <button class="route" data-route="motion" type="button"><span>04</span>MOTION</button>
+        <button class="route" data-route="prompt" type="button"><span>05</span>AI VISUAL</button>
+        <button class="route" data-route="story" type="button"><span>06</span>STORY</button>
+      </section>
+
+      <div id="roomTrack" class="room-track">
+        <section class="room active" id="room-illusion" data-room="illusion" aria-labelledby="illusionTitle">
+          <div class="room-copy">
+            <p class="route-code">SOURCE → SIGNAL → CONTACT → PRESSURE → TRACE</p>
+            <h1 id="illusionTitle">See the route your seeing takes.</h1>
+            <p>Both centre lines begin equal. Change the pressure around them, then reveal the measure. The visual does not merely decorate the law—it performs it.</p>
+            <div class="observation-box">
+              <span id="illusionQuestion">Which centre line looks longer?</span>
+              <div class="choice-row">
+                <button type="button" data-observe="top">TOP</button>
+                <button type="button" data-observe="same">SAME</button>
+                <button type="button" data-observe="bottom">BOTTOM</button>
+              </div>
+            </div>
+          </div>
+          <div class="visual-crown illusion-crown">
+            <div class="crown-head"><span id="illusionName">MÜLLER–LYER / PRESSURE FIELD</span><b id="illusionState">LIVE</b></div>
+            <canvas id="illusionCanvas" aria-label="Interactive optical illusion"></canvas>
+            <div class="measure-line" id="measureLine" aria-hidden="true"><span></span><span></span></div>
+            <div class="canvas-caption"><span id="illusionCaption">Equal source. Different surrounding pressure.</span><strong id="illusionReadout">160 px = 160 px</strong></div>
+          </div>
+        </section>
+
+        <section class="room" id="room-image" data-room="image" aria-labelledby="imageTitle" hidden>
+          <div class="room-copy">
+            <p class="route-code">IMAGE → TREATMENT → DIFFERENCE → EXPORT</p>
+            <h1 id="imageTitle">Edit without losing the source.</h1>
+            <p>The source stays recoverable while exposure, contrast, saturation, hue and blur travel as visible state—not destructive mystery.</p>
+            <label class="gold-button file-button">LOAD IMAGE<input id="imageInput" type="file" accept="image/*" hidden></label>
+            <button id="imageReset" class="quiet-button" type="button">RESET TREATMENT</button>
+          </div>
+          <div class="visual-crown editor-crown">
+            <div class="crown-head"><span>JM IMAGE FIELD</span><b id="imageState">WAITING</b></div>
+            <div class="image-stage">
+              <canvas id="imageCanvas" aria-label="Image editing canvas"></canvas>
+              <div class="empty-state" id="imageEmpty"><strong>DROP / LOAD A SOURCE</strong><span>Nothing is altered until contact.</span></div>
+              <button id="compareHold" class="compare-hold" type="button">HOLD TO SEE SOURCE</button>
+            </div>
+            <div class="editor-controls" id="imageControls">
+              <label>EXPOSURE<input data-filter="brightness" type="range" min="30" max="180" value="100"><output>100</output></label>
+              <label>CONTRAST<input data-filter="contrast" type="range" min="30" max="200" value="100"><output>100</output></label>
+              <label>SATURATION<input data-filter="saturate" type="range" min="0" max="220" value="100"><output>100</output></label>
+              <label>HUE<input data-filter="hue" type="range" min="-180" max="180" value="0"><output>0</output></label>
+              <label>BLUR<input data-filter="blur" type="range" min="0" max="12" value="0"><output>0</output></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="room" id="room-video" data-room="video" aria-labelledby="videoTitle" hidden>
+          <div class="room-copy">
+            <p class="route-code">CLIP → FRAME → TIMING → CAPTURE → STORY</p>
+            <h1 id="videoTitle">Inspect motion before claiming the edit.</h1>
+            <p>A bounded first video body: load a clip, change playback pressure, step through frames, treat the preview and send exact frames into the storyboard.</p>
+            <label class="gold-button file-button">LOAD VIDEO<input id="videoInput" type="file" accept="video/*" hidden></label>
+            <div class="choice-row video-actions">
+              <button id="videoPlay" type="button">PLAY / PAUSE</button>
+              <button id="frameBack" type="button">− FRAME</button>
+              <button id="frameForward" type="button">+ FRAME</button>
+            </div>
+          </div>
+          <div class="visual-crown video-crown">
+            <div class="crown-head"><span>JM VIDEO FIELD</span><b id="videoState">WAITING</b></div>
+            <div class="video-stage">
+              <video id="videoPlayer" playsinline preload="metadata"></video>
+              <div class="empty-state" id="videoEmpty"><strong>LOAD A VIDEO SOURCE</strong><span>Playback remains local to this device.</span></div>
+              <div class="scanline" aria-hidden="true"></div>
+            </div>
+            <div class="video-meter"><span id="videoTime">00:00.000</span><input id="videoSeek" type="range" min="0" max="1000" value="0"><span id="videoDuration">00:00.000</span></div>
+            <div class="compact-controls">
+              <label>SPEED<select id="videoSpeed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+              <label>CONTRAST<input id="videoContrast" type="range" min="50" max="180" value="100"></label>
+              <button id="captureFrame" class="gold-button compact" type="button">CAPTURE FRAME</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="room" id="room-motion" data-room="motion" aria-labelledby="motionTitle" hidden>
+          <div class="room-copy">
+            <p class="route-code">STILL → DIFFERENCE → PRESERVED RELATION → MOTION</p>
+            <h1 id="motionTitle">Movement is connected difference.</h1>
+            <p>This field uses repeated differences with preserved relation. Change speed, density and pull; the trace changes without the body losing itself.</p>
+            <div class="choice-row">
+              <button class="motion-preset" data-preset="orbit" type="button">ORBIT</button>
+              <button class="motion-preset" data-preset="tunnel" type="button">TUNNEL</button>
+              <button class="motion-preset" data-preset="breathe" type="button">BREATHE</button>
+            </div>
+          </div>
+          <div class="visual-crown motion-crown">
+            <div class="crown-head"><span>CONNECTED-DIFFERENCE FIELD</span><b id="motionState">RUNNING</b></div>
+            <canvas id="motionCanvas" aria-label="Interactive motion field"></canvas>
+            <div class="motion-controls">
+              <label>SPEED<input id="motionSpeed" type="range" min="0" max="200" value="70"><output>70</output></label>
+              <label>DENSITY<input id="motionDensity" type="range" min="12" max="120" value="52"><output>52</output></label>
+              <label>PULL<input id="motionPull" type="range" min="0" max="200" value="90"><output>90</output></label>
+              <button id="motionPause" class="quiet-button" type="button">PAUSE</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="room" id="room-prompt" data-room="prompt" aria-labelledby="promptTitle" hidden>
+          <div class="room-copy">
+            <p class="route-code">AIM → SEPARATE → COMPOSE → GOVERN → OUTPUT</p>
+            <h1 id="promptTitle">Form the visual before asking for it.</h1>
+            <p>This is a prompt-forming body, not an image generator pretending to be connected. It separates subject, field, light, movement, framing and exclusions into a reusable governed visual brief.</p>
+          </div>
+          <div class="visual-crown prompt-crown">
+            <div class="crown-head"><span>VISUALANG PROMPT FORGE</span><b>LOCAL</b></div>
+            <div class="prompt-grid">
+              <label>SUBJECT<textarea id="promptSubject" placeholder="What exists in the visual?">An interactive JM Estate visual laboratory</textarea></label>
+              <label>FIELD<textarea id="promptField" placeholder="Where and under what pressure?">Dark architectural space, gold route-lines, living visual experiments</textarea></label>
+              <label>LIGHT<input id="promptLight" value="cinematic low light with precise warm gold highlights"></label>
+              <label>MOTION<input id="promptMotion" value="subtle continuous motion that reveals state changes"></label>
+              <label>FRAME<input id="promptFrame" value="mobile-first landscape interface, protected central visual field"></label>
+              <label>EXCLUDE<input id="promptExclude" value="generic dashboard, decorative dead cards, unreadable tiny text"></label>
+            </div>
+            <pre id="promptOutput" class="prompt-output" tabindex="0"></pre>
+            <div class="prompt-actions"><button id="formPrompt" class="gold-button" type="button">FORM BRIEF</button><button id="copyPrompt" class="quiet-button" type="button">COPY</button><button id="savePrompt" class="quiet-button" type="button">SEND TO STORY</button></div>
+          </div>
+        </section>
+
+        <section class="room" id="room-story" data-room="story" aria-labelledby="storyTitle" hidden>
+          <div class="room-copy">
+            <p class="route-code">FRAME → ORDER → MEANING → RECEIPT</p>
+            <h1 id="storyTitle">Meaning travels through sequence.</h1>
+            <p>Captured video frames, visual notes and prompt bodies land here. Reorder them, caption them and export the sequence without flattening the source of each frame.</p>
+            <button id="addTextFrame" class="gold-button" type="button">ADD TEXT FRAME</button>
+            <button id="exportStory" class="quiet-button" type="button">EXPORT STORY JSON</button>
+          </div>
+          <div class="visual-crown story-crown">
+            <div class="crown-head"><span>VISUAL STORY RAIL</span><b id="storyCount">0 FRAMES</b></div>
+            <div id="storyRail" class="story-rail" aria-live="polite"></div>
+            <div id="storyEmpty" class="empty-story"><strong>NO FRAMES YET</strong><span>Capture a video frame or form a visual brief.</span></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <section class="contact-dock" aria-label="Current route controls">
+      <div class="dock-state"><span class="pulse-dot" aria-hidden="true"></span><div><small>CURRENT BODY</small><strong id="currentBody">ILLUSION / MÜLLER–LYER</strong></div></div>
+      <div id="illusionDock" class="dock-controls active">
+        <label>ANGLE<input id="finAngle" type="range" min="10" max="80" value="42"><output>42°</output></label>
+        <label>PRESSURE<input id="illusionPressure" type="range" min="0" max="100" value="64"><output>64</output></label>
+        <button id="illusionCycle" class="quiet-button compact" type="button">NEXT ILLUSION</button>
+        <button id="measureToggle" class="gold-button compact" type="button" aria-pressed="false">REVEAL MEASURE</button>
+      </div>
+      <div id="genericDock" class="dock-controls"><span>Use the controls inside the active visual field.</span></div>
+    </section>
+
+    <nav class="action-bank" aria-label="Primary app actions">
+      <button id="previousRoute" type="button"><span>←</span><small>PREVIOUS</small></button>
+      <button id="primaryAction" class="primary-action" type="button"><span>◎</span><small>CONTACT</small></button>
+      <button id="nextRoute" type="button"><span>→</span><small>NEXT</small></button>
+      <button id="recoveryButton" type="button"><span>↺</span><small>RECOVER</small></button>
+    </nav>
+
+    <aside id="traceDrawer" class="trace-drawer" aria-hidden="true">
+      <div class="drawer-head"><div><small>TRACEBOX / COLD DING</small><h2>Visible route memory</h2></div><button id="closeTrace" class="icon-button" type="button">×</button></div>
+      <div class="trace-status"><span id="seedStatus">SOURCE LOADING</span><b id="traceCount">0 CONTACTS</b></div>
+      <ol id="traceList" class="trace-list"></ol>
+      <div class="drawer-actions"><button id="generateReceipt" class="gold-button" type="button">GENERATE DING RECEIPT</button><button id="exportTrace" class="quiet-button" type="button">EXPORT TRACE</button><button id="clearTrace" class="danger-button" type="button">CLEAR LOCAL TRACE</button></div>
+      <pre id="receiptPreview" class="receipt-preview">No Ding generated in this session.</pre>
+    </aside>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script src="./jm-core.js"></script>
+  <script src="./visual-runtime.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

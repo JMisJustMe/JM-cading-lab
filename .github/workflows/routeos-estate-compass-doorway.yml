@@ -1,0 +1,140 @@
+name: RouteOS Estate Compass Doorway
+
+on:
+  push:
+    branches:
+      - agent/routeos-estate-compass-doorway-v2-2a
+  pull_request:
+    branches:
+      - agent/routeos-estate-shelf-route-v2-1a
+    paths:
+      - 'android-compass-live/**'
+      - 'routeos-live-estate/**'
+      - '.github/workflows/routeos-estate-compass-doorway.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-compass-doorway:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout stacked Estate lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify frozen v2.1A parent ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 2af4683bf2783901775e6b972ebbaded77e5a603 HEAD
+
+      - name: Verify visible doorway contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .compass-doorway-proof
+          python3 -m py_compile android-compass-live/tools/verify_compass_routeos_doorway.py
+          python3 android-compass-live/tools/verify_compass_routeos_doorway.py \
+            | tee .compass-doorway-proof/STATIC_AUTHORITY.txt
+          cmp \
+            routeos-live-estate/compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html \
+            android-compass-live/app/src/main/assets/estate-shelf.html
+
+      - name: Set up Java and Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Build both unsigned release APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon -p routeos-live-estate :app:assembleRelease
+          gradle --no-daemon -p android-compass-live :app:assembleRelease
+
+      - name: Inspect packages, permissions, assets and alignment
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROUTEOS_APK=routeos-live-estate/app/build/outputs/apk/release/app-release-unsigned.apk
+          COMPASS_APK=android-compass-live/app/build/outputs/apk/release/app-release-unsigned.apk
+          test -s "$ROUTEOS_APK"
+          test -s "$COMPASS_APK"
+          mkdir -p artifact extracted-compass
+
+          APKANALYZER="$(command -v apkanalyzer || true)"
+          if [[ -z "$APKANALYZER" ]]; then
+            APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          fi
+          test -x "$APKANALYZER"
+
+          test "$($APKANALYZER manifest application-id "$ROUTEOS_APK")" = 'com.jmisjustme.routeos.gameestate'
+          test "$($APKANALYZER manifest application-id "$COMPASS_APK")" = 'com.jmestate.estatecompass'
+          "$APKANALYZER" manifest print "$ROUTEOS_APK" > artifact/ROUTEOS_ANDROID_MANIFEST.xml
+          "$APKANALYZER" manifest print "$COMPASS_APK" > artifact/COMPASS_ANDROID_MANIFEST.xml
+          ! grep -Fq 'android.permission.INTERNET' artifact/ROUTEOS_ANDROID_MANIFEST.xml
+          ! grep -Fq 'android.permission.INTERNET' artifact/COMPASS_ANDROID_MANIFEST.xml
+          grep -Fq 'jmrouteos' artifact/ROUTEOS_ANDROID_MANIFEST.xml
+          grep -Fq 'cartridge' artifact/ROUTEOS_ANDROID_MANIFEST.xml
+          grep -Fq 'com.jmisjustme.routeos.gameestate' artifact/COMPASS_ANDROID_MANIFEST.xml
+
+          unzip -l "$ROUTEOS_APK" > artifact/ROUTEOS_APK_CONTENTS.txt
+          unzip -l "$COMPASS_APK" > artifact/COMPASS_APK_CONTENTS.txt
+          grep -Fq 'assets/index.html' artifact/ROUTEOS_APK_CONTENTS.txt
+          grep -Fq 'assets/cartridges.json' artifact/ROUTEOS_APK_CONTENTS.txt
+          grep -Fq 'assets/estate-router.js' artifact/ROUTEOS_APK_CONTENTS.txt
+          grep -Fq 'assets/estate-shelf.html' artifact/COMPASS_APK_CONTENTS.txt
+          unzip -q "$COMPASS_APK" assets/estate-shelf.html -d extracted-compass
+          cmp \
+            routeos-live-estate/compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html \
+            extracted-compass/assets/estate-shelf.html
+
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -f -p 4 \
+            "$ROUTEOS_APK" \
+            artifact/JM_ROUTEOS_ESTATE_SHELF_v2_1A_UNSIGNED_ALIGNED.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -f -p 4 \
+            "$COMPASS_APK" \
+            artifact/JM_ESTATE_COMPASS_ROUTEOS_DOORWAY_v2_2A_UNSIGNED_ALIGNED.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -p 4 \
+            artifact/JM_ROUTEOS_ESTATE_SHELF_v2_1A_UNSIGNED_ALIGNED.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -p 4 \
+            artifact/JM_ESTATE_COMPASS_ROUTEOS_DOORWAY_v2_2A_UNSIGNED_ALIGNED.apk
+
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" artifact/apksigner.jar
+          cp android-compass-live/README.md artifact/COMPASS_ROUTEOS_DOORWAY_README.md
+          cp android-compass-live/proof/COMPASS_ROUTEOS_DOORWAY_CONTRACT_v2.2A.json artifact/
+          cp android-compass-live/app/src/main/assets/estate-shelf.html artifact/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html
+          cp .compass-doorway-proof/* artifact/
+          printf '%s\n' \
+            'machine_step_outcome=success' \
+            'frozen_parent=2af4683bf2783901775e6b972ebbaded77e5a603' \
+            'compass_package=com.jmestate.estatecompass' \
+            'routeos_package=com.jmisjustme.routeos.gameestate' \
+            'visible_doorway=ROUTEOS' \
+            'route_five_crowns=jmrouteos://cartridge/five-crowns' \
+            'route_estate_router=jmrouteos://cartridge/estate-router' \
+            'shelf_byte_identity=PASS' \
+            > artifact/GATE_STATUS.txt
+          (cd artifact && sha256sum * > SHA256SUMS.txt)
+
+      - name: Upload paired Compass and RouteOS receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-estate-compass-doorway-v2.2A-unsigned
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 14

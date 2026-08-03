@@ -14,8 +14,8 @@ import android_lifecycle_endurance as lifecycle  # noqa: E402
 
 
 def main() -> int:
-    assert lifecycle.parse_total_pss("TOTAL PSS: 12345 TOTAL RSS: 30000\n") == 12345
-    assert lifecycle.parse_total_pss("  TOTAL   6789  100  200  300\n") == 6789
+    assert lifecycle.parse_total_pss("TOTAL PSS: 12,345 TOTAL RSS: 30,000\n") == 12345
+    assert lifecycle.parse_total_pss("  TOTAL   6,789  100  200  300\n") == 6789
     try:
         lifecycle.parse_total_pss("TOTAL PSS: 0\n")
     except ValueError:
@@ -118,7 +118,7 @@ def main() -> int:
         else:
             raise AssertionError("incomplete lifecycle route was accepted")
 
-    print("JM ANDROID LIFECYCLE: MEMORY PARSER + 5 SHARDS + 100 ENDURANCE RECEIPTS PASS")
+    print("JM ANDROID LIFECYCLE: COMMA MEMORY PARSER + 5 SHARDS + 100 ENDURANCE RECEIPTS PASS")
     return 0
 
 

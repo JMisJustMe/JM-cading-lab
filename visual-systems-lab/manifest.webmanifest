@@ -1,0 +1,21 @@
+{
+  "name": "JM Estate — Visual Systems Lab",
+  "short_name": "JM Visual Lab",
+  "description": "A living visual workshop built through JM coding bodies.",
+  "id": "/JM-cading-lab/visual-systems-lab/",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050a10",
+  "theme_color": "#071019",
+  "categories": ["design", "education", "photo", "video", "productivity"],
+  "icons": [
+    {"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ],
+  "shortcuts": [
+    {"name":"Illusion Field","short_name":"Illusions","url":"./#illusion","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]},
+    {"name":"Video Field","short_name":"Video","url":"./#video","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]},
+    {"name":"Story Rail","short_name":"Story","url":"./#story","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml"}]}
+  ]
+}

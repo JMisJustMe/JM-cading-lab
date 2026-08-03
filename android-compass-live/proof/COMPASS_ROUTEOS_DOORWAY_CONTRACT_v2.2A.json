@@ -1,0 +1,48 @@
+{
+  "body": "JM Estate Compass RouteOS Doorway",
+  "version": "v2.2A",
+  "status": "CONSTRUCTION",
+  "frozenParent": {
+    "name": "RouteOS Estate Shelf Route v2.1A",
+    "commit": "2af4683bf2783901775e6b972ebbaded77e5a603",
+    "anchor": "anchor/routeos-estate-shelf-route-v2-1a-ding-pass"
+  },
+  "compass": {
+    "package": "com.jmestate.estatecompass",
+    "versionCode": 2200,
+    "versionName": "2.2.0",
+    "defaultBody": "app/src/main/assets/estate-shelf.html",
+    "nativeControl": "ROUTEOS",
+    "preservesImportedBodyMount": true
+  },
+  "routeos": {
+    "package": "com.jmisjustme.routeos.gameestate",
+    "routes": [
+      "jmrouteos://cartridge/five-crowns",
+      "jmrouteos://cartridge/estate-router"
+    ]
+  },
+  "laws": [
+    "The frozen v2.1A shelf must remain byte-identical when mounted inside Compass.",
+    "The RouteOS doorway must be visible without requiring a mounted private Compass body.",
+    "The user must not need to remember a package name, URI scheme or cartridge identifier.",
+    "Compass and RouteOS remain separate Android packages and independently recoverable bodies.",
+    "Imported Compass bodies remain replaceable, restorable and removable.",
+    "No Android INTERNET permission may be added to either application.",
+    "No Ding may be claimed until static verification, both Android release builds, package inspection, asset inspection and zip alignment pass."
+  ],
+  "requiredProof": {
+    "frozenParentAncestry": "required",
+    "shelfByteIdentity": "required",
+    "visibleNativeControl": "required",
+    "directFiveCrownsRoute": "required",
+    "directEstateRouterRoute": "required",
+    "bodyMountRecovery": "required",
+    "compassReleaseBuild": "required",
+    "routeosReleaseBuild": "required",
+    "packageAndPermissionInspection": "required",
+    "apkAssetInspection": "required",
+    "zipAlignment": "required"
+  },
+  "claimBoundary": "This body proves a visible native Compass doorway and a paired build-and-inspection route for the frozen RouteOS shelf. It does not merge the applications, publish them, install owner content automatically or claim physical-device behaviour before device contact."
+}

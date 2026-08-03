@@ -12,6 +12,22 @@ from typing import Any
 import android_cross_runner_build as base
 
 _ORIGINAL_RUN = base.release.run
+_ORIGINAL_GENERATE = base.factory.generate
+TEXT_SUFFIXES = {
+    ".gradle",
+    ".java",
+    ".json",
+    ".kt",
+    ".kts",
+    ".md",
+    ".pro",
+    ".properties",
+    ".txt",
+    ".xml",
+    ".yml",
+    ".yaml",
+}
+TEXT_NAMES = {"gradlew", "settings.gradle", "build.gradle"}
 
 
 def platform_safe_run(
@@ -31,6 +47,26 @@ def platform_safe_run(
             subprocess.list2cmdline(prepared),
         ]
     return _ORIGINAL_RUN(prepared, timeout=timeout)
+
+
+def canonicalize_generated_text(root: Path) -> int:
+    """Force generated text to LF bytes so Windows newline translation cannot create false drift."""
+    changed = 0
+    for path in sorted(item for item in root.rglob("*") if item.is_file()):
+        if path.suffix.lower() not in TEXT_SUFFIXES and path.name not in TEXT_NAMES:
+            continue
+        payload = path.read_bytes()
+        normalized = payload.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+        if normalized != payload:
+            path.write_bytes(normalized)
+            changed += 1
+    return changed
+
+
+def deterministic_generate(repo: Path, out: Path) -> None:
+    _ORIGINAL_GENERATE(repo, out)
+    changed = canonicalize_generated_text(out)
+    print(f"JM_WINDOWS_CANONICAL_LF_FILES:{changed}", flush=True)
 
 
 def environment_receipt(runner_label: str) -> dict[str, Any]:
@@ -70,12 +106,14 @@ def environment_receipt(runner_label: str) -> dict[str, Any]:
         "path_separator": os.pathsep,
         "directory_separator": os.sep,
         "python_platform": sys.platform,
+        "generated_text_newline": "LF",
     }
 
 
 def install_adapter() -> None:
     base.release.run = platform_safe_run
     base.os_receipt = environment_receipt
+    base.factory.generate = deterministic_generate
 
 
 def main() -> int:

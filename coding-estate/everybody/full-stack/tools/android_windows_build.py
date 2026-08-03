@@ -35,16 +35,17 @@ def platform_safe_run(
     *,
     timeout: int = 900,
 ):
-    """Execute Windows batch tools through cmd while preserving direct executables elsewhere."""
+    """Execute Windows batch tools through cmd CALL while preserving direct executables elsewhere."""
     prepared = [str(part) for part in command]
     executable = prepared[0].lower()
     if os.name == "nt" and executable.endswith((".bat", ".cmd")):
+        command_text = "call " + subprocess.list2cmdline(prepared)
         prepared = [
             os.environ.get("COMSPEC", "cmd.exe"),
             "/d",
             "/s",
             "/c",
-            subprocess.list2cmdline(prepared),
+            command_text,
         ]
     return _ORIGINAL_RUN(prepared, timeout=timeout)
 

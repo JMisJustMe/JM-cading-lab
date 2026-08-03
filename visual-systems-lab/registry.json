@@ -1,0 +1,44 @@
+{
+  "schema": "jm.visual-systems-lab.registry/0.1",
+  "name": "JM Estate — Visual Systems Lab",
+  "version": "0.1.0",
+  "status": "WORKING_FIRST_BODY_MOUNTED_NOT_CROWNED",
+  "keeper": "Observant. Absorbent. Adaptive. The visual should reveal the route.",
+  "route": "visual-systems-lab/",
+  "open_first": "visual-systems-lab/00_OPEN_FIRST.html",
+  "source_seed": "visual-systems-lab/visual-lab.cading",
+  "source_authority": [
+    "Cading",
+    "JMLogic",
+    "OneBody",
+    "RouteFrame",
+    "StateField",
+    "ContactBand",
+    "JM Visual Interaction Runtime",
+    "JMVisualGraft",
+    "Visualang",
+    "TraceBox",
+    "Dings",
+    "Cold Ding Join",
+    "OneBody Delivery",
+    "Zionfolder"
+  ],
+  "rooms": [
+    {"id":"illusion","state":"LIVE","caps":["Muller-Lyer","Rubin figure-ground","peripheral drift","checker shadow","measure reveal","observation trace"]},
+    {"id":"image","state":"LIVE_BOUNDED","caps":["local source load","non-destructive preview treatment","source compare","PNG export"]},
+    {"id":"video","state":"LIVE_BOUNDED","caps":["local clip load","playback speed","frame stepping","preview contrast","frame capture"]},
+    {"id":"motion","state":"LIVE","caps":["connected-difference field","orbit","tunnel","breathe","speed density pull"]},
+    {"id":"prompt","state":"LIVE_FORMING_BODY","caps":["subject field light motion frame exclusion separation","copy","story handoff"]},
+    {"id":"story","state":"LIVE_BOUNDED","caps":["video frame intake","prompt intake","text frames","reorder","caption","JSON export"]}
+  ],
+  "surface_law": "128 is the whole available visible body; identity > protected visual world > movement contact > actions > recovery.",
+  "controls": ["touch","keyboard","trackpad","pointer"],
+  "delivery": {
+    "website": "LIVE_ROUTE",
+    "pwa": "INSTALLABLE_SOURCE_MOUNTED",
+    "offline": "CORE_CACHE_MOUNTED",
+    "capacitor_android_source": "MOUNTED",
+    "compiled_signed_apk": "NOT_YET_CLAIMED"
+  },
+  "claim_boundary": "A working first visual laboratory body. It is not yet a crown, a signed APK/AAB, a full non-linear editor, or a connected AI image generator."
+}

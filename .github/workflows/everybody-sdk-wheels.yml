@@ -48,6 +48,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install Python packaging toolchain
+        run: python -m pip install --upgrade pip setuptools wheel build
+
       - name: Generate all body compiler tooling and VM packages
         run: |
           rm -rf build/everybody-sdk-source-v0.2 build/everybody-sdk-wheels-v0.2

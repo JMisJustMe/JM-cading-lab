@@ -8,10 +8,12 @@ A living visual workshop built from JM coding bodies from the beginning.
 - `00_OPEN_FIRST.html` — status, architecture and claim boundary
 - `visual-lab.cading` — source-side route seed
 - `registry.json` — bounded capability and delivery registry
+- `ANDROID_STATUS.json` — package-safe Android state and claim boundary
+- `ANDROID_RECEIPT.json` — exact external APK proof custody
 
 ## Native body route
 
-`visual-lab.cading → JMOneBody/JMLogic → JM Visual Interaction Runtime/JMVisualGraft → RouteFrame/StateField/ContactBand → TraceBox/Dings → PWA + Capacitor host`
+`visual-lab.cading → JMOneBody/JMLogic → JM Visual Interaction Runtime/JMVisualGraft → RouteFrame/StateField/ContactBand → TraceBox/Dings → OneBody delivery → PWA + Capacitor Android host`
 
 The host serves delivery. It does not replace source authority.
 
@@ -30,4 +32,6 @@ Touch/pointer and keyboard share one ContactBand. Keyboard: `1–6` rooms, `←/
 
 ## Website / PWA / Android
 
-The route is a static installable PWA. `package.json` and `capacitor.config.json` establish the Android source carrier. A compiled or signed APK/AAB is not claimed in v0.1.
+The website route, installable PWA, offline core and Capacitor Android generation have passed. A real debug-signed installable APK has also compiled and passed archive/signature/hash proof. Exact per-artifact custody remains in `ANDROID_RECEIPT.json` beside the downloadable package.
+
+A Play Store release-signed APK, Android App Bundle (`.aab`) and store publication are not claimed in v0.1.

@@ -1,0 +1,62 @@
+{
+  "body": "JM Android Owner Signing Receipt",
+  "version": "v1.0",
+  "status": "UNFILLED_TEMPLATE",
+  "publicSafeOnly": true,
+  "keyFamily": "JM_ROUTEOS_COMPASS_RELEASE_v1",
+  "alias": "jm-routeos-compass-release",
+  "packageScope": [
+    "com.jmestate.estatecompass",
+    "com.jmisjustme.routeos.gameestate"
+  ],
+  "certificate": {
+    "createdAt": "FILL_LOCALLY",
+    "validFrom": "FILL_LOCALLY",
+    "validUntil": "FILL_LOCALLY",
+    "sha256Fingerprint": "FILL_PUBLIC_FINGERPRINT_ONLY",
+    "sha1Fingerprint": "OPTIONAL_PUBLIC_FINGERPRINT"
+  },
+  "backupProof": {
+    "primaryEncryptedCopy": "PASS_OR_FAIL",
+    "physicallySeparateEncryptedCopy": "PASS_OR_FAIL",
+    "passwordStoredSeparately": "PASS_OR_FAIL",
+    "restoreTestedAt": "FILL_AFTER_TEST",
+    "result": "UNPROVEN"
+  },
+  "signedArtifacts": [
+    {
+      "package": "com.jmisjustme.routeos.gameestate",
+      "file": "JM_ROUTEOS_ESTATE_SHELF_v2_1A_SIGNED.apk",
+      "apkSha256": "FILL_AFTER_SIGNING",
+      "certificateSha256": "FILL_AFTER_VERIFY",
+      "apksignerVerify": "PASS_OR_FAIL"
+    },
+    {
+      "package": "com.jmestate.estatecompass",
+      "file": "JM_ESTATE_COMPASS_ROUTEOS_DOORWAY_v2_2A_SIGNED.apk",
+      "apkSha256": "FILL_AFTER_SIGNING",
+      "certificateSha256": "FILL_AFTER_VERIFY",
+      "apksignerVerify": "PASS_OR_FAIL"
+    }
+  ],
+  "physicalContact": {
+    "deviceModel": "FILL_ON_DEVICE",
+    "androidVersion": "FILL_ON_DEVICE",
+    "routeosInstalled": "PASS_OR_FAIL",
+    "compassInstalled": "PASS_OR_FAIL",
+    "routeosControlVisible": "PASS_OR_FAIL",
+    "estateShelfOpen": "PASS_OR_FAIL",
+    "fiveCrownsOpen": "PASS_OR_FAIL",
+    "estateRouterOpen": "PASS_OR_FAIL",
+    "returnNavigation": "PASS_OR_FAIL",
+    "privateBodyMountReplaceRestoreRemove": "PASS_OR_FAIL"
+  },
+  "ding": "NOT_EARNED",
+  "forbidden": [
+    "keystore file",
+    "keystore password",
+    "key password",
+    "private key",
+    "unredacted secret-bearing terminal history"
+  ]
+}

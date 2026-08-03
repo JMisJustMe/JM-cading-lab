@@ -5,6 +5,11 @@ on:
     paths:
       - 'visual-systems-lab/**'
       - '.github/workflows/visual-systems-lab.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'visual-systems-lab/**'
+      - '.github/workflows/visual-systems-lab.yml'
   workflow_dispatch:
 
 permissions:

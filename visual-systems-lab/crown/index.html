@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050b12">
+  <meta name="description" content="JM Visual Systems Lab Crown Pass — a living visual instrument built through JM coding bodies.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <title>JM Visual Systems Lab — Crown Pass</title>
+</head>
+<body data-motion="full">
+  <canvas id="estateAtmosphere" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+
+  <div id="jmApp" class="jm-app" data-route="portal">
+    <header class="identity-band">
+      <a class="brand" href="#portal" aria-label="Open Portal">
+        <span class="brand-mark" aria-hidden="true"><b>JM</b><i>C</i></span>
+        <span class="brand-copy"><strong>VISUAL SYSTEMS LAB</strong><small>Crown Pass · Observant · Absorbent · Adaptive</small></span>
+      </a>
+      <div class="identity-state">
+        <span class="state-lamp" aria-hidden="true"></span>
+        <div><small>CURRENT BODY</small><b id="identityState">PORTAL / ORIENTED</b></div>
+      </div>
+      <div class="identity-actions">
+        <button id="installButton" class="button gold compact" type="button" hidden>INSTALL</button>
+        <button id="motionToggle" class="icon-button" type="button" aria-pressed="false" title="Reduce motion">◌</button>
+        <button id="traceButton" class="icon-button" type="button" aria-expanded="false" aria-controls="traceBox" title="Open TraceBox">⌁</button>
+      </div>
+    </header>
+
+    <nav id="routeRail" class="route-rail" aria-label="Visual rooms">
+      <button class="route active" data-route="portal"><span>00</span>PORTAL</button>
+      <button class="route" data-route="illusion"><span>01</span>ILLUSION</button>
+      <button class="route" data-route="image"><span>02</span>IMAGE</button>
+      <button class="route" data-route="video"><span>03</span>VIDEO</button>
+      <button class="route" data-route="motion"><span>04</span>MOTION</button>
+      <button class="route" data-route="forge"><span>05</span>FORGE</button>
+      <button class="route" data-route="mum"><span>06</span>MUM</button>
+      <button class="route" data-route="story"><span>07</span>STORY</button>
+      <button class="route" data-route="vault"><span>08</span>VAULT</button>
+    </nav>
+
+    <main id="protectedWorld" class="protected-world" tabindex="-1">
+      <section class="room active" data-room="portal" aria-labelledby="portalTitle">
+        <header class="room-intro">
+          <p>ORIENT → SELECT → ENTER → ROUTE</p>
+          <h1 id="portalTitle">The estate opens as a living route.</h1>
+          <span>Every room is distinct. Every room returns to one governed body.</span>
+        </header>
+        <div class="crown-frame portal-frame" data-profile="portal">
+          <div class="crown-label"><span>ROUTE CONSTELLATION</span><b>LIVE</b></div>
+          <canvas id="portalCanvas" aria-label="Living route constellation"></canvas>
+          <div id="portalNodes" class="portal-nodes" aria-label="Choose a visual room"></div>
+          <div class="meaning-plate portal-meaning"><strong>THE VISUAL SHOULD REVEAL THE ROUTE</strong><small>Choose a body. Contact becomes consequence.</small></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="illusion" aria-labelledby="illusionTitle" hidden>
+        <header class="room-intro">
+          <p>PREDICT → CONTACT → PRESSURE → REVEAL → COMPARE → TRACE</p>
+          <h1 id="illusionTitle">Prediction enters before measurement.</h1>
+          <div class="prediction-bank" aria-label="Record prediction">
+            <button data-predict="A">A</button><button data-predict="EQUAL">EQUAL</button><button data-predict="B">B</button>
+          </div>
+        </header>
+        <div class="crown-frame illusion-frame" data-profile="illusion">
+          <div class="crown-label"><span id="illusionName">MÜLLER–LYER / DIRECTIONAL PRESSURE</span><b id="illusionState">PREDICT</b></div>
+          <canvas id="illusionCanvas" aria-label="Interactive optical illusion"></canvas>
+          <div class="field-caption"><span id="illusionQuestion">Which centre line looks longer?</span><strong id="illusionMeasure">SOURCE HIDDEN</strong></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="image" aria-labelledby="imageTitle" hidden>
+        <header class="room-intro">
+          <p>SOURCE → TREATMENT → COMPARE → CAPTURE → EXPORT</p>
+          <h1 id="imageTitle">Edit without losing the source.</h1>
+          <label class="button gold file-button">LOAD IMAGE<input id="imageInput" type="file" accept="image/*" hidden></label>
+        </header>
+        <div class="crown-frame image-frame" data-profile="image">
+          <div class="crown-label"><span>SOURCE-PRESERVING LIGHT TABLE</span><b id="imageState">WAITING</b></div>
+          <div class="image-stage">
+            <canvas id="imageCanvas" aria-label="Image treatment field"></canvas>
+            <div id="imageEmpty" class="empty-state"><strong>DROP / PASTE / LOAD A SOURCE</strong><small>Large media stays out of localStorage.</small></div>
+            <div id="compareCurtain" class="compare-curtain" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="room" data-room="video" aria-labelledby="videoTitle" hidden>
+        <header class="room-intro">
+          <p>CLIP → TIMING → RANGE → FRAME CONTACT → CAPTURE → STORY</p>
+          <h1 id="videoTitle">Inspect motion before claiming the edit.</h1>
+          <label class="button gold file-button">LOAD VIDEO<input id="videoInput" type="file" accept="video/*" hidden></label>
+        </header>
+        <div class="crown-frame video-frame" data-profile="video">
+          <div class="crown-label"><span>FRAME + TIMING ANALYSIS BAY</span><b id="videoState">WAITING</b></div>
+          <div class="video-stage">
+            <video id="videoPlayer" playsinline preload="metadata"></video>
+            <canvas id="videoOverlay" aria-hidden="true"></canvas>
+            <div id="videoEmpty" class="empty-state"><strong>LOAD A LOCAL CLIP</strong><small>No remote upload route is active.</small></div>
+            <div id="captureFlash" class="capture-flash" aria-hidden="true"></div>
+          </div>
+          <div class="timeline"><span id="videoCurrent">00:00.000</span><input id="videoSeek" type="range" min="0" max="1000" value="0"><span id="videoDuration">00:00.000</span></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="motion" aria-labelledby="motionTitle" hidden>
+        <header class="room-intro">
+          <p>RUNNING → CONTACT → PRESSURE → RELEASE → COOLING → CAPTURE</p>
+          <h1 id="motionTitle">Movement is connected difference.</h1>
+          <span>Touch the field. Hold adds pressure. Release leaves a cooling trace.</span>
+        </header>
+        <div class="crown-frame motion-frame" data-profile="motion">
+          <div class="crown-label"><span id="motionName">ORBIT / PRESERVED CENTRE</span><b id="motionState">RUNNING</b></div>
+          <canvas id="motionCanvas" aria-label="Interactive connected-difference field"></canvas>
+          <div class="vector-readout"><span id="motionVector">FIELD 0·0</span><strong id="motionFps">AUTO</strong></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="forge" aria-labelledby="forgeTitle" hidden>
+        <header class="room-intro">
+          <p>SOURCE OPEN → AIM → FORM → COOL → ROUTE</p>
+          <h1 id="forgeTitle">Form the visual before asking for it.</h1>
+          <span>A governed body-former. No false claim that a generator is connected.</span>
+        </header>
+        <div class="forge-layout">
+          <div class="source-rack">
+            <label>SUBJECT<textarea id="forgeSubject">A living JM visual systems laboratory</textarea></label>
+            <label>FIELD<textarea id="forgeField">Obsidian chamber, gold route metal, cyan living signal</textarea></label>
+            <label>LIGHT<input id="forgeLight" value="low cinematic light with precise gold edges"></label>
+            <label>MOTION<input id="forgeMotion" value="state-driven movement that cools after contact"></label>
+            <label>MEANING<input id="forgeMeaning" value="The visual should reveal the route"></label>
+            <label>EXCLUDE<input id="forgeExclude" value="generic dashboard cards, dead controls, centre-blocking alerts"></label>
+          </div>
+          <div class="crown-frame forge-frame" data-profile="forge">
+            <div class="crown-label"><span>VISUALANG FORGE TABLE</span><b id="forgeState">SOURCE OPEN</b></div>
+            <div id="forgeFieldView" class="forge-field-view"><div class="forge-lines" aria-hidden="true"></div><div id="formedBody" class="meaning-plate formed-body"><strong>FORM BODY</strong><small>Source strips will gather here.</small></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="room" data-room="mum" aria-labelledby="mumTitle" hidden>
+        <header class="room-intro">
+          <p>SOURCE BODIES → SHARED FIELD → PRESSURE → ARRIVAL → CAPTURE</p>
+          <h1 id="mumTitle">MUM Field: the bodies play together.</h1>
+          <span>Editable composition without erasure. Flattening happens only on capture.</span>
+        </header>
+        <div class="mum-layout">
+          <div id="mumSourceRack" class="mum-source-rack" aria-label="Add source bodies">
+            <button data-add-layer="geometry">+ GEOMETRY</button>
+            <button data-add-layer="motion">+ MOTION</button>
+            <button data-add-layer="meaning">+ MEANING</button>
+            <button data-add-layer="field">+ FIELD</button>
+          </div>
+          <div class="crown-frame mum-frame" data-profile="mum">
+            <div class="crown-label"><span>MULTI-BODY VISUAL COMPOSITOR</span><b id="mumState">SOURCES PRESENT</b></div>
+            <canvas id="mumBackdrop" aria-hidden="true"></canvas>
+            <div id="mumLayerStage" class="mum-layer-stage" aria-label="Editable composition stage"></div>
+            <canvas id="mumEffects" aria-hidden="true"></canvas>
+            <div id="mumCaptureFlash" class="capture-flash" aria-hidden="true"></div>
+          </div>
+          <div id="mumLayerRail" class="mum-layer-rail" aria-label="Composition layers"></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="story" aria-labelledby="storyTitle" hidden>
+        <header class="room-intro">
+          <p>FRAME → ORDER → CAPTION → PREVIEW → EXPORT</p>
+          <h1 id="storyTitle">Meaning travels through sequence.</h1>
+          <span>Every frame keeps its source room and trace route.</span>
+        </header>
+        <div class="crown-frame story-frame" data-profile="story">
+          <div class="crown-label"><span>SEQUENCE + MEANING RAIL</span><b id="storyState">EMPTY</b></div>
+          <div id="storyStage" class="story-stage"><div class="empty-state"><strong>NO FRAMES YET</strong><small>Capture from Illusion, Image, Video, Motion, Forge or MUM.</small></div></div>
+          <div id="storyRail" class="story-rail"></div>
+        </div>
+      </section>
+
+      <section class="room" data-room="vault" aria-labelledby="vaultTitle" hidden>
+        <header class="room-intro">
+          <p>LEDGER → BODY → VERIFY → FILE → RECOVER → DING</p>
+          <h1 id="vaultTitle">The estate remembers. The room proves.</h1>
+          <span>Sessions, traces, faults, exports and bounded receipts.</span>
+        </header>
+        <div class="vault-layout">
+          <div id="vaultShelves" class="vault-shelves">
+            <button data-shelf="session" class="active">SESSION</button>
+            <button data-shelf="story">STORY</button>
+            <button data-shelf="trace">TRACE</button>
+            <button data-shelf="faults">FAULTS</button>
+            <button data-shelf="receipts">RECEIPTS</button>
+          </div>
+          <div class="crown-frame vault-frame" data-profile="vault">
+            <div class="crown-label"><span>TRACEBOX / COLD DING VAULT</span><b id="vaultState">LEDGER READY</b></div>
+            <div id="vaultLedger" class="vault-ledger"></div>
+            <pre id="receiptPlate" class="receipt-plate">No Ding generated for this Crown body.</pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section id="noticeLayer" class="notice-layer" aria-live="polite"></section>
+
+    <section id="contactBand" class="contact-band" aria-label="Current room controls">
+      <div class="contact-status"><small>CONTACT BAND</small><strong id="contactStatus">Choose a route body.</strong></div>
+      <div id="contactControls" class="contact-controls"></div>
+    </section>
+
+    <nav class="recovery-bank" aria-label="Route and recovery controls">
+      <button id="prevRoute" type="button"><span>←</span><small>PREV</small></button>
+      <button id="primaryContact" class="primary-contact" type="button"><span>◎</span><small id="primaryLabel">ENTER</small></button>
+      <button id="nextRoute" type="button"><span>→</span><small>NEXT</small></button>
+      <button id="recoverCurrent" type="button"><span>↺</span><small>RECOVER</small></button>
+    </nav>
+
+    <aside id="traceBox" class="trace-box" aria-hidden="true">
+      <header><div><small>TRACEBOX / VISIBLE ROUTE MEMORY</small><h2>Contact becomes receipt.</h2></div><button id="closeTrace" class="icon-button" type="button">×</button></header>
+      <div class="trace-summary"><span id="traceStatus">0 CONTACTS</span><b id="storageStatus">PERSISTENT</b></div>
+      <ol id="traceList"></ol>
+      <div class="drawer-actions"><button id="dingButton" class="button gold">GENERATE WORKING DING</button><button id="exportTrace" class="button">EXPORT TRACE</button></div>
+    </aside>
+  </div>
+
+  <script src="./crown-core.js"></script>
+  <script src="./crown-runtime.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

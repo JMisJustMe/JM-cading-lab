@@ -2,10 +2,17 @@
   "schema": "jm.visual-lab.build-receipt/0.4",
   "body": "JM Estate — Visual Systems Lab",
   "version": "0.1.0",
-  "candidate_state": "AWAITING_CLEAN_FRAME_REAL_VIEWPORT_PROOF",
+  "state": "PASS_CLEAN_FRAME_REAL_VIEWPORT_PROOF",
+  "proved_at": "2026-08-03T01:46:17.142Z",
+  "proof_run": {
+    "workflow_run_id": 30777643640,
+    "head_sha": "30964432db8814762bfd66d6cb66db3c50068743",
+    "artifact_digest": "sha256:4cc6edabc9f28fca35238daa3f6194af71b1803e7465a92db42288df195e0983",
+    "merged_receipt_commit": "dc50fc04409dd143b71f8913a9aeba1d4f23df4f"
+  },
   "source_route": "visual-lab.cading -> jm-core.js -> visual-runtime.js -> app.js",
   "delivery_route": "build.mjs -> dist -> PWA / Capacitor Android host",
-  "gates": [
+  "passed_gates": [
     "JavaScript syntax",
     "JSON parse",
     "exact Cading source route",
@@ -20,5 +27,14 @@
     "toast opacity equals zero before clean main-frame capture",
     "clean main-field and trace screenshots"
   ],
-  "claim_boundary": "Website/PWA body and Android source carrier only. No compiled or signed APK/AAB is claimed."
+  "proof_values": {
+    "desktop_viewport": [1440, 900],
+    "android_viewport": [412, 915],
+    "desktop_overflow_x": 0,
+    "android_overflow_x": 0,
+    "desktop_toast_opacity_at_capture": 0,
+    "android_toast_opacity_at_capture": 0,
+    "trace_contacts": 8
+  },
+  "claim_boundary": "Website/PWA body and Android source carrier passed. No compiled or signed APK/AAB is claimed."
 }

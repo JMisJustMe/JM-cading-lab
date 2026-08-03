@@ -34,11 +34,13 @@
   "surface_law": "128 is the whole available visible body; identity > protected visual world > movement contact > actions > recovery.",
   "controls": ["touch","keyboard","trackpad","pointer"],
   "delivery": {
-    "website": "LIVE_ROUTE",
-    "pwa": "INSTALLABLE_SOURCE_MOUNTED",
-    "offline": "CORE_CACHE_MOUNTED",
-    "capacitor_android_source": "MOUNTED",
-    "compiled_signed_apk": "NOT_YET_CLAIMED"
+    "website": "PASS_LIVE_ROUTE",
+    "pwa": "PASS_INSTALLABLE",
+    "offline": "PASS_CORE_CACHE",
+    "capacitor_android_source": "PASS_GENERATED",
+    "android_debug_apk": "PASS_COMPILED_INSTALLABLE",
+    "play_store_release_signed_apk": "NOT_CLAIMED",
+    "android_app_bundle_aab": "NOT_CLAIMED"
   },
-  "claim_boundary": "A working first visual laboratory body. It is not yet a crown, a signed APK/AAB, a full non-linear editor, or a connected AI image generator."
+  "claim_boundary": "A working first visual laboratory body with proved website, PWA and Android debug APK delivery. It is not yet a crown, a Play Store release-signed APK/AAB, a full non-linear editor, or a connected AI image generator."
 }

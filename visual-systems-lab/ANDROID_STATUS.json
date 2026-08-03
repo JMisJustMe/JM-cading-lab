@@ -1,0 +1,15 @@
+{
+  "schema": "jm.visual-lab.android-status/0.1",
+  "body": "JM Estate — Visual Systems Lab",
+  "version": "0.1.0",
+  "state": "DEBUG_APK_COMPILE_ROUTE_PROVED",
+  "host": "Capacitor 7 Android",
+  "source_authority": "visual-lab.cading -> JMOneBody/JMLogic -> JM Visual Runtime",
+  "proof_boundary": "This package belongs to a source body whose Android debug compile route passed. Exact per-artifact size, SHA-256 and workflow custody live beside the downloadable artifact in ANDROID_RECEIPT.json.",
+  "not_claimed": [
+    "Play Store release signing",
+    "production signing key custody",
+    "Android App Bundle (AAB)",
+    "Play Store publication"
+  ]
+}

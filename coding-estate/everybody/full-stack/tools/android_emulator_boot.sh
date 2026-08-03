@@ -7,13 +7,29 @@ LOG_PATH="${JM_EMULATOR_LOG:-build/android-emulator.log}"
 PID_PATH="${JM_EMULATOR_PID:-build/android-emulator.pid}"
 ADB_REGISTER_ATTEMPTS="${JM_ADB_REGISTER_ATTEMPTS:-60}"
 BOOT_ATTEMPTS="${JM_BOOT_ATTEMPTS:-120}"
-mkdir -p "$(dirname "$LOG_PATH")" "$(dirname "$PID_PATH")"
+AVD_ROOT="${JM_ANDROID_AVD_ROOT:-${RUNNER_TEMP:-$HOME}/jm-android-avd}"
+
+export ANDROID_AVD_HOME="$AVD_ROOT/avd"
+export ANDROID_EMULATOR_HOME="$AVD_ROOT/emulator-home"
+export ANDROID_PREFS_ROOT="$AVD_ROOT/preferences"
+mkdir -p \
+  "$(dirname "$LOG_PATH")" \
+  "$(dirname "$PID_PATH")" \
+  "$ANDROID_AVD_HOME" \
+  "$ANDROID_EMULATOR_HOME" \
+  "$ANDROID_PREFS_ROOT"
 
 command -v avdmanager >/dev/null
 command -v adb >/dev/null
 test -x "$ANDROID_HOME/emulator/emulator"
 
 diagnose() {
+  echo "== JM AVD roots ==" >&2
+  printf 'ANDROID_AVD_HOME=%s\nANDROID_EMULATOR_HOME=%s\nANDROID_PREFS_ROOT=%s\n' \
+    "$ANDROID_AVD_HOME" "$ANDROID_EMULATOR_HOME" "$ANDROID_PREFS_ROOT" >&2
+  find "$AVD_ROOT" -maxdepth 3 -type f -printf '%p\n' >&2 2>/dev/null || true
+  echo "== JM emulator AVD list ==" >&2
+  "$ANDROID_HOME/emulator/emulator" -list-avds >&2 || true
   echo "== JM emulator process ==" >&2
   if [[ -f "$PID_PATH" ]]; then
     emulator_pid="$(cat "$PID_PATH")"
@@ -42,10 +58,19 @@ else
   ACCELERATION=("-accel" "off")
 fi
 
-echo no | avdmanager create avd \
+AVD_PATH="$ANDROID_AVD_HOME/${AVD_NAME}.avd"
+printf 'no\n' | avdmanager create avd \
   --force \
   --name "$AVD_NAME" \
-  --package "$SYSTEM_IMAGE"
+  --package "$SYSTEM_IMAGE" \
+  --path "$AVD_PATH"
+
+if ! "$ANDROID_HOME/emulator/emulator" -list-avds | grep -Fxq "$AVD_NAME"; then
+  echo "Created AVD is not visible to the emulator: $AVD_NAME" >&2
+  exit 1
+fi
+
+echo "JM_ANDROID_AVD_CREATE_PASS:$AVD_NAME:$AVD_PATH"
 
 nohup "$ANDROID_HOME/emulator/emulator" \
   -avd "$AVD_NAME" \

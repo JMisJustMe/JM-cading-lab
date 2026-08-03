@@ -4,7 +4,7 @@ import {mkdir,rm,writeFile} from 'node:fs/promises';
 await rm('qa',{recursive:true,force:true});
 await mkdir('qa',{recursive:true});
 const browser=await chromium.launch({headless:true});
-const report={schema:'jm.visual-lab.browser-proof/0.2',created_at:new Date().toISOString(),views:[],errors:[]};
+const report={schema:'jm.visual-lab.browser-proof/0.3',created_at:new Date().toISOString(),views:[],errors:[]};
 
 async function verify(name,viewport,{mobile=false}={}){
   const context=await browser.newContext({viewport,deviceScaleFactor:1,isMobile:mobile,hasTouch:mobile});
@@ -44,7 +44,8 @@ async function verify(name,viewport,{mobile=false}={}){
   await page.keyboard.press('4');
   await page.waitForSelector('#room-motion:not([hidden])');
   await page.click('#motionPause');
-  await page.waitForTimeout(180);
+  await page.waitForFunction(()=>!document.querySelector('#toast').classList.contains('show'));
+  await page.waitForTimeout(120);
   await page.screenshot({path:`qa/${name}-main.png`,fullPage:false});
 
   await page.keyboard.press('t');

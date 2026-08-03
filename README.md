@@ -11,6 +11,8 @@ GitHub Pages public corridor for the JM Estate.
 - `coding-estate/everybody/00_OPEN_FIRST.html` — **JM EveryBody v2.0 — 100-Body Current-Native Completion**
 - `coding-estate/everybody/canonical-native-v2.html` — mobile-first native specification and execution workbench
 - `games-beyond/` — **Games&Beyond — The JM Games House**
+- `visual-systems-lab/` — **JM Estate Visual Systems Lab v0.1 — living illusions, image, video, motion, prompt and story body**
+- `visual-systems-lab/00_OPEN_FIRST.html` — Visual Lab architecture, status and claim boundary
 - `cading.html` — working Cading Lab
 - `fresh-app-lab/` — Fresh App Lab
 
@@ -25,6 +27,7 @@ GitHub Pages public corridor for the JM Estate.
 - `coding-estate/everybody/body-registry-extension-01.json` — Coding House and Finger extension
 - `coding-estate/everybody/body-registry-extension-02.json` — recovered 53-body parity extension
 - `games-beyond/registry.json` — games, engines, loops, benchmarks, host shelves and proof-node registry
+- `visual-systems-lab/registry.json` — Visual Systems Lab rooms, source authority, controls, delivery state and claim boundary
 
 ## Current law
 
@@ -45,6 +48,8 @@ GitHub provides the public corridor, source/version history, registry and Pages 
 - Current native degree: **10 / 10 for every registered body**
 - Canonical conformance: **500 body-level positive, negative and round-trip checks**
 - Historical-native proof preserved separately: Quadze, Cading, MMZG and Speakuals exact recovered subsets
+- JM Visual Systems Lab v0.1: **working first body mounted with six living rooms, PWA shell and Android source route**
+- Visual Lab compiled/signed APK or AAB: **not yet claimed**
 - Supreme bodies crowned: **none**
 - Games&Beyond Games House: editable host foundation built
 - Repository visibility: public release corridor; private-source custody remains owner-controlled

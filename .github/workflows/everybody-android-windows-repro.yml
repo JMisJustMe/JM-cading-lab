@@ -1,0 +1,384 @@
+name: JM 100 Sovereign Android Linux-Windows Reproducibility
+run-name: "Crown32 Android Linux-Windows reproducibility v1.4 @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-windows-repro-v1-4
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_3_CROSS_OS_LOCK.json
+      - coding-estate/everybody/full-stack/CROWN32_ANDROID_V1_4_OPEN_FIRST.md
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_windows_build.py
+      - coding-estate/everybody/full-stack/tools/android_windows_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_windows_repro.py
+      - .github/workflows/everybody-android-windows-repro.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/ANDROID_V1_3_CROSS_OS_LOCK.json
+      - coding-estate/everybody/full-stack/CROWN32_ANDROID_V1_4_OPEN_FIRST.md
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_3.py
+      - coding-estate/everybody/full-stack/tools/android_gradle_factory_v0_4.py
+      - coding-estate/everybody/full-stack/tools/android_release_candidate_batch.py
+      - coding-estate/everybody/full-stack/tools/android_release_assurance_batch.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_build.py
+      - coding-estate/everybody/full-stack/tools/android_cross_runner_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_cross_os_aggregate.py
+      - coding-estate/everybody/full-stack/tools/android_windows_build.py
+      - coding-estate/everybody/full-stack/tools/android_windows_aggregate.py
+      - coding-estate/everybody/full-stack/tests/test_android_windows_repro.py
+      - .github/workflows/everybody-android-windows-repro.yml
+
+concurrency:
+  group: jm-everybody-android-windows-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  JM_BUILD_TOOLS: "35.0.0"
+
+jobs:
+  windows-contract:
+    name: Windows execution, newline, OS-family and payload contracts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact Windows-repro branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen v1.3 Linux-macOS lock remains intact
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          lock = json.loads(Path("coding-estate/everybody/full-stack/ANDROID_V1_3_CROSS_OS_LOCK.json").read_text(encoding="utf-8"))
+          assert lock["status"] == "ANDROID_LINUX_MACOS_REPRODUCIBILITY_FEDERATION_LOCKED"
+          assert lock["source_head_sha"] == "9b4a2a8252f697d958b4b61ce1c68b40d73620fc"
+          assert lock["body_count"] == 100
+          assert lock["independent_release_builds"] == 200
+          assert lock["unsigned_byte_identical_pairs"] == 100
+          assert lock["source_inventory_identical_pairs"] == 100
+          assert lock["unsigned_inventory_identical_pairs"] == 100
+          assert lock["normalized_signed_payload_equivalent_pairs"] == 100
+          assert lock["independent_test_certificates"] == 200
+          assert lock["private_keys_in_delivery"] == 0
+          print("v1.3 Linux-macOS lock preserved beneath Windows proof")
+          PY
+      - name: Compile Windows bodies
+        run: |
+          python -m py_compile \
+            coding-estate/everybody/full-stack/tools/android_windows_build.py \
+            coding-estate/everybody/full-stack/tools/android_windows_aggregate.py \
+            coding-estate/everybody/full-stack/tests/test_android_windows_repro.py
+      - name: Prove Windows batch, LF, OS-family and platform-tool laws
+        run: python coding-estate/everybody/full-stack/tests/test_android_windows_repro.py
+
+  cading-windows-build:
+    name: Cading independent release on ${{ matrix.os }}
+    needs: windows-contract
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 55
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+    steps:
+      - name: Check out exact Windows-repro branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up exact Java 17 family and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17.0.16+8"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install pinned Android tools on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          echo "JM_AAPT2=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" >> "$GITHUB_ENV"
+          echo "JM_APKSIGNER=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" >> "$GITHUB_ENV"
+          echo "JM_ZIPALIGN=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign" >> "$GITHUB_ENV"
+      - name: Install pinned Android tools on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          1..200 | ForEach-Object { 'y' } | & sdkmanager.bat --licenses | Out-Null
+          & sdkmanager.bat 'platforms;android-35' "build-tools;$env:JM_BUILD_TOOLS"
+          $tools = Join-Path $env:ANDROID_HOME "build-tools\$env:JM_BUILD_TOOLS"
+          $aapt2 = Join-Path $tools 'aapt2.exe'
+          $apksigner = Join-Path $tools 'apksigner.bat'
+          $zipalign = Join-Path $tools 'zipalign.exe'
+          if (!(Test-Path $aapt2) -or !(Test-Path $apksigner) -or !(Test-Path $zipalign)) { throw 'Pinned Android Windows tools are missing' }
+          "JM_AAPT2=$aapt2" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "JM_APKSIGNER=$apksigner" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "JM_ZIPALIGN=$zipalign" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build Cading independently on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_build.py \
+            --repo-root . \
+            --out build/cading-windows \
+            --runner-label "${{ matrix.os }}" \
+            --body-id cading \
+            --aapt2 "$JM_AAPT2" \
+            --apksigner "$JM_APKSIGNER" \
+            --zipalign "$JM_ZIPALIGN"
+      - name: Build Cading independently on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_build.py `
+            --repo-root . `
+            --out build/cading-windows `
+            --runner-label '${{ matrix.os }}' `
+            --body-id cading `
+            --aapt2 $env:JM_AAPT2 `
+            --apksigner $env:JM_APKSIGNER `
+            --zipalign $env:JM_ZIPALIGN
+      - name: Upload Cading unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_LINUX_WINDOWS_${{ matrix.os }}_v1.4
+          path: build/cading-windows/cross-runner-smoke-${{ matrix.os }}-cading/**
+          if-no-files-found: error
+          compression-level: 6
+
+  cading-windows-compare:
+    name: Cading Linux ↔ Windows exact comparison
+    needs: cading-windows-build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out Linux-Windows binder
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download both independent Cading builds
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_CADING_LINUX_WINDOWS_*_v1.4
+          path: build/cading-windows-source
+          merge-multiple: false
+      - name: Prove exact unsigned bytes and normalized signed payload across Linux and Windows
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_aggregate.py \
+            --source build/cading-windows-source \
+            --out build/cading-windows-master \
+            --expected-bodies 1 \
+            --expected-shards 1 \
+            --runner-a ubuntu-24.04 \
+            --runner-b windows-2022
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/cading-windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_LINUX_WINDOWS_UNSIGNED_EXACT_AND_SIGNED_PAYLOAD_EQUIVALENCE_PASS"
+          assert receipt["body_count"] == 1
+          assert receipt["runner_count"] == 2
+          assert receipt["cross_os_family_count"] == 2
+          assert set(receipt["cross_os_families"].values()) == {"Linux/Ubuntu", "Windows/Server"}
+          assert receipt["independent_release_builds"] == 2
+          assert receipt["unsigned_byte_identical_pairs"] == 1
+          assert receipt["source_inventory_identical_pairs"] == 1
+          assert receipt["unsigned_inventory_identical_pairs"] == 1
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 1
+          assert receipt["independent_test_certificates"] == 2
+          assert receipt["platform_binary_fingerprint_count"] == 2
+          assert receipt["windows_native_execution_proof"] is True
+          assert receipt["private_keys_in_delivery"] == 0
+          print("Cading Linux-Windows comparison gate earned")
+          PY
+      - name: Upload Cading paired Linux-Windows receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_CADING_LINUX_WINDOWS_PAIR_v1.4
+          path: |
+            build/cading-windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/cading-windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_v1.4.zip
+            build/cading-windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_v1.4.sha256
+          if-no-files-found: error
+
+  windows-shards:
+    name: ${{ matrix.os }} release shard ${{ matrix.shard }} of 10
+    needs: cading-windows-compare
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 110
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2022]
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    steps:
+      - name: Check out exact Windows-repro branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Set up exact Java 17 family and keytool
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17.0.16+8"
+      - name: Set up Android command-line tools
+        uses: android-actions/setup-android@v3
+      - name: Install pinned Android tools on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;$JM_BUILD_TOOLS"
+          echo "JM_AAPT2=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/aapt2" >> "$GITHUB_ENV"
+          echo "JM_APKSIGNER=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/apksigner" >> "$GITHUB_ENV"
+          echo "JM_ZIPALIGN=$ANDROID_HOME/build-tools/$JM_BUILD_TOOLS/zipalign" >> "$GITHUB_ENV"
+      - name: Install pinned Android tools on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          1..200 | ForEach-Object { 'y' } | & sdkmanager.bat --licenses | Out-Null
+          & sdkmanager.bat 'platforms;android-35' "build-tools;$env:JM_BUILD_TOOLS"
+          $tools = Join-Path $env:ANDROID_HOME "build-tools\$env:JM_BUILD_TOOLS"
+          $aapt2 = Join-Path $tools 'aapt2.exe'
+          $apksigner = Join-Path $tools 'apksigner.bat'
+          $zipalign = Join-Path $tools 'zipalign.exe'
+          if (!(Test-Path $aapt2) -or !(Test-Path $apksigner) -or !(Test-Path $zipalign)) { throw 'Pinned Android Windows tools are missing' }
+          "JM_AAPT2=$aapt2" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "JM_APKSIGNER=$apksigner" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "JM_ZIPALIGN=$zipalign" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Set up exact Gradle donor
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.10.2"
+      - name: Build 10 sovereign releases independently on Linux
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_build.py \
+            --repo-root . \
+            --out build/windows-repro \
+            --runner-label "${{ matrix.os }}" \
+            --shard-index ${{ matrix.shard }} \
+            --shard-count 10 \
+            --aapt2 "$JM_AAPT2" \
+            --apksigner "$JM_APKSIGNER" \
+            --zipalign "$JM_ZIPALIGN"
+      - name: Build 10 sovereign releases independently on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_build.py `
+            --repo-root . `
+            --out build/windows-repro `
+            --runner-label '${{ matrix.os }}' `
+            --shard-index ${{ matrix.shard }} `
+            --shard-count 10 `
+            --aapt2 $env:JM_AAPT2 `
+            --apksigner $env:JM_APKSIGNER `
+            --zipalign $env:JM_ZIPALIGN
+      - name: Upload public unsigned, signed and receipt evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_LINUX_WINDOWS_${{ matrix.os }}_SHARD_${{ matrix.shard }}_OF_10_v1.4
+          path: build/windows-repro/cross-runner-${{ matrix.os }}-shard-*-of-10/**
+          if-no-files-found: error
+          compression-level: 6
+
+  windows-federation:
+    name: Seal 100-body Linux-Windows reproducibility federation
+    needs: windows-shards
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out Linux-Windows binder
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Download all twenty independent operating-system shards
+        uses: actions/download-artifact@v4
+        with:
+          pattern: JM_ANDROID_LINUX_WINDOWS_*_SHARD_*_OF_10_v1.4
+          path: build/windows-shards
+          merge-multiple: false
+      - name: Verify 100 paired bodies across Linux and Windows
+        run: |
+          python coding-estate/everybody/full-stack/tools/android_windows_aggregate.py \
+            --source build/windows-shards \
+            --out build/windows-master \
+            --expected-bodies 100 \
+            --expected-shards 10 \
+            --runner-a ubuntu-24.04 \
+            --runner-b windows-2022
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("build/windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_MASTER_RECEIPT.json").read_text(encoding="utf-8"))
+          assert receipt["status"] == "ANDROID_100_LINUX_WINDOWS_UNSIGNED_EXACT_AND_SIGNED_PAYLOAD_EQUIVALENCE_PASS"
+          assert receipt["body_count"] == 100
+          assert receipt["runner_count"] == 2
+          assert receipt["cross_os_family_count"] == 2
+          assert set(receipt["cross_os_families"].values()) == {"Linux/Ubuntu", "Windows/Server"}
+          assert receipt["independent_release_builds"] == 200
+          assert receipt["unsigned_byte_identical_pairs"] == 100
+          assert receipt["source_inventory_identical_pairs"] == 100
+          assert receipt["unsigned_inventory_identical_pairs"] == 100
+          assert receipt["normalized_signed_payload_equivalent_pairs"] == 100
+          assert receipt["v2_or_newer_signature_proofs"] == 200
+          assert receipt["independent_test_certificates"] == 200
+          assert receipt["platform_binary_fingerprint_count"] == 2
+          assert receipt["windows_native_execution_proof"] is True
+          assert receipt["zero_permission_pair_proofs"] == 100
+          assert receipt["single_exported_launcher_pair_proofs"] == 100
+          assert receipt["zero_native_payload_pair_proofs"] == 100
+          assert receipt["zero_private_key_entry_pair_proofs"] == 100
+          assert receipt["unique_packages"] == 100
+          assert receipt["private_keys_in_delivery"] == 0
+          print("200 independent Linux-Windows builds and 100 exact pairs verified")
+          PY
+      - name: Seal public Linux-Windows estate
+        run: |
+          tar -czf JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4.tar.gz -C build windows-master
+          sha256sum JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4.tar.gz | tee JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4.sha256
+      - name: Upload 100-body Linux-Windows federation
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4
+          path: |
+            JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4.tar.gz
+            JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_FEDERATION_v1.4.sha256
+            build/windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_MASTER_RECEIPT.json
+            build/windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_v1.4.zip
+            build/windows-master/JM_ANDROID_100_LINUX_WINDOWS_REPRODUCIBILITY_v1.4.sha256
+          if-no-files-found: error
+          compression-level: 0

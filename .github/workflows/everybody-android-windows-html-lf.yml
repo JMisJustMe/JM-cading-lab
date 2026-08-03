@@ -1,0 +1,44 @@
+name: JM Android Windows HTML LF Contract
+run-name: "Android Windows HTML LF contract @ ${{ github.sha }}"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/crown32-android-windows-repro-v1-4
+    paths:
+      - coding-estate/everybody/full-stack/tools/android_windows_build.py
+      - coding-estate/everybody/full-stack/tests/test_android_windows_html_lf.py
+      - .github/workflows/everybody-android-windows-html-lf.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/full-stack/tools/android_windows_build.py
+      - coding-estate/everybody/full-stack/tests/test_android_windows_html_lf.py
+      - .github/workflows/everybody-android-windows-html-lf.yml
+
+concurrency:
+  group: jm-android-windows-html-lf-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  html-lf-contract:
+    name: Canonical HTML LF and binary-preservation contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Check out exact Windows-repro branch
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile adapter and regression
+        run: |
+          python -m py_compile \
+            coding-estate/everybody/full-stack/tools/android_windows_build.py \
+            coding-estate/everybody/full-stack/tests/test_android_windows_html_lf.py
+      - name: Prove HTML CRLF-to-LF canonicalization
+        run: python coding-estate/everybody/full-stack/tests/test_android_windows_html_lf.py

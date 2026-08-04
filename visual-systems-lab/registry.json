@@ -1,12 +1,25 @@
 {
-  "schema": "jm.visual-systems-lab.registry/0.1",
-  "name": "JM Estate — Visual Systems Lab",
-  "version": "0.1.0",
-  "status": "WORKING_FIRST_BODY_MOUNTED_NOT_CROWNED",
+  "schema": "jm.visual-systems-lab.registry/0.3",
+  "name": "JM Visual Crown — Deep House, Living Fields & Composition Without Erasure",
+  "version": "0.3.0",
+  "status": "ACCEPTED_FROZEN_LOCKED_ANCHORED_MOUNTED",
+  "chat_name": "JM VISUAL CROWN — Deep House, Living Fields & Composition Without Erasure — From Optical Illusion to Alterable Visual Estate",
   "keeper": "Observant. Absorbent. Adaptive. The visual should reveal the route.",
-  "route": "visual-systems-lab/",
-  "open_first": "visual-systems-lab/00_OPEN_FIRST.html",
-  "source_seed": "visual-systems-lab/visual-lab.cading",
+  "authority": {
+    "current": "JM Visual Crown — Deep House v0.3",
+    "previous_proved_recovery": "JM Visual Systems Lab v0.1",
+    "release_register": "visual-systems-lab/releases/v0.3/",
+    "exact_library_path": "/JM Estate/Visual Systems Lab/Deep House v0.3",
+    "exact_html_sha256": "e0d843720abe739543e4d7892f4f42a8c109fbc01ebb0df5cbb97bc18f9ca16a",
+    "source_zip_sha256": "718f2a9a0d1ff29c10f4a3f253eefeed997b578edc8180da7391c47209624ec0",
+    "proof_zip_sha256": "07c5fb939ef07413f199dfeca00d69231e973c37d4ed7baf9e14fc6732e22108"
+  },
+  "lineage": [
+    {"version":"0.1.0","role":"proved website/PWA/debug-APK recovery body","preserved":true},
+    {"version":"0.2.0","role":"Full House fill-out lineage","preserved":true},
+    {"version":"0.2.1","role":"Illusion Depth repair lineage","preserved":true},
+    {"version":"0.3.0","role":"accepted Deep House authority","preserved":true}
+  ],
   "source_authority": [
     "Cading",
     "JMLogic",
@@ -17,6 +30,8 @@
     "JM Visual Interaction Runtime",
     "JMVisualGraft",
     "Visualang",
+    "Living Cursor",
+    "GripCube / GripBody",
     "TraceBox",
     "Dings",
     "Cold Ding Join",
@@ -24,23 +39,50 @@
     "Zionfolder"
   ],
   "rooms": [
-    {"id":"illusion","state":"LIVE","caps":["Muller-Lyer","Rubin figure-ground","peripheral drift","checker shadow","measure reveal","observation trace"]},
-    {"id":"image","state":"LIVE_BOUNDED","caps":["local source load","non-destructive preview treatment","source compare","PNG export"]},
-    {"id":"video","state":"LIVE_BOUNDED","caps":["local clip load","playback speed","frame stepping","preview contrast","frame capture"]},
-    {"id":"motion","state":"LIVE","caps":["connected-difference field","orbit","tunnel","breathe","speed density pull"]},
-    {"id":"prompt","state":"LIVE_FORMING_BODY","caps":["subject field light motion frame exclusion separation","copy","story handoff"]},
-    {"id":"story","state":"LIVE_BOUNDED","caps":["video frame intake","prompt intake","text frames","reorder","caption","JSON export"]}
+    {"id":"portal","state":"LIVE_FILLED","caps":["route constellation","living preview","direct route entry","status assembly"]},
+    {"id":"illusion","state":"LIVE_DEEP","caps":["six distinct illusion renderers","direct field dragging","perceivable slider consequence","predict reveal compare trace"]},
+    {"id":"image","state":"LIVE_DEEP","caps":["built-in source","local source replacement","light colour depth bloom compare modes","histogram","recipes","PNG derivative"]},
+    {"id":"video","state":"LIVE_DEEP_BOUNDED","caps":["animated demo reel","local clip replacement","camera depth trail grade interaction","frame step","IN OUT loop","Story capture"]},
+    {"id":"motion","state":"LIVE_DEEP","caps":["five motion species","attract repel vortex weave","direct touch pressure","symmetry","echo persistence","capture"]},
+    {"id":"forge","state":"LIVE_DEEP_FORMING_BODY","caps":["source recipes","heat compression spread","draggable formation focus","orbit column wave constellation","MUM Story handoff"]},
+    {"id":"mum","state":"LIVE_DEEP_COMPOSITOR","caps":["eight source-body types","proof arrival storm archive presets","move scale rotate","opacity blend rename text visibility lock duplicate reorder","composition without erasure"]},
+    {"id":"story","state":"LIVE_DEEP_SEQUENCE","caps":["populated guided sequence","captured body intake","captions","duration","fade slide pulse cut transitions","reorder","HTML JSON export"]},
+    {"id":"vault","state":"LIVE_DEEP_LEDGER","caps":["session assets Story layers Trace exports faults receipts shelves","interactive route topology","session export import","recovery","bounded Ding"]}
   ],
-  "surface_law": "128 is the whole available visible body; identity > protected visual world > movement contact > actions > recovery.",
-  "controls": ["touch","keyboard","trackpad","pointer"],
+  "surface_law": "128 is the whole actual visible body; identity > protected visual world > movement/contact > actions > always-reachable recovery.",
+  "visual_laws": [
+    "MAXIMAL VISUAL DEPTH IS A CORE FUNCTION",
+    "DEPTH MUST CARRY MEANING",
+    "INTERACTION MUST PRODUCE PERCEIVABLE CONSEQUENCE",
+    "ALTERATION IS FIRST-CLASS",
+    "SHARED HOUSE DOES NOT ERASE DISTINCT ROOM IDENTITY",
+    "MUM IS COMPOSITION WITHOUT ERASURE"
+  ],
+  "controls": ["touch","keyboard","trackpad","pointer","direct field drag","sliders","presets","layer manipulation"],
+  "proof": {
+    "viewports": ["412x915","360x800","1366x768","1440x900"],
+    "zero_horizontal_overflow": "PASS",
+    "image_depth_pixel_change": "PASS",
+    "image_bloom_pixel_change": "PASS",
+    "video_depth_pixel_change": "PASS",
+    "video_grade_pixel_change": "PASS",
+    "forge_heat_pixel_change": "PASS",
+    "forge_spread_pixel_change": "PASS",
+    "mum_scale_change": "PASS",
+    "story_timeline_count": 5,
+    "browser_errors": 0,
+    "user_acceptance": "PASS"
+  },
   "delivery": {
-    "website": "PASS_LIVE_ROUTE",
-    "pwa": "PASS_INSTALLABLE",
-    "offline": "PASS_CORE_CACHE",
-    "capacitor_android_source": "PASS_GENERATED",
-    "android_debug_apk": "PASS_COMPILED_INSTALLABLE",
+    "v0_3_standalone_html": "PASS_ACCEPTED_AND_LIBRARY_MOUNTED",
+    "v0_3_source_and_proof_custody": "PASS_LIBRARY_MOUNTED_WITH_SHA256",
+    "v0_3_github_release_register": "PASS_MOUNTED",
+    "v0_3_public_github_pages_head": "NOT_YET_PROMOTED",
+    "v0_3_pwa_recompile": "NOT_YET_RUN",
+    "v0_3_android_debug_apk": "NOT_YET_COMPILED",
+    "v0_1_live_website_pwa_android_recovery": "PASS_PRESERVED",
     "play_store_release_signed_apk": "NOT_CLAIMED",
     "android_app_bundle_aab": "NOT_CLAIMED"
   },
-  "claim_boundary": "A working first visual laboratory body with proved website, PWA and Android debug APK delivery. It is not yet a crown, a Play Store release-signed APK/AAB, a full non-linear editor, or a connected AI image generator."
+  "claim_boundary": "Accepted Deep House checkpoint and current visual authority with exact body, source, proof, QA and hashes mounted. It is not claimed as a final universal visual system, a full professional nonlinear editor, a production Play Store release, or a final Crown beyond the recorded proof and user acceptance."
 }

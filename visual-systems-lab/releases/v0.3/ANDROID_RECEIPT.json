@@ -1,0 +1,28 @@
+{
+  "schema": "jm.visual.android-receipt/0.3",
+  "body": "JM Visual Crown — Deep House v0.3",
+  "status": "DEBUG_APK_PACKAGED_AND_MOUNTED",
+  "app_label": "JM Deep House",
+  "package_id": "com.jmisjustme.visualsystems",
+  "source_html_sha256": "e0d843720abe739543e4d7892f4f42a8c109fbc01ebb0df5cbb97bc18f9ca16a",
+  "embedded_index_sha256": "e0d843720abe739543e4d7892f4f42a8c109fbc01ebb0df5cbb97bc18f9ca16a",
+  "exact_body_match": true,
+  "apk": {
+    "filename": "JM-Visual-Crown-Deep-House-v0.3-debug.apk",
+    "bytes": 3781063,
+    "sha256": "4aa25970084e29367ecf6adbb5399147b02ed7fc11b1aeb0dd76bb64b70fb160",
+    "archive_integrity": "PASS",
+    "signature": "JAR_V1_SHA256WITHRSA_PASS",
+    "real_device_install": "PENDING_USER_DING"
+  },
+  "custody": {
+    "library_path": "/JM Estate/Visual Systems Lab/Deep House v0.3",
+    "apk": "libfile_4c4d82297abc81918847b13311a0dbb9",
+    "proof_zip": "libfile_7e6e062f84708191bf88063b0cc1dd38",
+    "build_proof": "libfile_d05eae8c07648191905a5fe681ca9a8e",
+    "install_receipt": "libfile_bfde191f6a1c8191875bb6ca6907558c",
+    "sha256": "libfile_f61426b864c88191a9c6aeaaa933fada"
+  },
+  "install_note": "This APK uses a new debug key with the existing package ID. If Android reports a signature conflict, uninstall the older JM Visual Lab debug build before installing.",
+  "claim_boundary": "Debug-signed sideload APK. Not Play Store release-signed, not an AAB, and real-device installation remains pending user contact."
+}

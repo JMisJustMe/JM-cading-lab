@@ -1,0 +1,17 @@
+{
+  "schema": "jm.visual.android-package-plan/0.3",
+  "body": "JM Visual Crown — Deep House v0.3",
+  "status": "BUILDING_EXACT_BODY_DEBUG_APK",
+  "source_html_sha256": "e0d843720abe739543e4d7892f4f42a8c109fbc01ebb0df5cbb97bc18f9ca16a",
+  "package_target": "com.jmisjustme.visualcrown",
+  "app_name": "JM Visual Crown",
+  "required_proof": [
+    "exact accepted HTML copied as Android assets/public/index.html",
+    "embedded index SHA-256 equals accepted HTML SHA-256",
+    "Gradle assembleDebug passes",
+    "APK archive integrity passes",
+    "debug signing certificate present",
+    "APK SHA-256 recorded"
+  ],
+  "claim_boundary": "Installable debug APK only; not Play Store release-signed and not an AAB."
+}

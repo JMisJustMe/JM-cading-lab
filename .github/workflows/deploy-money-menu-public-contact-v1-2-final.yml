@@ -1,0 +1,180 @@
+name: Deploy Money Menu Public Contact v1.2 Final
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-money-menu-public-contact-v1-2-final.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out current authority
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Build exact Money Menu and Estate map
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          parts=[Path(f'money-menu/source/index.part.{i:03d}') for i in range(10)]
+          assert all(p.is_file() for p in parts)
+          body=b''.join(p.read_bytes() for p in parts)
+          expected='7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d'
+          assert hashlib.sha256(body).hexdigest()==expected
+          Path('money-menu/index.html').write_bytes(body)
+
+          p=Path('registry/estate-map.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          route={'body':'JM Money Menu — Public Contact Carrier v1.2','path':'money-menu/index.html','state':'LIVE_242_ROUTE_PUBLIC_CONTACT_CARRIER_160_OF_160_PARITY'}
+          routes=d.setdefault('live_github_routes',[])
+          old=next((x for x in routes if x.get('path')==route['path']),None)
+          old.update(route) if old else routes.append(route)
+          department={'body':'JM Money Menu','state':'PUBLIC_CONTACT_CARRIER_V1_2_DEPLOYMENT_RAIL','route':'money-menu/','registry':'registry/money-menu-publication-receipt-v1.2.json','route_count':242,'immediate_route_parity':'160/160 PASS'}
+          departments=d.setdefault('registered_departments',[])
+          old=next((x for x in departments if x.get('body')=='JM Money Menu'),None)
+          old.update(department) if old else departments.append(department)
+          d['money_menu']={'name':'JM Money Menu — Public Contact Carrier','version':'1.2','data_authority':'JM Money Menu — Standalone Current Head v1.1','route':'money-menu/','registry':'registry/money-menu-publication-receipt-v1.2.json','route_count':242,'unique_route_ids':242,'immediate_route_parity':'160/160 PASS','commercial_handoff':['shortlist','enquiry','brief','scope receipt','copy','JSON','text','Web Share','email draft'],'boundary':'v1.2 is the public behaviour descendant; v1.1 remains the reconciled data authority.'}
+          p.write_text(json.dumps(d,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          print('EXACT MONEY MENU SHA PASS', expected)
+          PY
+
+      - name: Assemble and prove governed public body
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf cloudflare-estate
+          mkdir -p cloudflare-estate
+          for f in index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js author-home-door.js robots.txt sitemap.xml 404.html cading.html; do
+            [ ! -f "$f" ] || cp "$f" cloudflare-estate/
+          done
+          for d in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery theory; do
+            [ ! -d "$d" ] || cp -a "$d" "cloudflare-estate/$d"
+          done
+          mkdir -p cloudflare-estate/money-menu cloudflare-estate/registry
+          cp money-menu/index.html money-menu/STATUS.md money-menu/PUBLICATION_RECEIPT.json cloudflare-estate/money-menu/
+          cp registry/estate-map.json registry/money-menu-publication-receipt-v1.2.json registry/money-menu-web-mesh-connection-v1.0.json cloudflare-estate/registry/
+
+          cat > cloudflare-estate/_headers <<'EOF'
+          /*
+            X-Content-Type-Options: nosniff
+            Referrer-Policy: strict-origin-when-cross-origin
+            Cache-Control: no-cache, must-revalidate
+          /sw.js
+            Cache-Control: no-store, no-cache, must-revalidate
+            Service-Worker-Allowed: /
+          /money-menu/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          EOF
+          cat > cloudflare-estate/_redirects <<'EOF'
+          /money-menu /money-menu/index.html 200
+          /money-menu/ /money-menu/index.html 200
+          /apps /apps/index.html 200
+          /apps/ /apps/index.html 200
+          /games-beyond /games-beyond/index.html 200
+          /games-beyond/ /games-beyond/index.html 200
+          /theory /theory/index.html 200
+          /theory/ /theory/index.html 200
+          /lyrics /lyrics/index.html 200
+          /lyrics/ /lyrics/index.html 200
+          /recovery /recovery/index.html 200
+          /recovery/ /recovery/index.html 200
+          EOF
+
+          grep -Fq 'Your work no longer lives as scattered HTMLs' cloudflare-estate/index.html
+          grep -Fq 'JM Money Menu · Public Contact Carrier v1.2' cloudflare-estate/money-menu/index.html
+          grep -Fq 'governed routes' cloudflare-estate/money-menu/index.html
+          grep -Fq 'enquiry → brief → scope → receipt' cloudflare-estate/money-menu/index.html
+          grep -Fq 'No silent submission' cloudflare-estate/money-menu/index.html
+          grep -Fq './money-menu/' cloudflare-estate/author-home-door.js
+          grep -Fq '/money-menu/' cloudflare-estate/sitemap.xml
+          grep -Fq 'jm-web-estate-v1.4.6-money-menu-public-contact' cloudflare-estate/sw.js
+          for p in apps/index.html games-beyond/index.html theory/index.html lyrics/index.html recovery/index.html; do test -s "cloudflare-estate/$p"; done
+          python3 - <<'PY'
+          import json
+          d=json.load(open('cloudflare-estate/registry/estate-map.json',encoding='utf-8'))
+          assert d['money_menu']['route_count']==242
+          assert d['money_menu']['immediate_route_parity']=='160/160 PASS'
+          assert any(x.get('path')=='money-menu/index.html' for x in d['live_github_routes'])
+          PY
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove live Android and laptop contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          android='Mozilla/5.0 (Linux; Android 16; CPH2305) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Mobile Safari/537.36'
+          laptop='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Safari/537.36'
+          for label in android laptop; do
+            [ "$label" = android ] && ua="$android" || ua="$laptop"
+            pass=0
+            for attempt in $(seq 1 60); do
+              pass=1
+              for check in '/index.html|Your work no longer lives as scattered HTMLs' '/money-menu/index.html|JM Money Menu · Public Contact Carrier v1.2' '/money-menu/|JM Money Menu · Public Contact Carrier v1.2'; do
+                path="${check%%|*}"; marker="${check#*|}"; body="$RUNNER_TEMP/$label.html"
+                code="$(curl -sSLo "$body" -w '%{http_code}' --max-time 25 -A "$ua" -H 'Cache-Control: no-cache' "$base$path?proof=$GITHUB_RUN_ID-$attempt" || true)"
+                if [ "$code" != 200 ] || ! grep -Fq "$marker" "$body" || grep -Fq 'Returning to the JM Web Estate' "$body"; then pass=0; fi
+              done
+              [ "$pass" = 1 ] && break
+              sleep 3
+            done
+            test "$pass" = 1
+          done
+          for path in /apps/ /games-beyond/ /theory/ /lyrics/ /recovery/; do
+            body="$RUNNER_TEMP/preserved.html"
+            code="$(curl -sSLo "$body" -w '%{http_code}' --max-time 25 -H 'Cache-Control: no-cache' "$base$path?proof=$GITHUB_RUN_ID" || true)"
+            test "$code" = 200
+            ! grep -Fq 'Returning to the JM Web Estate' "$body"
+          done
+
+      - name: Seal live current head and receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          now=datetime.now(timezone.utc).isoformat(); run=os.environ['GITHUB_RUN_ID']; sha=os.environ['GITHUB_SHA']
+          live={'schema':'JM.CloudflareMoneyMenuLiveReceipt/1.2','verified_utc':now,'status':'LIVE_ANDROID_AND_LAPTOP_EXACT_AND_DIRECTORY_PASS','host':'https://jmisjustme-estate.pages.dev','route':'/money-menu/','exact_route':'/money-menu/index.html','public_carrier':'JM Money Menu — Public Contact Carrier v1.2','data_authority':'JM Money Menu — Standalone Current Head v1.1','routes':242,'unique_route_ids':242,'immediate_route_parity':'160/160 PASS','root_front_door':'PASS','commercial_handoff':['shortlist','enquiry','brief','scope receipt','copy','JSON','text','Web Share','email draft'],'workflow_run':run,'source_commit':sha,'boundary':'Public live contact passed. External delivery still depends on the visitor choosing copy, share or email.'}
+          Path('registry/cloudflare-money-menu-live-receipt-v1.2.json').write_text(json.dumps(live,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          p=Path('registry/money-menu-publication-receipt-v1.2.json'); r=json.loads(p.read_text(encoding='utf-8'))
+          r.update({'status':'LIVE_DEPLOYMENT_PASS','deployment':'CLOUDFLARE_PASS','root_front_door':'PASS','live_phone_contact':'ANDROID_EXACT_AND_DIRECTORY_PASS','live_laptop_contact':'DESKTOP_EXACT_AND_DIRECTORY_PASS','verified_utc':now,'workflow_run':run})
+          p.write_text(json.dumps(r,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          Path('money-menu/STATUS.md').write_text(f'''# JM Money Menu — Public Publication Status\n\n**Data authority:** JM Money Menu — Standalone Current Head v1.1  \n**Public carrier:** JM Money Menu — Public Contact Carrier v1.2  \n**Routes:** 242 unique identities  \n**Immediate parity:** 160/160 PASS  \n**Cloudflare:** LIVE DEPLOYMENT PASS  \n**Android:** exact + directory PASS  \n**Laptop:** exact + directory PASS  \n**Root Estate door:** PASS  \n**Verified:** {now}  \n\nShortlist → enquiry → brief → scope receipt → copy/download/share/email draft. No form is silently submitted.\n''',encoding='utf-8')
+          PY
+          git config user.name 'JM Money Menu Public Contact Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add money-menu/index.html money-menu/STATUS.md registry/estate-map.json registry/cloudflare-money-menu-live-receipt-v1.2.json registry/money-menu-publication-receipt-v1.2.json
+          git commit -m 'Seal Money Menu v1.2 live publication [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

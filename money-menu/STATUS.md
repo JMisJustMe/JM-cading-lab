@@ -3,15 +3,11 @@
 **Data authority:** JM Money Menu — Standalone Current Head v1.1  
 **Public carrier:** JM Money Menu — Public Contact Carrier v1.2  
 **Routes:** 242 unique identities  
-**Immediate route parity:** 160/160 PASS  
+**Immediate parity:** 160/160 PASS  
+**Cloudflare:** LIVE DEPLOYMENT PASS  
+**Android:** exact + directory PASS  
+**Laptop:** exact + directory PASS  
+**Root Estate door:** PASS  
+**Verified:** 2026-08-05T22:28:28.913371+00:00  
 
-## Route
-
-- `money-menu/index.html` — public contact carrier v1.2
-- v1.1 authority carrier — preserved in Estate custody; not duplicated as a second public head
-
-## Commercial handoff
-
-Shortlist → enquiry → brief → scope receipt → copy/download/share/email draft.
-
-No form is silently submitted. The generated scope is a request, not a contract, payment receipt or completion Ding.
+Shortlist → enquiry → brief → scope receipt → copy/download/share/email draft. No form is silently submitted.

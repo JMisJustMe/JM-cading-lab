@@ -130,6 +130,11 @@
       "body": "JM Capability, Access & Architectural Authority Law",
       "path": "governance/capability-access-authority-law/index.html",
       "state": "PERMANENT_GOVERNING_OWNER_AUTHORITY_GATE"
+    },
+    {
+      "body": "JM Money Menu — Public Contact Carrier v1.2",
+      "path": "money-menu/index.html",
+      "state": "LIVE_242_ROUTE_PUBLIC_CONTACT_CARRIER_160_OF_160_PARITY"
     }
   ],
   "registered_departments": [
@@ -275,6 +280,14 @@
       "route": "author/press-kit/",
       "registry": "author/press-kit/press-kit-public.json",
       "boundary": "Author projection route; does not mutate governed body or Project Head passport totals."
+    },
+    {
+      "body": "JM Money Menu",
+      "state": "PUBLIC_CONTACT_CARRIER_V1_2_DEPLOYMENT_RAIL",
+      "route": "money-menu/",
+      "registry": "registry/money-menu-publication-receipt-v1.2.json",
+      "route_count": 242,
+      "immediate_route_parity": "160/160 PASS"
     }
   ],
   "author_master_body": {
@@ -516,5 +529,27 @@
     "crown_law": "Capability does not grant coronation. Access does not grant architectural authority. No new public lane may be created before the existing lane is recalled, declared and deliberately continued—or deliberately preserved as separate by JM.",
     "public_route": "governance/capability-access-authority-law/",
     "registry": "registry/capability-access-authority-law-v1.0.json"
+  },
+  "money_menu": {
+    "name": "JM Money Menu — Public Contact Carrier",
+    "version": "1.2",
+    "data_authority": "JM Money Menu — Standalone Current Head v1.1",
+    "route": "money-menu/",
+    "registry": "registry/money-menu-publication-receipt-v1.2.json",
+    "route_count": 242,
+    "unique_route_ids": 242,
+    "immediate_route_parity": "160/160 PASS",
+    "commercial_handoff": [
+      "shortlist",
+      "enquiry",
+      "brief",
+      "scope receipt",
+      "copy",
+      "JSON",
+      "text",
+      "Web Share",
+      "email draft"
+    ],
+    "boundary": "v1.2 is the public behaviour descendant; v1.1 remains the reconciled data authority."
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "JM.MoneyMenuPublicationReceipt/1.2",
   "recorded_at": "2026-08-05",
-  "status": "SOURCE_READY_DEPLOYMENT_PENDING",
+  "status": "LIVE_DEPLOYMENT_PASS",
   "data_authority": "JM Money Menu — Standalone Current Head v1.1",
   "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
   "route": "money-menu/index.html",
@@ -26,9 +26,12 @@
     "Web Share",
     "email draft"
   ],
-  "deployment": "PENDING_AUTHORITATIVE_CLOUDFLARE_WORKFLOW",
-  "live_phone_contact": "PENDING",
-  "live_laptop_contact": "PENDING",
+  "deployment": "CLOUDFLARE_PASS",
+  "live_phone_contact": "ANDROID_EXACT_AND_DIRECTORY_PASS",
+  "live_laptop_contact": "DESKTOP_EXACT_AND_DIRECTORY_PASS",
   "boundary": "Source and local interaction proof are complete. Public live contact is not claimed before workflow verification.",
-  "preserved_v1_1": "Estate custody / not separately exposed as a public head"
+  "preserved_v1_1": "Estate custody / not separately exposed as a public head",
+  "root_front_door": "PASS",
+  "verified_utc": "2026-08-05T22:28:28.913371+00:00",
+  "workflow_run": "31052843453"
 }

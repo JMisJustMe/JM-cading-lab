@@ -1,0 +1,28 @@
+{
+  "schema": "JM.CloudflareMoneyMenuLiveReceipt/1.2",
+  "verified_utc": "2026-08-05T22:28:28.913371+00:00",
+  "status": "LIVE_ANDROID_AND_LAPTOP_EXACT_AND_DIRECTORY_PASS",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "route": "/money-menu/",
+  "exact_route": "/money-menu/index.html",
+  "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
+  "data_authority": "JM Money Menu — Standalone Current Head v1.1",
+  "routes": 242,
+  "unique_route_ids": 242,
+  "immediate_route_parity": "160/160 PASS",
+  "root_front_door": "PASS",
+  "commercial_handoff": [
+    "shortlist",
+    "enquiry",
+    "brief",
+    "scope receipt",
+    "copy",
+    "JSON",
+    "text",
+    "Web Share",
+    "email draft"
+  ],
+  "workflow_run": "31052843453",
+  "source_commit": "2b41efa75b360ae1dd23216aa218804ee3ca3067",
+  "boundary": "Public live contact passed. External delivery still depends on the visitor choosing copy, share or email."
+}

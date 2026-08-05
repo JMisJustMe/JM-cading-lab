@@ -8,7 +8,7 @@
 ## Route
 
 - `money-menu/index.html` — public contact carrier v1.2
-- `money-menu/v1.1.html` — preserved exact compressed v1.1 carrier
+- v1.1 authority carrier — preserved in Estate custody; not duplicated as a second public head
 
 ## Commercial handoff
 

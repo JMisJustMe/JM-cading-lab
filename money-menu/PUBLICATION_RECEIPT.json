@@ -1,0 +1,25 @@
+{
+  "schema": "JM.MoneyMenuPublicPublicationReceipt/1.0",
+  "status": "SOURCE_READY_DEPLOYMENT_PENDING",
+  "data_authority": "JM Money Menu — Standalone Current Head v1.1",
+  "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
+  "routes": 242,
+  "immediate_parity": "160/160 PASS",
+  "files": [
+    "money-menu/index.html",
+    "money-menu/v1.1.html",
+    "money-menu/STATUS.md"
+  ],
+  "commercial_handoff": [
+    "shortlist",
+    "enquiry",
+    "brief",
+    "scope receipt",
+    "copy",
+    "JSON",
+    "text",
+    "Web Share",
+    "email draft"
+  ],
+  "boundary": "Source build complete. Cloudflare and real-device live contact require deployment receipt."
+}

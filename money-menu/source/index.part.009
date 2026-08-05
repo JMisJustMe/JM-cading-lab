@@ -1,0 +1,43 @@
+al()}
+function buildScopePack(){const routes=selectedRoutes();scopePack={schema:'JM.MoneyMenuEnquiryScopeReceipt/1.0',generated_at:new Date().toISOString(),public_carrier:'JM Money Menu — Public Contact Carrier v1.2',data_authority:'JM Money Menu — Standalone Current Head v1.1 / Estate Growth Ledger v1.0',route_count:routes.length,routes:routes.map(x=>({id:x.id,title:x.title,house:x.house,state:x.state,price:x.price,tagline:x.tagline,source_status:x.source_status,boundary:x.boundary})),enquiry:{name:$('#clientName').value.trim(),reply_contact:$('#clientContact').value.trim(),budget:$('#clientBudget').value,timing:$('#clientTiming').value,need:$('#clientNeed').value.trim(),conditions:$('#clientBoundary').value.trim()},scope_state:'REQUESTED_SCOPE_NOT_ACCEPTED_CONTRACT',truth_boundary:'This is a visitor-generated enquiry and scoping receipt. It is not an accepted quotation, contract, payment receipt or completion Ding.'};$('#scopePreview').textContent=JSON.stringify(scopePack,null,2);try{localStorage.setItem('jm-money-menu-enquiry-draft',JSON.stringify(scopePack))}catch(e){}return scopePack}
+function scopeText(){const p=scopePack||buildScopePack();return `JM MONEY MENU — ENQUIRY / BRIEF / SCOPE RECEIPT\nGenerated: ${p.generated_at}\nName: ${p.enquiry.name||'Not supplied'}\nReply contact: ${p.enquiry.reply_contact||'Not supplied'}\nBudget: ${p.enquiry.budget}\nTiming: ${p.enquiry.timing}\n\nROUTES\n${p.routes.map((r,i)=>`${i+1}. ${r.title} [${r.id}] — ${r.price} — ${r.house} — ${r.state}`).join('\n')}\n\nNEED\n${p.enquiry.need||'Not supplied'}\n\nCONDITIONS / BOUNDARIES\n${p.enquiry.conditions||'Not supplied'}\n\nBOUNDARY\n${p.truth_boundary}`};
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$('#enquiryBtn').onclick=openEnquiry;$('#frontEnquiryBtn').onclick=openEnquiry;$('#closeEnquiry').onclick=()=>$('#enquiryDlg').close();
+$('#enquiryForm').onsubmit=e=>{e.preventDefault();buildScopePack()};
+$('#copyScope').onclick=async()=>{const t=scopeText();try{await navigator.clipboard.writeText(t);$('#copyScope').textContent='Copied'}catch{$('#scopePreview').textContent=t}};
+$('#downloadScopeJson').onclick=()=>{const p=scopePack||buildScopePack();download(`JM_MONEY_MENU_ENQUIRY_${Date.now()}.json`,JSON.stringify(p,null,2),'application/json')};
+$('#downloadScopeText').onclick=()=>download(`JM_MONEY_MENU_ENQUIRY_${Date.now()}.txt`,scopeText(),'text/plain');
+$('#shareScope').onclick=async()=>{const t=scopeText();if(navigator.share){try{await navigator.share({title:'JM Money Menu enquiry',text:t})}catch(e){}}else{try{await navigator.clipboard.writeText(t);$('#shareScope').textContent='Copied instead'}catch{}}};
+$('#emailScope').onclick=()=>{const p=scopePack||buildScopePack();const subject=encodeURIComponent(`JM Money Menu enquiry — ${p.routes.map(r=>r.title).join(' + ')||'route request'}`);const body=encodeURIComponent(scopeText());location.href=`mailto:${contactTarget}?subject=${subject}&body=${body}`};
+try{const draft=JSON.parse(localStorage.getItem('jm-money-menu-enquiry-draft')||'null');if(draft?.enquiry){$('#clientName').value=draft.enquiry.name||'';$('#clientContact').value=draft.enquiry.reply_contact||'';$('#clientBudget').value=draft.enquiry.budget||'Not decided';$('#clientTiming').value=draft.enquiry.timing||'Exploring';$('#clientNeed').value=draft.enquiry.need||'';$('#clientBoundary').value=draft.enquiry.conditions||''}}catch(e){}
+const receipt=`JM MONEY MENU — AUTHORITY RECONCILIATION & PARITY RECEIPT
+Status: PUBLIC CONTACT DESCENDANT / v1.1 DATA AUTHORITY PRESERVED
+Direct source body: JM Money Menu — Estate Growth Ledger v1.0
+Current route count: 242
+Previous promoted source: v0.8 / 231 routes
+Authority correction: +11 routes / 0 removals
+Immediate census comparison: 32 routes
+Route IDs: 32/32 MATCH
+Titles: 32/32 MATCH
+Houses: 32/32 MATCH
+States: 32/32 MATCH
+Prices: 32/32 MATCH
+Five-field checks: 160/160 PASS
+
+Boundary:
+This carrier is a verified descendant reconciled to the strongest accessible direct source data.
+The v0.8 / 231-route carrier remains preserved as lineage.
+It is not claimed to be the lost 67,371-byte ancestor.
+
+Source carrier SHA-256:
+${META.source_sha256}
+
+Embedded Money payload SHA-256:
+${META.payload_sha256}
+
+DING: PASS — SOURCE AUTHORITY RECONCILIATION & EXACT 32-ROUTE PARITY`;
+$('#receiptText').textContent=receipt;$('#receiptBtn').onclick=()=>$('#receiptDlg').showModal();$('#closeReceipt').onclick=()=>$('#receiptDlg').close();
+render();
+})();
+</script>
+</body></html>

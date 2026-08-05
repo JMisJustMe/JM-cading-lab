@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.5-author-press-kit';
+const CACHE='jm-web-estate-v1.4.6-money-menu-public-contact';
 const CORE=[
   './',
   './index.html',
@@ -14,7 +14,11 @@ const CORE=[
   './registry/estate-map.json',
   './registry/estate-head-public-current.json',
   './registry/theory-wing.json',
+  './registry/money-menu-publication-receipt-v1.2.json',
   './games-beyond/registry.json',
+  './money-menu/',
+  './money-menu/index.html',
+  './money-menu/PUBLICATION_RECEIPT.json',
   './author/',
   './author/index.html',
   './author/author-public.json',

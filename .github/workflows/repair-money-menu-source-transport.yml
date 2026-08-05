@@ -1,0 +1,55 @@
+name: Repair Exact Money Menu Source Transport
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repair-money-menu-source-transport.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Decode, prove and replace exact part 001
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 money-menu/source/index.part.001.decode.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          part=Path('money-menu/source/index.part.001').read_bytes()
+          git_blob=hashlib.sha1(b'blob '+str(len(part)).encode()+b'\0'+part).hexdigest()
+          assert len(part)==7058, len(part)
+          assert git_blob=='e0c846debd6ae20cb6ed52d6997cd62e29a1364c', git_blob
+          pieces=[Path(f'money-menu/source/index.part.{i:03d}').read_bytes() for i in range(10)]
+          complete=b''.join(pieces)
+          assert hashlib.sha256(complete).hexdigest()=='7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d'
+          PY
+          rm -f money-menu/source/index.part.001.fix money-menu/source/index.part.001.decode.py money-menu/source/USE_INDEX_PART_001_FIX.txt money-menu/source/README_TRANSPORT.md
+
+      - name: Commit exact repaired source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Exact Source Transport Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A money-menu/source
+          git commit -m 'Repair exact Money Menu part 001 transport'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

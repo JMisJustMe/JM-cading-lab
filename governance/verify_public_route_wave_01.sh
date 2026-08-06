@@ -104,17 +104,24 @@ prove_browser() {
     > "$WORK/theory-$label-witness-dom.html"
 
   echo "THEORY WITNESS DIAGNOSTIC: $label"
-  grep -nE 'data-status=|THEORY WAVE 01 RUNTIME|version|bodies|drafts|fullBodies|recoveryPass007|proof37of37|lineage' \
+  grep -nE 'data-status=|THEORY WAVE 01 RUNTIME|CHECK_' \
     "$WORK/theory-$label-witness-dom.html" | tail -40 || true
   grep -Fq 'data-status="PASS"' "$WORK/theory-$label-witness-dom.html"
   grep -Fq 'THEORY WAVE 01 RUNTIME PASS' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"version": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"bodies": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"drafts": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"fullBodies": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"recoveryPass007": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"proof37of37": true' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq '"lineage": true' "$WORK/theory-$label-witness-dom.html"
+  for token in \
+    CHECK_version_PASS \
+    CHECK_bodies_PASS \
+    CHECK_drafts_PASS \
+    CHECK_fullBodies_PASS \
+    CHECK_phoneRealmsRepaired_PASS \
+    CHECK_topFullBodies_PASS \
+    CHECK_topIntegrityBodies_PASS \
+    CHECK_recoveryPass007_PASS \
+    CHECK_proof37of37_PASS \
+    CHECK_reconciledShell_PASS \
+    CHECK_waveMarker_PASS; do
+    grep -Fq "$token" "$WORK/theory-$label-witness-dom.html"
+  done
   echo "THEORY RUNTIME WITNESS PASS: $label"
 
   echo "BROWSER BEHAVIOUR PASS: $label"
@@ -172,7 +179,7 @@ proof = {
             'Phone-Realms repaired',
             'Recovery Pass 007 rendered',
             '37/37 proof rendered',
-            'v0.20.1 over v0.19 lineage rendered',
+            'v0.20.1 runtime over 300-route reconciled shell',
         ],
     },
 }

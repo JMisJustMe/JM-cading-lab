@@ -38,15 +38,31 @@ jobs:
           import hashlib
           import re
 
+          class RoomParser(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.rooms = []
+
+              def handle_starttag(self, tag, attrs):
+                  attrs = dict(attrs)
+                  classes = set(attrs.get('class', '').split())
+                  if tag == 'section' and 'room' in classes and attrs.get('data-room'):
+                      self.rooms.append(attrs['data-room'])
+
           path = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html')
           raw = path.read_bytes()
           text = raw.decode('utf-8')
+          parser = RoomParser()
+          parser.feed(text)
+          expected_rooms = {'open', 'map', 'command', 'use', 'play', 'read', 'verify', 'owner'}
+          parsed_rooms = set(parser.rooms)
 
           checks = {
               'non_empty_file': len(raw) > 0,
               'html_parser_contact': True,
-              'eight_room_sections': text.count('<section class="room') == 8,
-              'eight_data_room_attributes': text.count('data-room="') == 8,
+              'eight_room_sections': len(parser.rooms) == 8,
+              'eight_unique_room_ids': len(parsed_rooms) == 8,
+              'exact_room_id_set': parsed_rooms == expected_rooms,
               'open_first_label': 'OPEN FIRST' in text,
               'estate_map_label': 'ESTATE MAP' in text,
               'command_room_label': 'COMMAND ROOM' in text,
@@ -60,12 +76,12 @@ jobs:
               'command_search': 'id="search"' in text,
           }
 
-          HTMLParser().feed(text)
           scripts = re.findall(r'<script>(.*?)</script>', text, flags=re.S)
           checks['single_inline_script'] = len(scripts) == 1
 
           for name, passed in checks.items():
               print(('PASS ' if passed else 'FAIL ') + name)
+          print('PARSED rooms', ','.join(parser.rooms))
           failed = [name for name, passed in checks.items() if not passed]
           assert not failed, 'failed checks: ' + ', '.join(failed)
 
@@ -102,6 +118,7 @@ jobs:
               'checks': {
                   'html_parser_contact': 'PASS',
                   'eight_room_navigation': 'PASS',
+                  'unique_room_identity': 'PASS',
                   'mobile_first_bottom_rail': 'PASS',
                   'command_search': 'PASS',
                   'estate_house_filters': 'PASS',

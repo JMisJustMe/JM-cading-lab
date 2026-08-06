@@ -1,0 +1,47 @@
+name: Recover WORDS Missing Base64 Character Wave 01
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/recover-words-missing-character-wave01.yml"
+      - "governance/recover_words_missing_base64_char_wave01.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Check out current WORDS authority
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Prove unique CRC-valid recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/diagnose_theory_runtime_carriers.py
+          python3 -m py_compile governance/diagnose_theory_runtime_carriers_v2.py
+          python3 -m py_compile governance/recover_words_missing_base64_char_wave01.py
+          python3 governance/recover_words_missing_base64_char_wave01.py
+          test -s registry/words-missing-base64-character-recovery-wave01.json
+
+      - name: Seal recovery receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM WORDS Carrier Recovery Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/words-missing-base64-character-recovery-wave01.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Seal WORDS missing-character recovery receipt [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

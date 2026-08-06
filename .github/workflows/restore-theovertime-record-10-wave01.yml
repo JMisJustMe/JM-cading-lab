@@ -134,5 +134,6 @@ jobs:
           git add theory/data/v0_4/part-07.txt
           git add registry/theovertime-record-10-source-restoration-wave01.json
           git commit -m 'Restore TheOverTime record 10 from exact Gmail source'
+          git checkout -- governance/restore_theovertime_record_10_wave01.py
           git pull --rebase origin main
           git push origin HEAD:main

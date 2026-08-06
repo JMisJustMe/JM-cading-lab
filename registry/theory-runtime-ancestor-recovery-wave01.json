@@ -1,0 +1,294 @@
+{
+  "schema": "JM.TheoryRuntimeAncestorRecovery/1.1",
+  "status": "SCAN_COMPLETE",
+  "chat_graft_history": {
+    "candidate_blobs": 11,
+    "valid_94_record_carriers": [],
+    "candidates": [
+      {
+        "blob": "8c91600f5969a65824002712e52cd46862974b99",
+        "path": "theory/chat-graft-v2.js",
+        "raw_characters": 6956,
+        "normalized_characters": 5820,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      },
+      {
+        "blob": "1406e72b81a89d1a58e52214f17af86d05598f34",
+        "path": "theory/chat-graft-v3.js",
+        "raw_characters": 7728,
+        "normalized_characters": 6460,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      },
+      {
+        "blob": "ca82e84e62021aa9f9678a0799fdbb5467a27e93",
+        "path": "theory/chat-graft-v4.js",
+        "raw_characters": 9674,
+        "normalized_characters": 7888,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      },
+      {
+        "blob": "1cddc2263098c77190ff19481521c67d192995f9",
+        "path": "theory/chat-graft.js",
+        "raw_characters": 5431,
+        "normalized_characters": 4532,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      },
+      {
+        "blob": "c78becda53c68f765b9a1c283d69b1e3494bf495",
+        "path": "theory/data/chat-graft-v1.b64",
+        "raw_characters": 19999,
+        "normalized_characters": 20000,
+        "normalized_mod_4": 0,
+        "base64": "PASS",
+        "decoded_bytes": 14998,
+        "first_16_hex": "beb6356987b03a2f30436229984e85b4",
+        "gzip_magic": false,
+        "gzip_magic_offsets_first_20": []
+      },
+      {
+        "blob": "98c7573f792f08941a866eb8203cc88aa3f956de",
+        "path": "theory/data/chat-graft-v2/part-01.txt",
+        "raw_characters": 5976,
+        "normalized_characters": 5976,
+        "normalized_mod_4": 0,
+        "base64": "PASS",
+        "decoded_bytes": 4482,
+        "first_16_hex": "1f8b0800b05b616a02ffed7d6d8f2357",
+        "gzip_magic": true,
+        "gzip_magic_offsets_first_20": [
+          0
+        ],
+        "gzip": "FAIL",
+        "error": "EOFError('Compressed file ended before the end-of-stream marker was reached')"
+      },
+      {
+        "blob": "229106e6106b212084e8525e16703aed5f2c3115",
+        "path": "theory/data/chat-graft-v2/part-02.txt",
+        "raw_characters": 5976,
+        "normalized_characters": 5976,
+        "normalized_mod_4": 0,
+        "base64": "PASS",
+        "decoded_bytes": 4482,
+        "first_16_hex": "a9a30dfb0e32b9f835203e518163381e",
+        "gzip_magic": false,
+        "gzip_magic_offsets_first_20": []
+      },
+      {
+        "blob": "9265974a47ae8abf80c85ef439eb984805b8269c",
+        "path": "theory/data/chat-graft-v2/part-03.txt",
+        "raw_characters": 5976,
+        "normalized_characters": 5976,
+        "normalized_mod_4": 0,
+        "base64": "PASS",
+        "decoded_bytes": 4482,
+        "first_16_hex": "23d654969e3462249a18814bbef6dd70",
+        "gzip_magic": false,
+        "gzip_magic_offsets_first_20": []
+      },
+      {
+        "blob": "fbb9fb853c2aabe722eb7b7a22f4bf670c6efd3f",
+        "path": "theory/data/chat-graft-v2/part-04.txt",
+        "raw_characters": 5976,
+        "normalized_characters": 5976,
+        "normalized_mod_4": 0,
+        "base64": "PASS",
+        "decoded_bytes": 4480,
+        "first_16_hex": "1f6284526a59c7ba878c751d04935a20",
+        "gzip_magic": false,
+        "gzip_magic_offsets_first_20": []
+      },
+      {
+        "blob": "efdccb26a69ef48d50d97d859d8f9604f8ce8eb0",
+        "path": "theory/data/chat-graft-v3-memory.json",
+        "raw_characters": 5320,
+        "normalized_characters": 4376,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      },
+      {
+        "blob": "e55144d014339ed6b1457bb7b21523e76874ce92",
+        "path": "theory/data/chat-graft-v4-library-wisebase.json",
+        "raw_characters": 15771,
+        "normalized_characters": 14140,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "ValueError('string argument should contain only ASCII characters')"
+      }
+    ]
+  },
+  "words_history": {
+    "commit_pairs_tested": 2,
+    "valid_gzip_pairs": [],
+    "pairs": [
+      {
+        "commit": "d1497b8c6e003f7c3e1856acba363fc8ea8421c8",
+        "available": true,
+        "record_id": "project-words-are-data-constrainers",
+        "chunk_count": 2,
+        "raw_characters": 57615,
+        "normalized_characters": 57616,
+        "normalized_mod_4": 0,
+        "base64": "FAIL",
+        "error": "Error('Invalid base64-encoded string: number of data characters (57613) cannot be 1 more than a multiple of 4')"
+      },
+      {
+        "commit": "e90c68d1387a2a70b36aa5d6b48d91e6c98d3c9e",
+        "available": false
+      }
+    ]
+  },
+  "integrity_orig": {
+    "status": "CARRIER_CONTACTED",
+    "carrier": {
+      "raw_characters": 4380,
+      "normalized_characters": 4380,
+      "normalized_mod_4": 0,
+      "base64": "PASS",
+      "decoded_bytes": 3283,
+      "first_16_hex": "1f8b080090a2616a02ffa559bf73e3c6",
+      "gzip_magic": true,
+      "gzip_magic_offsets_first_20": [
+        0
+      ],
+      "gzip": "PASS",
+      "uncompressed_bytes": 7239,
+      "json": "NOT_JSON",
+      "text_characters": 7056,
+      "text_first_120": "JM Original Theory for Reality — Full Body v1.0A\nEL-Literalist basis · two formula offices · one full theory body\nOr",
+      "json_error": "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')"
+    },
+    "script_path": "theory/source-body-integrity-v12.js",
+    "payload_type": "text",
+    "payload_characters": 7056,
+    "payload_bytes": 7239,
+    "line_count": 250,
+    "first_1200": "JM Original Theory for Reality — Full Body v1.0A\nEL-Literalist basis · two formula offices · one full theory body\nOriginal Theory for Reality\nA clarified full body joining EL-Literalism, the original X/e relational formula, the protected becoming formula, Reality Contact, FTR, 128 Hand, language carriers and the minimal strengthening ring.\nBasis: EL-Literalism\nRelational formula: X/e\nBecoming formula: -T+B×S\nReality No.1: macro keeper\nWhole-body crown: held to Reality\nEL-Literalism is the basis. “Reality No.1” is the more-formed macro keeper of the same ground. The full Theory for Reality contains both formula offices.\nHierarchy\nEL-Literalism\nX/e Formula\n-T+B×S\nReality Contact\n128 Hand\nLanguage\nSit-Alongs\nStatus\nCorrected one-body hierarchy\nREALITY / X ITSELF\n        ↓\nEL-LITERALISM — BASIS\n        ↔\nREALITY No.1 — MACRO KEEPER OF THE SAME GROUND\n        ↓\nORIGINAL THEORY FOR REALITY — WHOLE BODY\n        ├─ X/e RELATIONAL FORMULA\n        ├─ -T+B×S BECOMING / CROWN FORMULA\n        ├─ REALITY CONTACT ARCHITECTURE\n        ├─ FTR\n        ├─ 128 HAND\n        └─ PROTOCOL / RUNTIME / LANGUAGE / CODE\nNot the hierarchy\nReality No.1 does not sit above EL-Literalism as a rival theory, and X/e",
+    "last_500": "tact, FTR, Hand, Protocol and runtime separated by office.\nDirectional proto-language separated from 128.\nMinimal strengthening ring attached.\nNot claimed\nWHOLE REALITY FINISHED = NO\nUNIVERSAL EMPIRICAL LAW PROVEN = NO\nT AND S SOLVED = NO\nX/e CALCULUS COMPLETE = NO\nEVERY HAND ASSIGNMENT IMMUTABLE = NO\nFUTURE CORRECTION FORBIDDEN = NO\nNo further speculative decoding without source, direct correction or discriminating evidence.\nEL-Literalism basis · Two formula offices · Reality remains corrective",
+    "control_character_counts": {
+      "U+000A": 249
+    },
+    "candidate_splits": [
+      {
+        "name": "record_separator_U+001E",
+        "delimiter_repr": "'\\x1e'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      },
+      {
+        "name": "unit_separator_U+001F",
+        "delimiter_repr": "'\\x1f'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      },
+      {
+        "name": "form_feed_U+000C",
+        "delimiter_repr": "'\\x0c'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      },
+      {
+        "name": "null_U+0000",
+        "delimiter_repr": "'\\x00'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      },
+      {
+        "name": "triple_newline",
+        "delimiter_repr": "'\\n\\n\\n'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      },
+      {
+        "name": "double_newline",
+        "delimiter_repr": "'\\n\\n'",
+        "part_count": 3,
+        "nonempty_count": 3,
+        "minimum_nonempty_characters": 1006,
+        "maximum_nonempty_characters": 3691,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          3691,
+          1006,
+          2355
+        ]
+      },
+      {
+        "name": "horizontal_rule",
+        "delimiter_repr": "'\\n---\\n'",
+        "part_count": 1,
+        "nonempty_count": 1,
+        "minimum_nonempty_characters": 7056,
+        "maximum_nonempty_characters": 7056,
+        "under_700_count": 0,
+        "first_20_lengths": [
+          7056
+        ]
+      }
+    ],
+    "parser_source_after_orig_first_8000": "\nlet src=[],done=false;\nconst E=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst N=v=>String(v??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();\nasync function text(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error(url+' returned '+r.status);return r.text()}\nasync function gunzip64(v){const b=Uint8Array.from(atob(v),c=>c.charCodeAt(0));const s=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));return new TextDecoder().decode(new Uint8Array(await new Response(s).arrayBuffer()))}\nasync function hash(v){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')}\nfunction base64Bytes(v){const clean=v.replace(/\\s/g,'');const out=new Uint8Array(Math.floor(clean.length*3/4));let cursor=0;for(let i=0;i<clean.length;i+=32768){const binary=atob(clean.slice(i,i+32768));for(let j=0;j<binary.length;j++)out[cursor++]=binary.charCodeAt(j)}return out.slice(0,cursor)}\nasync function gunzipBytes(b){const s=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));return new TextDecoder().decode(new Uint8Array(await new Response(s).arrayBuffer()))}\nasync function load(){\n const [chunks,cause,original]=await Promise.all([\n  Promise.all(Array.from({length:7},(_,i)=>text(`./data/v0_4/part-${String(i+1).padStart(2,'0')}.txt?v=2001`))),\n  text('./cause-must-pass/00_OPEN_FIRST.html?v=2001'),\n  gunzip64(ORIG)\n ]);\n const joined=chunks.map(x=>x.trim()).join('');\n if(joined.length!==50428)throw Error('source payload length '+joined.length+' expected 50428');\n const data=JSON.parse(await gunzipBytes(base64Bytes(joined)));\n if(!Array.isArray(data.records)||data.records.length!==297)throw Error('source route count mismatch');\n const map=new Map(data.records.map(x=>[String(x.id),x]));\n const causeText=new DOMParser().parseFromString(cause,'text/html').body.innerText.trim();\n for(const [id,title] of Object.entries(TITLES)){\n  const x=map.get(id)||{id,title};\n  let body=id==='cause-must-pass'?causeText:id==='original-theory-reality'?original:String(x.body_text||x.body||x.text||'').trim();\n  let draft=String(x.draft_text||x.draft||'').trim();\n  if(!body||body.length<700)throw Error('under-depth body '+id);\n  if(x.title&&N(x.title)!==N(title))throw Error('source title mismatch '+id);\n  src.push({id,title,body,draft,file:id==='cause-must-pass'?'CAUSE_MUST_PASS_Completion_Edition_v1_0 + dedicated route':id==='original-theory-reality'?'JM_ORIGINAL_THEORY_FOR_REALITY_FULL_BODY_v1_0A.html':x.source_file||x.source||'37-body estate carrier',complete:id==='cause-must-pass'||id==='original-theory-reality'||!!(x.is_complete||x.complete),sha:await hash(body)});\n }\n if(src.length!==37||new Set(src.map(x=>x.id)).size!==37||new Set(src.map(x=>x.sha)).size!==37)throw Error('37-body uniqueness check failed');\n if(src.filter(x=>x.draft).length!==DRAFTS)throw Error('publication draft count mismatch');\n const p=src.find(x=>x.id==='21'),m=src.find(x=>x.id==='contact-causation-authority');\n if(!/realm-interface/i.test(p.body)||/supplied mediumship recording/i.test(p.body)||!/mediumship/i.test(m.body))throw Error('Phone-Realms/contact-body integrity test failed');\n}\nasync function wait(){for(let i=0;i<600;i++){if(typeof DATA!=='undefined'&&DATA.records?.length===300&&window.JMTheoryFirstStageT1ReconciliationV10)return;await new Promise(r=>setTimeout(r,50))}throw Error('v0.19 estate not ready')}\nfunction css(){if(document.getElementById('v11css'))return;let s=document.createElement('style');s.id='v11css';s.textContent=`.row.v11checked small:after{content:' · BODY CHECKED';color:#79f0c3;font-weight:900}.custody11{margin-top:18px;border:1px solid #397454;border-radius:15px;background:linear-gradient(145deg,#071b13,#0a1720);padding:15px;overflow-wrap:anywhere}.custody11 h3{margin:.2em 0 .7em}.custody11 .state{display:inline-block;border:1px solid #397454;border-radius:999px;padding:5px 8px;color:#a8f5ca;font:900 10px system-ui}.custody11 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.custody11 .cell{border:1px solid #294d3a;border-radius:10px;padding:9px;background:#07130e;font-size:12px}.custody11 .cell b{display:block;color:#a8f5ca;font-size:10px;text-transform:uppercase}.draft11{margin-top:12px;border:1px solid #4d4567;border-radius:12px;background:#0f0b18}.draft11 summary{cursor:pointer;padding:12px;color:#dfccff;font-weight:900}.draft11 pre{margin:0;padding:13px;border-top:1px solid #4d4567;white-space:pre-wrap;overflow-wrap:anywhere;font:500 14px/1.6 system-ui;color:#d8dce2}.v11proof{border-color:#397454!important}@media(max-width:700px){.custody11 .grid{grid-template-columns:1fr}}`;document.head.appendChild(s)}\nfunction apply(){\n const map=new Map(DATA.records.map(x=>[String(x.id),x]));\n for(const x of src){\n  const r=map.get(x.id);if(!r||N(r.title)!==N(x.title))throw Error('live title mismatch '+x.id);\n  r.body=x.body;r.publication_draft_v11=x.draft;r.source_file=x.file;r.source='SOURCE-BODY INTEGRITY VERIFIED · '+x.file;r.source_body_sha256_v11=x.sha;r.integrity_checked_v11=true;\n  r.tags=[...new Set([...(r.tags||[]),'source body integrity checked'])];\n  if(x.complete){r.complete=true;r.grade='COMPLETE'}\n  if(x.id==='cause-must-pass')r.route='cause-must-pass/00_OPEN_FIRST.html';\n }\n const full=DATA.records.filter(x=>x.complete||x.grade==='COMPLETE').length;if(full!==FULL)throw Error('full count '+full+' expected '+FULL);\n}\nfunction custody(r){if(r.integrity_checked_v11)return r.publication_draft_v11?'Working body + publication draft seated here':r.id==='cause-must-pass'?'Full body here + dedicated public route':'Full source body seated in this reader';if(r.full_body_recovered_v5||r.exact_master_v6||((r.complete||r.grade==='COMPLETE')&&String(r.body||'').length>700))return'Body text seated here; source grade shown below';if(r.chat_source||r.source_contacts?.length)return'Source contact located; full-body custody not yet verified';return'Retrieval open; no verified full-body estate claim'}\nfunction append(){\n if(typeof state==='undefined'||!state.selected)return;const r=DATA.records.find(x=>String(x.id)===String(state.selected)),reader=document.getElementById('reader');if(!r||!reader||reader.querySelector('[data-custody11]'))return;\n const body=reader.querySelector('.body-copy');if(body)body.textContent=body.textContent.replace(/\\[Compact public route\\. Full source remains preserved in the Estate\\.\\]/gi,'[Public route. Verified custody state is shown below.]');\n const x=src.find(y=>y.id===String(r.id));reader.insertAdjacentHTML('beforeend',`<section class=\"custody11\" data-custody11><div class=\"eyebrow\">Source-body custody</div><h3>${E(custody(r))}</h3><span class=\"state\">${x?'TITLE ↔ BODY ID + SHA CHECKED':'CUSTODY BOUNDARY'}</span><div class=\"grid\"><div class=\"cell\"><b>Reader</b>${x?'Correct source body remounted by stable ID':'Not in the earlier 37-body integrity set'}</div><div class=\"cell\"><b>Source</b>${E(r.source_file||r.source||'Exact source not yet located')}</div>${x?`<div class=\"cell\"><b>SHA-256</b>${x.sha.slice(0,20)}…</div><div class=\"cell\"><b>Completion</b>${x.complete?'Complete within declared scope':'Working/source body; not crowned complete'}</div>`:''}</div>${r.route?`<div class=\"actions\"><a class=\"btn primary\" href=\"${E(r.route)}\">Open dedicated body route ↗</a></div>`:''}${x?.draft?`<details class=\"draft11\"><summary>Open preserved publication draft (${x.draft.length.toLocaleString()} characters)</summary><pre>${E(x.draft)}</pre></details>`:''}</section>`);\n}\nfunction mark(){document.querySelectorAll('#results [data-id]').forEach(n=>n.classList.toggle('v11checked',!!DATA.records.find(x=>String(x.id)===String(n.dataset.id))?.integrity_checked_v11))}\nfunction staticCopy(){\n document.title='JM Theory Multihub v0.20 — 18 Full Bodies · 37 Source Bodies Checked';let d=document.querySelector('meta[name=description]');if(d)d.content='JM Theory Mu",
+    "parser_string_literals_first_100": [
+      "",
+      "']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','",
+      ":",
+      ",\"",
+      ":'&#39;'}[c]));\nconst N=v=>String(v??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();\nasync function text(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error(url+' returned '+r.status);return r.text()}\nasync function gunzip64(v){const b=Uint8Array.from(atob(v),c=>c.charCodeAt(0));const s=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));return new TextDecoder().decode(new Uint8Array(await new Response(s).arrayBuffer()))}\nasync function hash(v){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')}\nfunction base64Bytes(v){const clean=v.replace(/\\s/g,'');const out=new Uint8Array(Math.floor(clean.length*3/4));let cursor=0;for(let i=0;i<clean.length;i+=32768){const binary=atob(clean.slice(i,i+32768));for(let j=0;j<binary.length;j++)out[cursor++]=binary.charCodeAt(j)}return out.slice(0,cursor)}\nasync function gunzipBytes(b){const s=new Blob([b]).stream().pipeThrough(new DecompressionStream('gzip'));return new TextDecoder().decode(new Uint8Array(await new Response(s).arrayBuffer()))}\nasync function load(){\n const [chunks,cause,original]=await Promise.all([\n  Promise.all(Array.from({length:7},(_,i)=>text(`./data/v0_4/part-${String(i+1).padStart(2,'0')}.txt?v=2001`))),\n  text('./cause-must-pass/00_OPEN_FIRST.html?v=2001'),\n  gunzip64(ORIG)\n ]);\n const joined=chunks.map(x=>x.trim()).join('');\n if(joined.length!==50428)throw Error('source payload length '+joined.length+' expected 50428');\n const data=JSON.parse(await gunzipBytes(base64Bytes(joined)));\n if(!Array.isArray(data.records)||data.records.length!==297)throw Error('source route count mismatch');\n const map=new Map(data.records.map(x=>[String(x.id),x]));\n const causeText=new DOMParser().parseFromString(cause,'text/html').body.innerText.trim();\n for(const [id,title] of Object.entries(TITLES)){\n  const x=map.get(id)||{id,title};\n  let body=id==='cause-must-pass'?causeText:id==='original-theory-reality'?original:String(x.body_text||x.body||x.text||'').trim();\n  let draft=String(x.draft_text||x.draft||'').trim();\n  if(!body||body.length<700)throw Error('under-depth body '+id);\n  if(x.title&&N(x.title)!==N(title))throw Error('source title mismatch '+id);\n  src.push({id,title,body,draft,file:id==='cause-must-pass'?'CAUSE_MUST_PASS_Completion_Edition_v1_0 + dedicated route':id==='original-theory-reality'?'JM_ORIGINAL_THEORY_FOR_REALITY_FULL_BODY_v1_0A.html':x.source_file||x.source||'37-body estate carrier',complete:id==='cause-must-pass'||id==='original-theory-reality'||!!(x.is_complete||x.complete),sha:await hash(body)});\n }\n if(src.length!==37||new Set(src.map(x=>x.id)).size!==37||new Set(src.map(x=>x.sha)).size!==37)throw Error('37-body uniqueness check failed');\n if(src.filter(x=>x.draft).length!==DRAFTS)throw Error('publication draft count mismatch');\n const p=src.find(x=>x.id==='21'),m=src.find(x=>x.id==='contact-causation-authority');\n if(!/realm-interface/i.test(p.body)||/supplied mediumship recording/i.test(p.body)||!/mediumship/i.test(m.body))throw Error('Phone-Realms/contact-body integrity test failed');\n}\nasync function wait(){for(let i=0;i<600;i++){if(typeof DATA!=='undefined'&&DATA.records?.length===300&&window.JMTheoryFirstStageT1ReconciliationV10)return;await new Promise(r=>setTimeout(r,50))}throw Error('v0.19 estate not ready')}\nfunction css(){if(document.getElementById('v11css'))return;let s=document.createElement('style');s.id='v11css';s.textContent=`.row.v11checked small:after{content:' Â· BODY CHECKED';color:#79f0c3;font-weight:900}.custody11{margin-top:18px;border:1px solid #397454;border-radius:15px;background:linear-gradient(145deg,#071b13,#0a1720);padding:15px;overflow-wrap:anywhere}.custody11 h3{margin:.2em 0 .7em}.custody11 .state{display:inline-block;border:1px solid #397454;border-radius:999px;padding:5px 8px;color:#a8f5ca;font:900 10px system-ui}.custody11 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.custody11 .cell{border:1px solid #294d3a;border-radius:10px;padding:9px;background:#07130e;font-size:12px}.custody11 .cell b{display:block;color:#a8f5ca;font-size:10px;text-transform:uppercase}.draft11{margin-top:12px;border:1px solid #4d4567;border-radius:12px;background:#0f0b18}.draft11 summary{cursor:pointer;padding:12px;color:#dfccff;font-weight:900}.draft11 pre{margin:0;padding:13px;border-top:1px solid #4d4567;white-space:pre-wrap;overflow-wrap:anywhere;font:500 14px/1.6 system-ui;color:#d8dce2}.v11proof{border-color:#397454!important}@media(max-width:700px){.custody11 .grid{grid-template-columns:1fr}}`;document.head.appendChild(s)}\nfunction apply(){\n const map=new Map(DATA.records.map(x=>[String(x.id),x]));\n for(const x of src){\n  const r=map.get(x.id);if(!r||N(r.title)!==N(x.title))throw Error('live title mismatch '+x.id);\n  r.body=x.body;r.publication_draft_v11=x.draft;r.source_file=x.file;r.source='SOURCE-BODY INTEGRITY VERIFIED Â· '+x.file;r.source_body_sha256_v11=x.sha;r.integrity_checked_v11=true;\n  r.tags=[...new Set([...(r.tags||[]),'source body integrity checked'])];\n  if(x.complete){r.complete=true;r.grade='COMPLETE'}\n  if(x.id==='cause-must-pass')r.route='cause-must-pass/00_OPEN_FIRST.html';\n }\n const full=DATA.records.filter(x=>x.complete||x.grade==='COMPLETE').length;if(full!==FULL)throw Error('full count '+full+' expected '+FULL);\n}\nfunction custody(r){if(r.integrity_checked_v11)return r.publication_draft_v11?'Working body + publication draft seated here':r.id==='cause-must-pass'?'Full body here + dedicated public route':'Full source body seated in this reader';if(r.full_body_recovered_v5||r.exact_master_v6||((r.complete||r.grade==='COMPLETE')&&String(r.body||'').length>700))return'Body text seated here; source grade shown below';if(r.chat_source||r.source_contacts?.length)return'Source contact located; full-body custody not yet verified';return'Retrieval open; no verified full-body estate claim'}\nfunction append(){\n if(typeof state==='undefined'||!state.selected)return;const r=DATA.records.find(x=>String(x.id)===String(state.selected)),reader=document.getElementById('reader');if(!r||!reader||reader.querySelector('[data-custody11]'))return;\n const body=reader.querySelector('.body-copy');if(body)body.textContent=body.textContent.replace(/\\[Compact public route\\. Full source remains preserved in the Estate\\.\\]/gi,'[Public route. Verified custody state is shown below.]');\n const x=src.find(y=>y.id===String(r.id));reader.insertAdjacentHTML('beforeend',`<section class=",
+      " data-custody11><div class=",
+      ">Source-body custody</div><h3>${E(custody(r))}</h3><span class=",
+      ">${x?'TITLE â BODY ID + SHA CHECKED':'CUSTODY BOUNDARY'}</span><div class=",
+      "><div class=",
+      "><b>Reader</b>${x?'Correct source body remounted by stable ID':'Not in the earlier 37-body integrity set'}</div><div class=",
+      "><b>Source</b>${E(r.source_file||r.source||'Exact source not yet located')}</div>${x?`<div class=",
+      "><b>SHA-256</b>${x.sha.slice(0,20)}â¦</div><div class=",
+      "><b>Completion</b>${x.complete?'Complete within declared scope':'Working/source body; not crowned complete'}</div>`:''}</div>${r.route?`<div class=",
+      "><a class=",
+      " href=",
+      ">Open dedicated body route â</a></div>`:''}${x?.draft?`<details class=",
+      "",
+      "#results [data-id]",
+      "v11checked",
+      "JM Theory Multihub v0.20 â 18 Full Bodies Â· 37 Source Bodies Checked",
+      "meta[name=description]"
+    ],
+    "split_expressions": [],
+    "runtime_split_tests": []
+  }
+}

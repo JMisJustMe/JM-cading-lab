@@ -78,6 +78,6 @@ grep -Fq 'data-public-route-wave="01"' "$OUT/apps/index.html"
 grep -Fq 'data-public-route-wave="01"' "$OUT/theory/index.html"
 grep -Fq '242-route v1.1 data authority · live public contact v1.2' "$OUT/apps/index.html"
 grep -Fq 'v0.20.1 integrity layer · v0.19 reconciled shell' "$OUT/theory/index.html"
-grep -Fq 'JM.TheoryWave01RuntimeWitness/1.0' "$OUT/theory/wave01-runtime-proof.html"
+grep -Fq 'JM.TheoryWave01RuntimeWitness/1.1' "$OUT/theory/wave01-runtime-proof.html"
 
 echo "WAVE 01 ASSEMBLY PASS: $OUT"

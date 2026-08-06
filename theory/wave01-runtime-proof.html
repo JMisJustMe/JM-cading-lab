@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>JM Theory Wave 01 Runtime Witness</title>
+<style>
+:root{color-scheme:dark;--bg:#07100d;--panel:#0d1c16;--line:#315c49;--ink:#effff7;--muted:#a7c7b8;--pass:#79f0c3;--hold:#ffd166;--fail:#ff8e99}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 0,#15382b,transparent 34%),var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}.wrap{width:min(920px,calc(100% - 24px));margin:auto;padding:24px 0 60px}.card{border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#11261d,#09130f);padding:22px;box-shadow:0 24px 80px #0007}.eyebrow{font-size:.72rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--pass)}h1{margin:.25em 0;font-size:clamp(2rem,7vw,4.8rem);line-height:.92;letter-spacing:-.045em}.state{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-weight:900;color:var(--hold)}.state.pass{color:var(--pass)}.state.fail{color:var(--fail)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#050b08;border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--muted)}iframe{position:absolute;width:1px;height:1px;border:0;opacity:.001;pointer-events:none}</style>
+</head>
+<body>
+<main class="wrap">
+<section class="card">
+<div class="eyebrow">Same-origin live runtime witness</div>
+<h1>Theory Wave 01</h1>
+<p>This witness opens the public Theory route in a same-origin frame and reads the runtime object and rendered proof nodes directly.</p>
+<div id="wave01BrowserProof" class="state" data-status="WAITING">WAITING FOR THEORY RUNTIME</div>
+<pre id="detail">Initialising…</pre>
+</section>
+<iframe id="theoryFrame" title="Theory runtime witness target" src="./index.html?wave01-witness=1"></iframe>
+</main>
+<script>
+'use strict';
+(()=>{
+ const status=document.getElementById('wave01BrowserProof');
+ const detail=document.getElementById('detail');
+ const frame=document.getElementById('theoryFrame');
+ const finish=(state,payload)=>{
+  status.dataset.status=state;
+  status.className='state '+state.toLowerCase();
+  status.textContent='THEORY WAVE 01 RUNTIME '+state;
+  detail.textContent=JSON.stringify(payload,null,2);
+  document.documentElement.dataset.wave01Runtime=state;
+ };
+ const test=()=>{
+  try{
+   const w=frame.contentWindow,d=frame.contentDocument,api=w&&w.JMTheorySourceIntegrityV12;
+   if(!w||!d||!api)return false;
+   const proof=d.querySelector('[data-v11-proof]');
+   const lead=d.getElementById('sourcePassLead');
+   const topFull=d.getElementById('topFullBodies');
+   const topIntegrity=d.getElementById('topIntegrityBodies');
+   const checks={
+    version:api.version==='v0.20.1',
+    bodies:api.bodies===37,
+    drafts:api.drafts===24,
+    fullBodies:api.fullBodies===18,
+    phoneRealmsRepaired:api.phoneRealmsRepaired===true,
+    topFullBodies:String(topFull?.textContent||'').trim()==='18',
+    topIntegrityBodies:String(topIntegrity?.textContent||'').trim()==='37',
+    recoveryPass007:/Recovery Pass 007/.test(lead?.textContent||''),
+    proof37of37:/37\/37 earlier source bodies now open correctly/.test(proof?.textContent||''),
+    lineage:/v0\.20\.1 integrity layer · v0\.19 reconciled shell/.test(d.body?.textContent||''),
+   };
+   const payload={schema:'JM.TheoryWave01RuntimeWitness/1.0',checks,runtime:{...api},location:w.location.href};
+   if(Object.values(checks).every(Boolean)){finish('PASS',payload);return true}
+   finish('FAIL',payload);return true;
+  }catch(error){finish('FAIL',{error:String(error),stack:error?.stack||null});return true}
+ };
+ let attempts=0;
+ const timer=setInterval(()=>{
+  attempts++;
+  if(test()){clearInterval(timer);return}
+  detail.textContent='Waiting for v0.20.1 runtime… attempt '+attempts;
+  if(attempts>=600){clearInterval(timer);finish('FAIL',{error:'Theory runtime witness timeout',attempts})}
+ },100);
+})();
+</script>
+</body>
+</html>

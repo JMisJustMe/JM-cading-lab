@@ -1,0 +1,138 @@
+name: Public Route Repair Wave 01 Final Seal
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/public-route-repair-wave-01-final.yml"
+      - "governance/assemble_public_route_wave_01.sh"
+      - "governance/verify_public_route_wave_01.sh"
+      - "governance/finalize_public_route_wave_01.py"
+  workflow_dispatch:
+
+concurrency:
+  group: jmisjustme-estate-production
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  deployments: write
+
+jobs:
+  full-parity-and-seal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - name: Check out seated Wave 01 authority
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Resolve authority commit and validate helpers
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "REPAIR_SHA=$(git log -1 --format=%H -- apps/index.html theory/index.html)" >> "$GITHUB_ENV"
+          python3 -m py_compile governance/finalize_public_route_wave_01.py
+          bash -n governance/assemble_public_route_wave_01.sh
+          bash -n governance/verify_public_route_wave_01.sh
+          node --check estate-head-public-consumer.js
+          node --check theory/source-body-integrity-v12.js
+
+      - name: Assemble current repository authority
+        shell: bash
+        run: bash governance/assemble_public_route_wave_01.sh cloudflare-estate
+
+      - name: Deploy full-parity candidate
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove Android laptop raw parity and browser behaviour
+        shell: bash
+        run: |
+          set -euo pipefail
+          export WAVE01_PARITY_JSON="$RUNNER_TEMP/wave01-parity.json"
+          bash governance/verify_public_route_wave_01.sh \
+            https://jmisjustme-estate.pages.dev \
+            "$WAVE01_PARITY_JSON"
+
+      - name: Finalize Wave 01 receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          export WAVE01_PARITY_JSON="$RUNNER_TEMP/wave01-parity.json"
+          python3 governance/finalize_public_route_wave_01.py
+          python3 - <<'PY'
+          import json
+          live=json.load(open('registry/public-route-repair-wave-01-live-receipt.json',encoding='utf-8'))
+          contract=json.load(open('registry/estate-head-public-current.json',encoding='utf-8'))
+          assert live['status']=='PASS'
+          assert live['theory']['source_bodies']=='37/37'
+          assert live['apps']['rooms']==44
+          assert live['whole_estate_ding']=='OPEN'
+          assert contract['current_public_subset_version']=='v0.3.1'
+          assert contract['public_route_repair_wave_01']['status']=='PASS'
+          PY
+
+      - name: Commit sealed current head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Public Route Repair Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add apps/PUBLIC_ROUTE_STATUS_v1_1.md
+          git add theory/PUBLIC_ROUTE_STATUS_v0_20_1.md
+          git add registry/estate-head-public-current.json registry/estate-map.json
+          git add registry/public-route-repair-wave-01-live-receipt.json
+          git commit -m 'Seal Public Route Repair Wave 01 live proof [skip ci]'
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo "SEALED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Assemble sealed authority
+        shell: bash
+        run: bash governance/assemble_public_route_wave_01.sh cloudflare-estate
+
+      - name: Deploy sealed Wave 01 authority
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prove sealed contract and receipts live
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          files=(
+            registry/estate-head-public-current.json
+            registry/public-route-repair-wave-01-live-receipt.json
+            apps/PUBLIC_ROUTE_STATUS_v1_1.md
+            theory/PUBLIC_ROUTE_STATUS_v0_20_1.md
+          )
+          passed=0
+          for attempt in $(seq 1 60); do
+            passed=1
+            for path in "${files[@]}"; do
+              target="$RUNNER_TEMP/final-$(echo "$path" | tr '/' '_')"
+              code="$(curl -sSLo "$target" -w '%{http_code}' --max-time 30 \
+                -H 'Cache-Control: no-cache' \
+                "$base/$path?wave01-final=$GITHUB_RUN_ID-$attempt" || true)"
+              if [ "$code" != 200 ] || ! cmp -s "$path" "$target"; then
+                passed=0
+                break
+              fi
+            done
+            [ "$passed" = 1 ] && break
+            sleep 3
+          done
+          test "$passed" = 1
+          echo 'DING PASS — PUBLIC ROUTE REPAIR WAVE 01; WHOLE-ESTATE DING OPEN'

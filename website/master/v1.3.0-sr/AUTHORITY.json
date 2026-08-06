@@ -1,0 +1,42 @@
+{
+  "schema": "jm.website.github-authority/v1.1",
+  "status": "AUTHORITY_AND_ANDROID_CARRIER_SOURCE_SEATED",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "body": "MASTER WEBSITE",
+  "version": "v1.3.0 SR",
+  "package": "com.jmisjustme.livingestate",
+  "versionCode": 130,
+  "exactBodies": {
+    "masterOneBody": {
+      "name": "00_OPEN_FIRST_JMISJUSTME_MASTER_WEBSITE_v1.3.0_SR.html",
+      "bytes": 35113018,
+      "sha256": "de7da3b348dae896020521c2d316c0d8bb5f8b028d8cc74c21216954cf8ddd93",
+      "custody": "/JM Estate/Websites/JMISJUSTME Living Website/Current Head/v1.3.0 SR/"
+    },
+    "editableSource": {
+      "name": "JMISJUSTME_LIVING_WEBSITE_v1.3.0_SOURCE.zip",
+      "bytes": 25292878,
+      "sha256": "36cc055098233033bca22a34808c2b84a897444465018398963e5bb56d9c578a",
+      "custody": "/JM Estate/Websites/JMISJUSTME Living Website/Current Head/v1.3.0 SR/"
+    },
+    "publicPwa": {
+      "name": "JMISJUSTME_LIVING_WEBSITE_v1.3.0_PUBLIC_PWA.zip",
+      "bytes": 25246595,
+      "sha256": "83eef997fa8612df126e9ec50414c99f64548832e08fa8b33cf40bea86e2dd1d",
+      "custody": "/JM Estate/Websites/JMISJUSTME Living Website/Current Head Candidate/v1.3.0 Sovereign Reconciled/"
+    }
+  },
+  "githubSeat": {
+    "authorityMetadata": "PASS",
+    "androidCarrierSource": "PASS",
+    "api36BuildWorkflow": "PASS",
+    "fullBinaryParity": "HOLD_CONNECTOR_BINARY_STREAM_LIMIT"
+  },
+  "boundaries": {
+    "cloudflare": "UNCHANGED_EXISTING_PUBLIC_RAIL",
+    "intakeChamber": "SEPARATE_NOT_MERGED",
+    "androidCarrier": "IMPORTS_AND_STORES_EXACT_MASTER_ONEBODY",
+    "embeddedFinalApk": "OPEN_LATER_REFINEMENT",
+    "physicalDeviceDing": "OPEN"
+  }
+}

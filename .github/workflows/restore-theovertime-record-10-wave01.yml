@@ -29,7 +29,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Align restoration check with record source vocabulary
+      - name: Align restoration with record source and body vocabulary
         shell: bash
         run: |
           set -euo pipefail
@@ -39,7 +39,8 @@ jobs:
           path=Path('governance/restore_theovertime_record_10_wave01.py')
           lines=path.read_text(encoding='utf-8').splitlines(keepends=True)
           output=[]
-          replaced=False
+          source_replaced=False
+          body_replaced=False
           index=0
           while index < len(lines):
               line=lines[index]
@@ -62,13 +63,37 @@ jobs:
                       indent+'    )\n',
                   ])
                   index += 2
-                  replaced=True
+                  source_replaced=True
                   continue
+              if 'old_body = before_record.get("body_text")' in line:
+                  indent=line[:len(line)-len(line.lstrip())]
+                  output.extend([
+                      indent+'body_key = next(\n',
+                      indent+'    (\n',
+                      indent+'        key\n',
+                      indent+'        for key in ("body_text", "body", "text", "full_body", "source_body")\n',
+                      indent+'        if isinstance(before_record.get(key), str)\n',
+                      indent+'    ),\n',
+                      indent+'    None,\n',
+                      indent+')\n',
+                      indent+'old_body = before_record.get(body_key) if body_key else None\n',
+                      indent+'if not isinstance(old_body, str):\n',
+                      indent+'    raise RuntimeError(\n',
+                      indent+'        f"Record 10 exposes no recognised body field; keys={sorted(before_record.keys())!r}"\n',
+                      indent+'    )\n',
+                  ])
+                  index += 3
+                  body_replaced=True
+                  continue
+              line=line.replace('records[index]["body_text"] = source_body','records[index][body_key] = source_body')
+              line=line.replace('after_matches[0].get("body_text") != source_body','after_matches[0].get(body_key) != source_body')
               output.append(line)
               index += 1
 
-          if not replaced:
+          if not source_replaced:
               raise SystemExit('Expected source-file assertion line was not found')
+          if not body_replaced:
+              raise SystemExit('Expected body_text assertion block was not found')
           path.write_text(''.join(output),encoding='utf-8')
           PY
 

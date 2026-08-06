@@ -1,0 +1,41 @@
+{
+  "schema": "JM.WordsMissingBase64CharacterRecovery/1.0",
+  "status": "COMPLETE",
+  "record": {
+    "id": "project-words-are-data-constrainers",
+    "title": "WORDS ARE DATA CONSTRAINERS",
+    "source": "Library complete professional master body v1.1 · source body recovered and mounted"
+  },
+  "carrier": {
+    "chunk_characters": [
+      45936,
+      11679
+    ],
+    "boundary_global_character_index": 45936,
+    "joined_characters": 57615,
+    "data_characters": 57613,
+    "padding": "==",
+    "joined_mod_4": 3,
+    "data_mod_4": 1,
+    "missing_data_characters_required_for_valid_mod_4": 1
+  },
+  "first_chunk_stream_diagnostic": {
+    "status": "ERROR",
+    "compressed_byte_index": 2521,
+    "plain_bytes_before_error": 4802,
+    "error": "error('Error -3 while decompressing data: invalid distance too far back')",
+    "estimated_base64_character_index": 3360
+  },
+  "search": {
+    "candidate_positions": 2436,
+    "attempts": 155904,
+    "alphabet_characters": 64,
+    "position_min": 0,
+    "position_max": 57613
+  },
+  "classification": "NO_CRC_VALID_RECOVERY_IN_EVIDENCE_BOUNDED_WINDOWS",
+  "success_count": 0,
+  "unique_plain_hashes": [],
+  "successes": [],
+  "boundary": "A repaired carrier may be written only when one unique Base64 insertion yields a CRC-valid gzip body. No prose, padding or replacement body is generated here."
+}

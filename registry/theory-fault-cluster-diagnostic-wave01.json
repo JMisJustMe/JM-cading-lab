@@ -1,0 +1,274 @@
+{
+  "schema": "JM.TheoryFaultClusterDiagnostic/1.0",
+  "status": "COMPLETE",
+  "words_chunk_semantics": {
+    "chunk_count": 1,
+    "trace": [
+      {
+        "path": "theory/data/full-body-recovery/words-1.js",
+        "file_bytes": 47172,
+        "chunks_found": 0,
+        "chunk_characters": [],
+        "chunk_endings": []
+      },
+      {
+        "path": "theory/data/full-body-recovery/words-2.js",
+        "file_bytes": 11821,
+        "chunks_found": 1,
+        "chunk_characters": [
+          11679
+        ],
+        "chunk_endings": [
+          "/w/UMaUhM8sAAA=="
+        ]
+      }
+    ],
+    "chunks": [
+      {
+        "index": 0,
+        "characters": 11679,
+        "mod_4": 3,
+        "ends_with_padding": true,
+        "first_24": "tfwhlwOIJ2ke895zJDVsYbDx",
+        "last_24": "at634vhn/w/UMaUhM8sAAA==",
+        "base64": "FAIL",
+        "error": "Error('Invalid base64-encoded string: number of data characters (11677) cannot be 1 more than a multiple of 4')"
+      }
+    ],
+    "base64_text_join": {
+      "base64": "FAIL",
+      "error": "Error('Invalid base64-encoded string: number of data characters (11677) cannot be 1 more than a multiple of 4')"
+    }
+  },
+  "current_v0_4_id_10": {
+    "payload_keys": [
+      "district_count",
+      "districts",
+      "records",
+      "routes",
+      "version"
+    ],
+    "record_count": 297,
+    "trace": {
+      "joined_characters": 50428,
+      "joined_sha256": "503b4d9b36ab4035442d097fd6c147ced2de75f3c2d03f766bab789edc51c5f8",
+      "gzip_bytes": 37819,
+      "gzip_sha256": "db5eba8a9dcb3461e06549d1822048a7203159b56699971b974b8f72e58246c3",
+      "plain_bytes": 386039,
+      "plain_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5",
+      "parts": [
+        {
+          "path": "theory/data/v0_4/part-01.txt",
+          "characters": 7500,
+          "sha256": "58d57836b67ffbc218ce08f0876c36e390709bf0df746f96c21e3218f0aaa973",
+          "first_16": "H4sIAPuKXWoC/+y9",
+          "last_16": "qKxL39eJ/Q8qrZ/b"
+        },
+        {
+          "path": "theory/data/v0_4/part-02.txt",
+          "characters": 7500,
+          "sha256": "9fb2d151d985dfdbe00927c70a64067affe08310d7f84232de80b61f919272fd",
+          "first_16": "+7P+tRzou1+/iplZ",
+          "last_16": "/0S71q8RYnFGzKVz"
+        },
+        {
+          "path": "theory/data/v0_4/part-03.txt",
+          "characters": 7500,
+          "sha256": "2b3ed74d830d4f16735d610d1daf6505bb173c24edb780d0032f724c7ec315fd",
+          "first_16": "gypVJHSzicVB6T17",
+          "last_16": "RF7q3Kjm2pIF7wJO"
+        },
+        {
+          "path": "theory/data/v0_4/part-04.txt",
+          "characters": 7500,
+          "sha256": "6ef9f85b85be58a8b9337f58feb285fc241965b536b7ada3211eb5b91901bb07",
+          "first_16": "ySVXRqUkOfqGbtpf",
+          "last_16": "yxUspSBCPLv2zolU"
+        },
+        {
+          "path": "theory/data/v0_4/part-05.txt",
+          "characters": 7500,
+          "sha256": "2782eee0d6314ba32ab42f0364420cd079211b3b2fe90509e593331388d467c7",
+          "first_16": "pIY/MEOJA0a8HLOq",
+          "last_16": "Uy4UsrWzGBt/5/HY"
+        },
+        {
+          "path": "theory/data/v0_4/part-06.txt",
+          "characters": 7500,
+          "sha256": "0732e42ddf0fe6c9839b2d6d618bfa2f89fd5c3343c33ac465e763e0b6dbdff4",
+          "first_16": "+DncHH6cj3IVFxgX",
+          "last_16": "pHGwCcrjjE6q6z9I"
+        },
+        {
+          "path": "theory/data/v0_4/part-07.txt",
+          "characters": 5428,
+          "sha256": "1fb9bb4f9ea3445b2709f32910160b33e020ab9a36dc918bdc67eefca39bf536",
+          "first_16": "7j7rlCBnOiWDjkFX",
+          "last_16": "/wes7PBW9+MFAA=="
+        }
+      ]
+    },
+    "id_10_match_count": 1,
+    "id_10": {
+      "id": "10",
+      "title": "TheOverTime Approach",
+      "keys": [
+        "body",
+        "claim",
+        "complete",
+        "grade",
+        "id",
+        "identity",
+        "keepers",
+        "lane",
+        "n",
+        "route",
+        "shelf",
+        "source",
+        "subtitle",
+        "tags",
+        "title"
+      ],
+      "selected_body_field": "body",
+      "selected_body_characters": 370,
+      "selected_body_sha256": "bd3960fd3c2d2d4dc07c863a53a039df63002fa704a9d3e7a6a9f771a8e604fe",
+      "selected_body_first_700": "10. TheOverTime Approach\n\nAuthor / Source Creator: Theodore Benjamin Scott / JM TheOlogist B. Lyrikz / TB Scott / JayEmm Lyrikz  \nStatus: Preservation draft. Early stages, still ongoing. Not the complete Evernote/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr\n\n[Compact public route. Full source remains preserved in the Estate.]",
+      "fields": {
+        "body": {
+          "characters": 370,
+          "sha256": "bd3960fd3c2d2d4dc07c863a53a039df63002fa704a9d3e7a6a9f771a8e604fe",
+          "first_300": "10. TheOverTime Approach\n\nAuthor / Source Creator: Theodore Benjamin Scott / JM TheOlogist B. Lyrikz / TB Scott / JayEmm Lyrikz  \nStatus: Preservation draft. Early stages, still ongoing. Not the complete Evernote/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr",
+          "last_160": "te/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr\n\n[Compact public route. Full source remains preserved in the Estate.]"
+        },
+        "source": {
+          "characters": 49,
+          "sha256": "6409aa41958809c16cc925698370d60456dcae805161eb3bf4c846bfd2502917",
+          "first_300": "BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md",
+          "last_160": "BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md"
+        },
+        "title": {
+          "characters": 20,
+          "sha256": "b8c012e8b7ea7ce60212b29382f3c4c5daeacef5cb4fffc43d19551b92f9bc79",
+          "first_300": "TheOverTime Approach",
+          "last_160": "TheOverTime Approach"
+        },
+        "id": {
+          "characters": 2,
+          "sha256": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5",
+          "first_300": "10",
+          "last_160": "10"
+        }
+      }
+    },
+    "expected_title": {
+      "found_titles_object": true,
+      "id_10_expected_title": "TheOverTime Approach",
+      "titles_literal_first_1000": "\"cause-must-pass\":\"CAUSE MUST PASS\",\"01\":\"MMM-BBB and Whole Human Participation\",\"02\":\"Theory of Mind\",\"03\":\"Theory of Body\",\"04\":\"BTG - Bridging The Gap\",\"05\":\"VTS, YAK, DGYAK, TRY IT NOW, and HANDPRINT\",\"06\":\"HOS, HOSF, and Support-Recovery Systems\",\"07\":\"FlowTalk and MAP\",\"08\":\"Living Pattern Engine\",\"09\":\"Human Pattern Calibration\",\"10\":\"TheOverTime Approach\",\"11\":\"Container Theory and Container Method\",\"12\":\"Witness-Responsibility Theory\",\"13\":\"The Bridge Analyst\",\"14\":\"Basketball Performance Model\",\"15\":\"SHIMS - She, He, In Motion\",\"16\":\"PLAYFORM - Playable Expression Framework\",\"17\":\"GlyphPlay / JM Engine\",\"18\":\"FTR - Futuristic Technology Resources / Finding the ROOT-ROUTE\",\"19\":\"Embedded World Engine\",\"20\":\"Humanimals and Mythuse\",\"21\":\"Phone-Realms\",\"22\":\"T-Boys / 4T Clash\",\"23\":\"Rapathon, Wrap-A-Rap, PieceMaker, and Lyricomical\",\"24\":\"Central Hub, Hydra/Hydro Mode, and Governance\",\"bringing-it-all-together\":\"Bringing It All Together\",\"first-stage-jungle\":\"First Stage / Step ",
+      "title_count_estimate": 43
+    }
+  },
+  "v0_4_id_10_history": {
+    "commits_contacted": 7,
+    "unique_payloads_contacted": 1,
+    "healthy_id_10_versions": [],
+    "strongest_id_10_versions": [],
+    "versions": [
+      {
+        "commit": "5129d4a80d756a69b52d4e71d22601c44f5343bd",
+        "status": "PASS",
+        "record_count": 297,
+        "payload_plain_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5",
+        "joined_sha256": "503b4d9b36ab4035442d097fd6c147ced2de75f3c2d03f766bab789edc51c5f8",
+        "id_10_match_count": 1,
+        "id_10": {
+          "id": "10",
+          "title": "TheOverTime Approach",
+          "keys": [
+            "body",
+            "claim",
+            "complete",
+            "grade",
+            "id",
+            "identity",
+            "keepers",
+            "lane",
+            "n",
+            "route",
+            "shelf",
+            "source",
+            "subtitle",
+            "tags",
+            "title"
+          ],
+          "selected_body_field": "body",
+          "selected_body_characters": 370,
+          "selected_body_sha256": "bd3960fd3c2d2d4dc07c863a53a039df63002fa704a9d3e7a6a9f771a8e604fe",
+          "selected_body_first_700": "10. TheOverTime Approach\n\nAuthor / Source Creator: Theodore Benjamin Scott / JM TheOlogist B. Lyrikz / TB Scott / JayEmm Lyrikz  \nStatus: Preservation draft. Early stages, still ongoing. Not the complete Evernote/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr\n\n[Compact public route. Full source remains preserved in the Estate.]",
+          "fields": {
+            "body": {
+              "characters": 370,
+              "sha256": "bd3960fd3c2d2d4dc07c863a53a039df63002fa704a9d3e7a6a9f771a8e604fe",
+              "first_300": "10. TheOverTime Approach\n\nAuthor / Source Creator: Theodore Benjamin Scott / JM TheOlogist B. Lyrikz / TB Scott / JayEmm Lyrikz  \nStatus: Preservation draft. Early stages, still ongoing. Not the complete Evernote/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr",
+              "last_160": "te/source vault. Built as a workable compilation and re-entry pack.  \nClassification: Appr\n\n[Compact public route. Full source remains preserved in the Estate.]"
+            },
+            "source": {
+              "characters": 49,
+              "sha256": "6409aa41958809c16cc925698370d60456dcae805161eb3bf4c846bfd2502917",
+              "first_300": "BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md",
+              "last_160": "BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md"
+            },
+            "title": {
+              "characters": 20,
+              "sha256": "b8c012e8b7ea7ce60212b29382f3c4c5daeacef5cb4fffc43d19551b92f9bc79",
+              "first_300": "TheOverTime Approach",
+              "last_160": "TheOverTime Approach"
+            },
+            "id": {
+              "characters": 2,
+              "sha256": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5",
+              "first_300": "10",
+              "last_160": "10"
+            }
+          }
+        }
+      },
+      {
+        "commit": "d445e7677f3590ed175985f47356486a92e84e43",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-07.txt')"
+      },
+      {
+        "commit": "5e1789baa59ac31ff28c758569c2d8a76beb6639",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-06.txt')"
+      },
+      {
+        "commit": "c57df56f3e8bc5b8b7ffdf87e27f720e5fd33727",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-05.txt')"
+      },
+      {
+        "commit": "637db53b87dda2339fc7f3dd265c49862f455901",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-04.txt')"
+      },
+      {
+        "commit": "540a680237afd6fedd7366cf646db6cbfaa566e0",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-02.txt')"
+      },
+      {
+        "commit": "66d005f5e57892fd1d3b73ac0b3daa2eca92ae87",
+        "status": "FAIL",
+        "error": "FileNotFoundError('theory/data/v0_4/part-02.txt')"
+      }
+    ]
+  },
+  "all_ref_blob_scan_for_94_record_chat_graft": {
+    "total_blobs": 2861,
+    "candidate_blobs_inspected": 2284,
+    "valid_94_record_findings": [],
+    "finding_count": 0
+  },
+  "boundary": "This receipt diagnoses exact carriers and historical authority. It does not repair, pad, merge or crown any body."
+}

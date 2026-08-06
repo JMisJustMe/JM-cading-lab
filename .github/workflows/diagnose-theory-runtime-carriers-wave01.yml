@@ -1,0 +1,45 @@
+name: Diagnose Theory Runtime Carriers Wave 01
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/diagnose-theory-runtime-carriers-wave01.yml"
+      - "governance/diagnose_theory_runtime_carriers.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out current Theory authority
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Run byte-level carrier diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/diagnose_theory_runtime_carriers.py
+          python3 governance/diagnose_theory_runtime_carriers.py
+          test -s registry/theory-runtime-carrier-diagnostic-wave01.json
+
+      - name: Seal diagnostic receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Theory Runtime Diagnostic Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/theory-runtime-carrier-diagnostic-wave01.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Seal Theory runtime carrier diagnostic Wave 01 [skip ci]'
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi

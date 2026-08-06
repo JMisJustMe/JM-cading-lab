@@ -9,6 +9,7 @@ on:
       - "governance/diagnose_theory_runtime_carriers.py"
       - "governance/diagnose_theory_runtime_carriers_v2.py"
       - "governance/recover_theory_runtime_ancestors_wave01.py"
+      - "governance/recover_theory_runtime_ancestors_wave01_v2.py"
   workflow_dispatch:
 
 permissions:
@@ -38,8 +39,9 @@ jobs:
           python3 -m py_compile governance/diagnose_theory_runtime_carriers.py
           python3 -m py_compile governance/diagnose_theory_runtime_carriers_v2.py
           python3 -m py_compile governance/recover_theory_runtime_ancestors_wave01.py
+          python3 -m py_compile governance/recover_theory_runtime_ancestors_wave01_v2.py
           python3 governance/diagnose_theory_runtime_carriers_v2.py
-          python3 governance/recover_theory_runtime_ancestors_wave01.py
+          python3 governance/recover_theory_runtime_ancestors_wave01_v2.py
           test -s registry/theory-runtime-carrier-diagnostic-wave01.json
           test -s registry/theory-runtime-ancestor-recovery-wave01.json
 

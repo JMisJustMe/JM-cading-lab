@@ -1,8 +1,8 @@
 {
-  "schema": "JM.WixAuthorityRebuildReceipt/1.1",
-  "recorded_utc": "2026-08-06T09:08:54.834545+00:00",
+  "schema": "JM.WixAuthorityRebuildReceipt/1.2",
+  "recorded_utc": "2026-08-06T10:25:31.909979+00:00",
   "operation_id": "wix-v2-authority-rebuild",
-  "state": "WORKING_SINGLE_FILE_PROTOTYPE_VALIDATED_AWAITING_WIX_EDITOR_TRANSLATION_AND_JM_PREVIEW",
+  "state": "ISOLATED_LIVE_PHONE_PREVIEW_READY_FOR_JM_PHYSICAL_CONTACT",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "site": {
     "id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
@@ -12,12 +12,24 @@
   "source_branch_id": "00000000-0000-0000-0000-000000000000",
   "rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
   "rebuild_branch_name": "JM Estate v2.0 Authority Rebuild",
+  "rebuild_branch_revision_checked": "1",
+  "rebuild_editor_type": "HARMONY",
+  "wix_editor_url": "https://editor.wix.com/edit/od/359e611d-96d4-49c0-ac93-4e5768ed1263?metaSiteId=7724b482-0a61-41bb-8d78-cb6587d6e3e7&branchId=ec3edba7-2e32-4a4b-8359-637e5fa2c789",
   "working_body": {
     "file": "JM_WIX_AUTHORITY_ROOM_v0_1.html",
     "size_bytes": 21941,
     "sha256": "aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062",
     "rooms": 8,
     "proof_receipt": "JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json"
+  },
+  "phone_preview": {
+    "provider": "Cloudflare Pages",
+    "project": "jmisjustme-estate",
+    "branch": "wix-authority-room-preview",
+    "url": "https://wix-authority-room-preview.jmisjustme-estate.pages.dev",
+    "receipt": "JM_WIX_AUTHORITY_ROOM_CLOUDFLARE_PREVIEW_RECEIPT_v0_1.json",
+    "production": false,
+    "search_indexing": "NOINDEX_NOFOLLOW_NOARCHIVE"
   },
   "checks": {
     "html_parser_contact": "PASS",
@@ -26,16 +38,21 @@
     "command_search": "PASS",
     "estate_house_filters": "PASS",
     "javascript_syntax": "PASS",
-    "authority_and_claim_boundaries": "PASS"
+    "authority_and_claim_boundaries": "PASS",
+    "cloudflare_preview_deployment": "PASS",
+    "live_marker_contact": "PASS",
+    "live_sha256_match": "PASS",
+    "noindex_nofollow_header": "PASS"
   },
   "source_copied": true,
   "new_site_created": false,
   "live_site_changed": false,
   "default_branch_changed": false,
   "github_main_changed": false,
+  "cloudflare_production_changed": false,
   "publication_requested": false,
   "publication_completed": false,
   "physical_test_completed": false,
   "ding": false,
-  "claim_boundary": "The governed working room exists and is validated on the GitHub proposal branch. Static Wix layout translation, Wix preview contact, publication and JM Ding remain unclaimed."
+  "claim_boundary": "The exact validated room is live on an isolated, search-blocked Cloudflare preview branch for JM phone contact. Wix static layout translation remains an editor-only operation and is not claimed as completed. The Wix live branch, Cloudflare production branch, GitHub main, physical acceptance and Ding remain untouched or unclaimed."
 }

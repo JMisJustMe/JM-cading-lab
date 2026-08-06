@@ -1,8 +1,8 @@
 {
-  "schema": "JM.WixAuthorityRebuildReceipt/1.0",
-  "recorded_utc": "2026-08-06T08:30:14.453Z",
+  "schema": "JM.WixAuthorityRebuildReceipt/1.1",
+  "recorded_utc": "2026-08-06T09:08:54.834545+00:00",
   "operation_id": "wix-v2-authority-rebuild",
-  "state": "WIX_REBUILD_BRANCH_CREATED_AWAITING_EDITOR_BUILD",
+  "state": "WORKING_SINGLE_FILE_PROTOTYPE_VALIDATED_AWAITING_WIX_EDITOR_TRANSLATION_AND_JM_PREVIEW",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "site": {
     "id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
@@ -12,13 +12,30 @@
   "source_branch_id": "00000000-0000-0000-0000-000000000000",
   "rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
   "rebuild_branch_name": "JM Estate v2.0 Authority Rebuild",
+  "working_body": {
+    "file": "JM_WIX_AUTHORITY_ROOM_v0_1.html",
+    "size_bytes": 21941,
+    "sha256": "aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062",
+    "rooms": 8,
+    "proof_receipt": "JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json"
+  },
+  "checks": {
+    "html_parser_contact": "PASS",
+    "unique_eight_room_navigation": "PASS",
+    "mobile_first_bottom_rail": "PASS",
+    "command_search": "PASS",
+    "estate_house_filters": "PASS",
+    "javascript_syntax": "PASS",
+    "authority_and_claim_boundaries": "PASS"
+  },
   "source_copied": true,
   "new_site_created": false,
   "live_site_changed": false,
   "default_branch_changed": false,
+  "github_main_changed": false,
   "publication_requested": false,
   "publication_completed": false,
   "physical_test_completed": false,
   "ding": false,
-  "claim_boundary": "The isolated Wix rebuild branch and its governed editor route exist. This receipt does not claim that the page layout has been rebuilt, previewed, published, physically accepted or Dinged. Wix static page editing remains an editor operation."
+  "claim_boundary": "The governed working room exists and is validated on the GitHub proposal branch. Static Wix layout translation, Wix preview contact, publication and JM Ding remain unclaimed."
 }

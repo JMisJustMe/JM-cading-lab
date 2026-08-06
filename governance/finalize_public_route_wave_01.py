@@ -17,8 +17,11 @@ def main() -> None:
     parity = json.loads(parity_path.read_text(encoding="utf-8"))
     if parity.get("status") != "PASS":
         raise SystemExit("Wave 01 parity receipt is not PASS")
-    if len(parity.get("files", [])) != 11:
-        raise SystemExit("Wave 01 parity file count is not 11")
+    if len(parity.get("files", [])) != 12:
+        raise SystemExit("Wave 01 parity file count is not 12")
+    witness = parity.get("browser_proof", {}).get("theory_runtime_witness", [])
+    if len(witness) != 8:
+        raise SystemExit("Theory runtime witness did not preserve all eight checks")
 
     now = datetime.now(timezone.utc).isoformat()
     run = os.environ.get("GITHUB_RUN_ID", "manual")
@@ -46,6 +49,7 @@ def main() -> None:
             "directory_routes": parity.get("directory_routes"),
             "android": "PASS_RAW_PARITY_AND_BROWSER_BEHAVIOUR",
             "laptop": "PASS_RAW_PARITY_AND_BROWSER_BEHAVIOUR",
+            "theory_runtime_witness": "PASS_8_OF_8",
             "receipt": str(LIVE_RECEIPT_PATH),
         }
     )
@@ -69,6 +73,7 @@ def main() -> None:
         "workflow_run": run,
         "source_commit": source,
         "theory": "v0.20.1 integrity over v0.19 shell — LIVE",
+        "theory_runtime_witness": "PASS_8_OF_8",
         "apps_rooms": 44,
         "money_menu_public_contact": "v1.2 LIVE",
         "raw_parity_files": len(parity["files"]),
@@ -81,7 +86,7 @@ def main() -> None:
     )
 
     live_receipt = {
-        "schema": "JM.PublicRouteRepairWaveLiveReceipt/1.0",
+        "schema": "JM.PublicRouteRepairWaveLiveReceipt/1.1",
         "wave": "01",
         "status": "PASS",
         "verified_utc": now,
@@ -90,11 +95,13 @@ def main() -> None:
         "source_commit": source,
         "theory": {
             "route": "/theory/",
+            "runtime_witness_route": "/theory/wave01-runtime-proof.html",
             "public_head": "v0.20.1 source-body integrity over v0.19 reconciled shell",
             "full_bodies": 18,
             "source_bodies": "37/37",
             "publication_drafts": 24,
             "census_routes": 300,
+            "runtime_witness": "PASS_8_OF_8",
             "android": "PASS",
             "laptop": "PASS",
         },
@@ -141,9 +148,10 @@ Many bodies. One living line. None erased.
 **Earlier source bodies:** 37/37  
 **Publication drafts:** 24  
 **Census routes:** 300 visible after mounted layers  
+**Runtime witness:** 8/8 direct same-origin checks PASS  
 **Cloudflare:** LIVE SOURCE PARITY PASS  
-**Android:** Recovery Pass 007 / 37-of-37 / 18-body behaviour PASS  
-**Laptop:** Recovery Pass 007 / 37-of-37 / 18-body behaviour PASS  
+**Android:** runtime witness / 37-of-37 / 18-body behaviour PASS  
+**Laptop:** runtime witness / 37-of-37 / 18-body behaviour PASS  
 **Verified:** {now}  
 
 The room preserves formation. The body preserves current-best content.

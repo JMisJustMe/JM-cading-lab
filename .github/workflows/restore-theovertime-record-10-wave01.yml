@@ -1,0 +1,70 @@
+name: Restore TheOverTime Record 10 Wave 01
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/restore-theovertime-record-10-wave01.yml"
+      - "governance/restore_theovertime_record_10_wave01.py"
+      - "theory/BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md"
+      - "theory/BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.txt"
+  workflow_dispatch:
+
+concurrency:
+  group: theory-record-10-restoration
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - name: Check out current v0.4 carrier
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Restore exact Gmail source into record 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/restore_theovertime_record_10_wave01.py
+          python3 governance/restore_theovertime_record_10_wave01.py
+          test -s registry/theovertime-record-10-source-restoration-wave01.json
+          python3 - <<'PY'
+          import json
+          receipt=json.load(open('registry/theovertime-record-10-source-restoration-wave01.json',encoding='utf-8'))
+          assert receipt['status']=='PASS_EXACT_SOURCE_RESTORED'
+          assert receipt['record_id']=='10'
+          assert receipt['record_after']['body_characters']>=993
+          assert receipt['record_after']['integrity_floor_993']=='PASS'
+          assert receipt['payload']['records']==297
+          assert receipt['payload']['changed_record_ids']==['10']
+          assert receipt['payload']['unchanged_non_target_records']==296
+          assert receipt['authority']['normalized_md_txt_parity']=='PASS'
+          assert receipt['whole_estate_ding']=='OPEN'
+          print('THEOVERTIME RECORD 10 EXACT SOURCE RESTORATION PASS')
+          PY
+
+      - name: Commit restored seven-part carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM TheOverTime Source Restoration Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add theory/data/v0_4/part-01.txt
+          git add theory/data/v0_4/part-02.txt
+          git add theory/data/v0_4/part-03.txt
+          git add theory/data/v0_4/part-04.txt
+          git add theory/data/v0_4/part-05.txt
+          git add theory/data/v0_4/part-06.txt
+          git add theory/data/v0_4/part-07.txt
+          git add registry/theovertime-record-10-source-restoration-wave01.json
+          git commit -m 'Restore TheOverTime record 10 from exact Gmail source'
+          git pull --rebase origin main
+          git push origin HEAD:main

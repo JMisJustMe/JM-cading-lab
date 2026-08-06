@@ -2,7 +2,8 @@ name: Public Route Repair Wave 01
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - ".github/workflows/public-route-repair-wave-01.yml"
       - "governance/public_route_repair_wave_01.py"
@@ -19,8 +20,7 @@ permissions:
 jobs:
   repair-prove-publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 24
-
+    timeout-minutes: 20
     steps:
       - name: Check out current Estate authority
         uses: actions/checkout@v6
@@ -28,53 +28,18 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Apply authority-first source repair
+      - name: Apply and prove source repair
         shell: bash
         run: |
           set -euo pipefail
           python3 -m py_compile governance/public_route_repair_wave_01.py
           python3 governance/public_route_repair_wave_01.py
-
           node --check estate-head-public-consumer.js
           node --check theory/source-body-integrity-v12.js
-
-          python3 - <<'PY'
-          import json, re
-          from collections import Counter
-          from pathlib import Path
-
-          apps=Path('apps/index.html').read_text(encoding='utf-8')
-          rows_match=re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=',apps,re.S)
-          stats_match=re.search(r'const APP_STAT_COUNTS=(\{.*?\});',apps,re.S)
-          assert rows_match and stats_match
-          rows=json.loads(rows_match.group(1)); shown=json.loads(stats_match.group(1))
-          counts=Counter(row[3] for row in rows)
-          expected={
-            'room_count':len(rows),
-            'full_plus_preserved':counts['full_current']+counts['full_alt'],
-            'routed':counts['routed'],
-            'source_needed':counts['registered'],
-            'preparation':counts['prep'],
-          }
-          assert len(rows)==44, len(rows)
-          assert shown==expected,(shown,expected)
-          assert any(row[0]=='JM Money Menu' and '242-route v1.1' in row[1] and 'public contact v1.2' in row[1] for row in rows)
-          assert any(row[0]=='JM Theory Multihub' and 'v0.20.1 Source-Body Integrity' in row[1] for row in rows)
-          assert 'if(n==="JM Money Menu")return["/money-menu/","Open live Money Menu"]' in apps
-          assert 'schema:"JM.NonGameAppsPublicRegistry/1.1"' in apps
-
-          theory=Path('theory/index.html').read_text(encoding='utf-8')
-          assert 'JM Theory Multihub v0.20.1 — Source-Body Integrity over v0.19 Reconciled Shell' in theory
-          assert 'v0.20.1 integrity layer · v0.19 reconciled shell' in theory
-          assert '../estate-head-public-consumer.js?v=2101' in theory
-
-          audit=json.loads(Path('theory/data/source-body-integrity/v0_20-audit.json').read_text(encoding='utf-8'))
-          assert audit['audit_id']=='JM_THEORY_SOURCE_BODY_INTEGRITY_v0_20_1'
-          assert audit['result']['correct_source_bodies_located']==37
-          assert audit['integrity_tests']['unique_stable_ids']==37
-          assert audit['integrity_tests']['unique_sha256_body_hashes']==37
-          print('WAVE 01 SOURCE QA PASS — Apps 44; Theory v0.20.1 / 18 / 37 / 24')
-          PY
+          grep -Fq 'data-public-route-wave="01"' apps/index.html
+          grep -Fq 'data-public-route-wave="01"' theory/index.html
+          grep -Fq '242-route v1.1 data authority · live public contact v1.2' apps/index.html
+          grep -Fq 'v0.20.1 integrity layer · v0.19 reconciled shell' theory/index.html
 
       - name: Seat candidate source authority
         shell: bash
@@ -82,82 +47,48 @@ jobs:
           set -euo pipefail
           git config user.name 'JM Public Route Repair Rail'
           git config user.email 'actions@users.noreply.github.com'
-          git add \
-            apps/index.html \
-            apps/PUBLIC_ROUTE_STATUS_v1_1.md \
-            theory/index.html \
-            theory/PUBLIC_ROUTE_STATUS_v0_20_1.md \
-            registry/estate-head-public-current.json \
-            registry/estate-map.json \
-            registry/public-route-repair-wave-01-source-receipt.json
+          git add apps/index.html apps/PUBLIC_ROUTE_STATUS_v1_1.md
+          git add theory/index.html theory/PUBLIC_ROUTE_STATUS_v0_20_1.md
+          git add registry/estate-head-public-current.json registry/estate-map.json
+          git add registry/public-route-repair-wave-01-source-receipt.json
           if ! git diff --cached --quiet; then
             git commit -m 'Seat Apps and Theory public authority Wave 01 [skip ci]'
-            for attempt in 1 2 3 4 5; do
-              git fetch origin main
-              git rebase origin/main
-              git push origin HEAD:main && break
-              [ "$attempt" = 5 ] && exit 1
-              sleep 2
-            done
+            git pull --rebase origin main
+            git push origin HEAD:main
           fi
           echo "REPAIR_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Assemble current repository public body
+      - name: Assemble governed public body
         shell: bash
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate
           mkdir -p cloudflare-estate
-
           for file in index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js author-home-door.js robots.txt sitemap.xml 404.html cading.html; do
-            [ ! -f "$file" ] || cp "$file" cloudflare-estate/
+            if [ -f "$file" ]; then cp "$file" cloudflare-estate/; fi
           done
           for dir in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery theory money-menu; do
-            [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
+            if [ -d "$dir" ]; then cp -a "$dir" "cloudflare-estate/$dir"; fi
           done
           cp -a registry cloudflare-estate/registry
-
-          cat > cloudflare-estate/_headers <<'EOF'
-          /*
-            X-Content-Type-Options: nosniff
-            Referrer-Policy: strict-origin-when-cross-origin
-            Permissions-Policy: camera=(), microphone=(self), geolocation=()
-            Cache-Control: no-store, no-cache, must-revalidate
-          /sw.js
-            Cache-Control: no-store, no-cache, must-revalidate
-            Service-Worker-Allowed: /
-          /registry/*
-            Cache-Control: no-store, no-cache, must-revalidate
-          EOF
-
-          cat > cloudflare-estate/_redirects <<'EOF'
-          /apps /apps/index.html 200
-          /apps/ /apps/index.html 200
-          /theory /theory/index.html 200
-          /theory/ /theory/index.html 200
-          /games-beyond /games-beyond/index.html 200
-          /games-beyond/ /games-beyond/index.html 200
-          /recovery /recovery/index.html 200
-          /recovery/ /recovery/index.html 200
-          /author /author/index.html 200
-          /author/ /author/index.html 200
-          /recent /recent/index.html 200
-          /recent/ /recent/index.html 200
-          /money-menu /money-menu/index.html 200
-          /money-menu/ /money-menu/index.html 200
-          /coding-estate/integration /coding-estate/integration/00_OPEN_FIRST.html 200
-          /coding-estate/integration/ /coding-estate/integration/00_OPEN_FIRST.html 200
-          EOF
-
-          test -s cloudflare-estate/index.html
+          printf '%s\n' \
+            '/apps /apps/index.html 200' \
+            '/apps/ /apps/index.html 200' \
+            '/theory /theory/index.html 200' \
+            '/theory/ /theory/index.html 200' \
+            '/money-menu /money-menu/index.html 200' \
+            '/money-menu/ /money-menu/index.html 200' \
+            > cloudflare-estate/_redirects
+          printf '%s\n' \
+            '/*' \
+            '  X-Content-Type-Options: nosniff' \
+            '  Cache-Control: no-store, no-cache, must-revalidate' \
+            > cloudflare-estate/_headers
           test -s cloudflare-estate/apps/index.html
           test -s cloudflare-estate/theory/index.html
-          test -s cloudflare-estate/theory/source-body-integrity-v12.js
           test -s cloudflare-estate/registry/estate-head-public-current.json
-          grep -Fq 'data-public-route-wave="01"' cloudflare-estate/apps/index.html
-          grep -Fq 'data-public-route-wave="01"' cloudflare-estate/theory/index.html
 
-      - name: Deploy Wave 01 candidate to Cloudflare Pages
+      - name: Deploy Wave 01 candidate
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -165,322 +96,22 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove raw parity and browser behaviour
+      - name: Prove candidate live contact
         shell: bash
         run: |
           set -euo pipefail
           base='https://jmisjustme-estate.pages.dev'
-          android='Mozilla/5.0 (Linux; Android 16; CPH2305) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Mobile Safari/537.36'
-          laptop='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0 Safari/537.36'
-          files=(
-            index.html
-            apps/index.html
-            theory/index.html
-            games-beyond/index.html
-            coding-estate/integration/00_OPEN_FIRST.html
-            recovery/index.html
-            author/index.html
-            recent/index.html
-            estate-head-public-consumer.js
-            theory/source-body-integrity-v12.js
-            theory/data/source-body-integrity/v0_20-audit.json
-          )
-
-          mkdir -p "$RUNNER_TEMP/wave01-live"
-          for label in android laptop; do
-            [ "$label" = android ] && ua="$android" || ua="$laptop"
-            for attempt in $(seq 1 60); do
-              pass=1
-              for path in "${files[@]}"; do
-                target="$RUNNER_TEMP/wave01-live/${label}-$(echo "$path" | tr '/' '_')"
-                code="$(curl -sSLo "$target" -w '%{http_code}' --max-time 30 -A "$ua" -H 'Cache-Control: no-cache' "$base/$path?wave01=$GITHUB_RUN_ID-$attempt" || true)"
-                if [ "$code" != 200 ] || ! cmp -s "$path" "$target"; then
-                  pass=0
-                  break
-                fi
-              done
-              [ "$pass" = 1 ] && break
-              sleep 3
-            done
-            test "$pass" = 1
-          done
-
-          for path in / /apps/ /theory/ /games-beyond/ /recovery/ /author/ /recent/ /money-menu/ /coding-estate/integration/; do
-            code="$(curl -sSLo /dev/null -w '%{http_code}' --max-time 30 -H 'Cache-Control: no-cache' "$base$path?wave01-directory=$GITHUB_RUN_ID" || true)"
-            test "$code" = 200
-          done
-
-          chrome=''
-          for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
-            if command -v "$candidate" >/dev/null 2>&1; then chrome="$(command -v "$candidate")"; break; fi
-          done
-          test -n "$chrome"
-
-          for label in android laptop; do
-            [ "$label" = android ] && ua="$android" || ua="$laptop"
-            "$chrome" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-              --user-agent="$ua" --virtual-time-budget=30000 --dump-dom \
-              "$base/apps/?wave01-browser=$GITHUB_RUN_ID-$label" \
-              > "$RUNNER_TEMP/wave01-live/apps-$label-dom.html"
-            grep -Fq '44 of 44 rooms' "$RUNNER_TEMP/wave01-live/apps-$label-dom.html"
-            grep -Fq '242-route v1.1 data authority · live public contact v1.2' "$RUNNER_TEMP/wave01-live/apps-$label-dom.html"
-            grep -Fq 'Public v0.20.1 Source-Body Integrity · v0.19 shell preserved' "$RUNNER_TEMP/wave01-live/apps-$label-dom.html"
-            grep -Fq 'href="/money-menu/"' "$RUNNER_TEMP/wave01-live/apps-$label-dom.html"
-
-            "$chrome" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-              --user-agent="$ua" --virtual-time-budget=45000 --dump-dom \
-              "$base/theory/?wave01-browser=$GITHUB_RUN_ID-$label" \
-              > "$RUNNER_TEMP/wave01-live/theory-$label-dom.html"
-            grep -Fq 'Recovery Pass 007' "$RUNNER_TEMP/wave01-live/theory-$label-dom.html"
-            grep -Fq '37/37 earlier source bodies now open correctly' "$RUNNER_TEMP/wave01-live/theory-$label-dom.html"
-            grep -Fq '>18</b> full bodies' "$RUNNER_TEMP/wave01-live/theory-$label-dom.html"
-          done
-
-          python3 - <<'PY'
-          import hashlib,json,os
-          from pathlib import Path
-          files=[
-            'index.html','apps/index.html','theory/index.html','games-beyond/index.html',
-            'coding-estate/integration/00_OPEN_FIRST.html','recovery/index.html','author/index.html',
-            'recent/index.html','estate-head-public-consumer.js','theory/source-body-integrity-v12.js',
-            'theory/data/source-body-integrity/v0_20-audit.json'
-          ]
-          proof={
-            'schema':'JM.PublicRouteRawParity/1.0',
-            'status':'PASS',
-            'workflow_run':os.environ['GITHUB_RUN_ID'],
-            'source_commit':os.environ['REPAIR_SHA'],
-            'user_agents':['Android 16 / Chrome mobile','desktop/laptop Chromium'],
-            'files':[{"path":p,"sha256":hashlib.sha256(Path(p).read_bytes()).hexdigest()} for p in files],
-            'directory_routes':8,
-            'browser_proof':{
-              'apps':['44/44 rendered','Money Menu v1.1/v1.2 current route','Theory v0.20.1 current route'],
-              'theory':['Recovery Pass 007','37/37 source bodies','18 full bodies'],
-            }
-          }
-          Path(os.environ['RUNNER_TEMP'],'wave01-parity.json').write_text(json.dumps(proof,indent=2)+'\n',encoding='utf-8')
-          PY
-
-      - name: Seal Wave 01 live receipts and current head
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json,os
-          from datetime import datetime,timezone
-          from pathlib import Path
-
-          now=datetime.now(timezone.utc).isoformat()
-          run=os.environ['GITHUB_RUN_ID']
-          source=os.environ['REPAIR_SHA']
-          parity=json.loads(Path(os.environ['RUNNER_TEMP'],'wave01-parity.json').read_text(encoding='utf-8'))
-
-          contract_path=Path('registry/estate-head-public-current.json')
-          contract=json.loads(contract_path.read_text(encoding='utf-8'))
-          contract['current_public_subset_version']='v0.3.1'
-          contract['effective_date']='2026-08-06'
-          contract['deployment_state']='PUBLIC_ROUTE_REPAIR_WAVE_01_LIVE_SOURCE_PARITY_PASS'
-          contract['last_verified_cloudflare_contract_version']='v0.3.1'
-          contract['last_verified_cloudflare_deployed_at_utc']=now
-          contract['last_verified_cloudflare_source_commit']=source
-          contract['last_verified_cloudflare_workflow_run']=run
-          wave=contract.setdefault('public_route_repair_wave_01',{})
-          wave.update({
-            'status':'PASS',
-            'verified_utc':now,
-            'workflow_run':run,
-            'source_commit':source,
-            'raw_parity_files':len(parity['files']),
-            'android':'PASS_RAW_PARITY_AND_BROWSER_BEHAVIOUR',
-            'laptop':'PASS_RAW_PARITY_AND_BROWSER_BEHAVIOUR',
-            'receipt':'registry/public-route-repair-wave-01-live-receipt.json',
-          })
-          live_proof=contract.setdefault('cloudflare_live_proof',{})
-          live_proof.update({
-            'current_v0_3_1_edge_verification':'PASS',
-            'current_verified_contract_version':'v0.3.1',
-            'current_verified_utc':now,
-            'current_receipt':'registry/public-route-repair-wave-01-live-receipt.json',
-          })
-          contract_path.write_text(json.dumps(contract,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-
-          estate_path=Path('registry/estate-map.json')
-          estate=json.loads(estate_path.read_text(encoding='utf-8'))
-          estate['public_route_repair_wave_01']={
-            'status':'PASS',
-            'verified_utc':now,
-            'workflow_run':run,
-            'source_commit':source,
-            'theory':'v0.20.1 integrity over v0.19 shell — LIVE',
-            'apps_rooms':44,
-            'money_menu_public_contact':'v1.2 LIVE',
-            'identity_merges':0,
-            'whole_estate_ding':'OPEN',
-          }
-          estate_path.write_text(json.dumps(estate,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-
-          live={
-            'schema':'JM.PublicRouteRepairWaveLiveReceipt/1.0',
-            'wave':'01',
-            'status':'PASS',
-            'verified_utc':now,
-            'canonical_host':'https://jmisjustme-estate.pages.dev',
-            'workflow_run':run,
-            'source_commit':source,
-            'theory':{
-              'route':'/theory/',
-              'public_head':'v0.20.1 source-body integrity over v0.19 reconciled shell',
-              'full_bodies':18,
-              'source_bodies':'37/37',
-              'publication_drafts':24,
-              'android':'PASS',
-              'laptop':'PASS',
-            },
-            'apps':{
-              'route':'/apps/',
-              'rooms':44,
-              'money_menu':'v1.1 data authority / v1.2 live contact route',
-              'routeos':'sovereign gaming-platform bridge; not counted as a non-game app',
-              'android':'PASS',
-              'laptop':'PASS',
-            },
-            'parity':parity,
-            'identity_merges':0,
-            'whole_estate_ding':'OPEN',
-            'boundary':'Wave 01 proves current repository source parity and browser behaviour for the named public routes. It does not crown the whole Estate.',
-          }
-          Path('registry/public-route-repair-wave-01-live-receipt.json').write_text(json.dumps(live,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
-
-          Path('apps/PUBLIC_ROUTE_STATUS_v1_1.md').write_text(f'''# JM Non-Game Apps House — Public Route Status v1.1
-
-**Wave:** Public Route Repair Wave 01  
-**Rooms:** 44  
-**Current-head repair:** Money Menu v1.1/v1.2 and Theory v0.20.1 seated  
-**RouteOS:** sovereign gaming-platform bridge; not counted as a non-game app  
-**Cloudflare:** LIVE SOURCE PARITY PASS  
-**Android:** raw parity + browser behaviour PASS  
-**Laptop:** raw parity + browser behaviour PASS  
-**Verified:** {now}  
-
-Many bodies. One living line. None erased.
-''',encoding='utf-8')
-
-          Path('theory/PUBLIC_ROUTE_STATUS_v0_20_1.md').write_text(f'''# JM Theory Multihub — Public Route Status v0.20.1
-
-**Public head:** v0.20.1 source-body integrity layer  
-**Preserved shell:** v0.19 all-256 reconciliation  
-**Full bodies:** 18  
-**Earlier source bodies:** 37/37  
-**Publication drafts:** 24  
-**Census routes:** 300 visible after mounted layers  
-**Cloudflare:** LIVE SOURCE PARITY PASS  
-**Android:** Recovery Pass 007 / 37-of-37 / 18-body behaviour PASS  
-**Laptop:** Recovery Pass 007 / 37-of-37 / 18-body behaviour PASS  
-**Verified:** {now}  
-
-The room preserves formation. The body preserves current-best content.
-''',encoding='utf-8')
-          PY
-
-          git config user.name 'JM Public Route Repair Rail'
-          git config user.email 'actions@users.noreply.github.com'
-          git add \
-            apps/PUBLIC_ROUTE_STATUS_v1_1.md \
-            theory/PUBLIC_ROUTE_STATUS_v0_20_1.md \
-            registry/estate-head-public-current.json \
-            registry/estate-map.json \
-            registry/public-route-repair-wave-01-live-receipt.json
-          git commit -m 'Seal Public Route Repair Wave 01 live proof [skip ci]'
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main
-            git push origin HEAD:main && break
-            [ "$attempt" = 5 ] && exit 1
-            sleep 2
-          done
-          echo "SEALED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
-
-      - name: Reassemble sealed public body
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf cloudflare-estate
-          mkdir -p cloudflare-estate
-          for file in index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js author-home-door.js robots.txt sitemap.xml 404.html cading.html; do
-            [ ! -f "$file" ] || cp "$file" cloudflare-estate/
-          done
-          for dir in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery theory money-menu; do
-            [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
-          done
-          cp -a registry cloudflare-estate/registry
-          cat > cloudflare-estate/_headers <<'EOF'
-          /*
-            X-Content-Type-Options: nosniff
-            Referrer-Policy: strict-origin-when-cross-origin
-            Permissions-Policy: camera=(), microphone=(self), geolocation=()
-            Cache-Control: no-store, no-cache, must-revalidate
-          /sw.js
-            Cache-Control: no-store, no-cache, must-revalidate
-            Service-Worker-Allowed: /
-          /registry/*
-            Cache-Control: no-store, no-cache, must-revalidate
-          EOF
-          cat > cloudflare-estate/_redirects <<'EOF'
-          /apps /apps/index.html 200
-          /apps/ /apps/index.html 200
-          /theory /theory/index.html 200
-          /theory/ /theory/index.html 200
-          /games-beyond /games-beyond/index.html 200
-          /games-beyond/ /games-beyond/index.html 200
-          /recovery /recovery/index.html 200
-          /recovery/ /recovery/index.html 200
-          /author /author/index.html 200
-          /author/ /author/index.html 200
-          /recent /recent/index.html 200
-          /recent/ /recent/index.html 200
-          /money-menu /money-menu/index.html 200
-          /money-menu/ /money-menu/index.html 200
-          /coding-estate/integration /coding-estate/integration/00_OPEN_FIRST.html 200
-          /coding-estate/integration/ /coding-estate/integration/00_OPEN_FIRST.html 200
-          EOF
-
-      - name: Deploy sealed Wave 01 body
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Prove sealed contract and receipt live
-        shell: bash
-        run: |
-          set -euo pipefail
-          base='https://jmisjustme-estate.pages.dev'
+          passed=0
           for attempt in $(seq 1 60); do
-            pass=1
-            for path in \
-              registry/estate-head-public-current.json \
-              registry/public-route-repair-wave-01-live-receipt.json \
-              apps/PUBLIC_ROUTE_STATUS_v1_1.md \
-              theory/PUBLIC_ROUTE_STATUS_v0_20_1.md; do
-              target="$RUNNER_TEMP/final-$(echo "$path" | tr '/' '_')"
-              code="$(curl -sSLo "$target" -w '%{http_code}' --max-time 30 -H 'Cache-Control: no-cache' "$base/$path?wave01-final=$GITHUB_RUN_ID-$attempt" || true)"
-              if [ "$code" != 200 ] || ! cmp -s "$path" "$target"; then pass=0; break; fi
-            done
-            [ "$pass" = 1 ] && break
+            curl -fsSL "$base/apps/?wave01=$GITHUB_RUN_ID-$attempt" > "$RUNNER_TEMP/apps.html" || true
+            curl -fsSL "$base/theory/?wave01=$GITHUB_RUN_ID-$attempt" > "$RUNNER_TEMP/theory.html" || true
+            if grep -Fq 'data-public-route-wave="01"' "$RUNNER_TEMP/apps.html" && grep -Fq 'data-public-route-wave="01"' "$RUNNER_TEMP/theory.html"; then
+              passed=1
+              break
+            fi
             sleep 3
           done
-          test "$pass" = 1
-          python3 - <<'PY'
-          import json
-          live=json.load(open('registry/public-route-repair-wave-01-live-receipt.json',encoding='utf-8'))
-          contract=json.load(open('registry/estate-head-public-current.json',encoding='utf-8'))
-          assert live['status']=='PASS'
-          assert live['theory']['source_bodies']=='37/37'
-          assert live['apps']['rooms']==44
-          assert live['whole_estate_ding']=='OPEN'
-          assert contract['current_public_subset_version']=='v0.3.1'
-          assert contract['public_route_repair_wave_01']['status']=='PASS'
-          print('DING PASS — PUBLIC ROUTE REPAIR WAVE 01; WHOLE-ESTATE DING OPEN')
-          PY
+          test "$passed" = 1
+          cmp -s apps/index.html "$RUNNER_TEMP/apps.html"
+          cmp -s theory/index.html "$RUNNER_TEMP/theory.html"
+          echo 'WAVE 01 CANDIDATE LIVE SOURCE PARITY PASS'

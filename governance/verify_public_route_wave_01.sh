@@ -104,8 +104,8 @@ prove_browser() {
     > "$WORK/theory-$label-witness-dom.html"
 
   echo "THEORY WITNESS DIAGNOSTIC: $label"
-  grep -nE 'data-status=|THEORY WAVE 01 RUNTIME|CHECK_' \
-    "$WORK/theory-$label-witness-dom.html" | tail -40 || true
+  grep -nE 'data-status=|data-error=|THEORY WAVE 01 RUNTIME|CHECK_|RUNTIME_WITNESS_ERROR|id="detail"' \
+    "$WORK/theory-$label-witness-dom.html" | tail -60 || true
   grep -Fq 'data-status="PASS"' "$WORK/theory-$label-witness-dom.html"
   grep -Fq 'THEORY WAVE 01 RUNTIME PASS' "$WORK/theory-$label-witness-dom.html"
   for token in \

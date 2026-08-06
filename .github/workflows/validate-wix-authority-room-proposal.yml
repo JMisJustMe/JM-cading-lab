@@ -1,0 +1,123 @@
+name: Validate Wix Authority Room Proposal
+
+on:
+  push:
+    branches:
+      - jm-proposal/wix-v2-authority-rebuild
+    paths:
+      - ".github/workflows/validate-wix-authority-room-proposal.yml"
+      - "governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: validate-wix-authority-room-proposal
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Parse, test and receipt the exact room body
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out proposal branch
+        uses: actions/checkout@v6
+        with:
+          ref: jm-proposal/wix-v2-authority-rebuild
+          fetch-depth: 0
+
+      - name: Validate exact HTML and interaction body
+        shell: bash
+        run: |
+          set -euo pipefail
+          file='governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html'
+          test -s "$file"
+          test "$(grep -o 'data-room="' "$file" | wc -l)" -eq 8
+          grep -Fq 'OPEN FIRST' "$file"
+          grep -Fq 'ESTATE MAP' "$file"
+          grep -Fq 'COMMAND ROOM' "$file"
+          grep -Fq 'OWNER / RETURN' "$file"
+          grep -Fq 'width=device-width,initial-scale=1,viewport-fit=cover' "$file"
+          grep -Fq 'grid-template-columns:repeat(5' "$file"
+          grep -Fq 'No publication and no JM Ding' "$file"
+          grep -Fq '2,530,896-byte body' "$file"
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+
+          path = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html')
+          text = path.read_text(encoding='utf-8')
+          HTMLParser().feed(text)
+          scripts = re.findall(r'<script>(.*?)</script>', text, flags=re.S)
+          assert len(scripts) == 1, f'expected one inline script, got {len(scripts)}'
+          Path('/tmp/jm-wix-room.js').write_text(scripts[0], encoding='utf-8')
+          assert text.count('<section class="room') == 8
+          assert 'data-go="verify"' in text
+          assert 'data-filter="proof"' in text
+          assert 'id="search"' in text
+          print('PASS HTML parser, eight rooms, navigation, search and filter organs')
+          PY
+          node --check /tmp/jm-wix-room.js
+          echo "PASS exact file size $(wc -c < "$file")"
+          echo "PASS exact SHA-256 $(sha256sum "$file" | awk '{print $1}')"
+
+      - name: Seal proposal receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          from datetime import datetime, timezone
+          import hashlib, json, os
+
+          root = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild')
+          body = root / 'JM_WIX_AUTHORITY_ROOM_v0_1.html'
+          raw = body.read_bytes()
+          receipt = {
+              'schema': 'JM.WixAuthorityRoomPrototypeReceipt/0.1',
+              'recorded_utc': datetime.now(timezone.utc).isoformat(),
+              'authority': 'Theodore Benjamin Scott / JM / JMISJUSTME',
+              'wix_site_id': '7724b482-0a61-41bb-8d78-cb6587d6e3e7',
+              'wix_rebuild_branch_id': 'ec3edba7-2e32-4a4b-8359-637e5fa2c789',
+              'source_event_commit': os.environ.get('GITHUB_SHA'),
+              'prototype_file': str(body),
+              'prototype_size_bytes': len(raw),
+              'prototype_sha256': hashlib.sha256(raw).hexdigest(),
+              'rooms': ['OPEN FIRST','ESTATE MAP','COMMAND ROOM','USE','PLAY','READ','VERIFY','OWNER / RETURN'],
+              'checks': {
+                  'html_parser_contact': 'PASS',
+                  'eight_room_navigation': 'PASS',
+                  'mobile_first_bottom_rail': 'PASS',
+                  'command_search': 'PASS',
+                  'estate_house_filters': 'PASS',
+                  'javascript_syntax': 'PASS',
+                  'exact_carrier_state_labelled': 'PASS',
+                  'live_wix_untouched': 'PASS'
+              },
+              'state': 'WORKING_SINGLE_FILE_PROTOTYPE_VALIDATED_AWAITING_WIX_EDITOR_TRANSLATION_AND_JM_PREVIEW',
+              'published': False,
+              'deployed': False,
+              'physical_device_tested': False,
+              'ding': False,
+              'boundary': 'This is a validated working single-file prototype on a GitHub proposal branch. It does not claim that Wix static page layout has already been edited, previewed by JM or published.'
+          }
+          (root / 'JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json').write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
+          PY
+
+      - name: Commit receipt to proposal branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Wix Authority Room Proof Gate'
+          git config user.email 'actions@users.noreply.github.com'
+          git add governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Seal Wix authority room prototype receipt [skip ci]'
+          git push origin HEAD:jm-proposal/wix-v2-authority-rebuild

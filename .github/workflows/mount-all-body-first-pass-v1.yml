@@ -37,7 +37,29 @@ jobs:
           target='estate/authoritative/all-body-first-pass-v1.0'
           mkdir -p "$target"
 
-          cat "$payload"/command-register.html.gz.b64.part* > /tmp/jm-command-register.b64
+          cat \
+            "$payload"/repair.part00a \
+            "$payload"/repair.part00b \
+            "$payload"/repair.part00c \
+            "$payload"/repair.part00d \
+            "$payload"/repair.part01ab \
+            "$payload"/repair.part01cd \
+            "$payload"/command-register.html.gz.b64.part02 \
+            "$payload"/repair.part03ab \
+            "$payload"/repair.part03cd \
+            "$payload"/command-register.html.gz.b64.part04 \
+            "$payload"/command-register.html.gz.b64.part05 \
+            "$payload"/command-register.html.gz.b64.part06a \
+            "$payload"/command-register.html.gz.b64.part06b \
+            "$payload"/command-register.html.gz.b64.part06c \
+            "$payload"/command-register.html.gz.b64.part06d \
+            "$payload"/command-register.html.gz.b64.part07a \
+            "$payload"/command-register.html.gz.b64.part07b \
+            "$payload"/command-register.html.gz.b64.part07c \
+            "$payload"/command-register.html.gz.b64.part07d \
+            "$payload"/command-register.html.gz.b64.part08 \
+            > /tmp/jm-command-register.b64
+
           base64 --decode /tmp/jm-command-register.b64 > /tmp/jm-command-register.html.gz
           gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$target/index.html"
 

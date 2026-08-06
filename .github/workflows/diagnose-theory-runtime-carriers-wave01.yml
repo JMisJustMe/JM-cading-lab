@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/diagnose-theory-runtime-carriers-wave01.yml"
       - "governance/diagnose_theory_runtime_carriers.py"
+      - "governance/diagnose_theory_runtime_carriers_v2.py"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +29,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m py_compile governance/diagnose_theory_runtime_carriers.py
-          python3 governance/diagnose_theory_runtime_carriers.py
+          python3 -m py_compile governance/diagnose_theory_runtime_carriers_v2.py
+          python3 governance/diagnose_theory_runtime_carriers_v2.py
           test -s registry/theory-runtime-carrier-diagnostic-wave01.json
 
       - name: Seal diagnostic receipt

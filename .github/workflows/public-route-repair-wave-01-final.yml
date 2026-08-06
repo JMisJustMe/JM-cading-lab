@@ -9,11 +9,15 @@ on:
       - "governance/assemble_public_route_wave_01.sh"
       - "governance/verify_public_route_wave_01.sh"
       - "governance/finalize_public_route_wave_01.py"
+      - "governance/cdp_theory_wave01_probe.mjs"
+      - "estate-head-public-consumer.js"
+      - "theory/index.html"
+      - "theory/source-body-integrity-v12.js"
   workflow_dispatch:
 
 concurrency:
   group: jmisjustme-estate-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -38,6 +42,7 @@ jobs:
           python3 -m py_compile governance/finalize_public_route_wave_01.py
           bash -n governance/assemble_public_route_wave_01.sh
           bash -n governance/verify_public_route_wave_01.sh
+          node --check governance/cdp_theory_wave01_probe.mjs
           node --check estate-head-public-consumer.js
           node --check theory/source-body-integrity-v12.js
 
@@ -74,6 +79,7 @@ jobs:
           contract=json.load(open('registry/estate-head-public-current.json',encoding='utf-8'))
           assert live['status']=='PASS'
           assert live['theory']['source_bodies']=='37/37'
+          assert live['theory']['chrome_runtime_probe']=='PASS_11_OF_11_ANDROID_AND_LAPTOP'
           assert live['apps']['rooms']==44
           assert live['whole_estate_ding']=='OPEN'
           assert contract['current_public_subset_version']=='v0.3.1'

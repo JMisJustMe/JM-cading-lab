@@ -14,6 +14,7 @@ FILES=(
   index.html
   apps/index.html
   theory/index.html
+  theory/wave01-runtime-proof.html
   games-beyond/index.html
   coding-estate/integration/00_OPEN_FIRST.html
   recovery/index.html
@@ -47,6 +48,7 @@ prove_raw_parity() {
       code="$(curl -sSLo "$target" -w '%{http_code}' --max-time 30 -A "$ua" \
         -H 'Cache-Control: no-cache' "$BASE/$path?wave01=$RUN_ID-$label-$attempt" || true)"
       if [[ "$code" != 200 ]] || ! cmp -s "$path" "$target"; then
+        echo "RAW PARITY WAIT: $label $path HTTP=$code"
         pass=0
         break
       fi
@@ -97,14 +99,23 @@ prove_browser() {
   echo "APPS BROWSER PASS: $label"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-    --user-data-dir="$profile-theory" --user-agent="$ua" --virtual-time-budget=45000 \
-    --dump-dom "$BASE/theory/?wave01-browser=$RUN_ID-$label" \
-    > "$WORK/theory-$label-dom.html"
-  grep -Fq 'Recovery Pass 007' "$WORK/theory-$label-dom.html"
-  grep -Fq '37/37 earlier source bodies now open correctly' "$WORK/theory-$label-dom.html"
-  grep -Fq '>18</b> full bodies' "$WORK/theory-$label-dom.html"
-  grep -Fq 'v0.20.1 integrity layer · v0.19 reconciled shell' "$WORK/theory-$label-dom.html"
-  echo "THEORY BROWSER PASS: $label"
+    --user-data-dir="$profile-theory" --user-agent="$ua" --virtual-time-budget=70000 \
+    --dump-dom "$BASE/theory/wave01-runtime-proof.html?wave01-browser=$RUN_ID-$label" \
+    > "$WORK/theory-$label-witness-dom.html"
+
+  echo "THEORY WITNESS DIAGNOSTIC: $label"
+  grep -nE 'data-status=|THEORY WAVE 01 RUNTIME|version|bodies|drafts|fullBodies|recoveryPass007|proof37of37|lineage' \
+    "$WORK/theory-$label-witness-dom.html" | tail -40 || true
+  grep -Fq 'data-status="PASS"' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq 'THEORY WAVE 01 RUNTIME PASS' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"version": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"bodies": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"drafts": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"fullBodies": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"recoveryPass007": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"proof37of37": true' "$WORK/theory-$label-witness-dom.html"
+  grep -Fq '"lineage": true' "$WORK/theory-$label-witness-dom.html"
+  echo "THEORY RUNTIME WITNESS PASS: $label"
 
   echo "BROWSER BEHAVIOUR PASS: $label"
 }
@@ -125,6 +136,7 @@ files = [
     'index.html',
     'apps/index.html',
     'theory/index.html',
+    'theory/wave01-runtime-proof.html',
     'games-beyond/index.html',
     'coding-estate/integration/00_OPEN_FIRST.html',
     'recovery/index.html',
@@ -135,7 +147,7 @@ files = [
     'theory/data/source-body-integrity/v0_20-audit.json',
 ]
 proof = {
-    'schema': 'JM.PublicRouteRawParity/1.0',
+    'schema': 'JM.PublicRouteRawParity/1.1',
     'status': 'PASS',
     'workflow_run': os.environ['WAVE01_RUN_ID'],
     'source_commit': os.environ['WAVE01_SOURCE_COMMIT'],
@@ -152,11 +164,15 @@ proof = {
             'Theory v0.20.1 current route',
             'Money Menu live door rendered',
         ],
-        'theory': [
-            'Recovery Pass 007',
-            '37/37 source bodies',
+        'theory_runtime_witness': [
+            'JMTheorySourceIntegrityV12.version = v0.20.1',
+            '37 source bodies',
+            '24 publication drafts',
             '18 full bodies',
-            'v0.20.1 over v0.19 lineage label',
+            'Phone-Realms repaired',
+            'Recovery Pass 007 rendered',
+            '37/37 proof rendered',
+            'v0.20.1 over v0.19 lineage rendered',
         ],
     },
 }

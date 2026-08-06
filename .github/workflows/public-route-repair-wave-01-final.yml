@@ -13,6 +13,9 @@ on:
       - "estate-head-public-consumer.js"
       - "theory/index.html"
       - "theory/source-body-integrity-v12.js"
+      - "theory/data/v0_4/**"
+      - "theory/BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md"
+      - "registry/theovertime-record-10-source-restoration-wave01.json"
   workflow_dispatch:
 
 concurrency:
@@ -38,7 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "REPAIR_SHA=$(git log -1 --format=%H -- apps/index.html theory/index.html)" >> "$GITHUB_ENV"
+          echo "REPAIR_SHA=$(git log -1 --format=%H -- apps/index.html theory/index.html theory/data/v0_4)" >> "$GITHUB_ENV"
           python3 -m py_compile governance/finalize_public_route_wave_01.py
           bash -n governance/assemble_public_route_wave_01.sh
           bash -n governance/verify_public_route_wave_01.sh

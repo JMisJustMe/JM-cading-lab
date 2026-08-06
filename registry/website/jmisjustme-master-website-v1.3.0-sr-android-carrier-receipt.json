@@ -1,0 +1,36 @@
+{
+  "schema": "jm.website.android-carrier-receipt/v1",
+  "status": "BUILD_PASS_DEVICE_CONTACT_OPEN",
+  "body": "MASTER WEBSITE",
+  "version": "v1.3.0 SR",
+  "package": "com.jmisjustme.livingestate",
+  "versionCode": 130,
+  "versionName": "1.3.0",
+  "sourceCommit": "653bb98b45db6fd4f22155796acc7751249a1124",
+  "workflowRun": "31088208576",
+  "debugApk": {
+    "name": "JMISJUSTME_LIVING_ESTATE_CARRIER_v1.3.0_DEBUG.apk",
+    "bytes": 14133,
+    "sha256": "9c1e0df894592a062ae2cdecd938cabfa2c3bc12ff65abe43b2a637b43df07ee"
+  },
+  "proofAab": {
+    "name": "JMISJUSTME_LIVING_ESTATE_CARRIER_v1.3.0_PROOF.aab",
+    "bytes": 11408,
+    "sha256": "de23c651cf4c9c716580fad434b4d1e73e19331c5088241a9e9fb5f8aa3d18cc"
+  },
+  "universalApk": {
+    "name": "JMISJUSTME_LIVING_ESTATE_CARRIER_v1.3.0_UNIVERSAL.apk",
+    "bytes": 21136,
+    "sha256": "51a12384d6a9c96ac72381d8a07fea2762aca333864512f7c78978f12347505b"
+  },
+  "carrierRoute": "Android document picker \u2192 exact Master OneBody identity check \u2192 private persistent storage \u2192 local/offline WebView",
+  "exactMasterRequiredMarkers": [
+    "MASTER WEBSITE",
+    "v1.3.0 SR"
+  ],
+  "signingBoundary": "Temporary proof key; not owner production/update key.",
+  "embeddedFinalApk": "OPEN_LATER_REFINEMENT",
+  "physicalDeviceDing": "OPEN",
+  "cloudflareOverwritten": false,
+  "intakeChamberMerged": false
+}

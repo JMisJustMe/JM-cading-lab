@@ -10,6 +10,7 @@ on:
       - "governance/diagnose_theory_runtime_carriers_v2.py"
       - "governance/recover_theory_runtime_ancestors_wave01.py"
       - "governance/recover_theory_runtime_ancestors_wave01_v2.py"
+      - "governance/diagnose_theory_fault_cluster_wave01.py"
   workflow_dispatch:
 
 permissions:
@@ -18,7 +19,7 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 16
+    timeout-minutes: 24
     steps:
       - name: Check out all Theory authority refs
         uses: actions/checkout@v6
@@ -40,10 +41,13 @@ jobs:
           python3 -m py_compile governance/diagnose_theory_runtime_carriers_v2.py
           python3 -m py_compile governance/recover_theory_runtime_ancestors_wave01.py
           python3 -m py_compile governance/recover_theory_runtime_ancestors_wave01_v2.py
+          python3 -m py_compile governance/diagnose_theory_fault_cluster_wave01.py
           python3 governance/diagnose_theory_runtime_carriers_v2.py
           python3 governance/recover_theory_runtime_ancestors_wave01_v2.py
+          python3 governance/diagnose_theory_fault_cluster_wave01.py
           test -s registry/theory-runtime-carrier-diagnostic-wave01.json
           test -s registry/theory-runtime-ancestor-recovery-wave01.json
+          test -s registry/theory-fault-cluster-diagnostic-wave01.json
 
       - name: Seal diagnostic receipts
         shell: bash
@@ -53,8 +57,9 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add registry/theory-runtime-carrier-diagnostic-wave01.json
           git add registry/theory-runtime-ancestor-recovery-wave01.json
+          git add registry/theory-fault-cluster-diagnostic-wave01.json
           if ! git diff --cached --quiet; then
-            git commit -m 'Seal Theory runtime ancestor recovery Wave 01 [skip ci]'
+            git commit -m 'Seal exact Theory fault-cluster diagnostic Wave 01 [skip ci]'
             git pull --rebase origin main
             git push origin HEAD:main
           fi

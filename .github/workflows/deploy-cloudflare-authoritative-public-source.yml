@@ -242,6 +242,7 @@ jobs:
                       print('WAIT', path, code, marker)
                       next_pending.append((path, marker))
               if not next_pending:
+                  pending = []
                   break
               pending = next_pending
               time.sleep(3)

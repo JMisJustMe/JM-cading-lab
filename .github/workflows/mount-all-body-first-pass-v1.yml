@@ -6,7 +6,7 @@ on:
       - jm-proposal/exact-command-register-v1-0
     paths:
       - ".github/workflows/mount-all-body-first-pass-v1.yml"
-      - "governance/mount-payloads/all-body-first-pass-v1.0/command-register.html.gz"
+      - "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-*.b64"
       - "governance/mount-requests/exact-command-register-v1-0.json"
   workflow_dispatch:
 
@@ -35,16 +35,56 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          source='governance/mount-payloads/all-body-first-pass-v1.0/command-register.html.gz'
+          payload='governance/mount-payloads/all-body-first-pass-v1.0'
           target='estate/authoritative/all-body-first-pass-v1.0'
           mkdir -p "$target"
 
-          expected_gzip='d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438'
-          actual_gzip="$(sha256sum "$source" | awk '{print $1}')"
-          test "$actual_gzip" = "$expected_gzip"
-          test "$(wc -c < "$source")" -eq 116149
+          cat \
+            "$payload"/repair.part00a \
+            "$payload"/repair.part00b \
+            "$payload"/repair.part00c \
+            "$payload"/repair.part00d \
+            "$payload"/exact-fix-p01-0.b64 \
+            "$payload"/exact-fix-p01-1.b64 \
+            "$payload"/exact-fix-p01-2.b64 \
+            "$payload"/exact-fix-p01-3.b64 \
+            "$payload"/exact-fix-p01-4.b64 \
+            "$payload"/tiny.p01.1 \
+            "$payload"/tiny.p01.2 \
+            "$payload"/tiny.p01.3 \
+            "$payload"/repair.part01cd \
+            "$payload"/command-register.html.gz.b64.part02 \
+            "$payload"/exact-fix-p03-0.b64 \
+            "$payload"/exact-fix-p03-1.b64 \
+            "$payload"/exact-fix-p03-2.b64 \
+            "$payload"/exact-fix-p03-3.b64 \
+            "$payload"/exact-fix-p03-4.b64 \
+            "$payload"/tiny.p03.1 \
+            "$payload"/tiny.p03.2 \
+            "$payload"/tiny.p03.3 \
+            "$payload"/repair.part03cd \
+            "$payload"/command-register.html.gz.b64.part04 \
+            "$payload"/command-register.html.gz.b64.part05 \
+            "$payload"/command-register.html.gz.b64.part06a \
+            "$payload"/command-register.html.gz.b64.part06b \
+            "$payload"/command-register.html.gz.b64.part06c \
+            "$payload"/command-register.html.gz.b64.part06d \
+            "$payload"/command-register.html.gz.b64.part07a \
+            "$payload"/command-register.html.gz.b64.part07b \
+            "$payload"/command-register.html.gz.b64.part07c \
+            "$payload"/command-register.html.gz.b64.part07d \
+            "$payload"/command-register.html.gz.b64.part08 \
+            > /tmp/jm-command-register.b64
 
-          gzip --decompress --stdout "$source" > "$target/index.html"
+          test "$(wc -c < /tmp/jm-command-register.b64)" -eq 154868
+          base64 --decode /tmp/jm-command-register.b64 > /tmp/jm-command-register.html.gz
+
+          expected_gzip='d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438'
+          actual_gzip="$(sha256sum /tmp/jm-command-register.html.gz | awk '{print $1}')"
+          test "$actual_gzip" = "$expected_gzip"
+          test "$(wc -c < /tmp/jm-command-register.html.gz)" -eq 116149
+
+          gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$target/index.html"
 
           expected_html='abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410'
           actual_html="$(sha256sum "$target/index.html" | awk '{print $1}')"

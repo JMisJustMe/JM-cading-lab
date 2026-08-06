@@ -11,9 +11,18 @@
   ],
   "declared_base_sha": "9a1f8f6b67b24412ddbf02d12703b4cadb86273d",
   "proposal_ref": "jm-proposal/exact-command-register-v1-0",
-  "proposed_action": "Add one exact gzip carrier, reconstruct the 2,530,896-byte interactive HTML on the proposal branch and seal a bounded proof receipt.",
+  "proposed_action": "Reuse every byte-matching preserved fragment, replace only two disproved 2,500-character regions with ten exact Git-SHA-verified repair blobs, reconstruct the 2,530,896-byte interactive HTML on the proposal branch and seal a bounded proof receipt.",
   "target_paths": [
-    "governance/mount-payloads/all-body-first-pass-v1.0/command-register.html.gz",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p01-0.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p01-1.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p01-2.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p01-3.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p01-4.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p03-0.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p03-1.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p03-2.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p03-3.b64",
+    "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-p03-4.b64",
     "estate/authoritative/all-body-first-pass-v1.0/index.html",
     "estate/authoritative/all-body-first-pass-v1.0/GITHUB_MOUNT_RECEIPT_v1_0.json"
   ],
@@ -25,6 +34,7 @@
   "proposed_new_ids": [],
   "non_overwrite_boundary": "No main mutation, no deployment, no workflow deletion, no authority replacement and no automatic Ding.",
   "proof_checks": {
+    "assembled_base64_characters": 154868,
     "compressed_size_bytes": 116149,
     "compressed_sha256": "d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438",
     "reconstructed_size_bytes": 2530896,

@@ -35,29 +35,41 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+
           path=Path('governance/restore_theovertime_record_10_wave01.py')
-          text=path.read_text(encoding='utf-8')
-          old='''    if before_record.get("source_file") != EXPECTED_SOURCE_PATH:
-              raise RuntimeError(f"Record 10 source path mismatch: {before_record.get('source_file')!r}")
-          '''
-          new='''    source_key = next(
-              (
-                  key
-                  for key in ("source_file", "source_path", "source", "path")
-                  if isinstance(before_record.get(key), str)
-              ),
-              None,
-          )
-          source_value = before_record.get(source_key) if source_key else None
-          if source_value != EXPECTED_SOURCE_PATH:
-              raise RuntimeError(
-                  f"Record 10 source path mismatch: key={source_key!r}, value={source_value!r}, "
-                  f"keys={sorted(before_record.keys())!r}"
-              )
-          '''
-          if old not in text:
-              raise SystemExit('Expected source-file assertion was not found')
-          path.write_text(text.replace(old,new,1),encoding='utf-8')
+          lines=path.read_text(encoding='utf-8').splitlines(keepends=True)
+          output=[]
+          replaced=False
+          index=0
+          while index < len(lines):
+              line=lines[index]
+              if 'if before_record.get("source_file") != EXPECTED_SOURCE_PATH:' in line:
+                  indent=line[:len(line)-len(line.lstrip())]
+                  output.extend([
+                      indent+'source_key = next(\n',
+                      indent+'    (\n',
+                      indent+'        key\n',
+                      indent+'        for key in ("source_file", "source_path", "source", "path")\n',
+                      indent+'        if isinstance(before_record.get(key), str)\n',
+                      indent+'    ),\n',
+                      indent+'    None,\n',
+                      indent+')\n',
+                      indent+'source_value = before_record.get(source_key) if source_key else None\n',
+                      indent+'if source_value != EXPECTED_SOURCE_PATH:\n',
+                      indent+'    raise RuntimeError(\n',
+                      indent+'        f"Record 10 source path mismatch: key={source_key!r}, "\n',
+                      indent+'        f"value={source_value!r}, keys={sorted(before_record.keys())!r}"\n',
+                      indent+'    )\n',
+                  ])
+                  index += 2
+                  replaced=True
+                  continue
+              output.append(line)
+              index += 1
+
+          if not replaced:
+              raise SystemExit('Expected source-file assertion line was not found')
+          path.write_text(''.join(output),encoding='utf-8')
           PY
 
       - name: Restore exact Gmail source into record 10

@@ -36,7 +36,9 @@ DIRECTORIES=(
 )
 
 prove_raw_parity() {
-  local label="$1" ua="$2" pass target code
+  local label="$1"
+  local ua="$2"
+  local pass target code
   pass=0
   for attempt in $(seq 1 60); do
     pass=1
@@ -75,10 +77,14 @@ for candidate in google-chrome google-chrome-stable chromium chromium-browser; d
   fi
 done
 [[ -n "$CHROME" ]]
+echo "BROWSER ENGINE: $CHROME"
 
 prove_browser() {
-  local label="$1" ua="$2" profile="$WORK/profile-$label"
+  local label="$1"
+  local ua="$2"
+  local profile="$WORK/profile-$label"
   rm -rf "$profile-apps" "$profile-theory"
+  echo "BROWSER PROOF START: $label"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
     --user-data-dir="$profile-apps" --user-agent="$ua" --virtual-time-budget=30000 \
@@ -88,6 +94,7 @@ prove_browser() {
   grep -Fq '242-route v1.1 data authority · live public contact v1.2' "$WORK/apps-$label-dom.html"
   grep -Fq 'Public v0.20.1 Source-Body Integrity · v0.19 shell preserved' "$WORK/apps-$label-dom.html"
   grep -Fq 'href="/money-menu/"' "$WORK/apps-$label-dom.html"
+  echo "APPS BROWSER PASS: $label"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
     --user-data-dir="$profile-theory" --user-agent="$ua" --virtual-time-budget=45000 \
@@ -97,6 +104,7 @@ prove_browser() {
   grep -Fq '37/37 earlier source bodies now open correctly' "$WORK/theory-$label-dom.html"
   grep -Fq '>18</b> full bodies' "$WORK/theory-$label-dom.html"
   grep -Fq 'v0.20.1 integrity layer · v0.19 reconciled shell' "$WORK/theory-$label-dom.html"
+  echo "THEORY BROWSER PASS: $label"
 
   echo "BROWSER BEHAVIOUR PASS: $label"
 }

@@ -79,17 +79,28 @@ for candidate in google-chrome google-chrome-stable chromium chromium-browser; d
   fi
 done
 [[ -n "$CHROME" ]]
+node --check governance/cdp_theory_wave01_probe.mjs
 echo "BROWSER ENGINE: $CHROME"
 
 prove_browser() {
   local label="$1"
   local ua="$2"
-  local profile="$WORK/profile-$label"
-  rm -rf "$profile-apps" "$profile-theory"
+  local port
+  local apps_profile="$WORK/profile-$label-apps"
+  local theory_profile="$WORK/profile-$label-theory"
+  local theory_log="$WORK/theory-$label-chrome.log"
+  local theory_proof="$WORK/theory-$label-cdp-proof.json"
+  local theory_error="$WORK/theory-$label-cdp-error.log"
+  local chrome_pid
+  local probe_rc
+  local debugger_ready
+
+  if [[ "$label" == android ]]; then port=9222; else port=9223; fi
+  rm -rf "$apps_profile" "$theory_profile"
   echo "BROWSER PROOF START: $label"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-    --user-data-dir="$profile-apps" --user-agent="$ua" --virtual-time-budget=30000 \
+    --user-data-dir="$apps_profile" --user-agent="$ua" --virtual-time-budget=30000 \
     --dump-dom "$BASE/apps/?wave01-browser=$RUN_ID-$label" \
     > "$WORK/apps-$label-dom.html"
   grep -Fq '44 of 44 rooms' "$WORK/apps-$label-dom.html"
@@ -99,31 +110,69 @@ prove_browser() {
   echo "APPS BROWSER PASS: $label"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
-    --user-data-dir="$profile-theory" --user-agent="$ua" --virtual-time-budget=70000 \
-    --dump-dom "$BASE/theory/wave01-runtime-proof.html?wave01-browser=$RUN_ID-$label" \
-    > "$WORK/theory-$label-witness-dom.html"
+    --remote-debugging-address=127.0.0.1 \
+    --remote-debugging-port="$port" \
+    --user-data-dir="$theory_profile" \
+    --user-agent="$ua" \
+    "$BASE/theory/?wave01-cdp=$RUN_ID-$label" \
+    > "$theory_log" 2>&1 &
+  chrome_pid=$!
 
-  echo "THEORY WITNESS DIAGNOSTIC: $label"
-  grep -nE 'data-status=|data-error=|THEORY WAVE 01 RUNTIME|CHECK_|RUNTIME_WITNESS_ERROR|id="detail"' \
-    "$WORK/theory-$label-witness-dom.html" | tail -60 || true
-  grep -Fq 'data-status="PASS"' "$WORK/theory-$label-witness-dom.html"
-  grep -Fq 'THEORY WAVE 01 RUNTIME PASS' "$WORK/theory-$label-witness-dom.html"
-  for token in \
-    CHECK_version_PASS \
-    CHECK_bodies_PASS \
-    CHECK_drafts_PASS \
-    CHECK_fullBodies_PASS \
-    CHECK_phoneRealmsRepaired_PASS \
-    CHECK_topFullBodies_PASS \
-    CHECK_topIntegrityBodies_PASS \
-    CHECK_recoveryPass007_PASS \
-    CHECK_proof37of37_PASS \
-    CHECK_reconciledShell_PASS \
-    CHECK_waveMarker_PASS; do
-    grep -Fq "$token" "$WORK/theory-$label-witness-dom.html"
+  debugger_ready=0
+  for attempt in $(seq 1 120); do
+    if curl -fsS "http://127.0.0.1:$port/json/version" >/dev/null 2>&1; then
+      debugger_ready=1
+      break
+    fi
+    if ! kill -0 "$chrome_pid" >/dev/null 2>&1; then
+      break
+    fi
+    sleep 0.25
   done
-  echo "THEORY RUNTIME WITNESS PASS: $label"
 
+  if [[ "$debugger_ready" != 1 ]]; then
+    echo "CHROME DEVTOOLS DID NOT OPEN: $label"
+    cat "$theory_log" || true
+    kill "$chrome_pid" >/dev/null 2>&1 || true
+    wait "$chrome_pid" >/dev/null 2>&1 || true
+    return 1
+  fi
+
+  set +e
+  node governance/cdp_theory_wave01_probe.mjs "$port" 60000 /theory/ \
+    > "$theory_proof" 2> "$theory_error"
+  probe_rc=$?
+  set -e
+
+  kill "$chrome_pid" >/dev/null 2>&1 || true
+  wait "$chrome_pid" >/dev/null 2>&1 || true
+
+  if [[ "$probe_rc" != 0 ]]; then
+    echo "THEORY CDP PROBE FAILED: $label RC=$probe_rc"
+    cat "$theory_proof" || true
+    cat "$theory_error" || true
+    cat "$theory_log" || true
+    return "$probe_rc"
+  fi
+
+  echo "THEORY CDP PROOF: $label"
+  cat "$theory_proof"
+  grep -Fq '"status": "PASS"' "$theory_proof"
+  for check in \
+    version \
+    bodies \
+    drafts \
+    fullBodies \
+    phoneRealmsRepaired \
+    topFullBodies \
+    topIntegrityBodies \
+    recoveryPass007 \
+    proof37of37 \
+    reconciledShell \
+    waveMarker; do
+    grep -Fq "\"$check\": true" "$theory_proof"
+  done
+  echo "THEORY DIRECT CHROME RUNTIME PASS: $label / 11 OF 11"
   echo "BROWSER BEHAVIOUR PASS: $label"
 }
 
@@ -154,7 +203,7 @@ files = [
     'theory/data/source-body-integrity/v0_20-audit.json',
 ]
 proof = {
-    'schema': 'JM.PublicRouteRawParity/1.1',
+    'schema': 'JM.PublicRouteRawParity/1.2',
     'status': 'PASS',
     'workflow_run': os.environ['WAVE01_RUN_ID'],
     'source_commit': os.environ['WAVE01_SOURCE_COMMIT'],
@@ -171,7 +220,7 @@ proof = {
             'Theory v0.20.1 current route',
             'Money Menu live door rendered',
         ],
-        'theory_runtime_witness': [
+        'theory_chrome_runtime_probe': [
             'JMTheorySourceIntegrityV12.version = v0.20.1',
             '37 source bodies',
             '24 publication drafts',
@@ -179,8 +228,9 @@ proof = {
             'Phone-Realms repaired',
             'Recovery Pass 007 rendered',
             '37/37 proof rendered',
-            'v0.20.1 runtime over 300-route reconciled shell',
+            'v0.20.1 runtime over reconciled shell',
         ],
+        'theory_chrome_runtime_checks': 11,
     },
 }
 Path(os.environ['WAVE01_OUT_JSON']).write_text(

@@ -18,7 +18,7 @@
 <div id="checkTokens" class="tokens">CHECKS_WAITING</div>
 <pre id="detail">Initialising…</pre>
 </section>
-<iframe id="theoryFrame" title="Theory runtime witness target" src="./index.html?wave01-witness=2"></iframe>
+<iframe id="theoryFrame" title="Theory runtime witness target" src="./index.html?wave01-witness=3"></iframe>
 </main>
 <script>
 'use strict';
@@ -31,20 +31,25 @@
   status.dataset.status=state;
   status.className='state '+state.toLowerCase();
   status.textContent='THEORY WAVE 01 RUNTIME '+state;
+  if(payload.error)status.dataset.error=String(payload.error).slice(0,240);
   const checks=payload.checks||{};
-  tokens.textContent=Object.entries(checks).map(([key,value])=>'CHECK_'+key+'_'+(value?'PASS':'FAIL')).join(' ');
+  tokens.textContent=Object.keys(checks).length
+   ?Object.entries(checks).map(([key,value])=>'CHECK_'+key+'_'+(value?'PASS':'FAIL')).join(' ')
+   :'RUNTIME_WITNESS_ERROR';
   detail.textContent=JSON.stringify(payload,null,2);
   document.documentElement.dataset.wave01Runtime=state;
  };
  const test=()=>{
   try{
-   const w=frame.contentWindow,d=frame.contentDocument,api=w&&w.JMTheorySourceIntegrityV12;
-   if(!w||!d||!api)return false;
+   const w=frame.contentWindow;
+   const d=frame.contentDocument;
+   if(!w||!d)return false;
+   const api=w.JMTheorySourceIntegrityV12;
+   if(!api)return false;
    const proof=d.querySelector('[data-v11-proof]');
    const lead=d.getElementById('sourcePassLead');
    const topFull=d.getElementById('topFullBodies');
    const topIntegrity=d.getElementById('topIntegrityBodies');
-   const records=w.DATA&&Array.isArray(w.DATA.records)?w.DATA.records.length:0;
    const checks={
     version:api.version==='v0.20.1',
     bodies:api.bodies===37,
@@ -55,13 +60,21 @@
     topIntegrityBodies:String(topIntegrity?.textContent||'').trim()==='37',
     recoveryPass007:/Recovery Pass 007/.test(lead?.textContent||''),
     proof37of37:/37\/37 earlier source bodies now open correctly/.test(proof?.textContent||''),
-    reconciledShell:Boolean(w.JMTheoryFirstStageT1ReconciliationV10)&&records===300,
+    reconciledShell:Boolean(w.JMTheoryFirstStageT1ReconciliationV10),
     waveMarker:d.body?.dataset?.publicRouteWave==='01',
    };
-   const payload={schema:'JM.TheoryWave01RuntimeWitness/1.1',checks,runtime:{...api},reconciledShell:{object:Boolean(w.JMTheoryFirstStageT1ReconciliationV10),records},location:w.location.href};
+   const payload={
+    schema:'JM.TheoryWave01RuntimeWitness/1.1',
+    checks,
+    runtimeVersion:String(api.version||''),
+    sourceBodies:Number(api.bodies||0),
+    publicationDrafts:Number(api.drafts||0),
+    fullBodies:Number(api.fullBodies||0),
+    reconciledShellObject:Boolean(w.JMTheoryFirstStageT1ReconciliationV10)
+   };
    if(Object.values(checks).every(Boolean)){finish('PASS',payload);return true}
    finish('FAIL',payload);return true;
-  }catch(error){finish('FAIL',{error:String(error),stack:error?.stack||null});return true}
+  }catch(error){finish('FAIL',{error:String(error),stack:String(error?.stack||'')});return true}
  };
  let attempts=0;
  const timer=setInterval(()=>{

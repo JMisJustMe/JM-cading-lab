@@ -1,0 +1,79 @@
+{
+  "schema": "JM.TheOverTimeRecord10SourceRestoration/1.0",
+  "status": "PASS_EXACT_SOURCE_RESTORED",
+  "record_id": "10",
+  "title": "TheOverTime Approach",
+  "source_path": "BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md",
+  "authority": {
+    "custody_route": "Gmail attachment",
+    "message_id": "19e46a49b06061d3",
+    "message_date": "2026-05-20T19:27:31+01:00",
+    "markdown_filename": "10_theovertime_approach_model.md",
+    "markdown_reported_bytes": 3070,
+    "markdown_sha256": "260ff0439a74f38a88cda1cbd61852eaf8c7932a3509527f12ab600a83abd963",
+    "text_filename": "10_theovertime_approach_model.txt",
+    "text_reported_bytes": 3014,
+    "text_sha256": "7766cda21d8212494594ec06f36c19ccba2cbab7d7c16c590f374150a9ff0f7c",
+    "normalized_md_txt_parity": "PASS",
+    "source_status_boundary": "Preservation draft; early stages, still ongoing; not the complete Evernote/source vault."
+  },
+  "record_before": {
+    "body_characters": 370,
+    "body_sha256": "bd3960fd3c2d2d4dc07c863a53a039df63002fa704a9d3e7a6a9f771a8e604fe",
+    "record_sha256": "ed552e8ade504b7e0e4d2fae3567f41ce8631f1b9a07e6432dca70365d1fafc9"
+  },
+  "record_after": {
+    "body_characters": 3067,
+    "body_sha256": "f5514a3bb52f37cbabfe5b24edfd5117019b64d658a37ff25820507a05eb8301",
+    "record_sha256": "59fc47632f6868a62dbf71c707c2b20f6e04a546ab2daca25931ca72807b24be",
+    "integrity_floor_993": "PASS"
+  },
+  "payload": {
+    "records": 297,
+    "changed_record_indices": [
+      10
+    ],
+    "changed_record_ids": [
+      "10"
+    ],
+    "unchanged_non_target_records": 296,
+    "before": {
+      "part_characters": [
+        7500,
+        7500,
+        7500,
+        7500,
+        7500,
+        7500,
+        5428
+      ],
+      "joined_base64_characters": 50428,
+      "joined_base64_sha256": "503b4d9b36ab4035442d097fd6c147ced2de75f3c2d03f766bab789edc51c5f8",
+      "compressed_bytes": 37819,
+      "compressed_sha256": "db5eba8a9dcb3461e06549d1822048a7203159b56699971b974b8f72e58246c3",
+      "plain_bytes": 386039,
+      "plain_sha256": "3f61c30383bee6b0ace5543e184805f0d65968484ce9d473bf95d26ec3d43ff5"
+    },
+    "after": {
+      "part_characters": [
+        7328,
+        7328,
+        7328,
+        7328,
+        7328,
+        7328,
+        7324
+      ],
+      "joined_base64_characters": 51292,
+      "joined_base64_sha256": "2cbec0ebb89bca60bf8778f390e2c01c3f6e0dcf4a2ae575e1d2b6ba5b5f905a",
+      "compressed_bytes": 38468,
+      "compressed_sha256": "5f91234eb4c28cd3dc805fa800cb33fcb3a77fd44f7a2f5d78e4403b67023c04",
+      "plain_bytes": 388809,
+      "plain_sha256": "3fd3b234123b70d374141a71b339e3a8deeaa03b506f78a1412b93768a5237bb"
+    },
+    "part_count": 7
+  },
+  "identity_merges": 0,
+  "whole_estate_ding": "OPEN",
+  "boundary": "The exact Gmail preservation draft replaces only the compact public route body for record 10. It is not crowned as the missing complete Evernote/source vault."
+}

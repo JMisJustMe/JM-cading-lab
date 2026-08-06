@@ -1,0 +1,299 @@
+{
+  "schema": "JM.TheoryRuntimeCarrierDiagnostic/1.1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "chat_graft_carriers": [
+    {
+      "name": "chat-graft-v1.b64",
+      "raw_characters": 19999,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 19999,
+      "clean_mod_4": 3,
+      "padding_added": 1,
+      "normalized_characters": 20000,
+      "base64_decode": "PASS",
+      "decoded_bytes": 14998,
+      "first_16_hex": "beb6356987b03a2f30436229984e85b4",
+      "gzip_magic": false,
+      "gzip_decode": "FAIL",
+      "gzip_error": "BadGzipFile(\"Not a gzipped file (b'\\\\xbe\\\\xb6')\")"
+    },
+    {
+      "name": "chat-graft-v2 joined",
+      "raw_characters": 23904,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 23904,
+      "clean_mod_4": 0,
+      "padding_added": 0,
+      "normalized_characters": 23904,
+      "base64_decode": "PASS",
+      "decoded_bytes": 17926,
+      "first_16_hex": "1f8b0800b05b616a02ffed7d6d8f2357",
+      "gzip_magic": true,
+      "gzip_decode": "PASS",
+      "uncompressed_bytes": 66395,
+      "uncompressed_first_80": "{\"version\":\"v2-delta\",\"records\":[{\"id\":\"bringing-it-all-together\",\"title\":\"Bring",
+      "json_decode": "PASS",
+      "json_type": "dict",
+      "json_keys": [
+        "proof",
+        "records",
+        "version"
+      ],
+      "record_count": 21
+    },
+    {
+      "name": "chat-graft-v2 parts",
+      "parts": [
+        {
+          "path": "theory/data/chat-graft-v2/part-01.txt",
+          "raw_characters": 5976,
+          "whitespace_characters": 0,
+          "whitespace_codepoints": {},
+          "invalid_character_count": 0,
+          "invalid_characters_first_50": [],
+          "starts_with_bom": false,
+          "ends_with_newline": false
+        },
+        {
+          "path": "theory/data/chat-graft-v2/part-02.txt",
+          "raw_characters": 5976,
+          "whitespace_characters": 0,
+          "whitespace_codepoints": {},
+          "invalid_character_count": 0,
+          "invalid_characters_first_50": [],
+          "starts_with_bom": false,
+          "ends_with_newline": false
+        },
+        {
+          "path": "theory/data/chat-graft-v2/part-03.txt",
+          "raw_characters": 5976,
+          "whitespace_characters": 0,
+          "whitespace_codepoints": {},
+          "invalid_character_count": 0,
+          "invalid_characters_first_50": [],
+          "starts_with_bom": false,
+          "ends_with_newline": false
+        },
+        {
+          "path": "theory/data/chat-graft-v2/part-04.txt",
+          "raw_characters": 5976,
+          "whitespace_characters": 0,
+          "whitespace_codepoints": {},
+          "invalid_character_count": 0,
+          "invalid_characters_first_50": [],
+          "starts_with_bom": false,
+          "ends_with_newline": false
+        }
+      ]
+    }
+  ],
+  "full_body_recovery_carriers": [
+    {
+      "name": "recovery:become-a-probability",
+      "raw_characters": 8352,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 8352,
+      "clean_mod_4": 0,
+      "padding_added": 0,
+      "normalized_characters": 8352,
+      "base64_decode": "PASS",
+      "decoded_bytes": 6263,
+      "first_16_hex": "1f8b0800fb77616a02ffcd5cdb921b37",
+      "gzip_magic": true,
+      "gzip_decode": "PASS",
+      "uncompressed_bytes": 16794,
+      "uncompressed_first_80": "BECOME A PROBABILITY\n\nBody-Participation Route v1.0\n\nHEAD. TORSO. LEGS.\n\nI do no",
+      "json_decode": "FAIL",
+      "json_error": "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')",
+      "record_id": "become-a-probability",
+      "record_title": "BECOME A PROBABILITY",
+      "carrier_field": "body_b64",
+      "chunk_count": 0
+    },
+    {
+      "name": "recovery:change-continuation-spine",
+      "raw_characters": 6760,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 6760,
+      "clean_mod_4": 0,
+      "padding_added": 0,
+      "normalized_characters": 6760,
+      "base64_decode": "PASS",
+      "decoded_bytes": 5070,
+      "first_16_hex": "1f8b0800fb77616a02ffbd5bcb8e24c7",
+      "gzip_magic": true,
+      "gzip_decode": "PASS",
+      "uncompressed_bytes": 13726,
+      "uncompressed_first_80": "JM Estate-Wide Change–Continuation Spine v1.0\nJM ESTATE GOVERNING SYNTHESIS\nFR",
+      "json_decode": "FAIL",
+      "json_error": "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')",
+      "record_id": "change-continuation-spine",
+      "record_title": "Estate-Wide Change–Continuation Spine",
+      "carrier_field": "body_b64",
+      "chunk_count": 0
+    },
+    {
+      "name": "recovery:hit-window-law",
+      "raw_characters": 5048,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 5048,
+      "clean_mod_4": 0,
+      "padding_added": 0,
+      "normalized_characters": 5048,
+      "base64_decode": "PASS",
+      "decoded_bytes": 3784,
+      "first_16_hex": "1f8b0800fb77616a02ffb55a5d73dbc6",
+      "gzip_magic": true,
+      "gzip_decode": "PASS",
+      "uncompressed_bytes": 9663,
+      "uncompressed_first_80": "Hit-Window Law v1.0\nHit-Window Law v1.0\nMini Handbook / Mount Package\nMounted 23",
+      "json_decode": "FAIL",
+      "json_error": "JSONDecodeError('Expecting value: line 1 column 1 (char 0)')",
+      "record_id": "hit-window-law",
+      "record_title": "Hit-Window Law v1.0",
+      "carrier_field": "body_b64",
+      "chunk_count": 0
+    },
+    {
+      "name": "recovery:project-words-are-data-constrainers",
+      "raw_characters": 57615,
+      "whitespace_characters": 0,
+      "whitespace_codepoints": {},
+      "invalid_character_count": 0,
+      "invalid_characters_first_50": [],
+      "starts_with_bom": false,
+      "ends_with_newline": false,
+      "clean_characters": 57615,
+      "clean_mod_4": 3,
+      "padding_added": 1,
+      "normalized_characters": 57616,
+      "base64_decode": "FAIL",
+      "base64_error": "Error('Invalid base64-encoded string: number of data characters (57613) cannot be 1 more than a multiple of 4')",
+      "record_id": "project-words-are-data-constrainers",
+      "record_title": "WORDS ARE DATA CONSTRAINERS",
+      "carrier_field": "body_b64_chunks",
+      "chunk_count": 2
+    }
+  ],
+  "full_body_recovery_source_trace": [
+    {
+      "path": "theory/data/full-body-recovery/become-a-probability.js",
+      "bytes": 9517,
+      "actions": [
+        {
+          "type": "record",
+          "id": "become-a-probability",
+          "title": "BECOME A PROBABILITY",
+          "initial_chunks": 0,
+          "has_body_b64": true
+        }
+      ]
+    },
+    {
+      "path": "theory/data/full-body-recovery/change-continuation-spine.js",
+      "bytes": 7984,
+      "actions": [
+        {
+          "type": "record",
+          "id": "change-continuation-spine",
+          "title": "Estate-Wide Change–Continuation Spine",
+          "initial_chunks": 0,
+          "has_body_b64": true
+        }
+      ]
+    },
+    {
+      "path": "theory/data/full-body-recovery/hit-window.js",
+      "bytes": 6014,
+      "actions": [
+        {
+          "type": "record",
+          "id": "hit-window-law",
+          "title": "Hit-Window Law v1.0",
+          "initial_chunks": 0,
+          "has_body_b64": true
+        }
+      ]
+    },
+    {
+      "path": "theory/data/full-body-recovery/words-1.js",
+      "bytes": 47172,
+      "actions": [
+        {
+          "type": "record",
+          "id": "project-words-are-data-constrainers",
+          "title": "WORDS ARE DATA CONSTRAINERS",
+          "initial_chunks": 1,
+          "has_body_b64": false
+        }
+      ]
+    },
+    {
+      "path": "theory/data/full-body-recovery/words-2.js",
+      "bytes": 11821,
+      "actions": [
+        {
+          "type": "continuation",
+          "id": "project-words-are-data-constrainers",
+          "chunk_characters": 11679
+        }
+      ]
+    }
+  ],
+  "source_body_integrity": {
+    "source_count_detected": 2,
+    "minimum_thresholds_detected": [
+      700
+    ],
+    "under_depth_messages": [
+      "under-depth body "
+    ],
+    "body_10_one_based": null,
+    "body_10_zero_based": null,
+    "sources": [
+      {
+        "zero_based_index": 0,
+        "one_based_index": 1,
+        "source": "./cause-must-pass/00_OPEN_FIRST.html?v=2001",
+        "resolved_path": "theory/cause-must-pass/00_OPEN_FIRST.html",
+        "exists": true,
+        "bytes": 14558,
+        "characters_utf8": 14513
+      },
+      {
+        "zero_based_index": 1,
+        "one_based_index": 2,
+        "source": "cause-must-pass/00_OPEN_FIRST.html",
+        "resolved_path": "theory/cause-must-pass/00_OPEN_FIRST.html",
+        "exists": true,
+        "bytes": 14558,
+        "characters_utf8": 14513
+      }
+    ]
+  }
+}

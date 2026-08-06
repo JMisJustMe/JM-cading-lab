@@ -60,8 +60,9 @@ prove_raw_parity android "$ANDROID"
 prove_raw_parity laptop "$LAPTOP"
 
 for path in "${DIRECTORIES[@]}"; do
-  code="$(curl -sSLo /dev/null -w '%{http_code}' --max-time 30 \
+  code="$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 30 \
     -H 'Cache-Control: no-cache' "$BASE$path?wave01-directory=$RUN_ID" || true)"
+  echo "DIRECTORY CONTACT: $path HTTP=$code"
   [[ "$code" == 200 ]]
 done
 echo "DIRECTORY CONTACT PASS: ${#DIRECTORIES[@]} routes"
@@ -77,7 +78,7 @@ done
 
 prove_browser() {
   local label="$1" ua="$2" profile="$WORK/profile-$label"
-  rm -rf "$profile"
+  rm -rf "$profile-apps" "$profile-theory"
 
   "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage \
     --user-data-dir="$profile-apps" --user-agent="$ua" --virtual-time-budget=30000 \

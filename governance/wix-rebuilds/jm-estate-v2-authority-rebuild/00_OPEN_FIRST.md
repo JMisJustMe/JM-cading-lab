@@ -19,6 +19,33 @@ Reconstruct the existing **Jmisjustme Living Es** Wix site from the current JM E
 
 `https://editor.wix.com/edit/od/359e611d-96d4-49c0-ac93-4e5768ed1263?metaSiteId=7724b482-0a61-41bb-8d78-cb6587d6e3e7&branchId=ec3edba7-2e32-4a4b-8359-637e5fa2c789`
 
+## Working body now present
+
+`JM_WIX_AUTHORITY_ROOM_v0_1.html`
+
+- Size: **21,941 bytes**
+- SHA-256: `aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062`
+- Eight unique working rooms: **PASS**
+- Mobile-first bottom rail: **PASS**
+- Command search: **PASS**
+- Estate house filters: **PASS**
+- JavaScript syntax: **PASS**
+- Exact carrier state and claim boundaries: **PASS**
+- Proof receipt: `JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json`
+
+The working body contains:
+
+1. OPEN FIRST
+2. ESTATE MAP
+3. COMMAND ROOM
+4. USE
+5. PLAY
+6. READ
+7. VERIFY
+8. OWNER / RETURN
+
+It is a functioning, mobile-first single-file room body on the GitHub proposal branch. It is the exact translation source for the isolated Wix editor branch; it is not a false claim that Wix static page layout has already been edited.
+
 ## Authority heads carried into the rebuild
 
 - **JM Master Tool Register v2.0**
@@ -36,7 +63,7 @@ The exact 2,530,896-byte interactive Command Register is separately proved in dr
 
 ## Current state
 
-`WIX_REBUILD_BRANCH_CREATED_AWAITING_EDITOR_BUILD`
+`WORKING_SINGLE_FILE_PROTOTYPE_VALIDATED_AWAITING_WIX_EDITOR_TRANSLATION_AND_JM_PREVIEW`
 
 ## Constitutional boundary
 

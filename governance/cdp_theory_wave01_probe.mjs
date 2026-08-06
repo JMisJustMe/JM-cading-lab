@@ -6,6 +6,7 @@ const expectedPath = process.argv[4] || '/theory/';
 const base = `http://127.0.0.1:${port}`;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const bounded = (value, limit = 1200) => String(value ?? '').slice(0, limit);
 
 async function getTarget() {
   const deadline = Date.now() + timeoutMs;
@@ -48,9 +49,39 @@ async function main() {
   const ws = await connect(target.webSocketDebuggerUrl);
   let id = 0;
   const pending = new Map();
+  const events = [];
+
+  const keepEvent = event => {
+    events.push({ at: new Date().toISOString(), ...event });
+    if (events.length > 100) events.shift();
+  };
 
   ws.addEventListener('message', event => {
     const message = JSON.parse(String(event.data));
+
+    if (message.method === 'Runtime.consoleAPICalled') {
+      const params = message.params || {};
+      const args = (params.args || []).map(arg => bounded(arg.value ?? arg.description ?? arg.unserializableValue, 500));
+      keepEvent({ type: `console.${params.type || 'log'}`, text: args.join(' ') });
+    } else if (message.method === 'Runtime.exceptionThrown') {
+      const details = message.params?.exceptionDetails || {};
+      keepEvent({
+        type: 'exception',
+        text: bounded(details.exception?.description || details.text || 'Runtime exception'),
+        url: bounded(details.url, 300),
+        line: details.lineNumber,
+        column: details.columnNumber
+      });
+    } else if (message.method === 'Log.entryAdded') {
+      const entry = message.params?.entry || {};
+      keepEvent({
+        type: `log.${entry.level || 'info'}`,
+        text: bounded(entry.text),
+        url: bounded(entry.url, 300),
+        line: entry.lineNumber
+      });
+    }
+
     if (!message.id) return;
     const slot = pending.get(message.id);
     if (!slot) return;
@@ -67,6 +98,7 @@ async function main() {
 
   await send('Runtime.enable');
   await send('Page.enable');
+  await send('Log.enable');
 
   const expression = String.raw`(() => {
     const api = window.JMTheorySourceIntegrityV12;
@@ -74,16 +106,66 @@ async function main() {
     const lead = document.getElementById('sourcePassLead');
     const topFull = document.getElementById('topFullBodies');
     const topIntegrity = document.getElementById('topIntegrityBodies');
+    let dataRecords = null;
+    let dataDistricts = null;
+    try {
+      dataRecords = typeof DATA !== 'undefined' && Array.isArray(DATA.records) ? DATA.records.length : null;
+      dataDistricts = typeof DATA !== 'undefined' && Array.isArray(DATA.districts) ? DATA.districts.length : null;
+    } catch (_) {}
+    const globals = {
+      chatGraftV3: Boolean(window.JMTheoryChatGraftV3),
+      chatGraftV4: Boolean(window.JMTheoryChatGraftV4),
+      fullBodyRecoveryV5: Boolean(window.JMTheoryFullBodyRecoveryV5),
+      chatRoomRecoveryV6: Boolean(window.JMTheoryChatRoomRecoveryV6),
+      projectRouteRecoveryV7: Boolean(window.JMTheoryProjectRouteRecoveryV7),
+      deepRecoveryV8: Boolean(window.JMTheoryFirstStageDeepRecoveryV8),
+      t2RecoveryV9: Boolean(window.JMTheoryFirstStageT2RecoveryV9),
+      t1ReconciliationV10: Boolean(window.JMTheoryFirstStageT1ReconciliationV10),
+      sourceIntegrityV12: Boolean(window.JMTheorySourceIntegrityV12),
+      t2Payload: typeof window.JMFirstStageT2Gzip === 'string',
+      t1Payload: typeof window.JMFirstStageT1Gzip === 'string'
+    };
+    const loading = document.getElementById('loading');
+    const loadStatus = document.getElementById('loadStatus');
+    const loadError = document.getElementById('loadError');
+    const diagnostics = {
+      readyState: document.readyState,
+      dataRecords,
+      dataDistricts,
+      decompressionStream: 'DecompressionStream' in window,
+      globals,
+      loading: {
+        hidden: Boolean(loading?.hidden),
+        className: String(loading?.className || ''),
+        status: String(loadStatus?.textContent || '').trim(),
+        error: String(loadError?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 1000)
+      },
+      scriptSources: Array.from(document.scripts).map(script => script.src).filter(Boolean),
+      resources: performance.getEntriesByType('resource')
+        .filter(entry => /(?:theory|estate-head-public-consumer|registry)/.test(entry.name))
+        .map(entry => ({
+          name: entry.name,
+          initiatorType: entry.initiatorType,
+          duration: Math.round(entry.duration),
+          transferSize: entry.transferSize,
+          encodedBodySize: entry.encodedBodySize,
+          decodedBodySize: entry.decodedBodySize,
+          responseStatus: entry.responseStatus || null
+        }))
+    };
+
     if (!api) {
       return {
         ready: false,
         href: location.href,
         title: document.title,
         waveMarker: document.body?.dataset?.publicRouteWave || null,
-        shellObject: Boolean(window.JMTheoryFirstStageT1ReconciliationV10),
-        lead: String(lead?.textContent || '').slice(0, 160)
+        shellObject: globals.t1ReconciliationV10,
+        lead: String(lead?.textContent || '').slice(0, 300),
+        diagnostics
       };
     }
+
     const checks = {
       version: api.version === 'v0.20.1',
       bodies: api.bodies === 37,
@@ -94,7 +176,7 @@ async function main() {
       topIntegrityBodies: String(topIntegrity?.textContent || '').trim() === '37',
       recoveryPass007: /Recovery Pass 007/.test(lead?.textContent || ''),
       proof37of37: /37\/37 earlier source bodies now open correctly/.test(proof?.textContent || ''),
-      reconciledShell: Boolean(window.JMTheoryFirstStageT1ReconciliationV10),
+      reconciledShell: globals.t1ReconciliationV10,
       waveMarker: document.body?.dataset?.publicRouteWave === '01'
     };
     return {
@@ -114,6 +196,7 @@ async function main() {
         sourcePassLead: String(lead?.textContent || '').trim(),
         proofText: String(proof?.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 500)
       },
+      diagnostics,
       href: location.href,
       title: document.title
     };
@@ -131,10 +214,11 @@ async function main() {
     last = result?.result?.value ?? result;
     if (last?.ready && last?.pass) {
       const receipt = {
-        schema: 'JM.TheoryWave01ChromeRuntimeProof/1.0',
+        schema: 'JM.TheoryWave01ChromeRuntimeProof/1.1',
         status: 'PASS',
         target: target.url,
         verifiedAt: new Date().toISOString(),
+        events,
         ...last
       };
       console.log(JSON.stringify(receipt, null, 2));
@@ -142,7 +226,14 @@ async function main() {
       return;
     }
     if (last?.ready && last?.pass === false) {
-      console.error(JSON.stringify({ status: 'READY_BUT_CHECK_FAILED', ...last }, null, 2));
+      console.error(JSON.stringify({
+        schema: 'JM.TheoryWave01ChromeRuntimeProof/1.1',
+        status: 'READY_BUT_CHECK_FAILED',
+        target: target.url,
+        verifiedAt: new Date().toISOString(),
+        events,
+        ...last
+      }, null, 2));
       ws.close();
       process.exit(2);
     }
@@ -150,9 +241,10 @@ async function main() {
   }
 
   console.error(JSON.stringify({
-    schema: 'JM.TheoryWave01ChromeRuntimeProof/1.0',
+    schema: 'JM.TheoryWave01ChromeRuntimeProof/1.1',
     status: 'TIMEOUT',
     target: target.url,
+    events,
     last
   }, null, 2));
   ws.close();
@@ -161,7 +253,7 @@ async function main() {
 
 main().catch(error => {
   console.error(JSON.stringify({
-    schema: 'JM.TheoryWave01ChromeRuntimeProof/1.0',
+    schema: 'JM.TheoryWave01ChromeRuntimeProof/1.1',
     status: 'ERROR',
     error: String(error),
     stack: String(error?.stack || '')

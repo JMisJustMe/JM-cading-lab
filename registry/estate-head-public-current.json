@@ -1,7 +1,7 @@
 {
   "schema": "JM.EstateHeadPublicCurrent/1.1",
-  "current_public_subset_version": "v0.3.0",
-  "effective_date": "2026-07-22",
+  "current_public_subset_version": "v0.3.1",
+  "effective_date": "2026-08-06",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
   "body_count": 61,
   "project_head_count": 11,
@@ -37,7 +37,7 @@
     "receipt": "registry/recent-chat-convergence-receipt-v1.0.json",
     "public_house": "recent/index.html"
   },
-  "deployment_state": "PUBLIC_HOUSE_AND_RECENT_CONVERGENCE_LIVE_ON_GITHUB_PAGES_AND_CANONICAL_CLOUDFLARE",
+  "deployment_state": "PUBLIC_ROUTE_REPAIR_WAVE_01_CANDIDATE_DEPLOYMENT",
   "canonical_public_door": "https://jmisjustme-estate.pages.dev/",
   "github_pages_door": "https://jmisjustme.github.io/JM-cading-lab/",
   "public_head_route": "registry/estate-head-public-current.json",
@@ -147,9 +147,9 @@
       "state": "LIVE_DIRECTION_CONTRACT_UNFINISHED_PRODUCTS_NOT_CROWNED"
     },
     {
-      "body": "JM Theory Multihub v0.9 — Source Depth + Recent Convergence",
+      "body": "JM Theory Multihub — Public Source-Body Integrity Head v0.20.1 over Reconciled v0.19 Shell",
       "path": "theory/index.html",
-      "state": "LIVE_15_VERIFIED_24_SHAPED_297_CENSUS_ROUTES"
+      "state": "LIVE_18_FULL_37_OF_37_SOURCE_BODIES_24_DRAFTS_300_CENSUS_ROUTES"
     },
     {
       "body": "CAUSE MUST PASS — Relation, Passage and Physical Consequence",
@@ -192,9 +192,9 @@
       "state": "LIVE_PUBLIC_CONTRACT_V0_3_0"
     },
     {
-      "body": "JM Non-Game Apps House",
+      "body": "JM Non-Game Apps House — Current Public Route Wave 01",
       "path": "apps/index.html",
-      "state": "LIVE_GOVERNED_40_ROOM_PUBLIC_SAFE_CATALOGUE"
+      "state": "LIVE_GOVERNED_44_ROOM_PUBLIC_SAFE_CATALOGUE_CURRENT_HEADS_RECONCILED"
     }
   ],
   "house_consumption_receipt": "registry/estate-head-house-consumption-receipt.json",
@@ -225,5 +225,24 @@
     "version_number_coronation": false,
     "recent_projection_layer_does_not_mutate_passport_counts": true,
     "receipt": "registry/source-to-living-governance-receipt-v1.0.json"
+  },
+  "public_route_repair_wave_01": {
+    "status": "SOURCE_REPAIRED_LIVE_PROOF_PENDING",
+    "theory": {
+      "path": "theory/index.html",
+      "shell": "v0.19",
+      "integrity_head": "v0.20.1",
+      "full_bodies": 18,
+      "source_body_integrity": "37/37",
+      "publication_drafts": 24
+    },
+    "apps": {
+      "path": "apps/index.html",
+      "rooms": 44,
+      "money_menu": "242-route v1.1 authority / public contact v1.2",
+      "routeos": "sovereign gaming-platform bridge; not counted as a non-game app"
+    },
+    "law": "CURRENT AUTHORITY BEFORE CONTINUATION; ADAPTER DOES NOT MERGE BODY IDENTITY.",
+    "source_repaired_utc": "2026-08-06T01:37:23.067500+00:00"
   }
 }

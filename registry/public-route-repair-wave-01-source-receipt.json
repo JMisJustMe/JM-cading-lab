@@ -1,0 +1,46 @@
+{
+  "schema": "JM.PublicRouteRepairWave/1.0",
+  "wave": "01",
+  "recorded_utc": "2026-08-06T01:37:23.067500+00:00",
+  "status": "SOURCE_REPAIRED_LIVE_PROOF_PENDING",
+  "theory": {
+    "shell": "v0.19 reconciled shell",
+    "integrity_head": "v0.20.1",
+    "full_bodies": 18,
+    "source_bodies": 37,
+    "publication_drafts": 24,
+    "census_routes": 297,
+    "minimum_body_characters": 993
+  },
+  "apps": {
+    "rooms": 44,
+    "status_counts": {
+      "full_alt": 2,
+      "full_current": 27,
+      "live_current": 1,
+      "prep": 2,
+      "routed": 12
+    },
+    "embedded_stat_receipt": {
+      "room_count": 44,
+      "full_plus_preserved": 29,
+      "routed": 12,
+      "source_needed": 0,
+      "preparation": 2
+    },
+    "money_menu_current": "242-route v1.1 data authority · live public contact v1.2",
+    "theory_current": "Public v0.20.1 Source-Body Integrity · v0.19 shell preserved"
+  },
+  "contract": {
+    "version": "v0.3.1",
+    "state": "PUBLIC_ROUTE_REPAIR_WAVE_01_CANDIDATE_DEPLOYMENT"
+  },
+  "identity_merges": 0,
+  "whole_estate_ding": "OPEN",
+  "laws": [
+    "CURRENT AUTHORITY BEFORE CONTINUATION.",
+    "ROUTE CONTACTS BODY; BODY IDENTITY REMAINS SOVEREIGN.",
+    "SOURCE BODY CONTACT IS NOT LIVE HTTP CONTACT.",
+    "NO DING, NO CLAIM."
+  ]
+}

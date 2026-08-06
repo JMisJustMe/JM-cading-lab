@@ -1,0 +1,22 @@
+{
+  "schema": "JM.CloudflareAuthoritativeRouteReceipt/1.2",
+  "verified_utc": "2026-08-06T05:41:04.205250+00:00",
+  "state": "PASS_CURRENT_PUBLIC_ESTATE_SOURCE_AND_LIVE_CONTACT",
+  "source_commit": "a98218be1a2f58057294b1b8da9c2981b20f3396",
+  "workflow_run": "31074830103",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "routes": [
+    "/",
+    "/money-menu/",
+    "/apps/",
+    "/games-beyond/",
+    "/theory/",
+    "/lyrics/",
+    "/recent/"
+  ],
+  "deployment_source": "current governed public repository source",
+  "self_erasure": false,
+  "silent_parallel_lane": false,
+  "ding": false,
+  "claim_boundary": "Source assembly, Cloudflare deployment and named live contact routes passed. Owner-side physical acceptance and Ding remain separate."
+}

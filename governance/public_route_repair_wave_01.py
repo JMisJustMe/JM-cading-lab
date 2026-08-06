@@ -88,12 +88,15 @@ def validate_theory(text: str) -> dict[str, object]:
 
     consumer = Path("estate-head-public-consumer.js").read_text(encoding="utf-8")
     integrity = Path("theory/source-body-integrity-v12.js").read_text(encoding="utf-8")
-    audit = json.loads(Path("theory/data/source-body-integrity/v0_20-audit.json").read_text(encoding="utf-8"))
+    audit = json.loads(
+        Path("theory/data/source-body-integrity/v0_20-audit.json").read_text(encoding="utf-8")
+    )
 
     if "source-body-integrity-v12.js?v=2001" not in consumer:
         raise SystemExit("Estate Head consumer no longer loads Theory source-body integrity v12")
     if "const V='v0.20.1',FULL=18,DRAFTS=24" not in integrity:
         raise SystemExit("Theory integrity body no longer declares v0.20.1 / 18 / 24")
+
     tests = audit.get("integrity_tests", {})
     result = audit.get("result", {})
     if audit.get("audit_id") != "JM_THEORY_SOURCE_BODY_INTEGRITY_v0_20_1":
@@ -133,18 +136,24 @@ def update_route_contract(contract: dict[str, object], candidate: bool) -> None:
             continue
         if route.get("path") == "theory/index.html":
             theory_seen = True
-            route.update({
-                "body": "JM Theory Multihub — Public Source-Body Integrity Head v0.20.1 over Reconciled v0.19 Shell",
-                "state": "LIVE_18_FULL_37_OF_37_SOURCE_BODIES_24_DRAFTS_300_CENSUS_ROUTES",
-            })
+            route.update(
+                {
+                    "body": "JM Theory Multihub — Public Source-Body Integrity Head v0.20.1 over Reconciled v0.19 Shell",
+                    "state": "LIVE_18_FULL_37_OF_37_SOURCE_BODIES_24_DRAFTS_300_CENSUS_ROUTES",
+                }
+            )
         elif route.get("path") == "apps/index.html":
             apps_seen = True
-            route.update({
-                "body": "JM Non-Game Apps House — Current Public Route Wave 01",
-                "state": "LIVE_GOVERNED_44_ROOM_PUBLIC_SAFE_CATALOGUE_CURRENT_HEADS_RECONCILED",
-            })
+            route.update(
+                {
+                    "body": "JM Non-Game Apps House — Current Public Route Wave 01",
+                    "state": "LIVE_GOVERNED_44_ROOM_PUBLIC_SAFE_CATALOGUE_CURRENT_HEADS_RECONCILED",
+                }
+            )
     if not theory_seen or not apps_seen:
-        raise SystemExit(f"Public route register missing Theory or Apps: theory={theory_seen}, apps={apps_seen}")
+        raise SystemExit(
+            f"Public route register missing Theory or Apps: theory={theory_seen}, apps={apps_seen}"
+        )
 
     contract["public_route_repair_wave_01"] = {
         "status": "SOURCE_REPAIRED_LIVE_PROOF_PENDING" if candidate else "PASS",
@@ -243,7 +252,7 @@ def main() -> None:
     )
     theory = replace_once(
         theory,
-        '<body>',
+        "<body>",
         '<body data-public-route-wave="01">',
         "Theory Wave marker",
     )
@@ -285,28 +294,31 @@ def main() -> None:
     }
     ESTATE_MAP.write_text(json.dumps(estate_map, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-    Path("apps/PUBLIC_ROUTE_STATUS_v1_1.md").write_text(
-        """# JM Non-Game Apps House — Public Route Status v1.1\n\n"
-        "**Wave:** Public Route Repair Wave 01  \n"
-        "**Rooms:** 44  \n"
-        "**Current-head repair:** Money Menu v1.1/v1.2 and Theory v0.20.1 seated  \n"
-        "**RouteOS:** sovereign gaming-platform bridge; not counted as a non-game app  \n"
-        "**State:** SOURCE REPAIRED / LIVE PROOF PENDING\n\n"
-        "Many bodies. One living line. None erased.\n",
-        encoding="utf-8",
-    )
-    Path("theory/PUBLIC_ROUTE_STATUS_v0_20_1.md").write_text(
-        """# JM Theory Multihub — Public Route Status v0.20.1\n\n"
-        "**Public head:** v0.20.1 source-body integrity layer  \n"
-        "**Preserved shell:** v0.19 all-256 reconciliation  \n"
-        "**Full bodies:** 18  \n"
-        "**Earlier source bodies:** 37/37  \n"
-        "**Publication drafts:** 24  \n"
-        "**Census routes:** 300 visible after mounted layers  \n"
-        "**State:** SOURCE REPAIRED / LIVE PROOF PENDING\n\n"
-        "The room preserves formation. The body preserves current-best content.\n",
-        encoding="utf-8",
-    )
+    apps_status = """# JM Non-Game Apps House — Public Route Status v1.1
+
+**Wave:** Public Route Repair Wave 01  
+**Rooms:** 44  
+**Current-head repair:** Money Menu v1.1/v1.2 and Theory v0.20.1 seated  
+**RouteOS:** sovereign gaming-platform bridge; not counted as a non-game app  
+**State:** SOURCE REPAIRED / LIVE PROOF PENDING
+
+Many bodies. One living line. None erased.
+"""
+    Path("apps/PUBLIC_ROUTE_STATUS_v1_1.md").write_text(apps_status, encoding="utf-8")
+
+    theory_status = """# JM Theory Multihub — Public Route Status v0.20.1
+
+**Public head:** v0.20.1 source-body integrity layer  
+**Preserved shell:** v0.19 all-256 reconciliation  
+**Full bodies:** 18  
+**Earlier source bodies:** 37/37  
+**Publication drafts:** 24  
+**Census routes:** 300 visible after mounted layers  
+**State:** SOURCE REPAIRED / LIVE PROOF PENDING
+
+The room preserves formation. The body preserves current-best content.
+"""
+    Path("theory/PUBLIC_ROUTE_STATUS_v0_20_1.md").write_text(theory_status, encoding="utf-8")
 
     receipt = {
         "schema": "JM.PublicRouteRepairWave/1.0",
@@ -328,8 +340,9 @@ def main() -> None:
             "NO DING, NO CLAIM.",
         ],
     }
-    SOURCE_RECEIPT.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
+    SOURCE_RECEIPT.write_text(
+        json.dumps(receipt, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
     print(json.dumps(receipt, indent=2, ensure_ascii=False))
 
 

@@ -29,6 +29,46 @@ function asPlan(sourceOrPlan) {
   return sourceOrPlan;
 }
 
+function normalIdentity(value = '') {
+  return String(value).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function exactBodyForOperator(word, registry) {
+  const needle = normalIdentity(word);
+  return registry.bodies.find(body => {
+    if (normalIdentity(body.id) === needle) return true;
+    if (normalIdentity(body.name) === needle) return true;
+    return (body.aliases ?? []).some(alias => normalIdentity(alias) === needle);
+  }) ?? null;
+}
+
+function preserveOperatorCustody(estatePlan, operators, registry) {
+  const explicit = operators
+    .map(word => ({ word, body: exactBodyForOperator(word, registry) }))
+    .filter(item => item.body);
+  if (!explicit.length) return { estatePlan, explicitBodies: [] };
+
+  const existing = new Set(estatePlan.route.map(item => item.id));
+  const additions = explicit
+    .filter(item => !existing.has(item.body.id))
+    .map(item => ({
+      order: 0,
+      id: item.body.id,
+      name: item.body.name,
+      category: item.body.category,
+      family: item.body.family,
+      score: Number.MAX_SAFE_INTEGER,
+      reasons: [`explicit-natural-operator:${item.word}`],
+      role: item.body.role
+    }));
+
+  const route = [...additions, ...estatePlan.route].map((item, index) => ({ ...item, order: index + 1 }));
+  return {
+    estatePlan: { ...estatePlan, route },
+    explicitBodies: explicit.map(item => ({ word: item.word, id: item.body.id, name: item.body.name }))
+  };
+}
+
 export function naturalRoutingQuery(sourceOrPlan) {
   const plan = asPlan(sourceOrPlan);
   const operators = [...new Set(collectOperators(plan.ast))];
@@ -46,22 +86,26 @@ export function planNaturalEstateRoute(sourceOrPlan, registry, options = {}) {
   need(validation.valid, 'NOL_ROUTE_REGISTRY_INVALID', `Sovereign registry invalid: ${validation.failures.join(', ')}`);
   const plan = asPlan(sourceOrPlan);
   const routing = naturalRoutingQuery(plan);
-  const estatePlan = planEstateRoute(routing.query, registry, options);
+  const rankedPlan = planEstateRoute(routing.query, registry, options);
+  const custody = preserveOperatorCustody(rankedPlan, routing.operators, registry);
+  const estatePlan = custody.estatePlan;
   return {
     type: 'JM.NaturalOperationalEstateRoute.v0.1',
     naturalSource: plan.source,
     naturalPlanDigest: plan.digest,
     operators: routing.operators,
+    explicitOperatorBodies: custody.explicitBodies,
     inferredRouteHints: routing.hints,
     estatePlan,
     laws: [
       'NATURAL_LANGUAGE_FRONT_DOOR',
+      'EXPLICIT_OPERATOR_CUSTODY',
       'IDENTITY_PRESERVED',
       'SOURCE_AUTHORITY_REQUIRED',
       'TRACE_REQUIRED',
       'DING_REQUIRED',
       'NO_SUPREME_BODY'
     ],
-    digest: digest({ planDigest: plan.digest, route: estatePlan.route, hints: routing.hints })
+    digest: digest({ planDigest: plan.digest, route: estatePlan.route, hints: routing.hints, explicit: custody.explicitBodies })
   };
 }

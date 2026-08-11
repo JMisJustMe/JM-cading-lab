@@ -1,31 +1,49 @@
 # Bounce Spine v0.1 — Build Status
 
-**Status:** FIRST FUNCTIONING BOUNCE SPINE / CI PASS / DIRECT-OPEN CARRIER BUILT / NOT FROZEN / NOT CROWNED
+**Status:** FROZEN WORKING ANCHOR / OWNER-PHONE VISUAL CONTACT OBSERVED / PROVISIONALLY MOUNTED / CI PASS / NOT CROWNED
 
-## Demonstrated in this pass
+## Frozen anchor
 
-- branched directly from the 100-body current-constructible foundation;
-- preserved the existing sovereign estate rather than rebuilding it;
-- built a natural-language-first operational parser and runtime;
-- implemented marked-word standing with no semantic guessing;
-- implemented first `and` composition with two-sided custody;
-- implemented visible state consequence, trace, receipt, undo, reuse and alteration;
-- delegated RECORP pressure forms to the existing sovereign RECORP body;
-- delegated meaning bridge resolution to the existing sovereign FlowTalk body;
-- connected natural operational plans to the existing canonical 100-body Estate router;
-- added explicit operator custody so a named sovereign operator such as RECORP cannot disappear merely because support bodies scored higher;
-- preserved mandatory TraceBox, Dings and Source Ledger routing;
-- built the creator/gamer Bounce Room with Estate routing hidden underneath by default;
-- generated a standalone OPEN_FIRST carrier from the actual current branch donor modules and embedded canonical 100-body registry;
-- removed relative module imports from that generated carrier so core room operation does not require sibling-file fetches;
-- executable proof workflow passed.
+The first functioning creator-facing Bounce Spine is now frozen and locked before further semantic expansion.
 
-## Decisive proof
+- freeze head: `b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d`
+- freeze branch: `freeze/natural-operational-language-bounce-v0-1-owner-contact`
+- permanent anchor: `anchor/natural-operational-language-bounce-v0-1-owner-contact`
+- freeze and anchor: **commit-identical by construction**
+- full freeze law: `FREEZE_LOCK_ANCHOR_v0.1.md`
+
+The owner opened the working room on a phone and supplied screenshot contact showing `;open; door ;and; ;close; window` with the visible result `Contact produced a visible state difference.` This is recorded as **owner-phone visual contact**, not inflated into independent device instrumentation or a final physical-device Ding.
+
+## Provisional mount
+
+The frozen body is now mounted as an **external creator-front-door surface** against the existing sovereign Estate.
+
+This mount is deliberately labelled **PROVISIONAL_MOUNT** because mounting at this stage is earlier than a final semantic/body crown.
+
+- mount manifest: `../integration/mounts/natural-operational-language-bounce-v0.1.json`
+- canonical registry remains exactly `100` bodies;
+- the Bounce surface is **not** inserted as fake body 101;
+- no supremacy is granted;
+- required mounted support/donor bodies: FlowTalk, RECORP, TraceBox, Dings, Source Ledger;
+- route planning is mounted;
+- direct sovereign execution / OneContainer / kernel contact from this front door is **not yet mounted**.
+
+## Mount proof
 
 - workflow: `JM Natural Operational Language Bounce Spine`
-- run: `31455871123`
+- run: `31478667134`
 - result: **PASS**
-- proven head: `2f390a9fb0df94b767d33a2581a0653b5a3611a8`
+- proven mount head: `33a63ad4b040fd32d6fc11136de6b119ba8b6806`
+- `Execute natural operational-language proof` — PASS
+- `Execute natural-to-sovereign estate route proof` — PASS
+- `Execute provisional mount proof` — PASS
+- donor bodies + Estate router presence — PASS
+- standalone carrier rebuild + static gate — PASS
+
+## Earlier decisive runtime proof
+
+- workflow run: `31455871123` — PASS
+- proven runtime head: `2f390a9fb0df94b767d33a2581a0653b5a3611a8`
 - artifact: `JM_NATURAL_OPERATIONAL_LANGUAGE_BOUNCE_v0.1`
 - artifact id: `9087990039`
 - artifact digest: `sha256:165c83d1025c0d3beb629bd3b9d66e6c26af043367358ebf2827f5bcf8cbba44`
@@ -34,26 +52,33 @@
 - embedded canonical bodies: `100`
 - embedded donor/module graph: `7` modules
 
-## Important correction caught by proof
+## Demonstrated body
 
-The first natural-to-Estate router proof failed because explicit `RECORP` could be outranked by generic recovery/route support bodies. That was a real semantic-routing bug, not waived test noise.
-
-The adapter was corrected with `EXPLICIT_OPERATOR_CUSTODY`: when the natural source explicitly names a registered sovereign operator, that body is carried into the Estate route even while support/proof bodies remain present. The corrected workflow passed.
+- natural-language-first marked-word parser/runtime;
+- `;and;` composition with two-sided custody;
+- visible state consequence, trace, receipt, undo, reuse and alteration;
+- RECORP punctuation-pressure delegation;
+- FlowTalk meaning bridge;
+- natural plans routed into the existing canonical 100-body Estate router;
+- explicit sovereign-operator custody;
+- mandatory TraceBox, Dings and Source Ledger route custody;
+- creator/gamer Bounce Room;
+- standalone OPEN_FIRST carrier built from actual donor modules and the canonical registry.
 
 ## Not claimed
 
-- owner semantic approval of the local trial words;
+- final ordinary-word semantic set;
 - final general grammar;
-- complete multi-operator composition and precedence;
-- live OneContainer/kernel federation execution from natural-language input;
+- complete composition/grouping/precedence;
+- direct permission-checked sovereign-body execution from the natural surface;
+- live OneContainer/kernel execution from the natural surface;
 - body-native self-hosting;
-- physical/device/speech proof;
-- final semantic freeze or crown.
+- independent device instrumentation / final physical-device proof;
+- speech/gesture/environment proof;
+- semantic crown.
 
-## Next live gates
+## Continuation law
 
-1. owner word contact in the Bounce Room;
-2. deepen composition/grouping/precedence without flattening words;
-3. turn Estate route planning into permission-checked real body contact;
-4. test the standalone carrier on the owner device;
-5. keep extending from this body rather than starting a replacement shell.
+The frozen anchor is not rewritten for convenience.
+
+`FROZEN BODY → PROVISIONAL MOUNT ABOVE IT → CONTINUE ABOVE THE ANCHOR`

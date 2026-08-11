@@ -1,0 +1,71 @@
+name: JM Natural Operational Language Bounce Spine
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-1
+    paths:
+      - 'coding-estate/natural-operational-language/**'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-four/direct/**'
+      - 'coding-estate/integration/**'
+      - '.github/workflows/natural-operational-language-bounce.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/**'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-four/direct/**'
+      - 'coding-estate/integration/**'
+      - '.github/workflows/natural-operational-language-bounce.yml'
+
+jobs:
+  bounce-spine-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Execute natural operational-language proof
+        run: node coding-estate/natural-operational-language/test-bounce-spine.mjs
+
+      - name: Execute natural-to-sovereign estate route proof
+        run: node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+
+      - name: Execute provisional mount proof
+        run: node coding-estate/natural-operational-language/test-provisional-mount.mjs
+
+      - name: Prove donor bodies and estate router remain present
+        run: |
+          test -f coding-estate/sovereign-ten/direct/language-native.mjs
+          test -f coding-estate/sovereign-batch-four/direct/bridge-native.mjs
+          test -f coding-estate/integration/router-core.mjs
+          test -f coding-estate/integration/mounts/natural-operational-language-bounce-v0.1.json
+          grep -q 'export const FlowTalk' coding-estate/sovereign-ten/direct/language-native.mjs
+          grep -q 'export const RECORP' coding-estate/sovereign-batch-four/direct/bridge-native.mjs
+          grep -q 'export function planEstateRoute' coding-estate/integration/router-core.mjs
+          grep -q '"status": "PROVISIONAL_MOUNT"' coding-estate/integration/mounts/natural-operational-language-bounce-v0.1.json
+
+      - name: Build direct-open standalone Bounce Room
+        run: node coding-estate/natural-operational-language/build-standalone.mjs
+
+      - name: Static standalone carrier gate
+        run: |
+          test -s coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+          grep -q 'data:text/javascript;base64,' coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+          grep -q '"embeddedRegistryBodies": 100' coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+
+      - name: Upload direct-open Bounce Room
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_BOUNCE_v0.1
+          path: |
+            coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+          if-no-files-found: error

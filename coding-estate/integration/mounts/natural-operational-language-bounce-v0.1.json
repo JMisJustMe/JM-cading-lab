@@ -1,0 +1,59 @@
+{
+  "schema": "jm.sovereign-estate.external-surface-mount/1.0",
+  "id": "natural-operational-language-bounce-v0.1",
+  "name": "JM Natural Operational Language Bounce Spine v0.1",
+  "status": "PROVISIONAL_MOUNT",
+  "mountClass": "creator-front-door-surface",
+  "mountPrematurityAcknowledged": true,
+  "canonicalRegistryMutation": false,
+  "canonicalRegistryCount": 100,
+  "supreme": false,
+  "authority": {
+    "freezeHead": "b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d",
+    "freezeBranch": "freeze/natural-operational-language-bounce-v0-1-owner-contact",
+    "anchorBranch": "anchor/natural-operational-language-bounce-v0-1-owner-contact",
+    "anchorCommitIdenticalToFreeze": true,
+    "decisiveProvenRuntimeHead": "2f390a9fb0df94b767d33a2581a0653b5a3611a8",
+    "decisiveWorkflowRun": 31455871123,
+    "artifactId": 9087990039,
+    "artifactDigest": "sha256:165c83d1025c0d3beb629bd3b9d66e6c26af043367358ebf2827f5bcf8cbba44",
+    "standaloneSha256": "576fc61e2db385cfd749de5861bea1a3a7295f0ef3b9111ca693e5b9488410dd"
+  },
+  "surface": {
+    "entry": "coding-estate/natural-operational-language/00_OPEN_FIRST.html",
+    "runtime": "coding-estate/natural-operational-language/bounce-spine.mjs",
+    "estateAdapter": "coding-estate/natural-operational-language/estate-route-adapter.mjs",
+    "frontDoorLaw": "NATURAL_LANGUAGE_FRONT_DOOR"
+  },
+  "mountedAgainst": {
+    "registry": "coding-estate/integration/REGISTRY.json",
+    "router": "coding-estate/integration/router-core.mjs",
+    "requiredBodies": [
+      "flowtalk",
+      "recorp",
+      "tracebox",
+      "dings",
+      "source-ledger"
+    ]
+  },
+  "laws": [
+    "PEA_BEFORE_GALAXY",
+    "MARK_NOT_MEANING",
+    "UNKNOWN_NOT_GUESSED",
+    "EXPLICIT_OPERATOR_CUSTODY",
+    "IDENTITY_PRESERVED",
+    "TRACE_REQUIRED",
+    "DING_REQUIRED",
+    "SOURCE_AUTHORITY_REQUIRED",
+    "NO_SUPREME_BODY"
+  ],
+  "claimBoundary": {
+    "routePlanning": "MOUNTED",
+    "directSovereignExecution": "NOT_YET_MOUNTED",
+    "oneContainerKernelContact": "NOT_YET_MOUNTED",
+    "ownerPhoneVisualContact": "OBSERVED",
+    "independentPhysicalDeviceInstrumentation": "NOT_PROVEN",
+    "semanticCrown": "NOT_CLAIMED"
+  },
+  "continuation": "Continue above the frozen anchor; do not mutate the canonical 100-body count merely to make this surface look native to the registry."
+}

@@ -26,10 +26,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
       - name: Execute natural operational-language proof
         run: node coding-estate/natural-operational-language/test-bounce-spine.mjs
@@ -45,3 +45,22 @@ jobs:
           grep -q 'export const FlowTalk' coding-estate/sovereign-ten/direct/language-native.mjs
           grep -q 'export const RECORP' coding-estate/sovereign-batch-four/direct/bridge-native.mjs
           grep -q 'export function planEstateRoute' coding-estate/integration/router-core.mjs
+
+      - name: Build direct-open standalone Bounce Room
+        run: node coding-estate/natural-operational-language/build-standalone.mjs
+
+      - name: Static standalone carrier gate
+        run: |
+          test -s coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+          grep -q 'data:text/javascript;base64,' coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+          grep -q '"embeddedRegistryBodies": 100' coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+
+      - name: Upload direct-open Bounce Room
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_BOUNCE_v0.1
+          path: |
+            coding-estate/natural-operational-language/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/dist/STANDALONE_BUILD_RECEIPT.json
+          if-no-files-found: error

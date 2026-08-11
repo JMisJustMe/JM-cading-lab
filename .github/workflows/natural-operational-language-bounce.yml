@@ -1,0 +1,40 @@
+name: JM Natural Operational Language Bounce Spine
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-1
+    paths:
+      - 'coding-estate/natural-operational-language/**'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-four/direct/**'
+      - '.github/workflows/natural-operational-language-bounce.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/**'
+      - 'coding-estate/sovereign-ten/direct/**'
+      - 'coding-estate/sovereign-batch-four/direct/**'
+      - '.github/workflows/natural-operational-language-bounce.yml'
+
+jobs:
+  bounce-spine-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Execute natural operational-language proof
+        run: node coding-estate/natural-operational-language/test-bounce-spine.mjs
+
+      - name: Prove donor bodies remain present
+        run: |
+          test -f coding-estate/sovereign-ten/direct/language-native.mjs
+          test -f coding-estate/sovereign-batch-four/direct/bridge-native.mjs
+          grep -q 'export const FlowTalk' coding-estate/sovereign-ten/direct/language-native.mjs
+          grep -q 'export const RECORP' coding-estate/sovereign-batch-four/direct/bridge-native.mjs

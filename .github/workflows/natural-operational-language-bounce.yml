@@ -8,12 +8,14 @@ on:
       - 'coding-estate/natural-operational-language/**'
       - 'coding-estate/sovereign-ten/direct/**'
       - 'coding-estate/sovereign-batch-four/direct/**'
+      - 'coding-estate/integration/**'
       - '.github/workflows/natural-operational-language-bounce.yml'
   pull_request:
     paths:
       - 'coding-estate/natural-operational-language/**'
       - 'coding-estate/sovereign-ten/direct/**'
       - 'coding-estate/sovereign-batch-four/direct/**'
+      - 'coding-estate/integration/**'
       - '.github/workflows/natural-operational-language-bounce.yml'
 
 jobs:
@@ -32,9 +34,14 @@ jobs:
       - name: Execute natural operational-language proof
         run: node coding-estate/natural-operational-language/test-bounce-spine.mjs
 
-      - name: Prove donor bodies remain present
+      - name: Execute natural-to-sovereign estate route proof
+        run: node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+
+      - name: Prove donor bodies and estate router remain present
         run: |
           test -f coding-estate/sovereign-ten/direct/language-native.mjs
           test -f coding-estate/sovereign-batch-four/direct/bridge-native.mjs
+          test -f coding-estate/integration/router-core.mjs
           grep -q 'export const FlowTalk' coding-estate/sovereign-ten/direct/language-native.mjs
           grep -q 'export const RECORP' coding-estate/sovereign-batch-four/direct/bridge-native.mjs
+          grep -q 'export function planEstateRoute' coding-estate/integration/router-core.mjs

@@ -26,7 +26,7 @@ jobs:
       BODY: governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2.html
       EXPECTED_SIZE: "27778"
       EXPECTED_SHA256: 4507f8d5bb07ae9fac819711f6783750a0a7c3e157d7131f66c8a9ba2852d94c
-      PREVIEW_URL: https://wix-authority-room-preview-v02.jmisjustme-estate.pages.dev
+      PREVIEW_URL: https://wix-room-v02.jmisjustme-estate.pages.dev
 
     steps:
       - name: Check out Wix proposal branch
@@ -74,7 +74,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .wix-authority-preview-v02 --project-name=jmisjustme-estate --branch=wix-authority-room-preview-v02
+          command: pages deploy .wix-authority-preview-v02 --project-name=jmisjustme-estate --branch=wix-room-v02
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify stable v0.2 preview contact
@@ -123,7 +123,7 @@ jobs:
               'wix_site_id': '7724b482-0a61-41bb-8d78-cb6587d6e3e7',
               'wix_rebuild_branch_id': 'ec3edba7-2e32-4a4b-8359-637e5fa2c789',
               'cloudflare_project': 'jmisjustme-estate',
-              'cloudflare_branch': 'wix-authority-room-preview-v02',
+              'cloudflare_branch': 'wix-room-v02',
               'preview_url': os.environ['PREVIEW_URL'],
               'current_room_size_bytes': len(raw),
               'current_room_sha256': hashlib.sha256(raw).hexdigest(),

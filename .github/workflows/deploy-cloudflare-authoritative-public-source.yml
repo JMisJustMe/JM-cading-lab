@@ -95,7 +95,9 @@ jobs:
             recent-chat-convergence-cloudflare-live-receipt-v1.0.json \
             recent-chat-convergence-final-receipt-v1.0.json \
             recent-chat-convergence-classification-receipt-v1.0.json \
-            github-pages-route-repair-receipt-v1.0.json; do
+            github-pages-route-repair-receipt-v1.0.json \
+            cloudflare-authoritative-route-receipt-v1.2.json \
+            cloudflare-authoritative-route-receipt-v1.3.json; do
             [ ! -f "registry/$file" ] || cp "registry/$file" "cloudflare-estate/registry/$file"
           done
 
@@ -123,6 +125,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /lyrics/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /estate/authoritative/all-body-first-pass-v1.0/*
+            Cache-Control: no-store, no-cache, must-revalidate
           EOF
 
           cat > cloudflare-estate/_redirects <<'EOF'
@@ -149,6 +153,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
+          import hashlib
 
           checks = [
               ('index.html', 'Your work no longer lives as scattered HTMLs'),
@@ -164,6 +169,8 @@ jobs:
               ('theory/trasta/index.html', 'Trust the trace'),
               ('theory/reality-route-ethos/index.html', 'Reality is not'),
               ('games-beyond/recent-direction/index.html', 'More game'),
+              ('estate/authoritative/all-body-first-pass-v1.0/index.html', 'JM All-Body First Pass — Current Authority'),
+              ('estate/authoritative/all-body-first-pass-v1.0/command-register/index.html', 'JM Command Register v1.0 — First Pass Finished'),
               ('sw.js', 'jm-web-estate-v1.4.6-money-menu-public-contact'),
               ('404.html', 'JM ESTATE ROUTE REPAIR'),
           ]
@@ -183,6 +190,17 @@ jobs:
                   failed.append(f'STALE_SHELL {relative}')
                   continue
               print(f'PASS {relative} :: {marker}')
+
+          exact = root / 'estate/authoritative/all-body-first-pass-v1.0/command-register/index.html'
+          if exact.is_file():
+              raw = exact.read_bytes()
+              exact_sha = hashlib.sha256(raw).hexdigest()
+              if len(raw) != 2530896:
+                  failed.append(f'EXACT_SIZE {len(raw)}')
+              if exact_sha != 'abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410':
+                  failed.append(f'EXACT_SHA {exact_sha}')
+              else:
+                  print('PASS exact Command Register source SHA-256', exact_sha)
 
           if failed:
               raise SystemExit('PUBLIC SOURCE GATE FAILED\n' + '\n'.join(failed))
@@ -204,6 +222,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
+          import hashlib
           import os
           import time
           from urllib.request import Request, urlopen
@@ -217,6 +236,8 @@ jobs:
               ('/theory/', 'JM Theory Multihub'),
               ('/lyrics/', 'JM Lyrics'),
               ('/recent/', 'The Estate'),
+              ('/estate/authoritative/all-body-first-pass-v1.0/', 'JM All-Body First Pass — Current Authority'),
+              ('/estate/authoritative/all-body-first-pass-v1.0/command-register/', 'JM Command Register v1.0 — First Pass Finished'),
           ]
           run = os.environ.get('GITHUB_RUN_ID', 'manual')
           pending = checks[:]
@@ -248,6 +269,33 @@ jobs:
               time.sleep(3)
           if pending:
               raise SystemExit('LIVE CONTACT FAILED: ' + ', '.join(path for path, _ in pending))
+
+          exact_path = '/estate/authoritative/all-body-first-pass-v1.0/command-register/'
+          expected_sha = 'abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410'
+          exact_ok = False
+          for attempt in range(1, 31):
+              url = f'{base}{exact_path}?jm-exact={run}-{attempt}'
+              try:
+                  req = Request(url, headers={
+                      'User-Agent': 'JM-Estate-Exact-Carrier-Proof/1.0',
+                      'Cache-Control': 'no-cache',
+                  })
+                  with urlopen(req, timeout=30) as response:
+                      raw = response.read()
+                      code = response.status
+              except Exception as exc:
+                  print('WAIT EXACT', type(exc).__name__)
+                  time.sleep(3)
+                  continue
+              actual_sha = hashlib.sha256(raw).hexdigest()
+              if code == 200 and len(raw) == 2530896 and actual_sha == expected_sha:
+                  print('LIVE EXACT PASS', exact_path, len(raw), actual_sha)
+                  exact_ok = True
+                  break
+              print('WAIT EXACT', code, len(raw), actual_sha)
+              time.sleep(3)
+          if not exact_ok:
+              raise SystemExit('LIVE EXACT COMMAND REGISTER HASH CONTACT FAILED')
           PY
 
       - name: Seal current Cloudflare deployment receipt
@@ -261,34 +309,43 @@ jobs:
           from pathlib import Path
 
           receipt = {
-              'schema': 'JM.CloudflareAuthoritativeRouteReceipt/1.2',
+              'schema': 'JM.CloudflareAuthoritativeRouteReceipt/1.3',
               'verified_utc': datetime.now(timezone.utc).isoformat(),
-              'state': 'PASS_CURRENT_PUBLIC_ESTATE_SOURCE_AND_LIVE_CONTACT',
+              'state': 'PASS_CURRENT_PUBLIC_ESTATE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'host': 'https://jmisjustme-estate.pages.dev',
               'routes': [
-                  '/', '/money-menu/', '/apps/', '/games-beyond/',
-                  '/theory/', '/lyrics/', '/recent/'
+                  '/', '/money-menu/', '/apps/', '/games-beyond/', '/theory/', '/lyrics/', '/recent/',
+                  '/estate/authoritative/all-body-first-pass-v1.0/',
+                  '/estate/authoritative/all-body-first-pass-v1.0/command-register/'
               ],
+              'exact_command_register': {
+                  'route': '/estate/authoritative/all-body-first-pass-v1.0/command-register/',
+                  'size_bytes': 2530896,
+                  'sha256': 'abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410',
+                  'source_hash_proof': 'PASS',
+                  'live_hash_proof': 'PASS'
+              },
+              'parent_authority_door_preserved': True,
               'deployment_source': 'current governed public repository source',
               'self_erasure': False,
               'silent_parallel_lane': False,
               'ding': False,
-              'claim_boundary': 'Source assembly, Cloudflare deployment and named live contact routes passed. Owner-side physical acceptance and Ding remain separate.'
+              'claim_boundary': 'Current public source, named live routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate.'
           }
-          path = Path('registry/cloudflare-authoritative-route-receipt-v1.2.json')
+          path = Path('registry/cloudflare-authoritative-route-receipt-v1.3.json')
           path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
           PY
 
           git config user.name 'JM Cloudflare Authoritative Route Rail'
           git config user.email 'actions@users.noreply.github.com'
-          git add registry/cloudflare-authoritative-route-receipt-v1.2.json
+          git add registry/cloudflare-authoritative-route-receipt-v1.3.json
           if git diff --cached --quiet; then
             echo 'Receipt already current.'
             exit 0
           fi
-          git commit -m 'Seal current Cloudflare authoritative Estate deployment [skip ci]'
+          git commit -m 'Seal current Cloudflare authoritative Estate deployment v1.3 [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main

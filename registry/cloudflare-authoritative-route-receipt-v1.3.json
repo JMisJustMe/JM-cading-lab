@@ -1,0 +1,32 @@
+{
+  "schema": "JM.CloudflareAuthoritativeRouteReceipt/1.3",
+  "verified_utc": "2026-08-14T17:47:41.376831+00:00",
+  "state": "PASS_CURRENT_PUBLIC_ESTATE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER",
+  "source_commit": "2dfc2fee986c54dd178816a768c81475cd270466",
+  "workflow_run": "31825602611",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "routes": [
+    "/",
+    "/money-menu/",
+    "/apps/",
+    "/games-beyond/",
+    "/theory/",
+    "/lyrics/",
+    "/recent/",
+    "/estate/authoritative/all-body-first-pass-v1.0/",
+    "/estate/authoritative/all-body-first-pass-v1.0/command-register/"
+  ],
+  "exact_command_register": {
+    "route": "/estate/authoritative/all-body-first-pass-v1.0/command-register/",
+    "size_bytes": 2530896,
+    "sha256": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
+    "source_hash_proof": "PASS",
+    "live_hash_proof": "PASS"
+  },
+  "parent_authority_door_preserved": true,
+  "deployment_source": "current governed public repository source",
+  "self_erasure": false,
+  "silent_parallel_lane": false,
+  "ding": false,
+  "claim_boundary": "Current public source, named live routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate."
+}

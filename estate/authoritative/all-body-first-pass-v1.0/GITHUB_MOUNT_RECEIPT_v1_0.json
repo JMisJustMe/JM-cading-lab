@@ -1,17 +1,32 @@
 {
   "schema": "JM.AllBodyFirstPassGitHubMountReceipt/1.0",
-  "recorded_utc": "2026-08-06T08:25:58.741305+00:00",
-  "source_event_commit": "15c071b1f3545993023527e718ad61cfc2207125",
-  "state": "PROPOSAL_EXACT_COMMAND_REGISTER_RECONSTRUCTED_AWAITING_JM_REVIEW",
+  "mounted_utc": "2026-08-06T08:20:00+01:00",
+  "state": "PASS_CURRENT_V2_AUTHORITY_MOUNTED_AWAITING_PUBLIC_RAIL_CONTACT_AND_JM_PHYSICAL_TEST",
   "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
-  "command_register_size_bytes": 2530896,
-  "command_register_sha256": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
-  "compressed_carrier_size_bytes": 116149,
-  "compressed_carrier_sha256": "d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438",
-  "main_changed": false,
-  "deployment_requested": false,
+  "current_heads": {
+    "master_tool_register": "v2.0",
+    "register_of_registers": "v1.0",
+    "command_register": "v1.0 — First Pass Finished"
+  },
+  "counts": {
+    "source_records": 1122,
+    "lineages": 1074,
+    "final_dispositions": 1074,
+    "houses_passed": 14,
+    "highways_preserved": 2298,
+    "residual_blockers_disclosed": 973,
+    "delivery_manifests": 69,
+    "executable_route_specs": 25,
+    "waves_completed": 7
+  },
+  "interactive_command_register": {
+    "source_size_bytes": 2530896,
+    "source_sha256": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
+    "github_byte_transfer": "PENDING_SEPARATE_EXACT_TRANSFER",
+    "authority_status": "PRESERVED_AND_HASH_BOUND"
+  },
   "self_erasure": false,
   "silent_parallel_lane": false,
-  "ding": false,
-  "boundary": "Exact bytes are reconstructed and proved on a proposal branch only. This is not a main mount, deployment, physical acceptance or JM Ding."
+  "automated_ding": false,
+  "claim_boundary": "The current v2.0 authority, exact standing and public authority door are mounted. This receipt does not claim byte-for-byte GitHub transfer of every large companion carrier, full implementation of every body, owner device acceptance or JM Ding."
 }

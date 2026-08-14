@@ -1,4 +1,4 @@
-name: Propose Exact JM Command Register v1.0
+name: Maintain Exact JM Command Register Sibling Carrier
 
 on:
   push:
@@ -11,33 +11,44 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: jm-exact-command-register-proposal-v1
+  group: jm-exact-command-register-sibling-v1
   cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
-  reconstruct:
-    name: Reconstruct and prove exact proposal carrier
+  mount-sibling:
+    name: Reconstruct, prove and preserve sibling carrier
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
-      - name: Check out proposal branch
+      - name: Check out selected ref
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref_name }}
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Reconstruct and prove exact carrier
+      - name: Preserve current public authority door on proposal branch
+        if: github.ref_name != 'main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          public_root='estate/authoritative/all-body-first-pass-v1.0'
+          git checkout origin/main -- \
+            "$public_root/index.html" \
+            "$public_root/GITHUB_MOUNT_RECEIPT_v1_0.json"
+          echo 'PASS current main authority door and historical root receipt restored into proposal tree'
+
+      - name: Reconstruct exact Command Register into sibling carrier
         shell: bash
         run: |
           set -euo pipefail
           payload='governance/mount-payloads/all-body-first-pass-v1.0'
-          target='estate/authoritative/all-body-first-pass-v1.0'
-          mkdir -p "$target"
+          exact_dir='estate/authoritative/all-body-first-pass-v1.0/command-register'
+          mkdir -p "$exact_dir"
 
           cat \
             "$payload"/repair.part00a \
@@ -84,64 +95,87 @@ jobs:
           test "$actual_gzip" = "$expected_gzip"
           test "$(wc -c < /tmp/jm-command-register.html.gz)" -eq 116149
 
-          gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$target/index.html"
+          gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$exact_dir/index.html"
 
           expected_html='abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410'
-          actual_html="$(sha256sum "$target/index.html" | awk '{print $1}')"
+          actual_html="$(sha256sum "$exact_dir/index.html" | awk '{print $1}')"
           test "$actual_html" = "$expected_html"
-          test "$(wc -c < "$target/index.html")" -eq 2530896
-          grep -Fq 'JM Command Register v1.0 — First Pass Finished' "$target/index.html"
-          grep -Fq '1,074' "$target/index.html"
-          grep -Fq 'FULL FIRST-PASS FINISHED' "$target/index.html"
+          test "$(wc -c < "$exact_dir/index.html")" -eq 2530896
+          grep -Fq 'JM Command Register v1.0 — First Pass Finished' "$exact_dir/index.html"
+          grep -Fq '1,074' "$exact_dir/index.html"
+          grep -Fq 'FULL FIRST-PASS FINISHED' "$exact_dir/index.html"
 
           echo "PASS exact compressed carrier $actual_gzip"
-          echo "PASS exact command register $actual_html"
+          echo "PASS exact sibling command register $actual_html"
 
-      - name: Seal proposal receipt
+      - name: Seal sibling route and receipt
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json
-          import os
+          import json, os
           from datetime import datetime, timezone
           from pathlib import Path
 
-          path = Path('estate/authoritative/all-body-first-pass-v1.0/GITHUB_MOUNT_RECEIPT_v1_0.json')
+          exact_dir = Path('estate/authoritative/all-body-first-pass-v1.0/command-register')
+          (exact_dir / 'OPEN_FIRST.md').write_text(
+              '# JM Command Register v1.0 — Exact Sibling Carrier\n\n'
+              '**Role:** exact interactive Command Register carrier beneath the existing All-Body public authority door.\n\n'
+              '- Exact size: **2,530,896 bytes**\n'
+              '- SHA-256: `abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410`\n'
+              '- Compressed carrier: **116,149 bytes**\n'
+              '- Compressed SHA-256: `d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438`\n\n'
+              'The parent `/estate/authoritative/all-body-first-pass-v1.0/` remains the concise public authority door. '
+              'This sibling preserves the exact interactive carrier instead of replacing the parent door.\n\n'
+              '**Whole-Estate Final Corpus:** OPEN BY LAW.  \n'
+              '**Ding:** false.\n',
+              encoding='utf-8'
+          )
+
           receipt = {
-              'schema': 'JM.AllBodyFirstPassGitHubMountReceipt/1.0',
+              'schema': 'JM.ExactCommandRegisterSiblingMountReceipt/1.0',
               'recorded_utc': datetime.now(timezone.utc).isoformat(),
-              'source_event_commit': os.environ['GITHUB_SHA'],
-              'state': 'PROPOSAL_EXACT_COMMAND_REGISTER_RECONSTRUCTED_AWAITING_JM_REVIEW',
+              'source_event_commit': os.environ.get('GITHUB_SHA'),
               'authority': 'Theodore Benjamin Scott / JM / JMISJUSTME',
+              'state': 'PASS_EXACT_COMMAND_REGISTER_SIBLING_CARRIER_RECONSTRUCTED',
+              'parent_authority_door': '/estate/authoritative/all-body-first-pass-v1.0/',
+              'exact_carrier_route': '/estate/authoritative/all-body-first-pass-v1.0/command-register/',
               'command_register_size_bytes': 2530896,
               'command_register_sha256': 'abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410',
               'compressed_carrier_size_bytes': 116149,
               'compressed_carrier_sha256': 'd1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438',
-              'main_changed': False,
-              'deployment_requested': False,
+              'parent_door_replaced': False,
               'self_erasure': False,
               'silent_parallel_lane': False,
+              'production_deployed': False,
+              'physical_acceptance': False,
               'ding': False,
-              'boundary': 'Exact bytes are reconstructed and proved on a proposal branch only. This is not a main mount, deployment, physical acceptance or JM Ding.'
+              'boundary': 'Exact bytes are proved as a sibling carrier. This receipt does not replace the parent authority door, claim production contact, physical acceptance or JM Ding.'
           }
-          path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          (exact_dir / 'GITHUB_EXACT_COMMAND_REGISTER_RECEIPT_v1_0.json').write_text(
+              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
+          )
           PY
 
-      - name: Commit proved proposal result
+      - name: Commit sibling carrier and preserved door state
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'JM Exact Carrier Proposal Rail'
+          git config user.name 'JM Exact Carrier Sibling Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add \
             estate/authoritative/all-body-first-pass-v1.0/index.html \
-            estate/authoritative/all-body-first-pass-v1.0/GITHUB_MOUNT_RECEIPT_v1_0.json
+            estate/authoritative/all-body-first-pass-v1.0/GITHUB_MOUNT_RECEIPT_v1_0.json \
+            estate/authoritative/all-body-first-pass-v1.0/command-register
 
           if git diff --cached --quiet; then
-            echo 'No proposal result change required.'
+            echo 'No sibling carrier change required.'
             exit 0
           fi
 
-          git commit -m 'Propose exact JM Command Register v1.0 carrier [skip ci]'
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git commit -m 'Mount exact Command Register as sibling carrier [skip ci]'
+          if [ "${GITHUB_REF_NAME}" != 'main' ]; then
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            git push origin HEAD:main
+          fi

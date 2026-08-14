@@ -1,51 +1,78 @@
-name: Mount JM All-Body First Pass v1.0
+name: Maintain Exact JM Command Register Sibling Carrier
 
 on:
-  workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - jm-proposal/exact-command-register-v1-0
     paths:
       - ".github/workflows/mount-all-body-first-pass-v1.yml"
-      - "governance/mount-payloads/all-body-first-pass-v1.0/**"
+      - "governance/mount-payloads/all-body-first-pass-v1.0/exact-fix-*.b64"
+      - "governance/mount-requests/exact-command-register-v1-0.json"
+  workflow_dispatch:
 
 concurrency:
-  group: jm-all-body-first-pass-mount-v1
+  group: jm-exact-command-register-sibling-v1
   cancel-in-progress: false
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
-  mount:
-    name: Reconstruct, verify, mount and dispatch public rails
+  mount-sibling:
+    name: Reconstruct, prove and preserve sibling carrier
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
 
     steps:
-      - name: Check out current Estate source
+      - name: Check out selected ref
         uses: actions/checkout@v6
         with:
-          ref: main
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Reconstruct exact Command Register
+      - name: Preserve current public authority door on proposal branch
+        if: github.ref_name != 'main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          public_root='estate/authoritative/all-body-first-pass-v1.0'
+          git checkout origin/main -- \
+            "$public_root/index.html" \
+            "$public_root/GITHUB_MOUNT_RECEIPT_v1_0.json"
+          echo 'PASS current main authority door and historical root receipt restored into proposal tree'
+
+      - name: Reconstruct exact Command Register into sibling carrier
         shell: bash
         run: |
           set -euo pipefail
           payload='governance/mount-payloads/all-body-first-pass-v1.0'
-          target='estate/authoritative/all-body-first-pass-v1.0'
-          mkdir -p "$target"
+          exact_dir='estate/authoritative/all-body-first-pass-v1.0/command-register'
+          mkdir -p "$exact_dir"
 
           cat \
             "$payload"/repair.part00a \
             "$payload"/repair.part00b \
             "$payload"/repair.part00c \
             "$payload"/repair.part00d \
-            "$payload"/repair.part01ab \
+            "$payload"/exact-fix-p01-0.b64 \
+            "$payload"/exact-fix-p01-1.b64 \
+            "$payload"/exact-fix-p01-2.b64 \
+            "$payload"/exact-fix-p01-3.b64 \
+            "$payload"/exact-fix-p01-4.b64 \
+            "$payload"/tiny.p01.1 \
+            "$payload"/tiny.p01.2 \
+            "$payload"/tiny.p01.3 \
             "$payload"/repair.part01cd \
             "$payload"/command-register.html.gz.b64.part02 \
-            "$payload"/repair.part03ab \
+            "$payload"/exact-fix-p03-0.b64 \
+            "$payload"/exact-fix-p03-1.b64 \
+            "$payload"/exact-fix-p03-2.b64 \
+            "$payload"/exact-fix-p03-3.b64 \
+            "$payload"/exact-fix-p03-4.b64 \
+            "$payload"/tiny.p03.1 \
+            "$payload"/tiny.p03.2 \
+            "$payload"/tiny.p03.3 \
             "$payload"/repair.part03cd \
             "$payload"/command-register.html.gz.b64.part04 \
             "$payload"/command-register.html.gz.b64.part05 \
@@ -60,214 +87,95 @@ jobs:
             "$payload"/command-register.html.gz.b64.part08 \
             > /tmp/jm-command-register.b64
 
+          test "$(wc -c < /tmp/jm-command-register.b64)" -eq 154868
           base64 --decode /tmp/jm-command-register.b64 > /tmp/jm-command-register.html.gz
-          gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$target/index.html"
 
-          expected='abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410'
-          actual="$(sha256sum "$target/index.html" | awk '{print $1}')"
-          test "$actual" = "$expected"
-          test "$(wc -c < "$target/index.html")" -eq 2530896
-          grep -Fq 'JM Command Register v1.0 — First Pass Finished' "$target/index.html"
-          grep -Fq '1,074' "$target/index.html"
-          grep -Fq 'FULL FIRST-PASS FINISHED' "$target/index.html"
-          echo "PASS exact command register $actual"
+          expected_gzip='d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438'
+          actual_gzip="$(sha256sum /tmp/jm-command-register.html.gz | awk '{print $1}')"
+          test "$actual_gzip" = "$expected_gzip"
+          test "$(wc -c < /tmp/jm-command-register.html.gz)" -eq 116149
 
-      - name: Mount current authority and source receipt
-        shell: bash
-        run: |
-          set -euo pipefail
-          target='estate/authoritative/all-body-first-pass-v1.0'
+          gzip --decompress --stdout /tmp/jm-command-register.html.gz > "$exact_dir/index.html"
 
-          cat > "$target/CURRENT_HEAD_JM_MASTER_TOOL_REGISTER_v2_0.md" <<'EOF'
-          # CURRENT HEAD — JM Master Tool Register v2.0
+          expected_html='abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410'
+          actual_html="$(sha256sum "$exact_dir/index.html" | awk '{print $1}')"
+          test "$actual_html" = "$expected_html"
+          test "$(wc -c < "$exact_dir/index.html")" -eq 2530896
+          grep -Fq 'JM Command Register v1.0 — First Pass Finished' "$exact_dir/index.html"
+          grep -Fq '1,074' "$exact_dir/index.html"
+          grep -Fq 'FULL FIRST-PASS FINISHED' "$exact_dir/index.html"
 
-          **Current register:** `01_JM_MASTER_TOOL_REGISTER_FIRST_PASS_FINISHED_v2_0.xlsx`  
-          **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
-          **Cutoff:** 2026-08-06T05:33:58+01:00  
-          **State:** ALL-BODY ROAD-FORWARD FULL FIRST PASS FINISHED.
+          echo "PASS exact compressed carrier $actual_gzip"
+          echo "PASS exact sibling command register $actual_html"
 
-          ## DING state
-
-          - STAGE 3 RECONCILIATION MOUNT: **PASS**
-          - WAVE 01 CLOSEOUT / MOUNT: **PASS**
-          - WAVES 02–07 FINAL DISPOSITION: **PASS**
-          - 14-HOUSE FIRST-PASS AUDIT: **PASS**
-          - 1,074 / 1,074 LINEAGE DISPOSITIONS: **PASS**
-          - FIRST-PASS PROOF PACKAGE: **PASS**
-          - WHOLE-ESTATE FINAL CORPUS: **OPEN BY LAW**
-
-          v2.0 is a major first-pass completion head. It preserves v1.6, v1.5 and all prior lineage/proof floors.
-          EOF
-
-          cat > "$target/JM_REGISTER_OF_REGISTERS_v1_0.md" <<'EOF'
-          # JM REGISTER OF REGISTERS v1.0
-
-          **Status:** CURRENT REGISTER AUTHORITY — ALL-BODY FIRST PASS FINISHED  
-          **Owner:** JM Estate Head  
-          **Supersedes:** v0.21; every ancestor remains preserved.
-
-          ## Current first-pass surfaces
-
-          1. `JM_COMMAND_REGISTER_v1_0_FIRST_PASS_FINISHED_OPEN_FIRST.html`
-          2. `01_JM_MASTER_TOOL_REGISTER_FIRST_PASS_FINISHED_v2_0.xlsx`
-          3. `JM_ALL_BODY_FIRST_PASS_FINISHED_v1_0.json`
-          4. `JM_ALL_BODY_FINAL_FIRST_PASS_REGISTER_v1_0.csv`
-          5. `JM_RESIDUAL_BLOCKER_REGISTER_v1_0.csv`
-          6. `JM_HOUSE_COMPLETION_REGISTER_v1_0.csv`
-          7. `JM_DELIVERY_PACKAGE_REGISTER_v1_0.csv`
-          8. `JM_EXECUTABLE_ROUTE_REGISTER_v1_0.csv`
-          9. `JM_FIRST_PASS_COMPLETION_GATE_v1_0.csv`
-          10. `JM_ALL_BODY_FIRST_PASS_LINEAGE_RECEIPTS_v1_0.ndjson`
-          11. `JM_ALL_BODY_FIRST_PASS_FINISHED_RECEIPT_v1_0.json`
-          12. `JM_ALL_BODY_FIRST_PASS_FINISHED_PROOF_PACKAGE_v1_0.zip`
-
-          ## Governing route
-
-          `source record → lineage → proof/contact → road → wave disposition → house audit → blocker disclosure → mount → receipt`
-
-          ## Boundary
-
-          The staged first pass is finished. The Whole-Estate Final Corpus remains open only where physical source or implementation evidence genuinely remains outside contact.
-          EOF
-
-          cat > "$target/JM_ALL_BODY_FIRST_PASS_FINISHED_REPORT_v1_0.md" <<'EOF'
-          # JM ALL-BODY ROAD-FORWARD — FULL FIRST-PASS FINISHED v1.0
-
-          **Status:** FULL FIRST-PASS FINISHED ✅  
-          **Created:** 2026-08-06T05:33:58+01:00  
-          **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME
-
-          ## Exact standing
-
-          - Source records: **1,122**
-          - Conservative lineages: **1,074**
-          - Houses: **14 / 14 PASS**
-          - Stage-Two highways preserved: **2,298**
-          - Exact capability joins: **1,122 / 1,122**
-          - Final lineage dispositions: **1074 / 1074**
-          - Explicit residual blockers: **973**
-          - Wave 02 delivery manifests: **69**
-          - Wave 03 executable build specifications: **25**
-
-          ## Waves completed
-
-          - WAVE_01_CLOSEOUT_MOUNT: **32 / 32 disposed**
-          - WAVE_02_PACKAGE_RELEASE: **69 / 69 disposed**
-          - WAVE_03_VALIDATE_BUILD: **90 / 90 disposed**
-          - WAVE_04_SOURCE_RECOVERY: **838 / 838 disposed**
-          - WAVE_05_ANCHORED_EXTENSION: **18 / 18 disposed**
-          - WAVE_06_MANUAL_DECISION: **7 / 7 disposed**
-          - WAVE_07_PARKED: **20 / 20 disposed**
-
-          ## Completion law
-
-          The operation is complete because every surfaced lineage has been contacted or truthfully accounted for, assigned a final disposition, mounted or held according to evidence, routed through its house, and given an explicit proof boundary and continuation condition.
-
-          A blocker does not reopen this completed first pass. It prevents unsupported body promotion, package claims, implementation claims or corpus crowns.
-
-          ## Final boundary
-
-          **The All-Body Road-Forward staged first pass is FINISHED.**
-
-          **The Whole-Estate Final Corpus remains OPEN BY LAW** wherever exact physical source identity, unmounted raw corpus, standalone package bytes, runtime implementation, device QA or public release proof is genuinely absent.
-          EOF
-
-          cat > "$target/SOURCE_RECEIPT_v1_0.json" <<'EOF'
-          {
-            "receipt": "JM ALL-BODY ROAD-FORWARD — FULL FIRST-PASS FINISHED RECEIPT",
-            "version": "1.0",
-            "status": "PASS — FULL FIRST-PASS FINISHED",
-            "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
-            "counts": {
-              "source_records": 1122,
-              "lineages": 1074,
-              "final_dispositions": 1074,
-              "houses_passed": 14,
-              "highways_preserved": 2298,
-              "exact_capability_joins": 1122,
-              "residual_blockers_disclosed": 973,
-              "delivery_manifests": 69,
-              "executable_route_specs": 25,
-              "waves_completed": 7
-            },
-            "sha256": {
-              "JM_COMMAND_REGISTER_v1_0_FIRST_PASS_FINISHED_OPEN_FIRST.html": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
-              "01_JM_MASTER_TOOL_REGISTER_FIRST_PASS_FINISHED_v2_0.xlsx": "4c4eb96efe2c8b89ae119e63cf1d7a17c0090b798d0bd5c1bb7093474f0c202d",
-              "JM_ALL_BODY_FIRST_PASS_FINISHED_v1_0.json": "a39b075345959d8c31e9a7e55702df551438696c09c8367ef3e514b396f91782",
-              "JM_ALL_BODY_FINAL_FIRST_PASS_REGISTER_v1_0.csv": "4a4800ab0dda7fa2984761c58f6c19c883414167cf24941321f9a36c7ffed08f",
-              "JM_RESIDUAL_BLOCKER_REGISTER_v1_0.csv": "84ad42bfd3f5c0c3bbfaa6a9ae99b4faf478195f792773f841e4addd321e1448",
-              "JM_HOUSE_COMPLETION_REGISTER_v1_0.csv": "01450453aa11cf8b7378c6384f17992f52cb3acc803993d6a1010fbae55b1ab0",
-              "JM_DELIVERY_PACKAGE_REGISTER_v1_0.csv": "4847da7b282ba3fc422fa346bb04c5df0dc64ff6930f40a8edd9feb38f13d40e",
-              "JM_EXECUTABLE_ROUTE_REGISTER_v1_0.csv": "745b0530b5b86dc9c0526b3774184bcb84c767f9190fd2677863ab61055ab2f6",
-              "JM_FIRST_PASS_COMPLETION_GATE_v1_0.csv": "afd8e9a6b4bb1541aa4087f48d6987dedd58b59bef5bb497f6f6ff278ce49fab",
-              "JM_ALL_BODY_FIRST_PASS_LINEAGE_RECEIPTS_v1_0.ndjson": "aef78c1b58a6d6e704a052d29f326fbca97934bcc49d4c4904c67721b1ac2181"
-            },
-            "boundary": "The staged first pass is fully finished. This receipt does not claim that every body is fully implemented, device-tested, publicly released or physically source-complete."
-          }
-          EOF
-
-      - name: Seal mount receipt
+      - name: Seal sibling route and receipt
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json
-          import os
+          import json, os
           from datetime import datetime, timezone
           from pathlib import Path
 
-          target = Path('estate/authoritative/all-body-first-pass-v1.0')
+          exact_dir = Path('estate/authoritative/all-body-first-pass-v1.0/command-register')
+          (exact_dir / 'OPEN_FIRST.md').write_text(
+              '# JM Command Register v1.0 — Exact Sibling Carrier\n\n'
+              '**Role:** exact interactive Command Register carrier beneath the existing All-Body public authority door.\n\n'
+              '- Exact size: **2,530,896 bytes**\n'
+              '- SHA-256: `abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410`\n'
+              '- Compressed carrier: **116,149 bytes**\n'
+              '- Compressed SHA-256: `d1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438`\n\n'
+              'The parent `/estate/authoritative/all-body-first-pass-v1.0/` remains the concise public authority door. '
+              'This sibling preserves the exact interactive carrier instead of replacing the parent door.\n\n'
+              '**Whole-Estate Final Corpus:** OPEN BY LAW.  \n'
+              '**Ding:** false.\n',
+              encoding='utf-8'
+          )
+
           receipt = {
-              'schema': 'JM.AllBodyFirstPassGitHubMountReceipt/1.0',
-              'mounted_utc': datetime.now(timezone.utc).isoformat(),
+              'schema': 'JM.ExactCommandRegisterSiblingMountReceipt/1.0',
+              'recorded_utc': datetime.now(timezone.utc).isoformat(),
               'source_event_commit': os.environ.get('GITHUB_SHA'),
-              'state': 'PASS_EXACT_COMMAND_REGISTER_MOUNTED_AWAITING_PUBLIC_RAILS_AND_JM_PHYSICAL_TEST',
               'authority': 'Theodore Benjamin Scott / JM / JMISJUSTME',
+              'state': 'PASS_EXACT_COMMAND_REGISTER_SIBLING_CARRIER_RECONSTRUCTED',
+              'parent_authority_door': '/estate/authoritative/all-body-first-pass-v1.0/',
+              'exact_carrier_route': '/estate/authoritative/all-body-first-pass-v1.0/command-register/',
+              'command_register_size_bytes': 2530896,
               'command_register_sha256': 'abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410',
-              'lineages': 1074,
-              'final_dispositions': 1074,
+              'compressed_carrier_size_bytes': 116149,
+              'compressed_carrier_sha256': 'd1e547e1bfbb2c14a3319a09a54aeda80114ef4925415923987008febf8c6438',
+              'parent_door_replaced': False,
               'self_erasure': False,
               'silent_parallel_lane': False,
+              'production_deployed': False,
+              'physical_acceptance': False,
               'ding': False,
-              'boundary': 'The exact interactive command register and current v2.0 authority surfaces are mounted. Large raw companion registers remain hash-bound by the source receipt until separately transferred byte-for-byte.'
+              'boundary': 'Exact bytes are proved as a sibling carrier. This receipt does not replace the parent authority door, claim production contact, physical acceptance or JM Ding.'
           }
-          (target / 'GITHUB_MOUNT_RECEIPT_v1_0.json').write_text(
+          (exact_dir / 'GITHUB_EXACT_COMMAND_REGISTER_RECEIPT_v1_0.json').write_text(
               json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
           )
           PY
 
-      - name: Commit verified mount
-        id: commit
+      - name: Commit sibling carrier and preserved door state
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'JM All-Body Mount Rail'
+          git config user.name 'JM Exact Carrier Sibling Rail'
           git config user.email 'actions@users.noreply.github.com'
-          git add estate/authoritative/all-body-first-pass-v1.0
+          git add \
+            estate/authoritative/all-body-first-pass-v1.0/index.html \
+            estate/authoritative/all-body-first-pass-v1.0/GITHUB_MOUNT_RECEIPT_v1_0.json \
+            estate/authoritative/all-body-first-pass-v1.0/command-register
 
           if git diff --cached --quiet; then
-            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+            echo 'No sibling carrier change required.'
             exit 0
           fi
 
-          git commit -m 'Mount JM All-Body First Pass v1.0 authority [skip ci]'
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main
-            if git push origin HEAD:main; then
-              echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            sleep 2
-          done
-          exit 1
-
-      - name: Dispatch GitHub Pages and Cloudflare rails
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          gh workflow run deploy-pages.yml --ref main
-          gh workflow run deploy-cloudflare-authoritative-public-source.yml --ref main
-          echo "Dispatched public rails for mounted commit ${{ steps.commit.outputs.sha }}"
+          git commit -m 'Mount exact Command Register as sibling carrier [skip ci]'
+          if [ "${GITHUB_REF_NAME}" != 'main' ]; then
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          else
+            git push origin HEAD:main
+          fi

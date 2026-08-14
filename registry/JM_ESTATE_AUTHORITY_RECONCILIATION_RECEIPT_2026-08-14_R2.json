@@ -1,0 +1,51 @@
+{
+  "schema": "JM.EstateAuthorityReconciliationReceipt/1.1",
+  "date": "2026-08-14",
+  "revision": "R2",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "proposal_branch": "jm-proposal/estate-authority-reconciliation-2026-08-14",
+  "state": "R2_NATIVE_LINEAGE_RECONCILED_TARGET_REPROOF_REQUIRED",
+  "r1_preserved": true,
+  "whole_estate_control": {
+    "lineages": "1074/1074",
+    "houses": "14/14 PASS",
+    "residual_blockers": 973,
+    "final_corpus": "OPEN_BY_LAW"
+  },
+  "natural_operational_language": {
+    "freeze_anchor_commit": "b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d",
+    "state": "FROZEN_WORKING_ANCHOR_OWNER_PHONE_VISUAL_CONTACT_OBSERVED_NOT_CROWNED",
+    "decisive_run": 31455871123,
+    "result": "PASS",
+    "phone_contact": "VISUAL_CONTACT_OBSERVED",
+    "device_execution": "PARTIAL_ONLY",
+    "final_device_ding": false
+  },
+  "routeos_jm_native": {
+    "v2_1a": {
+      "anchor_commit": "e47dcec3c0323a8c1c03e222860783b390c8b92c",
+      "state": "FROZEN_ANCHORED_SCOPED_CONSTRUCTION_DING_PASS",
+      "matrix": "22/22 PASS",
+      "merge_authority": "NOT_GRANTED",
+      "estate_wide_ding": false
+    },
+    "v2_2a": {
+      "current_head": "baf3e092f8371255c385e9d240668f05e393d89b",
+      "state": "HELD_CONSTRUCTION_SUCCESSOR_NOT_ANCHORED",
+      "decisive_run": 30719246085,
+      "decisive_result": "FAILURE",
+      "expected_anchor_present": false,
+      "supersedes_v2_1a": false
+    }
+  },
+  "target_status": {
+    "pr_111": "R2_SIDE_CAR_PENDING",
+    "pr_112": "R2_CONTENT_CORRECTION_AND_REPROOF_PENDING"
+  },
+  "main_changed": false,
+  "production_deployed": false,
+  "wix_published": false,
+  "physical_acceptance_claimed": false,
+  "ding": false,
+  "boundary": "This R2 receipt corrects native-lineage interpretation without rewriting R1 or creating a whole-Estate Ding."
+}

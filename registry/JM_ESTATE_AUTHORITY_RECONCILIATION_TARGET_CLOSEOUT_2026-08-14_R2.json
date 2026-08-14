@@ -1,0 +1,56 @@
+{
+  "schema": "JM.EstateAuthorityReconciliationTargetCloseout/1.0",
+  "date": "2026-08-14",
+  "revision": "R2",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "whole_estate_control": {
+    "lineages": "1074/1074",
+    "houses": "14/14 PASS",
+    "residual_blockers": 973,
+    "final_corpus": "OPEN_BY_LAW"
+  },
+  "pr_111": {
+    "state": "EXACT_CARRIER_PRESERVED_R2_AUTHORITY_INTERPRETATION_COMPLETE",
+    "carrier_size_bytes": 2530896,
+    "carrier_sha256": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
+    "carrier_rewritten": false,
+    "r2_sidecar": "governance/mount-receipts/exact-command-register-v1-0-authority-reconciliation-2026-08-14-R2.json"
+  },
+  "pr_112": {
+    "state": "ALL_NON_OWNER_SOURCE_AND_ISOLATED_PREVIEW_GATES_PASS_OWNER_WIX_EDITOR_CONTACT_REMAINS",
+    "current_source": "JM_WIX_AUTHORITY_ROOM_v0_2_R2.html",
+    "size_bytes": 29309,
+    "sha256": "8792d69cf56ee27e19d6e6abc1fab8a697000026f289c7fefd17d01f9bcebfb8",
+    "structural_validation_run": 31824126846,
+    "structural_validation": "PASS",
+    "isolated_cloudflare_run": 31824206471,
+    "isolated_cloudflare": "PASS",
+    "preview_url": "https://wix-room-v02.jmisjustme-estate.pages.dev",
+    "live_sha_match": "PASS",
+    "noindex_boundary": "PASS",
+    "cloudflare_production_untouched": true,
+    "published_wix_untouched": true,
+    "wix_static_editor_translation": "OPEN_EDITOR_ONLY",
+    "jm_physical_review": "OPEN_OWNER_GATE",
+    "jm_publication_authority": "OPEN_OWNER_GATE"
+  },
+  "wix_live_state_verified": {
+    "site_id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
+    "site_status": "PUBLISHED",
+    "published_url": "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es",
+    "default_branch": "Original-Branch",
+    "default_branch_id": "00000000-0000-0000-0000-000000000000",
+    "rebuild_branch": "JM Estate v2.0 Authority Rebuild",
+    "rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
+    "rebuild_branch_type": "USER",
+    "rebuild_branch_is_default": false,
+    "branch_content_api_boundary": "METADATA_ONLY_CONTENT_EDITING_EDITOR_ONLY"
+  },
+  "state": "R2_NATIVE_LINEAGE_RECONCILED_TARGETS_REPROVED_OWNER_WIX_CONTACT_REMAINS",
+  "main_changed_by_this_closeout": false,
+  "production_deployed_by_this_closeout": false,
+  "wix_published_by_this_closeout": false,
+  "physical_acceptance_claimed": false,
+  "ding": false,
+  "boundary": "R2 recovery, authority interpretation and all available non-owner source/isolated-preview proof gates are closed. Wix editor translation, JM physical review, publication authority and any JM Ding remain separate owner-facing gates."
+}

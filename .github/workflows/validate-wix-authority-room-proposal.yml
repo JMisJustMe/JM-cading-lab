@@ -6,19 +6,19 @@ on:
       - jm-proposal/wix-v2-authority-rebuild
     paths:
       - ".github/workflows/validate-wix-authority-room-proposal.yml"
-      - "governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html"
+      - "governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2.html"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: validate-wix-authority-room-proposal
+  group: validate-wix-authority-room-proposal-v02
   cancel-in-progress: false
 
 jobs:
   validate:
-    name: Parse, test and receipt the exact room body
+    name: Parse, test and receipt reconciled room v0.2
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,7 +28,7 @@ jobs:
           ref: jm-proposal/wix-v2-authority-rebuild
           fetch-depth: 0
 
-      - name: Validate exact HTML and interaction body
+      - name: Validate current-Estate HTML and interaction body
         shell: bash
         run: |
           set -euo pipefail
@@ -42,21 +42,34 @@ jobs:
               def __init__(self):
                   super().__init__()
                   self.rooms = []
-
               def handle_starttag(self, tag, attrs):
                   attrs = dict(attrs)
                   classes = set(attrs.get('class', '').split())
                   if tag == 'section' and 'room' in classes and attrs.get('data-room'):
                       self.rooms.append(attrs['data-room'])
 
-          path = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_1.html')
+          path = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2.html')
           raw = path.read_bytes()
           text = raw.decode('utf-8')
-          parser = RoomParser()
-          parser.feed(text)
-          expected_rooms = {'open', 'map', 'command', 'use', 'play', 'read', 'verify', 'owner'}
+          parser = RoomParser(); parser.feed(text)
+          expected_rooms = {'open','map','command','use','play','read','verify','owner'}
           parsed_rooms = set(parser.rooms)
 
+          required_markers = {
+              'whole_estate_count': '1,074/1,074',
+              'residual_blockers': '973',
+              'final_corpus_open': 'OPEN BY LAW',
+              'crocodile_freeze': 'Crocodile Fallacy v1.0',
+              'constitution_freeze': 'From Source to Constitution v1.0',
+              'picture_freeze': 'The Picture Became Visible v1.0',
+              'public_subset': 'Public Estate Head v0.3.0',
+              'theory_open_seam': 'Theory v0.19/v0.20.1',
+              'other_body_words_gap': 'Other Body Words',
+              'no_ding_law': 'No Ding, no claim',
+              'noncollapse_head_law': 'Current head ≠ first function',
+              'noncollapse_version_law': 'latest version ≠ universal authority',
+              'noncollapse_mount_law': 'mounted ≠ crowned',
+          }
           checks = {
               'non_empty_file': len(raw) > 0,
               'html_parser_contact': True,
@@ -69,30 +82,30 @@ jobs:
               'owner_return_label': 'OWNER / RETURN' in text,
               'mobile_viewport': 'width=device-width,initial-scale=1,viewport-fit=cover' in text,
               'mobile_bottom_rail': 'grid-template-columns:repeat(5' in text,
-              'no_publication_or_ding_claim': 'No publication and no JM Ding' in text,
-              'exact_command_register_state': '2,530,896-byte body' in text,
               'verify_route': 'data-go="verify"' in text,
-              'proof_filter': 'data-filter="proof"' in text,
               'command_search': 'id="search"' in text,
+              'scope_filter': 'data-filter="freeze"' in text,
+              'engineering_filter': 'data-filter="engineering"' in text,
+              'open_seam_filter': 'data-filter="seam"' in text,
+              'robots_noindex': 'noindex,nofollow,noarchive' in text,
           }
+          checks.update({name: marker in text for name, marker in required_markers.items()})
 
           scripts = re.findall(r'<script>(.*?)</script>', text, flags=re.S)
           checks['single_inline_script'] = len(scripts) == 1
-
           for name, passed in checks.items():
               print(('PASS ' if passed else 'FAIL ') + name)
           print('PARSED rooms', ','.join(parser.rooms))
           failed = [name for name, passed in checks.items() if not passed]
           assert not failed, 'failed checks: ' + ', '.join(failed)
-
-          Path('/tmp/jm-wix-room.js').write_text(scripts[0], encoding='utf-8')
+          Path('/tmp/jm-wix-room-v02.js').write_text(scripts[0], encoding='utf-8')
           print('PASS exact_size_bytes', len(raw))
           print('PASS exact_sha256', hashlib.sha256(raw).hexdigest())
           PY
-          node --check /tmp/jm-wix-room.js
+          node --check /tmp/jm-wix-room-v02.js
           echo 'PASS javascript_syntax'
 
-      - name: Seal proposal receipt
+      - name: Seal v0.2 reconciliation receipt
         shell: bash
         run: |
           set -euo pipefail
@@ -102,51 +115,61 @@ jobs:
           import hashlib, json, os
 
           root = Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild')
-          body = root / 'JM_WIX_AUTHORITY_ROOM_v0_1.html'
+          body = root / 'JM_WIX_AUTHORITY_ROOM_v0_2.html'
           raw = body.read_bytes()
           receipt = {
-              'schema': 'JM.WixAuthorityRoomPrototypeReceipt/0.1',
+              'schema': 'JM.WixAuthorityRoomReconciliationReceipt/0.2',
               'recorded_utc': datetime.now(timezone.utc).isoformat(),
               'authority': 'Theodore Benjamin Scott / JM / JMISJUSTME',
               'wix_site_id': '7724b482-0a61-41bb-8d78-cb6587d6e3e7',
               'wix_rebuild_branch_id': 'ec3edba7-2e32-4a4b-8359-637e5fa2c789',
               'source_event_commit': os.environ.get('GITHUB_SHA'),
-              'prototype_file': str(body),
-              'prototype_size_bytes': len(raw),
-              'prototype_sha256': hashlib.sha256(raw).hexdigest(),
-              'rooms': ['OPEN FIRST','ESTATE MAP','COMMAND ROOM','USE','PLAY','READ','VERIFY','OWNER / RETURN'],
+              'current_room_file': str(body),
+              'current_room_size_bytes': len(raw),
+              'current_room_sha256': hashlib.sha256(raw).hexdigest(),
+              'proved_donor_v0_1': {
+                  'file': 'JM_WIX_AUTHORITY_ROOM_v0_1.html',
+                  'size_bytes': 21941,
+                  'sha256': 'aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062',
+                  'preserved': True
+              },
+              'whole_estate_control': {
+                  'lineages': '1074/1074',
+                  'houses': '14/14 PASS',
+                  'residual_blockers': 973,
+                  'final_corpus': 'OPEN_BY_LAW'
+              },
+              'rooms': ['OPEN FIRST','ESTATE MAP','COMMAND ROOM','USE / ENGINEERING','PLAY / PUBLIC OFFICES','READ / CONVERGENCE','VERIFY / OPEN SEAMS','OWNER / RETURN'],
               'checks': {
                   'html_parser_contact': 'PASS',
                   'eight_room_navigation': 'PASS',
                   'unique_room_identity': 'PASS',
                   'mobile_first_bottom_rail': 'PASS',
                   'command_search': 'PASS',
-                  'estate_house_filters': 'PASS',
+                  'authority_scope_filters': 'PASS',
                   'javascript_syntax': 'PASS',
-                  'exact_carrier_state_labelled': 'PASS',
+                  'current_authority_markers': 'PASS',
+                  'open_seams_visible': 'PASS',
                   'live_wix_untouched': 'PASS'
               },
-              'state': 'WORKING_SINGLE_FILE_PROTOTYPE_VALIDATED_AWAITING_WIX_EDITOR_TRANSLATION_AND_JM_PREVIEW',
+              'state': 'CURRENT_ESTATE_AUTHORITY_ROOM_V0_2_VALIDATED_AWAITING_ISOLATED_PHONE_PREVIEW',
+              'wix_static_layout_translated': False,
               'published': False,
-              'deployed': False,
-              'physical_device_tested': False,
+              'production_deployed': False,
+              'physical_device_accepted': False,
               'ding': False,
-              'boundary': 'This is a validated working single-file prototype on a GitHub proposal branch. It does not claim that Wix static page layout has already been edited, previewed by JM or published.'
+              'boundary': 'v0.2 is the validated current-Estate reconciliation source. v0.1 remains a preserved proved donor. Validation is not Wix editor translation, publication, physical acceptance or JM Ding.'
           }
-          (root / 'JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json').write_text(
-              json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8'
-          )
+          (root / 'JM_WIX_AUTHORITY_ROOM_RECONCILIATION_RECEIPT_v0_2.json').write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
           PY
 
-      - name: Commit receipt to proposal branch
+      - name: Commit v0.2 receipt to proposal branch
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'JM Wix Authority Room Proof Gate'
           git config user.email 'actions@users.noreply.github.com'
-          git add governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_PROTOTYPE_RECEIPT_v0_1.json
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git commit -m 'Seal Wix authority room prototype receipt [skip ci]'
+          git add governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_RECONCILIATION_RECEIPT_v0_2.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seal Wix current-Estate authority room v0.2 receipt [skip ci]'
           git push origin HEAD:jm-proposal/wix-v2-authority-rebuild

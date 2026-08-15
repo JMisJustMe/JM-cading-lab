@@ -22,6 +22,10 @@ That does **not** make the current v2.0 workspace itself primarily a game or gam
 
 Reclassifying the mounted surface does not rewrite the frozen body, its history, its game-adjacent interaction lineage, the permanent anchor, or the canonical 100-body Estate.
 
+## Proof
+
+Apps / Tools classification guard passed in workflow run `31913897590` together with the complete v0.1-v2.0 regression, mount proof, mobile/desktop direct-open smokes and registry=100 guard.
+
 ## Boundary
 
 - frozen v2.0 body: unchanged;

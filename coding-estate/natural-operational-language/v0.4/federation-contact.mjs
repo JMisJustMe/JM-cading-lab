@@ -44,6 +44,16 @@ export function preflightFederation({ source, contacts = [], context = {}, state
   return { ...body, plan, digest: digest(body) };
 }
 
+function stateAfterContact(contacted, inputState) {
+  const payload = contacted.contact.contact;
+  // Some sovereign contacts are interpretive/observational and use `after`
+  // for their own context body rather than the shared Estate state. They may
+  // observe the carried state without owning or replacing it. Only a contact
+  // that reports a state change is allowed to advance shared carry-forward state.
+  if (payload.changed === true) return clone(payload.after);
+  return clone(inputState);
+}
+
 export function contactSovereignFederation({ source, contacts = [], state = {}, context = {}, stateMode = 'isolated' } = {}) {
   const preflight = preflightFederation({ source, contacts, context, stateMode });
   const initialState = clone(state);
@@ -62,7 +72,7 @@ export function contactSovereignFederation({ source, contacts = [], state = {}, 
       context
     });
 
-    const outputState = contacted.contact.contact.after ?? inputState;
+    const outputState = stateAfterContact(contacted, inputState);
     if (stateMode === 'carry-forward') carriedState = clone(outputState);
 
     results.push({
@@ -72,6 +82,7 @@ export function contactSovereignFederation({ source, contacts = [], state = {}, 
       inputStateDigest: digest(inputState),
       outputStateDigest: digest(outputState),
       changed: contacted.contact.contact.changed,
+      sharedStateAdvanced: contacted.contact.contact.changed === true,
       contactReceiptDigest: contacted.receipt.digest,
       contact: contacted
     });
@@ -106,6 +117,7 @@ export function contactSovereignFederation({ source, contacts = [], state = {}, 
       'PREFLIGHT_BEFORE_EXECUTION',
       'IDENTITY_PRESERVED',
       'MEET_NOT_MERGE',
+      'NON_STATE_CONTACT_CANNOT_REPLACE_SHARED_STATE',
       'NO_ROUTE_SCORE_AUTO_EXECUTION'
     ],
     boundary: 'v0.4 federates only explicitly selected bodies with mounted direct adapters. It is not automatic 100-body execution or kernel federation.'

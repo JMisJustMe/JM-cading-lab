@@ -8,6 +8,15 @@
   "canonicalRegistryMutation": false,
   "canonicalRegistryCount": 100,
   "supreme": false,
+  "classification": {
+    "primaryProject": "APPS_TOOLS",
+    "primaryCategory": "TOOL",
+    "workingType": "CREATOR_WORKSPACE_MANAGEMENT_ORCHESTRATION_OPERATIONAL_INTERFACE",
+    "gamePrimaryClassification": false,
+    "gameRelationship": "DOWNSTREAM_TARGET_AND_INTERACTION_LINEAGE_ONLY",
+    "classificationLaw": "CLASSIFICATION_NOT_LINEAGE_DELETION",
+    "reason": "The current body primarily manages meaning, state, rooms, checkpoints, recovery, permissions and routes into the wider Estate."
+  },
   "authority": {
     "freezeHead": "69174bc78c4a0824965ed0c0240965f7527496dc",
     "freezeBranch": "freeze/natural-operational-language-recoverable-workspace-v2-0",
@@ -25,6 +34,7 @@
     "entry": "coding-estate/natural-operational-language/v2.0/00_OPEN_FIRST.html",
     "workspaceRuntime": "coding-estate/natural-operational-language/v2.0/recoverable-workspace.mjs",
     "creatorDonor": "coding-estate/natural-operational-language/v1.0/creator-surface.mjs",
+    "classificationRecord": "coding-estate/natural-operational-language/v2.0/CLASSIFICATION_APPS_TOOLS.md",
     "frontDoorLaw": "NATURAL_LANGUAGE_FRONT_DOOR",
     "recoveryLaw": "REPLAY_LEDGER_NOT_OPAQUE_STATE_INJECTION"
   },
@@ -50,6 +60,7 @@
     "SESSION_GRANT_NOT_PERSISTENCE",
     "EXPLICIT_OPERATOR_CUSTODY",
     "IDENTITY_PRESERVED",
+    "CLASSIFICATION_NOT_LINEAGE_DELETION",
     "TRACE_REQUIRED",
     "DING_REQUIRED",
     "SOURCE_AUTHORITY_REQUIRED",

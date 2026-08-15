@@ -61,8 +61,9 @@ export class NaturalOperationalCreatorSurfaceV10 {
 
   contact(source, bodyId, bindings = {}, options = {}) {
     const result = this.relations.parent.wordbook.contact(source, bodyId, bindings, options);
-    this.events.push({ event: 'surface.sovereign.contact', bodyId: String(bodyId).toLowerCase(), receiptDigest: result.receipt.digest, changed: result.contact.contact.changed });
-    return result;
+    const targetBody = result.contact?.targetBody ?? String(bodyId).toLowerCase();
+    this.events.push({ event: 'surface.sovereign.contact', bodyId: targetBody, receiptDigest: result.receipt.digest, changed: result.contact.contact.changed });
+    return { ...result, targetBody };
   }
 
   federate(source, bodyIds, bindings = {}, options = {}) {

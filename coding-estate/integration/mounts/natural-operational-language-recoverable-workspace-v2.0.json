@@ -1,0 +1,73 @@
+{
+  "schema": "jm.sovereign-estate.external-surface-mount/1.0",
+  "id": "natural-operational-language-recoverable-workspace-v2.0",
+  "name": "JM Natural Operational Language Recoverable Workspace v2.0",
+  "status": "PROVISIONAL_MOUNT",
+  "mountClass": "creator-front-door-recoverable-workspace",
+  "mountPrematurityAcknowledged": true,
+  "canonicalRegistryMutation": false,
+  "canonicalRegistryCount": 100,
+  "supreme": false,
+  "authority": {
+    "freezeHead": "69174bc78c4a0824965ed0c0240965f7527496dc",
+    "freezeBranch": "freeze/natural-operational-language-recoverable-workspace-v2-0",
+    "anchorBranch": "anchor/natural-operational-language-recoverable-workspace-v2-0",
+    "anchorCommitIdenticalToFreeze": true,
+    "decisiveProvenWorkspaceHead": "24dc5ee3c22ef34e67af66638613c13a53c860ec",
+    "freezeValidationWorkflowRun": 31912141852,
+    "decisiveWorkflowRun": 31911681743,
+    "artifactId": 9253827415,
+    "artifactDigest": "sha256:fdcfb14579c59ff920e145e8b8f40fd053d65622c52da28ef9ccbeb21076a24c",
+    "standaloneSha256": "dc93ebe8868eb53d0e44ad0f0dcf38e2b7ce69e6e8115f6c6be05f633f46044a",
+    "standaloneBytes": 206602
+  },
+  "surface": {
+    "entry": "coding-estate/natural-operational-language/v2.0/00_OPEN_FIRST.html",
+    "workspaceRuntime": "coding-estate/natural-operational-language/v2.0/recoverable-workspace.mjs",
+    "creatorDonor": "coding-estate/natural-operational-language/v1.0/creator-surface.mjs",
+    "frontDoorLaw": "NATURAL_LANGUAGE_FRONT_DOOR",
+    "recoveryLaw": "REPLAY_LEDGER_NOT_OPAQUE_STATE_INJECTION"
+  },
+  "mountedAgainst": {
+    "registry": "coding-estate/integration/REGISTRY.json",
+    "router": "coding-estate/integration/router-core.mjs",
+    "requiredBodies": [
+      "flowtalk",
+      "recorp",
+      "tracebox",
+      "dings",
+      "source-ledger"
+    ]
+  },
+  "laws": [
+    "PEA_BEFORE_GALAXY",
+    "NATURAL_LANGUAGE_FRONT_DOOR",
+    "MARK_NOT_MEANING",
+    "UNKNOWN_NOT_GUESSED",
+    "AND_TWO_SIDED_CUSTODY",
+    "PREVIEW_NOT_COMMIT",
+    "REPLAY_RECOVERY",
+    "SESSION_GRANT_NOT_PERSISTENCE",
+    "EXPLICIT_OPERATOR_CUSTODY",
+    "IDENTITY_PRESERVED",
+    "TRACE_REQUIRED",
+    "DING_REQUIRED",
+    "SOURCE_AUTHORITY_REQUIRED",
+    "NO_SUPREME_BODY"
+  ],
+  "claimBoundary": {
+    "creatorWorkspace": "MOUNTED",
+    "previewCommitDoor": "MOUNTED",
+    "replayRecovery": "MOUNTED",
+    "undoRedoCheckpointsRooms": "MOUNTED",
+    "integrityBoundRoomImportExport": "MOUNTED",
+    "portableIRDoor": "MOUNTED",
+    "directSovereignExecution": "MOUNTED_SELECTED_ADAPTERS_SESSION_TRANSIENT",
+    "persistedSovereignGrants": "NOT_MOUNTED",
+    "oneContainerKernelContact": "NOT_YET_MOUNTED",
+    "universalLanguageUnderstanding": "NOT_CLAIMED",
+    "ownerPhysicalDeviceV20": "NOT_PROVEN",
+    "semanticCrown": "NOT_CLAIMED"
+  },
+  "continuation": "Use the permanent v2.0 anchor as the donor/reference point. Continue above it; do not work directly on the anchor or mutate the canonical 100-body count to make the creator surface look like body 101."
+}

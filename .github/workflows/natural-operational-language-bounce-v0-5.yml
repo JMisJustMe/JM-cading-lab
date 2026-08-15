@@ -1,0 +1,56 @@
+name: JM Natural Operational Language Bounce Spine v0.5
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-5-creator-room
+    paths:
+      - 'coding-estate/natural-operational-language/v0.5/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-5.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v0.5/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-5.yml'
+
+jobs:
+  creator-room:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Regression v0.1-v0.4
+        run: |
+          node coding-estate/natural-operational-language/test-bounce-spine.mjs
+          node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+          node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+          node coding-estate/natural-operational-language/v0.3/test-v0.3.mjs
+          node coding-estate/natural-operational-language/v0.4/test-v0.4.mjs
+      - name: Creator-room controller proof
+        run: node coding-estate/natural-operational-language/v0.5/test-v0.5.mjs
+      - name: Build standalone creator room
+        run: node coding-estate/natural-operational-language/v0.5/build-standalone.mjs
+      - name: Static creator-room carrier gate
+        run: |
+          grep -q 'Write it like you mean it.' coding-estate/natural-operational-language/v0.5/dist/00_OPEN_FIRST_STANDALONE.html
+          grep -q 'Grant before execute\|GRANT BEFORE EXECUTE' coding-estate/natural-operational-language/v0.5/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s coding-estate/natural-operational-language/v0.5/dist/STANDALONE_BUILD_RECEIPT.json
+      - name: Prove registry remains 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE
+      - name: Upload v0.5 creator room
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_BOUNCE_v0.5
+          path: |
+            coding-estate/natural-operational-language/v0.5/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/v0.5/dist/STANDALONE_BUILD_RECEIPT.json

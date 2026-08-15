@@ -52,7 +52,8 @@ check('05 frozen v2.0 creator body is present', () => {
     './recoverable-workspace.mjs',
     './test-v2.0.mjs',
     './build-standalone.mjs',
-    './FREEZE_LOCK_ANCHOR_v2.0.md'
+    './FREEZE_LOCK_ANCHOR_v2.0.md',
+    './CLASSIFICATION_APPS_TOOLS.md'
   ];
   const missing = files.filter(file => !fs.existsSync(new URL(file, import.meta.url)));
   expect(missing.length === 0, `MISSING_V20_FILES:${missing.join(',')}`);
@@ -89,11 +90,22 @@ check('08 front-door and recovery laws remain intact', () => {
     'REPLAY_RECOVERY',
     'SESSION_GRANT_NOT_PERSISTENCE',
     'EXPLICIT_OPERATOR_CUSTODY',
+    'CLASSIFICATION_NOT_LINEAGE_DELETION',
     'NO_SUPREME_BODY'
   ]) expect(mount.laws.includes(law), `MISSING_LAW:${law}`);
   expect(mount.surface.frontDoorLaw === 'NATURAL_LANGUAGE_FRONT_DOOR', 'FRONT_DOOR_MOVED');
   expect(mount.surface.recoveryLaw === 'REPLAY_LEDGER_NOT_OPAQUE_STATE_INJECTION', 'RECOVERY_LAW_MOVED');
   return mount.laws;
+});
+
+check('09 current body is classified under Apps/Tools, not Games', () => {
+  expect(mount.classification.primaryProject === 'APPS_TOOLS', 'PRIMARY_PROJECT_NOT_APPS_TOOLS');
+  expect(mount.classification.primaryCategory === 'TOOL', 'PRIMARY_CATEGORY_NOT_TOOL');
+  expect(mount.classification.workingType === 'CREATOR_WORKSPACE_MANAGEMENT_ORCHESTRATION_OPERATIONAL_INTERFACE', 'WORKING_TYPE_DRIFT');
+  expect(mount.classification.gamePrimaryClassification === false, 'FALSE_GAME_PRIMARY_CLASSIFICATION');
+  expect(mount.classification.gameRelationship === 'DOWNSTREAM_TARGET_AND_INTERACTION_LINEAGE_ONLY', 'GAME_RELATIONSHIP_DRIFT');
+  expect(mount.classification.classificationLaw === 'CLASSIFICATION_NOT_LINEAGE_DELETION', 'CLASSIFICATION_LAW_DRIFT');
+  return mount.classification;
 });
 
 const failed = checks.filter(item => !item.passed);
@@ -103,6 +115,7 @@ const receipt = {
   passed: checks.length - failed.length,
   failed: failed.length,
   mount: mount.id,
+  classification: mount.classification,
   freezeHead: mount.authority.freezeHead,
   canonicalRegistryCount: bodies.length,
   checks

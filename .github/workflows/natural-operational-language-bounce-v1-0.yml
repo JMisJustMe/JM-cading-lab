@@ -39,12 +39,15 @@ jobs:
         run: node coding-estate/natural-operational-language/v1.0/build-standalone.mjs
       - name: Static standalone carrier gate
         run: |
-          test -s coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
+          FILE=coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s "$FILE"
           test -s coding-estate/natural-operational-language/v1.0/dist/STANDALONE_BUILD_RECEIPT.json
-          grep -q 'Write normally.' coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
-          grep -q 'data:text/javascript;base64,' coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
-          ! grep -q "from './" coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
-          ! grep -q "from '../" coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
+          test "$(wc -c < "$FILE")" -lt 2000000
+          grep -q 'Write normally.' "$FILE"
+          grep -q 'data:text/javascript;base64,' "$FILE"
+          grep -q '<script type="importmap">' "$FILE"
+          ! grep -q "from './" "$FILE"
+          ! grep -q "from '../" "$FILE"
       - name: Prove canonical registry remains 100
         run: |
           node --input-type=module <<'NODE'

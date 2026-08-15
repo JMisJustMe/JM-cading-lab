@@ -1,0 +1,53 @@
+name: JM Natural Operational Language Bounce Spine v0.4
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-4-federation
+    paths:
+      - 'coding-estate/natural-operational-language/v0.4/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-4.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v0.4/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-4.yml'
+
+jobs:
+  federation-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Re-run v0.1 regression proofs
+        run: |
+          node coding-estate/natural-operational-language/test-bounce-spine.mjs
+          node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+
+      - name: Re-run v0.2 proof
+        run: node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+
+      - name: Re-run v0.3 context and bug-watch proof
+        run: node coding-estate/natural-operational-language/v0.3/test-v0.3.mjs
+
+      - name: Execute v0.4 federation proof
+        run: node coding-estate/natural-operational-language/v0.4/test-v0.4.mjs
+
+      - name: Prove canonical registry remains 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE

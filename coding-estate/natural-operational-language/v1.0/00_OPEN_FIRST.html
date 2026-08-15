@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Natural Operational Language — Creator Surface v1.0</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1118;--panel:#111a24;--panel2:#0e1620;--line:#2b3b4e;--text:#f3f6fb;--muted:#aeb9c7;--good:#a9efb3;--warn:#ffd68a;--accent:#bcd8ff;--chip:#182435;--active:#eaf2ff;--activeText:#111827}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#111a26 0,#090f16 55%,#080d13 100%);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}.wrap{max-width:900px;margin:auto;padding:26px 18px 70px}header{padding:10px 2px 20px}.eyebrow{color:var(--muted);letter-spacing:.18em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2rem,8vw,4.2rem);line-height:.98;margin:.6rem 0 1rem;letter-spacing:-.04em}header p{color:#c9d2df;font-size:1.08rem;line-height:1.6;max-width:720px}.laws{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.law,.pill{border:1px solid var(--line);border-radius:999px;padding:8px 12px;color:#dce5f1;background:#0e1620;font-size:.86rem}.panel{border:1px solid var(--line);border-radius:24px;background:rgba(15,23,33,.92);padding:18px;margin:14px 0;box-shadow:0 18px 50px #0004}.panel h2{margin:0 0 6px;font-size:1.15rem}.small{font-size:.85rem;color:var(--muted);line-height:1.45}label{display:block;color:#c7d1de;font-size:.86rem;margin:12px 0 6px}textarea,input,select{width:100%;border:1px solid #35485d;background:#0a1119;color:var(--text);border-radius:15px;padding:13px 14px;font:inherit;outline:none}textarea{min-height:105px;resize:vertical;font-size:1.05rem;line-height:1.5}input:focus,textarea:focus,select:focus{border-color:#7897ba}.tokens{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0 4px}.token{appearance:none;border:1px solid #34475c;border-radius:999px;background:var(--chip);color:#dce5f1;padding:9px 12px;font:inherit;cursor:pointer}.token.active{background:var(--active);color:var(--activeText);border-color:var(--active)}.token.relation{box-shadow:inset 0 0 0 1px #7c6faf}.toolbar{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.toolbar.three{grid-template-columns:repeat(3,1fr)}button.action{border:1px solid #3b5068;border-radius:16px;background:#182536;color:#eef4fc;padding:13px 15px;font-weight:700;font-size:.96rem;cursor:pointer}button.primary{background:#edf3ff;color:#111827;border-color:#edf3ff}button.ghost{background:#0c141d}.status{margin-top:12px;padding:12px 14px;border:1px solid #33475d;border-radius:16px;color:#d9e4f2;background:#0b131c}.status.good{color:var(--good)}.status.warn{color:var(--warn)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:10px}.entity{background:#0b131c;border:1px solid #29394a;border-radius:14px;padding:12px}.entity strong{display:block;margin-bottom:5px}.entity code{color:#bcd8ff;white-space:pre-wrap;font-size:.78rem}.relation-row{border-left:3px solid #566f91;padding:8px 10px;margin:7px 0;background:#0c141d;border-radius:0 12px 12px 0}.advanced{margin-top:16px;border-top:1px solid #263648;padding-top:8px}details{border:1px solid #29394a;border-radius:16px;padding:11px 13px;margin:10px 0;background:#0b131c}summary{cursor:pointer;font-weight:700}pre{white-space:pre-wrap;word-break:break-word;max-height:320px;overflow:auto;background:#070c11;border-radius:12px;padding:12px;color:#bcd8ff;font-size:.76rem}.wordbook-list{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.wordbook-list span{border:1px solid #33485d;border-radius:999px;padding:6px 9px;font-size:.78rem;color:#cbd7e5}.footer{color:#8290a1;font-size:.78rem;text-align:center;margin-top:28px}@media(max-width:600px){.wrap{padding:18px 12px 54px}.panel{padding:15px;border-radius:19px}.grid,.toolbar,.toolbar.three{grid-template-columns:1fr}h1{font-size:3rem}.token{padding:10px 12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="eyebrow">JM · Natural Operational Language · Creator Surface v1.0</div>
+<h1>Write normally.<br>Choose what acts.</h1>
+<p>Your sentence stays ordinary language. Tap the words you want to carry operational standing, then run it. The compiler/runtime estate stays underneath.</p>
+<div class="laws"><span class="law">MARK ≠ MEANING</span><span class="law">UNKNOWN ≠ GUESSED</span><span class="law">MEET ≠ MERGE</span><span class="law">ACT → SEE → ALTER → REUSE</span></div>
+</header>
+
+<section class="panel">
+<h2>1 · Write</h2>
+<div class="small">Tap word-bodies below the sentence to activate them. Relation words only act when you explicitly select them.</div>
+<label for="phrase">Ordinary phrase</label>
+<textarea id="phrase">open door and move chair to there</textarea>
+<div class="grid">
+<div><label for="modifier">Mark pressure for newly selected words</label><select id="modifier"><option value="">designate ;word;</option><option value="!">command !</option><option value="?">inspect ?</option><option value="~">soften ~</option><option value=".lock">hold .lock</option><option value="→">route →</option></select></div>
+<div><label for="orChoice">If an activated OR needs a choice</label><select id="orChoice"><option value="">ask me / do not guess</option><option value="left">choose left</option><option value="right">choose right</option></select></div>
+</div>
+<div id="tokens" class="tokens"></div>
+<div class="toolbar three"><button class="action primary" id="run">Run selected meaning</button><button class="action" id="undo">Undo</button><button class="action ghost" id="clearActivations">Clear selections</button></div>
+<div id="status" class="status">Ready.</div>
+</section>
+
+<section class="panel">
+<h2>2 · Room context</h2>
+<div class="small">Context is explicit. If “it” or “there” is not bound, the room refuses to guess.</div>
+<div class="grid"><div><label for="itRef">it =</label><input id="itRef" placeholder="chair"></div><div><label for="thereRef">there =</label><input id="thereRef" value="studio" placeholder="studio"></div></div>
+<div class="grid"><div><label for="hereRef">here =</label><input id="hereRef" placeholder="workbench"></div><div><label for="currentBody">current body =</label><input id="currentBody" placeholder="door"></div></div>
+</section>
+
+<section class="panel">
+<h2>3 · What changed</h2>
+<div id="entities" class="entity-grid"></div>
+<div id="relations"></div>
+</section>
+
+<section class="panel">
+<h2>Teach a word</h2>
+<div class="small">Unknown marked words stay unbound. You can deliberately give a new readable word one of the proven local primitive roles.</div>
+<div class="grid"><div><label for="newWord">word</label><input id="newWord" placeholder="unseal"></div><div><label for="newRole">declared role</label><select id="newRole"><option value="open">open</option><option value="close">close</option><option value="move">move</option><option value="hold">hold</option></select></div></div>
+<div class="toolbar"><button class="action" id="defineWord">Teach word</button><button class="action ghost" id="refreshWords">Refresh sentence words</button></div>
+<div id="wordbook" class="wordbook-list"></div>
+</section>
+
+<section class="panel advanced">
+<h2>Optional depth</h2>
+<div class="small">Not required to use the language. These are proof/export/contact doors underneath the creator surface.</div>
+<details><summary>Portable IR</summary><div class="toolbar"><button class="action" id="makeIR">Prepare portable IR</button><button class="action ghost" id="copyMarked">Show marked source</button></div><pre id="irOut">No IR prepared.</pre></details>
+<details><summary>Sovereign contact</summary><div class="grid"><div><label for="bodySelect">body</label><select id="bodySelect"><option value="recorp">RECORP</option><option value="flowtalk">FlowTalk</option></select></div><div><label for="contactSource">contact source</label><input id="contactSource" value="RECORP! shards"></div></div><div class="toolbar three"><button class="action" id="grant">Grant this session</button><button class="action" id="contact">Contact body</button><button class="action ghost" id="revoke">Revoke</button></div><pre id="contactOut">No direct contact yet.</pre></details>
+<details><summary>Session receipt</summary><button class="action" id="receipt">Refresh receipt</button><pre id="receiptOut"></pre></details>
+</section>
+<div class="footer">v1.0 working creator surface · not crowned · canonical sovereign registry remains 100</div>
+</div>
+<script type="module">
+import { NaturalOperationalCreatorSurfaceV10 } from './creator-surface.mjs';
+
+const surface = new NaturalOperationalCreatorSurfaceV10();
+const $ = id => document.getElementById(id);
+const selected = new Map();
+const REL = new Set(['and','then','or']);
+
+function tokenise(text){
+  const counts = new Map();
+  const out=[];
+  const re=/[A-Za-z][\w-]*/g; let m;
+  while((m=re.exec(text))){const word=m[0];const keyWord=word.toLowerCase();const occurrence=(counts.get(keyWord)||0)+1;counts.set(keyWord,occurrence);out.push({surface:word,word:keyWord,occurrence,key:`${keyWord}#${occurrence}`});}
+  return out;
+}
+function activations(){return [...selected.values()].map(x=>({word:x.word,occurrence:x.occurrence,modifier:x.modifier||'',...(x.payload?{payload:x.payload}:{})}));}
+function bindings(){return {it:$('itRef').value.trim(),there:$('thereRef').value.trim(),here:$('hereRef').value.trim(),currentBody:$('currentBody').value.trim()};}
+function setStatus(text,kind=''){const s=$('status');s.textContent=text;s.className=`status ${kind}`.trim();}
+function renderTokens(){
+  const valid=new Set(); $('tokens').innerHTML='';
+  for(const t of tokenise($('phrase').value)){valid.add(t.key);const b=document.createElement('button');b.className=`token ${REL.has(t.word)?'relation':''} ${selected.has(t.key)?'active':''}`;b.textContent=selected.has(t.key)?`${t.surface}${selected.get(t.key).modifier||'·'}`:t.surface;b.onclick=()=>{if(selected.has(t.key))selected.delete(t.key);else selected.set(t.key,{...t,modifier:$('modifier').value});renderTokens();};$('tokens').appendChild(b);}
+  for(const key of [...selected.keys()])if(!valid.has(key))selected.delete(key);
+}
+function renderState(){
+  const state=surface.state||{}; const entities=state.entities||{}; $('entities').innerHTML='';
+  const keys=Object.keys(entities); if(!keys.length)$('entities').innerHTML='<div class="small">No entity state change yet.</div>';
+  for(const key of keys){const d=document.createElement('div');d.className='entity';d.innerHTML=`<strong>${escapeHtml(key)}</strong><code>${escapeHtml(JSON.stringify(entities[key].state||{},null,2))}</code>`;$('entities').appendChild(d);}
+  const relations=state.relations||[];$('relations').innerHTML=relations.length?'<h3>Relations</h3>':'';
+  for(const r of relations.slice(-8)){const d=document.createElement('div');d.className='relation-row';d.textContent=`${r.word.toUpperCase()} · ${r.operation||''} · merge:${String(r.merge===true)}`;$('relations').appendChild(d);}
+}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function refreshWordbook(){const w=surface.wordbook();$('wordbook').innerHTML='';for(const d of w.definitions){const s=document.createElement('span');s.textContent=`${d.word} → ${d.canonical}`;$('wordbook').appendChild(s);}}
+function errorText(e){return e?.code?`${e.code}: ${e.message}`:(e?.message||String(e));}
+
+$('phrase').addEventListener('input',renderTokens);
+$('clearActivations').onclick=()=>{selected.clear();renderTokens();};
+$('refreshWords').onclick=renderTokens;
+$('run').onclick=()=>{try{const choice=$('orChoice').value||undefined;const result=surface.runPhrase($('phrase').value,activations(),bindings(),choice?{choice}:{});renderState();if(result.receipt.status==='choice-required')setStatus('OR needs an explicit left/right choice. Nothing was partially committed.','warn');else setStatus(result.receipt.changed?'Contact produced a visible state difference.':'Ran cleanly; no state difference was produced.','good');}catch(e){setStatus(errorText(e),'warn');}};
+$('undo').onclick=()=>{try{const r=surface.undo();renderState();setStatus(r.changed?'Undone.':'Nothing to undo.',r.changed?'good':'');}catch(e){setStatus(errorText(e),'warn');}};
+$('defineWord').onclick=()=>{try{const word=$('newWord').value.trim();surface.defineWord(word,{as:$('newRole').value});$('newWord').value='';refreshWordbook();renderTokens();setStatus(`Word taught: ${word}.`,'good');}catch(e){setStatus(errorText(e),'warn');}};
+$('makeIR').onclick=()=>{try{const {compiled,ir}=surface.portableFromPhrase($('phrase').value,activations(),{surface:'v1.0'});$('irOut').textContent=JSON.stringify({markedSource:compiled.markedSource,ir},null,2);}catch(e){$('irOut').textContent=errorText(e);}};
+$('copyMarked').onclick=()=>{try{const {compiled}=surface.portableFromPhrase($('phrase').value,activations(),{});$('irOut').textContent=compiled.markedSource;}catch(e){$('irOut').textContent=errorText(e);}};
+$('grant').onclick=()=>{try{const body=$('bodySelect').value;const g=surface.grant(body);$('contactOut').textContent=`Granted ${body} for this local session.\n${g.digest}`;}catch(e){$('contactOut').textContent=errorText(e);}};
+$('revoke').onclick=()=>{try{const body=$('bodySelect').value;$('contactOut').textContent=surface.revoke(body)?`Revoked ${body}.`:`No grant existed for ${body}.`;}catch(e){$('contactOut').textContent=errorText(e);}};
+$('contact').onclick=()=>{try{const body=$('bodySelect').value;const r=surface.contact($('contactSource').value,body,bindings());$('contactOut').textContent=JSON.stringify({target:r.targetBody,changed:r.contact.contact.changed,receipt:r.receipt},null,2);renderState();}catch(e){$('contactOut').textContent=errorText(e);}};
+$('receipt').onclick=()=>{$('receiptOut').textContent=JSON.stringify(surface.receipt(),null,2);};
+
+renderTokens();renderState();refreshWordbook();$('receipt').click();
+</script>
+</body>
+</html>

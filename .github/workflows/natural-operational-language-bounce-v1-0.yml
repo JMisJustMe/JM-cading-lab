@@ -1,0 +1,78 @@
+name: JM Natural Operational Language Creator Surface v1.0
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v1-0-creator-surface
+    paths:
+      - 'coding-estate/natural-operational-language/v1.0/**'
+      - '.github/workflows/natural-operational-language-bounce-v1-0.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v1.0/**'
+      - '.github/workflows/natural-operational-language-bounce-v1-0.yml'
+
+jobs:
+  creator-surface:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Regression v0.1-v0.9
+        run: |
+          node coding-estate/natural-operational-language/test-bounce-spine.mjs
+          node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+          node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+          node coding-estate/natural-operational-language/v0.3/test-v0.3.mjs
+          node coding-estate/natural-operational-language/v0.4/test-v0.4.mjs
+          node coding-estate/natural-operational-language/v0.5/test-v0.5.mjs
+          node coding-estate/natural-operational-language/v0.6/test-v0.6.mjs
+          node coding-estate/natural-operational-language/v0.7/test-v0.7.mjs
+          node coding-estate/natural-operational-language/v0.8/test-v0.8.mjs
+          python3 coding-estate/natural-operational-language/v0.9/test_v0_9.py
+      - name: Consolidated creator surface proof
+        run: node coding-estate/natural-operational-language/v1.0/test-v1.0.mjs
+      - name: Build standalone creator surface
+        run: node coding-estate/natural-operational-language/v1.0/build-standalone.mjs
+      - name: Static standalone carrier gate
+        run: |
+          FILE=coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s "$FILE"
+          test -s coding-estate/natural-operational-language/v1.0/dist/STANDALONE_BUILD_RECEIPT.json
+          test "$(wc -c < "$FILE")" -lt 2000000
+          grep -q 'Write normally.' "$FILE"
+          grep -q 'data:text/javascript;base64,' "$FILE"
+          grep -q '<script type="importmap">' "$FILE"
+          ! grep -q "from './" "$FILE"
+          ! grep -q "from '../" "$FILE"
+      - name: Real direct-open browser smoke
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          FILE="$PWD/coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html"
+          timeout 30 "$CHROME" --headless=new --no-sandbox --disable-gpu --allow-file-access-from-files --virtual-time-budget=4000 --dump-dom "file://$FILE" > /tmp/jm-nol-v10-dom.html
+          grep -q 'class="token' /tmp/jm-nol-v10-dom.html
+          grep -q '>open<' /tmp/jm-nol-v10-dom.html
+          grep -q '>and<' /tmp/jm-nol-v10-dom.html
+          grep -q '>move<' /tmp/jm-nol-v10-dom.html
+      - name: Prove canonical registry remains 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE
+      - name: Upload v1.0 creator surface
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_CREATOR_SURFACE_v1.0
+          path: |
+            coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/v1.0/dist/STANDALONE_BUILD_RECEIPT.json
+          if-no-files-found: error

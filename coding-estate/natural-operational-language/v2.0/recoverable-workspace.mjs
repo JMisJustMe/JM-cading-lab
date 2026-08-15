@@ -32,6 +32,7 @@ function validateCommand(command, ordinal) {
 }
 
 function packageBody(room) {
+  const cleanReplay = room._freshReplaySurface(room.cursor);
   return {
     schema: ROOM_SCHEMA_V20,
     version: '2.0',
@@ -40,9 +41,9 @@ function packageBody(room) {
     cursor: room.cursor,
     checkpoints: clone(room.checkpoints),
     draft: clone(room.draft),
-    stateDigest: digest(room.surface.state),
-    wordbookDigest: room.surface.wordbook().digest,
-    surfaceReceiptDigest: room.surface.receipt().digest,
+    stateDigest: digest(cleanReplay.state),
+    wordbookDigest: cleanReplay.wordbook().digest,
+    replayReceiptDigest: cleanReplay.receipt().digest,
     boundary: 'Replayable creator operations are recoverable. Session grants and sovereign contacts are intentionally not persisted or auto-replayed.'
   };
 }
@@ -328,7 +329,7 @@ export class NaturalOperationalRecoverableWorkspaceV20 {
 
     need(digest(this.surface.state) === incoming.stateDigest, 'NOL_V20_ROOM_STATE_MISMATCH', 'Room recovery did not reproduce the exported state.');
     need(this.surface.wordbook().digest === incoming.wordbookDigest, 'NOL_V20_ROOM_WORDBOOK_MISMATCH', 'Room recovery did not reproduce the exported wordbook.');
-    need(this.surface.receipt().digest === incoming.surfaceReceiptDigest, 'NOL_V20_ROOM_RECEIPT_MISMATCH', 'Room recovery did not reproduce the exported surface receipt.');
+    need(this.surface.receipt().digest === incoming.replayReceiptDigest, 'NOL_V20_ROOM_REPLAY_RECEIPT_MISMATCH', 'Room recovery did not reproduce the exported clean replay receipt.');
     return { room: this.exportRoom(), state: this.state, receipt: this.receipt() };
   }
 

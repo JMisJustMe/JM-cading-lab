@@ -1,0 +1,100 @@
+name: JM Natural Operational Language Recoverable Workspace v2.0
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-creator-v2-0-recoverable-workspace
+    paths:
+      - 'coding-estate/natural-operational-language/v2.0/**'
+      - 'coding-estate/integration/mounts/natural-operational-language-recoverable-workspace-v2.0.json'
+      - '.github/workflows/natural-operational-language-v2-0.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v2.0/**'
+      - 'coding-estate/integration/mounts/natural-operational-language-recoverable-workspace-v2.0.json'
+      - '.github/workflows/natural-operational-language-v2-0.yml'
+
+jobs:
+  recoverable-workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Full natural-operational regression v0.1-v1.0
+        run: |
+          node coding-estate/natural-operational-language/test-bounce-spine.mjs
+          node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+          node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+          node coding-estate/natural-operational-language/v0.3/test-v0.3.mjs
+          node coding-estate/natural-operational-language/v0.4/test-v0.4.mjs
+          node coding-estate/natural-operational-language/v0.5/test-v0.5.mjs
+          node coding-estate/natural-operational-language/v0.6/test-v0.6.mjs
+          node coding-estate/natural-operational-language/v0.7/test-v0.7.mjs
+          node coding-estate/natural-operational-language/v0.8/test-v0.8.mjs
+          python3 coding-estate/natural-operational-language/v0.9/test_v0_9.py
+          node coding-estate/natural-operational-language/v1.0/test-v1.0.mjs
+      - name: v1.1 mobile-state donor guard
+        run: |
+          grep -q 'FOCUS ≠ SELECTED' coding-estate/natural-operational-language/v1.1/00_OPEN_FIRST.html
+          grep -q 'selected-relation' coding-estate/natural-operational-language/v1.1/00_OPEN_FIRST.html
+          grep -q 'aria-pressed' coding-estate/natural-operational-language/v1.1/00_OPEN_FIRST.html
+      - name: Recoverable workspace semantic proof
+        run: node coding-estate/natural-operational-language/v2.0/test-v2.0.mjs
+      - name: Provisional v2.0 Estate mount proof
+        run: node coding-estate/natural-operational-language/v2.0/test-provisional-mount-v2.0.mjs
+      - name: Build compact direct-open workspace
+        run: node coding-estate/natural-operational-language/v2.0/build-standalone.mjs
+      - name: Pea-before-Galaxy carrier gate
+        run: |
+          FILE=coding-estate/natural-operational-language/v2.0/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s "$FILE"
+          test -s coding-estate/natural-operational-language/v2.0/dist/STANDALONE_BUILD_RECEIPT.json
+          test "$(wc -c < "$FILE")" -lt 2000000
+          grep -q 'Keep the route home.' "$FILE"
+          grep -q 'Recovery timeline' "$FILE"
+          grep -q 'Export JSON' "$FILE"
+          grep -q 'data:text/javascript;base64,' "$FILE"
+          grep -q '<script type="importmap">' "$FILE"
+          ! grep -q "from './" "$FILE"
+          ! grep -q "from '../" "$FILE"
+      - name: Real direct-open mobile smoke 412x915
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          FILE="$PWD/coding-estate/natural-operational-language/v2.0/dist/00_OPEN_FIRST_STANDALONE.html"
+          timeout 35 "$CHROME" --headless=new --no-sandbox --disable-gpu --allow-file-access-from-files --window-size=412,915 --virtual-time-budget=5000 --dump-dom "file://$FILE" > /tmp/jm-nol-v20-mobile.html
+          grep -q 'class="token' /tmp/jm-nol-v20-mobile.html
+          grep -q 'id="saveRoom"' /tmp/jm-nol-v20-mobile.html
+          grep -q 'id="preview"' /tmp/jm-nol-v20-mobile.html
+          grep -q 'id="redo"' /tmp/jm-nol-v20-mobile.html
+          grep -q 'room digest:' /tmp/jm-nol-v20-mobile.html
+          grep -q '>open<' /tmp/jm-nol-v20-mobile.html
+          grep -q '>and<' /tmp/jm-nol-v20-mobile.html
+      - name: Real direct-open desktop smoke
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          FILE="$PWD/coding-estate/natural-operational-language/v2.0/dist/00_OPEN_FIRST_STANDALONE.html"
+          timeout 35 "$CHROME" --headless=new --no-sandbox --disable-gpu --allow-file-access-from-files --window-size=1365,900 --virtual-time-budget=5000 --dump-dom "file://$FILE" > /tmp/jm-nol-v20-desktop.html
+          grep -q 'Recoverable Workspace v2.0' /tmp/jm-nol-v20-desktop.html
+          grep -q 'Session grants are excluded' /tmp/jm-nol-v20-desktop.html
+      - name: Prove canonical registry remains exactly 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE
+      - name: Upload v2.0 recoverable workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_RECOVERABLE_WORKSPACE_v2.0
+          path: |
+            coding-estate/natural-operational-language/v2.0/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/v2.0/dist/STANDALONE_BUILD_RECEIPT.json
+          if-no-files-found: error

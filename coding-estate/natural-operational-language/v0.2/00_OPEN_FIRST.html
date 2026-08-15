@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Natural Operational Language — Bounce Room v0.2</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:dark;background:#0b0d10;color:#f4f6f8}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#1c2734 0,#0b0d10 42%);padding:18px}.wrap{max-width:980px;margin:auto}.hero{padding:20px 0 14px}.eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:#a9b6c8}.hero h1{font-size:clamp(2rem,8vw,4.5rem);line-height:.96;margin:.45rem 0 1rem;max-width:860px}.hero p{max-width:760px;color:#c8d1dc;line-height:1.55}.pills,.row,.samples{display:flex;gap:8px;flex-wrap:wrap}.pill{border:1px solid #374251;border-radius:999px;padding:7px 10px;font-size:.76rem;background:#111720}.samples{overflow:auto;flex-wrap:nowrap;padding:4px 0 12px}.samples button{white-space:nowrap}.grid{display:grid;gap:14px}.card{background:rgba(18,23,30,.95);border:1px solid #2b3543;border-radius:18px;padding:16px;box-shadow:0 18px 45px rgba(0,0,0,.22)}@media(min-width:820px){.grid{grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr)}}label{display:block;font-size:.76rem;color:#9eacbe;margin:0 0 7px}textarea,input,select{width:100%;border:1px solid #3a4656;background:#0d1218;color:#fff;border-radius:12px;padding:12px;font:inherit}textarea{min-height:128px;resize:vertical;line-height:1.45}button{border:0;border-radius:12px;padding:11px 14px;font-weight:750;cursor:pointer;background:#e8edf5;color:#10151b}.secondary{background:#1b2531;color:#ecf2f8;border:1px solid #39495b}.ghost{background:transparent;color:#c8d4e1;border:1px solid #334150}.notice{margin-top:12px;padding:10px 12px;border-radius:12px;background:#111a24;border:1px solid #2f4155;color:#b9c9da;font-size:.82rem}.good{color:#b7f2bd}.error{color:#ffb7b7}.statusline{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.status{font-size:.74rem;color:#aebccc}.resultgrid,.entitygrid{display:grid;gap:8px}.box{padding:11px;border-radius:11px;background:#0c1117;border:1px solid #293443}.key{font-size:.72rem;color:#8795a8}.value{font-size:.92rem;overflow-wrap:anywhere}.mini{font-size:.78rem;color:#a9b5c4;line-height:1.45}.trace{font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere;background:#090d12;padding:10px;border-radius:10px;max-height:300px;overflow:auto}details{border-top:1px solid #283341;margin-top:12px;padding-top:12px}summary{cursor:pointer;color:#cbd6e3}.contact{margin-top:16px;padding-top:16px;border-top:1px solid #283341}.check{display:flex;gap:9px;align-items:flex-start;margin:10px 0}.check input{width:auto;margin-top:3px}.footer{padding:22px 0;color:#8795a8;font-size:.8rem}.warn{color:#e9c98a}.relation{border-left:3px solid #44566e;padding-left:10px}.signal{font-weight:800}.changed{color:#b7f2bd}.still{color:#e9c98a}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+  <div class="eyebrow">JM · Natural Operational Language · Bounce Room v0.2</div>
+  <h1>Group meaning without guessing the group.</h1>
+  <p>The frozen v0.1 front door stays intact underneath. This continuation adds explicit grouping and a deliberate permission gate before selected sovereign bodies can be contacted directly.</p>
+  <div class="pills">
+    <span class="pill">FROZEN v0.1 PRESERVED</span>
+    <span class="pill">GROUPING ≠ GUESSING</span>
+    <span class="pill">EXECUTION ≠ ROUTE RANKING</span>
+    <span class="pill">MEET ≠ MERGE</span>
+  </div>
+</section>
+
+<div class="samples" id="samples"></div>
+
+<div class="grid">
+<section class="card">
+  <div class="statusline"><strong>Bounce input</strong><span class="status">v0.2 · working · not mounted · not crowned</span></div>
+  <label for="source">Say/write the route</label>
+  <textarea id="source">(;open; door ;and; ;close; window) ;and; ;move(to=kitchen); chair</textarea>
+  <div class="row" style="margin-top:10px">
+    <button id="run">Run</button>
+    <button class="secondary" id="undo">Undo</button>
+    <button class="ghost" id="reset">Reset</button>
+  </div>
+  <div class="notice" id="notice">Ready. If more than one top-level ;and; appears, use parentheses so the room does not invent your grouping.</div>
+
+  <div style="height:14px"></div>
+  <div class="statusline"><strong>What happened</strong><span class="signal still" id="changeSignal">WAITING</span></div>
+  <div class="resultgrid" id="result"></div>
+
+  <details>
+    <summary>Underneath: trace + receipt</summary>
+    <div class="trace" id="trace">No run yet.</div>
+  </details>
+</section>
+
+<aside class="card">
+  <strong>Current contacted bodies</strong>
+  <p class="mini">Local Bounce state and relations are visible. A direct sovereign contact is separate and never happens merely because a body ranked highly.</p>
+  <div class="entitygrid" id="entities"><div class="mini">No local contacts yet.</div></div>
+
+  <div class="contact">
+    <strong>Sovereign contact</strong>
+    <p class="mini">v0.2 starts with two real mounted adapters: RECORP and FlowTalk. You must explicitly select one and grant it execute for this working-room session.</p>
+    <label for="body">Selected body</label>
+    <select id="body"><option value="recorp">RECORP</option><option value="flowtalk">FlowTalk</option></select>
+    <label class="check"><input id="grant" type="checkbox"><span class="mini">I grant the selected body <b>execute</b> for this local working-room contact.</span></label>
+    <button class="secondary" id="contact">Contact selected body</button>
+    <div class="notice" id="contactNotice">No direct sovereign contact yet.</div>
+    <details>
+      <summary>Direct contact receipt</summary>
+      <div class="trace" id="contactTrace">No receipt yet.</div>
+    </details>
+  </div>
+</aside>
+</div>
+
+<div class="footer">Pea stays readable. Galaxy stays underneath. v0.2 is a continuation above the frozen owner-contact anchor, not a replacement shell.</div>
+</div>
+
+<script type="module">
+import { BounceSpineV02 } from './composition-spine.mjs';
+import { contactSovereignBody, makeOwnerSessionGrant } from './sovereign-contact.mjs';
+
+const sourceEl=document.querySelector('#source');
+const resultEl=document.querySelector('#result');
+const traceEl=document.querySelector('#trace');
+const entitiesEl=document.querySelector('#entities');
+const noticeEl=document.querySelector('#notice');
+const changeSignal=document.querySelector('#changeSignal');
+const contactNotice=document.querySelector('#contactNotice');
+const contactTrace=document.querySelector('#contactTrace');
+const bodyEl=document.querySelector('#body');
+const grantEl=document.querySelector('#grant');
+
+const samples=[
+  ';open; door ;and; ;close; window',
+  '(;open; door ;and; ;close; window) ;and; ;move(to=kitchen); chair',
+  ';open; door ;and; ;close; window ;and; ;hold; chest',
+  'RECORP! shards',
+  ';glimmer; room'
+];
+
+let spine=new BounceSpineV02({state:{bodies:{shards:{parts:['left','right'],state:'scattered'}}}});
+const esc=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pretty=value=>JSON.stringify(value,null,2);
+
+function paintState(){
+  const entities=Object.values(spine.state.entities??{}).map(item=>({id:item.id,kind:'entity',body:item}));
+  const bodies=Object.entries(spine.state.bodies??{}).map(([id,body])=>({id,kind:'body',body}));
+  const relations=(spine.state.relations??[]).map(item=>({id:item.id,kind:'relation',body:item}));
+  const all=[...entities,...bodies,...relations];
+  if(!all.length){entitiesEl.innerHTML='<div class="mini">No local contacts yet.</div>';return;}
+  entitiesEl.innerHTML=all.map(item=>`<div class="box ${item.kind==='relation'?'relation':''}"><strong>${esc(item.id)}</strong><div class="key">${esc(item.kind)}</div><div class="mini">${esc(pretty(item.body))}</div></div>`).join('');
+}
+
+function paintRun(run){
+  changeSignal.textContent=run.receipt.changed?'CHANGED':'NO STATE CHANGE';
+  changeSignal.className=`signal ${run.receipt.changed?'changed':'still'}`;
+  resultEl.innerHTML=[
+    ['result',run.result.kind],
+    ['source',run.plan.source],
+    ['relations',run.receipt.relationCount],
+    ['grouping',pretty(run.plan.groupingSummary)]
+  ].map(([key,value])=>`<div class="box"><div class="key">${esc(key)}</div><div class="value">${esc(value)}</div></div>`).join('');
+  traceEl.textContent=`${pretty(run.trace)}\n\nRECEIPT\n${pretty(run.receipt)}`;
+  noticeEl.className='notice good';
+  noticeEl.textContent=run.receipt.changed?'Contact produced a visible state difference.':'The route was read/inspected without forcing a state difference.';
+  paintState();
+}
+
+function run(){
+  try{paintRun(spine.execute(sourceEl.value));}
+  catch(error){noticeEl.className='notice error';noticeEl.textContent=`${error.code??error.name}: ${error.message}`;}
+}
+
+document.querySelector('#run').addEventListener('click',run);
+document.querySelector('#undo').addEventListener('click',()=>{const out=spine.undo();noticeEl.className='notice';noticeEl.textContent=out.changed?`Undid: ${out.undoneSource}`:'Nothing to undo.';paintState();});
+document.querySelector('#reset').addEventListener('click',()=>{spine=new BounceSpineV02({state:{bodies:{shards:{parts:['left','right'],state:'scattered'}}}});resultEl.innerHTML='';traceEl.textContent='No run yet.';noticeEl.className='notice';noticeEl.textContent='Local v0.2 state reset. The frozen v0.1 anchor was never touched.';changeSignal.textContent='WAITING';changeSignal.className='signal still';paintState();});
+
+document.querySelector('#contact').addEventListener('click',()=>{
+  try{
+    if(!grantEl.checked) throw Object.assign(new Error('Tick the owner-session grant before direct sovereign contact.'),{code:'NOL_V02_PERMISSION_REQUIRED'});
+    const bodyId=bodyEl.value;
+    const grant=makeOwnerSessionGrant({bodyId});
+    const contact=contactSovereignBody({source:sourceEl.value,targetBody:bodyId,grant,state:spine.state,context:{room:'owner-working-room-v0.2'}});
+    contactNotice.className='notice good';
+    contactNotice.textContent=`${bodyId} contacted via ${contact.contact.contactKind}. ${contact.receipt.changed?'State changed.':'Meaning contact completed without local state mutation.'}`;
+    contactTrace.textContent=pretty(contact);
+    if(bodyId==='recorp'&&contact.contact.after){spine.state=contact.contact.after;paintState();}
+  }catch(error){contactNotice.className='notice error';contactNotice.textContent=`${error.code??error.name}: ${error.message}`;}
+});
+
+document.querySelector('#samples').innerHTML=samples.map((sample,index)=>`<button class="secondary" data-i="${index}">${esc(sample)}</button>`).join('');
+document.querySelector('#samples').addEventListener('click',event=>{const button=event.target.closest('[data-i]');if(!button)return;sourceEl.value=samples[Number(button.dataset.i)];});
+paintState();
+</script>
+</body>
+</html>

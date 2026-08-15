@@ -1,0 +1,79 @@
+name: JM Natural Operational Language Bounce Spine v0.2
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-2-composition-contact
+    paths:
+      - 'coding-estate/natural-operational-language/v0.2/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-2.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v0.2/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-2.yml'
+
+jobs:
+  composition-and-sovereign-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prove frozen v0.1 anchor remains ancestor
+        run: git merge-base --is-ancestor b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d HEAD
+
+      - name: Prove frozen v0.1 implementation was not rewritten in v0.2
+        run: |
+          git diff --exit-code b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d -- \
+            coding-estate/natural-operational-language/bounce-spine.mjs \
+            coding-estate/natural-operational-language/estate-route-adapter.mjs \
+            coding-estate/natural-operational-language/00_OPEN_FIRST.html \
+            coding-estate/natural-operational-language/build-standalone.mjs
+
+      - name: Re-run frozen v0.1 operational proof
+        run: node coding-estate/natural-operational-language/test-bounce-spine.mjs
+
+      - name: Re-run frozen v0.1 Estate route proof
+        run: node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+
+      - name: Execute v0.2 grouping and permissioned sovereign-contact proof
+        run: node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+
+      - name: Prove canonical registry remains 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE
+
+      - name: Build direct-open v0.2 Bounce Room
+        run: node coding-estate/natural-operational-language/v0.2/build-standalone.mjs
+
+      - name: Static standalone v0.2 carrier gate
+        run: |
+          test -s coding-estate/natural-operational-language/v0.2/dist/00_OPEN_FIRST_STANDALONE.html
+          test -s coding-estate/natural-operational-language/v0.2/dist/STANDALONE_BUILD_RECEIPT.json
+          grep -q 'data:text/javascript;base64,' coding-estate/natural-operational-language/v0.2/dist/00_OPEN_FIRST_STANDALONE.html
+          grep -q '"compositionV02Embedded": true' coding-estate/natural-operational-language/v0.2/dist/STANDALONE_BUILD_RECEIPT.json
+          grep -q '"permissionedSovereignContactEmbedded": true' coding-estate/natural-operational-language/v0.2/dist/STANDALONE_BUILD_RECEIPT.json
+
+      - name: Upload direct-open v0.2 Bounce Room
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_NATURAL_OPERATIONAL_LANGUAGE_BOUNCE_v0.2
+          path: |
+            coding-estate/natural-operational-language/v0.2/dist/00_OPEN_FIRST_STANDALONE.html
+            coding-estate/natural-operational-language/v0.2/dist/STANDALONE_BUILD_RECEIPT.json
+          if-no-files-found: error

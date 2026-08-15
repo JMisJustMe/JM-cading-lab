@@ -48,6 +48,16 @@ jobs:
           grep -q '<script type="importmap">' "$FILE"
           ! grep -q "from './" "$FILE"
           ! grep -q "from '../" "$FILE"
+      - name: Real direct-open browser smoke
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          FILE="$PWD/coding-estate/natural-operational-language/v1.0/dist/00_OPEN_FIRST_STANDALONE.html"
+          timeout 30 "$CHROME" --headless=new --no-sandbox --disable-gpu --allow-file-access-from-files --virtual-time-budget=4000 --dump-dom "file://$FILE" > /tmp/jm-nol-v10-dom.html
+          grep -q 'class="token' /tmp/jm-nol-v10-dom.html
+          grep -q '>open<' /tmp/jm-nol-v10-dom.html
+          grep -q '>and<' /tmp/jm-nol-v10-dom.html
+          grep -q '>move<' /tmp/jm-nol-v10-dom.html
       - name: Prove canonical registry remains 100
         run: |
           node --input-type=module <<'NODE'

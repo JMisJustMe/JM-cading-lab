@@ -6,10 +6,12 @@ on:
       - agent/natural-operational-language-creator-v2-0-recoverable-workspace
     paths:
       - 'coding-estate/natural-operational-language/v2.0/**'
+      - 'coding-estate/integration/mounts/natural-operational-language-recoverable-workspace-v2.0.json'
       - '.github/workflows/natural-operational-language-v2-0.yml'
   pull_request:
     paths:
       - 'coding-estate/natural-operational-language/v2.0/**'
+      - 'coding-estate/integration/mounts/natural-operational-language-recoverable-workspace-v2.0.json'
       - '.github/workflows/natural-operational-language-v2-0.yml'
 
 jobs:
@@ -41,6 +43,8 @@ jobs:
           grep -q 'aria-pressed' coding-estate/natural-operational-language/v1.1/00_OPEN_FIRST.html
       - name: Recoverable workspace semantic proof
         run: node coding-estate/natural-operational-language/v2.0/test-v2.0.mjs
+      - name: Provisional v2.0 Estate mount proof
+        run: node coding-estate/natural-operational-language/v2.0/test-provisional-mount-v2.0.mjs
       - name: Build compact direct-open workspace
         run: node coding-estate/natural-operational-language/v2.0/build-standalone.mjs
       - name: Pea-before-Galaxy carrier gate

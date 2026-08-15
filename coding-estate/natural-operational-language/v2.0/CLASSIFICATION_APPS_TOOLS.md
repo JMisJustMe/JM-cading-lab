@@ -24,7 +24,9 @@ Reclassifying the mounted surface does not rewrite the frozen body, its history,
 
 ## Proof
 
-Apps / Tools classification guard passed in workflow run `31913897590` together with the complete v0.1-v2.0 regression, mount proof, mobile/desktop direct-open smokes and registry=100 guard.
+Apps / Tools classification guard passed in workflow run `31913944474` together with the complete v0.1-v2.0 regression, mount proof, mobile/desktop direct-open smokes and registry=100 guard.
+
+Separate Sovereign Estate integration conformance run `31913944482` also passed after the classification change.
 
 ## Boundary
 

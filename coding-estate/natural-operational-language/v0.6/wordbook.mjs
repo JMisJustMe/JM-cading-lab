@@ -1,5 +1,6 @@
 import { digest, need } from '../../sovereign-ten/direct/native-core.mjs';
-import { CreatorRoomSessionV05 } from '../v0.5/room-controller.mjs';
+import { CreatorRoomSessionV05, contextFromRoomBindings } from '../v0.5/room-controller.mjs';
+import { resolvePlaceReference } from '../v0.3/context-room.mjs';
 
 const CANONICAL_ROLES = Object.freeze({
   open: { office: 'state-action', operation: 'set-open', description: 'Make the contacted body open.' },
@@ -22,6 +23,10 @@ function safeWord(value) {
   const word = normalWord(value);
   need(/^[a-z][\w-]*$/.test(word), 'NOL_V06_BAD_WORD', 'Wordbook words must be ordinary single word-bodies using letters, numbers, underscore or hyphen.');
   return word;
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function snapshotBody(definitions) {
@@ -77,10 +82,27 @@ export class NaturalWordbookV06 {
     return value ? clone(value) : null;
   }
 
+  prepareSource(source, bindings = {}) {
+    let prepared = String(source);
+    const context = contextFromRoomBindings(bindings);
+    for (const definition of this.definitions.values()) {
+      if (definition.canonical !== 'move') continue;
+      const escaped = escapeRegExp(definition.word);
+      const naturalMove = new RegExp(`;${escaped}(\\.lock|[!?~→])?;\\s+([^;()]+?)\\s+to\\s+([^;()]+?)(?=\\s*;and;|\\)|$)`, 'gi');
+      prepared = prepared.replace(naturalMove, (_whole, modifier = '', target, rawDestination) => {
+        const destination = resolvePlaceReference(String(rawDestination).trim(), context, []);
+        return `;${definition.word}${modifier || ''}(to=${destination}); ${String(target).trim()}`;
+      });
+    }
+    return prepared;
+  }
+
   run(source, bindings = {}) {
-    const result = this.room.run(source, bindings);
-    this.events.push({ event: 'wordbook.run', source: String(source), receiptDigest: result.receipt.digest, changed: result.receipt.changed });
-    return result;
+    const inputSource = String(source);
+    const preparedSource = this.prepareSource(inputSource, bindings);
+    const result = this.room.run(preparedSource, bindings);
+    this.events.push({ event: 'wordbook.run', inputSource, preparedSource, receiptDigest: result.receipt.digest, changed: result.receipt.changed });
+    return { ...result, inputSource, preparedSource };
   }
 
   undo() {

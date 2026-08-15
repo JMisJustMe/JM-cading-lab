@@ -1,0 +1,53 @@
+name: JM Natural Operational Language Bounce Spine v0.3
+
+on:
+  push:
+    branches:
+      - agent/natural-operational-language-bounce-v0-3-context-room
+    paths:
+      - 'coding-estate/natural-operational-language/v0.3/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-3.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/natural-operational-language/v0.3/**'
+      - '.github/workflows/natural-operational-language-bounce-v0-3.yml'
+
+jobs:
+  context-room-and-bug-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Prove frozen v0.1 anchor remains ancestor
+        run: git merge-base --is-ancestor b9b9127fc37e504f1d3b9b7cdbaa94d2b605eb7d HEAD
+
+      - name: Re-run v0.1 regression proofs
+        run: |
+          node coding-estate/natural-operational-language/test-bounce-spine.mjs
+          node coding-estate/natural-operational-language/test-estate-route-adapter.mjs
+
+      - name: Re-run v0.2 grouping and sovereign-contact proofs
+        run: node coding-estate/natural-operational-language/v0.2/test-v0.2.mjs
+
+      - name: Execute v0.3 context-room and bug-watch matrix
+        run: node coding-estate/natural-operational-language/v0.3/test-v0.3.mjs
+
+      - name: Prove canonical registry remains 100
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const root='coding-estate/integration/';
+          const manifest=JSON.parse(fs.readFileSync(root+'REGISTRY.json','utf8'));
+          const bodies=manifest.parts.flatMap(part=>JSON.parse(fs.readFileSync(root+part,'utf8')).bodies);
+          if(manifest.count!==100 || bodies.length!==100) throw new Error(`REGISTRY_DRIFT:${manifest.count}/${bodies.length}`);
+          console.log(JSON.stringify({status:'PASS',count:bodies.length}));
+          NODE

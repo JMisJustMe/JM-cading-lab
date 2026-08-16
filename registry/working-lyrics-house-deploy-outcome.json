@@ -1,12 +1,12 @@
 {
   "schema": "JM.WorkingLyricsHouseDeploymentOutcome/1.0",
   "status": "completed",
-  "conclusion": "success",
-  "run_id": "29763882205",
-  "head_sha": "b0c8299df88680cea273d001e85d2fe9ddc7988f",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/29763882205",
-  "updated_at": "2026-07-20T17:30:34Z",
-  "recorded_at_utc": "2026-07-20T17:30:43Z",
+  "conclusion": "failure",
+  "run_id": "31978040382",
+  "head_sha": "333b3b75f4d0d74fc86c0f7e81a7c736b9e64b4d",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/31978040382",
+  "updated_at": "2026-08-16T23:03:35Z",
+  "recorded_at_utc": "2026-08-16T23:03:44Z",
   "steps": [
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",
@@ -31,22 +31,22 @@
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",
       "name": "Prove page completion and JavaScript syntax",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",
       "name": "Click-test the real controls",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",
       "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",
       "name": "Prove the working body on the canonical host",
-      "conclusion": "success"
+      "conclusion": "skipped"
     },
     {
       "job": "Preserve live Estate, interaction-test and deploy Lyrics House",

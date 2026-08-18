@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """Apply the bounded JM Owner Vault v0.1 graft to the existing Web Estate.
 
-This tool intentionally edits only three existing public-crown files:
-- index.html: load the optional Owner Vault client bridge.
-- sw.js: cache the bridge but never cache private /api/owner/ responses.
-- authoritative Cloudflare workflow: deploy the bridge and trigger when Functions change.
+The existing authoritative Cloudflare deployment already publishes estate-app.js and
+sw.js, so this tool deliberately leaves index.html and deployment workflows untouched.
+It makes only two bounded crown edits:
 
-It is idempotent and fails if expected anchors disappear, so a changed crown is reviewed
-rather than silently rewritten.
+- estate-app.js: append the isolated Owner Vault bridge source behind explicit markers.
+- sw.js: bump the public shell cache and bypass all private /api/owner/ requests.
+
+The tool is idempotent and fails if its source body is missing. It does not create an R2
+bucket, secret, deployment, public claim or Ding.
 """
 
 from __future__ import annotations
@@ -16,6 +18,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BEGIN = "// JM_OWNER_VAULT_V0_1_BEGIN"
+END = "// JM_OWNER_VAULT_V0_1_END"
 
 
 def read(path: str) -> str:
@@ -26,17 +30,20 @@ def write(path: str, text: str) -> None:
     (ROOT / path).write_text(text, encoding="utf-8")
 
 
-def patch_index() -> bool:
-    path = "index.html"
+def patch_estate_app() -> bool:
+    path = "estate-app.js"
     text = read(path)
-    tag = '<script defer src="./estate-owner-vault.js"></script>'
-    if tag in text:
+    if BEGIN in text and END in text:
         return False
-    anchor = '<script type="module" src="./estate-app.js"></script>'
-    if anchor not in text:
-        raise SystemExit("Owner Vault graft refused: estate-app.js script anchor not found in index.html")
-    text = text.replace(anchor, anchor + tag, 1)
-    write(path, text)
+    if BEGIN in text or END in text:
+        raise SystemExit("Owner Vault graft refused: partial Estate app marker found")
+
+    bridge = read("estate-owner-vault.js").strip()
+    if "JM Owner Vault" not in bridge or "Sync local shelf to vault" not in bridge:
+        raise SystemExit("Owner Vault graft refused: bridge source failed its identity gate")
+
+    graft = f"\n\n{BEGIN}\n{bridge}\n{END}\n"
+    write(path, text.rstrip() + graft)
     return True
 
 
@@ -44,12 +51,6 @@ def patch_service_worker() -> bool:
     path = "sw.js"
     text = read(path)
     original = text
-
-    if "'./estate-owner-vault.js'," not in text:
-        anchor = "  './estate-app.js',\n"
-        if anchor not in text:
-            raise SystemExit("Owner Vault graft refused: estate-app.js cache anchor not found in sw.js")
-        text = text.replace(anchor, anchor + "  './estate-owner-vault.js',\n", 1)
 
     cache_match = re.search(r"const CACHE='([^']+)';", text)
     if not cache_match:
@@ -70,45 +71,12 @@ def patch_service_worker() -> bool:
     return False
 
 
-def patch_authoritative_workflow() -> bool:
-    path = ".github/workflows/deploy-cloudflare-authoritative-public-source.yml"
-    text = read(path)
-    original = text
-
-    if '      - "functions/**"\n' not in text:
-        anchor = '      - "estate-*.js"\n'
-        if anchor not in text:
-            raise SystemExit("Owner Vault graft refused: authoritative workflow path anchor not found")
-        text = text.replace(anchor, anchor + '      - "functions/**"\n', 1)
-
-    copy_anchor = "            index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js " + "\\" + "\n"
-    if "estate-owner-vault.js" not in text.split("for file in", 1)[1].split("; do", 1)[0]:
-        if copy_anchor not in text:
-            raise SystemExit("Owner Vault graft refused: authoritative workflow root-copy anchor not found")
-        replacement = "            index.html estate-app.js estate-owner-vault.js estate-accessibility.js estate-head-public-consumer.js " + "\\" + "\n"
-        text = text.replace(copy_anchor, replacement, 1)
-
-    check_anchor = "              ('index.html', 'Your work no longer lives as scattered HTMLs'),\n"
-    vault_check = "              ('estate-owner-vault.js', 'JM Owner Vault'),\n"
-    if vault_check not in text:
-        if check_anchor not in text:
-            raise SystemExit("Owner Vault graft refused: authoritative workflow source-proof anchor not found")
-        text = text.replace(check_anchor, check_anchor + vault_check, 1)
-
-    if text != original:
-        write(path, text)
-        return True
-    return False
-
-
 def main() -> None:
     changes = []
-    if patch_index():
-        changes.append("index.html")
+    if patch_estate_app():
+        changes.append("estate-app.js")
     if patch_service_worker():
         changes.append("sw.js")
-    if patch_authoritative_workflow():
-        changes.append(".github/workflows/deploy-cloudflare-authoritative-public-source.yml")
 
     if changes:
         print("JM Owner Vault v0.1 graft applied:")

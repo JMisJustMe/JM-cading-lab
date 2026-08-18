@@ -1,0 +1,33 @@
+{
+  "schema": "JM.OwnerVaultCloudflareReadiness/0.1",
+  "checked_utc": "2026-08-18T18:38:05.927081+00:00",
+  "state": "ACCOUNT_SIDE_MOUNT_INCOMPLETE",
+  "project": {
+    "name": "jmisjustme-estate",
+    "http_status": 200,
+    "read_success": true,
+    "uses_functions": false,
+    "production_branch": "main",
+    "canonical_deployment_id": "c0275b98-5eac-40ed-ad9e-0b299df0f444",
+    "latest_deployment_id": "c0275b98-5eac-40ed-ad9e-0b299df0f444"
+  },
+  "production": {
+    "r2_binding_names": [],
+    "env_var_types_by_name": {},
+    "owner_vault_binding_present": false,
+    "owner_key_variable_present": false
+  },
+  "preview": {
+    "r2_binding_names": [],
+    "env_var_types_by_name": {}
+  },
+  "bucket_probe": {
+    "name": "jm-estate-owner-vault",
+    "http_status": 403,
+    "exists_and_readable_with_current_token": false
+  },
+  "mutations_performed": false,
+  "secret_values_recorded": false,
+  "ding": false,
+  "claim_boundary": "Read-only account probe. This does not create storage, bindings, secrets, public publication, owner acceptance or a Ding."
+}

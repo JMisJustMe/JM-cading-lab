@@ -66,22 +66,29 @@ The stages are distinct on purpose.
 
 ## Files introduced
 
-- `estate-owner-vault.js` — Owner Room UI bridge.
+- `estate-owner-vault.js` — isolated source for the Owner Room UI bridge.
 - `functions/api/owner/vault.js` — same-origin private Pages Function.
 - `registry/owner-vault-contract-v0.1.json` — boundary/contract.
-- `tools/apply-owner-vault-v0.1.py` — idempotent graft into the existing crown.
+- `tools/apply-owner-vault-v0.1.py` — idempotent graft into already-deployed crown files.
 - `tools/test-owner-vault-v0.1.mjs` — fail-closed/storage contract tests.
 - `.github/workflows/test-owner-vault-v0-1.yml` — branch acceptance and bounded graft workflow.
 
 ## Graft edits
 
-The apply tool changes only:
+The existing authoritative deployment already publishes `estate-app.js` and `sw.js`, so the apply tool deliberately leaves the root HTML and deployment workflows untouched.
 
-- `index.html` — loads `estate-owner-vault.js`.
-- `sw.js` — caches the public bridge, bumps the cache, and refuses to intercept/cache private API traffic.
-- `.github/workflows/deploy-cloudflare-authoritative-public-source.yml` — triggers on Pages Function changes and copies/proves the new public bridge.
+It changes only:
 
-No existing body is merged, renamed, deleted or re-authored.
+- `estate-app.js` — appends the isolated Owner Vault bridge behind explicit begin/end markers. This makes the current Owner Room surface the durable-storage controls without creating another public shell.
+- `sw.js` — bumps the Estate shell cache and refuses to intercept/cache `/api/owner/` traffic.
+
+No existing body is merged, renamed, deleted or re-authored. The deployment rail remains the same rail.
+
+## Acceptance result boundary
+
+The v0.1 contract test proves the fail-closed API, owner-state persistence contract, HTML storage, SHA-256 duplicate avoidance, private download, metadata snapshot and deletion using a fake R2 implementation. The crown graft separately proves that the bridge lands in the existing app and private API traffic bypasses the service worker.
+
+That is code/build proof, not live-storage proof.
 
 ## Claim boundary
 

@@ -81,11 +81,11 @@ def patch_authoritative_workflow() -> bool:
             raise SystemExit("Owner Vault graft refused: authoritative workflow path anchor not found")
         text = text.replace(anchor, anchor + '      - "functions/**"\n', 1)
 
-    copy_anchor = "            index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js \\\n"
+    copy_anchor = "            index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js " + "\\" + "\n"
     if "estate-owner-vault.js" not in text.split("for file in", 1)[1].split("; do", 1)[0]:
         if copy_anchor not in text:
             raise SystemExit("Owner Vault graft refused: authoritative workflow root-copy anchor not found")
-        replacement = "            index.html estate-app.js estate-owner-vault.js estate-accessibility.js estate-head-public-consumer.js \\\n"
+        replacement = "            index.html estate-app.js estate-owner-vault.js estate-accessibility.js estate-head-public-consumer.js " + "\\" + "\n"
         text = text.replace(copy_anchor, replacement, 1)
 
     check_anchor = "              ('index.html', 'Your work no longer lives as scattered HTMLs'),\n"

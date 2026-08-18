@@ -65,11 +65,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q 'estate-owner-vault.js' index.html
+          grep -q 'JM_OWNER_VAULT_V0_1_BEGIN' estate-app.js
+          grep -q 'Sync local shelf to vault' estate-app.js
           grep -q "jm-web-estate-v1.4.7-owner-vault-v0-1" sw.js
           grep -q "url.pathname.startsWith('/api/owner/')" sw.js
-          grep -q 'functions/\*\*' .github/workflows/deploy-cloudflare-authoritative-public-source.yml
-          grep -q 'estate-owner-vault.js' .github/workflows/deploy-cloudflare-authoritative-public-source.yml
           grep -q 'JM Owner Vault' functions/api/owner/vault.js
           grep -q 'STAGED_NOT_LIVE_NOT_DINGED' registry/owner-vault-contract-v0.1.json
           echo 'PASS: Owner Vault code and crown graft satisfy the staged boundary.'
@@ -81,7 +80,7 @@ jobs:
           set -euo pipefail
           git config user.name 'JM Owner Vault Graft Rail'
           git config user.email 'actions@users.noreply.github.com'
-          git add index.html sw.js .github/workflows/deploy-cloudflare-authoritative-public-source.yml
+          git add estate-app.js sw.js
           if git diff --cached --quiet; then
             echo 'Owner Vault crown graft already committed; no branch mutation required.'
             exit 0

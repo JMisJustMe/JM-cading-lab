@@ -1,0 +1,33 @@
+{
+  "schema": "JM.OwnerVaultContract/0.1",
+  "name": "JM Owner Vault",
+  "version": "v0.1",
+  "state": "STAGED_NOT_LIVE_NOT_DINGED",
+  "parent": "JMISJUSTME — The Owned Web Estate",
+  "purpose": "Add explicit private durable owner storage behind the existing local-first Owner Room without turning private custody into public publication.",
+  "storage": {
+    "provider_graft": "Cloudflare R2",
+    "pages_binding": "JM_OWNER_VAULT",
+    "owner_secret": "JM_OWNER_VAULT_KEY",
+    "stored_state": ["owner notes", "favourites", "recent routes"],
+    "stored_bodies": "standalone HTML bytes explicitly synced by the owner",
+    "snapshot_rule": "metadata/state snapshots do not duplicate HTML object bytes"
+  },
+  "laws": [
+    "Local-first remains valid",
+    "Nothing uploads without explicit owner sync",
+    "Private durable copy is not public publication",
+    "Connect does not mean merge",
+    "Duplicate HTML bytes are not re-stored",
+    "No Ding, No Claim"
+  ],
+  "security_boundary": {
+    "default": "FAIL_CLOSED",
+    "session_auth": "X-JM-Owner-Key entered by the owner and held only in browser sessionStorage",
+    "public_source_contains_secret": false,
+    "service_worker_private_api_cache": false,
+    "future_upgrade": "Cloudflare Access identity/JWT gate may replace the session key without changing the storage contract"
+  },
+  "publication_boundary": "R2 owner-vault objects remain private working custody. Deliberate promotion to a canonical public repository body continues through the governed permanent HTML body pipeline and separate deployment proof.",
+  "ding": false
+}

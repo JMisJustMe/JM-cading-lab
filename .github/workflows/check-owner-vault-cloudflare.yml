@@ -1,0 +1,157 @@
+name: Inspect JM Owner Vault Cloudflare Readiness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/check-owner-vault-cloudflare.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-owner-vault-cloudflare-readiness
+  cancel-in-progress: false
+
+jobs:
+  inspect:
+    name: Read current Cloudflare binding state
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PROJECT_NAME: jmisjustme-estate
+      BUCKET_NAME: jm-estate-owner-vault
+    steps:
+      - name: Check out current Estate
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Read Cloudflare project and R2 state without mutating it
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .owner-vault-readiness
+
+          project_status="$(curl -sS -o .owner-vault-readiness/project.json -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json')"
+
+          bucket_status="$(curl -sS -o .owner-vault-readiness/bucket.json -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets/${BUCKET_NAME}" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json')"
+
+          PROJECT_HTTP_STATUS="$project_status" BUCKET_HTTP_STATUS="$bucket_status" python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          def load(path):
+              try:
+                  return json.loads(Path(path).read_text(encoding='utf-8'))
+              except Exception:
+                  return {}
+
+          project_payload = load('.owner-vault-readiness/project.json')
+          bucket_payload = load('.owner-vault-readiness/bucket.json')
+          project = project_payload.get('result') or {}
+          configs = project.get('deployment_configs') or {}
+          production = configs.get('production') or {}
+          preview = configs.get('preview') or {}
+
+          def binding_names(config):
+              value = config.get('r2_buckets') or {}
+              return sorted(value.keys()) if isinstance(value, dict) else []
+
+          def env_types(config):
+              value = config.get('env_vars') or {}
+              if not isinstance(value, dict):
+                  return {}
+              return {name: (meta or {}).get('type') for name, meta in sorted(value.items())}
+
+          prod_r2 = binding_names(production)
+          preview_r2 = binding_names(preview)
+          prod_env = env_types(production)
+          preview_env = env_types(preview)
+          project_ok = os.environ.get('PROJECT_HTTP_STATUS') == '200' and project_payload.get('success') is True
+          bucket_ok = os.environ.get('BUCKET_HTTP_STATUS') == '200' and bucket_payload.get('success') is True
+
+          binding_present = 'JM_OWNER_VAULT' in prod_r2
+          owner_key_present = 'JM_OWNER_VAULT_KEY' in prod_env
+
+          if project_ok and binding_present and owner_key_present and bucket_ok:
+              state = 'READY_FOR_AUTHENTICATED_LIVE_VAULT_PROOF'
+          elif not project_ok:
+              state = 'CLOUDFLARE_PROJECT_READ_FAILED'
+          else:
+              state = 'ACCOUNT_SIDE_MOUNT_INCOMPLETE'
+
+          receipt = {
+              'schema': 'JM.OwnerVaultCloudflareReadiness/0.1',
+              'checked_utc': datetime.now(timezone.utc).isoformat(),
+              'state': state,
+              'project': {
+                  'name': project.get('name') or os.environ.get('PROJECT_NAME'),
+                  'http_status': int(os.environ.get('PROJECT_HTTP_STATUS', '0') or 0),
+                  'read_success': project_ok,
+                  'uses_functions': project.get('uses_functions'),
+                  'production_branch': project.get('production_branch'),
+                  'canonical_deployment_id': (project.get('canonical_deployment') or {}).get('id'),
+                  'latest_deployment_id': (project.get('latest_deployment') or {}).get('id')
+              },
+              'production': {
+                  'r2_binding_names': prod_r2,
+                  'env_var_types_by_name': prod_env,
+                  'owner_vault_binding_present': binding_present,
+                  'owner_key_variable_present': owner_key_present
+              },
+              'preview': {
+                  'r2_binding_names': preview_r2,
+                  'env_var_types_by_name': preview_env
+              },
+              'bucket_probe': {
+                  'name': os.environ.get('BUCKET_NAME'),
+                  'http_status': int(os.environ.get('BUCKET_HTTP_STATUS', '0') or 0),
+                  'exists_and_readable_with_current_token': bucket_ok
+              },
+              'mutations_performed': False,
+              'secret_values_recorded': False,
+              'ding': False,
+              'claim_boundary': 'Read-only account probe. This does not create storage, bindings, secrets, public publication, owner acceptance or a Ding.'
+          }
+          Path('registry/owner-vault-cloudflare-readiness-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          print(json.dumps({
+              'state': state,
+              'project_http_status': receipt['project']['http_status'],
+              'uses_functions': receipt['project']['uses_functions'],
+              'owner_vault_binding_present': binding_present,
+              'owner_key_variable_present': owner_key_present,
+              'bucket_http_status': receipt['bucket_probe']['http_status'],
+              'bucket_exists_and_readable': bucket_ok
+          }, indent=2))
+          PY
+
+      - name: Commit sanitized readiness receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Owner Vault Readiness Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/owner-vault-cloudflare-readiness-v0.1.json
+          if git diff --cached --quiet; then
+            echo 'Readiness receipt unchanged.'
+            exit 0
+          fi
+          git commit -m 'Record Owner Vault Cloudflare readiness [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

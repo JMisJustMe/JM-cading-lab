@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.6-money-menu-public-contact';
+const CACHE='jm-web-estate-v1.4.7-owner-vault-v0-1';
 const CORE=[
   './',
   './index.html',
@@ -73,5 +73,7 @@ async function fresh(request){
 
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if(url.pathname.startsWith('/api/owner/')) return;
   event.respondWith(fresh(event.request));
 });

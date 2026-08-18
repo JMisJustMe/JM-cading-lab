@@ -12,6 +12,17 @@ on:
       - tools/apply-owner-vault-v0.1.py
       - tools/test-owner-vault-v0.1.mjs
       - .github/workflows/test-owner-vault-v0-1.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - estate-owner-vault.js
+      - functions/api/owner/vault.js
+      - registry/owner-vault-contract-v0.1.json
+      - docs/JM_OWNER_VAULT_v0_1.md
+      - tools/apply-owner-vault-v0.1.py
+      - tools/test-owner-vault-v0.1.mjs
+      - .github/workflows/test-owner-vault-v0-1.yml
   workflow_dispatch:
 
 permissions:
@@ -64,6 +75,7 @@ jobs:
           echo 'PASS: Owner Vault code and crown graft satisfy the staged boundary.'
 
       - name: Commit bounded graft back to the branch
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
           set -euo pipefail

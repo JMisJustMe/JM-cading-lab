@@ -1,0 +1,84 @@
+name: Test and graft JM Owner Vault v0.1
+
+on:
+  push:
+    branches:
+      - jm/owner-vault-v0-1
+    paths:
+      - estate-owner-vault.js
+      - functions/api/owner/vault.js
+      - registry/owner-vault-contract-v0.1.json
+      - docs/JM_OWNER_VAULT_v0_1.md
+      - tools/apply-owner-vault-v0.1.py
+      - tools/test-owner-vault-v0.1.mjs
+      - .github/workflows/test-owner-vault-v0-1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-owner-vault-v0-1-graft
+  cancel-in-progress: false
+
+jobs:
+  acceptance:
+    name: Prove fail-closed vault and bounded crown graft
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out Owner Vault branch
+        uses: actions/checkout@v6
+        with:
+          ref: jm/owner-vault-v0-1
+          fetch-depth: 0
+
+      - name: Apply bounded graft to existing Web Estate crown
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/apply-owner-vault-v0.1.py
+
+      - name: Prove source syntax and private storage contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile tools/apply-owner-vault-v0.1.py
+          node --check estate-owner-vault.js
+          node --input-type=module --check < functions/api/owner/vault.js
+          node tools/test-owner-vault-v0.1.mjs
+          python3 -m json.tool registry/owner-vault-contract-v0.1.json >/dev/null
+          git diff --check
+
+      - name: Prove bounded crown integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'estate-owner-vault.js' index.html
+          grep -q "jm-web-estate-v1.4.7-owner-vault-v0-1" sw.js
+          grep -q "url.pathname.startsWith('/api/owner/')" sw.js
+          grep -q 'functions/\*\*' .github/workflows/deploy-cloudflare-authoritative-public-source.yml
+          grep -q 'estate-owner-vault.js' .github/workflows/deploy-cloudflare-authoritative-public-source.yml
+          grep -q 'JM Owner Vault' functions/api/owner/vault.js
+          grep -q 'STAGED_NOT_LIVE_NOT_DINGED' registry/owner-vault-contract-v0.1.json
+          echo 'PASS: Owner Vault code and crown graft satisfy the staged boundary.'
+
+      - name: Commit bounded graft back to the branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Owner Vault Graft Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html sw.js .github/workflows/deploy-cloudflare-authoritative-public-source.yml
+          if git diff --cached --quiet; then
+            echo 'Owner Vault crown graft already committed; no branch mutation required.'
+            exit 0
+          fi
+          git commit -m 'Graft Owner Vault v0.1 into Web Estate crown'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin jm/owner-vault-v0-1
+            git rebase origin/jm/owner-vault-v0-1
+            git push origin HEAD:jm/owner-vault-v0-1 && exit 0
+            sleep 2
+          done
+          exit 1

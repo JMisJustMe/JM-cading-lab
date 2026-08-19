@@ -1,0 +1,47 @@
+{
+  "schema": "JM.OwnerVaultOwnerRoundtripReceipt/0.1",
+  "date_local": "2026-08-20",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "service": "JM Owner Vault",
+  "result": "PASS_AUTHENTICATED_OWNER_STATE_WRITE_AND_READ_BACK",
+  "preconditions": {
+    "r2_binding": "JM_OWNER_VAULT",
+    "bucket": "jm-estate-owner-vault",
+    "owner_key_configured": true,
+    "public_access": false
+  },
+  "owner_session_proof": [
+    {
+      "step": "unlock",
+      "observed": "R2 VAULT MOUNTED / UNLOCKED THIS SESSION"
+    },
+    {
+      "step": "write",
+      "local_test_note": "Owner Vault live proof",
+      "observed": "Sync complete: owner state saved; 0 new HTML bodies stored; 0 duplicate bodies already held."
+    },
+    {
+      "step": "local_clear",
+      "observed": "Owner notes cleared."
+    },
+    {
+      "step": "read_back",
+      "action": "Restore owner state",
+      "observed": "Owner Vault live proof returned after the local note had been cleared."
+    }
+  ],
+  "proved": [
+    "owner-session authentication succeeds",
+    "owner state writes to private durable storage",
+    "owner state reads back from private durable storage after local deletion"
+  ],
+  "not_proved_in_this_receipt": [
+    "HTML body upload/download/delete path",
+    "historical private-artifact full census",
+    "custom-domain ownership"
+  ],
+  "secret_value_recorded": false,
+  "public_publication_claim": false,
+  "ding": false,
+  "boundary": "This is an owner-witnessed live roundtrip receipt for private owner state. The passphrase is not stored in this receipt. Zero mounted HTML bodies means HTML-body CRUD was not exercised and is not required to establish that the Owner Vault itself writes and reads owner state."
+}

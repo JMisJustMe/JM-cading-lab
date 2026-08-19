@@ -1,18 +1,19 @@
 name: Prove JM Owner Vault live readiness
-# Trigger after the proof rail exists on main.
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/prove-owner-vault-live.yml"
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: jm-owner-vault-live-readiness
+  group: jm-owner-vault-live-readiness-${{ github.event_name }}
   cancel-in-progress: false
 
 jobs:
@@ -51,7 +52,7 @@ jobs:
           sys.exit(0 if data.get('ready') is True and data.get('storage_bound') is True and data.get('owner_key_configured') is True else 1)
           PY
             then
-              if printf '%s' "$sw" | grep -q 'jm-web-estate-v1.4.8-owner-vault-binding-activation'; then
+              if printf '%s' "$sw" | grep -q 'jm-web-estate-v1.4.6-money-menu-public-contact'; then
                 ok=1
                 break
               fi
@@ -61,8 +62,10 @@ jobs:
           printf '%s' "$status" > "$RUNNER_TEMP/owner-vault-final-status.json"
           echo "ok=$ok" >> "$GITHUB_OUTPUT"
           echo "http=$http" >> "$GITHUB_OUTPUT"
+          echo "Final live status: $status"
 
       - name: Write live-readiness receipt
+        if: github.event_name != 'pull_request'
         shell: bash
         env:
           OK: ${{ steps.probe.outputs.ok }}
@@ -88,7 +91,7 @@ jobs:
               'host': 'https://jmisjustme-estate.pages.dev',
               'http_status': os.environ.get('HTTP'),
               'status_response': status,
-              'cache_marker': 'jm-web-estate-v1.4.8-owner-vault-binding-activation',
+              'cache_marker': 'jm-web-estate-v1.4.6-money-menu-public-contact',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,

@@ -1,7 +1,7 @@
 {
   "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
-  "verified_utc": "2026-08-19T23:17:09.698049+00:00",
-  "state": "LIVE_READINESS_NOT_YET",
+  "verified_utc": "2026-08-19T23:18:37.565151+00:00",
+  "state": "LIVE_READINESS_PASS",
   "host": "https://jmisjustme-estate.pages.dev",
   "http_status": "200",
   "status_response": {
@@ -13,9 +13,9 @@
     "auth": "X-JM-Owner-Key (session-entered; never embedded in public source)",
     "public_claim": false
   },
-  "cache_marker": "jm-web-estate-v1.4.8-owner-vault-binding-activation",
-  "source_commit": "30a43068fdf22b4f3a33bba763b339570dafb071",
-  "workflow_run": "32312209251",
+  "cache_marker": "jm-web-estate-v1.4.6-money-menu-public-contact",
+  "source_commit": "b59c9735dfa75be549ab79fa745c7b8a3cef06b4",
+  "workflow_run": "32312686150",
   "authenticated_write_read_delete_proof": false,
   "owner_secret_value_recorded": false,
   "ding": false,

@@ -1,0 +1,61 @@
+{
+  "schema": "JM.LyricsCurrentHead/1.0",
+  "promoted_at": "2026-08-19T00:18:00Z",
+  "status": "CURRENT__CATALOGUE_AWARE__LIVE_PUBLIC_DING",
+  "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+  "public_head": {
+    "name": "JM Lyrics & Music House — Catalogue-Aware",
+    "state": "LIVE PUBLIC HEAD"
+  },
+  "app_heads": [
+    {
+      "name": "JM LyricStudio",
+      "version": "v0.6 Catalogue-Aware",
+      "state": "CURRENT HEAD"
+    },
+    {
+      "name": "JM Lyric Pad",
+      "version": "v0.7 Catalogue-Aware",
+      "state": "CURRENT HEAD"
+    }
+  ],
+  "organisation_head": {
+    "name": "JM Lyric Catalogue Reassembly",
+    "version": "v1.0"
+  },
+  "analysis_head": {
+    "name": "JM Lyric Analyzer",
+    "version": "cumulative v1.1 / Pass 13"
+  },
+  "representation": {
+    "project_performance_bodies": 8,
+    "creative_work_authorities": 37,
+    "analyzer_bodies": 309,
+    "source_units": 1065,
+    "gtkm_gtky_compact_live_pieces": 13,
+    "calmer_karma_curated_pieces": 19
+  },
+  "live_proof": {
+    "receipt": "registry/cloudflare-lyrics-catalogue-deploy-receipt.json",
+    "status": "SUCCESS",
+    "proof": "CATALOGUE_AWARE_LYRICS_HOUSE_LIVE",
+    "source_commit": "14c6d3baeb5d5c2b14e9654303d71a0b25c0bea0",
+    "workflow_run": "32200447738",
+    "deployed_at_utc": "2026-08-19T00:14:49Z",
+    "manual_upload_required": false,
+    "private_full_corpus_published": false
+  },
+  "lineage_keep": [
+    "JM LyricStudio v0.5 / v0.5.1",
+    "JM Lyric Pad v0.6 Frozen",
+    "JM Lyric Estate v0.6 Clickable Body Index"
+  ],
+  "physical_android_contact": "OPEN / NOT CLAIMED",
+  "broad_estate_head_mutated": false,
+  "laws": [
+    "SOURCE CARRIER != PROJECT",
+    "ANALYZER BODY != WORK",
+    "MESH != MERGE",
+    "NO DING, NO CLAIM"
+  ]
+}

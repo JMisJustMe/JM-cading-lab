@@ -3,47 +3,37 @@
 **Authority:** Theodore Benjamin Scott / JM / JMISJUSTME  
 **Roles:** Konengineer · Co-developer · Kodifier
 
-## Correction and purpose
+## Purpose
 
 A ChatGPT Android `content://` handle, temporary preview, sandbox link, or session download is **not** a permanent body.
 
-The browser is useful only as an **intake hand**: it can open the temporary result and download the actual HTML bytes. Permanence comes from the governed route below:
+The current Estate has two owned persistence lanes and one deliberate publication lane:
 
 ```text
-TEMPORARY CHAT HTML
-→ DOWNLOAD ACTUAL FILE
-→ JM ESTATE WORKBENCH INTAKE
+TEMPORARY / LOCAL HTML
+→ OWNER ROOM INTAKE
+→ PRIVATE DURABLE R2 COPY WHEN JM PRESSES SYNC
 → BYTE HASH + DUPLICATE CHECK
-→ GOVERNED REPOSITORY OFFICE
+→ GOVERNED REPOSITORY OFFICE WHEN JM CHOOSES PERMANENT PUBLIC PROMOTION
 → MANIFEST + RECEIPT
 → HUMAN REVIEW
 → GIT COMMIT
 → CLOUDFLARE DEPLOYMENT
-→ STABLE JM-OWNED URL
+→ STABLE JM-OWNED ROUTE
 ```
 
-The OpenAI browser does not replace JM3232 Navigator, Stringline, Git, GitHub, Cloudflare, or the JM Estate. It reduces the handoff between a temporary page and the owned source pipeline.
-
-## Result extracted from the desktop setup
-
-The desktop setup now has a useful, bounded role:
-
-1. **Built-in browser:** opens the temporary HTML or download page and saves the actual file.
-2. **JM Estate Workbench:** receives the file without copying the whole library.
-3. **Codex:** runs the promotion tool, inspects the diff, tests the body, and records source gaps.
-4. **Git:** preserves the exact change and rollback history.
-5. **GitHub:** holds the owner-controlled source.
-6. **Cloudflare Pages:** converts an approved repository path into a stable public route.
-7. **JM3232 Navigator / Estate registries:** govern identity, route, lineage, Stringmarks, and receipts.
+Private durability and public publication are separate gates. R2 does not silently publish a body. GitHub/Cloudflare publication does not silently copy every private body.
 
 ## Storage law
 
-- Copy only the final HTML bytes once.
+- Keep code and governed public source in Git/GitHub.
+- Keep explicit private Owner Room state and private mounted-body copies in the JM Owner Vault (R2).
+- Copy final HTML bytes once per authority lane; hash before copying.
 - Do not create duplicate archives, `node_modules`, build caches, or whole-repository clones for a single body.
-- Hash before copying.
 - If a byte-identical `index.html` already exists, return its current permanent route instead of creating another copy.
 - Store only small JSON manifests and receipts beside or behind the body.
 - Do not publish automatically.
+- A private R2 copy is not a public crown.
 
 ## Promotion tool
 
@@ -53,14 +43,9 @@ Repository tool:
 tools/Promote-JMHtmlBody.ps1
 ```
 
-It accepts either:
+It accepts either a local `.html` file path or an `https://` URL that returns the HTML bytes. It rejects `content://` because that is an Android-local handle rather than a transferable web address.
 
-- a local `.html` file path; or
-- an `https://` URL that returns the HTML bytes.
-
-It deliberately rejects `content://` because that is an Android-local handle rather than a transferable web address.
-
-### Example: non-game app
+### Example
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\Promote-JMHtmlBody.ps1 `
@@ -69,17 +54,6 @@ powershell -ExecutionPolicy Bypass -File .\tools\Promote-JMHtmlBody.ps1 `
   -Office "apps" `
   -BodyName "My Body" `
   -Version "v0.1"
-```
-
-### Example: coding body
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\tools\Promote-JMHtmlBody.ps1 `
-  -Source "C:\Users\theod\Downloads\VISUALANG.html" `
-  -Slug "visualang" `
-  -Office "coding-estate" `
-  -BodyName "Visualang" `
-  -Version "source-mounted"
 ```
 
 ## What the tool creates
@@ -92,78 +66,48 @@ apps/my-body/body-manifest.json
 receipts/body-intake/my-body-YYYYMMDD-HHMMSS.json
 ```
 
-The HTML is not duplicated into the receipt. The receipt contains only identity, route, bytes, hash, claim boundary, and next gate.
+The HTML is not duplicated into the receipt. The receipt contains identity, route, bytes, hash, claim boundary and next gate.
 
 ## What the tool does not do
 
-It does **not**:
-
-- commit;
-- push;
-- deploy;
-- overwrite an existing body without an explicit switch;
-- install Node, GitHub CLI, packages, or engines;
-- copy the Documents folder;
-- merge separate JM bodies;
-- crown a body as live merely because a file exists.
+It does **not** commit, push, deploy, overwrite without an explicit switch, install packages, copy whole owner folders, merge separate JM bodies, or crown a body as live merely because a file exists.
 
 ## Approval and deployment gate
 
-After staging, Codex must:
+After staging:
 
-1. inspect `git diff`;
-2. open the HTML locally;
-3. test all visible controls;
-4. validate the recorded SHA-256;
-5. confirm the correct office and stable route;
-6. ask for approval before committing or pushing;
-7. verify the deployed file byte-for-byte after Cloudflare publishes it;
-8. update the appropriate Estate registry only after the body and route are confirmed.
+1. inspect the diff;
+2. open/test the HTML as appropriate;
+3. validate recorded SHA-256;
+4. confirm office and route;
+5. approve commit/push;
+6. verify deployed bytes after Cloudflare publishes;
+7. update the relevant Estate registry only after identity and route are confirmed.
 
 ## Claim classes
 
 ```text
-TEMPORARY
-The file exists only in a chat preview, Android handle, or transient download.
-
-STAGED
-The exact HTML bytes are preserved locally in the repository worktree with a manifest and receipt.
-
-COMMITTED
-Git history preserves the body at an exact commit.
-
-DEPLOYED
-Cloudflare returns the body at a stable JM-owned URL.
-
-REGISTERED
-The Estate and Navigator recognise its identity, office, source, route, and lineage.
-
-PROVEN / DING
-Declared gates passed with evidence. A deployed page alone is not a Ding.
+TEMPORARY      chat preview, device handle or transient download only
+PRIVATE_HELD   explicit private durable Owner Vault copy; not publication
+STAGED         exact bytes preserved in repository worktree with manifest/receipt
+COMMITTED      Git history preserves the body at an exact commit
+DEPLOYED       Cloudflare returns the body at a stable Estate route
+REGISTERED     Estate governance recognises identity, office, source, route and lineage
+PROVEN / DING  declared gates passed with evidence; deployment alone is not a Ding
 ```
 
-## Default permanent route pattern
+## Default route pattern
 
 ```text
 https://jmisjustme-estate.pages.dev/<office>/<slug>/
 ```
 
-Examples:
-
-```text
-https://jmisjustme-estate.pages.dev/apps/<slug>/
-https://jmisjustme-estate.pages.dev/theory/<slug>/
-https://jmisjustme-estate.pages.dev/games-beyond/<slug>/
-https://jmisjustme-estate.pages.dev/coding-estate/<slug>/
-https://jmisjustme-estate.pages.dev/recovery/<slug>/
-```
-
 ## Operating law
 
 > The browser may retrieve the body.  
-> The Workbench may hold the body.  
-> Git may remember the body.  
-> Cloudflare may deliver the body.  
+> The Owner Vault may hold a private durable copy.  
+> Git may remember governed source.  
+> Cloudflare may deliver an approved public route.  
 > JM governance decides what the body is.
 
-This pipeline exists to ensure that no finished HTML is left living only behind a temporary Android or chat link again.
+This pipeline exists so a finished current HTML body does not remain dependent on a temporary chat, browser session or one device.

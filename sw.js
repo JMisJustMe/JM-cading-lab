@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.8-owner-vault-binding-activation';
+const CACHE='jm-web-estate-v1.4.6-money-menu-public-contact';
 const CORE=[
   './',
   './index.html',

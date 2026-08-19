@@ -14,7 +14,7 @@ function Resolve-JMRepoRoot {
     if ($LASTEXITCODE -ne 0 -or -not $root) {
         throw 'No Git repository root found. Run inside JM-cading-lab or pass -RepoRoot.'
     }
-    return (Resolve-Path -LiteralPath $root.Trim()).Path
+    return (Resolve-Path -LiteralPath ([string]$root).Trim()).Path
 }
 
 function Get-Sha256Lower {
@@ -23,10 +23,11 @@ function Get-Sha256Lower {
 }
 
 $repo = Resolve-JMRepoRoot -ExplicitRoot $RepoRoot
-$head = (& git -C $repo rev-parse HEAD).Trim()
+$head = ([string](& git -C $repo rev-parse HEAD)).Trim()
 if ($LASTEXITCODE -ne 0 -or -not $head) { throw 'Unable to resolve repository HEAD.' }
-$short = (& git -C $repo rev-parse --short=12 HEAD).Trim()
-$branch = (& git -C $repo branch --show-current).Trim()
+$short = ([string](& git -C $repo rev-parse --short=12 HEAD)).Trim()
+$branchOutput = @(& git -C $repo branch --show-current)
+$branch = if ($branchOutput.Count) { ([string]$branchOutput[0]).Trim() } else { '' }
 $dirty = [bool]((& git -C $repo status --porcelain) -join '')
 if ($dirty -and -not $AllowDirty) {
     throw 'Working tree is dirty. Commit/stash changes first, or pass -AllowDirty knowing the export still represents committed HEAD only.'

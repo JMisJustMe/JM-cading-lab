@@ -1,0 +1,114 @@
+name: Prove JM Owner Vault live readiness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/prove-owner-vault-live.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-owner-vault-live-readiness
+  cancel-in-progress: false
+
+jobs:
+  prove:
+    name: Prove deployed function sees binding and secret
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Wait for bound Owner Vault deployment
+        id: probe
+        shell: bash
+        run: |
+          set -u
+          BASE='https://jmisjustme-estate.pages.dev'
+          ok=0
+          http='000'
+          status='{}'
+          sw=''
+          for attempt in $(seq 1 60); do
+            http="$(curl --silent --show-error --location --max-time 20 -o "$RUNNER_TEMP/owner-vault-status.json" -w '%{http_code}' "$BASE/api/owner/vault?mode=status&proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+            status="$(cat "$RUNNER_TEMP/owner-vault-status.json" 2>/dev/null || printf '{}')"
+            sw="$(curl --silent --show-error --location --max-time 20 "$BASE/sw.js?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+            if [ "$http" = '200' ] \
+              && STATUS_JSON="$status" python3 - <<'PY'
+          import json, os, sys
+          try:
+              data=json.loads(os.environ['STATUS_JSON'])
+          except Exception:
+              sys.exit(1)
+          sys.exit(0 if data.get('ready') is True and data.get('storage_bound') is True and data.get('owner_key_configured') is True else 1)
+          PY
+            then
+              if printf '%s' "$sw" | grep -q 'jm-web-estate-v1.4.8-owner-vault-binding-activation'; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 5
+          done
+          printf '%s' "$status" > "$RUNNER_TEMP/owner-vault-final-status.json"
+          echo "ok=$ok" >> "$GITHUB_OUTPUT"
+          echo "http=$http" >> "$GITHUB_OUTPUT"
+
+      - name: Write live-readiness receipt
+        shell: bash
+        env:
+          OK: ${{ steps.probe.outputs.ok }}
+          HTTP: ${{ steps.probe.outputs.http }}
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          status_path = Path(os.environ['RUNNER_TEMP']) / 'owner-vault-final-status.json'
+          try:
+              status = json.loads(status_path.read_text(encoding='utf-8'))
+          except Exception:
+              status = {}
+          passed = os.environ.get('OK') == '1'
+          receipt = {
+              'schema': 'JM.OwnerVaultLiveReadinessReceipt/0.1',
+              'verified_utc': datetime.now(timezone.utc).isoformat(),
+              'state': 'LIVE_READINESS_PASS' if passed else 'LIVE_READINESS_NOT_YET',
+              'host': 'https://jmisjustme-estate.pages.dev',
+              'http_status': os.environ.get('HTTP'),
+              'status_response': status,
+              'cache_marker': 'jm-web-estate-v1.4.8-owner-vault-binding-activation',
+              'source_commit': os.environ.get('GITHUB_SHA'),
+              'workflow_run': os.environ.get('GITHUB_RUN_ID'),
+              'authenticated_write_read_delete_proof': False,
+              'owner_secret_value_recorded': False,
+              'ding': False,
+              'claim_boundary': 'This receipt proves only public status visibility of the bound R2 resource and configured owner secret plus the current cache deployment. Authenticated owner storage mutation remains a separate owner-session proof.'
+          }
+          Path('registry/owner-vault-live-readiness-receipt-v0.1.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+          PY
+
+          git config user.name 'JM Owner Vault Live Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add registry/owner-vault-live-readiness-receipt-v0.1.json
+          git diff --cached --quiet || git commit -m 'Record Owner Vault live readiness proof [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main && break
+            sleep 2
+          done
+
+      - name: Enforce readiness result
+        shell: bash
+        run: test '${{ steps.probe.outputs.ok }}' = '1'

@@ -1,0 +1,23 @@
+{
+  "schema": "JM.OwnerVaultLiveReadinessReceipt/0.1",
+  "verified_utc": "2026-08-19T23:17:09.698049+00:00",
+  "state": "LIVE_READINESS_NOT_YET",
+  "host": "https://jmisjustme-estate.pages.dev",
+  "http_status": "200",
+  "status_response": {
+    "schema": "JM.OwnerVault/0.1",
+    "service": "JM Owner Vault",
+    "storage_bound": true,
+    "owner_key_configured": true,
+    "ready": true,
+    "auth": "X-JM-Owner-Key (session-entered; never embedded in public source)",
+    "public_claim": false
+  },
+  "cache_marker": "jm-web-estate-v1.4.8-owner-vault-binding-activation",
+  "source_commit": "30a43068fdf22b4f3a33bba763b339570dafb071",
+  "workflow_run": "32312209251",
+  "authenticated_write_read_delete_proof": false,
+  "owner_secret_value_recorded": false,
+  "ding": false,
+  "claim_boundary": "This receipt proves only public status visibility of the bound R2 resource and configured owner secret plus the current cache deployment. Authenticated owner storage mutation remains a separate owner-session proof."
+}

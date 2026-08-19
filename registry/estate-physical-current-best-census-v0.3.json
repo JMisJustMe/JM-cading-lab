@@ -1,0 +1,86 @@
+{
+  "schema": "JM.EstatePhysicalCurrentBestCensus/0.3",
+  "name": "Estate Operational Finish Census v0.3",
+  "date_local": "2026-08-20",
+  "status": "OPERATIONAL_HOUSE_CORE_PROVED_FULL_HISTORICAL_CENSUS_REMAINS_OPEN",
+  "owner_authority": "Theodore Benjamin Scott / JM",
+  "inheritance": [
+    "registry/estate-physical-current-best-census-v0.2-wave1.json",
+    "registry/source-to-living-governance-receipt-v1.0.json",
+    "registry/cloudflare-authoritative-route-receipt-v1.3.json",
+    "registry/owner-vault-live-readiness-receipt-v0.1.json",
+    "registry/owner-vault-owner-roundtrip-receipt-v0.1.json"
+  ],
+  "ruling": "Do not confuse historical byte-recovery with operational Estate completion. The working Estate can be completed while named historical recovery targets remain explicitly held and uncrowned.",
+  "proved_operational_core": [
+    {
+      "gate": "current physical operating authorities",
+      "state": "PASS",
+      "evidence": "Census wave 1 physically validates Multimedia Unit v2.3.0 S3, Altogether Assembly v2.0.2 as a hosted complete body, and Zionfolder OS v1.1.1; JMStudios source custody is deferred rather than impersonated."
+    },
+    {
+      "gate": "repository-wide source-to-living governance",
+      "state": "PASS",
+      "evidence": {
+        "governed_records": 72,
+        "body_passports": 61,
+        "project_head_passports": 11,
+        "stage_receipts": 432,
+        "public_promotions_guarded": 27
+      }
+    },
+    {
+      "gate": "live public Estate front door",
+      "state": "PASS",
+      "host": "https://jmisjustme-estate.pages.dev",
+      "evidence": "Authoritative Cloudflare route receipt and subsequent successful production deployment."
+    },
+    {
+      "gate": "private durable owner storage",
+      "state": "PASS_WRITE_READ",
+      "evidence": "R2 binding and encrypted owner key are live; owner-session write, local clear and remote restore roundtrip passed."
+    }
+  ],
+  "operational_finish_work": [
+    {
+      "id": "durable-intake-policy",
+      "state": "OPEN",
+      "priority": 1,
+      "task": "Make the existing Estate intake route authoritative for future private files and bodies: current code/source remains in GitHub; private owner state and private large/artifact storage use R2; public promotion remains deliberate."
+    },
+    {
+      "id": "recovery-export",
+      "state": "OPEN",
+      "priority": 2,
+      "task": "Prove a whole-Estate recovery/export route so the governed current Estate can be reconstructed without relying on a chat session or one device."
+    },
+    {
+      "id": "stranded-current-body-check",
+      "state": "OPEN_BOUNDED",
+      "priority": 3,
+      "task": "Check only for CURRENT authoritative bodies that are outside GitHub/R2/current governed carriers. Do not reopen already-settled continuity audits or chase every historical version."
+    },
+    {
+      "id": "custom-domain-frontage",
+      "state": "OPTIONAL_OWNER_PURCHASE",
+      "priority": 4,
+      "task": "Choose and buy a permanent custom domain, then attach it to the existing Estate. This is frontage/ownership polish, not a prerequisite for storage or source authority."
+    }
+  ],
+  "historical_recovery_not_operational_blockers": [
+    {
+      "id": "jmstudios-b083-physical-body",
+      "state": "HELD",
+      "source": "registry/physical-current-best-census-v0.2-held-items.json"
+    },
+    {
+      "id": "zionfolder-v111-frozen-zip",
+      "state": "HELD",
+      "source": "registry/physical-current-best-census-v0.2-held-items.json"
+    }
+  ],
+  "full_historical_byte_census_crowned": false,
+  "operational_estate_finished": false,
+  "next_action": "Close durable intake and whole-Estate recovery/export first. Then perform a bounded current-body stranding check. Domain frontage follows by owner choice.",
+  "boundary": "This census advances the working Estate toward an operational finish. It does not erase or falsify older held-item records, and it does not claim every historical ZIP, chat export or private file has been byte-for-byte recovered."
+}

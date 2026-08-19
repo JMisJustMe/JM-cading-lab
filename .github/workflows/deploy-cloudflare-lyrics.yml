@@ -1,4 +1,4 @@
-name: Deploy Working Lyrics House
+name: Deploy Catalogue-Aware Lyrics House
 
 on:
   push:
@@ -10,16 +10,16 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: jmisjustme-estate-lyrics-working
-  cancel-in-progress: false
+  group: jmisjustme-estate-lyrics-catalogue-aware
+  cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   deployments: write
 
 jobs:
   deploy:
-    name: Preserve live Estate, interaction-test and deploy Lyrics House
+    name: Preserve live Estate, prove catalogue-aware Lyrics House, deploy and receipt
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -47,13 +47,12 @@ jobs:
           out=Path('cloudflare-estate')
           queue=deque([''])
           seen=set()
-          seeds=['navigator/','apps/','theory/','author/','recovery/','404.html','manifest.webmanifest','robots.txt','sitemap.xml','sw.js','_headers','_redirects']
-          queue.extend(seeds)
+          queue.extend(['navigator/','apps/','theory/','author/','recovery/','404.html','manifest.webmanifest','robots.txt','sitemap.xml','sw.js','_headers','_redirects'])
 
           def fetch(path, required=False):
               url=urljoin(base,path)
               try:
-                  req=Request(url,headers={'User-Agent':'JM-Lyrics-Working-Deploy/1.0'})
+                  req=Request(url,headers={'User-Agent':'JM-Lyrics-Catalogue-Deploy/1.1'})
                   with urlopen(req,timeout=25) as response:
                       return response.read(),response.headers.get_content_type()
               except Exception:
@@ -87,12 +86,25 @@ jobs:
                       if candidate not in seen: queue.append(candidate)
           PY
 
-      - name: Overlay restored working Lyrics House
+      - name: Overlay catalogue-aware Lyrics House
         shell: bash
         run: |
           set -euo pipefail
           rm -rf cloudflare-estate/lyrics
           cp -a lyrics cloudflare-estate/lyrics
+
+          # Repair the one stale named-global expression in the catalogue-aware source
+          # without altering lyric/catalogue content or title authority.
+          python3 <<'PY'
+          from pathlib import Path
+          p=Path('cloudflare-estate/lyrics/index.html')
+          text=p.read_text(encoding='utf-8')
+          text=text.replace("save.onclick=", "document.querySelector('#save').onclick=")
+          text=text.replace("clear.onclick=", "document.querySelector('#clear').onclick=")
+          text=text.replace("export.onclick=", "document.querySelector('#export').onclick=")
+          p.write_text(text,encoding='utf-8')
+          PY
+
           cat > cloudflare-estate/_headers <<'EOF'
           /*
             X-Content-Type-Options: nosniff
@@ -108,30 +120,51 @@ jobs:
           /* /index.html 200
           EOF
 
-      - name: Prove page completion and JavaScript syntax
+      - name: Prove catalogue, completion and JavaScript syntax
         shell: bash
         run: |
           set -euo pipefail
-          file=cloudflare-estate/lyrics/index.html
-          test -s "$file"
-          grep -q "JM Lyrics & Music House — Whole-Estate Public Door" "$file"
-          grep -q 'data-view="desk"' "$file"
-          grep -q 'id="save"' "$file"
-          grep -q 'id="export"' "$file"
-          grep -q 'id="clear"' "$file"
-          grep -q '</script>' "$file"
-          grep -q '</html>' "$file"
+          page=cloudflare-estate/lyrics/index.html
+          data=cloudflare-estate/lyrics/catalogue-public.json
+          test -s "$page"
+          test -s "$data"
+          grep -q "JM Lyrics & Music House — Catalogue-Aware" "$page"
+          grep -q "The lyrics have their shape back." "$page"
+          grep -q "Getting To Know Me / Getting To Know You" "$page"
+          grep -q "Calmer Karma" "$page"
+          grep -q "From Behind Bars To Behind Bars" "$page"
+          grep -q 'data-go=desk' "$page"
+          grep -q 'id=save' "$page"
+          grep -q 'id=export' "$page"
+          grep -q 'id=clear' "$page"
+          grep -q '</script>' "$page"
+          grep -q '</html>' "$page"
+
           python3 <<'PY'
+          import json,re
           from pathlib import Path
-          import re
+          data=json.loads(Path('cloudflare-estate/lyrics/catalogue-public.json').read_text(encoding='utf-8'))
+          assert data['counts']=={
+              'project_performance_bodies':8,
+              'creative_work_authorities':37,
+              'analyzer_bodies':309,
+              'source_units':1065,
+          }
+          assert len(data['projects'])==8
+          assert len(data['works'])==37
+          assert all(w.get('title') for w in data['works'])
+          assert data['projects'][0]['title']=='Getting To Know Me / Getting To Know You'
+          assert data['projects'][0]['piece_count']==13
+          assert next(p for p in data['projects'] if p['title']=='Calmer Karma')['piece_count']==19
+
           text=Path('cloudflare-estate/lyrics/index.html').read_text(encoding='utf-8')
-          scripts=re.findall(r'<script[^>]*>(.*?)</script>',text,re.I|re.S)
-          assert scripts, 'No executable script found'
+          scripts=[s for s in re.findall(r'<script[^>]*>(.*?)</script>',text,re.I|re.S) if s.strip()]
+          assert scripts, 'No executable inline script found'
           Path('/tmp/lyrics-runtime.js').write_text('\n'.join(scripts),encoding='utf-8')
           PY
           node --check /tmp/lyrics-runtime.js
 
-      - name: Click-test the real controls
+      - name: Click-test catalogue navigation and writing desk
         shell: bash
         run: |
           set -euo pipefail
@@ -143,24 +176,30 @@ jobs:
           const fs=require('fs');
           const {JSDOM}=require('jsdom');
           const html=fs.readFileSync(process.env.GITHUB_WORKSPACE+'/cloudflare-estate/lyrics/index.html','utf8');
-          const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://jmisjustme-estate.pages.dev/lyrics/',beforeParse(window){window.scrollTo=()=>{};window.confirm=()=>true;}});
+          const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://jmisjustme-estate.pages.dev/lyrics/',beforeParse(window){window.scrollTo=()=>{};window.confirm=()=>true;window.URL.createObjectURL=()=>"blob:jm-test";window.URL.revokeObjectURL=()=>{};}});
           const {document,localStorage,Event}=dom.window;
-          const deskButton=document.querySelector('[data-view="desk"]');
-          if(!deskButton) throw new Error('Desk button missing');
-          deskButton.click();
-          const desk=document.querySelector('[data-panel="desk"]');
-          if(!desk.classList.contains('active')) throw new Error('Desk button did not activate its panel');
-          const title=document.querySelector('#pieceTitle');
-          const text=document.querySelector('#lyricText');
-          title.value='Runtime smoke'; text.value='Buttons are connected.';
+
+          const catalogue=document.querySelector('[data-go="cat"]');
+          catalogue.click();
+          if(!document.querySelector('[data-v="cat"]').classList.contains('on')) throw new Error('Catalogue navigation failed');
+          if(!document.body.textContent.includes('Getting To Know Me / Getting To Know You')) throw new Error('GTKM catalogue body missing');
+          if(!document.body.textContent.includes('From Behind Bars To Behind Bars')) throw new Error('Recovered work titles missing');
+
+          document.querySelector('[data-go="desk"]').click();
+          if(!document.querySelector('[data-v="desk"]').classList.contains('on')) throw new Error('Desk navigation failed');
+          const title=document.querySelector('#title');
+          const text=document.querySelector('#text');
+          title.value='Runtime smoke';
+          text.value='Buttons are connected.';
           title.dispatchEvent(new Event('input',{bubbles:true}));
           text.dispatchEvent(new Event('input',{bubbles:true}));
           document.querySelector('#save').click();
-          const saved=JSON.parse(localStorage.getItem('jm-lyrics-public-desk-v1'));
-          if(saved?.title!=='Runtime smoke'||saved?.text!=='Buttons are connected.') throw new Error('Save button did not write the draft');
-          document.querySelector('[data-view="receipt"]').click();
-          if(!document.querySelector('[data-panel="receipt"]').classList.contains('active')) throw new Error('Proof button did not activate its panel');
-          console.log('LYRICS HOUSE INTERACTION PASS');
+          const keys=Object.keys(localStorage);
+          const key=keys.find(k=>k.startsWith('jm-lyrics-public-desk-v'));
+          if(!key) throw new Error('Save button did not create local draft');
+          const saved=JSON.parse(localStorage.getItem(key));
+          if(saved?.title!=='Runtime smoke'||saved?.text!=='Buttons are connected.') throw new Error('Saved draft mismatch');
+          console.log('CATALOGUE-AWARE LYRICS HOUSE INTERACTION PASS');
           JS
 
       - name: Deploy the existing Cloudflare Pages project
@@ -171,23 +210,59 @@ jobs:
           command: pages deploy cloudflare-estate --project-name=jmisjustme-estate --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prove the working body on the canonical host
+      - name: Prove catalogue-aware Lyrics House on canonical host
         shell: bash
         run: |
           set -euo pipefail
           proved=0
           for attempt in $(seq 1 45); do
             curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/lyrics/?working-proof=${GITHUB_RUN_ID}-${attempt}" \
+              "https://jmisjustme-estate.pages.dev/lyrics/?catalogue-proof=${GITHUB_RUN_ID}-${attempt}" \
               > "$RUNNER_TEMP/live-lyrics.html" || true
-            if grep -q "JM Lyrics & Music House — Whole-Estate Public Door" "$RUNNER_TEMP/live-lyrics.html" \
-              && grep -q 'data-view="desk"' "$RUNNER_TEMP/live-lyrics.html" \
-              && grep -q 'id="save"' "$RUNNER_TEMP/live-lyrics.html" \
-              && grep -q '</html>' "$RUNNER_TEMP/live-lyrics.html"; then
+            curl --fail --silent --show-error --location \
+              "https://jmisjustme-estate.pages.dev/lyrics/catalogue-public.json?catalogue-proof=${GITHUB_RUN_ID}-${attempt}" \
+              > "$RUNNER_TEMP/live-catalogue.json" || true
+            if grep -q "The lyrics have their shape back." "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q "Getting To Know Me / Getting To Know You" "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q "From Behind Bars To Behind Bars" "$RUNNER_TEMP/live-lyrics.html" \
+              && grep -q '"creative_work_authorities": 37' "$RUNNER_TEMP/live-catalogue.json" \
+              && grep -q '"analyzer_bodies": 309' "$RUNNER_TEMP/live-catalogue.json"; then
               proved=1
               break
             fi
             sleep 2
           done
           test "$proved" -eq 1
-          echo "WORKING LYRICS HOUSE LIVE PROOF PASS"
+          echo "CATALOGUE-AWARE LYRICS HOUSE LIVE PROOF PASS"
+
+      - name: Write successful lyric catalogue deployment receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p registry
+          cat > registry/cloudflare-lyrics-catalogue-deploy-receipt.json <<EOF
+          {
+            "schema": "JM.CloudflareLyricsCatalogueDeployReceipt/1.0",
+            "status": "SUCCESS",
+            "project": "jmisjustme-estate",
+            "canonical_route": "https://jmisjustme-estate.pages.dev/lyrics/",
+            "source_commit": "${GITHUB_SHA}",
+            "workflow_run": "${GITHUB_RUN_ID}",
+            "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "proof": "CATALOGUE_AWARE_LYRICS_HOUSE_LIVE",
+            "project_performance_bodies": 8,
+            "creative_work_authorities": 37,
+            "analyzer_bodies": 309,
+            "source_units": 1065,
+            "gtkm_piece_count": 13,
+            "calmer_karma_piece_count": 19,
+            "private_full_corpus_published": false,
+            "manual_upload_required": false
+          }
+          EOF
+          git config user.name "JM Lyrics Deployment Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add registry/cloudflare-lyrics-catalogue-deploy-receipt.json
+          git diff --cached --quiet || git commit -m "Record catalogue-aware Lyrics House deployment success"
+          git pull --rebase origin main
+          git push origin HEAD:main

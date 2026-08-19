@@ -1,0 +1,118 @@
+name: Prove Estate recovery export
+
+on:
+  push:
+    branches:
+      - main
+      - jm/estate-recovery-export-v0-1
+    paths:
+      - tools/Build-JMEstateRecoveryExport.ps1
+      - docs/JM_ESTATE_RECOVERY_EXPORT_v0_1.md
+      - .github/workflows/prove-estate-recovery-export.yml
+  pull_request:
+    paths:
+      - tools/Build-JMEstateRecoveryExport.ps1
+      - docs/JM_ESTATE_RECOVERY_EXPORT_v0_1.md
+      - .github/workflows/prove-estate-recovery-export.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recovery-export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out complete source history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Build governed recovery export
+        id: build
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'jm-estate-recovery'
+          & ./tools/Build-JMEstateRecoveryExport.ps1 -RepoRoot $env:GITHUB_WORKSPACE -OutputDirectory $out
+          $manifest = Get-ChildItem -LiteralPath $out -Filter '*-manifest.json' -File | Select-Object -First 1
+          $snapshot = Get-ChildItem -LiteralPath $out -Filter '*-source.zip' -File | Select-Object -First 1
+          $bundle = Get-ChildItem -LiteralPath $out -Filter '*-history.bundle' -File | Select-Object -First 1
+          if (-not $manifest -or -not $snapshot -or -not $bundle) { throw 'Recovery export did not produce all three governed files.' }
+          "manifest=$($manifest.FullName)" >> $env:GITHUB_OUTPUT
+          "snapshot=$($snapshot.FullName)" >> $env:GITHUB_OUTPUT
+          "bundle=$($bundle.FullName)" >> $env:GITHUB_OUTPUT
+          "out=$out" >> $env:GITHUB_OUTPUT
+
+      - name: Prove source snapshot reconstructs required Estate paths
+        shell: pwsh
+        env:
+          MANIFEST: ${{ steps.build.outputs.manifest }}
+          SNAPSHOT: ${{ steps.build.outputs.snapshot }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $m = Get-Content -LiteralPath $env:MANIFEST -Raw | ConvertFrom-Json
+          if ($m.schema -ne 'JM.EstateRecoveryExport/1.0') { throw 'Unexpected recovery manifest schema.' }
+          if ($m.private_owner_recovery.secret_value_in_export -ne $false) { throw 'Recovery manifest crossed the owner-secret boundary.' }
+          if ($m.private_owner_recovery.bucket -ne 'jm-estate-owner-vault') { throw 'Owner Vault bucket contract is missing.' }
+          if ($m.private_owner_recovery.binding -ne 'JM_OWNER_VAULT') { throw 'Owner Vault binding contract is missing.' }
+          $actual = (Get-FileHash -LiteralPath $env:SNAPSHOT -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $m.snapshot.sha256) { throw 'Snapshot hash does not match recovery manifest.' }
+          $expanded = Join-Path $env:RUNNER_TEMP 'jm-estate-expanded'
+          Expand-Archive -LiteralPath $env:SNAPSHOT -DestinationPath $expanded -Force
+          foreach ($relative in $m.required_paths) {
+            $candidate = Join-Path $expanded $relative
+            if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { throw "Snapshot missing required Estate path: $relative" }
+          }
+          Write-Host "PASS source snapshot: $($m.tracked_file_count) committed files represented; required Estate paths recovered."
+
+      - name: Prove Git history bundle is portable
+        shell: bash
+        env:
+          BUNDLE: ${{ steps.build.outputs.bundle }}
+          MANIFEST: ${{ steps.build.outputs.manifest }}
+        run: |
+          set -euo pipefail
+          git bundle verify "$BUNDLE"
+          clone="$RUNNER_TEMP/jm-estate-bundle-clone"
+          git clone "$BUNDLE" "$clone"
+          test -f "$clone/index.html"
+          test -f "$clone/estate-app.js"
+          test -f "$clone/functions/api/owner/vault.js"
+          test -f "$clone/registry/estate-physical-current-best-census-v0.3.json"
+          python3 - <<'PY'
+          import json, os, subprocess
+          m=json.load(open(os.environ['MANIFEST'],encoding='utf-8'))
+          clone=os.path.join(os.environ['RUNNER_TEMP'],'jm-estate-bundle-clone')
+          cloned=subprocess.check_output(['git','-C',clone,'rev-parse','HEAD'],text=True).strip()
+          if cloned != m['source_commit']:
+              raise SystemExit(f"Bundle clone HEAD mismatch: {cloned} != {m['source_commit']}")
+          print('PASS portable Git bundle clone', cloned)
+          PY
+
+      - name: Upload short-lived owner-downloadable proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM-Estate-Recovery-Export-${{ github.run_id }}
+          path: ${{ steps.build.outputs.out }}/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Enforce current private-restore proof receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          ready=json.loads(Path('registry/owner-vault-live-readiness-receipt-v0.1.json').read_text())
+          roundtrip=json.loads(Path('registry/owner-vault-owner-roundtrip-receipt-v0.1.json').read_text())
+          if ready.get('state') != 'LIVE_READINESS_PASS':
+              raise SystemExit('Owner Vault live readiness is not proven.')
+          if roundtrip.get('result') != 'PASS_AUTHENTICATED_OWNER_STATE_WRITE_AND_READ_BACK':
+              raise SystemExit('Owner Vault owner write/read recovery roundtrip is not proven.')
+          if roundtrip.get('secret_value_recorded') is not False:
+              raise SystemExit('Owner secret boundary is not clean.')
+          print('PASS private R2 recovery lane already proven; no secret value consumed by export CI.')
+          PY

@@ -3,9 +3,11 @@ name: Test permanent HTML body pipeline
 on:
   push:
     branches:
-      - jm/permanent-body-pipeline-v0-1
+      - main
+      - jm/permanent-intake-mainline-v0-1
     paths:
       - tools/Promote-JMHtmlBody.ps1
+      - docs/JM_PERMANENT_BODY_PIPELINE_v0_1.md
       - .github/workflows/test-permanent-html-body-pipeline.yml
   pull_request:
     paths:
@@ -21,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Run governed intake acceptance tests
         shell: pwsh
@@ -79,57 +81,30 @@ jobs:
             -RepoRoot $root 6>&1 | Out-String)
 
           $duplicateDir = Join-Path (Join-Path $root 'apps') 'duplicate-body'
-          if (Test-Path -LiteralPath $duplicateDir) {
-              throw 'A byte-identical duplicate body was created.'
-          }
-          if ($duplicateOutput -notmatch 'No copy created') {
-              throw 'Duplicate avoidance did not return its existing-body result.'
-          }
+          if (Test-Path -LiteralPath $duplicateDir) { throw 'A byte-identical duplicate body was created.' }
+          if ($duplicateOutput -notmatch 'No copy created') { throw 'Duplicate avoidance did not return its existing-body result.' }
 
           $contentRejected = $false
           try {
-              & $tool `
-                -Source 'content://android-provider/temporary-body' `
-                -Slug 'android-handle' `
-                -Office 'apps' `
-                -BodyName 'Android Handle' `
-                -RepoRoot $root
+              & $tool -Source 'content://android-provider/temporary-body' -Slug 'android-handle' -Office 'apps' -BodyName 'Android Handle' -RepoRoot $root
           }
-          catch {
-              $contentRejected = $_.Exception.Message -match 'content://'
-          }
+          catch { $contentRejected = $_.Exception.Message -match 'content://' }
           if (-not $contentRejected) { throw 'Android content handle was not rejected.' }
 
           $traversalRejected = $false
           try {
-              & $tool `
-                -Source $source `
-                -Slug 'outside-body' `
-                -Office 'custom' `
-                -CustomOfficePath '../outside' `
-                -BodyName 'Outside Body' `
-                -RepoRoot $root
+              & $tool -Source $source -Slug 'outside-body' -Office 'custom' -CustomOfficePath '../outside' -BodyName 'Outside Body' -RepoRoot $root
           }
-          catch {
-              $traversalRejected = $_.Exception.Message -match 'unsafe|outside|relative'
-          }
+          catch { $traversalRejected = $_.Exception.Message -match 'unsafe|outside|relative' }
           if (-not $traversalRejected) { throw 'Repository path traversal was not rejected.' }
 
           $largeSource = Join-Path $env:RUNNER_TEMP 'jm-large-body.html'
           [IO.File]::WriteAllText($largeSource, ('x' * 2048), [Text.UTF8Encoding]::new($false))
           $sizeRejected = $false
           try {
-              & $tool `
-                -Source $largeSource `
-                -Slug 'large-body' `
-                -Office 'apps' `
-                -BodyName 'Large Body' `
-                -RepoRoot $root `
-                -MaxBytes 1024
+              & $tool -Source $largeSource -Slug 'large-body' -Office 'apps' -BodyName 'Large Body' -RepoRoot $root -MaxBytes 1024
           }
-          catch {
-              $sizeRejected = $_.Exception.Message -match 'intake ceiling'
-          }
+          catch { $sizeRejected = $_.Exception.Message -match 'intake ceiling' }
           if (-not $sizeRejected) { throw 'Oversized intake was not rejected.' }
 
           Write-Host 'PASS: governed permanent HTML body pipeline acceptance tests.'

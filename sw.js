@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.7-owner-vault-v0-1';
+const CACHE='jm-web-estate-v1.4.8-owner-vault-binding-activation';
 const CORE=[
   './',
   './index.html',

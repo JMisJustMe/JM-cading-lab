@@ -1,0 +1,87 @@
+{
+  "schema": "JM.EstateCurrentBodyStrandingCheck/0.1",
+  "date_local": "2026-08-20",
+  "scope": "Only the ten named open seams from the 2026-08-14 R2 authority-reconciliation map, rechecked against later current Estate evidence. This is not a fresh continuity audit and not a full historical byte census.",
+  "result": "ONE_CURRENT_PRIVATE_DURABILITY_GAP_REMAINS",
+  "blocking_current_items": 1,
+  "seams": [
+    {
+      "id": 1,
+      "name": "Theory v0.19 / v0.20.1 exact source body",
+      "classification": "NOT_OPERATIONAL_BLOCKER_CURRENT_THEORY_WING_PRESENT_HISTORICAL_SOURCE_DEPTH_REMAINS",
+      "evidence": ["registry/theory-wing.json", "registry/theory-chat-source-graft-v3-receipt.json"],
+      "reason": "The current Theory Wing is live on main with verified full/canonical bodies, shaped standalones, a 37-body source-depth library/vault and explicitly graded source custody. Older exact-package/source-depth retrieval remains honest historical/source work; census placeholders are explicitly excluded from the current body count."
+    },
+    {
+      "id": 2,
+      "name": "Newest / last-built Games&Beyond current-best proofs",
+      "classification": "NOT_STRANDED_CURRENT_EXACT_BODY_HOSTS_PRESENT_VERSION_RECONCILIATION_ONLY",
+      "evidence": ["games-beyond/CURRENT_GAMES_WORKING_SET.md", "games-beyond/GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt"],
+      "reason": "The current working-set register says the playable estate is not missing: exact bodies are physically carried across strong hosts plus newer standalone authorities. Remaining work is version reconciliation and one-front-door routing, not source recovery."
+    },
+    {
+      "id": 3,
+      "name": "RouteOS platform v108A.5",
+      "classification": "CURRENT_PRIVATE_DURABILITY_GAP_R2_COPY_REQUIRED",
+      "blocking": true,
+      "evidence": ["registry/routeos-v108a5-recovery-authority.json", ".github/workflows/apply-routeos-v108a5-recovery.yml"],
+      "reason": "The full ten-file package was recovered and independently revalidated, but the recovery authority deliberately keeps the full payload in private owner custody rather than publishing it into GitHub. No exact keeper package was found in the connected Wisebase search. To make the current-Estate recovery promise device-independent, the exact private keeper must gain a durable R2 copy."
+    },
+    {
+      "id": 4,
+      "name": "RouteOS JM-Native v2.2A",
+      "classification": "NOT_STORAGE_STRANDED_DURABLE_GITHUB_SPECIALIST_REF_UNCROWNED",
+      "evidence": ["agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a", "systems/routeos-kernel-jm-native-v2.2A/source/fault_class_recovery.jmroute", "systems/routeos-kernel-jm-native-v2.2A/carrier/routeos-v2.2A-source.part00.b64"],
+      "reason": "The v2.2A source/carrier exists on a durable GitHub specialist branch. The old decisive-runtime/crown boundary was not converted into a current-main crown, so it remains release/governance work rather than a lost-source or device-only storage problem."
+    },
+    {
+      "id": 5,
+      "name": "Other Body Words",
+      "classification": "NOT_OPERATIONAL_BLOCKER_UNSEATED_TITLE_ONLY_RECOVERY",
+      "reason": "No current repository source/body match was found. A title earns retrieval, not a completed-body crown; it is not treated as a current authoritative body solely from the historical recovery title."
+    },
+    {
+      "id": 6,
+      "name": "GitHub ↔ Cloudflare RouteOS public receipt parity",
+      "classification": "CLOSED_BY_LATER_CLOUDFLARE_AUTHORITY_AND_DEPLOYMENT_PROOFS",
+      "evidence": ["registry/cloudflare-authoritative-route-receipt-v1.3.json", "registry/owner-vault-live-readiness-receipt-v0.1.json"],
+      "reason": "Later authoritative Cloudflare contact/deployment proof supersedes the Aug-14 parity uncertainty for the current operational Estate."
+    },
+    {
+      "id": 7,
+      "name": "Public Estate Head gap ledger",
+      "classification": "NOT_CURRENT_BODY_STRANDING_BLOCKER_HISTORICAL_LEDGER_PRESERVED",
+      "evidence": ["registry/estate-physical-current-best-census-v0.3.json", "registry/remaining-retrieval-truth-outcome.json"],
+      "reason": "Historical unresolved retrieval truth remains preserved. The operational finish census is now deliberately bounded and does not convert historical source gaps into present missing-current-body claims."
+    },
+    {
+      "id": 8,
+      "name": "Wisebase whole-file inventory",
+      "classification": "NOT_OPERATIONAL_AUTHORITY_STORE_WISEBASE_REMAINS_SEARCH_MEMORY_ROOM",
+      "reason": "Wisebase is useful retrieval/memory custody but is not treated as the sole physical authority lane. Exact RouteOS keeper searches found references but not the actual keeper package; current durability authority remains Git/GitHub plus private R2."
+    },
+    {
+      "id": 9,
+      "name": "Wix canonical translation/routing authority",
+      "classification": "NOT_OPERATIONAL_BLOCKER_STANDALONE_CLOUDFLARE_ESTATE_IS_CURRENT_FRONT_DOOR",
+      "evidence": ["registry/cloudflare-authoritative-route-receipt-v1.3.json", "docs/JM_ESTATE_RECOVERY_EXPORT_v0_1.md"],
+      "reason": "Wix is not required for source identity, storage or current delivery. A custom domain remains optional owner frontage and can be attached to the existing standalone Estate later."
+    },
+    {
+      "id": 10,
+      "name": "Estate navigation naming LET’S GO vs LG_SPLITSHADOW",
+      "classification": "NOT_PHYSICAL_STRANDING_BLOCKER_NAMING_GOVERNANCE_ONLY",
+      "reason": "This is a naming/navigation reconciliation seam, not evidence that a current authoritative body lacks durable custody."
+    }
+  ],
+  "current_finish_blocker": {
+    "id": "routeos-v108a5-private-r2-copy",
+    "body": "RouteOS platform v108A.5",
+    "required_outcome": "Exact recovered private keeper package stored in JM Owner Vault / R2 with hash and owner-readable retrieval proof.",
+    "does_not_require": ["public GitHub publication", "public Cloudflare route", "Wisebase publication", "Wix", "fresh Estate continuity audit"]
+  },
+  "full_historical_byte_census_crowned": false,
+  "operational_estate_finished": false,
+  "ding": false,
+  "boundary": "Nine named Aug-14 seams are later-closed or non-blocking for current operational custody. One current private keeper still needs a durable R2 copy before the current-Estate recovery promise can be called complete."
+}

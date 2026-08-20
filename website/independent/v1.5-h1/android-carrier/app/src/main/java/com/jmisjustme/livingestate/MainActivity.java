@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -50,7 +49,22 @@ public final class MainActivity extends Activity {
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
-        if (installedIndex().isFile()) openLocalEstate(); else showImportRoom();
+        if (!installedIndex().isFile()) {
+            showImportRoom();
+            return;
+        }
+        try {
+            String storedIndexHash = sha256(installedIndex());
+            if (EXPECTED_INDEX_SHA256.equals(storedIndexHash)) {
+                openLocalEstate();
+            } else {
+                showImportRoom();
+                identityHold("Stored root index no longer matches the frozen H1 identity. The preserved local body was not opened or deleted. Re-import the exact H1 package to recover.\n\nExpected: " + shortHash(EXPECTED_INDEX_SHA256) + "\nFound: " + shortHash(storedIndexHash));
+            }
+        } catch (Exception error) {
+            showImportRoom();
+            importHold(error);
+        }
     }
 
     private File siteDir() { return new File(getFilesDir(), "JMISJUSTME_v1_5_H1_site"); }
@@ -112,27 +126,46 @@ public final class MainActivity extends Activity {
         super.onActivityResult(request, result, data);
         if (request != OPEN_SITE_PACKAGE || result != RESULT_OK || data == null || data.getData() == null) return;
         Uri uri = data.getData();
+        showImportProgress();
+        new Thread(() -> importVerifiedPackage(uri), "jm-h1-import").start();
+    }
+
+    private void showImportProgress() {
+        LinearLayout room = new LinearLayout(this);
+        room.setOrientation(LinearLayout.VERTICAL);
+        room.setGravity(Gravity.CENTER);
+        room.setPadding(dp(30), dp(42), dp(30), dp(42));
+        room.setBackgroundColor(0xff080b11);
+        room.addView(text("Verifying and storing the exact H1 package…", 18, Color.WHITE));
+        room.addView(text("The frozen website body is not being changed.", 14, 0xff9be0b0));
+        setContentView(room);
+    }
+
+    private void importVerifiedPackage(Uri uri) {
+        File tempZip = new File(getCacheDir(), "JMISJUSTME_v1_5_H1_import.zip");
+        File staging = new File(getFilesDir(), "JMISJUSTME_v1_5_H1_staging");
         try {
-            File tempZip = new File(getCacheDir(), "JMISJUSTME_v1_5_H1_import.zip");
             String packageHash = copyAndHash(uri, tempZip);
             if (!EXPECTED_PACKAGE_SHA256.equals(packageHash)) {
-                tempZip.delete();
-                identityHold("Package SHA-256 mismatch. Expected the exact frozen H1 full HTDOCS body. Nothing was replaced.\n\nExpected: " + shortHash(EXPECTED_PACKAGE_SHA256) + "\nSelected: " + shortHash(packageHash));
+                runOnUiThread(() -> {
+                    showImportRoom();
+                    identityHold("Package SHA-256 mismatch. Expected the exact frozen H1 full HTDOCS body. Nothing was replaced.\n\nExpected: " + shortHash(EXPECTED_PACKAGE_SHA256) + "\nSelected: " + shortHash(packageHash));
+                });
                 return;
             }
 
-            File staging = new File(getFilesDir(), "JMISJUSTME_v1_5_H1_staging");
             recursiveDelete(staging);
             if (!staging.mkdirs() && !staging.isDirectory()) throw new IllegalStateException("Could not create private staging room.");
             unpackSafely(tempZip, staging);
-            tempZip.delete();
 
             File stagedIndex = new File(staging, "index.html");
             if (!stagedIndex.isFile()) throw new IllegalStateException("Exact H1 package did not contain root index.html.");
             String indexHash = sha256(stagedIndex);
             if (!EXPECTED_INDEX_SHA256.equals(indexHash)) {
-                recursiveDelete(staging);
-                identityHold("Root index identity mismatch. Nothing was replaced.\n\nExpected: " + shortHash(EXPECTED_INDEX_SHA256) + "\nFound: " + shortHash(indexHash));
+                runOnUiThread(() -> {
+                    showImportRoom();
+                    identityHold("Root index identity mismatch. Nothing was replaced.\n\nExpected: " + shortHash(EXPECTED_INDEX_SHA256) + "\nFound: " + shortHash(indexHash));
+                });
                 return;
             }
 
@@ -150,15 +183,27 @@ public final class MainActivity extends Activity {
                 .putString("package_sha256", packageHash)
                 .putString("index_sha256", indexHash)
                 .apply();
-            Toast.makeText(this, "H1 body verified and stored · " + shortHash(packageHash), Toast.LENGTH_LONG).show();
-            openLocalEstate();
+            runOnUiThread(() -> {
+                Toast.makeText(this, "H1 body verified and stored · " + shortHash(packageHash), Toast.LENGTH_LONG).show();
+                openLocalEstate();
+            });
         } catch (Exception error) {
-            new AlertDialog.Builder(this)
-                .setTitle("Import HOLD")
-                .setMessage(error.getMessage() == null ? error.toString() : error.getMessage())
-                .setPositiveButton("OK", null)
-                .show();
+            runOnUiThread(() -> {
+                showImportRoom();
+                importHold(error);
+            });
+        } finally {
+            tempZip.delete();
+            recursiveDelete(staging);
         }
+    }
+
+    private void importHold(Exception error) {
+        new AlertDialog.Builder(this)
+            .setTitle("Import HOLD")
+            .setMessage(error.getMessage() == null ? error.toString() : error.getMessage())
+            .setPositiveButton("OK", null)
+            .show();
     }
 
     private void identityHold(String message) {
@@ -197,7 +242,7 @@ public final class MainActivity extends Activity {
             while ((entry = zin.getNextEntry()) != null) {
                 if (++entries > MAX_ENTRIES) throw new IllegalStateException("Package exceeds entry safety limit.");
                 String name = entry.getName().replace('\\', '/');
-                if (name.startsWith("/") || name.contains("../") || name.equals("..")) throw new IllegalStateException("Unsafe package path blocked: " + name);
+                if (!CarrierPolicy.isSafeArchiveName(name)) throw new IllegalStateException("Unsafe package path blocked: " + name);
                 File outFile = new File(root, name);
                 String outPath = outFile.getCanonicalPath();
                 if (!outPath.startsWith(rootPath) && !outPath.equals(rootCanonical)) throw new IllegalStateException("Package path escaped private room: " + name);
@@ -230,6 +275,8 @@ public final class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(false);
+        settings.setAllowFileAccessFromFileURLs(false);
+        settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         web.setWebChromeClient(new WebChromeClient());
@@ -301,8 +348,9 @@ public final class MainActivity extends Activity {
             Uri uri = request.getUrl();
             if (!"jm.local".equalsIgnoreCase(uri.getHost())) return null;
             try {
-                String rawPath = uri.getEncodedPath();
-                String path = URLDecoder.decode(rawPath == null ? "/" : rawPath, "UTF-8");
+                if (!"https".equalsIgnoreCase(uri.getScheme())) return null;
+                String path = uri.getPath();
+                if (path == null) path = "/";
                 if (path.equals("/")) path = "/index.html";
                 while (path.startsWith("/")) path = path.substring(1);
                 File root = siteDir();
@@ -320,8 +368,10 @@ public final class MainActivity extends Activity {
 
         @Override public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             Uri uri = request.getUrl();
-            if ("jm.local".equalsIgnoreCase(uri.getHost())) return false;
-            openExternal(uri);
+            if ("https".equalsIgnoreCase(uri.getScheme()) && "jm.local".equalsIgnoreCase(uri.getHost())) return false;
+            String scheme = uri.getScheme();
+            if (CarrierPolicy.isAllowedExternalScheme(scheme)) openExternal(uri);
+            else Toast.makeText(MainActivity.this, "Blocked unsupported external link.", Toast.LENGTH_SHORT).show();
             return true;
         }
     }
@@ -394,3 +444,4 @@ public final class MainActivity extends Activity {
         super.onDestroy();
     }
 }
+

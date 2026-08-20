@@ -1,0 +1,28 @@
+{
+  "schema": "JM.OperationalFinishMountReceipt/1.0",
+  "date_local": "2026-08-20",
+  "scope": "WORKING_OPERATIONAL_ESTATE_ONLY",
+  "state": "FROZEN_LOCKED_ANCHORED_MOUNTED_PENDING_MAIN_MERGE",
+  "zionfolder_path": "JM_ESTATE/Zionfolders/Operational_Finish/JM_ESTATE_ZIONFOLDER_OPERATIONAL_FINISH_v1.0_2026-08-20.zip",
+  "zionfolder_sha256": "849b07bf8f2cd5c686b865fe5fcf6f55f6556e8ec75253c1113676e2fff003ea",
+  "zionfolder_bytes": 113400,
+  "keeper_contents": [
+    "00_OPEN_FIRST_JM_ESTATE_OPERATIONAL_FINISH_FREEZE_v1.0.pdf",
+    "01_JM_ESTATE_OPERATIONAL_FINISH_FREEZE_v1.0.docx",
+    "02_JM_ESTATE_OPERATIONAL_FINISH_ANCHOR_RECEIPT_v1.0.json",
+    "03_ZIONFOLDER_MANIFEST.json",
+    "KEEPER_README.txt",
+    "SHA256SUMS.txt"
+  ],
+  "registry_anchor": "registry/estate-operational-finish-anchor-v1.0.json",
+  "readable_source": "docs/JM_ESTATE_OPERATIONAL_FINISH_FREEZE_v1_0.md",
+  "freeze": "PASS",
+  "lock": "PASS",
+  "mount": "PASS",
+  "anchor_branch_planned": "anchor/estate-operational-finish-v1-0",
+  "scoped_operational_ding": "PASS",
+  "estate_wide_universal_ding": false,
+  "full_historical_final_corpus": "OPEN_BY_LAW",
+  "secret_values_recorded": false,
+  "boundary": "This receipt closes the working operational Estate only. Historical held records and optional future frontage remain preserved outside this scoped finish."
+}

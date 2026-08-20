@@ -1,0 +1,49 @@
+{
+  "schema": "jm.website.android-carrier-receipt/v1.5-h1",
+  "status": "BUILD_PASS__PHYSICAL_DEVICE_CONTACT_OPEN",
+  "websiteHead": "JMISJUSTME Independent Website \u2014 Current Estate Convergence v1.5 H1",
+  "websiteHeadState": "FROZEN_LOCKED_ANCHORED_MOUNTED_PUBLIC_DING",
+  "package": "com.jmisjustme.livingestate",
+  "versionCode": 1501,
+  "versionName": "1.5-H1",
+  "sourceCommit": "6b4efae5d65a4605f30e4d5b5976f58dfe24a35b",
+  "workflowRun": "32403191492",
+  "sourceDonor": {
+    "body": "JM Living Estate v1.3.0 Android carrier",
+    "commit": "653bb98b45db6fd4f22155796acc7751249a1124",
+    "reuse": "package identity + native WebView/contact carrier lineage"
+  },
+  "exactImport": {
+    "name": "JMISJUSTME_INFINITYFREE_HTDOCS_FULL_v1_5_POST_GRAFT_CURRENT_H1.zip",
+    "sha256": "9df5439dcec6e4aa1ddad8e835a6d12fe97f460d35d42984046fcbbd1c48a0bc",
+    "rootIndexSha256": "28983ccf02a3c7bb50107a8a059bc0ccd0eda0b1356ef93d48ba8203bbb418f1"
+  },
+  "carrierRoute": "Android document picker \u2192 exact H1 ZIP hash check \u2192 safe private extraction \u2192 root index identity check \u2192 https://jm.local same-origin WebView \u2192 persistent/offline re-entry",
+  "security": [
+    "zip-slip block",
+    "entry limit",
+    "unpacked-size limit",
+    "no file:// WebView access",
+    "external URLs leave through system browser"
+  ],
+  "debugApk": {
+    "name": "JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_DEBUG.apk",
+    "bytes": 21364,
+    "sha256": "453ebb7f7fd01b876d4920c783c275cdbe44b4dde6532ab9361bc97f6ab9dd2b"
+  },
+  "proofAab": {
+    "name": "JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_PROOF.aab",
+    "bytes": 17030,
+    "sha256": "38107f380ffdd389c3954cee475a94badbd21dbea017f57861b6a0394136a5ff"
+  },
+  "universalApk": {
+    "name": "00_INSTALL_JMISJUSTME_LIVING_ESTATE_v1.5_H1_UNIVERSAL.apk",
+    "bytes": 25232,
+    "sha256": "d383e842326a4350ba39e333ccab7d4809708ed3640e43525aca0f7cb33ab1c0"
+  },
+  "signingBoundary": "Temporary proof identity; not owner production/update key.",
+  "physicalDeviceDing": "OPEN",
+  "publicWebsiteMutated": false,
+  "cloudflareMutated": false,
+  "meshLaw": "Mesh != merge"
+}

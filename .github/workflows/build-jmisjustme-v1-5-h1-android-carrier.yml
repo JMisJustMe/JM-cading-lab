@@ -1,0 +1,141 @@
+name: JMISJUSTME v1.5 H1 Android Carrier
+
+on:
+  push:
+    paths:
+      - 'website/independent/v1.5-h1/android-carrier/**'
+      - '.github/workflows/build-jmisjustme-v1-5-h1-android-carrier.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jmisjustme-v1-5-h1-android-carrier-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: website/independent/v1.5-h1/android-carrier
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android API 36
+        run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Create temporary proof signing identity
+        run: |
+          keytool -genkeypair -noprompt -keystore proof-upload.jks \
+            -storepass jm-proof-only -keypass jm-proof-only \
+            -alias jm-proof -keyalg RSA -keysize 4096 -validity 3650 \
+            -dname 'CN=JM Living Estate v1.5 H1 Carrier Proof, O=JM, C=GB'
+
+      - name: Compile carrier APK and proof AAB
+        run: gradle --no-daemon clean :app:assembleDebug :app:bundleRelease
+
+      - name: Build universal APK and proof set
+        run: |
+          set -euo pipefail
+          rm -rf release
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_DEBUG.apk
+          cp app/build/outputs/bundle/release/app-release.aab release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_PROOF.aab
+          curl -fsSL -o bundletool.jar 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
+          java -jar bundletool.jar build-apks \
+            --bundle=release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_PROOF.aab \
+            --output=release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER.apks \
+            --mode=universal \
+            --ks=proof-upload.jks --ks-pass=pass:jm-proof-only \
+            --ks-key-alias=jm-proof --key-pass=pass:jm-proof-only
+          unzip -p release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER.apks universal.apk > release/00_INSTALL_JMISJUSTME_LIVING_ESTATE_v1.5_H1_UNIVERSAL.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_DEBUG.apk > release/DEBUG_SIGNATURE.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/00_INSTALL_JMISJUSTME_LIVING_ESTATE_v1.5_H1_UNIVERSAL.apk > release/UNIVERSAL_SIGNATURE.txt
+          rm release/JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER.apks
+
+      - name: Write build receipt and source snapshot
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os, zipfile
+
+          rel = Path('release')
+          def meta(name):
+              p = rel / name
+              return {'name': name, 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
+
+          receipt = {
+              'schema': 'jm.website.android-carrier-receipt/v1.5-h1',
+              'status': 'BUILD_PASS__PHYSICAL_DEVICE_CONTACT_OPEN',
+              'websiteHead': 'JMISJUSTME Independent Website — Current Estate Convergence v1.5 H1',
+              'websiteHeadState': 'FROZEN_LOCKED_ANCHORED_MOUNTED_PUBLIC_DING',
+              'package': 'com.jmisjustme.livingestate',
+              'versionCode': 1501,
+              'versionName': '1.5-H1',
+              'sourceCommit': os.environ['GITHUB_SHA'],
+              'workflowRun': os.environ['GITHUB_RUN_ID'],
+              'sourceDonor': {
+                  'body': 'JM Living Estate v1.3.0 Android carrier',
+                  'commit': '653bb98b45db6fd4f22155796acc7751249a1124',
+                  'reuse': 'package identity + native WebView/contact carrier lineage'
+              },
+              'exactImport': {
+                  'name': 'JMISJUSTME_INFINITYFREE_HTDOCS_FULL_v1_5_POST_GRAFT_CURRENT_H1.zip',
+                  'sha256': '9df5439dcec6e4aa1ddad8e835a6d12fe97f460d35d42984046fcbbd1c48a0bc',
+                  'rootIndexSha256': '28983ccf02a3c7bb50107a8a059bc0ccd0eda0b1356ef93d48ba8203bbb418f1'
+              },
+              'carrierRoute': 'Android document picker → exact H1 ZIP hash check → safe private extraction → root index identity check → https://jm.local same-origin WebView → persistent/offline re-entry',
+              'security': ['zip-slip block', 'entry limit', 'unpacked-size limit', 'no file:// WebView access', 'external URLs leave through system browser'],
+              'debugApk': meta('JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_DEBUG.apk'),
+              'proofAab': meta('JMISJUSTME_LIVING_ESTATE_v1.5_H1_CARRIER_PROOF.aab'),
+              'universalApk': meta('00_INSTALL_JMISJUSTME_LIVING_ESTATE_v1.5_H1_UNIVERSAL.apk'),
+              'signingBoundary': 'Temporary proof identity; not owner production/update key.',
+              'physicalDeviceDing': 'OPEN',
+              'publicWebsiteMutated': False,
+              'cloudflareMutated': False,
+              'meshLaw': 'Mesh != merge'
+          }
+          (rel / 'ANDROID_CARRIER_BUILD_RECEIPT.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
+
+          root = Path('.')
+          out = rel / 'JMISJUSTME_LIVING_ESTATE_v1.5_H1_ANDROID_CARRIER_SOURCE.zip'
+          keep = [Path('README.md'), Path('settings.gradle.kts'), Path('build.gradle.kts'), Path('gradle.properties'), Path('app/build.gradle.kts'), Path('app/src/main/AndroidManifest.xml'), Path('app/src/main/res/values/styles.xml'), Path('app/src/main/java/com/jmisjustme/livingestate/MainActivity.java')]
+          with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
+              for p in keep: z.write(p, p.as_posix())
+          PY
+          sha256sum release/* > release/SHA256SUMS.txt
+
+      - name: Upload GitHub Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JMISJUSTME_LIVING_ESTATE_v1.5_H1_ANDROID_CARRIER
+          retention-days: 30
+          path: website/independent/v1.5-h1/android-carrier/release/
+
+      - name: Seat branch-local build proof
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git config user.name 'JM v1.5 H1 Android Carrier'
+          git config user.email 'actions@users.noreply.github.com'
+          git add website/independent/v1.5-h1/android-carrier/release/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seat JM v1.5 H1 Android carrier build proof [skip ci]'
+          git push origin HEAD:"$GITHUB_REF_NAME"

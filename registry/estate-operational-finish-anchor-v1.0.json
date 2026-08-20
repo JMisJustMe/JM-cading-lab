@@ -2,8 +2,10 @@
   "schema": "JM.EstateOperationalFinishAnchor/1.0",
   "date_local": "2026-08-20",
   "scope": "WORKING_OPERATIONAL_ESTATE_ONLY",
-  "result": "PASS_READY_TO_FREEZE_LOCK_ANCHOR_MOUNT",
+  "result": "FROZEN_LOCKED_ANCHORED_MOUNTED",
   "ruling": "No positively evidenced CURRENT authoritative body remains stranded outside governed GitHub/R2/current carriers. Historical Final Corpus remains open by law.",
+  "package_merge_commit": "fbdd3eb9babadea161608e5066f868fd2b31824b",
+  "anchor_branch": "anchor/estate-operational-finish-v1-0",
   "proved_operational_core": [
     "current physical operating authorities PASS",
     "repository-wide source-to-living governance PASS",
@@ -30,8 +32,8 @@
   "freeze_law": {
     "freeze": "Preserve this operational state as a v1.0 keeper; later work supersedes rather than rewrites it.",
     "lock": "Preserve historical holds, boundary statements and non-claims.",
-    "anchor": "Bind the keeper to the Git commit that mounts this receipt/package, then create a dedicated anchor branch.",
-    "mount": "Mount the polished PDF and Word keeper inside the Zionfolder package with checksums and public governance receipt."
+    "anchor": "The dedicated anchor branch resolves to the finalized mounted keeper state.",
+    "mount": "The polished PDF and Word keeper are mounted inside the Zionfolder package with checksums and public governance receipt."
   },
   "scoped_operational_ding": "PASS",
   "estate_wide_universal_ding": false,
@@ -56,6 +58,11 @@
       "sha256": "5812f7b9ce85feccd568484a6669af540008212ea131a7239cb68b3c01398b5f",
       "bytes": 41838
     }
+  },
+  "zionfolder": {
+    "path": "JM_ESTATE/Zionfolders/Operational_Finish/JM_ESTATE_ZIONFOLDER_OPERATIONAL_FINISH_v1.0_2026-08-20.zip",
+    "sha256": "849b07bf8f2cd5c686b865fe5fcf6f55f6556e8ec75253c1113676e2fff003ea",
+    "bytes": 113400
   },
   "secret_values_recorded": false,
   "boundary": "Operational finish is frozen without converting it into a universal historical-completeness claim."

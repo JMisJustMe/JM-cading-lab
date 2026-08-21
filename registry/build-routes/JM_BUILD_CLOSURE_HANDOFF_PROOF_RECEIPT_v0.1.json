@@ -1,0 +1,139 @@
+{
+  "schema": "jm.build-closure-handoff-proof-receipt/0.1",
+  "name": "JM Closure & Handoff Body v0.1 — Ordered Closure / Forward Route Proof Receipt",
+  "date": "2026-08-21",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "infrastructure_pr": 140,
+  "purpose": "Prove that execution CLOSED is not automatically freeze/lock/anchor/mount/handoff, that applicable closure stages resolve in order with evidence or explicit N/A, that a closure Ding blocks later stages and forward routing, and that recovery pointer + handoff are required before FORWARD_READY.",
+  "recovered_donors": [
+    {
+      "name": "JM Operational Finish Freeze Lock Anchor Mount v1.0",
+      "branch": "jm/estate-operational-finish-freeze-v1-0",
+      "path": "JM_ESTATE/GOVERNANCE/OPERATIONAL_FINISH_FREEZE_LOCK_ANCHOR_MOUNT_v1.0.json",
+      "observed": {
+        "freeze": "PASS",
+        "lock": "PASS",
+        "mount": "PASS",
+        "has_zionfolder_path": true,
+        "has_registry_anchor": true
+      },
+      "role": "Donor authority for existing operational finish receipt semantics; not recreated by the closure router."
+    },
+    {
+      "name": "THE INSTRUCTION HANDOFF v1.0",
+      "branch": "jm/estate-operational-finish-freeze-v1-0",
+      "path": "JM_ESTATE/GOVERNANCE/THE_INSTRUCTION_HANDOFF_v1.0/FREEZE_LOCK_ANCHOR.md",
+      "observed_laws": [
+        "Later is not automatically stronger.",
+        "A handoff is the route through which difference gains legitimate control of continuity."
+      ],
+      "role": "Donor authority for handoff continuity/provenance law."
+    }
+  ],
+  "implementation": {
+    "closure_tool": "scripts/jm_build_closure.py",
+    "closure_policy": "registry/build-routes/JM_BUILD_CLOSURE_POLICY_v0.1.json",
+    "workflow": ".github/workflows/jm-build-closure-handoff.yml",
+    "entry_rule": "Initialize only from jm.build-execution/0.1 state CLOSED with closure.execution_closed=true and no OPEN/FAIL execution gates.",
+    "ordered_stages": [
+      "PACKAGE",
+      "FREEZE",
+      "LOCK",
+      "ANCHOR",
+      "MOUNT",
+      "RECOVERY_POINTER",
+      "HANDOFF"
+    ],
+    "stage_states": ["OPEN", "PASS", "FAIL", "N/A"],
+    "forward_result": "FORWARD_READY",
+    "claim_boundary": "The closure ledger records evidence references and routing only; it cannot itself perform or prove an external/native package, freeze, lock, anchor, mount, pointer resolution or handoff event."
+  },
+  "live_proof": {
+    "workflow_run": 32490478108,
+    "job_id": 96796663718,
+    "workflow_name": "JM Build Closure & Handoff",
+    "job_name": "Prove truthful closure, handoff and forward routing",
+    "result": "SUCCESS",
+    "self_test": "PASS",
+    "donor_recovery": "PASS",
+    "execution_entry": {
+      "state": "CLOSED",
+      "execution_closed": true,
+      "execution_freeze_lock_anchor_mount_claimed": false,
+      "new_capability_creation_authorized": false
+    },
+    "sequence": [
+      {
+        "stage": "FREEZE",
+        "attempt": "PASS before PACKAGE resolution",
+        "result": "EXPECTED_RED_PASS",
+        "observed": "closure stages are ordered; next unresolved stage is 'PACKAGE', not 'FREEZE'"
+      },
+      {
+        "stage": "PACKAGE",
+        "result": "N/A",
+        "reason": "Synthetic router fixture has no distributable package; no package ceremony required."
+      },
+      {
+        "stage": "FREEZE",
+        "result": "PASS",
+        "evidence_scope": "synthetic router proof only"
+      },
+      {
+        "stage": "LOCK",
+        "result": "PASS",
+        "evidence_scope": "synthetic router proof only"
+      },
+      {
+        "stage": "ANCHOR",
+        "result": "FAIL",
+        "meaning": "Synthetic Ding proves fail-closed local closure routing."
+      },
+      {
+        "stage": "MOUNT",
+        "attempt": "PASS while ANCHOR failed",
+        "result": "EXPECTED_RED_PASS",
+        "observed": "closure stages are ordered; next unresolved stage is 'ANCHOR', not 'MOUNT'",
+        "forward_state": "BLOCKED"
+      },
+      {
+        "stage": "ANCHOR",
+        "result": "OPEN",
+        "meaning": "Repair evidence returned only the affected stage to retest."
+      },
+      {
+        "stage": "ANCHOR",
+        "result": "PASS"
+      },
+      {
+        "stage": "MOUNT",
+        "result": "PASS"
+      },
+      {
+        "stage": "RECOVERY_POINTER",
+        "result": "PASS",
+        "pointer": "registry/build-routes/JM_BUILD_CLOSURE_PROBE_CURRENT_KEEPER.json",
+        "scope": "synthetic pointer for router proof only"
+      },
+      {
+        "stage": "HANDOFF",
+        "result": "PASS",
+        "handoff_to": "forward-descendant-router",
+        "scope": "synthetic handoff target for router proof only"
+      }
+    ],
+    "final_state": "HANDOFF_COMPLETE",
+    "final_forward_state": "FORWARD_READY",
+    "frozen_keeper_immutable": true,
+    "final_observed": "JM Closure & Handoff live proof PASS: execution CLOSED -> ordered closure -> synthetic Ding containment/retest -> recovery pointer -> handoff -> FORWARD_READY; router did not retroactively manufacture product/contact/crown proof."
+  },
+  "non_claims": [
+    "The live CI fixture does not freeze, lock, anchor or mount a real product; those PASS values are synthetic route-state evidence for the router test.",
+    "The synthetic recovery pointer is not a real keeper pointer and is not published as one.",
+    "FORWARD_READY does not create a descendant automatically; it means the closure/handoff route no longer blocks forward creation.",
+    "Execution CLOSED remains distinct from closure completion.",
+    "Closure completion remains distinct from runtime/contact/crown proof."
+  ],
+  "proof_result": "PASS — EXECUTION CLOSED -> ORDERED APPLICABLE CLOSURE -> FAIL-CLOSED DING -> LOCAL RETEST -> RECOVERY POINTER -> HANDOFF -> FORWARD_READY",
+  "governing_result": "The JM default now governs entry, execution and closure as separate evidence-bounded bodies. Packaging may be N/A when genuinely inapplicable; freeze/lock/anchor/mount cannot be inferred from CLOSED; forward creation is unlocked only after closure continuity and recovery routing are resolved."
+}

@@ -52,6 +52,26 @@ jobs:
           HTML
           test -s pages-probe/_worker.js
 
+      - name: Local Pages runtime smoke
+        run: |
+          set -euo pipefail
+          npx wrangler pages dev pages-probe --ip 127.0.0.1 --port 8788 > /tmp/jm-pages-dev.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          HEALTH=''
+          for ATTEMPT in $(seq 1 30); do
+            if HEALTH=$(curl --fail --silent --show-error http://127.0.0.1:8788/health 2>/dev/null); then break; fi
+            sleep 1
+          done
+          if [ -z "$HEALTH" ]; then
+            echo '--- Pages dev log ---'
+            cat /tmp/jm-pages-dev.log
+            echo '--- direct response ---'
+            curl -i http://127.0.0.1:8788/health || true
+            exit 1
+          fi
+          printf '%s\n' "$HEALTH"
+
       - name: Ensure isolated Pages project exists
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -90,11 +110,20 @@ jobs:
         run: |
           set -euo pipefail
           HEALTH=''
-          for ATTEMPT in $(seq 1 30); do
-            if HEALTH=$(curl --fail --silent --show-error "$PREVIEW_URL/health" 2>/dev/null); then break; fi
+          for ATTEMPT in $(seq 1 20); do
+            STATUS=$(curl --silent --show-error --output /tmp/jm-health-body.txt --write-out '%{http_code}' "$PREVIEW_URL/health" || true)
+            if [ "$STATUS" = '200' ]; then
+              HEALTH=$(cat /tmp/jm-health-body.txt)
+              break
+            fi
+            echo "attempt=$ATTEMPT status=$STATUS body=$(cat /tmp/jm-health-body.txt 2>/dev/null || true)"
             sleep 2
           done
-          test -n "$HEALTH"
+          if [ -z "$HEALTH" ]; then
+            echo 'Final remote response:'
+            curl -i "$PREVIEW_URL/health" || true
+            exit 1
+          fi
           printf '%s\n' "$HEALTH"
           node -e 'const fs=require("fs"); const base=process.env.PREVIEW_URL; const health=JSON.parse(process.argv[1]); fs.writeFileSync("PUBLIC_PROBE_DEPLOYMENT.json", JSON.stringify({pass:true,transport:"cloudflare-pages-advanced-mode",probeOnly:true,privateDonorBytesIncluded:false,previewUrl:base,mcpUrl:base+"/mcp",health,chatgptContactProvenHere:false},null,2)+"\n")' "$HEALTH"
 

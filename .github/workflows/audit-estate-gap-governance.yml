@@ -15,6 +15,7 @@ on:
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/**"
       - "games-beyond/**"
+      - ".github/workflows/audit-estate-gap-governance.yml"
 
 permissions:
   contents: read
@@ -55,18 +56,27 @@ jobs:
           if len(system)!=10 or any(x.get('state') not in {'OPEN','PARTIAL','RESOLVED'} for x in system): errors.append('System breach register invalid')
           authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
           auth={x.get('id'):x for x in authority.get('bodies',[])}
-          if auth.get('routeos',{}).get('severity')!='CRITICAL_CORRECTED': errors.append('RouteOS authority weakened')
+          allowed_routeos_severity={
+              'CRITICAL_CORRECTED',
+              'CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED',
+          }
+          routeos_severity=auth.get('routeos',{}).get('severity')
+          if routeos_severity not in allowed_routeos_severity: errors.append(f'RouteOS authority weakened or unrecognised: {routeos_severity!r}')
           manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
           if not any(x.get('id')=='routeos-platform' for x in manifest.get('extraBodies',[])): errors.append('RouteOS missing from Games&Beyond')
           if not Path('games-beyond/routeos/index.html').exists(): errors.append('RouteOS flagship room missing')
           apps=Path('apps/index.html').read_text()
-          m=re.search(r'const APPS=(\[.*?\]);\s*const LABELS=',apps,re.S)
+          m=re.search(r'const\s+APPS\s*=\s*(\[.*?\]);',apps,re.S)
           if not m: errors.append('Apps registry unreadable')
           else:
-              rows=json.loads(m.group(1))
-              if any(row[0]=='RouteOS' for row in rows): errors.append('RouteOS returned to Non-Game Apps')
-              if any(str(row[2]).strip().lower()=='other' for row in rows): errors.append('Apps House uses forbidden Other category')
+              try:
+                  rows=json.loads(m.group(1))
+              except json.JSONDecodeError as exc:
+                  errors.append(f'Apps registry JSON unreadable: {exc}')
+              else:
+                  if any(row[0]=='RouteOS' for row in rows): errors.append('RouteOS returned to Non-Game Apps')
+                  if any(str(row[2]).strip().lower()=='other' for row in rows): errors.append('Apps House uses forbidden Other category')
           if errors:
               print('\n'.join('ERROR: '+e for e in errors)); raise SystemExit(1)
-          print(f'Gap governance PASS: 56 named gaps preserved; states={actual}; RouteOS guarded; no Other dumping.')
+          print(f'Gap governance PASS: 56 named gaps preserved; states={actual}; RouteOS guarded at {routeos_severity}; no Other dumping.')
           PY

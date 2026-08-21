@@ -1,0 +1,100 @@
+$('intentionButton').addEventListener('click', () => {
+  state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment, Math.floor(Math.random() * 8) + 1, true);
+  saveState();
+  renderMoments();
+});
+
+$('completeMicroButton').addEventListener('click', () => {
+  const micro = state.activeMicroReturn;
+  if (!micro) return;
+  $('microReceiptSummary').textContent = `${micro.trigger}: ${micro.dose}.`;
+  $('microDialog').showModal();
+});
+
+$('microForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const micro = state.activeMicroReturn;
+  if (!micro) return;
+  const pain = $('microPainReported').checked;
+  const xp = micro.environmentKey === 'intention' ? 4 : 8;
+  state.microHistory.unshift({
+    ...micro,
+    date: new Date().toISOString(),
+    complete: true,
+    ease: Number($('microEase').value),
+    moodAfter: Number($('microMoodAfter').value),
+    pain,
+    notes: $('microNotes').value.trim(),
+    xp
+  });
+  state.xp += xp;
+  updateStreak();
+  if (pain) state.nextFactor = clamp((state.nextFactor || 1) * .85, .65, 1.2);
+  state.activeMicroReturn = null;
+  saveState();
+  $('microDialog').close();
+  $('microForm').reset();
+  $('microEaseOutput').value = 3;
+  render();
+  openTab('record');
+});
+
+$('completeSessionButton').addEventListener('click', () => $('sessionDialog').showModal());
+$('sessionForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const rpe = Number($('rpe').value);
+  const pain = $('painReported').checked;
+  const xp = 20 + state.routine.exercises.length * state.routine.rounds * 5;
+  const adaptation = adaptationFor(rpe, pain);
+  state.history.unshift({
+    date: new Date().toISOString(),
+    signature: state.routine.signature.code,
+    exercises: state.routine.exercises,
+    rounds: state.routine.rounds,
+    rpe,
+    moodBefore: Number($('moodBefore').value),
+    moodAfter: Number($('moodAfter').value),
+    pain,
+    notes: $('sessionNotes').value.trim(),
+    adaptation,
+    xp
+  });
+  state.xp += xp;
+  updateStreak();
+  state.routine = buildRoutine(state.profile, state.history.length);
+  saveState();
+  $('sessionDialog').close();
+  $('sessionForm').reset();
+  $('rpeOutput').value = 6;
+  render();
+  openTab('record');
+});
+
+$('nudgesEnabled').addEventListener('change', (event) => {
+  state.nudgeSettings.enabled = event.target.checked;
+  if (state.nudgeSettings.enabled) scheduleNextNudge();
+  else state.nudgeSettings.nextAt = null;
+  saveState();
+  renderNudgeSettings();
+});
+
+['nudgeInterval','nudgeTrigger','nudgeStart','nudgeEnd'].forEach((id) => $(id).addEventListener('change', () => {
+  state.nudgeSettings.intervalMinutes = Number($('nudgeInterval').value);
+  state.nudgeSettings.trigger = $('nudgeTrigger').value;
+  state.nudgeSettings.start = $('nudgeStart').value;
+  state.nudgeSettings.end = $('nudgeEnd').value;
+  if (state.nudgeSettings.enabled) scheduleNextNudge();
+  saveState();
+  renderNudgeSettings();
+}));
+
+$('notificationPermissionButton').addEventListener('click', requestNotificationPermission);
+$('exportButton').addEventListener('click', exportData);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+
+setInterval(checkNudge, 30000);
+render();
+checkNudge();

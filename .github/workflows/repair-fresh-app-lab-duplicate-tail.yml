@@ -1,0 +1,80 @@
+name: Repair Fresh App Lab Duplicate Tail
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/repair-fresh-app-lab-duplicate-tail.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-fresh-app-lab-duplicate-tail-repair
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Remove appended second HTML document only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('fresh-app-lab/index.html')
+          s = p.read_text(encoding='utf-8')
+          close = '</html>'
+          i = s.lower().find(close)
+          if i < 0:
+              raise SystemExit('Fresh App Lab has no closing </html>; refusing mutation.')
+          clean = s[:i + len(close)].rstrip() + '\n'
+          if 'JM Fresh App Lab — Single File v0.2' not in clean:
+              raise SystemExit('Fresh App Lab identity missing from retained body.')
+          if '12 Apps. One Page. No Dead Routes.' not in clean:
+              raise SystemExit('Fresh App Lab 12-app body marker missing.')
+          if clean.lower().count('<!doctype html>') != 1:
+              raise SystemExit('Retained body does not contain exactly one doctype.')
+          if '<title>zezu.nwona — Cading Home</title>' in clean:
+              raise SystemExit('zezu.nwona appended document still present before first close.')
+          if clean == s:
+              print('No appended tail remains; no change needed.')
+          else:
+              removed = len(s.encode('utf-8')) - len(clean.encode('utf-8'))
+              p.write_text(clean, encoding='utf-8')
+              print(f'Removed appended second-document tail: {removed} bytes')
+          PY
+      - name: Prove repaired body
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('fresh-app-lab/index.html').read_text(encoding='utf-8')
+          assert s.lower().count('<!doctype html>') == 1
+          assert s.lower().count('</html>') == 1
+          assert '<title>zezu.nwona — Cading Home</title>' not in s
+          assert 'JM Fresh App Lab — Single File v0.2' in s
+          assert '12 Apps. One Page. No Dead Routes.' in s
+          print('FRESH_APP_LAB_DUPLICATE_TAIL_REPAIR=PASS')
+          PY
+      - name: Commit repaired Fresh App Lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- fresh-app-lab/index.html; then
+            echo 'Fresh App Lab already clean.'
+            exit 0
+          fi
+          git config user.name 'JM Estate Repair'
+          git config user.email 'actions@users.noreply.github.com'
+          git add fresh-app-lab/index.html
+          git commit -m 'Repair Fresh App Lab duplicate document tail'
+          git push origin HEAD:main

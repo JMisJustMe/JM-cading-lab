@@ -21,6 +21,18 @@ const PLAYABLE_IR_SCHEMA = "jm.gamecore.playable-ir/v0.3";
 const ONEBODY_ABI = "jm.onebody-abi/v0.1";
 const WIDGET_SESSION_ID = "jm-inline-contact-untitled-field-v0.9";
 const MCP_PATH = "/mcp";
+const ADAPTER_VERSION = "0.1.2";
+
+const RENDER_OUTPUT_SCHEMA = {
+  schema: z.literal("jm.chatgpt-host-adapter/render-receipt/v0.1"),
+  bodyId: z.literal(BODY_ID),
+  sourceSha256: z.literal(BODY_SHA256),
+  playableIrSchema: z.literal(PLAYABLE_IR_SCHEMA),
+  oneBodyAbi: z.literal(ONEBODY_ABI),
+  hostRole: z.literal("CARRIER_NOT_SOURCE_AUTHORITY"),
+  mergeForbidden: z.boolean(),
+  keeper: z.string(),
+};
 
 function readFrozenBody() {
   return fs.readFileSync(BODY_PATH, "utf8");
@@ -34,7 +46,7 @@ const toolUiMeta = {
 function createJmServer() {
   const server = new McpServer({
     name: "JM ChatGPT Host Adapter",
-    version: "0.1.1",
+    version: ADAPTER_VERSION,
   });
 
   registerAppResource(
@@ -56,6 +68,7 @@ function createJmServer() {
                 resourceDomains: [],
               },
             },
+            "openai/widgetDescription": "Existing frozen JM playable body carried into the ChatGPT host without changing source authority.",
             "jm/sourceAuthority": "JM / frozen donor body",
             "jm/sourceSha256": BODY_SHA256,
             "jm/hostRole": "CARRIER_NOT_SOURCE_AUTHORITY",
@@ -75,6 +88,7 @@ function createJmServer() {
       inputSchema: {
         bodyId: z.literal(BODY_ID).default(BODY_ID),
       },
+      outputSchema: RENDER_OUTPUT_SCHEMA,
       _meta: toolUiMeta,
       annotations: {
         readOnlyHint: true,
@@ -136,11 +150,12 @@ const httpServer = createHttpServer(async (req, res) => {
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({
       ok: true,
-      adapterVersion: "0.1.1",
+      adapterVersion: ADAPTER_VERSION,
       bodyId: BODY_ID,
       sourceSha256: BODY_SHA256,
       playableIrSchema: PLAYABLE_IR_SCHEMA,
       oneBodyAbi: ONEBODY_ABI,
+      outputSchemaDeclared: true,
       claim: "HOST_ADAPTER_BUILT_NOT_CHATGPT_CONTACT_PROVEN",
     }));
     return;
@@ -176,5 +191,5 @@ const httpServer = createHttpServer(async (req, res) => {
 });
 
 httpServer.listen(port, () => {
-  console.log(`JM ChatGPT Host Adapter v0.1.1 listening on http://localhost:${port}${MCP_PATH}`);
+  console.log(`JM ChatGPT Host Adapter v${ADAPTER_VERSION} listening on http://localhost:${port}${MCP_PATH}`);
 });

@@ -19,6 +19,31 @@ jobs:
       - name: Self-test automatic build intake
         run: python3 scripts/jm_build_intake.py --self-test
 
+      - name: Live-probe automatic Estate recovery
+        run: |
+          set -euo pipefail
+          python3 scripts/jm_build_intake.py \
+            --body "JM ChatGPT Host Adapter v0.1.1" \
+            --body-type "in-house ChatGPT host adapter" \
+            --destination "proof-only intake recovery probe" \
+            --body-path "apps/jm-chatgpt-host-adapter-v0.1" \
+            --work-pr 0 \
+            --output "build-intake-probe/JM_BUILD_INTAKE_LIVE_PROBE.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('build-intake-probe/JM_BUILD_INTAKE_LIVE_PROBE.json')
+          data = json.loads(p.read_text())
+          recovery = data['foundation']['estate_recovery']
+          assert recovery['candidate_count'] > 0, 'live Estate scan recovered no candidates'
+          assert data['state']['build_authorized_by_manifest'] is False, 'automatic intake must default fail-closed'
+          assert any(
+              item.get('source_type') == 'build-route-manifest'
+              for item in recovery['route_manifest_candidates']
+          ), 'expected at least one manifest-backed recovery candidate'
+          print(f"JM Build Intake live recovery PASS: {recovery['candidate_count']} candidate reference(s); fail-closed authorization preserved.")
+          PY
+
       - name: Self-test entry classifier
         run: python3 scripts/jm_build_entry_gate.py --self-test
 

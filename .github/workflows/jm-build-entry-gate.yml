@@ -16,6 +16,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Self-test automatic build intake
+        run: python3 scripts/jm_build_intake.py --self-test
+
       - name: Self-test entry classifier
         run: python3 scripts/jm_build_entry_gate.py --self-test
 
@@ -45,5 +48,5 @@ jobs:
       - name: Enforce entry result
         if: steps.gate.outcome == 'failure'
         run: |
-          echo "JM Build Entry Gate failed. Use the generated entry draft as routing assistance; do not invent donors/proof just to satisfy the gate."
+          echo "JM Build Entry Gate failed. Run/resolve automatic intake first; do not invent donors, gaps or proof merely to satisfy the gate."
           exit 1

@@ -5,6 +5,10 @@ on:
     paths:
       - 'apps/jm-estate-live-registry/**'
       - '.github/workflows/build-jm-estate-live-registry-android-v0.3.yml'
+  pull_request:
+    paths:
+      - 'apps/jm-estate-live-registry/**'
+      - '.github/workflows/build-jm-estate-live-registry-android-v0.3.yml'
   workflow_dispatch:
 
 permissions:
@@ -23,17 +27,13 @@ jobs:
         working-directory: apps/jm-estate-live-registry/android-v0.3
     steps:
       - uses: actions/checkout@v6
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - uses: android-actions/setup-android@v3
-
       - name: Install Android API 36
         run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
-
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.13'
@@ -46,13 +46,11 @@ jobs:
           root=pathlib.Path('apps/jm-estate-live-registry')
           receipt=json.loads((root/'FREEZE_LOCK_ANCHOR_MOUNT_v0.2.json').read_text())
           expected='0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38'
-          text=json.dumps(receipt)
-          assert expected in text, 'Frozen v0.2 keeper hash missing from closure receipt'
+          assert expected in json.dumps(receipt), 'Frozen v0.2 keeper hash missing from closure receipt'
           for name in ['index.html','style.css','seed.js','app.js','manifest.webmanifest','sw.js']:
               assert (root/name).is_file(), f'missing Registry source asset: {name}'
           android=(root/'android-v0.3/README.md').read_text()
-          assert expected in android
-          assert 'com.jmisjustme.estateregistry' in android
+          assert expected in android and 'com.jmisjustme.estateregistry' in android
           print('Frozen parent/source guard PASS')
           PY
 
@@ -88,12 +86,7 @@ jobs:
           cp app/build/outputs/bundle/release/app-release.aab release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab
           curl -fsSL -o bundletool.jar 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
           java -jar bundletool.jar validate --bundle=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab
-          java -jar bundletool.jar build-apks \
-            --bundle=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab \
-            --output=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3.apks \
-            --mode=universal \
-            --ks=proof-upload.jks --ks-pass=pass:jm-proof-only \
-            --ks-key-alias=jm-proof --key-pass=pass:jm-proof-only
+          java -jar bundletool.jar build-apks --bundle=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab --output=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3.apks --mode=universal --ks=proof-upload.jks --ks-pass=pass:jm-proof-only --ks-key-alias=jm-proof --key-pass=pass:jm-proof-only
           unzip -p release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3.apks universal.apk > release/00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk > release/UNIVERSAL_SIGNATURE.txt
           cp /tmp/debug-signature.txt release/DEBUG_SIGNATURE.txt
@@ -104,39 +97,13 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import hashlib, json, os, zipfile
-          here=Path('.')
-          parent=here.parent
-          rel=here/'release'
+          here=Path('.'); parent=here.parent; rel=here/'release'
           def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
           def meta(name):
               p=rel/name
               return {'name':name,'bytes':p.stat().st_size,'sha256':sha(p)}
           assets={name:sha(parent/name) for name in ['index.html','style.css','seed.js','app.js','manifest.webmanifest','sw.js']}
-          receipt={
-            'schema':'jm.estate-live-registry.android-build-receipt/0.3',
-            'status':'BUILD_PASS__PHYSICAL_DEVICE_CONTACT_OPEN',
-            'body':'JM Estate Live Registry Android v0.3',
-            'frozenParent':'JM Estate Live Registry App v0.2 — Native Circulation',
-            'frozenParentSha256':'0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38',
-            'package':'com.jmisjustme.estateregistry',
-            'versionCode':300,
-            'versionName':'0.3',
-            'compileSdk':36,'targetSdk':36,'minSdk':23,
-            'localOrigin':'https://registry.jm.local/',
-            'internetPermission':False,
-            'registrySourceAssetSha256':assets,
-            'sourceCommit':os.environ['GITHUB_SHA'],
-            'workflowRun':os.environ['GITHUB_RUN_ID'],
-            'donors':['JM Sovereign Ten','JMISJUSTME Living Estate carrier lineage','JM Universal Forge v2.1'],
-            'hostAdapters':['stable local HTTPS WebView origin','DOM storage','Android JSON file chooser','Android JSON/receipt save bridge'],
-            'debugApk':meta('JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_DEBUG.apk'),
-            'proofAab':meta('JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab'),
-            'universalApk':meta('00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk'),
-            'signingBoundary':'Temporary proof identity; not owner production/update key.',
-            'physicalDeviceDing':'OPEN',
-            'freezeState':'NOT_FROZEN__CONTACT_REQUIRED',
-            'meshLaw':'Mesh != merge'
-          }
+          receipt={'schema':'jm.estate-live-registry.android-build-receipt/0.3','status':'BUILD_PASS__PHYSICAL_DEVICE_CONTACT_OPEN','body':'JM Estate Live Registry Android v0.3','frozenParent':'JM Estate Live Registry App v0.2 — Native Circulation','frozenParentSha256':'0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38','package':'com.jmisjustme.estateregistry','versionCode':300,'versionName':'0.3','compileSdk':36,'targetSdk':36,'minSdk':23,'localOrigin':'https://registry.jm.local/','internetPermission':False,'registrySourceAssetSha256':assets,'sourceCommit':os.environ['GITHUB_SHA'],'workflowRun':os.environ['GITHUB_RUN_ID'],'donors':['JM Sovereign Ten','JMISJUSTME Living Estate carrier lineage','JM Universal Forge v2.1'],'hostAdapters':['stable local HTTPS WebView origin','DOM storage','Android JSON file chooser','Android JSON/receipt save bridge'],'debugApk':meta('JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_DEBUG.apk'),'proofAab':meta('JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab'),'universalApk':meta('00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk'),'signingBoundary':'Temporary proof identity; not owner production/update key.','physicalDeviceDing':'OPEN','freezeState':'NOT_FROZEN__CONTACT_REQUIRED','meshLaw':'Mesh != merge'}
           (rel/'ANDROID_v0.3_BUILD_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
           keep=[Path('README.md'),Path('settings.gradle.kts'),Path('build.gradle.kts'),Path('gradle.properties'),Path('app/build.gradle.kts'),Path('app/src/main/AndroidManifest.xml'),Path('app/src/main/res/values/styles.xml'),Path('app/src/main/java/com/jmisjustme/estateregistry/MainActivity.java')]
           with zipfile.ZipFile(rel/'JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_SOURCE.zip','w',zipfile.ZIP_DEFLATED) as z:

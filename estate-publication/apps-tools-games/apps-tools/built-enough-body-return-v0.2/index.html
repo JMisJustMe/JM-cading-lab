@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0907" />
+  <meta name="description" content="BUILT ENOUGH: BODY RETURN — a SHIMS-based personal movement practice, moment engine and self-lab." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>BUILT ENOUGH: BODY RETURN</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="brand-line">BUILT ENOUGH</p>
+        <h1>BODY RETURN</h1>
+      </div>
+      <button class="icon-button" id="menuButton" aria-label="Open route overview" title="Route overview">↗</button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="heroTitle">
+        <p class="route-statement" id="heroTitle">I’ve built enough. Now something needs to come back into my life.</p>
+        <p class="principle">Numbers guide the shape. <strong>Your body sets the boundary.</strong> The moment creates the opening. Use supplies the proof.</p>
+      </section>
+
+      <nav class="tabs" aria-label="Main sections">
+        <button class="tab active" data-tab="today">Today</button>
+        <button class="tab" data-tab="moments">Moments</button>
+        <button class="tab" data-tab="setup">Set-up</button>
+        <button class="tab" data-tab="record">Record</button>
+        <button class="tab" data-tab="route">Route</button>
+      </nav>
+
+      <section id="today" class="tab-panel active">
+        <div id="profileMissing" class="empty-state">
+          <h2>Build your first Body Return</h2>
+          <p>Your date of birth creates the symbolic pattern. Your current capacity decides what is realistic today.</p>
+          <button class="primary-button" data-open-tab="setup">Create my pattern</button>
+        </div>
+
+        <div id="todayContent" class="hidden">
+          <div class="signature-strip">
+            <div><span class="small-label">PERSONAL SIGNATURE</span><strong id="signatureCode">—</strong></div>
+            <div><span class="small-label">LEVEL</span><strong id="levelValue">1</strong></div>
+            <div><span class="small-label">STREAK</span><strong><span id="streakValue">0</span>d</strong></div>
+          </div>
+
+          <article class="panel instant-panel">
+            <div class="panel-heading">
+              <div><span class="small-label">RIGHT NOW</span><h2>Turn this moment into movement</h2></div>
+              <span class="return-count"><strong id="todayReturnCount">0</strong> today</span>
+            </div>
+            <p class="muted">Starting, finishing, waiting, celebrating or resetting can become a small physical return.</p>
+            <div class="quick-trigger-grid" id="todayQuickTriggers"></div>
+            <button class="secondary-button wide" data-open-tab="moments">Open the full moment engine</button>
+          </article>
+
+          <article class="panel focus-panel">
+            <div class="panel-heading">
+              <div><span class="small-label">TODAY’S ROUTE</span><h2 id="routineTitle">Foundation Session</h2></div>
+              <button class="secondary-button compact" id="regenerateButton">Regenerate</button>
+            </div>
+            <p id="routineReason" class="muted"></p>
+            <div id="exerciseList" class="exercise-list"></div>
+            <div class="routine-footer">
+              <div><span class="small-label">REST</span><strong id="restValue">—</strong></div>
+              <div><span class="small-label">ROUNDS</span><strong id="roundValue">—</strong></div>
+              <button class="primary-button" id="completeSessionButton" disabled>Complete session</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading"><div><span class="small-label">BODY CONTEXT</span><h2>Markers, not verdicts</h2></div></div>
+            <div id="contextMarkers" class="context-grid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="moments" class="tab-panel">
+        <div id="momentsMissing" class="empty-state">
+          <h2>Create your pattern first</h2>
+          <p>The moment engine needs a baseline before it can make a small, personal movement suggestion.</p>
+          <button class="primary-button" data-open-tab="setup">Go to set-up</button>
+        </div>
+
+        <div id="momentsContent" class="hidden">
+          <article class="panel moment-builder">
+            <span class="small-label">STATE → MOVEMENT</span>
+            <h2>What is happening right now?</h2>
+            <p class="muted">Choose the moment. BODY RETURN will generate a small dose rather than a full workout.</p>
+            <div class="trigger-grid" id="triggerGrid"></div>
+            <h3>What is around you?</h3>
+            <div class="environment-grid" id="environmentGrid"></div>
+          </article>
+
+          <article id="microReturnCard" class="panel micro-card hidden" aria-live="polite">
+            <div class="micro-top"><div><span class="small-label" id="microTriggerLabel">MOMENT RETURN</span><h2 id="microTitle">—</h2></div><div class="micro-number" id="microNumber">—</div></div>
+            <p class="micro-dose" id="microDose">—</p>
+            <p class="muted" id="microReason">—</p>
+            <div class="micro-actions"><button class="secondary-button" id="swapMicroButton">Give me another</button><button class="primary-button" id="completeMicroButton">Done — record return</button></div>
+            <button class="text-button" id="intentionButton">Not moving right now — give me an intention version</button>
+          </article>
+
+          <article class="panel reminder-panel">
+            <div class="panel-heading"><div><span class="small-label">LOCAL NUDGES</span><h2>Let the day ask you back</h2></div><label class="switch-label"><input type="checkbox" id="nudgesEnabled" /> <span>On</span></label></div>
+            <p class="muted">Best-effort local reminders. They work most reliably while this app remains open or installed; reopening the app catches overdue nudges.</p>
+            <div class="form-grid reminder-grid">
+              <label><span>Every</span><select id="nudgeInterval"><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60" selected>60 minutes</option><option value="90">90 minutes</option><option value="120">2 hours</option></select></label>
+              <label><span>Default nudge</span><select id="nudgeTrigger"></select></label>
+              <label><span>Start time</span><input type="time" id="nudgeStart" value="09:00" /></label>
+              <label><span>End time</span><input type="time" id="nudgeEnd" value="21:00" /></label>
+            </div>
+            <div class="reminder-status" id="reminderStatus">Nudges are off.</div>
+            <button class="secondary-button wide" id="notificationPermissionButton">Allow browser notifications</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="setup" class="tab-panel">
+        <form id="profileForm" class="panel form-panel">
+          <div class="panel-heading"><div><span class="small-label">SELF-LAB INPUT</span><h2>Build the personal pattern</h2></div></div>
+          <div class="form-grid">
+            <label><span>Name or alias</span><input id="name" name="name" autocomplete="name" placeholder="Optional" /></label>
+            <label><span>Date of birth</span><input id="dob" name="dob" type="date" required /></label>
+            <label><span>Favourite number</span><input id="favouriteNumber" name="favouriteNumber" type="number" min="1" max="999" value="32" /></label>
+            <label><span>Preferred session effort</span><select id="effort" name="effort"><option value="1">1 — very gentle</option><option value="2" selected>2 — gentle</option><option value="3">3 — steady</option><option value="4">4 — challenging</option><option value="5">5 — hard</option></select></label>
+          </div>
+          <h3>Current comfortable capacity</h3>
+          <p class="muted">Use what you could do with clean form today, not your lifetime best.</p>
+          <div class="form-grid three">
+            <label><span>Push-ups</span><input id="pushBase" name="pushBase" type="number" min="0" max="200" value="5" required /></label>
+            <label><span>Core reps</span><input id="coreBase" name="coreBase" type="number" min="0" max="200" value="8" required /></label>
+            <label><span>Walking minutes</span><input id="walkBase" name="walkBase" type="number" min="1" max="240" value="10" required /></label>
+          </div>
+          <h3>Optional context markers</h3>
+          <div class="form-grid"><label><span>Height (cm)</span><input id="height" name="height" type="number" min="100" max="250" placeholder="Optional" /></label><label><span>Weight (kg)</span><input id="weight" name="weight" type="number" min="25" max="350" step="0.1" placeholder="Optional" /></label></div>
+          <fieldset><legend>Movement choices</legend><div class="check-grid"><label class="check"><input type="checkbox" name="movements" value="push" checked /> Push</label><label class="check"><input type="checkbox" name="movements" value="core" checked /> Core</label><label class="check"><input type="checkbox" name="movements" value="legs" checked /> Legs</label><label class="check"><input type="checkbox" name="movements" value="walk" checked /> Walk / march</label><label class="check"><input type="checkbox" name="movements" value="mobility" checked /> Mobility</label></div></fieldset>
+          <label class="check warning-check"><input id="limitations" name="limitations" type="checkbox" />I have pain, an injury, a medical concern, or I have been inactive for a long time.</label>
+          <div id="limitationsNotice" class="notice hidden">Start gently and consider speaking with a GP or qualified professional before increasing intensity. This app does not diagnose or treat conditions.</div>
+          <button class="primary-button wide" type="submit">Generate or update my routine</button>
+        </form>
+      </section>
+
+      <section id="record" class="tab-panel">
+        <article class="panel stats-panel"><span class="small-label">RETURN TOTALS</span><h2>What has come back?</h2><div class="stats-grid"><div><strong id="totalReturns">0</strong><span>all returns</span></div><div><strong id="microReturns">0</strong><span>moment returns</span></div><div><strong id="sessionReturns">0</strong><span>full sessions</span></div><div><strong id="totalXp">0</strong><span>XP</span></div></div></article>
+        <article class="panel"><div class="panel-heading"><div><span class="small-label">RECEIPTS</span><h2>What actually happened?</h2></div><button class="secondary-button compact" id="exportButton">Export</button></div><div id="historyList" class="history-list"></div></article>
+        <article class="panel claim-ledger"><span class="small-label">CLAIM LEDGER</span><h2>What kind of statement is this?</h2><div class="ledger-row"><strong>Symbolic</strong><p>Date and number patterns create meaning, identity and routine structure. No medical causation is claimed.</p></div><div class="ledger-row"><strong>Personal</strong><p>Your logs show what happened for you, under these conditions, at this point in time.</p></div><div class="ledger-row"><strong>Guideline</strong><p>Public-health targets provide general context; they are not an individual diagnosis or prescription.</p></div><div class="ledger-row"><strong>Generated</strong><p>The moment engine creates a suggestion from your inputs. You still choose whether, how or whether not to perform it.</p></div></article>
+      </section>
+
+      <section id="route" class="tab-panel">
+        <article class="panel route-panel"><span class="small-label">FORMALISED ROUTE</span><h2>From mental body to physical return</h2><ol class="route-list"><li><strong>Moment:</strong> something happens in ordinary life.</li><li><strong>Interpretation:</strong> SHIMS turns context and number-pattern into a small route.</li><li><strong>Action:</strong> the person performs, adapts, swaps or declines.</li><li><strong>Receipt:</strong> the app records what actually happened.</li><li><strong>Adaptation:</strong> later suggestions learn from capacity and response.</li><li><strong>Coding bodies:</strong> the working specimen is reverse-engineered into native JM structures.</li><li><strong>Product:</strong> app, game and paid method grow from repeated useful returns.</li></ol><div class="route-equation">LIFE EVENT → MICRO ROUTE → BODY ACTION → RECEIPT → ADAPTATION</div><img src="assets/body-return-roadmap.svg" alt="BUILT ENOUGH: BODY RETURN formal route infographic" class="roadmap-image" /></article>
+      </section>
+    </main>
+
+    <footer><p>SHIMS BODY RETURN v0.2 · Local-first · Your data stays in this browser unless you export it.</p><p class="safety">Stop if you feel pain, chest pain, dizziness, faintness or unusual shortness of breath. Seek appropriate medical help when needed.</p></footer>
+  </div>
+
+  <dialog id="sessionDialog"><form method="dialog" id="sessionForm"><button class="dialog-close" value="cancel" aria-label="Close">×</button><span class="small-label">SESSION RECEIPT</span><h2>Record the return</h2><label><span>Effort felt (1–10)</span><input id="rpe" type="range" min="1" max="10" value="6" oninput="rpeOutput.value = value" /><output id="rpeOutput">6</output></label><label><span>Mood before (1–5)</span><input id="moodBefore" type="number" min="1" max="5" value="3" required /></label><label><span>Mood after (1–5)</span><input id="moodAfter" type="number" min="1" max="5" value="4" required /></label><label class="check"><input id="painReported" type="checkbox" /> Pain or worrying symptoms occurred</label><label><span>Notes</span><textarea id="sessionNotes" rows="4" placeholder="What worked? What resisted? What changed?"></textarea></label><button class="primary-button wide" value="default">Save session receipt</button></form></dialog>
+
+  <dialog id="microDialog"><form method="dialog" id="microForm"><button class="dialog-close" value="cancel" aria-label="Close">×</button><span class="small-label">MOMENT RECEIPT</span><h2>That came back</h2><p class="muted" id="microReceiptSummary"></p><label><span>How did it feel? (1–5)</span><input id="microEase" type="range" min="1" max="5" value="3" oninput="microEaseOutput.value = value" /><output id="microEaseOutput">3</output></label><label><span>Mood after (1–5)</span><input id="microMoodAfter" type="number" min="1" max="5" value="4" required /></label><label class="check"><input id="microPainReported" type="checkbox" /> Pain or worrying symptoms occurred</label><label><span>Optional note</span><textarea id="microNotes" rows="3" placeholder="Fast, awkward, energising, resisted, easier than expected…"></textarea></label><button class="primary-button wide" value="default">Save moment return</button></form></dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

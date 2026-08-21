@@ -1,0 +1,143 @@
+                <span class="small-label">LOCAL NUDGES</span>
+                <h2>Let the day ask you back</h2>
+              </div>
+              <label class="switch-label"><input type="checkbox" id="nudgesEnabled" /> <span>On</span></label>
+            </div>
+            <p class="muted">Best-effort local reminders. They work most reliably while this app remains open or installed; reopening the app catches overdue nudges.</p>
+            <div class="form-grid reminder-grid">
+              <label>
+                <span>Every</span>
+                <select id="nudgeInterval">
+                  <option value="30">30 minutes</option>
+                  <option value="45">45 minutes</option>
+                  <option value="60" selected>60 minutes</option>
+                  <option value="90">90 minutes</option>
+                  <option value="120">2 hours</option>
+                </select>
+              </label>
+              <label>
+                <span>Default nudge</span>
+                <select id="nudgeTrigger"></select>
+              </label>
+              <label>
+                <span>Start time</span>
+                <input type="time" id="nudgeStart" value="09:00" />
+              </label>
+              <label>
+                <span>End time</span>
+                <input type="time" id="nudgeEnd" value="21:00" />
+              </label>
+            </div>
+            <div class="reminder-status" id="reminderStatus">Nudges are off.</div>
+            <button class="secondary-button wide" id="notificationPermissionButton">Allow browser notifications</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="setup" class="tab-panel">
+        <form id="profileForm" class="panel form-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="small-label">SELF-LAB INPUT</span>
+              <h2>Build the personal pattern</h2>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <label>
+              <span>Name or alias</span>
+              <input id="name" name="name" autocomplete="name" placeholder="Optional" />
+            </label>
+            <label>
+              <span>Date of birth</span>
+              <input id="dob" name="dob" type="date" required />
+            </label>
+            <label>
+              <span>Favourite number</span>
+              <input id="favouriteNumber" name="favouriteNumber" type="number" min="1" max="999" value="32" />
+            </label>
+            <label>
+              <span>Preferred session effort</span>
+              <select id="effort" name="effort">
+                <option value="1">1 — very gentle</option>
+                <option value="2" selected>2 — gentle</option>
+                <option value="3">3 — steady</option>
+                <option value="4">4 — challenging</option>
+                <option value="5">5 — hard</option>
+              </select>
+            </label>
+          </div>
+
+          <h3>Current comfortable capacity</h3>
+          <p class="muted">Use what you could do with clean form today, not your lifetime best.</p>
+          <div class="form-grid three">
+            <label>
+              <span>Push-ups</span>
+              <input id="pushBase" name="pushBase" type="number" min="0" max="200" value="5" required />
+            </label>
+            <label>
+              <span>Core reps</span>
+              <input id="coreBase" name="coreBase" type="number" min="0" max="200" value="8" required />
+            </label>
+            <label>
+              <span>Walking minutes</span>
+              <input id="walkBase" name="walkBase" type="number" min="1" max="240" value="10" required />
+            </label>
+          </div>
+
+          <h3>Optional context markers</h3>
+          <div class="form-grid">
+            <label>
+              <span>Height (cm)</span>
+              <input id="height" name="height" type="number" min="100" max="250" placeholder="Optional" />
+            </label>
+            <label>
+              <span>Weight (kg)</span>
+              <input id="weight" name="weight" type="number" min="25" max="350" step="0.1" placeholder="Optional" />
+            </label>
+          </div>
+
+          <fieldset>
+            <legend>Movement choices</legend>
+            <div class="check-grid">
+              <label class="check"><input type="checkbox" name="movements" value="push" checked /> Push</label>
+              <label class="check"><input type="checkbox" name="movements" value="core" checked /> Core</label>
+              <label class="check"><input type="checkbox" name="movements" value="legs" checked /> Legs</label>
+              <label class="check"><input type="checkbox" name="movements" value="walk" checked /> Walk / march</label>
+              <label class="check"><input type="checkbox" name="movements" value="mobility" checked /> Mobility</label>
+            </div>
+          </fieldset>
+
+          <label class="check warning-check">
+            <input id="limitations" name="limitations" type="checkbox" />
+            I have pain, an injury, a medical concern, or I have been inactive for a long time.
+          </label>
+
+          <div id="limitationsNotice" class="notice hidden">
+            Start gently and consider speaking with a GP or qualified professional before increasing intensity. This app does not diagnose or treat conditions.
+          </div>
+
+          <button class="primary-button wide" type="submit">Generate or update my routine</button>
+        </form>
+      </section>
+
+      <section id="record" class="tab-panel">
+        <article class="panel stats-panel">
+          <span class="small-label">RETURN TOTALS</span>
+          <h2>What has come back?</h2>
+          <div class="stats-grid">
+            <div><strong id="totalReturns">0</strong><span>all returns</span></div>
+            <div><strong id="microReturns">0</strong><span>moment returns</span></div>
+            <div><strong id="sessionReturns">0</strong><span>full sessions</span></div>
+            <div><strong id="totalXp">0</strong><span>XP</span></div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <span class="small-label">RECEIPTS</span>
+              <h2>What actually happened?</h2>
+            </div>
+            <button class="secondary-button compact" id="exportButton">Export</button>
+          </div>

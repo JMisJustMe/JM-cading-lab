@@ -8,7 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.MimeTypeMap;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -21,16 +23,22 @@ import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public final class MainActivity extends Activity {
+    private static final int PICK_IMPORT = 3001;
+    private static final int SAVE_EXPORT = 3002;
     private static final String LOCAL_ORIGIN = "https://registry.jm.local/";
     private static final String PARENT_BODY = "JM Estate Live Registry App v0.2 — Native Circulation";
     private static final String PARENT_SHA256 = "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38";
     private WebView web;
+    private ValueCallback<Uri[]> fileChooser;
+    private String pendingExportText;
+    private String pendingExportName;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -44,7 +52,6 @@ public final class MainActivity extends Activity {
     private void openRegistry() {
         FrameLayout root = new FrameLayout(this);
         root.setBackgroundColor(0xff0c0f14);
-
         web = new WebView(this);
         web.setBackgroundColor(0xff0c0f14);
         WebSettings settings = web.getSettings();
@@ -57,7 +64,8 @@ public final class MainActivity extends Activity {
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setMediaPlaybackRequiresUserGesture(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
-        web.setWebChromeClient(new WebChromeClient());
+        web.addJavascriptInterface(new AndroidHostBridge(), "JMAndroidHost");
+        web.setWebChromeClient(new RegistryChromeClient());
         web.setWebViewClient(new RegistryClient());
         root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -82,13 +90,7 @@ public final class MainActivity extends Activity {
     private void showProof() {
         new AlertDialog.Builder(this)
             .setTitle("JM Estate Registry · Android v0.3")
-            .setMessage(
-                "Surface: native Android carrier\n" +
-                "Package: com.jmisjustme.estateregistry\n" +
-                "Origin: " + LOCAL_ORIGIN + "\n\n" +
-                "Frozen parent:\n" + PARENT_BODY + "\n" + PARENT_SHA256 + "\n\n" +
-                "The APK hosts the Registry; it does not replace or merge the frozen parent. Browser storage belongs to this stable app origin."
-            )
+            .setMessage("Surface: native Android carrier\nPackage: com.jmisjustme.estateregistry\nOrigin: " + LOCAL_ORIGIN + "\n\nFrozen parent:\n" + PARENT_BODY + "\n" + PARENT_SHA256 + "\n\nThe APK hosts the Registry; it does not replace or merge the frozen parent. Browser storage belongs to this stable app origin.")
             .setPositiveButton("OK", null)
             .show();
     }
@@ -96,6 +98,18 @@ public final class MainActivity extends Activity {
     private void openExternal(Uri uri) {
         try { startActivity(new Intent(Intent.ACTION_VIEW, uri)); }
         catch (Exception e) { Toast.makeText(this, "No external route available.", Toast.LENGTH_SHORT).show(); }
+    }
+
+    private final class RegistryChromeClient extends WebChromeClient {
+        @Override public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
+            if (fileChooser != null) fileChooser.onReceiveValue(null);
+            fileChooser = callback;
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/json");
+            try { startActivityForResult(intent, PICK_IMPORT); return true; }
+            catch (Exception e) { fileChooser.onReceiveValue(null); fileChooser = null; return false; }
+        }
     }
 
     private final class RegistryClient extends WebViewClient {
@@ -110,6 +124,63 @@ public final class MainActivity extends Activity {
             if ("https".equalsIgnoreCase(uri.getScheme()) && "registry.jm.local".equalsIgnoreCase(uri.getHost())) return false;
             openExternal(uri);
             return true;
+        }
+
+        @Override public void onPageFinished(WebView view, String url) {
+            if (!url.startsWith(LOCAL_ORIGIN)) return;
+            String bridge = "(()=>{if(window.__jmAndroidBridge)return;window.__jmAndroidBridge=true;const old=URL.createObjectURL.bind(URL);const blobs=new Map();URL.createObjectURL=(b)=>{const u=old(b);blobs.set(u,b);return u;};document.addEventListener('click',async(e)=>{const a=e.target.closest&&e.target.closest('a[download]');if(!a||!a.href.startsWith('blob:')||!blobs.has(a.href))return;e.preventDefault();try{const text=await blobs.get(a.href).text();JMAndroidHost.saveText(a.download||'JM_EXPORT.json',text);}catch(err){console.error(err);}},true);})();";
+            view.evaluateJavascript(bridge, null);
+        }
+    }
+
+    private final class AndroidHostBridge {
+        @JavascriptInterface public void saveText(String name, String text) {
+            runOnUiThread(() -> beginExport(name, text));
+        }
+    }
+
+    private void beginExport(String name, String text) {
+        pendingExportName = safeFileName(name);
+        pendingExportText = text;
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/json");
+        intent.putExtra(Intent.EXTRA_TITLE, pendingExportName);
+        try { startActivityForResult(intent, SAVE_EXPORT); }
+        catch (Exception e) {
+            pendingExportName = null;
+            pendingExportText = null;
+            Toast.makeText(this, "No document-save route available.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String safeFileName(String name) {
+        String cleaned = name == null ? "JM_EXPORT.json" : name.replaceAll("[^A-Za-z0-9._-]", "_");
+        if (cleaned.isEmpty()) cleaned = "JM_EXPORT.json";
+        return cleaned;
+    }
+
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMPORT) {
+            Uri[] result = null;
+            if (resultCode == RESULT_OK && data != null && data.getData() != null) result = new Uri[]{data.getData()};
+            if (fileChooser != null) fileChooser.onReceiveValue(result);
+            fileChooser = null;
+            return;
+        }
+        if (requestCode == SAVE_EXPORT) {
+            if (resultCode == RESULT_OK && data != null && data.getData() != null && pendingExportText != null) {
+                try (OutputStream out = getContentResolver().openOutputStream(data.getData(), "wt")) {
+                    if (out == null) throw new IllegalStateException("Output document could not be opened.");
+                    out.write(pendingExportText.getBytes(StandardCharsets.UTF_8));
+                    Toast.makeText(this, "Export saved · " + pendingExportName, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, "Export failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+            pendingExportName = null;
+            pendingExportText = null;
         }
     }
 

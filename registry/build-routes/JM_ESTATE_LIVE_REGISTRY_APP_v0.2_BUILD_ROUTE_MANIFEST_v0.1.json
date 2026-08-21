@@ -1,0 +1,143 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1",
+  "instantiation_mode": "retrospective-live-proof",
+  "created_for": {
+    "body": "JM Estate Live Registry App v0.2 — Native Circulation",
+    "body_type": "in-house Estate registry app / local-first PWA carrier",
+    "intended_destination": "JM-native Estate registry surface with local editing, audit, receipt and offline/installable browser contact"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "mount_path": "apps/jm-estate-live-registry/",
+    "frozen_parent": "JM Estate Live Registry v0.1",
+    "parent_sha256": "ae72073716b6be2bbe9897103625b04b48a9a6561a5db7a4e910e91f9cb49121",
+    "current_keeper": "JM Estate Live Registry App v0.2 — Native Circulation",
+    "keeper_sha256": "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38",
+    "closure_pr": 136,
+    "closure_merge_commit": "455c154b344dc85b1c9478215ac9e15bd006b226",
+    "immutability": "The frozen v0.1 and v0.2 executable keepers remain unchanged; later repairs advance as separately versioned descendants."
+  },
+  "foundation": {
+    "estate_rule": "Estate -> creation; recover before rebuild; mesh != merge; use strongest appropriate existing bodies first.",
+    "donor_estate_ancestor": "JM GameCore v0.2I — Donor Estate Escalation and Default Build Standard",
+    "surface_topology": "One continuing body may use multiple appropriate carriers/surfaces without collapsing their roles."
+  },
+  "donors": [
+    {
+      "body": "Native Core",
+      "authority_file": "coding-estate/sovereign-ten/direct/native-core.mjs",
+      "source_sha": "1f5d1d2f6567fc5532c4ad57e2f329638f050048",
+      "relationship": "REFERENCE / semantic inheritance",
+      "use": "stable-value digest, need/error, Trace and receipt semantics"
+    },
+    {
+      "body": "FlowTalk / JMLogic / JM32-1DA",
+      "authority_file": "coding-estate/sovereign-ten/direct/language-native.mjs",
+      "source_sha": "921907bf861114c89df6bb31553d298ef9a32db9",
+      "relationship": "REFERENCE / policy precedent",
+      "use": "explicit rule, policy and evidence discipline"
+    },
+    {
+      "body": "RouteScript / RouteVM / RouteOS / Reality Contact / TraceBox / Dings",
+      "authority_file": "coding-estate/sovereign-ten/direct/route-proof-native.mjs",
+      "source_sha": "c1a76ccb99282abea85cd4aebf6858dd04be5019",
+      "relationship": "REFERENCE / proof authority",
+      "use": "route, trace, receipt and Ding proof discipline"
+    },
+    {
+      "body": "Game-CODING / JM GameCore",
+      "authority_file": "coding-estate/sovereign-ten/direct/game-native.mjs",
+      "source_sha": "30d3f831e39e1749d28f0cdb10a1bb020c0b9ee4",
+      "relationship": "REFERENCE ONLY",
+      "use": "mounted donor; deliberately not forced into this non-game runtime"
+    }
+  ],
+  "exact_stack": {
+    "jm_coding_authority": "JM Sovereign Ten current-native rail",
+    "authority_path": "coding-estate/sovereign-ten/direct/",
+    "coding_bodies": [
+      "native-core.mjs",
+      "language-native.mjs",
+      "route-proof-native.mjs",
+      "game-native.mjs (donor only)"
+    ],
+    "app_runtime": ["index.html", "seed.js", "app.js"],
+    "carrier": "HTML/PWA/browser APIs",
+    "governance_boundary": "HTML/PWA is the carrier; JM coding bodies govern trace/receipt/audit semantics.",
+    "sovereign_ten_conformance": {"passed": 23, "failed": 0, "digest": "8f872539157cf4c3"}
+  },
+  "true_gaps": {
+    "new_runtime_body_required_for_v0_2": false,
+    "known_unproven_capabilities": [
+      "edit persistence across full reload",
+      "exported-file round-trip behavior"
+    ],
+    "rule": "Unproven does not equal broken. Escalate only if a built-in, receipt or later contact exposes a defect."
+  },
+  "host_and_surfaces": {
+    "proven_surface": "Android phone / browser content:// download route",
+    "proven_contact_time": "2026-08-21T06:08:00+01:00",
+    "app_surface": "local-first PWA/offline browser carrier",
+    "inline_in_chat": "not claimed for this body",
+    "apk": "not claimed for this body",
+    "surface_rule": "Only surfaces actually required or proven are crowned."
+  },
+  "built_ins": {
+    "native_audit": "PASS",
+    "seeded_body_count": 20,
+    "audit_issues": 0,
+    "registry_digest": "05f66d2006be8ccc",
+    "proof_organs": ["NativeTrace", "nativeDigest", "native receipt", "Reality Contact Ding"],
+    "recovery_rule": "Frozen keeper remains immutable; repair forward if a real defect appears."
+  },
+  "proof_route": {
+    "physical_contact": "PASS",
+    "rendering": "PROVEN",
+    "record_detail_rendering": "PROVEN",
+    "native_audit_result": "PROVEN",
+    "persistence_reload": "OPEN / not independently evidenced",
+    "export_round_trip": "OPEN / not independently evidenced",
+    "sufficient_evidence_rule": "Existing physical-contact receipt and built-in audit are sufficient for the crowns they directly prove; they do not silently prove the two open capabilities."
+  },
+  "escalation": {
+    "triggers": [
+      "Native audit warning or failure",
+      "contradictory receipt or digest",
+      "observed persistence/reload defect",
+      "observed export/import round-trip defect",
+      "runtime/contact failure",
+      "credible propagation risk"
+    ],
+    "route": "FAIL LOCAL -> CONTAIN -> TRACE -> RECOVER LAST GOOD STATE -> CORRECT FORWARD -> RETEST AFFECTED GATES"
+  },
+  "state": {
+    "route": "CLOSED / retrospective route captured",
+    "body": "FROZEN / LOCKED / ANCHORED / MOUNTED",
+    "contact": "PHYSICAL_CONTACT_PASS",
+    "next_change_policy": "CREATE FORWARD"
+  },
+  "closure": {
+    "earned_crowns": [
+      "JM coding-body intake/provenance",
+      "Sovereign Ten conformance 23/0",
+      "Android content:// rendering",
+      "native audit PASS",
+      "Estate record detail rendering",
+      "frozen keeper hash",
+      "GitHub mount"
+    ],
+    "explicit_open_gates": [
+      "persistence across full reload",
+      "exported-file round-trip"
+    ],
+    "contact_receipt": "apps/jm-estate-live-registry/PHYSICAL_CONTACT_DING_v0.2.json",
+    "keeper_mount": "apps/jm-estate-live-registry/",
+    "closure_rule": "Close only what is actually proven."
+  },
+  "manifest_proof": {
+    "purpose": "First live instantiation of the JM Build Route Manifest organ against an already closed real JM body.",
+    "non_mutation": "This manifest is stored outside the frozen app package so it does not alter the executable keeper or its recorded package identity.",
+    "result": "PASS — the manifest can recover the exact authority, donors, stack, host, proof, open gates, escalation route and closure state for a real build without rebuilding or mutating it."
+  }
+}

@@ -23,7 +23,7 @@ jobs:
         with:
           ref: main
 
-      - name: Inspect the completed deployment run and write receipts
+      - name: Inspect the completed deployment run and write outcome
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -48,7 +48,7 @@ jobs:
             > "$RUNNER_TEMP/jobs.json"
 
           python3 <<'PY'
-          import json, os
+          import json, os, re
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -82,7 +82,7 @@ jobs:
           receipt_step = raw_steps.get('Write successful five-room deployment receipt', 'missing')
 
           outcome = {
-              'schema': 'JM.CloudflareNavigatorWorkflowOutcome/1.2',
+              'schema': 'JM.CloudflareNavigatorWorkflowOutcome/1.3',
               'workflow': 'Deploy Live-Preserving Cloudflare Estate',
               'status': os.environ['STATUS'],
               'conclusion': os.environ['CONCLUSION'],
@@ -98,46 +98,42 @@ jobs:
               'run_url': os.environ['RUN_URL'],
               'updated_at': os.environ['UPDATED_AT'],
               'recorded_at_utc': recorded,
-              'boundary': 'Proof organs are matched by governed aliases, so harmless wording changes cannot turn a successful deployment into a false missing result.'
+              'boundary': 'Observer records inspected step evidence and validates the deployment-owned receipt; it does not overwrite deployment truth.'
           }
           Path('registry/cloudflare-navigator-workflow-outcome.json').write_text(json.dumps(outcome, indent=2) + '\n')
 
           if proven:
-              receipt = {
-                  'schema': 'JM.CloudflareAutoDeployReceipt/1.4',
-                  'status': 'SUCCESS',
-                  'project': 'jmisjustme-estate',
-                  'canonical_host': 'jmisjustme-estate.pages.dev',
-                  'source_commit': os.environ['HEAD_SHA'],
-                  'workflow_run': os.environ['RUN_ID'],
-                  'proved_at_utc': os.environ['UPDATED_AT'],
-                  'rooms': ['navigator', 'apps', 'theory', 'lyrics', 'recovery'],
-                  'navigator_route': 'https://jmisjustme-estate.pages.dev/navigator/',
-                  'navigator_proof': 'EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE',
-                  'stringline_proof': 'Many bodies. One living line. None erased.',
-                  'apps_registry_count': 40,
-                  'apps_boundary': 'PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE',
-                  'theory_policy': 'PRESERVE_PRE_REGRESSION_F6336B93_BODY',
-                  'theory_mobile_reader_clearance': 'PROVEN',
-                  'deployment_step': 'SUCCESS',
-                  'canonical_live_proof_step': 'SUCCESS',
-                  'workflow_conclusion': os.environ['CONCLUSION'],
-                  'receipt_step': receipt_step,
-                  'receipt_reconciliation': 'Written by the independent Stringline observer from inspected step evidence.',
-                  'manual_upload_required': False,
-                  'boundary': 'This proves JM3232 Navigator v0.1.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK.'
+              receipt_path = Path('registry/cloudflare-auto-deploy-receipt.json')
+              if not receipt_path.exists():
+                  raise SystemExit('Successful deployment receipt is missing; observer will not manufacture a replacement.')
+              receipt = json.loads(receipt_path.read_text())
+              apps_text = Path('apps/index.html').read_text(encoding='utf-8')
+              match = re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', apps_text, re.S)
+              if not match:
+                  raise SystemExit('Current Apps registry cannot be parsed for receipt validation.')
+              current_count = len(json.loads(match.group(1)))
+              checks = {
+                  'status': receipt.get('status') == 'SUCCESS',
+                  'schema': receipt.get('schema') == 'JM.CloudflareAutoDeployReceipt/1.5',
+                  'source_commit': receipt.get('source_commit') == os.environ['HEAD_SHA'],
+                  'workflow_run': str(receipt.get('workflow_run')) == str(os.environ['RUN_ID']),
+                  'apps_registry_count': receipt.get('apps_registry_count') == current_count,
+                  'manual_upload_required': receipt.get('manual_upload_required') is False,
               }
-              Path('registry/cloudflare-auto-deploy-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+              failed = [name for name, ok in checks.items() if not ok]
+              if failed:
+                  raise SystemExit(f'Deployment-owned receipt validation failed: {failed}; observer will not overwrite it.')
+              print(f'Deployment-owned receipt validated: {current_count} Apps rooms; observer preserved it unchanged.')
           PY
 
-      - name: Commit receipts without flattening parallel work
+      - name: Commit outcome without flattening deployment receipt
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "JM Stringline Deployment Observer"
           git config user.email "actions@users.noreply.github.com"
-          git add registry/cloudflare-navigator-workflow-outcome.json registry/cloudflare-auto-deploy-receipt.json
+          git add registry/cloudflare-navigator-workflow-outcome.json
           git diff --cached --quiet && exit 0
-          git commit -m "Record and reconcile Cloudflare Navigator deployment outcome"
+          git commit -m "Record Cloudflare deployment outcome without receipt overwrite"
           git pull --rebase origin main
           git push origin HEAD:main

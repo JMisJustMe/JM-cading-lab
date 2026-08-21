@@ -48,8 +48,8 @@ jobs:
             -alias jm-proof -keyalg RSA -keysize 4096 -validity 3650 \
             -dname 'CN=JM Living Estate v1.5 H1 Carrier Proof, O=JM, C=GB'
 
-      - name: Compile carrier APK and proof AAB
-        run: gradle --no-daemon clean :app:assembleDebug :app:bundleRelease
+      - name: Lint, test, compile carrier APK and proof AAB
+        run: gradle --no-daemon clean :app:lintDebug :app:testDebugUnitTest :app:assembleDebug :app:bundleRelease
 
       - name: Build universal APK and proof set
         run: |
@@ -115,8 +115,29 @@ jobs:
           (rel / 'ANDROID_CARRIER_BUILD_RECEIPT.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
 
           root = Path('.')
+          contact = {
+              'schema': 'jm.website.android-contact-pack/v1.5-h1-2',
+              'status': 'ASSISTANT_SIDE_PASS__PHYSICAL_DEVICE_CONTACT_OPEN',
+              'sourceCommit': os.environ['GITHUB_SHA'],
+              'workflowRun': os.environ['GITHUB_RUN_ID'],
+              'package': receipt['package'],
+              'versionName': receipt['versionName'],
+              'versionCode': receipt['versionCode'],
+              'universalApk': receipt['universalApk'],
+              'proofAab': receipt['proofAab'],
+              'debugApk': receipt['debugApk'],
+              'exactImport': receipt['exactImport'],
+              'checks': ['lintDebug', 'testDebugUnitTest', 'assembleDebug', 'bundleRelease', 'universal APK signature verification'],
+              'signingBoundary': receipt['signingBoundary'],
+              'publicWebsiteMutated': False,
+              'meshLaw': 'Mesh != merge',
+              'physicalDeviceDing': 'OPEN'
+          }
+          (rel / 'CONTACT_PACK_MANIFEST.json').write_text(json.dumps(contact, indent=2) + '\n', encoding='utf-8')
+          (rel / 'PRE_PHONE_VERIFICATION.md').write_text((root / 'PRE_PHONE_VERIFICATION.md').read_text(encoding='utf-8'), encoding='utf-8')
+
           out = rel / 'JMISJUSTME_LIVING_ESTATE_v1.5_H1_ANDROID_CARRIER_SOURCE.zip'
-          keep = [Path('README.md'), Path('settings.gradle.kts'), Path('build.gradle.kts'), Path('gradle.properties'), Path('app/build.gradle.kts'), Path('app/src/main/AndroidManifest.xml'), Path('app/src/main/res/values/styles.xml'), Path('app/src/main/java/com/jmisjustme/livingestate/MainActivity.java')]
+          keep = [Path('README.md'), Path('PRE_PHONE_VERIFICATION.md'), Path('CONTACT_PACK_MANIFEST.json'), Path('settings.gradle.kts'), Path('build.gradle.kts'), Path('gradle.properties'), Path('app/build.gradle.kts'), Path('app/src/main/AndroidManifest.xml'), Path('app/src/main/res/values/styles.xml'), Path('app/src/main/java/com/jmisjustme/livingestate/MainActivity.java'), Path('app/src/main/java/com/jmisjustme/livingestate/CarrierPolicy.java'), Path('app/src/test/java/com/jmisjustme/livingestate/CarrierPolicyTest.java')]
           with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as z:
               for p in keep: z.write(p, p.as_posix())
           PY
@@ -139,3 +160,4 @@ jobs:
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'Seat JM v1.5 H1 Android carrier build proof [skip ci]'
           git push origin HEAD:"$GITHUB_REF_NAME"
+

@@ -1,5 +1,5 @@
 {
-  "schema": "JM.WebSurfaceConvergence/1.0",
+  "schema": "JM.WebSurfaceConvergence/1.1",
   "date": "2026-08-21",
   "status": "MACHINE_SIDE_CONVERGED__OWNER_CONTACT_AND_PUBLICATION_GATES_OPEN",
   "governing_law": [
@@ -67,7 +67,13 @@
         "Mythic Clash",
         "Mythic Clash"
       ],
-      "duplicate_title_state": "TWO_DISTINCT_MYTHIC_CLASH_APP_RECORDS__DO_NOT_MERGE_OR_DELETE_WITHOUT_PROVENANCE"
+      "mythic_clash_title_collision": {
+        "status": "PROVEN_DISTINCT_DATA_BODIES__DO_NOT_COLLAPSE",
+        "body_a_schema": ["MonsterCard", "PlayerProfile"],
+        "body_b_schema": ["PlayerCard", "BattleLog"],
+        "conclusion": "The shared title does not represent one duplicate app body. The accessible data schemas are materially different and both identities are preserved.",
+        "boundary": "Direct code/sandbox inspection is Builder-plan gated in the connected Base44 workspace; no claim is made that every frontend/runtime distinction has been exhaustively compared."
+      }
     }
   },
   "android_carrier": {
@@ -106,18 +112,13 @@
       "gate": "Five Wix draft-site disposition",
       "owner": "OWNER_DECISION",
       "reason": "Deletion, archival or repurposing is destructive/identity-affecting; drafts are retained until their role is explicitly established."
-    },
-    {
-      "gate": "Two Mythic Clash Base44 app records",
-      "owner": "PROVENANCE_OR_CONTACT",
-      "reason": "Same title does not prove duplicate body identity; no automatic merge or deletion."
     }
   ],
   "non_actions": [
     "No new primary website created.",
     "No frozen proof PR merged merely to reduce PR count.",
     "No Wix draft deleted or renamed without proven role.",
-    "No Base44 app merged or deleted from title similarity alone.",
+    "No Base44 app collapsed from title similarity; the two Mythic Clash records are preserved as distinct data bodies.",
     "No owner-private signing or full-custody payload moved into the public repository."
   ]
 }

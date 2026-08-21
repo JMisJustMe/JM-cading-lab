@@ -6,6 +6,7 @@ on:
       - jm-chatgpt-host-adapter-v0.1
     paths:
       - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-probe-integration.mjs'
       - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
       - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
   pull_request:
@@ -13,6 +14,7 @@ on:
       - main
     paths:
       - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-probe-integration.mjs'
       - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
       - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
   workflow_dispatch:
@@ -38,8 +40,10 @@ jobs:
           npm install --no-audit --no-fund
           npm install --no-save --no-audit --no-fund wrangler@4 esbuild
 
-      - name: Syntax check Worker
-        run: node --check src/worker.mjs
+      - name: Syntax check Worker and proof client
+        run: |
+          node --check src/worker.mjs
+          node --check src/public-probe-integration.mjs
 
       - name: Bundle MCP handler as Pages Advanced Mode worker
         run: |
@@ -47,9 +51,7 @@ jobs:
           rm -rf pages-probe
           mkdir -p pages-probe
           npx esbuild src/worker.mjs --bundle --format=esm --platform=browser --target=es2022 --outfile=pages-probe/_worker.js
-          cat > pages-probe/index.html <<'HTML'
-          <!doctype html><meta charset="utf-8"><title>JM Inline Contact Probe</title><style>body{font-family:system-ui;background:#090a0f;color:#fff;padding:2rem}code{word-break:break-all}</style><h1>JM Inline Contact Probe</h1><p>Public transport probe only. MCP endpoint: <code>/mcp</code></p>
-          HTML
+          printf '%s\n' '<!doctype html><meta charset="utf-8"><title>JM Inline Contact</title><p>JM Inline Contact routes are served by the Pages worker.</p>' > pages-probe/index.html
           test -s pages-probe/_worker.js
 
       - name: Local Pages runtime smoke
@@ -71,6 +73,9 @@ jobs:
             exit 1
           fi
           printf '%s\n' "$HEALTH"
+          curl --fail --silent http://127.0.0.1:8788/privacy >/dev/null
+          curl --fail --silent http://127.0.0.1:8788/terms >/dev/null
+          curl --fail --silent http://127.0.0.1:8788/support >/dev/null
 
       - name: Ensure isolated Pages project exists
         env:
@@ -104,7 +109,7 @@ jobs:
           fi
           printf 'preview_url=%s\n' "$URL" >> "$GITHUB_OUTPUT"
 
-      - name: Smoke-test public HTTPS MCP host
+      - name: Smoke-test public HTTPS host
         env:
           PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
         run: |
@@ -119,17 +124,23 @@ jobs:
             echo "attempt=$ATTEMPT status=$STATUS body=$(cat /tmp/jm-health-body.txt 2>/dev/null || true)"
             sleep 2
           done
-          if [ -z "$HEALTH" ]; then
-            echo 'Final remote response:'
-            curl -i "$PREVIEW_URL/health" || true
-            exit 1
-          fi
+          test -n "$HEALTH"
           printf '%s\n' "$HEALTH"
-          node -e 'const fs=require("fs"); const base=process.env.PREVIEW_URL; const health=JSON.parse(process.argv[1]); fs.writeFileSync("PUBLIC_PROBE_DEPLOYMENT.json", JSON.stringify({pass:true,transport:"cloudflare-pages-advanced-mode",probeOnly:true,privateDonorBytesIncluded:false,previewUrl:base,mcpUrl:base+"/mcp",health,chatgptContactProvenHere:false},null,2)+"\n")' "$HEALTH"
+          for PATHNAME in / /privacy /terms /support; do
+            curl --fail --silent --show-error "$PREVIEW_URL$PATHNAME" >/dev/null
+          done
+          node -e 'const fs=require("fs"); const base=process.env.PREVIEW_URL; const health=JSON.parse(process.argv[1]); fs.writeFileSync("PUBLIC_PROBE_DEPLOYMENT_v0_1_2.json", JSON.stringify({pass:true,transport:"cloudflare-pages-advanced-mode",probeOnly:true,privateDonorBytesIncluded:false,previewUrl:base,mcpUrl:base+"/mcp",websiteUrl:base+"/",privacyUrl:base+"/privacy",termsUrl:base+"/terms",supportUrl:base+"/support",health,chatgptContactProvenHere:false},null,2)+"\n")' "$HEALTH"
 
-      - name: Upload public probe deployment receipt
+      - name: Public MCP tool/resource integration proof
+        env:
+          JM_PUBLIC_BASE_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: node src/public-probe-integration.mjs
+
+      - name: Upload public submission proof receipts
         uses: actions/upload-artifact@v4
         with:
-          name: jm-inline-contact-public-probe
-          path: apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_PROBE_DEPLOYMENT.json
+          name: jm-inline-contact-public-submission-proof-v0.1.2
+          path: |
+            apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_PROBE_DEPLOYMENT_v0_1_2.json
+            apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_SUBMISSION_READINESS_v0_1_2.json
           if-no-files-found: error

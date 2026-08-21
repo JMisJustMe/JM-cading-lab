@@ -10,6 +10,15 @@ on:
       - 'apps/jm-chatgpt-host-adapter-v0.1/public-bodies/128-hand-football-v0.7.4.html.gz'
       - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
       - '.github/workflows/jm-inline-contact-managed-beta.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/managed-beta-worker.mjs.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-managed-beta-integration.mjs.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/public-bodies/128-hand-football-v0.7.4.html.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-managed-beta.yml'
   workflow_dispatch:
 
 jobs:

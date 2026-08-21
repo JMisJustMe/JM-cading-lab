@@ -1,0 +1,122 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM ChatGPT Host Adapter v0.1.1 — Recovery-First Graft",
+    "body_type": "in-house ChatGPT/MCP host adapter",
+    "intended_destination": "Expose an existing frozen JM playable body as a genuinely interactive inline ChatGPT surface without replacing or mutating its source/runtime authority"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 135,
+    "head_branch": "jm-chatgpt-host-adapter-v0.1",
+    "head_sha": "6ce103e493fd366ad53ad2d65543dc7efb544224",
+    "source_authority": "00_OPEN_FIRST_UNTITLED_FIELD_BRANCH_v0_9_FROZEN.html",
+    "source_sha256": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea",
+    "source_rule": "CARRIER_NOT_SOURCE_AUTHORITY",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "interaction_runtime_authority": "JM Visual Interaction Runtime",
+    "runtime_donors": ["JM GameCore", "GameForge", "GlyphPlay", "GlyphForge", "PLAYFORM"],
+    "playable_ir": "jm.gamecore.playable-ir/v0.3",
+    "carrier_abi": "jm.onebody-abi/v0.1",
+    "adapter_precedent": "JM32-1DA Cross-Device Runtime Adapter v0.2",
+    "estate_decision": "A genuine host-target gap exists; extend for the new host surface rather than creating a new game engine/runtime/IR."
+  },
+  "exact_stack": {
+    "governing_jm_bodies": [
+      "JM Visual Interaction Runtime",
+      "JM GameCore / GameForge / GlyphPlay / GlyphForge / PLAYFORM",
+      "jm.gamecore.playable-ir/v0.3",
+      "jm.onebody-abi/v0.1",
+      "JM32-1DA Cross-Device Runtime Adapter v0.2 precedent"
+    ],
+    "host_adapter": "JM ChatGPT Host Adapter v0.1.1",
+    "host_technology": [
+      "Node native HTTP",
+      "@modelcontextprotocol/sdk",
+      "@modelcontextprotocol/ext-apps",
+      "zod"
+    ],
+    "deliberately_removed_as_unnecessary": ["Express", "CORS package"],
+    "tool": "render-jm-game",
+    "resource": "ui://jm/untitled-field-branch-v0.9.html",
+    "host_surface": "OpenAI MCP Apps / ChatGPT"
+  },
+  "true_gaps": {
+    "new_game_engine_required": false,
+    "new_game_runtime_required": false,
+    "new_playable_ir_required": false,
+    "new_host_adapter_required": true,
+    "remaining_capability_gap": "Actual interactive contact inside the ChatGPT conversation surface"
+  },
+  "proof_lanes": {
+    "source_integrity": {
+      "state": "PASS",
+      "rule": "Frozen donor remains separate and hash-anchored; a marked CI transport fixture cannot become source authority."
+    },
+    "mcp_runtime": {
+      "state": "PASS",
+      "workflow_run": 32450184890,
+      "covers": ["initialize", "tool listing", "resource listing/read", "render-tool call", "receipt generation"]
+    },
+    "public_inline_probe": {
+      "state": "PASS",
+      "workflow_run": 32450185034,
+      "meaning": "Host/probe transport path is reachable; this is not ChatGPT inline contact."
+    },
+    "chatgpt_inline_contact": {
+      "state": "OPEN",
+      "criterion": "The playable body must be genuinely interactive inside the ChatGPT conversation surface.",
+      "non_qualifying_evidence": ["file", "screenshot", "static card", "external browser preview", "local server", "CI transport pass"]
+    }
+  },
+  "built_in_ding": {
+    "state": "ISOLATED_EXTERNAL_GOVERNANCE_FAILURE",
+    "workflow": "Audit Estate Gap Governance",
+    "workflow_run": 32450184849,
+    "job": "Preserve named gaps until receipted resolution",
+    "errors": ["RouteOS authority weakened", "Apps registry unreadable"],
+    "attribution": "NOT CAUSED BY HOST ADAPTER DIFF",
+    "evidence": "PR #135 changes only ChatGPT host-adapter files and its two workflows; it does not modify registry/estate-classification-authority-v1.0.json, registry/estate-gap-governance-breach-v0.2.json, games-beyond/payload-manifest.json, games-beyond/routeos/index.html, or apps/index.html.",
+    "current_main_observation": "RouteOS current severity is CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED, which is stronger/newer than the failing guard's exact expected string CRITICAL_CORRECTED. The Apps House is currently readable on main and defines const APPS. This indicates governance-gate drift/staleness rather than evidence that the host adapter weakened RouteOS or rewrote the Apps House.",
+    "routing_effect": "Do not rebuild or distrust the host adapter. Keep the unrelated governance-gate reconciliation separate. Do not merge/crown the route while a repository built-in remains red without explicit reconciliation."
+  },
+  "host_and_surfaces": {
+    "target_surface": "inline/in-chat ChatGPT",
+    "mcp_runtime_surface": "PROVEN",
+    "public_probe_surface": "PROVEN",
+    "actual_chatgpt_inline_surface": "OPEN",
+    "external_browser_as_final_target": false,
+    "apk_required_for_this_route": false
+  },
+  "escalation": {
+    "current_escalations": [
+      "Actual in-chat contact gate remains open",
+      "Estate Gap Governance guard requires separate reconciliation before truthful merge/closure"
+    ],
+    "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> RECOVER -> CORRECT RESPONSIBLE ORGAN FORWARD -> RETEST AFFECTED GATE",
+    "manual_user_contact": "Only required when the actual inline ChatGPT contact surface is available and must be physically interacted with; CI/runtime proof is already sufficient for its own lanes."
+  },
+  "state": {
+    "route": "PROVING",
+    "source": "PASS",
+    "mcp_runtime": "PASS",
+    "public_probe": "PASS",
+    "chatgpt_inline_contact": "OPEN",
+    "repository_governance": "RED / isolated unrelated gate drift",
+    "merge": "NOT READY",
+    "crown": "NOT EARNED"
+  },
+  "next_route": {
+    "host_adapter": "Preserve current body; no rebuild.",
+    "governance_gate": "Reconcile the stale/over-strict Estate Gap Governance checks against current authority formats/status without weakening the protected laws.",
+    "contact": "When real inline execution is available, perform the Third Ding interaction and record only the behavior actually observed.",
+    "closure": "Only after the relevant repository built-ins and inline-contact gate are green may this route advance toward closure."
+  },
+  "manifest_proof": {
+    "result": "PASS — prospective manifest caught a real red built-in, isolated it from the target build, prevented unnecessary rebuild, preserved the already-green proof lanes, and kept the genuine inline-contact gate open."
+  }
+}

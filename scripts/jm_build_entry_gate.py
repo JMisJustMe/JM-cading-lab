@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""JM Build Entry Gate v0.1.
+"""JM Build Entry Gate v0.1.1.
 
 High-confidence front-door routing only. This script does not decide that every
 code change is a new body, and it never manufactures donor/proof claims.
+Automatic intake may recover candidates, but only an explicitly resolved route
+with state.build_authorized_by_manifest=true can open the build gate.
 """
 
 from __future__ import annotations
@@ -59,12 +61,9 @@ def first_new_boundary(
     if not parts or parts[0] not in executable_roots:
         return None
 
-    # A single-file body directly under an executable root is itself a boundary.
     if len(parts) == 2:
         return path if not exists_at_base(path) else None
 
-    # Walk from the shallowest body/descendant directory toward the file.
-    # The first directory absent from base is the new-body boundary.
     for end in range(2, len(parts)):
         candidate = "/".join(parts[:end])
         if not exists_at_base(candidate):
@@ -88,9 +87,13 @@ def classify_added_paths(
     return hits
 
 
-def matching_manifest(pr_number: int, changed_paths: set[str], policy: dict) -> str | None:
+def matching_manifest(
+    pr_number: int, changed_paths: set[str], policy: dict
+) -> tuple[str | None, str | None]:
+    """Return (authorized_manifest, unresolved_same_pr_manifest)."""
     prefix = "registry/build-routes/"
     suffix = "_BUILD_ROUTE_MANIFEST_v0.1.json"
+    unresolved: str | None = None
     for path in sorted(changed_paths):
         if not (path.startswith(prefix) and path.endswith(suffix)):
             continue
@@ -108,9 +111,12 @@ def matching_manifest(pr_number: int, changed_paths: set[str], policy: dict) -> 
             work_pr = int(work_pr)
         except (TypeError, ValueError):
             continue
-        if work_pr == pr_number:
-            return path
-    return None
+        if work_pr != pr_number:
+            continue
+        if data.get("state", {}).get("build_authorized_by_manifest") is True:
+            return path, None
+        unresolved = path
+    return None, unresolved
 
 
 def write_draft(pr_number: int, hits: list[dict[str, str]]) -> Path:
@@ -134,7 +140,7 @@ def write_draft(pr_number: int, hits: list[dict[str, str]]) -> Path:
             "warning": "This draft is not authority and cannot be used to invent donors, proof, gaps or crown state.",
         },
         "foundation": {
-            "status": "UNRESOLVED — search current Estate and strongest appropriate donors first"
+            "status": "UNRESOLVED — run JM Build Intake / search current Estate and strongest appropriate donors first"
         },
         "exact_stack": {
             "status": "UNRESOLVED — declare actual JM coding bodies, building bodies/apps/tools, runtime/host and surfaces"
@@ -157,7 +163,7 @@ def write_draft(pr_number: int, hits: list[dict[str, str]]) -> Path:
             "crown": "NOT EARNED"
         },
         "next_route": {
-            "step": "Recover Estate -> select strongest appropriate donors -> declare exact stack -> identify true gaps -> replace unresolved fields -> commit this route manifest in the same PR"
+            "step": "Recover Estate -> select strongest appropriate donors -> declare exact stack -> identify true gaps -> explicitly authorize route -> commit manifest in this PR"
         },
         "manifest_proof": {
             "result": "AUTO ENTRY DRAFT ONLY — NOT A CONTRACT PASS"
@@ -200,7 +206,7 @@ def self_test(policy: dict) -> None:
     ), "single-file-first new body must trigger"
 
     assert "apps" in roots and "games" in roots
-    print("JM Build Entry Gate self-test PASS: new app, descendant and single-file body trigger; governance/repair examples do not.")
+    print("JM Build Entry Gate self-test PASS: new app, descendant and single-file body trigger; governance/repair examples do not; unresolved intake cannot authorize a build.")
 
 
 def main() -> int:
@@ -249,15 +255,20 @@ def main() -> int:
         print("PASS: no high-confidence new/descendant executable-body boundary detected. Existing built-ins still govern the work.")
         return 0
 
-    manifest = matching_manifest(args.pr_number, changed, policy)
+    manifest, unresolved = matching_manifest(args.pr_number, changed, policy)
     if manifest:
-        print(f"PASS: serious build entry has same-PR prospective manifest: {manifest}")
+        print(f"PASS: serious build entry has same-PR authorized prospective manifest: {manifest}")
         return 0
+
+    if unresolved:
+        print(f"ERROR: same-PR prospective intake exists but is not build-authorized: {unresolved}")
+        print("Route required: resolve Estate recovery decision + exact stack + true gap; set state.build_authorized_by_manifest=true only from evidence.")
+        return 1
 
     draft = write_draft(args.pr_number, hits)
     print("ERROR: high-confidence new/descendant executable body detected without a same-PR prospective Build Route Manifest.")
     print(f"AUTO-DRAFT: {draft.relative_to(ROOT)}")
-    print("Route required: Estate recovery -> strongest appropriate donors -> exact stack -> true gap -> replace unresolved draft fields -> commit manifest in this PR.")
+    print("Route required: run JM Build Intake -> strongest appropriate donors -> exact stack -> true gap -> explicit authorization -> commit manifest in this PR.")
     return 1
 
 

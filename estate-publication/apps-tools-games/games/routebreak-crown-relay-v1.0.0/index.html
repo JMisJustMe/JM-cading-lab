@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#090b13">
+  <meta name="description" content="ROUTEBREAK: Crown Relay — an original JM four-route arena game.">
+  <link rel="icon" href="data:,">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="src/styles.css">
+  <title>ROUTEBREAK: Crown Relay</title>
+</head>
+<body>
+<div id="app">
+  <main class="shell" aria-label="ROUTEBREAK game body">
+    <header class="topbar">
+      <div class="brand"><div class="mark" aria-hidden="true"></div><div><h1>ROUTEBREAK: Crown Relay</h1><p>JM.GAME.ROUTEBREAK · v1.0.0 First Playable Crown</p></div></div>
+      <div class="top-actions">
+        <button id="helpBtn" class="btn ghost" type="button">?<span> Help</span></button>
+        <button id="soundBtn" class="btn ghost" type="button">◉ <span>Sound</span></button>
+        <button id="traceBtn" class="btn ghost" type="button" disabled>⌁<span> Trace</span></button>
+        <button id="pauseBtn" class="btn" type="button" disabled>Ⅱ<span> Pause</span></button>
+      </div>
+    </header>
+
+    <section class="stage-wrap">
+      <canvas id="gameCanvas" width="1280" height="720" aria-label="ROUTEBREAK arena"></canvas>
+
+      <div id="hud" class="hud">
+        <div class="hud-top"><div class="hud-strip"><span class="chip"><strong id="modeLabel">Menu</strong></span><span class="chip">Time <strong id="timerLabel">3:00</strong></span><span class="chip">Seed <strong id="seedLabel">—</strong></span></div><span id="objectiveLabel" class="chip">Last stock standing</span></div>
+        <div id="fighterHud" class="fighter-hud"></div>
+      </div>
+
+      <section id="menuScreen" class="screen active" aria-label="Game setup">
+        <div class="panel">
+          <div class="hero">
+            <div><div class="eyebrow">Difference becomes movement</div><h2>BREAK THE ROUTE.<br>KEEP THE CROWN.</h2><p>A four-body arena game where position, pressure, recovery and handoff are all playable. Choose a route-form, enter the field and prove what survives contact.</p></div>
+            <div class="route-diagram" aria-hidden="true"><div class="route-tile">RUSH</div><div class="route-tile">ARC</div><div class="route-tile">BRACE</div><div class="route-tile">SHIFT</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="grid">
+            <div class="field"><label for="modeSelect">Match body</label><select id="modeSelect"><option value="CROWNFALL">Crownfall — ring-out stock battle</option><option value="RELAY">Crown Relay — carry and score</option></select></div>
+            <div class="field"><label for="arenaSelect">Field</label><select id="arenaSelect"><option value="SPLIT_DECK">Split Deck</option><option value="RISE_WELL">Rise Well</option><option value="DRIFT_RING">Drift Ring</option></select></div>
+            <div class="field"><label for="foesSelect">Opposition</label><select id="foesSelect"><option value="1">1 rival</option><option value="2" selected>2 rivals</option><option value="3">3 rivals</option></select></div>
+            <div class="field"><label for="difficultySelect">Contact pressure</label><select id="difficultySelect"><option value="1">Open</option><option value="2" selected>Sharp</option><option value="3">Jagged</option><option value="4">Sovereign</option></select></div>
+          </div>
+          <div class="divider"></div>
+          <div class="eyebrow">Choose your route-body</div>
+          <div id="formGrid" class="form-grid"></div>
+          <div class="mode-cards"><div class="mode-card"><strong>Crownfall</strong><span>Three stocks. Damage increases launch. Last route-body standing holds the crown.</span></div><div class="mode-card"><strong>Crown Relay</strong><span>Carry the shard into your own gate. Contact forces a drop. First to five wins.</span></div></div>
+          <div class="actions"><button id="startBtn" class="btn primary" type="button">IGNITE MATCH</button></div>
+          <div class="kicker"><span id="profileLine"></span> · <span id="runtimeStatus">Runtime gate awaits ignition</span></div>
+        </div>
+      </section>
+
+      <section id="pauseScreen" class="screen" aria-label="Paused">
+        <div class="panel"><div class="eyebrow">Field held</div><h2>PAUSED</h2><p>The simulation is stopped. State, history and receipt remain intact.</p><div class="actions"><button id="resumeBtn" class="btn primary" type="button">RESUME</button><button id="restartBtn" class="btn" type="button">RESTART MATCH</button><button id="menuBtn" class="btn danger" type="button">RETURN TO ENTRY</button></div></div>
+      </section>
+
+      <section id="endScreen" class="screen" aria-label="Match receipt">
+        <div class="panel"><div class="eyebrow">Match returned</div><h2 id="resultTitle">CROWN HELD</h2><p id="resultBody"></p><div id="resultMetrics" class="result-grid"></div><div class="actions"><button id="endReplayBtn" class="btn primary" type="button">RUN IT BACK</button><button id="exportReceiptBtn" class="btn" type="button">EXPORT RECEIPT</button><button id="endMenuBtn" class="btn" type="button">NEW SETUP</button></div></div>
+      </section>
+
+      <section id="helpScreen" class="screen" aria-label="Controls and game rules">
+        <div class="panel"><div class="eyebrow">Control body</div><h2>HOW TO MOVE THE FIELD</h2><div class="notice">Mobile controls appear automatically. Gamepad is live whenever one is connected.</div><table class="help-table"><tbody><tr><td>Move</td><td>A / D or ← / →</td></tr><tr><td>Jump</td><td>W, Space or ↑</td></tr><tr><td>Strike</td><td>J</td></tr><tr><td>Route ability</td><td>K</td></tr><tr><td>Guard / parry</td><td>Hold L; catch contact in the opening moment</td></tr><tr><td>Dash / recovery</td><td>Shift</td></tr><tr><td>Pause</td><td>P or Escape</td></tr><tr><td>Trace</td><td>Backquote (`) or Trace button</td></tr></tbody></table><div class="divider"></div><p><strong>RUSH</strong> bursts through contact. <strong>BRACE</strong> quakes the nearby field. <strong>ARC</strong> sends a ranged bolt. <strong>SHIFT</strong> rewrites position with a blink strike.</p><div class="actions"><button id="closeHelpBtn" class="btn primary" type="button">CLOSE</button></div></div>
+      </section>
+
+      <aside id="traceDrawer" class="trace-drawer" aria-label="JM TraceBox"><div class="eyebrow">TraceBox · live route events</div><div id="traceList"></div></aside>
+
+      <div id="touchControls" class="touch-controls" aria-label="Touch controls">
+        <div class="touch-cluster touch-move"><button class="touch-btn jump" data-action="jump" type="button">↑</button><button class="touch-btn left" data-action="left" type="button">←</button><button class="touch-btn down" data-action="down" type="button">↓</button><button class="touch-btn right" data-action="right" type="button">→</button></div>
+        <div class="touch-cluster touch-actions"><button class="touch-btn" data-action="guard" type="button">GUARD</button><button class="touch-btn" data-action="ability" type="button">POWER</button><button class="touch-btn" data-action="dash" type="button">DASH</button><button class="touch-btn" data-action="attack" type="button">HIT</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<script src="src/game-core.js"></script>
+<script src="src/game-simulation.js"></script>
+<script src="src/game-render.js"></script>
+</body>
+</html>

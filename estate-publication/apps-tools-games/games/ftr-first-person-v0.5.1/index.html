@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#06121a">
+<meta name="description" content="FTR First-Person v0.5.1 — True 360 Aim Deck carrier.">
+<title>FTR First-Person Perception Body v0.5.1</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link href="styles.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+<canvas id="game"></canvas><div class="lookZone" id="lookZone"></div>
+<div class="hud"><div class="top"><div class="mark">FTR<b>BODY</b></div><div class="status"><div class="chip"><small>SCORE</small><strong id="score">000000</strong></div><div class="chip"><small>CORES</small><strong id="cores">0/2</strong></div><div class="chip integrity"><small>INTEGRITY <span id="hpText">100</span></small><div class="bar"><i id="hpBar"></i></div></div></div></div><div class="bottom"><div class="joy" data-label="MOVE" id="joy"><div id="stick"></div></div><div class="actions"><button class="mini" id="phase">PHASE</button><button class="mini" id="scan">SCAN</button><button class="mini" id="flow">FLOW</button><button class="mini" id="side">SIDE</button><button class="mini" id="act">TRACE</button><button class="fire" id="fire">AIM / PULSE<small id="ammo">20</small></button></div></div></div>
+<div class="tracker"><canvas id="trackerMarks"></canvas></div><div class="objective" id="objective">FIND THE FIRST <b>TRACE CORE</b></div><div class="reticle" id="reticle"><i></i></div><div id="prompt"></div><div id="toast"></div><div class="footer">FTR FIRST-PERSON v0.5.1 | JMLOGIC CORE | TRUE 360 AIM-DECK CARRIER</div>
+<div class="overlay" id="startOverlay"><div class="panel"><h1>ENTER <span>BODY</span></h1><p>A real first-person space. Find two Trace Cores, breach the gate, then reach extraction. Scan the environment, use cover, phase through pressure and choose which side carries your extension.</p><div class="verbs">FREE MOVE | AUTO FLOW | TRUE 360 AIM | TAP FIRE | HOLD PULSE | SCAN | PHASE</div><button class="primary" id="startBtn">MOUNT FIRST-PERSON BODY</button><div class="desktopHint">Desktop: WASD | full mouse look | click/space fire | R auto-flow | E trace | F scan | Shift phase | Q side</div></div></div>
+<div class="overlay hidden" id="endOverlay"><div class="panel"><h1 id="endTitle">BODY COMPLETE</h1><p id="endText"></p><button class="primary" id="restartBtn">REMOUNT</button><button class="secondary" id="receiptBtn">COPY RUN RECEIPT</button></div></div>
+</div>
+<script src="ftr-core.js"></script><script src="ftr-controls.js"></script><script src="ftr-world.js"></script><script src="ftr-raycast-sprites.js"></script><script src="ftr-hud-render-loop.js"></script><script src="ftr-input-bridge.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{});</script>
+</body>
+</html>

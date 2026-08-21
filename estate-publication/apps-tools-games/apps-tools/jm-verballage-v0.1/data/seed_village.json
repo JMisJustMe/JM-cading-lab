@@ -1,0 +1,10 @@
+{
+  "village": "FIRST_VILLAGE",
+  "chain": [
+    {"id":"BROKEN-CHAT","title":"The Broken Chat","parent_id":null},
+    {"id":"THE-MOVE","title":"The Move","parent_id":"BROKEN-CHAT"},
+    {"id":"WHAT-MAKES-A-MOMENT","title":"What Makes a Moment","parent_id":"THE-MOVE"},
+    {"id":"DEFAULT-STORY-BUILDER","title":"The DEFAULT Story Builder","parent_id":"WHAT-MAKES-A-MOMENT"},
+    {"id":"JM-VERBALLAGE","title":"JM Verballage","parent_id":"DEFAULT-STORY-BUILDER"}
+  ]
+}

@@ -1,0 +1,106 @@
+name: Validate Apps Tools Games Publication
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/**'
+      - '.github/workflows/estate-publication-validate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-public-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate JavaScript source
+        shell: bash
+        run: |
+          set -euo pipefail
+          find estate-publication/apps-tools-games -type f -name '*.js' -print0 \
+            | sort -z \
+            | xargs -0 -n1 node --check
+
+      - name: Validate JSON and manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('estate-publication/apps-tools-games')
+          files = sorted(list(root.rglob('*.json')) + list(root.rglob('*.webmanifest')))
+          assert files, 'No JSON/manifest files found'
+          for path in files:
+              json.loads(path.read_text(encoding='utf-8'))
+              print('JSON PASS', path)
+          PY
+
+      - name: Compile Python source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q estate-publication/apps-tools-games
+
+      - name: Compile Verballage C carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd estate-publication/apps-tools-games/apps-tools/jm-verballage-v0.1
+          gcc -std=c11 -Wall -Wextra -pedantic -DJM_VERBALLAGE_DEMO \
+            src/story_engine.c -o /tmp/jm_story_demo
+          /tmp/jm_story_demo > /tmp/jm_story.json
+          python -m json.tool /tmp/jm_story.json >/dev/null
+
+      - name: Check required runnable bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            'estate-publication/apps-tools-games/apps-tools/tracebox-routebox-v5.7R/index.html'
+            'estate-publication/apps-tools-games/apps-tools/jm-verballage-v0.1/index.html'
+            'estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1/index.html'
+            'estate-publication/apps-tools-games/apps-tools/jmisjustme-github-pages-v1.15.0/site/index.html'
+            'estate-publication/apps-tools-games/apps-tools/jmisjustme-github-pages-v1.15.0/site/data/estate-registry.json'
+            'estate-publication/apps-tools-games/games/routebreak-crown-relay-v1.0.0/index.html'
+            'estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1/index.html'
+            'estate-publication/apps-tools-games/ESTATE_PUBLICATION_REGISTER_v1_0.json'
+            'estate-publication/apps-tools-games/PROJECT_CHAT_CROSSWALK_v1_0.md'
+          )
+          for path in "${required[@]}"; do test -s "$path" || { echo "Missing $path"; exit 1; }; done
+
+      - name: Validate service-worker asset references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          roots = [
+              Path('estate-publication/apps-tools-games/apps-tools/tracebox-routebox-v5.7R'),
+              Path('estate-publication/apps-tools-games/apps-tools/jm-verballage-v0.1'),
+              Path('estate-publication/apps-tools-games/apps-tools/liveforge-engine-v0.1'),
+              Path('estate-publication/apps-tools-games/apps-tools/jmisjustme-github-pages-v1.15.0/site'),
+              Path('estate-publication/apps-tools-games/games/routebreak-crown-relay-v1.0.0'),
+              Path('estate-publication/apps-tools-games/games/ftr-first-person-v0.5.1'),
+          ]
+          for root in roots:
+              workers = [p for p in (root / 'service-worker.js', root / 'sw.js') if p.exists()]
+              assert workers, f'No service worker in {root}'
+              text = workers[0].read_text(encoding='utf-8')
+              for rel in re.findall(r"['\"](\./[^'\"]+)['\"]", text):
+                  if rel == './':
+                      continue
+                  path = root / rel[2:]
+                  assert path.exists(), f'{workers[0]} references missing {path}'
+              print('ASSET PASS', root)
+          PY

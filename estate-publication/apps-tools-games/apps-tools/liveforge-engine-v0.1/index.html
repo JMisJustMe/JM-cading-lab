@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LiveForge Engine Body v0.1</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="mark"></div><div><h1>LiveForge Engine</h1><p>v0.1 — actual product bench</p></div></div>
+    <nav class="nav">
+      <button data-tab="dashboard" class="active">Dashboard</button>
+      <button data-tab="intake">Intake</button>
+      <button data-tab="route">Route</button>
+      <button data-tab="forge">Forge</button>
+      <button data-tab="receipts">Receipts</button>
+      <button data-tab="map">Visual Map</button>
+      <button data-tab="switchboard">Switchboard</button>
+      <button data-tab="export">Export</button>
+    </nav>
+    <div class="locks"><h3>Hard Locks</h3><p>LiveForge is bench, not hub.</p><p>Central Switchboard remains master.</p><p>Restore before rewrite.</p><p>No Ding, no completion claim.</p></div>
+  </aside>
+  <main class="main">
+    <div class="top"><div class="title"><h2>LiveForge Engine Body v0.1</h2><p>Actual runnable bench for source intake, ecosystem routing, product-body forging, receipt generation, and Switchboard handoff.</p></div><div class="actions"><button class="btn primary" onclick="setTab('intake')">Add Feed</button><button class="btn" onclick="exportState()">Export State</button><button class="btn warn" onclick="resetState()">Reset Sample</button></div></div>
+
+    <section id="dashboard" class="section active"><div id="metrics" class="grid"></div><div class="panel grid"><div class="card"><h3>What this is</h3><p>This is the <b>actual LiveForge engine body</b>: a product-making bench. It intakes raw material, routes it through the eco, forges product shells, and leaves receipts.</p></div><div class="card"><h3>What this is not</h3><p>It is not Central Switchboard, not the entire estate, and not a replacement for GlyphPlay, GameForge, GameCore, or FlowTalk.</p></div><div class="card"><h3>Next recovery target</h3><p><code>JMGAMECOREv02I_DONOR_ESTATE_INTAKE_REGISTER</code></p><p class="muted">Recover existing body; do not recreate blindly.</p></div></div><div id="branchList" class="list"></div></section>
+
+    <section id="intake" class="section"><div class="card"><h3>Source Feed Intake</h3><form id="feedForm" class="form"><div class="two"><label>Feed title<input name="title" placeholder="e.g. Recover Estate Intake Register" required></label><label>Feed type<select name="type"><option>recovery</option><option>game</option><option>app</option><option>theory</option><option>tool</option><option>lyrics</option><option>external donor</option><option>constraint</option><option>governance</option></select></label></div><label>Source material<textarea name="text" placeholder="Paste raw material, user note, branch command, donor idea, or recovery target..." required></textarea></label><div class="three"><label>Branch route<select id="branchSelect" name="branch"></select></label><label>Claim-status<select name="claim"><option>KNOWN</option><option>INFERRED</option><option>UNKNOWN</option><option>LIMIT</option><option>WORKING MODEL</option><option>STRUCTURAL LOCK</option><option>PROOF-OUTPUT</option></select></label><label>Priority<select name="priority"><option>HIGH</option><option>MEDIUM</option><option>LOW</option><option>PARKED</option></select></label></div><button class="btn primary" type="submit">Intake + Route</button></form></div><div class="panel"><h3>Feeds</h3><div id="feedListIntake" class="list"></div></div></section>
+
+    <section id="route" class="section"><div id="routeDetail"></div><div class="panel"><h3>All Feeds</h3><div id="feedListRoute" class="list"></div></div></section>
+
+    <section id="forge" class="section"><div class="card"><h3>Product Body Forge</h3><p class="muted">Select a feed, then generate/copy/download a product-body markdown shell.</p><div class="actions" style="justify-content:flex-start"><button class="btn" onclick="copyForge()">Copy</button><button class="btn primary" onclick="downloadForge()">Download Markdown</button></div><pre id="forgeOut" class="console"></pre></div></section>
+
+    <section id="receipts" class="section"><div class="card"><h3>Receipts</h3><p class="muted">Ding routes from Feed cards to create receipts.</p><button class="btn" onclick="exportReceipts()">Export Receipts Markdown</button></div><div id="receiptList" class="list panel"></div></section>
+
+    <section id="map" class="section"><div class="card map"><h3>Visual Route Map</h3><div id="routeMap"></div></div></section>
+
+    <section id="switchboard" class="section"><div class="card"><h3>Switchboard Update</h3><p class="muted">Copy this into Central Switchboard when mounting this app body.</p><pre id="switchboardOut" class="console"></pre><button class="btn" onclick="navigator.clipboard.writeText(document.getElementById('switchboardOut').textContent)">Copy Switchboard Update</button></div></section>
+
+    <section id="export" class="section"><div class="grid"><div class="card"><h3>Export State</h3><p>Download all feeds and receipts as JSON.</p><button class="btn primary" onclick="exportState()">Export JSON</button></div><div class="card"><h3>Import State</h3><p>Load a previous LiveForge JSON export.</p><input id="importFile" type="file" accept="application/json"></div><div class="card"><h3>Persistence Note</h3><p class="warntext">Android downloaded HTML may not preserve state reliably. Export JSON after important work.</p></div></div></section>
+
+    <p class="footer-note">Cold Ding: runnable engine body created. LiveForge is product bench, not ecosystem hub.</p>
+  </main>
+</div>
+<script src="app-model.js"></script>
+<script src="app-runtime.js"></script>
+<script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){navigator.serviceWorker.register("./service-worker.js").catch(()=>{});}</script>
+</body>
+</html>

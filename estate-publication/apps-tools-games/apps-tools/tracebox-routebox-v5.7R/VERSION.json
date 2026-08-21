@@ -1,0 +1,15 @@
+{
+  "app": "TraceBox / RouteBox",
+  "version": "v5.7R",
+  "label": "Estate-Recovered Source Sync Candidate",
+  "built_at_utc": "2026-08-02T22:38:12.977055+00:00",
+  "source_basis": [
+    "Estate-confirmed v5.7 build receipt: Mobile Workflow + Result Review Candidate",
+    "Locked v0.2 2^4 gate table and 16-state model",
+    "v2 simulator lock: choose scenario, set gates, run input, read state, recover route",
+    "v3 calibration lock: expected vs actual, match/drift/break, correction, memory update",
+    "v5 applied-runs lock: stop expanding the engine; start running the engine"
+  ],
+  "boundary": "The original v5.7 package bytes were not recovered in this chat; this is a v5.7R rebuilt recovery body from estate-confirmed spec and source locks.",
+  "target": "offline-capable PWA plus single-file Android quick-open fallback"
+}

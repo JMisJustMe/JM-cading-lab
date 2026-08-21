@@ -1,0 +1,32 @@
+{
+  "storage_key": "tracebox_routebox_v5_7R_runs",
+  "state_bits": [
+    "space:Inside/Outside",
+    "time:Before/After",
+    "route:Open/Closed",
+    "role:Input/Output"
+  ],
+  "world_body": "3 = Space / Time / Height-View",
+  "gate_structure": "2^4 = Inside/Outside, Before/After, Open/Closed, Input/Output",
+  "states": [
+    ["Inside","Before","Open","Input","Ready Intake","Intake"],
+    ["Inside","Before","Open","Output","Premature Release","Output"],
+    ["Inside","Before","Closed","Input","Stored Potential","Memory"],
+    ["Inside","Before","Closed","Output","Blocked Output","Boundary"],
+    ["Inside","After","Open","Input","Late Intake","Intake"],
+    ["Inside","After","Open","Output","Clean Activation","Output"],
+    ["Inside","After","Closed","Input","Locked Memory","Memory"],
+    ["Inside","After","Closed","Output","Contained Result","Boundary"],
+    ["Outside","Before","Open","Input","External Intake","Intake"],
+    ["Outside","Before","Open","Output","Early External Signal","Output"],
+    ["Outside","Before","Closed","Input","Protected Boundary","Boundary"],
+    ["Outside","Before","Closed","Output","Suppressed Leak","Boundary"],
+    ["Outside","After","Open","Input","After-Contact Intake","Intake"],
+    ["Outside","After","Open","Output","External Release","Output"],
+    ["Outside","After","Closed","Input","Quarantine / Isolation","Boundary"],
+    ["Outside","After","Closed","Output","Sealed Consequence","Memory"]
+  ],
+  "operators": ["Force","Lift","Slide","Drag","Hold","Release","Delay","Reset","Split","Merge","Block","Store","Trigger","Trace","Observe"],
+  "drift_categories": ["Space","Time","Height","Gate","Operator","Material","Signal","Meaning","Memory","Reset"],
+  "corrections": ["Re-route","Re-time","Raise View","Re-gate","Re-operator","Re-material","Re-signal","Re-label","Re-reset","Re-run"]
+}

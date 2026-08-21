@@ -1,0 +1,5 @@
+const CACHE='jm-living-estate-v1-15-0-readable-source';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./assets/styles-base.css','./assets/styles-components.css','./assets/styles-views.css','./assets/styles-responsive.css','./assets/app-core.js','./assets/app-home.js','./assets/app-estates-library.js','./assets/app-connections-command.js','./assets/app-owner-post.js','./assets/app-actions.js','./assets/jm-mark.svg','./assets/estate-hero.svg','./data/estate-registry.json','./data/hosting-map.json'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res}).catch(()=>caches.match('./index.html'))))});

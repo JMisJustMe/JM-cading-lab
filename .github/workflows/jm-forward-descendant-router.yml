@@ -1,0 +1,206 @@
+name: JM Forward Descendant Router
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  forward-descendant:
+    name: Prove immutable parent to governed descendant re-entry
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Self-test forward descendant router
+        run: python3 scripts/jm_forward_descendant.py --self-test
+
+      - name: Live-probe frozen parent through forward re-entry
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build-forward-probe
+          printf '%s\n' 'synthetic frozen parent keeper — routing proof only' > build-forward-probe/parent-keeper.bin
+          PARENT_SHA="$(sha256sum build-forward-probe/parent-keeper.bin | awk '{print $1}')"
+          printf '%s\n' "$PARENT_SHA" > build-forward-probe/parent-before.sha256
+
+          # Build a normal authorized parent route and close its execution truthfully.
+          python3 scripts/jm_build_intake.py \
+            --body "JM Forward Parent Probe v1.0" \
+            --body-type "governance lineage proof fixture" \
+            --destination "prove frozen-parent forward descendant routing only" \
+            --body-path "apps/jm-chatgpt-host-adapter-v0.1" \
+            --work-pr 0 \
+            --selected-donor "JM Build Intake v0.1.1" \
+            --selected-donor "JM Default Execution Body v0.1" \
+            --selected-donor "JM Closure & Handoff Body v0.1" \
+            --stack "JM Build Intake v0.1.1 — Estate recovery/front door" \
+            --stack "JM Default Execution Body v0.1 — ordered execution" \
+            --stack "JM Closure & Handoff Body v0.1 — closure continuity" \
+            --surface "GitHub Actions proof surface" \
+            --recovery-decision "Reuse existing routing/closure bodies; the synthetic keeper exists only to prove parent immutability and lineage binding." \
+            --true-gap "No product capability gap; forward descendant routing only." \
+            --authorize \
+            --output build-forward-probe/parent-manifest.json
+
+          python3 scripts/jm_build_execution.py \
+            --manifest build-forward-probe/parent-manifest.json \
+            --state-file build-forward-probe/parent-execution.json \
+            --init
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to COMPOSING --evidence "ci:forward-parent-compose"
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to CONTACTABLE --evidence "ci:synthetic-parent-contact-path"
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to PROVING --evidence "ci:forward-parent-proof" \
+            --gate route-manifest=PASS --gate synthetic-runtime=PASS
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to PASS --evidence "ci:forward-parent-pass"
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to CLOSING --evidence "ci:forward-parent-closing"
+          python3 scripts/jm_build_execution.py --state-file build-forward-probe/parent-execution.json \
+            --to CLOSED --evidence "ci:forward-parent-closed"
+
+          python3 scripts/jm_build_closure.py \
+            --execution-ledger build-forward-probe/parent-execution.json \
+            --state-file build-forward-probe/parent-closure.json \
+            --init
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage PACKAGE --state N/A \
+            --note "Synthetic keeper has no distributable package; no packaging ceremony required."
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage FREEZE --state PASS --evidence "ci:synthetic-parent-freeze-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage LOCK --state PASS --evidence "ci:synthetic-parent-lock-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage ANCHOR --state PASS --evidence "ci:synthetic-parent-anchor-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage MOUNT --state PASS --evidence "ci:synthetic-parent-mount-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage RECOVERY_POINTER --state PASS \
+            --evidence "ci:synthetic-parent-pointer-resolves" \
+            --pointer "build-forward-probe/parent-keeper.bin"
+          python3 scripts/jm_build_closure.py --state-file build-forward-probe/parent-closure.json \
+            --stage HANDOFF --state PASS \
+            --evidence "ci:synthetic-forward-handoff" \
+            --handoff-to "forward-descendant-router"
+
+          # Same-name 'descendant' is forbidden: it would hide mutation behind lineage paperwork.
+          if python3 scripts/jm_forward_descendant.py \
+            --closure-ledger build-forward-probe/parent-closure.json \
+            --parent-keeper-ref build-forward-probe/parent-keeper.bin \
+            --parent-keeper-sha256 "$PARENT_SHA" \
+            --descendant-name "JM Forward Parent Probe v1.0" \
+            --body-type "governance lineage proof fixture" \
+            --destination "must fail: same identity" \
+            --body-path "apps/jm-forward-descendant-probe-v1.1" \
+            --work-pr 0 \
+            --lineage-relation INHERIT \
+            --change-class REPAIR \
+            --change-intent "synthetic repair" \
+            --output build-forward-probe/same-name-must-not-exist.json; then
+            echo "ERROR: forward router allowed descendant to reuse frozen parent identity"
+            exit 1
+          else
+            echo "EXPECTED RED: frozen parent identity cannot be reused as the descendant"
+          fi
+
+          # FORWARD_READY creates lineage eligibility, not implementation authorization.
+          python3 scripts/jm_forward_descendant.py \
+            --closure-ledger build-forward-probe/parent-closure.json \
+            --parent-keeper-ref build-forward-probe/parent-keeper.bin \
+            --parent-keeper-sha256 "$PARENT_SHA" \
+            --descendant-name "JM Forward Descendant Probe v1.1" \
+            --body-type "governance lineage proof fixture" \
+            --destination "prove fail-closed descendant re-entry into the normal build front door" \
+            --body-path "apps/jm-forward-descendant-probe-v1.1" \
+            --work-pr 0 \
+            --lineage-relation INHERIT \
+            --change-class REPAIR \
+            --change-intent "carry a synthetic local repair forward without mutating the v1.0 keeper" \
+            --surface "GitHub Actions proof surface" \
+            --output build-forward-probe/descendant-unresolved.json
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d = json.loads(Path('build-forward-probe/descendant-unresolved.json').read_text())
+          lineage = d['foundation']['forward_lineage']
+          assert d['state']['build_authorized_by_manifest'] is False
+          assert d['true_gaps']['new_capability_creation_authorized'] is False
+          assert d['state']['forward_descendant_route'] == 'LINEAGE_ROUTED_AWAITING_BUILD_AUTHORIZATION'
+          assert lineage['parent_body'] == 'JM Forward Parent Probe v1.0'
+          assert lineage['lineage_relation'] == 'INHERIT'
+          assert lineage['change_class'] == 'REPAIR'
+          assert lineage['parent_immutable'] is True
+          assert lineage['parent_recovery_pointer'] == 'build-forward-probe/parent-keeper.bin'
+          assert d['proof_lanes']['forward_handoff']['state'] == 'PASS'
+          print('Forward lineage intake PASS: immutable parent/handoff recorded while descendant build + new capability remain unauthorized.')
+          PY
+
+          if python3 scripts/jm_build_execution.py \
+            --manifest build-forward-probe/descendant-unresolved.json \
+            --state-file build-forward-probe/descendant-execution-must-not-exist.json \
+            --init; then
+            echo "ERROR: unresolved forward descendant entered execution without Build Intake authorization"
+            exit 1
+          else
+            echo "EXPECTED RED: forward lineage alone cannot initialize execution"
+          fi
+
+          # Resolve normal intake requirements. The executable still does not exist and
+          # new-capability authorization stays false.
+          python3 scripts/jm_forward_descendant.py \
+            --closure-ledger build-forward-probe/parent-closure.json \
+            --parent-keeper-ref build-forward-probe/parent-keeper.bin \
+            --parent-keeper-sha256 "$PARENT_SHA" \
+            --descendant-name "JM Forward Descendant Probe v1.1" \
+            --body-type "governance lineage proof fixture" \
+            --destination "prove governed re-entry into existing Build Intake/Execution" \
+            --body-path "apps/jm-forward-descendant-probe-v1.1" \
+            --work-pr 0 \
+            --lineage-relation INHERIT \
+            --change-class REPAIR \
+            --change-intent "carry a synthetic local repair forward without mutating the v1.0 keeper" \
+            --selected-donor "JM Forward Descendant Router v0.1" \
+            --stack "JM Forward Descendant Router v0.1 — immutable lineage bridge" \
+            --stack "JM Build Intake v0.1.1 — Estate recovery and authorization" \
+            --stack "JM Default Execution Body v0.1 — post-authorization execution" \
+            --surface "GitHub Actions proof surface" \
+            --recovery-decision "Recover the frozen v1.0 keeper as parent authority; preserve it unchanged; route only the synthetic repair through a separately named v1.1 descendant." \
+            --true-gap "No new product capability is authorized; only a synthetic repair descendant route is under proof." \
+            --authorize \
+            --output build-forward-probe/descendant-authorized.json
+
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          d = json.loads(Path('build-forward-probe/descendant-authorized.json').read_text())
+          before = Path('build-forward-probe/parent-before.sha256').read_text().strip()
+          after = hashlib.sha256(Path('build-forward-probe/parent-keeper.bin').read_bytes()).hexdigest()
+          assert before == after == d['foundation']['forward_lineage']['parent_keeper_sha256']
+          assert d['state']['build_authorized_by_manifest'] is True
+          assert d['true_gaps']['new_capability_creation_authorized'] is False
+          assert d['state']['forward_descendant_route'] == 'LINEAGE_ROUTED_AND_BUILD_AUTHORIZED'
+          assert d['authority']['forward_parent']['immutable'] is True
+          assert not Path('apps/jm-forward-descendant-probe-v1.1').exists(), 'router must not create descendant executable body'
+          print('Forward authorization PASS: parent hash unchanged; normal intake authorized route; new capability false; no descendant executable manufactured.')
+          PY
+
+          python3 scripts/jm_build_execution.py \
+            --manifest build-forward-probe/descendant-authorized.json \
+            --state-file build-forward-probe/descendant-execution.json \
+            --init
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          e = json.loads(Path('build-forward-probe/descendant-execution.json').read_text())
+          assert e['state'] == 'AUTHORIZED'
+          assert e['authority']['new_capability_creation_authorized'] is False
+          print('JM Forward Descendant live proof PASS: FORWARD_READY -> immutable parent lineage -> unresolved descendant RED -> normal intake authorization -> existing execution AUTHORIZED; parent untouched and no product created.')
+          PY

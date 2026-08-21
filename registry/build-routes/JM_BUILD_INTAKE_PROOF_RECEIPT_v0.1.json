@@ -1,0 +1,89 @@
+{
+  "schema": "jm.build-intake-proof-receipt/0.1",
+  "name": "JM Build Intake v0.1 — Intake-First Fail-Closed Proof Receipt",
+  "date": "2026-08-21",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "infrastructure_pr": 140,
+  "purpose": "Prove that serious-build intake can recover current Estate candidates before implementation, remain fail-closed while route selection/gap analysis is unresolved, and open the existing Build Entry Gate only after explicit evidence-based authorization.",
+  "implementation": {
+    "intake_tool": "scripts/jm_build_intake.py",
+    "entry_gate": "scripts/jm_build_entry_gate.py",
+    "policy": "registry/build-routes/JM_BUILD_ENTRY_POLICY_v0.1.json",
+    "workflow": ".github/workflows/jm-build-entry-gate.yml",
+    "automatic_recovery_sources": [
+      "current registry/build-routes/*_BUILD_ROUTE_MANIFEST_v0.1.json",
+      "current tracked executable-body paths under policy executable roots"
+    ],
+    "candidate_boundary": "Recovered matches are RECOVERY_CANDIDATE_ONLY and cannot become donor/source authority merely because the intake ranked them.",
+    "default_state": "INTAKE_RECOVERED_AWAITING_ROUTE_RESOLUTION",
+    "default_build_authorized_by_manifest": false,
+    "authorization_requires": [
+      "explicit recovery decision",
+      "non-empty declared exact stack",
+      "explicit true-gap result"
+    ],
+    "gate_requirement": "For future high-confidence serious bodies, state.build_authorized_by_manifest must be true on the same-PR prospective manifest."
+  },
+  "live_recovery_proof": {
+    "fixture_query": "JM ChatGPT Host Adapter v0.1.1",
+    "red_run": 32477140771,
+    "red_job": 96755723104,
+    "red_run_recovered_candidate_references": 17,
+    "green_run": 32477192672,
+    "green_job": 96755875167,
+    "green_run_recovered_candidate_references": 18,
+    "meaning": "The actual CI checkout searched current Estate material and recovered manifest-backed candidate references while preserving AUTHORIZED=false by default."
+  },
+  "controlled_proof": {
+    "pr": 144,
+    "branch": "test/jm-build-intake-proof-v0.1",
+    "base_branch": "jm-build-route-manifest-v0.1",
+    "disposition": "CLOSED_UNMERGED",
+    "intake_manifest": "registry/build-routes/JM_BUILD_INTAKE_PROOF_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+    "executable_fixture": "games/jm-build-intake-proof-v0.1.html",
+    "sequence": [
+      {
+        "phase": "INTAKE_FIRST",
+        "result": "PASS",
+        "evidence": "Prospective intake manifest existed before the executable fixture and was bound to PR 144 with build_authorized_by_manifest=false."
+      },
+      {
+        "phase": "UNRESOLVED_INTAKE_PLUS_NEW_BODY",
+        "result": "EXPECTED_RED_PASS",
+        "workflow_run": 32477140771,
+        "job_id": 96755723104,
+        "observed": "ERROR: same-PR prospective intake exists but is not build-authorized",
+        "fallback_draft_created": false,
+        "meaning": "The gate distinguished an existing unresolved intake from a missing intake and refused to treat paperwork presence as authorization."
+      },
+      {
+        "phase": "ROUTE_RESOLVED_EXECUTABLE_UNCHANGED",
+        "result": "GREEN_PASS",
+        "workflow_run": 32477192672,
+        "job_id": 96755875167,
+        "observed": "PASS: serious build entry has same-PR authorized prospective manifest",
+        "manifest_validator_run": 32477192703,
+        "manifest_validator_job": 96755875358,
+        "meaning": "Only the route manifest changed; the executable fixture remained unchanged."
+      }
+    ]
+  },
+  "proof_result": "PASS — INTAKE FIRST -> UNRESOLVED RED -> ROUTE RESOLUTION -> SAME BODY GREEN",
+  "non_claims": [
+    "This proof does not claim runtime quality, user contact, packaging, APK readiness or crown status.",
+    "Automatic recovery candidates are not automatically donors, sources, authorities or reuse decisions.",
+    "A structural Build Route Manifest PASS is not runtime/contact proof.",
+    "The disposable PR 144 fixture is not an Estate product and was not merged."
+  ],
+  "implementation_trace": {
+    "accidental_placeholder": {
+      "path": "registry/build-routes/JM_BUILD_INTAKE_PROOF_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+      "create_commit": "e44f0e87f966f01190fef797790cefa64d31e9cd",
+      "content": "single character x",
+      "cleanup_commit": "f9564bf89e9f17767f5df4b6aa18a68c44bbc949",
+      "final_persistent_state": "REMOVED_BEFORE_DISPOSABLE_PROOF_BRANCH",
+      "meaning": "Recorded for trace completeness; it was caught immediately and did not become a keeper, route authority or proof input."
+    }
+  },
+  "governing_result": "Serious JM builds can now enter through Estate recovery automatically. Intake evidence reduces operator burden, but native gates remain authoritative and unresolved recovery cannot be papered over into a green build."
+}

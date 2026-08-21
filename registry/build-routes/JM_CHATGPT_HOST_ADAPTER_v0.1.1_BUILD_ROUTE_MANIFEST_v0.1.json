@@ -74,15 +74,27 @@
     }
   },
   "built_in_ding": {
-    "state": "ISOLATED_EXTERNAL_GOVERNANCE_FAILURE",
-    "workflow": "Audit Estate Gap Governance",
-    "workflow_run": 32450184849,
-    "job": "Preserve named gaps until receipted resolution",
-    "errors": ["RouteOS authority weakened", "Apps registry unreadable"],
+    "original_state": "ISOLATED_EXTERNAL_GOVERNANCE_FAILURE",
+    "original_workflow_run": 32450184849,
+    "original_errors": ["RouteOS authority weakened", "Apps registry unreadable"],
     "attribution": "NOT CAUSED BY HOST ADAPTER DIFF",
-    "evidence": "PR #135 changes only ChatGPT host-adapter files and its two workflows; it does not modify registry/estate-classification-authority-v1.0.json, registry/estate-gap-governance-breach-v0.2.json, games-beyond/payload-manifest.json, games-beyond/routeos/index.html, or apps/index.html.",
-    "current_main_observation": "RouteOS current severity is CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED, which is stronger/newer than the failing guard's exact expected string CRITICAL_CORRECTED. The Apps House is currently readable on main and defines const APPS. This indicates governance-gate drift/staleness rather than evidence that the host adapter weakened RouteOS or rewrote the Apps House.",
-    "routing_effect": "Do not rebuild or distrust the host adapter. Keep the unrelated governance-gate reconciliation separate. Do not merge/crown the route while a repository built-in remains red without explicit reconciliation."
+    "diagnosis": [
+      "RouteOS authority had advanced from CRITICAL_CORRECTED to CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED while the guard required the older exact value.",
+      "Apps House inserted APP_STAT_COUNTS between APPS and LABELS while the guard incorrectly required LABELS to follow APPS immediately."
+    ],
+    "correct_forward_repair": {
+      "pr": 142,
+      "branch": "fix/estate-gap-governance-current-authority",
+      "head_sha": "d284415932a5024b2597b4941502ca04914226bb",
+      "workflow_run": 32450427629,
+      "job_id": 96677795288,
+      "result": "PASS",
+      "observed_output": "Gap governance PASS: 56 named gaps preserved; states={'PARTIAL': 20, 'OPEN': 35, 'RESOLVED': 1}; RouteOS guarded at CRITICAL_CORRECTED_AND_FULL_KEEPER_RECOVERED; no Other dumping.",
+      "protected_laws_preserved": true,
+      "adoption_state": "PROVEN ON REPAIR PR; NOT YET MERGED TO MAIN",
+      "tool_boundary": "Attempt to transition PR #142 from draft to ready was blocked by the GitHub connector safety layer; no false mainline adoption claim is made."
+    },
+    "routing_effect": "The host adapter remains preserved. The responsible governance organ has a proven repair. Repository-main adoption remains a separate gate."
   },
   "host_and_surfaces": {
     "target_surface": "inline/in-chat ChatGPT",
@@ -95,10 +107,10 @@
   "escalation": {
     "current_escalations": [
       "Actual in-chat contact gate remains open",
-      "Estate Gap Governance guard requires separate reconciliation before truthful merge/closure"
+      "Proven Estate Gap Governance repair PR #142 still requires mainline adoption before the historical repository-red gate can be considered reconciled on main"
     ],
     "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> RECOVER -> CORRECT RESPONSIBLE ORGAN FORWARD -> RETEST AFFECTED GATE",
-    "manual_user_contact": "Only required when the actual inline ChatGPT contact surface is available and must be physically interacted with; CI/runtime proof is already sufficient for its own lanes."
+    "manual_user_contact": "Only required for actual inline ChatGPT interaction when that contact surface is available; CI/runtime proof already closes its own lanes."
   },
   "state": {
     "route": "PROVING",
@@ -106,17 +118,18 @@
     "mcp_runtime": "PASS",
     "public_probe": "PASS",
     "chatgpt_inline_contact": "OPEN",
-    "repository_governance": "RED / isolated unrelated gate drift",
-    "merge": "NOT READY",
+    "repository_governance_repair": "PASS ON PR #142 / MAIN ADOPTION OPEN",
+    "host_adapter_rebuild_required": false,
+    "merge": "NOT READY FOR FINAL ROUTE CLOSURE",
     "crown": "NOT EARNED"
   },
   "next_route": {
     "host_adapter": "Preserve current body; no rebuild.",
-    "governance_gate": "Reconcile the stale/over-strict Estate Gap Governance checks against current authority formats/status without weakening the protected laws.",
-    "contact": "When real inline execution is available, perform the Third Ding interaction and record only the behavior actually observed.",
-    "closure": "Only after the relevant repository built-ins and inline-contact gate are green may this route advance toward closure."
+    "governance_gate": "Adopt proven PR #142 into main when the repository authorization/safety boundary permits; then re-evaluate PR #135 against the repaired built-in.",
+    "contact": "Perform Third Ding only through real inline ChatGPT interaction and record only observed behavior.",
+    "closure": "Close only after the relevant repository built-ins and actual inline-contact gate are green."
   },
   "manifest_proof": {
-    "result": "PASS — prospective manifest caught a real red built-in, isolated it from the target build, prevented unnecessary rebuild, preserved the already-green proof lanes, and kept the genuine inline-contact gate open."
+    "result": "PASS — prospective manifest caught a real red built-in, isolated it from the target build, routed repair to the responsible governance organ, obtained a green retest without weakening protected laws, prevented unnecessary host-adapter rebuild, and kept the genuine inline-contact gate open."
   }
 }

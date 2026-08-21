@@ -7,6 +7,12 @@ on:
     paths:
       - 'apps/jm-chatgpt-host-adapter-v0.1/**'
       - '.github/workflows/jm-chatgpt-host-adapter-runtime-proof.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/**'
+      - '.github/workflows/jm-chatgpt-host-adapter-runtime-proof.yml'
   workflow_dispatch:
 
 jobs:

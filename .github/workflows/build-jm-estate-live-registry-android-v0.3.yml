@@ -97,7 +97,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           import hashlib, json, os, zipfile
-          here=Path('.'); parent=here.parent; rel=here/'release'
+          here=Path('.').resolve(); parent=here.parent; rel=here/'release'
           def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
           def meta(name):
               p=rel/name

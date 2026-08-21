@@ -1,0 +1,134 @@
+  const signature = buildSignature(profile);
+  const effortFactors = { 1: .30, 2: .40, 3: .52, 4: .62, 5: .72 };
+  let factor = effortFactors[profile.effort] * (state.nextFactor || 1);
+  if (profile.limitations) factor *= .75;
+  factor = clamp(factor, .20, .80);
+
+  const available = profile.movements.filter((m) => movementLibrary[m]);
+  const movementCount = clamp(2 + ((signature.month + variation) % 3), 2, Math.min(4, available.length));
+  const start = (signature.day + variation) % available.length;
+  const selected = Array.from({ length: movementCount }, (_, i) => available[(start + i) % available.length]);
+  const rounds = clamp(1 + ((signature.root + variation) % 3), 1, 3);
+  const restSeconds = clamp(25 + signature.yearPulse * 5, 30, 75);
+  const easier = profile.limitations || Number(profile.effort) <= 2;
+
+  const exercises = selected.map((key, index) => {
+    const movement = movementLibrary[key];
+    return {
+      id: `${Date.now()}-${index}`,
+      key,
+      title: movement.title,
+      variation: easier ? movement.easier : movement.standard,
+      dose: movement.dose(profile, factor, signature),
+      complete: false
+    };
+  });
+
+  return {
+    createdAt: new Date().toISOString(),
+    title: profile.limitations ? 'Gentle Foundation Session' : `${['Foundation','Rhythm','Capacity'][rounds - 1]} Session`,
+    reason: `${signature.code} shapes ${movementCount} movement lanes across ${rounds} round${rounds === 1 ? '' : 's'}. Your current capacity sets each dose.`,
+    signature,
+    factor,
+    rounds,
+    restSeconds,
+    exercises
+  };
+}
+
+function buildMicroReturn(triggerKey, environmentKey, variation = 0, intention = false) {
+  if (!state.profile) return null;
+  const profile = state.profile;
+  const signature = buildSignature(profile);
+  const trigger = triggerLibrary[triggerKey] || triggerLibrary.start;
+  const available = profile.movements.filter((movement) => movementLibrary[movement]);
+  const preferred = trigger.preferred.filter((movement) => available.includes(movement));
+  const pool = preferred.length ? preferred : available;
+  const index = (signature.day + signature.root + hashText(triggerKey) + variation + state.microHistory.length) % pool.length;
+  const movement = pool[index];
+  const environment = intention ? 'intention' : environmentKey;
+  const [variationName, unit] = microMovementVariants[movement][environment] || microMovementVariants[movement].space;
+  const limitationFactor = profile.limitations ? .7 : 1;
+  const anchorPulse = 1 + ((signature.anchor + variation) % 3);
+  let amount;
+
+  if (unit === 'reps') {
+    const bases = { push: profile.pushBase, core: profile.coreBase, legs: Math.max(profile.coreBase, 8) };
+    amount = clamp(Math.round((bases[movement] || 6) * .30 * limitationFactor) + anchorPulse - 1, 1, 12);
+  } else {
+    const baseSeconds = movement === 'walk' ? 45 : 25;
+    amount = clamp(baseSeconds + anchorPulse * 10 + signature.root * 2, 20, intention ? 60 : 120);
+  }
+
+  const displayedDose = unit === 'reps' ? `${amount} ${variationName}` : `${amount} seconds of ${variationName}`;
+  const number = unit === 'reps' ? amount : Math.round(amount / 10) * 10;
+  return {
+    id: `${Date.now()}-${triggerKey}-${variation}`,
+    createdAt: new Date().toISOString(),
+    triggerKey,
+    trigger: trigger.label,
+    environmentKey: environment,
+    environment: intention ? 'Intention only' : environmentLibrary[environmentKey]?.label || 'Some floor space',
+    movement,
+    title: intention ? 'Intention Return' : movementLibrary[movement].title,
+    amount,
+    unit,
+    number,
+    variation: variationName,
+    dose: displayedDose,
+    reason: `${trigger.prompt} Your ${signature.code} pattern chooses the lane; this is a small fraction of your stated capacity.`,
+    signature: signature.code,
+    complete: false
+  };
+}
+
+function bmi(profile) {
+  if (!profile.height || !profile.weight) return null;
+  const metres = profile.height / 100;
+  return (profile.weight / (metres * metres)).toFixed(1);
+}
+
+function openTab(id) {
+  tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.tab === id));
+  panels.forEach((panel) => panel.classList.toggle('active', panel.id === id));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function fillForm() {
+  if (!state.profile) return;
+  const p = state.profile;
+  ['name','dob','favouriteNumber','effort','pushBase','coreBase','walkBase','height','weight'].forEach((key) => {
+    if ($(key)) $(key).value = p[key] ?? '';
+  });
+  $('limitations').checked = Boolean(p.limitations);
+  document.querySelectorAll('input[name="movements"]').forEach((input) => { input.checked = p.movements.includes(input.value); });
+  $('limitationsNotice').classList.toggle('hidden', !p.limitations);
+}
+
+function renderTriggerButtons() {
+  const triggerMarkup = Object.entries(triggerLibrary).map(([key, item]) => `
+    <button class="trigger-button ${state.selectedTrigger === key ? 'active' : ''}" data-trigger="${key}">
+      <strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.prompt)}</span>
+    </button>`).join('');
+  $('triggerGrid').innerHTML = triggerMarkup;
+  $('todayQuickTriggers').innerHTML = Object.entries(triggerLibrary).map(([key, item]) => `<button class="quick-trigger" data-quick-trigger="${key}">${escapeHtml(item.short)}</button>`).join('');
+
+  document.querySelectorAll('[data-trigger]').forEach((button) => button.addEventListener('click', () => {
+    state.selectedTrigger = button.dataset.trigger;
+    state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment);
+    saveState();
+    renderMoments();
+  }));
+  document.querySelectorAll('[data-quick-trigger]').forEach((button) => button.addEventListener('click', () => {
+    state.selectedTrigger = button.dataset.quickTrigger;
+    state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment);
+    saveState();
+    openTab('moments');
+    renderMoments();
+  }));
+}
+
+function renderEnvironmentButtons() {
+  $('environmentGrid').innerHTML = Object.entries(environmentLibrary).map(([key, item]) => `<button class="environment-button ${state.selectedEnvironment === key ? 'active' : ''}" data-environment="${key}">${escapeHtml(item.label)}</button>`).join('');
+  document.querySelectorAll('[data-environment]').forEach((button) => button.addEventListener('click', () => {
+    state.selectedEnvironment = button.dataset.environment;

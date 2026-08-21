@@ -1,5 +1,5 @@
 {
-  "schema": "JM.WebSurfaceConvergence/1.1",
+  "schema": "JM.WebSurfaceConvergence/1.2",
   "date": "2026-08-21",
   "status": "MACHINE_SIDE_CONVERGED__OWNER_CONTACT_AND_PUBLICATION_GATES_OPEN",
   "governing_law": [
@@ -78,8 +78,10 @@
   },
   "android_carrier": {
     "pr": 134,
-    "head_after_main_reconciliation": "23f4784e78f81e4a42b9a99a74fc8ddf599c4090",
-    "main_reconciliation": "ZERO_BEHIND_AND_MERGEABLE_AFTER_EXACT_BLOB_OVERLAY",
+    "reconciled_head": "23f4784e78f81e4a42b9a99a74fc8ddf599c4090",
+    "main_seat_commit": "c7e34d461985f03e86de04f76f8467aba9f7ecf3",
+    "engineering_state": "MERGED_CLOSED__EXACT_NINE_BLOB_HARDENING_SEATED_ON_MAIN",
+    "fresh_owner_vault_readiness_on_reconciled_head": "PASS",
     "hardening_scope": [
       "off-UI-thread import and extraction",
       "root-index re-verification before local launch",

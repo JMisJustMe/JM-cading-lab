@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""JM Build Intake v0.1.
+"""JM Build Intake v0.1.1.
 
 Upstream recovery helper for serious JM builds. It searches the current Estate
 for relevant existing route manifests and executable bodies, then emits a
 prospective Build Route Manifest seed. Recovery hits are candidates, not donor
 claims. The seed is fail-closed until stack/gap routing is explicitly resolved.
+
+Build execution authorization and new-capability creation authorization are
+separate: a reuse-only build may proceed without inventing a new capability.
 """
 
 from __future__ import annotations
@@ -129,20 +132,22 @@ def recover_candidates(body: str, body_type: str, body_path: str, keywords: list
 
 
 def authorization_errors(args: argparse.Namespace) -> list[str]:
-    if not args.authorize:
-        return []
-    errors = []
-    if not args.recovery_decision:
-        errors.append("--recovery-decision is required with --authorize")
-    if not args.stack:
-        errors.append("at least one --stack is required with --authorize")
-    if not args.true_gap:
-        errors.append("--true-gap is required with --authorize")
+    errors: list[str] = []
+    if args.authorize:
+        if not args.recovery_decision:
+            errors.append("--recovery-decision is required with --authorize")
+        if not args.stack:
+            errors.append("at least one --stack is required with --authorize")
+        if not args.true_gap:
+            errors.append("--true-gap is required with --authorize")
+    if args.authorize_new_capability and not args.authorize:
+        errors.append("--authorize-new-capability requires --authorize")
     return errors
 
 
 def make_manifest(args: argparse.Namespace, recovery: dict) -> dict:
     authorized = bool(args.authorize)
+    new_capability_authorized = bool(args.authorize_new_capability)
     branch = args.branch
     if not branch:
         try:
@@ -172,7 +177,8 @@ def make_manifest(args: argparse.Namespace, recovery: dict) -> dict:
     true_gaps = {
         "state": "RESOLVED" if authorized else "OPEN",
         "remaining_capability_gap": args.true_gap or "OPEN — create nothing new until the gap survives Estate recovery",
-        "new_capability_creation_authorized": authorized,
+        "new_capability_creation_authorized": new_capability_authorized,
+        "authorization_rule": "Build execution authorization is separate from new-capability creation authorization. New capability creation must be explicitly requested after the gap survives recovery."
     }
 
     surfaces = args.surface or []
@@ -222,7 +228,7 @@ def make_manifest(args: argparse.Namespace, recovery: dict) -> dict:
         },
         "next_route": {
             "step": (
-                "Proceed with the declared stack and gap; native built-ins remain authoritative."
+                "Proceed with the declared stack and gap through JM Default Execution Body; native built-ins remain authoritative."
                 if authorized
                 else "Resolve strongest appropriate donors/authority, declare the exact stack, prove the true gap, then explicitly authorize this manifest before implementation."
             )
@@ -244,14 +250,18 @@ def self_test() -> None:
     sample = "JM ChatGPT Host Adapter recovery with GameCore runtime"
     assert token_hits(sample, q)[:3] == ["chatgpt", "host", "adapter"]
 
-    ns = argparse.Namespace(authorize=True, recovery_decision="", stack=[], true_gap="")
+    ns = argparse.Namespace(authorize=True, authorize_new_capability=False, recovery_decision="", stack=[], true_gap="")
     errs = authorization_errors(ns)
     assert len(errs) == 3
     ns.recovery_decision = "Reuse recovered host/runtime donors"
     ns.stack = ["JM GameCore"]
-    ns.true_gap = "New host adapter only"
+    ns.true_gap = "No new capability gap; reuse-only route"
     assert authorization_errors(ns) == []
-    print("JM Build Intake self-test PASS: token recovery works and authorization fails closed until recovery decision, exact stack and true gap are explicit.")
+
+    ns.authorize = False
+    ns.authorize_new_capability = True
+    assert authorization_errors(ns) == ["--authorize-new-capability requires --authorize"]
+    print("JM Build Intake self-test PASS: token recovery works, route authorization fails closed, and build authorization remains separate from new-capability creation authorization.")
 
 
 def main() -> int:
@@ -270,6 +280,7 @@ def main() -> int:
     parser.add_argument("--recovery-decision", default="")
     parser.add_argument("--true-gap", default="")
     parser.add_argument("--authorize", action="store_true")
+    parser.add_argument("--authorize-new-capability", action="store_true")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
@@ -303,6 +314,7 @@ def main() -> int:
     print(f"JM Build Intake: recovered {candidates} candidate reference(s) for {args.body!r}")
     print(f"OUTPUT: {output.relative_to(ROOT)}")
     print(f"AUTHORIZED: {manifest['state']['build_authorized_by_manifest']}")
+    print(f"NEW_CAPABILITY_AUTHORIZED: {manifest['true_gaps']['new_capability_creation_authorized']}")
     if not manifest["state"]["build_authorized_by_manifest"]:
         print("NEXT: resolve recovery decision + exact stack + true gap, then regenerate with --authorize. Do not implement merely because intake exists.")
     return 0

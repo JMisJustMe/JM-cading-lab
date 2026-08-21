@@ -1,4 +1,4 @@
-name: JM Build Entry Gate
+name: JM Build Route, Intake & Execution
 
 on:
   pull_request:
@@ -8,9 +8,9 @@ permissions:
 
 jobs:
   entry-gate:
-    name: Require route manifest for new serious bodies
+    name: Route serious bodies through intake and execution
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v6
         with:
@@ -37,11 +37,88 @@ jobs:
           recovery = data['foundation']['estate_recovery']
           assert recovery['candidate_count'] > 0, 'live Estate scan recovered no candidates'
           assert data['state']['build_authorized_by_manifest'] is False, 'automatic intake must default fail-closed'
+          assert data['true_gaps']['new_capability_creation_authorized'] is False, 'automatic intake must not authorize new capability by default'
           assert any(
               item.get('source_type') == 'build-route-manifest'
               for item in recovery['route_manifest_candidates']
           ), 'expected at least one manifest-backed recovery candidate'
-          print(f"JM Build Intake live recovery PASS: {recovery['candidate_count']} candidate reference(s); fail-closed authorization preserved.")
+          print(f"JM Build Intake live recovery PASS: {recovery['candidate_count']} candidate reference(s); build and new-capability authorization both fail-closed by default.")
+          PY
+
+      - name: Self-test default execution body
+        run: python3 scripts/jm_build_execution.py --self-test
+
+      - name: Live-probe authorized execution state machine
+        run: |
+          set -euo pipefail
+          mkdir -p build-execution-probe
+          python3 scripts/jm_build_intake.py \
+            --body "JM Execution Route Probe v0.1" \
+            --body-type "governance execution probe" \
+            --destination "prove authorized state routing only" \
+            --body-path "apps/jm-chatgpt-host-adapter-v0.1" \
+            --work-pr 0 \
+            --keyword "chatgpt" \
+            --selected-donor "JM Build Intake v0.1.1" \
+            --selected-donor "JM Default Execution Body v0.1" \
+            --stack "JM Build Intake v0.1.1 — recovery route" \
+            --stack "JM Default Execution Body v0.1 — execution state router" \
+            --stack "JM Build Route Manifest v0.1 — authority/provenance route" \
+            --surface "GitHub Actions proof surface" \
+            --recovery-decision "Reuse current JM routing infrastructure; no product runtime or engine is being created by this execution probe." \
+            --true-gap "No product capability gap; only the execution-state routing mechanism is under proof." \
+            --authorize \
+            --output "build-execution-probe/manifest.json"
+
+          python3 scripts/jm_build_execution.py \
+            --manifest build-execution-probe/manifest.json \
+            --state-file build-execution-probe/state.json \
+            --init
+
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to COMPOSING --evidence "ci:intake-authorized"
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to CONTACTABLE --evidence "ci:synthetic-contact-path-present"
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to PROVING --evidence "ci:proof-start" \
+            --gate route-manifest=PASS --gate runtime-probe=OPEN
+
+          if python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to PASS --evidence "ci:premature-pass-attempt"; then
+            echo "ERROR: PASS incorrectly allowed while runtime-probe remained OPEN"
+            exit 1
+          else
+            echo "EXPECTED RED: OPEN gate correctly blocked premature PASS"
+          fi
+
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to ESCALATED --evidence "ci:synthetic-runtime-ding" \
+            --gate runtime-probe=FAIL --note "Synthetic Ding proves local escalation routing"
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to PROVING --evidence "ci:synthetic-repair-applied" \
+            --gate runtime-probe=OPEN --note "Repair applied; return to affected proof state"
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to PASS --evidence "ci:synthetic-runtime-pass" --gate runtime-probe=PASS
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to CLOSING --evidence "ci:execution-close-start"
+          python3 scripts/jm_build_execution.py --state-file build-execution-probe/state.json \
+            --to CLOSED --evidence "ci:execution-route-closed"
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('build-execution-probe/manifest.json').read_text())
+          state = json.loads(Path('build-execution-probe/state.json').read_text())
+          assert manifest['state']['build_authorized_by_manifest'] is True
+          assert manifest['true_gaps']['new_capability_creation_authorized'] is False
+          assert state['state'] == 'CLOSED'
+          assert state['closure']['execution_closed'] is True
+          assert state['closure']['freeze_lock_anchor_mount_claimed'] is False
+          assert state['gates']['route-manifest']['state'] == 'PASS'
+          assert state['gates']['runtime-probe']['state'] == 'PASS'
+          assert any(item['to'] == 'ESCALATED' for item in state['history'])
+          assert any(item['from'] == 'ESCALATED' and item['to'] == 'PROVING' for item in state['history'])
+          print('JM Default Execution Body live proof PASS: ordered execution, OPEN-block, Ding escalation, recovery, PASS and truthful CLOSED state verified; no product capability or freeze/mount claim manufactured.')
           PY
 
       - name: Self-test entry classifier

@@ -108,3 +108,5 @@ jobs:
           else:
               raise SystemExit('Atomic deployment verifier update exhausted its retries.')
           PY
+
+# Manual trace-only retrigger: 2026-08-21 registry drift contact.

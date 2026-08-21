@@ -241,7 +241,7 @@ def inject_lineage(
 
 def self_test() -> None:
     policy = load_policy()
-    with tempfile.TemporaryDirectory() as td:
+    with tempfile.TemporaryDirectory(dir=ROOT) as td:
         root = Path(td)
         parent = root / "parent.bin"
         parent.write_bytes(b"frozen-parent")

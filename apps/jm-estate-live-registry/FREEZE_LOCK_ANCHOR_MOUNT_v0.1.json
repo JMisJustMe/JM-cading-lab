@@ -1,0 +1,14 @@
+{
+  "schema": "jm.estate.freeze-lock-anchor-mount/1.0",
+  "body": "JM Estate Live Registry",
+  "version": "v0.1",
+  "state": ["FROZEN", "LOCKED", "ANCHORED", "GITHUB_MOUNTED"],
+  "date": "2026-08-21",
+  "parent_file": "JM_ESTATE_LIVE_REGISTRY_v0.1.html",
+  "sha256": "ae72073716b6be2bbe9897103625b04b48a9a6561a5db7a4e910e91f9cb49121",
+  "zip_sha256": "7f30bdda7ed8e316f8d7c77979d36aa82a7d9856359781263effe7c8f4081cce",
+  "claim_boundary": "Freezes the exact v0.1 HTML parent. It does not claim physical device contact that was not performed in this run. v0.2 is a forward descendant and remains active/contact-pending.",
+  "lineage": "JM Estate Circulation & Return + Estate Head/Compass + donor-register precedent → JM Estate Live Registry v0.1 → JM Estate Live Registry App v0.2",
+  "github_branch": "jm-estate-live-registry-v0.2",
+  "github_mount_path": "apps/jm-estate-live-registry/"
+}

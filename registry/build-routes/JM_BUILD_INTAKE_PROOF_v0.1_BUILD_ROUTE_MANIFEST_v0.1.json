@@ -30,23 +30,32 @@
       "tracked_body_candidates": [],
       "candidate_rule": "Candidate evidence is not a donor or authority claim."
     },
-    "recovery_decision": "OPEN — proof route intentionally unresolved before executable creation",
-    "selected_donors": []
+    "recovery_decision": "Reuse the existing JM Build Intake v0.1 + JM Build Entry Gate v0.1.1 infrastructure. Do not create a new builder/runtime; the executable exists only as the minimal signal needed to exercise the route boundary.",
+    "selected_donors": [
+      "JM Build Intake v0.1",
+      "JM Build Entry Gate v0.1.1"
+    ]
   },
   "exact_stack": {
-    "state": "OPEN",
-    "declared_stack": [],
-    "rule": "Resolve before implementation."
+    "state": "RESOLVED",
+    "declared_stack": [
+      "JM Build Intake v0.1 — recovery/intake organ",
+      "JM Build Entry Gate v0.1.1 — fail-closed enforcement organ",
+      "JM Build Route Manifest v0.1 — route/provenance organ",
+      "single-file HTML — disposable proof carrier only",
+      "GitHub Actions — CI proof surface"
+    ],
+    "rule": "No new JM runtime, engine, host or production surface is created for this proof."
   },
   "true_gaps": {
-    "state": "OPEN",
-    "remaining_capability_gap": "OPEN — controlled proof has not yet authorized fixture creation",
+    "state": "RESOLVED",
+    "remaining_capability_gap": "No Estate capability gap. Only a disposable executable signal is required to prove that an unresolved intake blocks and an explicitly resolved route opens the entry gate.",
     "new_capability_creation_authorized": false
   },
   "proof_lanes": {
     "estate_recovery_scan": {"state": "PASS"},
-    "stack_selection": {"state": "OPEN"},
-    "gap_test": {"state": "OPEN"},
+    "stack_selection": {"state": "PASS"},
+    "gap_test": {"state": "PASS"},
     "runtime_or_contact": {"state": "NOT_CLAIMED"}
   },
   "host_and_surfaces": {
@@ -58,16 +67,16 @@
     "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> CORRECT ROUTE -> RETEST"
   },
   "state": {
-    "route": "INTAKE_RECOVERED_AWAITING_ROUTE_RESOLUTION",
-    "build_authorized_by_manifest": false,
+    "route": "AUTHORIZED_TO_BUILD",
+    "build_authorized_by_manifest": true,
     "runtime": "NOT CLAIMED",
     "contact": "NOT CLAIMED",
     "crown": "NOT EARNED"
   },
   "next_route": {
-    "step": "Resolve recovery decision, exact stack and true gap before adding the executable fixture."
+    "step": "Retest the same unchanged executable fixture. If green, close this disposable PR unmerged and preserve only the proof receipt on the real infrastructure branch."
   },
   "manifest_proof": {
-    "result": "INTAKE PASS — route intentionally unresolved and not authorization to implement."
+    "result": "ROUTE AUTHORIZATION PASS — recovery decision, exact stack and true gap are explicit. This authorizes only the disposable proof route and does not claim runtime/contact/crown proof."
   }
 }

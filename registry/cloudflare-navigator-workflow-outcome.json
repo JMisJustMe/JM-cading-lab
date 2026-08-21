@@ -2,8 +2,8 @@
   "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.2",
   "workflow": "Deploy Live-Preserving Cloudflare Estate",
   "status": "completed",
-  "conclusion": "failure",
-  "deployment_proven": false,
+  "conclusion": "success",
+  "deployment_proven": true,
   "proof_steps": {
     "assemble": {
       "name": "Assemble the canonical Estate body",
@@ -15,26 +15,26 @@
     },
     "verify": {
       "name": "Verify the assembled deployment body",
-      "conclusion": "failure"
+      "conclusion": "success"
     },
     "deploy": {
       "name": "Deploy the existing Cloudflare Pages project",
-      "conclusion": "skipped"
+      "conclusion": "success"
     },
     "live_proof": {
       "name": "Prove Navigator, Apps and repaired Theory on the canonical host",
-      "conclusion": "skipped"
+      "conclusion": "success"
     }
   },
-  "receipt_step": "skipped",
-  "run_id": "32480837458",
-  "run_number": "21",
+  "receipt_step": "success",
+  "run_id": "32481025159",
+  "run_number": "22",
   "run_attempt": "1",
-  "head_sha": "60a95bc18dd957da8ec0742342eca5cbbfe51331",
+  "head_sha": "d018898b9c4bed4e3ffc9caa99d1d83612e7dcbf",
   "head_branch": "main",
   "event": "push",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32480837458",
-  "updated_at": "2026-08-21T12:13:23Z",
-  "recorded_at_utc": "2026-08-21T12:13:32Z",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32481025159",
+  "updated_at": "2026-08-21T12:16:08Z",
+  "recorded_at_utc": "2026-08-21T12:16:18Z",
   "boundary": "Proof organs are matched by governed aliases, so harmless wording changes cannot turn a successful deployment into a false missing result."
 }

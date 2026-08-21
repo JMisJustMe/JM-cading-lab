@@ -1,16 +1,30 @@
 {
-  "schema": "JM.CloudflareAutoDeployReceipt/1.5",
+  "schema": "JM.CloudflareAutoDeployReceipt/1.4",
   "status": "SUCCESS",
   "project": "jmisjustme-estate",
   "canonical_host": "jmisjustme-estate.pages.dev",
   "source_commit": "d018898b9c4bed4e3ffc9caa99d1d83612e7dcbf",
   "workflow_run": "32481025159",
-  "deployed_at_utc": "2026-08-21T12:16:03Z",
-  "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
+  "proved_at_utc": "2026-08-21T12:16:08Z",
+  "rooms": [
+    "navigator",
+    "apps",
+    "theory",
+    "lyrics",
+    "recovery"
+  ],
+  "navigator_route": "https://jmisjustme-estate.pages.dev/navigator/",
   "navigator_proof": "EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE",
-  "apps_registry_count": 44,
+  "stringline_proof": "Many bodies. One living line. None erased.",
+  "apps_registry_count": 40,
   "apps_boundary": "PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE",
   "theory_policy": "PRESERVE_PRE_REGRESSION_F6336B93_BODY",
   "theory_mobile_reader_clearance": "PROVEN",
-  "manual_upload_required": false
+  "deployment_step": "SUCCESS",
+  "canonical_live_proof_step": "SUCCESS",
+  "workflow_conclusion": "success",
+  "receipt_step": "success",
+  "receipt_reconciliation": "Written by the independent Stringline observer from inspected step evidence.",
+  "manual_upload_required": false,
+  "boundary": "This proves JM3232 Navigator v0.1.1 and JM Stringline are live as a browser-experience shell. It does not claim a custom rendering engine, platform-level chat embedding, universal parser completion or APK."
 }

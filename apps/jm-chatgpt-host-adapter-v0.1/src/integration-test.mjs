@@ -45,7 +45,7 @@ async function waitForHealth() {
 let client;
 try {
   const health = await waitForHealth();
-  client = new Client({ name: "jm-host-adapter-proof-client", version: "0.1.1" });
+  client = new Client({ name: "jm-host-adapter-proof-client", version: "0.1.2" });
   const transport = new StreamableHTTPClientTransport(mcpUrl);
   await client.connect(transport);
 
@@ -53,6 +53,9 @@ try {
   const renderTool = toolList.tools.find((tool) => tool.name === "render-jm-game");
   if (!renderTool) throw new Error("render-jm-game not advertised");
   if (renderTool.annotations?.readOnlyHint !== true) throw new Error("render-jm-game readOnlyHint missing");
+  if (renderTool.annotations?.destructiveHint !== false) throw new Error("render-jm-game destructiveHint mismatch");
+  if (renderTool.annotations?.openWorldHint !== false) throw new Error("render-jm-game openWorldHint mismatch");
+  if (!renderTool.outputSchema) throw new Error("render-jm-game outputSchema missing");
 
   const resources = await client.listResources();
   const widget = resources.resources.find((resource) => resource.uri === "ui://jm/untitled-field-branch-v0.9.html");
@@ -77,15 +80,16 @@ try {
     proofClass: fixtureUsed ? "MCP_RUNTIME_TRANSPORT_WITH_MARKED_FIXTURE" : "MCP_RUNTIME_TRANSPORT_WITH_PRESENT_BODY",
     sourceAuthorityProvenHere: false,
     chatgptContactProvenHere: false,
+    outputSchemaAdvertised: Boolean(renderTool.outputSchema),
     health,
     serverVersion: client.getServerVersion?.() ?? null,
-    tools: toolList.tools.map((tool) => tool.name),
+    tools: toolList.tools.map((tool) => ({ name: tool.name, outputSchema: Boolean(tool.outputSchema), annotations: tool.annotations ?? null })),
     resources: resources.resources.map((resource) => resource.uri),
     renderReceipt: structured,
     fixtureMarker: fixtureUsed ? fixtureMarker : null,
   };
   fs.mkdirSync(path.join(root, "artifacts"), { recursive: true });
-  fs.writeFileSync(path.join(root, "artifacts", "MCP_RUNTIME_PROOF_v0_1_1.json"), JSON.stringify(receipt, null, 2) + "\n");
+  fs.writeFileSync(path.join(root, "artifacts", "MCP_RUNTIME_PROOF_v0_1_2.json"), JSON.stringify(receipt, null, 2) + "\n");
   console.log(JSON.stringify(receipt, null, 2));
 } finally {
   try { await client?.close(); } catch {}

@@ -222,15 +222,26 @@ jobs:
           cp registry/jm3232-navigator.json cloudflare-estate/navigator/JM3232_NAVIGATOR_REGISTRY.json
           cp registry/jm3232-navigator.json cloudflare-estate/recovery/JM3232_NAVIGATOR_REGISTRY.json
 
-          cat > cloudflare-estate/DEPLOY_MANIFEST.json <<'EOF'
+          APP_COUNT="$(python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          text = Path('cloudflare-estate/apps/index.html').read_text(encoding='utf-8')
+          match = re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', text, re.S)
+          if not match:
+              raise SystemExit('Apps registry could not be parsed before manifest creation.')
+          print(len(json.loads(match.group(1))))
+          PY
+          )"
+
+          cat > cloudflare-estate/DEPLOY_MANIFEST.json <<EOF
           {
-            "schema": "JM.CloudflareEstateDeployment/1.4",
-            "version": "v1.16.1-theory-mobile-tabs-clearance",
+            "schema": "JM.CloudflareEstateDeployment/1.5",
+            "version": "v1.17.0-estate-classification-integrity",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
             "source_rail": "JMisJustMe/JM-cading-lab",
             "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
-            "apps_registry_count": 40,
+            "apps_registry_count": ${APP_COUNT},
             "theory_source": "preserved Cloudflare deployment f6336b93",
             "theory_mobile_repair": "reader tabs retained above source-body pane with 10px clearance",
             "navigator_registry": "navigator/JM3232_NAVIGATOR_REGISTRY.json",
@@ -258,7 +269,43 @@ jobs:
           grep -q "Explore outward. String inward." cloudflare-estate/navigator/index.html
           grep -q "Many bodies. One living line. None erased." cloudflare-estate/navigator/stringline.json
           grep -q "NON-GAME APPS HOUSE" cloudflare-estate/apps/index.html
-          grep -q "40 rooms" cloudflare-estate/apps/index.html
+          python3 <<'PY'
+          from collections import Counter
+          import json, re
+          from pathlib import Path
+
+          text = Path('cloudflare-estate/apps/index.html').read_text(encoding='utf-8')
+          rows_match = re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', text, re.S)
+          stats_match = re.search(r'const APP_STAT_COUNTS=(\{.*?\});', text, re.S)
+          if not rows_match or not stats_match:
+              raise SystemExit('Deployed Apps registry or embedded count receipt is unreadable.')
+          rows = json.loads(rows_match.group(1))
+          shown = json.loads(stats_match.group(1))
+          counts = Counter(row[3] for row in rows)
+          expected = {
+              'room_count': len(rows),
+              'full_plus_preserved': counts['full_current'] + counts['full_alt'],
+              'routed': counts['routed'],
+              'source_needed': counts['registered'],
+              'preparation': counts['prep'],
+          }
+          if shown != expected:
+              raise SystemExit(f'Apps count receipt mismatch: {shown} != {expected}')
+          if any(row[0] == 'RouteOS' for row in rows):
+              raise SystemExit('RouteOS has regressed into the literal Non-Game Apps registry.')
+          retrieval = {row[0] for row in rows if row[3] == 'registered'}
+          if retrieval != {'Portal Engine', 'Latest Body Finder', 'Source-Body Auditor'}:
+              raise SystemExit(f'Unexpected exact-package retrieval set: {sorted(retrieval)}')
+          required_text = [
+              'RouteOS has returned to its sovereign gaming-platform seat',
+              'Exact package retrieval',
+              'package-retrieval + preparation',
+          ]
+          missing = [value for value in required_text if value not in text]
+          if missing:
+              raise SystemExit(f'Apps classification markers missing: {missing}')
+          print(f'Apps registry proof PASS: {len(rows)} rooms; {expected}')
+          PY
           grep -q "Human Pattern Calibration" cloudflare-estate/theory/index.html
           grep -q "jm-theory-mobile-reader-clearance-v1" cloudflare-estate/theory/index.html
           ! grep -q "JM Theory Multihub v0.4 — Touch Repair" cloudflare-estate/theory/index.html
@@ -295,6 +342,9 @@ jobs:
               && grep -q "Explore outward. String inward." "$RUNNER_TEMP/live-navigator.html" \
               && grep -q "Many bodies. One living line. None erased." "$RUNNER_TEMP/live-stringline.json" \
               && grep -q "NON-GAME APPS HOUSE" "$RUNNER_TEMP/live-apps.html" \
+              && grep -q "RouteOS has returned to its sovereign gaming-platform seat" "$RUNNER_TEMP/live-apps.html" \
+              && grep -q "Exact package retrieval" "$RUNNER_TEMP/live-apps.html" \
+              && grep -q "package-retrieval + preparation" "$RUNNER_TEMP/live-apps.html" \
               && grep -q "Human Pattern Calibration" "$RUNNER_TEMP/live-theory.html" \
               && grep -q "jm-theory-mobile-reader-clearance-v1" "$RUNNER_TEMP/live-theory.html" \
               && ! grep -q "JM Theory Multihub v0.4 — Touch Repair" "$RUNNER_TEMP/live-theory.html"; then
@@ -311,9 +361,19 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p registry
+          APP_COUNT="$(python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          text = Path('apps/index.html').read_text(encoding='utf-8')
+          match = re.search(r'const APPS=(\[.*?\]);\s*const APP_STAT_COUNTS=', text, re.S)
+          if not match:
+              raise SystemExit('Apps registry could not be parsed before receipt creation.')
+          print(len(json.loads(match.group(1))))
+          PY
+          )"
           cat > registry/cloudflare-auto-deploy-receipt.json <<EOF
           {
-            "schema": "JM.CloudflareAutoDeployReceipt/1.4",
+            "schema": "JM.CloudflareAutoDeployReceipt/1.5",
             "status": "SUCCESS",
             "project": "jmisjustme-estate",
             "canonical_host": "jmisjustme-estate.pages.dev",
@@ -322,7 +382,7 @@ jobs:
             "deployed_at_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
             "rooms": ["navigator", "apps", "theory", "lyrics", "recovery"],
             "navigator_proof": "EXECUTABLE_BROWSER_EXPERIENCE_SHELL_AND_LOCAL_FIRST_STRINGLINE",
-            "apps_registry_count": 40,
+            "apps_registry_count": ${APP_COUNT},
             "apps_boundary": "PUBLIC_SAFE_CATALOGUE_PRIVATE_PAYLOADS_OWNER_SIDE",
             "theory_policy": "PRESERVE_PRE_REGRESSION_F6336B93_BODY",
             "theory_mobile_reader_clearance": "PROVEN",
@@ -332,6 +392,6 @@ jobs:
           git config user.name "JM Estate Deployment Rail"
           git config user.email "actions@users.noreply.github.com"
           git add registry/cloudflare-auto-deploy-receipt.json
-          git diff --cached --quiet || git commit -m "Record Theory mobile reader clearance deployment success"
+          git diff --cached --quiet || git commit -m "Record classification-integrity Cloudflare deployment success"
           git pull --rebase origin main
           git push origin main

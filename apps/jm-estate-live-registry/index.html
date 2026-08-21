@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>JM Estate Live Registry App v0.2 — Native Circulation</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#0c0f14" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <h1>JM Estate Live Registry App <small style="font-size:.42em;color:var(--muted)">v0.2</small></h1>
+      <p>Native circulation control plane · current keepers · lineage · surfaces · proof · next action</p>
+    </div>
+    <div class="keeper">One Estate. Many bodies. Many surfaces. One traceable circulation.</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="addBtn">+ Add body</button>
+    <button class="btn" id="exportBtn">Export JSON</button>
+    <label class="btn" for="importFile">Import JSON</label><input id="importFile" class="hidden" type="file" accept="application/json,.json" />
+    <button class="btn" id="auditBtn">Run native audit</button>
+    <button class="btn" id="receiptBtn">Export receipt</button>
+    <button class="btn" id="installBtn" hidden>Install app</button>
+    <button class="btn" id="resetBtn">Reset seed</button>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="keeper" id="nativeRail" style="max-width:none;margin-bottom:12px">JM current-native rail: Native Core → JMLogic/JM32 policy semantics → Route/Trace/Ding proof. Parent v0.1 is frozen; this v0.2 descendant remains contact-pending.</div>
+
+  <div class="toolbar">
+    <input class="field search" id="search" placeholder="Search body, family, donor, surface, next action…" />
+    <select class="field" id="familyFilter"><option value="">All families</option></select>
+    <select class="field" id="statusFilter"><option value="">All statuses</option></select>
+    <select class="field" id="surfaceFilter"><option value="">All surfaces</option></select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="note">Local-first: changes persist in this browser when storage is available. Native receipts use the JM stable/digest/Trace grammar. The registry points to bodies; it does not merge or replace them.</div>
+</div>
+
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="sheet">
+    <h2 id="modalTitle">Add Estate body</h2>
+    <form id="bodyForm">
+      <div class="form">
+        <div><label>Body name</label><input class="field" name="name" required /></div>
+        <div><label>Family / class</label><input class="field" name="family" required /></div>
+        <div><label>Version / keeper</label><input class="field" name="keeper" /></div>
+        <div><label>Status</label><select class="field" name="status"><option>ACTIVE</option><option>FROZEN</option><option>PROVEN</option><option>OPEN</option><option>COMPLETE</option><option>PLANNED</option></select></div>
+        <div class="full"><label>Parent / lineage</label><input class="field" name="parent" /></div>
+        <div class="full"><label>Strongest donors</label><input class="field" name="donors" placeholder="Comma-separated" /></div>
+        <div class="full"><label>Coding / runtime authority</label><input class="field" name="runtime" /></div>
+        <div class="full"><label>Surfaces</label><input class="field" name="surfaces" placeholder="Phone, Laptop, Web, APK…" /></div>
+        <div><label>Proof / Ding</label><input class="field" name="proof" /></div>
+        <div><label>Hash / receipt</label><input class="field" name="hash" /></div>
+        <div class="full"><label>Estate location / mount</label><input class="field" name="location" /></div>
+        <div class="full"><label>Next action</label><textarea class="field" rows="3" name="next"></textarea></div>
+      </div>
+      <div class="foot">
+        <button type="button" class="btn" id="cancelBtn">Cancel</button>
+        <button class="btn primary" type="submit">Save record</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="seed.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

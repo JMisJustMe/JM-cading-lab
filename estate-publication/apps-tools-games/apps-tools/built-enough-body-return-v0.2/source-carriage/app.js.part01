@@ -1,0 +1,168 @@
+const STORAGE_KEY = 'shims-body-return-v0.2';
+const LEGACY_STORAGE_KEY = 'shims-body-return-v0.1';
+const state = loadState();
+
+const $ = (id) => document.getElementById(id);
+const tabs = [...document.querySelectorAll('.tab')];
+const panels = [...document.querySelectorAll('.tab-panel')];
+
+const triggerLibrary = {
+  start: { label: 'Starting something', short: 'Start', prompt: 'Convert intention into first motion.', preferred: ['push','legs','mobility'] },
+  finish: { label: 'Finished something', short: 'Finish', prompt: 'Let completion return through the body.', preferred: ['push','walk','mobility'] },
+  happy: { label: 'Feeling good', short: 'Celebrate', prompt: 'Give positive energy a physical receipt.', preferred: ['push','legs','walk'] },
+  frustrated: { label: 'Frustrated', short: 'Reset', prompt: 'Discharge pressure without turning movement into punishment.', preferred: ['mobility','walk','legs'] },
+  waiting: { label: 'Waiting', short: 'Waiting', prompt: 'Use dead time without needing a full workout.', preferred: ['legs','mobility','walk'] },
+  sitting: { label: 'Sitting too long', short: 'Break sitting', prompt: 'Interrupt stillness with a small return.', preferred: ['walk','mobility','legs'] }
+};
+
+const environmentLibrary = {
+  space: { label: 'Some floor space' },
+  wall: { label: 'Wall or counter' },
+  chair: { label: 'Chair nearby' },
+  tiny: { label: 'Almost no space' }
+};
+
+const movementLibrary = {
+  push: {
+    title: 'Push pattern',
+    standard: 'Incline or floor push-ups',
+    easier: 'Wall push-ups',
+    dose: (profile, factor) => `${Math.max(1, Math.round(profile.pushBase * factor))} reps`
+  },
+  core: {
+    title: 'Core pattern',
+    standard: 'Sit-ups or dead bugs',
+    easier: 'Seated knee lifts',
+    dose: (profile, factor) => `${Math.max(2, Math.round(profile.coreBase * factor))} reps`
+  },
+  legs: {
+    title: 'Leg pattern',
+    standard: 'Squats or chair sit-to-stands',
+    easier: 'Supported chair stands',
+    dose: (profile, factor, signature) => `${Math.max(4, Math.round((profile.coreBase + signature.root) * factor))} reps`
+  },
+  walk: {
+    title: 'Movement pattern',
+    standard: 'Brisk walk or march',
+    easier: 'Gentle walk',
+    dose: (profile, factor) => `${Math.max(3, Math.round(profile.walkBase * factor))} minutes`
+  },
+  mobility: {
+    title: 'Mobility pattern',
+    standard: 'Shoulders, hips and spine flow',
+    easier: 'Seated mobility flow',
+    dose: (_profile, _factor, signature) => `${Math.max(3, Math.min(8, signature.month))} minutes`
+  }
+};
+
+const microMovementVariants = {
+  push: {
+    space: ['comfortable floor or incline push-ups', 'reps'],
+    wall: ['wall or counter push-ups', 'reps'],
+    chair: ['seated palm presses', 'seconds'],
+    tiny: ['standing palm presses', 'seconds'],
+    intention: ['slowly rehearse one clean push-up in your mind, then set your posture', 'seconds']
+  },
+  core: {
+    space: ['dead bugs or controlled core reps', 'reps'],
+    wall: ['standing knee drives with support', 'reps'],
+    chair: ['seated knee lifts', 'reps'],
+    tiny: ['brace, breathe and release', 'seconds'],
+    intention: ['rehearse clean bracing and one controlled rep', 'seconds']
+  },
+  legs: {
+    space: ['comfortable squats', 'reps'],
+    wall: ['supported squats or calf raises', 'reps'],
+    chair: ['chair sit-to-stands', 'reps'],
+    tiny: ['calf raises or weight shifts', 'reps'],
+    intention: ['stand tall, feel both feet and rehearse one smooth squat', 'seconds']
+  },
+  walk: {
+    space: ['walk or march', 'seconds'],
+    wall: ['march beside the counter', 'seconds'],
+    chair: ['seated march', 'seconds'],
+    tiny: ['heel-to-toe shifts', 'seconds'],
+    intention: ['choose the exact route for your next short walk', 'seconds']
+  },
+  mobility: {
+    space: ['shoulder, hip and spine flow', 'seconds'],
+    wall: ['wall-supported shoulder and calf flow', 'seconds'],
+    chair: ['seated shoulder and spine flow', 'seconds'],
+    tiny: ['neck, shoulders, wrists and ankles reset', 'seconds'],
+    intention: ['scan the body and choose the first area that wants movement', 'seconds']
+  }
+};
+
+function defaultState() {
+  return {
+    profile: null,
+    routine: null,
+    history: [],
+    microHistory: [],
+    xp: 0,
+    streak: 0,
+    lastCompletedDate: null,
+    nextFactor: 1,
+    selectedTrigger: 'start',
+    selectedEnvironment: 'space',
+    activeMicroReturn: null,
+    nudgeSettings: {
+      enabled: false,
+      intervalMinutes: 60,
+      trigger: 'sitting',
+      start: '09:00',
+      end: '21:00',
+      nextAt: null
+    }
+  };
+}
+
+function loadState() {
+  try {
+    const current = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || 'null');
+    const source = current || legacy || {};
+    const merged = { ...defaultState(), ...source };
+    merged.nudgeSettings = { ...defaultState().nudgeSettings, ...(source.nudgeSettings || {}) };
+    merged.microHistory = Array.isArray(source.microHistory) ? source.microHistory : [];
+    return merged;
+  } catch {
+    return defaultState();
+  }
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function digitalRoot(value) {
+  let n = Math.abs(Number(value) || 0);
+  while (n > 9 && ![11, 22, 33].includes(n)) {
+    n = String(n).split('').reduce((sum, digit) => sum + Number(digit), 0);
+  }
+  return n || 1;
+}
+
+function calculateAge(dob) {
+  const birth = new Date(`${dob}T00:00:00`);
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const monthDiff = now.getMonth() - birth.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < birth.getDate())) age--;
+  return age;
+}
+
+function buildSignature(profile) {
+  const [year, month, day] = profile.dob.split('-').map(Number);
+  const digitSum = profile.dob.replace(/\D/g, '').split('').reduce((sum, digit) => sum + Number(digit), 0);
+  const root = digitalRoot(digitSum);
+  const yearPulse = digitalRoot(year);
+  const favourite = Number(profile.favouriteNumber) || day;
+  const anchor = favourite || profile.age || day;
+  return { day, month, year, digitSum, root, yearPulse, anchor, code: `${String(day).padStart(2, '0')}·${String(month).padStart(2, '0')}·${root}` };
+}
+
+function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
+function hashText(text) { return [...String(text)].reduce((sum, char) => sum + char.charCodeAt(0), 0); }
+
+function buildRoutine(profile, variation = 0) {

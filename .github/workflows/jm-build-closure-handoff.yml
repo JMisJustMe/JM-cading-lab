@@ -1,0 +1,150 @@
+name: JM Build Closure & Handoff
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  closure-handoff:
+    name: Prove truthful closure, handoff and forward routing
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Self-test closure and handoff body
+        run: python3 scripts/jm_build_closure.py --self-test
+
+      - name: Live-probe recovered closure donors
+        run: |
+          set -euo pipefail
+          git show origin/jm/estate-operational-finish-freeze-v1-0:JM_ESTATE/GOVERNANCE/OPERATIONAL_FINISH_FREEZE_LOCK_ANCHOR_MOUNT_v1.0.json > /tmp/operational-finish.json
+          git show origin/jm/estate-operational-finish-freeze-v1-0:JM_ESTATE/GOVERNANCE/THE_INSTRUCTION_HANDOFF_v1.0/FREEZE_LOCK_ANCHOR.md > /tmp/instruction-handoff.md
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          finish = json.loads(Path('/tmp/operational-finish.json').read_text())
+          handoff = Path('/tmp/instruction-handoff.md').read_text()
+          assert finish['freeze'] == 'PASS'
+          assert finish['lock'] == 'PASS'
+          assert finish['mount'] == 'PASS'
+          assert finish['zionfolder_path']
+          assert finish['registry_anchor']
+          assert 'A handoff is the route through which difference gains legitimate control of continuity.' in handoff
+          assert 'Later is not automatically stronger.' in handoff
+          print('Closure donor recovery PASS: Operational Finish F/L/A/M receipt + Instruction Handoff law recovered from existing Estate branch; no replacement semantics invented.')
+          PY
+
+      - name: Live-probe execution closed into closure and handoff
+        run: |
+          set -euo pipefail
+          mkdir -p build-closure-probe
+
+          python3 scripts/jm_build_intake.py \
+            --body "JM Closure Route Probe v0.1" \
+            --body-type "governance closure probe" \
+            --destination "prove execution-closed to closure/handoff routing only" \
+            --body-path "apps/jm-chatgpt-host-adapter-v0.1" \
+            --work-pr 0 \
+            --keyword "closure" \
+            --selected-donor "JM Default Execution Body v0.1" \
+            --selected-donor "JM Operational Finish Freeze Lock Anchor Mount v1.0" \
+            --selected-donor "THE INSTRUCTION HANDOFF v1.0" \
+            --stack "JM Default Execution Body v0.1 — execution closure authority" \
+            --stack "JM Closure & Handoff Body v0.1 — closure route ledger" \
+            --surface "GitHub Actions proof surface" \
+            --recovery-decision "Reuse existing Operational Finish and Instruction Handoff semantics; only the missing closure router is under proof." \
+            --true-gap "No product capability gap; closure routing only." \
+            --authorize \
+            --output "build-closure-probe/manifest.json"
+
+          python3 scripts/jm_build_execution.py \
+            --manifest build-closure-probe/manifest.json \
+            --state-file build-closure-probe/execution.json \
+            --init
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to COMPOSING --evidence "ci:closure-probe-compose"
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to CONTACTABLE --evidence "ci:synthetic-closure-probe-contact-path"
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to PROVING --evidence "ci:closure-probe-proof" \
+            --gate route-manifest=PASS --gate synthetic-runtime=PASS
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to PASS --evidence "ci:closure-probe-execution-pass"
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to CLOSING --evidence "ci:closure-probe-closing"
+          python3 scripts/jm_build_execution.py --state-file build-closure-probe/execution.json \
+            --to CLOSED --evidence "ci:closure-probe-execution-closed"
+
+          python3 scripts/jm_build_closure.py \
+            --execution-ledger build-closure-probe/execution.json \
+            --state-file build-closure-probe/closure.json \
+            --init
+
+          if python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage FREEZE --state PASS --evidence "ci:synthetic-freeze-receipt"; then
+            echo "ERROR: closure incorrectly allowed FREEZE before PACKAGE resolution"
+            exit 1
+          else
+            echo "EXPECTED RED: ordered closure blocked premature FREEZE"
+          fi
+
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage PACKAGE --state N/A \
+            --note "Synthetic router fixture has no distributable package; no package ceremony required."
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage FREEZE --state PASS --evidence "ci:synthetic-external-freeze-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage LOCK --state PASS --evidence "ci:synthetic-external-lock-receipt"
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage ANCHOR --state FAIL --evidence "ci:synthetic-anchor-ding" \
+            --note "Synthetic anchor Ding proves local fail-closed closure routing."
+
+          if python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage MOUNT --state PASS --evidence "ci:synthetic-mount-receipt"; then
+            echo "ERROR: closure incorrectly allowed MOUNT through failed ANCHOR"
+            exit 1
+          else
+            echo "EXPECTED RED: failed ANCHOR blocked MOUNT and forward route"
+          fi
+
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage ANCHOR --state OPEN --evidence "ci:synthetic-anchor-repair" \
+            --note "Synthetic repair applied; retest only the anchor stage."
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage ANCHOR --state PASS --evidence "ci:synthetic-anchor-pass"
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage MOUNT --state PASS --evidence "ci:synthetic-mount-pass"
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage RECOVERY_POINTER --state PASS \
+            --evidence "ci:synthetic-pointer-resolves" \
+            --pointer "registry/build-routes/JM_BUILD_CLOSURE_PROBE_CURRENT_KEEPER.json"
+          python3 scripts/jm_build_closure.py --state-file build-closure-probe/closure.json \
+            --stage HANDOFF --state PASS \
+            --evidence "ci:synthetic-handoff-trace" \
+            --handoff-to "forward-descendant-router"
+
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          execution = json.loads(Path('build-closure-probe/execution.json').read_text())
+          closure = json.loads(Path('build-closure-probe/closure.json').read_text())
+          assert execution['state'] == 'CLOSED'
+          assert execution['closure']['execution_closed'] is True
+          assert execution['closure']['freeze_lock_anchor_mount_claimed'] is False
+          assert closure['state'] == 'HANDOFF_COMPLETE'
+          assert closure['forward']['state'] == 'FORWARD_READY'
+          assert closure['forward']['frozen_keeper_immutable'] is True
+          assert closure['stages']['PACKAGE']['state'] == 'N/A'
+          assert closure['stages']['FREEZE']['state'] == 'PASS'
+          assert closure['stages']['ANCHOR']['state'] == 'PASS'
+          assert closure['stages']['MOUNT']['state'] == 'PASS'
+          assert closure['stages']['RECOVERY_POINTER']['pointer'].endswith('CURRENT_KEEPER.json')
+          assert closure['stages']['HANDOFF']['handoff_to'] == 'forward-descendant-router'
+          assert any(item['stage'] == 'ANCHOR' and item['to'] == 'FAIL' for item in closure['history'])
+          print('JM Closure & Handoff live proof PASS: execution CLOSED -> ordered closure -> synthetic Ding containment/retest -> recovery pointer -> handoff -> FORWARD_READY; router did not retroactively manufacture product/contact/crown proof.')
+          PY

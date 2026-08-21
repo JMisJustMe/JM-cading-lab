@@ -21,3 +21,6 @@ Forward Android carrier for the frozen/current freestanding website head.
 
 ## Boundary
 Build proof is not physical-device Ding. Temporary proof signing identity is not the future owner production/update key.
+
+The carrier re-verifies the frozen root index before each local launch. Import and extraction run away from the UI thread so the 35 MB contact body does not block Android's main loop. See `PRE_PHONE_VERIFICATION.md` and `CONTACT_PACK_MANIFEST.json` for the pre-phone boundary and exact handoff identities.
+

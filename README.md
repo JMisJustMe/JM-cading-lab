@@ -18,6 +18,8 @@ GitHub Pages public corridor for the JM Estate.
 
 ## Registries
 
+- `registry/JM_WEB_SURFACE_CONVERGENCE_2026-08-21.json` — current website/public-surface authority map: primary freestanding JMISJUSTME body, carrier roles, Android hardening state and genuine remaining owner gates
+- `estate-publication/apps-tools-games/` — merged public-safe Apps / Tools / Games Wave 1 source wing; Wave 2 is governed by issue #86
 - `registry/estate-map.json` — central Estate map
 - `author/author-public.json` — public author route, evidence states and privacy boundary
 - `registry/theory-wing.json` — Theory Wing district map and current-best mount
@@ -35,10 +37,15 @@ GitHub Pages public corridor for the JM Estate.
 
 Connect all to and through GitHub without flattening independent bodies.
 
+The freestanding JMISJUSTME website remains the primary website identity. GitHub, Cloudflare, Wix, InfinityFree and Base44 are support, publication, mirror, specialist-room or build surfaces according to the web convergence register; they do not silently replace the primary body.
+
 GitHub provides the public corridor, source/version history, registry and Pages route. Owner-controlled Zionfolders, private notes, historical raw carriers and local/full archives remain preserved separately.
 
 ## Current status
 
+- JMISJUSTME web/public surfaces: **converged in the current web-surface register; owner-contact/publication gates remain explicit rather than collapsed**
+- JMISJUSTME v1.5 H1 Android carrier hardening: **merged on `main`; physical Android contact remains open**
+- Apps / Tools / Games public-source Wave 1: **merged on `main`; Wave 2 remains issue #86**
 - Author Public Page v0.3: **live public human/source entrance**
 - Author creator menu, evidence spine, bio toolkit and direct Estate navigation: **mounted**
 - Private Theodore Source Biography: **owner-controlled / not uploaded**

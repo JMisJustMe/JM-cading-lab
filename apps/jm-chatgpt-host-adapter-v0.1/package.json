@@ -1,18 +1,18 @@
 {
   "name": "jm-chatgpt-host-adapter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Thin MCP Apps / ChatGPT host adapter for existing JM playable bodies. No new game engine.",
   "scripts": {
     "start": "node src/server.mjs",
-    "check": "node --check src/server.mjs && node src/selfcheck.mjs"
+    "check": "node --check src/server.mjs && node src/selfcheck.mjs",
+    "contract": "node src/host-contract-check.mjs",
+    "integration": "node src/integration-test.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "^1.0.1",
     "@modelcontextprotocol/sdk": "^1.26.0",
-    "cors": "^2.8.5",
-    "express": "^5.2.1",
     "zod": "^3.25.0"
   }
 }

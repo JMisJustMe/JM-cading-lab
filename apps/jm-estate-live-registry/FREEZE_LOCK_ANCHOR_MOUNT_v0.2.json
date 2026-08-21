@@ -1,0 +1,14 @@
+{
+  "schema": "jm.estate.freeze-lock-anchor-mount/1.0",
+  "body": "JM Estate Live Registry App v0.2 — Native Circulation",
+  "version": "v0.2",
+  "parent": "JM Estate Live Registry v0.1",
+  "parent_sha256": "ae72073716b6be2bbe9897103625b04b48a9a6561a5db7a4e910e91f9cb49121",
+  "keeper_sha256": "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38",
+  "status": ["FROZEN", "LOCKED", "ANCHORED", "MOUNTED"],
+  "contact_receipt": "PHYSICAL_CONTACT_DING_v0.2.json",
+  "contact_registry_digest": "05f66d2006be8ccc",
+  "freeze_reason": "Real Android content:// contact plus in-app native audit PASS with 20 bodies and 0 audit issues.",
+  "immutability_law": "Any repair or changed executable body advances forward to a new descendant; this exact v0.2 keeper is not silently mutated.",
+  "claim_boundary": "Persistence/reload and exported-file round-trip behavior were not independently evidenced by the supplied screenshots and are not added to the contact claim."
+}

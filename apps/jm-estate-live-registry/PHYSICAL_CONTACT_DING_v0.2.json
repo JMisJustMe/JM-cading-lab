@@ -1,0 +1,35 @@
+{
+  "schema": "jm.reality-contact.ding/1.0",
+  "body": "JM Estate Live Registry App v0.2 — Native Circulation",
+  "contact_time_local": "2026-08-21T06:08:00+01:00",
+  "surface": "Android phone / browser content:// download route",
+  "state": "PHYSICAL_CONTACT_PASS",
+  "observed": {
+    "app_rendered": true,
+    "seeded_body_count": 20,
+    "active_count": 8,
+    "frozen_count": 5,
+    "proven_complete_count": 6,
+    "open_count": 1,
+    "audit_issues": 0,
+    "native_audit": "PASS",
+    "registry_digest": "05f66d2006be8ccc",
+    "record_detail_rendered": true
+  },
+  "evidence": [
+    {
+      "file": "1000215866.jpg",
+      "sha256": "d7619608b72cd99151f0cadb2d9b0a711addf50605e8df27871c01df3b26f6c9",
+      "shows": "app header, action controls, census counts, native audit PASS and registry digest"
+    },
+    {
+      "file": "1000215865.jpg",
+      "sha256": "a93523c9033604e6ba713d5d67ebc27e0da3560eddb0f69db3603468f9feac65",
+      "shows": "rendered Estate record detail, donor/runtime/proof/location/next-action fields"
+    }
+  ],
+  "claim_boundary": [
+    "This Ding proves real Android content:// rendering and the in-app native audit result shown in the supplied screenshots.",
+    "The screenshots do not independently prove edit persistence across reload or exported-file round-trip behavior; those remain separately testable capabilities."
+  ]
+}

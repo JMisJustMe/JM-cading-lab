@@ -1,0 +1,15 @@
+{
+  "schema": "jm.coding-body-intake/1.0",
+  "app": "JM Estate Live Registry App v0.2",
+  "source_repo": "JMisJustMe/JM-cading-lab",
+  "source_branch": "main",
+  "authority_path": "coding-estate/sovereign-ten/direct/",
+  "donors": [
+    {"body":"Native Core","file":"native-core.mjs","sha":"1f5d1d2f6567fc5532c4ad57e2f329638f050048","use":"stable value digest, need/error, Trace/receipt semantics"},
+    {"body":"FlowTalk / JMLogic / JM32-1DA","file":"language-native.mjs","sha":"921907bf861114c89df6bb31553d298ef9a32db9","use":"policy/logic architecture precedent; app audit follows the same explicit rule/evidence discipline"},
+    {"body":"RouteScript / RouteVM / RouteOS / Reality Contact / TraceBox / Dings","file":"route-proof-native.mjs","sha":"c1a76ccb99282abea85cd4aebf6858dd04be5019","use":"route, trace, receipt and Ding proof authority"},
+    {"body":"Game-CODING / JM GameCore","file":"game-native.mjs","sha":"30d3f831e39e1749d28f0cdb10a1bb020c0b9ee4","use":"mounted donor only; deliberately not forced into non-game runtime"}
+  ],
+  "sovereign_ten_conformance": {"passed":23,"failed":0,"digest":"8f872539157cf4c3"},
+  "host_boundary": "HTML/PWA is a carrier. JM coding bodies govern trace/receipt/audit semantics; browser APIs provide storage and install surface."
+}

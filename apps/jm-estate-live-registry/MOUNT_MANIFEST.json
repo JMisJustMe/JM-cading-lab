@@ -1,0 +1,17 @@
+{
+  "schema": "jm.estate.mount/1.0",
+  "body": "JM Estate Live Registry",
+  "frozen_parent": "v0.1",
+  "frozen_parent_sha256": "ae72073716b6be2bbe9897103625b04b48a9a6561a5db7a4e910e91f9cb49121",
+  "current_frozen_keeper": "v0.2",
+  "keeper_sha256": "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38",
+  "github_repository": "JMisJustMe/JM-cading-lab",
+  "github_branch": "jm-estate-live-registry-v0.2",
+  "github_mount_path": "apps/jm-estate-live-registry/",
+  "local_package_sha256": "15282c9707401df3cff7da48caad1818d5cd2ff9c07ecc716c45da14c0834093",
+  "mount_targets": ["GitHub Estate", "Zionfolder/Estate records", "Wisebase when a user-side upload route is invoked"],
+  "state": "FROZEN_LOCKED_ANCHORED_GITHUB_MOUNTED",
+  "contact": "PHYSICAL_CONTACT_PASS",
+  "contact_receipt": "PHYSICAL_CONTACT_DING_v0.2.json",
+  "rules": ["Mesh != merge", "Frozen v0.1 remains immutable", "Frozen v0.2 remains immutable", "Forward repairs become separately versioned descendants"]
+}

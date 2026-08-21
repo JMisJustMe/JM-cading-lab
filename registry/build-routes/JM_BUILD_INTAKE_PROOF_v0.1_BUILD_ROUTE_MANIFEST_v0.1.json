@@ -1,0 +1,73 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — AUTOMATIC INTAKE PROOF",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Build Intake Proof v0.1",
+    "body_type": "disposable single-file executable proof fixture",
+    "intended_destination": "Prove intake-first routing and fail-closed authorization without creating an Estate product",
+    "body_path": "games/jm-build-intake-proof-v0.1.html"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 0,
+    "head_branch": "test/jm-build-intake-proof-v0.1",
+    "intake_generated": true,
+    "authority_rule": "Proof fixture only; recovery candidates are not donor/source authority."
+  },
+  "foundation": {
+    "estate_recovery": {
+      "state": "PASS",
+      "query_terms": ["intake", "proof"],
+      "candidate_count": 1,
+      "route_manifest_candidates": [
+        {
+          "source_type": "build-route-manifest",
+          "reference": "registry/build-routes/JM_BUILD_ENTRY_GATE_PROOF_RECEIPT_v0.1.json",
+          "status": "RECOVERY_CANDIDATE_ONLY"
+        }
+      ],
+      "tracked_body_candidates": [],
+      "candidate_rule": "Candidate evidence is not a donor or authority claim."
+    },
+    "recovery_decision": "OPEN — proof route intentionally unresolved before executable creation",
+    "selected_donors": []
+  },
+  "exact_stack": {
+    "state": "OPEN",
+    "declared_stack": [],
+    "rule": "Resolve before implementation."
+  },
+  "true_gaps": {
+    "state": "OPEN",
+    "remaining_capability_gap": "OPEN — controlled proof has not yet authorized fixture creation",
+    "new_capability_creation_authorized": false
+  },
+  "proof_lanes": {
+    "estate_recovery_scan": {"state": "PASS"},
+    "stack_selection": {"state": "OPEN"},
+    "gap_test": {"state": "OPEN"},
+    "runtime_or_contact": {"state": "NOT_CLAIMED"}
+  },
+  "host_and_surfaces": {
+    "requested_surfaces": ["GitHub CI proof only"],
+    "state": "RESOLVED"
+  },
+  "escalation": {
+    "manual_user_contact": "Not required for this CI governance proof.",
+    "failure_route": "FAIL LOCAL -> CONTAIN -> TRACE -> CORRECT ROUTE -> RETEST"
+  },
+  "state": {
+    "route": "INTAKE_RECOVERED_AWAITING_ROUTE_RESOLUTION",
+    "build_authorized_by_manifest": false,
+    "runtime": "NOT CLAIMED",
+    "contact": "NOT CLAIMED",
+    "crown": "NOT EARNED"
+  },
+  "next_route": {
+    "step": "Resolve recovery decision, exact stack and true gap before adding the executable fixture."
+  },
+  "manifest_proof": {
+    "result": "INTAKE PASS — route intentionally unresolved and not authorization to implement."
+  }
+}

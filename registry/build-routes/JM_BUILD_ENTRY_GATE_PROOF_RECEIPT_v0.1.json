@@ -1,0 +1,66 @@
+{
+  "schema": "jm.build-entry-gate-proof-receipt/0.1",
+  "body": "JM Build Entry Gate v0.1",
+  "proof_type": "controlled future-PR fail -> route -> green",
+  "proof_pr": 143,
+  "proof_pr_state": "CLOSED_UNMERGED_DISPOSABLE_FIXTURE",
+  "base_branch": "jm-build-route-manifest-v0.1",
+  "fixture": {
+    "path": "games/jm-build-entry-gate-proof-v0.1.html",
+    "role": "disposable single-file executable signal",
+    "estate_product": false,
+    "keeper": false,
+    "crown": false,
+    "merged": false
+  },
+  "phase_1_missing_manifest": {
+    "expected": "RED",
+    "result": "PASS",
+    "workflow_run": 32469846738,
+    "job_id": 96734156424,
+    "high_confidence_signals": 1,
+    "detected_boundary": "games/jm-build-entry-gate-proof-v0.1.html",
+    "observed_ding": "high-confidence new/descendant executable body detected without a same-PR prospective Build Route Manifest",
+    "auto_draft": {
+      "artifact_name": "JM_BUILD_ENTRY_DRAFT_PR_143",
+      "artifact_id": 9442086522,
+      "artifact_zip_sha256": "ab88d56c6905c04461b911e3cc0d1cc11bd89345980706189357799af61feb91",
+      "behavior": "Generated unresolved routing assistance rather than fabricating Estate authority, donors, gaps or proof."
+    },
+    "enforcement": "PR gate failed as intended after the draft artifact was safely uploaded."
+  },
+  "phase_2_same_body_with_route": {
+    "expected": "GREEN",
+    "result": "PASS",
+    "fixture_changed_between_phases": false,
+    "added_route_manifest": "registry/build-routes/JM_BUILD_ENTRY_GATE_PROOF_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+    "route_manifest_work_pr": 143,
+    "entry_gate_workflow_run": 32469971148,
+    "entry_gate_job_id": 96734522341,
+    "entry_gate_observed": "PASS: serious build entry has same-PR prospective manifest: registry/build-routes/JM_BUILD_ENTRY_GATE_PROOF_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json",
+    "missing_route_artifact_step": "SKIPPED",
+    "enforcement_failure_step": "SKIPPED",
+    "manifest_contract_workflow_run": 32469971119,
+    "manifest_contract_job_id": 96734522250,
+    "manifest_contract_observed": "JM Build Route Manifest contract PASS: 3 manifest(s) structurally routable; validator does not manufacture runtime/contact proof."
+  },
+  "classifier_calibration": {
+    "result": "PASS",
+    "new_app": "TRIGGERS",
+    "new_descendant": "TRIGGERS",
+    "new_single_file_body": "TRIGGERS",
+    "governance_repair": "DOES_NOT_TRIGGER",
+    "new_helper_inside_existing_body": "DOES_NOT_TRIGGER"
+  },
+  "governance_result": {
+    "front_door_enforcement_proven": true,
+    "automatic_draft_proven": true,
+    "same_pr_route_acceptance_proven": true,
+    "manifest_contract_independently_proven": true,
+    "unnecessary_rebuild_required": false,
+    "manual_user_contact_required": false,
+    "reason_manual_contact_not_required": "The claimed behavior is native GitHub CI governance behavior, fully observable through the built-in itself.",
+    "law": "Estate -> creation. A future high-confidence new executable body cannot silently enter through this gate without first carrying its own prospective route."
+  },
+  "boundary": "This receipt proves the Build Entry Gate mechanism only. It does not prove runtime/contact quality of any future body and cannot be used to crown one."
+}

@@ -1,0 +1,49 @@
+name: JM Build Entry Gate
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  entry-gate:
+    name: Require route manifest for new serious bodies
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Self-test entry classifier
+        run: python3 scripts/jm_build_entry_gate.py --self-test
+
+      - name: Evaluate live PR entry route
+        id: gate
+        continue-on-error: true
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          git cat-file -e "$BASE_SHA^{commit}"
+          python3 scripts/jm_build_entry_gate.py \
+            --base "$BASE_SHA" \
+            --head HEAD \
+            --pr-number "$PR_NUMBER"
+
+      - name: Upload automatic entry draft when route is missing
+        if: always() && steps.gate.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_BUILD_ENTRY_DRAFT_PR_${{ github.event.pull_request.number }}
+          path: build-entry-output/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Enforce entry result
+        if: steps.gate.outcome == 'failure'
+        run: |
+          echo "JM Build Entry Gate failed. Use the generated entry draft as routing assistance; do not invent donors/proof just to satisfy the gate."
+          exit 1

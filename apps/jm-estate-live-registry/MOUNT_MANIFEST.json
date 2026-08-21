@@ -1,0 +1,15 @@
+{
+  "schema": "jm.estate.mount/1.0",
+  "body": "JM Estate Live Registry",
+  "frozen_parent": "v0.1",
+  "frozen_parent_sha256": "ae72073716b6be2bbe9897103625b04b48a9a6561a5db7a4e910e91f9cb49121",
+  "forward_descendant": "JM Estate Live Registry App v0.2",
+  "descendant_state": "ACTIVE_CONTACT_PENDING",
+  "github_repository": "JMisJustMe/JM-cading-lab",
+  "github_branch": "jm-estate-live-registry-v0.2",
+  "github_mount_path": "apps/jm-estate-live-registry/",
+  "local_package_sha256": "ca96870b8adfb902be4afd60213c1bca7b9193fc3d4aa7c78bd8dc002c591dce",
+  "mount_targets": ["GitHub Estate", "Zionfolder/Estate records", "Wisebase when a user-side upload route is invoked"],
+  "state": "GITHUB_MOUNTED",
+  "rules": ["Mesh != merge", "Frozen v0.1 remains immutable", "v0.2 remains active until contact earns freeze"]
+}

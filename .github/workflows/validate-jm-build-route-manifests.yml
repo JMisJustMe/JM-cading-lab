@@ -1,0 +1,94 @@
+name: Validate JM Build Route Manifests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "registry/build-routes/**"
+      - ".github/workflows/validate-jm-build-route-manifests.yml"
+  pull_request:
+    paths:
+      - "registry/build-routes/**"
+      - ".github/workflows/validate-jm-build-route-manifests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Enforce route-manifest contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Validate manifests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('registry/build-routes')
+          contract_path = root / 'JM_BUILD_ROUTE_MANIFEST_CONTRACT_v0.1.json'
+          contract = json.loads(contract_path.read_text())
+          expected_schema = contract['manifest_schema']
+          allowed_modes = set(contract['allowed_instantiation_modes'])
+          required_top = contract['required_top_level']
+          required_created = contract['required_created_for']
+          mode_requirements = contract['mode_requirements']
+
+          manifests = sorted(root.glob('*_BUILD_ROUTE_MANIFEST_v0.1.json'))
+          errors = []
+          if not manifests:
+              errors.append('No JM Build Route Manifest v0.1 files found')
+
+          def missing_nonempty(obj, keys):
+              return [key for key in keys if key not in obj or obj[key] in (None, '', [], {})]
+
+          for path in manifests:
+              try:
+                  data = json.loads(path.read_text())
+              except Exception as exc:
+                  errors.append(f'{path}: invalid JSON: {exc}')
+                  continue
+
+              if data.get('schema') != expected_schema:
+                  errors.append(f'{path}: schema must be {expected_schema!r}')
+
+              missing = missing_nonempty(data, required_top)
+              if missing:
+                  errors.append(f'{path}: missing/empty top-level keys: {missing}')
+
+              created = data.get('created_for', {})
+              missing_created = missing_nonempty(created, required_created)
+              if missing_created:
+                  errors.append(f'{path}: created_for missing/empty keys: {missing_created}')
+
+              mode = data.get('instantiation_mode')
+              if mode not in allowed_modes:
+                  errors.append(f'{path}: unsupported instantiation_mode {mode!r}')
+              else:
+                  missing_mode = missing_nonempty(data, mode_requirements.get(mode, []))
+                  if missing_mode:
+                      errors.append(f'{path}: {mode} missing/empty mode keys: {missing_mode}')
+
+              if not isinstance(data.get('exact_stack'), dict) or not data.get('exact_stack'):
+                  errors.append(f'{path}: exact_stack must be a non-empty object')
+              if not isinstance(data.get('true_gaps'), dict) or not data.get('true_gaps'):
+                  errors.append(f'{path}: true_gaps must be a non-empty object')
+              if not isinstance(data.get('state'), dict) or not data.get('state'):
+                  errors.append(f'{path}: state must be a non-empty object')
+              if not isinstance(data.get('escalation'), dict) or not data.get('escalation'):
+                  errors.append(f'{path}: escalation must be a non-empty object')
+
+              proof = data.get('manifest_proof', {})
+              if not isinstance(proof, dict) or not str(proof.get('result', '')).strip():
+                  errors.append(f'{path}: manifest_proof.result is required')
+
+          if errors:
+              print('\n'.join('ERROR: ' + error for error in errors))
+              raise SystemExit(1)
+
+          print(f'JM Build Route Manifest contract PASS: {len(manifests)} manifest(s) structurally routable; validator does not manufacture runtime/contact proof.')
+          PY

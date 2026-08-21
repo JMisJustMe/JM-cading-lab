@@ -1,0 +1,178 @@
+name: JM Inline Contact Managed Beta
+
+on:
+  push:
+    branches:
+      - jm-inline-contact-v0.2-managed-beta
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/managed-beta-worker.mjs.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-managed-beta-integration.mjs.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/public-bodies/128-hand-football-v0.7.4.html.gz'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-managed-beta.yml'
+  workflow_dispatch:
+
+jobs:
+  managed-beta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install MCP and Pages build dependencies
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund wrangler@4 esbuild
+
+      - name: Expand managed-beta source bundle
+        run: |
+          set -euo pipefail
+          mkdir -p public-bodies/generated
+          gzip -dc src/managed-beta-worker.mjs.gz > src/generated-managed-beta-worker.mjs
+          gzip -dc src/public-managed-beta-integration.mjs.gz > src/generated-public-managed-beta-integration.mjs
+          gzip -dc public-bodies/128-hand-football-v0.7.4.html.gz > public-bodies/generated/128-hand-football-v0.7.4.html
+
+      - name: Syntax check managed beta
+        run: |
+          node --check src/generated-managed-beta-worker.mjs
+          node --check src/generated-public-managed-beta-integration.mjs
+
+      - name: Verify exact 128 Hand source custody
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import { createHash } from 'node:crypto';
+          import fs from 'node:fs';
+          const source = fs.readFileSync('./public-bodies/generated/128-hand-football-v0.7.4.html');
+          const sha = createHash('sha256').update(source).digest('hex');
+          if (source.length !== 24693) throw new Error(`byte mismatch ${source.length} != 24693`);
+          if (sha !== 'f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe') throw new Error('unexpected source identity');
+          if (!source.toString('utf8').includes('<title>128 Hand Football · v0.7.4</title>')) throw new Error('source title mismatch');
+          console.log(JSON.stringify({ pass:true, bodyId:'jm.128-hand-football/v0.7.4', bytes:source.length, sha256:sha, exactSourceRecovered:true }, null, 2));
+          NODE
+
+      - name: Bundle managed-beta Pages worker
+        run: |
+          set -euo pipefail
+          rm -rf pages-managed-beta
+          mkdir -p pages-managed-beta
+          npx esbuild src/generated-managed-beta-worker.mjs --bundle --format=esm --platform=browser --target=es2022 --loader:.html=text --outfile=pages-managed-beta/_worker.js
+          printf '%s\n' '<!doctype html><meta charset="utf-8"><title>JM Inline Contact Managed Beta</title><p>Routes are served by the Pages worker.</p>' > pages-managed-beta/index.html
+          test -s pages-managed-beta/_worker.js
+
+      - name: Local Pages runtime smoke
+        run: |
+          set -euo pipefail
+          npx wrangler pages dev pages-managed-beta --ip 127.0.0.1 --port 8789 > /tmp/jm-managed-beta-pages.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          HEALTH=''
+          for ATTEMPT in $(seq 1 30); do
+            if HEALTH=$(curl --fail --silent --show-error http://127.0.0.1:8789/health 2>/dev/null); then break; fi
+            sleep 1
+          done
+          if [ -z "$HEALTH" ]; then
+            echo '--- Pages dev log ---'
+            cat /tmp/jm-managed-beta-pages.log
+            curl -i http://127.0.0.1:8789/health || true
+            exit 1
+          fi
+          printf '%s\n' "$HEALTH"
+          printf '%s' 'f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe' | grep -F "$(curl --fail --silent http://127.0.0.1:8789/bodies/128-hand-football-v0.7.4/source.sha256 | awk '{print $1}')"
+          curl --fail --silent http://127.0.0.1:8789/privacy >/dev/null
+          curl --fail --silent http://127.0.0.1:8789/terms >/dev/null
+          curl --fail --silent http://127.0.0.1:8789/support >/dev/null
+
+      - name: Ensure Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          set +e
+          OUT=$(npx wrangler pages project create jm-inline-contact-probe --production-branch=main 2>&1)
+          CODE=$?
+          set -e
+          printf '%s\n' "$OUT"
+          if [ "$CODE" -ne 0 ] && ! printf '%s\n' "$OUT" | grep -Eqi 'already exists|project.*exists'; then
+            exit "$CODE"
+          fi
+
+      - name: Deploy isolated managed-beta preview
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          OUT=$(npx wrangler pages deploy pages-managed-beta --project-name=jm-inline-contact-probe --branch=managed-beta 2>&1)
+          printf '%s\n' "$OUT"
+          CLEAN=$(printf '%s\n' "$OUT" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+          URL=$(printf '%s\n' "$CLEAN" | grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' | tail -n 1 || true)
+          if [ -z "$URL" ]; then
+            echo 'No Cloudflare Pages preview URL recovered.' >&2
+            exit 1
+          fi
+          printf 'preview_url=%s\n' "$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve stable managed-beta branch alias
+        id: alias
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: |
+          set -euo pipefail
+          ALIAS='https://managed-beta.jm-inline-contact-probe.pages.dev'
+          PUBLIC_BASE="$PREVIEW_URL"
+          for ATTEMPT in $(seq 1 12); do
+            STATUS=$(curl --silent --show-error --output /tmp/jm-beta-alias-health.json --write-out '%{http_code}' "$ALIAS/health" || true)
+            if [ "$STATUS" = '200' ] && grep -q '"channel": "managed-beta"' /tmp/jm-beta-alias-health.json; then
+              PUBLIC_BASE="$ALIAS"
+              break
+            fi
+            sleep 2
+          done
+          echo "public_base=$PUBLIC_BASE" >> "$GITHUB_OUTPUT"
+          echo "managed_beta_alias=$ALIAS" >> "$GITHUB_OUTPUT"
+          echo "public_base=$PUBLIC_BASE"
+
+      - name: Smoke-test public managed beta
+        env:
+          PUBLIC_BASE: ${{ steps.alias.outputs.public_base }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$PUBLIC_BASE/health" | tee /tmp/jm-managed-beta-health.json
+          grep -q '"adapterVersion": "0.2.0-beta.1"' /tmp/jm-managed-beta-health.json
+          grep -q '"channel": "managed-beta"' /tmp/jm-managed-beta-health.json
+          SHA=$(curl --fail --silent --show-error "$PUBLIC_BASE/bodies/128-hand-football-v0.7.4/source.sha256" | awk '{print $1}')
+          test "$SHA" = 'f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe'
+
+      - name: Public MCP managed-beta integration proof
+        env:
+          JM_PUBLIC_BASE_URL: ${{ steps.alias.outputs.public_base }}
+        run: node src/generated-public-managed-beta-integration.mjs
+
+      - name: Write deployment receipt
+        env:
+          PUBLIC_BASE: ${{ steps.alias.outputs.public_base }}
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+          MANAGED_BETA_ALIAS: ${{ steps.alias.outputs.managed_beta_alias }}
+        run: |
+          node -e 'const fs=require("fs"); fs.writeFileSync("MANAGED_BETA_DEPLOYMENT_v0_2_0.json", JSON.stringify({pass:true,channel:"managed-beta",adapterVersion:"0.2.0-beta.1",publicBase:process.env.PUBLIC_BASE,previewUrl:process.env.PREVIEW_URL,managedBetaAlias:process.env.MANAGED_BETA_ALIAS,mcpUrl:process.env.PUBLIC_BASE+"/mcp",stableAncestor:"0.1.2",bodyId:"jm.128-hand-football/v0.7.4",sourceSha256:"f788dd3ff38c965fe5b8a7cd20c7b48929fc38a5b2b8a1f552e7b7732275b3fe",chatgptInlineContactProvenHere:false,ownerContactRequiredForNewBody:true},null,2)+"\n")'
+
+      - name: Upload managed-beta proof receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-inline-contact-managed-beta-v0.2.0-beta.1
+          path: |
+            apps/jm-chatgpt-host-adapter-v0.1/MANAGED_BETA_DEPLOYMENT_v0_2_0.json
+            apps/jm-chatgpt-host-adapter-v0.1/MANAGED_BETA_PUBLIC_PROOF_v0_2_0.json
+          if-no-files-found: error

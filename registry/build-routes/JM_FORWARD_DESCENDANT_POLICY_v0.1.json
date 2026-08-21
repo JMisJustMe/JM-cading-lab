@@ -1,0 +1,40 @@
+{
+  "schema": "jm.forward-descendant-policy/0.1",
+  "name": "JM Forward Descendant Router v0.1",
+  "purpose": "Route a truthfully closed FORWARD_READY JM keeper into a separately identified descendant Build Route Manifest without mutating the parent, bypassing Estate recovery, or authorizing implementation/new capability merely because forward creation is allowed.",
+  "entry": {
+    "closure_schema": "jm.build-closure/0.1",
+    "closure_state": "HANDOFF_COMPLETE",
+    "forward_state": "FORWARD_READY",
+    "frozen_keeper_immutable": true,
+    "recovery_pointer_state": "PASS",
+    "handoff_state": "PASS",
+    "handoff_to": "forward-descendant-router"
+  },
+  "lineage_relations": ["INHERIT", "FORK"],
+  "change_classes": ["REPAIR", "EXTENSION", "RADICAL_RETHINK"],
+  "rules": {
+    "distinct_identity": "The descendant body name must differ from the closed parent body name. A route is not a descendant merely because a version string was edited.",
+    "parent_keeper": "A parent keeper reference and 64-hex SHA-256 are mandatory. If the reference resolves to a file in the current checkout, the router must verify the actual file hash before routing.",
+    "parent_immutability": "The router never writes to or replaces the parent keeper. Once FREEZE has passed, all behavioural change proceeds through a separately routed descendant.",
+    "recovery_pointer": "The closure recovery pointer remains part of the descendant lineage record; forward routing does not replace it.",
+    "inherit": "INHERIT means continuity remains primarily within the parent's identity/role while a new versioned descendant carries the change.",
+    "fork": "FORK means a separately identified branch/body is intentionally created from the parent while preserving the parent as ancestor.",
+    "radical_rethink": "RADICAL_RETHINK requires FORK so a radical identity change cannot silently masquerade as an ordinary repair/version bump.",
+    "reference_boundary": "REFERENCE alone is not a descendant relation in this v0.1 router. A referenced body can be a donor without becoming the parent.",
+    "intake_reentry": "The router must emit the existing jm.build-route-manifest/0.1 prospective format through JM Build Intake rather than invent a parallel authorization format.",
+    "fail_closed": "A generated descendant route defaults build_authorized_by_manifest=false and new_capability_creation_authorized=false unless the normal Build Intake requirements are explicitly resolved.",
+    "authorization_separation": "FORWARD_READY means legitimate forward creation is no longer blocked. It is not build authorization, new-capability authorization, runtime proof, contact proof, or crown status.",
+    "claim_boundary": "The Forward Descendant Router proves lineage routing and re-entry into the existing build front door only. It does not create the descendant executable body."
+  },
+  "recovered_laws": [
+    "Recover before rebuild.",
+    "No restart: find the strongest existing body, repair it, continue from there.",
+    "Mesh does not mean merge; composition does not erase identity.",
+    "Later is not automatically stronger.",
+    "A handoff is the route through which difference gains legitimate control of continuity.",
+    "Frozen ancestors remain immutable; correct forward.",
+    "Estate -> creation, not creation -> eventually remembers Estate."
+  ],
+  "authority_boundary": "The exact Donor Forge / Build DNA document was not independently recovered during this implementation pass, so this policy does not falsely cite it as direct authority. It relies on the recovered closure/handoff, restore-before-rebuild, lineage-preservation and current Build Intake authorities already present in the Estate."
+}

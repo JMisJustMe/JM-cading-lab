@@ -1,0 +1,69 @@
+{
+  "schema": "jm.inline-contact/submission-materials/v0.1.2",
+  "status": "ASSISTANT_SIDE_READY_PUBLISHER_ACTION_REQUIRED",
+  "submission_type": "WITH_MCP_MCP_ONLY_WITH_CUSTOM_UI",
+  "listing": {
+    "plugin_name": "JM Inline Contact",
+    "short_description": "Interactive contact inside ChatGPT.",
+    "long_description": "JM Inline Contact provides a touch-driven interactive surface inside ChatGPT. The initial public body is a deliberately non-sensitive contact probe: users can touch or drag the field, observe readable state changes, visible consequence, and an in-widget trace. The public probe contains no private or frozen JM game donor bytes and exists to prove the reusable in-chat contact route before broader JM playable bodies are carried through it.",
+    "category": "DEVELOPER_TOOLS",
+    "website_url": "https://inline-contact.jm-inline-contact-probe.pages.dev/",
+    "support_url": "https://inline-contact.jm-inline-contact-probe.pages.dev/support",
+    "privacy_policy_url": "https://inline-contact.jm-inline-contact-probe.pages.dev/privacy",
+    "terms_url": "https://inline-contact.jm-inline-contact-probe.pages.dev/terms",
+    "logo_asset": "JM_INLINE_CONTACT_LOGO_512.png",
+    "logo_provenance": "Extracted from an existing JM Visual Systems Lab crown/monogram visual asset; no disconnected new brand identity introduced."
+  },
+  "mcp": {
+    "url_type": "UNIVERSAL",
+    "production_mcp_url": "https://inline-contact.jm-inline-contact-probe.pages.dev/mcp",
+    "authentication": "NONE",
+    "demo_credentials_required": false,
+    "content_security_policy": {
+      "connectDomains": [],
+      "resourceDomains": []
+    },
+    "domain_verification": {
+      "challenge_base_url": "https://inline-contact.jm-inline-contact-probe.pages.dev",
+      "challenge_path": "/.well-known/openai-apps-challenge",
+      "status": "READY_FOR_PORTAL_TOKEN",
+      "operator_instruction": "When the OpenAI portal generates the exact domain verification token, paste that token back into the working chat. Seat it as OPENAI_APPS_CHALLENGE on the isolated Cloudflare Pages project and redeploy; do not hand-edit source."
+    }
+  },
+  "tool": {
+    "name": "render-jm-inline-probe",
+    "readOnlyHint": true,
+    "openWorldHint": false,
+    "destructiveHint": false,
+    "outputSchemaDeclared": true,
+    "privateDonorBytesIncluded": false
+  },
+  "starter_prompts": [
+    "Render the JM inline contact probe here.",
+    "Give me a touchable JM contact test inside the chat.",
+    "Show me the JM probe where touching the field creates a visible Ding.",
+    "Open the JM inline probe so I can drag the orb around.",
+    "Run the JM inline contact probe again."
+  ],
+  "test_counts": {
+    "positive": 5,
+    "negative": 3,
+    "source": "chatgpt-app-submission.json"
+  },
+  "release_notes": "Initial public submission of JM Inline Contact. This version exposes one read-only MCP tool and one interactive UI resource for a non-sensitive touch/contact probe. It adds explicit output schemas, narrow CSP metadata, public website/support/privacy/terms routes, automated MCP transport proof, automated public HTTPS tool/resource proof, and a domain-verification endpoint. No authentication or reviewer credentials are required. No private or frozen JM game donor bytes are included in the public probe. ChatGPT inline contact itself is not claimed until the widget is actually rendered and interacted with inside ChatGPT.",
+  "proof": {
+    "mcp_runtime": "PASS",
+    "public_https_mcp": "PASS",
+    "public_policy_routes": "PASS",
+    "public_tool_scan_equivalent_integration": "PASS",
+    "chatgpt_inline_contact": "NOT_YET_DINGED"
+  },
+  "publisher_actions_only": {
+    "apps_management_write": "REQUIRED_BY_OPENAI; organization owners already have this permission according to current docs, otherwise grant Apps Management Write.",
+    "developer_identity": "Select/complete verified individual or business identity in OpenAI Platform.",
+    "availability": "Publisher must choose countries/regions where product, support and legal terms are ready.",
+    "policy_attestations": "Publisher must personally review and attest before submission.",
+    "submit_for_review": "Publisher must trigger the final Submit for Review action."
+  },
+  "proof_boundary": "Submission-ready engineering does not equal ChatGPT Inline Contact. Third Ding remains false until a real interactive widget is rendered and touched inside the ChatGPT conversation surface."
+}

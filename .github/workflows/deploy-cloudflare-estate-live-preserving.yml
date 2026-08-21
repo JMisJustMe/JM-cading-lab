@@ -293,9 +293,15 @@ jobs:
               raise SystemExit(f'Apps count receipt mismatch: {shown} != {expected}')
           if any(row[0] == 'RouteOS' for row in rows):
               raise SystemExit('RouteOS has regressed into the literal Non-Game Apps registry.')
-          retrieval = {row[0] for row in rows if row[3] == 'registered'}
-          if retrieval != {'Portal Engine', 'Latest Body Finder', 'Source-Body Auditor'}:
-              raise SystemExit(f'Unexpected exact-package retrieval set: {sorted(retrieval)}')
+          promoted = {'Portal Engine', 'Latest Body Finder', 'Source-Body Auditor'}
+          statuses = {row[0]: row[3] for row in rows}
+          bad_promotions = {
+              name: statuses.get(name)
+              for name in promoted
+              if statuses.get(name) not in {'live_current', 'full_current', 'full_alt', 'routed'}
+          }
+          if bad_promotions:
+              raise SystemExit(f'Apps promotion regression: {bad_promotions}')
           required_text = [
               'RouteOS has returned to its sovereign gaming-platform seat',
               'Exact package retrieval',
@@ -304,7 +310,7 @@ jobs:
           missing = [value for value in required_text if value not in text]
           if missing:
               raise SystemExit(f'Apps classification markers missing: {missing}')
-          print(f'Apps registry proof PASS: {len(rows)} rooms; {expected}')
+          print(f'Apps registry proof PASS: {len(rows)} rooms; {expected}; promoted={sorted(promoted)}')
           PY
           grep -q "Human Pattern Calibration" cloudflare-estate/theory/index.html
           grep -q "jm-theory-mobile-reader-clearance-v1" cloudflare-estate/theory/index.html

@@ -43,6 +43,6 @@ jobs:
       - name: Upload runtime proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: jm-chatgpt-host-adapter-runtime-proof-v0.1.1
-          path: apps/jm-chatgpt-host-adapter-v0.1/artifacts/MCP_RUNTIME_PROOF_v0_1_1.json
+          name: jm-chatgpt-host-adapter-runtime-proof-v0.1.2
+          path: apps/jm-chatgpt-host-adapter-v0.1/artifacts/MCP_RUNTIME_PROOF_v0_1_2.json
           if-no-files-found: error

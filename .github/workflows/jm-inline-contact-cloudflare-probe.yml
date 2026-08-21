@@ -1,0 +1,77 @@
+name: JM Inline Contact Cloudflare Probe
+
+on:
+  push:
+    branches:
+      - jm-chatgpt-host-adapter-v0.1
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/wrangler.toml'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/wrangler.toml'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
+  workflow_dispatch:
+
+jobs:
+  public-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install MCP dependencies
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+        run: npm install --no-audit --no-fund
+
+      - name: Syntax check Worker
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+        run: node --check src/worker.mjs
+
+      - name: Upload isolated Cloudflare preview version
+        id: upload
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/jm-chatgpt-host-adapter-v0.1
+          wranglerVersion: '4'
+          command: versions upload --preview-alias inline-contact
+
+      - name: Recover and smoke-test preview URL
+        id: probe
+        env:
+          CMD_OUTPUT: ${{ steps.upload.outputs.command-output }}
+        run: |
+          set -euo pipefail
+          CLEAN=$(printf '%s\n' "$CMD_OUTPUT" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+          URL=$(printf '%s\n' "$CLEAN" | grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' | tail -n 1 || true)
+          if [ -z "$URL" ]; then
+            echo "$CLEAN"
+            echo 'No Cloudflare preview URL recovered.' >&2
+            exit 1
+          fi
+          HEALTH=$(curl --fail --silent --show-error "$URL/health")
+          printf '%s\n' "$HEALTH"
+          printf '%s\n' "$URL/mcp" > /tmp/jm_mcp_url.txt
+          node -e 'const fs=require("fs"); const url=fs.readFileSync("/tmp/jm_mcp_url.txt","utf8").trim(); const health=JSON.parse(process.argv[1]); fs.writeFileSync("PUBLIC_PROBE_DEPLOYMENT.json", JSON.stringify({pass:true,probeOnly:true,privateDonorBytesIncluded:false,previewUrl:url.replace(/\/mcp$/, ""),mcpUrl:url,health,chatgptContactProvenHere:false},null,2)+"\n")' "$HEALTH"
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+
+      - name: Upload public probe deployment receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-inline-contact-public-probe
+          path: apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_PROBE_DEPLOYMENT.json
+          if-no-files-found: error

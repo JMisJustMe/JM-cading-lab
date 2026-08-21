@@ -1,0 +1,107 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Build Entry Gate Proof Fixture v0.1",
+    "body_type": "disposable single-file gate-proof fixture",
+    "intended_destination": "Prove that JM Build Entry Gate v0.1 blocks a future new executable body without a same-PR route, then accepts the unchanged body once its prospective route is explicit. This fixture is not an Estate product or merge candidate."
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 143,
+    "head_branch": "test/jm-build-entry-gate-proof-v0.1",
+    "source_fixture": "games/jm-build-entry-gate-proof-v0.1.html",
+    "fixture_role": "DISPOSABLE GOVERNANCE PROOF ONLY",
+    "source_authority_claimed": false,
+    "merge_as_product_forbidden": true
+  },
+  "foundation": {
+    "governing_body": "JM Build Entry Gate v0.1",
+    "routing_contract": "JM Build Route Manifest v0.1",
+    "manifest_contract": "JM_BUILD_ROUTE_MANIFEST_CONTRACT_v0.1.json",
+    "recovery_result": "No new game engine, game runtime, playable IR, UI framework, host adapter, APK body or Estate product capability is required. The only body under test is the entry-governance mechanism itself.",
+    "reuse_decision": "Use the existing gate + manifest contract exactly as built; do not create a new builder or runtime for this proof."
+  },
+  "exact_stack": {
+    "jm_bodies": [
+      "JM Build Entry Gate v0.1",
+      "JM Build Route Manifest v0.1",
+      "JM Build Route Manifest Contract v0.1"
+    ],
+    "fixture": "one static single-file HTML body",
+    "runtime": "none required beyond browser-readable HTML; runtime behavior is not the proof target",
+    "host": "GitHub pull request + GitHub Actions",
+    "workflow": ".github/workflows/jm-build-entry-gate.yml",
+    "classifier": "scripts/jm_build_entry_gate.py",
+    "policy": "registry/build-routes/JM_BUILD_ENTRY_POLICY_v0.1.json"
+  },
+  "true_gaps": {
+    "estate_product_capability_gap": false,
+    "new_runtime_gap": false,
+    "new_engine_gap": false,
+    "governance_proof_gap": "Before PR #143, the front-door gate had self-test/live-legacy proof but no controlled future PR proving missing-manifest RED -> auto-draft -> same-body routed GREEN behavior.",
+    "new_body_creation_justification": "The fixture exists solely because an actual newly added executable boundary is required to test the gate's future-PR enforcement. It is disposable after proof."
+  },
+  "proof_lanes": {
+    "classifier_self_test": {
+      "state": "PASS",
+      "evidence": "Run 32469846738 classified new app, descendant and single-file body as triggers while governance/repair examples remained non-triggers."
+    },
+    "phase_1_missing_manifest_ding": {
+      "state": "PASS",
+      "workflow_run": 32469846738,
+      "job": 96734156424,
+      "observed": "PR #143 produced one high-confidence signal for games/jm-build-entry-gate-proof-v0.1.html and failed because no same-PR prospective manifest existed."
+    },
+    "phase_1_auto_draft": {
+      "state": "PASS",
+      "workflow_run": 32469846738,
+      "artifact_id": 9442086522,
+      "artifact": "JM_BUILD_ENTRY_DRAFT_PR_143",
+      "artifact_zip_sha256": "ab88d56c6905c04461b911e3cc0d1cc11bd89345980706189357799af61feb91",
+      "meaning": "The gate produced routing assistance with unresolved fields instead of inventing authority, donors, gaps or proof."
+    },
+    "phase_2_same_body_routed_green": {
+      "state": "OPEN",
+      "criterion": "With this same-PR prospective manifest present and the fixture itself unchanged, JM Build Entry Gate must recognize authority.work_pr=143 and pass."
+    },
+    "manifest_contract": {
+      "state": "OPEN",
+      "criterion": "Validate JM Build Route Manifests must accept this prospective manifest structurally without treating structural validity as runtime/contact proof."
+    }
+  },
+  "host_and_surfaces": {
+    "proof_surface": "GitHub PR / GitHub Actions",
+    "fixture_surface": "static single-file HTML",
+    "phone_contact_required": false,
+    "laptop_contact_required": false,
+    "inline_chatgpt_contact_required": false,
+    "apk_required": false,
+    "reason": "The target claim is CI governance behavior, so native CI evidence is sufficient for this lane."
+  },
+  "escalation": {
+    "manual_user_contact": "Not required for this proof because the claimed behavior is the GitHub Actions entry gate itself.",
+    "on_failure": "Fail local -> inspect gate/classifier/manifest contract -> correct the responsible governance organ -> retest; do not alter or elaborate the disposable fixture merely to force green.",
+    "built_in_bypass_forbidden": true
+  },
+  "state": {
+    "route": "PROVING",
+    "phase_1_red_ding": "PASS",
+    "auto_draft": "PASS",
+    "phase_2_routed_green": "OPEN",
+    "manifest_contract": "OPEN",
+    "fixture_product_status": "DISPOSABLE / NOT ESTATE PRODUCT",
+    "merge": "FORBIDDEN AS PRODUCT",
+    "crown": "NOT APPLICABLE"
+  },
+  "next_route": {
+    "step_1": "Re-run PR #143 with this same-PR prospective manifest.",
+    "step_2": "Require JM Build Entry Gate PASS with the new-body signal still present.",
+    "step_3": "Require Build Route Manifest structural validator PASS.",
+    "step_4": "Record the red -> routed green proof, then close/dispose PR #143 instead of merging the fixture."
+  },
+  "manifest_proof": {
+    "result": "PROSPECTIVE ROUTE DECLARED — Phase 1 Ding and auto-draft are proven; Phase 2 routed-green and manifest-contract lanes remain open until CI observes them."
+  }
+}

@@ -1,0 +1,96 @@
+name: Validate Wave 2 PLAYFORM v0.4 Source
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4/**'
+      - '.github/workflows/estate-publication-wave2-playform-v0-4.yml'
+  workflow_dispatch:
+
+jobs:
+  prove-playform-v0-4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Reconstruct exact frozen source
+        run: |
+          cd estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4
+          python reconstruct_playform.py
+          test "$(wc -c < 00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html)" = "160711"
+          echo "60da0d1f303a1e17d3580d3261123bbdd51f9f7022199fee0f502fa60e70839d  00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html" | sha256sum -c -
+
+      - name: Validate pointer and publication manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4')
+          p=json.loads((root/'CURRENT_HEAD_POINTER.json').read_text())
+          m=json.loads((root/'PUBLICATION_MANIFEST.json').read_text())
+          assert p['currentHead']=='JM Playform — Offpage v0.4 Crown Forge'
+          assert p['version']=='v0.4'
+          assert p['sourceBytes']==160711
+          assert p['sourceSha256']=='60da0d1f303a1e17d3580d3261123bbdd51f9f7022199fee0f502fa60e70839d'
+          assert m['source_authority']['bytes']==p['sourceBytes']
+          assert m['source_authority']['sha256']==p['sourceSha256']
+          assert m['source_authority']['duplicate_library_carriers_byte_identical'] is True
+          assert m['carriage']['parts']==4
+          assert m['carriage']['gzip_sha256']=='7d4514bb32cc63e35f064da45addd9a3b63ad304fbd8657ba6ad7595b4820012'
+          PY
+
+      - name: Reject private signing and credential material
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path('estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4/00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html').read_text(errors='ignore')
+          patterns=[
+            r'BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY', r'PKCS8', r'private[_ -]?key',
+            r'\.jks\b', r'keystore', r'api[_ -]?key', r'auth[_ -]?token',
+            r'client[_ -]?secret', r'password\s*[=:]'
+          ]
+          for pat in patterns:
+            assert not re.search(pat,s,re.I), f'public-safety hit: {pat}'
+          PY
+          ! find estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4 -type f \( -iname '*.apk' -o -iname '*.aab' -o -iname '*.apks' -o -iname '*.jks' -o -iname '*.keystore' -o -iname '*.p12' -o -iname '*.pfx' \) | grep .
+
+      - name: Validate inline JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4/00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html').read_text()
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',src,re.S|re.I)
+          assert len(scripts)==1, len(scripts)
+          Path('/tmp/playform-inline.js').write_text(scripts[0])
+          PY
+          node --check /tmp/playform-inline.js
+
+      - name: Prove frozen PLAYFORM authority markers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4/00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html').read_text()
+          required=[
+            '<title>JM Playform — Offpage v0.4 Crown Forge</title>',
+            "const VERSION = '0.4.0';",
+            "const BUILD = 'Crown Forge';",
+            "VERSION==='0.4.0'",
+            'NAV.length===16', 'ISSUES.length===2', 'SCENES.length===10',
+            'CHARACTERS.length===4', 'OBJECTS.length===4', 'VISUALANG.length===9',
+            'runChecks().length===14', "['read','hybrid','build']", "['dark','light','contrast']",
+            'PlayZone locked', 'v0.3 frozen anchor mounted beneath',
+            'window.__JM_RUN_TEST__ = test;'
+          ]
+          for marker in required:
+            assert marker in s, marker
+          assert 'http://' not in s and 'https://' not in s
+          PY
+
+      - name: Final publication boundary
+        run: |
+          echo 'PLAYFORM v0.4 SOURCE PUBLICATION PROOF: PASS'
+          echo 'Current head: JM Playform — Offpage v0.4 Crown Forge'
+          echo 'v0.3 preserved as lineage; PlayZone remains protected and unabsorbed.'

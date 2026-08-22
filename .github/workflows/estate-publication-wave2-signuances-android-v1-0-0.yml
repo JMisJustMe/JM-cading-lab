@@ -1,0 +1,94 @@
+name: Validate Wave 2 Signuances Android Source
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source/**'
+      - '.github/workflows/estate-publication-wave2-signuances-android-v1-0-0.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-signuances-android-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prove reused Android skeleton Git-object identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source/source-carriage'
+          test "$(git hash-object "$D/part-00.b64")" = '0e9d5a416a8df9986da724b4ac157a83731c95ef'
+          test "$(git hash-object "$D/part-01.b64")" = 'bf63f6d05df4e690d82990c8d778a8b3737c472b'
+          test "$(git hash-object "$D/part-02.b64")" = '7334d44fbaa229f7428137a93a7de835484d3f07'
+          test "$(git hash-object "$D/part-03.b64")" = '5bfc7b7f487969bea9c657eba7d8b07eceb17e6a'
+          test "$(git hash-object "$D/part-04.b64")" = '5baa7dac05546f3d78339bfba36b0bc4f1e02cd1'
+
+      - name: Reconstruct exact Android project and canonical web body
+        shell: bash
+        run: |
+          set -euo pipefail
+          python estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source/reconstruct_android_source.py
+
+      - name: Validate pointer manifest and Android authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source'
+          python - <<'PY'
+          import json, pathlib
+          d=pathlib.Path('estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source')
+          p=json.loads((d/'CURRENT_HEAD_POINTER.json').read_text())
+          m=json.loads((d/'PUBLICATION_MANIFEST.json').read_text())
+          assert p['version']=='1.0.0' and p['package']=='com.jmisjustme.signuances'
+          assert p['versionCode']==10000 and p['minSdk']==26 and p['targetSdk']==36
+          assert m['authority']['package']==p['package']
+          assert m['carriage']['webSourceSha256']==p['embeddedWebSourceSha256']
+          assert m['publicationBoundary']['sourceOnly'] is True
+          PY
+          R="$D/reconstructed-source"
+          grep -R -q 'com.jmisjustme.signuances' "$R/app"
+          grep -R -q '10000' "$R/app"
+          if grep -R -q 'android.permission.INTERNET' "$R/app/src/main/AndroidManifest.xml"; then exit 1; fi
+          test -s "$R/app/src/main/assets/index.html"
+          echo 'fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631  '"$R"'/app/src/main/assets/index.html' | sha256sum -c -
+
+      - name: Reject signing custody and binary payload leakage
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source'
+          if find "$D" -type f \( -iname '*.apk' -o -iname '*.aab' -o -iname '*.jks' -o -iname '*.keystore' -o -iname '*.p12' -o -iname '*.pfx' \) | grep -q .; then exit 1; fi
+          if grep -R -I -E -- '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----|BEGIN PRIVATE KEY|sk-proj-|ghp_[A-Za-z0-9]+' "$D/reconstructed-source"; then exit 1; fi
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Build unsigned/debug source proof
+        shell: bash
+        working-directory: estate-publication/apps-tools-games/apps-tools/signuances-android-v1.0.0-source/reconstructed-source
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:assembleDebug
+          test -s app/build/outputs/apk/debug/app-debug.apk
+          echo 'BUILD_PROOF_ONLY: debug artifact generated transiently by CI; not published in repository.'
+
+      - name: Final Android source publication boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'SIGNUANCES_ANDROID_SOURCE_V1_0_0_PUBLICATION_PROOF_PASS'
+          echo 'No APK/AAB, private signing identity, owner signing, or physical-device claim is seated by this source publication.'

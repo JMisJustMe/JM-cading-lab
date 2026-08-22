@@ -1,0 +1,1 @@
+This directory is the Wave 2 public-source publication candidate for JM Signal Engine v2.4.0 Counterpart Perfection. See `PUBLICATION_BOUNDARY.md`, `PROOF_EXPECTATIONS.md`, `CURRENT_HEAD_POINTER.json`, and `SOURCE_PUBLICATION_MANIFEST.json` for authority, exclusions, and proof requirements.

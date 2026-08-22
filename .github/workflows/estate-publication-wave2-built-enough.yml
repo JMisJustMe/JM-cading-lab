@@ -1,0 +1,117 @@
+name: Validate Wave 2 Built Enough Source
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2/**'
+      - '.github/workflows/estate-publication-wave2-built-enough.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-built-enough-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Reconstruct governed source and verify all keeper hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2
+          python3 source-carriage/REBUILD_SOURCE.py
+
+      - name: Validate reconstructed JavaScript and algorithm smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2
+          node --check app.js
+          node --check sw.js
+          node test-algorithm.mjs
+
+      - name: Validate JSON and web manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for rel in ('SOURCE_PUBLICATION_MANIFEST.json', 'DATA_MODEL.json', 'manifest.webmanifest'):
+              json.loads(Path(rel).read_text(encoding='utf-8'))
+              print('JSON PASS', rel)
+          PY
+
+      - name: Validate runtime asset graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+
+          root = Path('.')
+          index = Path('index.html').read_text(encoding='utf-8')
+          sw = Path('sw.js').read_text(encoding='utf-8')
+
+          required = {
+              'styles.css', 'app.js', 'manifest.webmanifest',
+              'assets/icon.svg', 'assets/body-return-roadmap.svg'
+          }
+          for rel in sorted(required):
+              assert (root / rel).is_file(), f'Missing runtime asset: {rel}'
+
+          assert 'styles.css' in index
+          assert 'app.js' in index
+          assert 'manifest.webmanifest' in index
+          assert 'assets/icon.svg' in index
+          assert 'assets/body-return-roadmap.svg' in index
+
+          for rel in re.findall(r"['\"](\./[^'\"]+)['\"]", sw):
+              if rel == './':
+                  continue
+              path = root / rel[2:]
+              assert path.exists(), f'sw.js references missing {path}'
+              print('SW ASSET PASS', path)
+          PY
+
+      - name: Public-safety scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2'
+          if grep -RInE --exclude-dir=.git --exclude='SOURCE_PUBLICATION_MANIFEST.json' \
+            '(BEGIN[[:space:]]+(RSA[[:space:]]+|EC[[:space:]]+)?PRIVATE[[:space:]]+KEY|PKCS8|PRIVATE_KEY_PKCS8|CHILD_PRIVATE_KEY|\.keystore|ghp_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|sk-[A-Za-z0-9]{20,})' "$root"; then
+            echo 'FAIL — private/signing/credential material signature detected'
+            exit 1
+          fi
+          echo 'PASS — no targeted private/signing/credential signatures detected'
+
+      - name: Enforce public-source exclusions
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2'
+          test ! -e "$root/body-return-single.html"
+          test ! -e "$root/assets/body-return-roadmap.png"
+          echo 'PASS — duplicate single-file convenience body and heavy proof PNG remain excluded'
+
+      - name: Confirm source carriage is complete
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2/source-carriage'
+          test "$(find "$root" -maxdepth 1 -name 'app.js.part*' | wc -l)" -eq 5
+          test "$(find "$root" -maxdepth 1 -name 'index.html.part*' | wc -l)" -eq 3
+          test -s "$root/REBUILD_SOURCE.py"
+          echo 'PASS — 5 app.js parts + 3 index.html parts + rebuild gate present'

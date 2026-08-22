@@ -1,0 +1,30 @@
+{
+  "body": "BUILT ENOUGH: BODY RETURN v0.2",
+  "source_role": "Wave 2 public buildable source",
+  "keeper": "built-enough-body-return-v0.2.zip",
+  "keeper_bytes": 1874898,
+  "source_carriage": {
+    "reason": "GitHub connector text-carriage limit; original large text members are line-boundary chunked and rebuilt byte-for-byte",
+    "rebuild": "python3 source-carriage/REBUILD_SOURCE.py"
+  },
+  "expected": {
+    "index.html": {"bytes": 17937, "sha256": "b46856c0078445742f6b0e5537d3be55f51661d70af557f78f8d99a3ef76b89d"},
+    "app.js": {"bytes": 29127, "sha256": "17b388989141db1fca3f2c28836a0fe7c3bf0f28893f646f4ebe0e7d851b9fbe"},
+    "styles.css": {"bytes": 12343, "sha256": "f13ecca5e10f3faf5939753508155c5a8e21cc5f6856572e0329e809d2a303f7"},
+    "manifest.webmanifest": {"bytes": 401, "sha256": "73171a39a2895a472baa89d871b126ce1bcd4c66a9e8450917dbab56574e22f5"},
+    "sw.js": {"bytes": 962, "sha256": "f66e551134b2bbaa391bf3d27165791161eaf5015d9450bb594b680aa9ea52f7"},
+    "README.md": {"bytes": 1736, "sha256": "2256fd089bfdcb39627a5a0a3cc964d98d907a042abacfe7e4ea3d4e56550afe"},
+    "FORMAL_SPEC.md": {"bytes": 1914, "sha256": "9216f3a9a878b0c72b1e6bc4d9de1132344bd6819909a60464ded35b052a73a6"},
+    "ROADMAP.md": {"bytes": 1188, "sha256": "9dadfa732e6ad0198194db2eea2a5e7a88d7c01476ea0bec49bdada7bcb51faa"},
+    "REVERSE_ENGINEERING_MAP.md": {"bytes": 2144, "sha256": "a9ccc44b843908600c8222cff9dec855e2c062b9b0f52a9a40055bd57fa91fb2"},
+    "DATA_MODEL.json": {"bytes": 1473, "sha256": "f20d818cd73e4b32fb09d49a6e61db3ab7e3c1f35a87d49ef4d3f7517b064a80"},
+    "test-algorithm.mjs": {"bytes": 678, "sha256": "4ad5d049db48d1baf7043ec9a2a178501d7df884c1c14e4ce6e15fbf1c3f2a4c"},
+    "serve.sh": {"bytes": 48, "sha256": "48f19edccba501f0ea84c5c10000ce0b15a6cc00cd98a934443cb6aa4a8c5d36"},
+    "assets/icon.svg": {"bytes": 405, "sha256": "a39c4e48a385247c1ad72c0fbfdc4cda5931bb732ed6c0ee454cf050e54c9fbb"},
+    "assets/body-return-roadmap.svg": {"bytes": 3843, "sha256": "2944a98f5f70f389523c1a20d9d80ee57e766222b35492f4ee0f53263f9139a1"}
+  },
+  "excluded_from_public_source_commit": {
+    "body-return-single.html": "duplicate single-file convenience body; modular source is authoritative for public source publication",
+    "assets/body-return-roadmap.png": "1846782-byte proof/visual export not referenced by runtime; SVG source counterpart is included"
+  }
+}

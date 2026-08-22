@@ -1,0 +1,128 @@
+    if (state.activeMicroReturn) state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment, 0);
+    saveState();
+    renderMoments();
+  }));
+}
+
+function renderMoments() {
+  const hasProfile = Boolean(state.profile);
+  $('momentsMissing').classList.toggle('hidden', hasProfile);
+  $('momentsContent').classList.toggle('hidden', !hasProfile);
+  if (!hasProfile) return;
+  renderTriggerButtons();
+  renderEnvironmentButtons();
+
+  const micro = state.activeMicroReturn;
+  $('microReturnCard').classList.toggle('hidden', !micro);
+  if (micro) {
+    $('microTriggerLabel').textContent = micro.trigger.toUpperCase();
+    $('microTitle').textContent = micro.title;
+    $('microNumber').textContent = micro.number;
+    $('microDose').textContent = micro.dose;
+    $('microReason').textContent = micro.reason;
+  }
+  renderNudgeSettings();
+}
+
+function renderNudgeSettings() {
+  const settings = state.nudgeSettings;
+  $('nudgesEnabled').checked = settings.enabled;
+  $('nudgeInterval').value = String(settings.intervalMinutes);
+  $('nudgeStart').value = settings.start;
+  $('nudgeEnd').value = settings.end;
+  $('nudgeTrigger').innerHTML = Object.entries(triggerLibrary).map(([key, item]) => `<option value="${key}" ${settings.trigger === key ? 'selected' : ''}>${escapeHtml(item.label)}</option>`).join('');
+  const next = settings.nextAt ? new Date(settings.nextAt) : null;
+  const notificationText = !('Notification' in window) ? 'Browser notifications are unavailable here.' : `Notification permission: ${Notification.permission}.`;
+  $('reminderStatus').textContent = settings.enabled && next
+    ? `Next local nudge: ${next.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}. ${notificationText}`
+    : `Nudges are off. ${notificationText}`;
+}
+
+function render() {
+  const hasProfile = Boolean(state.profile);
+  $('profileMissing').classList.toggle('hidden', hasProfile);
+  $('todayContent').classList.toggle('hidden', !hasProfile);
+  renderHistory();
+  renderMoments();
+  if (!hasProfile) return;
+  if (!state.routine) state.routine = buildRoutine(state.profile);
+
+  const routine = state.routine;
+  $('signatureCode').textContent = routine.signature.code;
+  $('levelValue').textContent = getLevel();
+  $('streakValue').textContent = state.streak;
+  $('routineTitle').textContent = routine.title;
+  $('routineReason').textContent = routine.reason;
+  $('restValue').textContent = `${routine.restSeconds}s`;
+  $('roundValue').textContent = routine.rounds;
+  $('todayReturnCount').textContent = returnsToday();
+
+  $('exerciseList').innerHTML = routine.exercises.map((exercise, index) => `
+    <article class="exercise-row ${exercise.complete ? 'complete' : ''}" data-exercise-id="${exercise.id}">
+      <span class="exercise-index">${index + 1}</span>
+      <div><h3>${escapeHtml(exercise.title)}</h3><p>${escapeHtml(exercise.variation)} · ${escapeHtml(exercise.dose)}</p></div>
+      <button class="exercise-toggle" aria-label="Mark ${escapeHtml(exercise.title)} complete">${exercise.complete ? '✓' : '○'}</button>
+    </article>`).join('');
+
+  document.querySelectorAll('.exercise-toggle').forEach((button) => button.addEventListener('click', () => {
+    const row = button.closest('.exercise-row');
+    const exercise = state.routine.exercises.find((item) => item.id === row.dataset.exerciseId);
+    exercise.complete = !exercise.complete;
+    saveState();
+    render();
+  }));
+
+  $('completeSessionButton').disabled = !routine.exercises.every((item) => item.complete);
+  const currentBmi = bmi(state.profile);
+  const markers = [
+    ['Age', `${state.profile.age}`, 'Used for context, never as a hard limit.'],
+    ['Anchor', `${routine.signature.anchor}`, 'Favourite number first; birth day as fallback.'],
+    ['Intensity', `${Math.round(routine.factor * 100)}%`, 'A fraction of your stated comfortable capacity.'],
+    ['BMI', currentBmi || 'Not entered', currentBmi ? 'Context marker only; not used alone to set exercise.' : 'Height and weight are optional.']
+  ];
+  $('contextMarkers').innerHTML = markers.map(([label, value, note]) => `<div class="context-card"><span>${label}</span><strong>${value}</strong><span>${note}</span></div>`).join('');
+  fillForm();
+}
+
+function combinedHistory() {
+  const sessions = state.history.map((entry) => ({ ...entry, receiptType: 'session' }));
+  const micros = state.microHistory.map((entry) => ({ ...entry, receiptType: 'micro' }));
+  return [...sessions, ...micros].sort((a, b) => new Date(b.date || b.createdAt) - new Date(a.date || a.createdAt));
+}
+
+function renderHistory() {
+  const entries = combinedHistory();
+  $('totalReturns').textContent = entries.length;
+  $('microReturns').textContent = state.microHistory.length;
+  $('sessionReturns').textContent = state.history.length;
+  $('totalXp').textContent = state.xp;
+  if (!entries.length) {
+    $('historyList').innerHTML = '<div class="empty-state"><h3>No receipts yet</h3><p>Complete a session or a moment return. The system becomes real when action returns data.</p></div>';
+    return;
+  }
+  $('historyList').innerHTML = entries.map((entry) => {
+    if (entry.receiptType === 'micro') {
+      return `<article class="history-item micro-history">
+        <span class="receipt-type">MOMENT RETURN · ${escapeHtml(entry.trigger || 'Moment')}</span>
+        <div class="history-top"><strong>${formatDate(entry.date)}</strong><span>Ease ${entry.ease}/5 · +${entry.xp} XP</span></div>
+        <p>${escapeHtml(entry.dose)} · ${escapeHtml(entry.environment)}</p>
+        <p>Mood after ${entry.moodAfter}/5${entry.pain ? ' · Pain/symptoms recorded' : ''}</p>
+        ${entry.notes ? `<p>${escapeHtml(entry.notes)}</p>` : ''}
+      </article>`;
+    }
+    return `<article class="history-item">
+      <span class="receipt-type">FULL SESSION</span>
+      <div class="history-top"><strong>${formatDate(entry.date)}</strong><span>RPE ${entry.rpe}/10 · +${entry.xp} XP</span></div>
+      <p>Mood ${entry.moodBefore} → ${entry.moodAfter}${entry.pain ? ' · Pain/symptoms recorded' : ''}</p>
+      ${entry.notes ? `<p>${escapeHtml(entry.notes)}</p>` : ''}
+      <p class="adaptation">Next route: ${escapeHtml(entry.adaptation)}</p>
+    </article>`;
+  }).join('');
+}
+
+function formatDate(value) {
+  return new Date(value).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+
+function returnsToday() {
+  const today = new Date().toISOString().slice(0, 10);

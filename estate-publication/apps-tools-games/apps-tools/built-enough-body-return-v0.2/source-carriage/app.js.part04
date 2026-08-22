@@ -1,0 +1,174 @@
+  return combinedHistory().filter((entry) => String(entry.date || entry.createdAt).slice(0, 10) === today).length;
+}
+
+function getLevel() { return 1 + Math.floor(Math.sqrt(state.xp / 100)); }
+
+function updateStreak() {
+  const today = new Date();
+  const todayKey = today.toISOString().slice(0, 10);
+  if (state.lastCompletedDate === todayKey) return;
+  if (!state.lastCompletedDate) state.streak = 1;
+  else {
+    const previous = new Date(`${state.lastCompletedDate}T00:00:00`);
+    const difference = Math.round((new Date(`${todayKey}T00:00:00`) - previous) / 86400000);
+    state.streak = difference === 1 ? state.streak + 1 : 1;
+  }
+  state.lastCompletedDate = todayKey;
+}
+
+function adaptationFor(rpe, pain) {
+  if (pain) {
+    state.nextFactor = .80;
+    return 'Reduce the next dose, choose easier variations, rest, and seek professional advice if symptoms persist or concern you.';
+  }
+  if (rpe <= 5) {
+    state.nextFactor = clamp((state.nextFactor || 1) * 1.08, .75, 1.25);
+    return 'Increase slightly next time. The session was comfortably below your present ceiling.';
+  }
+  if (rpe <= 7) {
+    state.nextFactor = state.nextFactor || 1;
+    return 'Maintain. This is a useful working dose.';
+  }
+  state.nextFactor = clamp((state.nextFactor || 1) * .88, .65, 1.2);
+  return 'Reduce slightly next time. Progress is not punishment.';
+}
+
+function escapeHtml(text) {
+  return String(text ?? '').replace(/[&<>'"]/g, (char) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), appVersion: '0.2', ...state }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `body-return-receipts-${new Date().toISOString().slice(0,10)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function timeToMinutes(value) {
+  const [hour, minute] = value.split(':').map(Number);
+  return hour * 60 + minute;
+}
+
+function withinNudgeWindow(date = new Date()) {
+  const current = date.getHours() * 60 + date.getMinutes();
+  const start = timeToMinutes(state.nudgeSettings.start);
+  const end = timeToMinutes(state.nudgeSettings.end);
+  return start <= end ? current >= start && current <= end : current >= start || current <= end;
+}
+
+function scheduleNextNudge(from = new Date()) {
+  if (!state.nudgeSettings.enabled) {
+    state.nudgeSettings.nextAt = null;
+    saveState();
+    return;
+  }
+  const next = new Date(from.getTime() + Number(state.nudgeSettings.intervalMinutes) * 60000);
+  state.nudgeSettings.nextAt = next.toISOString();
+  saveState();
+}
+
+async function showNudge() {
+  const trigger = triggerLibrary[state.nudgeSettings.trigger] || triggerLibrary.sitting;
+  state.selectedTrigger = state.nudgeSettings.trigger;
+  state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment, state.microHistory.length + 1);
+  saveState();
+  renderMoments();
+
+  const title = 'BODY RETURN';
+  const body = `${trigger.label}: ${state.activeMicroReturn?.dose || 'Open the app for a small return.'}`;
+  try {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification(title, { body, icon: './assets/icon.svg', tag: 'body-return-nudge' });
+      } else {
+        new Notification(title, { body });
+      }
+    }
+  } catch {}
+  scheduleNextNudge();
+  renderNudgeSettings();
+}
+
+function checkNudge() {
+  if (!state.nudgeSettings.enabled || !withinNudgeWindow()) return;
+  if (!state.nudgeSettings.nextAt) {
+    scheduleNextNudge();
+    renderNudgeSettings();
+    return;
+  }
+  if (Date.now() >= new Date(state.nudgeSettings.nextAt).getTime()) showNudge();
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    alert('This browser does not provide notification permission to this page. The in-app reminder still works while the app is open.');
+    return;
+  }
+  const permission = await Notification.requestPermission();
+  renderNudgeSettings();
+  if (permission === 'granted') {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification('BODY RETURN notifications are ready', { body: 'Your local nudges can now appear as browser notifications.', icon: './assets/icon.svg', tag: 'body-return-ready' });
+      }
+    } catch {}
+  }
+}
+
+tabs.forEach((tab) => tab.addEventListener('click', () => openTab(tab.dataset.tab)));
+document.querySelectorAll('[data-open-tab]').forEach((button) => button.addEventListener('click', () => openTab(button.dataset.openTab)));
+$('menuButton').addEventListener('click', () => openTab('route'));
+$('limitations').addEventListener('change', (event) => $('limitationsNotice').classList.toggle('hidden', !event.target.checked));
+
+$('profileForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  const dob = data.get('dob');
+  const age = calculateAge(dob);
+  if (age < 18) {
+    alert('This first version is for adults aged 18 and over.');
+    return;
+  }
+  const movements = data.getAll('movements');
+  if (movements.length < 2) {
+    alert('Choose at least two movement lanes.');
+    return;
+  }
+  state.profile = {
+    name: data.get('name')?.trim() || 'You',
+    dob,
+    age,
+    favouriteNumber: Number(data.get('favouriteNumber')) || null,
+    effort: Number(data.get('effort')),
+    pushBase: Number(data.get('pushBase')),
+    coreBase: Number(data.get('coreBase')),
+    walkBase: Number(data.get('walkBase')),
+    height: Number(data.get('height')) || null,
+    weight: Number(data.get('weight')) || null,
+    movements,
+    limitations: data.get('limitations') === 'on'
+  };
+  state.routine = buildRoutine(state.profile);
+  state.activeMicroReturn = null;
+  saveState();
+  render();
+  openTab('today');
+});
+
+$('regenerateButton').addEventListener('click', () => {
+  state.routine = buildRoutine(state.profile, Math.floor(Math.random() * 7) + 1);
+  saveState();
+  render();
+});
+
+$('swapMicroButton').addEventListener('click', () => {
+  state.activeMicroReturn = buildMicroReturn(state.selectedTrigger, state.selectedEnvironment, Math.floor(Math.random() * 12) + 1);
+  saveState();
+  renderMoments();
+});
+

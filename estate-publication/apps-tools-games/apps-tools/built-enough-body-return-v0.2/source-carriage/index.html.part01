@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0907" />
+  <meta name="description" content="BUILT ENOUGH: BODY RETURN — a SHIMS-based personal movement practice, moment engine and self-lab." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>BUILT ENOUGH: BODY RETURN</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="brand-line">BUILT ENOUGH</p>
+        <h1>BODY RETURN</h1>
+      </div>
+      <button class="icon-button" id="menuButton" aria-label="Open route overview" title="Route overview">↗</button>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="heroTitle">
+        <p class="route-statement" id="heroTitle">I’ve built enough. Now something needs to come back into my life.</p>
+        <p class="principle">Numbers guide the shape. <strong>Your body sets the boundary.</strong> The moment creates the opening. Use supplies the proof.</p>
+      </section>
+
+      <nav class="tabs" aria-label="Main sections">
+        <button class="tab active" data-tab="today">Today</button>
+        <button class="tab" data-tab="moments">Moments</button>
+        <button class="tab" data-tab="setup">Set-up</button>
+        <button class="tab" data-tab="record">Record</button>
+        <button class="tab" data-tab="route">Route</button>
+      </nav>
+
+      <section id="today" class="tab-panel active">
+        <div id="profileMissing" class="empty-state">
+          <h2>Build your first Body Return</h2>
+          <p>Your date of birth creates the symbolic pattern. Your current capacity decides what is realistic today.</p>
+          <button class="primary-button" data-open-tab="setup">Create my pattern</button>
+        </div>
+
+        <div id="todayContent" class="hidden">
+          <div class="signature-strip">
+            <div>
+              <span class="small-label">PERSONAL SIGNATURE</span>
+              <strong id="signatureCode">—</strong>
+            </div>
+            <div>
+              <span class="small-label">LEVEL</span>
+              <strong id="levelValue">1</strong>
+            </div>
+            <div>
+              <span class="small-label">STREAK</span>
+              <strong><span id="streakValue">0</span>d</strong>
+            </div>
+          </div>
+
+          <article class="panel instant-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="small-label">RIGHT NOW</span>
+                <h2>Turn this moment into movement</h2>
+              </div>
+              <span class="return-count"><strong id="todayReturnCount">0</strong> today</span>
+            </div>
+            <p class="muted">Starting, finishing, waiting, celebrating or resetting can become a small physical return.</p>
+            <div class="quick-trigger-grid" id="todayQuickTriggers"></div>
+            <button class="secondary-button wide" data-open-tab="moments">Open the full moment engine</button>
+          </article>
+
+          <article class="panel focus-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="small-label">TODAY’S ROUTE</span>
+                <h2 id="routineTitle">Foundation Session</h2>
+              </div>
+              <button class="secondary-button compact" id="regenerateButton">Regenerate</button>
+            </div>
+            <p id="routineReason" class="muted"></p>
+            <div id="exerciseList" class="exercise-list"></div>
+            <div class="routine-footer">
+              <div>
+                <span class="small-label">REST</span>
+                <strong id="restValue">—</strong>
+              </div>
+              <div>
+                <span class="small-label">ROUNDS</span>
+                <strong id="roundValue">—</strong>
+              </div>
+              <button class="primary-button" id="completeSessionButton" disabled>Complete session</button>
+            </div>
+          </article>
+
+          <article class="panel">
+            <div class="panel-heading">
+              <div>
+                <span class="small-label">BODY CONTEXT</span>
+                <h2>Markers, not verdicts</h2>
+              </div>
+            </div>
+            <div id="contextMarkers" class="context-grid"></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="moments" class="tab-panel">
+        <div id="momentsMissing" class="empty-state">
+          <h2>Create your pattern first</h2>
+          <p>The moment engine needs a baseline before it can make a small, personal movement suggestion.</p>
+          <button class="primary-button" data-open-tab="setup">Go to set-up</button>
+        </div>
+
+        <div id="momentsContent" class="hidden">
+          <article class="panel moment-builder">
+            <span class="small-label">STATE → MOVEMENT</span>
+            <h2>What is happening right now?</h2>
+            <p class="muted">Choose the moment. BODY RETURN will generate a small dose rather than a full workout.</p>
+            <div class="trigger-grid" id="triggerGrid"></div>
+
+            <h3>What is around you?</h3>
+            <div class="environment-grid" id="environmentGrid"></div>
+          </article>
+
+          <article id="microReturnCard" class="panel micro-card hidden" aria-live="polite">
+            <div class="micro-top">
+              <div>
+                <span class="small-label" id="microTriggerLabel">MOMENT RETURN</span>
+                <h2 id="microTitle">—</h2>
+              </div>
+              <div class="micro-number" id="microNumber">—</div>
+            </div>
+            <p class="micro-dose" id="microDose">—</p>
+            <p class="muted" id="microReason">—</p>
+            <div class="micro-actions">
+              <button class="secondary-button" id="swapMicroButton">Give me another</button>
+              <button class="primary-button" id="completeMicroButton">Done — record return</button>
+            </div>
+            <button class="text-button" id="intentionButton">Not moving right now — give me an intention version</button>
+          </article>
+
+          <article class="panel reminder-panel">
+            <div class="panel-heading">
+              <div>

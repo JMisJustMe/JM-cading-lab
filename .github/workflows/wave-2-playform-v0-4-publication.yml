@@ -1,0 +1,47 @@
+name: Wave 2 Playform v0.4 publication proof
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4-crown-forge/**'
+      - '.github/workflows/wave-2-playform-v0-4-publication.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-playform-v0-4:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rebuild exact Library-authority source
+        working-directory: estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4-crown-forge
+        run: python3 source-carriage/REBUILD_SOURCE.py
+
+      - name: Verify source identity, syntax and public boundary
+        working-directory: estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4-crown-forge
+        run: python3 source-carriage/VERIFY_PUBLICATION.py
+
+      - name: Verify carriage part identities
+        working-directory: estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4-crown-forge
+        run: |
+          test "$(git hash-object source-carriage/part-01.b64)" = "03ed2ed00dace138f1aa73e5ec0d9b49c8df0dc4"
+          test "$(git hash-object source-carriage/part-02.b64)" = "42b10ab36acaca5c0ce65ccae1a7a4ba443a90eb"
+          test "$(git hash-object source-carriage/part-03.b64)" = "c525b4d9a4dd83660d6b97e34d90844e12752154"
+          test "$(git hash-object source-carriage/part-04.b64)" = "1a77b6bb872b8f75a4a9ff026c883937f3154a52"
+
+      - name: Final publication boundary
+        working-directory: estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4-crown-forge
+        run: |
+          test "$(find source-carriage -name 'part-*.b64' | wc -l)" -eq 4
+          grep -Fq 'v0.3 lineage preserved beneath v0.4' JM_PLAYFORM_v0_4_FREEZE_LOCK_ANCHOR.md
+          grep -Fq 'PlayZone protection boundary' JM_PLAYFORM_v0_4_FREEZE_LOCK_ANCHOR.md
+          echo 'PASS — exact v0.4 source is recoverable; v0.3 lineage and PlayZone boundary remain intact.'

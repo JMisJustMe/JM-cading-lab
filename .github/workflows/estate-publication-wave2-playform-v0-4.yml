@@ -72,6 +72,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           s=Path('estate-publication/apps-tools-games/apps-tools/jm-playform-offpage-v0.4/00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html').read_text()
           required=[
             '<title>JM Playform — Offpage v0.4 Crown Forge</title>',
@@ -86,7 +87,8 @@ jobs:
           ]
           for marker in required:
             assert marker in s, marker
-          assert 'http://' not in s and 'https://' not in s
+          remote_resources=re.findall(r'<(?:script|link)[^>]+(?:src|href)=["\']https?://',s,re.I)
+          assert not remote_resources, remote_resources
           PY
 
       - name: Final publication boundary

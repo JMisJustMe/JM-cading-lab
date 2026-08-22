@@ -1,0 +1,31 @@
+{
+  "schema": "jm.wave2.signuances-android-source-publication/v1",
+  "publicationDate": "2026-08-22",
+  "status": "SOURCE_PUBLICATION_CANDIDATE",
+  "body": {"name":"Signuances Android carrier source","version":"1.0.0"},
+  "authority": {
+    "package":"com.jmisjustme.signuances",
+    "versionCode":10000,
+    "minSdk":26,
+    "targetSdk":36,
+    "launcher":"com.jmisjustme.signuances.MainActivity"
+  },
+  "carriage": {
+    "origin":"closed build-doorway PR #25 / head 1ee21493c01492b5fb63767e9bbc420386f0ec58",
+    "androidSkeletonParts":5,
+    "androidSkeletonZipSha256":"e8e76e2adfa3313ae472bc7f0086f9c8a135e394d2e69c51377d859dd82bb539",
+    "webSourceRoute":"../signuances-v1.0.0-web/source-carriage",
+    "webSourceSha256":"fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631",
+    "policy":"reuse canonical web carriage; do not duplicate the 16 web-source blobs"
+  },
+  "estateEvidence": {
+    "apkBuild":"PASS",
+    "embeddedHtmlIdentity":"PASS",
+    "internetPermission":"NOT DECLARED",
+    "exportImportBridge":"PRESENT"
+  },
+  "publicationBoundary": {
+    "sourceOnly":true,
+    "excluded":["APK","AAB","JKS/keystore","signing passwords/properties","private maintenance bundle","owner signing","physical-device claims"]
+  }
+}

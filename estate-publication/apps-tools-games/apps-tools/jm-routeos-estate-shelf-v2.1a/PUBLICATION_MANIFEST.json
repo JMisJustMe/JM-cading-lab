@@ -1,0 +1,63 @@
+{
+  "schema": "jm.wave2.routeos-estate-shelf-publication/v1",
+  "publication_date": "2026-08-22",
+  "status": "SOURCE_PUBLICATION_CANDIDATE",
+  "body": {
+    "name": "JM RouteOS Game Estate v2.1A — Estate Shelf Route",
+    "version": "v2.1A",
+    "role": "current RouteOS app/platform shelf publication target",
+    "frozen_parent": "RouteOS Five Crowns Live Estate v2.0A",
+    "frozen_parent_commit": "8cc8cb5143ec8fef766acf464ef860d00d4c0e36"
+  },
+  "source_authority": {
+    "anchor_branch": "anchor/routeos-estate-shelf-route-v2-1a-ding-pass",
+    "construction_head": "b045cd348f22b98092d0c51eeeed9086d347953c",
+    "reused_git_subtrees": {
+      "app": "6d7ea90859a720e55d122c116e6f76ea9caeeac7",
+      "compass-mount": "8a1d77e4285b1f6ba9c77964741dab83b695109a",
+      "proof": "1b003f87bbdfe8f01797d6c21de5584b7a0e58c8",
+      "tools": "380a4f909436bc45cc140da82295381799cb4a10"
+    },
+    "reused_root_blobs": {
+      "README.md": "531a1f828b1294e37d013f7a0f8586c5fb595ea6",
+      "build.gradle": "5b7ccba7c566afb5057eaea1b10b99b083851fe4",
+      "gradle.properties": "2e11322913e56c04783e2f5dbe7927b9e0539007",
+      "settings.gradle": "dc051e94743c13bca12f8fb9895ed00dc24cccb1"
+    },
+    "exact_source_file_count": 35
+  },
+  "earned_proof": {
+    "complete_lineage": "22/22 PASS",
+    "artifact_checksum_ledger": "15/15 PASS",
+    "historical_estate_shelf_run": 30813150084,
+    "historical_decisive_job": 91684398586,
+    "historical_artifact_digest": "sha256:2277325fc09f28321a0ea02bfea8f6996e8a140f458b2b20202cd14300ae22a3"
+  },
+  "invariants": {
+    "android_package": "com.jmisjustme.routeos.gameestate",
+    "offline": true,
+    "android_internet_permission_forbidden": true,
+    "registered_routes": [
+      "jmrouteos://cartridge/five-crowns",
+      "jmrouteos://cartridge/estate-router"
+    ],
+    "canonical_registry_bodies": 100,
+    "canonical_registry_batches": 6
+  },
+  "publication_boundary": {
+    "source_only": true,
+    "excluded_payloads": ["APK", "AAB", "JKS", "keystore", "private key", "password", "signed local APK"],
+    "compass_doorway_v2_2a": "distinct neighbouring body; not absorbed",
+    "routeos_kernel_lineage": "distinct crown/proof line; not replaced or flattened",
+    "owner_signing": "separate local custody gate; not published here",
+    "real_hardware_kernel_boot": "not claimed",
+    "production_os_readiness": "not claimed"
+  },
+  "laws": [
+    "Recover before rebuild",
+    "Latest useful/current keeper first",
+    "Mesh != merge",
+    "Source before crown",
+    "No Ding, no publication claim"
+  ]
+}

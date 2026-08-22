@@ -1,0 +1,70 @@
+{
+  "schema": "jm.routeos.estate-shelf.source-lineage.v1",
+  "body": "EstateShelfRoute",
+  "version": "v2.1A",
+  "frozenParent": {
+    "name": "RouteOS Five Crowns Live Estate v2.0A",
+    "commit": "8cc8cb5143ec8fef766acf464ef860d00d4c0e36",
+    "anchor": "anchor/routeos-five-crowns-live-estate-v2-0a-ding-pass"
+  },
+  "recoveredSource": {
+    "branch": "agent/sovereign-estate-integration-v1",
+    "files": [
+      {
+        "path": "coding-estate/integration/REGISTRY.json",
+        "gitBlob": "cb8e4d9c814e20d011509c79d7a6ca868434f73b",
+        "mountedPath": "app/src/main/assets/estate-registry/REGISTRY.json",
+        "sha256": "9a5c48c39bda0844e07ab43848405a67b0fdcb4f79e8a39e7848bec47581f27d"
+      },
+      {
+        "path": "coding-estate/integration/COMPATIBILITY.json",
+        "gitBlob": "31d3363bbaaa8010ab74001099fdc859bfc7020b",
+        "mountedPath": "app/src/main/assets/estate-registry/COMPATIBILITY.json",
+        "sha256": "16119062821fcf8c5431a406cf5ddfeaaff0e0093e1b5fb5f8c33909348a1e90"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-ten.json",
+        "gitBlob": "2bba7b52405e45b738693610efeec06997a7a9ff",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-ten.json",
+        "sha256": "a250d4b5b7943eb14c074629d847f3aa74323ea9e25e5f82aa6412f8af1103ce"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-batch-two.json",
+        "gitBlob": "708a55f62020b5ae97928c035f9ef58786d4a90a",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-batch-two.json",
+        "sha256": "296e5ec5af545dd5c7ec3ccfcbe9b0167df54c6bfd9c80b3ebf816280e37db30"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-batch-three.json",
+        "gitBlob": "f97f454dc70f470466a25c71a4b51a51d6616c8d",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-batch-three.json",
+        "sha256": "6c19a4e0c6ad951904ad9ceed7c7e443f4ff8a466f8825eb9cb330df13cb2b67"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-batch-four.json",
+        "gitBlob": "c108638c67d4b16bba1230953076cb3673363792",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-batch-four.json",
+        "sha256": "6e86987ca9cf3028928880ac267e41e6e25653780db5a676bb701c08e2c27350"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-batch-five.json",
+        "gitBlob": "aedb55b482593fe721f75cf0d557e4cb527fc8af",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-batch-five.json",
+        "sha256": "6688bbd01e8afcdbc140644f0589b7729f9f106642a78ca5255acbc73a581adb"
+      },
+      {
+        "path": "coding-estate/integration/registry-parts/sovereign-batch-six.json",
+        "gitBlob": "9195966f3dc0afd76963869a91705ff033743b2d",
+        "mountedPath": "app/src/main/assets/estate-registry/registry-parts/sovereign-batch-six.json",
+        "sha256": "8d85441a9df73cc58eac9cf9421f8d11e20f2ed24de54a99c3c8271ae08f2f2a"
+      },
+      {
+        "path": "coding-estate/integration/router-core.mjs",
+        "gitBlob": "437b9bc323c2ad0f32d80470c70dd697f1cb8415",
+        "adaptedPath": "app/src/main/assets/estate-router.js",
+        "adaptation": "UMD/browser/CommonJS carrier plus generic cartridge resolver and search surface; scoring and route laws preserved and expanded without replacing donor provenance."
+      }
+    ]
+  },
+  "claimBoundary": "The recovered 100-body registry and compatibility matrix are mounted byte-for-byte. The browser router is an adapted carrier, not a silent rename of the earlier router-core source."
+}

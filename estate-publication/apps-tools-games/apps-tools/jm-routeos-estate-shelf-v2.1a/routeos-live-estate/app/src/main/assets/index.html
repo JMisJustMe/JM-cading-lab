@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07101a">
+  <title>JM RouteOS Game Estate · Estate Shelf</title>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="estate-shelf.css">
+</head>
+<body data-view="library">
+  <div class="appShell">
+    <header class="topBar">
+      <button class="brandButton" id="libraryButton" aria-label="Open cartridge library">
+        <span class="brandMark" aria-hidden="true">R</span>
+        <span><b>JM RouteOS Game Estate</b><small>Estate Shelf Route · v2.1A</small></span>
+      </button>
+      <div class="topActions">
+        <button class="ghostButton" id="compassButton">Compass</button>
+        <button class="ghostButton" id="resetButton">Reset route</button>
+      </div>
+    </header>
+
+    <nav class="viewNav" aria-label="Cartridge sections">
+      <button data-nav="library">Shelf</button>
+      <button data-nav="play">Five Crowns</button>
+      <button data-nav="router">Estate Router</button>
+      <button data-nav="crowns">Crowns</button>
+      <button data-nav="proof">Proof</button>
+    </nav>
+
+    <main>
+      <section class="libraryView" data-view="library">
+        <div class="libraryHero shelfHero">
+          <div class="heroCopy">
+            <h1>One shelf. Real doors.</h1>
+            <p>The Five Crowns app is now a genuine multi-cartridge Estate host. Open the playable RouteOS body or ask the canonical 100-body router which JM organs should build the next thing.</p>
+            <div class="heroActions">
+              <button class="primaryButton" data-open-cartridge="five-crowns">Play Five Crowns</button>
+              <button class="secondaryButton" data-open-cartridge="estate-router">Open Estate Router</button>
+            </div>
+            <div class="registryLine" id="registryStatus">Loading offline cartridge and estate registries…</div>
+          </div>
+
+          <div class="shelfSignal" aria-label="Estate Shelf route">
+            <div class="signalNode"><small>Compass</small><b>Unified browser</b></div>
+            <div class="signalArrow">→</div>
+            <div class="signalNode active"><small>RouteOS</small><b>Estate Shelf</b></div>
+            <div class="signalArrow">→</div>
+            <div class="signalStack">
+              <span>Five Crowns</span>
+              <span>Estate Router</span>
+              <span>Proof Room</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cartridgeShelf" id="cartridgeShelf"></div>
+
+        <div class="libraryStrip">
+          <article><b>Multi-cartridge</b><span>The native host resolves registered IDs and aliases instead of one hard-coded module.</span></article>
+          <article><b>100-body router</b><span>Search and plan across six repository-proven sovereign batches.</span></article>
+          <article><b>Identity-safe</b><span>Source authority, TraceBox and Dings are mandatory; no supreme body is created.</span></article>
+          <article><b>Compass-ready</b><span>Import the included Estate Shelf HTML body or use the existing deep-link bridge.</span></article>
+        </div>
+      </section>
+
+      <section class="playView" data-view="play" hidden>
+        <div class="playHeader">
+          <div>
+            <h2>Five Crowns route</h2>
+            <p id="routeMessage">Find PrimitiveRoute. Collect the five crowns in order.</p>
+          </div>
+          <div class="miniStats" aria-label="Game statistics">
+            <span><b id="progressValue">0/5</b><small>Crowns</small></span>
+            <span><b id="faultValue">0</b><small>Faults</small></span>
+            <span><b id="recoveryValue">0</b><small>Recoveries</small></span>
+            <span><b id="moveValue">0</b><small>Moves</small></span>
+          </div>
+        </div>
+
+        <div class="playGrid">
+          <aside class="routePanel">
+            <h3>Mount order</h3>
+            <ol id="crownRail" class="crownRail"></ol>
+            <div class="nextRoute"><small>Next route</small><b id="nextValue">PrimitiveRoute</b></div>
+          </aside>
+
+          <section class="canvasPanel">
+            <canvas id="gameCanvas" tabindex="0" aria-label="RouteOS Five Crowns playfield"></canvas>
+            <div class="canvasLegend">
+              <span><i class="legendPlayer"></i>JM</span>
+              <span><i class="legendCrown"></i>Crown</span>
+              <span><i class="legendFault"></i>Fault</span>
+              <span><i class="legendAnchor"></i>Anchor</span>
+            </div>
+            <div class="winPanel" id="winPanel" hidden>
+              <b>FIVE CROWNS DING</b>
+              <span>Mounted · Frozen · Locked · Anchored</span>
+              <button class="secondaryButton" id="resetProofButton">Run the route again</button>
+            </div>
+          </section>
+
+          <aside class="tracePanel">
+            <h3>TraceBox</h3>
+            <ol id="traceList" class="traceList"></ol>
+          </aside>
+        </div>
+
+        <div class="controlDeck" aria-label="Game controls">
+          <div class="dpad">
+            <span></span><button data-move="0,-1" aria-label="Move up">↑</button><span></span>
+            <button data-move="-1,0" aria-label="Move left">←</button><button class="actButton" id="actButton">ACT</button><button data-move="1,0" aria-label="Move right">→</button>
+            <span></span><button data-move="0,1" aria-label="Move down">↓</button><span></span>
+          </div>
+          <p>Keyboard: arrows or WASD · Space/Enter: scan route</p>
+        </div>
+      </section>
+
+      <section class="routerView" data-view="router" hidden>
+        <div class="routerIntro">
+          <div>
+            <h2>JM Sovereign Estate Router</h2>
+            <p>Describe the thing you want. The router selects bodies by job, preserves their identities, and automatically adds source authority, trace and proof.</p>
+          </div>
+          <div class="routerStats">
+            <span><b id="bodyCount">100</b><small>Bodies</small></span>
+            <span><b id="batchCount">6</b><small>Batches</small></span>
+            <span><b id="failureCount">0</b><small>Proof failures</small></span>
+          </div>
+        </div>
+
+        <div class="routerWorkspace">
+          <section class="routerCommand">
+            <label for="routePrompt">What are you building?</label>
+            <textarea id="routePrompt">Build a touch game with visual feedback, recovery and proof</textarea>
+            <div class="routerActions">
+              <button class="primaryButton" id="planRouteButton">Plan the route</button>
+              <button class="secondaryButton" id="copyRouteButton">Copy receipt</button>
+            </div>
+            <div class="quickPrompts" aria-label="Example build requests">
+              <button data-prompt="Build a touch game with visual feedback, recovery and proof">Touch game</button>
+              <button data-prompt="Compile Cading to JavaScript and package it with proof">Compiler route</button>
+              <button data-prompt="Create an operating system service route with permissions and recovery">Estate OS</button>
+              <button data-prompt="Create a conversational tool that routes ambiguity into deterministic action">Conversation</button>
+            </div>
+            <div class="routerLaw">
+              <b>No supreme body.</b>
+              <span>Shared organs compose through declared compatibility; names and provenance stay intact.</span>
+            </div>
+          </section>
+
+          <section class="routeReceiptPanel">
+            <div class="panelHeading">
+              <div><small>Live route receipt</small><b id="routeTitle">Touch game route</b></div>
+              <span id="intentSummary">game · touch · visual · recover · proof</span>
+            </div>
+            <ol class="plannedRoute" id="plannedRoute"></ol>
+            <div class="compatibilityPath" id="compatibilityPath"></div>
+            <div class="appliedLaws" id="appliedLaws"></div>
+          </section>
+        </div>
+
+        <section class="bodyFinder">
+          <div class="bodyFinderHead">
+            <div><h3>Find an organ</h3><p>Search all 100 bodies by name, role, family or capability.</p></div>
+            <input id="bodySearch" type="search" placeholder="Try GlyphPlay, compiler, touch, proof…">
+          </div>
+          <div class="bodyResults" id="bodyResults"></div>
+        </section>
+      </section>
+
+      <section class="crownsView" data-view="crowns" hidden>
+        <div class="sectionIntro">
+          <h2>The five authority lifts</h2>
+          <p>Each crown removed a handwritten authority island, generated a replacement, proved it in the inherited QEMU route, froze it, locked it and anchored it.</p>
+        </div>
+        <div class="crownCards" id="crownCards"></div>
+      </section>
+
+      <section class="proofView" data-view="proof" hidden>
+        <div class="sectionIntro proofIntro">
+          <h2>Frozen parent and live shelf</h2>
+          <p>The Five Crowns kernel proof remains intact underneath the Android Estate Shelf. The shelf adds discoverability and routing; it does not rewrite the kernel claim.</p>
+        </div>
+
+        <div class="proofGrid">
+          <article class="proofBlock dominant">
+            <small>Live Estate v2.0A parent</small>
+            <code>8cc8cb5143ec8fef766acf464ef860d00d4c0e36</code>
+            <button data-copy="8cc8cb5143ec8fef766acf464ef860d00d4c0e36">Copy parent</button>
+          </article>
+          <article class="proofBlock">
+            <small>Kernel v1.9A parent</small>
+            <code>110909c7199bcfbd7007ed56437d05a8aea5967b</code>
+            <button data-copy="110909c7199bcfbd7007ed56437d05a8aea5967b">Copy kernel head</button>
+          </article>
+          <article class="proofMetric"><b>100</b><span>canonical sovereign bodies in the offline router</span></article>
+          <article class="proofMetric"><b>6</b><span>repository-proven source batches retained</span></article>
+          <article class="proofMetric"><b>0</b><span>failed source-batch proof counts</span></article>
+          <article class="proofMetric"><b>2</b><span>usable registered cartridges</span></article>
+          <article class="proofMetric"><b>5</b><span>forbidden compatibility failures enforced</span></article>
+          <article class="proofMetric"><b>∞</b><span>build requests routed without flattening identity</span></article>
+        </div>
+
+        <div class="proofLinks">
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/pull/96">Open frozen Live Estate PR #96</a>
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/pull/78">Open final kernel PR #78</a>
+          <a href="https://github.com/JMisJustMe/JM-cading-lab/tree/anchor/routeos-five-crowns-live-estate-v2-0a-ding-pass">Open v2.0A anchor</a>
+        </div>
+
+        <div class="claimBoundary">
+          <h3>Claim boundary</h3>
+          <p>The Estate Shelf routes known, repository-proven JM bodies and launches registered offline cartridges. It does not merge all bodies into one, prove every possible composition, install private Compass content automatically, boot the x86 kernel inside Android, or replace the original machine receipts.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="core.js"></script>
+  <script src="estate-router.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

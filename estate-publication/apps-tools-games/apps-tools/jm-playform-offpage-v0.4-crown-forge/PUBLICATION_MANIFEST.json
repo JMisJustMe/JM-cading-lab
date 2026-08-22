@@ -1,0 +1,42 @@
+{
+  "schema": "jm.wave2.playform-offpage-publication/v1",
+  "publication_date": "2026-08-22",
+  "status": "SOURCE_PUBLICATION_CANDIDATE",
+  "body": {
+    "name": "JM Playform — Offpage v0.4 Crown Forge",
+    "version": "v0.4",
+    "role": "current preserved PLAYFORM head",
+    "ancestor": "JM PLAYFORM Offpage v0.3"
+  },
+  "source_authority": {
+    "library_file_name": "00_OPEN_FIRST_JM_PLAYFORM_OFFPAGE_v0_4.html",
+    "bytes": 160711,
+    "sha256": "60da0d1f303a1e17d3580d3261123bbdd51f9f7022199fee0f502fa60e70839d",
+    "duplicate_library_copies_checked": 2,
+    "duplicate_library_copies_byte_identical": true
+  },
+  "carriage": {
+    "format": "deterministic gzip (mtime=0) encoded as base64",
+    "gzip_bytes": 43164,
+    "gzip_sha256": "7d4514bb32cc63e35f064da45addd9a3b63ad304fbd8657ba6ad7595b4820012",
+    "base64_chars": 57552,
+    "reconstruction_required": true,
+    "parts": [
+      {"name": "part-01.b64", "chars": 15000, "git_blob_sha": "03ed2ed00dace138f1aa73e5ec0d9b49c8df0dc4"},
+      {"name": "part-02.b64", "chars": 15000, "git_blob_sha": "42b10ab36acaca5c0ce65ccae1a7a4ba443a90eb"},
+      {"name": "part-03.b64", "chars": 15000, "git_blob_sha": "c525b4d9a4dd83660d6b97e34d90844e12752154"},
+      {"name": "part-04.b64", "chars": 12552, "git_blob_sha": "1a77b6bb872b8f75a4a9ff026c883937f3154a52"}
+    ]
+  },
+  "governance": {
+    "freeze_status": "FROZEN / LOCKED / ANCHORED / PARKED-PROTECTED",
+    "v0_3_lineage_preserved": true,
+    "playzone_boundary_preserved": true
+  },
+  "publication_boundary": {
+    "source_only": true,
+    "no_apk_binary_route_claim": true,
+    "no_private_signing_claim": true,
+    "no_playzone_absorption": true
+  }
+}

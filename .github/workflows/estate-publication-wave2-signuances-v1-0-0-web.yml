@@ -1,0 +1,116 @@
+name: Validate Wave 2 Signuances v1.0.0 Web Source
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web/**'
+      - '.github/workflows/estate-publication-wave2-signuances-v1-0-0-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-signuances-web-v1-0-0:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prove reused source Git-object identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web/source-carriage'
+          test "$(find "$root" -maxdepth 1 -type f -name 'part-*.b64' | wc -l)" = 16
+          while read -r name sha; do
+            test "$(git rev-parse "HEAD:$root/$name")" = "$sha"
+          done <<'EOF'
+          part-00.b64 b732867d9bae519f4cedfe3e43b3393adb27c74b
+          part-01.b64 b6ec3539ce9fca0d266946936ef9c4a438617260
+          part-02.b64 accab359af0590f67d0dcc0ed9d8913841ec6aa2
+          part-03.b64 f780c73f2ddc20249e02b4024c684db7bb27bf62
+          part-04.b64 a5320f25ba172c568d3fd6cb682758e937c769ba
+          part-05.b64 96a1894fab02d07b79594e68c0cf53a58cdb3f98
+          part-06.b64 1fd86b3750913bc4837f5dcf061203e364c2a391
+          part-07.b64 0ff695e93394b5d5c061102bb106a39c33c0ea10
+          part-08.b64 0ac744ed46e0bf3f64ba0dc9f66f77ac1e89cc9b
+          part-09.b64 018f15f6aca2e0a149a6ff3f718c40f9d0fd3387
+          part-10.b64 0fb3701f2cc43f9f87e173505e98b91d3f51df95
+          part-11.b64 bb289ed144b63d83ce6391721df9edc7f1ff4d3b
+          part-12.b64 bfa2b1bf58641357fd96f81750b029b4e6fa21bd
+          part-13.b64 6ae7d1cf5199ca3d35cca0452ed271fde04332ad
+          part-14.b64 0a2199d706f53cd38a6f1261d9e6c579671bf129
+          part-15.b64 d70ec94cae59e22b0bacc27526bdca19c78a1fc6
+          EOF
+
+      - name: Reconstruct exact final crowned web body
+        run: |
+          cd estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web
+          python reconstruct_signuances.py
+          test "$(wc -c < Signuances_SINGLE.html)" = 220954
+          echo 'fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631  Signuances_SINGLE.html' | sha256sum -c -
+
+      - name: Validate current-head pointer and publication manifest
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web')
+          p=json.loads((root/'CURRENT_HEAD_POINTER.json').read_text())
+          m=json.loads((root/'PUBLICATION_MANIFEST.json').read_text())
+          assert p['currentHead']=='Signuances portable HTML v1.0.0'
+          assert p['version']=='1.0.0'
+          assert p['sourceBytes']==220954
+          assert p['sourceSha256']=='fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631'
+          assert p['stableStorageKey']=='signuances_cases_v050'
+          assert m['sourceAuthority']['bytes']==p['sourceBytes']
+          assert m['sourceAuthority']['sha256']==p['sourceSha256']
+          assert m['carriage']['parts']==16
+          assert m['carriage']['xzSha256']=='addde0faadfe715a6bcd2487febd1a8da0de55709ce9714ce90e77f01ac981cf'
+          assert m['estateValidationEvidence']['qaPassed']==35
+          assert m['estateValidationEvidence']['qaFailed']==0
+          assert m['publicationBoundary']['sourceOnly'] is True
+          PY
+
+      - name: Validate final source markers and JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web/Signuances_SINGLE.html').read_text()
+          assert "APP_VERSION = '1.0.0'" in src
+          assert 'signuances_cases_v050' in src
+          assert '1.0.0-rc.1' not in src
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',src,re.S|re.I)
+          assert len(scripts)==1, len(scripts)
+          Path('/tmp/signuances-inline.js').write_text(scripts[0])
+          PY
+          node --check /tmp/signuances-inline.js
+
+      - name: Reject private signing credential and Android payload leakage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src=Path('estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web/Signuances_SINGLE.html').read_text(errors='ignore')
+          patterns=[
+            r'BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY', r'PKCS8',
+            r'private[_ -]?key\s*[=:]', r'api[_ -]?key\s*[=:]',
+            r'auth[_ -]?token\s*[=:]', r'client[_ -]?secret\s*[=:]',
+            r'password\s*[=:]'
+          ]
+          for pat in patterns:
+            assert not re.search(pat,src,re.I), f'public-safety hit: {pat}'
+          assert 'http://' not in src
+          assert 'https://' not in src
+          PY
+          ! find estate-publication/apps-tools-games/apps-tools/signuances-v1.0.0-web -type f \( -iname '*.apk' -o -iname '*.aab' -o -iname '*.apks' -o -iname '*.jks' -o -iname '*.keystore' -o -iname '*.p12' -o -iname '*.pfx' \) | grep .
+
+      - name: Final web publication boundary
+        run: |
+          echo 'SIGNUANCES v1.0.0 WEB SOURCE PUBLICATION PROOF: PASS'
+          echo 'Exact crowned HTML: 220954 bytes / fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631'
+          echo 'Android source/APK/signing and physical-device claims remain separate.'

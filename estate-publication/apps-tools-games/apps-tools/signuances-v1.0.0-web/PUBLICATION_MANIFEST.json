@@ -1,0 +1,37 @@
+{
+  "schema": "jm.wave2.signuances-web-publication/v1",
+  "publicationDate": "2026-08-22",
+  "status": "SOURCE_PUBLICATION_CANDIDATE",
+  "body": {
+    "name": "Signuances portable HTML v1.0.0",
+    "version": "1.0.0",
+    "role": "final crowned portable web body"
+  },
+  "sourceAuthority": {
+    "file": "Signuances_SINGLE.html",
+    "bytes": 220954,
+    "sha256": "fad2ddc3122ca47a7e1d130a0c27980822a1c542ba7ac52ceb2498fec497d631",
+    "stableStorageKey": "signuances_cases_v050"
+  },
+  "carriage": {
+    "origin": "closed build-doorway PR #25 / head 1ee21493c01492b5fb63767e9bbc420386f0ec58",
+    "format": "16 pre-existing XZ/base64 Git blobs reused without payload rewriting",
+    "xzSha256": "addde0faadfe715a6bcd2487febd1a8da0de55709ce9714ce90e77f01ac981cf",
+    "parts": 16,
+    "canonicalIdentity": "decompressed HTML SHA-256"
+  },
+  "estateValidationEvidence": {
+    "qaPassed": 35,
+    "qaFailed": 0,
+    "evidenceBody": "QA_REPORT_v1_0_0.md",
+    "note": "Estate evidence recorded here; GitHub publication gate independently verifies source identity, syntax and public-safety boundaries."
+  },
+  "lineage": {
+    "supersededAncestor": "1.0.0-rc.1",
+    "publicationAuthority": "1.0.0 final crown"
+  },
+  "publicationBoundary": {
+    "sourceOnly": true,
+    "excluded": ["Android project", "APK", "AAB", "private signing maintenance", "keystores", "owner signing", "physical-device claims"]
+  }
+}

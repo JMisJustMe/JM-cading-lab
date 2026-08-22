@@ -1,0 +1,131 @@
+name: Wave 2 RouteOS v2.1A publication proof
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/**'
+      - '.github/workflows/wave-2-routeos-v2-1a-publication.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/**'
+      - '.github/workflows/wave-2-routeos-v2-1a-publication.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prove-routeos-v2-1a:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Exact anchored Git-object identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/routeos-live-estate'
+          test "$(git rev-parse HEAD:$ROOT/app)" = '6d7ea90859a720e55d122c116e6f76ea9caeeac7'
+          test "$(git rev-parse HEAD:$ROOT/compass-mount)" = '8a1d77e4285b1f6ba9c77964741dab83b695109a'
+          test "$(git rev-parse HEAD:$ROOT/proof)" = '1b003f87bbdfe8f01797d6c21de5584b7a0e58c8'
+          test "$(git rev-parse HEAD:$ROOT/tools)" = '380a4f909436bc45cc140da82295381799cb4a10'
+          test "$(git rev-parse HEAD:$ROOT/README.md)" = '531a1f828b1294e37d013f7a0f8586c5fb595ea6'
+          test "$(git rev-parse HEAD:$ROOT/build.gradle)" = '5b7ccba7c566afb5057eaea1b10b99b083851fe4'
+          test "$(git rev-parse HEAD:$ROOT/gradle.properties)" = '2e11322913e56c04783e2f5dbe7927b9e0539007'
+          test "$(git rev-parse HEAD:$ROOT/settings.gradle)" = 'dc051e94743c13bca12f8fb9895ed00dc24cccb1'
+          test "$(find "$ROOT" -type f | wc -l | tr -d ' ')" = '35'
+
+      - name: Publication manifest and pointer agree
+        shell: python
+        run: |
+          import json
+          from pathlib import Path
+          p = Path('estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a')
+          manifest = json.loads((p/'PUBLICATION_MANIFEST.json').read_text())
+          pointer = json.loads((p/'CURRENT_HEAD_POINTER.json').read_text())
+          assert manifest['body']['version'] == 'v2.1A'
+          assert pointer['version'] == 'v2.1A'
+          assert manifest['body']['name'] == pointer['publication_target']
+          assert manifest['source_authority']['anchor_branch'] == pointer['authority']
+          assert manifest['source_authority']['exact_source_file_count'] == 35
+          assert manifest['publication_boundary']['source_only'] is True
+          assert manifest['invariants']['offline'] is True
+          print('RouteOS publication manifest/pointer: PASS')
+
+      - name: Reject binary and signing custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          PUB='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a'
+          BAD="$(find "$PUB" -type f \( -iname '*.apk' -o -iname '*.aab' -o -iname '*.jks' -o -iname '*.keystore' -o -iname '*.p12' -o -iname '*.pfx' \) -print)"
+          if [ -n "$BAD" ]; then
+            echo "$BAD"
+            exit 1
+          fi
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a')
+          forbidden = [b'-----BEGIN PRIVATE KEY-----', b'-----BEGIN RSA PRIVATE KEY-----', b'-----BEGIN EC PRIVATE KEY-----', b'-----BEGIN OPENSSH PRIVATE KEY-----']
+          hits=[]
+          for p in root.rglob('*'):
+              if p.is_file():
+                  data=p.read_bytes()
+                  if any(x in data for x in forbidden): hits.append(str(p))
+          assert not hits, f'private-key material found: {hits}'
+          print('binary/signing custody boundary: PASS')
+          PY
+
+      - name: Validate JSON and JavaScript
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/routeos-live-estate'
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a')
+          files=list(root.rglob('*.json'))
+          for p in files: json.loads(p.read_text())
+          print(f'JSON validity: PASS ({len(files)} files)')
+          PY
+          while IFS= read -r -d '' f; do node --check "$f"; done < <(find "$ROOT" -type f -name '*.js' -print0)
+
+      - name: Prove offline Android source boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/routeos-live-estate'
+          MANIFEST="$ROOT/app/src/main/AndroidManifest.xml"
+          ! grep -q 'android.permission.INTERNET' "$MANIFEST"
+          grep -q 'android:scheme="jmrouteos"' "$MANIFEST"
+          grep -q 'android:host="cartridge"' "$MANIFEST"
+          grep -q "applicationId 'com.jmisjustme.routeos.gameestate'" "$ROOT/app/build.gradle"
+          grep -q 'jmrouteos://cartridge/five-crowns' "$ROOT/compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html"
+          grep -q 'jmrouteos://cartridge/estate-router' "$ROOT/compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html"
+          echo 'offline Android source boundary: PASS'
+
+      - name: Run inherited RouteOS simulation and router tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/routeos-live-estate'
+          node "$ROOT/tools/test_simulation.js"
+          node "$ROOT/tools/test_estate_router.js"
+
+      - name: Run inherited RouteOS authority verifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/apps-tools/jm-routeos-estate-shelf-v2.1a/routeos-live-estate'
+          python3 "$ROOT/tools/verify_live_estate.py"
+          python3 "$ROOT/tools/verify_estate_shelf.py"
+
+      - name: Final publication boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'RouteOS Estate Shelf Route v2.1A source publication: PASS'
+          echo 'Runtime/app-platform source retained; kernel crown, Compass v2.2A, APK and owner-signing custody remain separate.'

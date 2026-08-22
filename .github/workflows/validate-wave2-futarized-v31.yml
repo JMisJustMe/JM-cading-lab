@@ -1,0 +1,81 @@
+name: Validate Wave 2 FUTARIZED v3.1 Source
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/games/futarized-v3.1/**'
+      - '.github/workflows/validate-wave2-futarized-v31.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct exact crowned HTML bodies
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          cat "$P/source-carriage/part-i.part00.b64" "$P/source-carriage/part-i.part01.b64" | base64 -d | gzip -d > "$P/FUTARIZED_PART_I_LIVING_REFIT.html"
+          cat "$P/source-carriage/part-ii.part00.b64" "$P/source-carriage/part-ii.part01.b64" | base64 -d | gzip -d > "$P/FUTARIZED_PART_II_FUTARIAN_FIELD.html"
+      - name: Verify exact bytes and SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          test "$(wc -c < "$P/FUTARIZED_PART_I_LIVING_REFIT.html")" -eq 75586
+          test "$(sha256sum "$P/FUTARIZED_PART_I_LIVING_REFIT.html" | cut -d' ' -f1)" = 0084b1a1f3c0a496117375ad3881de89ba3b7b1fd2f62d090d07af0adeb54ec8
+          test "$(wc -c < "$P/FUTARIZED_PART_II_FUTARIAN_FIELD.html")" -eq 41017
+          test "$(sha256sum "$P/FUTARIZED_PART_II_FUTARIAN_FIELD.html" | cut -d' ' -f1)" = 2917d0762b8921f585c5472c052fbac7c406a39989a31f5846e0734d796fad95
+          test "$(sha256sum "$P/index.html" | cut -d' ' -f1)" = 8c5da09aa55e89f002fd052eb6b78afb602cc3306f367c1f868cda128313d161
+          test "$(sha256sum "$P/manifest.json" | cut -d' ' -f1)" = cad6134d4962a5545e41f1f462a71421520f0a8f0eff6dfb7bd4ae6241ed7eea
+          test "$(sha256sum "$P/README.md" | cut -d' ' -f1)" = efcee8924a1c604b19f2fe57c0296b7df1be14c93ea3ad1a84c33cf4a84219f8
+      - name: Validate manifest and source routing
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          python -m json.tool "$P/manifest.json" >/dev/null
+          python -m json.tool "$P/PUBLICATION_MANIFEST.json" >/dev/null
+          grep -F '"crown_version": "3.1"' "$P/manifest.json"
+          grep -F 'FUTARIZED_PART_I_LIVING_REFIT.html' "$P/index.html"
+          grep -F 'FUTARIZED_PART_II_FUTARIAN_FIELD.html' "$P/index.html"
+          grep -F "location.href='FUTARIZED_PART_II_FUTARIAN_FIELD.html'" "$P/FUTARIZED_PART_I_LIVING_REFIT.html"
+      - name: Check all inline JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          python - <<'PY'
+          import re, pathlib, subprocess
+          p=pathlib.Path('estate-publication/apps-tools-games/games/futarized-v3.1')
+          total=0
+          for html in ['FUTARIZED_PART_I_LIVING_REFIT.html','FUTARIZED_PART_II_FUTARIAN_FIELD.html']:
+              text=(p/html).read_text(encoding='utf-8')
+              scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, re.S|re.I)
+              if not scripts: raise SystemExit(f'no inline JS in {html}')
+              for i,src in enumerate(scripts):
+                  f=p/f'.ci-{html}-{i}.js'; f.write_text(src,encoding='utf-8')
+                  subprocess.run(['node','--check',str(f)],check=True)
+                  total+=1
+          print('inline JS bodies PASS:', total)
+          PY
+      - name: Enforce public-safety and source-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1
+          if grep -RniE --exclude='validate-wave2-futarized-v31.yml' 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|PKCS8|PRIVATE_KEY|keystore|storePassword|keyPassword|ghp_[A-Za-z0-9]+|sk-[A-Za-z0-9]{20,}' "$P"; then
+            echo 'private/signing/credential material found' >&2; exit 1
+          fi
+          if find "$P" -type f \( -iname '*.apk' -o -iname '*.aab' -o -iname '*.apks' -o -iname '*.jks' -o -iname '*.keystore' \) | grep -q .; then
+            echo 'binary/signing payload crossed source boundary' >&2; exit 1
+          fi
+          test ! -e "$P/FUTARIZED_v3_1_COMBAT_FLOW_PROJECT.zip"
+      - name: Verify carriage completeness
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/futarized-v3.1/source-carriage
+          test "$(find "$P" -type f -name '*.b64' | wc -l)" -eq 4

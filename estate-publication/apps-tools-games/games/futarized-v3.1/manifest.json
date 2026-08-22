@@ -1,0 +1,25 @@
+{
+  "project": "FUTARIZED",
+  "crown_version": "3.1",
+  "title": "Two-Part Crown — Combat Flow",
+  "entry": "index.html",
+  "part_i": {
+    "name": "Living Body Refit",
+    "file": "FUTARIZED_PART_I_LIVING_REFIT.html",
+    "status": "preserved from v2.1"
+  },
+  "part_ii": {
+    "name": "Futarian Field",
+    "version": "0.2",
+    "file": "FUTARIZED_PART_II_FUTARIAN_FIELD.html",
+    "patch": [
+      "left-side movement drag",
+      "right-side aim and continuous fire",
+      "default nearest-threat auto-fire",
+      "hold-to-fire backup button",
+      "higher sustainable firing cadence",
+      "stronger projectile speed and damage",
+      "visible live aim reticle"
+    ]
+  }
+}

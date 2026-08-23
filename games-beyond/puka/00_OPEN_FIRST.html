@@ -7,7 +7,7 @@
 <meta name="description" content="PUKA — learn poker through play, evidence, psychology and royal progression.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="puka.css">
-<title>PUKA v0.2A — Open First</title>
+<title>PUKA v0.3A — Open First</title>
 </head>
 <body>
 <div class="app">
@@ -17,24 +17,6 @@
   </header>
 
   <main class="shell" id="main">
-    <section class="panel intro" aria-label="Player identity and route">
-      <details id="identityDetails" open>
-        <summary><span id="profileSummary">PLAYER · PAUPER</span><small>identity / route</small></summary>
-        <div class="identity-body">
-          <div id="identity" class="identity"></div>
-          <div class="rankrow"><b id="rank">Pauper</b><div class="bar" aria-label="Royal progression"><i id="rankBar"></i></div><small id="xp">0 XP</small></div>
-          <div class="rankmeta"><span id="nextRank"></span><span id="purseLine"></span></div>
-          <h2 id="identityTitle">Choose the card you enter through</h2>
-          <div id="suitPicker" class="suits" aria-label="Choose suit"></div>
-          <div class="modes" aria-label="Presentation route">
-            <button data-mode="portrait">PORTRAIT</button><button data-mode="royal">ROYAL TABLE</button><button id="autoMode">AUTO</button>
-          </div>
-          <button id="dealBtn" class="deal">DEAL FIRST HAND</button>
-          <button id="reviewBtn" class="secondary">OPEN EVIDENCE / PSYCHOLOGY</button>
-        </div>
-      </details>
-    </section>
-
     <section class="game" aria-label="PUKA poker table">
       <div class="table-wrap">
         <div class="court-ribbon"><b id="courtRoom">Lower Dormitory</b><span id="dealerLine">SESSION 1</span></div>
@@ -44,7 +26,7 @@
     </section>
 
     <section class="panel coach" aria-labelledby="lessonTitle">
-      <div class="coach-head"><div><small>PUKA TEACHER</small><h2 id="lessonTitle">Learn while the hand moves</h2></div><b id="streetChip">READY</b></div>
+      <div class="coach-head"><div><small>PUKA TEACHER</small><h2 id="lessonTitle">Read the hand, not a lecture</h2></div><b id="streetChip">READY</b></div>
       <div class="coachgrid">
         <article><small>YOUR HAND</small><b id="madeHand">—</b></article>
         <article><small>TO CALL</small><b id="callCost">0</b></article>
@@ -55,17 +37,36 @@
       <p id="tendency" class="tendency"></p>
     </section>
 
+    <section class="panel intro" aria-label="Player identity and route">
+      <details id="identityDetails">
+        <summary><span id="profileSummary">♠ PAUPER · 1000</span><small>PROFILE</small></summary>
+        <div class="identity-body">
+          <div id="identity" class="identity"></div>
+          <div class="rankrow"><b id="rank">Pauper</b><div class="bar" aria-label="Royal progression"><i id="rankBar"></i></div><small id="xp">0 XP</small></div>
+          <div class="rankmeta"><span id="nextRank"></span><span id="purseLine"></span></div>
+          <h2 id="identityTitle">Choose your suit</h2>
+          <div id="suitPicker" class="suits" aria-label="Choose suit"></div>
+          <div class="modes" aria-label="Presentation route">
+            <button data-mode="portrait">PORTRAIT</button><button data-mode="royal">ROYAL TABLE</button><button id="autoMode">AUTO</button>
+          </div>
+          <p class="rotate-note">Rotate phone for Royal Table</p>
+          <button id="dealBtn" class="deal">DEAL FIRST HAND</button>
+          <button id="reviewBtn" class="secondary">EVIDENCE / PSYCHOLOGY</button>
+        </div>
+      </details>
+    </section>
+
     <section id="evidence" class="panel evidence" aria-label="Evidence and psychology">
       <details id="evidenceDrawer">
         <summary><span>EVIDENCE / PSYCHOLOGY</span><small id="evidenceCount">0 traces</small></summary>
         <div class="evidence-body">
-          <p>Observation stays separate from interpretation. A hidden card becomes fact only when the game actually reveals it.</p>
+          <p>Observation stays separate from interpretation. Hidden cards become fact only when revealed.</p>
           <div id="trace" class="tracegrid" aria-live="polite"></div>
         </div>
       </details>
     </section>
 
-    <footer class="footer">PUKA v0.2A · JM Games&amp;Beyond descendant · stage body · no real-money wagering layer</footer>
+    <footer class="footer">PUKA v0.3A · JM Games&amp;Beyond descendant · stage body · no real-money wagering layer</footer>
   </main>
 </div>
 <script src="puka-core.js"></script>

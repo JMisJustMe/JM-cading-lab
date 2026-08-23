@@ -17,9 +17,13 @@ jobs:
         run: |
           set -euo pipefail
           ROOT='estate-publication/apps-tools-games/games-engines/source-authorities'
+          echo "gameforge_b64_bytes=$(wc -c < "$ROOT/gameforge-v3.16/source.html.gz.b64")"
+          echo "glyphforge_b64_bytes=$(wc -c < "$ROOT/glyphforge-v68.2/source.html.gz.b64")"
           base64 -d "$ROOT/gameforge-v3.16/source.html.gz.b64" > /tmp/gameforge.html.gz
+          echo "gameforge_gzip_bytes=$(wc -c < /tmp/gameforge.html.gz)"
           gzip -dc /tmp/gameforge.html.gz > /tmp/gameforge.html
           base64 -d "$ROOT/glyphforge-v68.2/source.html.gz.b64" > /tmp/glyphforge.html.gz
+          echo "glyphforge_gzip_bytes=$(wc -c < /tmp/glyphforge.html.gz)"
           gzip -dc /tmp/glyphforge.html.gz > /tmp/glyphforge.html
           test "$(wc -c < /tmp/gameforge.html)" -eq 114474
           test "$(sha256sum /tmp/gameforge.html | cut -d' ' -f1)" = 'a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb'

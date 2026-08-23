@@ -1,0 +1,78 @@
+name: Validate Wave 2 GameForge GlyphForge Source Authorities
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/games-engines/source-authorities/**'
+      - '.github/workflows/validate-wave2-gameforge-glyphforge.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct exact source authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/games-engines/source-authorities'
+          base64 -d "$ROOT/gameforge-v3.16/source.html.gz.b64" > /tmp/gameforge.html.gz
+          gzip -dc /tmp/gameforge.html.gz > /tmp/gameforge.html
+          base64 -d "$ROOT/glyphforge-v68.2/source.html.gz.b64" > /tmp/glyphforge.html.gz
+          gzip -dc /tmp/glyphforge.html.gz > /tmp/glyphforge.html
+          test "$(wc -c < /tmp/gameforge.html)" -eq 114474
+          test "$(sha256sum /tmp/gameforge.html | cut -d' ' -f1)" = 'a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb'
+          test "$(sha256sum /tmp/gameforge.html.gz | cut -d' ' -f1)" = '6d958f7eea7a0b2c93fb37a98b97c6da38233cdc464033f988ff5346c546a480'
+          test "$(wc -c < /tmp/glyphforge.html)" -eq 108992
+          test "$(sha256sum /tmp/glyphforge.html | cut -d' ' -f1)" = '93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3'
+          test "$(sha256sum /tmp/glyphforge.html.gz | cut -d' ' -f1)" = '1c3cf711971863abd14a83884206273a4464a688d1618c437acd9c2216cccd17'
+      - name: Validate manifest and authority markers
+        run: |
+          python - <<'PY'
+          import json
+          p='estate-publication/apps-tools-games/games-engines/source-authorities/PUBLICATION_MANIFEST.json'
+          d=json.load(open(p))
+          assert [e['name'] for e in d['entries']] == ['GameForge','GlyphForge']
+          for path, markers in {
+            '/tmp/gameforge.html':['GameForge','v3.16'],
+            '/tmp/glyphforge.html':['GlyphForge','v68.2'],
+          }.items():
+            text=open(path,encoding='utf-8').read()
+            for m in markers: assert m in text, (path,m)
+          PY
+      - name: Check every inline JavaScript body
+        run: |
+          python - <<'PY'
+          import re, pathlib
+          expected={'gameforge':4,'glyphforge':3}
+          for name in expected:
+            text=pathlib.Path('/tmp/'+name+'.html').read_text(encoding='utf-8')
+            scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.I|re.S)
+            assert len(scripts)==expected[name], (name,len(scripts))
+            out=pathlib.Path('/tmp/'+name+'-scripts'); out.mkdir(exist_ok=True)
+            for i,s in enumerate(scripts): (out/f'{i:02}.js').write_text(s)
+          PY
+          for f in /tmp/gameforge-scripts/*.js /tmp/glyphforge-scripts/*.js; do node --check "$f"; done
+      - name: Public-safety boundary scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib,re
+          bad=[
+            r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----', r'PKCS8', r'\.keystore\b',
+            r'github_pat_[A-Za-z0-9_]+', r'ghp_[A-Za-z0-9]+', r'sk-[A-Za-z0-9]{20,}',
+            r'OPENAI_API_KEY\s*=', r'(?i)(?:password|secret)\s*[:=]\s*["\'][^"\']{8,}["\']'
+          ]
+          for p in ['/tmp/gameforge.html','/tmp/glyphforge.html']:
+            t=pathlib.Path(p).read_text(encoding='utf-8')
+            for pat in bad:
+              assert not re.search(pat,t), (p,pat)
+          PY
+      - name: Enforce claim boundary
+        run: |
+          grep -q 'source authority != mature output' estate-publication/apps-tools-games/games-engines/source-authorities/README.md
+          grep -q 'owner-device' estate-publication/apps-tools-games/games-engines/source-authorities/README.md
+          test ! -e estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16/app.apk
+          test ! -e estate-publication/apps-tools-games/games-engines/source-authorities/glyphforge-v68.2/app.apk

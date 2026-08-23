@@ -1,36 +1,39 @@
-# PUKA v0.1A — BUILD RECEIPT
+# PUKA v0.4A — BUILD RECEIPT
 
 **Parent:** Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
-**Front door:** `00_OPEN_FIRST.html`
+**Front door:** `00_OPEN_FIRST.html`  
+**Live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
 
-## Estate intake used
-
-- JM EveryBody registry / coding lineage
-- JM GameCore v0.2I donor-estate law
-- JM Games realism-forward + native build lock
-- cardBORED / LG as a card-game donor without identity merge
-- Quadze, Choice Box, TraceBox, JMLogic, JM Visual Interaction Runtime and GameForge-family governing roles
-
-## PUKA body delivered
+## Preserved body
 
 - one shared poker/state core
-- one OPEN_FIRST door
-- portrait academy route: cartoon/chunky/one-hand-oriented
-- royal table route: wider, atmospheric, information-rich
+- portrait academy + royal table routes from the same state
 - heads-up Texas Hold'em teaching loop
-- deck verification and hand evaluator
-- House Mind opponent
-- royal XP ladder
-- suit/attribute character route
-- psychology evidence table separating observation, interpretation and fact
-- PWA/offline shell
-- no real-money wagering layer
+- bankroll persistence, royal XP ladder and psychology evidence separation
+- orientation-led portrait/landscape composition
+- one singular live direct door
 
-## Public donor sweep boundary
+## v0.4A art-direction push
 
-Current public poker/mobile interfaces were studied for portrait ergonomics, thumb reach, landscape information density and onboarding. No external game code, art, branding or proprietary assets were copied into PUKA.
+- added `puka-art.css` as a non-destructive premium art layer over the proven v0.3 responsive shell
+- added original royal-room backdrop artwork
+- added original PUKA chip-stack artwork
+- added felt-grain material texture
+- retained PUKA card-back and royal felt medallion artwork
+- upgraded table rail depth, felt lighting, pot/chip presentation, card thickness, hero-card treatment, buttons and panels
+- Portrait Academy receives a richer illustrated/storybook material language
+- Royal Table receives a distinct court-room atmosphere rather than simply widening the portrait table
+- short-landscape overrides protect playability inside mobile browser chrome
+
+## Delivery default promoted to estate root
+
+The live direct door rule is now surfaced in root `AGENTS.md`, `.github/copilot-instructions.md`, and the existing coding-estate delivery law:
+
+**SOURCE → OPEN_FIRST → ESTATE MOUNT → LIVE PROOF → DIRECT DOOR**
+
+For estate-hosted HTML/web builds, the proved live URL is the normal owner-facing route. Sandbox/ZIP/download routes are fallback or archival only unless explicitly requested.
 
 ## Claim boundary
 
-Code/source validation may produce a Code Ding when tests pass. Physical phone contact, installed Android behaviour, persistence after app lifecycle, and Cold Ding are **not** claimed by this receipt until actually tested.
+Source/core/layout checks and public HTTP contact may produce Code/Public Dings independently. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

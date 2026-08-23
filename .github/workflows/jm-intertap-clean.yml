@@ -58,7 +58,11 @@ jobs:
           gzip -dc "$GZ" > "$ASSET"
           echo '138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389  '"$ASSET" | sha256sum -c -
 
-      - name: Source identity and permission gate
+          # Transport proves the body but is not runtime payload.
+          rm -f "$DIR/index.html.gz.b64" "$DIR"/index.html.gz.b64.part*
+          test "$(find "$DIR" -maxdepth 1 -type f -name 'index.html.gz.b64*' | wc -l)" -eq 0
+
+      - name: Source identity, capability and permission gate
         shell: bash
         run: |
           set -euo pipefail
@@ -77,6 +81,12 @@ jobs:
           grep -q 'Intent.ACTION_VIEW' "$JAVA"
           grep -q 'Intent.ACTION_CREATE_DOCUMENT' "$JAVA"
           grep -q 'bridgeNonce' "$JAVA"
+          grep -q 'setMediaPlaybackRequiresUserGesture(true)' "$JAVA"
+          grep -q 'setJavaScriptCanOpenWindowsAutomatically(false)' "$JAVA"
+          grep -q 'Referrer-Policy' "$JAVA"
+          grep -q 'no-referrer' "$JAVA"
+          grep -q 'MAX_EXPORT_BASE64_CHARS' "$JAVA"
+          grep -q 'safeMime' "$JAVA"
           grep -q 'com.jmisjustme.intertaproute' "$CAD"
           grep -q '"package": "com.jmisjustme.intertaproute"' "$ONE"
           test "$(grep -c '^body ' "$CAD")" -eq 14
@@ -100,16 +110,20 @@ jobs:
           grep -q "uses-permission: name='android.permission.INTERNET'" artifact/AAPT_PERMISSIONS.txt
           test "$(grep -c '^uses-permission:' artifact/AAPT_PERMISSIONS.txt)" -eq 1
           ! grep -Eq 'CAMERA|RECORD_AUDIO|ACCESS_(FINE|COARSE)_LOCATION|CONTACTS|CALENDAR|BLUETOOTH|REQUEST_INSTALL_PACKAGES' artifact/AAPT_PERMISSIONS.txt
+          ! unzip -l "$ALIGNED" | grep -q 'assets/index.html.gz.b64'
           unzip -p "$ALIGNED" assets/index.html | sha256sum | tee artifact/EMBEDDED_HTML_SHA256.txt
           grep -q '^138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389 ' artifact/EMBEDDED_HTML_SHA256.txt
           unzip -p "$ALIGNED" assets/JM_SOURCE.jm.cading | sha256sum | tee artifact/EMBEDDED_CADING_SHA256.txt
           grep -q '^3e09896d82826a981df9ba975863c42e30d4793a7ff2d7c5e24a3fd80f5eff64 ' artifact/EMBEDDED_CADING_SHA256.txt
           unzip -p "$ALIGNED" assets/JM_ONEBODY.json | sha256sum | tee artifact/EMBEDDED_ONEBODY_SHA256.txt
-          grep -q '^104ab42030da74f70dac2b49d4bc645b2096d619b91366900e4eac8c1f63594a ' artifact/EMBEDDED_ONEBODY_SHA256.txt
+          grep -q '^00500197ea2dc6b54bf25f3cde3801e03941620946d384cff8880c94bd704d58 ' artifact/EMBEDDED_ONEBODY_SHA256.txt
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'onShowFileChooser'
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'com/jmisjustme/intertaproute/MainActivity'
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'intertap.jm.local'
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'ACTION_CREATE_DOCUMENT\|android.intent.action.CREATE_DOCUMENT'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'Referrer-Policy'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'no-referrer'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'application/octet-stream'
           cp "$BT/lib/apksigner.jar" artifact/apksigner.jar
           sha256sum artifact/* > artifact/SHA256SUMS.txt
 

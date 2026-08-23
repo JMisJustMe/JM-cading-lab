@@ -1,8 +1,8 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.2A",
-  "verified_utc": "2026-08-23T20:04:41.694330+00:00",
-  "source_commit": "e687cd754f6630e5d8a2bb6252fe5bf90f1ae7d0",
-  "workflow_run": "32663227251",
+  "schema": "JM.PUKA.ProofReceipt/0.3A",
+  "verified_utc": "2026-08-23T20:55:18.621844+00:00",
+  "source_commit": "7b94138a6abc161cf616ac861f939d43a1247654",
+  "workflow_run": "32665866767",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
@@ -14,9 +14,11 @@
     "puka-ui.js",
     "puka.css",
     "manifest.webmanifest",
-    "registry.json"
+    "registry.json",
+    "assets/puka-card-back.svg",
+    "assets/royal-felt-medallion.svg"
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core tests and public HTTP contact passed. Owner-side physical phone play, lifecycle persistence across a second real hand, landscape contact, installed Android behaviour and Cold Ding remain separate."
+  "claim_boundary": "Source/core and layout source tests plus public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate."
 }

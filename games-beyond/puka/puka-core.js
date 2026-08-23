@@ -1,5 +1,5 @@
 /*
-  PUKA CORE v0.1A
+  PUKA CORE v0.2A
   JM lineage contract:
   recover -> parse/structure -> state -> consequence -> trace -> test -> host
   Host JS serves the game; it does not define the governance.
@@ -8,16 +8,22 @@
   'use strict';
 
   const SUITS = {
-    hearts:   {symbol:'♥', label:'Hearts',   attribute:'Intuition', archetype:'Warm reader'},
+    hearts:   {symbol:'♥', label:'Hearts',   attribute:'Intuition',   archetype:'Warm reader'},
     diamonds: {symbol:'♦', label:'Diamonds', attribute:'Calculation', archetype:'Value reader'},
-    clubs:    {symbol:'♣', label:'Clubs',    attribute:'Nerve', archetype:'Pressure maker'},
+    clubs:    {symbol:'♣', label:'Clubs',    attribute:'Nerve',       archetype:'Pressure maker'},
     spades:   {symbol:'♠', label:'Spades',   attribute:'Discernment', archetype:'Pattern reader'}
   };
   const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
   const RANK_VALUE = Object.fromEntries(RANKS.map((r,i)=>[r,i+2]));
   const ROYAL_LADDER = [
-    {name:'Pauper',xp:0},{name:'Servant',xp:80},{name:'Jester',xp:180},{name:'Squire',xp:320},
-    {name:'Knight',xp:520},{name:'Courtier',xp:800},{name:'Heir',xp:1180},{name:'King / Queen',xp:1700}
+    {name:'Pauper',xp:0,room:'Lower Dormitory'},
+    {name:'Servant',xp:80,room:"Servants' Hall"},
+    {name:'Jester',xp:180,room:"Fool's Gallery"},
+    {name:'Squire',xp:320,room:"Squire's Chamber"},
+    {name:'Knight',xp:520,room:"Knight's Hall"},
+    {name:'Courtier',xp:800,room:'Royal Salon'},
+    {name:'Heir',xp:1180,room:"Heir's Chamber"},
+    {name:'King / Queen',xp:1700,room:'Throne Room'}
   ];
 
   const clone = x => JSON.parse(JSON.stringify(x));
@@ -49,8 +55,8 @@
     return 0;
   }
   function straightHigh(values){
-    let u=[...new Set(values)].sort((a,b)=>b-a);
-    if(u.includes(14)) u.push(1);
+    const u0=[...new Set(values)].sort((a,b)=>b-a);
+    const u=u0.includes(14)?[...u0,1]:u0;
     let run=1;
     for(let i=1;i<u.length;i++){
       if(u[i]===u[i-1]-1){run++; if(run>=5) return u[i-4];}
@@ -114,7 +120,7 @@
 
   class TraceBox{
     constructor(){this.entries=[];}
-    add(kind,message,data={}){const row={time:new Date().toISOString(),kind,message,data};this.entries.unshift(row);this.entries=this.entries.slice(0,120);return row;}
+    add(kind,message,data={}){const row={time:new Date().toISOString(),kind,message,data};this.entries.unshift(row);this.entries=this.entries.slice(0,160);return row;}
     observation(who,action,context={}){return this.add('observation',`${who} ${action}`,context);}
     interpretation(message,confidence='low',data={}){return this.add('interpretation',message,{confidence,...data});}
     fact(message,data={}){return this.add('fact',message,data);}
@@ -124,79 +130,89 @@
     constructor(saved={}){
       this.trace=new TraceBox();
       this.profile={...{hands:0,folds:0,calls:0,checks:0,raises:0,showdowns:0},...(saved.profile||{})};
+      const bankroll=saved.bankroll||{};
       this.meta={
         xp:Number(saved.xp||0),
         suit:saved.suit&&SUITS[saved.suit]?saved.suit:'spades',
         mode:saved.mode||'auto',
-        handNo:Number(saved.handNo||0)
+        handNo:Number(saved.handNo||0),
+        sessionNo:Number(saved.sessionNo||1),
+        bankroll:{
+          player:Number.isFinite(Number(bankroll.player))?Number(bankroll.player):1000,
+          ai:Number.isFinite(Number(bankroll.ai))?Number(bankroll.ai):1000
+        }
       };
       this.ai={name:'House Mind',aggression:.54,bluff:.12,patience:.58};
       this.state=null;
     }
     get rank(){let r=ROYAL_LADDER[0];for(const x of ROYAL_LADDER) if(this.meta.xp>=x.xp) r=x;return r;}
     get nextRank(){return ROYAL_LADDER.find(x=>x.xp>this.meta.xp)||null;}
+    get room(){return this.rank.room;}
     setSuit(s){if(SUITS[s]){this.meta.suit=s;this.trace.fact(`Character suit set to ${SUITS[s].label}.`,{suit:s});}}
     setMode(m){if(['auto','portrait','royal'].includes(m)) this.meta.mode=m;}
-    persistable(){return {xp:this.meta.xp,suit:this.meta.suit,mode:this.meta.mode,handNo:this.meta.handNo,profile:this.profile};}
+    persistable(){return {xp:this.meta.xp,suit:this.meta.suit,mode:this.meta.mode,handNo:this.meta.handNo,sessionNo:this.meta.sessionNo,bankroll:clone(this.meta.bankroll),profile:clone(this.profile)};}
+
+    ensurePlayablePurse(){
+      if(this.meta.bankroll.player>=20&&this.meta.bankroll.ai>=20)return;
+      const old=clone(this.meta.bankroll);
+      this.meta.bankroll={player:1000,ai:1000};
+      this.meta.sessionNo+=1;
+      this.trace.fact('A new court purse begins because one stack could no longer post a full big blind.',{previous:old,sessionNo:this.meta.sessionNo});
+    }
+    syncBankroll(){if(this.state){this.meta.bankroll.player=this.state.players.player.stack;this.meta.bankroll.ai=this.state.players.ai.stack;}}
 
     newHand(){
-      let deck=shuffle(makeDeck());
+      this.ensurePlayablePurse();
+      const deck=shuffle(makeDeck());
       if(!verifyDeck(deck)) throw new Error('Deck verification failed');
       const handNo=++this.meta.handNo;
       const dealer=handNo%2===1?'player':'ai';
       const s={
         handNo,deck,board:[],street:'preflop',dealer,pot:0,currentBet:0,
-        players:{player:{stack:1000,hole:[],streetPut:0,folded:false},ai:{stack:1000,hole:[],streetPut:0,folded:false}},
+        players:{player:{stack:this.meta.bankroll.player,hole:[],streetPut:0,folded:false},ai:{stack:this.meta.bankroll.ai,hole:[],streetPut:0,folded:false}},
         pending:[],turn:null,ended:false,winner:null,message:'',lastAggressor:null
       };
       this.state=s;
       s.players.player.hole=[s.deck.pop(),s.deck.pop()];
       s.players.ai.hole=[s.deck.pop(),s.deck.pop()];
-      const sb=dealer, bb=dealer==='player'?'ai':'player';
-      this.put(sb,10); this.put(bb,20); s.currentBet=20;
-      this.trace.add('state',`Hand ${handNo} begins. ${dealer==='player'?'You':'House Mind'} has the button.`,{dealer});
+      const sb=dealer,bb=dealer==='player'?'ai':'player';
+      this.put(sb,10);this.put(bb,20);s.currentBet=Math.max(s.players.player.streetPut,s.players.ai.streetPut);
+      this.trace.add('state',`Hand ${handNo} begins in ${this.room}. ${dealer==='player'?'You':'House Mind'} has the button.`,{dealer,room:this.room,sessionNo:this.meta.sessionNo});
       this.trace.observation(dealer==='player'?'You':'House Mind','posted the small blind',{amount:10});
       this.trace.observation(bb==='player'?'You':'House Mind','posted the big blind',{amount:20});
-      const first=dealer; const second=bb;
-      s.pending=[first,second]; s.turn=first;
+      s.pending=[dealer,bb];s.turn=dealer;
       this.advanceUntilPlayer();
       return this.snapshot();
     }
     put(who,amount){const p=this.state.players[who];const paid=Math.max(0,Math.min(amount,p.stack));p.stack-=paid;p.streetPut+=paid;this.state.pot+=paid;return paid;}
     callAmount(who){return Math.max(0,this.state.currentBet-this.state.players[who].streetPut);}
     legal(who='player'){
-      const s=this.state;if(!s||s.ended||s.turn!==who) return [];
-      const call=this.callAmount(who), p=s.players[who], out=['fold'];
-      if(call===0) out.push('check'); else if(p.stack>0) out.push('call');
-      if(p.stack>call+0 && p.stack>0) out.push('raise');
+      const s=this.state;if(!s||s.ended||s.turn!==who)return[];
+      const call=this.callAmount(who),p=s.players[who],out=['fold'];
+      if(call===0)out.push('check');else if(p.stack>0)out.push('call');
+      if(p.stack>call&&p.stack>0)out.push('raise');
       return out;
     }
-    playerAction(action){
-      if(!this.legal('player').includes(action)) return this.snapshot();
-      this.applyAction('player',action);
-      this.advanceUntilPlayer();
-      return this.snapshot();
-    }
+    playerAction(action){if(!this.legal('player').includes(action))return this.snapshot();this.applyAction('player',action);this.advanceUntilPlayer();return this.snapshot();}
     applyAction(who,action){
       const s=this.state,p=s.players[who],other=who==='player'?'ai':'player',call=this.callAmount(who);
       if(action==='fold'){
         p.folded=true;s.ended=true;s.winner=other;s.message=`${who==='player'?'You fold':'House Mind folds'}. ${other==='player'?'You win':'House Mind wins'} ${s.pot}.`;
         s.players[other].stack+=s.pot;
         this.trace.observation(who==='player'?'You':'House Mind','folded',{street:s.street,pot:s.pot});
-        if(who==='player'){this.profile.folds++;this.awardXP(2);} else this.awardXP(14);
-        this.profile.hands++;
-        return;
+        if(who==='player'){this.profile.folds++;this.awardXP(2);}else this.awardXP(14);
+        this.profile.hands++;this.syncBankroll();return;
       }
       if(action==='check'){
         this.trace.observation(who==='player'?'You':'House Mind','checked',{street:s.street});
         if(who==='player')this.profile.checks++;
         this.removePending(who);
-      } else if(action==='call'){
+      }else if(action==='call'){
         const paid=this.put(who,call);
         this.trace.observation(who==='player'?'You':'House Mind','called',{street:s.street,amount:paid,pot:s.pot});
         if(who==='player')this.profile.calls++;
         this.removePending(who);
-      } else if(action==='raise'){
+      }else if(action==='raise'){
         const extra=Math.max(20,Math.round(Math.max(20,s.pot*.6)/10)*10);
         const paid=this.put(who,Math.min(p.stack,call+extra));
         s.currentBet=p.streetPut;s.lastAggressor=who;
@@ -204,39 +220,30 @@
         if(who==='player')this.profile.raises++;
         s.pending=[other];s.turn=other;
       }
-      if(!s.ended&&s.pending.length===0) this.advanceStreet();
-      else if(!s.ended&&s.pending.length){s.turn=s.pending[0];}
+      if(!s.ended&&s.pending.length===0)this.advanceStreet();else if(!s.ended&&s.pending.length)s.turn=s.pending[0];
     }
     removePending(who){const s=this.state;s.pending=s.pending.filter(x=>x!==who);s.turn=s.pending[0]||null;}
     advanceStreet(){
-      const s=this.state;
-      if(s.street==='river'){this.showdown();return;}
-      const order=['preflop','flop','turn','river']; const next=order[order.indexOf(s.street)+1];
-      s.street=next;s.currentBet=0;s.lastAggressor=null;
-      s.players.player.streetPut=0;s.players.ai.streetPut=0;
-      if(next==='flop') s.board.push(s.deck.pop(),s.deck.pop(),s.deck.pop());
-      else s.board.push(s.deck.pop());
+      const s=this.state;if(s.street==='river'){this.showdown();return;}
+      const order=['preflop','flop','turn','river'];const next=order[order.indexOf(s.street)+1];
+      s.street=next;s.currentBet=0;s.lastAggressor=null;s.players.player.streetPut=0;s.players.ai.streetPut=0;
+      if(next==='flop')s.board.push(s.deck.pop(),s.deck.pop(),s.deck.pop());else s.board.push(s.deck.pop());
       this.trace.add('state',`${next.toUpperCase()} dealt.`,{board:s.board.map(c=>c.id)});
-      const first=s.dealer==='player'?'ai':'player'; const second=first==='player'?'ai':'player';
-      s.pending=[first,second];s.turn=first;
+      const first=s.dealer==='player'?'ai':'player',second=first==='player'?'ai':'player';s.pending=[first,second];s.turn=first;
     }
     advanceUntilPlayer(){
       let guard=0;
-      while(this.state&&!this.state.ended&&this.state.turn==='ai'&&guard++<20){
-        const action=this.aiDecision(); this.applyAction('ai',action);
-      }
-      if(guard>=20) throw new Error('AI turn guard exceeded');
+      while(this.state&&!this.state.ended&&this.state.turn==='ai'&&guard++<24){const action=this.aiDecision();this.applyAction('ai',action);}
+      if(guard>=24)throw new Error('AI turn guard exceeded');
     }
     aiDecision(){
-      const s=this.state, strength=madeStrength(s.players.ai.hole,s.board),call=this.callAmount('ai');
-      const potOdds=call/(Math.max(1,s.pot+call));
-      const pressure=this.profile.raises/Math.max(1,this.profile.hands);
+      const s=this.state,strength=madeStrength(s.players.ai.hole,s.board),call=this.callAmount('ai');
+      const potOdds=call/Math.max(1,s.pot+call),pressure=this.profile.raises/Math.max(1,this.profile.hands);
       const bluff=Math.random()<this.ai.bluff*(1-Math.min(.6,pressure*.3));
       let action;
-      if(call===0){
-        action=(strength>.66||bluff)&&Math.random()<this.ai.aggression?'raise':'check';
-      } else if(strength+(.16*Math.random())<potOdds+.12){action='fold';}
-      else if(strength>.68||bluff){action=Math.random()<this.ai.aggression?'raise':'call';}
+      if(call===0)action=(strength>.66||bluff)&&Math.random()<this.ai.aggression?'raise':'check';
+      else if(strength+(.16*Math.random())<potOdds+.12)action='fold';
+      else if(strength>.68||bluff)action=Math.random()<this.ai.aggression?'raise':'call';
       else action='call';
       this.trace.interpretation(
         action==='raise'?'A raise can represent strength, pressure, or a bluff — the action alone does not prove which.':
@@ -247,40 +254,45 @@
       return action;
     }
     showdown(){
-      const s=this.state, ph=evaluate([...s.players.player.hole,...s.board]), ah=evaluate([...s.players.ai.hole,...s.board]);
-      const cmp=compareVec(ph.score,ah.score);
-      s.ended=true;this.profile.showdowns++;this.profile.hands++;
+      const s=this.state,ph=evaluate([...s.players.player.hole,...s.board]),ah=evaluate([...s.players.ai.hole,...s.board]);
+      const cmp=compareVec(ph.score,ah.score);s.ended=true;this.profile.showdowns++;this.profile.hands++;
       if(cmp>0){s.winner='player';s.players.player.stack+=s.pot;s.message=`Showdown: ${ph.name} beats ${ah.name}. You win ${s.pot}.`;this.awardXP(25);}
       else if(cmp<0){s.winner='ai';s.players.ai.stack+=s.pot;s.message=`Showdown: House Mind's ${ah.name} beats your ${ph.name}.`;this.awardXP(7);}
-      else {s.winner='split';const half=Math.floor(s.pot/2);s.players.player.stack+=half;s.players.ai.stack+=s.pot-half;s.message=`Showdown: both hold ${ph.name}. Pot split.`;this.awardXP(12);}
+      else{s.winner='split';const half=Math.floor(s.pot/2);s.players.player.stack+=half;s.players.ai.stack+=s.pot-half;s.message=`Showdown: both hold ${ph.name}. Pot split.`;this.awardXP(12);}
       this.trace.fact(`Showdown reveals House Mind held ${s.players.ai.hole.map(c=>c.rank+c.symbol).join(' ')} for ${ah.name}.`,{cards:s.players.ai.hole.map(c=>c.id),hand:ah.name});
       this.trace.fact(`Your revealed hand is ${ph.name}.`,{hand:ph.name});
+      this.syncBankroll();
     }
     awardXP(n){this.meta.xp+=n;}
+    teaching(){
+      const s=this.state;
+      if(!s)return{madeHand:'—',toCall:0,potOdds:'—',position:'—',street:'READY',line:'Choose a suit, then deal. PUKA teaches the rule at the moment it matters.'};
+      const toCall=s.ended?0:this.callAmount('player'),potAfter=s.pot+toCall;
+      const odds=toCall>0?`${Math.round((toCall/Math.max(1,potAfter))*100)}%`:'FREE';
+      const made=s.board.length>=3?evaluate([...s.players.player.hole,...s.board]).name:evaluate(s.players.player.hole).name;
+      const position=s.dealer==='player'?'Button / small blind':'Big blind';
+      return{madeHand:made,toCall,potOdds:odds,position,street:s.street.toUpperCase(),line:this.handHint()};
+    }
     handHint(){
-      const s=this.state;if(!s)return 'Choose a suit and deal the first hand.';
-      if(s.ended)return 'Review what was observed, what was inferred, and what became known at showdown.';
+      const s=this.state;if(!s)return'Choose a suit and deal the first hand.';
+      if(s.ended)return'Review what was observed, what was inferred, and what became known at showdown.';
       const call=this.callAmount('player');
-      if(s.street==='preflop') return `Pre-flop: two private cards. ${call?`It costs ${call} to continue.`:'You can check for free.'} Position changes who acts first.`;
-      const e=evaluate([...s.players.player.hole,...s.board]);
-      return `${s.street}: your current made hand is ${e.name}. That describes cards — not whether an opponent is bluffing.`;
+      if(s.street==='preflop')return`Pre-flop: two private cards. ${call?`It costs ${call} to continue.`:'You can check for free.'} Position changes who acts first.`;
+      const e=evaluate([...s.players.player.hole,...s.board]),odds=call>0?Math.round((call/Math.max(1,s.pot+call))*100):0;
+      return`${s.street}: your current made hand is ${e.name}. ${call?`Calling costs ${call}, about ${odds}% of the pot after your call.`:'Checking costs nothing.'} Pot odds describe price — they do not reveal House Mind's cards.`;
     }
     playerTendency(){
-      const p=this.profile,total=Math.max(1,p.calls+p.checks+p.raises+p.folds);
-      const ag=p.raises/total, fold=p.folds/total;
-      if(total<4)return 'Not enough observed actions yet.';
-      if(ag>.42)return 'Observed tendency: pressure-heavy so far. Interpretation: opponents may begin calling wider; this is not a fixed personality fact.';
-      if(fold>.38)return 'Observed tendency: selective/fold-heavy so far. Interpretation: opponents may test your blinds more often.';
-      return 'Observed tendency: mixed actions so far. No strong behavioural read earned yet.';
+      const p=this.profile,total=Math.max(1,p.calls+p.checks+p.raises+p.folds),ag=p.raises/total,fold=p.folds/total;
+      if(total<4)return'Not enough observed actions yet.';
+      if(ag>.42)return'Observed tendency: pressure-heavy so far. Interpretation: opponents may begin calling wider; this is not a fixed personality fact.';
+      if(fold>.38)return'Observed tendency: selective/fold-heavy so far. Interpretation: opponents may test your blinds more often.';
+      return'Observed tendency: mixed actions so far. No strong behavioural read earned yet.';
     }
     snapshot(){
       const s=this.state;
-      return {
-        meta:clone(this.meta),rank:clone(this.rank),nextRank:clone(this.nextRank),suit:clone(SUITS[this.meta.suit]),
-        state:s?clone(s):null,legal:this.legal('player'),hint:this.handHint(),tendency:this.playerTendency(),trace:clone(this.trace.entries),profile:clone(this.profile)
-      };
+      return{meta:clone(this.meta),rank:clone(this.rank),nextRank:clone(this.nextRank),room:this.room,suit:clone(SUITS[this.meta.suit]),state:s?clone(s):null,legal:this.legal('player'),teaching:this.teaching(),hint:this.handHint(),tendency:this.playerTendency(),trace:clone(this.trace.entries),profile:clone(this.profile)};
     }
   }
 
-  window.PUKA = {SUITS,RANKS,ROYAL_LADDER,makeDeck,shuffle,verifyDeck,evaluate,compareVec,PukaGame};
+  window.PUKA={SUITS,RANKS,ROYAL_LADDER,makeDeck,shuffle,verifyDeck,evaluate,compareVec,PukaGame};
 })();

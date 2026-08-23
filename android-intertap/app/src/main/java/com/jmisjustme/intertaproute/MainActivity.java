@@ -25,13 +25,16 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 public final class MainActivity extends Activity {
     private static final int REQUEST_WEB_FILE_CHOOSER = 1401;
     private static final int REQUEST_SAVE_EXPORT = 1402;
     private static final int MAX_EXPORT_BYTES = 128 * 1024 * 1024;
+    private static final long MAX_EXPORT_BASE64_CHARS = (((long) MAX_EXPORT_BYTES + 2L) / 3L) * 4L + 8192L;
     private static final String BODY_HOST = "intertap.jm.local";
     private static final String BODY_URL = "https://" + BODY_HOST + "/index.html";
 
@@ -51,6 +54,7 @@ public final class MainActivity extends Activity {
     private void configureWebView() {
         webView = new WebView(this);
         webView.setBackgroundColor(Color.rgb(7, 10, 16));
+        webView.setFilterTouchesWhenObscured(true);
         setContentView(webView);
 
         WebSettings settings = webView.getSettings();
@@ -59,7 +63,9 @@ public final class MainActivity extends Activity {
         settings.setDatabaseEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setAllowContentAccess(true);
-        settings.setMediaPlaybackRequiresUserGesture(false);
+        settings.setMediaPlaybackRequiresUserGesture(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(false);
+        settings.setSupportMultipleWindows(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) settings.setSafeBrowsingEnabled(true);
 
@@ -101,7 +107,13 @@ public final class MainActivity extends Activity {
                 if (BODY_HOST.equals(uri.getHost()) && ("/".equals(uri.getPath()) || "/index.html".equals(uri.getPath()))) {
                     try {
                         InputStream in = getAssets().open("index.html");
-                        return new WebResourceResponse("text/html", "UTF-8", in);
+                        WebResourceResponse response = new WebResourceResponse("text/html", "UTF-8", in);
+                        Map<String, String> headers = new HashMap<>();
+                        headers.put("Referrer-Policy", "no-referrer");
+                        headers.put("X-Content-Type-Options", "nosniff");
+                        headers.put("Cache-Control", "no-store");
+                        response.setResponseHeaders(headers);
+                        return response;
                     } catch (IOException error) {
                         return new WebResourceResponse("text/plain", "UTF-8", 500, "Asset error", null,
                                 new ByteArrayInputStream("INTERTAP body unavailable".getBytes()));
@@ -161,6 +173,10 @@ public final class MainActivity extends Activity {
         @JavascriptInterface
         public void saveBase64(String nonce, String filename, String base64, String mime) {
             if (!allowed(nonce) || base64 == null) return;
+            if ((long) base64.length() > MAX_EXPORT_BASE64_CHARS) {
+                runOnUiThread(() -> toast("Export is larger than the 128 MB safety limit."));
+                return;
+            }
             final byte[] decoded;
             try {
                 decoded = Base64.decode(base64, Base64.DEFAULT);
@@ -173,7 +189,7 @@ public final class MainActivity extends Activity {
                 return;
             }
             final String safeName = safeFilename(filename);
-            final String safeMime = (mime == null || mime.isBlank()) ? "application/octet-stream" : mime;
+            final String safeMime = safeMime(mime);
             runOnUiThread(() -> beginSave(decoded, safeName, safeMime));
         }
     }
@@ -251,6 +267,15 @@ public final class MainActivity extends Activity {
         n = n.replaceAll("[\\\\/:*?\"<>|\\p{Cntrl}]", "_");
         if (n.isBlank()) n = "INTERTAP_EXPORT.json";
         return n.length() > 120 ? n.substring(0, 120) : n;
+    }
+
+    private static String safeMime(String mime) {
+        if (mime == null) return "application/octet-stream";
+        String value = mime.trim().toLowerCase(Locale.ROOT);
+        if (!value.matches("^[a-z0-9][a-z0-9!#$&^_.+-]*/[a-z0-9][a-z0-9!#$&^_.+-]*$")) {
+            return "application/octet-stream";
+        }
+        return value;
     }
 
     private void toast(String message) {

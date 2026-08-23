@@ -1,0 +1,31 @@
+{
+  "schema": "jm-lossless-transport/1.0",
+  "body": "GameForge",
+  "version": "v3.16",
+  "identity_rule": "raw source bytes + raw SHA-256 are authority; gzip/base64/chunks are reversible transport only",
+  "authority": {
+    "raw_bytes": 114474,
+    "raw_sha256": "a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb"
+  },
+  "transport": {
+    "gzip": {
+      "bytes": 32963,
+      "sha256": "4de197793d8c5f3fc7b8d6d7ac49d0647d90ef7a1e7e502f2d54f9098ee4f471",
+      "method": "gzip level 9, mtime=0"
+    },
+    "base64": {
+      "bytes": 43952,
+      "encoding": "RFC 4648 standard alphabet, no inserted line breaks"
+    },
+    "chunk_count": 7,
+    "ordered_chunks": [
+      {"name": "source.html.gz.b64.part001", "bytes": 7000, "sha256": "e53292cdeec0103410a1da9e70484a1bf05584a134e6e139ce1e48b0e2521ca7", "git_blob_sha1": "8be1edecde2161ea8b4cf3cfd439ff19d5939af8"},
+      {"name": "source.html.gz.b64.part002", "bytes": 7000, "sha256": "34b6a76347a045c1407b0fed4c0e32ee35be501ab33661f860ba258c16c24f63", "git_blob_sha1": "31a0b84926bdfb68af9d01edd98878139f8b71db"},
+      {"name": "source.html.gz.b64.part003", "bytes": 7000, "sha256": "7f83a085ec8fd95131503793d5fc11dece91cc6aa51824312ea88d1d04ff32d8", "git_blob_sha1": "7d51cd76eee727d806dd2110808f4512068a5c7f"},
+      {"name": "source.html.gz.b64.part004", "bytes": 7000, "sha256": "1713123ca6ae8c42f5e84a409f6a930cf0245939d7268441d8afc3a8eef8b04e", "git_blob_sha1": "2d246ec7689c6dfb6cc626c3a4d9abc4b94dcb84"},
+      {"name": "source.html.gz.b64.part005", "bytes": 7000, "sha256": "f56c22e320260ea3568f579ef6e9f1a5346582589e659d813e029d727abf8d6e", "git_blob_sha1": "866e29bb4bf782bfdc8cb1e1dfd447792e75ffcc"},
+      {"name": "source.html.gz.b64.part006", "bytes": 7000, "sha256": "449232e59767c5cda0d79c2381531345b7dd987d685f2204ae8a31757c10e761", "git_blob_sha1": "9adea2e005ac190d99b272a7ddaf8e7c07c449f6"},
+      {"name": "source.html.gz.b64.part007", "bytes": 1952, "sha256": "7561f37530952b691a4e5c5c1d24d407839c2cfcc1a6d512a241db2e3bc2ce66", "git_blob_sha1": "def902d7e130adc03de3afc04b3ef987cce22d21"}
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 {
-  "schema": "jm-wave2-source-authority-publication/1.0",
+  "schema": "jm-wave2-source-authority-publication/1.1",
   "authority_family": "JM Games & PLAYFORM Authority Reconciliation v1.0",
+  "transport_law": "source identity is raw bytes + raw SHA-256; compression/carriage may change without changing authority if reconstruction is exact",
   "entries": [
     {
       "name": "GameForge",
@@ -8,7 +9,7 @@
       "role": "source/forge authority",
       "source_bytes": 114474,
       "source_sha256": "a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb",
-      "gzip_sha256": "6d958f7eea7a0b2c93fb37a98b97c6da38233cdc464033f988ff5346c546a480",
+      "transport_manifest": "gameforge-v3.16/transport/MANIFEST.json",
       "inline_scripts": 4,
       "mature_output": "Forgefall Full Campaign v3.0"
     },
@@ -18,11 +19,19 @@
       "role": "source authority",
       "source_bytes": 108992,
       "source_sha256": "93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3",
-      "gzip_sha256": "1c3cf711971863abd14a83884206273a4464a688d1618c437acd9c2216cccd17",
+      "transport_manifest": "glyphforge-v68.2/transport/MANIFEST.json",
       "inline_scripts": 3,
       "mature_output": "Prism Production Studio v3.0"
     }
   ],
-  "excluded_claims": ["mature output source identity collapse", "APK/AAB publication", "private signing", "owner-device proof", "final product crown"],
+  "failure_receipt": "TRANSPORT_FAILURE_RECEIPT.md",
+  "excluded_claims": [
+    "mature output source identity collapse",
+    "APK/AAB publication",
+    "private signing",
+    "owner-device proof",
+    "native-delivery proof",
+    "final product crown"
+  ],
   "glyphplay_status": "authority resolved separately; source publication transport still open"
 }

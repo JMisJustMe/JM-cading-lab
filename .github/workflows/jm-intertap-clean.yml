@@ -37,8 +37,11 @@ jobs:
           set -euo pipefail
           ASSET='android-intertap/app/src/main/assets/index.html'
           B64='android-intertap/app/src/main/assets/index.html.gz.b64'
-          rm -f "$ASSET" /tmp/intertap-index.html.gz
-          base64 -d "$B64" > /tmp/intertap-index.html.gz
+          rm -f "$ASSET" /tmp/intertap-index.html.gz /tmp/intertap-index.clean.b64
+          tr -dc 'A-Za-z0-9+/=' < "$B64" > /tmp/intertap-index.clean.b64
+          test $(( $(wc -c < /tmp/intertap-index.clean.b64) % 4 )) -eq 0
+          base64 -d /tmp/intertap-index.clean.b64 > /tmp/intertap-index.html.gz
+          gzip -t /tmp/intertap-index.html.gz
           gzip -dc /tmp/intertap-index.html.gz > "$ASSET"
           echo '138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389  '"$ASSET" | sha256sum -c -
 

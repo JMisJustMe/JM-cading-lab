@@ -101,7 +101,7 @@ val materializeFrozenRegistry by tasks.registering {
                         check(target.path.startsWith(outRoot.canonicalPath + java.io.File.separator)) {
                             "Frozen-parent package path escaped generated asset room: $relative"
                         }
-                        if (entry.isDirectory) {
+                        if (entry.isDirectory()) {
                             target.mkdirs()
                         } else {
                             target.parentFile?.mkdirs()

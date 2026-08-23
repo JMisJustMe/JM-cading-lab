@@ -50,6 +50,7 @@ jobs:
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node games-beyond/puka/puka-core.test.js
+          node games-beyond/puka/puka-layout.test.js
 
       - name: Prove PUKA production contact
         shell: bash
@@ -121,7 +122,7 @@ jobs:
             'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka.css','manifest.webmanifest','registry.json','assets/puka-card-back.svg','assets/royal-felt-medallion.svg'],
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Source/core tests and public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core and layout source tests plus public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY

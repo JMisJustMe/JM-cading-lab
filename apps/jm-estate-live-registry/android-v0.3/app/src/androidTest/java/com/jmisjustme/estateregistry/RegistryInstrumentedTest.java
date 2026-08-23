@@ -16,6 +16,7 @@ import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,12 +102,29 @@ public final class RegistryInstrumentedTest {
             instrumentation.removeMonitor(receiptMonitor);
 
             Uri importUri = Uri.parse("content://" + TestJsonProvider.AUTHORITY + "/registry-import.json");
-            String importBody = "{\"format\":\"JM_ESTATE_LIVE_REGISTRY\",\"version\":\"0.2\",\"records\":[{" +
-                "\"id\":\"emulator-import\",\"name\":\"Emulator Import Probe\",\"family\":\"Proof\",\"keeper\":\"v0.3 test\"," +
-                "\"status\":\"ACTIVE\",\"parent\":\"v0.2 frozen\",\"donors\":\"exact frozen keeper\",\"runtime\":\"Android WebView\"," +
-                "\"surfaces\":\"Android\",\"proof\":\"emulator round-trip\",\"hash\":\"\",\"location\":\"test provider\"," +
-                "\"next\":\"Return to seed after proof.\"}]}";
+            JSONObject importRecord = new JSONObject();
+            importRecord.put("id", "emulator-import");
+            importRecord.put("name", "Emulator Import Probe");
+            importRecord.put("family", "Proof");
+            importRecord.put("keeper", "v0.3 test");
+            importRecord.put("status", "ACTIVE");
+            importRecord.put("parent", "v0.2 frozen");
+            importRecord.put("donors", "exact frozen keeper");
+            importRecord.put("runtime", "Android WebView");
+            importRecord.put("surfaces", "Android");
+            importRecord.put("proof", "emulator round-trip");
+            importRecord.put("hash", "");
+            importRecord.put("location", "test provider");
+            importRecord.put("next", "Return to seed after proof.");
+            JSONArray importRecords = new JSONArray();
+            importRecords.put(importRecord);
+            JSONObject importEnvelope = new JSONObject();
+            importEnvelope.put("format", "JM_ESTATE_LIVE_REGISTRY");
+            importEnvelope.put("version", "0.2");
+            importEnvelope.put("records", importRecords);
+            String importBody = importEnvelope.toString();
             try (OutputStream out = test.getContentResolver().openOutputStream(importUri, "wt")) {
+                if (out == null) throw new IllegalStateException("Import probe output stream unavailable");
                 out.write(importBody.getBytes(StandardCharsets.UTF_8));
             }
 

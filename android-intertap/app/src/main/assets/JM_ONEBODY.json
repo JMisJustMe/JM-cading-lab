@@ -49,7 +49,7 @@
     },
     {
       "body": "JM Singular Link MultiHub Registry v0.1",
-      "role": "embedded offline registry donor"
+      "role": "embedded offline registry donor; INTERTAP descendant adds sandbox-safe memory/export fallback without mutating donor source"
     },
     {
       "body": "Device Continuity",
@@ -60,11 +60,12 @@
     "bridge": "per-launch nonce authorised",
     "iframe": "sandbox without allow-same-origin",
     "fileChooser": "WebChromeClient.onShowFileChooser",
-    "localRefs": "preserve-not-fake-open"
+    "localRefs": "preserve-not-fake-open",
+    "embeddedDonor": "sandbox compatibility adapts descendant storage behavior; parent iframe remains without allow-same-origin"
   },
   "provenance": {
-    "cadingSha256": "3e09896d82826a981df9ba975863c42e30d4793a7ff2d7c5e24a3fd80f5eff64",
-    "htmlSha256": "138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389",
-    "carrier": "clean Gradle source, not binary-patched Forge parent"
+    "cadingSha256": "f53df2a5512900ea6ce82496b8dae569fbae7b3bdb988033933ded8706576aea",
+    "htmlSha256": "93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df",
+    "carrier": "clean Gradle source, not binary-patched Forge parent; CI qualification PASS pre-device-contact"
   }
 }

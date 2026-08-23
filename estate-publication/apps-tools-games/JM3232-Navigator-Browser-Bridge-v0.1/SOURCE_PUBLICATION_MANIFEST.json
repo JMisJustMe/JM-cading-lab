@@ -1,0 +1,35 @@
+{
+  "schema": "jm.wave2.navigator-browser-bridge.publication/0.1",
+  "body": "JM3232 Navigator Browser Bridge v0.1",
+  "role": "remaining search / lexicon / widget corpus",
+  "authority": {
+    "restored_source": "JM3232 Unified Browser v1.0",
+    "preserves": "JM3232 Navigator v0.1.1 routes",
+    "governed_zionfolder_zip": {
+      "name": "JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1_ZIONFOLDER.zip",
+      "size_bytes": 1715467,
+      "sha256": "3f3710376307d34b45bb1d0de0c69c1089f3855d277ce1afaeeb47f4594375f7"
+    }
+  },
+  "public_carriage": {
+    "format": "deterministic tar.xz -> base64 -> 4 ordered text parts",
+    "tar_xz_size_bytes": 433440,
+    "tar_xz_sha256": "c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283",
+    "published_member_count": 35,
+    "parts": [
+      {"name":"part-01.b64","size_bytes":144480,"sha256":"d9f83ff50cc73cb8163102891a1e8da41573949bb1a140d92060e5ef73ee0bd9","git_blob_sha":"784a4bf8f8c9cc80c75882c84ab5f0bb116af762"},
+      {"name":"part-02.b64","size_bytes":144480,"sha256":"257c1b625c88b2014529cf2a9428141716cadc93cd7e8a4845f1df7dea690d5b","git_blob_sha":"a688f4e9ed3cf474ac670f7849f7ce144b6ea04b"},
+      {"name":"part-03.b64","size_bytes":144480,"sha256":"6c90f58b358a09634b215fa46b906f77f7139b3389950c5f30907c8364eef4f7","git_blob_sha":"bf28d23e33306df5018d9638e93e5864a9896cc3"},
+      {"name":"part-04.b64","size_bytes":144480,"sha256":"74cf9a7cfe91e4aef585c4cc197f0f3cf8917674d7a12443c1736422573b2244","git_blob_sha":"3754b1541e59aacdbfd1e8ab326157f048420221"}
+    ],
+    "excluded_as_non_source":[".pytest_cache/","exports/ disposable proof/test packs","TRACE/DESKTOP_PROOF.png","TRACE/MOBILE_PROOF.png"]
+  },
+  "corpus":{"tools":10,"search_documents":881,"radius_lexicon_entries":640,"browser_bodies":20,"unit_contract_tests":{"passed":9,"failed":0}},
+  "source_authorities":[
+    {"name":"01_JM_ESTATE_HEAD_REGISTRY_v0_2_3.json","size_bytes":126329,"sha256":"d73aae7d8fcdd9d9eacee0ef8aeeb56bf53a4ec880307512fd6ad746bd6b92fb"},
+    {"name":"04_JM_ESTATE_PUBLIC_SUBSET_v0_2.json","size_bytes":41144,"sha256":"935915b2891e68031fa525b5d297f4077f4f52054f7a964a442c412ae649369c"},
+    {"name":"JM3232_UNIFIED_BROWSER_v1_0_OPEN.html","size_bytes":2740557,"sha256":"c56395f209087f7a118fb81c2c7db5990c04f2b038d5072b93aae73fc6e11f36"},
+    {"name":"RADIUS_LEXICON_v1_0_OPEN.html","size_bytes":2665550,"sha256":"567403d9cf04a8238d02e016b026ec94230bd2858935c5d8a56b12c37bdb222c"}
+  ],
+  "claim_boundary":{"proved":["bounded local MCP execution","10-tool surface","881/640 corpus","9/9 tests","receipt-chain PASS","desktop/mobile UI proof","SavePack export"],"open":["HTTPS deployment","ChatGPT Developer Mode connection","signed-in host approvals","owner physical desktop proof","Final Ding"],"laws":["Restore before rebuild","Mesh != merge","Registration != proof","No Ding, no claim"]}
+}

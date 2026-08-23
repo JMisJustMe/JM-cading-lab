@@ -1,0 +1,98 @@
+name: Validate Wave 2 GameForge GlyphForge Source Authorities
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/games-engines/source-authorities/**'
+      - '.github/workflows/validate-wave2-gameforge-glyphforge.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'estate-publication/apps-tools-games/games-engines/source-authorities/**'
+      - '.github/workflows/validate-wave2-gameforge-glyphforge.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify carriers and reconstruct exact authorities
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64, gzip, hashlib, json, pathlib, re, subprocess, tempfile
+
+          ROOT = pathlib.Path('estate-publication/apps-tools-games/games-engines/source-authorities')
+          cases = [
+              ('gameforge-v3.16', 'GameForge', 'v3.16', 4),
+              ('glyphforge-v68.2', 'GlyphForge', 'v68.2', 3),
+          ]
+
+          def git_blob_sha(data):
+              return hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+
+          reconstructed = {}
+          for folder, name, version, expected_scripts in cases:
+              m = json.loads((ROOT/folder/'transport/MANIFEST.json').read_text())
+              assert m['body'] == name and m['version'] == version
+              pieces = []
+              for c in m['transport']['ordered_chunks']:
+                  p = ROOT/folder/'transport'/c['name']
+                  data = p.read_bytes()
+                  assert len(data) == c['bytes'], (p, len(data), c['bytes'])
+                  assert hashlib.sha256(data).hexdigest() == c['sha256'], p
+                  assert git_blob_sha(data) == c['git_blob_sha1'], p
+                  pieces.append(data)
+
+              b64 = b''.join(pieces)
+              assert len(b64) == m['transport']['base64']['bytes']
+              gz = base64.b64decode(b64, validate=True)
+              assert len(gz) == m['transport']['gzip']['bytes']
+              assert hashlib.sha256(gz).hexdigest() == m['transport']['gzip']['sha256']
+
+              raw = gzip.decompress(gz)
+              assert len(raw) == m['authority']['raw_bytes']
+              assert hashlib.sha256(raw).hexdigest() == m['authority']['raw_sha256']
+              text = raw.decode('utf-8')
+
+              scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.I|re.S)
+              assert len(scripts) == expected_scripts, (name, len(scripts))
+              for script in scripts:
+                  with tempfile.NamedTemporaryFile('w', suffix='.js', encoding='utf-8', delete=False) as f:
+                      f.write(script)
+                      js_path = f.name
+                  subprocess.run(['node', '--check', js_path], check=True)
+
+              bad = [
+                  r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
+                  r'PKCS8', r'\.keystore\b',
+                  r'github_pat_[A-Za-z0-9_]+', r'ghp_[A-Za-z0-9]+',
+                  r'sk-[A-Za-z0-9]{20,}', r'OPENAI_API_KEY\s*=',
+                  r"(?i)(?:password|secret)\s*[:=]\s*['\"][^'\"]{8,}['\"]",
+              ]
+              for pat in bad:
+                  assert not re.search(pat, text), (name, pat)
+
+              reconstructed[name] = (len(raw), hashlib.sha256(raw).hexdigest())
+              print(f'{name}: EXACT {len(raw)} {hashlib.sha256(raw).hexdigest()}')
+
+          pub = json.loads((ROOT/'PUBLICATION_MANIFEST.json').read_text())
+          assert pub['schema'] == 'jm-wave2-source-authority-publication/1.1'
+          assert [e['name'] for e in pub['entries']] == ['GameForge', 'GlyphForge']
+          for e in pub['entries']:
+              assert reconstructed[e['name']] == (e['source_bytes'], e['source_sha256'])
+
+          assert not (ROOT/'gameforge-v3.16/source.html.gz.b64').exists()
+          assert not (ROOT/'glyphforge-v68.2/source.html.gz.b64').exists()
+          PY
+      - name: Enforce claim boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/games-engines/source-authorities'
+          grep -Fq 'source authority != mature output != owner-device/native/final product crown' "$ROOT/README.md"
+          grep -Fq 'No source hash was changed to accommodate the failed carrier.' "$ROOT/TRANSPORT_FAILURE_RECEIPT.md"
+          test ! -e "$ROOT/gameforge-v3.16/app.apk"
+          test ! -e "$ROOT/glyphforge-v68.2/app.apk"

@@ -1,0 +1,30 @@
+{
+  "schema": "jm-lossless-transport/1.0",
+  "body": "GlyphForge",
+  "version": "v68.2",
+  "identity_rule": "raw source bytes + raw SHA-256 are authority; gzip/base64/chunks are reversible transport only",
+  "authority": {
+    "raw_bytes": 108992,
+    "raw_sha256": "93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3"
+  },
+  "transport": {
+    "gzip": {
+      "bytes": 29482,
+      "sha256": "0c8edd9e8de97f51e31a82ff12fa19af10983c27c775342d110618372d54f7fd",
+      "method": "gzip level 9, mtime=0"
+    },
+    "base64": {
+      "bytes": 39312,
+      "encoding": "RFC 4648 standard alphabet, no inserted line breaks"
+    },
+    "chunk_count": 6,
+    "ordered_chunks": [
+      {"name": "source.html.gz.b64.part001", "bytes": 7000, "sha256": "1754d7f9aa816cfb9ffd62bdd1ab013773d6032e0d89fafda771fc559032cb88", "git_blob_sha1": "5d0590e57fb02d036b7abc1a29ed69318bd12df6"},
+      {"name": "source.html.gz.b64.part002", "bytes": 7000, "sha256": "58da8bfdaa7a4649d4e7c283b687efdab2b8894c014d4a0e4c6a8367ff54532d", "git_blob_sha1": "a9446fe9fb33f28c1d82eb27b596edf68f8c857d"},
+      {"name": "source.html.gz.b64.part003", "bytes": 7000, "sha256": "d260d47d1ef174cc2bad7982b74c5ad14fb338db0bb26eeffb42d85b4b50a747", "git_blob_sha1": "c24bd7f3aeaa377bd3376261d41138e209d9ae06"},
+      {"name": "source.html.gz.b64.part004", "bytes": 7000, "sha256": "0489a178bd157a0ee69cc7954568af28f2b152fe1975d6fa5019491fd260fac0", "git_blob_sha1": "18ac0b8e82a52aadf9b88c7117f496a46872dfee"},
+      {"name": "source.html.gz.b64.part005", "bytes": 7000, "sha256": "2f3684bf56cbf92c07eff5be6c15efc8e68919984e99429fada5b5f06d6589a4", "git_blob_sha1": "91d7632423ea045df713d2c7c36e7234fbff5d2f"},
+      {"name": "source.html.gz.b64.part006", "bytes": 4312, "sha256": "f04a611124c27e6907e4defcf2006b3b9cb393fffebb09d3869eabab1b8b6f6c", "git_blob_sha1": "ce7b9ac20710bd3a20fcd3aa566433384ad45a22"}
+    ]
+  }
+}

@@ -1,0 +1,214 @@
+/* PUKA v0.4A — art direction layer. Preserves v0.3 layout/core; upgrades materials, lighting and graphic identity. */
+:root{
+  --puka-ivory:#f7f0dc;
+  --puka-gold:#e8c86f;
+  --puka-gold-deep:#8b6426;
+  --puka-felt:#155d4c;
+  --puka-felt-dark:#092f28;
+  --puka-plum:#321d3c;
+  --puka-burgundy:#4e1428;
+}
+
+/* Global finish */
+.app{
+  background:
+    radial-gradient(circle at 14% -10%,#5b376d66 0,transparent 32%),
+    radial-gradient(circle at 92% 12%,#205e4f55 0,transparent 28%),
+    linear-gradient(180deg,#100c13 0,#070908 58%,#050606 100%);
+}
+.top{
+  box-shadow:0 9px 28px #0008,inset 0 -1px #f0d58b22;
+}
+.crest{
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 35% 20%,#5d4618 0,#2d220d 42%,#120d07 100%);
+  border-color:#e7c76b;
+  box-shadow:inset 0 0 0 2px #0008,inset 0 0 18px #f4db8340,0 8px 20px #0007;
+}
+.crest:before{content:'♠';position:absolute;font:900 2rem Georgia,serif;color:#e7c76b16;transform:translate(8px,8px) rotate(-13deg)}
+.brand b{font-family:Georgia,'Times New Roman',serif;letter-spacing:.045em;text-shadow:0 2px 10px #000}
+.status{text-shadow:0 2px 9px #000}
+
+/* Table as object, not panel */
+.table-wrap{
+  border-color:#6e4d20;
+  background:
+    linear-gradient(112deg,#ffffff0b 0,transparent 21%,#ffffff05 45%,transparent 63%),
+    radial-gradient(ellipse at 50% 37%,#31846e 0,#1c6857 32%,#11503f 62%,#092f28 100%);
+  box-shadow:
+    inset 0 0 0 3px #170f09,
+    inset 0 0 0 7px #765020,
+    inset 0 0 0 10px #efcb72,
+    inset 0 0 0 13px #3c270f,
+    inset 0 0 44px #0008,
+    0 23px 52px #000a;
+}
+.table-wrap:before{
+  background-image:url('./assets/royal-felt-medallion.svg'),url('./assets/felt-grain.svg');
+  background-size:92% 82%,240px 240px;
+  background-repeat:no-repeat,repeat;
+  background-position:center,center;
+  opacity:.72;
+  mix-blend-mode:soft-light;
+}
+.table-wrap:after{
+  inset:13px;
+  border-radius:18px;
+  border:1px solid #ffe9a92b;
+  box-shadow:inset 0 0 22px #f3cf7110;
+}
+.court-ribbon{
+  background:linear-gradient(90deg,#07110beb,#11130def,#07110beb);
+  border-color:#e2c16c66;
+  box-shadow:0 4px 12px #0008,inset 0 1px #fff1;
+}
+.court-ribbon b{font-family:Georgia,'Times New Roman',serif;letter-spacing:.08em}
+
+/* Pot becomes a visual object */
+.pot{position:relative;min-height:70px;align-content:center;isolation:isolate}
+.pot:before{
+  content:'';
+  position:absolute;
+  width:92px;height:64px;
+  left:50%;top:50%;
+  transform:translate(-50%,-46%);
+  background:url('./assets/puka-chip-stack.svg') center/contain no-repeat;
+  opacity:.42;
+  filter:drop-shadow(0 9px 9px #0008);
+  z-index:-1;
+}
+.pot span,.pot small{text-shadow:0 2px 7px #000}
+.pot b{font-size:1.38rem;text-shadow:0 2px 0 #533a13,0 5px 16px #000}
+
+/* Cards: thickness, edge-light and suit identity */
+.playing-card{
+  transform-style:preserve-3d;
+  background:
+    linear-gradient(110deg,#fffdf8 0,#f8f0df 50%,#e2d4b8 100%);
+  border-color:#9d8a69;
+  box-shadow:
+    0 2px 0 #c8b99b,
+    0 5px 0 #685c49,
+    0 9px 17px #0006,
+    inset 0 0 0 1px #fff8;
+}
+.playing-card:before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(115deg,#fff9 0,transparent 18%,transparent 72%,#5b471a18 100%);
+  pointer-events:none;
+}
+.playing-card.suit-hearts,.playing-card.suit-diamonds{--suit-glow:#b5293e}
+.playing-card.suit-clubs,.playing-card.suit-spades{--suit-glow:#17392f}
+.playing-card.hero-card{
+  border-color:color-mix(in srgb,var(--suit-glow) 56%,#d7bd78);
+  box-shadow:0 3px 0 #c7b28f,0 7px 0 #4a4033,0 13px 24px #0008,0 0 20px color-mix(in srgb,var(--suit-glow) 22%,transparent);
+}
+.playing-card.hero-card .pip{font-size:2rem;filter:drop-shadow(0 2px 0 #fff)}
+.playing-card.hero-card b{font-size:1rem}
+.playing-card small{font-weight:750;letter-spacing:.055em}
+.playing-card.back{
+  border-color:#e4c970;
+  box-shadow:0 3px 0 #997b3d,0 7px 0 #3f321d,0 12px 20px #0007,inset 0 0 0 1px #fff3;
+}
+.slot{
+  border:1px dashed #f2e2b43c;
+  background:linear-gradient(#00000005,#ffffff03);
+  box-shadow:inset 0 0 16px #0002;
+}
+
+/* Portrait Academy gets illustrated storybook energy */
+html[data-puka-mode='portrait'] .app{
+  background:
+    radial-gradient(circle at 16% 0,#6a4177 0,transparent 31%),
+    radial-gradient(circle at 95% 20%,#23665b 0,transparent 34%),
+    linear-gradient(180deg,#17101e 0,#0d1313 58%,#07100e 100%);
+}
+html[data-puka-mode='portrait'] .table-wrap{
+  background:
+    radial-gradient(circle at 50% 34%,#4c9d88 0,#317866 34%,#205c51 62%,#12363b 100%);
+  box-shadow:
+    inset 0 0 0 4px #2d1838,
+    inset 0 0 0 8px #7a4c88,
+    inset 0 0 0 11px #e0b15f,
+    inset 0 0 0 14px #432349,
+    inset 0 0 35px #0006,
+    0 20px 44px #0008;
+}
+html[data-puka-mode='portrait'] .table-wrap:before{opacity:.66}
+html[data-puka-mode='portrait'] .empty-state:before{
+  content:'';position:absolute;inset:13% 12% 18%;border-radius:42% 42% 20% 20%;
+  border:1px solid #efcf7b22;box-shadow:inset 0 0 60px #f3ca6a09;pointer-events:none;
+}
+html[data-puka-mode='portrait'] .big-suit{text-shadow:0 8px 22px #0007,0 0 24px #f5d47722}
+html[data-puka-mode='portrait'] .action{
+  box-shadow:inset 0 1px #fff1,0 7px 14px #0004;
+}
+html[data-puka-mode='portrait'] .action:active{transform:translateY(2px);box-shadow:inset 0 1px #fff1,0 3px 7px #0004}
+
+/* Royal Table gets its own room, not merely a wide green rectangle */
+html[data-puka-mode='royal'] .app{
+  background:
+    linear-gradient(#0003,#0003),
+    url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,
+    #050505;
+}
+html[data-puka-mode='royal'] .top{
+  background:linear-gradient(90deg,#090807f4,#12100cf2,#090807f4);
+  border-bottom-color:#9b743a;
+}
+html[data-puka-mode='royal'] .table-wrap{
+  background:
+    linear-gradient(105deg,#fff0 0,#fff7 18%,#fff0 27%,#fff0 75%,#d1a64c09 100%),
+    radial-gradient(ellipse at 50% 40%,#236f55 0,#145441 46%,#0b382d 72%,#061d19 100%);
+  box-shadow:
+    inset 0 0 0 4px #120d08,
+    inset 0 0 0 9px #5a3518,
+    inset 0 0 0 13px #c79447,
+    inset 0 0 0 17px #33200f,
+    inset 0 0 60px #0009,
+    0 28px 70px #000c;
+}
+html[data-puka-mode='royal'] .table-wrap:before{opacity:.56}
+html[data-puka-mode='royal'] .court-ribbon{border-radius:8px;background:linear-gradient(90deg,#0a0d09f4,#19140cf4,#0a0d09f4)}
+html[data-puka-mode='royal'] .panel{
+  background:linear-gradient(155deg,#16120d,#090a08);
+  border-color:#6d542c;
+  box-shadow:inset 0 1px #fff1,0 16px 40px #0007;
+}
+
+/* Teacher + evidence material language */
+.coach{
+  position:relative;overflow:hidden;
+  background:linear-gradient(155deg,#171019,#0c1110)!important;
+}
+.coach:before{content:'';position:absolute;width:160px;height:160px;right:-70px;top:-80px;border-radius:50%;background:#e7c46a0a;pointer-events:none}
+.coachgrid article{background:linear-gradient(150deg,#0b1712,#07100d);box-shadow:inset 0 1px #fff08}
+.evidence .trace{box-shadow:inset 0 1px #fff08,0 5px 12px #0002}
+
+/* Fine detail and motion: restrained, no slot-machine nonsense */
+@keyframes puka-card-arrive{from{opacity:0;transform:translateY(-8px) rotate(-1deg) scale(.97)}to{opacity:1;transform:none}}
+@keyframes puka-pot-breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.08)}}
+.playing-card{animation:puka-card-arrive .22s cubic-bezier(.2,.7,.2,1) both}
+.pot b{animation:puka-pot-breathe 2.8s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.playing-card,.pot b{animation:none}}
+
+/* Narrow phones: art must never beat fit */
+@media(max-width:380px){
+  .table-wrap{padding:10px}
+  .playing-card,.slot{width:42px;height:61px}
+  .playing-card .pip{font-size:1.55rem}
+  .pot:before{width:74px;height:52px}
+}
+
+/* Short landscape browser viewport: preserve whole playable table */
+@media(max-height:560px) and (orientation:landscape){
+  html[data-puka-mode='royal'] .top{height:50px}
+  html[data-puka-mode='royal'] .table-wrap{min-height:390px;padding:9px 12px}
+  html[data-puka-mode='royal'] .table-state{min-height:310px;gap:4px}
+  html[data-puka-mode='royal'] .playing-card,html[data-puka-mode='royal'] .slot{width:48px;height:69px}
+  html[data-puka-mode='royal'] .pot{min-height:48px}
+  html[data-puka-mode='royal'] .pot:before{width:70px;height:48px}
+  html[data-puka-mode='royal'] .actions{margin-top:4px}
+}

@@ -1,0 +1,167 @@
+name: PUKA Source + Live Contact Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/puka-live-proof.yml"
+      - "games-beyond/puka/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: puka-proof
+  cancel-in-progress: false
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current JM Estate
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Prove PUKA source body
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s games-beyond/puka/00_OPEN_FIRST.html
+          test -s games-beyond/puka/puka-core.js
+          test -s games-beyond/puka/puka-ui.js
+          test -s games-beyond/puka/puka.css
+          test -s games-beyond/puka/manifest.webmanifest
+          test -s games-beyond/puka/sw.js
+          test -s games-beyond/puka/registry.json
+          grep -Fq 'Earn your place at the table.' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'Observation is kept separate from interpretation.' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'window.PUKA' games-beyond/puka/puka-core.js
+          grep -Fq 'data-puka-mode' games-beyond/puka/puka.css
+          node --check games-beyond/puka/puka-core.js
+          node --check games-beyond/puka/puka-ui.js
+
+          node <<'NODE'
+          global.window = {};
+          require('./games-beyond/puka/puka-core.js');
+          const P = global.window.PUKA;
+          const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
+
+          const deck = P.makeDeck();
+          assert(P.verifyDeck(deck), '52-card deck verification failed');
+          assert(new Set(deck.map(c => c.id)).size === 52, 'duplicate card ids');
+
+          const by = id => deck.find(c => c.id === id);
+          const wheel = P.evaluate([by('A-spades'),by('2-hearts'),by('3-clubs'),by('4-diamonds'),by('5-spades')]);
+          assert(wheel.name === 'Straight' && wheel.score[1] === 5, 'Ace-low straight failed');
+
+          const seven = P.evaluate([by('9-spades'),by('10-spades'),by('J-spades'),by('Q-spades'),by('K-spades'),by('2-hearts'),by('2-clubs')]);
+          assert(seven.name === 'Straight Flush', 'best-of-seven evaluation failed');
+
+          const game = new P.PukaGame({});
+          game.newHand();
+          let guard = 0;
+          while (!game.state.ended && guard++ < 40) {
+            if (game.state.turn !== 'player') throw new Error('turn did not return to player');
+            const legal = game.legal('player');
+            const action = legal.includes('check') ? 'check' : legal.includes('call') ? 'call' : 'fold';
+            game.playerAction(action);
+          }
+          assert(game.state.ended, 'heads-up hand did not terminate');
+          assert(game.trace.entries.some(e => e.kind === 'observation'), 'TraceBox has no observation');
+          assert(P.ROYAL_LADDER[0].name === 'Pauper', 'royal ladder missing entry body');
+          assert(P.ROYAL_LADDER.at(-1).name === 'King / Queen', 'royal ladder missing crown body');
+          console.log('PUKA CODE DING PASS');
+          NODE
+
+      - name: Prove PUKA production contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os, time
+          from urllib.request import Request, urlopen
+
+          base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka/'
+          checks = [
+              ('', 'PUKA v0.1A'),
+              ('00_OPEN_FIRST.html', 'Earn your place at the table.'),
+              ('puka-core.js', 'window.PUKA'),
+              ('puka-ui.js', 'jm-puka-v01a'),
+              ('puka.css', 'data-puka-mode'),
+              ('manifest.webmanifest', 'Poker Learning Court'),
+          ]
+          run = os.environ.get('GITHUB_RUN_ID', 'manual')
+          pending = checks[:]
+          for attempt in range(1, 41):
+              next_pending = []
+              for rel, marker in pending:
+                  url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
+                  try:
+                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.1A','Cache-Control':'no-cache'})
+                      with urlopen(req, timeout=20) as response:
+                          raw = response.read()
+                          code = response.status
+                      body = raw.decode('utf-8', 'replace')
+                  except Exception as exc:
+                      print('WAIT', rel or '/', type(exc).__name__)
+                      next_pending.append((rel, marker))
+                      continue
+                  if code == 200 and marker in body:
+                      print('LIVE PASS', rel or '/', marker)
+                  else:
+                      print('WAIT', rel or '/', code, marker)
+                      next_pending.append((rel, marker))
+              if not next_pending:
+                  pending = []
+                  break
+              pending = next_pending
+              time.sleep(3)
+          if pending:
+              raise SystemExit('PUKA LIVE CONTACT FAILED: ' + ', '.join(rel or '/' for rel, _ in pending))
+          PY
+
+      - name: Seal PUKA proof receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          receipt = {
+            'schema':'JM.PUKA.ProofReceipt/0.1A',
+            'verified_utc':datetime.now(timezone.utc).isoformat(),
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'host':'https://jmisjustme-estate.pages.dev',
+            'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
+            'source_code_ding':'PASS',
+            'public_contact':'PASS',
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka.css','manifest.webmanifest'],
+            'cold_ding':False,
+            'crowned':False,
+            'claim_boundary':'Source/core tests and public HTTP contact passed. Owner-side physical phone play, lifecycle persistence, installed Android behaviour and Cold Ding remain separate.'
+          }
+          Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+          PY
+
+          git config user.name 'JM PUKA Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
+          if git diff --cached --quiet; then
+            echo 'PUKA proof receipt already current.'
+            exit 0
+          fi
+          git commit -m 'Seal PUKA v0.1A source and public contact proof [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

@@ -1,11 +1,13 @@
 {
-  "schema":"JM.PUKA.Room/0.1A",
+  "schema":"JM.PUKA.Room/0.2A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
   "parentHouse":"Games&Beyond",
   "sourceLaw":"JM bodies govern; browser code hosts the output",
   "frontDoor":"00_OPEN_FIRST.html",
+  "liveDoor":"https://jmisjustme-estate.pages.dev/games-beyond/puka/",
+  "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
   "donors":[
@@ -18,13 +20,23 @@
     "JM Visual Interaction Runtime — contact must cause readable state",
     "GameForge/GlyphPlay/GlyphForge — distinct-game adapter lineage"
   ],
+  "v02Changes":[
+    "bankroll persists hand-to-hand",
+    "portrait playfield moves ahead of setup chrome once play starts",
+    "evidence becomes a disclosure drawer rather than an always-expanded scroll wall",
+    "teacher strip exposes made hand, call price, pot odds and position",
+    "royal ranks map to named court rooms",
+    "royal landscape receives its own denser cinematic table treatment",
+    "v0.1A local progress migrates into v0.2A storage"
+  ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
     "Observation != interpretation != fact",
     "Different games may share organs without sharing identities",
+    "One singular live direct door is the normal owner contact route",
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Playable source stage. Automated source/core tests may Ding independently; physical phone contact and Cold Ding remain separate until performed."
+  "claimBoundary":"Playable source stage. Automated source/core tests and public contact may Ding independently; physical phone contact and Cold Ding remain separate until performed."
 }

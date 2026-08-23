@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -31,18 +31,31 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
 
-      - name: Reconstruct exact INTERTAP HTML asset
+      - name: Reconstruct and prove exact INTERTAP HTML asset
         shell: bash
         run: |
           set -euo pipefail
-          ASSET='android-intertap/app/src/main/assets/index.html'
-          B64='android-intertap/app/src/main/assets/index.html.gz.b64'
-          rm -f "$ASSET" /tmp/intertap-index.html.gz /tmp/intertap-index.clean.b64
-          tr -dc 'A-Za-z0-9+/=' < "$B64" > /tmp/intertap-index.clean.b64
-          test $(( $(wc -c < /tmp/intertap-index.clean.b64) % 4 )) -eq 0
-          base64 -d /tmp/intertap-index.clean.b64 > /tmp/intertap-index.html.gz
-          gzip -t /tmp/intertap-index.html.gz
-          gzip -dc /tmp/intertap-index.html.gz > "$ASSET"
+          DIR='android-intertap/app/src/main/assets'
+          ASSET="$DIR/index.html"
+          JOINED='/tmp/intertap-index.html.gz.b64'
+          GZ='/tmp/intertap-index.html.gz'
+
+          test "$(find "$DIR" -maxdepth 1 -type f -name 'index.html.gz.b64.part*' | wc -l)" -eq 7
+          echo '6efbbd9a127f7c0c000ee2390371c36b8bb1d2d44a2c80ab0a542733ca29fb23  '"$DIR/index.html.gz.b64.part01" | sha256sum -c -
+          echo '5202a885ba01296cb923b7d78c6e199d9d23a5047ffe18dcc44d5678d0594960  '"$DIR/index.html.gz.b64.part02" | sha256sum -c -
+          echo '3a98fac9192d11ee6974423a62d782d15025a3795bd213c4fd7748ce5314e769  '"$DIR/index.html.gz.b64.part03" | sha256sum -c -
+          echo '02455d4de27c611164f5b9d8ffb198f3f55d9decc2b8fdf1b7797ea951051503  '"$DIR/index.html.gz.b64.part04" | sha256sum -c -
+          echo '242671e6687539d506f559a1fabc8dbd772dba7f14258ea106bbeb07f5e2fb23  '"$DIR/index.html.gz.b64.part05" | sha256sum -c -
+          echo '3554bcc889d06342f6a93e28be739020ce8f05b5cdf3b49fb1c14ea2493dc969  '"$DIR/index.html.gz.b64.part06" | sha256sum -c -
+          echo '0f4c72067d8ca621688a6b0d003b8dbc863b66e1ffa79464608e3ac7840f7213  '"$DIR/index.html.gz.b64.part07" | sha256sum -c -
+
+          cat "$DIR"/index.html.gz.b64.part{01..07} > "$JOINED"
+          echo '577b0bfb82f98cd898fc78cf8d166ca8205702ad97d439d22d2b2643435f7652  '"$JOINED" | sha256sum -c -
+          test $(( $(wc -c < "$JOINED") % 4 )) -eq 0
+
+          base64 -d "$JOINED" > "$GZ"
+          gzip -t "$GZ"
+          gzip -dc "$GZ" > "$ASSET"
           echo '138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389  '"$ASSET" | sha256sum -c -
 
       - name: Source identity and permission gate

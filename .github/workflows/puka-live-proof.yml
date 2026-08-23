@@ -13,12 +13,12 @@ permissions:
 
 concurrency:
   group: puka-proof
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   prove:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 6
     steps:
       - name: Checkout current JM Estate
         uses: actions/checkout@v6
@@ -26,11 +26,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Prove PUKA source body
+      - name: Prove PUKA source body — Code Ding gate
         shell: bash
         run: |
           set -euo pipefail
           test -s games-beyond/puka/00_OPEN_FIRST.html
+          test -s games-beyond/puka/index.html
           test -s games-beyond/puka/puka-core.js
           test -s games-beyond/puka/puka-ui.js
           test -s games-beyond/puka/puka.css
@@ -39,43 +40,10 @@ jobs:
           test -s games-beyond/puka/registry.json
           grep -Fq 'Earn your place at the table.' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'Observation is kept separate from interpretation.' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'window.PUKA' games-beyond/puka/puka-core.js
-          grep -Fq 'data-puka-mode' games-beyond/puka/puka.css
+          grep -Fq 'PUKA v0.1A' games-beyond/puka/index.html
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
-
-          node <<'NODE'
-          global.window = {};
-          require('./games-beyond/puka/puka-core.js');
-          const P = global.window.PUKA;
-          const assert = (ok, msg) => { if (!ok) throw new Error(msg); };
-
-          const deck = P.makeDeck();
-          assert(P.verifyDeck(deck), '52-card deck verification failed');
-          assert(new Set(deck.map(c => c.id)).size === 52, 'duplicate card ids');
-
-          const by = id => deck.find(c => c.id === id);
-          const wheel = P.evaluate([by('A-spades'),by('2-hearts'),by('3-clubs'),by('4-diamonds'),by('5-spades')]);
-          assert(wheel.name === 'Straight' && wheel.score[1] === 5, 'Ace-low straight failed');
-
-          const seven = P.evaluate([by('9-spades'),by('10-spades'),by('J-spades'),by('Q-spades'),by('K-spades'),by('2-hearts'),by('2-clubs')]);
-          assert(seven.name === 'Straight Flush', 'best-of-seven evaluation failed');
-
-          const game = new P.PukaGame({});
-          game.newHand();
-          let guard = 0;
-          while (!game.state.ended && guard++ < 40) {
-            if (game.state.turn !== 'player') throw new Error('turn did not return to player');
-            const legal = game.legal('player');
-            const action = legal.includes('check') ? 'check' : legal.includes('call') ? 'call' : 'fold';
-            game.playerAction(action);
-          }
-          assert(game.state.ended, 'heads-up hand did not terminate');
-          assert(game.trace.entries.some(e => e.kind === 'observation'), 'TraceBox has no observation');
-          assert(P.ROYAL_LADDER[0].name === 'Pauper', 'royal ladder missing entry body');
-          assert(P.ROYAL_LADDER.at(-1).name === 'King / Queen', 'royal ladder missing crown body');
-          console.log('PUKA CODE DING PASS');
-          NODE
+          node games-beyond/puka/puka-core.test.js
 
       - name: Prove PUKA production contact
         shell: bash
@@ -96,16 +64,15 @@ jobs:
           ]
           run = os.environ.get('GITHUB_RUN_ID', 'manual')
           pending = checks[:]
-          for attempt in range(1, 41):
+          for attempt in range(1, 21):
               next_pending = []
               for rel, marker in pending:
                   url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
                   try:
                       req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.1A','Cache-Control':'no-cache'})
-                      with urlopen(req, timeout=20) as response:
-                          raw = response.read()
+                      with urlopen(req, timeout=15) as response:
+                          body = response.read().decode('utf-8', 'replace')
                           code = response.status
-                      body = raw.decode('utf-8', 'replace')
                   except Exception as exc:
                       print('WAIT', rel or '/', type(exc).__name__)
                       next_pending.append((rel, marker))
@@ -119,7 +86,7 @@ jobs:
                   pending = []
                   break
               pending = next_pending
-              time.sleep(3)
+              time.sleep(2)
           if pending:
               raise SystemExit('PUKA LIVE CONTACT FAILED: ' + ', '.join(rel or '/' for rel, _ in pending))
           PY
@@ -153,10 +120,6 @@ jobs:
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          if git diff --cached --quiet; then
-            echo 'PUKA proof receipt already current.'
-            exit 0
-          fi
           git commit -m 'Seal PUKA v0.1A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main

@@ -1,0 +1,84 @@
+{
+  "version": "0.2.3",
+  "type": "HEADLESS_JM_SCREEN_LOGIC_QA",
+  "passed": 15,
+  "total": 15,
+  "scenarios": [
+    {
+      "name": "inside_deadzone_stays",
+      "pass": true,
+      "detail": "1.0 within 1.5 slack"
+    },
+    {
+      "name": "right_edge_follows",
+      "pass": true,
+      "detail": "excess beyond slack moves focus"
+    },
+    {
+      "name": "left_edge_follows",
+      "pass": true,
+      "detail": "negative excess follows"
+    },
+    {
+      "name": "z_slack_larger_than_x",
+      "pass": true,
+      "detail": "portrait gives deeper vertical slack"
+    },
+    {
+      "name": "world_wider_than_old",
+      "pass": true,
+      "detail": "new width"
+    },
+    {
+      "name": "world_longer_than_old",
+      "pass": true,
+      "detail": "new length"
+    },
+    {
+      "name": "world_portrait_ratio",
+      "pass": true,
+      "detail": "world favours portrait travel"
+    },
+    {
+      "name": "lead_nonzero",
+      "pass": true,
+      "detail": "movement route lead"
+    },
+    {
+      "name": "target_bias_subordinate",
+      "pass": true,
+      "detail": "active remains camera authority"
+    },
+    {
+      "name": "zoom_bounded",
+      "pass": true,
+      "detail": "dynamic zoom modest"
+    },
+    {
+      "name": "focus_clamp_x",
+      "pass": true,
+      "detail": "camera focus stays inside arena wall"
+    },
+    {
+      "name": "focus_clamp_z",
+      "pass": true,
+      "detail": "camera focus stays inside arena wall"
+    },
+    {
+      "name": "offscreen_target_route",
+      "pass": true,
+      "detail": "target indicator exists"
+    },
+    {
+      "name": "offscreen_partner_route",
+      "pass": true,
+      "detail": "partner indicator exists"
+    },
+    {
+      "name": "tag_authority_live",
+      "pass": true,
+      "detail": "camera reads mutable active fighter"
+    }
+  ],
+  "webglPhoneDing": false
+}

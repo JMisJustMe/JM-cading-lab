@@ -1,0 +1,27 @@
+{
+  "body": "T-Boys Estate Clash",
+  "version": "0.2.3",
+  "graft": "JM Screen Logic / moving portrait viewport",
+  "source": "v0.2.2 direct fight graft",
+  "html": "TBOYS_ESTATE_CLASH_v0_2_3_JM_SCREEN_LOGIC_SINGLE_HTML.html",
+  "changes": [
+    "arena expanded beyond viewport",
+    "soft active-fighter camera follow",
+    "movement lead",
+    "rival engagement bias",
+    "dynamic combat zoom",
+    "offscreen target/partner indicators",
+    "camera authority follows tags",
+    "moving light focus",
+    "world zone labels"
+  ],
+  "staticQA": "20/20",
+  "headlessQA": "15/15",
+  "boundaries": [
+    "WebGL phone runtime not tested in container",
+    "owner camera feel Ding pending",
+    "performance Ding pending",
+    "combat readability during long travel pending"
+  ],
+  "deliveryLaw": "separate standalone HTML plus same-version complete Zionfolder"
+}

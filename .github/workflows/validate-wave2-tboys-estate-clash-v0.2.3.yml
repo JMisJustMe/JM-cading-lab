@@ -1,0 +1,65 @@
+name: Validate Wave 2 T-Boys Estate Clash v0.2.3 Source
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3/**'
+      - '.github/workflows/validate-wave2-tboys-estate-clash-v0.2.3.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct exact current-head HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3
+          cat "$P/source-carriage/source.part00.b64" "$P/source-carriage/source.part01.b64" "$P/source-carriage/source.part02.b64" | base64 -d | gzip -d > "$P/TBOYS_ESTATE_CLASH_v0_2_3_JM_SCREEN_LOGIC_SINGLE_HTML.html"
+      - name: Verify exact source bytes and SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3
+          test "$(wc -c < "$P/TBOYS_ESTATE_CLASH_v0_2_3_JM_SCREEN_LOGIC_SINGLE_HTML.html")" = "56072"
+          echo '52263e0e63a25b3ba394faeff0c1b525a9a3a68d7a62290a9c2baca75b755608  '"$P"'/TBOYS_ESTATE_CLASH_v0_2_3_JM_SCREEN_LOGIC_SINGLE_HTML.html' | sha256sum -c -
+      - name: Verify seated QA boundaries
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3')
+          s=json.loads((p/'STATIC_QA_v0_2_3.json').read_text())
+          h=json.loads((p/'HEADLESS_JM_SCREEN_LOGIC_QA_v0_2_3.json').read_text())
+          assert (s['passed'],s['total'])==(20,20)
+          assert (h['passed'],h['total'])==(15,15)
+          assert s['ownerPhoneDing'] is False
+          assert h['webglPhoneDing'] is False
+          PY
+      - name: Check inline JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3
+          python - <<'PY'
+          import re, pathlib
+          p=pathlib.Path('estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3/TBOYS_ESTATE_CLASH_v0_2_3_JM_SCREEN_LOGIC_SINGLE_HTML.html')
+          text=p.read_text()
+          scripts=re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',text,re.S|re.I)
+          assert scripts, 'no inline scripts found'
+          out=pathlib.Path('/tmp/tboys-js'); out.mkdir(exist_ok=True)
+          for i,s in enumerate(scripts): (out/f'{i:02}.js').write_text(s)
+          print(len(scripts))
+          PY
+          for f in /tmp/tboys-js/*.js; do node --check "$f"; done
+      - name: Enforce source-only public boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=estate-publication/apps-tools-games/games/tboys-estate-clash-v0.2.3
+          ! grep -RIE '(BEGIN (RSA|OPENSSH|EC|PGP) PRIVATE KEY|sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9]{20,}|github_pat_)' "$P"
+          test ! -e "$P/TBOYS_ESTATE_CLASH_v0_2_3_ZIONFOLDER.zip"

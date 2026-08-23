@@ -15,6 +15,7 @@ on:
       - "registry/estate-classification-authority-v1.0.json"
       - "apps/**"
       - "games-beyond/**"
+      - ".github/workflows/audit-estate-gap-governance.yml"
 
 permissions:
   contents: read
@@ -31,42 +32,94 @@ jobs:
         run: |
           set -euo pipefail
           python3 <<'PY'
-          import hashlib, json, re
+          import hashlib, json
           from collections import Counter
           from pathlib import Path
+
           errors=[]
+
           data=json.loads(Path('registry/estate-gap-governance-breach-v0.2.json').read_text())
           gaps=data.get('body_gaps',[])
           ids=[str(x.get('id','')).strip() for x in gaps]
           names=[str(x.get('name','')).strip() for x in gaps]
           states=[x.get('state') for x in gaps]
           fingerprint=hashlib.sha256('\n'.join(sorted(ids)).encode()).hexdigest()
-          if data.get('keeper')!='Nothing goes to Other. It goes to Recovery until classified.': errors.append('Recovery keeper law changed')
-          if len(gaps)!=56: errors.append(f'Expected 56 named gaps, found {len(gaps)}')
-          if fingerprint!='a293004b84d6d86818d1a4d19e467a7d0cd250ebbe8cdafcf9c9c32797c0afb6': errors.append('Historical named-gap ID set changed')
-          if len(ids)!=len(set(ids)) or len(names)!=len(set(names)): errors.append('Duplicate gap ID or name')
-          if set(states)-{'OPEN','PARTIAL','MISSEATED','RESOLVED'}: errors.append('Unsupported body-gap state')
+
+          if data.get('keeper')!='Nothing goes to Other. It goes to Recovery until classified.':
+              errors.append('Recovery keeper law changed')
+          if len(gaps)!=56:
+              errors.append(f'Expected 56 named gaps, found {len(gaps)}')
+          if fingerprint!='a293004b84d6d86818d1a4d19e467a7d0cd250ebbe8cdafcf9c9c32797c0afb6':
+              errors.append('Historical named-gap ID set changed')
+          if len(ids)!=len(set(ids)) or len(names)!=len(set(names)):
+              errors.append('Duplicate gap ID or name')
+          if set(states)-{'OPEN','PARTIAL','MISSEATED','RESOLVED'}:
+              errors.append('Unsupported body-gap state')
+
           actual=dict(Counter(states))
-          if actual!=data.get('counts',{}).get('current_classification'): errors.append(f'Count drift: actual={actual}')
-          if any(str(x.get('domain','')).strip().lower()=='other' for x in gaps): errors.append('Body dumped into Other')
-          routeos=next((x for x in gaps if x.get('id')=='JM-APP-001-ROUTEOS'),None)
-          if not routeos or routeos.get('state')!='RESOLVED': errors.append('RouteOS correction receipt missing')
+          if actual!=data.get('counts',{}).get('current_classification'):
+              errors.append(f'Count drift: actual={actual}')
+          if any(str(x.get('domain','')).strip().lower()=='other' for x in gaps):
+              errors.append('Body dumped into Other')
+
+          routeos_gap=next((x for x in gaps if x.get('id')=='JM-APP-001-ROUTEOS'),None)
+          if not routeos_gap or routeos_gap.get('state')!='RESOLVED':
+              errors.append('RouteOS correction receipt missing')
+
           system=data.get('system_breaches',[])
-          if len(system)!=10 or any(x.get('state') not in {'OPEN','PARTIAL','RESOLVED'} for x in system): errors.append('System breach register invalid')
+          if len(system)!=10 or any(x.get('state') not in {'OPEN','PARTIAL','RESOLVED'} for x in system):
+              errors.append('System breach register invalid')
+
           authority=json.loads(Path('registry/estate-classification-authority-v1.0.json').read_text())
           auth={x.get('id'):x for x in authority.get('bodies',[])}
-          if auth.get('routeos',{}).get('severity')!='CRITICAL_CORRECTED': errors.append('RouteOS authority weakened')
+          routeos_authority=auth.get('routeos',{})
+          severity=str(routeos_authority.get('severity',''))
+          if not severity.startswith('CRITICAL_CORRECTED'):
+              errors.append(f'RouteOS authority weakened: severity={severity!r}')
+          if routeos_authority.get('primary_seat')!='Games & Beyond / Gaming Systems / Console Platforms':
+              errors.append('RouteOS sovereign primary seat changed')
+          if routeos_authority.get('public_route')!='/games-beyond/routeos/':
+              errors.append('RouteOS public flagship route changed')
+          if not routeos_authority.get('recovery_record'):
+              errors.append('RouteOS recovery record missing')
+
           manifest=json.loads(Path('games-beyond/payload-manifest.json').read_text())
-          if not any(x.get('id')=='routeos-platform' for x in manifest.get('extraBodies',[])): errors.append('RouteOS missing from Games&Beyond')
-          if not Path('games-beyond/routeos/index.html').exists(): errors.append('RouteOS flagship room missing')
-          apps=Path('apps/index.html').read_text()
-          m=re.search(r'const APPS=(\[.*?\]);\s*const LABELS=',apps,re.S)
-          if not m: errors.append('Apps registry unreadable')
+          if not any(x.get('id')=='routeos-platform' for x in manifest.get('extraBodies',[])):
+              errors.append('RouteOS missing from Games&Beyond')
+          if not Path('games-beyond/routeos/index.html').exists():
+              errors.append('RouteOS flagship room missing')
+
+          apps_text=Path('apps/index.html').read_text()
+          marker='const APPS='
+          pos=apps_text.find(marker)
+          if pos<0:
+              errors.append('Apps registry unreadable: const APPS marker missing')
+              rows=[]
           else:
-              rows=json.loads(m.group(1))
-              if any(row[0]=='RouteOS' for row in rows): errors.append('RouteOS returned to Non-Game Apps')
-              if any(str(row[2]).strip().lower()=='other' for row in rows): errors.append('Apps House uses forbidden Other category')
+              payload=apps_text[pos+len(marker):].lstrip()
+              try:
+                  rows,end=json.JSONDecoder().raw_decode(payload)
+              except Exception as exc:
+                  errors.append(f'Apps registry unreadable: {exc}')
+                  rows=[]
+
+          if rows:
+              if not isinstance(rows,list) or any(not isinstance(row,list) or len(row)<3 for row in rows):
+                  errors.append('Apps registry shape invalid')
+              else:
+                  if any(str(row[0]).strip()=='RouteOS' for row in rows):
+                      errors.append('RouteOS returned to Non-Game Apps')
+                  if any(str(row[2]).strip().lower()=='other' for row in rows):
+                      errors.append('Apps House uses forbidden Other category')
+
           if errors:
-              print('\n'.join('ERROR: '+e for e in errors)); raise SystemExit(1)
-          print(f'Gap governance PASS: 56 named gaps preserved; states={actual}; RouteOS guarded; no Other dumping.')
+              print('\n'.join('ERROR: '+e for e in errors))
+              raise SystemExit(1)
+
+          print(
+              'Gap governance PASS: '
+              f'56 named gaps preserved; states={actual}; '
+              f'RouteOS authority={severity}; apps={len(rows)}; '
+              'RouteOS guarded; no Other dumping.'
+          )
           PY

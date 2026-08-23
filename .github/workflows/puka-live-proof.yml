@@ -38,11 +38,15 @@ jobs:
           test -s games-beyond/puka/manifest.webmanifest
           test -s games-beyond/puka/sw.js
           test -s games-beyond/puka/registry.json
-          grep -Fq 'Earn your place at the table.' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'Observation stays separate from interpretation.' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'PUKA v0.2A' games-beyond/puka/index.html
-          grep -Fq 'jm-puka-v02a' games-beyond/puka/puka-ui.js
-          grep -Fq 'singular live direct door every time' games-beyond/puka/registry.json
+          test -s games-beyond/puka/assets/puka-card-back.svg
+          test -s games-beyond/puka/assets/royal-felt-medallion.svg
+          grep -Fq 'PUKA v0.3A' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'PUKA v0.3A' games-beyond/puka/index.html
+          grep -Fq 'Rotate phone for Royal Table' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'jm-puka-v03a' games-beyond/puka/sw.js
+          grep -Fq 'orientation-authoritative Royal Table' games-beyond/puka/registry.json
+          grep -Fq 'Phone landscape: true royal composition' games-beyond/puka/puka.css
+          grep -Fq "isPhone()" games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node games-beyond/puka/puka-core.test.js
@@ -57,13 +61,15 @@ jobs:
 
           base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks = [
-              ('', 'PUKA v0.2A'),
-              ('00_OPEN_FIRST.html', 'PUKA v0.2A'),
+              ('', 'PUKA v0.3A'),
+              ('00_OPEN_FIRST.html', 'PUKA v0.3A'),
               ('puka-core.js', 'PUKA CORE v0.2A'),
-              ('puka-ui.js', 'jm-puka-v02a'),
-              ('puka.css', 'data-hand-state'),
-              ('manifest.webmanifest', 'Poker Learning Court'),
-              ('registry.json', 'singular live direct door every time'),
+              ('puka-ui.js', 'orientation: portrait'),
+              ('puka.css', 'Phone landscape: true royal composition'),
+              ('manifest.webmanifest', 'Portrait Academy + Royal Table'),
+              ('registry.json', 'orientation-authoritative Royal Table'),
+              ('assets/puka-card-back.svg', 'PUKA'),
+              ('assets/royal-felt-medallion.svg', 'PUKA'),
           ]
           run = os.environ.get('GITHUB_RUN_ID', 'manual')
           pending = checks[:]
@@ -72,7 +78,7 @@ jobs:
               for rel, marker in pending:
                   url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
                   try:
-                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.2A','Cache-Control':'no-cache'})
+                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.3A','Cache-Control':'no-cache'})
                       with urlopen(req, timeout=15) as response:
                           body = response.read().decode('utf-8', 'replace')
                           code = response.status
@@ -104,7 +110,7 @@ jobs:
           from pathlib import Path
 
           receipt = {
-            'schema':'JM.PUKA.ProofReceipt/0.2A',
+            'schema':'JM.PUKA.ProofReceipt/0.3A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
@@ -112,10 +118,10 @@ jobs:
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS',
             'public_contact':'PASS',
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka.css','manifest.webmanifest','registry.json'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka.css','manifest.webmanifest','registry.json','assets/puka-card-back.svg','assets/royal-felt-medallion.svg'],
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Source/core tests and public HTTP contact passed. Owner-side physical phone play, lifecycle persistence across a second real hand, landscape contact, installed Android behaviour and Cold Ding remain separate.'
+            'claim_boundary':'Source/core tests and public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
@@ -123,7 +129,7 @@ jobs:
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.2A source and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.3A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main

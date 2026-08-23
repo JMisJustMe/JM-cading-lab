@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.3A",
+  "schema":"JM.PUKA.Room/0.4A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,37 +10,29 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg"],
-  "donors":[
-    "cardBORED / LG — card-route donor without identity merge",
-    "JM GameCore v0.2I — donor-estate/shared-organ law",
-    "Quadze — default game-body lineage/contact donor",
-    "Choice Box — visible consequential choice",
-    "TraceBox — evidence/trace separation",
-    "JMLogic — state and consequence",
-    "JM Visual Interaction Runtime — contact must cause readable state",
-    "GameForge/GlyphPlay/GlyphForge — distinct-game adapter lineage"
-  ],
-  "v03Changes":[
-    "preserved poker/game core; rebuilt presentation shell only",
-    "phone portrait is table-first with compact profile disclosure",
-    "phone landscape is orientation-authoritative Royal Table rather than resized portrait",
-    "all primary controls constrained to the viewport with no horizontal overflow by design",
-    "quick suit selector moved onto the ready table so setup is no longer a blocking wall",
-    "original PUKA card-back and royal felt medallion assets replace placeholder graphic treatment",
-    "evidence remains collapsed during play to protect the playfield",
-    "service-worker cache bumped so old CSS cannot contaminate the visual reset"
+  "artLayer":"puka-art.css",
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
+  "v04Changes":[
+    "preserved the v0.3A responsive shell and poker core",
+    "added premium art-direction layer rather than destabilising layout again",
+    "added original royal-room backdrop, chip-stack illustration and felt-grain asset",
+    "upgraded table rail, felt material, card depth, pot treatment, controls and lighting",
+    "Portrait Academy receives illustrated storybook material treatment",
+    "Royal Table receives a distinct room atmosphere rather than a widened green table",
+    "short-landscape art overrides protect the playable table inside mobile browser chrome",
+    "live direct door remains the canonical owner delivery route"
   ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
+    "Visual quality is a completion gate, not decoration after completion",
     "Observation != interpretation != fact",
     "Different games may share organs without sharing identities",
     "One singular live direct door is the normal owner contact route",
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Visual-reset source stage. Automated source/core tests and public contact may Ding independently; owner-side portrait fit, landscape fit and visual-quality acceptance remain the Cold Ding gate."
+  "claimBoundary":"Art-direction source stage. Automated source/core/layout tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
 }

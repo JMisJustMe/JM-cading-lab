@@ -41,22 +41,24 @@ jobs:
           GZ='/tmp/intertap-index.html.gz'
 
           test "$(find "$DIR" -maxdepth 1 -type f -name 'index.html.gz.b64.part*' | wc -l)" -eq 7
-          echo '6efbbd9a127f7c0c000ee2390371c36b8bb1d2d44a2c80ab0a542733ca29fb23  '"$DIR/index.html.gz.b64.part01" | sha256sum -c -
-          echo '5202a885ba01296cb923b7d78c6e199d9d23a5047ffe18dcc44d5678d0594960  '"$DIR/index.html.gz.b64.part02" | sha256sum -c -
-          echo '3a98fac9192d11ee6974423a62d782d15025a3795bd213c4fd7748ce5314e769  '"$DIR/index.html.gz.b64.part03" | sha256sum -c -
-          echo '02455d4de27c611164f5b9d8ffb198f3f55d9decc2b8fdf1b7797ea951051503  '"$DIR/index.html.gz.b64.part04" | sha256sum -c -
-          echo '242671e6687539d506f559a1fabc8dbd772dba7f14258ea106bbeb07f5e2fb23  '"$DIR/index.html.gz.b64.part05" | sha256sum -c -
-          echo '3554bcc889d06342f6a93e28be739020ce8f05b5cdf3b49fb1c14ea2493dc969  '"$DIR/index.html.gz.b64.part06" | sha256sum -c -
-          echo '0f4c72067d8ca621688a6b0d003b8dbc863b66e1ffa79464608e3ac7840f7213  '"$DIR/index.html.gz.b64.part07" | sha256sum -c -
+          echo 'ffc15aab711b79bc9159782ec061b5105c041f410e160ff9537ddd51effa65b2  '"$DIR/index.html.gz.b64.part01" | sha256sum -c -
+          echo '6ba1f4d4f74c22bd8f1845edd66b3ca8cfde81051cfd6f2138fa57ba9b955e4a  '"$DIR/index.html.gz.b64.part02" | sha256sum -c -
+          echo 'b37c45c558fee6b96300e21b938c6cc1808e74fc51d4b2defdad5709f2426f1c  '"$DIR/index.html.gz.b64.part03" | sha256sum -c -
+          echo '981795f1e729a320f8c885c0c247a3d65d2987b87a3e087ab754cca29dd04776  '"$DIR/index.html.gz.b64.part04" | sha256sum -c -
+          echo '02db7457b6c886c99c6453149e51fd844972837dd576496b5342aaaac5b19724  '"$DIR/index.html.gz.b64.part05" | sha256sum -c -
+          echo '4150e3726e686cf13084edda68c2d4faa2ab61fb8b1cfaa9a466fe6e9ac3a96c  '"$DIR/index.html.gz.b64.part06" | sha256sum -c -
+          echo '24372eedcfcd6650deae54e859d59ea0d02a97a8c13d883b5a1b998d963c44d0  '"$DIR/index.html.gz.b64.part07" | sha256sum -c -
 
           cat "$DIR"/index.html.gz.b64.part{01..07} > "$JOINED"
-          echo '577b0bfb82f98cd898fc78cf8d166ca8205702ad97d439d22d2b2643435f7652  '"$JOINED" | sha256sum -c -
+          echo 'd77723d739714b8d168cd226708b69a99e97dbfa0986c27a715f82fb44e51146  '"$JOINED" | sha256sum -c -
           test $(( $(wc -c < "$JOINED") % 4 )) -eq 0
 
           base64 -d "$JOINED" > "$GZ"
           gzip -t "$GZ"
           gzip -dc "$GZ" > "$ASSET"
-          echo '138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389  '"$ASSET" | sha256sum -c -
+          echo '93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df  '"$ASSET" | sha256sum -c -
+          grep -q 'memory+export' "$ASSET"
+          ! grep -q 'sandbox="allow-scripts allow-same-origin"' "$ASSET"
 
           # Transport proves the body but is not runtime payload.
           rm -f "$DIR/index.html.gz.b64" "$DIR"/index.html.gz.b64.part*
@@ -87,8 +89,11 @@ jobs:
           grep -q 'no-referrer' "$JAVA"
           grep -q 'MAX_EXPORT_BASE64_CHARS' "$JAVA"
           grep -q 'safeMime' "$JAVA"
+          grep -q 'sandbox limits instead of weakening the parent sandbox' "$CAD"
+          grep -q 'CLEAN_GRADLE_BUILD_ROUTE_CI_PASS' "$CAD"
           grep -q 'com.jmisjustme.intertaproute' "$CAD"
           grep -q '"package": "com.jmisjustme.intertaproute"' "$ONE"
+          grep -q 'sandbox-safe memory/export fallback' "$ONE"
           test "$(grep -c '^body ' "$CAD")" -eq 14
 
       - name: Lint and compile clean release
@@ -112,11 +117,13 @@ jobs:
           ! grep -Eq 'CAMERA|RECORD_AUDIO|ACCESS_(FINE|COARSE)_LOCATION|CONTACTS|CALENDAR|BLUETOOTH|REQUEST_INSTALL_PACKAGES' artifact/AAPT_PERMISSIONS.txt
           ! unzip -l "$ALIGNED" | grep -q 'assets/index.html.gz.b64'
           unzip -p "$ALIGNED" assets/index.html | sha256sum | tee artifact/EMBEDDED_HTML_SHA256.txt
-          grep -q '^138b97c6321b09a4bc0d3a61929a85a6bc9c6ee8f3102fc9f82661cf868a8389 ' artifact/EMBEDDED_HTML_SHA256.txt
+          grep -q '^93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df ' artifact/EMBEDDED_HTML_SHA256.txt
+          unzip -p "$ALIGNED" assets/index.html | grep -q 'memory+export'
+          ! unzip -p "$ALIGNED" assets/index.html | grep -q 'sandbox="allow-scripts allow-same-origin"'
           unzip -p "$ALIGNED" assets/JM_SOURCE.jm.cading | sha256sum | tee artifact/EMBEDDED_CADING_SHA256.txt
-          grep -q '^3e09896d82826a981df9ba975863c42e30d4793a7ff2d7c5e24a3fd80f5eff64 ' artifact/EMBEDDED_CADING_SHA256.txt
+          grep -q '^f53df2a5512900ea6ce82496b8dae569fbae7b3bdb988033933ded8706576aea ' artifact/EMBEDDED_CADING_SHA256.txt
           unzip -p "$ALIGNED" assets/JM_ONEBODY.json | sha256sum | tee artifact/EMBEDDED_ONEBODY_SHA256.txt
-          grep -q '^00500197ea2dc6b54bf25f3cde3801e03941620946d384cff8880c94bd704d58 ' artifact/EMBEDDED_ONEBODY_SHA256.txt
+          grep -q '^08b1f48d1d195d988e568080005d32e3f78d1702d9a56a2e071038ee8e7d6c17 ' artifact/EMBEDDED_ONEBODY_SHA256.txt
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'onShowFileChooser'
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'com/jmisjustme/intertaproute/MainActivity'
           unzip -p "$ALIGNED" classes.dex | strings | grep -q 'intertap.jm.local'

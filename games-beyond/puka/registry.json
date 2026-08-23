@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.2A",
+  "schema":"JM.PUKA.Room/0.3A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,6 +10,7 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg"],
   "donors":[
     "cardBORED / LG — card-route donor without identity merge",
     "JM GameCore v0.2I — donor-estate/shared-organ law",
@@ -20,23 +21,26 @@
     "JM Visual Interaction Runtime — contact must cause readable state",
     "GameForge/GlyphPlay/GlyphForge — distinct-game adapter lineage"
   ],
-  "v02Changes":[
-    "bankroll persists hand-to-hand",
-    "portrait playfield moves ahead of setup chrome once play starts",
-    "evidence becomes a disclosure drawer rather than an always-expanded scroll wall",
-    "teacher strip exposes made hand, call price, pot odds and position",
-    "royal ranks map to named court rooms",
-    "royal landscape receives its own denser cinematic table treatment",
-    "v0.1A local progress migrates into v0.2A storage"
+  "v03Changes":[
+    "preserved poker/game core; rebuilt presentation shell only",
+    "phone portrait is table-first with compact profile disclosure",
+    "phone landscape is orientation-authoritative Royal Table rather than resized portrait",
+    "all primary controls constrained to the viewport with no horizontal overflow by design",
+    "quick suit selector moved onto the ready table so setup is no longer a blocking wall",
+    "original PUKA card-back and royal felt medallion assets replace placeholder graphic treatment",
+    "evidence remains collapsed during play to protect the playfield",
+    "service-worker cache bumped so old CSS cannot contaminate the visual reset"
   ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
+    "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
+    "Protect playfield before setup chrome",
     "Observation != interpretation != fact",
     "Different games may share organs without sharing identities",
     "One singular live direct door is the normal owner contact route",
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Playable source stage. Automated source/core tests and public contact may Ding independently; physical phone contact and Cold Ding remain separate until performed."
+  "claimBoundary":"Visual-reset source stage. Automated source/core tests and public contact may Ding independently; owner-side portrait fit, landscape fit and visual-quality acceptance remain the Cold Ding gate."
 }

@@ -1,3 +1,4 @@
+import java.io.File
 import java.security.MessageDigest
 import java.util.Base64
 import java.util.zip.ZipInputStream
@@ -98,7 +99,7 @@ val materializeFrozenRegistry by tasks.registering {
                             "Unsafe frozen-parent package path: $relative"
                         }
                         val target = outRoot.resolve(relative).canonicalFile
-                        check(target.path.startsWith(outRoot.canonicalPath + java.io.File.separator)) {
+                        check(target.path.startsWith(outRoot.canonicalPath + File.separator)) {
                             "Frozen-parent package path escaped generated asset room: $relative"
                         }
                         if (entry.isDirectory()) {

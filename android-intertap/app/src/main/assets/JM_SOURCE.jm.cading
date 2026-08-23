@@ -55,6 +55,7 @@ func intertapRoute(source, body, host):
   do bind local HTML without collapsing source identity
   do use Android Storage Access Framework for chosen HTML and JSON files
   do keep imported preview bodies sandboxed from parent origin
+  do adapt trusted embedded donor descendants to sandbox limits instead of weakening the parent sandbox
   do authorise native bridge calls with a per-launch nonce
   do open web routes through Android ACTION_VIEW
   do fall back from localStorage to IndexedDB to export
@@ -70,10 +71,10 @@ map URL Receiver -> INTERTAP Intake
 map DoorDock -> Route Registry
 map URL Route Room Launcher 006.1 -> Open Surface
 map Tunneledoor Android Safe Launcher -> Android Open-First
-map JM Singular Link MultiHub Registry -> Embedded Recovered Body
+map JM Singular Link MultiHub Registry -> Embedded Recovered Body descendant with sandbox-safe memory/export fallback
 map Device Continuity -> Capability Fallback Laws
 
-state CLEAN_GRADLE_BUILD_ROUTE_PENDING_CI
+state CLEAN_GRADLE_BUILD_ROUTE_CI_PASS
 boundary no static build proof becomes owner-device Ding
 boundary file/content/sandbox references are preserved until Android grants an explicit intake route
 ding JM-authority-after-real-device-contact

@@ -11,7 +11,9 @@ payload=b""
 for p in parts:
     path=CARR/p["name"]
     raw=path.read_bytes()
-    if len(raw)!=p["size_bytes"] or hashlib.sha256(raw).hexdigest()!=p["sha256"]:
+    actual_sha=hashlib.sha256(raw).hexdigest()
+    print(f"{p['name']} actual_bytes={len(raw)} actual_sha256={actual_sha} expected_bytes={p['size_bytes']} expected_sha256={p['sha256']}")
+    if len(raw)!=p["size_bytes"] or actual_sha!=p["sha256"]:
         raise SystemExit(f"part identity FAIL: {p['name']}")
     payload += raw
 archive=base64.b64decode(payload, validate=True)

@@ -1,4 +1,4 @@
-const CACHE='jm-puka-v01a';
+const CACHE='jm-puka-v02a';
 const CORE=['./','./00_OPEN_FIRST.html','./index.html','./puka.css','./puka-core.js','./puka-ui.js','./manifest.webmanifest','./registry.json'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith('jm-puka-')).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));

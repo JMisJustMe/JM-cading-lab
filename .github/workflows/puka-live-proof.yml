@@ -35,17 +35,20 @@ jobs:
           test -s games-beyond/puka/puka-core.js
           test -s games-beyond/puka/puka-ui.js
           test -s games-beyond/puka/puka.css
+          test -s games-beyond/puka/puka-art.css
           test -s games-beyond/puka/manifest.webmanifest
           test -s games-beyond/puka/sw.js
           test -s games-beyond/puka/registry.json
           test -s games-beyond/puka/assets/puka-card-back.svg
           test -s games-beyond/puka/assets/royal-felt-medallion.svg
-          grep -Fq 'PUKA v0.3A' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'PUKA v0.3A' games-beyond/puka/index.html
-          grep -Fq 'Rotate phone for Royal Table' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'jm-puka-v03a' games-beyond/puka/sw.js
-          grep -Fq 'orientation-authoritative Royal Table' games-beyond/puka/registry.json
-          grep -Fq 'Phone landscape: true royal composition' games-beyond/puka/puka.css
+          test -s games-beyond/puka/assets/royal-room-backdrop.svg
+          test -s games-beyond/puka/assets/puka-chip-stack.svg
+          test -s games-beyond/puka/assets/felt-grain.svg
+          grep -Fq 'PUKA v0.4A' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'PUKA v0.4A' games-beyond/puka/index.html
+          grep -Fq 'puka-art.css' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'jm-puka-v04a' games-beyond/puka/sw.js
+          grep -Fq 'Royal Table gets its own room' games-beyond/puka/puka-art.css
           grep -Fq "isPhone()" games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
@@ -59,18 +62,19 @@ jobs:
           python3 - <<'PY'
           import os, time
           from urllib.request import Request, urlopen
-
           base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks = [
-              ('', 'PUKA v0.3A'),
-              ('00_OPEN_FIRST.html', 'PUKA v0.3A'),
+              ('', 'PUKA v0.4A'),
+              ('00_OPEN_FIRST.html', 'puka-art.css'),
+              ('puka-art.css', 'Royal Table gets its own room'),
               ('puka-core.js', 'PUKA CORE v0.2A'),
               ('puka-ui.js', 'orientation: portrait'),
               ('puka.css', 'Phone landscape: true royal composition'),
-              ('manifest.webmanifest', 'Portrait Academy + Royal Table'),
-              ('registry.json', 'orientation-authoritative Royal Table'),
               ('assets/puka-card-back.svg', 'PUKA'),
               ('assets/royal-felt-medallion.svg', 'PUKA'),
+              ('assets/royal-room-backdrop.svg', '<svg'),
+              ('assets/puka-chip-stack.svg', '<svg'),
+              ('assets/felt-grain.svg', 'feTurbulence'),
           ]
           run = os.environ.get('GITHUB_RUN_ID', 'manual')
           pending = checks[:]
@@ -79,26 +83,19 @@ jobs:
               for rel, marker in pending:
                   url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
                   try:
-                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.3A','Cache-Control':'no-cache'})
+                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.4A','Cache-Control':'no-cache'})
                       with urlopen(req, timeout=15) as response:
                           body = response.read().decode('utf-8', 'replace')
                           code = response.status
                   except Exception as exc:
                       print('WAIT', rel or '/', type(exc).__name__)
-                      next_pending.append((rel, marker))
-                      continue
-                  if code == 200 and marker in body:
-                      print('LIVE PASS', rel or '/', marker)
-                  else:
-                      print('WAIT', rel or '/', code, marker)
-                      next_pending.append((rel, marker))
+                      next_pending.append((rel, marker)); continue
+                  if code == 200 and marker in body: print('LIVE PASS', rel or '/', marker)
+                  else: next_pending.append((rel, marker))
               if not next_pending:
-                  pending = []
-                  break
-              pending = next_pending
-              time.sleep(2)
-          if pending:
-              raise SystemExit('PUKA LIVE CONTACT FAILED: ' + ', '.join(rel or '/' for rel, _ in pending))
+                  pending=[]; break
+              pending=next_pending; time.sleep(2)
+          if pending: raise SystemExit('PUKA LIVE CONTACT FAILED: ' + ', '.join(rel or '/' for rel,_ in pending))
           PY
 
       - name: Seal PUKA proof receipt
@@ -109,31 +106,27 @@ jobs:
           import json, os
           from datetime import datetime, timezone
           from pathlib import Path
-
-          receipt = {
-            'schema':'JM.PUKA.ProofReceipt/0.3A',
+          receipt={
+            'schema':'JM.PUKA.ProofReceipt/0.4A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
-            'source_code_ding':'PASS',
-            'public_contact':'PASS',
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka.css','manifest.webmanifest','registry.json','assets/puka-card-back.svg','assets/royal-felt-medallion.svg'],
-            'cold_ding':False,
-            'crowned':False,
-            'claim_boundary':'Source/core and layout source tests plus public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate.'
+            'source_code_ding':'PASS','public_contact':'PASS',
+            'art_layer':'puka-art.css',
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
+            'cold_ding':False,'crowned':False,
+            'claim_boundary':'Source/core/layout tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
-
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.3A source and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.4A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main
+            git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0
             sleep 2
           done

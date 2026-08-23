@@ -1,0 +1,29 @@
+{
+  "version": "0.2.3",
+  "type": "STATIC_QA",
+  "passed": 20,
+  "total": 20,
+  "checks": {
+    "version_023": true,
+    "expanded_arena": true,
+    "larger_floor": true,
+    "jm_screen_config": true,
+    "camera_deadzone": true,
+    "camera_lead": true,
+    "target_bias": true,
+    "dynamic_zoom": true,
+    "active_follow": true,
+    "tag_follow_dynamic": true,
+    "world_clamp": true,
+    "edge_target": true,
+    "edge_partner": true,
+    "zone_logic": true,
+    "moving_light": true,
+    "tick_graft": true,
+    "static_base_removed": true,
+    "direct_touch_preserved": true,
+    "attack_graft_preserved": true,
+    "separate_html": true
+  },
+  "ownerPhoneDing": false
+}

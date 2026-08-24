@@ -105,21 +105,21 @@ public final class RegistryInstrumentedTest {
                         assertTrue(title != null && title.endsWith(".json"));
                         int which = saveRequests.incrementAndGet();
                         Uri destination = which == 1 ? exportUri : receiptUri;
-                        activity.onActivityResult(
+                        activity.getWindow().getDecorView().post(() -> activity.onActivityResult(
                             MainActivity.SAVE_EXPORT,
                             Activity.RESULT_OK,
                             new Intent().setData(destination).addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                        );
+                        ));
                         return true;
                     }
                     if (requestCode == MainActivity.PICK_IMPORT) {
                         assertEquals(Intent.ACTION_OPEN_DOCUMENT, intent.getAction());
                         openRequests.incrementAndGet();
-                        activity.onActivityResult(
+                        activity.getWindow().getDecorView().post(() -> activity.onActivityResult(
                             MainActivity.PICK_IMPORT,
                             Activity.RESULT_OK,
                             new Intent().setData(importUri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        );
+                        ));
                         return true;
                     }
                     throw new AssertionError("Unexpected document request code: " + requestCode);

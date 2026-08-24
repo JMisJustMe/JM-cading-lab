@@ -30,8 +30,8 @@ import java.util.Locale;
 import java.util.Map;
 
 public final class MainActivity extends Activity {
-    private static final int PICK_IMPORT = 3001;
-    private static final int SAVE_EXPORT = 3002;
+    static final int PICK_IMPORT = 3001;
+    static final int SAVE_EXPORT = 3002;
     private static final String LOCAL_ORIGIN = "https://registry.jm.local/";
     private static final String PARENT_BODY = "JM Estate Live Registry App v0.2 — Native Circulation";
     private static final String PARENT_SHA256 = "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38";
@@ -39,6 +39,15 @@ public final class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileChooser;
     private String pendingExportText;
     private String pendingExportName;
+    private DocumentRequestHook documentRequestHook;
+
+    interface DocumentRequestHook {
+        boolean onRequest(int requestCode, Intent intent);
+    }
+
+    void setDocumentRequestHookForTest(DocumentRequestHook hook) {
+        documentRequestHook = hook;
+    }
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -100,6 +109,12 @@ public final class MainActivity extends Activity {
         catch (Exception e) { Toast.makeText(this, "No external route available.", Toast.LENGTH_SHORT).show(); }
     }
 
+    private boolean launchDocumentRequest(Intent intent, int requestCode) {
+        if (documentRequestHook != null && documentRequestHook.onRequest(requestCode, intent)) return true;
+        try { startActivityForResult(intent, requestCode); return true; }
+        catch (Exception e) { return false; }
+    }
+
     private final class RegistryChromeClient extends WebChromeClient {
         @Override public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
             if (fileChooser != null) fileChooser.onReceiveValue(null);
@@ -107,8 +122,10 @@ public final class MainActivity extends Activity {
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
             intent.setType("application/json");
-            try { startActivityForResult(intent, PICK_IMPORT); return true; }
-            catch (Exception e) { fileChooser.onReceiveValue(null); fileChooser = null; return false; }
+            if (launchDocumentRequest(intent, PICK_IMPORT)) return true;
+            fileChooser.onReceiveValue(null);
+            fileChooser = null;
+            return false;
         }
     }
 
@@ -146,8 +163,7 @@ public final class MainActivity extends Activity {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("application/json");
         intent.putExtra(Intent.EXTRA_TITLE, pendingExportName);
-        try { startActivityForResult(intent, SAVE_EXPORT); }
-        catch (Exception e) {
+        if (!launchDocumentRequest(intent, SAVE_EXPORT)) {
             pendingExportName = null;
             pendingExportText = null;
             Toast.makeText(this, "No document-save route available.", Toast.LENGTH_SHORT).show();

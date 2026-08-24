@@ -1,0 +1,78 @@
+{
+  "schema": "jm.wave2.navigator-browser-bridge.publication/0.1",
+  "body": "JM3232 Navigator Browser Bridge v0.1",
+  "role": "remaining search / lexicon / widget corpus",
+  "authority": {
+    "restored_source": "JM3232 Unified Browser v1.0",
+    "preserves": "JM3232 Navigator v0.1.1 routes",
+    "governed_zionfolder_zip": {
+      "name": "JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1_ZIONFOLDER.zip",
+      "size_bytes": 1715467,
+      "sha256": "3f3710376307d34b45bb1d0de0c69c1089f3855d277ce1afaeeb47f4594375f7"
+    }
+  },
+  "public_carriage": {
+    "format": "deterministic PAX tar -> XZ preset 9 -> base64 -> 33 ordered text parts",
+    "deterministic_recipe": {
+      "member_order": "lexicographic path",
+      "tar_format": "PAX",
+      "mtime": 0,
+      "uid": 0,
+      "gid": 0,
+      "uname": "",
+      "gname": "",
+      "file_mode": "0644",
+      "xz_preset": 9,
+      "base64": "RFC 4648 no line wrapping",
+      "chunk_bytes": 18000
+    },
+    "tar_xz_size_bytes": 433440,
+    "tar_xz_sha256": "c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283",
+    "base64_size_bytes": 577920,
+    "published_member_count": 35,
+    "parts": [
+      {"name":"part-001.b64","size_bytes":18000,"sha256":"b4ea232f192bd29d5db3775b6c5443f9b4cb8a7831be21d827e3a7b400bd31a5","git_blob_sha":"d0fe969d95e542e16a7e3405254a83f7d9cb4d9c"},
+      {"name":"part-002.b64","size_bytes":18000,"sha256":"2277e652075aa815f5eaace6eb8e9fd208109e15f9288ee00afe6edd887b0b69","git_blob_sha":"5b829f2af0e3dd18a0780dc6453e2dc1ec5b5fc7"},
+      {"name":"part-003.b64","size_bytes":18000,"sha256":"8d734dd6ef425f6ac5ae05ad938f5e583dd554ea0d585a4013565cac45034436","git_blob_sha":"92e72046d2010337e47d48605ac609bd7e156d5f"},
+      {"name":"part-004.b64","size_bytes":18000,"sha256":"6dbf8e458c0cb0da0a00335bf2aa5fb0f25f2a86c3ad6fa967d813f927d31710","git_blob_sha":"9e89168d79a44c9292b9c23b3851a8bc9a9f8987"},
+      {"name":"part-005.b64","size_bytes":18000,"sha256":"75af7c59968b455871403b2db5854c74d82f4cbc0f2e8c4792e38310495764c1","git_blob_sha":"d83aef52ce4b7318ca1a27a25b8faa4dde307341"},
+      {"name":"part-006.b64","size_bytes":18000,"sha256":"3d2dc5203205a5a8f2f80383a39cb0c7210f9cdd7f86973fbe11b296676b5d9a","git_blob_sha":"7f116b3415fb19d38118915504c9ce179c095804"},
+      {"name":"part-007.b64","size_bytes":18000,"sha256":"b2f201f5bfbed278e881085ae50194e04b6d8310aeb04e90709b6a7fa21370eb","git_blob_sha":"d248b4d8b12e3963e243ac2315fb3d0be1f8a3be"},
+      {"name":"part-008.b64","size_bytes":18000,"sha256":"0b4b6f4149b4ba349c7bae1cd85cd1ab3d2fb3f407cca1617801b945a321c261","git_blob_sha":"dc1dc26d64e758e19fd7482c95c832b627479881"},
+      {"name":"part-009.b64","size_bytes":18000,"sha256":"1d0e651759add8ea92276dcc1f42630f2a1032e8608399705bb5bf6fd0360b77","git_blob_sha":"e8e02dffa88c31571baedb2dd432a4d9951edbc8"},
+      {"name":"part-010.b64","size_bytes":18000,"sha256":"e23efa8a48799f3d5510b63167cff591e501d02f65cd5cfae1fb71788329b4ba","git_blob_sha":"6b755e83d2777a44ab7365290106dbe492ed8518"},
+      {"name":"part-011.b64","size_bytes":18000,"sha256":"56c7df1d614f0d51e9041e7f2d0f5fd743fec025baceb9324ef620f16d4ff6dd","git_blob_sha":"b2c88976ca6d4f7a6de2d68a7ba4839721fe15ab"},
+      {"name":"part-012.b64","size_bytes":18000,"sha256":"f32503c4bcb9e0ddace12d42c334a40141d276c5fabccdc0d42c52ce5264e21a","git_blob_sha":"67146e7d7293381565c2f0b971e5126387ce9a26"},
+      {"name":"part-013.b64","size_bytes":18000,"sha256":"a8ba237b9761a67087944741d52663ae86f79678c714b6b824c9ffe37b83271d","git_blob_sha":"0b92dee2a0f439becc653d8132f8cdad508f814a"},
+      {"name":"part-014.b64","size_bytes":18000,"sha256":"578820e4a65ada21d7de546aa095393daae507a8c83b4cc1aac088f40a214ac5","git_blob_sha":"f65f9556a0a9c2f706e3b28f35338870ac9d340a"},
+      {"name":"part-015.b64","size_bytes":18000,"sha256":"a53fd1ff7fcbc82acc6594f61b73026082abe5b97be023c5b4db7377805df5a2","git_blob_sha":"1d7ede7d51132373b4f4c87360aa6558557e311b"},
+      {"name":"part-016.b64","size_bytes":18000,"sha256":"1dce6131d70f839f89f95c43e9df822b86f81364c0aeccddf3d191d7ba1ab5ed","git_blob_sha":"23fe31a4a4bb916d37c387676d65118ba6d4c5f7"},
+      {"name":"part-017.b64","size_bytes":18000,"sha256":"6434572ec22935aa80f95b262adcfb3d4c9cefef7727e02903d848124324caac","git_blob_sha":"05f5bf1d664e32db66add965b688eb702fb9091d"},
+      {"name":"part-018.b64","size_bytes":18000,"sha256":"372e69af895e7a237e808aad4bc248d03f846f77f4269eb9b720588e85ac1566","git_blob_sha":"b99fcaf446f9072d0d152b4a1a4d97804a06d1e2"},
+      {"name":"part-019.b64","size_bytes":18000,"sha256":"9be30fd358747b7b9d182b6c6762e2d13fa5b6d3d2d990489a6cdb751293bba0","git_blob_sha":"0213b005e00f07d0aeeb9657e914c288109393ca"},
+      {"name":"part-020.b64","size_bytes":18000,"sha256":"854498212d06f37df88d079af1cc1781974f8d9a16e6c0a9f03746beaf238dbf","git_blob_sha":"c00ab87877bff15f55dbdb958834e053851077d0"},
+      {"name":"part-021.b64","size_bytes":18000,"sha256":"9a913abe07ca992a3abe58c6a9fe3c5cadf0c5b28657674f85437d8d4b90dc9e","git_blob_sha":"91220f116f9b6d37a9e8ddbe4ebbc3ab684f4651"},
+      {"name":"part-022.b64","size_bytes":18000,"sha256":"e51ec906985a77ed57134743e0fb70c43b8d33124ef94b4e19c90885cad102bb","git_blob_sha":"971ca74fc51504da40e6b706681e94b02f937111"},
+      {"name":"part-023.b64","size_bytes":18000,"sha256":"fb8fef74628b51b525b3e3762c5d4ee5d6d12666cc714ab28d7b3f487a208a2d","git_blob_sha":"29c34ad1d866fc145f15fc4ff5f1e9e7298d8469"},
+      {"name":"part-024.b64","size_bytes":18000,"sha256":"2063da6092b4f66b213031313bcc76be71e00516aa47a5c4e096f036f004b1bc","git_blob_sha":"7c620447ee4afc4525aa7e57b314ec1b25294fdd"},
+      {"name":"part-025.b64","size_bytes":18000,"sha256":"123325c75d5101c964d7a5305083b15fc643093f3e1c33174f07d79192179424","git_blob_sha":"cccc945753bf8c7ba4b16531a5399883f9aed4ab"},
+      {"name":"part-026.b64","size_bytes":18000,"sha256":"5171e28297c43d45374938db999e0ae57991e54ba89f650d31da1ba54de022e4","git_blob_sha":"617f78e8640ee73499e7060d81d675f989f55a7f"},
+      {"name":"part-027.b64","size_bytes":18000,"sha256":"ebf12b6ccf213c77358495174ac8fc94103eeeb0590bbdefa4f7ed6a0aec08d4","git_blob_sha":"3c3cb34ca74c6b1251a32b8e7f97de6b17c0c775"},
+      {"name":"part-028.b64","size_bytes":18000,"sha256":"4a2cb9c69dd8370cbdc78510f32aef3fbed4d6befa60c5f06db2bbd0f9eb1ddc","git_blob_sha":"38362b4d8309279431f9e5cdcdae15a53ab0356e"},
+      {"name":"part-029.b64","size_bytes":18000,"sha256":"2f11e4f8239eccb7f9f63fe1be4d791b369bf484708d2838a77f330fca5ad790","git_blob_sha":"c18abaaf4322eff392f86198dfcf025b06d4e7fb"},
+      {"name":"part-030.b64","size_bytes":18000,"sha256":"dcc7c32095c2cfc2904db3fcbbe6af0bec77cef306204353ae5bce84495090f7","git_blob_sha":"ac525eb8ceffbb5a8caacbe0f1cbc28bcd1c925d"},
+      {"name":"part-031.b64","size_bytes":18000,"sha256":"a5be0078ea88e20a2f63081e71ab46e10262fbc8a73bb3d5a7f838a538599d7e","git_blob_sha":"cad19e0ea03329c019c7014b923078416cccb435"},
+      {"name":"part-032.b64","size_bytes":18000,"sha256":"1d986731369c9ce3e1522a800281df7284dd42bc5649690523380e391cc1dddb","git_blob_sha":"47f676cf7b21f082339b9921d61c5d6d6d9a1bce"},
+      {"name":"part-033.b64","size_bytes":1920,"sha256":"ad4221a53f44cef8046afaa1538a27c10795c3fdf33ae8e6e7374176d03f1667","git_blob_sha":"e3e759d47149a1e85a9466a49158a7b6f387627c"}
+    ],
+    "excluded_as_non_source":[".pytest_cache/","exports/ disposable proof/test packs","TRACE/JM3232_BROWSER_BRIDGE_DESKTOP_PROOF.png","TRACE/JM3232_BROWSER_BRIDGE_MOBILE_PROOF.png"]
+  },
+  "corpus":{"tools":10,"search_documents":881,"radius_lexicon_entries":640,"browser_bodies":20,"unit_contract_tests":{"passed":9,"failed":0}},
+  "source_authorities":[
+    {"name":"01_JM_ESTATE_HEAD_REGISTRY_v0_2_3.json","size_bytes":126329,"sha256":"d73aae7d8fcdd9d9eacee0ef8aeeb56bf53a4ec880307512fd6ad746bd6b92fb"},
+    {"name":"04_JM_ESTATE_PUBLIC_SUBSET_v0_2.json","size_bytes":41144,"sha256":"935915b2891e68031fa525b5d297f4077f4f52054f7a964a442c412ae649369c"},
+    {"name":"JM3232_UNIFIED_BROWSER_v1_0_OPEN.html","size_bytes":2740557,"sha256":"c56395f209087f7a118fb81c2c7db5990c04f2b038d5072b93aae73fc6e11f36"},
+    {"name":"RADIUS_LEXICON_v1_0_OPEN.html","size_bytes":2665550,"sha256":"567403d9cf04a8238d02e016b026ec94230bd2858935c5d8a56b12c37bdb222c"}
+  ],
+  "claim_boundary":{"proved":["bounded local MCP execution","10-tool surface","881/640 corpus","9/9 tests","receipt-chain PASS","desktop/mobile UI proof","SavePack export","exact 35-file public-source carriage"],"open":["HTTPS deployment","ChatGPT Developer Mode connection","signed-in host approvals","owner physical desktop proof","Final Ding"],"laws":["Restore before rebuild","Mesh != merge","Registration != proof","No Ding, no claim"]}
+}

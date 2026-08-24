@@ -128,7 +128,7 @@ public final class MainActivity extends Activity {
 
         @Override public void onPageFinished(WebView view, String url) {
             if (!url.startsWith(LOCAL_ORIGIN)) return;
-            String bridge = "(()=>{if(window.__jmAndroidBridge)return;window.__jmAndroidBridge=true;const old=URL.createObjectURL.bind(URL);const blobs=new Map();URL.createObjectURL=(b)=>{const u=old(b);blobs.set(u,b);return u;};document.addEventListener('click',async(e)=>{const a=e.target.closest&&e.target.closest('a[download]');if(!a||!a.href.startsWith('blob:')||!blobs.has(a.href))return;e.preventDefault();try{const text=await blobs.get(a.href).text();JMAndroidHost.saveText(a.download||'JM_EXPORT.json',text);}catch(err){console.error(err);}},true);})();";
+            String bridge = "(()=>{if(window.__jmAndroidBridge)return;window.__jmAndroidBridge=true;const oldCreate=URL.createObjectURL.bind(URL);const blobs=new Map();URL.createObjectURL=(b)=>{const u=oldCreate(b);blobs.set(u,b);return u;};const nativeAnchorClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){const a=this;if(a.download&&a.href.startsWith('blob:')&&blobs.has(a.href)){blobs.get(a.href).text().then(text=>JMAndroidHost.saveText(a.download||'JM_EXPORT.json',text)).catch(err=>console.error(err));return;}return nativeAnchorClick.call(a);};})();";
             view.evaluateJavascript(bridge, null);
         }
     }

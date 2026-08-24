@@ -21,7 +21,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -145,7 +148,7 @@ public final class MainActivity extends Activity {
 
         @Override public void onPageFinished(WebView view, String url) {
             if (!url.startsWith(LOCAL_ORIGIN)) return;
-            String bridge = "(()=>{if(window.__jmAndroidBridge)return;window.__jmAndroidBridge=true;const oldCreate=URL.createObjectURL.bind(URL);const blobs=new Map();URL.createObjectURL=(b)=>{const u=oldCreate(b);blobs.set(u,b);return u;};const nativeAnchorClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){const a=this;if(a.download&&a.href.startsWith('blob:')&&blobs.has(a.href)){blobs.get(a.href).text().then(text=>JMAndroidHost.saveText(a.download||'JM_EXPORT.json',text)).catch(err=>console.error(err));return;}return nativeAnchorClick.call(a);};})();";
+            String bridge = "(()=>{if(window.__jmAndroidBridge)return;window.__jmAndroidBridge=true;const oldCreate=URL.createObjectURL.bind(URL);const blobs=new Map();URL.createObjectURL=(b)=>{const u=oldCreate(b);blobs.set(u,b);return u;};const nativeAnchorClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){const a=this;if(a.download&&a.href.startsWith('blob:')&&blobs.has(a.href)){blobs.get(a.href).text().then(text=>JMAndroidHost.saveText(a.download||'JM_EXPORT.json',text)).catch(err=>console.error(err));return;}return nativeAnchorClick.call(a);};window.__jmAndroidImportText=(text)=>{try{const parsed=JSON.parse(text);const incoming=Array.isArray(parsed)?parsed:parsed.records;if(!Array.isArray(incoming))throw new Error('No records array');if(confirm(`Import ${incoming.length} records? This replaces the current registry view, not the underlying Estate files.`)){records=incoming;nativeTrace.emit('registry.imported',{count:records.length,digest:nativeDigest(records)});render();return true;}return false;}catch(err){alert('Import failed: '+err.message);return false;}};})();";
             view.evaluateJavascript(bridge, null);
         }
     }
@@ -176,13 +179,34 @@ public final class MainActivity extends Activity {
         return cleaned;
     }
 
+    private String readUtf8(Uri uri) throws Exception {
+        try (InputStream in = getContentResolver().openInputStream(uri); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            if (in == null) throw new IllegalStateException("Import document could not be opened.");
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
+            return new String(out.toByteArray(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private void finishFileChooserWithoutUri() {
+        if (fileChooser != null) fileChooser.onReceiveValue(null);
+        fileChooser = null;
+    }
+
     @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMPORT) {
-            Uri[] result = null;
-            if (resultCode == RESULT_OK && data != null && data.getData() != null) result = new Uri[]{data.getData()};
-            if (fileChooser != null) fileChooser.onReceiveValue(result);
-            fileChooser = null;
+            Uri uri = resultCode == RESULT_OK && data != null ? data.getData() : null;
+            finishFileChooserWithoutUri();
+            if (uri != null) {
+                try {
+                    String text = readUtf8(uri);
+                    web.evaluateJavascript("window.__jmAndroidImportText(" + JSONObject.quote(text) + ")", null);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Import failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
             return;
         }
         if (requestCode == SAVE_EXPORT) {

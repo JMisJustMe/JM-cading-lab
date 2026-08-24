@@ -145,7 +145,13 @@ public final class RegistryInstrumentedTest {
             assertEquals("0.2", receipt.getJSONObject("result").getString("version"));
             assertEquals(0, receipt.getJSONObject("result").getJSONArray("issues").length());
 
-            js(web, "window.confirm=()=>true;document.getElementById('importFile').click();'import-requested'");
+            js(web, "window.confirm=()=>true;'import-confirm-ready'");
+            WebView importWeb = web;
+            AtomicReference<Boolean> chooserAccepted = new AtomicReference<>(false);
+            InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> chooserAccepted.set(
+                importWeb.getWebChromeClient().onShowFileChooser(importWeb, value -> {}, null)
+            ));
+            assertTrue("Production WebChromeClient must accept the native import route", chooserAccepted.get());
             waitJsTrue(web, "records.length===1&&records[0].name==='Emulator Import Probe'", 8000);
             assertNoHookError(hookError);
             assertEquals("0", js(web, "auditRecords(false).length"));

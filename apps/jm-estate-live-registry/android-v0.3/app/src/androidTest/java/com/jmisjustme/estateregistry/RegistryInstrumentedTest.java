@@ -4,10 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
-import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.webkit.WebView;
@@ -29,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(AndroidJUnit4.class)
@@ -36,9 +35,8 @@ public final class RegistryInstrumentedTest {
     private static final String KEEPER_SHA256 = "0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38";
 
     @Test public void exactKeeperBootAuditPersistenceImportExportRoundTrip() throws Exception {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        Context target = instrumentation.getTargetContext();
-        Context test = instrumentation.getContext();
+        Context target = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Context test = InstrumentationRegistry.getInstrumentation().getContext();
 
         assertEquals(KEEPER_SHA256, sha256(readAll(target.getAssets().open("registry/index.html"))));
 
@@ -66,42 +64,9 @@ public final class RegistryInstrumentedTest {
             assertEquals("0", js(web, "auditRecords(false).length"));
 
             Uri exportUri = Uri.parse("content://" + TestJsonProvider.AUTHORITY + "/registry-export.json");
-            Instrumentation.ActivityMonitor exportMonitor = instrumentation.addMonitor(
-                new IntentFilter(Intent.ACTION_CREATE_DOCUMENT),
-                new Instrumentation.ActivityResult(
-                    Activity.RESULT_OK,
-                    new Intent().setData(exportUri).addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                ),
-                true
-            );
-            js(web, "document.getElementById('exportBtn').click();'export-requested'");
-            waitMonitorHit(exportMonitor, 5000);
-            String exported = waitRead(test, exportUri, 5000);
-            JSONObject exportedJson = new JSONObject(exported);
-            assertEquals("JM_ESTATE_LIVE_REGISTRY", exportedJson.getString("format"));
-            assertEquals("0.2", exportedJson.getString("version"));
-            assertEquals(20, exportedJson.getJSONArray("records").length());
-            assertTrue(exported.contains("EMULATOR_PERSISTENCE_PROBE"));
-            instrumentation.removeMonitor(exportMonitor);
-
             Uri receiptUri = Uri.parse("content://" + TestJsonProvider.AUTHORITY + "/native-receipt.json");
-            Instrumentation.ActivityMonitor receiptMonitor = instrumentation.addMonitor(
-                new IntentFilter(Intent.ACTION_CREATE_DOCUMENT),
-                new Instrumentation.ActivityResult(
-                    Activity.RESULT_OK,
-                    new Intent().setData(receiptUri).addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                ),
-                true
-            );
-            js(web, "document.getElementById('receiptBtn').click();'receipt-requested'");
-            waitMonitorHit(receiptMonitor, 5000);
-            JSONObject receipt = new JSONObject(waitRead(test, receiptUri, 5000));
-            assertEquals("jm.native.receipt/1.0", receipt.getString("schema"));
-            assertEquals("0.2", receipt.getJSONObject("result").getString("version"));
-            assertEquals(0, receipt.getJSONObject("result").getJSONArray("issues").length());
-            instrumentation.removeMonitor(receiptMonitor);
-
             Uri importUri = Uri.parse("content://" + TestJsonProvider.AUTHORITY + "/registry-import.json");
+
             JSONObject importRecord = new JSONObject();
             importRecord.put("id", "emulator-import");
             importRecord.put("name", "Emulator Import Probe");
@@ -122,31 +87,81 @@ public final class RegistryInstrumentedTest {
             importEnvelope.put("format", "JM_ESTATE_LIVE_REGISTRY");
             importEnvelope.put("version", "0.2");
             importEnvelope.put("records", importRecords);
-            String importBody = importEnvelope.toString();
             try (OutputStream out = test.getContentResolver().openOutputStream(importUri, "wt")) {
                 if (out == null) throw new IllegalStateException("Import probe output stream unavailable");
-                out.write(importBody.getBytes(StandardCharsets.UTF_8));
+                out.write(importEnvelope.toString().getBytes(StandardCharsets.UTF_8));
             }
 
-            Instrumentation.ActivityMonitor importMonitor = instrumentation.addMonitor(
-                new IntentFilter(Intent.ACTION_OPEN_DOCUMENT),
-                new Instrumentation.ActivityResult(
-                    Activity.RESULT_OK,
-                    new Intent().setData(importUri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                ),
-                true
-            );
+            AtomicReference<Throwable> hookError = new AtomicReference<>();
+            AtomicInteger saveRequests = new AtomicInteger();
+            AtomicInteger openRequests = new AtomicInteger();
+            scenario.onActivity(activity -> activity.setDocumentRequestHookForTest((requestCode, intent) -> {
+                try {
+                    assertEquals("application/json", intent.getType());
+                    assertTrue(intent.hasCategory(Intent.CATEGORY_OPENABLE));
+                    if (requestCode == MainActivity.SAVE_EXPORT) {
+                        assertEquals(Intent.ACTION_CREATE_DOCUMENT, intent.getAction());
+                        String title = intent.getStringExtra(Intent.EXTRA_TITLE);
+                        assertTrue(title != null && title.endsWith(".json"));
+                        int which = saveRequests.incrementAndGet();
+                        Uri destination = which == 1 ? exportUri : receiptUri;
+                        activity.onActivityResult(
+                            MainActivity.SAVE_EXPORT,
+                            Activity.RESULT_OK,
+                            new Intent().setData(destination).addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                        );
+                        return true;
+                    }
+                    if (requestCode == MainActivity.PICK_IMPORT) {
+                        assertEquals(Intent.ACTION_OPEN_DOCUMENT, intent.getAction());
+                        openRequests.incrementAndGet();
+                        activity.onActivityResult(
+                            MainActivity.PICK_IMPORT,
+                            Activity.RESULT_OK,
+                            new Intent().setData(importUri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        );
+                        return true;
+                    }
+                    throw new AssertionError("Unexpected document request code: " + requestCode);
+                } catch (Throwable t) {
+                    hookError.compareAndSet(null, t);
+                    return true;
+                }
+            }));
+
+            js(web, "document.getElementById('exportBtn').click();'export-requested'");
+            String exported = waitRead(test, exportUri, 8000);
+            assertNoHookError(hookError);
+            JSONObject exportedJson = new JSONObject(exported);
+            assertEquals("JM_ESTATE_LIVE_REGISTRY", exportedJson.getString("format"));
+            assertEquals("0.2", exportedJson.getString("version"));
+            assertEquals(20, exportedJson.getJSONArray("records").length());
+            assertTrue(exported.contains("EMULATOR_PERSISTENCE_PROBE"));
+
+            js(web, "document.getElementById('receiptBtn').click();'receipt-requested'");
+            JSONObject receipt = new JSONObject(waitRead(test, receiptUri, 8000));
+            assertNoHookError(hookError);
+            assertEquals("jm.native.receipt/1.0", receipt.getString("schema"));
+            assertEquals("0.2", receipt.getJSONObject("result").getString("version"));
+            assertEquals(0, receipt.getJSONObject("result").getJSONArray("issues").length());
+
             js(web, "window.confirm=()=>true;document.getElementById('importFile').click();'import-requested'");
-            waitMonitorHit(importMonitor, 5000);
             waitJsTrue(web, "records.length===1&&records[0].name==='Emulator Import Probe'", 8000);
+            assertNoHookError(hookError);
             assertEquals("0", js(web, "auditRecords(false).length"));
-            instrumentation.removeMonitor(importMonitor);
+            assertEquals(2, saveRequests.get());
+            assertEquals(1, openRequests.get());
 
             js(web, "localStorage.clear();location.reload();'resetting'");
             waitReady(web);
             waitJsTrue(web, "records.length===20", 8000);
             assertEquals("0", js(web, "auditRecords(false).length"));
         }
+    }
+
+    private static void assertNoHookError(AtomicReference<Throwable> hookError) {
+        Throwable t = hookError.get();
+        if (t != null) throw new AssertionError("Document request hook failed", t);
     }
 
     private static WebView webFrom(ActivityScenario<MainActivity> scenario) throws Exception {
@@ -189,15 +204,6 @@ public final class RegistryInstrumentedTest {
         );
         if (!latch.await(8, TimeUnit.SECONDS)) throw new AssertionError("JavaScript callback timed out: " + script);
         return result.get();
-    }
-
-    private static void waitMonitorHit(Instrumentation.ActivityMonitor monitor, long timeoutMs) {
-        long end = SystemClock.uptimeMillis() + timeoutMs;
-        while (SystemClock.uptimeMillis() < end) {
-            if (monitor.getHits() > 0) return;
-            SystemClock.sleep(50);
-        }
-        throw new AssertionError("Expected Android document intent was not emitted.");
     }
 
     private static String waitRead(Context context, Uri uri, long timeoutMs) throws Exception {

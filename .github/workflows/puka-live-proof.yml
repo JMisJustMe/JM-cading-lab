@@ -3,7 +3,7 @@ name: PUKA Source + Live Contact Proof
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, puka-v05-art]
     paths:
       - ".github/workflows/puka-live-proof.yml"
       - "games-beyond/puka/**"
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: puka-proof
+  group: puka-proof-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
-      - name: Checkout current JM Estate
+      - name: Checkout current PUKA descendant
         uses: actions/checkout@v6
         with:
-          ref: main
+          ref: ${{ github.ref_name }}
           fetch-depth: 0
 
       - name: Prove PUKA source body — Code Ding gate
@@ -65,6 +65,7 @@ jobs:
           node games-beyond/puka/puka-layout.test.js
 
       - name: Prove PUKA production contact
+        if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
@@ -112,6 +113,7 @@ jobs:
           PY
 
       - name: Seal PUKA proof receipt
+        if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail

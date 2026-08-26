@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520">
+  <defs>
+    <radialGradient id="halo" cx="50%" cy="48%" r="55%">
+      <stop offset="0" stop-color="#e7c46a" stop-opacity=".13"/>
+      <stop offset=".45" stop-color="#e7c46a" stop-opacity=".045"/>
+      <stop offset="1" stop-color="#e7c46a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="450" cy="260" rx="390" ry="205" fill="url(#halo)"/>
+  <g fill="none" stroke="#e7c46a" stroke-opacity=".17">
+    <ellipse cx="450" cy="260" rx="318" ry="164" stroke-width="3"/>
+    <ellipse cx="450" cy="260" rx="272" ry="136" stroke-width="1.5" stroke-dasharray="4 11"/>
+    <path d="M180 260c50-70 90-104 151-132M720 260c-50-70-90-104-151-132M180 260c50 70 90 104 151 132M720 260c-50 70-90 104-151 132"/>
+    <path d="M332 260c21-43 54-74 118-106 64 32 97 63 118 106-21 43-54 74-118 106-64-32-97-63-118-106Z" stroke-width="2"/>
+  </g>
+  <g transform="translate(450 246)" fill="none" stroke="#efd98a" stroke-opacity=".28" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-64-12c14-33 34-56 64-76 30 20 50 43 64 76-16-8-31-8-45-1L0 0l-19-13c-14-7-29-7-45 1Z"/>
+    <path d="M-49-7l13 55h72L49-7"/>
+    <path d="M-35 47c19 13 51 13 70 0"/>
+  </g>
+  <text x="450" y="339" text-anchor="middle" fill="#efd98a" fill-opacity=".16" font-size="88" font-family="Georgia,serif" font-weight="700">PUKA</text>
+</svg>

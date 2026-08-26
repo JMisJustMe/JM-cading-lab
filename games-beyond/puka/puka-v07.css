@@ -1,0 +1,31 @@
+/* PUKA v0.7A — rank changes the visible court. */
+:root{--court-metal:#8d6d37;--court-light:#d4b567;--court-ring:#7b557d;--court-glow:#d4b56722}
+html[data-court-tier='lower']{--court-metal:#76502b;--court-light:#b18a52;--court-ring:#7b557d;--court-glow:#b18a521b}
+html[data-court-tier='middle']{--court-metal:#9e793d;--court-light:#dfbd68;--court-ring:#9d6f8e;--court-glow:#dfbd6822}
+html[data-court-tier='high']{--court-metal:#b18a44;--court-light:#eed079;--court-ring:#b28f64;--court-glow:#eed07926}
+html[data-court-tier='heir']{--court-metal:#d3bb79;--court-light:#fff0b0;--court-ring:#8c91b7;--court-glow:#fff0b02d}
+html[data-court-tier='throne']{--court-metal:#d5aa4e;--court-light:#ffe48b;--court-ring:#d2a853;--court-glow:#ffe48b35}
+
+html[data-puka-mode='royal'][data-court-tier='lower'] .app{background:linear-gradient(#03050442,#050504c8),url('./assets/court-lower-v07.svg') center top/cover fixed no-repeat,url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,#050505}
+html[data-puka-mode='royal'][data-court-tier='middle'] .app{background:linear-gradient(#03050430,#050504b8),url('./assets/court-middle-v07.svg') center top/cover fixed no-repeat,url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,#050505}
+html[data-puka-mode='royal'][data-court-tier='high'] .app{background:linear-gradient(#02030324,#040303ae),url('./assets/court-high-v07.svg') center top/cover fixed no-repeat,url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,#040404}
+html[data-puka-mode='royal'][data-court-tier='heir'] .app{background:linear-gradient(#0203031f,#040404a6),url('./assets/court-heir-v07.svg') center top/cover fixed no-repeat,url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,#040404}
+html[data-puka-mode='royal'][data-court-tier='throne'] .app{background:linear-gradient(#02010119,#0302029c),url('./assets/court-throne-v07.svg') center top/cover fixed no-repeat,url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,#030202}
+
+html[data-puka-mode='royal'] .table-wrap{box-shadow:inset 0 0 0 3px #120b07,inset 0 0 0 8px #2b170c,inset 0 0 0 12px var(--court-metal),inset 0 0 0 15px #21140b,inset 0 0 0 19px var(--court-light),inset 0 0 0 22px #26170c,inset 0 0 76px #000a,0 30px 82px #000d,0 0 50px var(--court-glow)}
+html[data-puka-mode='portrait'] .table-wrap{box-shadow:inset 0 0 0 2px #160c1b,inset 0 0 0 6px #3d2146,inset 0 0 0 10px var(--court-ring),inset 0 0 0 13px var(--court-light),inset 0 0 0 16px #3d2146,inset 0 0 58px #0008,0 22px 56px #000b,0 0 38px var(--court-glow)}
+
+.court-ribbon{position:relative;gap:7px}.court-ribbon>b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ascent-plaque{display:flex;align-items:center;gap:5px;flex:0 0 auto;padding:2px 6px 2px 3px;border:1px solid #d6ba6d40;border-radius:999px;background:#050706b8}
+.ascent-plaque i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--court-light);background:var(--court-metal);color:#fff0b0;font:700 .7rem Georgia,serif;font-style:normal;box-shadow:0 2px 5px #0007}
+.ascent-plaque em{max-width:88px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--court-light);font:800 .4rem ui-monospace,monospace;letter-spacing:.1em;font-style:normal}
+.seat-rank-seal{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;margin-left:-2px;border-radius:50%;border:1px solid var(--court-light);background:linear-gradient(145deg,var(--court-metal),#2a1a0d);color:#fff0b0;font:700 .8rem Georgia,serif;font-style:normal;box-shadow:0 3px 8px #0008,0 0 12px var(--court-glow)}
+
+html[data-court-tier='lower'] .pot:before{opacity:.42}html[data-court-tier='middle'] .pot:before{opacity:.52}html[data-court-tier='high'] .pot:before{opacity:.62}html[data-court-tier='heir'] .pot:before{opacity:.7}html[data-court-tier='throne'] .pot:before{opacity:.8;filter:drop-shadow(0 10px 12px #000b) drop-shadow(0 0 9px #f3ce6a44)}
+html[data-court-tier='throne'] .pot b{color:#ffe79a;text-shadow:0 2px 0 #654512,0 6px 18px #000,0 0 13px #f7ce6744}
+
+@keyframes pukaCourtGleam{0%{filter:brightness(.92)}40%{filter:brightness(1.12)}100%{filter:none}}
+html[data-court-tier='heir'] .ascent-plaque,html[data-court-tier='throne'] .ascent-plaque{animation:pukaCourtGleam .55s ease-out 1}
+@media(max-width:380px){.ascent-plaque em{display:none}.ascent-plaque{padding-right:3px}.ascent-plaque i{width:16px;height:16px;font-size:.6rem}.seat-rank-seal{width:19px;height:19px;flex-basis:19px;font-size:.68rem}}
+@media(max-height:560px) and (orientation:landscape){.ascent-plaque em{display:none}.seat-rank-seal{width:18px;height:18px;flex-basis:18px;font-size:.62rem}}
+@media(prefers-reduced-motion:reduce){.ascent-plaque{animation:none!important}html[data-puka-mode='royal'] .app{background-attachment:scroll}}

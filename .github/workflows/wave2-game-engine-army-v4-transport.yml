@@ -1,0 +1,25 @@
+name: Wave 2 Game Engine Army v4 transport proof
+
+on:
+  push:
+    branches:
+      - "wave2/game-engine-army-v4-public-source"
+    paths:
+      - "wave2-public/game-engine-army-v4/**"
+      - ".github/workflows/wave2-game-engine-army-v4-transport.yml"
+  pull_request:
+    paths:
+      - "wave2-public/game-engine-army-v4/**"
+      - ".github/workflows/wave2-game-engine-army-v4-transport.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Reconstruct and verify frozen source
+        run: python wave2-public/game-engine-army-v4/rebuild_and_verify.py

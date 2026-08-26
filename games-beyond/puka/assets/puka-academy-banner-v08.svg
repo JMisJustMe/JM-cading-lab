@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" role="img" aria-label="PUKA Academy guild banner">
+<defs>
+ <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7d4d8b" stop-opacity=".26"/><stop offset=".5" stop-color="#3c2446" stop-opacity=".18"/><stop offset="1" stop-color="#214f45" stop-opacity=".22"/></linearGradient>
+ <linearGradient id="trim"><stop stop-color="#ffe8a0" stop-opacity=".4"/><stop offset="1" stop-color="#9f7631" stop-opacity=".22"/></linearGradient>
+</defs>
+<path d="M205 55h590v210l-80 65-88-38-127 68-127-68-88 38-80-65Z" fill="url(#cloth)" stroke="url(#trim)" stroke-width="4"/>
+<path d="M230 82h540v164l-61 47-84-37-125 63-125-63-84 37-61-47Z" fill="none" stroke="url(#trim)" stroke-width="2" stroke-dasharray="5 11" opacity=".75"/>
+<g transform="translate(500 174)" text-anchor="middle">
+ <circle r="92" fill="#0b1612" fill-opacity=".16" stroke="url(#trim)" stroke-width="3"/>
+ <circle r="72" fill="none" stroke="url(#trim)" stroke-width="1.5"/>
+ <text y="10" fill="#fff0b1" fill-opacity=".46" font-family="Georgia,serif" font-weight="700" font-size="42" letter-spacing="5">PUKA</text>
+ <text y="45" fill="#d8d0c2" fill-opacity=".34" font-family="system-ui,sans-serif" font-weight="700" font-size="13" letter-spacing="6">ACADEMY OF THE FOUR SUITS</text>
+</g>
+<g font-family="Georgia,serif" font-weight="700" font-size="50" text-anchor="middle" opacity=".28">
+ <text x="305" y="190" fill="#d85d72">♥</text><text x="385" y="132" fill="#efb74f">♦</text><text x="615" y="132" fill="#69b78f">♣</text><text x="695" y="190" fill="#90a7d8">♠</text>
+</g>
+<path d="M205 55 170 25M795 55 830 25" stroke="url(#trim)" stroke-width="6" stroke-linecap="round"/>
+<circle cx="165" cy="20" r="9" fill="#d6b765" fill-opacity=".45"/><circle cx="835" cy="20" r="9" fill="#d6b765" fill-opacity=".45"/>
+</svg>

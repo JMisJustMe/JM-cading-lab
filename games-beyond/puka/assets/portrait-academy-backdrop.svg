@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1800" role="img" aria-label="PUKA Portrait Academy hall">
+  <defs>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#21172a"/>
+      <stop offset=".48" stop-color="#17232a"/>
+      <stop offset="1" stop-color="#091516"/>
+    </linearGradient>
+    <radialGradient id="windowGlow" cx="50%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#c5e7dd" stop-opacity=".38"/>
+      <stop offset=".5" stop-color="#62a995" stop-opacity=".13"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5f5567"/>
+      <stop offset=".5" stop-color="#2e2835"/>
+      <stop offset="1" stop-color="#18151e"/>
+    </linearGradient>
+    <linearGradient id="banner" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#74456f"/>
+      <stop offset="1" stop-color="#2b1835"/>
+    </linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#182b27"/>
+      <stop offset="1" stop-color="#07100f"/>
+    </linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="22"/></filter>
+  </defs>
+  <rect width="1200" height="1800" fill="url(#wall)"/>
+  <rect width="1200" height="1200" fill="url(#windowGlow)"/>
+
+  <!-- masonry bands -->
+  <g opacity=".22" stroke="#b9a9bd" stroke-width="3" fill="none">
+    <path d="M0 170H1200M0 350H1200M0 535H1200M0 720H1200M0 905H1200"/>
+    <path d="M150 0v170M420 170v180M740 0v170M1010 170v180M245 350v185M590 350v185M930 350v185M120 535v185M470 535v185M820 535v185M1080 535v185"/>
+  </g>
+
+  <!-- tall training-hall arch -->
+  <path d="M250 810V390C250 175 405 70 600 70s350 105 350 320v420" fill="#0b1518" stroke="url(#stone)" stroke-width="42"/>
+  <path d="M320 790V405c0-165 116-260 280-260s280 95 280 260v385" fill="#10242a" stroke="#7c6e80" stroke-opacity=".33" stroke-width="8"/>
+  <path d="M345 735V420c0-140 103-225 255-225s255 85 255 225v315" fill="#183f42" opacity=".72"/>
+  <path d="M600 195v540M345 520h510" stroke="#a5c6bd" stroke-opacity=".22" stroke-width="7"/>
+  <circle cx="600" cy="395" r="72" fill="none" stroke="#bbd8d0" stroke-opacity=".2" stroke-width="8"/>
+  <path d="M600 323l22 45 50 7-36 35 9 50-45-24-45 24 9-50-36-35 50-7z" fill="#d2bd72" opacity=".16"/>
+
+  <!-- academy banners -->
+  <g opacity=".78">
+    <path d="M90 240h150v390l-75-70-75 70z" fill="url(#banner)" stroke="#c7a65c" stroke-opacity=".45" stroke-width="5"/>
+    <path d="M960 240h150v390l-75-70-75 70z" fill="url(#banner)" stroke="#c7a65c" stroke-opacity=".45" stroke-width="5"/>
+    <text x="165" y="420" text-anchor="middle" font-family="Georgia,serif" font-size="112" fill="#e5c96f" opacity=".72">♠</text>
+    <text x="1035" y="420" text-anchor="middle" font-family="Georgia,serif" font-size="112" fill="#e5c96f" opacity=".72">♥</text>
+    <text x="165" y="505" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" letter-spacing="8" fill="#eadca6" opacity=".7">READ</text>
+    <text x="1035" y="505" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" letter-spacing="8" fill="#eadca6" opacity=".7">PLAY</text>
+  </g>
+
+  <!-- sconces -->
+  <g fill="#d7ae55" opacity=".62">
+    <path d="M145 790h40v110h-40zM1015 790h40v110h-40z"/>
+    <circle cx="165" cy="765" r="14"/><circle cx="1035" cy="765" r="14"/>
+  </g>
+  <g fill="#ffd982" opacity=".18" filter="url(#blur)">
+    <circle cx="165" cy="750" r="95"/><circle cx="1035" cy="750" r="95"/>
+  </g>
+
+  <!-- lower hall / floor -->
+  <path d="M0 1030 600 890l600 140v770H0z" fill="url(#floor)"/>
+  <g stroke="#b8a467" stroke-opacity=".12" stroke-width="4">
+    <path d="M600 890v910M445 925 280 1800M755 925 920 1800M300 960 0 1480M900 960l300 520"/>
+    <path d="M85 1230h1030M0 1510h1200"/>
+  </g>
+  <ellipse cx="600" cy="1110" rx="430" ry="130" fill="#000" opacity=".22"/>
+
+  <!-- subtle PUKA floor seal -->
+  <g opacity=".14" fill="none" stroke="#e2c570" stroke-width="8">
+    <circle cx="600" cy="1320" r="185"/>
+    <circle cx="600" cy="1320" r="145" stroke-dasharray="8 18"/>
+    <path d="M600 1195l38 76 84 12-61 59 15 84-76-40-76 40 15-84-61-59 84-12z"/>
+  </g>
+  <text x="600" y="1342" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="70" letter-spacing="18" fill="#e4c878" opacity=".13">PUKA</text>
+</svg>

@@ -1,0 +1,96 @@
+/* PUKA v0.9A — table theatre and focal-composition layer. */
+:root{--v09-street-glow:#e7c76e12;--v09-stage-line:#f3d77c40;--v09-seat:#080c0ad8}
+html[data-table-street='preflop']{--v09-street-glow:#e4c46b12}
+html[data-table-street='flop']{--v09-street-glow:#e7c96f20}
+html[data-table-street='turn']{--v09-street-glow:#edcf742b}
+html[data-table-street='river']{--v09-street-glow:#f4d67b38}
+
+.table-theatre-chrome{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;border-radius:inherit}
+.dealer-medallion{
+  position:absolute;width:50px;height:50px;opacity:0;
+  background:url('./assets/puka-dealer-medallion-v09.svg') center/contain no-repeat;
+  filter:drop-shadow(0 9px 10px #000b);
+  transform:scale(.78) rotate(-8deg);
+  transition:top .35s ease,bottom .35s ease,left .35s ease,right .35s ease,opacity .2s ease,transform .35s ease;
+}
+html[data-dealer-seat='house'] .dealer-medallion{top:82px;right:clamp(24px,12%,90px);bottom:auto;left:auto;opacity:.94;transform:scale(.9) rotate(6deg)}
+html[data-dealer-seat='you'] .dealer-medallion{bottom:96px;left:clamp(24px,12%,90px);top:auto;right:auto;opacity:.96;transform:scale(.96) rotate(-5deg)}
+.seat-plate{display:none;position:absolute;padding:4px 9px;border:1px solid color-mix(in srgb,var(--v08-gold) 38%,transparent);border-radius:999px;background:linear-gradient(180deg,#14110de8,#050706e8);box-shadow:inset 0 1px #fff10,0 5px 13px #0008;color:color-mix(in srgb,var(--v08-gold-hi) 78%,#fff);font:850 .43rem ui-monospace,monospace;letter-spacing:.18em}
+.table-sightline{display:none;position:absolute;height:1px;width:16%;background:linear-gradient(90deg,transparent,var(--v09-stage-line),transparent);box-shadow:0 0 8px var(--v09-street-glow);opacity:.45}
+
+/* Seat plinths create actual depth planes while preserving the existing semantic zones. */
+.zone{position:relative;isolation:isolate;padding:6px 24px}
+.zone>*{position:relative;z-index:1}
+.zone:before{content:'';position:absolute;z-index:0;left:16%;right:16%;height:74%;border:1px solid color-mix(in srgb,var(--v08-gold) 16%,#395347);border-radius:50%;background:radial-gradient(ellipse at center,var(--v09-street-glow),#07120e80 48%,transparent 72%);box-shadow:inset 0 1px #fff09,0 9px 22px #0003;pointer-events:none}
+.opponent.zone:before{top:-4px;border-bottom-color:transparent;transform:perspective(280px) rotateX(-8deg)}
+.you.zone:before{bottom:-4px;border-top-color:transparent;transform:perspective(280px) rotateX(8deg)}
+.opponent.zone .player-label,.you.zone .player-label{min-width:118px;padding:4px 12px!important;border-radius:999px!important}
+.player-label span:before{content:'◉';margin-right:4px;color:var(--v08-gold);font-size:.52rem;text-shadow:0 0 8px var(--v09-street-glow)}
+
+/* Community cards now live on a dedicated five-card runway. */
+.board{
+  position:relative;isolation:isolate;min-height:90px;padding:7px 12px;border-radius:48px;
+  background:url('./assets/puka-board-runway-v09.svg') center/100% 100% no-repeat;
+  filter:drop-shadow(0 7px 15px #0003);
+}
+.board:before{content:'';position:absolute;inset:13% 7%;z-index:-1;border-radius:999px;background:radial-gradient(ellipse at center,var(--v09-street-glow),transparent 72%);box-shadow:0 0 28px var(--v09-street-glow);pointer-events:none}
+.board .playing-card,.board .slot{position:relative;z-index:1}
+.board .slot{border-color:color-mix(in srgb,var(--v08-gold) 20%,#d7e3d02b)!important;background:linear-gradient(145deg,#ffffff04,#0002)!important;box-shadow:inset 0 0 0 1px #0004,inset 0 0 14px #0002}
+html[data-table-street='flop'] .board,html[data-table-street='turn'] .board,html[data-table-street='river'] .board{filter:drop-shadow(0 8px 18px #0005) drop-shadow(0 0 12px var(--v09-street-glow))}
+html[data-table-street='river'] .board .playing-card{box-shadow:0 2px 0 #d7c8a8,0 6px 0 #615644,0 13px 24px #0009,0 0 12px var(--v09-street-glow),inset 0 0 0 1px #fff!important}
+
+/* The centre game line reads as one coherent stage: House → treasury → board → player. */
+.table-state{grid-template-rows:minmax(74px,auto) minmax(68px,auto) minmax(90px,auto) minmax(78px,auto)!important;gap:3px!important}
+.pot{position:relative;margin:-2px auto;z-index:2}
+.pot:before{transition:filter .25s ease,transform .25s ease!important}
+html[data-table-street='turn'] .pot:before{transform:translateY(-1px) scale(1.025)}
+html[data-table-street='river'] .pot:before{transform:translateY(-2px) scale(1.055);filter:drop-shadow(0 12px 12px #000c) drop-shadow(0 0 12px var(--v09-street-glow))!important}
+
+/* Completed hands get a restrained ceremonial frame rather than a generic alert strip. */
+.result{position:relative;overflow:hidden;min-width:min(360px,88%);padding:10px 38px!important;border-radius:999px!important}
+.result:before,.result:after{position:absolute;top:50%;transform:translateY(-52%);color:color-mix(in srgb,var(--v08-gold-hi) 70%,transparent);font:700 .82rem Georgia,serif;opacity:.75}
+.result:before{content:'♛';left:14px}.result:after{content:'♛';right:14px;transform:translateY(-52%) scaleX(-1)}
+html[data-hand-state='ended'] .table-wrap{box-shadow:inset 0 0 0 2px #090604,inset 0 0 0 6px var(--v08-wood),inset 0 0 0 10px var(--v08-wood-hi),inset 0 0 0 13px #160c06,inset 0 0 0 16px var(--v08-gold-low),inset 0 0 0 19px var(--v08-gold),inset 0 0 0 22px #2c1709,inset 0 0 72px #0009,0 30px 78px #000d,0 0 62px color-mix(in srgb,var(--v08-room-glow) 80%,var(--v09-street-glow))!important}
+
+/* Royal Table gains visible table architecture; Portrait remains more intimate. */
+html[data-puka-mode='royal'] .seat-plate,html[data-puka-mode='royal'] .table-sightline{display:block}
+html[data-puka-mode='royal'] .seat-house{top:88px;left:30px}.seat-you{bottom:102px;right:30px}
+html[data-puka-mode='royal'] .sightline-house{top:117px;left:11%;transform:rotate(7deg)}
+html[data-puka-mode='royal'] .sightline-you{bottom:128px;right:11%;transform:rotate(7deg)}
+html[data-puka-mode='royal'] .board{max-width:min(620px,86%);margin-inline:auto}
+html[data-puka-mode='royal'] .opponent.zone:before,html[data-puka-mode='royal'] .you.zone:before{left:24%;right:24%;border-color:color-mix(in srgb,var(--v08-gold) 20%,#263d34)}
+html[data-puka-mode='royal'][data-court-tier='heir'] .seat-plate,html[data-puka-mode='royal'][data-court-tier='throne'] .seat-plate{border-color:color-mix(in srgb,var(--v08-gold-hi) 48%,transparent);box-shadow:inset 0 1px #fff14,0 6px 16px #0009,0 0 16px var(--v08-room-glow)}
+html[data-puka-mode='royal'][data-court-tier='throne'] .board{filter:drop-shadow(0 10px 20px #0007) drop-shadow(0 0 16px #ffd66b25)}
+
+html[data-puka-mode='portrait'] .board{width:calc(100% + 6px);margin-left:-3px;background-size:108% 104%}
+html[data-puka-mode='portrait'] .zone:before{left:10%;right:10%;background:radial-gradient(ellipse at center,color-mix(in srgb,var(--v05-accent) 8%,var(--v09-street-glow)),#15101b65 52%,transparent 74%)}
+html[data-puka-mode='portrait'] .dealer-medallion{width:44px;height:44px}
+html[data-puka-mode='portrait'][data-dealer-seat='house'] .dealer-medallion{top:76px;right:18px}
+html[data-puka-mode='portrait'][data-dealer-seat='you'] .dealer-medallion{bottom:100px;left:18px}
+
+@keyframes pukaV09Runway{0%,100%{opacity:.72}50%{opacity:1}}
+html[data-table-street='river'] .board:before{animation:pukaV09Runway 3.2s ease-in-out infinite}
+
+@media(max-width:420px){
+  .dealer-medallion{width:42px;height:42px}.zone{padding-inline:16px}.zone:before{left:7%;right:7%}
+  .board{min-height:78px;padding:5px 7px;background-size:112% 106%}
+  .table-state{grid-template-rows:minmax(68px,auto) minmax(60px,auto) minmax(78px,auto) minmax(70px,auto)!important}
+  .result{min-width:0;padding:9px 31px!important}.result:before{left:10px}.result:after{right:10px}
+}
+@media(max-width:360px){
+  .zone{padding-inline:10px}.opponent.zone .player-label,.you.zone .player-label{min-width:100px;padding-inline:8px!important}
+  .board{padding-inline:4px;gap:3px!important}.dealer-medallion{width:38px;height:38px}
+}
+@media(max-height:560px) and (orientation:landscape){
+  html[data-puka-mode='royal'] .table-state{grid-template-rows:minmax(52px,auto) minmax(42px,auto) minmax(62px,auto) minmax(52px,auto)!important;gap:0!important}
+  html[data-puka-mode='royal'] .board{min-height:62px;padding-block:2px;max-width:72%}
+  html[data-puka-mode='royal'] .zone{padding-block:2px}.zone:before{height:66%}
+  html[data-puka-mode='royal'] .dealer-medallion{width:36px;height:36px}
+  html[data-puka-mode='royal'][data-dealer-seat='house'] .dealer-medallion{top:62px;right:12%}
+  html[data-puka-mode='royal'][data-dealer-seat='you'] .dealer-medallion{bottom:72px;left:12%}
+  html[data-puka-mode='royal'] .seat-plate,html[data-puka-mode='royal'] .table-sightline{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .dealer-medallion,.pot:before{transition:none!important}
+  html[data-table-street='river'] .board:before{animation:none!important}
+}

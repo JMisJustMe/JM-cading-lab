@@ -30,14 +30,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js manifest.webmanifest sw.js registry.json; do test -s "games-beyond/puka/$f"; done
-          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg; do test -s "games-beyond/puka/assets/$f"; done
+          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-v08-academy.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js manifest.webmanifest sw.js registry.json; do test -s "games-beyond/puka/$f"; done
+          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg puka-academy-banner-v08.svg; do test -s "games-beyond/puka/assets/$f"; done
           grep -Fq 'PUKA v0.8A' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'PUKA v0.8A' games-beyond/puka/index.html
           grep -Fq 'puka-v08.css' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'puka-v08-academy.css' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'jm-puka-v08a' games-beyond/puka/sw.js
           grep -Fq 'puka-table-inlay-v08.svg' games-beyond/puka/puka-v08.css
           grep -Fq 'puka-treasury-v08.svg' games-beyond/puka/puka-v08.css
+          grep -Fq 'puka-academy-banner-v08.svg' games-beyond/puka/puka-v08-academy.css
           grep -Fq "html[data-court-tier='throne'] .table-wrap" games-beyond/puka/puka-v08.css
           grep -Fq "'King':{tier:'throne'" games-beyond/puka/puka-world-v07.js
           grep -Fq "html[data-puka-mode='royal'] .card-spirit{display:none!important}" games-beyond/puka/puka-v06.css
@@ -60,8 +62,9 @@ jobs:
           base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks=[
             ('','PUKA v0.8A'),
-            ('00_OPEN_FIRST.html','puka-v08.css'),
+            ('00_OPEN_FIRST.html','puka-v08-academy.css'),
             ('puka-v08.css','puka-table-inlay-v08.svg'),
+            ('puka-v08-academy.css','puka-academy-banner-v08.svg'),
             ('puka-v07.css','court-throne-v07.svg'),
             ('puka-world-v07.js',"'King':{tier:'throne'"),
             ('puka-v06.css',"html[data-puka-mode='royal'] .card-spirit{display:none!important}"),
@@ -71,6 +74,7 @@ jobs:
             ('puka.css','Phone landscape: true royal composition'),
             ('assets/puka-table-inlay-v08.svg','PUKA ceremonial table inlay'),
             ('assets/puka-treasury-v08.svg','PUKA treasury chip bank'),
+            ('assets/puka-academy-banner-v08.svg','PUKA Academy guild banner'),
             ('assets/court-throne-v07.svg','throne room overlay'),
           ]
           run=os.environ.get('GITHUB_RUN_ID','manual'); pending=checks[:]
@@ -106,10 +110,10 @@ jobs:
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS','public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v08.css','assets/puka-table-inlay-v08.svg','assets/puka-treasury-v08.svg','puka-v07.css','puka-world-v07.js','assets/court-throne-v07.svg'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v08.css','puka-v08-academy.css','assets/puka-table-inlay-v08.svg','assets/puka-treasury-v08.svg','assets/puka-academy-banner-v08.svg','puka-v07.css','puka-world-v07.js','assets/court-throne-v07.svg'],
             'cold_ding':False,'crowned':False,
-            'claim_boundary':'Source/core/layout/art/character/world/material tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character/world/material/academy tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY

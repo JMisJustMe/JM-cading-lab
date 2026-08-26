@@ -1,8 +1,8 @@
 {
-  "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.2",
+  "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.3",
   "workflow": "Deploy Live-Preserving Cloudflare Estate",
   "status": "completed",
-  "conclusion": "success",
+  "conclusion": "cancelled",
   "deployment_proven": true,
   "proof_steps": {
     "assemble": {
@@ -26,15 +26,15 @@
       "conclusion": "success"
     }
   },
-  "receipt_step": "success",
-  "run_id": "32481025159",
-  "run_number": "22",
+  "receipt_step": "cancelled",
+  "run_id": "32916343695",
+  "run_number": "23",
   "run_attempt": "1",
-  "head_sha": "d018898b9c4bed4e3ffc9caa99d1d83612e7dcbf",
+  "head_sha": "ba373d1454bf97f259682b23f7184e7ef67488b1",
   "head_branch": "main",
   "event": "push",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32481025159",
-  "updated_at": "2026-08-21T12:16:08Z",
-  "recorded_at_utc": "2026-08-21T12:16:18Z",
-  "boundary": "Proof organs are matched by governed aliases, so harmless wording changes cannot turn a successful deployment into a false missing result."
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32916343695",
+  "updated_at": "2026-08-26T00:45:59Z",
+  "recorded_at_utc": "2026-08-26T00:46:06Z",
+  "boundary": "Observer records inspected step evidence and validates the deployment-owned receipt; it does not overwrite deployment truth."
 }

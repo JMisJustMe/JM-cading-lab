@@ -37,6 +37,7 @@ jobs:
           test -s games-beyond/puka/puka.css
           test -s games-beyond/puka/puka-art.css
           test -s games-beyond/puka/puka-v05.css
+          test -s games-beyond/puka/puka-v05-room.css
           test -s games-beyond/puka/puka-cards-v05.js
           test -s games-beyond/puka/manifest.webmanifest
           test -s games-beyond/puka/sw.js
@@ -44,14 +45,17 @@ jobs:
           test -s games-beyond/puka/assets/puka-card-back.svg
           test -s games-beyond/puka/assets/royal-felt-medallion.svg
           test -s games-beyond/puka/assets/royal-room-backdrop.svg
+          test -s games-beyond/puka/assets/portrait-academy-backdrop.svg
           test -s games-beyond/puka/assets/puka-chip-stack.svg
           test -s games-beyond/puka/assets/felt-grain.svg
           grep -Fq 'PUKA v0.5A' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'PUKA v0.5A' games-beyond/puka/index.html
           grep -Fq 'puka-v05.css' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'puka-v05-room.css' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'puka-cards-v05.js' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq 'jm-puka-v05a' games-beyond/puka/sw.js
           grep -Fq 'Card body: actual card composition' games-beyond/puka/puka-v05.css
+          grep -Fq 'portrait-academy-backdrop.svg' games-beyond/puka/puka-v05-room.css
           grep -Fq 'const PIPS' games-beyond/puka/puka-cards-v05.js
           grep -Fq "isPhone()" games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
@@ -72,6 +76,7 @@ jobs:
               ('', 'PUKA v0.5A'),
               ('00_OPEN_FIRST.html', 'puka-cards-v05.js'),
               ('puka-v05.css', 'Card body: actual card composition'),
+              ('puka-v05-room.css', 'portrait-academy-backdrop.svg'),
               ('puka-cards-v05.js', 'const PIPS'),
               ('puka-art.css', 'Royal Table gets its own room'),
               ('puka-core.js', 'PUKA CORE v0.2A'),
@@ -80,6 +85,7 @@ jobs:
               ('assets/puka-card-back.svg', 'PUKA'),
               ('assets/royal-felt-medallion.svg', 'PUKA'),
               ('assets/royal-room-backdrop.svg', '<svg'),
+              ('assets/portrait-academy-backdrop.svg', 'PUKA Portrait Academy hall'),
               ('assets/puka-chip-stack.svg', '<svg'),
               ('assets/felt-grain.svg', 'feTurbulence'),
           ]
@@ -121,8 +127,8 @@ jobs:
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS','public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-cards-v05.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v05.css','puka-cards-v05.js','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-cards-v05.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v05.css','puka-v05-room.css','puka-cards-v05.js','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/portrait-academy-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
             'cold_ding':False,'crowned':False,
             'claim_boundary':'Source/core/layout/art tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }

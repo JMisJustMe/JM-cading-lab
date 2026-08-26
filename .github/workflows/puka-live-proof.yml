@@ -3,7 +3,7 @@ name: PUKA Source + Live Contact Proof
 on:
   workflow_dispatch:
   push:
-    branches: [main, puka-v06-character]
+    branches: [main, puka-v07-court-ascent]
     paths:
       - ".github/workflows/puka-live-proof.yml"
       - "games-beyond/puka/**"
@@ -30,39 +30,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test -s games-beyond/puka/00_OPEN_FIRST.html
-          test -s games-beyond/puka/index.html
-          test -s games-beyond/puka/puka-core.js
-          test -s games-beyond/puka/puka-ui.js
-          test -s games-beyond/puka/puka.css
-          test -s games-beyond/puka/puka-art.css
-          test -s games-beyond/puka/puka-v05.css
-          test -s games-beyond/puka/puka-v05-room.css
-          test -s games-beyond/puka/puka-v06.css
-          test -s games-beyond/puka/puka-cards-v05.js
-          test -s games-beyond/puka/puka-character-v06.js
-          test -s games-beyond/puka/manifest.webmanifest
-          test -s games-beyond/puka/sw.js
-          test -s games-beyond/puka/registry.json
-          test -s games-beyond/puka/assets/puka-card-back.svg
-          test -s games-beyond/puka/assets/royal-felt-medallion.svg
-          test -s games-beyond/puka/assets/royal-room-backdrop.svg
-          test -s games-beyond/puka/assets/portrait-academy-backdrop.svg
-          test -s games-beyond/puka/assets/puka-chip-stack.svg
-          test -s games-beyond/puka/assets/felt-grain.svg
-          grep -Fq 'PUKA v0.6A' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'PUKA v0.6A' games-beyond/puka/index.html
-          grep -Fq 'puka-v06.css' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'puka-character-v06.js' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'jm-puka-v06a' games-beyond/puka/sw.js
-          grep -Fq "html[data-puka-mode='portrait'] .hero-card .card-spirit" games-beyond/puka/puka-v06.css
+          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js manifest.webmanifest sw.js registry.json; do test -s "games-beyond/puka/$f"; done
+          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg; do test -s "games-beyond/puka/assets/$f"; done
+          grep -Fq 'PUKA v0.7A' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'PUKA v0.7A' games-beyond/puka/index.html
+          grep -Fq 'puka-v07.css' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'puka-world-v07.js' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'jm-puka-v07a' games-beyond/puka/sw.js
+          grep -Fq "'King':{tier:'throne'" games-beyond/puka/puka-world-v07.js
+          grep -Fq "'Heir':{tier:'heir'" games-beyond/puka/puka-world-v07.js
+          grep -Fq 'court-throne-v07.svg' games-beyond/puka/puka-v07.css
           grep -Fq "html[data-puka-mode='royal'] .card-spirit{display:none!important}" games-beyond/puka/puka-v06.css
-          grep -Fq 'const seenCards=new Set()' games-beyond/puka/puka-character-v06.js
-          grep -Fq "isPhone()" games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-cards-v05.js
           node --check games-beyond/puka/puka-character-v06.js
+          node --check games-beyond/puka/puka-world-v07.js
           node games-beyond/puka/puka-core.test.js
           node games-beyond/puka/puka-layout.test.js
 
@@ -72,48 +55,39 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import os, time
-          from urllib.request import Request, urlopen
-          base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka/'
-          checks = [
-              ('', 'PUKA v0.6A'),
-              ('00_OPEN_FIRST.html', 'puka-character-v06.js'),
-              ('puka-v06.css', "html[data-puka-mode='portrait'] .hero-card .card-spirit"),
-              ('puka-character-v06.js', 'const seenCards=new Set()'),
-              ('puka-v05.css', 'Card body: actual card composition'),
-              ('puka-v05-room.css', 'portrait-academy-backdrop.svg'),
-              ('puka-cards-v05.js', 'const PIPS'),
-              ('puka-art.css', 'Royal Table gets its own room'),
-              ('puka-core.js', 'PUKA CORE v0.2A'),
-              ('puka-ui.js', 'orientation: portrait'),
-              ('puka.css', 'Phone landscape: true royal composition'),
-              ('assets/puka-card-back.svg', 'PUKA'),
-              ('assets/royal-felt-medallion.svg', 'PUKA'),
-              ('assets/royal-room-backdrop.svg', '<svg'),
-              ('assets/portrait-academy-backdrop.svg', 'PUKA Portrait Academy hall'),
-              ('assets/puka-chip-stack.svg', '<svg'),
-              ('assets/felt-grain.svg', 'feTurbulence'),
+          import os,time
+          from urllib.request import Request,urlopen
+          base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
+          checks=[
+            ('','PUKA v0.7A'),
+            ('00_OPEN_FIRST.html','puka-world-v07.js'),
+            ('puka-v07.css','court-throne-v07.svg'),
+            ('puka-world-v07.js',"'King':{tier:'throne'"),
+            ('puka-v06.css',"html[data-puka-mode='royal'] .card-spirit{display:none!important}"),
+            ('puka-v05.css','Card body: actual card composition'),
+            ('puka-core.js','PUKA CORE v0.2A'),
+            ('puka-ui.js','orientation: portrait'),
+            ('puka.css','Phone landscape: true royal composition'),
+            ('assets/court-lower-v07.svg','lower court chamber overlay'),
+            ('assets/court-middle-v07.svg','court training chamber overlay'),
+            ('assets/court-high-v07.svg','royal service hall overlay'),
+            ('assets/court-heir-v07.svg','heir chamber overlay'),
+            ('assets/court-throne-v07.svg','throne room overlay'),
           ]
-          run = os.environ.get('GITHUB_RUN_ID', 'manual')
-          pending = checks[:]
-          for attempt in range(1, 31):
-              next_pending = []
-              for rel, marker in pending:
-                  url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
-                  try:
-                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.6A','Cache-Control':'no-cache'})
-                      with urlopen(req, timeout=15) as response:
-                          body = response.read().decode('utf-8', 'replace')
-                          code = response.status
-                  except Exception as exc:
-                      print('WAIT', rel or '/', type(exc).__name__)
-                      next_pending.append((rel, marker)); continue
-                  if code == 200 and marker in body: print('LIVE PASS', rel or '/', marker)
-                  else: next_pending.append((rel, marker))
-              if not next_pending:
-                  pending=[]; break
-              pending=next_pending; time.sleep(2)
-          if pending: raise SystemExit('PUKA LIVE CONTACT FAILED: ' + ', '.join(rel or '/' for rel,_ in pending))
+          run=os.environ.get('GITHUB_RUN_ID','manual'); pending=checks[:]
+          for attempt in range(1,31):
+            nxt=[]
+            for rel,marker in pending:
+              try:
+                req=Request(f'{base}{rel}?jm-puka-proof={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Proof/0.7A','Cache-Control':'no-cache'})
+                with urlopen(req,timeout=15) as r: body=r.read().decode('utf-8','replace'); code=r.status
+              except Exception:
+                nxt.append((rel,marker)); continue
+              if code==200 and marker in body: print('LIVE PASS',rel or '/',marker)
+              else: nxt.append((rel,marker))
+            if not nxt: pending=[]; break
+            pending=nxt; time.sleep(2)
+          if pending: raise SystemExit('PUKA LIVE CONTACT FAILED: '+', '.join(rel or '/' for rel,_ in pending))
           PY
 
       - name: Seal PUKA proof receipt
@@ -122,28 +96,28 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json, os
-          from datetime import datetime, timezone
+          import json,os
+          from datetime import datetime,timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.ProofReceipt/0.6A',
+            'schema':'JM.PUKA.ProofReceipt/0.7A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS','public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-cards-v05.js','puka-character-v06.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v06.css','puka-character-v06.js','puka-v05.css','puka-v05-room.css','puka-cards-v05.js','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/portrait-academy-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v07.css','puka-world-v07.js','assets/court-lower-v07.svg','assets/court-middle-v07.svg','assets/court-high-v07.svg','assets/court-heir-v07.svg','assets/court-throne-v07.svg'],
             'cold_ding':False,'crowned':False,
-            'claim_boundary':'Source/core/layout/art/character tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character/world tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.6A source and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.7A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0

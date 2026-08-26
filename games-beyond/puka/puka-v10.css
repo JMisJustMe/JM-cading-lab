@@ -1,0 +1,164 @@
+/* PUKA v0.10A — living-table physicality and restrained cinematic feedback. */
+:root{
+  --v10-chip-glow:#e8c86820;
+  --v10-board-flash:#ffe69a24;
+  --v10-atmosphere:#e9c86812;
+  --v10-seat-shadow:#0009;
+}
+html[data-court-tier='lower']{--v10-atmosphere:#c1945210}
+html[data-court-tier='middle']{--v10-atmosphere:#d4ac5916}
+html[data-court-tier='high']{--v10-atmosphere:#e1bd681d}
+html[data-court-tier='heir']{--v10-atmosphere:#efd88b26}
+html[data-court-tier='throne']{--v10-atmosphere:#ffd66c32}
+
+/* Court atmosphere uses the existing theatre chrome so it remains presentation-only. */
+.table-theatre-chrome:before,.table-theatre-chrome:after{
+  content:'';
+  position:absolute;
+  top:8%;bottom:8%;
+  width:28%;
+  pointer-events:none;
+  opacity:.42;
+  filter:blur(1px);
+}
+.table-theatre-chrome:before{
+  left:-8%;
+  background:radial-gradient(ellipse at 35% 42%,var(--v10-atmosphere),transparent 52%);
+}
+.table-theatre-chrome:after{
+  right:-8%;
+  background:radial-gradient(ellipse at 65% 42%,var(--v10-atmosphere),transparent 52%);
+}
+html[data-puka-mode='royal'][data-court-tier='heir'] .table-theatre-chrome:before,
+html[data-puka-mode='royal'][data-court-tier='heir'] .table-theatre-chrome:after,
+html[data-puka-mode='royal'][data-court-tier='throne'] .table-theatre-chrome:before,
+html[data-puka-mode='royal'][data-court-tier='throne'] .table-theatre-chrome:after{opacity:.75}
+html[data-puka-mode='portrait'] .table-theatre-chrome:before{background:radial-gradient(ellipse at 35% 42%,color-mix(in srgb,var(--v05-accent) 15%,transparent),transparent 52%)}
+html[data-puka-mode='portrait'] .table-theatre-chrome:after{background:radial-gradient(ellipse at 65% 42%,#60c4a515,transparent 52%)}
+
+/* Visible chip values become physical banks. No gameplay values are created here. */
+.living-chip-bank{
+  position:absolute;
+  z-index:6;
+  width:82px;
+  height:52px;
+  pointer-events:none;
+  filter:drop-shadow(0 9px 8px #0008);
+}
+.living-chip-bank:after{
+  content:'';
+  position:absolute;
+  left:12%;right:12%;bottom:1px;
+  height:8px;
+  border-radius:50%;
+  background:#0008;
+  filter:blur(4px);
+  z-index:-1;
+}
+.living-chip-bank i{
+  position:absolute;
+  left:calc(2px + (var(--chip-i) * 15px));
+  bottom:0;
+  width:42px;
+  height:51px;
+  background:url('./assets/puka-chip-column-v10.svg') center bottom/contain no-repeat;
+  transform-origin:50% 100%;
+  transform:translateY(calc(var(--chip-i) * -2px)) scale(calc(1 - (var(--chip-i) * .025)));
+  opacity:calc(1 - (var(--chip-i) * .045));
+}
+.chip-house{right:7%;top:46px;transform:scale(.76) rotate(3deg);opacity:.72;filter:grayscale(.22) saturate(.7) drop-shadow(0 8px 8px #0007)}
+.chip-you{left:7%;bottom:43px;transform:scale(.86) rotate(-3deg)}
+.chip-pot{left:50%;bottom:-3px;transform:translateX(-50%) scale(.82);z-index:-1;opacity:.9}
+.chip-level-1{width:48px}.chip-level-2{width:61px}.chip-level-3{width:72px}.chip-level-4{width:84px}.chip-level-5{width:98px}
+.chip-level-5 i:nth-child(5){filter:brightness(1.08) saturate(1.08)}
+html[data-puka-suit='hearts'] .chip-you{filter:hue-rotate(290deg) saturate(.88) drop-shadow(0 8px 8px #0008)}
+html[data-puka-suit='diamonds'] .chip-you{filter:hue-rotate(36deg) saturate(.92) brightness(1.06) drop-shadow(0 8px 8px #0008)}
+html[data-puka-suit='clubs'] .chip-you{filter:saturate(1.08) drop-shadow(0 8px 8px #0008)}
+html[data-puka-suit='spades'] .chip-you{filter:hue-rotate(120deg) saturate(.72) drop-shadow(0 8px 8px #0008)}
+
+/* The centre bank and printed pot remain readable above the physical chips. */
+.pot{isolation:isolate}
+.pot>span,.pot>b,.pot>small{position:relative;z-index:4}
+.pot .chip-pot{z-index:0}
+.pot:before{z-index:1!important;opacity:.48!important}
+.pot:after{z-index:-1!important}
+
+/* Board arrival is a runway response to newly visible cards, not a second deal animation. */
+.board{overflow:visible}
+.board.board-reveal-wave:after{
+  content:'';
+  position:absolute;
+  z-index:-1;
+  left:4%;right:4%;top:14%;bottom:14%;
+  border-radius:999px;
+  background:radial-gradient(ellipse at center,var(--v10-board-flash),transparent 67%);
+  box-shadow:0 0 26px var(--v10-board-flash);
+  pointer-events:none;
+  animation:pukaV10BoardWave .62s ease-out both;
+}
+@keyframes pukaV10BoardWave{
+  0%{opacity:0;transform:scaleX(.58) scaleY(.7)}
+  38%{opacity:1;transform:scaleX(1.04) scaleY(1)}
+  100%{opacity:0;transform:scaleX(1.13) scaleY(1.04)}
+}
+html[data-board-count='3'] .board{--v10-board-flash:#f3d07120}
+html[data-board-count='4'] .board{--v10-board-flash:#f5d77728}
+html[data-board-count='5'] .board{--v10-board-flash:#ffe28b34}
+html[data-board-count='5'] .board:before{box-shadow:0 0 36px #f2d37718!important}
+
+/* Chip value changes settle with mass rather than bouncing like an arcade counter. */
+@keyframes pukaV10ChipSettle{
+  0%{transform:translateX(-50%) translateY(-6px) scale(.76);filter:brightness(1.22) drop-shadow(0 0 12px var(--v10-chip-glow))}
+  55%{transform:translateX(-50%) translateY(1px) scale(.85);filter:brightness(1.05) drop-shadow(0 9px 8px #0008)}
+  100%{transform:translateX(-50%) translateY(0) scale(.82);filter:drop-shadow(0 9px 8px #0008)}
+}
+.chip-pot.chip-bank-change{animation:pukaV10ChipSettle .34s cubic-bezier(.2,.78,.2,1)}
+
+/* Court cards receive a subtle printed-foil layer. Royal stays formal; Portrait retains faces. */
+.playing-card[data-puka-court-foil='1'] .court-art{
+  box-shadow:inset 0 0 0 1px #fff8,inset 0 0 18px color-mix(in srgb,var(--v05-accent) 10%,transparent),0 0 8px #0001;
+}
+.playing-card[data-puka-court-foil='1'] .court-art:before{
+  width:130%;height:52%;
+  left:-18%;top:-18%;
+  transform:rotate(-28deg)!important;
+  background:linear-gradient(90deg,transparent,#fff7 46%,color-mix(in srgb,var(--v05-accent) 18%,transparent) 55%,transparent 72%)!important;
+  opacity:.44;
+  mix-blend-mode:screen;
+}
+.playing-card[data-puka-court-foil='1'] .court-art:after{
+  width:110%;height:1px;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--v05-accent) 45%,#c9a64e),transparent)!important;
+  opacity:.7;
+}
+html[data-puka-mode='royal'] .playing-card[data-puka-court-foil='1']{border-color:color-mix(in srgb,var(--v08-gold-hi) 42%,#a99775)!important}
+html[data-puka-mode='portrait'] .playing-card[data-puka-court-foil='1'] .court-art{background:linear-gradient(145deg,color-mix(in srgb,var(--v05-accent) 11%,#ead5a8),#fff9 45%,color-mix(in srgb,var(--v05-accent) 8%,#d2b877))}
+
+/* Higher courts feel calmer and more assured rather than simply brighter. */
+html[data-puka-mode='royal'][data-court-tier='high'] .table-wrap,
+html[data-puka-mode='royal'][data-court-tier='heir'] .table-wrap,
+html[data-puka-mode='royal'][data-court-tier='throne'] .table-wrap{background-image:linear-gradient(116deg,#ffffff08 0,transparent 16%,transparent 64%,#ffda6708 100%),radial-gradient(ellipse at 50% 31%,#ffffff0c,transparent 23%),radial-gradient(ellipse at 50% 37%,#2e8269 0,#17604e 38%,#0d493d 68%,#062821 100%)!important}
+html[data-puka-mode='royal'][data-court-tier='throne'] .table-theatre-chrome{filter:drop-shadow(0 0 20px #ffd66b14)}
+html[data-puka-mode='royal'][data-court-tier='throne'] .dealer-medallion{filter:drop-shadow(0 9px 10px #000b) drop-shadow(0 0 10px #ffd76b28)}
+
+/* Seat chips never compete with decision controls on phone. */
+@media(max-width:420px){
+  .chip-house{right:2%;top:42px;transform:scale(.58) rotate(3deg)}
+  .chip-you{left:2%;bottom:39px;transform:scale(.64) rotate(-3deg)}
+  .chip-pot{bottom:-1px;transform:translateX(-50%) scale(.68)}
+  .living-chip-bank{height:44px}.living-chip-bank i{width:36px;height:44px;left:calc(1px + (var(--chip-i) * 12px))}
+  .chip-level-5{width:80px}
+}
+@media(max-width:360px){
+  .chip-house,.chip-you{opacity:.58}.chip-house{right:-4%}.chip-you{left:-4%}
+  .chip-pot{transform:translateX(-50%) scale(.61)}
+}
+@media(max-height:560px) and (orientation:landscape){
+  html[data-puka-mode='royal'] .chip-house,html[data-puka-mode='royal'] .chip-you{display:none}
+  html[data-puka-mode='royal'] .chip-pot{bottom:-5px;transform:translateX(-50%) scale(.55)}
+  html[data-puka-mode='royal'] .table-theatre-chrome:before,html[data-puka-mode='royal'] .table-theatre-chrome:after{opacity:.28}
+}
+@media(prefers-reduced-motion:reduce){
+  .board.board-reveal-wave:after,.chip-pot.chip-bank-change{animation:none!important}
+  .table-theatre-chrome:before,.table-theatre-chrome:after{filter:none}
+}

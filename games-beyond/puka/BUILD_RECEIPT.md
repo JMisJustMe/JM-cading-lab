@@ -1,4 +1,4 @@
-# PUKA v0.6A — BUILD RECEIPT
+# PUKA v0.7A — BUILD RECEIPT
 
 **Parent:** Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
@@ -11,29 +11,28 @@
 - Portrait Academy + Royal Table routes from the same state
 - heads-up Texas Hold'em teaching loop
 - bankroll persistence, royal XP ladder and psychology evidence separation
-- orientation-led portrait/landscape composition
+- v0.5 card illustration body
+- v0.6 Portrait character / Royal realism split
 - one singular live direct door
 
-## v0.5A inherited visual body
+## v0.7A visible court ascent
 
-- multi-pip numbered cards, PUKA Ace seal and geometric J/Q/K court-card illustrations
-- physical card paper/edge/shadow treatment
-- deep felt/rail/pot/button materials
-- original Royal Table and Portrait Academy environment art
-- small-screen and short-landscape fit guards
+Royal progression now changes the world rather than only changing a text label.
 
-## v0.6A presentation split
-
-- added `puka-character-v06.js` as a presentation-only character/motion organ
-- added `puka-v06.css` as its visual body
-- Portrait Academy player cards gain small readable faces and expressions
-- expressions are driven only by visible state: ready, focus, watch, joy or rueful
-- expression state is explicitly presentation, not a claim about hidden psychology
-- Royal Table suppresses character faces and retains formal/cinematic card treatment
-- card arrival motion is session-aware so already-seen cards do not animate on every rerender
-- pot emphasis moves only when the displayed pot value actually changes
-- `prefers-reduced-motion` removes nonessential movement
-- the working poker core remains untouched
+- `puka-world-v07.js` reads the existing rank and room state and derives presentation-only court tier
+- Pauper / Servant → lower court
+- Jester / Squire → court training
+- Knight / Courtier → royal service
+- Heir → succession chamber
+- King / Queen → throne room
+- added original environment overlays for lower, middle, high, heir and throne tiers
+- Royal Table changes room dressing and table materials with the tier
+- a compact court-stage plaque is added to the table ribbon
+- the player's seat carries a rank seal
+- pot ceremony and material richness increase with rank
+- Portrait Academy remains visually distinct but inherits restrained achievement materials
+- narrow-phone, short-landscape and reduced-motion protections remain active
+- poker rules and royal XP thresholds remain in the existing core; the v0.7 organ does not duplicate progression logic
 
 ## Delivery default
 
@@ -43,4 +42,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.6A descendant may pass source/core/layout/art/character checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+The v0.7A descendant may pass source/core/layout/art/character/world checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

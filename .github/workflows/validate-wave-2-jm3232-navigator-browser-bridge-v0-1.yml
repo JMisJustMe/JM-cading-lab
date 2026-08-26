@@ -1,0 +1,131 @@
+name: Validate Wave 2 JM3232 Navigator Browser Bridge v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/**'
+      - '.github/workflows/validate-wave-2-jm3232-navigator-browser-bridge-v0-1.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-navigator-browser-bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify every live carriage Git object
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage')
+          rows=(root/'FINAL_CARRIER_LEDGER.tsv').read_text().splitlines()[1:]
+          assert len(rows)==98, len(rows)
+          for row in rows:
+              rel,size,expected=row.split('\t')
+              p=root/rel
+              assert p.stat().st_size==int(size), (rel,p.stat().st_size,size)
+              got=subprocess.check_output(['git','hash-object',str(p)],text=True).strip()
+              assert got==expected,(rel,got,expected)
+          print('98/98 live carriage Git-object identities PASS')
+          PY
+
+      - name: Reconstruct exact public source
+        run: |
+          python estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstruct_navigator_bridge.py
+
+      - name: Verify publication manifest and authority hashes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json
+          root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1')
+          m=json.loads((root/'SOURCE_PUBLICATION_MANIFEST.json').read_text())
+          assert m['authority']['public_archive']=={'format':'ustar.xz','bytes':433440,'sha256':'c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283','members':35}
+          body=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1'
+          assert len([p for p in body.rglob('*') if p.is_file()])==35
+          sm=json.loads((body/'data/SOURCE_MANIFEST.json').read_text())
+          assert sm['counts']['lexicon_entries']==640
+          assert sm['counts']['browser_bodies']==20
+          assert sm['counts']['search_documents']==881
+          for name,expected in m['source_authorities'].items():
+              got=hashlib.sha256((body/'source_authorities'/name).read_bytes()).hexdigest()
+              assert got==expected,(name,got,expected)
+          print('manifest + authority identity PASS')
+          PY
+
+      - name: Compile Python source
+        run: |
+          B=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1
+          python -m py_compile "$B/server.py" "$B/bridge/core.py" "$B/scripts/extract_authorities.py" "$B/scripts/run_mcp_proof.py" "$B/tests/test_bridge.py"
+
+      - name: Re-run authority extraction and corpus counts
+        run: |
+          B=$PWD/estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1
+          cd "$B"
+          python scripts/extract_authorities.py > /tmp/extract.txt
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('data/SOURCE_MANIFEST.json').read_text())
+          assert m['counts']=={'lexicon_entries':640,'browser_bodies':20,'builtin_docs':3,'estate_bodies':64,'public_bodies':53,'search_documents':881}
+          print('640 lexicon / 881 search corpus re-extraction PASS')
+          PY
+
+      - name: Install runtime requirements and run 9 tests
+        run: |
+          B=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1
+          python -m pip install --disable-pip-version-check -q -r "$B/requirements.txt" pytest
+          cd "$B"
+          pytest -q
+
+      - name: Verify ten-tool and Stringdoor interface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          b=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1')
+          server=(b/'server.py').read_text()
+          core=(b/'bridge/core.py').read_text()
+          widget=(b/'public/navigator-stringdoor-v0.1.html').read_text()
+          required=['search','fetch','stringdoor','rootword','lineage','stringmark','register','stringreceipt','savepack','status']
+          joined=(server+core).lower()
+          assert not [x for x in required if x not in joined]
+          assert 'WIDGET_URI = "ui://jm3232-navigator/stringdoor-v0.1.html"' in core
+          assert 'navigator_open_stringdoor' in server
+          assert 'navigator-stringdoor-v0.1.html' in server
+          assert 'JM3232 Stringdoor' in widget
+          print('ten-tool semantic surface + actual Stringdoor route PASS')
+          PY
+
+      - name: Public-safety and binary exclusion scan
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1')
+          bad_names={'.jks','.keystore','.p12','.pfx','.apk','.aab','.apks'}
+          assert not [p for p in root.rglob('*') if p.is_file() and p.suffix.lower() in bad_names]
+          pats=[rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',rb'-----BEGIN PRIVATE KEY-----',rb'gh[pousr]_[A-Za-z0-9_]{20,}',rb'sk-[A-Za-z0-9_-]{20,}',rb'AKIA[0-9A-Z]{16}',rb'(?i)(?:password|api[_-]?key|secret|token)\s*[:=]\s*["\'][^"\']{8,}["\']']
+          hits=[]
+          for p in root.rglob('*'):
+              if p.is_file():
+                  data=p.read_bytes()
+                  for pat in pats:
+                      if re.search(pat,data): hits.append((str(p),pat.decode('ascii','ignore')))
+          assert not hits,hits
+          print('public-safety/signing/binary exclusion PASS')
+          PY
+
+      - name: Preserve bounded claim boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/SOURCE_PUBLICATION_MANIFEST.json').read_text())
+          required={'HTTPS deployment','ChatGPT Developer Mode connection','signed-in host approvals','owner physical desktop proof','Final Ding'}
+          assert required.issubset(set(m['claim_boundary']['open']))
+          print('OPEN deployment/contact/Ding boundary PASS')
+          PY

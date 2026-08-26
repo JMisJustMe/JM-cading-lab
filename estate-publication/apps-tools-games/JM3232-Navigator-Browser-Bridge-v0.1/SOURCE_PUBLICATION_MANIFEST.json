@@ -1,0 +1,36 @@
+{
+  "schema": "jm.wave2.navigator-browser-bridge.publication/0.2",
+  "authority": {
+    "governed_zip": {
+      "bytes": 1715467,
+      "sha256": "3f3710376307d34b45bb1d0de0c69c1089f3855d277ce1afaeeb47f4594375f7"
+    },
+    "public_archive": {
+      "format": "ustar.xz",
+      "bytes": 433440,
+      "sha256": "c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283",
+      "members": 35
+    }
+  },
+  "carrier": {
+    "prefix": {"files": 37, "encoding": "base64", "decoded_bytes": 286875},
+    "bridge": {
+      "files": ["part-001.b64","part-002.b64","part-003.b64","part-004a.b64","part-004b.b64","part-005.b64","part-006.b64","part-007.b64","part-008.b64"],
+      "encoding": "base64",
+      "decoded_bytes": 11250
+    },
+    "packed": {"files": 19, "encoding": "jm14-u4e00-msb", "decoded_bytes": 86450},
+    "ascii": {"files": 33, "encoding": "base64", "decoded_bytes": 48865},
+    "ledger": "source-carriage/FINAL_CARRIER_LEDGER.tsv"
+  },
+  "source_authorities": {
+    "01_JM_ESTATE_HEAD_REGISTRY_v0_2_3.json": "d73aae7d8fcdd9d9eacee0ef8aeeb56bf53a4ec880307512fd6ad746bd6b92fb",
+    "04_JM_ESTATE_PUBLIC_SUBSET_v0_2.json": "935915b2891e68031fa525b5d297f4077f4f52054f7a964a442c412ae649369c",
+    "JM3232_UNIFIED_BROWSER_v1_0_OPEN.html": "c56395f209087f7a118fb81c2c7db5990c04f2b038d5072b93aae73fc6e11f36",
+    "RADIUS_LEXICON_v1_0_OPEN.html": "567403d9cf04a8238d02e016b026ec94230bd2858935c5d8a56b12c37bdb222c"
+  },
+  "expected_counts": {"lexicon_entries":640,"browser_bodies":20,"search_documents":881,"tests":9,"mcp_tools":10},
+  "prior_carriage_receipt": {"status":"PRESERVED_IN_ANCESTRY_NOT_LIVE","failure":"connected-text truncation","old_part_01_actual_bytes":19999,"old_part_01_expected_bytes":144480},
+  "laws": ["SOURCE IDENTITY != CARRIER IDENTITY","ACCEPTED WRITE != EXACT WRITE","MERGEABLE != PROVED","NO DING, NO CLAIM"],
+  "claim_boundary": {"open":["HTTPS deployment","ChatGPT Developer Mode connection","signed-in host approvals","owner physical desktop proof","Final Ding"]}
+}

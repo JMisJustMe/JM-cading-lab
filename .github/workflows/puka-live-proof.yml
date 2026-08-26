@@ -40,7 +40,7 @@ jobs:
           grep -Fq 'puka-table-inlay-v08.svg' games-beyond/puka/puka-v08.css
           grep -Fq 'puka-treasury-v08.svg' games-beyond/puka/puka-v08.css
           grep -Fq 'puka-academy-banner-v08.svg' games-beyond/puka/puka-v08-academy.css
-          grep -Fq "html[data-court-tier='throne'] .table-wrap" games-beyond/puka/puka-v08.css
+          grep -Fq "html[data-puka-mode='royal'][data-court-tier='throne'] .table-wrap" games-beyond/puka/puka-v08.css
           grep -Fq "'King':{tier:'throne'" games-beyond/puka/puka-world-v07.js
           grep -Fq "html[data-puka-mode='royal'] .card-spirit{display:none!important}" games-beyond/puka/puka-v06.css
           node --check games-beyond/puka/puka-core.js

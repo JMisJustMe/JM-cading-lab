@@ -3,7 +3,7 @@ name: PUKA Source + Live Contact Proof
 on:
   workflow_dispatch:
   push:
-    branches: [main, puka-v08-cinematic-material]
+    branches: [main, puka-v09-table-theatre]
     paths:
       - ".github/workflows/puka-live-proof.yml"
       - "games-beyond/puka/**"
@@ -30,26 +30,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-v08-academy.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js manifest.webmanifest sw.js registry.json; do test -s "games-beyond/puka/$f"; done
-          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg puka-academy-banner-v08.svg; do test -s "games-beyond/puka/assets/$f"; done
-          grep -Fq 'PUKA v0.8A' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'PUKA v0.8A' games-beyond/puka/index.html
-          grep -Fq 'puka-v08.css' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'puka-v08-academy.css' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'jm-puka-v08a' games-beyond/puka/sw.js
-          grep -Fq 'puka-table-inlay-v08.svg' games-beyond/puka/puka-v08.css
-          grep -Fq 'puka-treasury-v08.svg' games-beyond/puka/puka-v08.css
-          grep -Fq 'puka-academy-banner-v08.svg' games-beyond/puka/puka-v08-academy.css
-          grep -Fq "html[data-puka-mode='royal'][data-court-tier='throne'] .table-wrap" games-beyond/puka/puka-v08.css
-          grep -Fq "'King':{tier:'throne'" games-beyond/puka/puka-world-v07.js
-          grep -Fq "html[data-puka-mode='royal'] .card-spirit{display:none!important}" games-beyond/puka/puka-v06.css
+          must_file(){ test -s "$1" || { echo "PUKA DING FAIL missing file: $1"; exit 1; }; echo "FILE PASS $1"; }
+          must_have(){ grep -Fq "$2" "$1" || { echo "PUKA DING FAIL marker [$2] missing from $1"; exit 1; }; echo "MARKER PASS $1 :: $2"; }
+          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-v08-academy.css puka-v09.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js puka-table-theatre-v09.js puka-core.test.js puka-layout.test.js puka-theatre.test.js manifest.webmanifest sw.js registry.json; do must_file "games-beyond/puka/$f"; done
+          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg puka-academy-banner-v08.svg puka-dealer-medallion-v09.svg puka-board-runway-v09.svg; do must_file "games-beyond/puka/assets/$f"; done
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'PUKA v0.9A'
+          must_have games-beyond/puka/index.html 'PUKA v0.9A'
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-v09.css'
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-table-theatre-v09.js'
+          must_have games-beyond/puka/sw.js 'jm-puka-v09a'
+          must_have games-beyond/puka/puka-v09.css 'puka-dealer-medallion-v09.svg'
+          must_have games-beyond/puka/puka-v09.css 'puka-board-runway-v09.svg'
+          must_have games-beyond/puka/puka-table-theatre-v09.js 'root.dataset.dealerSeat'
+          must_have games-beyond/puka/puka-table-theatre-v09.js 'root.dataset.tableStreet'
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-cards-v05.js
           node --check games-beyond/puka/puka-character-v06.js
           node --check games-beyond/puka/puka-world-v07.js
+          node --check games-beyond/puka/puka-table-theatre-v09.js
           node games-beyond/puka/puka-core.test.js
           node games-beyond/puka/puka-layout.test.js
+          node games-beyond/puka/puka-theatre.test.js
 
       - name: Prove PUKA production contact
         if: github.ref == 'refs/heads/main'
@@ -61,33 +63,31 @@ jobs:
           from urllib.request import Request,urlopen
           base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks=[
-            ('','PUKA v0.8A'),
-            ('00_OPEN_FIRST.html','puka-v08-academy.css'),
+            ('','PUKA v0.9A'),
+            ('00_OPEN_FIRST.html','puka-table-theatre-v09.js'),
+            ('puka-v09.css','puka-board-runway-v09.svg'),
+            ('puka-table-theatre-v09.js','root.dataset.dealerSeat'),
+            ('assets/puka-dealer-medallion-v09.svg','PUKA dealer medallion'),
+            ('assets/puka-board-runway-v09.svg','PUKA community card runway'),
             ('puka-v08.css','puka-table-inlay-v08.svg'),
             ('puka-v08-academy.css','puka-academy-banner-v08.svg'),
             ('puka-v07.css','court-throne-v07.svg'),
             ('puka-world-v07.js',"'King':{tier:'throne'"),
             ('puka-v06.css',"html[data-puka-mode='royal'] .card-spirit{display:none!important}"),
-            ('puka-v05.css','Card body: actual card composition'),
             ('puka-core.js','PUKA CORE v0.2A'),
             ('puka-ui.js','orientation: portrait'),
-            ('puka.css','Phone landscape: true royal composition'),
-            ('assets/puka-table-inlay-v08.svg','PUKA ceremonial table inlay'),
-            ('assets/puka-treasury-v08.svg','PUKA treasury chip bank'),
-            ('assets/puka-academy-banner-v08.svg','PUKA Academy guild banner'),
-            ('assets/court-throne-v07.svg','throne room overlay'),
           ]
           run=os.environ.get('GITHUB_RUN_ID','manual'); pending=checks[:]
           for attempt in range(1,31):
             nxt=[]
             for rel,marker in pending:
               try:
-                req=Request(f'{base}{rel}?jm-puka-proof={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Proof/0.8A','Cache-Control':'no-cache'})
+                req=Request(f'{base}{rel}?jm-puka-proof={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Proof/0.9A','Cache-Control':'no-cache'})
                 with urlopen(req,timeout=15) as r: body=r.read().decode('utf-8','replace'); code=r.status
-              except Exception:
-                nxt.append((rel,marker)); continue
+              except Exception as exc:
+                print('WAIT',rel or '/',type(exc).__name__); nxt.append((rel,marker)); continue
               if code==200 and marker in body: print('LIVE PASS',rel or '/',marker)
-              else: nxt.append((rel,marker))
+              else: print('WAIT',rel or '/',code,marker); nxt.append((rel,marker))
             if not nxt: pending=[]; break
             pending=nxt; time.sleep(2)
           if pending: raise SystemExit('PUKA LIVE CONTACT FAILED: '+', '.join(rel or '/' for rel,_ in pending))
@@ -103,24 +103,24 @@ jobs:
           from datetime import datetime,timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.ProofReceipt/0.8A',
+            'schema':'JM.PUKA.ProofReceipt/0.9A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS','public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v08.css','puka-v08-academy.css','assets/puka-table-inlay-v08.svg','assets/puka-treasury-v08.svg','assets/puka-academy-banner-v08.svg','puka-v07.css','puka-world-v07.js','assets/court-throne-v07.svg'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-v09.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js','puka-table-theatre-v09.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v09.css','puka-table-theatre-v09.js','assets/puka-dealer-medallion-v09.svg','assets/puka-board-runway-v09.svg','puka-v08.css','puka-v08-academy.css','puka-v07.css','puka-world-v07.js'],
             'cold_ding':False,'crowned':False,
-            'claim_boundary':'Source/core/layout/art/character/world/material/academy tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character/world/material/academy/theatre tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.8A source and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.9A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0

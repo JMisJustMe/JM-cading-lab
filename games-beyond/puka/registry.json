@@ -10,14 +10,15 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-cards-v05.js"],
-  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-cards-v05.js"],
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
   "v05Changes":[
     "preserved the working poker core and responsive v0.3/v0.4 presentation shell",
-    "mounted a separate card illustration organ instead of rewriting the core UI",
+    "mounted separate card illustration and environment organs instead of rewriting the core UI",
     "replaced rank-plus-single-pip card faces with full pip fields for numbered cards",
     "added original Ace seal and geometric Jack Queen King court-card compositions",
     "added suit-responsive accent material without changing card-game mechanics",
+    "added an original Portrait Academy training-hall environment rather than relying on gradients alone",
     "deepened table rail felt lighting seat labels pot treatment and control tactility",
     "kept narrow-phone and short-landscape fit sovereign over ornament",
     "live direct door remains the canonical owner delivery route"

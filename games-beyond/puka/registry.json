@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.5A",
+  "schema":"JM.PUKA.Room/0.6A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,22 +10,24 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-cards-v05.js"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-cards-v05.js","puka-character-v06.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
-  "v05Changes":[
-    "preserved the working poker core and responsive v0.3/v0.4 presentation shell",
-    "mounted separate card illustration and environment organs instead of rewriting the core UI",
-    "replaced rank-plus-single-pip card faces with full pip fields for numbered cards",
-    "added original Ace seal and geometric Jack Queen King court-card compositions",
-    "added suit-responsive accent material without changing card-game mechanics",
-    "added an original Portrait Academy training-hall environment rather than relying on gradients alone",
-    "deepened table rail felt lighting seat labels pot treatment and control tactility",
-    "kept narrow-phone and short-landscape fit sovereign over ornament",
-    "live direct door remains the canonical owner delivery route"
+  "v06Changes":[
+    "preserved the shared poker core and v0.5 card illustration body",
+    "mounted a separate portrait character-expression organ rather than contaminating poker rules with presentation state",
+    "Portrait Academy hero cards gain readable face expressions driven only by visible game state",
+    "moods are ready focus watch joy or rueful and do not claim hidden psychological facts",
+    "Royal Table deliberately suppresses cartoon character faces and keeps formal card presentation",
+    "newly observed cards receive restrained deal/reveal motion while already-seen cards do not repeatedly animate",
+    "pot motion responds to an actual pot-value change",
+    "prefers-reduced-motion disables nonessential movement",
+    "small-screen and short-landscape laws remain sovereign over ornament"
   ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
+    "Portrait Academy may personify cards; Royal Table remains ceremonial and more realistic",
+    "Presentation mood may reflect visible game state but must not invent hidden psychology",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
     "Visual quality is a completion gate, not decoration after completion",
@@ -35,5 +37,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Card-led art source stage. Automated source/core/layout tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
+  "claimBoundary":"Character/motion art source stage. Automated source/core/layout/art tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
 }

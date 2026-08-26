@@ -1,4 +1,4 @@
-# PUKA v0.8A — BUILD RECEIPT
+# PUKA v0.9A — BUILD RECEIPT
 
 **Parent:** Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
@@ -11,30 +11,33 @@
 - Portrait Academy + Royal Table routes from the same state
 - heads-up Texas Hold'em teaching loop
 - bankroll persistence, royal XP ladder and psychology evidence separation
-- v0.5 card illustration body
+- v0.5 illustrated playing-card body
 - v0.6 Portrait character / Royal realism split
 - v0.7 visible court ascent
+- v0.8 cinematic materials, treasury, table inlay and Academy guild environment
 - one singular live direct door
 
-## v0.8A cinematic material pass
+## v0.9A table theatre
 
-This descendant raises visual finish without altering poker rules or duplicating progression state.
+This descendant improves composition and table presence without altering poker rules.
 
-- added `puka-v08.css` as a presentation-only premium material layer
-- added original `assets/puka-table-inlay-v08.svg` ceremonial table artwork
-- added original `assets/puka-treasury-v08.svg` chip-bank artwork
-- added `puka-v08-academy.css` plus original `assets/puka-academy-banner-v08.svg` so Portrait Academy has its own premium authored guild environment
-- rebuilt table rails as layered timber, dark lacquer, brass and gold hardware
-- added controlled room-light halos and vignette depth while keeping the playfield dominant
-- increased felt detail and centre-table identity through the new inlay
-- strengthened card stock with ivory fibre, foil edge, deeper hero-card shadow and richer card-back depth
-- upgraded court ribbon, player labels, rank seals, teacher blocks, result banner and controls into one material language
-- enlarged pot / treasury presence so wagering state has physical weight without implying real-money play
-- top court tiers gain stronger ceremonial lighting and throne-specific finish
-- Portrait Academy gains four-suit guild identity while preserving its illustrated/personified route
-- Royal Table remains the formal, cinematic route
-- narrow-phone, short-landscape and `prefers-reduced-motion` guards remain active
-- poker core, evaluation, AI, purse persistence and XP thresholds remain untouched
+- added `puka-table-theatre-v09.js` as a removable presentation-only staging organ
+- theatre state reads only visible DOM: dealer/button label, displayed street and hand state
+- theatre organ does not access PUKA core objects, hidden cards, AI state or player internals
+- added `puka-v09.css` as the focal-composition body
+- added original `assets/puka-dealer-medallion-v09.svg`; the medallion moves to the visible button holder
+- added original `assets/puka-board-runway-v09.svg` to give the five community cards a dedicated stage
+- House, treasury, board and player now read as one deliberate visual axis
+- seat plinths add depth while retaining the existing semantic table zones
+- Royal Table gains side seat plates and longer sightlines; Portrait Academy remains more intimate
+- flop, turn and river gradually increase visible board/pot emphasis using only the displayed street
+- completed hands receive restrained ceremonial framing instead of a generic alert strip
+- narrow-phone, short-landscape and `prefers-reduced-motion` safeguards remain active
+- poker evaluation, AI, purse persistence, XP thresholds and evidence logic remain untouched
+
+## Proof improvement
+
+The v0.9 proof rail reports the exact missing file or marker when a source gate fails. A dedicated theatre test also guards the visible-state boundary so the presentation organ cannot quietly become a hidden-state reader.
 
 ## Delivery default
 
@@ -44,4 +47,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.8A descendant may pass source/core/layout/art/character/world/material/academy checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+The v0.9A descendant may pass source/core/layout/art/character/world/material/academy/theatre checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

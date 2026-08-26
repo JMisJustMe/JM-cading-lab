@@ -20,6 +20,9 @@ Scope: JM estate-hosted HTML/web builds and future descendants unless Theodore/J
 - Never claim a live route before the proof rail has contacted the route and required assets.
 - Apply this to PUKA and future JM HTML/web descendants by default.
 
-## Short memory form
+## Manual ChatGPT Memory form
 
-**For my JM HTML/web builds, always use the existing estate and give me one proved LIVE DIRECT URL first. Use SOURCE → OPEN_FIRST → ESTATE MOUNT → LIVE PROOF → DIRECT DOOR. Keep the public link stable as the build evolves. Sandbox/ZIP/file links are fallback only. Do not call live HTTP proof a Cold Ding; owner device contact is separate.**
+Measured save-field cap from owner contact: **500 characters**.
+Current payload: **410 characters**, leaving 90 characters of headroom.
+
+JM WEB DELIVERY DEFAULT: For every JM HTML/web build, recover and use the existing estate first. Use SOURCE → OPEN_FIRST → ESTATE MOUNT → LIVE PROOF → DIRECT DOOR. Give me one proved live direct URL first and keep it stable as the build evolves. Sandbox/ZIP/file links are fallback only. Never claim live before route/assets are proved. Live HTTP proof ≠ Cold Ding; owner-device contact/acceptance is separate.

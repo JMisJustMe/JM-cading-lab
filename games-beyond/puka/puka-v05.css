@@ -1,0 +1,362 @@
+/* PUKA v0.5A — card-led visual elevation. Layout/core stay governed by earlier bodies. */
+:root{
+  --v05-accent:#d7b75b;
+  --v05-accent-soft:#d7b75b2b;
+  --v05-accent-glow:#d7b75b20;
+  --v05-ink:#17130e;
+  --v05-paper:#fffdf4;
+  --v05-paper-shadow:#d9ccb0;
+  --v05-felt-hi:#287b64;
+  --v05-felt-mid:#145b49;
+  --v05-felt-low:#082d26;
+  --v05-rail:#4a2b16;
+  --v05-rail-hi:#9f7135;
+}
+html[data-puka-suit='hearts']{--v05-accent:#d85d72;--v05-accent-soft:#d85d7230;--v05-accent-glow:#d85d7220}
+html[data-puka-suit='diamonds']{--v05-accent:#efb74f;--v05-accent-soft:#efb74f30;--v05-accent-glow:#efb74f20}
+html[data-puka-suit='clubs']{--v05-accent:#69b78f;--v05-accent-soft:#69b78f30;--v05-accent-glow:#69b78f20}
+html[data-puka-suit='spades']{--v05-accent:#90a7d8;--v05-accent-soft:#90a7d830;--v05-accent-glow:#90a7d820}
+
+/* Estate-quality finish: structure remains v0.3/v0.4; v0.5 supplies material and identity. */
+.app{
+  background:
+    radial-gradient(circle at 50% -8%,var(--v05-accent-glow),transparent 28%),
+    radial-gradient(circle at 10% 12%,#56386545,transparent 25%),
+    radial-gradient(circle at 90% 26%,#19594b38,transparent 28%),
+    linear-gradient(180deg,#100d12,#070a09 55%,#050606);
+}
+.top{
+  height:64px;
+  border-bottom:1px solid color-mix(in srgb,var(--v05-accent) 50%,#4a3e2d);
+  background:linear-gradient(180deg,#151018f8,#0e0b10f2);
+  box-shadow:0 10px 35px #000b,inset 0 -1px #fff08;
+}
+.crest{
+  border-radius:50% 50% 44% 44%;
+  border:1px solid color-mix(in srgb,var(--v05-accent) 72%,#e7c76b);
+  background:
+    radial-gradient(circle at 36% 28%,#6b5120 0,#2c2110 38%,#110e09 72%),
+    #171008;
+  color:#f6df8e;
+  text-shadow:0 2px 0 #3e2b0d;
+}
+.crest:after{content:'';position:absolute;inset:5px;border:1px solid #f8df8b33;border-radius:inherit;pointer-events:none}
+.brand b{font-size:1.06rem;color:#fff8e6}
+.brand small{color:#bfc7c2}
+.status{color:color-mix(in srgb,var(--v05-accent) 72%,#f2d578)}
+
+/* The table reads as a physical object with a dark wooden rim and lit felt well. */
+.table-wrap{
+  border:0;
+  border-radius:32px;
+  background:
+    radial-gradient(ellipse at 50% 38%,#ffffff0d 0,transparent 24%),
+    radial-gradient(ellipse at 50% 43%,var(--v05-felt-hi) 0,var(--v05-felt-mid) 43%,var(--v05-felt-low) 78%,#041a16 100%);
+  box-shadow:
+    inset 0 0 0 2px #160e08,
+    inset 0 0 0 6px #39200f,
+    inset 0 0 0 10px var(--v05-rail-hi),
+    inset 0 0 0 13px #1f130b,
+    inset 0 0 0 16px #bf914c,
+    inset 0 0 0 19px #39220f,
+    inset 0 0 64px #0009,
+    0 24px 64px #000c,
+    0 0 42px var(--v05-accent-glow);
+}
+.table-wrap:before{
+  inset:20px;
+  background-image:
+    radial-gradient(ellipse at center,#ffffff05,transparent 58%),
+    url('./assets/royal-felt-medallion.svg'),
+    url('./assets/felt-grain.svg');
+  background-size:auto,86% 76%,180px 180px;
+  background-repeat:no-repeat,no-repeat,repeat;
+  background-position:center,center,center;
+  border-radius:18px;
+  opacity:.64;
+  mix-blend-mode:soft-light;
+}
+.table-wrap:after{
+  inset:20px;
+  border-radius:18px;
+  border:1px solid #fff2;
+  box-shadow:inset 0 0 0 1px #0005,inset 0 0 32px #0004;
+}
+.court-ribbon{
+  max-width:min(94%,560px);
+  padding:6px 12px;
+  border:1px solid color-mix(in srgb,var(--v05-accent) 48%,#d5b562);
+  background:
+    linear-gradient(90deg,#050806ee,#15120bed,#050806ee);
+  box-shadow:0 6px 20px #0009,inset 0 1px #fff12;
+}
+.court-ribbon b{color:color-mix(in srgb,var(--v05-accent) 66%,#f5d987)}
+
+/* Seats gain identity; chip count reads as a table object rather than bare text. */
+.player-label{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  width:max-content;
+  max-width:92%;
+  margin-inline:auto;
+  padding:5px 9px;
+  border:1px solid #d6c17b2e;
+  border-radius:999px;
+  background:linear-gradient(180deg,#0b1510da,#050a08e8);
+  box-shadow:0 5px 14px #0007,inset 0 1px #fff0d;
+}
+.player-label:before{
+  content:'•';
+  display:grid;
+  place-items:center;
+  width:16px;height:16px;
+  border-radius:50%;
+  color:#f7d978;
+  background:radial-gradient(circle,#b52235 0 22%,#efe3c1 23% 32%,#1d1d1a 33% 49%,#b52235 50% 67%,#efe3c1 68% 76%,#171713 77%);
+  box-shadow:0 2px 5px #0008;
+  font-size:0;
+}
+.player-label b{font-family:Georgia,'Times New Roman',serif;font-size:.7rem;letter-spacing:.07em}
+.player-label span{font-size:.52rem;letter-spacing:.06em;color:#c8d2cc}
+
+/* Card body: actual card composition, not rank + oversized glyph. */
+.playing-card{
+  --card-fg:#17130f;
+  position:relative;
+  isolation:isolate;
+  width:clamp(46px,12vw,61px);
+  height:clamp(67px,17vw,87px);
+  padding:0;
+  border-radius:8px;
+  border:1px solid #a69678;
+  background:
+    linear-gradient(125deg,#ffffff80 0,transparent 19%),
+    radial-gradient(circle at 48% 38%,#fffef7 0,#f8f1e1 57%,#ded0b1 100%);
+  color:var(--card-fg);
+  box-shadow:
+    0 2px 0 #cabd9f,
+    0 5px 0 #665b49,
+    0 9px 17px #0007,
+    inset 0 0 0 1px #fff9;
+  overflow:hidden;
+}
+.playing-card.red{--card-fg:#aa2036;color:var(--card-fg)}
+.playing-card:before{
+  content:'';
+  position:absolute;
+  inset:3px;
+  z-index:-1;
+  border:1px solid color-mix(in srgb,var(--card-fg) 13%,transparent);
+  border-radius:5px;
+  background:
+    repeating-linear-gradient(45deg,#fff0 0 8px,#7f694407 8px 9px),
+    radial-gradient(circle at 50% 45%,#fff5,transparent 62%);
+}
+.playing-card:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:8;
+  pointer-events:none;
+  background:linear-gradient(112deg,#fff8 0,transparent 14%,transparent 72%,#6a512015 100%);
+}
+.playing-card.hero-card{
+  transform:translateY(-3px) scale(1.07);
+  border-color:color-mix(in srgb,var(--v05-accent) 54%,#d8c28a);
+  box-shadow:
+    0 2px 0 #c9b792,
+    0 6px 0 #514536,
+    0 13px 25px #0009,
+    0 0 24px var(--v05-accent-glow),
+    inset 0 0 0 1px #fff9;
+}
+
+.corner{
+  position:absolute;
+  z-index:5;
+  left:4px;top:4px;
+  display:grid;
+  justify-items:center;
+  line-height:.8;
+  font-family:Georgia,'Times New Roman',serif;
+  color:var(--card-fg);
+  text-shadow:0 1px #fff;
+}
+.corner b{font-size:.72rem;line-height:.82}
+.corner i{font-style:normal;font-size:.54rem;line-height:1}
+.bottom-corner{left:auto;top:auto;right:4px;bottom:4px;transform:rotate(180deg)}
+.pip-field{position:absolute;z-index:2;inset:11px 8px 13px}
+.pip-mark{
+  position:absolute;
+  left:var(--x);top:var(--y);
+  transform:translate(-50%,-50%);
+  font:700 clamp(.75rem,3.2vw,1.03rem) Georgia,'Times New Roman',serif;
+  line-height:1;
+  color:var(--card-fg);
+  text-shadow:0 1px #fff;
+}
+.pip-mark.pip-alt{transform:translate(-50%,-50%) rotate(180deg)}
+.ace-art{
+  position:absolute;
+  inset:12px 7px 13px;
+  display:grid;
+  place-items:center;
+}
+.ace-art:before,.ace-art:after{content:'';position:absolute;border-radius:50%;border:1px solid color-mix(in srgb,var(--card-fg) 22%,transparent)}
+.ace-art:before{width:72%;aspect-ratio:1}
+.ace-art:after{width:54%;aspect-ratio:1;border-style:dashed}
+.ace-art span{font:700 clamp(2rem,7vw,2.75rem) Georgia,'Times New Roman',serif;color:var(--card-fg);filter:drop-shadow(0 2px 0 #fff)}
+.ace-art i{position:absolute;bottom:2px;font:700 .29rem ui-monospace,monospace;letter-spacing:.16em;color:#756a59}
+.court-art{
+  position:absolute;
+  inset:11px 6px 13px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border-radius:5px;
+  background:
+    linear-gradient(135deg,color-mix(in srgb,var(--card-fg) 8%,#f3dfad),#fff8 42%,color-mix(in srgb,var(--card-fg) 11%,#d7bf83));
+  border:1px solid color-mix(in srgb,var(--card-fg) 22%,#b79d68);
+}
+.court-art:before,.court-art:after{content:'';position:absolute;width:85%;height:1px;background:color-mix(in srgb,var(--card-fg) 20%,transparent);transform:rotate(35deg)}
+.court-art:after{transform:rotate(-35deg)}
+.court-svg{position:relative;z-index:2;width:82%;height:82%;overflow:visible}
+.court-line{fill:color-mix(in srgb,var(--v05-accent) 24%,#e0c372);stroke:var(--card-fg);stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.court-line path+path{fill:none}
+.court-suit{font:700 17px Georgia,serif;fill:var(--card-fg)}
+.court-art em{position:absolute;z-index:4;bottom:1px;padding:1px 4px;border-radius:999px;background:#f8f1dddf;color:#40392f;font:800 .25rem ui-monospace,monospace;letter-spacing:.12em;font-style:normal}
+.playing-card>small{
+  position:absolute;
+  z-index:6;
+  left:50%;right:auto;bottom:2px;
+  transform:translateX(-50%);
+  width:58%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  color:#736a5c;
+  font:700 .25rem ui-sans-serif,system-ui;
+  letter-spacing:.04em;
+  text-align:center;
+}
+.playing-card.back{
+  background:#0b1212 url('./assets/puka-card-back.svg') center/cover no-repeat;
+  border-color:#e7c96d;
+  box-shadow:0 2px 0 #9a7b3c,0 6px 0 #40321b,0 13px 22px #0009,inset 0 0 0 1px #fff4;
+}
+.playing-card.back:after{background:linear-gradient(115deg,#fff5 0,transparent 20%,transparent 74%,#e4be5820 100%)}
+
+.slot{
+  position:relative;
+  width:clamp(46px,12vw,61px);
+  height:clamp(67px,17vw,87px);
+  border:1px dashed #e9dbad38;
+  border-radius:8px;
+  background:radial-gradient(circle,#fff04,transparent 68%);
+}
+.slot:after{content:'PUKA';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font:700 .3rem ui-monospace,monospace;letter-spacing:.2em;color:#e7ddc72c}
+
+/* Pot becomes the visual centre of the wager state. */
+.pot{min-height:72px}
+.pot:before{width:106px;height:70px;opacity:.58;filter:drop-shadow(0 10px 9px #000a)}
+.pot:after{content:'';position:absolute;left:50%;bottom:4px;width:104px;height:13px;transform:translateX(-50%);border-radius:50%;background:#0007;filter:blur(5px);z-index:-2}
+.pot span{font-weight:900;color:#efe7d1}
+.pot b{font-size:1.45rem;color:#ffe18a;text-shadow:0 2px 0 #654512,0 6px 16px #000}
+.pot small{padding:2px 6px;border:1px solid #fff1;border-radius:999px;background:#08100caa;color:#c4d4ca}
+
+/* Controls should feel like pieces of the table, not browser buttons. */
+.action,.table-deal,.deal,.secondary,.modes button{
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+  box-shadow:inset 0 1px #fff16,inset 0 -2px #0006,0 7px 15px #0005;
+  text-shadow:0 1px 0 #000;
+}
+.action:before,.table-deal:before,.deal:before,.secondary:before,.modes button:before{
+  content:'';position:absolute;left:0;right:0;top:0;height:42%;background:linear-gradient(#fff0e,#fff0);pointer-events:none
+}
+.action.raise,.action.next,.table-deal,.deal{
+  border-color:color-mix(in srgb,var(--v05-accent) 65%,#d5b65d);
+  background:linear-gradient(180deg,#4b3612,#261a08);
+  color:#ffeaa0;
+}
+.action.call,.action.check{background:linear-gradient(180deg,#1d4738,#10271f)}
+.action.fold{background:linear-gradient(180deg,#4a1d27,#251117)}
+.action:active,.table-deal:active,.deal:active,.secondary:active,.modes button:active{transform:translateY(2px);box-shadow:inset 0 1px #fff10,inset 0 -1px #0006,0 3px 8px #0005}
+
+/* Identity + teaching panels get quieter so the table and cards win the eye. */
+.panel{border-color:#6d62502f;background:linear-gradient(155deg,#111513f2,#090c0bf5);box-shadow:inset 0 1px #fff08,0 10px 28px #0005}
+.coach{border-color:color-mix(in srgb,var(--v05-accent) 24%,#5b5243)!important}
+.coachgrid article{border-color:#63716628;background:linear-gradient(145deg,#0c1511,#070d0b)}
+.coachgrid article b{color:#f5eee0}
+.suit.chosen,.quick-suit.chosen{box-shadow:inset 0 0 0 1px #fff10,0 0 18px var(--v05-accent-glow);border-color:var(--v05-accent)}
+.bar i{background:linear-gradient(90deg,var(--v05-accent),#f2d77d)}
+
+/* Portrait Academy: illustrated, tactile, card-forward. */
+html[data-puka-mode='portrait'] .table-wrap{
+  background:
+    radial-gradient(circle at 50% 31%,#ffffff0b,transparent 24%),
+    radial-gradient(circle at 50% 40%,#398b77 0,#236856 42%,#123f38 72%,#08272a 100%);
+  box-shadow:
+    inset 0 0 0 2px #160c1b,
+    inset 0 0 0 6px #3d2146,
+    inset 0 0 0 10px color-mix(in srgb,var(--v05-accent) 35%,#7b4e85),
+    inset 0 0 0 13px #d9ab59,
+    inset 0 0 0 16px #3d2146,
+    inset 0 0 56px #0008,
+    0 22px 54px #000b,
+    0 0 35px var(--v05-accent-glow);
+}
+.entry-seal{position:relative;display:grid;place-items:center;width:108px;height:108px;border-radius:50%;border:1px solid color-mix(in srgb,var(--v05-accent) 55%,#e5c972);background:radial-gradient(circle,#1c463b,#0a1714 66%);box-shadow:inset 0 0 0 5px #0005,inset 0 0 0 7px #e2bf6727,0 13px 30px #0008}
+.entry-seal:before,.entry-seal:after{content:'';position:absolute;border:1px solid #e9d69928;border-radius:50%}.entry-seal:before{inset:13px}.entry-seal:after{inset:23px;border-style:dashed}
+.entry-seal .big-suit{font-size:3.45rem;line-height:1;color:var(--v05-accent);filter:drop-shadow(0 5px 12px #0008)}
+.entry-seal i{position:absolute;bottom:14px;font:800 .42rem ui-monospace,monospace;letter-spacing:.22em;color:#e7d9a7;font-style:normal}
+html[data-puka-mode='portrait'] .actions{border-color:color-mix(in srgb,var(--v05-accent) 34%,#76598a);background:linear-gradient(180deg,#171019ed,#0d0b11f3)}
+
+/* Royal Table: deeper room presence and more ceremonial surface. */
+html[data-puka-mode='royal'] .app{
+  background:
+    linear-gradient(180deg,#0002,#0008),
+    radial-gradient(circle at 50% 15%,var(--v05-accent-glow),transparent 32%),
+    url('./assets/royal-room-backdrop.svg') center top/cover fixed no-repeat,
+    #050505;
+}
+html[data-puka-mode='royal'] .table-wrap{
+  box-shadow:
+    inset 0 0 0 3px #120b07,
+    inset 0 0 0 8px #492713,
+    inset 0 0 0 12px #a77736,
+    inset 0 0 0 15px #24150b,
+    inset 0 0 0 19px #d0a24f,
+    inset 0 0 0 22px #3a2110,
+    inset 0 0 72px #000a,
+    0 30px 80px #000d,
+    0 0 44px var(--v05-accent-glow);
+}
+html[data-puka-mode='royal'] .playing-card{width:clamp(48px,6.6vw,68px);height:clamp(70px,9.4vw,96px)}
+html[data-puka-mode='royal'] .slot{width:clamp(48px,6.6vw,68px);height:clamp(70px,9.4vw,96px)}
+
+/* Fit stays sovereign over ornament. */
+@media(max-width:380px){
+  .playing-card,.slot{width:41px;height:61px}
+  .corner b{font-size:.62rem}.corner i{font-size:.46rem}
+  .pip-mark{font-size:.72rem}
+  .court-art{inset:10px 5px 12px}
+  .playing-card>small{font-size:.21rem}
+  .entry-seal{width:92px;height:92px}
+  .entry-seal .big-suit{font-size:2.9rem}
+}
+@media(max-height:560px) and (orientation:landscape){
+  html[data-puka-mode='royal'] .playing-card,html[data-puka-mode='royal'] .slot{width:45px;height:65px}
+  html[data-puka-mode='royal'] .table-wrap{padding:8px 12px}
+  .player-label{padding:3px 7px}
+  .pot{min-height:44px}
+  .pot:before{width:72px;height:46px}
+  .pot b{font-size:1.15rem}
+}
+@media(prefers-reduced-motion:no-preference){
+  .playing-card.hero-card{transition:transform .18s ease,filter .18s ease}
+  .playing-card.hero-card:hover{filter:brightness(1.035)}
+}

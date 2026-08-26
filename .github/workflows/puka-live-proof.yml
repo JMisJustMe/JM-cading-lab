@@ -3,7 +3,7 @@ name: PUKA Source + Live Contact Proof
 on:
   workflow_dispatch:
   push:
-    branches: [main, puka-v05-art]
+    branches: [main, puka-v06-character]
     paths:
       - ".github/workflows/puka-live-proof.yml"
       - "games-beyond/puka/**"
@@ -38,7 +38,9 @@ jobs:
           test -s games-beyond/puka/puka-art.css
           test -s games-beyond/puka/puka-v05.css
           test -s games-beyond/puka/puka-v05-room.css
+          test -s games-beyond/puka/puka-v06.css
           test -s games-beyond/puka/puka-cards-v05.js
+          test -s games-beyond/puka/puka-character-v06.js
           test -s games-beyond/puka/manifest.webmanifest
           test -s games-beyond/puka/sw.js
           test -s games-beyond/puka/registry.json
@@ -48,19 +50,19 @@ jobs:
           test -s games-beyond/puka/assets/portrait-academy-backdrop.svg
           test -s games-beyond/puka/assets/puka-chip-stack.svg
           test -s games-beyond/puka/assets/felt-grain.svg
-          grep -Fq 'PUKA v0.5A' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'PUKA v0.5A' games-beyond/puka/index.html
-          grep -Fq 'puka-v05.css' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'puka-v05-room.css' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'puka-cards-v05.js' games-beyond/puka/00_OPEN_FIRST.html
-          grep -Fq 'jm-puka-v05a' games-beyond/puka/sw.js
-          grep -Fq 'Card body: actual card composition' games-beyond/puka/puka-v05.css
-          grep -Fq 'portrait-academy-backdrop.svg' games-beyond/puka/puka-v05-room.css
-          grep -Fq 'const PIPS' games-beyond/puka/puka-cards-v05.js
+          grep -Fq 'PUKA v0.6A' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'PUKA v0.6A' games-beyond/puka/index.html
+          grep -Fq 'puka-v06.css' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'puka-character-v06.js' games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'jm-puka-v06a' games-beyond/puka/sw.js
+          grep -Fq "html[data-puka-mode='portrait'] .hero-card .card-spirit" games-beyond/puka/puka-v06.css
+          grep -Fq "html[data-puka-mode='royal'] .card-spirit{display:none!important}" games-beyond/puka/puka-v06.css
+          grep -Fq 'const seenCards=new Set()' games-beyond/puka/puka-character-v06.js
           grep -Fq "isPhone()" games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-cards-v05.js
+          node --check games-beyond/puka/puka-character-v06.js
           node games-beyond/puka/puka-core.test.js
           node games-beyond/puka/puka-layout.test.js
 
@@ -74,8 +76,10 @@ jobs:
           from urllib.request import Request, urlopen
           base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks = [
-              ('', 'PUKA v0.5A'),
-              ('00_OPEN_FIRST.html', 'puka-cards-v05.js'),
+              ('', 'PUKA v0.6A'),
+              ('00_OPEN_FIRST.html', 'puka-character-v06.js'),
+              ('puka-v06.css', "html[data-puka-mode='portrait'] .hero-card .card-spirit"),
+              ('puka-character-v06.js', 'const seenCards=new Set()'),
               ('puka-v05.css', 'Card body: actual card composition'),
               ('puka-v05-room.css', 'portrait-academy-backdrop.svg'),
               ('puka-cards-v05.js', 'const PIPS'),
@@ -97,7 +101,7 @@ jobs:
               for rel, marker in pending:
                   url = f'{base}{rel}?jm-puka-proof={run}-{attempt}'
                   try:
-                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.5A','Cache-Control':'no-cache'})
+                      req = Request(url, headers={'User-Agent':'JM-PUKA-Proof/0.6A','Cache-Control':'no-cache'})
                       with urlopen(req, timeout=15) as response:
                           body = response.read().decode('utf-8', 'replace')
                           code = response.status
@@ -122,24 +126,24 @@ jobs:
           from datetime import datetime, timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.ProofReceipt/0.5A',
+            'schema':'JM.PUKA.ProofReceipt/0.6A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'host':'https://jmisjustme-estate.pages.dev',
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS','public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-cards-v05.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v05.css','puka-v05-room.css','puka-cards-v05.js','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/portrait-academy-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-cards-v05.js','puka-character-v06.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v06.css','puka-character-v06.js','puka-v05.css','puka-v05-room.css','puka-cards-v05.js','puka-art.css','puka-core.js','puka-ui.js','puka.css','assets/puka-card-back.svg','assets/royal-felt-medallion.svg','assets/royal-room-backdrop.svg','assets/portrait-academy-backdrop.svg','assets/puka-chip-stack.svg','assets/felt-grain.svg'],
             'cold_ding':False,'crowned':False,
-            'claim_boundary':'Source/core/layout/art tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.5A source and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.6A source and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0

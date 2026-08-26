@@ -55,7 +55,7 @@ has(ascent,'MutationObserver','court ascent remount observer missing');
 has(material,'cinematic material pass','v0.8 material source marker missing');
 has(material,"puka-table-inlay-v08.svg",'ceremonial table inlay not mounted');
 has(material,"puka-treasury-v08.svg",'treasury chip-bank art not mounted');
-has(material,"html[data-court-tier='throne'] .table-wrap",'throne material escalation missing');
+has(material,"html[data-puka-mode='royal'][data-court-tier='throne'] .table-wrap",'Royal throne material escalation missing');
 has(material,"html[data-puka-mode='portrait'] .table-wrap",'Portrait Academy material route missing');
 has(material,'@media(max-width:360px)','narrow-phone material guard missing');
 has(material,'@media(max-height:560px) and (orientation:landscape)','short-landscape material guard missing');

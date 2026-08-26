@@ -1,24 +1,36 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.3A",
-  "verified_utc": "2026-08-23T20:55:18.621844+00:00",
-  "source_commit": "7b94138a6abc161cf616ac861f939d43a1247654",
-  "workflow_run": "32665866767",
+  "schema": "JM.PUKA.ProofReceipt/0.5A",
+  "verified_utc": "2026-08-26T20:44:26.441697+00:00",
+  "source_commit": "ad60474151f96761187dd1194efcd4282d683305",
+  "workflow_run": "33011857928",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
   "public_contact": "PASS",
+  "art_layers": [
+    "puka-art.css",
+    "puka-v05.css",
+    "puka-v05-room.css",
+    "puka-cards-v05.js"
+  ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-v05.css",
+    "puka-v05-room.css",
+    "puka-cards-v05.js",
+    "puka-art.css",
     "puka-core.js",
     "puka-ui.js",
     "puka.css",
-    "manifest.webmanifest",
-    "registry.json",
     "assets/puka-card-back.svg",
-    "assets/royal-felt-medallion.svg"
+    "assets/royal-felt-medallion.svg",
+    "assets/royal-room-backdrop.svg",
+    "assets/portrait-academy-backdrop.svg",
+    "assets/puka-chip-stack.svg",
+    "assets/felt-grain.svg"
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core and layout source tests plus public HTTP contact passed. Owner-side portrait fit, landscape fit, visual-quality acceptance, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
 }

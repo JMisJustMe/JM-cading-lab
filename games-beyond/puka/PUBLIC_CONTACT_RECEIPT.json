@@ -1,8 +1,8 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.6A",
-  "verified_utc": "2026-08-26T20:50:55.052532+00:00",
-  "source_commit": "746bbce91344d78fa718389cdca0942513958a6b",
-  "workflow_run": "33012403421",
+  "schema": "JM.PUKA.ProofReceipt/0.7A",
+  "verified_utc": "2026-08-26T20:57:57.095582+00:00",
+  "source_commit": "a8a477ecea42596eef64499ba865f39ece9133ca",
+  "workflow_run": "33013002366",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
@@ -12,29 +12,23 @@
     "puka-v05.css",
     "puka-v05-room.css",
     "puka-v06.css",
+    "puka-v07.css",
     "puka-cards-v05.js",
-    "puka-character-v06.js"
+    "puka-character-v06.js",
+    "puka-world-v07.js"
   ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
-    "puka-v06.css",
-    "puka-character-v06.js",
-    "puka-v05.css",
-    "puka-v05-room.css",
-    "puka-cards-v05.js",
-    "puka-art.css",
-    "puka-core.js",
-    "puka-ui.js",
-    "puka.css",
-    "assets/puka-card-back.svg",
-    "assets/royal-felt-medallion.svg",
-    "assets/royal-room-backdrop.svg",
-    "assets/portrait-academy-backdrop.svg",
-    "assets/puka-chip-stack.svg",
-    "assets/felt-grain.svg"
+    "puka-v07.css",
+    "puka-world-v07.js",
+    "assets/court-lower-v07.svg",
+    "assets/court-middle-v07.svg",
+    "assets/court-high-v07.svg",
+    "assets/court-heir-v07.svg",
+    "assets/court-throne-v07.svg"
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art/character tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art/character/world tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
 }

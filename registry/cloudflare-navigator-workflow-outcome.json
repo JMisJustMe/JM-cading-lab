@@ -2,7 +2,7 @@
   "schema": "JM.CloudflareNavigatorWorkflowOutcome/1.3",
   "workflow": "Deploy Live-Preserving Cloudflare Estate",
   "status": "completed",
-  "conclusion": "cancelled",
+  "conclusion": "success",
   "deployment_proven": true,
   "proof_steps": {
     "assemble": {
@@ -26,15 +26,15 @@
       "conclusion": "success"
     }
   },
-  "receipt_step": "cancelled",
-  "run_id": "32916343695",
-  "run_number": "23",
+  "receipt_step": "success",
+  "run_id": "32921592726",
+  "run_number": "25",
   "run_attempt": "1",
-  "head_sha": "ba373d1454bf97f259682b23f7184e7ef67488b1",
+  "head_sha": "5fdd4bec38fbd68619f90596e35cf84c5adfddae",
   "head_branch": "main",
   "event": "push",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32916343695",
-  "updated_at": "2026-08-26T00:45:59Z",
-  "recorded_at_utc": "2026-08-26T00:46:06Z",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/32921592726",
+  "updated_at": "2026-08-26T02:08:47Z",
+  "recorded_at_utc": "2026-08-26T02:08:56Z",
   "boundary": "Observer records inspected step evidence and validates the deployment-owned receipt; it does not overwrite deployment truth."
 }

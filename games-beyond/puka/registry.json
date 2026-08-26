@@ -10,16 +10,17 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js"],
-  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js"],
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg"],
   "v08Changes":[
     "preserved poker rules state progression and all earlier presentation organs",
     "added an original ceremonial table inlay and treasury chip-bank illustration",
+    "added an original Portrait Academy guild banner with four-suit identity",
     "rebuilt table material language around layered timber brass felt and controlled room light",
     "strengthened card paper fibre foil edge hero-card weight and card-back depth",
     "upgraded panels teacher blocks ribbon labels seat seals buttons and result treatment to a coherent premium material language",
     "increased visual ceremony from lower court through throne while keeping rank mapping owned by puka-world-v07.js",
-    "kept Portrait Academy richer and warmer without collapsing it into Royal Table",
+    "gave Portrait Academy its own premium authored environment rather than treating it as a reduced Royal Table",
     "retained narrow-phone short-landscape and prefers-reduced-motion guards",
     "changed presentation only; the poker core remains untouched"
   ],
@@ -29,6 +30,7 @@
     "Royal progression must become visible in the world rather than existing only as text",
     "Portrait Academy may personify cards; Royal Table remains ceremonial and more realistic",
     "Premium material treatment must not reduce playfield clarity or phone fit",
+    "Both presentation routes deserve authored environments rather than primary and fallback status",
     "Presentation state may reflect visible game state but must not invent hidden psychology",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
@@ -39,5 +41,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Cinematic-material art source stage. Automated source/core/layout/art/world/material tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
+  "claimBoundary":"Cinematic-material and Academy-environment art source stage. Automated source/core/layout/art/world/material tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
 }

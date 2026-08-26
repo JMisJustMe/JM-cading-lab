@@ -13,7 +13,7 @@ has(html,'puka-v09.css','v0.9 theatre CSS not mounted');
 has(html,'puka-table-theatre-v09.js','v0.9 theatre JS not mounted');
 has(html,'data-dealer-seat="none"','dealer presentation dataset seed missing');
 has(html,'data-table-street="ready"','street presentation dataset seed missing');
-has(sw,'jm-puka-v09a','v0.9 cache marker missing');
+has(sw,"const CACHE='jm-puka-",'PUKA service-worker cache family missing');
 for(const asset of ['puka-v09.css','puka-table-theatre-v09.js','puka-dealer-medallion-v09.svg','puka-board-runway-v09.svg']) has(sw,asset,`${asset} not cached`);
 
 has(theatre,"document.querySelector('#dealerLine')",'theatre must read visible dealer label');

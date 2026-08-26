@@ -6,6 +6,7 @@ const room=fs.readFileSync(__dirname+'/puka-v05-room.css','utf8');
 const motion=fs.readFileSync(__dirname+'/puka-v06.css','utf8');
 const world=fs.readFileSync(__dirname+'/puka-v07.css','utf8');
 const material=fs.readFileSync(__dirname+'/puka-v08.css','utf8');
+const academy=fs.readFileSync(__dirname+'/puka-v08-academy.css','utf8');
 const cards=fs.readFileSync(__dirname+'/puka-cards-v05.js','utf8');
 const character=fs.readFileSync(__dirname+'/puka-character-v06.js','utf8');
 const ascent=fs.readFileSync(__dirname+'/puka-world-v07.js','utf8');
@@ -25,13 +26,15 @@ has(ui,"$('#identityDetails').open=false",'identity drawer must not block the pl
 has(ui,'data-quick-suit','ready-table quick suit selector missing');
 has(html,'PUKA v0.8A','v0.8A front-door marker missing');
 has(html,'puka-v08.css','v0.8 material layer not mounted');
+has(html,'puka-v08-academy.css','v0.8 Academy environment not mounted');
 has(html,'puka-v07.css','v0.7 world styling not mounted');
 has(html,'puka-world-v07.js','v0.7 world organ not mounted');
 has(sw,"jm-puka-v08a",'service worker cache version not bumped');
 has(sw,'puka-v08.css','v0.8 material style not cached');
+has(sw,'puka-v08-academy.css','v0.8 Academy style not cached');
 has(sw,'puka-v07.css','v0.7 world style not cached');
 has(sw,'puka-world-v07.js','v0.7 world organ not cached');
-for(const asset of ['court-lower-v07.svg','court-middle-v07.svg','court-high-v07.svg','court-heir-v07.svg','court-throne-v07.svg','puka-table-inlay-v08.svg','puka-treasury-v08.svg']) has(sw,asset,`${asset} not cached`);
+for(const asset of ['court-lower-v07.svg','court-middle-v07.svg','court-high-v07.svg','court-heir-v07.svg','court-throne-v07.svg','puka-table-inlay-v08.svg','puka-treasury-v08.svg','puka-academy-banner-v08.svg']) has(sw,asset,`${asset} not cached`);
 has(art,'Card body: actual card composition','v0.5 card-body art marker missing');
 has(room,'portrait-academy-backdrop.svg','Portrait Academy environment not mounted');
 has(cards,'const PIPS','number-card pip layouts missing');
@@ -56,5 +59,10 @@ has(material,"html[data-puka-mode='portrait'] .table-wrap",'Portrait Academy mat
 has(material,'@media(max-width:360px)','narrow-phone material guard missing');
 has(material,'@media(max-height:560px) and (orientation:landscape)','short-landscape material guard missing');
 has(material,'@media(prefers-reduced-motion:reduce)','material reduced-motion guard missing');
+has(academy,'Portrait Academy premium environment','Academy source marker missing');
+has(academy,'puka-academy-banner-v08.svg','Academy guild banner not mounted');
+has(academy,'ACADEMY OF THE FOUR SUITS','Academy source identity missing');
+has(academy,'@media(max-width:380px)','Academy narrow-phone guard missing');
+has(academy,'@media(prefers-reduced-motion:reduce)','Academy reduced-motion guard missing');
 
-console.log('PUKA LAYOUT + ART + CHARACTER + WORLD + MATERIAL SOURCE DING PASS');
+console.log('PUKA LAYOUT + ART + CHARACTER + WORLD + MATERIAL + ACADEMY SOURCE DING PASS');

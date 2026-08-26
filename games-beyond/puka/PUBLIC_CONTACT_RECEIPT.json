@@ -1,8 +1,8 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.8A",
-  "verified_utc": "2026-08-26T22:46:33.281213+00:00",
-  "source_commit": "0d0211f6853cac01938346f40c3521f3cb9347cb",
-  "workflow_run": "33020728434",
+  "schema": "JM.PUKA.ProofReceipt/0.9A",
+  "verified_utc": "2026-08-26T22:52:57.937314+00:00",
+  "source_commit": "4259c74622c394e3599015215d855ba2a4d00e9f",
+  "workflow_run": "33021128335",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
@@ -15,23 +15,25 @@
     "puka-v07.css",
     "puka-v08.css",
     "puka-v08-academy.css",
+    "puka-v09.css",
     "puka-cards-v05.js",
     "puka-character-v06.js",
-    "puka-world-v07.js"
+    "puka-world-v07.js",
+    "puka-table-theatre-v09.js"
   ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-v09.css",
+    "puka-table-theatre-v09.js",
+    "assets/puka-dealer-medallion-v09.svg",
+    "assets/puka-board-runway-v09.svg",
     "puka-v08.css",
     "puka-v08-academy.css",
-    "assets/puka-table-inlay-v08.svg",
-    "assets/puka-treasury-v08.svg",
-    "assets/puka-academy-banner-v08.svg",
     "puka-v07.css",
-    "puka-world-v07.js",
-    "assets/court-throne-v07.svg"
+    "puka-world-v07.js"
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art/character/world/material/academy tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
 }

@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.6A",
+  "schema":"JM.PUKA.Room/0.7A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,24 +10,25 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-cards-v05.js","puka-character-v06.js"],
-  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
-  "v06Changes":[
-    "preserved the shared poker core and v0.5 card illustration body",
-    "mounted a separate portrait character-expression organ rather than contaminating poker rules with presentation state",
-    "Portrait Academy hero cards gain readable face expressions driven only by visible game state",
-    "moods are ready focus watch joy or rueful and do not claim hidden psychological facts",
-    "Royal Table deliberately suppresses cartoon character faces and keeps formal card presentation",
-    "newly observed cards receive restrained deal/reveal motion while already-seen cards do not repeatedly animate",
-    "pot motion responds to an actual pot-value change",
-    "prefers-reduced-motion disables nonessential movement",
-    "small-screen and short-landscape laws remain sovereign over ornament"
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js"],
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg"],
+  "v07Changes":[
+    "preserved the shared poker core and earlier card-character art organs",
+    "mapped each royal rank to a visible court tier without changing poker rules",
+    "Pauper and Servant use the lower-court environment",
+    "Jester and Squire use court-training environment",
+    "Knight and Courtier use royal-service environment",
+    "Heir receives a succession chamber and King or Queen receives the throne-room stage",
+    "table metal ring light pot ceremony and player rank seal escalate with court tier",
+    "Portrait Academy remains an academy but receives restrained rank-material cues",
+    "rank presentation is derived from the existing visible rank state rather than duplicating progression logic"
   ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
+    "Royal progression must become visible in the world rather than existing only as text",
     "Portrait Academy may personify cards; Royal Table remains ceremonial and more realistic",
-    "Presentation mood may reflect visible game state but must not invent hidden psychology",
+    "Presentation state may reflect visible game state but must not invent hidden psychology",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
     "Visual quality is a completion gate, not decoration after completion",
@@ -37,5 +38,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Character/motion art source stage. Automated source/core/layout/art tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
+  "claimBoundary":"Court-ascent art source stage. Automated source/core/layout/art/world tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
 }

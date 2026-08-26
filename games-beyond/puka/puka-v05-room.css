@@ -1,0 +1,26 @@
+/* PUKA v0.5A environment layer — room art mounts after card/material layer. */
+html[data-puka-mode='portrait'] .app{
+  background:
+    linear-gradient(180deg,#100b16b8 0,#09110ed8 55%,#050706f2 100%),
+    radial-gradient(circle at 50% 8%,var(--v05-accent-glow),transparent 32%),
+    url('./assets/portrait-academy-backdrop.svg') center top/cover fixed no-repeat,
+    #080a09;
+}
+html[data-puka-mode='portrait'] .top{background:linear-gradient(180deg,#18101df2,#0d0a10ed)}
+html[data-puka-mode='portrait'] .shell{position:relative}
+html[data-puka-mode='portrait'] .shell:before{
+  content:'';
+  position:fixed;
+  z-index:-1;
+  left:50%;bottom:-120px;
+  width:min(92vw,520px);height:280px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse,var(--v05-accent-glow),transparent 70%);
+  filter:blur(16px);
+  pointer-events:none;
+}
+html[data-puka-mode='portrait'] .panel{backdrop-filter:blur(8px)}
+html[data-puka-mode='portrait'] .table-wrap{backdrop-filter:blur(1.5px)}
+@media(max-width:380px){html[data-puka-mode='portrait'] .app{background-position:center top}}
+@media(prefers-reduced-motion:reduce){html[data-puka-mode='portrait'] .app{background-attachment:scroll}}

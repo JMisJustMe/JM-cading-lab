@@ -23,6 +23,7 @@ This descendant raises visual finish without altering poker rules or duplicating
 - added `puka-v08.css` as a presentation-only premium material layer
 - added original `assets/puka-table-inlay-v08.svg` ceremonial table artwork
 - added original `assets/puka-treasury-v08.svg` chip-bank artwork
+- added `puka-v08-academy.css` plus original `assets/puka-academy-banner-v08.svg` so Portrait Academy has its own premium authored guild environment
 - rebuilt table rails as layered timber, dark lacquer, brass and gold hardware
 - added controlled room-light halos and vignette depth while keeping the playfield dominant
 - increased felt detail and centre-table identity through the new inlay
@@ -30,7 +31,7 @@ This descendant raises visual finish without altering poker rules or duplicating
 - upgraded court ribbon, player labels, rank seals, teacher blocks, result banner and controls into one material language
 - enlarged pot / treasury presence so wagering state has physical weight without implying real-money play
 - top court tiers gain stronger ceremonial lighting and throne-specific finish
-- Portrait Academy receives warmer premium materials while preserving its illustrated/personified identity
+- Portrait Academy gains four-suit guild identity while preserving its illustrated/personified route
 - Royal Table remains the formal, cinematic route
 - narrow-phone, short-landscape and `prefers-reduced-motion` guards remain active
 - poker core, evaluation, AI, purse persistence and XP thresholds remain untouched
@@ -43,4 +44,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.8A descendant may pass source/core/layout/art/character/world/material checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+The v0.8A descendant may pass source/core/layout/art/character/world/material/academy checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

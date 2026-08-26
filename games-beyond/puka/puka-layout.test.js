@@ -7,6 +7,7 @@ const motion=fs.readFileSync(__dirname+'/puka-v06.css','utf8');
 const world=fs.readFileSync(__dirname+'/puka-v07.css','utf8');
 const material=fs.readFileSync(__dirname+'/puka-v08.css','utf8');
 const academy=fs.readFileSync(__dirname+'/puka-v08-academy.css','utf8');
+const academyBanner=fs.readFileSync(__dirname+'/assets/puka-academy-banner-v08.svg','utf8');
 const cards=fs.readFileSync(__dirname+'/puka-cards-v05.js','utf8');
 const character=fs.readFileSync(__dirname+'/puka-character-v06.js','utf8');
 const ascent=fs.readFileSync(__dirname+'/puka-world-v07.js','utf8');
@@ -61,7 +62,8 @@ has(material,'@media(max-height:560px) and (orientation:landscape)','short-lands
 has(material,'@media(prefers-reduced-motion:reduce)','material reduced-motion guard missing');
 has(academy,'Portrait Academy premium environment','Academy source marker missing');
 has(academy,'puka-academy-banner-v08.svg','Academy guild banner not mounted');
-has(academy,'ACADEMY OF THE FOUR SUITS','Academy source identity missing');
+has(academyBanner,'ACADEMY OF THE FOUR SUITS','Academy banner identity missing');
+has(academyBanner,'PUKA Academy guild banner','Academy banner accessibility label missing');
 has(academy,'@media(max-width:380px)','Academy narrow-phone guard missing');
 has(academy,'@media(prefers-reduced-motion:reduce)','Academy reduced-motion guard missing');
 

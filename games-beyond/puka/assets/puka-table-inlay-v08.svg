@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" role="img" aria-label="PUKA ceremonial table inlay">
+<defs>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff0b0" stop-opacity=".72"/><stop offset=".45" stop-color="#c99a45" stop-opacity=".5"/><stop offset="1" stop-color="#7f5a22" stop-opacity=".32"/></linearGradient>
+  <radialGradient id="r"><stop stop-color="#ffe7a0" stop-opacity=".2"/><stop offset="1" stop-color="#ffe7a0" stop-opacity="0"/></radialGradient>
+</defs>
+<ellipse cx="500" cy="310" rx="430" ry="238" fill="none" stroke="url(#g)" stroke-width="3" opacity=".5"/>
+<ellipse cx="500" cy="310" rx="395" ry="212" fill="none" stroke="url(#g)" stroke-width="1.4" stroke-dasharray="3 10" opacity=".5"/>
+<ellipse cx="500" cy="310" rx="350" ry="182" fill="url(#r)" opacity=".38"/>
+<g fill="none" stroke="url(#g)" stroke-linecap="round" stroke-linejoin="round">
+ <path d="M170 310c55-48 92-69 141-84-25 29-34 52-27 82 10 40 43 61 93 71-73 15-145-5-207-69Z" opacity=".42"/>
+ <path d="M830 310c-55-48-92-69-141-84 25 29 34 52 27 82-10 40-43 61-93 71 73 15 145-5 207-69Z" opacity=".42"/>
+ <path d="M500 108c-21 32-39 56-78 79 31 3 52 16 78 43 26-27 47-40 78-43-39-23-57-47-78-79Z" opacity=".48"/>
+ <path d="M500 512c-21-32-39-56-78-79 31-3 52-16 78-43 26 27 47 40 78 43-39 23-57 47-78 79Z" opacity=".48"/>
+</g>
+<g transform="translate(500 310)" text-anchor="middle">
+ <circle r="66" fill="#06150f" fill-opacity=".23" stroke="url(#g)" stroke-width="2"/>
+ <circle r="52" fill="none" stroke="url(#g)" stroke-width="1" stroke-dasharray="2 7"/>
+ <path d="M0-38 31 0 0 38-31 0Z" fill="none" stroke="url(#g)" stroke-width="2"/>
+ <text y="7" fill="#f5d98b" fill-opacity=".55" font-family="Georgia,serif" font-weight="700" font-size="23">PUKA</text>
+</g>
+</svg>

@@ -1,0 +1,28 @@
+/* PUKA v0.8A — Portrait Academy premium environment. */
+html[data-puka-mode='portrait'] .app{
+  background:
+    linear-gradient(180deg,#100b16b0 0,#09110ecf 54%,#050706ef 100%),
+    radial-gradient(circle at 50% 5%,color-mix(in srgb,var(--v05-accent) 18%,transparent),transparent 31%),
+    url('./assets/puka-academy-banner-v08.svg') center 54px/min(96vw,620px) auto no-repeat,
+    url('./assets/portrait-academy-backdrop.svg') center top/cover fixed no-repeat,
+    #080a09!important;
+}
+html[data-puka-mode='portrait'] .top{background:linear-gradient(180deg,#1a111ef4,#0d0a10ef)!important}
+html[data-puka-mode='portrait'] .court-ribbon{box-shadow:0 7px 20px #0009,inset 0 1px #fff13,0 0 22px color-mix(in srgb,var(--v05-accent) 12%,transparent)!important}
+html[data-puka-mode='portrait'] .coach:after{
+  content:'♠  ♥  ♦  ♣';
+  position:absolute;right:11px;bottom:7px;
+  color:color-mix(in srgb,var(--v05-accent) 28%,#fff0);
+  font:700 .62rem Georgia,serif;letter-spacing:.18em;
+  pointer-events:none;
+}
+html[data-puka-mode='portrait'] .identity-body{position:relative}
+html[data-puka-mode='portrait'] .identity-body:after{
+  content:'PUKA ACADEMY';
+  justify-self:end;
+  color:color-mix(in srgb,var(--v05-accent) 38%,#b9c4bd);
+  font:800 .42rem ui-monospace,monospace;letter-spacing:.18em;
+  opacity:.8;
+}
+@media(max-width:380px){html[data-puka-mode='portrait'] .app{background-size:auto,auto,540px auto,cover}html[data-puka-mode='portrait'] .coach:after{display:none}}
+@media(prefers-reduced-motion:reduce){html[data-puka-mode='portrait'] .app{background-attachment:scroll}}

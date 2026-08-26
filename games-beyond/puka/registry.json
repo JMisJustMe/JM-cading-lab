@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.4A",
+  "schema":"JM.PUKA.Room/0.5A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,16 +10,16 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayer":"puka-art.css",
+  "artLayers":["puka-art.css","puka-v05.css","puka-cards-v05.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg"],
-  "v04Changes":[
-    "preserved the v0.3A responsive shell and poker core",
-    "added premium art-direction layer rather than destabilising layout again",
-    "added original royal-room backdrop, chip-stack illustration and felt-grain asset",
-    "upgraded table rail, felt material, card depth, pot treatment, controls and lighting",
-    "Portrait Academy receives illustrated storybook material treatment",
-    "Royal Table receives a distinct room atmosphere rather than a widened green table",
-    "short-landscape art overrides protect the playable table inside mobile browser chrome",
+  "v05Changes":[
+    "preserved the working poker core and responsive v0.3/v0.4 presentation shell",
+    "mounted a separate card illustration organ instead of rewriting the core UI",
+    "replaced rank-plus-single-pip card faces with full pip fields for numbered cards",
+    "added original Ace seal and geometric Jack Queen King court-card compositions",
+    "added suit-responsive accent material without changing card-game mechanics",
+    "deepened table rail felt lighting seat labels pot treatment and control tactility",
+    "kept narrow-phone and short-landscape fit sovereign over ornament",
     "live direct door remains the canonical owner delivery route"
   ],
   "laws":[
@@ -34,5 +34,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Art-direction source stage. Automated source/core/layout tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
+  "claimBoundary":"Card-led art source stage. Automated source/core/layout tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
 }

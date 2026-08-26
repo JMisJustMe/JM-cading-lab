@@ -1,0 +1,209 @@
+/* PUKA v0.8A — cinematic material pass. Rules/core remain untouched. */
+:root{
+  --v08-gold:#e4bf62;
+  --v08-gold-hi:#fff0ad;
+  --v08-gold-low:#78501f;
+  --v08-wood:#2b160c;
+  --v08-wood-hi:#7d4b20;
+  --v08-ink:#080706;
+  --v08-glass:#0b1110d9;
+  --v08-velvet:#1b1018;
+  --v08-room-glow:#e0bb5726;
+}
+html[data-court-tier='lower']{--v08-gold:#b78e50;--v08-gold-hi:#d8bd82;--v08-gold-low:#5e3b1d;--v08-wood:#24130b;--v08-wood-hi:#593217;--v08-room-glow:#b78e5016}
+html[data-court-tier='middle']{--v08-gold:#d2aa56;--v08-gold-hi:#ead28e;--v08-gold-low:#6b451c;--v08-wood:#2a160b;--v08-wood-hi:#71441d;--v08-room-glow:#d2aa561d}
+html[data-court-tier='high']{--v08-gold:#dfbd68;--v08-gold-hi:#f7dc91;--v08-gold-low:#79501f;--v08-wood:#2f190d;--v08-wood-hi:#835122;--v08-room-glow:#dfbd6826}
+html[data-court-tier='heir']{--v08-gold:#e7cb82;--v08-gold-hi:#fff0b1;--v08-gold-low:#81642f;--v08-wood:#332012;--v08-wood-hi:#8c6732;--v08-room-glow:#f0d79233}
+html[data-court-tier='throne']{--v08-gold:#efc85a;--v08-gold-hi:#fff3b7;--v08-gold-low:#8e5a19;--v08-wood:#34170b;--v08-wood-hi:#a06425;--v08-room-glow:#ffd87040}
+
+/* Room lighting: depth without stealing the playable layer. */
+.app{position:relative;isolation:isolate}
+.shell{position:relative;z-index:1}
+.app:before,.app:after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0}
+.app:before{
+  background:
+    radial-gradient(ellipse at 50% -8%,var(--v08-room-glow) 0,transparent 33%),
+    radial-gradient(circle at 13% 44%,#f4d87a0c 0,transparent 25%),
+    radial-gradient(circle at 87% 44%,#f4d87a0c 0,transparent 25%);
+  mix-blend-mode:screen;
+}
+.app:after{background:radial-gradient(ellipse at center,transparent 38%,#0005 78%,#000a 115%)}
+html[data-puka-mode='portrait'] .app:before{
+  background:
+    radial-gradient(ellipse at 50% -10%,color-mix(in srgb,var(--v05-accent) 18%,transparent) 0,transparent 34%),
+    radial-gradient(circle at 8% 34%,#a86bb116 0,transparent 23%),
+    radial-gradient(circle at 92% 37%,#56ba9d12 0,transparent 25%);
+}
+
+/* Header becomes a lacquered title rail. */
+.top{
+  height:66px;
+  background:linear-gradient(180deg,#15110ff5,#080907f0)!important;
+  border-bottom:1px solid color-mix(in srgb,var(--v08-gold) 58%,#24180d)!important;
+  box-shadow:0 12px 34px #000b,inset 0 1px #fff0c,inset 0 -1px var(--v08-gold-low);
+  backdrop-filter:blur(18px) saturate(1.15);
+}
+.crest{
+  width:44px;height:44px;
+  border-color:var(--v08-gold)!important;
+  background:
+    radial-gradient(circle at 32% 24%,#9b7134 0 7%,transparent 8%),
+    conic-gradient(from 25deg,#1c1209,#4f3215,#151008,#6f4b20,#181008,#1c1209)!important;
+  color:var(--v08-gold-hi)!important;
+  box-shadow:inset 0 0 0 2px #050403,inset 0 0 0 4px #fff0c,inset 0 0 20px var(--v08-room-glow),0 8px 20px #0009!important;
+}
+.crest:after{inset:6px!important;border-color:color-mix(in srgb,var(--v08-gold-hi) 42%,transparent)!important}
+.brand b{color:#fff8e9!important;text-shadow:0 2px 10px #000,0 0 15px var(--v08-room-glow)}
+.status{color:var(--v08-gold-hi)!important}
+
+/* Main table: polished timber, metal inlay, soft felt, readable centre. */
+.table-wrap{
+  border-radius:36px!important;
+  border:1px solid #140b06!important;
+  padding:14px!important;
+  background:
+    linear-gradient(116deg,#ffffff08 0,transparent 16%,transparent 64%,#ffda6708 100%),
+    radial-gradient(ellipse at 50% 37%,#2d8068 0,#17604e 38%,#0d493d 68%,#062821 100%)!important;
+  box-shadow:
+    inset 0 0 0 2px #090604,
+    inset 0 0 0 6px var(--v08-wood),
+    inset 0 0 0 10px var(--v08-wood-hi),
+    inset 0 0 0 13px #160c06,
+    inset 0 0 0 16px var(--v08-gold-low),
+    inset 0 0 0 19px var(--v08-gold),
+    inset 0 0 0 22px #2c1709,
+    inset 0 0 72px #0009,
+    0 30px 78px #000d,
+    0 0 52px var(--v08-room-glow)!important;
+}
+.table-wrap:before{
+  inset:22px!important;
+  border-radius:20px!important;
+  background-image:url('./assets/puka-table-inlay-v08.svg'),url('./assets/felt-grain.svg')!important;
+  background-size:94% 88%,170px 170px!important;
+  background-repeat:no-repeat,repeat!important;
+  background-position:center,center!important;
+  opacity:.66!important;
+  mix-blend-mode:soft-light!important;
+}
+.table-wrap:after{
+  inset:22px!important;
+  border-radius:20px!important;
+  border:1px solid color-mix(in srgb,var(--v08-gold-hi) 26%,transparent)!important;
+  box-shadow:inset 0 0 0 1px #0008,inset 0 0 36px #0005,0 0 0 1px #fff05!important;
+}
+html[data-puka-mode='portrait'] .table-wrap{
+  background:
+    radial-gradient(circle at 50% 34%,#4b9b84 0,#2f7866 34%,#1b5d50 61%,#10383a 100%)!important;
+  box-shadow:
+    inset 0 0 0 2px #100913,
+    inset 0 0 0 6px #321b3a,
+    inset 0 0 0 10px #7e4d8d,
+    inset 0 0 0 13px #27142e,
+    inset 0 0 0 16px var(--v08-gold-low),
+    inset 0 0 0 19px var(--v08-gold),
+    inset 0 0 0 22px #361b3e,
+    inset 0 0 64px #0007,
+    0 26px 66px #000c,
+    0 0 44px color-mix(in srgb,var(--v05-accent) 22%,transparent)!important;
+}
+html[data-puka-mode='portrait'] .table-wrap:before{opacity:.44!important}
+html[data-puka-mode='royal'][data-court-tier='throne'] .table-wrap{box-shadow:inset 0 0 0 2px #090403,inset 0 0 0 6px #3c1707,inset 0 0 0 10px #a15f20,inset 0 0 0 13px #1a0904,inset 0 0 0 16px #9f671f,inset 0 0 0 20px #f1cc69,inset 0 0 0 23px #4a1e08,inset 0 0 82px #0008,0 34px 90px #000e,0 0 68px #ffd56835!important}
+
+/* Court ribbon + seat medallions should look manufactured, not floated labels. */
+.court-ribbon{
+  padding:6px 10px!important;
+  border-color:color-mix(in srgb,var(--v08-gold) 55%,transparent)!important;
+  background:linear-gradient(180deg,#13120fee,#050706f2)!important;
+  box-shadow:0 7px 20px #000a,inset 0 1px #fff14,inset 0 -1px var(--v08-gold-low)!important;
+}
+.ascent-plaque{border-color:color-mix(in srgb,var(--v08-gold) 48%,transparent)!important;background:linear-gradient(180deg,#17120bee,#070706e8)!important;box-shadow:inset 0 1px #fff10,0 3px 10px #0007}
+.ascent-plaque i,.seat-rank-seal{background:radial-gradient(circle at 32% 25%,var(--v08-gold-hi),var(--v08-gold) 27%,var(--v08-gold-low) 68%,#241409 100%)!important;color:#211208!important;border-color:var(--v08-gold-hi)!important;text-shadow:0 1px #fff6;box-shadow:inset 0 0 0 1px #0007,0 4px 10px #0008,0 0 14px var(--v08-room-glow)!important}
+.player-label{border-color:color-mix(in srgb,var(--v08-gold) 26%,transparent)!important;background:linear-gradient(180deg,#111915e8,#050807eb)!important;box-shadow:0 7px 16px #0008,inset 0 1px #fff10!important}
+
+/* Treasury: larger, clearer wager centre. */
+.pot{min-height:82px!important;isolation:isolate}
+.pot:before{
+  width:138px!important;height:82px!important;
+  background:url('./assets/puka-treasury-v08.svg') center/contain no-repeat!important;
+  opacity:.72!important;
+  filter:drop-shadow(0 12px 12px #000c)!important;
+}
+.pot:after{width:132px!important;height:16px!important;bottom:1px!important;background:#0008!important;filter:blur(7px)!important}
+.pot b{font-size:1.55rem!important;color:var(--v08-gold-hi)!important;text-shadow:0 2px 0 #5d3d12,0 6px 18px #000,0 0 16px var(--v08-room-glow)!important}
+.pot span,.pot small{position:relative;z-index:2}
+
+/* Card stock: ivory fibre, foil edge, heavier hero presence. */
+.playing-card{
+  border-color:#a99775!important;
+  background:
+    linear-gradient(112deg,#ffffffb8 0,transparent 13%,transparent 70%,#8f6b2210 100%),
+    repeating-linear-gradient(0deg,#fff0 0 5px,#7d6b4608 5px 6px),
+    radial-gradient(circle at 46% 35%,#fffef7 0,#f9f1df 57%,#ded0b2 100%)!important;
+  box-shadow:0 2px 0 #d7c8a8,0 6px 0 #615644,0 12px 22px #0008,inset 0 0 0 1px #fff!important;
+}
+.playing-card:after{background:linear-gradient(112deg,#fff9 0,transparent 14%,transparent 72%,#5d431213 100%)!important}
+.playing-card.hero-card{
+  border-color:color-mix(in srgb,var(--v05-accent) 60%,var(--v08-gold-hi))!important;
+  box-shadow:0 2px 0 #d5c39d,0 7px 0 #514434,0 15px 28px #000a,0 0 25px color-mix(in srgb,var(--v05-accent) 25%,transparent),inset 0 0 0 1px #fff!important;
+}
+.playing-card.hero-card:after{background:linear-gradient(110deg,#fffbd0aa 0,transparent 13%,transparent 68%,color-mix(in srgb,var(--v05-accent) 13%,transparent) 100%)!important}
+.court-art{box-shadow:inset 0 0 0 1px #fff7,inset 0 0 16px #7b5b1a13}
+.ace-art:before{box-shadow:0 0 18px color-mix(in srgb,var(--v05-accent) 12%,transparent)}
+.playing-card.back{box-shadow:0 2px 0 #b7974d,0 7px 0 #40331d,0 14px 25px #000a,inset 0 0 0 1px #fff5!important}
+
+/* Panels: dark velvet / smoked glass language. */
+.panel{
+  border-color:color-mix(in srgb,var(--v08-gold) 28%,#31453d)!important;
+  background:linear-gradient(155deg,#151713ed,#090c0be8)!important;
+  box-shadow:inset 0 1px #fff0d,0 12px 30px #0006!important;
+  backdrop-filter:blur(10px) saturate(1.08);
+}
+html[data-puka-mode='portrait'] .panel{background:linear-gradient(155deg,#201521ef,#0d1010e8)!important;border-color:color-mix(in srgb,var(--v05-accent) 34%,#4c3b56)!important}
+.coachgrid article{border-color:color-mix(in srgb,var(--v08-gold) 20%,#29493c)!important;background:linear-gradient(145deg,#0d1814,#060a08)!important;box-shadow:inset 0 1px #fff0c,0 5px 12px #0003!important}
+.coach-head>b{border-color:color-mix(in srgb,var(--v08-gold) 30%,#365044)!important;background:#070b09b8}
+.result{background:linear-gradient(180deg,#241a08ef,#0d0b06f4)!important;border-color:var(--v08-gold)!important;box-shadow:0 9px 22px #0008,inset 0 1px #fff16}
+
+/* Buttons: table hardware with a press state. */
+.action,.table-deal,.deal,.secondary,.modes button{
+  border-color:color-mix(in srgb,var(--v08-gold) 22%,#365044)!important;
+  background:linear-gradient(180deg,#1b2f27,#0b1612)!important;
+  box-shadow:inset 0 1px #fff18,inset 0 -2px #0008,0 8px 16px #0006!important;
+  transition:transform .12s ease,filter .12s ease,box-shadow .12s ease;
+}
+.action.raise,.action.next,.table-deal,.deal{border-color:var(--v08-gold)!important;background:linear-gradient(180deg,#4a3612,#211606)!important;color:#fff0ad!important}
+.action.fold{border-color:#8d4b55!important;background:linear-gradient(180deg,#34191e,#170b0e)!important}
+.action:active,.table-deal:active,.deal:active,.secondary:active,.modes button:active{transform:translateY(2px);filter:brightness(.94);box-shadow:inset 0 2px #0006,0 3px 8px #0005!important}
+
+/* Rank ceremony intensifies at the top without becoming a slot machine. */
+html[data-court-tier='heir'] .court-ribbon,html[data-court-tier='throne'] .court-ribbon{box-shadow:0 8px 24px #000b,inset 0 1px #fff18,inset 0 -1px var(--v08-gold-low),0 0 22px var(--v08-room-glow)!important}
+html[data-court-tier='throne'] .court-ribbon:after{content:'♛';flex:0 0 auto;color:var(--v08-gold-hi);font:700 .8rem Georgia,serif;text-shadow:0 0 12px #ffd76b88}
+html[data-court-tier='throne'] .brand b{text-shadow:0 2px 10px #000,0 0 19px #ffd56838}
+
+@keyframes pukaV08Gleam{0%,100%{opacity:.72}50%{opacity:.9}}
+html[data-court-tier='throne'] .pot:before{animation:pukaV08Gleam 3.8s ease-in-out infinite}
+
+@media(max-width:420px){
+  .top{height:62px}.crest{width:40px;height:40px}
+  .table-wrap{border-radius:30px!important;padding:11px!important;box-shadow:inset 0 0 0 2px #090604,inset 0 0 0 5px var(--v08-wood),inset 0 0 0 8px var(--v08-wood-hi),inset 0 0 0 11px #160c06,inset 0 0 0 14px var(--v08-gold-low),inset 0 0 0 17px var(--v08-gold),inset 0 0 54px #0008,0 22px 56px #000c,0 0 36px var(--v08-room-glow)!important}
+  .table-wrap:before,.table-wrap:after{inset:18px!important}
+  .pot{min-height:70px!important}.pot:before{width:112px!important;height:68px!important}.pot:after{width:108px!important}
+  .pot b{font-size:1.36rem!important}
+}
+@media(max-width:360px){
+  .table-wrap{padding:9px!important}.table-wrap:before,.table-wrap:after{inset:16px!important}
+  .playing-card,.slot{width:41px!important;height:60px!important}.pot:before{width:96px!important;height:60px!important}
+}
+@media(max-height:560px) and (orientation:landscape){
+  html[data-puka-mode='royal'] .top{height:48px!important}
+  html[data-puka-mode='royal'] .table-wrap{border-radius:28px!important;padding:9px 11px!important}
+  html[data-puka-mode='royal'] .table-wrap:before,html[data-puka-mode='royal'] .table-wrap:after{inset:17px!important}
+  html[data-puka-mode='royal'] .pot{min-height:48px!important}
+  html[data-puka-mode='royal'] .pot:before{width:84px!important;height:50px!important}
+  html[data-puka-mode='royal'] .pot b{font-size:1.15rem!important}
+}
+@media(prefers-reduced-motion:reduce){
+  html[data-court-tier='throne'] .pot:before{animation:none!important}
+  .action,.table-deal,.deal,.secondary,.modes button{transition:none!important}
+  .app:before{mix-blend-mode:normal}
+}

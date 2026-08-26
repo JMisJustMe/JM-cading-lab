@@ -1,4 +1,4 @@
-# PUKA v0.5A — BUILD RECEIPT
+# PUKA v0.6A — BUILD RECEIPT
 
 **Parent:** Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
@@ -8,31 +8,32 @@
 ## Preserved body
 
 - one shared poker/state core
-- portrait academy + royal table routes from the same state
+- Portrait Academy + Royal Table routes from the same state
 - heads-up Texas Hold'em teaching loop
 - bankroll persistence, royal XP ladder and psychology evidence separation
 - orientation-led portrait/landscape composition
 - one singular live direct door
 
-## v0.4A inherited art body
+## v0.5A inherited visual body
 
-- `puka-art.css` premium material layer over the proven v0.3 responsive shell
-- royal-room backdrop, PUKA chip-stack artwork, felt grain, card back and royal felt medallion
-- table rail depth, felt lighting, pot/chip presentation, card thickness and court-room atmosphere
+- multi-pip numbered cards, PUKA Ace seal and geometric J/Q/K court-card illustrations
+- physical card paper/edge/shadow treatment
+- deep felt/rail/pot/button materials
+- original Royal Table and Portrait Academy environment art
+- small-screen and short-landscape fit guards
 
-## v0.5A card-led visual elevation
+## v0.6A presentation split
 
-- added `puka-v05.css` as the high-fidelity material/card layer
-- added `puka-cards-v05.js` as a separate presentation organ so the working poker UI/core did not need a restart
-- numbered cards now receive proper multi-pip fields instead of a single oversized suit glyph
-- Ace receives a distinct PUKA seal treatment
-- Jack, Queen and King receive original geometric court-card illustrations
-- card corners, reversed lower indices, paper texture, thickness, edge-light and hero-hand depth are now explicit
-- current player suit routes into restrained accent material without altering game mechanics
-- table labels, chip presence, pot emphasis and controls receive stronger physical depth
-- added original `assets/portrait-academy-backdrop.svg`
-- added `puka-v05-room.css` to give Portrait Academy an actual illustrated training hall rather than relying on gradients alone
-- narrow-phone and short-landscape guards remain sovereign over ornament
+- added `puka-character-v06.js` as a presentation-only character/motion organ
+- added `puka-v06.css` as its visual body
+- Portrait Academy player cards gain small readable faces and expressions
+- expressions are driven only by visible state: ready, focus, watch, joy or rueful
+- expression state is explicitly presentation, not a claim about hidden psychology
+- Royal Table suppresses character faces and retains formal/cinematic card treatment
+- card arrival motion is session-aware so already-seen cards do not animate on every rerender
+- pot emphasis moves only when the displayed pot value actually changes
+- `prefers-reduced-motion` removes nonessential movement
+- the working poker core remains untouched
 
 ## Delivery default
 
@@ -42,4 +43,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.5A branch may pass source/core/layout/art checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+The v0.6A descendant may pass source/core/layout/art/character checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

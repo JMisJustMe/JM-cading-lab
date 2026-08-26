@@ -1,8 +1,8 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.5A",
-  "verified_utc": "2026-08-26T20:44:26.441697+00:00",
-  "source_commit": "ad60474151f96761187dd1194efcd4282d683305",
-  "workflow_run": "33011857928",
+  "schema": "JM.PUKA.ProofReceipt/0.6A",
+  "verified_utc": "2026-08-26T20:50:55.052532+00:00",
+  "source_commit": "746bbce91344d78fa718389cdca0942513958a6b",
+  "workflow_run": "33012403421",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
@@ -11,11 +11,15 @@
     "puka-art.css",
     "puka-v05.css",
     "puka-v05-room.css",
-    "puka-cards-v05.js"
+    "puka-v06.css",
+    "puka-cards-v05.js",
+    "puka-character-v06.js"
   ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-v06.css",
+    "puka-character-v06.js",
     "puka-v05.css",
     "puka-v05-room.css",
     "puka-cards-v05.js",
@@ -32,5 +36,5 @@
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art/character tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
 }

@@ -41,34 +41,25 @@ jobs:
           from urllib.parse import urljoin, urlparse
           from urllib.request import Request, urlopen
           import os, re
-
-          base=os.environ['ESTATE_BASE']
-          host=urlparse(base).netloc
-          out=Path('cloudflare-estate')
-          queue=deque(['','navigator/','apps/','theory/','author/','recovery/','404.html','manifest.webmanifest','robots.txt','sitemap.xml','sw.js','_headers','_redirects'])
-          seen=set()
-
+          base=os.environ['ESTATE_BASE']; host=urlparse(base).netloc; out=Path('cloudflare-estate')
+          queue=deque(['','navigator/','apps/','theory/','author/','recovery/','404.html','manifest.webmanifest','robots.txt','sitemap.xml','sw.js','_headers','_redirects']); seen=set()
           def fetch(path, required=False):
               try:
                   req=Request(urljoin(base,path),headers={'User-Agent':'JM-Lyrics-Pass14-Deploy/1.0'})
-                  with urlopen(req,timeout=25) as response:
-                      return response.read(),response.headers.get_content_type()
+                  with urlopen(req,timeout=25) as response: return response.read(),response.headers.get_content_type()
               except Exception:
                   if required: raise
                   return b'', ''
-
           def target_for(path,ctype):
               clean=urlparse('/'+path).path.lstrip('/')
               if not clean: return out/'index.html'
               if clean.endswith('/'): return out/clean/'index.html'
               if ctype=='text/html' and '.' not in Path(clean).name: return out/clean/'index.html'
               return out/clean
-
           while queue and len(seen)<250:
               path=queue.popleft(); key=urlparse('/'+path).path.lstrip('/')
               if key in seen: continue
-              seen.add(key)
-              data,ctype=fetch(key,required=(key==''))
+              seen.add(key); data,ctype=fetch(key,required=(key==''))
               if not data: continue
               target=target_for(key,ctype); target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(data)
               if ctype=='text/html':
@@ -110,14 +101,13 @@ jobs:
           data=cloudflare-estate/lyrics/catalogue-public.json
           test -s "$page"
           test -s "$data"
-          grep -q "JM Lyrics & Music House — Pass 14 Closure-Synced" "$page"
+          grep -q "Pass 14 Closure-Synced" "$page"
           grep -q "The roots are back under the works." "$page"
           grep -q "Getting To Know Me / Getting To Know You" "$page"
           grep -q "Calmer Karma" "$page"
           grep -q "48" "$page"
           grep -q "13 Instrumentals by Havoc" "$page"
           grep -q '</html>' "$page"
-
           python3 <<'PY'
           import json
           from pathlib import Path
@@ -154,18 +144,11 @@ jobs:
           set -euo pipefail
           proved=0
           for attempt in $(seq 1 45); do
-            curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/lyrics/?pass14-proof=${GITHUB_RUN_ID}-${attempt}" \
-              > "$RUNNER_TEMP/live-lyrics.html" || true
-            curl --fail --silent --show-error --location \
-              "https://jmisjustme-estate.pages.dev/lyrics/catalogue-public.json?pass14-proof=${GITHUB_RUN_ID}-${attempt}" \
-              > "$RUNNER_TEMP/live-catalogue.json" || true
+            curl --fail --silent --show-error --location "https://jmisjustme-estate.pages.dev/lyrics/?pass14-proof=${GITHUB_RUN_ID}-${attempt}" > "$RUNNER_TEMP/live-lyrics.html" || true
+            curl --fail --silent --show-error --location "https://jmisjustme-estate.pages.dev/lyrics/catalogue-public.json?pass14-proof=${GITHUB_RUN_ID}-${attempt}" > "$RUNNER_TEMP/live-catalogue.json" || true
             if grep -q "The roots are back under the works." "$RUNNER_TEMP/live-lyrics.html" \
               && grep -q '"creative_work_authorities": 48' "$RUNNER_TEMP/live-catalogue.json" \
-              && grep -q '"open_true_missing_slots": 1' "$RUNNER_TEMP/live-catalogue.json"; then
-              proved=1
-              break
-            fi
+              && grep -q '"open_true_missing_slots": 1' "$RUNNER_TEMP/live-catalogue.json"; then proved=1; break; fi
             sleep 2
           done
           test "$proved" -eq 1

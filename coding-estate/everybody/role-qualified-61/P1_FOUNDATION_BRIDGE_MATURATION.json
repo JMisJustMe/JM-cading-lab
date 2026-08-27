@@ -1,14 +1,25 @@
 {
-  "schema": "jm.role-qualified-foundation-bridge-maturation/1.0",
+  "schema": "jm.role-qualified-foundation-bridge-maturation/1.1",
   "date": "2026-08-27",
   "law": "IMPLEMENTED != HISTORICAL_SOURCE_RECOVERED; CI_DING_REQUIRED_BEFORE_PROVEN; STRONGER_RECOVERED_SOURCE_SUPERSEDES_DECLARED_BRIDGE.",
-  "status": "IMPLEMENTED_CI_PENDING",
+  "status": "CI_PROVEN_CURRENT_NATIVE_BRIDGES",
+  "ci_proof": {
+    "workflow": "Role-qualified 61 coding identity",
+    "run_id": 33042784686,
+    "head_sha": "6d7b74297d4b1f4a756fb7e8e2a96344f7764c80",
+    "artifact_id": 9634488151,
+    "artifact_sha256": "e896b32db1ade0dc9378510fc92339e84a7c6919503fbc44cd48f37ae6feea2d",
+    "maturation_checks_passed": 56,
+    "maturation_checks_failed": 0,
+    "identity_depth_gate": "PASS"
+  },
   "bodies": [
     {
       "body_id": "os-coding",
       "name": "OS_CODING",
       "implementation": "coding-estate/everybody/role-qualified-61/native/os-coding.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/os-coding.selftest.mjs",
+      "selftest_result": "9/9 PASS",
       "donors": ["coding-estate/sovereign-ten/direct/route-proof-native.mjs"],
       "historicalRecoveryClaim": false,
       "native_gain": ["service grammar", "permissions IR", "RouteScript/RouteVM/RouteOS lowering"]
@@ -18,6 +29,7 @@
       "name": "IR / OneBody IR",
       "implementation": "coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs",
+      "selftest_result": "8/8 PASS",
       "donors": ["coding-estate/everybody/compiler-core.mjs"],
       "historicalRecoveryClaim": false,
       "native_gain": ["neutral nodes", "identity-preserving links", "instruction verifier", "portable lowering"]
@@ -27,6 +39,7 @@
       "name": "TheoC Contract + TheoC IR",
       "implementation": "coding-estate/everybody/role-qualified-61/native/theoc.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/theoc.selftest.mjs",
+      "selftest_result": "8/8 PASS",
       "donors": ["coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs", "coding-estate/everybody/compiler-core.mjs"],
       "historicalRecoveryClaim": false,
       "native_gain": ["contract grammar", "contract verifier", "TheoC IR", "JavaScript/C++ backend authorisation"]
@@ -36,9 +49,14 @@
       "name": "CodeHand RouteOS",
       "implementation": "coding-estate/everybody/role-qualified-61/native/codehand.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/codehand.selftest.mjs",
+      "selftest_result": "9/9 PASS",
       "donors": ["coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs", "coding-estate/everybody/role-qualified-61/native/os-coding.mjs"],
       "historicalRecoveryClaim": false,
       "native_gain": ["authoring-session grammar", "arena/world model", "identity-preserving body mounts", "run/inspect console", "Cold Ding receipt"]
     }
-  ]
+  ],
+  "additional_current_native_proof": {
+    "mark_level_syntax": "12/12 PASS",
+    "p0_five_body_mesh": "10/10 PASS"
+  }
 }

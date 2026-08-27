@@ -1,0 +1,80 @@
+{
+  "schema": "jm.game.current-head-carrier-alignment/1.0",
+  "date": "2026-08-27",
+  "status": [
+    "SOFTWARE_CARRIER_PASS",
+    "SOURCE_EXACT",
+    "ZIP_PASS",
+    "ZIP_ALIGNMENT_PASS",
+    "DEX_INTEGRITY_PASS",
+    "V1_SIGNATURE_PASS",
+    "V2_SIGNATURE_PASS",
+    "PHYSICAL_OWNER_DEVICE_DING_OPEN"
+  ],
+  "body": "PRESSUREPOINT: BREAKLINE v0.3 \u2014 Pressure Houses / Consequence Fields",
+  "source_file": "PRESSUREPOINT_BREAKLINE_v0_3_PRESSURE_HOUSES_CONSEQUENCE_FIELDS.html",
+  "source_bytes": 49092,
+  "source_sha256": "eec9ae8abbf2afc73c2d72da121fceae4339fc31a36ecb07349d4aa1c40e1fd6",
+  "embedded_source_sha256": "eec9ae8abbf2afc73c2d72da121fceae4339fc31a36ecb07349d4aa1c40e1fd6",
+  "embedded_source_exact": true,
+  "parent_carrier": "PRESSUREPOINT_BREAKLINE_v1_1_0_DEBUG.apk",
+  "parent_carrier_sha256": "f0c2306a71bfc74e90be90a74fa7ed411376d23f5392c00da77039cc2b08df02",
+  "parent_package": "com.jmisjustme.pressurepoint.cf",
+  "parent_carrier_versionName": "1.1.0",
+  "parent_carrier_versionCode": 11,
+  "lineage_action": "DECLARED_CARRIER_ONLY_DESCENDANT__NO_GAMEPLAY_SOURCE_MUTATION",
+  "emitted_apk": "PRESSUREPOINT_BREAKLINE_V0.3_CURRENT_HEAD_CARRIER_DEBUG.apk",
+  "apk_bytes": 61982,
+  "apk_sha256": "333d24a1cdf3c37f56b0766ce788f1204e3f1374f5af8dbc673b404f0f7119fc",
+  "emitted_package": "com.jmisjustme.pressurepoint.c2",
+  "package_identity_rule": "side-by-side c2 package avoids false update-signature continuity and preserves historical cf carrier",
+  "carrier_versionName": "1.1.0 inherited common-floor carrier version",
+  "carrier_versionCode": 11,
+  "targetSdk": 36,
+  "appCategory": "game",
+  "safe_system_window": "inherited from verified v1.1 game common-floor carrier",
+  "hardware_acceleration": true,
+  "resizeable": true,
+  "signer": "JM Phone Child Debug / embedded JM Android Forge development identity",
+  "signer_certificate_sha256": "a526590bcf01efe85d8b959ba424a687e712043ac4eaa75b2929afbed56bd19e",
+  "signature_schemes": [
+    "v1 JAR SHA256withRSA",
+    "v2 APK Signature Scheme RSA PKCS#1 SHA-256"
+  ],
+  "v1_verify_returncode": 0,
+  "v2_verification": {
+    "pass": true,
+    "signatureVerified": true,
+    "contentDigestVerified": true,
+    "algorithm": 259,
+    "digestAlgorithm": 259,
+    "signingBlockStart": 59664,
+    "currentCentralOffset": 61205,
+    "certificateSha256": "a526590bcf01efe85d8b959ba424a687e712043ac4eaa75b2929afbed56bd19e"
+  },
+  "zip_alignment": {
+    "alignment": 4,
+    "pass": true,
+    "storedEntriesChecked": 2,
+    "stored": [
+      {
+        "name": "resources.arsc",
+        "dataOffset": 6060,
+        "modulo": 0,
+        "bytes": 1292
+      },
+      {
+        "name": "assets/index.html",
+        "dataOffset": 7404,
+        "modulo": 0,
+        "bytes": 49092
+      }
+    ],
+    "misaligned": []
+  },
+  "dex_signature_sha1_ok": true,
+  "dex_adler32_ok": true,
+  "physical_owner_device_ding": "OPEN",
+  "production_signing": "OPEN",
+  "boundary": "Software/carrier proof only. Exact gameplay/source head preserved byte-for-byte. Owner Android install/play/feel decides physical Ding."
+}

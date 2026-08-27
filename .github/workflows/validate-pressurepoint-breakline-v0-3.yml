@@ -1,0 +1,41 @@
+name: Validate Wave 2 PRESSUREPOINT BREAKLINE v0.3
+on:
+  pull_request:
+    paths:
+      - 'wave2/pressurepoint-breakline-v0-3/**'
+      - '.github/workflows/validate-pressurepoint-breakline-v0-3.yml'
+  push:
+    paths:
+      - 'wave2/pressurepoint-breakline-v0-3/**'
+      - '.github/workflows/validate-pressurepoint-breakline-v0-3.yml'
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Exact reconstruction and authority proof
+        run: python wave2/pressurepoint-breakline-v0-3/tools/verify_pressurepoint_breakline_v0_3.py | tee /tmp/proof.txt
+      - name: JavaScript syntax proof
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,gzip,json,re
+          root=Path('wave2/pressurepoint-breakline-v0-3')
+          m=json.loads((root/'PUBLICATION_MANIFEST.json').read_text())
+          enc=b''.join((root/p['path']).read_bytes() for p in m['transport']['parts'])
+          text=gzip.decompress(base64.b64decode(enc)).decode('utf-8')
+          scripts=re.findall(r'<script(?:[^>]*)>(.*?)</script>',text,re.S|re.I)
+          Path('/tmp/pressurepoint.js').write_text('\n'.join(scripts))
+          PY
+          node --check /tmp/pressurepoint.js
+      - name: Claim boundary
+        run: |
+          grep -F 'Physical owner-device Ding remains OPEN' wave2/pressurepoint-breakline-v0-3/PUBLICATION_RECEIPT.md
+          grep -F 'does **not** manufacture' wave2/pressurepoint-breakline-v0-3/PUBLICATION_RECEIPT.md

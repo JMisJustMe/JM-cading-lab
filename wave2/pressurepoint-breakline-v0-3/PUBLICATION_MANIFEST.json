@@ -1,0 +1,55 @@
+{
+  "schema": "jm.wave2.pressurepoint-breakline-publication/1.0",
+  "body": "PRESSUREPOINT: BREAKLINE v0.3 — Pressure Houses / Consequence Fields",
+  "authority": {
+    "path": "PRESSUREPOINT_BREAKLINE_v0_3_PRESSURE_HOUSES_CONSEQUENCE_FIELDS.html",
+    "bytes": 49092,
+    "sha256": "eec9ae8abbf2afc73c2d72da121fceae4339fc31a36ecb07349d4aa1c40e1fd6",
+    "role": "CURRENT_EXECUTABLE_HEAD_SOURCE"
+  },
+  "lineage_parent": {
+    "body": "PRESSUREPOINT: BREAKLINE v0.2 — JM Native",
+    "bytes": 45079,
+    "sha256": "f6437d2b392b8a7669a2be08b008e11ed6c5132df7a3d130debe51ebe99625d5",
+    "role": "PARENT_LINEAGE_AUTHORITY_NOT_CURRENT_HEAD"
+  },
+  "transport": {
+    "encoding": "gzip(level=9,mtime=0)+base64",
+    "encoded_bytes": 22004,
+    "parts": [
+      {
+        "order": 1,
+        "path": "source-carriage/PRESSUREPOINT_BREAKLINE_v0_3.part-001.b64",
+        "bytes": 8000,
+        "git_blob_sha": "895bfe62e367862ac688dcd1ce9e3bab08552a6a"
+      },
+      {
+        "order": 2,
+        "path": "source-carriage/PRESSUREPOINT_BREAKLINE_v0_3.part-002.b64",
+        "bytes": 8000,
+        "git_blob_sha": "349d669bd9326aa7067ad4e2d9f9a60f7f7bf9d6"
+      },
+      {
+        "order": 3,
+        "path": "source-carriage/PRESSUREPOINT_BREAKLINE_v0_3.part-003.b64",
+        "bytes": 6004,
+        "git_blob_sha": "6a82bddfd31ccf2f201e15583da71e6729ac2b3e"
+      }
+    ]
+  },
+  "android_carrier_receipt": {
+    "path": "PRESSUREPOINT_BREAKLINE_V0.3_CURRENT_HEAD_CARRIER_DEBUG_RECEIPT.json",
+    "apk": "PRESSUREPOINT_BREAKLINE_V0.3_CURRENT_HEAD_CARRIER_DEBUG.apk",
+    "apk_bytes": 61982,
+    "apk_sha256": "333d24a1cdf3c37f56b0766ce788f1204e3f1374f5af8dbc673b404f0f7119fc",
+    "package": "com.jmisjustme.pressurepoint.c2",
+    "signer_certificate_sha256": "a526590bcf01efe85d8b959ba424a687e712043ac4eaa75b2929afbed56bd19e",
+    "physical_owner_device_ding": "OPEN"
+  },
+  "claim_boundary": [
+    "Publishes exact v0.3 current-head source authority and software-carrier proof only.",
+    "v0.2 remains parent lineage authority and is not relabelled current.",
+    "Physical owner-device Ding remains OPEN.",
+    "No stable-final gameplay, physical Final Ding, or final APK crown is manufactured."
+  ]
+}

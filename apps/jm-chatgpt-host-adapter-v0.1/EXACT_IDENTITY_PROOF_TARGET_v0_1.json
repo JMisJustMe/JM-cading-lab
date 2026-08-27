@@ -1,0 +1,30 @@
+{
+  "schema": "jm.universal-hosted-body/exact-identity-proof-target/v0.1",
+  "status": "OPEN_EMPIRICAL_GATE",
+  "body": {
+    "id": "jm.untitled-field-branch/v0.9",
+    "required_filename": "00_OPEN_FIRST_UNTITLED_FIELD_BRANCH_v0_9_FROZEN.html",
+    "sha256": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea",
+    "playable_ir": "jm.gamecore.playable-ir/v0.3",
+    "onebody_abi": "jm.onebody-abi/v0.1",
+    "mutation_allowed": false
+  },
+  "host_evidence": {
+    "browser_desktop": "PASS — inherited frozen keeper evidence",
+    "phone_android": "PASS — inherited frozen keeper owner-device evidence",
+    "chatgpt_adapter_transport": "PASS — JM ChatGPT Host Adapter v0.1.1 runtime/transport proof",
+    "chatgpt_inline_direct_contact_exact_body": "NOT_YET"
+  },
+  "required_final_sequence": [
+    "verify exact source SHA before mounting",
+    "mount exact frozen body through JM ChatGPT Host Adapter",
+    "perform direct user contact inside the ChatGPT message surface",
+    "observe visible state consequence from the exact body",
+    "verify source SHA / body id / playable IR / OneBody ABI unchanged",
+    "emit exact-identity cross-host receipt"
+  ],
+  "crown_rule": "Do not claim EXACT-BODY CROSS-HOST DING until the exact pinned body, not a marked fixture or safe probe, visibly changes state under direct inline contact.",
+  "host_role": "CARRIER_NOT_SOURCE_AUTHORITY",
+  "merge_forbidden": true,
+  "keeper": "One body. Multiple hosts. Carrier changes; source identity does not. Contact supplies the proof."
+}

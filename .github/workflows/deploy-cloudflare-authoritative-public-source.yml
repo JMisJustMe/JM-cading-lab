@@ -27,12 +27,14 @@ on:
       - "navigator/**"
       - "recent/**"
       - "recovery/**"
+      - "shims-reader/**"
       - "theory/**"
       - "registry/estate-map.json"
       - "registry/estate-head-public-current.json"
       - "registry/theory-wing.json"
       - "registry/lyrics-house.json"
       - "registry/money-menu-publication-receipt-v1.2.json"
+      - "registry/public-release-current.json"
 
 concurrency:
   group: jmisjustme-estate-production
@@ -55,7 +57,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Prove the Money Menu carrier
+      - name: Prove governed commercial carrier and new release bodies
         shell: bash
         run: |
           set -euo pipefail
@@ -63,7 +65,13 @@ jobs:
           actual="$(sha256sum money-menu/index.html | awk '{print $1}')"
           expected='7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d'
           test "$actual" = "$expected"
-          echo "PASS money-menu/index.html $actual"
+          test -s shims-reader/index.html
+          test -s apps/showcase/index.html
+          test -s games-beyond/showcase/index.html
+          grep -Fq 'SHIMS Reader' shims-reader/index.html
+          grep -Fq 'JM Apps & Tools' apps/showcase/index.html
+          grep -Fq 'JM Games' games-beyond/showcase/index.html
+          echo "PASS governed release source floor"
 
       - name: Assemble current governed public Estate
         shell: bash
@@ -79,7 +87,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery theory; do
+          for dir in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -97,7 +105,8 @@ jobs:
             recent-chat-convergence-classification-receipt-v1.0.json \
             github-pages-route-repair-receipt-v1.0.json \
             cloudflare-authoritative-route-receipt-v1.2.json \
-            cloudflare-authoritative-route-receipt-v1.3.json; do
+            cloudflare-authoritative-route-receipt-v1.3.json \
+            public-release-current.json; do
             [ ! -f "registry/$file" ] || cp "registry/$file" "cloudflare-estate/registry/$file"
           done
 
@@ -114,6 +123,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
             Clear-Site-Data: "cache"
           /money-menu/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /shims-reader/*
             Cache-Control: no-store, no-cache, must-revalidate
           /recent/*
             Cache-Control: no-store, no-cache, must-revalidate
@@ -132,16 +143,22 @@ jobs:
           cat > cloudflare-estate/_redirects <<'EOF'
           /money-menu /money-menu/index.html 200
           /money-menu/ /money-menu/index.html 200
-          /recent /recent/index.html 200
-          /recent/ /recent/index.html 200
+          /shims-reader /shims-reader/index.html 200
+          /shims-reader/ /shims-reader/index.html 200
           /apps /apps/index.html 200
           /apps/ /apps/index.html 200
+          /apps/showcase /apps/showcase/index.html 200
+          /apps/showcase/ /apps/showcase/index.html 200
           /games-beyond /games-beyond/index.html 200
           /games-beyond/ /games-beyond/index.html 200
+          /games-beyond/showcase /games-beyond/showcase/index.html 200
+          /games-beyond/showcase/ /games-beyond/showcase/index.html 200
           /theory /theory/index.html 200
           /theory/ /theory/index.html 200
           /lyrics /lyrics/index.html 200
           /lyrics/ /lyrics/index.html 200
+          /recent /recent/index.html 200
+          /recent/ /recent/index.html 200
           /recovery /recovery/index.html 200
           /recovery/ /recovery/index.html 200
           /* /index.html 200
@@ -157,11 +174,16 @@ jobs:
 
           checks = [
               ('index.html', 'Your work no longer lives as scattered HTMLs'),
+              ('author-home-door.js', 'SHIMS Reader'),
               ('money-menu/index.html', 'JM Money Menu · Public Contact Carrier v1.2'),
               ('money-menu/index.html', '242 routes'),
               ('money-menu/index.html', 'Enquiry → brief → scope → receipt'),
+              ('shims-reader/index.html', 'SHIMS Reader'),
+              ('shims-reader/index.html', 'Build my taster'),
               ('apps/index.html', 'NON-GAME APPS HOUSE'),
+              ('apps/showcase/index.html', 'JM Apps & Tools'),
               ('games-beyond/index.html', 'Games&Beyond'),
+              ('games-beyond/showcase/index.html', 'JM Games'),
               ('theory/index.html', 'JM Theory Multihub'),
               ('lyrics/index.html', 'JM Lyrics'),
               ('recent/index.html', 'The Estate'),
@@ -205,7 +227,6 @@ jobs:
           if failed:
               raise SystemExit('PUBLIC SOURCE GATE FAILED\n' + '\n'.join(failed))
           PY
-
           python3 -m json.tool cloudflare-estate/registry/estate-map.json >/dev/null
           python3 -m json.tool cloudflare-estate/registry/estate-head-public-current.json >/dev/null
 
@@ -231,8 +252,11 @@ jobs:
           checks = [
               ('/', 'Your work no longer lives as scattered HTMLs'),
               ('/money-menu/', 'JM Money Menu · Public Contact Carrier v1.2'),
+              ('/shims-reader/', 'SHIMS Reader'),
               ('/apps/', 'NON-GAME APPS HOUSE'),
+              ('/apps/showcase/', 'JM Apps & Tools'),
               ('/games-beyond/', 'Games&Beyond'),
+              ('/games-beyond/showcase/', 'JM Games'),
               ('/theory/', 'JM Theory Multihub'),
               ('/lyrics/', 'JM Lyrics'),
               ('/recent/', 'The Estate'),
@@ -244,10 +268,10 @@ jobs:
           for attempt in range(1, 61):
               next_pending = []
               for path, marker in pending:
-                  url = f'{base}{path}?jm-push={run}-{attempt}'
+                  url = f'{base}{path}?jm-release={run}-{attempt}'
                   try:
                       request = Request(url, headers={
-                          'User-Agent': 'JM-Estate-Cloudflare-Proof/1.0',
+                          'User-Agent': 'JM-Estate-Cloudflare-Proof/1.1',
                           'Cache-Control': 'no-cache',
                       })
                       with urlopen(request, timeout=25) as response:
@@ -311,15 +335,22 @@ jobs:
           receipt = {
               'schema': 'JM.CloudflareAuthoritativeRouteReceipt/1.3',
               'verified_utc': datetime.now(timezone.utc).isoformat(),
-              'state': 'PASS_CURRENT_PUBLIC_ESTATE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER',
+              'state': 'PASS_CURRENT_PUBLIC_RELEASE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER',
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'host': 'https://jmisjustme-estate.pages.dev',
               'routes': [
-                  '/', '/money-menu/', '/apps/', '/games-beyond/', '/theory/', '/lyrics/', '/recent/',
+                  '/', '/money-menu/', '/shims-reader/', '/apps/', '/apps/showcase/',
+                  '/games-beyond/', '/games-beyond/showcase/', '/theory/', '/lyrics/', '/recent/',
                   '/estate/authoritative/all-body-first-pass-v1.0/',
                   '/estate/authoritative/all-body-first-pass-v1.0/command-register/'
               ],
+              'release_extension': {
+                  'shims_reader': 'LIVE_PASS',
+                  'apps_showcase': 'LIVE_PASS',
+                  'games_showcase': 'LIVE_PASS',
+                  'root_shims_door_source': 'PRESENT'
+              },
               'exact_command_register': {
                   'route': '/estate/authoritative/all-body-first-pass-v1.0/command-register/',
                   'size_bytes': 2530896,
@@ -332,7 +363,7 @@ jobs:
               'self_erasure': False,
               'silent_parallel_lane': False,
               'ding': False,
-              'claim_boundary': 'Current public source, named live routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate.'
+              'claim_boundary': 'Current public release source, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate.'
           }
           path = Path('registry/cloudflare-authoritative-route-receipt-v1.3.json')
           path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')

@@ -1,21 +1,30 @@
 {
   "schema": "JM.CloudflareAuthoritativeRouteReceipt/1.3",
-  "verified_utc": "2026-08-26T22:52:59.345927+00:00",
-  "state": "PASS_CURRENT_PUBLIC_ESTATE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER",
-  "source_commit": "4259c74622c394e3599015215d855ba2a4d00e9f",
-  "workflow_run": "33021128255",
+  "verified_utc": "2026-08-27T05:13:28.461522+00:00",
+  "state": "PASS_CURRENT_PUBLIC_RELEASE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER",
+  "source_commit": "6b333e99e02c421a70f90bcd1ba30740d44c9a04",
+  "workflow_run": "33041799039",
   "host": "https://jmisjustme-estate.pages.dev",
   "routes": [
     "/",
     "/money-menu/",
+    "/shims-reader/",
     "/apps/",
+    "/apps/showcase/",
     "/games-beyond/",
+    "/games-beyond/showcase/",
     "/theory/",
     "/lyrics/",
     "/recent/",
     "/estate/authoritative/all-body-first-pass-v1.0/",
     "/estate/authoritative/all-body-first-pass-v1.0/command-register/"
   ],
+  "release_extension": {
+    "shims_reader": "LIVE_PASS",
+    "apps_showcase": "LIVE_PASS",
+    "games_showcase": "LIVE_PASS",
+    "root_shims_door_source": "PRESENT"
+  },
   "exact_command_register": {
     "route": "/estate/authoritative/all-body-first-pass-v1.0/command-register/",
     "size_bytes": 2530896,
@@ -28,5 +37,5 @@
   "self_erasure": false,
   "silent_parallel_lane": false,
   "ding": false,
-  "claim_boundary": "Current public source, named live routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate."
+  "claim_boundary": "Current public release source, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate."
 }

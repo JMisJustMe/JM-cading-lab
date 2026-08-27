@@ -1,10 +1,20 @@
 {
   "schema": "JM.MoneyMenuPublicPublicationReceipt/1.0",
-  "status": "SOURCE_READY_DEPLOYMENT_PENDING",
+  "status": "PASS_SOURCE_AND_CLOUDFLARE_LIVE_NEW_PRODUCT_CONNECTION",
   "data_authority": "JM Money Menu — Standalone Current Head v1.1",
   "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
   "routes": 242,
   "immediate_parity": "160/160 PASS",
+  "existing_carrier_live_proof": "Preserved from prior v1.2 publication status.",
+  "current_connection_live_proof": {
+    "workflow_run": "33041376055",
+    "source_commit": "1123f281a2f305092527ce2ea46c2cdf10d9199c",
+    "verified_utc": "2026-08-27T05:05:31.999590+00:00",
+    "canonical_host": "https://jmisjustme-estate.pages.dev",
+    "money_menu": "LIVE_PASS",
+    "shims_reader": "LIVE_PASS",
+    "proof_receipt": "../registry/cloudflare-authoritative-route-receipt-v1.3.json"
+  },
   "files": [
     "money-menu/index.html",
     "money-menu/STATUS.md"
@@ -21,5 +31,17 @@
     "Web Share",
     "email draft"
   ],
-  "boundary": "Source build complete. Cloudflare and real-device live contact require deployment receipt."
+  "connected_public_products": [
+    {
+      "name": "SHIMS Reader",
+      "route": "../shims-reader/",
+      "role": "reflective / personal-help route-reading service",
+      "assessed_price_range_gbp": "25-85",
+      "source_state": "COMMITTED_TO_MAIN",
+      "edge_state": "CLOUDFLARE_LIVE_PASS",
+      "handoff": "SHIMS service door -> Money Menu enquiry -> brief -> scope -> reviewed agreement",
+      "boundary": "Reflective route-reading only; not medical/clinical diagnosis or treatment and not professional legal or financial advice."
+    }
+  ],
+  "boundary": "Money Menu v1.1 remains the governed 242-route data authority. Public product connections do not silently alter route identities or create accepted contracts. The SHIMS and Money public doors passed authoritative Cloudflare live contact; an accepted contract still requires explicit reviewed agreement."
 }

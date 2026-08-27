@@ -1,0 +1,22 @@
+name: Validate Wave 2 FTR Energy TraceBox linkage
+on:
+  pull_request:
+    paths:
+      - "estate-publication/apps-tools-games/FTR-Energy-to-Engine-Energy-TraceBox-v1.0/**"
+      - ".github/workflows/validate-wave2-ftr-energy-tracebox.yml"
+  push:
+    branches: [main]
+    paths:
+      - "estate-publication/apps-tools-games/FTR-Energy-to-Engine-Energy-TraceBox-v1.0/**"
+      - ".github/workflows/validate-wave2-ftr-energy-tracebox.yml"
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct exact recovered FTR authorities
+        run: python estate-publication/apps-tools-games/FTR-Energy-to-Engine-Energy-TraceBox-v1.0/reconstruct_and_verify_ftr.py
+      - name: Enforce claim boundary
+        run: |
+          grep -F "does **not** claim a physical TraceBox connection" estate-publication/apps-tools-games/FTR-Energy-to-Engine-Energy-TraceBox-v1.0/FTR_LINKAGE_AND_PROOF_RECEIPT.md
+          grep -F "Simulation ≠ physical proof" estate-publication/apps-tools-games/FTR-Energy-to-Engine-Energy-TraceBox-v1.0/FTR_LINKAGE_AND_PROOF_RECEIPT.md

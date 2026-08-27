@@ -1,0 +1,206 @@
+body: Kading Host
+host: Kading
+family: Gold Mode Coding Hub
+type: Host / central build body
+route: mount → own-room → trace → ding
+working: Everything mounts into Kading first unless user deliberately selects hybrid mode.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Cading Room
+host: Kading
+family: Gold Mode Coding Hub
+type: Authoring language body
+route: mount → own-room → trace → ding
+working: Cading remains its own room/body inside Kading, not erased.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Quadze Room
+host: Kading
+family: Gold Mode Coding Hub
+type: Route algebra / quadrant body
+route: mount → own-room → trace → ding
+working: Quadze remains itself; mounted under Kading as its own room.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Finger One
+host: Kading
+family: Gold Mode Coding Hub
+type: Structured coding hand
+route: mount → own-room → trace → ding
+working: Cading, JMLogic, FlowTalk, Route-Code, parser, compiler, IR, emitters.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Finger Two
+host: Kading
+family: Gold Mode Coding Hub
+type: Contact / formula / glyph hand
+route: mount → own-room → trace → ding
+working: Formula-Born Code, ContactCode, MorseMinus, RECORP, PunctBody, JickMa.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: RouteOS
+host: Kading
+family: Gold Mode Coding Hub
+type: Runtime route layer
+route: mount → own-room → trace → ding
+working: Routes bodies, changes state, traces actions, returns Ding/BUGG.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: OneBody IR
+host: Kading
+family: Gold Mode Coding Hub
+type: Neutral body model
+route: mount → own-room → trace → ding
+working: Shared structure for bodies before target output.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Parser
+host: Kading
+family: Gold Mode Coding Hub
+type: Source reader
+route: mount → own-room → trace → ding
+working: Reads Kading/Cading/body syntax into structured body units.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Compiler
+host: Kading
+family: Gold Mode Coding Hub
+type: Translator
+route: mount → own-room → trace → ding
+working: Turns parsed body units into OneBody IR and target code.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: TraceBox
+host: Kading
+family: Gold Mode Coding Hub
+type: Proof recorder
+route: mount → own-room → trace → ding
+working: Action → Result → Trace → Ding/BUGG → Receipt.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Build Laws
+host: Kading
+family: Gold Mode Coding Hub
+type: Governance
+route: mount → own-room → trace → ding
+working: No Ding No Claim, Source Before Crown, Recall Before Rebuild.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Game Coding
+host: Kading
+family: Gold Mode Coding Hub
+type: Game logic layer
+route: mount → own-room → trace → ding
+working: Input → Route → Contact → State Change → Game Trace → Ding.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: GameCore
+host: Kading
+family: Gold Mode Coding Hub
+type: Shared game runtime
+route: mount → own-room → trace → ding
+working: Shared input, loop, contact, scoring, physics hooks.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: GlyphPlay
+host: Kading
+family: Gold Mode Coding Hub
+type: Game/engine body
+route: mount → own-room → trace → ding
+working: Mounted game creation body.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: PLAYFORM
+host: Kading
+family: Gold Mode Coding Hub
+type: Game/engine body
+route: mount → own-room → trace → ding
+working: Mounted play framework body.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: GameForge
+host: Kading
+family: Gold Mode Coding Hub
+type: Game/engine body
+route: mount → own-room → trace → ding
+working: Mounted game construction body.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Humanimals
+host: Kading
+family: Gold Mode Coding Hub
+type: Game project
+route: mount → own-room → trace → ding
+working: Mounted as game room; source status held until full files imported.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: T-Boys
+host: Kading
+family: Gold Mode Coding Hub
+type: Game project
+route: mount → own-room → trace → ding
+working: Mounted as game room; T-Boys keeps own room logic.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: PlayZone
+host: Kading
+family: Gold Mode Coding Hub
+type: Game/project space
+route: mount → own-room → trace → ding
+working: Mounted play space / arcade room.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Route Catch
+host: Kading
+family: Gold Mode Coding Hub
+type: Game body
+route: mount → own-room → trace → ding
+working: Mounted game body; source-needed until exact files imported.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: CadenPad
+host: Kading
+family: Gold Mode Coding Hub
+type: Workbench
+route: mount → own-room → trace → ding
+working: Editor/workbench room inherited from prior builds.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: Zionfolder
+host: Kading
+family: Gold Mode Coding Hub
+type: Delivery / preservation
+route: mount → own-room → trace → ding
+working: Every build gets OPEN_FIRST + manifest + receipt + SHA + ZIP.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending
+
+body: GitHub Route
+host: Kading
+family: Gold Mode Coding Hub
+type: Archive/release lane
+route: mount → own-room → trace → ding
+working: Repo JMisJustMe/JM-cading-lab; push only when user says go.
+boundary: mounted through Kading, not swallowed by Kading
+ding: pending

@@ -1,41 +1,22 @@
 {
-  "schema": "jm.role-qualified-remaining-19-maturation/1.0",
+  "schema": "jm.role-qualified-remaining-19-maturation/1.1",
   "date": "2026-08-27",
-  "status": "IMPLEMENTED_CI_PENDING_NO_CROWN",
+  "status": "CI_PROVEN_CURRENT_NATIVE_DING_CROWNED",
   "law": "RECOVER BEFORE REBUILD; WHEN SOURCE CANNOT BE RECOVERED, AUTHORISED FORWARD CREATION MAY BRIDGE THE GAP PROVIDED THE BRIDGE DECLARES ITSELF; NO DING, NO CLAIM.",
   "baseline_crowned": 42,
-  "pending_count": 19,
-  "target_if_green": 61,
-  "pending_ids": [
-    "cading-lab",
-    "cadenpad",
-    "coding-body-house",
-    "finger-one",
-    "finger-one-codestudio",
-    "finger-two",
-    "lexicon",
-    "namebank",
-    "codeing-engine",
-    "gameforge",
-    "glyphforge",
-    "glyphplay",
-    "playform",
-    "seedform",
-    "prayer-hands-paired-contact",
-    "jickma-jickmah",
-    "mood-drills",
-    "morseminus",
-    "jm-visualang"
+  "crowned_count": 19,
+  "coverage_after_ding": 61,
+  "remaining_after_ding": 0,
+  "crowned_ids": [
+    "cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine","gameforge","glyphforge","glyphplay","playform","seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus","jm-visualang"
   ],
   "groups": {
     "authoring_nine": {
       "ids": ["cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine"],
       "implementation": "coding-estate/everybody/role-qualified-61/native/authoring-nine.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/authoring-nine.selftest.mjs",
-      "source_basis": [
-        "coding-estate/everybody/body-registry-extension-01.json",
-        "coding-estate/everybody/MOUNTED_ORIGINAL_TWO_HAND_CODING_REGISTRY_v0.1.md"
-      ],
+      "checks": 18,
+      "source_basis": ["coding-estate/everybody/body-registry-extension-01.json","coding-estate/everybody/MOUNTED_ORIGINAL_TWO_HAND_CODING_REGISTRY_v0.1.md"],
       "source_basis_commit": "6034befdbe8aaf73e9d07322d279562a80b2d44b",
       "claim": "AUTHORISED_FORWARD_CURRENT_NATIVE_CODING_FACES_FROM_RECOVERED_LINEAGE_PROFILES"
     },
@@ -43,6 +24,7 @@
       "ids": ["seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus"],
       "implementation": "coding-estate/everybody/role-qualified-61/native/remaining-embodied-five.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/remaining-embodied-five.selftest.mjs",
+      "checks": 12,
       "source_basis": ["coding-estate/everybody/MOUNTED_ORIGINAL_TWO_HAND_CODING_REGISTRY_v0.1.md","coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json"],
       "claim": "AUTHORISED_FORWARD_CURRENT_NATIVE_BRIDGES; MORSEMINUS_REMAINS_DISTINCT_FROM_MMZG"
     },
@@ -50,6 +32,7 @@
       "ids": ["gameforge","glyphforge","glyphplay","playform","jm-visualang"],
       "implementation": "coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.mjs",
       "selftest": "coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.selftest.mjs",
+      "checks": 15,
       "source_authorities": {
         "gameforge": {"commit":"d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08","version":"v3.16","bytes":114474,"sha256":"a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb"},
         "glyphforge": {"commit":"d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08","version":"v68.2","bytes":108992,"sha256":"93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3"},
@@ -66,5 +49,17 @@
     "JM GameCore may support Game-CODING but is not one of the 61 coding identities.",
     "GlyphPlay protected rejoin evidence is not source authority; its current-native coding face is a declared bridge.",
     "PLAYFORM orchestrates Crown Forge rooms; JM Visualang is the organ/form/behaviour visual language and remains distinct."
-  ]
+  ],
+  "ci_proof": {
+    "workflow": "Role-qualified 61 coding identity",
+    "run_id": 33045638498,
+    "run_number": 61,
+    "head_sha": "cbb07e3f32bd77a9017ee208980d9bbe5508a0a1",
+    "job_id": 98428857412,
+    "conclusion": "success",
+    "maturation_artifact_id": 9635523530,
+    "maturation_artifact_size_bytes": 11312,
+    "maturation_artifact_sha256": "87bf798784ed8e4017208703b7515ad389a895bad1f80459755f974c8620b4df",
+    "new_check_count": 45
+  }
 }

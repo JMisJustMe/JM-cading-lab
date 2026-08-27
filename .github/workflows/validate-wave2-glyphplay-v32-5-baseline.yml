@@ -1,0 +1,38 @@
+name: Validate Wave 2 GlyphPlay B1 v32.5 baseline
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure/**'
+      - '.github/workflows/validate-wave2-glyphplay-v32-5-baseline.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure/**'
+      - '.github/workflows/validate-wave2-glyphplay-v32-5-baseline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Prove exact GlyphPlay v32.5 frozen baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure'
+          test "$(find "$ROOT/carrier" -maxdepth 1 -type f -name '*.b64' | wc -l)" -eq 31
+          python "$ROOT/reconstruct_glyphplay_v32_5.py" --verify-only
+      - name: Reconstruct exact authority for artifact-level inspection
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT='estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure'
+          python "$ROOT/reconstruct_glyphplay_v32_5.py"
+          test "$(wc -c < "$ROOT/reconstructed/00_OPEN_FIRST_GLYPHPLAY_B1_v32_5_SOVEREIGN_BASELINE_LOOP_CLOSURE.html")" -eq 636271

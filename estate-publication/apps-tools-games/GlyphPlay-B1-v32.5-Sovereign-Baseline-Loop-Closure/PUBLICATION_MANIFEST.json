@@ -1,0 +1,44 @@
+{
+  "schema": "jm.wave2.glyphplay-baseline-publication.v1",
+  "body": "GlyphPlay B1 v32.5 — Sovereign Baseline Loop Closure",
+  "role": "frozen_reusable_baseline",
+  "claim_boundary": {
+    "proved": ["exact public-source carriage", "deterministic reconstruction", "source identity", "baseline identity"],
+    "not_claimed": ["latest GlyphPlay", "current GlyphPlay head", "final GlyphPlay crown", "owner-device Ding", "physical contact crown"]
+  },
+  "authority": {
+    "filename": "00_OPEN_FIRST_GLYPHPLAY_B1_v32_5_SOVEREIGN_BASELINE_LOOP_CLOSURE.html",
+    "bytes": 636271,
+    "sha256": "b12657b720838e0b6b2bcc2e39b6ddcc2b64b999cef75daec4d7e6e78b9934b5"
+  },
+  "deterministic_carrier": {
+    "format": "gzip(level=9,mtime=0) → base64 ASCII",
+    "gzip_bytes": 150602,
+    "gzip_sha256": "f59591b42ab192bdfe28a19ba110251e27e9c663b866b0110793064c1c7e7786",
+    "base64_bytes": 200804,
+    "live_objects": 31,
+    "ledger": "FINAL_CARRIER_LEDGER.tsv"
+  },
+  "required_source_markers": [
+    "GlyphPlay B1 v32.5 — Sovereign Baseline Loop Closure",
+    "v32.5 · BASELINE",
+    "GLYPHPLAY SOVEREIGN BASELINE · LOOP CLOSED"
+  ],
+  "public_safety_forbidden_markers": [
+    "-----BEGIN PRIVATE KEY-----",
+    "-----BEGIN RSA PRIVATE KEY-----",
+    "-----BEGIN OPENSSH PRIVATE KEY-----",
+    "-----BEGIN EC PRIVATE KEY-----",
+    ".keystore",
+    ".jks",
+    "PKCS12"
+  ],
+  "transport_receipts": {
+    "old_checkpoint": "preserved in Git ancestry only; incomplete checkpoint files are not the live publication tree",
+    "part_015_full": "connector safety indeterminacy; no object attached; repaired forward as part-015a + part-015b without changing source bytes",
+    "part_018_full_rejected_blob": "5d0b47b86bcdfde854fa316c411e610d61707edd",
+    "part_018_resolution": "full write returned non-authoritative Git object identity; rejected/unattached; repaired as exact part-018a + part-018b",
+    "part_022_truncated_rejected_blob": "721edeaf87dfe716dbb1b44fc152e6315828e9ff",
+    "part_022_resolution": "intermediate tool view truncated the carrier; rejected/unattached; exact full part-022 then seated"
+  }
+}

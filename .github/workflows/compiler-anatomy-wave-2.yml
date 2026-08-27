@@ -28,6 +28,8 @@ jobs:
           node-version: 'lts/*'
       - name: Run compiler anatomy negative and positive gates
         run: node coding-estate/everybody/native-maturation/compiler-anatomy-wave-2-selftest.mjs
+      - name: Run PrimeBody and TokenBody source-custody gates
+        run: node coding-estate/everybody/native-maturation/primebody-tokenbody-wave-2-selftest.mjs
       - name: Re-run EveryBody portable conformance
         run: node coding-estate/everybody/selftest.mjs
       - name: Re-run exact native frontend tests

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "jm.universal-hosted-body/exact-identity-receipt/v0.1",
+  "title": "JM Universal Hosted-Body Exact Identity Receipt v0.1",
+  "type": "object",
+  "required": [
+    "bodyId",
+    "sourceSha256",
+    "playableIr",
+    "oneBodyAbi",
+    "host",
+    "adapter",
+    "directContact",
+    "visibleConsequence",
+    "identityPreserved",
+    "sourceMutation",
+    "result"
+  ],
+  "properties": {
+    "bodyId": {"const": "jm.untitled-field-branch/v0.9"},
+    "sourceSha256": {"const": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea"},
+    "playableIr": {"const": "jm.gamecore.playable-ir/v0.3"},
+    "oneBodyAbi": {"const": "jm.onebody-abi/v0.1"},
+    "host": {"type": "string", "minLength": 1},
+    "adapter": {"const": "JM ChatGPT Host Adapter v0.1.1"},
+    "directContact": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+    "visibleConsequence": {"enum": ["PASS", "FAIL", "NOT_RUN"]},
+    "identityPreserved": {"enum": ["PASS", "FAIL"]},
+    "sourceMutation": {"const": "NONE"},
+    "result": {
+      "enum": [
+        "EXACT_BODY_CROSS_HOST_DING_PROVED",
+        "CONTACT_NOT_PROVED",
+        "IDENTITY_MISMATCH",
+        "BLOCKED"
+      ]
+    },
+    "claimBoundary": {"type": "string"},
+    "evidence": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"result": {"const": "EXACT_BODY_CROSS_HOST_DING_PROVED"}}},
+      "then": {
+        "properties": {
+          "directContact": {"const": "PASS"},
+          "visibleConsequence": {"const": "PASS"},
+          "identityPreserved": {"const": "PASS"}
+        }
+      }
+    }
+  ]
+}

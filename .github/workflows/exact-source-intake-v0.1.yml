@@ -1,0 +1,29 @@
+name: Exact Source Intake v0.1
+
+on:
+  push:
+    branches:
+      - universal-hosted-body-exact-identity-proof-v0.1
+  pull_request:
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/exact-source-loader.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/exact-source-loader.test.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/server.mjs'
+      - '.github/workflows/exact-source-intake-v0.1.yml'
+
+jobs:
+  private-intake-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax check exact-source route
+        run: |
+          node --check apps/jm-chatgpt-host-adapter-v0.1/src/exact-source-loader.mjs
+          node --check apps/jm-chatgpt-host-adapter-v0.1/src/server.mjs
+      - name: Prove mismatched private bytes are rejected
+        run: node apps/jm-chatgpt-host-adapter-v0.1/src/exact-source-loader.test.mjs
+      - name: Re-run crown gate conformance
+        run: node apps/jm-chatgpt-host-adapter-v0.1/EXACT_IDENTITY_GATE_v0_1.test.mjs

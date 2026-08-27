@@ -10,6 +10,7 @@ import {
   registerAppResource,
   RESOURCE_MIME_TYPE,
 } from "@modelcontextprotocol/ext-apps/server";
+import { EXACT_SOURCE_ENV, loadExactSource } from "./exact-source-loader.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -21,7 +22,7 @@ const PLAYABLE_IR_SCHEMA = "jm.gamecore.playable-ir/v0.3";
 const ONEBODY_ABI = "jm.onebody-abi/v0.1";
 const WIDGET_SESSION_ID = "jm-inline-contact-untitled-field-v0.9";
 const MCP_PATH = "/mcp";
-const ADAPTER_VERSION = "0.1.2";
+const ADAPTER_VERSION = "0.1.3-exact-identity-gate";
 
 const RENDER_OUTPUT_SCHEMA = {
   schema: z.literal("jm.chatgpt-host-adapter/render-receipt/v0.1"),
@@ -31,11 +32,16 @@ const RENDER_OUTPUT_SCHEMA = {
   oneBodyAbi: z.literal(ONEBODY_ABI),
   hostRole: z.literal("CARRIER_NOT_SOURCE_AUTHORITY"),
   mergeForbidden: z.boolean(),
+  exactSourceVerified: z.boolean(),
+  sourceIntake: z.string(),
   keeper: z.string(),
 };
 
 function readFrozenBody() {
-  return fs.readFileSync(BODY_PATH, "utf8");
+  return loadExactSource({
+    filePath: BODY_PATH,
+    expectedSha256: BODY_SHA256,
+  });
 }
 
 const toolUiMeta = {
@@ -54,28 +60,35 @@ function createJmServer() {
     "JM Untitled Field Branch v0.9 — frozen playable body",
     TEMPLATE_URI,
     {},
-    async () => ({
-      contents: [
-        {
-          uri: TEMPLATE_URI,
-          mimeType: RESOURCE_MIME_TYPE,
-          text: readFrozenBody(),
-          _meta: {
-            ui: {
-              prefersBorder: false,
-              csp: {
-                connectDomains: [],
-                resourceDomains: [],
+    async () => {
+      const exact = readFrozenBody();
+      return {
+        contents: [
+          {
+            uri: TEMPLATE_URI,
+            mimeType: RESOURCE_MIME_TYPE,
+            text: exact.text,
+            _meta: {
+              ui: {
+                prefersBorder: false,
+                csp: {
+                  connectDomains: [],
+                  resourceDomains: [],
+                },
               },
+              "openai/widgetDescription": "Exact frozen JM playable body carried into the ChatGPT host only after byte-level SHA verification.",
+              "jm/sourceAuthority": "JM / frozen donor body",
+              "jm/sourceSha256": BODY_SHA256,
+              "jm/observedSourceSha256": exact.observedSha256,
+              "jm/exactSourceVerified": true,
+              "jm/sourceIntake": exact.intake,
+              "jm/hostRole": exact.hostRole,
+              "jm/mutationAllowed": exact.mutationAllowed,
             },
-            "openai/widgetDescription": "Existing frozen JM playable body carried into the ChatGPT host without changing source authority.",
-            "jm/sourceAuthority": "JM / frozen donor body",
-            "jm/sourceSha256": BODY_SHA256,
-            "jm/hostRole": "CARRIER_NOT_SOURCE_AUTHORITY",
           },
-        },
-      ],
-    }),
+        ],
+      };
+    },
   );
 
   registerAppTool(
@@ -84,7 +97,7 @@ function createJmServer() {
     {
       title: "Render JM game inline",
       description:
-        "Use this when the user wants the existing JM playable body rendered as an interactive in-chat app surface. This host adapter carries the body; it does not redefine the game or its source authority.",
+        "Use this when the user wants the exact frozen JM playable body rendered as an interactive in-chat app surface. Source bytes are SHA-verified before carriage; the host does not redefine source authority.",
       inputSchema: {
         bodyId: z.literal(BODY_ID).default(BODY_ID),
       },
@@ -97,30 +110,38 @@ function createJmServer() {
         idempotentHint: true,
       },
     },
-    async ({ bodyId }) => ({
-      _meta: {
-        ...toolUiMeta,
-        "openai/widgetSessionId": WIDGET_SESSION_ID,
-        "jm/sourceSha256": BODY_SHA256,
-        "jm/hostRole": "CARRIER_NOT_SOURCE_AUTHORITY",
-      },
-      content: [
-        {
-          type: "text",
-          text: "Mounted the existing frozen JM playable body into the in-chat host surface. The host carries play; it does not own the game.",
+    async ({ bodyId }) => {
+      const exact = readFrozenBody();
+      return {
+        _meta: {
+          ...toolUiMeta,
+          "openai/widgetSessionId": WIDGET_SESSION_ID,
+          "jm/sourceSha256": BODY_SHA256,
+          "jm/observedSourceSha256": exact.observedSha256,
+          "jm/exactSourceVerified": true,
+          "jm/sourceIntake": exact.intake,
+          "jm/hostRole": "CARRIER_NOT_SOURCE_AUTHORITY",
         },
-      ],
-      structuredContent: {
-        schema: "jm.chatgpt-host-adapter/render-receipt/v0.1",
-        bodyId,
-        sourceSha256: BODY_SHA256,
-        playableIrSchema: PLAYABLE_IR_SCHEMA,
-        oneBodyAbi: ONEBODY_ABI,
-        hostRole: "CARRIER_NOT_SOURCE_AUTHORITY",
-        mergeForbidden: true,
-        keeper: "The estate donates. The game remains sovereign. The host serves play. Trace proves consequence.",
-      },
-    }),
+        content: [
+          {
+            type: "text",
+            text: "Mounted the exact frozen JM playable body after source-identity verification. The host carries play; it does not own or rewrite the game.",
+          },
+        ],
+        structuredContent: {
+          schema: "jm.chatgpt-host-adapter/render-receipt/v0.1",
+          bodyId,
+          sourceSha256: BODY_SHA256,
+          playableIrSchema: PLAYABLE_IR_SCHEMA,
+          oneBodyAbi: ONEBODY_ABI,
+          hostRole: "CARRIER_NOT_SOURCE_AUTHORITY",
+          mergeForbidden: true,
+          exactSourceVerified: true,
+          sourceIntake: exact.intake,
+          keeper: "One body. Multiple hosts. Carrier changes; source identity does not. Contact supplies the proof.",
+        },
+      };
+    },
   );
 
   return server;
@@ -156,7 +177,10 @@ const httpServer = createHttpServer(async (req, res) => {
       playableIrSchema: PLAYABLE_IR_SCHEMA,
       oneBodyAbi: ONEBODY_ABI,
       outputSchemaDeclared: true,
-      claim: "HOST_ADAPTER_BUILT_NOT_CHATGPT_CONTACT_PROVEN",
+      privateSourceEnvConfigured: Boolean(process.env[EXACT_SOURCE_ENV]),
+      localExactSourcePresent: fs.existsSync(BODY_PATH),
+      exactSourceMustVerifyBeforeRender: true,
+      claim: "EXACT_SOURCE_GATE_BUILT_NOT_CHATGPT_CONTACT_PROVEN",
     }));
     return;
   }

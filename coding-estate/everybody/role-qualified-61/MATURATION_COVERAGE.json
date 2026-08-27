@@ -1,84 +1,30 @@
 {
-  "schema": "jm.role-qualified-maturation-coverage/1.1",
+  "schema": "jm.role-qualified-maturation-coverage/1.2",
   "date": "2026-08-27",
-  "status": "P4_CROWNED_42_OF_61",
+  "status": "P5_REMAINING_19_CI_PENDING_42_CROWNED",
   "law": "COUNT FROM CLASSIFICATION STATE, NOT PRESENTATION; NO DING, NO CLAIM.",
   "census_total": 61,
   "current_crowned_count": 42,
   "current_crowned_ids": [
-    "os-coding",
-    "root-method",
-    "cadenvm",
-    "routevm",
-    "jmvm",
-    "codehand",
-    "jm32-1da",
-    "onebody-ir",
-    "theoc",
-    "cading",
-    "jmlogic",
-    "flowtalk",
-    "kading",
-    "quadze",
-    "mark-level-syntax",
-    "jmp",
-    "kocodifying",
-    "codifying",
-    "punctbody",
-    "contactband",
-    "statefield",
-    "routeframe",
-    "pattern-tapping",
-    "mudra-code",
-    "contactcode",
-    "command-glyphs",
-    "speech-code",
-    "speakgate",
-    "flowtalk-body-route",
-    "noncoding-code",
-    "formeula",
-    "formula-born-code",
-    "mark-code",
-    "route-code",
-    "tbs-string",
-    "recorp",
-    "buildode",
-    "mmzg",
-    "speakuals",
-    "routescript",
-    "reality-contact",
-    "game-coding"
+    "os-coding","root-method","cadenvm","routevm","jmvm","codehand","jm32-1da","onebody-ir","theoc","cading","jmlogic","flowtalk","kading","quadze","mark-level-syntax","jmp","kocodifying","codifying","punctbody","contactband","statefield","routeframe","pattern-tapping","mudra-code","contactcode","command-glyphs","speech-code","speakgate","flowtalk-body-route","noncoding-code","formeula","formula-born-code","mark-code","route-code","tbs-string","recorp","buildode","mmzg","speakuals","routescript","reality-contact","game-coding"
   ],
   "coverage_basis": {
-    "P1_FOUNDATION_DONOR_MAP": [
-      "os-coding", "root-method", "cadenvm", "routevm", "jmvm", "codehand", "jm32-1da", "onebody-ir", "theoc", "cading", "jmlogic", "flowtalk", "kading", "quadze"
-    ],
-    "P0_ADDITIONAL_CURRENT_NATIVE": [
-      "mark-level-syntax", "jmp", "kocodifying", "codifying"
-    ],
-    "P2_NONFOUNDATION_NATIVE_MATURATION": [
-      "punctbody", "contactband", "statefield", "routeframe", "pattern-tapping", "mudra-code", "contactcode", "command-glyphs", "speech-code", "speakgate", "flowtalk-body-route", "noncoding-code"
-    ],
-    "P3_FORMULA_ROUTE_RECOVERY_MATURATION": [
-      "formeula", "formula-born-code", "mark-code", "route-code", "tbs-string", "recorp", "buildode"
-    ],
-    "P4_RECOVERED_DONOR_SEATING": [
-      "mmzg", "speakuals", "routescript", "reality-contact", "game-coding"
-    ]
+    "P1_FOUNDATION_DONOR_MAP": ["os-coding","root-method","cadenvm","routevm","jmvm","codehand","jm32-1da","onebody-ir","theoc","cading","jmlogic","flowtalk","kading","quadze"],
+    "P0_ADDITIONAL_CURRENT_NATIVE": ["mark-level-syntax","jmp","kocodifying","codifying"],
+    "P2_NONFOUNDATION_NATIVE_MATURATION": ["punctbody","contactband","statefield","routeframe","pattern-tapping","mudra-code","contactcode","command-glyphs","speech-code","speakgate","flowtalk-body-route","noncoding-code"],
+    "P3_FORMULA_ROUTE_RECOVERY_MATURATION": ["formeula","formula-born-code","mark-code","route-code","tbs-string","recorp","buildode"],
+    "P4_RECOVERED_DONOR_SEATING": ["mmzg","speakuals","routescript","reality-contact","game-coding"]
   },
-  "pending_phase": null,
-  "pending_ids": [],
-  "remaining_count": 19,
-  "explicit_noncounted_suite_participants": [
-    "RouteOS",
-    "Dings",
-    "TraceBox",
-    "JM GameCore"
+  "pending_phase": "P5_REMAINING_19_MATURATION",
+  "pending_ids": [
+    "cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine","gameforge","glyphforge","glyphplay","playform","seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus","jm-visualang"
   ],
+  "remaining_count": 19,
+  "explicit_noncounted_suite_participants": ["RouteOS","Dings","TraceBox","JM GameCore"],
   "last_ci_ding": {
     "phase": "P4_RECOVERED_DONOR_SEATING",
-    "run_id": 33044839308,
-    "head_sha": "c742c7c83bbf23ab168c84c6753d490ac2d5826c",
+    "run_id": 33045023724,
+    "head_sha": "42364995eef1a738c1b270e51a0f2ade1d6a9635",
     "conclusion": "success"
   }
 }

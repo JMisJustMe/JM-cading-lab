@@ -1,0 +1,33 @@
+{
+  "schema": "jm.wave2.gamecore.transport/1.0",
+  "source_filename": "gamecore.html",
+  "source_role": "JM GameCore v0.2I-A corrected three-game integration body",
+  "source_bytes": 27900,
+  "source_sha256": "1d1fe40eb421bd4b9d7c2565e69af48b77041818ed48d8997aae2d112bc37aa7",
+  "encoding": {
+    "type": "gzip+base64",
+    "gzip_bytes": 8781,
+    "gzip_sha256": "d9c036a1edd998f0b4f355b9568805b8fce788f72665accbf64e417a6b9b9d88",
+    "base64_chars": 11708
+  },
+  "canonical_parts": [
+    {
+      "name": "carrier/part001.b64",
+      "size": 6000,
+      "sha256": "9f90daec41de5552c18cd6fc5e333379ecf0723c73baee8c5ffc80eeecc7c474",
+      "git_blob_sha1": "d263cb8473f9bec2a1bc14d22972017a2ea99303"
+    },
+    {
+      "name": "carrier/part002.b64",
+      "size": 5708,
+      "sha256": "6b51cd34f0835a5481c6b75c19d238aa7ad1917c3bd6d2fb5835c86dd9b9bd1b",
+      "git_blob_sha1": "aa2c5dbf718a5d2efc97248bb3d1c06a1520339e"
+    }
+  ],
+  "authority": {
+    "source_head": "v0.2I-A",
+    "operative_proof": "Organ Relay v1.0",
+    "routeos_role": "host/registry/native-handoff, not source crown"
+  },
+  "claim_boundary": "Exact public source publication for v0.2I-A only. Does not promote Organ Relay over source authority and does not claim owner-device/native Final Ding."
+}

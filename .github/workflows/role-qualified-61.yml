@@ -49,6 +49,11 @@ jobs:
           python coding-estate/everybody/role-qualified-61/validate_foundation_donors.py \
             > "$RUNNER_TEMP/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json"
 
+      - name: Validate machine-checkable maturation coverage
+        run: |
+          python coding-estate/everybody/role-qualified-61/validate_maturation_coverage.py \
+            > "$RUNNER_TEMP/role-qualified-61/MATURATION_COVERAGE_VALIDATION.json"
+
       - name: Build existing 105-body engineering-ecology role depth
         run: |
           python coding-estate/everybody/parity-105/patch_105_descendant.py
@@ -76,6 +81,8 @@ jobs:
           node coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/INNER_SPINE_FOUR_SELFTEST.json" || status=1
           node coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/EMBODIED_EIGHT_SELFTEST.json" || status=1
           node coding-estate/everybody/role-qualified-61/native/formula-route-recovery-seven.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/FORMULA_ROUTE_RECOVERY_SEVEN_SELFTEST.json" || status=1
+          node coding-estate/everybody/native-selftest.mjs > "$RUNNER_TEMP/role-qualified-61/P4_EXACT_NATIVE_FRONTENDS_SELFTEST.json" || status=1
+          node coding-estate/sovereign-ten/direct/native-selftest.mjs > "$RUNNER_TEMP/role-qualified-61/P4_SOVEREIGN_TEN_SELFTEST.json" || status=1
           exit "$status"
 
       - name: Upload 61-body maturation receipts
@@ -86,6 +93,7 @@ jobs:
           path: |
             ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json
             ${{ runner.temp }}/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json
+            ${{ runner.temp }}/role-qualified-61/MATURATION_COVERAGE_VALIDATION.json
             ${{ runner.temp }}/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/OS_CODING_SELFTEST.json
@@ -95,4 +103,6 @@ jobs:
             ${{ runner.temp }}/role-qualified-61/INNER_SPINE_FOUR_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/EMBODIED_EIGHT_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/FORMULA_ROUTE_RECOVERY_SEVEN_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/P4_EXACT_NATIVE_FRONTENDS_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/P4_SOVEREIGN_TEN_SELFTEST.json
           if-no-files-found: warn

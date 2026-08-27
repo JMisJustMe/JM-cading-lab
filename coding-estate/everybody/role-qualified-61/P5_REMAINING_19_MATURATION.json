@@ -1,0 +1,70 @@
+{
+  "schema": "jm.role-qualified-remaining-19-maturation/1.0",
+  "date": "2026-08-27",
+  "status": "IMPLEMENTED_CI_PENDING_NO_CROWN",
+  "law": "RECOVER BEFORE REBUILD; WHEN SOURCE CANNOT BE RECOVERED, AUTHORISED FORWARD CREATION MAY BRIDGE THE GAP PROVIDED THE BRIDGE DECLARES ITSELF; NO DING, NO CLAIM.",
+  "baseline_crowned": 42,
+  "pending_count": 19,
+  "target_if_green": 61,
+  "pending_ids": [
+    "cading-lab",
+    "cadenpad",
+    "coding-body-house",
+    "finger-one",
+    "finger-one-codestudio",
+    "finger-two",
+    "lexicon",
+    "namebank",
+    "codeing-engine",
+    "gameforge",
+    "glyphforge",
+    "glyphplay",
+    "playform",
+    "seedform",
+    "prayer-hands-paired-contact",
+    "jickma-jickmah",
+    "mood-drills",
+    "morseminus",
+    "jm-visualang"
+  ],
+  "groups": {
+    "authoring_nine": {
+      "ids": ["cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine"],
+      "implementation": "coding-estate/everybody/role-qualified-61/native/authoring-nine.mjs",
+      "selftest": "coding-estate/everybody/role-qualified-61/native/authoring-nine.selftest.mjs",
+      "source_basis": [
+        "coding-estate/everybody/body-registry-extension-01.json",
+        "coding-estate/everybody/MOUNTED_ORIGINAL_TWO_HAND_CODING_REGISTRY_v0.1.md"
+      ],
+      "source_basis_commit": "6034befdbe8aaf73e9d07322d279562a80b2d44b",
+      "claim": "AUTHORISED_FORWARD_CURRENT_NATIVE_CODING_FACES_FROM_RECOVERED_LINEAGE_PROFILES"
+    },
+    "embodied_choice_five": {
+      "ids": ["seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus"],
+      "implementation": "coding-estate/everybody/role-qualified-61/native/remaining-embodied-five.mjs",
+      "selftest": "coding-estate/everybody/role-qualified-61/native/remaining-embodied-five.selftest.mjs",
+      "source_basis": ["coding-estate/everybody/MOUNTED_ORIGINAL_TWO_HAND_CODING_REGISTRY_v0.1.md","coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json"],
+      "claim": "AUTHORISED_FORWARD_CURRENT_NATIVE_BRIDGES; MORSEMINUS_REMAINS_DISTINCT_FROM_MMZG"
+    },
+    "source_aware_final_five": {
+      "ids": ["gameforge","glyphforge","glyphplay","playform","jm-visualang"],
+      "implementation": "coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.mjs",
+      "selftest": "coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.selftest.mjs",
+      "source_authorities": {
+        "gameforge": {"commit":"d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08","version":"v3.16","bytes":114474,"sha256":"a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb"},
+        "glyphforge": {"commit":"d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08","version":"v68.2","bytes":108992,"sha256":"93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3"},
+        "glyphplay": {"commit":"6661de1798b3368deac2d388e610f187fe278f30","boundary":"PROTECTED_LINEAGE_NODE_NOT_SOURCE_AUTHORITY","claim":"AUTHORISED_FORWARD_NATIVE_BRIDGE"},
+        "playform": {"commit":"1e4506545a56adf3c04cc26d5946bff854fd8e63","version":"v0.4","bytes":160711,"sha256":"60da0d1f303a1e17d3580d3261123bbdd51f9f7022199fee0f502fa60e70839d"},
+        "jm-visualang": {"commit":"e314794d88ac0305b12ef0e29d2a543e7d4d061b","boundary":"RECOVERED_STANDALONE_NATIVE_LINE; CURRENT_NATIVE_LANGUAGE_FACE_ADDED_HERE"}
+      }
+    }
+  },
+  "identity_boundaries": [
+    "Coding Body House is a multi-role house with an evidenced intrinsic room/routing coding grammar; its hosted bodies remain separate.",
+    "Finger One CodeStudio is an authoring coding face; it does not absorb Finger One or mounted languages.",
+    "MorseMinus is the Finger-Two binding body and is not silently merged with MMZG / MorseMinus ZeroGrip.",
+    "JM GameCore may support Game-CODING but is not one of the 61 coding identities.",
+    "GlyphPlay protected rejoin evidence is not source authority; its current-native coding face is a declared bridge.",
+    "PLAYFORM orchestrates Crown Forge rooms; JM Visualang is the organ/form/behaviour visual language and remains distinct."
+  ]
+}

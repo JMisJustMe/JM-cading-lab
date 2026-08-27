@@ -1,0 +1,85 @@
+{
+  "schema": "JM.PublicReleaseReceipt/1.0",
+  "date": "2026-08-27",
+  "release": "SHIMS + Commercial Front Door + Creative + Apps + Games consecutive public release",
+  "status": "SOURCE_COMPLETE_EDGE_CONTACT_PENDING",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "branch": "main",
+  "laws": [
+    "Recover before rebuild",
+    "Source before crown",
+    "Contact before crown",
+    "No Ding, no claim",
+    "Carrier does not replace source authority",
+    "Showcase does not become source body",
+    "No dead buttons"
+  ],
+  "changes": [
+    {
+      "body": "SHIMS Reader",
+      "role": "public service / delivery body",
+      "path": "shims-reader/index.html",
+      "commit": "cee25d1184c30dacf316960d53b43169698a7487",
+      "state": "SOURCE_COMMITTED",
+      "proof": ["free local taster", "consent boundary", "copy", "download", "clear", "Money Menu handoff", "£25-£85 assessed range"]
+    },
+    {
+      "body": "Public sitemap",
+      "role": "discovery carrier",
+      "path": "sitemap.xml",
+      "commits": ["800f047c38e7a4cc15d6146db5670b25a712439b", "3c0514c4dfc5f99da79f48ad31fb9f3573854de2"],
+      "state": "SOURCE_COMMITTED",
+      "routes_added": ["/shims-reader/", "/apps/showcase/", "/games-beyond/showcase/"]
+    },
+    {
+      "body": "JM Money Menu",
+      "role": "commercial contact carrier",
+      "paths": ["money-menu/STATUS.md", "money-menu/PUBLICATION_RECEIPT.json"],
+      "commits": ["4955d1ad06df28e7b5bce0bf5ed301f7a83d76b1", "6bdeaa372b51c0e209b02547401d8d6fea81c41e"],
+      "state": "EXISTING_V1_2_LIVE_PROOF_PRESERVED_NEW_SHIMS_CONNECTION_SOURCE_COMMITTED_EDGE_PENDING",
+      "authority_boundary": "JM Money Menu v1.1 remains the governed 242-route data authority."
+    },
+    {
+      "body": "JM Lyrics & Music House",
+      "role": "public creative carrier",
+      "path": "lyrics/index.html",
+      "commit": "b3861ecd075c6afc71269114547ef3b5f8aa82fc",
+      "state": "SOURCE_COMMITTED",
+      "changes": ["public creator route", "governed enquiry CTA", "source-safe boundary retained"]
+    },
+    {
+      "body": "JM Estate front-door injector",
+      "role": "root public navigation organ",
+      "path": "author-home-door.js",
+      "commit": "54807e4d4ba5bb885d8842cd3b2ff029817f85ac",
+      "state": "SOURCE_COMMITTED",
+      "changes": ["SHIMS Reader front door", "Lyrics & Music front door", "Money Menu and Author doors preserved", "recent-route tracking preserved"]
+    },
+    {
+      "body": "Apps & Tools Public Showcase",
+      "role": "delivery / discovery body",
+      "path": "apps/showcase/index.html",
+      "commit": "69ebb3634bedde9fc0ad31c07fa3c93338e9b223",
+      "state": "SOURCE_COMMITTED",
+      "boundary": "The showcase points to governed app identities and does not become their source authority."
+    },
+    {
+      "body": "JM Games Public Showcase",
+      "role": "delivery / discovery body",
+      "path": "games-beyond/showcase/index.html",
+      "commit": "362b6cf8b875d956af084582e64026e33c39a324",
+      "state": "SOURCE_COMMITTED",
+      "selected_stage_ready_games": ["FOURFOLD Arena", "T-Boys Core Clash", "JM Rim Route", "Crewbound Arena", "JM House Siege", "JM Western Sniper PvP", "Dead Reckon", "FUTARIZED"],
+      "boundary": "Game, engine, loop, host and showcase remain distinct roles."
+    }
+  ],
+  "contact_proof": {
+    "github_source": "PASS",
+    "latest_release_content_commit_observed": "3c0514c4dfc5f99da79f48ad31fb9f3573854de2",
+    "money_boundary_correction_commit": "6bdeaa372b51c0e209b02547401d8d6fea81c41e",
+    "cloudflare_edge": "NOT_OBSERVED_FROM_CURRENT_TOOL_ENVIRONMENT",
+    "github_commit_status": "PENDING_WITH_ZERO_REPORTED_STATUSES_AT_CHECK",
+    "crown": "NOT_CLAIMED"
+  },
+  "closure": "All assistant-accessible repository/source publication work in this release pass is complete. The remaining gate is external edge contact/deployment observation, not additional product design or source construction."
+}

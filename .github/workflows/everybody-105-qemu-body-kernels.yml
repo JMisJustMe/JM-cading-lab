@@ -1,0 +1,231 @@
+name: JM 105 Sovereign Body Parity Descendant
+
+on:
+  push:
+    branches:
+      - agent/everybody-105-parity-v1-4
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/parity-105/**'
+      - '.github/workflows/everybody-105-qemu-body-kernels.yml'
+  workflow_dispatch:
+
+jobs:
+  parity-105:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install QEMU and bootable-container carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 grub-pc-bin grub-common xorriso mtools dosfstools
+
+      - name: Apply declared forward 105-body descendant patch
+        run: python coding-estate/everybody/parity-105/patch_105_descendant.py
+
+      - name: Verify 105-body registry contact
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0, 'coding-estate/everybody/semantic-depth/tools')
+          from semantic_core import load_bodies
+          from pathlib import Path
+          bodies=load_bodies(Path('.'))
+          assert len(bodies)==105, len(bodies)
+          names={b['name'] for b in bodies}
+          for expected in ['JaggedMirror','JM Actual Engine','JM Describe Into Reality Engine','JM Visualang','JM Living Diagram & Motion Layer']:
+              assert expected in names, expected
+          assert len({b['id'] for b in bodies})==105
+          assert len({b['law'] for b in bodies})==105
+          print('JM_105_REGISTRY_CONTACT_PASS')
+          PY
+
+      - name: Generate all 105 semantic-depth isolated runtimes
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/semantic_depth_factory.py \
+            --repo . --out dist/semantic-depth-105 --deterministic
+
+      - name: Verify 105 semantic fingerprints and isolated runtimes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('dist/semantic-depth-105/SEMANTIC_DEPTH_MANIFEST.json').read_text())
+          assert m['body_count']==105
+          assert m['unique_namespaces']==105
+          assert m['unique_semantic_signatures']==105
+          assert m['all_capabilities_executed'] is True
+          assert m['all_fault_recovery_passed'] is True
+          assert m['all_isolated_processes_passed'] is True
+          print('JM_105_SEMANTIC_DEPTH_PASS')
+          PY
+
+      - name: Build and machine-boot all 105 separate kernels
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/qemu_kernel_factory.py \
+            --repo . --out dist/qemu-105
+
+      - name: Verify all 105 QEMU receipts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/qemu-105')
+          m=json.loads((root/'QEMU_100_BODY_KERNEL_MANIFEST.json').read_text())
+          assert m['body_count']==105
+          assert m['unique_kernel_hashes']==105
+          assert m['unique_compiler_namespaces']==105
+          assert m['all_qemu_passed'] is True
+          assert m['status']=='QEMU_105_BODY_KERNEL_CARRIER_PASS_NOT_NATIVE_TOOLCHAIN_CROWN'
+          assert len(list(root.glob('*/kernel.elf')))==105
+          assert len(list(root.glob('*/MACHINE_RECEIPT.json')))==105
+          assert all(item['status']=='QEMU_BODY_KERNEL_CARRIER_PASS' for item in m['receipts'])
+          print('JM_105_QEMU_KERNELS_PASS')
+          PY
+
+      - name: Build OneContainer above all 105 proven kernels
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/onecontainer_factory.py \
+            --qemu-root dist/qemu-105 --out dist/onecontainer-105
+
+      - name: Verify 105 selections and 104 identity-preserving handoffs
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys
+          from pathlib import Path
+          root=Path('dist/onecontainer-105')
+          m=json.loads((root/'ONECONTAINER_MANIFEST.json').read_text())
+          assert m['body_count']==105
+          assert m['unique_kernel_hashes']==105
+          assert m['unique_namespaces']==105
+          assert m['selection_count']==105
+          assert m['handoff_count']==104
+          assert m['all_selection_passed'] is True
+          assert m['all_handoffs_preserve_identity'] is True
+          registry=json.loads((root/'REGISTRY.json').read_text())
+          for item in registry['bodies']:
+              r=subprocess.run([sys.executable,str(root/'select.py'),'--root',str(root),'--body',item['body_id']],capture_output=True,text=True)
+              assert r.returncode==0,(item['body_id'],r.stderr,r.stdout)
+              selected=json.loads(r.stdout)
+              assert selected['kernel_sha256']==item['kernel_sha256']
+          print('JM_105_ONECONTAINER_SELECTION_HANDOFF_PASS')
+          PY
+
+      - name: Run all 105 federation kernels simultaneously
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/simultaneous_federation_factory.py \
+            --repo . --out dist/simultaneous-federation-105
+
+      - name: Verify 105-body genesis-to-terminus federation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/simultaneous-federation-105')
+          r=json.loads((root/'SIMULTANEOUS_FEDERATION_RECEIPT.json').read_text())
+          assert r['body_count']==105
+          assert r['unique_kernel_hashes']==105
+          assert r['unique_compiler_namespaces']==105
+          assert r['simultaneous_ready_count']==105
+          assert r['accepted_body_count']==105
+          assert r['handoff_count']==104
+          assert r['all_105_simultaneously_ready'] is True
+          assert r['all_105_handoffs_accepted'] is True
+          assert r['status']=='SIMULTANEOUS_105_KERNEL_SERIAL_HANDOFF_PASS'
+          assert len(r['transitions'])==105
+          print('JM_105_SIMULTANEOUS_FEDERATION_PASS')
+          PY
+
+      - name: Build one ISO and machine-boot all 105 GRUB entries
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/bootable_onecontainer_factory.py \
+            --onecontainer-root dist/onecontainer-105 --out dist/bootable-onecontainer-105
+
+      - name: Verify every 105-body ISO selection
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/bootable-onecontainer-105')
+          r=json.loads((root/'BOOTABLE_ONECONTAINER_RECEIPT.json').read_text())
+          assert r['body_count']==105
+          assert r['menu_entry_count']==105
+          assert r['machine_selection_count']==105
+          assert r['all_menu_entries_machine_booted'] is True
+          assert r['all_kernel_hashes_verified'] is True
+          assert r['all_kernels_multiboot_validated'] is True
+          assert r['status']=='BOOTABLE_ONECONTAINER_ISO_ALL_105_MENU_MACHINE_SELECTIONS_PASS'
+          assert len(r['machine_selections'])==105
+          print('JM_105_BOOTABLE_ONECONTAINER_PASS')
+          PY
+
+      - name: Freeze current constructible 105-body scope
+        run: |
+          python coding-estate/everybody/semantic-depth/tools/completion_freeze_factory.py \
+            --semantic-root dist/semantic-depth-105 \
+            --qemu-root dist/qemu-105 \
+            --container-root dist/onecontainer-105 \
+            --bootable-root dist/bootable-onecontainer-105 \
+            --federation-root dist/simultaneous-federation-105 \
+            --out dist/current-scope-freeze-105
+
+      - name: Verify 105-body freeze boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          f=json.loads(Path('dist/current-scope-freeze-105/CURRENT_SCOPE_FREEZE_RECEIPT.json').read_text())
+          assert f['body_count']==105
+          assert f['grub_machine_selection_count']==105
+          assert f['simultaneous_ready_count']==105
+          assert f['federated_accept_count']==105
+          assert f['all_current_constructible_gates_passed'] is True
+          assert f['unique_semantic_signatures']==105
+          assert f['unique_kernel_hashes']==105
+          assert f['unique_federation_kernel_hashes']==105
+          assert f['unique_compiler_namespaces']==105
+          assert f['final_crown'] is False
+          assert f['status']=='CURRENT_CONSTRUCTIBLE_SCOPE_FROZEN_EXTERNAL_AUTHORITY_GATES_OPEN'
+          assert all(len(item['earned'])==12 for item in f['bodies'])
+          assert all(len(item['open_external_or_authority_gates'])==6 for item in f['bodies'])
+          print('JM_105_CURRENT_CONSTRUCTIBLE_SCOPE_FREEZE_PASS')
+          PY
+
+      - name: Seal 105-body parity artifacts
+        run: |
+          tar -czf JM_105_QEMU_BODY_KERNELS_v1.4.tar.gz -C dist qemu-105
+          tar -czf JM_105_SEMANTIC_DEPTH_v1.4.tar.gz -C dist semantic-depth-105
+          tar -czf JM_105_SIMULTANEOUS_FEDERATION_v1.4.tar.gz -C dist simultaneous-federation-105
+          sha256sum JM_105_QEMU_BODY_KERNELS_v1.4.tar.gz > JM_105_QEMU_BODY_KERNELS_v1.4.sha256
+          sha256sum JM_105_SEMANTIC_DEPTH_v1.4.tar.gz > JM_105_SEMANTIC_DEPTH_v1.4.sha256
+          sha256sum JM_105_SIMULTANEOUS_FEDERATION_v1.4.tar.gz > JM_105_SIMULTANEOUS_FEDERATION_v1.4.sha256
+          sha256sum dist/onecontainer-105/../JM_EVERYKERNEL_ONECONTAINER_v0.4.0.tar > JM_105_ONECONTAINER_v1.4.sha256
+          sha256sum dist/bootable-onecontainer-105/JM_EVERYKERNEL_ONECONTAINER_v0.5.1.iso > JM_105_BOOTABLE_ONECONTAINER_v1.4.iso.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_105_CURRENT_SCOPE_FREEZE_v1.4
+          path: |
+            JM_105_QEMU_BODY_KERNELS_v1.4.tar.gz
+            JM_105_QEMU_BODY_KERNELS_v1.4.sha256
+            JM_105_SEMANTIC_DEPTH_v1.4.tar.gz
+            JM_105_SEMANTIC_DEPTH_v1.4.sha256
+            JM_105_SIMULTANEOUS_FEDERATION_v1.4.tar.gz
+            JM_105_SIMULTANEOUS_FEDERATION_v1.4.sha256
+            JM_105_ONECONTAINER_v1.4.sha256
+            JM_105_BOOTABLE_ONECONTAINER_v1.4.iso.sha256
+            dist/qemu-105/QEMU_100_BODY_KERNEL_MANIFEST.json
+            dist/semantic-depth-105/SEMANTIC_DEPTH_MANIFEST.json
+            dist/simultaneous-federation-105/SIMULTANEOUS_FEDERATION_RECEIPT.json
+            dist/onecontainer-105/ONECONTAINER_MANIFEST.json
+            dist/onecontainer-105/REGISTRY.json
+            dist/onecontainer-105/HANDOFFS.json
+            dist/bootable-onecontainer-105/JM_EVERYKERNEL_ONECONTAINER_v0.5.1.iso
+            dist/bootable-onecontainer-105/BOOTABLE_ONECONTAINER_RECEIPT.json
+            dist/current-scope-freeze-105/CURRENT_SCOPE_FREEZE_RECEIPT.json
+            dist/current-scope-freeze-105/COMPLETION_BOUNDARY.md

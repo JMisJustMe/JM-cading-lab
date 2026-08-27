@@ -1,0 +1,85 @@
+{
+  "schema": "jm.wave2.ftr-energy-tracebox-linkage/1.0",
+  "scope": "FTR Energy-to-Engine / Energy TraceBox v1.0 / Visual Engine public source-linkage reconciliation",
+  "authorities": {
+    "ftr_memory": {
+      "filename": "FTR_MEMORY_FUSION_v1_0.md",
+      "raw_bytes": 11066,
+      "raw_sha256": "9bddb5b9d76f3488d2376c1cf4a2d0e55af04fcaf6aa5d0782e46843b626bf91",
+      "gzip_bytes": 4749,
+      "gzip_sha256": "10020ef30ec3c9961dbb72e83408a909635c43ef938552be2813012b0813d4d3",
+      "encoding": "gzip(mtime=0) -> base64 ascii -> ordered chunks",
+      "parts": [
+        {
+          "path": "source-carriage/ftr_memory/part-001.b64",
+          "bytes": 6332,
+          "git_blob_sha1": "f0cb753111d3489475fdb8c2e9b5fd882c3da937"
+        }
+      ]
+    },
+    "routeos_runtime": {
+      "filename": "ROUTEOS_PARTICIPATION_RUNTIME_v0_1_SINGLE.html",
+      "raw_bytes": 91414,
+      "raw_sha256": "311a53fb27200f074d24d6ffa7be6e709cee906ed5aa54544cc8881daac2d103",
+      "gzip_bytes": 22944,
+      "gzip_sha256": "31f330a0f5805fb26d69f77480470a7c6ad1fff3459b5beab7d93705b7894f28",
+      "encoding": "gzip(mtime=0) -> base64 ascii -> ordered chunks",
+      "parts": [
+        {
+          "path": "source-carriage/routeos_runtime/part-001.b64",
+          "bytes": 8000,
+          "git_blob_sha1": "5e6b32aa755af889341cf04d4d0acd96adb34d9f"
+        },
+        {
+          "path": "source-carriage/routeos_runtime/part-002.b64",
+          "bytes": 8000,
+          "git_blob_sha1": "0db66de8086281d61e0860b8f60e2f3c0a5bb2f0"
+        },
+        {
+          "path": "source-carriage/routeos_runtime/part-003.b64",
+          "bytes": 8000,
+          "git_blob_sha1": "a8a90bdc68369c4ae8a4a4a51fef3adcc824b079"
+        },
+        {
+          "path": "source-carriage/routeos_runtime/part-004.b64",
+          "bytes": 6592,
+          "git_blob_sha1": "c3de30411797e53fd104cd210df2f8993a6606b5"
+        }
+      ]
+    }
+  },
+  "relations": [
+    {
+      "from": "FTR Memory Fusion v1.0",
+      "to": "Energy TraceBox v1.0",
+      "type": "fused conceptual/proof-register authority"
+    },
+    {
+      "from": "RouteOS Participation Runtime v0.1",
+      "to": "Energy TraceBox v1.0",
+      "type": "operative software Case 001 / effort-to-tool proof"
+    },
+    {
+      "from": "Visual Engine",
+      "to": "FTR Memory Fusion v1.0",
+      "type": "governed visible route/state/proof/recourse organ; not asserted as independently recovered standalone package"
+    }
+  ],
+  "claim_boundary": {
+    "proved": [
+      "exact recovery of FTR Memory Fusion v1.0",
+      "exact recovery of RouteOS Participation Runtime v0.1 single-file source",
+      "software route demonstrates Press build-up → threshold → retained Armed state → lawful Blow → completion → trace → reset/recovery",
+      "valid wrong-order refusal is implemented",
+      "recovered runtime explicitly identifies itself as hardware simulation"
+    ],
+    "not_claimed": [
+      "physical Energy TraceBox connection",
+      "physical Geo-Board proof",
+      "full Participation Computer physical proof",
+      "kernel-level OS Ding",
+      "independently recovered standalone Visual Engine product pack",
+      "whole FTR completion"
+    ]
+  }
+}

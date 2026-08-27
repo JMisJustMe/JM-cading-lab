@@ -1,0 +1,67 @@
+name: JM 105 Role-Specific Cading Quadze Plus Depth
+
+on:
+  push:
+    branches:
+      - agent/everybody-105-parity-v1-4
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/parity-105/role_depth_factory.py'
+      - 'coding-estate/everybody/parity-105/patch_105_descendant.py'
+      - '.github/workflows/everybody-105-role-depth.yml'
+  workflow_dispatch:
+
+jobs:
+  role-depth-105:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply authorised 105-body descendant registry patch
+        run: python coding-estate/everybody/parity-105/patch_105_descendant.py
+
+      - name: Forge role-specific body depth for all 105
+        run: |
+          python coding-estate/everybody/parity-105/role_depth_factory.py \
+            --repo . --out dist/role-depth-105
+
+      - name: Verify role-specific depth without body flattening
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('dist/role-depth-105/ROLE_DEPTH_MANIFEST.json').read_text())
+          assert m['body_count']==105
+          assert m['unique_body_depth_signatures']==105
+          assert m['all_role_contracts_complete'] is True
+          assert m['all_specialist_ir_nonempty'] is True
+          assert m['all_fault_hold_pass'] is True
+          assert m['all_recovery_continue_pass'] is True
+          assert sum(m['roles'].values())==105
+          assert len(m['roles'])>=6, m['roles']
+          assert m['status']=='ROLE_SPECIFIC_CURRENT_CONSTRUCTIBLE_DEPTH_PASS_NATIVE_AUTHORITY_STILL_SEPARATE'
+          receipts=m['receipts']
+          assert len({x['law'] for x in receipts})==105
+          assert len({x['body_depth_signature'] for x in receipts})==105
+          assert all(x['execution']['specialist_ir'] for x in receipts)
+          assert all(x['role_contract']['role']==x['role'] for x in receipts)
+          print('JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_PASS')
+          print(json.dumps(m['roles'],sort_keys=True))
+          print('DECLARED_BRIDGES',m['bridge_count'])
+          PY
+
+      - name: Seal role-depth carrier
+        run: |
+          tar -czf JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0.tar.gz -C dist role-depth-105
+          sha256sum JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0.tar.gz > JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0
+          path: |
+            JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0.tar.gz
+            JM_105_ROLE_SPECIFIC_CADING_QUADZE_PLUS_DEPTH_v1.0.sha256
+            dist/role-depth-105/ROLE_DEPTH_MANIFEST.json

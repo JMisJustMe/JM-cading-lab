@@ -42,23 +42,12 @@ jobs:
           if-no-files-found: warn
 
       - name: Hard identity gate
-        run: |
-          python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
+        run: python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
 
       - name: Validate foundation donor authority
         run: |
           python coding-estate/everybody/role-qualified-61/validate_foundation_donors.py \
             > "$RUNNER_TEMP/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json"
-
-      - name: Prove Mark-Level Syntax forward-native bridge
-        run: |
-          node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs \
-            > "$RUNNER_TEMP/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json"
-
-      - name: Prove P0 five-body mesh without merge
-        run: |
-          node coding-estate/everybody/role-qualified-61/native/p0-five-body-route.selftest.mjs \
-            > "$RUNNER_TEMP/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json"
 
       - name: Build existing 105-body engineering-ecology role depth
         run: |
@@ -73,6 +62,19 @@ jobs:
             --role-depth-manifest "$RUNNER_TEMP/role-depth-105/ROLE_DEPTH_MANIFEST.json" \
             --out "$RUNNER_TEMP/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json"
 
+      - name: Prove P0 and bridge-only foundation descendants
+        if: always()
+        shell: bash
+        run: |
+          status=0
+          node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/p0-five-body-route.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/os-coding.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/OS_CODING_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/ONEBODY_IR_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/theoc.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/THEOC_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/codehand.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/CODEHAND_SELFTEST.json" || status=1
+          exit "$status"
+
       - name: Upload 61-body maturation receipts
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,4 +85,8 @@ jobs:
             ${{ runner.temp }}/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json
             ${{ runner.temp }}/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/OS_CODING_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/ONEBODY_IR_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/THEOC_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/CODEHAND_SELFTEST.json
           if-no-files-found: warn

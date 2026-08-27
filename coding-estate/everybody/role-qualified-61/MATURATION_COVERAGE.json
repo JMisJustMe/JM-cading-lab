@@ -1,0 +1,77 @@
+{
+  "schema": "jm.role-qualified-maturation-coverage/1.0",
+  "date": "2026-08-27",
+  "status": "P4_CI_PENDING",
+  "law": "COUNT FROM CLASSIFICATION STATE, NOT PRESENTATION; NO DING, NO CLAIM.",
+  "census_total": 61,
+  "current_crowned_count": 37,
+  "current_crowned_ids": [
+    "os-coding",
+    "root-method",
+    "cadenvm",
+    "routevm",
+    "jmvm",
+    "codehand",
+    "jm32-1da",
+    "onebody-ir",
+    "theoc",
+    "cading",
+    "jmlogic",
+    "flowtalk",
+    "kading",
+    "quadze",
+    "mark-level-syntax",
+    "jmp",
+    "kocodifying",
+    "codifying",
+    "punctbody",
+    "contactband",
+    "statefield",
+    "routeframe",
+    "pattern-tapping",
+    "mudra-code",
+    "contactcode",
+    "command-glyphs",
+    "speech-code",
+    "speakgate",
+    "flowtalk-body-route",
+    "noncoding-code",
+    "formeula",
+    "formula-born-code",
+    "mark-code",
+    "route-code",
+    "tbs-string",
+    "recorp",
+    "buildode"
+  ],
+  "coverage_basis": {
+    "P1_FOUNDATION_DONOR_MAP": [
+      "os-coding", "root-method", "cadenvm", "routevm", "jmvm", "codehand", "jm32-1da", "onebody-ir", "theoc", "cading", "jmlogic", "flowtalk", "kading", "quadze"
+    ],
+    "P0_ADDITIONAL_CURRENT_NATIVE": [
+      "mark-level-syntax", "jmp", "kocodifying", "codifying"
+    ],
+    "P2_NONFOUNDATION_NATIVE_MATURATION": [
+      "punctbody", "contactband", "statefield", "routeframe", "pattern-tapping", "mudra-code", "contactcode", "command-glyphs", "speech-code", "speakgate", "flowtalk-body-route", "noncoding-code"
+    ],
+    "P3_FORMULA_ROUTE_RECOVERY_MATURATION": [
+      "formeula", "formula-born-code", "mark-code", "route-code", "tbs-string", "recorp", "buildode"
+    ]
+  },
+  "pending_p4_count": 5,
+  "pending_p4_ids": [
+    "mmzg",
+    "speakuals",
+    "routescript",
+    "reality-contact",
+    "game-coding"
+  ],
+  "provisional_count_if_p4_green": 42,
+  "remaining_if_p4_green": 19,
+  "explicit_noncounted_suite_participants": [
+    "RouteOS",
+    "Dings",
+    "TraceBox",
+    "JM GameCore"
+  ]
+}

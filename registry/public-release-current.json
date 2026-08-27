@@ -88,5 +88,11 @@
     "owner_physical_acceptance": "SEPARATE_GATE",
     "jm_ding": "NOT_CLAIMED"
   },
+  "final_head_reproof": {
+    "requested_after_closure_commit": "e3dcb8f8f301a4bf5adbd9b90fef975fe0788dc4",
+    "reason": "The first authoritative final-head run was cancelled before job creation by a sibling deployment sharing the production concurrency group.",
+    "route": "Retrigger only the authoritative workflow through this canonical receipt path, which its push filter watches and the cancelling live-preserving sibling does not.",
+    "state": "AUTHORITATIVE_REPROOF_TRIGGERED"
+  },
   "closure": "Repository/source publication and authoritative Cloudflare edge-contact gates for this consecutive public release are complete. Owner-side physical acceptance and JM Ding remain separate and are not silently claimed."
 }

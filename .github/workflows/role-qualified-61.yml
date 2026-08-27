@@ -62,7 +62,7 @@ jobs:
             --role-depth-manifest "$RUNNER_TEMP/role-depth-105/ROLE_DEPTH_MANIFEST.json" \
             --out "$RUNNER_TEMP/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json"
 
-      - name: Prove P0 and bridge-only foundation descendants
+      - name: Prove source-aware maturation descendants
         if: always()
         shell: bash
         run: |
@@ -73,6 +73,7 @@ jobs:
           node coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/ONEBODY_IR_SELFTEST.json" || status=1
           node coding-estate/everybody/role-qualified-61/native/theoc.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/THEOC_SELFTEST.json" || status=1
           node coding-estate/everybody/role-qualified-61/native/codehand.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/CODEHAND_SELFTEST.json" || status=1
+          node coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs > "$RUNNER_TEMP/role-qualified-61/INNER_SPINE_FOUR_SELFTEST.json" || status=1
           exit "$status"
 
       - name: Upload 61-body maturation receipts
@@ -89,4 +90,5 @@ jobs:
             ${{ runner.temp }}/role-qualified-61/ONEBODY_IR_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/THEOC_SELFTEST.json
             ${{ runner.temp }}/role-qualified-61/CODEHAND_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/INNER_SPINE_FOUR_SELFTEST.json
           if-no-files-found: warn

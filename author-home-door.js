@@ -1,6 +1,8 @@
 (() => {
   const AUTHOR_ID = 'author-house';
   const MONEY_ID = 'money-menu-house';
+  const SHIMS_ID = 'shims-reader-house';
+  const LYRICS_ID = 'lyrics-house';
 
   function trackVisit(entry) {
     try {
@@ -12,44 +14,69 @@
     }
   }
 
-  function makeAuthorDoor() {
+  function makeDoor({id,href,accent,label,state,title,copy,action,visitName}) {
     const door = document.createElement('a');
-    door.className = 'door-card author-door-card';
-    door.href = './author/';
-    door.dataset.cardId = AUTHOR_ID;
-    door.style.setProperty('--accent', '#f0c66d');
-    door.setAttribute('aria-label', 'Open Theodore Benjamin Scott / JM author page');
+    door.className = `door-card ${id}-door-card`;
+    door.href = href;
+    door.dataset.cardId = id;
+    door.style.setProperty('--accent', accent);
+    door.setAttribute('aria-label', label);
     door.innerHTML = `
-      <span class="door-state">PUBLIC AUTHOR ROUTE · LIVE</span>
-      <h3>Theodore / JM</h3>
-      <p>Meet the human source behind the Estate: author, verbalist, lyricist, theorist, game and world builder, tool creator and source-to-body architect.</p>
-      <div class="door-foot"><span>Meet the creator</span><span aria-hidden="true">↗</span></div>
+      <span class="door-state">${state}</span>
+      <h3>${title}</h3>
+      <p>${copy}</p>
+      <div class="door-foot"><span>${action}</span><span aria-hidden="true">↗</span></div>
     `;
-    door.addEventListener('click', () => trackVisit({id:AUTHOR_ID,name:'Theodore / JM — Author & Source Creator',path:'./author/',route:null}));
+    door.addEventListener('click', () => trackVisit({id,name:visitName,path:href,route:null}));
     return door;
   }
 
+  function makeAuthorDoor() {
+    return makeDoor({
+      id:AUTHOR_ID,href:'./author/',accent:'#f0c66d',
+      label:'Open Theodore Benjamin Scott / JM author page',
+      state:'PUBLIC AUTHOR ROUTE · LIVE',title:'Theodore / JM',
+      copy:'Meet the human source behind the Estate: author, verbalist, lyricist, theorist, game and world builder, tool creator and source-to-body architect.',
+      action:'Meet the creator',visitName:'Theodore / JM — Author & Source Creator'
+    });
+  }
+
   function makeMoneyDoor() {
-    const door = document.createElement('a');
-    door.className = 'door-card money-menu-door-card';
-    door.href = './money-menu/';
-    door.dataset.cardId = MONEY_ID;
-    door.style.setProperty('--accent', '#77e8bd');
-    door.setAttribute('aria-label', 'Open the JM Money Menu');
-    door.innerHTML = `
-      <span class="door-state">PUBLIC COMMERCIAL ROUTE · 242 GOVERNED ROUTES</span>
-      <h3>JM Money Menu</h3>
-      <p>Search the governed route field, shortlist exact bodies and build an enquiry → brief → scope → receipt pack without silently submitting anything.</p>
-      <div class="door-foot"><span>Open the Money Menu</span><span aria-hidden="true">↗</span></div>
-    `;
-    door.addEventListener('click', () => trackVisit({id:MONEY_ID,name:'JM Money Menu — Public Contact Carrier v1.2',path:'./money-menu/',route:null}));
-    return door;
+    return makeDoor({
+      id:MONEY_ID,href:'./money-menu/',accent:'#77e8bd',
+      label:'Open the JM Money Menu',
+      state:'PUBLIC COMMERCIAL ROUTE · 242 GOVERNED ROUTES',title:'JM Money Menu',
+      copy:'Search the governed route field, shortlist exact bodies and build an enquiry → brief → scope → receipt pack without silently submitting anything.',
+      action:'Open the Money Menu',visitName:'JM Money Menu — Public Contact Carrier v1.2'
+    });
+  }
+
+  function makeShimsDoor() {
+    return makeDoor({
+      id:SHIMS_ID,href:'./shims-reader/',accent:'#ff8fb8',
+      label:'Open SHIMS Reader reflective route reading',
+      state:'PUBLIC SERVICE ROUTE · FREE TASTER + PAID READING',title:'SHIMS Reader',
+      copy:'Try a private local reflective route-reading taster, then carry the situation into a human-reviewed Starter, Full or Deep reading if useful.',
+      action:'Try SHIMS Reader',visitName:'SHIMS Reader — Reflective Route Reading'
+    });
+  }
+
+  function makeLyricsDoor() {
+    return makeDoor({
+      id:LYRICS_ID,href:'./lyrics/',accent:'#ff75ad',
+      label:'Open JM Lyrics and Music House',
+      state:'PUBLIC CREATIVE ROUTE · SOURCE-SAFE',title:'Lyrics & Music House',
+      copy:'Explore public-safe project, performance and recovered-work routes without exposing the private lyric and Evernote source corpus.',
+      action:'Enter Lyrics & Music',visitName:'JM Lyrics & Music House'
+    });
   }
 
   function mountDoors() {
     const host = document.getElementById('featureDoors');
     if (!host) return;
     if (!host.querySelector(`[data-card-id="${MONEY_ID}"]`)) host.prepend(makeMoneyDoor());
+    if (!host.querySelector(`[data-card-id="${SHIMS_ID}"]`)) host.prepend(makeShimsDoor());
+    if (!host.querySelector(`[data-card-id="${LYRICS_ID}"]`)) host.append(makeLyricsDoor());
     if (!host.querySelector(`[data-card-id="${AUTHOR_ID}"]`)) host.append(makeAuthorDoor());
   }
 

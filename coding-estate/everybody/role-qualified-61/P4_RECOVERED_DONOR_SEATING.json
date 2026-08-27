@@ -1,10 +1,10 @@
 {
-  "schema": "jm.role-qualified-recovered-donor-seating/1.0",
+  "schema": "jm.role-qualified-recovered-donor-seating/1.1",
   "date": "2026-08-27",
-  "status": "RECOVERED_DONORS_SEATED_CI_PENDING",
+  "status": "CI_PROVEN_CURRENT_NATIVE_DING",
   "law": "RECOVER BEFORE REBUILD; MEMBER OF X HOUSE != IS AN X; NO DING, NO CLAIM.",
   "proof_boundary": "This phase seats already-existing repository-native/current-native donors into the role-qualified 61 lane. It does not upgrade current-native donors to historical originals, and adjacent runtime/tool bodies exercised by a suite are not counted as coding identities.",
-  "new_census_ids_if_ci_green": [
+  "crowned_census_ids": [
     "mmzg",
     "speakuals",
     "routescript",
@@ -61,15 +61,27 @@
   "suite_boundaries": {
     "coding-estate/everybody/native-selftest.mjs": {
       "covered_by_suite": ["cading", "mmzg", "speakuals"],
-      "new_in_p4": ["mmzg", "speakuals"],
+      "crowned_in_p4": ["mmzg", "speakuals"],
       "overlap_not_recounted": ["cading"]
     },
     "coding-estate/sovereign-ten/direct/native-selftest.mjs": {
       "suite_check_count": 23,
-      "new_in_p4": ["routescript", "reality-contact", "game-coding"],
+      "crowned_in_p4": ["routescript", "reality-contact", "game-coding"],
       "overlap_not_recounted": ["flowtalk", "jmlogic", "jm32-1da", "routevm"],
       "adjacent_not_counted": ["RouteOS", "Dings", "TraceBox", "JM GameCore"]
     }
   },
-  "expected_coverage_after_green_ci": 42
+  "ci_proof": {
+    "workflow": "Role-qualified 61 coding identity",
+    "run_id": 33044839308,
+    "run_number": 46,
+    "head_sha": "c742c7c83bbf23ab168c84c6753d490ac2d5826c",
+    "conclusion": "success",
+    "job_id": 98426328084,
+    "maturation_artifact_id": 9635214621,
+    "maturation_artifact_size_bytes": 9095,
+    "maturation_artifact_sha256": "8461bca5190edc6c5f097fe2a225d33dec1f682f3438fb686cd3a167bddb174f"
+  },
+  "coverage_after_ding": 42,
+  "remaining_after_ding": 19
 }

@@ -1,0 +1,25 @@
+{
+  "schema": "jm.role-qualified-p2-nonfoundation-maturation/1.0",
+  "date": "2026-08-27",
+  "status": "IMPLEMENTED_CI_PENDING",
+  "law": "RECOVER BEFORE REBUILD; NO DEDICATED HEAD FOUND -> DECLARED FORWARD DESCENDANT; FAMILY SHARING DOES NOT COLLAPSE BODY IDENTITY.",
+  "search_boundary": "Repository code search returned no dedicated source head under each exact body name before authoring these descendants.",
+  "bodies": [
+    {"body_id":"punctbody","name":"PunctBody","implementation":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["punctuation operator grammar","precedence","completion state","fullstop Ding"]},
+    {"body_id":"routeframe","name":"RouteFrame","implementation":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["entry/step/fallback grammar","route graph IR","visible transition runtime"]},
+    {"body_id":"statefield","name":"StateField","implementation":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["state declarations","conditional transitions","contact consequence runtime"]},
+    {"body_id":"contactband","name":"ContactBand","implementation":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["bounded contact grammar","non-overlap verifier","contact-to-route runtime"]},
+    {"body_id":"pattern-tapping","name":"Pattern-Tapping","implementation":"coding-estate/everybody/role-qualified-61/native/embodied-contact-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["temporal tap grammar","tolerance matching","gesture signal runtime"]},
+    {"body_id":"mudra-code","name":"Mudra Code","implementation":"coding-estate/everybody/role-qualified-61/native/embodied-contact-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["pose sequence grammar","transition IR","hand-form signal runtime"]},
+    {"body_id":"contactcode","name":"ContactCode","implementation":"coding-estate/everybody/role-qualified-61/native/embodied-contact-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["physical/logical contact grammar","pressure gating","contact signal runtime"]},
+    {"body_id":"command-glyphs","name":"Command Glyphs","implementation":"coding-estate/everybody/role-qualified-61/native/embodied-contact-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["command glyph grammar","pressure semantics","glyph-to-route runtime"]},
+    {"body_id":"speech-code","name":"Speech-Code","implementation":"coding-estate/everybody/role-qualified-61/native/speech-meaning-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["phrase/intent grammar","permission map","speech-to-route runtime"]},
+    {"body_id":"speakgate","name":"SpeakGate","implementation":"coding-estate/everybody/role-qualified-61/native/speech-meaning-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["identity gate grammar","ambiguity policy","permission runtime"]},
+    {"body_id":"flowtalk-body-route","name":"FlowTalk Body Route","implementation":"coding-estate/everybody/role-qualified-61/native/speech-meaning-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["intent/body-route grammar","source wording preservation","route/output runtime"]},
+    {"body_id":"noncoding-code","name":"Noncoding-Code","implementation":"coding-estate/everybody/role-qualified-61/native/speech-meaning-four.mjs","selftest":"coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs","historicalRecoveryClaim":false,"native_gain":["meaning/signal/route grammar","action trace","non-text code runtime"]}
+  ],
+  "integration_routes": [
+    "PunctBody -> ContactBand -> StateField -> RouteFrame",
+    "Pattern-Tapping -> Mudra Code -> ContactCode -> Command Glyphs -> Speech-Code -> SpeakGate -> FlowTalk Body Route -> Noncoding-Code"
+  ]
+}

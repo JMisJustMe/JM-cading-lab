@@ -1,0 +1,44 @@
+name: JM Recovered Native Core
+
+on:
+  push:
+    branches:
+      - agent/everybody-105-parity-v1-4
+    paths:
+      - 'coding-estate/everybody/native-core/**'
+      - '.github/workflows/native-core-recovered-sources.yml'
+  workflow_dispatch:
+
+jobs:
+  native-core:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify recovered source hashes and body-native conformance
+        run: python coding-estate/everybody/native-core/test_native_core.py
+      - name: Execute recovered-source frontends and seal receipt
+        run: |
+          mkdir -p dist/native-core
+          python coding-estate/everybody/native-core/native_core.py > dist/native-core/RECOVERED_NATIVE_CORE_RECEIPT.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('dist/native-core/RECOVERED_NATIVE_CORE_RECEIPT.json')
+          r=json.loads(p.read_text())
+          assert set(r)=={'cading','kading'}
+          assert r['cading']['authority']=='RECOVERED_EXACT_SOURCE'
+          assert r['kading']['authority']=='RECOVERED_EXACT_SOURCE'
+          assert r['cading']['result']['runtime']['status']=='DING'
+          assert r['kading']['result']['runtime']['status']=='DING'
+          assert r['cading']['final_crown'] is False
+          assert r['kading']['final_crown'] is False
+          print('JM_RECOVERED_NATIVE_CORE_CADING_KADING_PASS')
+          PY
+          sha256sum dist/native-core/RECOVERED_NATIVE_CORE_RECEIPT.json > dist/native-core/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_RECOVERED_NATIVE_CORE_CADING_KADING_v1.0
+          path: dist/native-core

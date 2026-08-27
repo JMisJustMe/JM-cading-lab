@@ -19,10 +19,13 @@ jobs:
           python-version: '3.12'
       - name: Verify recovered source hashes and body-native conformance
         run: python coding-estate/everybody/native-core/test_native_core.py
+      - name: Verify FormeULA declared forward-native parser AST IR runtime and HOLD gates
+        run: python coding-estate/everybody/native-core/forward/test_formeula.py
       - name: Execute recovered-source frontends and seal receipt
         run: |
           mkdir -p dist/native-core
           python coding-estate/everybody/native-core/native_core.py > dist/native-core/RECOVERED_NATIVE_CORE_RECEIPT.json
+          python coding-estate/everybody/native-core/forward/formeula.py > dist/native-core/FORMEULA_AUTHORISED_FORWARD_RECEIPT.json
           python - <<'PY'
           import json
           from pathlib import Path
@@ -35,10 +38,16 @@ jobs:
           assert r['kading']['result']['runtime']['status']=='DING'
           assert r['cading']['final_crown'] is False
           assert r['kading']['final_crown'] is False
-          print('JM_RECOVERED_NATIVE_CORE_CADING_KADING_PASS')
+          f=json.loads(Path('dist/native-core/FORMEULA_AUTHORISED_FORWARD_RECEIPT.json').read_text())
+          assert f['ir']['authority']=='AUTHORISED_FORWARD_CREATION__NATIVE_RECOVERY_OPEN'
+          assert f['runtime']['authority']=='AUTHORISED_FORWARD_CREATION__NATIVE_RECOVERY_OPEN'
+          assert f['runtime']['status']=='DING'
+          assert f['runtime']['result']=='regrouped-10'
+          assert f['runtime']['final_crown'] is False
+          print('JM_RECOVERED_NATIVE_CORE_PLUS_FORMEULA_FORWARD_PASS')
           PY
-          sha256sum dist/native-core/RECOVERED_NATIVE_CORE_RECEIPT.json > dist/native-core/SHA256SUMS.txt
+          sha256sum dist/native-core/*.json > dist/native-core/SHA256SUMS.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_RECOVERED_NATIVE_CORE_CADING_KADING_v1.0
+          name: JM_NATIVE_CORE_RECOVERED_PLUS_FORMEULA_FORWARD_v1.1
           path: dist/native-core

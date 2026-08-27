@@ -24,8 +24,7 @@ jobs:
       - name: Prepare receipt directory
         run: mkdir -p "$RUNNER_TEMP/role-qualified-61"
 
-      - name: Validate 61-body identity authority
-        id: identity
+      - name: Produce 61-body identity diagnostic
         continue-on-error: true
         run: |
           python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py \
@@ -39,9 +38,9 @@ jobs:
           path: ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_IDENTITY.json
           if-no-files-found: warn
 
-      - name: Stop if identity gate failed
-        if: steps.identity.outcome != 'success'
-        run: exit 1
+      - name: Hard identity gate
+        run: |
+          python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
 
       - name: Build existing 105-body engineering-ecology role depth
         run: |

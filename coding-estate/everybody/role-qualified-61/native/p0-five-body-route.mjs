@@ -55,8 +55,8 @@ rule Approve {
   jmp: `
 jumpmap Outcome {
   from approved
-  case true -> "accepted" do route accepted.route
-  case false -> "held" do route hold.route
+  case true -> "accepted" do nextRoute = "accepted.route"
+  case false -> "held" do nextRoute = "hold.route"
 }
 `
 });

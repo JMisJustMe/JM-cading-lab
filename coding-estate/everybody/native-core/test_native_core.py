@@ -23,9 +23,7 @@ def main() -> None:
 
     cading_source = cading_path.read_text(encoding="utf-8")
     cading = CadingFrontend().parse(cading_source)
-    assert [section.name for section in cading.sections] == ["BOOT", "DUAL ENTRY", "Command.line {pre},".upper()] if False else [section.name for section in cading.sections]
-    assert len(cading.sections) == 5
-    assert [s.name for s in cading.sections] == ["BOOT", "DUAL ENTRY", "MODULE CONVERSION", "COLD DING"] or len(cading.sections) == 5
+    assert [section.name for section in cading.sections] == ["BOOT", "DUAL ENTRY", "MODULE CONVERSION", "COLD DING"]
     # Source-shaped obligations, not generic field-count checks.
     ir = cading.to_ir()
     runtime = cading.execute()
@@ -33,6 +31,8 @@ def main() -> None:
     assert any(r["signal"] == "TraceBox" and r["target"] == "ReceiptRecovery" and r["post"] and r["ding"] for r in ir["routes"])
     assert any(r["signal"] == "Touch.field" and r["pre"] for r in ir["routes"])
     assert any(r["signal"] == "Release" and r["target"] == "Output" and r["ding"] for r in ir["routes"])
+    assert any(r["signal"] == "Command.line" and r["pre"] for r in ir["routes"])
+    assert any(r["signal"] == "RESET" and r["post"] and r["ding"] for r in ir["routes"])
     assert runtime["state"]["RouteOS"] == "Continuity"
     assert runtime["state"]["Need"] == "Capability"
     assert sum(1 for x in runtime["trace"] if x["event"] == "DING") == 5

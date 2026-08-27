@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from pathlib import Path
 import hashlib
 import json
@@ -64,11 +64,18 @@ class CadingProgram:
         state: dict[str, Any] = {}
         trace: list[dict[str, Any]] = []
         for section in self.sections:
-            scope_open = False
+            # Recovered JM_SOURCE_04.cading defines COLD DING as a heading-level
+            # cold-open scope. Its final FORGE {post}.✓ closes that heading scope.
+            # This is source-specific grammar, not a blanket permission for orphan posts.
+            scope_open = section.name == "COLD DING"
+            if scope_open:
+                trace.append({"event": "PRE_OPEN", "section": section.name, "signal": "COLD_DING_SCOPE", "implicit": True})
             for term in section.terms:
                 if term.opens_pre:
+                    if scope_open:
+                        raise NativeSourceError(f"{section.name}: nested pre without close")
                     scope_open = True
-                    trace.append({"event": "PRE_OPEN", "section": section.name, "signal": term.name})
+                    trace.append({"event": "PRE_OPEN", "section": section.name, "signal": term.name, "implicit": False})
                 if term.value is not None:
                     before = state.get(term.name)
                     state[term.name] = term.value
@@ -90,9 +97,8 @@ class CadingProgram:
 class CadingFrontend:
     """Frontend for the recovered JM_SOURCE_04.cading source form.
 
-    This parser is intentionally source-shaped: section headings, assignment marks,
-    {pre}/{post} bounds and the completion glyph are retained as syntax rather than
-    normalised into a generic key/value language.
+    Section headings, assignment marks, {pre}/{post} bounds, the COLD DING
+    heading-scope and the completion glyph are retained as source syntax.
     """
 
     HEADER_STATUS = re.compile(r"^STATUS\s*=\s*(.+)$")
@@ -113,7 +119,6 @@ class CadingFrontend:
         current_terms: list[CadingTerm] = []
 
         for raw_line in meaningful[2:]:
-            # headings in the recovered source are bare uppercase words/spaces.
             is_heading = (
                 raw_line == raw_line.upper()
                 and "=" not in raw_line
@@ -137,7 +142,7 @@ class CadingFrontend:
             raise NativeSourceError("no Cading sections")
 
         program = CadingProgram(title, status, tuple(sections), sha256_text(source))
-        program.execute()  # structural + route proof on parse
+        program.execute()
         return program
 
     @staticmethod

@@ -1,10 +1,11 @@
 {
   "schema": "JM.MoneyMenuPublicPublicationReceipt/1.0",
-  "status": "LIVE_DEPLOYMENT_WITH_CONNECTED_PUBLIC_PRODUCT_ROUTE",
+  "status": "SOURCE_COMMITTED_NEW_PRODUCT_CONNECTION_EDGE_VERIFICATION_PENDING",
   "data_authority": "JM Money Menu — Standalone Current Head v1.1",
   "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
   "routes": 242,
   "immediate_parity": "160/160 PASS",
+  "existing_carrier_live_proof": "Preserved from prior v1.2 publication status; the 2026-08-27 SHIMS connection requires its own edge contact before live claim.",
   "files": [
     "money-menu/index.html",
     "money-menu/STATUS.md"
@@ -27,9 +28,11 @@
       "route": "../shims-reader/",
       "role": "reflective / personal-help route-reading service",
       "assessed_price_range_gbp": "25-85",
+      "source_state": "COMMITTED_TO_MAIN",
+      "edge_state": "VERIFICATION_PENDING",
       "handoff": "SHIMS service door -> Money Menu enquiry -> brief -> scope -> reviewed agreement",
       "boundary": "Reflective route-reading only; not medical/clinical diagnosis or treatment and not professional legal or financial advice."
     }
   ],
-  "boundary": "Money Menu v1.1 remains the governed 242-route data authority. Public product connections do not silently alter route identities or create accepted contracts."
+  "boundary": "Money Menu v1.1 remains the governed 242-route data authority. Public product connections do not silently alter route identities or create accepted contracts. No new edge-live claim is made without contact proof."
 }

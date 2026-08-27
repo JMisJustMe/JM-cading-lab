@@ -28,7 +28,7 @@ check('finger-two-embodied-route',()=>assert.deepEqual(FingerTwo.execute(f2).run
 check('finger-two-rejects-unbound-kind',()=>assert.throws(()=>FingerTwo.parse(`fingertwo Bad {\nbind mudra mudra-code\nsequence formula\n}`),/unbound/));
 check('lexicon-executable-term',()=>assert.equal(Lexicon.execute(lex,'ding').runtime.route,'proof.ding'));
 check('lexicon-rejects-unknown',()=>assert.throws(()=>Lexicon.execute(lex,'missing'),/Unknown term/));
-check('namebank-alias-resolution',()=>assert.deepEqual(NameBank.execute(bank,'Theomidul').runtime,{...NameBank.execute(bank,'Theomidul').runtime,canonical:'Cading'}));
+check('namebank-alias-resolution',()=>assert.equal(NameBank.execute(bank,'Theomidul').runtime.canonical,'Cading'));
 check('namebank-collision-protection',()=>assert.throws(()=>NameBank.parse(`namebank Bad {\nname A id a\nname A id b\n}`),/Duplicate canonical/));
 check('codeing-engine-pipeline',()=>assert.equal(CodeingEngine.execute(engine,'SOURCE').runtime.artifact.ir,'onebody-ir'));
 check('codeing-engine-source-authority-boundary',()=>assert.equal(CodeingEngine.execute(engine,'SOURCE').runtime.sourceAuthority,'external-to-engine'));

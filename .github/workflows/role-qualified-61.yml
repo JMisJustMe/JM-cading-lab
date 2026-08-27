@@ -55,6 +55,11 @@ jobs:
           node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs \
             > "$RUNNER_TEMP/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json"
 
+      - name: Prove P0 five-body mesh without merge
+        run: |
+          node coding-estate/everybody/role-qualified-61/native/p0-five-body-route.selftest.mjs \
+            > "$RUNNER_TEMP/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json"
+
       - name: Build existing 105-body engineering-ecology role depth
         run: |
           python coding-estate/everybody/parity-105/patch_105_descendant.py
@@ -77,4 +82,5 @@ jobs:
             ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json
             ${{ runner.temp }}/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json
             ${{ runner.temp }}/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json
+            ${{ runner.temp }}/role-qualified-61/P0_FIVE_BODY_ROUTE_SELFTEST.json
           if-no-files-found: warn

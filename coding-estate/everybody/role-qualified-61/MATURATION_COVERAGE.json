@@ -1,10 +1,10 @@
 {
-  "schema": "jm.role-qualified-maturation-coverage/1.0",
+  "schema": "jm.role-qualified-maturation-coverage/1.1",
   "date": "2026-08-27",
-  "status": "P4_CI_PENDING",
+  "status": "P4_CROWNED_42_OF_61",
   "law": "COUNT FROM CLASSIFICATION STATE, NOT PRESENTATION; NO DING, NO CLAIM.",
   "census_total": 61,
-  "current_crowned_count": 37,
+  "current_crowned_count": 42,
   "current_crowned_ids": [
     "os-coding",
     "root-method",
@@ -42,7 +42,12 @@
     "route-code",
     "tbs-string",
     "recorp",
-    "buildode"
+    "buildode",
+    "mmzg",
+    "speakuals",
+    "routescript",
+    "reality-contact",
+    "game-coding"
   ],
   "coverage_basis": {
     "P1_FOUNDATION_DONOR_MAP": [
@@ -56,22 +61,24 @@
     ],
     "P3_FORMULA_ROUTE_RECOVERY_MATURATION": [
       "formeula", "formula-born-code", "mark-code", "route-code", "tbs-string", "recorp", "buildode"
+    ],
+    "P4_RECOVERED_DONOR_SEATING": [
+      "mmzg", "speakuals", "routescript", "reality-contact", "game-coding"
     ]
   },
-  "pending_p4_count": 5,
-  "pending_p4_ids": [
-    "mmzg",
-    "speakuals",
-    "routescript",
-    "reality-contact",
-    "game-coding"
-  ],
-  "provisional_count_if_p4_green": 42,
-  "remaining_if_p4_green": 19,
+  "pending_phase": null,
+  "pending_ids": [],
+  "remaining_count": 19,
   "explicit_noncounted_suite_participants": [
     "RouteOS",
     "Dings",
     "TraceBox",
     "JM GameCore"
-  ]
+  ],
+  "last_ci_ding": {
+    "phase": "P4_RECOVERED_DONOR_SEATING",
+    "run_id": 33044839308,
+    "head_sha": "c742c7c83bbf23ab168c84c6753d490ac2d5826c",
+    "conclusion": "success"
+  }
 }

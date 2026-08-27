@@ -1,0 +1,46 @@
+name: Role-qualified 61 coding identity
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/**"
+      - "coding-estate/everybody/body-registry-extension-03.json"
+      - "coding-estate/everybody/parity-105/**"
+      - ".github/workflows/role-qualified-61.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity-and-depth:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate 61-body identity authority
+        run: |
+          python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
+
+      - name: Build existing 105-body engineering-ecology role depth
+        run: |
+          python coding-estate/everybody/parity-105/patch_105_descendant.py
+          python coding-estate/everybody/parity-105/role_depth_factory.py \
+            --repo "$GITHUB_WORKSPACE" \
+            --out "$RUNNER_TEMP/role-depth-105"
+
+      - name: Intersect role depth with actual 61 code identities
+        run: |
+          mkdir -p "$RUNNER_TEMP/role-qualified-61"
+          python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py \
+            --role-depth-manifest "$RUNNER_TEMP/role-depth-105/ROLE_DEPTH_MANIFEST.json" \
+            --out "$RUNNER_TEMP/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json"
+
+      - name: Upload 61-body identity receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-role-qualified-61-identity-receipt
+          path: ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json

@@ -1,0 +1,21 @@
+name: Exact Identity Gate v0.1
+
+on:
+  push:
+    branches:
+      - universal-hosted-body-exact-identity-proof-v0.1
+  pull_request:
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/EXACT_IDENTITY_*'
+      - '.github/workflows/exact-identity-gate-v0.1.yml'
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run exact-identity gate tests
+        run: node apps/jm-chatgpt-host-adapter-v0.1/EXACT_IDENTITY_GATE_v0_1.test.mjs

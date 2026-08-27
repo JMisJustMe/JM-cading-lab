@@ -1,30 +1,34 @@
 {
-  "schema": "jm.role-qualified-maturation-coverage/1.2",
+  "schema": "jm.role-qualified-maturation-coverage/1.3",
   "date": "2026-08-27",
-  "status": "P5_REMAINING_19_CI_PENDING_42_CROWNED",
+  "status": "CURRENT_NATIVE_MATURATION_CROWNED_61_OF_61",
   "law": "COUNT FROM CLASSIFICATION STATE, NOT PRESENTATION; NO DING, NO CLAIM.",
   "census_total": 61,
-  "current_crowned_count": 42,
+  "current_crowned_count": 61,
   "current_crowned_ids": [
-    "os-coding","root-method","cadenvm","routevm","jmvm","codehand","jm32-1da","onebody-ir","theoc","cading","jmlogic","flowtalk","kading","quadze","mark-level-syntax","jmp","kocodifying","codifying","punctbody","contactband","statefield","routeframe","pattern-tapping","mudra-code","contactcode","command-glyphs","speech-code","speakgate","flowtalk-body-route","noncoding-code","formeula","formula-born-code","mark-code","route-code","tbs-string","recorp","buildode","mmzg","speakuals","routescript","reality-contact","game-coding"
+    "os-coding","root-method","cadenvm","routevm","jmvm","codehand","jm32-1da","onebody-ir","theoc","cading","jmlogic","flowtalk","kading","quadze","mark-level-syntax","jmp","kocodifying","codifying","punctbody","contactband","statefield","routeframe","pattern-tapping","mudra-code","contactcode","command-glyphs","speech-code","speakgate","flowtalk-body-route","noncoding-code","formeula","formula-born-code","mark-code","route-code","tbs-string","recorp","buildode","mmzg","speakuals","routescript","reality-contact","game-coding","cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine","gameforge","glyphforge","glyphplay","playform","seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus","jm-visualang"
   ],
   "coverage_basis": {
     "P1_FOUNDATION_DONOR_MAP": ["os-coding","root-method","cadenvm","routevm","jmvm","codehand","jm32-1da","onebody-ir","theoc","cading","jmlogic","flowtalk","kading","quadze"],
     "P0_ADDITIONAL_CURRENT_NATIVE": ["mark-level-syntax","jmp","kocodifying","codifying"],
     "P2_NONFOUNDATION_NATIVE_MATURATION": ["punctbody","contactband","statefield","routeframe","pattern-tapping","mudra-code","contactcode","command-glyphs","speech-code","speakgate","flowtalk-body-route","noncoding-code"],
     "P3_FORMULA_ROUTE_RECOVERY_MATURATION": ["formeula","formula-born-code","mark-code","route-code","tbs-string","recorp","buildode"],
-    "P4_RECOVERED_DONOR_SEATING": ["mmzg","speakuals","routescript","reality-contact","game-coding"]
+    "P4_RECOVERED_DONOR_SEATING": ["mmzg","speakuals","routescript","reality-contact","game-coding"],
+    "P5_REMAINING_19_MATURATION": ["cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine","gameforge","glyphforge","glyphplay","playform","seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus","jm-visualang"]
   },
-  "pending_phase": "P5_REMAINING_19_MATURATION",
-  "pending_ids": [
-    "cading-lab","cadenpad","coding-body-house","finger-one","finger-one-codestudio","finger-two","lexicon","namebank","codeing-engine","gameforge","glyphforge","glyphplay","playform","seedform","prayer-hands-paired-contact","jickma-jickmah","mood-drills","morseminus","jm-visualang"
-  ],
-  "remaining_count": 19,
+  "pending_phase": null,
+  "pending_ids": [],
+  "remaining_count": 0,
   "explicit_noncounted_suite_participants": ["RouteOS","Dings","TraceBox","JM GameCore"],
+  "claim_boundary": "61/61 means every role-qualified actual coding identity now has a source-qualified current-native maturation route with CI proof. It does not mean every historical original has been recovered, every body is product-final, or adjacent runtime/tool/host bodies have become coding identities.",
   "last_ci_ding": {
-    "phase": "P4_RECOVERED_DONOR_SEATING",
-    "run_id": 33045023724,
-    "head_sha": "42364995eef1a738c1b270e51a0f2ade1d6a9635",
-    "conclusion": "success"
+    "phase": "P5_REMAINING_19_MATURATION",
+    "run_id": 33045638498,
+    "head_sha": "cbb07e3f32bd77a9017ee208980d9bbe5508a0a1",
+    "job_id": 98428857412,
+    "conclusion": "success",
+    "maturation_artifact_id": 9635523530,
+    "maturation_artifact_size_bytes": 11312,
+    "maturation_artifact_sha256": "87bf798784ed8e4017208703b7515ad389a895bad1f80459755f974c8620b4df"
   }
 }

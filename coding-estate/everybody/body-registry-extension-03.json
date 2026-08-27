@@ -1,0 +1,81 @@
+{
+  "schema": "jm.everybody.registry-extension/1.2",
+  "name": "Post-100 Sovereign Coding Body Extension",
+  "status": "AUTHORISED_FORWARD_PARITY_DESCENDANT",
+  "recovered_count": 5,
+  "source_lineage": [
+    "JM CodeBook Crown32 v1.4 Open Census 105",
+    "JaggedMirror 0003F Fivefold Ascent current-candidate authority",
+    "JM Actual Engine v2.0 accredited current-head proof body",
+    "JM Describe Into Reality Engine v0.2.0 frozen current-best keeper",
+    "JM Visualang Estate-Native v0.3 Wave Two + Source Runtime v0.2",
+    "JM LDML v0.2.3 Visualang x X-Form rollout kernel"
+  ],
+  "count_boundary": "Adds only census-admitted sovereign bodies 101-105. Body 106 remains OPEN / NO CLAIM.",
+  "bridge_boundary": "This registry extension carries recovered current authority into the existing shared parity machinery. Shared Python/GCC/x86/QEMU/GRUB carriers are not claimed as native self-hosted toolchains for these bodies.",
+  "bodies": [
+    {
+      "id": "jaggedmirror",
+      "census_id": 101,
+      "name": "JaggedMirror",
+      "kind": "sovereign_creator_simulation_body",
+      "status": "current_candidate_0003f_machine_gates_passed_owner_ding_open",
+      "law": "Same seed + different rule structures -> divergent living consequences -> traceable comparison",
+      "caps": ["donor-intake", "same-seed", "dual-rule", "simulate", "compare", "fivefold-ascent", "branch", "export", "recover"],
+      "targets": ["html", "android_apk", "laptop", "project_export"],
+      "current_source": "JaggedMirror_MultiHub_0003F_FIVEFOLD_ASCENT.html",
+      "current_source_sha256": "ae5477ccc4dffa2af932f114abbe60f560b58c412bea57a0e37372ba1cfcc461",
+      "needs": ["physical phone installation", "sustained laptop use", "cross-device project carry", "owner Ding", "body-authored native toolchain or role-equivalent"]
+    },
+    {
+      "id": "jm-actual-engine",
+      "census_id": 102,
+      "name": "JM Actual Engine",
+      "kind": "object_rule_scene_runtime_engine",
+      "status": "accredited_current_head_v2_0",
+      "law": "Object + Rule + Scene + Route Pressure -> Executed Consequence -> Trace / Recovery",
+      "caps": ["object-create", "object-update", "object-delete", "link", "rule-fire", "scene-route", "state-change", "pressure-change", "trace", "recover", "project-import", "project-export"],
+      "targets": ["html", "browser_runtime", "project_package"],
+      "current_source": "00_OPEN_FIRST_JM_ACTUAL_ENGINE_v2_0_RELEASE_CANDIDATE_PROOF_BODY.html",
+      "current_source_sha256": "826f019fac175e1358eed10c939e75263c6792b3d185db189fc941a1f4e6ec09",
+      "needs": ["body-authored specialist IR/toolchain", "self-hosting or role-equivalent", "substantial product primarily authored through JM Actual Engine", "final body-specific crown"]
+    },
+    {
+      "id": "jm-describe-into-reality-engine",
+      "census_id": 103,
+      "name": "JM Describe Into Reality Engine",
+      "kind": "description_to_playable_seed_engine",
+      "status": "frozen_locked_anchored_mounted_owner_play_contacted",
+      "law": "Describe -> Catch Meaning -> Govern Interpretation -> Generate / Mutate Playable Seed -> Trace / Receipt / Recovery",
+      "caps": ["describe", "interpret", "govern", "generate-seed", "mutate-seed", "play", "hold", "trace", "receipt", "recover"],
+      "targets": ["html", "playable_seed", "game_project"],
+      "current_source": "JM_DESCRIBE_INTO_REALITY_ENGINE_v0_2_0_FROZEN.html",
+      "current_source_sha256": "587e271ab1536eac1f7ba59d867a336621f7699eff1a282829471203982b8265",
+      "needs": ["body-authored specialist toolchain", "native backend expansion", "larger generated-game proof", "final body-specific crown"]
+    },
+    {
+      "id": "jm-visualang",
+      "census_id": 104,
+      "name": "JM Visualang",
+      "kind": "living_visual_language",
+      "status": "proven_standalone_estate_native_wave_two",
+      "law": "Visual intention -> Visualang source grammar -> validated visual / interaction consequence -> trace / rollback",
+      "caps": ["source-notation", "parse", "validate", "profile", "route", "anatomy", "contact", "intensity", "budget", "compile", "receipt", "rollback"],
+      "targets": ["html", "visual_runtime", "ldml", "x_form"],
+      "current_source": "00_OPEN_FIRST_JM_VISUALANG_ESTATE_NATIVE_v0_3_WAVE_TWO.html",
+      "needs": ["specialist IR deepening", "self-hosting or role-equivalent", "native backend expansion", "substantial Visualang-authored product", "final body-specific crown"]
+    },
+    {
+      "id": "jm-living-diagram-motion-layer",
+      "census_id": 105,
+      "name": "JM Living Diagram & Motion Layer",
+      "kind": "portable_visual_runtime_carrier",
+      "status": "proven_v0_2_3_visualang_xform_kernel",
+      "law": "Exact ancestor -> profile / anatomy / motion contract -> candidate runtime graft -> proof / receipt / rollback",
+      "caps": ["exact-source-intake", "hash", "profile-light", "profile-active", "profile-play", "ancestry-lock", "graft", "budget", "reduced-motion", "candidate-export", "proof", "receipt", "rollback"],
+      "targets": ["html", "visualang", "x_form", "portable_runtime"],
+      "current_source": "JM_LDML_ESTATE_ROLLOUT_KERNEL_v0_2_3_VISUALANG_XFORM_OPEN_FIRST.html",
+      "needs": ["specialist runtime/IR deepening", "native host adapters", "real-device rollout proof", "final body-specific crown"]
+    }
+  ]
+}

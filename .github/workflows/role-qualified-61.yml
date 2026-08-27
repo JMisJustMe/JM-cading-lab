@@ -20,6 +20,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
 
       - name: Prepare receipt directory
         run: mkdir -p "$RUNNER_TEMP/role-qualified-61"
@@ -42,6 +45,16 @@ jobs:
         run: |
           python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
 
+      - name: Validate foundation donor authority
+        run: |
+          python coding-estate/everybody/role-qualified-61/validate_foundation_donors.py \
+            > "$RUNNER_TEMP/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json"
+
+      - name: Prove Mark-Level Syntax forward-native bridge
+        run: |
+          node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs \
+            > "$RUNNER_TEMP/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json"
+
       - name: Build existing 105-body engineering-ecology role depth
         run: |
           python coding-estate/everybody/parity-105/patch_105_descendant.py
@@ -55,10 +68,13 @@ jobs:
             --role-depth-manifest "$RUNNER_TEMP/role-depth-105/ROLE_DEPTH_MANIFEST.json" \
             --out "$RUNNER_TEMP/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json"
 
-      - name: Upload 61-body role-depth receipt
+      - name: Upload 61-body maturation receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jm-role-qualified-61-role-depth-receipt
-          path: ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json
+          name: jm-role-qualified-61-maturation-receipts
+          path: |
+            ${{ runner.temp }}/role-qualified-61/ROLE_QUALIFIED_61_VALIDATION.json
+            ${{ runner.temp }}/role-qualified-61/P1_FOUNDATION_DONOR_VALIDATION.json
+            ${{ runner.temp }}/role-qualified-61/MARK_LEVEL_SYNTAX_SELFTEST.json
           if-no-files-found: warn

@@ -1,0 +1,19 @@
+name: Validate Wave 2 BodyMesh OneGame Public Reconciliation
+
+on:
+  pull_request:
+    paths:
+      - 'estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/**'
+      - '.github/workflows/validate-wave2-bodymesh-onegame-reconciliation.yml'
+  push:
+    paths:
+      - 'estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/**'
+      - '.github/workflows/validate-wave2-bodymesh-onegame-reconciliation.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove exact authority spine and typed public links
+        run: python estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/verify_bodymesh_onegame_reconciliation.py

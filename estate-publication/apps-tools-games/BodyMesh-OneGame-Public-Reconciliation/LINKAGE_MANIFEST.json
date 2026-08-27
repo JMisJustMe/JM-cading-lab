@@ -1,0 +1,99 @@
+{
+  "schema": "jm.wave2.bodymesh-onegame.reconciliation/1.0",
+  "scope": "public authority spine and typed linkage reconciliation",
+  "authority_date": "2026-08-27",
+  "source_bodies": [
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/bodymesh/00_OPEN_FIRST.txt",
+      "bytes": 1509,
+      "sha256": "439c87e7a40ed88590f2e8c32264b2eb97746c80329896a6033119933d988e8c"
+    },
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/bodymesh/04_SOURCE_AND_LINEAGE_REGISTER.txt",
+      "bytes": 4014,
+      "sha256": "53f6203a103d2a5ccf86dba7ea0c9b1749a49c56a6179599ae80f076018c75b7"
+    },
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/bodymesh/05_PRODUCT_RECEIPT.txt",
+      "bytes": 2245,
+      "sha256": "b02b573e52f6e3afcfce67ca1b4c60faf5db7bf4f523034dd254a33aa920dd71"
+    },
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/onegame/00_OPEN_FIRST.txt",
+      "bytes": 1528,
+      "sha256": "0c7035ac9f70fc03abf587afce3da3bdb3c953165b68ff886884f7636406ba1e"
+    },
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/onegame/04_SOURCE_AND_LINEAGE_REGISTER.txt",
+      "bytes": 5107,
+      "sha256": "c94c5d2c8308f1ae0434cfa2116941c8593cdbe6747c07a00690d1e5551f33e1"
+    },
+    {
+      "path": "estate-publication/apps-tools-games/BodyMesh-OneGame-Public-Reconciliation/authority/onegame/05_PRODUCT_RECEIPT.txt",
+      "bytes": 2692,
+      "sha256": "f8637a7722a653943a9fd4943ef38a44a68212201301d516fdea150fc45769dd"
+    }
+  ],
+  "roles": {
+    "BodyMesh": {
+      "edition": "Publication Edition v1.0",
+      "status": "publication body DING earned",
+      "role": "independent-body compilation, backup and recoverable mesh architecture",
+      "not_claimed": [
+        "exhaustive whole-estate ingestion",
+        "universal automatic identity or duplicate resolution",
+        "production multi-user compiler/runtime",
+        "universal empirical validation"
+      ]
+    },
+    "OneGame": {
+      "edition": "Publication Edition v1.0",
+      "status": "publication body DING earned",
+      "role": "selected-body game-making, contact-truth and cross-surface proof route",
+      "not_claimed": [
+        "complete current executable OneGame body",
+        "current phone proof",
+        "APK proof",
+        "stable public release proof",
+        "production-grade automatic game compiler",
+        "universal external-game validation"
+      ]
+    }
+  },
+  "typed_links": [
+    {
+      "from": "BodyMesh",
+      "to": "OneGame",
+      "relation": "governed packet supplier -> selected-body consumer/bridge",
+      "merge": false
+    },
+    {
+      "from": "OneGame",
+      "to": "JM GameCore v0.2I-A",
+      "relation": "selectable governed game organ / lineage reference",
+      "merge": false,
+      "public_target": "wave2-public/jm-gamecore-v0-2i-a/transport_manifest_v1.json"
+    },
+    {
+      "from": "OneGame",
+      "to": "GlyphPlay B1 v32.5 Sovereign Baseline Loop Closure",
+      "relation": "distinct game-body/engine lineage reference",
+      "merge": false,
+      "public_target": "estate-publication/apps-tools-games/GlyphPlay-B1-v32.5-Sovereign-Baseline-Loop-Closure/PUBLICATION_MANIFEST.json"
+    }
+  ],
+  "proof_surfaces": [
+    "SOURCE",
+    "BROWSER",
+    "PHONE",
+    "APK",
+    "PUBLIC"
+  ],
+  "law": [
+    "mesh != merge",
+    "publication body != current executable body",
+    "public source != private custody != device Ding",
+    "no Ding, no publication claim"
+  ],
+  "publication_boundary": "This reconciliation publishes authority/provenance/pointer text only. It does not republish DOCX/PDF presentation carriers and does not manufacture open phone/APK/public-release crowns."
+}

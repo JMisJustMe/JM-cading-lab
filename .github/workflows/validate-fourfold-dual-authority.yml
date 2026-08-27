@@ -1,0 +1,19 @@
+name: Validate Wave 2 FOURFOLD Dual Authority
+on:
+  pull_request:
+    paths:
+      - 'wave2/fourfold-dual-authority/**'
+      - '.github/workflows/validate-fourfold-dual-authority.yml'
+  push:
+    paths:
+      - 'wave2/fourfold-dual-authority/**'
+      - '.github/workflows/validate-fourfold-dual-authority.yml'
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python wave2/fourfold-dual-authority/tools/verify_fourfold_dual_authority.py

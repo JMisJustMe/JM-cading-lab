@@ -1,0 +1,51 @@
+{
+  "schema": "jm.wave2.fourfold-dual-authority-reconciliation/1.0",
+  "date": "2026-08-27",
+  "body": "FOURFOLD Arena",
+  "status": "ROLE_QUALIFIED_RECONCILIATION_READY",
+  "authorities": {
+    "mounted_flagship": {
+      "version": "v0.17 Living Bodies",
+      "role": "STAGE_READY_MOUNTED_PUBLIC_FLAGSHIP",
+      "source_file": "FOURFOLD_ARENA_v0_17_LIVING_BODIES_CHARACTER_AUTHORITY.html",
+      "source_bytes": 1364785,
+      "source_sha256": "3c0cff991e8e95bf647c303771c474f38bf15ae3b156fdeb76076892b050e31a",
+      "cartridge_id": "fourfold-arena",
+      "save_namespace": "jm.game.fourfold-arena",
+      "direct_launch_registered": true,
+      "web_handoff_registered": "https://jmisjustme-estate.pages.dev/routeos/cartridge/fourfold-arena"
+    },
+    "owner_forge_candidate": {
+      "version": "v0.21.1",
+      "role": "OWNER_FORGE_CANDIDATE_AND_RETAINED_EXECUTABLE_SOFTWARE_HEAD",
+      "source_file": "FOURFOLD_ARENA_v0_21_1_OWNER_FORGE_ANDROID_VISIBILITY_FIX.html",
+      "source_bytes": 1497992,
+      "source_sha256": "e944857af4abe461c22cb459c954fed065b81f3741b23c64c3be1531521141f2",
+      "cartridge_id": "fourfold-owner-forge-v0-21-1",
+      "save_namespace": "jm.game.fourfold-owner-forge-v0-21-1",
+      "direct_launch_registered": true,
+      "web_handoff_registered": "https://jmisjustme-estate.pages.dev/routeos/cartridge/fourfold-owner-forge-v0-21-1",
+      "android_carrier": "FOURFOLD_V0.21.1_v1_1_0_DEBUG.apk",
+      "carrier_alignment": "ALIGNED_EXISTING_OLD_PACK",
+      "physical_owner_device_ding": "OPEN"
+    }
+  },
+  "relation": {
+    "type": "SAME_LINEAGE_DISTINCT_ROLE_AUTHORITIES",
+    "law": "HIGHER VERSION DOES NOT SILENTLY REPLACE A DIFFERENT ROLE CROWN",
+    "mounted_flagship_remains": "v0.17",
+    "owner_forge_candidate_remains": "v0.21.1"
+  },
+  "transport_decision": {
+    "standalone_source_duplication": "NOT_PERFORMED",
+    "reason": "Two exact sovereign HTML bodies are already recovered and registered as embedded RouteOS cartridges; duplicating ~2.37 MB of base64 through connected text would violate minimum-sufficient carriage discipline.",
+    "routeos_registry": "JM-CARTRIDGE-REGISTRY / native-handoff descendant",
+    "live_http_contact": "NOT_PROVED_IN_THIS_RECONCILIATION"
+  },
+  "claim_boundary": [
+    "Exact source identity and role separation are proved.",
+    "Registered cartridge handoff is recorded, not upgraded to live HTTP contact.",
+    "v0.21.1 physical owner-device Ding remains OPEN.",
+    "No stable-final gameplay, production signing or physical Final Ding is claimed."
+  ]
+}

@@ -37,3 +37,5 @@ jobs:
           path: proof/exact-identity/dist/*
           if-no-files-found: error
           retention-days: 90
+
+# Triggered after workflow installation; no package-content change.

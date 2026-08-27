@@ -8,6 +8,7 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 CENSUS = HERE / "JM_61_ROLE_QUALIFIED_CODING_CENSUS.json"
 DONORS = HERE / "P1_FOUNDATION_DONOR_MAP.json"
+MATURATION = HERE / "P1_FOUNDATION_BRIDGE_MATURATION.json"
 
 
 def load(path: Path):
@@ -17,6 +18,7 @@ def load(path: Path):
 def main() -> int:
     census = load(CENSUS)
     donors = load(DONORS)
+    maturation = load(MATURATION)
     bodies = donors["bodies"]
 
     assert donors["scope_count"] == 14 == len(bodies)
@@ -43,8 +45,7 @@ def main() -> int:
         donors_for_body = body.get("strongest_donors") or []
         assert donors_for_body, f"{body['body_id']} has no donor path"
         for rel in donors_for_body:
-            path = REPO / rel
-            if not path.exists():
+            if not (REPO / rel).exists():
                 missing.append(str(rel))
 
     assert actual_classes == expected_classes, (actual_classes, expected_classes)
@@ -62,14 +63,31 @@ def main() -> int:
     }
     assert exact_ids == {"cading", "quadze"}
 
+    maturation_bodies = maturation.get("bodies", [])
+    maturation_ids = {body["body_id"] for body in maturation_bodies}
+    assert maturation_ids == bridge_ids, (maturation_ids, bridge_ids)
+    bridge_missing = []
+    for body in maturation_bodies:
+        assert body.get("historicalRecoveryClaim") is False
+        for key in ("implementation", "selftest"):
+            rel = body[key]
+            if not (REPO / rel).exists():
+                bridge_missing.append(rel)
+        for rel in body.get("donors", []):
+            if not (REPO / rel).exists():
+                bridge_missing.append(rel)
+    assert not bridge_missing, f"Missing bridge maturation paths: {bridge_missing}"
+
     result = {
-        "schema": "jm.role-qualified-foundation-donor-validation/1.0",
+        "schema": "jm.role-qualified-foundation-donor-validation/1.1",
         "foundation_count": len(bodies),
         "donor_class_counts": actual_classes,
         "bridge_ids": sorted(bridge_ids),
+        "bridge_implementations_present": True,
+        "bridge_maturation_status": maturation["status"],
         "exact_native_ids": sorted(exact_ids),
         "all_donor_paths_exist": True,
-        "status": "P1_FOUNDATION_DONOR_MAP_PASS",
+        "status": "P1_FOUNDATION_DONOR_AND_BRIDGE_MAP_PASS",
     }
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

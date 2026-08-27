@@ -1,0 +1,75 @@
+{
+  "schema": "jm.role-qualified-recovered-donor-seating/1.0",
+  "date": "2026-08-27",
+  "status": "RECOVERED_DONORS_SEATED_CI_PENDING",
+  "law": "RECOVER BEFORE REBUILD; MEMBER OF X HOUSE != IS AN X; NO DING, NO CLAIM.",
+  "proof_boundary": "This phase seats already-existing repository-native/current-native donors into the role-qualified 61 lane. It does not upgrade current-native donors to historical originals, and adjacent runtime/tool bodies exercised by a suite are not counted as coding identities.",
+  "new_census_ids_if_ci_green": [
+    "mmzg",
+    "speakuals",
+    "routescript",
+    "reality-contact",
+    "game-coding"
+  ],
+  "bodies": [
+    {
+      "body_id": "mmzg",
+      "name": "MMZG / MorseMinus ZeroGrip",
+      "source_truth": "EXACT_HISTORICAL_NATIVE_EXECUTABLE",
+      "strongest_donor": "coding-estate/everybody/native-adapters.mjs",
+      "proof_command": "node coding-estate/everybody/native-selftest.mjs",
+      "recovery_basis_commit": "9bec92a15a202967e749547b46062ebd07abfb21",
+      "claim_boundary": "Exact recovered native frontend subset; no claim that every historical/future MMZG tier is exhausted."
+    },
+    {
+      "body_id": "speakuals",
+      "name": "Speakuals",
+      "source_truth": "EXACT_HISTORICAL_NATIVE_EXECUTABLE",
+      "strongest_donor": "coding-estate/everybody/native-adapters.mjs",
+      "proof_command": "node coding-estate/everybody/native-selftest.mjs",
+      "recovery_basis_commit": "9bec92a15a202967e749547b46062ebd07abfb21",
+      "claim_boundary": "Exact recovered native frontend subset; no claim that every historical/future Speakuals tier is exhausted."
+    },
+    {
+      "body_id": "routescript",
+      "name": "RouteScript",
+      "source_truth": "FORWARD_NATIVE_CURRENT_SPEC_HISTORICAL_SOURCE_OPEN",
+      "strongest_donor": "coding-estate/sovereign-ten/direct/route-proof-native.mjs",
+      "proof_command": "node coding-estate/sovereign-ten/direct/native-selftest.mjs",
+      "recovery_basis_commit": "68718e23c2be2ae93b5dba23a80f779b0d0ed8ee",
+      "claim_boundary": "Dedicated readable current-native RouteScript donor recovered; historical-original source remains open."
+    },
+    {
+      "body_id": "reality-contact",
+      "name": "Reality Contact",
+      "source_truth": "FORWARD_NATIVE_CURRENT_SPEC_HISTORICAL_SOURCE_OPEN",
+      "strongest_donor": "coding-estate/sovereign-ten/direct/route-proof-native.mjs",
+      "proof_command": "node coding-estate/sovereign-ten/direct/native-selftest.mjs",
+      "recovery_basis_commit": "68718e23c2be2ae93b5dba23a80f779b0d0ed8ee",
+      "claim_boundary": "Dedicated readable current-native contact/evidence grammar donor recovered; historical-original source remains open."
+    },
+    {
+      "body_id": "game-coding",
+      "name": "Game-CODING",
+      "source_truth": "FORWARD_NATIVE_CURRENT_SPEC_HISTORICAL_SOURCE_OPEN",
+      "strongest_donor": "coding-estate/sovereign-ten/direct/game-native.mjs",
+      "proof_command": "node coding-estate/sovereign-ten/direct/native-selftest.mjs",
+      "recovery_basis_commit": "68718e23c2be2ae93b5dba23a80f779b0d0ed8ee",
+      "claim_boundary": "Dedicated readable current-native game coding grammar/mechanics donor recovered; historical-original source remains open. JM GameCore is exercised as the identity-preserving runtime/body but is not promoted into the 61 coding-identity count."
+    }
+  ],
+  "suite_boundaries": {
+    "coding-estate/everybody/native-selftest.mjs": {
+      "covered_by_suite": ["cading", "mmzg", "speakuals"],
+      "new_in_p4": ["mmzg", "speakuals"],
+      "overlap_not_recounted": ["cading"]
+    },
+    "coding-estate/sovereign-ten/direct/native-selftest.mjs": {
+      "suite_check_count": 23,
+      "new_in_p4": ["routescript", "reality-contact", "game-coding"],
+      "overlap_not_recounted": ["flowtalk", "jmlogic", "jm32-1da", "routevm"],
+      "adjacent_not_counted": ["RouteOS", "Dings", "TraceBox", "JM GameCore"]
+    }
+  },
+  "expected_coverage_after_green_ci": 42
+}

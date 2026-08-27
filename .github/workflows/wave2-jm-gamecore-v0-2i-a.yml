@@ -1,0 +1,25 @@
+name: Validate Wave 2 JM GameCore v0.2I-A source
+
+on:
+  push:
+    branches:
+      - "wave2/jm-gamecore-v0-2i-a-public-source"
+    paths:
+      - "wave2-public/jm-gamecore-v0-2i-a/**"
+      - ".github/workflows/wave2-jm-gamecore-v0-2i-a.yml"
+  pull_request:
+    paths:
+      - "wave2-public/jm-gamecore-v0-2i-a/**"
+      - ".github/workflows/wave2-jm-gamecore-v0-2i-a.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Reconstruct exact source and enforce boundary
+        run: python wave2-public/jm-gamecore-v0-2i-a/rebuild_and_verify.py

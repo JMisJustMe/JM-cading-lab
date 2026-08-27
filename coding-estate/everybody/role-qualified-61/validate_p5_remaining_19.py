@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent
-ROOT=HERE.parents[3]
+ROOT=HERE.parents[2]
 
 def load(name): return json.loads((HERE/name).read_text(encoding='utf-8'))
 def need(ok,msg):

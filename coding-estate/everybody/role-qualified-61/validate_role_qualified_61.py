@@ -22,18 +22,22 @@ def main() -> int:
     args = ap.parse_args()
 
     data = load(args.census)
-    bodies = data["bodies"]
+    counts = data["counts"]
+    rows = data["identity"]
+    groups = data["source_truth_groups"]
 
-    assert data["historical_engineering_ecology_count"] == 105
-    assert data["actual_coding_identity_count"] == 61
-    assert data["adjacent_non_code_ecology_count"] == 44
-    assert data["unresolved_identity_count"] == 0
-    assert len(bodies) == 61
+    assert counts == {
+        "engineering_ecology": 105,
+        "actual_coding_identities": 61,
+        "adjacent_non_code_organs": 44,
+        "unresolved": 0,
+    }
+    assert len(rows) == 61
 
-    new_numbers = [int(x["new_no"]) for x in bodies]
-    old_ids = [int(x["old_105_id"]) for x in bodies]
-    body_ids = [str(x["body_id"]) for x in bodies]
-    names = [str(x["name"]) for x in bodies]
+    new_numbers = [int(r[0]) for r in rows]
+    old_ids = [int(r[1]) for r in rows]
+    body_ids = [str(r[2]) for r in rows]
+    names = [str(r[3]) for r in rows]
 
     assert new_numbers == list(range(1, 62)), "new role-qualified numbering must be 1..61"
     assert len(set(old_ids)) == 61, "old 105 ids must be unique inside the 61"
@@ -44,21 +48,36 @@ def main() -> int:
     for adjacent in (101, 102, 103, 105):
         assert adjacent not in old_ids, f"post-100 adjacent body {adjacent} must not be counted as code"
 
-    tiers: dict[str, int] = {}
-    for body in bodies:
-        tier = str(body["source_truth_tier"])
-        tiers[tier] = tiers.get(tier, 0) + 1
-    assert tiers == data["source_truth_tier_counts"]
-    assert tiers.get("EXACT_HISTORICAL_NATIVE_EXECUTABLE") == 4
-    assert tiers.get("RECONSTRUCTED_EXECUTABLE_DESCENDANT") == 5
+    expected_tier_counts = {
+        "FORWARD_NATIVE_CURRENT_SPEC_HISTORICAL_SOURCE_OPEN": 24,
+        "RECOVERED_WORKING_PROFILE": 27,
+        "RECONSTRUCTED_EXECUTABLE_DESCENDANT": 5,
+        "EXACT_HISTORICAL_NATIVE_EXECUTABLE": 4,
+        "RECOVERED_STANDALONE_NATIVE_LINE": 1,
+    }
+    actual_tier_counts = {k: len(v) for k, v in groups.items()}
+    assert actual_tier_counts == expected_tier_counts, (actual_tier_counts, expected_tier_counts)
+
+    flattened = [str(body_id) for members in groups.values() for body_id in members]
+    assert len(flattened) == 61, "source-truth groups must contain exactly 61 seats"
+    assert len(set(flattened)) == 61, "source-truth groups must not overlap"
+    assert set(flattened) == set(body_ids), "source-truth groups must cover every and only actual code identity"
+
+    assert data["priority"]["P0_reconstructed_source_recovery"] == [
+        "jmlogic", "kocodifying", "codifying", "jmp", "mark-level-syntax"
+    ]
+    assert set(data["post_100"]["actual_code"]) == {"jm-visualang"}
+    assert set(data["post_100"]["adjacent_ecology"]) == {
+        "jaggedmirror", "jm-actual-engine", "jm-describe-into-reality-engine", "jm-living-diagram-motion-layer"
+    }
 
     result: dict[str, Any] = {
-        "schema": "jm.role-qualified-coding-census-validation/1.0",
-        "identity_count": len(bodies),
+        "schema": "jm.role-qualified-coding-census-validation/1.1",
+        "identity_count": len(rows),
         "old_105_ids_unique": True,
         "body_ids_unique": True,
         "names_unique": True,
-        "source_truth_tier_counts": tiers,
+        "source_truth_tier_counts": actual_tier_counts,
         "engineering_ecology_equation": "61 actual code + 44 adjacent organs = 105 engineering ecology",
         "status": "ROLE_QUALIFIED_61_IDENTITY_PASS",
     }

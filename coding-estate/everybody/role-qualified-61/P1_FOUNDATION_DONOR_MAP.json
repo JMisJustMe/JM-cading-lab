@@ -1,0 +1,171 @@
+{
+  "schema": "jm.role-qualified-foundation-donor-map/1.0",
+  "date": "2026-08-27",
+  "scope_count": 14,
+  "law": "RECOVER STRONGEST DONOR BEFORE BRIDGE; PROFILE != SOURCE; CURRENT_NATIVE != HISTORICAL_ORIGINAL; EXACT_NATIVE_SUBSET != TOTAL_LANGUAGE_PARITY.",
+  "priority_order": [
+    "EXACT_NATIVE_RECOVERED_SUBSET",
+    "SPECIALIST_CURRENT_NATIVE_DONOR",
+    "RECOVERED_WORKING_PROFILE_PLUS_DECLARED_BRIDGE"
+  ],
+  "bodies": [
+    {
+      "body_id": "os-coding",
+      "name": "OS_CODING",
+      "donor_class": "RECOVERED_WORKING_PROFILE_PLUS_DECLARED_BRIDGE",
+      "source_truth": "historical/source authority open",
+      "strongest_donors": [
+        "coding-estate/everybody/body-registry-extension-01.json",
+        "coding-estate/everybody/canonical-native-v2.mjs"
+      ],
+      "claim_boundary": "Starter-13 identity/profile is recovered; no dedicated OS_CODING historical/current-native source module has been recovered in this repository pass. Canonical v2 remains a declared present-day bridge, not historical source.",
+      "next_native_gate": "recover service grammar / permissions IR / kernel adapter source or author a declared OS_CODING-native descendant from the recovered profile"
+    },
+    {
+      "body_id": "root-method",
+      "name": "Root Method",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "current-native specialist; historical original open",
+      "strongest_donors": [
+        "coding-estate/sovereign-batch-two/direct/root-caden-native.mjs"
+      ],
+      "claim_boundary": "Dedicated readable Root Method current-native implementation exists; its formation receipt does not claim historical-original recovery.",
+      "next_native_gate": "deepen rooted premise/branch/provenance semantics and role-equivalent self-hosting from this donor"
+    },
+    {
+      "body_id": "cadenvm",
+      "name": "CadenVM",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "recovered VM lineage + current-native specialist; exact historical grammar still open",
+      "strongest_donors": [
+        "coding-estate/sovereign-batch-two/direct/root-caden-native.mjs"
+      ],
+      "claim_boundary": "Dedicated verified bytecode/current-native VM donor exists; this does not upgrade it to recovered historical-original source.",
+      "next_native_gate": "lock opcode registry/bytecode verifier/disassembler and expand native runtime without flattening into shared VM logic"
+    },
+    {
+      "body_id": "routevm",
+      "name": "RouteVM",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "current-native specialist; historical original open",
+      "strongest_donors": [
+        "coding-estate/sovereign-ten/direct/route-proof-native.mjs"
+      ],
+      "claim_boundary": "Dedicated RouteVM verified-instruction donor exists inside the Sovereign Ten route; its receipt explicitly denies full historical source recovery.",
+      "next_native_gate": "deepen route instruction set, verifier, runtime isolation and route-specific debugger"
+    },
+    {
+      "body_id": "jmvm",
+      "name": "JMVM",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "current-native specialist; historical original open",
+      "strongest_donors": [
+        "coding-estate/sovereign-batch-two/direct/prime-jmvm-native.mjs"
+      ],
+      "claim_boundary": "Dedicated checksummed JMVM bytecode/current-native donor exists; historical-original source remains open.",
+      "next_native_gate": "freeze instruction-set authority, verifier semantics, Ding contract and role-equivalent native runtime"
+    },
+    {
+      "body_id": "codehand",
+      "name": "CodeHand RouteOS",
+      "donor_class": "RECOVERED_WORKING_PROFILE_PLUS_DECLARED_BRIDGE",
+      "source_truth": "v1.0 lineage/profile recovered; dedicated source module not recovered in this pass",
+      "strongest_donors": [
+        "coding-estate/everybody/body-registry.json",
+        "coding-estate/everybody/canonical-native-v2.mjs"
+      ],
+      "claim_boundary": "CodeHand's authoring-runtime identity, law and capabilities are recovered; the current shared v2 path is a bridge until a dedicated CodeHand grammar/runtime head is recovered or authored.",
+      "next_native_gate": "recover or author parser API, REPL/debugger and project/module/room grammar as a declared CodeHand-native descendant"
+    },
+    {
+      "body_id": "jm32-1da",
+      "name": "JM32-1DA",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "recovered lineage + current-native specialist; historical original open",
+      "strongest_donors": [
+        "coding-estate/sovereign-ten/direct/language-native.mjs"
+      ],
+      "claim_boundary": "JM32-1DA has a dedicated current-native parser/semantics route in the Sovereign Ten source; that receipt does not claim complete historical source recovery.",
+      "next_native_gate": "deepen policy IR/static checks/runtime guards/receipt schema from the specialist donor"
+    },
+    {
+      "body_id": "onebody-ir",
+      "name": "IR / OneBody IR",
+      "donor_class": "RECOVERED_WORKING_PROFILE_PLUS_DECLARED_BRIDGE",
+      "source_truth": "working-profile semantics recovered; exact historical body IR source open",
+      "strongest_donors": [
+        "coding-estate/everybody/body-registry-extension-02.json",
+        "coding-estate/everybody/compiler-core.mjs"
+      ],
+      "claim_boundary": "The OneBody IR profile is recovered. compiler-core provides a shared portable IR and explicitly states that unrecovered native grammars remain visibly marked rather than invented; it is not substituted for exact OneBody IR historical source.",
+      "next_native_gate": "recover exact OneBody node/link/normalisation schema or author a declared body-native IR descendant with verifier and round-trip proof"
+    },
+    {
+      "body_id": "theoc",
+      "name": "TheoC Contract + TheoC IR",
+      "donor_class": "RECOVERED_WORKING_PROFILE_PLUS_DECLARED_BRIDGE",
+      "source_truth": "proven tool lineage/profile recovered; dedicated exact IR source open",
+      "strongest_donors": [
+        "coding-estate/everybody/body-registry.json",
+        "coding-estate/everybody/compiler-core.mjs"
+      ],
+      "claim_boundary": "TheoC contract/IR identity and proven-tool lineage are recovered. Shared compiler-core is only an interoperability bridge; no dedicated TheoC source module was recovered under its own name in this pass.",
+      "next_native_gate": "recover or author exact contract/IR schema, verifier, optimisation passes and multi-backend ABI as a declared TheoC descendant"
+    },
+    {
+      "body_id": "cading",
+      "name": "Cading / Theomidul / zeze.nwona",
+      "donor_class": "EXACT_NATIVE_RECOVERED_SUBSET",
+      "source_truth": "exact historical-native executable subset recovered",
+      "strongest_donors": [
+        "coding-estate/everybody/native-adapters.mjs"
+      ],
+      "claim_boundary": "Registered native Cading parser/lowering proves the recovered native subset only; it does not claim every historical feature or future tier.",
+      "next_native_gate": "expand exact recovered grammar/semantics and substantial Cading-authored product without replacing the recovered subset"
+    },
+    {
+      "body_id": "jmlogic",
+      "name": "JMLogic",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "reconstructed/current-native specialist; historical original open",
+      "strongest_donors": [
+        "coding-estate/sovereign-ten/direct/language-native.mjs"
+      ],
+      "claim_boundary": "Dedicated readable JMLogic current-native implementation is recovered from repository history/current tree, but its own receipt explicitly denies full historical-source recovery.",
+      "next_native_gate": "deepen logic grammar, state/consequence semantics and IR/runtime from this donor while P0 archaeology remains open"
+    },
+    {
+      "body_id": "flowtalk",
+      "name": "FlowTalk",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "recovered working profile + current-native specialist; historical exact grammar open",
+      "strongest_donors": [
+        "coding-estate/sovereign-ten/direct/language-native.mjs"
+      ],
+      "claim_boundary": "FlowTalk has a dedicated readable current-native parser/flow route; its formation receipt does not claim full historical source recovery.",
+      "next_native_gate": "deepen human-flow grammar, flow graph, effect checks and production use from the specialist donor"
+    },
+    {
+      "body_id": "kading",
+      "name": "Kading",
+      "donor_class": "SPECIALIST_CURRENT_NATIVE_DONOR",
+      "source_truth": "recovered working profile + current-native specialist; historical exact grammar open",
+      "strongest_donors": [
+        "coding-estate/sovereign-batch-two/direct/kading-jmp-native.mjs"
+      ],
+      "claim_boundary": "Kading has a dedicated current-native keyed-cadence implementation; its formation receipt explicitly avoids historical-source overclaim.",
+      "next_native_gate": "deepen cadence grammar, guarded beats, recovery semantics and substantial Kading-authored product"
+    },
+    {
+      "body_id": "quadze",
+      "name": "Quadze",
+      "donor_class": "EXACT_NATIVE_RECOVERED_SUBSET",
+      "source_truth": "exact historical-native executable subset recovered",
+      "strongest_donors": [
+        "coding-estate/everybody/quadze-native-adapter.mjs"
+      ],
+      "claim_boundary": "Quadze adapter names QUADZE_TIMEFLOW_LAB_SOLO_v0_3 as source authority and proves the recovered Mini-QUADZE Tier-0 grammar/runtime-loading contract only, not every future Quadze tier.",
+      "next_native_gate": "expand from the exact Tier-0 source into deeper game/timeflow IR and substantial Quadze-authored products without overwriting the recovered authority"
+    }
+  ]
+}

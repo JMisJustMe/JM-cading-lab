@@ -5,7 +5,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -13,7 +12,12 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[3]
 TOOLS = ROOT / "coding-estate/everybody/semantic-depth/tools"
 sys.path.insert(0, str(TOOLS))
-from semantic_core import load_bodies, stable, write_json  # type: ignore
+from semantic_core import load_bodies, stable  # type: ignore
+
+
+def write_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def sha(v: Any) -> str:
@@ -26,7 +30,7 @@ def words(text: str) -> list[str]:
 
 
 def classify(body: dict[str, Any]) -> str:
-    text = " ".join([body.get("kind", ""), body.get("name", ""), *body.get("caps", [])]).lower()
+    text = " ".join([str(body.get("kind", "")), str(body.get("name", "")), *[str(x) for x in body.get("caps", [])]]).lower()
     rules = [
         ("EMBODIED_CONTACT", ["gesture", "speech", "contact", "mudra", "tap", "mood", "reality", "speak"]),
         ("GAME_ENGINE", ["game", "play", "glyph", "world", "forge"]),
@@ -53,17 +57,18 @@ def role_contract(role: str) -> dict[str, Any]:
         "PROOF_GOVERNANCE_RECOVERY": ["claim_or_candidate", "gate_evaluation", "hold_reason", "evidence_binding", "recovery_route", "decision_receipt", "no_false_crown"],
         "DELIVERY_COMPOSITION": ["member_identity", "composition_contract", "non_flattening", "handoff", "integrity", "rollback", "delivery_receipt"],
         "AUTHORING_BUILDER": ["authoring_input", "body_creation", "edit_mutation", "preview_execute", "validation", "export", "reopen_continue"],
-        "SOVEREIGN_TRANSFORMATION": ["native_input_shape", "transformation", "state_delta", "consequence", "reversibility", "conformance"],
+        "SOVEREIGN_TRANSFORMATION": ["native_input_shape", "transformation", "state_delta", "consequence", "reversibility", "conformance", "identity_preservation"],
     }[role]
     return {"required_layers": common + extra, "role": role}
 
 
 def execute_role(body: dict[str, Any], role: str) -> dict[str, Any]:
-    caps = list(body.get("caps") or ["act"])
-    law = body["law"]
-    seed = int(sha({"id": body["id"], "law": law})[:8], 16)
+    caps = [str(x) for x in (body.get("caps") or ["act"])]
+    law = str(body["law"])
+    body_id = str(body["id"])
+    seed = int(sha({"id": body_id, "law": law})[:8], 16)
     state: dict[str, Any] = {"revision": 0, "pressure": seed % 17, "held": False, "history": []}
-    input_shape = {"tokens": words(body["name"] + " " + law)[:18], "capability": caps[0], "seed": seed}
+    input_shape = {"tokens": words(str(body["name"]) + " " + law)[:18], "capability": caps[0], "seed": seed}
 
     if role == "LANGUAGE_ROUTE_NOTATION":
         ast = [{"node": "TERM", "value": t, "index": i} for i, t in enumerate(input_shape["tokens"])]
@@ -90,7 +95,7 @@ def execute_role(body: dict[str, Any], role: str) -> dict[str, Any]:
         ir = [{"op": "GATE_PASS" if (seed + x["index"]) % 4 else "GATE_HOLD", "claim": x["claim"], "evidence": x["evidence"]} for x in ast]
         state["revision"] = sum(x["op"] == "GATE_PASS" for x in ir); state["held"] = any(x["op"] == "GATE_HOLD" for x in ir)
     elif role == "DELIVERY_COMPOSITION":
-        ast = [{"member": c, "identity": sha(body["id"] + ":" + c)[:16]} for c in caps]
+        ast = [{"member": c, "identity": sha(body_id + ":" + c)[:16]} for c in caps]
         ir = [{"op": "COMPOSE_WITHOUT_MERGE", **x} for x in ast]
         state["revision"] = len(ir); state["pressure"] = len({x["identity"] for x in ir})
     elif role == "AUTHORING_BUILDER":
@@ -104,11 +109,8 @@ def execute_role(body: dict[str, Any], role: str) -> dict[str, Any]:
 
     before_fault = dict(state)
     state["history"] = [{"event": "EXECUTE", "role": role, "ir_count": len(ir)}]
-    # Required held fault: invalid operation must not silently execute.
-    invalid = "__INVALID_BODY_OPERATION__"
     state["held"] = True
-    state["history"].append({"event": "FAULT_HOLD", "operation": invalid})
-    # Recovery must preserve pre-fault body consequence and continue.
+    state["history"].append({"event": "FAULT_HOLD", "operation": "__INVALID_BODY_OPERATION__"})
     state["held"] = False
     state["revision"] += 1
     state["history"].append({"event": "RECOVERY_CONTINUE", "revision": state["revision"]})
@@ -141,7 +143,7 @@ def main() -> int:
         bridge = "RECOVERED_NATIVE_SOURCE" not in str(native_state).upper() and "EXACT_NATIVE" not in str(native_state).upper()
         receipt = {
             "ordinal": index,
-            "body_id": body["id"],
+            "body_id": str(body["id"]),
             "name": body["name"],
             "kind": body.get("kind"),
             "law": body["law"],
@@ -151,7 +153,7 @@ def main() -> int:
             "bridge_boundary": "Generated role-depth anatomy proves a current-constructible body-specific route; it must yield to stronger recovered native source and is not self-hosting/native-history proof." if bridge else None,
             "execution": execution,
         }
-        receipt["body_depth_signature"] = sha({"body_id": body["id"], "law": body["law"], "role": role, "contract": contract, "ir": execution["specialist_ir"]})
+        receipt["body_depth_signature"] = sha({"body_id": str(body["id"]), "law": body["law"], "role": role, "contract": contract, "ir": execution["specialist_ir"]})
         body_dir = out / f"{index:03d}-{body['id']}"
         write_json(body_dir / "ROLE_DEPTH_RECEIPT.json", receipt)
         write_json(body_dir / "SPECIALIST_IR.json", execution["specialist_ir"])

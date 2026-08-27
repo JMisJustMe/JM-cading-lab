@@ -1,6 +1,6 @@
 {
   "schema": "JM.MoneyMenuPublicPublicationReceipt/1.0",
-  "status": "SOURCE_READY_DEPLOYMENT_PENDING",
+  "status": "LIVE_DEPLOYMENT_WITH_CONNECTED_PUBLIC_PRODUCT_ROUTE",
   "data_authority": "JM Money Menu — Standalone Current Head v1.1",
   "public_carrier": "JM Money Menu — Public Contact Carrier v1.2",
   "routes": 242,
@@ -21,5 +21,15 @@
     "Web Share",
     "email draft"
   ],
-  "boundary": "Source build complete. Cloudflare and real-device live contact require deployment receipt."
+  "connected_public_products": [
+    {
+      "name": "SHIMS Reader",
+      "route": "../shims-reader/",
+      "role": "reflective / personal-help route-reading service",
+      "assessed_price_range_gbp": "25-85",
+      "handoff": "SHIMS service door -> Money Menu enquiry -> brief -> scope -> reviewed agreement",
+      "boundary": "Reflective route-reading only; not medical/clinical diagnosis or treatment and not professional legal or financial advice."
+    }
+  ],
+  "boundary": "Money Menu v1.1 remains the governed 242-route data authority. Public product connections do not silently alter route identities or create accepted contracts."
 }

@@ -1,0 +1,97 @@
+name: Reprove role-qualified 61 recovered native suite
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/native/**"
+      - "coding-estate/everybody/role-qualified-61/NATIVE_SUITE_CURRENT_ESTATE_RECOVERY_RECEIPT_v1.json"
+      - ".github/workflows/role-qualified-61-native-suite-recovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-suite-current-estate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Confirm exact recovered donor native tree
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD:coding-estate/everybody/role-qualified-61/native)" = "e1a95a5482de660a24a78a504e43284616a282cf"
+          test "$(git hash-object coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs)" = "a05b44a94a94f9ad744a43b2f92cfeb01c2ac2bc"
+          test "$(git hash-object coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs)" = "915733838419746bf4b429a778787494b71274b3"
+
+      - name: Reprove current 61 identity boundary
+        run: python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py
+
+      - name: Prove recovered native integration suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/p0-five-body-route.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/os-coding.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/theoc.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/codehand.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/inner-spine-four.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/formula-route-recovery-seven.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/authoring-nine.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/remaining-embodied-five.selftest.mjs
+          node coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.selftest.mjs
+          node coding-estate/everybody/native-selftest.mjs
+          node coding-estate/sovereign-ten/direct/native-selftest.mjs
+
+      - name: Prove compatibility with current source-aware descendants
+        shell: bash
+        run: |
+          set -euo pipefail
+          node coding-estate/everybody/role-qualified-61/codifying/codifying-source-aware-smoke.mjs
+          node coding-estate/everybody/role-qualified-61/kocodifying/kocodifying-source-aware-smoke.mjs
+          node coding-estate/everybody/role-qualified-61/jmlogic/jmlogic-source-aware-smoke.mjs
+          node coding-estate/everybody/role-qualified-61/jmp/jmp-source-aware-smoke.mjs
+
+      - name: Enforce source-truth and anti-crown boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Eq "historicalRecoveryClaim:[[:space:]]*false" coding-estate/everybody/role-qualified-61/native/p0-five-body-route.mjs
+          grep -Eq "historicalRecoveryClaim:[[:space:]]*false" coding-estate/everybody/role-qualified-61/native/authoring-nine.mjs
+          grep -Eq "historicalRecoveryClaim:[[:space:]]*false" coding-estate/everybody/role-qualified-61/native/final-five-coding-faces.mjs
+          root=coding-estate/everybody/role-qualified-61
+          for stale in \
+            MATURATION_COVERAGE.json \
+            P0_SOURCE_ARCHAEOLOGY_2026-08-27.md \
+            P1_FOUNDATION_BRIDGE_MATURATION.json \
+            P1_FOUNDATION_DONOR_MAP.json \
+            P2_NONFOUNDATION_NATIVE_MATURATION.json \
+            P3_FORMULA_ROUTE_RECOVERY_MATURATION.json \
+            P4_RECOVERED_DONOR_SEATING.json \
+            P5_REMAINING_19_MATURATION.json \
+            validate_foundation_donors.py \
+            validate_maturation_coverage.py \
+            validate_p5_remaining_19.py; do
+            test ! -e "$root/$stale"
+          done
+
+      - name: Confirm current recovery receipt boundary
+        shell: bash
+        run: |
+          grep -Fq 'RECOVERED_DONOR_NATIVE_SUITE_SEATED_FOR_CURRENT_ESTATE_REPROOF' coding-estate/everybody/role-qualified-61/NATIVE_SUITE_CURRENT_ESTATE_RECOVERY_RECEIPT_v1.json
+          grep -Fq 'legacy_phase_ledgers_reintroduced": false' coding-estate/everybody/role-qualified-61/NATIVE_SUITE_CURRENT_ESTATE_RECOVERY_RECEIPT_v1.json
+          grep -Fq 'historical_original_source_recovery_claim": false' coding-estate/everybody/role-qualified-61/NATIVE_SUITE_CURRENT_ESTATE_RECOVERY_RECEIPT_v1.json

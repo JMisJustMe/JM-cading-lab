@@ -1,0 +1,39 @@
+{
+  "schema": "jm.role-qualified-61.native-suite-current-estate-recovery/1.0",
+  "date": "2026-08-28",
+  "status": "RECOVERED_DONOR_NATIVE_SUITE_SEATED_FOR_CURRENT_ESTATE_REPROOF",
+  "donor": {
+    "pull_request": 161,
+    "head_sha": "a79f56a462df45cd88cfe8733f395dc6938d0d53",
+    "native_tree_sha": "e1a95a5482de660a24a78a504e43284616a282cf",
+    "native_file_count": 27,
+    "historical_ci_state": "DONOR_HEAD_PROVED_GREEN"
+  },
+  "current_estate_before_recovery": {
+    "native_files_already_present": 2,
+    "already_present_exact_blobs": {
+      "mark-level-syntax.mjs": "a05b44a94a94f9ad744a43b2f92cfeb01c2ac2bc",
+      "mark-level-syntax.selftest.mjs": "915733838419746bf4b429a778787494b71274b3"
+    },
+    "net_missing_native_files_recovered": 25
+  },
+  "authority_boundary": {
+    "identity_census_authority": "Current main census and validator remain authority; both already exactly matched the donor identity correction before this recovery.",
+    "source_aware_body_authority": "Current body-specific source-aware contracts for Codifying, Kocodifying, JMLogic and J'MP remain authoritative. Mark-Level Syntax remains the current authorised forward-native bridge.",
+    "native_suite_role": "Recovered executable and integration proof organs are re-seated as current-Estate-compatible descendants only after fresh CI reproves them.",
+    "historical_original_source_recovery_claim": false,
+    "legacy_phase_ledgers_reintroduced": false,
+    "old_61_of_61_crown_promoted": false,
+    "product_finality_claim": false,
+    "device_contact_claim": false
+  },
+  "reproof_contract": {
+    "exact_native_tree_required": "e1a95a5482de660a24a78a504e43284616a282cf",
+    "run_current_identity_validator": true,
+    "run_recovered_native_selftests": true,
+    "run_current_source_aware_smokes": true,
+    "reject_legacy_phase_ledgers": true,
+    "merge_only_on_exact_green_head": true
+  },
+  "law": "RETURN TO AN EARLIER POINT != RETURN TO AN EARLIER STATE. REBEGINNING CARRIES FORWARD ALL SUBSEQUENT KNOWLEDGE."
+}

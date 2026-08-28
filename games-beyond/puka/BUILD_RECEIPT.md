@@ -1,4 +1,4 @@
-# PUKA v0.9A — BUILD RECEIPT
+# PUKA v0.10A — BUILD RECEIPT
 
 **Parent:** Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
@@ -15,29 +15,29 @@
 - v0.6 Portrait character / Royal realism split
 - v0.7 visible court ascent
 - v0.8 cinematic materials, treasury, table inlay and Academy guild environment
+- v0.9 dealer medallion, community runway and table theatre
 - one singular live direct door
 
-## v0.9A table theatre
+## v0.10A living table
 
-This descendant improves composition and table presence without altering poker rules.
+This descendant increases physical visual feedback without altering or duplicating poker state.
 
-- added `puka-table-theatre-v09.js` as a removable presentation-only staging organ
-- theatre state reads only visible DOM: dealer/button label, displayed street and hand state
-- theatre organ does not access PUKA core objects, hidden cards, AI state or player internals
-- added `puka-v09.css` as the focal-composition body
-- added original `assets/puka-dealer-medallion-v09.svg`; the medallion moves to the visible button holder
-- added original `assets/puka-board-runway-v09.svg` to give the five community cards a dedicated stage
-- House, treasury, board and player now read as one deliberate visual axis
-- seat plinths add depth while retaining the existing semantic table zones
-- Royal Table gains side seat plates and longer sightlines; Portrait Academy remains more intimate
-- flop, turn and river gradually increase visible board/pot emphasis using only the displayed street
-- completed hands receive restrained ceremonial framing instead of a generic alert strip
+- added `puka-living-table-v10.js` as a removable presentation-only organ
+- living-table state reads only values and cards already visible in the rendered table
+- visible player/House stack labels and printed pot value determine visual chip-bank mass
+- added original `assets/puka-chip-column-v10.svg` as the reusable physical chip object
+- visual chip banks never become bankroll authority and do not alter displayed values
+- visible community-card count sets `data-board-count` and drives a restrained runway-light response when new cards are already rendered
+- existing v0.6 per-card arrival motion remains the card motion authority; v0.10 responds at runway level instead of duplicating the deal
+- rendered J/Q/K artwork gains a subtle foil-print treatment without changing card identity
+- higher Royal tiers gain richer side atmosphere while Portrait Academy remains warmer and closer
+- player chip treatment follows the already-selected visible suit for small identity cues
 - narrow-phone, short-landscape and `prefers-reduced-motion` safeguards remain active
 - poker evaluation, AI, purse persistence, XP thresholds and evidence logic remain untouched
 
-## Proof improvement
+## Proof boundary
 
-The v0.9 proof rail reports the exact missing file or marker when a source gate fails. A dedicated theatre test also guards the visible-state boundary so the presentation organ cannot quietly become a hidden-state reader.
+A dedicated `puka-living-table.test.js` proves the visible-state source boundary. It fails if the organ reaches for PUKA core objects, snapshots, hidden AI hole cards, deck data or other gameplay authority. The existing core, inherited layout/art and table-theatre Dings still run alongside it.
 
 ## Delivery default
 
@@ -47,4 +47,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.9A descendant may pass source/core/layout/art/character/world/material/academy/theatre checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+The v0.10A descendant may pass source/core/layout/art/character/world/material/academy/theatre/living-table checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side visual-quality acceptance, portrait/landscape contact, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.

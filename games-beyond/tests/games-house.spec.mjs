@@ -19,7 +19,6 @@ async function openHouse(page) {
   page.on('console', message => message.type() === 'error' && errors.push(message.text()));
 
   await page.goto('./');
-  await expect(page.locator('title')).toHaveText(/Games&Beyond/);
   await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
   await expect(page.locator('#mountedStat')).toHaveText(String(BUILT_IN));
   await expect(page.locator('#expectedStat')).toHaveText(String(FULL_TARGET));

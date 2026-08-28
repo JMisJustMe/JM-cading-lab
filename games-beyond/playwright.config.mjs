@@ -6,13 +6,13 @@ export default defineConfig({
   retries: 0,
   workers: 1,
   use: {
-    baseURL: 'http://127.0.0.1:4173',
+    baseURL: 'http://127.0.0.1:4173/games-beyond/',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure'
   },
   webServer: {
-    command: 'npm run serve',
-    url: 'http://127.0.0.1:4173',
+    command: 'npx http-server .. -p 4173 -c-1',
+    url: 'http://127.0.0.1:4173/games-beyond/',
     reuseExistingServer: true,
     timeout: 30_000
   },

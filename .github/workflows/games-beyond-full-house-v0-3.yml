@@ -1,9 +1,8 @@
-name: Games&Beyond Full House v0.3 Proof
+name: Games&Beyond Full House Composition Proof
 
 on:
   push:
     branches:
-      - agent/games-beyond-full-house-v0-3-live
       - main
     paths:
       - 'games-beyond/**'
@@ -14,6 +13,10 @@ on:
       - 'games-beyond/**'
       - 'GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt'
       - '.github/workflows/games-beyond-full-house-v0-3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   full-house-proof:
@@ -21,10 +24,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify payload and fifteen mounted bodies
+      - name: Verify payload, built-in annex and 22/24 composition
         shell: python
         run: |
-          import base64, hashlib, json, lzma, pathlib, sys
+          import base64, hashlib, json, lzma, pathlib
 
           root = pathlib.Path('games-beyond')
           manifest = json.loads((root / 'payload-manifest.json').read_text(encoding='utf-8'))
@@ -53,27 +56,69 @@ jobs:
               raise SystemExit(f'RAW_SHA: {raw_hash}')
 
           house = json.loads(raw.decode('utf-8'))
-          bodies = house.get('bodies', [])
-          ids = [body.get('id') for body in bodies]
-          expected = manifest['bodyIds']
+          payload_bodies = house.get('bodies', [])
+          payload_ids = [body.get('id') for body in payload_bodies]
 
-          if len(bodies) != manifest['bodyCount']:
-              raise SystemExit(f'BODY_COUNT: {len(bodies)} != {manifest["bodyCount"]}')
-          if ids != expected:
-              raise SystemExit(f'BODY_ORDER_OR_IDS: {ids}')
+          payload_count = manifest['payloadBodyCount']
+          built_in_count = manifest['builtInBodyCount']
+          body_count = manifest['bodyCount']
+          full_target = manifest['fullTargetCount']
+          built_in_ids = manifest['bodyIdsBuiltIn']
+          extras = manifest['extraBodies']
+          full_imports = manifest['fullImportAdds']
 
-          bad = []
-          for body in bodies:
+          if payload_count != 15:
+              raise SystemExit(f'PAYLOAD_BOUNDARY_CHANGED: {payload_count}')
+          if len(payload_bodies) != payload_count:
+              raise SystemExit(f'PAYLOAD_BODY_COUNT: {len(payload_bodies)} != {payload_count}')
+          if payload_ids != built_in_ids[:payload_count]:
+              raise SystemExit(f'PAYLOAD_ORDER_OR_IDS: {payload_ids}')
+
+          bad_payload = []
+          for body in payload_bodies:
               html = body.get('html', '')
               if not html or ('<html' not in html.lower() and '<!doctype' not in html.lower()):
-                  bad.append(body.get('id'))
-          if bad:
-              raise SystemExit(f'INVALID_HTML_BODIES: {bad}')
+                  bad_payload.append(body.get('id'))
+          if bad_payload:
+              raise SystemExit(f'INVALID_PAYLOAD_HTML_BODIES: {bad_payload}')
+
+          extra_ids = [body['id'] for body in extras]
+          if payload_ids + extra_ids != built_in_ids:
+              raise SystemExit('BUILT_IN_COMPOSITION_ORDER_MISMATCH')
+          if len(built_in_ids) != built_in_count or body_count != built_in_count:
+              raise SystemExit(f'BUILT_IN_COUNT: ids={len(built_in_ids)} manifest={built_in_count} bodyCount={body_count}')
+
+          missing_extra = []
+          invalid_extra = []
+          for body in extras:
+              path = root / body['path']
+              if path.is_dir():
+                  path = path / 'index.html'
+              if not path.exists():
+                  missing_extra.append(str(path))
+                  continue
+              text = path.read_text(encoding='utf-8', errors='replace')
+              if '<html' not in text.lower() and '<!doctype' not in text.lower():
+                  invalid_extra.append(str(path))
+          if missing_extra:
+              raise SystemExit(f'MISSING_BUILT_IN_ANNEX: {missing_extra}')
+          if invalid_extra:
+              raise SystemExit(f'INVALID_BUILT_IN_ANNEX_HTML: {invalid_extra}')
+
+          import_ids = [body['id'] for body in full_imports]
+          if len(set(built_in_ids + import_ids)) != len(built_in_ids) + len(import_ids):
+              raise SystemExit('DUPLICATE_FULL_HOUSE_IDS')
+          if built_in_count + len(full_imports) != full_target:
+              raise SystemExit(f'FULL_TARGET: {built_in_count} + {len(full_imports)} != {full_target}')
 
           print(json.dumps({
-              'result': 'PACKAGE_DING',
-              'bodyCount': len(bodies),
-              'bodyIds': ids,
+              'result': 'PACKAGE_AND_COMPOSITION_DING',
+              'payloadBodyCount': payload_count,
+              'builtInBodyCount': built_in_count,
+              'fullTargetCount': full_target,
+              'payloadIds': payload_ids,
+              'annexIds': extra_ids,
+              'fullImportIds': import_ids,
               'compressedSha256': compressed_hash,
               'rawSha256': raw_hash
           }, indent=2))
@@ -86,9 +131,11 @@ jobs:
           index = (root / 'index.html').read_text(encoding='utf-8')
           app = (root / 'app.js').read_text(encoding='utf-8')
           worker = (root / 'sw.js').read_text(encoding='utf-8')
+          if '<title>Games&Beyond' not in index:
+              raise SystemExit('MISSING_GAMES_BEYOND_TITLE')
           required = [
               'HOUSE', 'ROOMS', 'EDIT', 'PROOF',
-              'PLAY BODY', 'SAVE REVISION', 'UNDO',
+              'OPEN BODY', 'SAVE REVISION', 'UNDO',
               'RESTORE SOURCE', 'EXPORT FULL HOUSE'
           ]
           missing = [item for item in required if item not in index and item not in app]

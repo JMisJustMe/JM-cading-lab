@@ -1,59 +1,88 @@
-# PUKA v0.11A — BUILD RECEIPT
+# PUKA v0.12A — FULL TABLE LEARNING LOOP BUILD RECEIPT
 
-**Parent:** PUKA v0.10A / Games&Beyond / JM-cading-lab  
+**Parent:** PUKA v0.11A / Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
 **Front door:** `00_OPEN_FIRST.html`  
 **Live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
 
 ## Preserved body
 
-- one shared poker/state core
-- Portrait Academy + Royal Table routes from the same state
+- one shared 52-card poker/state authority
+- Portrait Academy + Royal Table presentation routes reading the same state
 - heads-up Texas Hold'em teaching loop
-- bankroll persistence, royal XP ladder and psychology evidence separation
+- bankroll persistence and royal XP/room ladder
+- observation / interpretation / fact separation
 - v0.5 illustrated playing-card body
 - v0.6 Portrait character / Royal realism split
 - v0.7 visible court ascent
 - v0.8 cinematic materials, treasury, table inlay and Academy guild environment
 - v0.9 dealer medallion, community runway and table theatre
 - v0.10 living-table visible-state physicality
+- v0.11 real-context Android/desktop fit, contact and viewport-screenshot proof
 - one singular live direct door
 
-## Estate standards recovered before this build
+## Completion jump
 
-This descendant was driven by independent Games&Beyond, PLAYFORM and Visual Systems Lab standards rather than by PUKA grading itself.
+v0.12A targets the table-learning loop itself rather than another wholesale visual rewrite.
 
-- Games&Beyond browser acceptance uses explicit 390×844 portrait, 844×390 landscape and 1440×1000 desktop routes with zero horizontal overflow.
-- Games&Beyond acceptance treats console/page errors and real interaction contact as browser gates.
-- PLAYFORM's zero-issue internal accessibility preflight body uses a 44px interaction floor, strong focus visibility, `viewport-fit=cover` and reduced-motion handling.
-- Games&Beyond accessibility governance preserves zoom/text scaling and distinguishes automated preflight from universal accessibility certification.
-- Visual Systems Lab rejects same-size screenshots as sufficient viewport proof and instead uses separate real desktop and Android-touch contexts, exact viewport identity, protected main visual field and viewport-only screenshots.
-- Visual Systems Lab's recovered proof contexts include 1440×900 desktop and 412×915 Android touch.
-- Games House sovereignty remains intact: donor organs may inform PUKA without merging donor identities into PUKA.
+### Active-hand continuity
 
-## v0.11A estate conformance
+- `persistable()` now carries the validated current hand state, trace and latest-20 history as well as profile, XP, mode and purse.
+- restore accepts a hand only when the deck + board + both hole-card sets reconstruct exactly 52 canonical unique card identities.
+- browser proof must reload an active hand and recover the same hand number, player cards and pot before lifecycle continuity may Ding.
+- this browser continuity remains separate from installed physical Android lifecycle proof.
 
-- added `puka-v11.css` as a small conformance layer rather than another visual rewrite
-- raised Profile, Evidence, action, suit and deal contacts to a 44px minimum where older compact-phone rules had reduced them below the estate floor
-- added a focus-only skip door to the main PUKA play body
-- added polite/atomic live status announcements
-- retained browser zoom by avoiding `maximum-scale` / `user-scalable=no`
-- retained safe-area and reduced-motion handling
-- added `puka-estate-conformance.test.js` as a static standards gate
-- added `tests/puka-estate-conformance.spec.mjs` as real Chromium browser acceptance
-- browser acceptance now creates separate Android-touch and desktop contexts rather than relying only on resizing a desktop-like page
-- Games&Beyond contexts: 390×844 Android-touch portrait, 844×390 Android-touch landscape, 1440×1000 desktop
-- Visual Lab contexts: 412×915 Android touch and 1440×900 desktop
-- each proof context verifies its actual `innerWidth × innerHeight`, zero horizontal overflow, visible 44px contact floor and a protected non-collapsed PUKA table field
-- viewport-only screenshots are captured for every ready context plus active portrait, active landscape and portrait-return states
-- Android-touch proof enters a real hand, keeps House cards hidden, rotates portrait → Royal landscape → portrait and proves the same hand survives the presentation-route change
-- poker evaluation, AI authority, purse persistence, XP thresholds and evidence logic remain untouched
+### Deliberate raise sizing and all-in closure
+
+- one opaque `RAISE` consequence is replaced by temporary MIN / half-pot / pot / all-in raise-to choices.
+- the betting state remains authoritative in `puka-core.js`; the presentation tray does not create another bankroll or betting authority.
+- minimum raise and stack bounds are enforced by core normalization rather than trusted from button text.
+- heads-up all-in closure runs remaining board cards only after no further betting decision is possible and then resolves showdown.
+
+### Visible-card equity teaching
+
+- a deterministic Monte Carlo estimate is built from the player's visible hole cards and currently visible board only.
+- the estimate samples an unknown random opponent range from the unseen canonical deck.
+- it does **not** read, inspect or condition on House Mind's actual hidden hole cards.
+- therefore `equity estimate != hidden fact` remains an explicit law.
+- PUKA Teacher now carries made hand, price to call, pot odds, estimated equity, price read and position together.
+
+### Review, history and mastery
+
+- the royal ladder now has an aligned eight-stage lesson ladder from Cards & Price through Independent Table Read.
+- each player decision records the street, visible made hand, price and visible-card equity estimate at the decision moment.
+- completed hands gain a compact decision review.
+- latest-20 local hand history carries House cards only when they were actually revealed; a fold does not retroactively expose them.
+- Profile carries compact hands / showdowns / decisions / sized-raises mastery counts without turning the playfield into a dashboard.
+
+## Presentation law
+
+`puka-v12.css` is a small final capability layer. Raise sizing is temporary contact chrome, while mastery stays inside Profile and history/review stays inside Evidence. Existing v0.9/v0.10 living-table selectors remain intact.
+
+**Protect playfield before setup chrome. Clear body, quiet trace.**
+
+## Proof target
+
+The v0.12A source/browser rail must prove, on the exact descendant:
+
+- original deck/evaluator regression suite
+- active-hand state reconstruction
+- unrevealed-House-card history boundary
+- sized raise and all-in runout correctness
+- visible-card equity estimator boundary
+- v0.11 estate contact/overflow/real-context standards
+- Android-touch active-hand reload continuity
+- raise-tray 44px contact and zero-overflow behaviour
+- viewport-only screenshot evidence
+- production HTTP contact after authoritative mount
+
+No source or branch test is allowed to imply production contact before the exact descendant is mounted.
 
 ## Proof boundary
 
-The strengthened browser rail proves that the actual PUKA descendant renders and contacts correctly in separate mobile-touch and desktop output contexts and that viewport evidence was captured. This is **real-viewport structural visual proof**, not an aesthetic crown. It does not replace owner-side visual-quality judgement or physical Android contact.
+Automated browser lifecycle proof can establish that a web reload reconstructs the same validated hand. It cannot establish installed Android lifecycle behaviour across OS process death, storage eviction or device-specific browser/PWA behaviour without the corresponding physical-device evidence.
 
-A successful proof run therefore permits claims such as “real contexts rendered, fitted and were captured” while **not** permitting “graphics accepted”, “estate visual crown earned” or Cold Ding without the separate owner/device evidence.
+Real-context structural visual proof likewise does not equal owner-side aesthetic acceptance. `cold_ding` and `crowned` remain false unless their separate evidence gates are met.
 
 ## Delivery default
 
@@ -63,4 +92,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-The v0.11A descendant may pass source/core/layout/art/character/world/material/academy/theatre/living-table, separate real-context browser and viewport-screenshot checks before publication. Public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side aesthetic visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present in this stage body.
+PUKA v0.12A is a full-table learning-loop stage descendant. Source/core and browser gates may Ding independently before publication; public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present.

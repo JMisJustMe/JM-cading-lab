@@ -1,11 +1,32 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.10A",
-  "verified_utc": "2026-08-28T12:01:21.321002+00:00",
-  "source_commit": "6ed8e827ae499299aacbd969f2d3862ad205f494",
-  "workflow_run": "33169354337",
+  "schema": "JM.PUKA.ProofReceipt/0.11A",
+  "verified_utc": "2026-08-28T18:59:44.467134+00:00",
+  "source_commit": "e37fb3daf1ecd327a362368f6613415ec09ee716",
+  "workflow_run": "33201767860",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
+  "browser_runtime_ding": "PASS",
+  "real_viewport_visual_proof": "PASS",
+  "browser_viewports": [
+    "390x844 Android touch portrait",
+    "844x390 Android touch landscape",
+    "1440x1000 desktop",
+    "412x915 Visual Lab Android touch",
+    "1440x900 Visual Lab desktop"
+  ],
+  "browser_gates": [
+    "exact real output viewport",
+    "separate mobile/touch and desktop contexts",
+    "zero horizontal overflow",
+    "44px visible contact floor",
+    "protected table-field floor",
+    "viewport-only ready/active screenshots",
+    "table entry",
+    "hidden House cards during active play",
+    "portrait-landscape-portrait hand continuity",
+    "zero console/page errors"
+  ],
   "public_contact": "PASS",
   "art_layers": [
     "puka-art.css",
@@ -17,6 +38,7 @@
     "puka-v08-academy.css",
     "puka-v09.css",
     "puka-v10.css",
+    "puka-v11.css",
     "puka-cards-v05.js",
     "puka-character-v06.js",
     "puka-world-v07.js",
@@ -26,6 +48,7 @@
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-v11.css",
     "puka-v10.css",
     "puka-living-table-v10.js",
     "assets/puka-chip-column-v10.svg",
@@ -39,5 +62,5 @@
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre/living-table tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre/living-table, separate Chromium desktop/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Owner-side visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate."
 }

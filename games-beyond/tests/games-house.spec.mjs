@@ -35,7 +35,7 @@ async function showRooms(page) {
 async function gameForgeCard(page) {
   await showRooms(page);
   await page.locator('#search').fill('GameForge');
-  const card = page.locator('#roomRail .room').filter({ hasText: 'GameForge' });
+  const card = page.locator('#roomRail .room:has([data-edit="gameforge"])');
   await expect(card).toHaveCount(1);
   return card;
 }

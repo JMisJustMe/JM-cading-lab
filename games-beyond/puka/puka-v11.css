@@ -1,9 +1,20 @@
 /* PUKA v0.11A — estate conformance layer.
    Governing purpose: protect contact, fit and accessibility without replacing the visual/game bodies. */
 
-/* PLAYFORM / Games&Beyond contact floor: visible controls must not collapse below 44px. */
+/* PLAYFORM / Games&Beyond contact floor: visible controls must not collapse below 44px.
+   These class-qualified rules intentionally sit after the older compact-phone layers. */
 button,summary{min-height:44px}
-.intro summary,.evidence summary{min-height:44px}
+.table-deal,
+.deal,
+.secondary,
+.action,
+.suit,
+.quick-suit,
+.entry-suits button,
+.modes button,
+.intro summary,
+.evidence summary{min-height:44px}
+.entry-suits button,.quick-suit{min-width:44px}
 
 /* Keyboard/direct-navigation door. Hidden until contacted; no permanent chrome added. */
 .skip-link{

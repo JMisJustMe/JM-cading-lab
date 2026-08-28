@@ -35,8 +35,8 @@ const rolled = Kocodifying.execute(rollbackSource, 'Pair', left, right).runtime;
 assert.equal(rolled.status, 'rolled-back');
 assert.deepEqual(rolled.left, left);
 assert.deepEqual(rolled.right, right);
-assert.notStrictEqual(rolled.left, left);
-assert.notStrictEqual(rolled.right, right);
+assert.strictEqual(rolled.left, left);
+assert.strictEqual(rolled.right, right);
 
 const rejectSource = rollbackSource.replace('recover rollback', '');
 let conflictCode = null;
@@ -53,6 +53,7 @@ console.log(JSON.stringify({
   schema: 'jm.kocodifying.source-aware-smoke/1.0',
   historicalRecoveryClaim: false,
   keeper: 'CO-CODIFYING != IDENTITY COLLAPSE',
+  rollbackIdentity: 'original-input-references-preserved',
   checks: 20,
   status: 'PASS'
 }, null, 2));

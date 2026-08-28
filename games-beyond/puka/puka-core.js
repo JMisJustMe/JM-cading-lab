@@ -1,5 +1,5 @@
 /*
-  PUKA CORE v0.2A
+  PUKA CORE v0.12A — Full Table Learning Loop
   JM lineage contract:
   recover -> parse/structure -> state -> consequence -> trace -> test -> host
   Host JS serves the game; it does not define the governance.
@@ -25,9 +25,20 @@
     {name:'Heir',xp:1180,room:"Heir's Chamber"},
     {name:'King / Queen',xp:1700,room:'Throne Room'}
   ];
+  const LESSONS = [
+    {rank:'Pauper',title:'Cards & Price',focus:'Read your made hand and the price to continue.'},
+    {rank:'Servant',title:'Position',focus:'Notice who acts first and how position changes pressure.'},
+    {rank:'Jester',title:'Pressure',focus:'Separate what an action proves from what it might represent.'},
+    {rank:'Squire',title:'Raise Sizing',focus:'Choose a size deliberately instead of treating every raise as the same action.'},
+    {rank:'Knight',title:'Equity vs Price',focus:'Compare estimated equity with pot odds without pretending the estimate reveals hidden cards.'},
+    {rank:'Courtier',title:'Opponent Model',focus:'Use repeated observations cautiously; tendencies are not fixed personality facts.'},
+    {rank:'Heir',title:'Line Construction',focus:'Read the sequence across streets, not one isolated action.'},
+    {rank:'King / Queen',title:'Independent Table Read',focus:'Combine cards, price, position, action history and uncertainty without collapsing them.'}
+  ];
 
   const clone = x => JSON.parse(JSON.stringify(x));
   const rand = n => Math.floor(Math.random()*n);
+  const round10 = n => Math.max(0,Math.round(n/10)*10);
 
   function makeDeck(){
     const cards=[];
@@ -118,8 +129,52 @@
     return Math.min(1,0.12+category*0.72+high*0.16);
   }
 
+  function seedFromCards(cards){
+    let h=2166136261;
+    const text=cards.map(c=>c.id).sort().join('|');
+    for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619);}
+    return h>>>0;
+  }
+  function seeded(seed){
+    let a=seed>>>0;
+    return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};
+  }
+  function estimateEquity(hole,board=[],samples=320){
+    const visible=[...hole,...board];
+    if(hole.length!==2||board.length>5)return{pct:0,samples:0,method:'visible-card estimate'};
+    const known=new Set(visible.map(c=>c.id));
+    const unseen=makeDeck().filter(c=>!known.has(c.id));
+    const need=2+(5-board.length);
+    if(unseen.length<need)return{pct:0,samples:0,method:'visible-card estimate'};
+    const rng=seeded(seedFromCards(visible));
+    let score=0;
+    const loops=Math.max(80,Math.min(600,Number(samples)||320));
+    for(let n=0;n<loops;n++){
+      const pool=[...unseen];
+      for(let i=0;i<need;i++){
+        const j=i+Math.floor(rng()*(pool.length-i));
+        [pool[i],pool[j]]=[pool[j],pool[i]];
+      }
+      const opp=pool.slice(0,2),runout=pool.slice(2,need),fullBoard=[...board,...runout];
+      const mine=evaluate([...hole,...fullBoard]),theirs=evaluate([...opp,...fullBoard]);
+      const cmp=compareVec(mine.score,theirs.score);
+      if(cmp>0)score+=1;else if(cmp===0)score+=.5;
+    }
+    return{pct:Math.round((score/loops)*100),samples:loops,method:'visible-card estimate'};
+  }
+
+  function validSavedState(s){
+    if(!s||typeof s!=='object'||!['preflop','flop','turn','river'].includes(s.street))return false;
+    if(!s.players?.player||!s.players?.ai||!Array.isArray(s.deck)||!Array.isArray(s.board))return false;
+    if(!Array.isArray(s.players.player.hole)||!Array.isArray(s.players.ai.hole))return false;
+    const cards=[...s.deck,...s.board,...s.players.player.hole,...s.players.ai.hole];
+    if(cards.length!==52)return false;
+    const canonical=new Set(makeDeck().map(c=>c.id)),ids=cards.map(c=>c?.id);
+    return ids.every(id=>canonical.has(id))&&new Set(ids).size===52;
+  }
+
   class TraceBox{
-    constructor(){this.entries=[];}
+    constructor(entries=[]){this.entries=Array.isArray(entries)?clone(entries).slice(0,160):[];}
     add(kind,message,data={}){const row={time:new Date().toISOString(),kind,message,data};this.entries.unshift(row);this.entries=this.entries.slice(0,160);return row;}
     observation(who,action,context={}){return this.add('observation',`${who} ${action}`,context);}
     interpretation(message,confidence='low',data={}){return this.add('interpretation',message,{confidence,...data});}
@@ -128,8 +183,8 @@
 
   class PukaGame{
     constructor(saved={}){
-      this.trace=new TraceBox();
-      this.profile={...{hands:0,folds:0,calls:0,checks:0,raises:0,showdowns:0},...(saved.profile||{})};
+      this.trace=new TraceBox(saved.trace);
+      this.profile={...{hands:0,folds:0,calls:0,checks:0,raises:0,showdowns:0,decisions:0,sizedRaises:0,allIns:0},...(saved.profile||{})};
       const bankroll=saved.bankroll||{};
       this.meta={
         xp:Number(saved.xp||0),
@@ -143,14 +198,28 @@
         }
       };
       this.ai={name:'House Mind',aggression:.54,bluff:.12,patience:.58};
-      this.state=null;
+      this.history=Array.isArray(saved.history)?clone(saved.history).slice(0,20):[];
+      this._equityCache=new Map();
+      this.state=validSavedState(saved.state)?clone(saved.state):null;
+      if(this.state){
+        this.state.actions=Array.isArray(this.state.actions)?this.state.actions:[];
+        this.state.decisions=Array.isArray(this.state.decisions)?this.state.decisions:[];
+        this.state.minRaiseIncrement=Number(this.state.minRaiseIncrement||20);
+        this.state.archived=!!this.state.archived;
+        this.trace.fact(`Hand ${this.state.handNo} restored from the local table state.`,{street:this.state.street,ended:!!this.state.ended});
+      }
     }
     get rank(){let r=ROYAL_LADDER[0];for(const x of ROYAL_LADDER) if(this.meta.xp>=x.xp) r=x;return r;}
     get nextRank(){return ROYAL_LADDER.find(x=>x.xp>this.meta.xp)||null;}
     get room(){return this.rank.room;}
+    get lesson(){return LESSONS.find(x=>x.rank===this.rank.name)||LESSONS[0];}
     setSuit(s){if(SUITS[s]){this.meta.suit=s;this.trace.fact(`Character suit set to ${SUITS[s].label}.`,{suit:s});}}
     setMode(m){if(['auto','portrait','royal'].includes(m)) this.meta.mode=m;}
-    persistable(){return {xp:this.meta.xp,suit:this.meta.suit,mode:this.meta.mode,handNo:this.meta.handNo,sessionNo:this.meta.sessionNo,bankroll:clone(this.meta.bankroll),profile:clone(this.profile)};}
+    persistable(){return {
+      version:'0.12A',xp:this.meta.xp,suit:this.meta.suit,mode:this.meta.mode,handNo:this.meta.handNo,sessionNo:this.meta.sessionNo,
+      bankroll:clone(this.meta.bankroll),profile:clone(this.profile),state:this.state?clone(this.state):null,
+      trace:clone(this.trace.entries),history:clone(this.history)
+    };}
 
     ensurePlayablePurse(){
       if(this.meta.bankroll.player>=20&&this.meta.bankroll.ai>=20)return;
@@ -168,9 +237,10 @@
       const handNo=++this.meta.handNo;
       const dealer=handNo%2===1?'player':'ai';
       const s={
-        handNo,deck,board:[],street:'preflop',dealer,pot:0,currentBet:0,
+        handNo,deck,board:[],street:'preflop',dealer,pot:0,currentBet:0,minRaiseIncrement:20,
         players:{player:{stack:this.meta.bankroll.player,hole:[],streetPut:0,folded:false},ai:{stack:this.meta.bankroll.ai,hole:[],streetPut:0,folded:false}},
-        pending:[],turn:null,ended:false,winner:null,message:'',lastAggressor:null
+        pending:[],turn:null,ended:false,winner:null,message:'',lastAggressor:null,endReason:null,
+        actions:[],decisions:[],archived:false
       };
       this.state=s;
       s.players.player.hole=[s.deck.pop(),s.deck.pop()];
@@ -184,51 +254,124 @@
       this.advanceUntilPlayer();
       return this.snapshot();
     }
-    put(who,amount){const p=this.state.players[who];const paid=Math.max(0,Math.min(amount,p.stack));p.stack-=paid;p.streetPut+=paid;this.state.pot+=paid;return paid;}
+    put(who,amount){const p=this.state.players[who];const paid=Math.max(0,Math.min(Number(amount)||0,p.stack));p.stack-=paid;p.streetPut+=paid;this.state.pot+=paid;return paid;}
     callAmount(who){return Math.max(0,this.state.currentBet-this.state.players[who].streetPut);}
     legal(who='player'){
       const s=this.state;if(!s||s.ended||s.turn!==who)return[];
-      const call=this.callAmount(who),p=s.players[who],out=['fold'];
-      if(call===0)out.push('check');else if(p.stack>0)out.push('call');
-      if(p.stack>call&&p.stack>0)out.push('raise');
+      const call=this.callAmount(who),p=s.players[who],out=[];
+      if(p.stack<=0)return out;
+      out.push('fold');
+      if(call===0)out.push('check');else out.push('call');
+      if(p.stack>call)out.push('raise');
       return out;
     }
-    playerAction(action){if(!this.legal('player').includes(action))return this.snapshot();this.applyAction('player',action);this.advanceUntilPlayer();return this.snapshot();}
-    applyAction(who,action){
+    raiseBounds(who='player'){
+      const s=this.state,p=s?.players?.[who];
+      if(!s||!p)return null;
+      const maxTotal=p.streetPut+p.stack;
+      const minTotal=s.currentBet+Math.max(20,s.minRaiseIncrement||20);
+      return{maxTotal,minTotal:Math.min(maxTotal,minTotal),call:this.callAmount(who)};
+    }
+    raiseOptions(who='player'){
+      if(!this.legal(who).includes('raise'))return[];
+      const s=this.state,p=s.players[who],b=this.raiseBounds(who),basePot=s.pot+b.call;
+      const candidates=[
+        {key:'min',label:'MIN',target:b.minTotal},
+        {key:'half',label:'½ POT',target:Math.max(b.minTotal,round10(s.currentBet+basePot*.5))},
+        {key:'pot',label:'POT',target:Math.max(b.minTotal,round10(s.currentBet+basePot))},
+        {key:'allin',label:'ALL IN',target:b.maxTotal}
+      ];
+      const seen=new Set(),out=[];
+      for(const c of candidates){
+        const target=Math.max(b.minTotal,Math.min(b.maxTotal,c.target));
+        if(target<=s.currentBet||seen.has(target))continue;
+        seen.add(target);out.push({...c,target,put:target-p.streetPut,allIn:target===b.maxTotal});
+      }
+      return out.sort((a,b)=>a.target-b.target);
+    }
+    normalizeRaiseTarget(who,target=null){
+      const b=this.raiseBounds(who);if(!b)return null;
+      if(target===null||target===undefined){const opts=this.raiseOptions(who);return(opts.find(x=>x.key==='half')||opts[0]||null)?.target??null;}
+      const n=Number(target);if(!Number.isFinite(n))return null;
+      const t=Math.max(0,Math.min(b.maxTotal,Math.round(n)));
+      if(t<=this.state.currentBet)return null;
+      if(t<b.minTotal&&t!==b.maxTotal)return null;
+      return t;
+    }
+    decisionContext(action,target=null){
+      const s=this.state,toCall=this.callAmount('player'),potAfter=s.pot+toCall;
+      const potOddsPct=toCall>0?Math.round((toCall/Math.max(1,potAfter))*100):0;
+      const equity=this.visibleEquity();
+      const made=s.board.length>=3?evaluate([...s.players.player.hole,...s.board]).name:evaluate(s.players.player.hole).name;
+      return{time:new Date().toISOString(),street:s.street,action,target,toCall,pot:s.pot,potOddsPct,equityPct:equity.pct,madeHand:made};
+    }
+    playerAction(action,target=null){
+      if(!this.legal('player').includes(action))return this.snapshot();
+      let resolved=target;
+      if(action==='raise'){resolved=this.normalizeRaiseTarget('player',target);if(resolved===null)return this.snapshot();}
+      this.state.decisions.push(this.decisionContext(action,resolved));
+      this.profile.decisions++;
+      this.applyAction('player',action,resolved);
+      this.advanceUntilPlayer();
+      return this.snapshot();
+    }
+    recordAction(who,action,data={}){
+      const s=this.state;s.actions.push({time:new Date().toISOString(),who,action,street:s.street,potAfter:s.pot,...data});
+    }
+    applyAction(who,action,target=null){
       const s=this.state,p=s.players[who],other=who==='player'?'ai':'player',call=this.callAmount(who);
       if(action==='fold'){
-        p.folded=true;s.ended=true;s.winner=other;s.message=`${who==='player'?'You fold':'House Mind folds'}. ${other==='player'?'You win':'House Mind wins'} ${s.pot}.`;
+        this.recordAction(who,'fold',{toCall:call});
+        p.folded=true;s.ended=true;s.endReason='fold';s.winner=other;s.message=`${who==='player'?'You fold':'House Mind folds'}. ${other==='player'?'You win':'House Mind wins'} ${s.pot}.`;
         s.players[other].stack+=s.pot;
         this.trace.observation(who==='player'?'You':'House Mind','folded',{street:s.street,pot:s.pot});
         if(who==='player'){this.profile.folds++;this.awardXP(2);}else this.awardXP(14);
-        this.profile.hands++;this.syncBankroll();return;
+        this.profile.hands++;this.syncBankroll();this.archiveHand();return;
       }
       if(action==='check'){
+        this.recordAction(who,'check');
         this.trace.observation(who==='player'?'You':'House Mind','checked',{street:s.street});
         if(who==='player')this.profile.checks++;
         this.removePending(who);
       }else if(action==='call'){
         const paid=this.put(who,call);
-        this.trace.observation(who==='player'?'You':'House Mind','called',{street:s.street,amount:paid,pot:s.pot});
+        this.recordAction(who,'call',{paid,allIn:p.stack===0});
+        this.trace.observation(who==='player'?'You':'House Mind','called',{street:s.street,amount:paid,pot:s.pot,allIn:p.stack===0});
         if(who==='player')this.profile.calls++;
+        if(p.stack===0)this.profile.allIns+=who==='player'?1:0;
         this.removePending(who);
       }else if(action==='raise'){
-        const extra=Math.max(20,Math.round(Math.max(20,s.pot*.6)/10)*10);
-        const paid=this.put(who,Math.min(p.stack,call+extra));
+        const resolved=this.normalizeRaiseTarget(who,target);
+        if(resolved===null)return;
+        const previous=s.currentBet,paid=this.put(who,resolved-p.streetPut),increment=resolved-previous,allIn=p.stack===0;
         s.currentBet=p.streetPut;s.lastAggressor=who;
-        this.trace.observation(who==='player'?'You':'House Mind','raised',{street:s.street,paid,totalBet:s.currentBet,pot:s.pot});
-        if(who==='player')this.profile.raises++;
+        if(!allIn||increment>=s.minRaiseIncrement)s.minRaiseIncrement=Math.max(20,increment);
+        this.recordAction(who,'raise',{paid,totalBet:s.currentBet,increment,allIn});
+        this.trace.observation(who==='player'?'You':'House Mind','raised',{street:s.street,paid,totalBet:s.currentBet,pot:s.pot,allIn});
+        if(who==='player'){this.profile.raises++;this.profile.sizedRaises++;if(allIn)this.profile.allIns++;}
         s.pending=[other];s.turn=other;
       }
       if(!s.ended&&s.pending.length===0)this.advanceStreet();else if(!s.ended&&s.pending.length)s.turn=s.pending[0];
     }
     removePending(who){const s=this.state;s.pending=s.pending.filter(x=>x!==who);s.turn=s.pending[0]||null;}
-    advanceStreet(){
-      const s=this.state;if(s.street==='river'){this.showdown();return;}
-      const order=['preflop','flop','turn','river'];const next=order[order.indexOf(s.street)+1];
-      s.street=next;s.currentBet=0;s.lastAggressor=null;s.players.player.streetPut=0;s.players.ai.streetPut=0;
+    dealStreet(next){
+      const s=this.state;s.street=next;s.currentBet=0;s.lastAggressor=null;s.minRaiseIncrement=20;s.players.player.streetPut=0;s.players.ai.streetPut=0;
       if(next==='flop')s.board.push(s.deck.pop(),s.deck.pop(),s.deck.pop());else s.board.push(s.deck.pop());
       this.trace.add('state',`${next.toUpperCase()} dealt.`,{board:s.board.map(c=>c.id)});
+    }
+    runoutToShowdown(){
+      const s=this.state;if(!s||s.ended)return;
+      this.trace.fact('Betting is closed by an all-in. The remaining community cards run out without another decision.',{street:s.street,pot:s.pot});
+      if(s.board.length===0)this.dealStreet('flop');
+      if(s.board.length===3)this.dealStreet('turn');
+      if(s.board.length===4)this.dealStreet('river');
+      this.showdown('all-in');
+    }
+    advanceStreet(){
+      const s=this.state;if(s.street==='river'){this.showdown('showdown');return;}
+      if(s.players.player.stack===0||s.players.ai.stack===0){this.runoutToShowdown();return;}
+      const order=['preflop','flop','turn','river'],next=order[order.indexOf(s.street)+1];
+      this.dealStreet(next);
       const first=s.dealer==='player'?'ai':'player',second=first==='player'?'ai':'player';s.pending=[first,second];s.turn=first;
     }
     advanceUntilPlayer(){
@@ -253,33 +396,53 @@
       );
       return action;
     }
-    showdown(){
+    showdown(reason='showdown'){
       const s=this.state,ph=evaluate([...s.players.player.hole,...s.board]),ah=evaluate([...s.players.ai.hole,...s.board]);
-      const cmp=compareVec(ph.score,ah.score);s.ended=true;this.profile.showdowns++;this.profile.hands++;
+      const cmp=compareVec(ph.score,ah.score);s.ended=true;s.endReason=reason;this.profile.showdowns++;this.profile.hands++;
       if(cmp>0){s.winner='player';s.players.player.stack+=s.pot;s.message=`Showdown: ${ph.name} beats ${ah.name}. You win ${s.pot}.`;this.awardXP(25);}
       else if(cmp<0){s.winner='ai';s.players.ai.stack+=s.pot;s.message=`Showdown: House Mind's ${ah.name} beats your ${ph.name}.`;this.awardXP(7);}
       else{s.winner='split';const half=Math.floor(s.pot/2);s.players.player.stack+=half;s.players.ai.stack+=s.pot-half;s.message=`Showdown: both hold ${ph.name}. Pot split.`;this.awardXP(12);}
       this.trace.fact(`Showdown reveals House Mind held ${s.players.ai.hole.map(c=>c.rank+c.symbol).join(' ')} for ${ah.name}.`,{cards:s.players.ai.hole.map(c=>c.id),hand:ah.name});
       this.trace.fact(`Your revealed hand is ${ph.name}.`,{hand:ph.name});
-      this.syncBankroll();
+      this.syncBankroll();this.archiveHand({playerHand:ph.name,houseHand:ah.name});
+    }
+    archiveHand(extra={}){
+      const s=this.state;if(!s||!s.ended||s.archived)return;
+      s.archived=true;
+      const revealed=s.endReason!=='fold';
+      const row={
+        handNo:s.handNo,time:new Date().toISOString(),room:this.room,dealer:s.dealer,street:s.street,winner:s.winner,result:s.message,endReason:s.endReason,
+        playerHole:s.players.player.hole.map(c=>c.id),houseHole:revealed?s.players.ai.hole.map(c=>c.id):null,board:s.board.map(c=>c.id),
+        actions:clone(s.actions||[]),decisions:clone(s.decisions||[]),...extra
+      };
+      this.history.unshift(row);this.history=this.history.slice(0,20);
     }
     awardXP(n){this.meta.xp+=n;}
+    visibleEquity(){
+      const s=this.state;if(!s)return{pct:0,samples:0,method:'visible-card estimate'};
+      const key=[...s.players.player.hole,...s.board].map(c=>c.id).sort().join('|');
+      if(!this._equityCache.has(key))this._equityCache.set(key,estimateEquity(s.players.player.hole,s.board));
+      return this._equityCache.get(key);
+    }
     teaching(){
       const s=this.state;
-      if(!s)return{madeHand:'—',toCall:0,potOdds:'—',position:'—',street:'READY',line:'Choose a suit, then deal. PUKA teaches the rule at the moment it matters.'};
+      if(!s)return{madeHand:'—',toCall:0,potOdds:'—',potOddsPct:0,equity:'—',equityPct:0,priceRead:'—',position:'—',street:'READY',lesson:this.lesson,line:'Choose a suit, then deal. PUKA teaches the rule at the moment it matters.'};
       const toCall=s.ended?0:this.callAmount('player'),potAfter=s.pot+toCall;
-      const odds=toCall>0?`${Math.round((toCall/Math.max(1,potAfter))*100)}%`:'FREE';
+      const potOddsPct=toCall>0?Math.round((toCall/Math.max(1,potAfter))*100):0;
+      const odds=toCall>0?`${potOddsPct}%`:'FREE';
       const made=s.board.length>=3?evaluate([...s.players.player.hole,...s.board]).name:evaluate(s.players.player.hole).name;
       const position=s.dealer==='player'?'Button / small blind':'Big blind';
-      return{madeHand:made,toCall,potOdds:odds,position,street:s.street.toUpperCase(),line:this.handHint()};
+      const equity=this.visibleEquity(),gap=equity.pct-potOddsPct;
+      const priceRead=s.ended?'HAND COMPLETE':toCall===0?'No price required':gap>=8?'Estimate above price':gap<=-8?'Estimate below price':'Close price';
+      return{madeHand:made,toCall,potOdds:odds,potOddsPct,equity:`${equity.pct}%`,equityPct:equity.pct,equitySamples:equity.samples,priceRead,position,street:s.street.toUpperCase(),lesson:this.lesson,line:this.handHint()};
     }
     handHint(){
       const s=this.state;if(!s)return'Choose a suit and deal the first hand.';
-      if(s.ended)return'Review what was observed, what was inferred, and what became known at showdown.';
-      const call=this.callAmount('player');
-      if(s.street==='preflop')return`Pre-flop: two private cards. ${call?`It costs ${call} to continue.`:'You can check for free.'} Position changes who acts first.`;
+      if(s.ended)return'Review the action line: observation stays separate from interpretation, and hidden cards become fact only when revealed.';
+      const call=this.callAmount('player'),equity=this.visibleEquity();
+      if(s.street==='preflop')return`Pre-flop: two private cards. ${call?`It costs ${call} to continue.`:'You can check for free.'} Visible-card equity is estimated at ${equity.pct}% against an unknown random range — not against House Mind's actual hidden cards.`;
       const e=evaluate([...s.players.player.hole,...s.board]),odds=call>0?Math.round((call/Math.max(1,s.pot+call))*100):0;
-      return`${s.street}: your current made hand is ${e.name}. ${call?`Calling costs ${call}, about ${odds}% of the pot after your call.`:'Checking costs nothing.'} Pot odds describe price — they do not reveal House Mind's cards.`;
+      return`${s.street}: your current made hand is ${e.name}. ${call?`Calling costs ${call}, about ${odds}% of the pot after your call.`:'Checking costs nothing.'} Visible-card equity estimate: ${equity.pct}%. Price and equity inform a decision; neither reveals House Mind's cards.`;
     }
     playerTendency(){
       const p=this.profile,total=Math.max(1,p.calls+p.checks+p.raises+p.folds),ag=p.raises/total,fold=p.folds/total;
@@ -288,11 +451,26 @@
       if(fold>.38)return'Observed tendency: selective/fold-heavy so far. Interpretation: opponents may test your blinds more often.';
       return'Observed tendency: mixed actions so far. No strong behavioural read earned yet.';
     }
+    handReview(){
+      const s=this.state;
+      if(!s?.ended)return{title:'LIVE HAND',line:'A review is earned when the hand ends.',decisions:[]};
+      const ds=s.decisions||[],last=ds.at(-1);
+      if(!last)return{title:`HAND ${s.handNo} COMPLETE`,line:s.message,decisions:[]};
+      const action=last.action==='raise'?`raise to ${last.target}`:last.action;
+      const price=last.toCall?`price ${last.potOddsPct}%`:'free decision';
+      return{title:`HAND ${s.handNo} · ${s.winner==='player'?'WIN':s.winner==='split'?'SPLIT':'LOSS'}`,line:`Last decision: ${last.street} ${action} · ${price} · visible-card equity estimate ${last.equityPct}%. ${s.message}`,decisions:clone(ds)};
+    }
+    mastery(){
+      return{
+        hands:this.profile.hands,showdowns:this.profile.showdowns,decisions:this.profile.decisions,
+        sizedRaises:this.profile.sizedRaises,allIns:this.profile.allIns,history:this.history.length,lesson:clone(this.lesson)
+      };
+    }
     snapshot(){
       const s=this.state;
-      return{meta:clone(this.meta),rank:clone(this.rank),nextRank:clone(this.nextRank),room:this.room,suit:clone(SUITS[this.meta.suit]),state:s?clone(s):null,legal:this.legal('player'),teaching:this.teaching(),hint:this.handHint(),tendency:this.playerTendency(),trace:clone(this.trace.entries),profile:clone(this.profile)};
+      return{meta:clone(this.meta),rank:clone(this.rank),nextRank:clone(this.nextRank),room:this.room,suit:clone(SUITS[this.meta.suit]),state:s?clone(s):null,legal:this.legal('player'),raiseOptions:this.raiseOptions('player'),teaching:this.teaching(),hint:this.handHint(),tendency:this.playerTendency(),review:this.handReview(),mastery:this.mastery(),history:clone(this.history),trace:clone(this.trace.entries),profile:clone(this.profile)};
     }
   }
 
-  window.PUKA={SUITS,RANKS,ROYAL_LADDER,makeDeck,shuffle,verifyDeck,evaluate,compareVec,PukaGame};
+  window.PUKA={SUITS,RANKS,ROYAL_LADDER,LESSONS,makeDeck,shuffle,verifyDeck,evaluate,compareVec,estimateEquity,PukaGame};
 })();

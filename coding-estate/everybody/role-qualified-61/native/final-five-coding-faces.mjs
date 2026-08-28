@@ -1,0 +1,43 @@
+/* Final five role-qualified coding faces.
+ * GameForge/GlyphForge/PLAYFORM bind declared forward coding interfaces to recovered exact source authorities.
+ * GlyphPlay is a declared forward bridge from protected lineage/profile evidence.
+ * JM Visualang binds a current-native interface to its recovered standalone native line.
+ */
+import { Trace, digest } from '../../../sovereign-ten/direct/native-core.mjs';
+
+function need(ok,code,message){if(!ok){const e=new Error(message);e.code=code;throw e;}}
+function outer(source,keyword){const m=String(source??'').match(new RegExp(`^\\s*${keyword}\\s+([A-Za-z_][\\w.-]*)\\s*\\{([\\s\\S]*)\\}\\s*$`,'i'));need(m,`${keyword}_BODY`,`${keyword} NAME { ... } required.`);return{name:m[1],lines:m[2].replace(/\r/g,'').split('\n').map(x=>x.replace(/\s*(?:#|\/\/).*$/,'').trim()).filter(Boolean)}}
+function done(name,action,result){const t=new Trace(name);t.emit(action,result);return{...result,trace:t.events,receipt:t.receipt(action,result)}}
+
+export const FINAL_FIVE_AUTHORITY=Object.freeze({
+  gameforge:{status:'RECOVERED_EXACT_SOURCE_AUTHORITY_PLUS_DECLARED_CODING_FACE',version:'v3.16',bytes:114474,sha256:'a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb',commit:'d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08'},
+  glyphforge:{status:'RECOVERED_EXACT_SOURCE_AUTHORITY_PLUS_DECLARED_CODING_FACE',version:'v68.2',bytes:108992,sha256:'93e03de9c71e46907681e3c30eec11bf63c1c5f89b10fb9ae2a8343aa8b964d3',commit:'d96ad3c7f1e8d5529ecb5aaaf41034c3c859ec08'},
+  glyphplay:{status:'AUTHORISED_FORWARD_NATIVE_BRIDGE_FROM_PROTECTED_LINEAGE',historicalRecoveryClaim:false,commit:'6661de1798b3368deac2d388e610f187fe278f30'},
+  playform:{status:'RECOVERED_EXACT_FROZEN_SOURCE_AUTHORITY_PLUS_DECLARED_CODING_FACE',version:'v0.4',bytes:160711,sha256:'60da0d1f303a1e17d3580d3261123bbdd51f9f7022199fee0f502fa60e70839d',commit:'1e4506545a56adf3c04cc26d5946bff854fd8e63'},
+  visualang:{status:'RECOVERED_STANDALONE_NATIVE_LINE_PLUS_CURRENT_NATIVE_LANGUAGE_FACE',historicalRecoveryClaim:false,commit:'e314794d88ac0305b12ef0e29d2a543e7d4d061b'}
+});
+
+export const GameForge={
+  parse(source){const b=outer(source,'gameforge');const mechanics=[],scenes=[],builds=[];for(const line of b.lines){let m=line.match(/^mechanic\s+([\w.-]+)\s+using\s+([\w.-]+)\s+route\s+([\w.-]+)$/i);if(m){mechanics.push({name:m[1],donor:m[2],route:m[3]});continue;}m=line.match(/^scene\s+([\w.-]+)\s+uses\s+([\w.-]+)$/i);if(m){scenes.push({name:m[1],mechanic:m[2]});continue;}m=line.match(/^build\s+([\w.-]+)\s+from\s+([\w.-]+)$/i);if(m){builds.push({name:m[1],scene:m[2]});continue;}need(false,'GAMEFORGE_DECL',`Invalid GameForge declaration: ${line}`);}for(const s of scenes)need(mechanics.some(x=>x.name===s.mechanic),'GAMEFORGE_MECHANIC','Scene mechanic missing.');for(const x of builds)need(scenes.some(s=>s.name===x.scene),'GAMEFORGE_SCENE','Build scene missing.');return{type:'GameForgeProgram',name:b.name,mechanics,scenes,builds,authority:FINAL_FIVE_AUTHORITY.gameforge};},
+  execute(source,buildName){const ast=this.parse(source);const build=ast.builds.find(x=>x.name===buildName);need(build,'GAMEFORGE_BUILD','Unknown build.');const scene=ast.scenes.find(x=>x.name===build.scene);const mechanic=ast.mechanics.find(x=>x.name===scene.mechanic);const result={type:'GameForgeResult',build:build.name,scene:scene.name,mechanic:mechanic.name,donor:mechanic.donor,route:mechanic.route,sourceAuthority:ast.authority.sha256};return{ast,runtime:done('GameForge','build.forged',result)}}
+};
+
+export const GlyphForge={
+  parse(source){const b=outer(source,'glyphforge');const glyphs={},composites=[];for(const line of b.lines){let m=line.match(/^glyph\s+([\w.-]+)\s*=\s*("(?:\\.|[^"\\])*")\s+means\s+([\w.-]+)$/i);if(m){need(!glyphs[m[1]],'GLYPHFORGE_DUP','Duplicate glyph.');glyphs[m[1]]={mark:JSON.parse(m[2]),meaning:m[3]};continue;}m=line.match(/^compose\s+([\w.-]+)\s*=\s*([\w.-]+)\s*\+\s*([\w.-]+)\s+route\s+([\w.-]+)$/i);if(m){composites.push({name:m[1],left:m[2],right:m[3],route:m[4]});continue;}need(false,'GLYPHFORGE_DECL',`Invalid GlyphForge declaration: ${line}`);}for(const c of composites)need(glyphs[c.left]&&glyphs[c.right],'GLYPHFORGE_PART','Composite glyph parts missing.');return{type:'GlyphForgeProgram',name:b.name,glyphs,composites,authority:FINAL_FIVE_AUTHORITY.glyphforge};},
+  execute(source,name){const ast=this.parse(source);const c=ast.composites.find(x=>x.name===name);need(c,'GLYPHFORGE_COMPOSITE','Unknown composite.');const result={type:'GlyphForgeResult',name:c.name,marks:[ast.glyphs[c.left].mark,ast.glyphs[c.right].mark],meanings:[ast.glyphs[c.left].meaning,ast.glyphs[c.right].meaning],route:c.route,sourceAuthority:ast.authority.sha256};return{ast,runtime:done('GlyphForge','glyph.composed',result)}}
+};
+
+export const GlyphPlay={
+  parse(source){const b=outer(source,'glyphplay');const binds=[],states=[];for(const line of b.lines){let m=line.match(/^bind\s+("(?:\\.|[^"\\])*")\s*->\s*([\w.-]+)$/i);if(m){binds.push({glyph:JSON.parse(m[1]),action:m[2]});continue;}m=line.match(/^on\s+([\w.-]+)\s+state\s+([\w.-]+)\s*=\s*("(?:\\.|[^"\\])*")$/i);if(m){states.push({action:m[1],field:m[2],value:JSON.parse(m[3])});continue;}need(false,'GLYPHPLAY_DECL',`Invalid GlyphPlay declaration: ${line}`);}need(binds.length&&states.length,'GLYPHPLAY_EMPTY','GlyphPlay requires glyph binding + playable state consequence.');return{type:'GlyphPlayProgram',name:b.name,binds,states,authority:FINAL_FIVE_AUTHORITY.glyphplay};},
+  execute(source,glyph,state={}){const ast=this.parse(source);const bind=ast.binds.find(x=>x.glyph===glyph);need(bind,'GLYPHPLAY_GLYPH','Unbound glyph.');const effects=ast.states.filter(x=>x.action===bind.action);need(effects.length,'GLYPHPLAY_EFFECT','Glyph action has no state consequence.');const next={...state};for(const e of effects)next[e.field]=e.value;const result={type:'GlyphPlayResult',glyph,action:bind.action,before:structuredClone(state),after:next,stateChanged:JSON.stringify(state)!==JSON.stringify(next)};return{ast,runtime:done('GlyphPlay','glyph.played',result)}}
+};
+
+export const Playform={
+  parse(source){const b=outer(source,'playform');let mode=null;const rooms={},routes=[];for(const line of b.lines){let m=line.match(/^mode\s+(read|hybrid|build)$/i);if(m){mode=m[1].toLowerCase();continue;}m=line.match(/^room\s+([\w.-]+)\s+holds\s+([\w.-]+)$/i);if(m){rooms[m[1]]=m[2];continue;}m=line.match(/^route\s+([\w.-]+)\s*->\s*([\w.-]+)$/i);if(m){routes.push({from:m[1],to:m[2]});continue;}need(false,'PLAYFORM_DECL',`Invalid PLAYFORM declaration: ${line}`);}need(mode&&Object.keys(rooms).length&&routes.length,'PLAYFORM_EMPTY','PLAYFORM requires operating mode, rooms and routes.');for(const r of routes)need(rooms[r.from]&&rooms[r.to],'PLAYFORM_ROOM','PLAYFORM route endpoints must be rooms.');return{type:'PlayformProgram',name:b.name,mode,rooms,routes,authority:FINAL_FIVE_AUTHORITY.playform};},
+  execute(source,from,to){const ast=this.parse(source);const route=ast.routes.find(r=>r.from===from&&r.to===to);need(route,'PLAYFORM_ROUTE','No PLAYFORM room route.');const result={type:'PlayformResult',mode:ast.mode,from,to,sourceBody:ast.rooms[from],landingBody:ast.rooms[to],sourceAuthority:ast.authority.sha256,playZoneBoundary:'protected'};return{ast,runtime:done('PLAYFORM','room.routed',result)}}
+};
+
+export const Visualang={
+  parse(source){const b=outer(source,'visualang');const organs={},relations=[],behaviours=[];for(const line of b.lines){let m=line.match(/^organ\s+([\w.-]+)\s+form\s+([\w.-]+)$/i);if(m){organs[m[1]]={form:m[2]};continue;}m=line.match(/^relation\s+([\w.-]+)\s*->\s*([\w.-]+)$/i);if(m){relations.push({from:m[1],to:m[2]});continue;}m=line.match(/^behaviour\s+([\w.-]+)\s+on\s+([\w.-]+)\s+route\s+([\w.-]+)$/i);if(m){behaviours.push({organ:m[1],contact:m[2],route:m[3]});continue;}need(false,'VISUALANG_DECL',`Invalid Visualang declaration: ${line}`);}for(const r of relations)need(organs[r.from]&&organs[r.to],'VISUALANG_RELATION','Relations require addressable organs.');for(const x of behaviours)need(organs[x.organ],'VISUALANG_ORGAN','Behaviour organ missing.');return{type:'VisualangProgram',name:b.name,organs,relations,behaviours,authority:FINAL_FIVE_AUTHORITY.visualang};},
+  execute(source,organ,contact){const ast=this.parse(source);const behaviour=ast.behaviours.find(x=>x.organ===organ&&x.contact===contact);need(behaviour,'VISUALANG_BEHAVIOUR','No visual behaviour for contact.');const result={type:'VisualangResult',organ,form:ast.organs[organ].form,contact,route:behaviour.route,addressableOrgans:Object.keys(ast.organs),nativeOrder:'INTENTION->BODY->RELATION->FORM->BEHAVIOUR->CONTACT->EVIDENCE->TRACE->PLAY'};return{ast,runtime:done('JM Visualang','behaviour.executed',result)}}
+};

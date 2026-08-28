@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07100d">
-<meta name="description" content="PUKA — learn poker through play, evidence, psychology and royal progression.">
+<meta name="description" content="PUKA — learn poker through play, evidence, psychology, decision review and royal progression.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="stylesheet" href="puka.css">
 <link rel="stylesheet" href="puka-art.css">
@@ -17,7 +17,8 @@
 <link rel="stylesheet" href="puka-v09.css">
 <link rel="stylesheet" href="puka-v10.css">
 <link rel="stylesheet" href="puka-v11.css">
-<title>PUKA v0.11A — Open First</title>
+<link rel="stylesheet" href="puka-v12.css">
+<title>PUKA v0.12A — Open First</title>
 </head>
 <body>
 <a class="skip-link" href="#main">SKIP TO TABLE</a>
@@ -33,15 +34,18 @@
         <div class="court-ribbon"><b id="courtRoom">Lower Dormitory</b><span id="dealerLine">SESSION 1</span></div>
         <div id="tableState" class="table-state"></div>
         <div id="actions" class="actions" aria-label="Poker actions"></div>
+        <div id="raiseTray" class="raise-tray" aria-label="Choose raise size" hidden></div>
       </div>
     </section>
 
     <section class="panel coach" aria-labelledby="lessonTitle">
-      <div class="coach-head"><div><small>PUKA TEACHER</small><h2 id="lessonTitle">Read the hand, not a lecture</h2></div><b id="streetChip">READY</b></div>
-      <div class="coachgrid">
+      <div class="coach-head"><div><small>PUKA TEACHER · <span id="lessonRank">PAUPER</span></small><h2 id="lessonTitle">Cards &amp; Price</h2></div><b id="streetChip">READY</b></div>
+      <div class="coachgrid coachgrid-v12">
         <article><small>YOUR HAND</small><b id="madeHand">—</b></article>
         <article><small>TO CALL</small><b id="callCost">0</b></article>
         <article><small>POT ODDS</small><b id="potOdds">—</b></article>
+        <article><small>EQUITY EST.</small><b id="equity">—</b></article>
+        <article><small>PRICE READ</small><b id="priceRead">—</b></article>
         <article><small>POSITION</small><b id="position">—</b></article>
       </div>
       <p id="hint" class="hint"></p>
@@ -55,6 +59,12 @@
           <div id="identity" class="identity"></div>
           <div class="rankrow"><b id="rank">Pauper</b><div class="bar" aria-label="Royal progression"><i id="rankBar"></i></div><small id="xp">0 XP</small></div>
           <div class="rankmeta"><span id="nextRank"></span><span id="purseLine"></span></div>
+          <div class="mastery" aria-label="Learning progress">
+            <span><small>HANDS</small><b id="masteryHands">0</b></span>
+            <span><small>SHOWDOWNS</small><b id="masteryShowdowns">0</b></span>
+            <span><small>DECISIONS</small><b id="masteryDecisions">0</b></span>
+            <span><small>SIZED RAISES</small><b id="masteryRaises">0</b></span>
+          </div>
           <h2 id="identityTitle">Choose your suit</h2>
           <div id="suitPicker" class="suits" aria-label="Choose suit"></div>
           <div class="modes" aria-label="Presentation route">
@@ -62,22 +72,29 @@
           </div>
           <p class="rotate-note">Rotate phone for Royal Table</p>
           <button id="dealBtn" class="deal">DEAL FIRST HAND</button>
-          <button id="reviewBtn" class="secondary">EVIDENCE / PSYCHOLOGY</button>
+          <button id="reviewBtn" class="secondary">EVIDENCE / REVIEW</button>
         </div>
       </details>
     </section>
 
-    <section id="evidence" class="panel evidence" aria-label="Evidence and psychology">
+    <section id="evidence" class="panel evidence" aria-label="Evidence psychology and hand review">
       <details id="evidenceDrawer">
-        <summary><span>EVIDENCE / PSYCHOLOGY</span><small id="evidenceCount">0 traces</small></summary>
+        <summary><span>EVIDENCE / REVIEW</span><small id="evidenceCount">0 traces</small></summary>
         <div class="evidence-body">
-          <p>Observation stays separate from interpretation. Hidden cards become fact only when revealed.</p>
+          <p>Observation stays separate from interpretation. Hidden cards become fact only when revealed. Equity is estimated from visible cards against an unknown range; it does not inspect House Mind's hidden cards.</p>
+          <section class="hand-review" aria-live="polite">
+            <small>LAST HAND REVIEW</small>
+            <b id="reviewTitle">NO COMPLETED HAND</b>
+            <p id="reviewLine">Finish a hand to earn a decision review.</p>
+          </section>
+          <div class="history-head"><b>HAND HISTORY</b><small>LOCAL DEVICE · LATEST 20</small></div>
+          <div id="historyList" class="history-list"></div>
           <div id="trace" class="tracegrid" aria-live="polite"></div>
         </div>
       </details>
     </section>
 
-    <footer class="footer">PUKA v0.11A · JM Games&amp;Beyond descendant · estate-conformance stage · no real-money wagering layer</footer>
+    <footer class="footer">PUKA v0.12A · JM Games&amp;Beyond descendant · full-table learning-loop stage · no real-money wagering layer</footer>
   </main>
 </div>
 <script src="puka-core.js"></script>

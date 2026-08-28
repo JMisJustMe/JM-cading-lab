@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const door='/puka/00_OPEN_FIRST.html';
+// Relative to the Games&Beyond baseURL. A leading slash escapes the House and
+// can be intercepted by the Estate root router instead of contacting PUKA.
+const door='puka/00_OPEN_FIRST.html';
 const contexts=[
   {name:'gb-android-portrait-390x844',width:390,height:844,mode:'portrait',mobile:true,touch:true},
   {name:'gb-android-landscape-844x390',width:844,height:390,mode:'royal',mobile:true,touch:true},

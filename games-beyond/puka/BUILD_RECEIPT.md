@@ -39,6 +39,8 @@ This descendant increases physical visual feedback without altering or duplicati
 
 A dedicated `puka-living-table.test.js` proves the visible-state source boundary. It fails if the organ reaches for PUKA core objects, snapshots, hidden AI hole cards, deck data or other gameplay authority. The existing core, inherited layout/art and table-theatre Dings still run alongside it.
 
+Before promotion, this descendant was reconciled onto the then-current estate head after five unrelated governance commits landed during the proof run; no PUKA source files were overwritten by that sync.
+
 ## Delivery default
 
 **SOURCE → OPEN_FIRST → ESTATE MOUNT → LIVE PROOF → DIRECT DOOR**

@@ -28,8 +28,8 @@ has(sw,"jm-puka-v11a",'v0.11 service-worker cache marker missing');
 has(sw,'puka-v11.css','v0.11 conformance CSS not cached');
 has(registry,'JM.PUKA.Room/0.11A','v0.11 registry schema missing');
 
-for(const marker of ['390,844','844,390','1440,1000','scrollWidth','pageerror','console','data-puka-mode','data-next-hand']) has(browser,marker,`browser acceptance marker missing: ${marker}`);
+for(const marker of ['390,height:844','844,height:390','1440,height:1000','412,height:915','1440,height:900','scrollWidth','pageerror','console','data-puka-mode','data-next-hand','isMobile:mobile','hasTouch:touch','fullPage:false','protected PUKA table field']) has(browser,marker,`browser/visual acceptance marker missing: ${marker}`);
 has(workflow,'puka-estate-conformance.spec.mjs','browser acceptance spec not invoked by proof rail');
 has(workflow,'playwright install --with-deps chromium','Chromium proof environment missing');
 
-console.log('PUKA v0.11A ESTATE CONFORMANCE SOURCE DING PASS');
+console.log('PUKA v0.11A ESTATE + VISUAL-LAB CONFORMANCE SOURCE DING PASS');

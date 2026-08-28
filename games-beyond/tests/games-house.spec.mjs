@@ -28,6 +28,7 @@ async function openHouse(page) {
 }
 
 async function showRooms(page) {
+  await expect(page.locator('#toast')).not.toHaveClass(/\bshow\b/, { timeout: 5_000 });
   await page.locator('.nav [data-view="rooms"]').click();
   await expect(page.locator('.view[data-view="rooms"]')).toBeVisible();
 }
@@ -68,6 +69,7 @@ test('@inventory priority-eight proof lane is present in the mounted package', a
 });
 
 test('@priority-eight Open/Edit/Source/Export contact across the first proof set', async ({ page }) => {
+  test.setTimeout(90_000);
   await openHouse(page);
   await showRooms(page);
 

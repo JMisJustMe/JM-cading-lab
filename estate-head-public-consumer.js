@@ -1,6 +1,19 @@
 (() => {
   'use strict';
 
+  const path = location.pathname.replace(/\/+$/, '/');
+  if (!/\/games-beyond\/$/.test(path) && !/\/games-beyond\/index\.html$/.test(location.pathname)) return;
+  if (document.getElementById('jm-games-beyond-contact-safety-v1')) return;
+
+  const style = document.createElement('style');
+  style.id = 'jm-games-beyond-contact-safety-v1';
+  style.textContent = '.toast{pointer-events:none!important}';
+  document.head.appendChild(style);
+})();
+
+(() => {
+  'use strict';
+
   const script = document.currentScript;
   if (!script) return;
 

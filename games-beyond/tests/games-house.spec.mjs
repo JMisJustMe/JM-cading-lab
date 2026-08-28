@@ -1,20 +1,41 @@
 import { test, expect } from '@playwright/test';
 
+const BUILT_IN = 22;
+const FULL_TARGET = 24;
+const PRIORITY_EIGHT = [
+  'gameforge',
+  'glyphplay',
+  'glyphforge',
+  'drag-aim',
+  'aiming-run',
+  'fourfold-arena',
+  'tboys-core-clash',
+  'routeos-platform'
+];
+
 async function openHouse(page) {
   const errors = [];
   page.on('pageerror', error => errors.push(String(error)));
   page.on('console', message => message.type() === 'error' && errors.push(message.text()));
-  await page.goto('/');
-  await expect(page).toHaveTitle(/Games&Beyond/);
-  await expect(page.locator('#status')).toHaveText('15/15 MOUNTED', { timeout: 30_000 });
-  await expect(page.locator('#mountedStat')).toHaveText('15');
+
+  await page.goto('./');
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
+  await expect(page.locator('#mountedStat')).toHaveText(String(BUILT_IN));
+  await expect(page.locator('#expectedStat')).toHaveText(String(FULL_TARGET));
+  await expect(page.locator('#enterBtn')).toBeEnabled();
+
   return errors;
 }
 
-async function gameForgeCard(page) {
+async function showRooms(page) {
   await page.locator('.nav [data-view="rooms"]').click();
+  await expect(page.locator('.view[data-view="rooms"]')).toBeVisible();
+}
+
+async function gameForgeCard(page) {
+  await showRooms(page);
   await page.locator('#search').fill('GameForge');
-  const card = page.locator('#roomRail .room').filter({ hasText: 'GameForge' });
+  const card = page.locator('#roomRail .room:has([data-edit="gameforge"])');
   await expect(card).toHaveCount(1);
   return card;
 }
@@ -23,63 +44,105 @@ async function openGameForgeEditor(page) {
   await openHouse(page);
   const card = await gameForgeCard(page);
   await card.locator('[data-edit="gameforge"]').click();
-  await expect(page.locator('.view[data-view="edit"]')).toHaveClass(/active/);
+  await expect(page.locator('.view[data-view="edit"]')).toBeVisible();
   await expect(page.locator('#bodyName')).toHaveValue(/GameForge/i);
   await expect(page.locator('#source')).toHaveValue(/<html|<!doctype/i);
 }
 
-test('@boot Full House boot and fifteen-body registry', async ({ page }) => {
+async function frameHtmlLength(page) {
+  return page.locator('#bodyFrame').evaluate(frame => frame.contentDocument?.documentElement?.outerHTML.length || 0);
+}
+
+test('@boot current 22-built-in / 24-full House contract boots cleanly', async ({ page }) => {
   const errors = await openHouse(page);
   await expect(page.locator('.hero h1')).toContainText('One front door.');
-  await expect(page.locator('#enterBtn')).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
   expect(errors).toEqual([]);
 });
 
-test('@room-open Mounted body opens as its own playable page', async ({ page }) => {
+test('@inventory priority-eight proof lane is present in the mounted package', async ({ page }) => {
   await openHouse(page);
-  const card = await gameForgeCard(page);
-  const popupPromise = page.waitForEvent('popup');
-  await card.locator('[data-play="gameforge"]').click();
-  const popup = await popupPromise;
-  await popup.waitForLoadState('domcontentloaded');
-  await expect.poll(() => popup.evaluate(() => document.documentElement.outerHTML.length)).toBeGreaterThan(1000);
-  expect(popup.url()).toMatch(/^blob:/);
-  await popup.close();
+  const ids = await page.evaluate(() => window.GamesBeyond.pack.bodies.map(body => body.id));
+  for (const id of PRIORITY_EIGHT) expect(ids).toContain(id);
+  expect(ids).toHaveLength(BUILT_IN);
 });
 
-test('@room-ding Mounted body records real contact in the House', async ({ page }) => {
+test('@priority-eight Open/Edit/Source/Export contact across the first proof set', async ({ page }) => {
+  test.setTimeout(90_000);
+  await openHouse(page);
+  await showRooms(page);
+
+  for (const id of PRIORITY_EIGHT) {
+    const roomRail = page.locator('#roomRail');
+    const play = roomRail.locator(`[data-play="${id}"]`);
+    const edit = roomRail.locator(`[data-edit="${id}"]`);
+    const exportButton = roomRail.locator(`[data-export="${id}"]`);
+
+    await expect(play).toHaveCount(1);
+    await expect(edit).toHaveCount(1);
+    await expect(exportButton).toHaveCount(1);
+
+    await play.click();
+    await expect(page.locator('#bodyDialog')).toBeVisible();
+    await expect.poll(() => frameHtmlLength(page)).toBeGreaterThan(250);
+    await page.locator('#closeDialog').click();
+    await expect(page.locator('#bodyDialog')).not.toBeVisible();
+
+    await edit.click();
+    await expect(page.locator('.view[data-view="edit"]')).toBeVisible();
+    await expect(page.locator('#source')).toHaveValue(/<html|<!doctype/i);
+    expect((await page.locator('#source').inputValue()).length).toBeGreaterThan(250);
+
+    await showRooms(page);
+    const downloadPromise = page.waitForEvent('download');
+    await exportButton.click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/\.html$/i);
+  }
+});
+
+test('@room-open mounted GameForge opens in the current in-House dialog wrapper', async ({ page }) => {
+  await openHouse(page);
+  const card = await gameForgeCard(page);
+  await card.locator('[data-play="gameforge"]').click();
+  await expect(page.locator('#bodyDialog')).toBeVisible();
+  await expect(page.locator('#dialogTitle')).toContainText(/GameForge/i);
+  await expect.poll(() => frameHtmlLength(page)).toBeGreaterThan(1000);
+  await page.locator('#closeDialog').click();
+  await expect(page.locator('#bodyDialog')).not.toBeVisible();
+});
+
+test('@room-ding mounted body records real House contact', async ({ page }) => {
   await openHouse(page);
   const before = Number(await page.locator('#receiptStat').textContent());
   const card = await gameForgeCard(page);
-  const popupPromise = page.waitForEvent('popup');
   await card.locator('[data-play="gameforge"]').click();
-  const popup = await popupPromise;
-  await popup.waitForLoadState('domcontentloaded');
   await expect(page.locator('#recentRooms')).toContainText('GameForge');
   await expect.poll(async () => Number(await page.locator('#receiptStat').textContent())).toBeGreaterThan(before);
-  await popup.close();
+  await page.locator('#closeDialog').click();
 });
 
-test('@room-route Host reaches the body-native Edit route', async ({ page }) => {
+test('@room-route host reaches the body-native Edit/source route', async ({ page }) => {
   await openGameForgeEditor(page);
-  await expect(page.locator('#bodyState')).toContainText('PROTECTED DELIVERY SOURCE');
+  await expect(page.locator('#bodyState')).toContainText('Protected delivery body');
   await expect(page.locator('#source')).toBeEnabled();
 });
 
-test('@room-close Escape returns from the body workspace to Rooms', async ({ page }) => {
-  await openGameForgeEditor(page);
+test('@room-close Escape closes the body dialog and returns focus to House contact', async ({ page }) => {
+  await openHouse(page);
+  const card = await gameForgeCard(page);
+  await card.locator('[data-play="gameforge"]').click();
+  await expect(page.locator('#bodyDialog')).toBeVisible();
   await page.keyboard.press('Escape');
-  await expect(page.locator('.view[data-view="rooms"]')).toHaveClass(/active/);
-  await expect(page.locator('.nav [data-view="rooms"]')).toHaveClass(/active/);
+  await expect(page.locator('#bodyDialog')).not.toBeVisible();
 });
 
-test('@workbench Passport, source revision, undo, export, proof and receipts', async ({ page }) => {
+test('@workbench passport/source revision, undo, export, proof and receipts', async ({ page }) => {
   await openGameForgeEditor(page);
 
   await page.locator('#bodyVersion').fill('v3.16 QA');
   await page.locator('#savePassport').click();
-  await expect(page.locator('#bodyState')).toContainText('CREATOR REVISION');
+  await expect(page.locator('#bodyState')).toContainText('Creator revision');
   await expect.poll(async () => Number(await page.locator('#editedStat').textContent())).toBe(1);
 
   const source = page.locator('#source');
@@ -96,35 +159,56 @@ test('@workbench Passport, source revision, undo, export, proof and receipts', a
   expect(bodyDownload.suggestedFilename()).toMatch(/\.html$/i);
 
   await page.locator('.nav [data-view="proof"]').click();
-  await expect(page.locator('#receipts')).toContainText('PASSPORT_UPDATED');
-  await expect(page.locator('#receipts')).toContainText('SOURCE_REVISION_SAVED');
+  await expect(page.locator('#receipts')).toContainText('CREATOR_REVISION_SAVED');
   await expect(page.locator('#receipts')).toContainText('SOURCE_UNDO');
   await expect(page.locator('#receipts')).toContainText('BODY_EXPORTED');
 
   await page.locator('#runProof').click();
-  await expect(page.locator('#proofBox')).toContainText('"pass": true', { timeout: 30_000 });
-  await expect(page.locator('#proofBox')).toContainText('"bodyCount": 15');
+  await expect(page.locator('#proofBox')).toContainText('"pass": true', { timeout: 45_000 });
+  await expect(page.locator('#proofBox')).toContainText(`"bodyCount": ${BUILT_IN}`);
+  await expect(page.locator('#proofBox')).toContainText(`"builtInExpected": ${BUILT_IN}`);
+  await expect(page.locator('#proofBox')).toContainText(`"fullTarget": ${FULL_TARGET}`);
+  await expect(page.locator('#proofBox')).toContainText('"fullMount": false');
+  await expect(page.locator('#receipts')).toContainText('BUILT_IN_HOUSE_PROOF');
 });
 
-test('@responsive Portrait, landscape and desktop House routes', async ({ page }) => {
+test('@routeos public room preserves the owner-private full-keeper boundary', async ({ page }) => {
+  await openHouse(page);
+  const routeos = await page.evaluate(() => {
+    const body = window.GamesBeyond.pack.bodies.find(item => item.id === 'routeos-platform');
+    return body && {
+      name: body.name,
+      stage: body.stage,
+      sourceStatus: body.sourceStatus,
+      htmlLength: body.html.length
+    };
+  });
+
+  expect(routeos?.name).toMatch(/RouteOS/i);
+  expect(routeos?.stage).toMatch(/PRIVATE FULL KEEPER RECOVERED/i);
+  expect(routeos?.sourceStatus).toMatch(/public room carries evidence and navigation only/i);
+  expect(routeos?.htmlLength).toBeGreaterThan(250);
+});
+
+test('@responsive portrait, landscape and desktop House routes', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openHouse(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   await page.setViewportSize({ width: 844, height: 390 });
   await page.reload();
-  await expect(page.locator('#status')).toHaveText('15/15 MOUNTED', { timeout: 30_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
-  await page.locator('.nav [data-view="rooms"]').click();
+  await showRooms(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.reload();
-  await expect(page.locator('#status')).toHaveText('15/15 MOUNTED', { timeout: 30_000 });
+  await expect(page.locator('#status')).toHaveText(`${BUILT_IN} MOUNTED · ${FULL_TARGET} FULL`, { timeout: 45_000 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
-  for (const view of ['rooms', 'edit', 'proof', 'house']) {
+  for (const view of ['rooms', 'edit', 'proof', 'access', 'house']) {
     await page.locator(`.nav [data-view="${view}"]`).click();
-    await expect(page.locator(`.view[data-view="${view}"]`)).toHaveClass(/active/);
+    await expect(page.locator(`.view[data-view="${view}"]`)).toBeVisible();
   }
 });

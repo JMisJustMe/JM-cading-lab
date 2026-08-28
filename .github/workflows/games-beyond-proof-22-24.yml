@@ -1,0 +1,47 @@
+name: Games&Beyond 22-24 Proof
+
+on:
+  pull_request:
+    paths:
+      - 'games-beyond/**'
+      - '.github/workflows/games-beyond-proof-22-24.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: games-beyond
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install House dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Games&Beyond 22/24 browser proof only
+        run: npx playwright test tests/games-house.spec.mjs
+
+      - name: Upload Playwright failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: games-beyond-proof-failure-evidence
+          path: |
+            games-beyond/test-results/
+            games-beyond/playwright-report/
+          if-no-files-found: ignore

@@ -27,8 +27,14 @@ async function openHouse(page) {
   return errors;
 }
 
+async function waitForAccessibilitySweep(page) {
+  const toast = page.locator('#toast');
+  await expect(toast).toHaveText(/accessibility sweep complete/i, { timeout: 45_000 });
+  await expect(toast).not.toHaveClass(/\bshow\b/, { timeout: 5_000 });
+}
+
 async function showRooms(page) {
-  await expect(page.locator('#toast')).not.toHaveClass(/\bshow\b/, { timeout: 5_000 });
+  await waitForAccessibilitySweep(page);
   await page.locator('.nav [data-view="rooms"]').click();
   await expect(page.locator('.view[data-view="rooms"]')).toBeVisible();
 }

@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-28  
 **Scope:** Whole-Estate wave-state routing. This register does **not** merge programmes merely because they use the same wave number.  
-**Current terminal reading:** assistant-side/internal wave floors are exhausted at the presently connected boundary; remaining gates are explicitly forward/native-individuality, large-binary transport backend, authority/head selection, Library mutation backend, or lived external/device/private gates.
+**Current terminal reading:** assistant-side/internal wave floors are exhausted at the presently connected boundary; remaining gates are explicitly forward/native-individuality, large-binary transport backend, authority/head selection, Library mutation/backend-layout, or lived external/device/private gates.
 
 ## Governing law
 
@@ -10,40 +10,95 @@
 `RECOVER BEFORE REBUILD.`  
 `MESH ≠ MERGE.`  
 `PUBLIC SOURCE ≠ PRIVATE CUSTODY ≠ DEVICE DING.`  
-`NO DING, NO CLAIM.`
+`NO DING, NO CLAIM.`  
+`ACT → BACKEND RESULT → POST-STATE → DING.`
+
+The companion authority `estate-governance/JM_ALL_WAVE_CONSEQUENCE_REVALIDATION_v1_0.md` records the consequence-level replay that checks backend result and persisted state rather than trusting progress narration.
 
 ## 1. Formula × Theory activation programme
 
-The recovered programme has a Runtime Rollout floor followed by Wider-Estate Waves 2–9. Their automated/internal proof floors are closed and must not be reopened as generic unfinished work.
+The recovered programme has a **Runtime Rollout v1.0** activation floor followed by Wider-Estate Waves 2–9. There is no separately recovered `Wider Estate Wave 1`; for consequence-revalidation ordering, Runtime Rollout is treated as Wave 1 because Wider Estate Wave 2 names it as its parent rollout.
 
-| Stage | Internal proof state | Remaining lawful boundary |
-|---|---|---|
-| Runtime Rollout | 34/34 PASS | browser/device contact is separate |
-| Wider Estate Wave 2 | 42/42 PASS | outward/contact crowns separate |
-| Wider Estate Wave 3 | 46/46 PASS | changed descendants need their own contact |
-| Wider Estate Wave 4 | 57/57 PASS | external/device crowns separate |
-| Wider Estate Wave 5 | 35/35 PASS | external/device crowns separate |
-| Wider Estate Wave 6 | 64/64 PASS | five byte-identical root storage shadows are backend-delete blocked; canonical copies are intact |
-| Wider Estate Wave 7 | 51/51 PASS | physical release gates open |
-| Wider Estate Wave 8 | 52/52 PASS | external owner/contact gates open |
-| Wider Estate Wave 9 | 72/72 PASS | physical external crowns open |
+Their automated/internal proof floors remain closed, but package and Library-mount consequences are now separately qualified.
+
+| Stage | Internal proof state | Consequence-revalidated state | Remaining lawful boundary |
+|---|---|---|---|
+| Runtime Rollout / Wave 1 | 34/34 PASS | 16/16 package members exact; structured mount real; two exact root shadows | browser/device contact separate; harmless duplicate housekeeping |
+| Wider Estate Wave 2 | 42/42 PASS | 12/12 package members exact; ZIP structured; Library body flat; rehouse `no_shard` blocked | outward/contact crowns + backend layout |
+| Wider Estate Wave 3 | 46/46 PASS | 13/13 package members exact; ZIP structured; Library body flat; rehouse backend blocked | changed-descendant contact + backend layout |
+| Wider Estate Wave 4 | 57/57 PASS | 14/14 package members exact; ZIP structured; Library body flat; rehouse backend blocked | external/device crowns + backend layout |
+| Wider Estate Wave 5 | 35/35 PASS | 12/12 package members exact; ZIP structured; Library body flat; rehouse backend blocked | external/device crowns + backend layout |
+| Wider Estate Wave 6 | 64/64 PASS | 15/15 package members exact; structured mount real; five exact root shadows; 0/5 deleted | duplicate deletion backend blocked |
+| Wider Estate Wave 7 | 51/51 PASS | canonical ZIP repaired, persisted and read back; 15/15 members exact | physical release gates open |
+| Wider Estate Wave 8 | 52/52 PASS | canonical ZIP repaired, persisted and read back; 15/15 members exact | external owner/contact gates open |
+| Wider Estate Wave 9 | 72/72 PASS | canonical ZIP repaired, persisted and read back; 15/15 members exact | physical external crowns open |
 
 **Formula × Theory Wave 10 is not established by the recovered authority.** Do not fabricate it from another programme's numbering.
 
-### Wave 6 housekeeping blocker
+### Package receipts repaired by consequence replay
 
-Five root-level files were independently proved byte-identical to their correctly filed canonical copies: OPEN_FIRST, SYNTAX_QA, TEST_RECEIPT, CLOSEOUT and MANIFEST. The Library mutation backend refuses deletion unless it supplies a stable `library_file_id`, which current search/list results do not expose. This is **platform housekeeping blocked**, not unfinished theory/proof work. Canonical copies are protected and the duplicate identity question is closed.
+The previously absent canonical ZIPs for Waves 7–9 are now real Library consequences, not UI claims:
+
+- Wave 7 — **151,802 B** — SHA-256 `b6bef520c08f1a9f99e88aeff54a3a0069d09d88337e57f0fdb3776b7c33dc16` — 15/15 members exact.
+- Wave 8 — **3,424,873 B** — SHA-256 `568cc3bc6367a981c6921eab73b4741c881729852d965f5c6913c2e917cb3968` — 15/15 exact.
+- Wave 9 — **107,940 B** — SHA-256 `012744eaf990e3a53a33b98b997e5b888cd5ff1031ce55db11b3e50cccbe8286` — 15/15 exact.
+
+Each was built from the 14 manifest-declared mounted canonical members plus the manifest receipt, uploaded, materialized back from Library, re-hashed and reopened.
+
+### Library-layout / housekeeping blockers
+
+**Waves 2–5:** their persisted ZIP carriers are correctly structured and exact, but the canonical Library wave roots are physically flat. A no-rebuild repair attempted to move the exact existing objects into manifest-declared subfolders. The backend returned `no_shard` / Sediment failures for the moves, and post-state proved the original flat files remained intact. This is **Library rehouse/backend blocked**, not source or package failure. Do not duplicate-upload the same bodies merely to simulate a successful move.
+
+**Wave 6:** five root-level files are byte-identical shadows of canonical copies: OPEN_FIRST, SYNTAX_QA, TEST_RECEIPT, CLOSEOUT and MANIFEST. Two delete attempts returned five failures because the mutation backend requires a stable `library_file_id` not exposed for these objects. Fresh post-state listing proves all five remain physically present. Truth: **5/5 duplicate identity proved · 0/5 deleted**.
+
+**Wave 1:** two root-level shadows were also proved byte-identical to their nested canonical bodies; no divergent source identity exists.
 
 ## 2. Coding Estate wave programme
 
 Coding-body Waves 1–10 are a **different programme** from Formula × Theory. Coding Wave 10 is the embodied / speech / meaning route family. Shared numbering does not imply shared authority or continuation.
 
-The recovered sovereign-body register marks the current constructible machine scope as **`CURRENT_CONSTRUCTIBLE_MACHINE_SCOPE_PROVEN_PR62`** across the wave population. The separate **`CROWN32_NATIVE_INDIVIDUALITY_OPEN`** state is a later per-body native-individuality / exact-native-conformance programme; it is forward proof/development, not evidence that Waves 1–10 failed to close their current constructible floor.
+### Original Waves 1–10 / first 100 bodies
+
+PR #62 is **open, draft and unmerged**. It is therefore not a main-merge consequence.
+
+Its exact head `b16731ae41159564a099c926dee577fc25bddaf5` nevertheless has real branch-level machine proof:
+
+- `Sovereign 100 machine / parity` run **30600740725**;
+- job **91062616532**;
+- result **SUCCESS**;
+- 100 separate kernels, runtime boot/smoke, 100×100 parity/federation, all 100 GRUB entries, deterministic ISO and freeze receipt passed;
+- artifact digest `sha256:6999ef104fb6b3aa3bdf521607ba5c60cb3e25217e1b667adf79b8071612edaf`.
+
+Therefore the original Waves 1–10 / first-100 current-constructible machine/parity floor is **PROVED ON PR62 BRANCH LINEAGE**, not merged to main.
+
+### Post-100 engineering-ecology extension 101–105
+
+Bodies 101–105 are a later extension and are not retroactively part of PR62's first-100 proof.
+
+The real 105-body consequence is a later descendant on PR161 ancestry:
+
+- exact proved SHA `ab3779a63be7daaf5d74453d3cac0dc39baafef6`;
+- workflow `JM 105 Sovereign Body Parity Descendant`;
+- run **33034424009**;
+- job **98393918300** (`parity-105`);
+- result **SUCCESS**;
+- 105 registry contact, 105 semantic isolated runtimes, 105 machine-booted QEMU kernels, 105 selections / 104 identity-preserving handoffs, 105-kernel federation, all 105 GRUB selections and 105-body freeze boundary passed;
+- artifact `JM_105_CURRENT_SCOPE_FREEZE_v1.4` — **3,958,290 B** — digest `sha256:2642cf3bea7fc9a0c0374ceb1155d67f130db4affaea40512959c800aca1f80b`.
+
+PR #161 is also draft/unmerged; this remains branch-descendant proof, not a main-merge claim.
+
+A later change to `body-registry-extension-03.json` preserved the five engineering bodies' operative entries while adding the current role-qualified subject-identity boundary:
+
+**MEMBER OF X HOUSE != IS AN X.**
+
+The five entries remain engineering-ecology members. Under the role-qualified census only census 104, **JM Visualang**, is an intrinsic coding identity; 101, 102, 103 and 105 are adjacent/non-code engineering bodies. Generated 105-body parity therefore does **not** redefine the Coding Estate as 105 literal coding identities.
 
 Therefore:
-- Waves 1–10 current constructible/engineering floor: **CLOSED FOR CURRENT SCOPE**.
-- native individuality / deeper sensor, parser, native-runtime or historical-conformance crowns: **FORWARD PROGRAMME OPEN**.
-- no Coding Wave is to be reopened merely because a later Crown32 body remains open.
+- Coding Waves 1–10 / first 100 current-constructible machine floor: **BRANCH-PROVED FOR CURRENT SCOPE**.
+- post-100 101–105 engineering-ecology parity extension: **BRANCH-PROVED ON ITS EXACT LATER SHA**.
+- PR62 / PR161 merge-to-main: **NOT CLAIMED**.
+- role-qualified coding census: remains authoritative for intrinsic coding-identity count.
+- native individuality / deeper sensor, parser, native-runtime, self-hosting or exact historical-conformance crowns: **FORWARD PROGRAMME OPEN**.
 
 ## 3. Apps / Tools / Games public-source Wave 2
 
@@ -89,7 +144,7 @@ CODEBODY Shatter Halo Arena Route, Fight Clash Boxing/Ring-Out and JM Cartridge 
 
 Historical storage-maintenance wave receipts remain authoritative. The Living Library receipt index records machine/human closeout across Wave 1, Wave 2 and Waves 3–6, followed by frozen chamber transition and later maintenance receipts. Do not replay historical deletions from memory.
 
-Where a historical receipt records preservation/trash/quash rather than permanent erase, that state remains binding unless a new exact object-level audit explicitly reopens it. The only current named wave-housekeeping residue is the Formula × Theory Wave-6 five-file duplicate deletion backend block described above.
+Where a historical receipt records preservation/trash/quash rather than permanent erase, that state remains binding unless a new exact object-level audit explicitly reopens it. A progress/completion label never supersedes the underlying mutation receipt or current post-state.
 
 ## 5. Irreducible external / future-proof classes
 
@@ -103,10 +158,12 @@ The following classes are **not assistant-side missing wave work** once their cu
 - large-binary Release/LFS/native upload when the connected write surface lacks that action;
 - per-body native-individuality or Crown32 forward proof beyond the established current constructible Coding floor;
 - explicit current-head selection where recovered authority says the head is unproven;
-- Library deletion where the mutation backend withholds the stable identifier required to act.
+- Library deletion or rehouse where the mutation backend withholds the stable identifier/shard route required to act.
 
 ## Terminal closure rule
 
-**Every recovered wave programme now has its current assistant-side/internal floor either closed or precisely classified at a non-assistant boundary.**
+**Every recovered wave programme now has its current assistant-side/internal floor either consequence-verified, repaired and consequence-verified, or precisely classified at a backend/authority/external boundary.**
 
-A completed internal wave floor stays closed. A later descendant may open a new proof lane without reopening its ancestors. A transport/backend failure is classified as a transport/backend gate, never rewritten as source failure. An unproven head is preserved as an authority hold, never promoted by convenience. A physical/device/private crown is never inferred from software proof.
+A completed internal wave floor stays closed. A later descendant may open a new proof lane without reopening its ancestors. A transport/backend failure is classified as a transport/backend gate, never rewritten as source failure. An unproven head is preserved as an authority hold, never promoted by convenience. A physical/device/private crown is never inferred from software proof. A branch workflow success is not a merge-to-main claim.
+
+**THE UI MAY REPORT AN ATTEMPT. ONLY THE CONSEQUENCE MAY REPORT SUCCESS.**

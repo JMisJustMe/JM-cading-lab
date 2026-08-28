@@ -131,6 +131,8 @@ jobs:
           index = (root / 'index.html').read_text(encoding='utf-8')
           app = (root / 'app.js').read_text(encoding='utf-8')
           worker = (root / 'sw.js').read_text(encoding='utf-8')
+          if '<title>Games&Beyond' not in index:
+              raise SystemExit('MISSING_GAMES_BEYOND_TITLE')
           required = [
               'HOUSE', 'ROOMS', 'EDIT', 'PROOF',
               'OPEN BODY', 'SAVE REVISION', 'UNDO',

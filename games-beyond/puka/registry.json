@@ -12,16 +12,26 @@
   "sharedCore":"puka-core.js",
   "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg"],
+  "browserProofContexts":[
+    "390x844 Android touch portrait",
+    "844x390 Android touch landscape",
+    "1440x1000 Games&Beyond desktop",
+    "412x915 Visual Lab Android touch",
+    "1440x900 Visual Lab desktop"
+  ],
   "v11Changes":[
     "preserved the v0.10 living-table body and all poker state authorities unchanged",
-    "adopted the Games&Beyond browser acceptance viewports: 390x844 portrait, 844x390 landscape and 1440x1000 desktop",
-    "added exact zero-horizontal-overflow browser gates at all three estate acceptance viewports",
-    "added real browser table-entry contact and portrait-landscape-return continuity proof",
-    "raised profile and evidence summary contacts from the prior 36px source rule to the estate 44px interaction floor",
+    "adopted Games&Beyond responsive acceptance at 390x844 portrait, 844x390 landscape and 1440x1000 desktop",
+    "adopted Visual Systems Lab proof discipline requiring separate real desktop and Android-touch contexts rather than same-size page resizing alone",
+    "added exact real-output-viewport identity checks and zero-horizontal-overflow gates",
+    "added viewport-only ready and active screenshots as proof evidence instead of treating full-document or same-size screenshots as viewport proof",
+    "added a protected PUKA table-field floor so the main visual body cannot silently collapse while the document still fits",
+    "added real table-entry contact and Android-touch portrait-landscape-return continuity proof",
+    "raised compact profile, evidence, action, suit and deal contacts to the estate 44px interaction floor",
     "added a focus-only skip door to the main play body and polite live status announcements",
     "preserved browser zoom and text scaling by avoiding user-scalable or maximum-scale restrictions",
     "retained safe-area and reduced-motion routes without adding permanent interface chrome",
-    "kept automated browser acceptance separate from owner-side visual-quality and physical-device acceptance"
+    "kept real-viewport structural proof separate from owner-side aesthetic visual-quality acceptance and physical-device Cold Ding"
   ],
   "laws":[
     "No restart: restore before rebuild",
@@ -36,8 +46,9 @@
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
     "Visible interactive contacts use a 44px minimum estate floor",
-    "Estate browser acceptance includes 390x844 portrait, 844x390 landscape and 1440x1000 desktop with zero horizontal overflow",
-    "Automated browser acceptance does not equal owner physical-device acceptance",
+    "Estate browser acceptance uses real separate contexts, exact requested viewport identity and zero horizontal overflow",
+    "Viewport proof uses viewport-only screenshots from the rendered output context; same-size screenshots alone do not prove viewport context",
+    "Real-viewport structural proof does not equal aesthetic crown or owner physical-device acceptance",
     "Visual quality is a completion gate, not decoration after completion",
     "Observation != interpretation != fact",
     "Different games may share organs without sharing identities",
@@ -45,5 +56,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Estate-conformance stage. Automated source/core/layout/art/world/material/theatre/living-table and browser-responsive/contact gates plus public HTTP contact may Ding independently; owner-side visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate."
+  "claimBoundary":"Estate-conformance stage. Automated source/core/layout/art/world/material/theatre/living-table, separate desktop and Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently; owner-side aesthetic visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate."
 }

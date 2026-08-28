@@ -1,8 +1,8 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.9A",
-  "verified_utc": "2026-08-26T22:52:57.937314+00:00",
-  "source_commit": "4259c74622c394e3599015215d855ba2a4d00e9f",
-  "workflow_run": "33021128335",
+  "schema": "JM.PUKA.ProofReceipt/0.10A",
+  "verified_utc": "2026-08-28T12:01:21.321002+00:00",
+  "source_commit": "6ed8e827ae499299aacbd969f2d3862ad205f494",
+  "workflow_run": "33169354337",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
@@ -16,17 +16,21 @@
     "puka-v08.css",
     "puka-v08-academy.css",
     "puka-v09.css",
+    "puka-v10.css",
     "puka-cards-v05.js",
     "puka-character-v06.js",
     "puka-world-v07.js",
-    "puka-table-theatre-v09.js"
+    "puka-table-theatre-v09.js",
+    "puka-living-table-v10.js"
   ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-v10.css",
+    "puka-living-table-v10.js",
+    "assets/puka-chip-column-v10.svg",
     "puka-v09.css",
     "puka-table-theatre-v09.js",
-    "assets/puka-dealer-medallion-v09.svg",
     "assets/puka-board-runway-v09.svg",
     "puka-v08.css",
     "puka-v08-academy.css",
@@ -35,5 +39,5 @@
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
+  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre/living-table tests and public HTTP contact passed. Owner-side visual-quality acceptance, portrait/landscape fit, lifecycle persistence and Cold Ding remain separate."
 }

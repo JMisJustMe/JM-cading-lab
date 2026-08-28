@@ -1,0 +1,43 @@
+name: Role-qualified 61 identity authority
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json"
+      - "coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py"
+      - "estate-governance/JM_ROLE_QUALIFIED_CODING_IDENTITY_AUTHORITY_v1_0.md"
+      - ".github/workflows/role-qualified-61-authority.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  identity-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate role-qualified coding census
+        run: |
+          python coding-estate/everybody/role-qualified-61/validate_role_qualified_61.py \
+            --out "$RUNNER_TEMP/ROLE_QUALIFIED_61_IDENTITY.json"
+
+      - name: Confirm governance boundary markers
+        run: |
+          grep -Fq 'MEMBER OF X HOUSE != IS AN X.' estate-governance/JM_ROLE_QUALIFIED_CODING_IDENTITY_AUTHORITY_v1_0.md
+          grep -Fq 'IDENTITY CLOSURE != IMPLEMENTATION CLOSURE.' estate-governance/JM_ROLE_QUALIFIED_CODING_IDENTITY_AUTHORITY_v1_0.md
+          grep -Fq '61 actual coding identities + 44 adjacent/non-code engineering organs = 105 engineering-ecology members' estate-governance/JM_ROLE_QUALIFIED_CODING_IDENTITY_AUTHORITY_v1_0.md
+
+      - name: Upload identity receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-role-qualified-61-identity-authority
+          path: ${{ runner.temp }}/ROLE_QUALIFIED_61_IDENTITY.json
+          if-no-files-found: error

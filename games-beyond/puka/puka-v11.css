@@ -1,0 +1,45 @@
+/* PUKA v0.11A — estate conformance layer.
+   Governing purpose: protect contact, fit and accessibility without replacing the visual/game bodies. */
+
+/* PLAYFORM / Games&Beyond contact floor: visible controls must not collapse below 44px. */
+button,summary{min-height:44px}
+.intro summary,.evidence summary{min-height:44px}
+
+/* Keyboard/direct-navigation door. Hidden until contacted; no permanent chrome added. */
+.skip-link{
+  position:fixed;
+  z-index:1000;
+  left:max(8px,env(safe-area-inset-left));
+  top:max(8px,env(safe-area-inset-top));
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  padding:8px 12px;
+  border:1px solid var(--gold);
+  border-radius:12px;
+  background:#080b09;
+  color:#fff0a8;
+  font-weight:900;
+  text-decoration:none;
+  transform:translateY(calc(-100% - 24px));
+  transition:transform .16s ease-out;
+}
+.skip-link:focus,.skip-link:focus-visible{transform:translateY(0)}
+
+/* Safe-area contact must survive browser chrome and installed-PWA cut-outs. */
+.top{
+  height:auto;
+  min-height:62px;
+  padding-top:max(8px,env(safe-area-inset-top));
+}
+.shell{padding-bottom:max(8px,env(safe-area-inset-bottom))}
+
+/* Preserve readable contact labels while letting the playfield remain the primary body. */
+.coachgrid small{line-height:1.15}
+.status,.court-ribbon,.player-label,.coachgrid{font-variant-numeric:tabular-nums}
+
+/* Estate accessibility rail: reduced motion means presentation must remain usable without motion. */
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto}
+  .skip-link{transition:none}
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "jm.codifying.source-aware-maturation-contract/1.0",
+  "date": "2026-08-28",
+  "body": "Codifying",
+  "identity": "actual coding identity",
+  "source_truth_tier": "RECONSTRUCTED_EXECUTABLE_DESCENDANT",
+  "historicalRecoveryClaim": false,
+  "current_native_donor": {
+    "path": "coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs",
+    "git_blob_sha1": "bc82c44ce56ec48c6fa09e42a57529b1b91c47dc",
+    "role": "strong present-day specialist donor; not historical-original source"
+  },
+  "current_reconstructed_grammar": {
+    "body_form": "codex NAME { field NAME: TYPE [= DEFAULT]; require EXPR; emit NAME }",
+    "ast": "CodifyingProgram -> Codex -> CodexField",
+    "ir": "CodexSchemaSet -> CodexSchemaIR with field/constraint/emission nodes",
+    "runtime": "CodifiedRecord with typed record, stable encoding, digest, trace and receipt"
+  },
+  "semantic_boundary": {
+    "keeper": "TYPED MATERIALISATION != SILENT COERCION",
+    "meaning": "declared fields and constraints govern materialisation; wrong types and missing required values fail closed rather than being silently reshaped"
+  },
+  "maturation_obligations": [
+    "prove defaults are applied without mutating the caller input",
+    "prove object/list inputs are cloned into the codified record rather than aliased",
+    "prove required-field, duplicate-field, type and constraint failures remain distinct",
+    "prove named codex selection and unknown-codex rejection",
+    "prove stable encoding, record digest and trace are deterministic",
+    "maintain historicalRecoveryClaim=false until stronger historical source is actually recovered"
+  ],
+  "claim_ceiling": [
+    "no historical-original Codifying source recovered",
+    "no self-hosting crown",
+    "no implicit type-coercion claim",
+    "no body-specific final F/L/A/Z crown"
+  ],
+  "keeper": "RECOVER BEFORE REBUILD; WHEN RECOVERY DOES NOT YIELD THE ORIGINAL, BUILD FORWARD WITHOUT FORGING AN ANCESTOR."
+}

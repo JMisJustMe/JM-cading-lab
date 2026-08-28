@@ -1,0 +1,32 @@
+name: Validate Wave 2 current-source closeout
+
+on:
+  push:
+    branches:
+      - "wave2/final-public-carriage-closeout"
+    paths:
+      - "apps-tools-games/wave2/current-source/**"
+      - "wave2-public/current-source/**"
+      - ".github/workflows/wave2-current-source-closeout.yml"
+  pull_request:
+    paths:
+      - "apps-tools-games/wave2/current-source/**"
+      - "wave2-public/current-source/**"
+      - ".github/workflows/wave2-current-source-closeout.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-current-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify exact source carriage and boundaries
+        run: python wave2-public/current-source/verify_current_source_publication.py

@@ -1,0 +1,54 @@
+{
+  "schema": "jm.build-execution-policy/0.1",
+  "name": "JM Default Execution Body v0.1",
+  "purpose": "Drive an authorized serious JM build through explicit execution states without manufacturing runtime/contact/closure proof or bypassing the build's native safeguards.",
+  "initial_state": "AUTHORIZED",
+  "normal_path": [
+    "AUTHORIZED",
+    "COMPOSING",
+    "CONTACTABLE",
+    "PROVING",
+    "PASS",
+    "CLOSING",
+    "CLOSED"
+  ],
+  "normal_transitions": {
+    "AUTHORIZED": ["COMPOSING"],
+    "COMPOSING": ["CONTACTABLE"],
+    "CONTACTABLE": ["PROVING"],
+    "PROVING": ["PASS"],
+    "PASS": ["CLOSING"],
+    "CLOSING": ["CLOSED"],
+    "CLOSED": []
+  },
+  "escalatable_states": [
+    "COMPOSING",
+    "CONTACTABLE",
+    "PROVING",
+    "PASS",
+    "CLOSING"
+  ],
+  "escalation_state": "ESCALATED",
+  "gate_states": ["OPEN", "PASS", "FAIL", "N/A"],
+  "rules": {
+    "authorization": "Execution may initialize only from a prospective Build Route Manifest whose state.build_authorized_by_manifest is true.",
+    "new_capability_boundary": "Build execution authorization does not itself authorize new capability creation. The manifest's true_gaps.new_capability_creation_authorized remains a separate explicit claim.",
+    "evidence": "Every state transition after initialization requires at least one evidence reference or receipt note.",
+    "contactable": "CONTACTABLE means a real test/contact surface or executable interaction path exists; it does not claim that user contact has occurred.",
+    "proving": "Before entering PROVING, register at least one applicable native/proof gate, or explicitly record why no native gate applies.",
+    "pass": "PASS is forbidden while any registered gate is OPEN or FAIL. At least one gate must exist unless a no-native-gates justification is explicitly recorded.",
+    "escalation": "A Ding/failure routes the execution to ESCALATED and records the prior state as resume_state. Repair returns to that state; unrelated bodies are not rebuilt by this mechanism.",
+    "closure": "CLOSING/CLOSED remain forbidden if any registered gate is OPEN or FAIL. CLOSED is execution-route closure only; freeze/lock/anchor/mount claims still require their own applicable evidence and built-ins.",
+    "claim_boundary": "The execution ledger proves state routing and recorded evidence references only. It does not manufacture the evidence it points to."
+  },
+  "laws": [
+    "Estate -> creation, not creation -> eventually remembers Estate.",
+    "Recover before rebuild.",
+    "Built-ins first; never bypass a native safeguard to obtain green status.",
+    "Evidence can remove unnecessary operator repetition, but manual contact remains escalation when the target itself must be contacted or evidence is insufficient.",
+    "No Ding, no claim; a Ding must remain traceable through recovery.",
+    "Fail local -> contain -> trace -> recover -> correct responsible organ forward -> retest affected gate.",
+    "Frozen ancestors remain immutable; execution of repairs proceeds on a forward descendant.",
+    "Close only what is actually proven."
+  ]
+}

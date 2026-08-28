@@ -1,0 +1,54 @@
+{
+  "schema": "jm.build-closure-policy/0.1",
+  "name": "JM Closure & Handoff Body v0.1",
+  "purpose": "Route an execution-closed serious JM build through applicable packaging, freeze, lock, anchor, mount, recovery-pointer and handoff stages without manufacturing the external/native proof those stages require.",
+  "ordered_stages": [
+    "PACKAGE",
+    "FREEZE",
+    "LOCK",
+    "ANCHOR",
+    "MOUNT",
+    "RECOVERY_POINTER",
+    "HANDOFF"
+  ],
+  "stage_states": ["OPEN", "PASS", "FAIL", "N/A"],
+  "initial_state": "CLOSURE_OPEN",
+  "complete_state": "HANDOFF_COMPLETE",
+  "forward_state": "FORWARD_READY",
+  "donor_authorities": [
+    {
+      "name": "JM Operational Finish Freeze Lock Anchor Mount v1.0",
+      "reference": "branch:jm/estate-operational-finish-freeze-v1-0/JM_ESTATE/GOVERNANCE/OPERATIONAL_FINISH_FREEZE_LOCK_ANCHOR_MOUNT_v1.0.json",
+      "role": "Existing freeze/lock/anchor/mount receipt semantics and Zionfolder/registry-anchor pattern."
+    },
+    {
+      "name": "THE INSTRUCTION HANDOFF v1.0",
+      "reference": "branch:jm/estate-operational-finish-freeze-v1-0/JM_ESTATE/GOVERNANCE/THE_INSTRUCTION_HANDOFF_v1.0/FREEZE_LOCK_ANCHOR.md",
+      "role": "Existing handoff continuity/provenance law."
+    }
+  ],
+  "rules": {
+    "entry": "Closure may initialize only from JM Default Execution Body state CLOSED with closure.execution_closed=true.",
+    "evidence": "PASS requires one or more evidence references. N/A requires an explicit reason. The closure ledger records claims and evidence references; it does not manufacture the external/native event.",
+    "order": "A later stage cannot resolve PASS/N/A while any earlier stage remains OPEN or FAIL.",
+    "fail_closed": "Any FAIL stage blocks all later closure and FORWARD_READY state until corrected and retested.",
+    "package": "Packaging is applicable only when the body actually has a package/artifact requirement. If not applicable, record N/A with reason rather than creating ceremony.",
+    "freeze": "FREEZE PASS means an external/native freeze receipt or immutable keeper evidence exists. The closure router itself cannot freeze a body.",
+    "lock": "LOCK PASS requires FREEZE already resolved PASS/N/A and evidence of the applicable lock mechanism.",
+    "anchor": "ANCHOR PASS requires prior closure stages resolved and an evidence-backed anchor/registry/branch receipt as applicable.",
+    "mount": "MOUNT PASS requires prior stages resolved and evidence of the applicable Zionfolder/registry/storage mount. A path string alone is not proof of mount.",
+    "recovery_pointer": "RECOVERY_POINTER PASS requires a concrete recoverable pointer plus evidence that it resolves to the current keeper or recovery route.",
+    "handoff": "HANDOFF PASS requires all earlier stages resolved and a traceable continuity handoff. It must preserve source/keeper lineage and cannot silently transfer authority by recency alone.",
+    "forward": "FORWARD_READY is earned only after HANDOFF PASS/N/A and no FAIL/OPEN stages remain. If FREEZE is PASS, future change must proceed as a descendant/forward body rather than mutating the frozen keeper.",
+    "claim_boundary": "Closure-route completion is not runtime/contact/crown proof. It also does not retroactively upgrade weaker evidence into a freeze, anchor, mount or handoff receipt."
+  },
+  "laws": [
+    "Recover before rebuild.",
+    "Built-ins first; never bypass a native safeguard to obtain green status.",
+    "Evidence can remove unnecessary operator repetition, but cannot substitute for a built-in that itself requires contact.",
+    "Later is not automatically stronger.",
+    "A handoff is the route through which difference gains legitimate control of continuity.",
+    "Frozen ancestors remain immutable; correct forward.",
+    "Close only what is actually proven."
+  ]
+}

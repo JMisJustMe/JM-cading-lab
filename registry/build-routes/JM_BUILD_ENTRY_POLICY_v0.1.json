@@ -1,0 +1,90 @@
+{
+  "schema": "jm.build-entry-policy/0.1",
+  "name": "JM Build Entry Gate v0.1.1",
+  "purpose": "Require a prospective JM Build Route Manifest at the front door of high-confidence new or descendant executable bodies, with automatic Estate intake upstream and an explicit fail-closed authorization state before implementation proceeds. Ordinary repairs, governance, recovery, registry maintenance, and documentation are not turned into paperwork rituals.",
+  "enforcement": {
+    "future_prs_after": 142,
+    "meaning": "PRs numbered 142 or lower are legacy-active work and are not retroactively blocked. PR 143+ receives hard enforcement when the classifier detects a high-confidence new executable body."
+  },
+  "executable_roots": [
+    "apps",
+    "games",
+    "games-beyond",
+    "coding-estate",
+    "tools",
+    "fresh-app-lab",
+    "onegame",
+    "bodymesh",
+    "bodyweave",
+    "visual-systems-lab",
+    "mmzg-runtime-v0.6",
+    "functions",
+    "website"
+  ],
+  "non_build_roots": [
+    ".github",
+    "docs",
+    "registry",
+    "_registry",
+    "governance",
+    "recovery",
+    "recent",
+    "lyrics"
+  ],
+  "production_suffixes": [
+    ".html",
+    ".js",
+    ".mjs",
+    ".cjs",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".py",
+    ".java",
+    ".kt",
+    ".kts",
+    ".rs",
+    ".c",
+    ".cc",
+    ".cpp",
+    ".h",
+    ".hpp",
+    ".wat",
+    ".wasm"
+  ],
+  "production_basenames": [
+    "package.json",
+    "AndroidManifest.xml",
+    "wrangler.toml",
+    "build.gradle",
+    "build.gradle.kts",
+    "settings.gradle",
+    "settings.gradle.kts"
+  ],
+  "manifest_glob": "registry/build-routes/*_BUILD_ROUTE_MANIFEST_v0.1.json",
+  "required_manifest_mode": "prospective-live-route",
+  "required_manifest_pr_pointer": "authority.work_pr",
+  "required_manifest_authorization": "state.build_authorized_by_manifest=true",
+  "automatic_intake": {
+    "tool": "scripts/jm_build_intake.py",
+    "position": "UPSTREAM_OF_IMPLEMENTATION",
+    "default_state": "INTAKE_RECOVERED_AWAITING_ROUTE_RESOLUTION",
+    "rule": "Automatic intake may recover and rank candidate Estate references, but candidates are not donors/authority and the generated route remains fail-closed until recovery decision, exact stack and true gap are explicitly resolved."
+  },
+  "classifier": {
+    "hard_trigger": "At least one newly added production-signal file belongs to a path boundary that did not exist on the PR base. A new single-file HTML/JS/etc body directly under an executable root also qualifies.",
+    "repair_behavior": "Adding or modifying files inside an already-existing body does not hard-trigger this v0.1 gate merely because code changed.",
+    "uncertain_behavior": "No high-confidence trigger is not a claim that work is trivial; it only means this narrow automatic gate does not block it. Existing built-ins and proof gates still apply."
+  },
+  "laws": [
+    "Estate -> creation, not creation -> eventually remembers Estate.",
+    "Recover before rebuild.",
+    "Automatic recovery candidates are not donor or authority claims.",
+    "An unresolved intake manifest cannot authorize implementation.",
+    "New body creation is an exception after a real gap survives recovery.",
+    "Declare exact stack, donors, host/surfaces and true gaps before capability expansion.",
+    "Do not bypass built-ins to satisfy the entry gate.",
+    "Do not invent authority, donors, proof or gaps merely to make the manifest green.",
+    "Manual user action is escalation, not ritual."
+  ]
+}

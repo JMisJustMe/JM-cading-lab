@@ -1,0 +1,103 @@
+{
+  "schema": "jm.forward-descendant-proof-receipt/0.1",
+  "name": "JM Forward Descendant Router v0.1 — Immutable Parent / Governed Re-entry Proof Receipt",
+  "date": "2026-08-21",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "infrastructure_pr": 140,
+  "purpose": "Prove that a truthfully closed FORWARD_READY keeper can be routed into a separately identified descendant without mutating the parent, bypassing Estate intake, silently authorizing new capability, or manufacturing the descendant executable body.",
+  "implementation": {
+    "policy": "registry/build-routes/JM_FORWARD_DESCENDANT_POLICY_v0.1.json",
+    "router": "scripts/jm_forward_descendant.py",
+    "workflow": ".github/workflows/jm-forward-descendant-router.yml",
+    "output_contract": "jm.build-route-manifest/0.1",
+    "reentry": "JM Build Intake v0.1.1 -> JM Default Execution Body v0.1",
+    "lineage_relations": ["INHERIT", "FORK"],
+    "change_classes": ["REPAIR", "EXTENSION", "RADICAL_RETHINK"],
+    "radical_rethink_rule": "RADICAL_RETHINK requires FORK.",
+    "claim_boundary": "The router proves lineage eligibility and governed re-entry only. It does not create a descendant executable, authorize new capability by itself, or manufacture runtime/contact/crown proof."
+  },
+  "authority_and_recovery": {
+    "directly_recovered_laws": [
+      "Recover before rebuild.",
+      "No restart: recover the strongest existing body and correct forward.",
+      "Mesh does not mean merge; preserve distinct identities.",
+      "Later is not automatically stronger.",
+      "A handoff is the route through which difference gains legitimate control of continuity.",
+      "Frozen ancestors remain immutable; correct forward."
+    ],
+    "donor_forge_boundary": "The exact Donor Forge / Build DNA document was not independently recovered during this implementation pass. It is therefore not cited here as direct authority; no unsupported provenance claim is made."
+  },
+  "first_ding": {
+    "workflow_run": 32492669265,
+    "job_id": 96803732263,
+    "result": "EXPECTED_IMPLEMENTATION_DING / FAILURE",
+    "scope": "router self-test only; live end-to-end descendant proof did not run",
+    "cause": "The synthetic keeper fixture was created outside repository ROOT while production keeper verification intentionally treats only repo-contained files as locally hash-verifiable. The self-test therefore correctly classified the fixture as non-local and required external evidence.",
+    "correct_forward_repair": "Move only the synthetic self-test TemporaryDirectory under ROOT. Production keeper verification rules remain unchanged.",
+    "repair_commit": "c32d2b7f5370ba9d20a4613efa302f7ff8d5cf20"
+  },
+  "live_proof": {
+    "workflow_run": 32492978296,
+    "job_id": 96804735438,
+    "workflow_name": "JM Forward Descendant Router",
+    "job_name": "Prove immutable parent to governed descendant re-entry",
+    "result": "SUCCESS",
+    "self_test": "PASS",
+    "parent_route": {
+      "body": "JM Forward Parent Probe v1.0",
+      "build_authorized": true,
+      "new_capability_authorized": false,
+      "execution": "AUTHORIZED -> COMPOSING -> CONTACTABLE -> PROVING -> PASS -> CLOSING -> CLOSED",
+      "closure": "PACKAGE N/A -> FREEZE PASS -> LOCK PASS -> ANCHOR PASS -> MOUNT PASS -> RECOVERY_POINTER PASS -> HANDOFF PASS",
+      "closure_state": "HANDOFF_COMPLETE",
+      "forward_state": "FORWARD_READY",
+      "handoff_to": "forward-descendant-router"
+    },
+    "expected_red_cases": [
+      {
+        "case": "same frozen parent identity reused as descendant",
+        "result": "EXPECTED_RED_PASS",
+        "observed": "descendant name must differ from the closed parent body name",
+        "meaning": "A version/change route cannot hide parent mutation behind lineage paperwork."
+      },
+      {
+        "case": "lineage-routed descendant attempts execution before Build Intake authorization",
+        "result": "EXPECTED_RED_PASS",
+        "observed": "state.build_authorized_by_manifest must be true",
+        "meaning": "FORWARD_READY and valid lineage do not bypass the existing build front door."
+      }
+    ],
+    "unresolved_descendant": {
+      "body": "JM Forward Descendant Probe v1.1",
+      "relation": "INHERIT",
+      "change_class": "REPAIR",
+      "parent_immutable": true,
+      "forward_descendant_route": "LINEAGE_ROUTED_AWAITING_BUILD_AUTHORIZATION",
+      "build_authorized": false,
+      "new_capability_authorized": false,
+      "forward_handoff_lane": "PASS"
+    },
+    "authorized_descendant": {
+      "body": "JM Forward Descendant Probe v1.1",
+      "relation": "INHERIT",
+      "change_class": "REPAIR",
+      "forward_descendant_route": "LINEAGE_ROUTED_AND_BUILD_AUTHORIZED",
+      "build_authorized": true,
+      "new_capability_authorized": false,
+      "execution_reentry": "AUTHORIZED",
+      "parent_sha_unchanged": true,
+      "parent_immutable": true,
+      "descendant_executable_created_by_router": false
+    },
+    "final_observed": "JM Forward Descendant live proof PASS: FORWARD_READY -> immutable parent lineage -> unresolved descendant RED -> normal intake authorization -> existing execution AUTHORIZED; parent untouched and no product created."
+  },
+  "non_claims": [
+    "Synthetic parent FREEZE/LOCK/ANCHOR/MOUNT values prove routing behavior only; they do not close or freeze a real product.",
+    "The router did not create apps/jm-forward-descendant-probe-v1.1 or any descendant executable body.",
+    "Build authorization did not authorize new capability creation.",
+    "Forward lineage is not runtime/contact/crown proof.",
+    "FORWARD_READY is permission to route legitimate forward work, not permission to mutate a keeper or skip Build Intake."
+  ],
+  "proof_result": "PASS — HANDOFF_COMPLETE/FORWARD_READY -> HASH-BOUND IMMUTABLE PARENT -> DISTINCT DESCENDANT LINEAGE -> UNAUTHORIZED RED -> NORMAL INTAKE AUTHORIZATION -> EXISTING EXECUTION AUTHORIZED",
+  "governing_result": "The JM default build lifecycle now loops forward through the same Estate front door: closed frozen keepers are preserved as ancestors, descendant identity/intent is explicit, and forward work must recover/reroute/re-authorize before implementation."
+}

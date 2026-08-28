@@ -1,0 +1,45 @@
+name: Kocodifying source-aware maturation
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/kocodifying/**"
+      - ".github/workflows/kocodifying-source-aware-maturation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kocodifying-source-aware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Re-run Sovereign Batch Two native conformance
+        run: node coding-estate/sovereign-batch-two/direct/native-selftest.mjs
+
+      - name: Run Kocodifying source-aware smoke proof
+        run: node coding-estate/everybody/role-qualified-61/kocodifying/kocodifying-source-aware-smoke.mjs
+
+      - name: Enforce source-truth and identity boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('coding-estate/everybody/role-qualified-61/kocodifying/KOCODIFYING_SOURCE_AWARE_MATURATION_CONTRACT_v1.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['body'] == 'Kocodifying'
+          assert d['source_truth_tier'] == 'RECONSTRUCTED_EXECUTABLE_DESCENDANT'
+          assert d['historicalRecoveryClaim'] is False
+          assert d['current_native_donor']['git_blob_sha1'] == 'bc82c44ce56ec48c6fa09e42a57529b1b91c47dc'
+          assert d['semantic_boundary']['keeper'] == 'CO-CODIFYING != IDENTITY COLLAPSE'
+          assert 'WITHOUT FORGING AN ANCESTOR' in d['keeper']
+          print('Kocodifying source-truth boundary PASS')
+          PY

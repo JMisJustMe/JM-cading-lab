@@ -1,0 +1,49 @@
+{
+  "schema": "jm.build-route-manifest-contract/0.1",
+  "manifest_schema": "jm.build-route-manifest/0.1",
+  "purpose": "Machine-checkable minimum contract for per-build JM routing manifests. It validates structure and explicit proof routing; it does not manufacture runtime/contact proof or crown a build.",
+  "allowed_instantiation_modes": [
+    "retrospective-live-proof",
+    "prospective-live-route"
+  ],
+  "required_top_level": [
+    "schema",
+    "manifest",
+    "instantiation_mode",
+    "created_for",
+    "authority",
+    "foundation",
+    "exact_stack",
+    "true_gaps",
+    "host_and_surfaces",
+    "escalation",
+    "state",
+    "manifest_proof"
+  ],
+  "required_created_for": [
+    "body",
+    "body_type",
+    "intended_destination"
+  ],
+  "mode_requirements": {
+    "retrospective-live-proof": [
+      "closure"
+    ],
+    "prospective-live-route": [
+      "proof_lanes",
+      "next_route"
+    ]
+  },
+  "laws": [
+    "Estate first; recover before rebuild.",
+    "Declare the exact stack and true gaps before new capability creation.",
+    "Mesh does not mean merge; donor/source authority remains identifiable.",
+    "Built-ins are never bypassed to obtain green status.",
+    "A proof lane may only claim what its evidence actually proves.",
+    "A red Ding routes to the responsible organ; it does not justify rebuilding unrelated bodies.",
+    "Frozen keepers remain immutable; repairs correct forward.",
+    "Manual contact is escalation when native evidence is insufficient or the target contact surface itself must be proven.",
+    "Close only what is actually proven."
+  ],
+  "validator_boundary": "A contract PASS means the manifest is structurally routable and explicit. It is not build/runtime/contact proof by itself."
+}

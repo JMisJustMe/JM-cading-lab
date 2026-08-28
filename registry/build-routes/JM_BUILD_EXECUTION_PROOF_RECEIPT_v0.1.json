@@ -1,0 +1,121 @@
+{
+  "schema": "jm.build-execution-proof-receipt/0.1",
+  "name": "JM Default Execution Body v0.1 — Ordered State / Ding Recovery Proof Receipt",
+  "date": "2026-08-21",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "infrastructure_pr": 140,
+  "purpose": "Prove that an authorized JM build can move through explicit execution states, cannot skip proof gates to claim PASS, can route a Ding locally through ESCALATED and recovery, and can close its execution route without manufacturing product capability, contact, freeze, anchor or mount claims.",
+  "implementation": {
+    "execution_tool": "scripts/jm_build_execution.py",
+    "execution_policy": "registry/build-routes/JM_BUILD_EXECUTION_POLICY_v0.1.json",
+    "intake_tool": "scripts/jm_build_intake.py",
+    "workflow": ".github/workflows/jm-build-entry-gate.yml",
+    "normal_path": [
+      "AUTHORIZED",
+      "COMPOSING",
+      "CONTACTABLE",
+      "PROVING",
+      "PASS",
+      "CLOSING",
+      "CLOSED"
+    ],
+    "exception_state": "ESCALATED",
+    "gate_states": ["OPEN", "PASS", "FAIL", "N/A"],
+    "route_rule": "Execution initializes only from a prospective Build Route Manifest with state.build_authorized_by_manifest=true.",
+    "capability_rule": "Build authorization and true_gaps.new_capability_creation_authorized are independent. A reuse-only route can execute with new capability authorization false.",
+    "closure_boundary": "CLOSED proves only execution-route closure. It does not itself claim freeze, lock, anchor, mount, runtime contact or crown status."
+  },
+  "live_proof": {
+    "workflow_run": 32477684656,
+    "job_id": 96757327259,
+    "workflow_name": "JM Build Route, Intake & Execution",
+    "job_name": "Route serious bodies through intake and execution",
+    "result": "SUCCESS",
+    "manifest_validator_run": 32477684565,
+    "manifest_validator_result": "SUCCESS",
+    "estate_recovery_candidate_references": 17,
+    "build_authorized": true,
+    "new_capability_creation_authorized": false,
+    "sequence": [
+      {
+        "from": "AUTHORIZED",
+        "to": "COMPOSING",
+        "result": "PASS"
+      },
+      {
+        "from": "COMPOSING",
+        "to": "CONTACTABLE",
+        "result": "PASS",
+        "claim_boundary": "CONTACTABLE only proves a synthetic test/contact route for the execution mechanism, not actual end-user contact."
+      },
+      {
+        "from": "CONTACTABLE",
+        "to": "PROVING",
+        "result": "PASS",
+        "registered_gates": {
+          "route-manifest": "PASS",
+          "runtime-probe": "OPEN"
+        }
+      },
+      {
+        "from": "PROVING",
+        "to": "PASS",
+        "result": "EXPECTED_RED_PASS",
+        "observed": "ValueError: PASS blocked by OPEN/FAIL gates: ['runtime-probe']",
+        "meaning": "The execution ledger could not paper over an OPEN native/proof gate."
+      },
+      {
+        "from": "PROVING",
+        "to": "ESCALATED",
+        "result": "PASS",
+        "gate_update": "runtime-probe=FAIL",
+        "resume_state": "PROVING",
+        "meaning": "Synthetic Ding remained local and traceable."
+      },
+      {
+        "from": "ESCALATED",
+        "to": "PROVING",
+        "result": "PASS",
+        "gate_update": "runtime-probe=OPEN",
+        "meaning": "Recovery returned only to the affected proof state for retest."
+      },
+      {
+        "from": "PROVING",
+        "to": "PASS",
+        "result": "PASS",
+        "gate_update": "runtime-probe=PASS"
+      },
+      {
+        "from": "PASS",
+        "to": "CLOSING",
+        "result": "PASS"
+      },
+      {
+        "from": "CLOSING",
+        "to": "CLOSED",
+        "result": "PASS",
+        "freeze_lock_anchor_mount_claimed": false
+      }
+    ],
+    "final_observed": "JM Default Execution Body live proof PASS: ordered execution, OPEN-block, Ding escalation, recovery, PASS and truthful CLOSED state verified; no product capability or freeze/mount claim manufactured."
+  },
+  "self_test": {
+    "result": "PASS",
+    "proves": [
+      "unauthorized manifest cannot initialize execution",
+      "illegal state skipping is rejected",
+      "OPEN gate blocks PASS",
+      "FAIL gate requires ESCALATED",
+      "ESCALATED records and returns to resume_state only after red gate clears",
+      "closure remains distinct from freeze/lock/anchor/mount"
+    ]
+  },
+  "non_claims": [
+    "The synthetic execution probe does not prove a product runtime or user contact surface.",
+    "The execution ledger records evidence references; it does not manufacture the evidence.",
+    "CLOSED is not a crown and is not automatically frozen, locked, anchored or mounted.",
+    "No new product capability was authorized or created by the live execution probe."
+  ],
+  "proof_result": "PASS — AUTHORIZED -> ORDERED EXECUTION -> OPEN BLOCK -> DING -> LOCAL RECOVERY -> RETEST -> PASS -> TRUTHFUL CLOSED",
+  "governing_result": "The JM default can now govern not only how a serious build enters, but how an authorized build moves. State changes are ordered, evidence-backed, exception-routed and claim-bounded rather than inferred from activity or paperwork volume."
+}

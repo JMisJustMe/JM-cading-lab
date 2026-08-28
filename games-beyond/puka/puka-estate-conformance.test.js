@@ -18,7 +18,8 @@ has(html,'aria-live="polite"','live status announcement missing');
 if(/maximum-scale\s*=|user-scalable\s*=\s*no/i.test(html)) fail('zoom restriction is not allowed in the PUKA front door');
 
 has(css,'button,summary{min-height:44px}','44px interaction floor missing');
-has(css,'.intro summary,.evidence summary{min-height:44px}','drawer contact floor missing');
+for(const selector of ['.table-deal,','.deal,','.action,','.suit,','.quick-suit,','.intro summary,','.evidence summary{min-height:44px}']) has(css,selector,`qualified 44px contact guard missing: ${selector}`);
+has(css,'.entry-suits button,.quick-suit{min-width:44px}','compact suit target width guard missing');
 has(css,'env(safe-area-inset-top)','top safe-area route missing');
 has(css,'env(safe-area-inset-bottom)','bottom safe-area route missing');
 has(css,'@media(prefers-reduced-motion:reduce)','reduced-motion conformance guard missing');

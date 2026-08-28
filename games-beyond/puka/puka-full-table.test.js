@@ -33,6 +33,7 @@ assert(ui.includes("'jm-puka-v12a'"),'v0.12A storage authority missing');
 assert(ui.includes("game.playerAction('raise',Number(b.dataset.raiseTo))"),'raise tray is not wired to core sizing');
 assert(ui.includes("addEventListener('pagehide',save"),'pagehide persistence contact missing');
 assert(ui.includes('renderHistory()')&&ui.includes('renderMastery()'),'history/mastery rendering missing');
+assert(ui.includes("const hideAI=!s.ended||s.endReason==='fold'"),'folded hand must keep House cards hidden in presentation');
 
 assert(css.includes('.raise-tray'),'raise tray presentation missing');
 assert(css.includes('.raise-size{min-width:44px;min-height:44px}'),'v0.12 raise contact floor missing');

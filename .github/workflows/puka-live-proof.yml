@@ -1,4 +1,4 @@
-name: PUKA Source + Browser + Live Contact Proof
+name: PUKA Source + Browser + Visual Viewport + Live Contact Proof
 
 on:
   workflow_dispatch:
@@ -74,19 +74,20 @@ jobs:
         working-directory: games-beyond
         run: npx playwright install --with-deps chromium
 
-      - name: Prove PUKA estate browser acceptance
+      - name: Prove PUKA real-context estate and visual viewport acceptance
         working-directory: games-beyond
         run: npx playwright test tests/puka-estate-conformance.spec.mjs --project=desktop-chromium
 
-      - name: Upload PUKA browser evidence on failure
-        if: failure()
+      - name: Upload PUKA real-viewport proof evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: puka-v011-browser-evidence
+          name: puka-v011-real-viewport-proof-${{ github.run_id }}
           path: |
             games-beyond/test-results
             games-beyond/playwright-report
           if-no-files-found: ignore
+          retention-days: 14
 
       - name: Prove PUKA production contact
         if: github.ref == 'refs/heads/main'
@@ -149,21 +150,22 @@ jobs:
             'single_link':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'source_code_ding':'PASS',
             'browser_runtime_ding':'PASS',
-            'browser_viewports':['390x844 portrait','844x390 landscape','1440x1000 desktop'],
-            'browser_gates':['zero horizontal overflow','44px visible contact floor','table entry','hidden House cards during active play','portrait-landscape-portrait hand continuity','zero console/page errors'],
+            'real_viewport_visual_proof':'PASS',
+            'browser_viewports':['390x844 Android touch portrait','844x390 Android touch landscape','1440x1000 desktop','412x915 Visual Lab Android touch','1440x900 Visual Lab desktop'],
+            'browser_gates':['exact real output viewport','separate mobile/touch and desktop contexts','zero horizontal overflow','44px visible contact floor','protected table-field floor','viewport-only ready/active screenshots','table entry','hidden House cards during active play','portrait-landscape-portrait hand continuity','zero console/page errors'],
             'public_contact':'PASS',
             'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-v09.css','puka-v10.css','puka-v11.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js','puka-table-theatre-v09.js','puka-living-table-v10.js'],
             'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v11.css','puka-v10.css','puka-living-table-v10.js','assets/puka-chip-column-v10.svg','puka-v09.css','puka-table-theatre-v09.js','assets/puka-board-runway-v09.svg','puka-v08.css','puka-v08-academy.css','puka-v07.css','puka-world-v07.js'],
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Source/core/layout/art/character/world/material/academy/theatre/living-table and real Chromium responsive/contact gates plus public HTTP contact passed. Owner-side visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character/world/material/academy/theatre/living-table, separate Chromium desktop/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Owner-side visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.11A source browser and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.11A source browser visual viewport and public contact proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0

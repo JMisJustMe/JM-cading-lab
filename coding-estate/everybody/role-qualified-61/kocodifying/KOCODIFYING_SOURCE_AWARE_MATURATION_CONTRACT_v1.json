@@ -1,0 +1,39 @@
+{
+  "schema": "jm.kocodifying.source-aware-maturation-contract/1.0",
+  "date": "2026-08-28",
+  "body": "Kocodifying",
+  "identity": "actual coding identity",
+  "source_truth_tier": "RECONSTRUCTED_EXECUTABLE_DESCENDANT",
+  "historicalRecoveryClaim": false,
+  "current_native_donor": {
+    "path": "coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs",
+    "git_blob_sha1": "bc82c44ce56ec48c6fa09e42a57529b1b91c47dc",
+    "role": "strong present-day specialist donor; not historical-original source"
+  },
+  "current_reconstructed_grammar": {
+    "body_form": "cocode NAME { left ID; right ID; bind left.PATH <-> right.PATH; conflict left|right|reject; recover rollback|commit }",
+    "ast": "KocodifyingProgram -> CoCodex",
+    "ir": "CoCodexBindingSet -> BidirectionalBindingGraph",
+    "runtime": "CoCodexSync with separate left/right bodies, conflict trace and receipt"
+  },
+  "semantic_boundary": {
+    "keeper": "CO-CODIFYING != IDENTITY COLLAPSE",
+    "meaning": "two bodies may be bound bidirectionally while remaining separately represented; conflict policy chooses routing, not identity merger",
+    "mesh_law": "MESH != MERGE"
+  },
+  "maturation_obligations": [
+    "prove left-precedence and right-precedence are distinct executable conflict policies",
+    "prove reject-without-recovery fails closed",
+    "prove rollback returns the original left and right bodies rather than partially mutated copies",
+    "prove nested-path bindings preserve unrelated fields and body separation",
+    "prove deterministic synced consequence and trace",
+    "maintain historicalRecoveryClaim=false until stronger historical source is actually recovered"
+  ],
+  "claim_ceiling": [
+    "no historical-original Kocodifying source recovered",
+    "no self-hosting crown",
+    "no identity-collapse claim",
+    "no body-specific final F/L/A/Z crown"
+  ],
+  "keeper": "RECOVER BEFORE REBUILD; WHEN RECOVERY DOES NOT YIELD THE ORIGINAL, BUILD FORWARD WITHOUT FORGING AN ANCESTOR."
+}

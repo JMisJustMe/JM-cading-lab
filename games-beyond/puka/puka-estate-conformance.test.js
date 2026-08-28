@@ -2,6 +2,8 @@
 const fs=require('fs');
 const html=fs.readFileSync(__dirname+'/00_OPEN_FIRST.html','utf8');
 const css=fs.readFileSync(__dirname+'/puka-v11.css','utf8');
+const css12=fs.readFileSync(__dirname+'/puka-v12.css','utf8');
+const ui=fs.readFileSync(__dirname+'/puka-ui.js','utf8');
 const sw=fs.readFileSync(__dirname+'/sw.js','utf8');
 const registry=fs.readFileSync(__dirname+'/registry.json','utf8');
 const workflow=fs.readFileSync(__dirname+'/../../.github/workflows/puka-live-proof.yml','utf8');
@@ -9,8 +11,9 @@ const browser=fs.readFileSync(__dirname+'/../tests/puka-estate-conformance.spec.
 const fail=m=>{throw new Error(m)};
 const has=(body,needle,msg)=>{if(!body.includes(needle))fail(msg)};
 
-has(html,'PUKA v0.11A','v0.11A front-door marker missing');
-has(html,'puka-v11.css','v0.11 conformance layer not mounted');
+has(html,'PUKA v0.12A','v0.12A front-door marker missing');
+has(html,'puka-v11.css','v0.11 conformance layer must remain mounted');
+has(html,'puka-v12.css','v0.12 capability layer not mounted');
 has(html,'viewport-fit=cover','safe viewport-fit marker missing');
 has(html,'class="skip-link"','skip-link door missing');
 has(html,'href="#main"','skip-link must route to main play body');
@@ -23,13 +26,16 @@ has(css,'.entry-suits button,.quick-suit{min-width:44px}','compact suit target w
 has(css,'env(safe-area-inset-top)','top safe-area route missing');
 has(css,'env(safe-area-inset-bottom)','bottom safe-area route missing');
 has(css,'@media(prefers-reduced-motion:reduce)','reduced-motion conformance guard missing');
+has(css12,'.raise-size{min-width:44px;min-height:44px}','v0.12 raise contact floor missing');
 
-has(sw,"jm-puka-v11a",'v0.11 service-worker cache marker missing');
+has(ui,"const hideAI=!s.ended||s.endReason==='fold'",'folded hands must not reveal House cards in presentation');
+has(sw,"jm-puka-v12a",'v0.12 service-worker cache marker missing');
 has(sw,'puka-v11.css','v0.11 conformance CSS not cached');
-has(registry,'JM.PUKA.Room/0.11A','v0.11 registry schema missing');
+has(sw,'puka-v12.css','v0.12 capability CSS not cached');
+has(registry,'JM.PUKA.Room/0.12A','v0.12 registry schema missing');
 
-for(const marker of ['390,height:844','844,height:390','1440,height:1000','412,height:915','1440,height:900','scrollWidth','pageerror','console','data-puka-mode','data-next-hand','isMobile:mobile','hasTouch:touch','fullPage:false','protected PUKA table field']) has(browser,marker,`browser/visual acceptance marker missing: ${marker}`);
+for(const marker of ['390,height:844','844,height:390','1440,height:1000','412,height:915','1440,height:900','scrollWidth','pageerror','console','data-puka-mode','data-next-hand','isMobile:mobile','hasTouch:touch','fullPage:false','protected PUKA table field','page.reload','data-open-raise','data-raise-to','history-row']) has(browser,marker,`browser/visual acceptance marker missing: ${marker}`);
 has(workflow,'puka-estate-conformance.spec.mjs','browser acceptance spec not invoked by proof rail');
 has(workflow,'playwright install --with-deps chromium','Chromium proof environment missing');
 
-console.log('PUKA v0.11A ESTATE + VISUAL-LAB CONFORMANCE SOURCE DING PASS');
+console.log('PUKA v0.12A ESTATE + VISUAL-LAB CONFORMANCE SOURCE DING PASS');

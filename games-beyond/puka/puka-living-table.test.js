@@ -8,11 +8,11 @@ const chip=fs.readFileSync(__dirname+'/assets/puka-chip-column-v10.svg','utf8');
 const fail=m=>{throw new Error(m)};
 const has=(body,needle,msg)=>{if(!body.includes(needle))fail(msg)};
 
-has(html,'PUKA v0.10A','v0.10A front-door marker missing');
+has(html,'PUKA v0.11A','v0.11A current front-door marker missing');
 has(html,'puka-v10.css','living-table CSS not mounted');
 has(html,'puka-living-table-v10.js','living-table JS not mounted');
 has(html,'data-board-count="0"','visible board-count dataset seed missing');
-has(sw,'jm-puka-v10a','v0.10 cache marker missing');
+has(sw,'jm-puka-v11a','current cache marker missing');
 for(const item of ['puka-v10.css','puka-living-table-v10.js','puka-chip-column-v10.svg']) has(sw,item,`${item} not cached`);
 
 has(living,"label?.querySelector('span')",'player chip mass must derive from visible player label');
@@ -36,4 +36,4 @@ has(css,'@media(max-height:560px) and (orientation:landscape)','v0.10 short-land
 has(css,'@media(prefers-reduced-motion:reduce)','v0.10 reduced-motion guard missing');
 has(chip,'PUKA physical chip column','chip asset accessibility label missing');
 
-console.log('PUKA v0.10A LIVING TABLE SOURCE DING PASS');
+console.log('PUKA v0.10A LIVING TABLE SOURCE DING PASS INSIDE v0.11A DESCENDANT');

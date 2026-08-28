@@ -139,7 +139,7 @@
 
     $('#identityDetails').open=false;
     $('#statusLine').textContent=s.ended?'HAND COMPLETE':`${s.street.toUpperCase()} · ${s.turn==='player'?'YOUR TURN':'HOUSE THINKING'}`;
-    const hideAI=!s.ended;
+    const hideAI=!s.ended||s.endReason==='fold';
     $('#tableState').innerHTML=`
       <section class="opponent zone">
         <div class="player-label"><b>HOUSE MIND</b><span>${s.players.ai.stack}</span></div>

@@ -133,7 +133,7 @@ jobs:
           worker = (root / 'sw.js').read_text(encoding='utf-8')
           required = [
               'HOUSE', 'ROOMS', 'EDIT', 'PROOF',
-              'PLAY BODY', 'SAVE REVISION', 'UNDO',
+              'OPEN BODY', 'SAVE REVISION', 'UNDO',
               'RESTORE SOURCE', 'EXPORT FULL HOUSE'
           ]
           missing = [item for item in required if item not in index and item not in app]

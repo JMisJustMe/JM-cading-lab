@@ -1,0 +1,39 @@
+name: Mark-Level Syntax forward-native seat
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs"
+      - "coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs"
+      - ".github/workflows/mark-level-forward-native-seat.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mark-level-forward-native:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Confirm exact recovered forward-descendant blobs
+        run: |
+          test "$(git hash-object coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs)" = "a05b44a94a94f9ad744a43b2f92cfeb01c2ac2bc"
+          test "$(git hash-object coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs)" = "915733838419746bf4b429a778787494b71274b3"
+
+      - name: Run Mark-Level forward-native proof
+        run: node coding-estate/everybody/role-qualified-61/native/mark-level-syntax.selftest.mjs
+
+      - name: Enforce source-truth boundary
+        run: |
+          grep -Fq "status: 'AUTHORISED_FORWARD_NATIVE_BRIDGE'" coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs
+          grep -Fq "historicalRecoveryClaim: false" coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs
+          grep -Fq "AUTHORISED_FORWARD_NATIVE_BRIDGE_NOT_HISTORICAL_ORIGINAL" coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs
+          grep -Fq "historical-original grammar remains open" coding-estate/everybody/role-qualified-61/native/mark-level-syntax.mjs

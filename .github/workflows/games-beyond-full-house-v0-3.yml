@@ -5,6 +5,7 @@ on:
     branches:
       - agent/games-beyond-full-house-v0-3-live
       - main
+      - repair/games-beyond-full-house-manifest-schema-v051
     paths:
       - 'games-beyond/**'
       - 'GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt'
@@ -19,12 +20,12 @@ jobs:
   full-house-proof:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - name: Verify payload and fifteen mounted bodies
+      - name: Verify compressed payload and governed built-in House
         shell: python
         run: |
-          import base64, hashlib, json, lzma, pathlib, sys
+          import base64, hashlib, json, lzma, pathlib
 
           root = pathlib.Path('games-beyond')
           manifest = json.loads((root / 'payload-manifest.json').read_text(encoding='utf-8'))
@@ -54,13 +55,26 @@ jobs:
 
           house = json.loads(raw.decode('utf-8'))
           bodies = house.get('bodies', [])
-          ids = [body.get('id') for body in bodies]
-          expected = manifest['bodyIds']
+          payload_ids = [body.get('id') for body in bodies]
 
-          if len(bodies) != manifest['bodyCount']:
-              raise SystemExit(f'BODY_COUNT: {len(bodies)} != {manifest["bodyCount"]}')
-          if ids != expected:
-              raise SystemExit(f'BODY_ORDER_OR_IDS: {ids}')
+          # Legacy manifests used bodyCount/bodyIds for the compressed payload.
+          # Current manifests distinguish the compressed payload from the larger
+          # built-in public House. Preserve both schemas without collapsing them.
+          payload_count = manifest.get('payloadBodyCount', manifest.get('bodyCount'))
+          if not isinstance(payload_count, int) or payload_count < 1:
+              raise SystemExit(f'INVALID_PAYLOAD_BODY_COUNT: {payload_count!r}')
+
+          built_in_ids = manifest.get('bodyIdsBuiltIn')
+          expected_payload_ids = manifest.get('bodyIds')
+          if expected_payload_ids is None:
+              if not isinstance(built_in_ids, list) or len(built_in_ids) < payload_count:
+                  raise SystemExit('MANIFEST_SCHEMA: need bodyIds or bodyIdsBuiltIn covering payloadBodyCount')
+              expected_payload_ids = built_in_ids[:payload_count]
+
+          if len(bodies) != payload_count:
+              raise SystemExit(f'PAYLOAD_BODY_COUNT: {len(bodies)} != {payload_count}')
+          if payload_ids != expected_payload_ids:
+              raise SystemExit(f'PAYLOAD_BODY_ORDER_OR_IDS: {payload_ids}')
 
           bad = []
           for body in bodies:
@@ -70,10 +84,46 @@ jobs:
           if bad:
               raise SystemExit(f'INVALID_HTML_BODIES: {bad}')
 
+          built_in_count = manifest.get('builtInBodyCount', manifest.get('bodyCount', payload_count))
+          if built_in_ids is None:
+              built_in_ids = list(expected_payload_ids)
+          if len(built_in_ids) != built_in_count:
+              raise SystemExit(f'BUILT_IN_ID_COUNT: {len(built_in_ids)} != {built_in_count}')
+          if manifest.get('bodyCount') is not None and manifest['bodyCount'] != built_in_count:
+              raise SystemExit(f'PUBLIC_BODY_COUNT: {manifest["bodyCount"]} != {built_in_count}')
+
+          extra_bodies = manifest.get('extraBodies', [])
+          extra_ids = [body.get('id') for body in extra_bodies]
+          expected_extra_ids = built_in_ids[payload_count:]
+          if extra_ids != expected_extra_ids:
+              raise SystemExit(f'EXTRA_BODY_ORDER_OR_IDS: {extra_ids} != {expected_extra_ids}')
+          if payload_ids + extra_ids != built_in_ids:
+              raise SystemExit('BUILT_IN_COMPOSITION: payload + extras do not equal bodyIdsBuiltIn')
+
+          missing_extra_paths = []
+          for body in extra_bodies:
+              rel = body.get('path')
+              if not rel or not (root / rel).exists():
+                  missing_extra_paths.append({'id': body.get('id'), 'path': rel})
+          if missing_extra_paths:
+              raise SystemExit(f'MISSING_EXTRA_BODY_PATHS: {missing_extra_paths}')
+
+          full_target_count = manifest.get('fullTargetCount')
+          full_import_adds = manifest.get('fullImportAdds', [])
+          if full_target_count is not None and built_in_count + len(full_import_adds) != full_target_count:
+              raise SystemExit(
+                  f'FULL_TARGET_COUNT: {built_in_count} + {len(full_import_adds)} != {full_target_count}'
+              )
+
           print(json.dumps({
-              'result': 'PACKAGE_DING',
-              'bodyCount': len(bodies),
-              'bodyIds': ids,
+              'result': 'FULL_HOUSE_PACKAGE_DING',
+              'schema': manifest.get('schema'),
+              'payloadBodyCount': payload_count,
+              'payloadBodyIds': payload_ids,
+              'builtInBodyCount': built_in_count,
+              'builtInBodyIds': built_in_ids,
+              'extraBodyIds': extra_ids,
+              'fullTargetCount': full_target_count,
               'compressedSha256': compressed_hash,
               'rawSha256': raw_hash
           }, indent=2))

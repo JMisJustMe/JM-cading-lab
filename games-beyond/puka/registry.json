@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.10A",
+  "schema":"JM.PUKA.Room/0.11A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,19 +10,18 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg"],
-  "v10Changes":[
-    "preserved all poker rules persistence progression evidence and prior visual organs",
-    "added a removable living-table presentation organ that reads only visible player stack labels pot text and visible board cards",
-    "added an original physical chip-column asset and derives visual chip mass from values already printed on screen",
-    "added a restrained board-runway response when the count of already-visible community cards increases",
-    "added visible board-count presentation state without creating or predicting cards",
-    "added subtle court-card foil treatment by detecting court artwork already rendered in the DOM",
-    "increased Royal court atmosphere by existing court tier while keeping Portrait Academy warmer and more intimate",
-    "added suit-responsive player chip treatment using the already-selected visible suit",
-    "retained narrow-phone short-landscape and prefers-reduced-motion safeguards",
-    "changed presentation only; no hidden AI state poker-rule state or undealt card data is read by the living-table organ"
+  "v11Changes":[
+    "preserved the v0.10 living-table body and all poker state authorities unchanged",
+    "adopted the Games&Beyond browser acceptance viewports: 390x844 portrait, 844x390 landscape and 1440x1000 desktop",
+    "added exact zero-horizontal-overflow browser gates at all three estate acceptance viewports",
+    "added real browser table-entry contact and portrait-landscape-return continuity proof",
+    "raised profile and evidence summary contacts from the prior 36px source rule to the estate 44px interaction floor",
+    "added a focus-only skip door to the main play body and polite live status announcements",
+    "preserved browser zoom and text scaling by avoiding user-scalable or maximum-scale restrictions",
+    "retained safe-area and reduced-motion routes without adding permanent interface chrome",
+    "kept automated browser acceptance separate from owner-side visual-quality and physical-device acceptance"
   ],
   "laws":[
     "No restart: restore before rebuild",
@@ -36,6 +35,9 @@
     "Both presentation routes deserve authored environments rather than primary and fallback status",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
+    "Visible interactive contacts use a 44px minimum estate floor",
+    "Estate browser acceptance includes 390x844 portrait, 844x390 landscape and 1440x1000 desktop with zero horizontal overflow",
+    "Automated browser acceptance does not equal owner physical-device acceptance",
     "Visual quality is a completion gate, not decoration after completion",
     "Observation != interpretation != fact",
     "Different games may share organs without sharing identities",
@@ -43,5 +45,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Living-table source stage. Automated source/core/layout/art/world/material/theatre/living-table tests and public contact may Ding independently; owner-side visual-quality acceptance and Cold Ding remain separate."
+  "claimBoundary":"Estate-conformance stage. Automated source/core/layout/art/world/material/theatre/living-table and browser-responsive/contact gates plus public HTTP contact may Ding independently; owner-side visual-quality acceptance, physical Android fit, lifecycle persistence and Cold Ding remain separate."
 }

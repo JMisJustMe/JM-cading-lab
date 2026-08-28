@@ -1,0 +1,5 @@
+const CACHE='jm-ftr-fivefold-v9-0-public-custody-v2';
+const ASSETS=["./","./index.html","./manifest.webmanifest","./body-manifest.json","./docs/GOVERNING_SPEC_BUNDLE.md","./schemas/GOVERNING_SCHEMA_BUNDLE.json","./firmware/FIELD_FIRMWARE_BUNDLE.md","./samples/FIELD_SAMPLES_BUNDLE.md","./payload/runtime-v9-gzip.part-001","./payload/runtime-v9-gzip.part-002","./payload/runtime-v9-gzip.part-003","./payload/runtime-v9-gzip.part-004","./payload/runtime-v9-gzip.part-005","./payload/runtime-v9-gzip.part-006","./payload/runtime-v9-gzip.part-007","./payload/runtime-v9-gzip.part-008","./payload/runtime-v9-gzip.part-009","./payload/runtime-v9-gzip.part-010"];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
+self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(x=>{const y=x.clone();caches.open(CACHE).then(c=>c.put(e.request,y));return x}).catch(()=>caches.match('./index.html')))));

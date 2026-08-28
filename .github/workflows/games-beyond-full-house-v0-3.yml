@@ -136,14 +136,21 @@ jobs:
           index = (root / 'index.html').read_text(encoding='utf-8')
           app = (root / 'app.js').read_text(encoding='utf-8')
           worker = (root / 'sw.js').read_text(encoding='utf-8')
-          required = [
+
+          required_copy = [
               'HOUSE', 'ROOMS', 'EDIT', 'PROOF',
-              'PLAY BODY', 'SAVE REVISION', 'UNDO',
+              'OPEN BODY', 'SAVE REVISION', 'UNDO',
               'RESTORE SOURCE', 'EXPORT FULL HOUSE'
           ]
-          missing = [item for item in required if item not in index and item not in app]
+          missing = [item for item in required_copy if item not in index and item not in app]
           if missing:
               raise SystemExit(f'MISSING_ROUTES: {missing}')
+
+          # OPEN BODY is the current presentation copy; prove the control still
+          # routes through the actual open-body function rather than copy alone.
+          if 'data-play=' not in app or 'openBody(' not in app:
+              raise SystemExit('OPEN_BODY_ROUTE_MISSING')
+
           if 'games-beyond-v0-2' in worker:
               raise SystemExit('STALE_V0_2_CACHE')
           print('PUBLIC_SHELL_DING')

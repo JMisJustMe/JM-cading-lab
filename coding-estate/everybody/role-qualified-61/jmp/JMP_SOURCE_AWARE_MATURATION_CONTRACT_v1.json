@@ -1,0 +1,40 @@
+{
+  "schema": "jm.jmp.source-aware-maturation-contract/1.0",
+  "date": "2026-08-28",
+  "body": "J’MP",
+  "identity": "actual coding identity",
+  "source_truth_tier": "RECONSTRUCTED_EXECUTABLE_DESCENDANT",
+  "historicalRecoveryClaim": false,
+  "current_native_donor": {
+    "path": "coding-estate/sovereign-batch-two/direct/kading-jmp-native.mjs",
+    "git_blob_sha1": "ca9da0ef949fc34d9ebcd0b1f1d2553321a6ee10",
+    "role": "strong present-day specialist donor; not historical-original source"
+  },
+  "current_reconstructed_grammar": {
+    "body_form": "jumpmap NAME { from PATH; case VALUE [when GUARD] -> TARGET [do ACTION]; else -> TARGET [do ACTION] }",
+    "ast": "JMPProgram -> JMPMap -> JMPCase/JMPFallback",
+    "ir": "JMPJumpGraphSet -> JMPJumpGraph with source/case/fallback nodes and guarded-jump edges",
+    "runtime": "JMPTransition with selected target, cloned next-state, trace and receipt"
+  },
+  "semantic_boundary": {
+    "keeper": "JUMP SELECTION != STATE ERASURE",
+    "meaning": "a transition selects a route from current state while preserving the incoming state body unless an explicit transition action changes it",
+    "guard_law": "VALUE MATCH != GUARANTEED JUMP; DECLARED GUARD STILL GOVERNS"
+  },
+  "maturation_obligations": [
+    "prove a value-matched case with a failed guard can fall through to a later valid case",
+    "prove explicit fallback remains distinct from a matched case",
+    "prove missing matching case and missing fallback fail closed",
+    "prove actionless transitions preserve state content while returning a separate next-state object",
+    "prove named-map selection and unknown-map rejection",
+    "prove selected target, state and trace are deterministic",
+    "maintain historicalRecoveryClaim=false until stronger historical source is actually recovered"
+  ],
+  "claim_ceiling": [
+    "no historical-original J’MP source recovered",
+    "no self-hosting crown",
+    "no claim that a value match bypasses its guard",
+    "no body-specific final F/L/A/Z crown"
+  ],
+  "keeper": "RECOVER BEFORE REBUILD; WHEN RECOVERY DOES NOT YIELD THE ORIGINAL, BUILD FORWARD WITHOUT FORGING AN ANCESTOR."
+}

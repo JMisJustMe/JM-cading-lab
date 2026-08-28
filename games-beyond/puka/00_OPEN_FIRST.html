@@ -16,16 +16,18 @@
 <link rel="stylesheet" href="puka-v08-academy.css">
 <link rel="stylesheet" href="puka-v09.css">
 <link rel="stylesheet" href="puka-v10.css">
-<title>PUKA v0.10A — Open First</title>
+<link rel="stylesheet" href="puka-v11.css">
+<title>PUKA v0.11A — Open First</title>
 </head>
 <body>
+<a class="skip-link" href="#main">SKIP TO TABLE</a>
 <div class="app">
   <header class="top">
     <div class="brand"><div class="crest" aria-hidden="true">P</div><div><b>PUKA</b><small>Earn your place at the table.</small></div></div>
-    <div class="status"><span id="modeName">PORTRAIT ACADEMY</span><br><span id="statusLine">READY</span></div>
+    <div class="status" aria-live="polite" aria-atomic="true"><span id="modeName">PORTRAIT ACADEMY</span><br><span id="statusLine">READY</span></div>
   </header>
 
-  <main class="shell" id="main">
+  <main class="shell" id="main" tabindex="-1">
     <section class="game" aria-label="PUKA poker table">
       <div class="table-wrap">
         <div class="court-ribbon"><b id="courtRoom">Lower Dormitory</b><span id="dealerLine">SESSION 1</span></div>
@@ -75,7 +77,7 @@
       </details>
     </section>
 
-    <footer class="footer">PUKA v0.10A · JM Games&amp;Beyond descendant · living table stage · no real-money wagering layer</footer>
+    <footer class="footer">PUKA v0.11A · JM Games&amp;Beyond descendant · estate-conformance stage · no real-money wagering layer</footer>
   </main>
 </div>
 <script src="puka-core.js"></script>

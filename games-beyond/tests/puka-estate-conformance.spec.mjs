@@ -62,6 +62,14 @@ async function expectProtectedTableField(page){
   expect(field.height,'protected PUKA table field must not collapse below the Visual Lab crown floor').toBeGreaterThanOrEqual(150);
 }
 
+async function visibleHandIdentity(page){
+  return page.locator('.you .playing-card').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')));
+}
+
+async function visiblePot(page){
+  return page.locator('.pot b').textContent();
+}
+
 test('@puka-estate-conformance real output contexts, fit and visual evidence',async({browser},testInfo)=>{
   for(const proof of contexts){
     const {context,page}=await createProofPage(browser,proof);
@@ -112,5 +120,59 @@ test('@puka-estate-conformance Android touch hand survives portrait-landscape re
   await expectProtectedTableField(page);
   await page.screenshot({path:testInfo.outputPath('puka-android-portrait-return.png'),fullPage:false});
   expect(errors,'Android touch orientation/contact route must remain free of console/page errors').toEqual([]);
+  await context.close();
+});
+
+test('@puka-estate-conformance v0.12 active hand reload, sized raise and review continuity',async({browser},testInfo)=>{
+  const proof={width:390,height:844,mobile:true,touch:true};
+  const {context,page}=await createProofPage(browser,proof);
+  const errors=collectRuntimeErrors(page);
+  await openFresh(page,390,844);
+  await page.locator('[data-next-hand]').click();
+  await expect(page.locator('html')).toHaveAttribute('data-hand-state','active');
+  await expect(page.locator('.opponent .playing-card.back')).toHaveCount(2);
+
+  const handBefore=await page.locator('#dealerLine').textContent();
+  const cardsBefore=await visibleHandIdentity(page);
+  const potBefore=await visiblePot(page);
+  expect(cardsBefore).toHaveLength(2);
+
+  await page.reload({waitUntil:'networkidle'});
+  await expect(page.locator('html')).toHaveAttribute('data-hand-state','active');
+  await expect(page.locator('#dealerLine')).toHaveText(handBefore);
+  expect(await visibleHandIdentity(page),'active reload must preserve the exact player private cards').toEqual(cardsBefore);
+  expect(await visiblePot(page),'active reload must preserve the exact pot').toBe(potBefore);
+  await expect(page.locator('.opponent .playing-card.back')).toHaveCount(2);
+  await expectNoHorizontalOverflow(page);
+  await expectContactFloor(page);
+  await page.screenshot({path:testInfo.outputPath('puka-v12-android-reloaded-active.png'),fullPage:false});
+
+  await expect(page.locator('[data-open-raise]')).toBeVisible();
+  await page.locator('[data-open-raise]').click();
+  const raiseButtons=page.locator('[data-raise-to]');
+  await expect(raiseButtons.first()).toBeVisible();
+  expect(await raiseButtons.count(),'sized raise tray must expose at least one legal raise-to choice').toBeGreaterThanOrEqual(1);
+  await expectNoHorizontalOverflow(page);
+  await expectContactFloor(page);
+  await page.screenshot({path:testInfo.outputPath('puka-v12-android-raise-sizing.png'),fullPage:false});
+
+  await raiseButtons.first().click();
+  const stateAfterRaise=await page.locator('html').getAttribute('data-hand-state');
+  if(stateAfterRaise==='active'){
+    await expect(page.locator('[data-action="fold"]')).toBeVisible();
+    await page.locator('[data-action="fold"]').click();
+  }
+  await expect(page.locator('html')).toHaveAttribute('data-hand-state','ended');
+  await expect(page.locator('[data-review-hand]')).toBeVisible();
+  await page.locator('[data-review-hand]').click();
+  await expect(page.locator('#evidenceDrawer')).toHaveAttribute('open','');
+  await expect(page.locator('.history-row').first()).toBeVisible();
+  await expect(page.locator('#reviewLine')).not.toHaveText('Finish a hand to earn a decision review.');
+  await expect(page.locator('.history-row').first()).toContainText('HOUSE not revealed');
+  await expectNoHorizontalOverflow(page);
+  await expectContactFloor(page);
+  await page.screenshot({path:testInfo.outputPath('puka-v12-android-hand-review.png'),fullPage:false});
+
+  expect(errors,'v0.12 lifecycle/raise/review route must remain free of console/page errors').toEqual([]);
   await context.close();
 });

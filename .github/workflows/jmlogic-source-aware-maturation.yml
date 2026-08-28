@@ -1,0 +1,44 @@
+name: JMLogic source-aware maturation
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/role-qualified-61/jmlogic/**"
+      - ".github/workflows/jmlogic-source-aware-maturation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jmlogic-source-aware:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Re-run sovereign-ten native conformance
+        run: node coding-estate/sovereign-ten/direct/native-selftest.mjs
+
+      - name: Run JMLogic source-aware smoke proof
+        run: node coding-estate/everybody/role-qualified-61/jmlogic/jmlogic-source-aware-smoke.mjs
+
+      - name: Enforce source-truth boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('coding-estate/everybody/role-qualified-61/jmlogic/JMLOGIC_SOURCE_AWARE_MATURATION_CONTRACT_v1.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['body'] == 'JMLogic'
+          assert d['source_truth_tier'] == 'RECONSTRUCTED_EXECUTABLE_DESCENDANT'
+          assert d['historicalRecoveryClaim'] is False
+          assert d['current_native_donor']['git_blob_sha1'] == '921907bf861114c89df6bb31553d298ef9a32db9'
+          assert 'WITHOUT FORGING AN ANCESTOR' in d['keeper']
+          print('JMLogic source-truth boundary PASS')
+          PY

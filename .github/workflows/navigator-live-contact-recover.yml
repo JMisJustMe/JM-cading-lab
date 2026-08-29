@@ -27,18 +27,23 @@ jobs:
       - name: Reconstruct exact Navigator source
         run: |
           python estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstruct_navigator_bridge.py
-      - name: Re-prove canonical source before export
+      - name: Re-prove canonical extracted source before export
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib
+          import hashlib, json
           root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1')
           body=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1'
-          archive=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1.public.tar.xz'
-          expected='c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283'
-          assert hashlib.sha256(archive.read_bytes()).hexdigest()==expected
+          manifest=json.loads((root/'SOURCE_PUBLICATION_MANIFEST.json').read_text())
           assert len([p for p in body.rglob('*') if p.is_file()])==35
-          print('canonical Navigator source re-proof PASS')
+          sm=json.loads((body/'data/SOURCE_MANIFEST.json').read_text())
+          assert sm['counts']['lexicon_entries']==640
+          assert sm['counts']['browser_bodies']==20
+          assert sm['counts']['search_documents']==881
+          for name,expected in manifest['source_authorities'].items():
+              got=hashlib.sha256((body/'source_authorities'/name).read_bytes()).hexdigest()
+              assert got==expected,(name,got,expected)
+          print('canonical Navigator extracted-source re-proof PASS')
           PY
       - name: Emit transport inspection receipt
         run: |

@@ -1,0 +1,44 @@
+name: Navigator live-contact on proven Cloudflare host
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - '.github/workflows/navigator-live-contact-existing-host.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/navigator-live-contact-existing-host.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-audit --no-fund wrangler@4
+      - name: Reuse proven Cloudflare host and prove public Navigator MCP
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bash estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/deploy-existing-host.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: navigator-live-https-mcp-proof-v0.1
+          path: NAVIGATOR_LIVE_HTTPS_MCP_PROOF_v0_1.json
+          if-no-files-found: error
+          retention-days: 30

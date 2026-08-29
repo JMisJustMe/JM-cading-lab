@@ -1,0 +1,49 @@
+name: Navigator isolated R2 capability probe
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - '.github/workflows/navigator-r2-capability-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Probe target bucket and create only if authorised
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          BUCKET: jm-navigator-live-contact-runtime
+        run: |
+          set -euo pipefail
+          BASE="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/r2/buckets"
+          STATUS=$(curl -sS -o /tmp/get.json -w '%{http_code}' "$BASE/$BUCKET" -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Content-Type: application/json')
+          echo "target_bucket_get_http=$STATUS"
+          if [ "$STATUS" = 200 ]; then
+            python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/get.json'))
+          assert d.get('success') is True
+          print('TARGET_R2_BUCKET_ALREADY_EXISTS')
+          PY
+            exit 0
+          fi
+          CREATE_STATUS=$(curl -sS -o /tmp/create.json -w '%{http_code}' -X POST "$BASE" -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Content-Type: application/json' --data "{\"name\":\"$BUCKET\"}")
+          echo "target_bucket_create_http=$CREATE_STATUS"
+          python3 - <<'PY'
+          import json
+          d=json.load(open('/tmp/create.json'))
+          safe={'success':d.get('success'), 'errors':[{'code':e.get('code'),'message':e.get('message')} for e in d.get('errors',[])]}
+          print(safe)
+          if not d.get('success'):
+              raise SystemExit(1)
+          print('ISOLATED_NAVIGATOR_R2_BUCKET_READY')
+          PY

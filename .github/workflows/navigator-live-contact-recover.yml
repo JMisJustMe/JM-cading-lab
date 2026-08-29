@@ -1,0 +1,60 @@
+name: Navigator live-contact recover
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - '.github/workflows/navigator-live-contact-recover.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reconstruct exact Navigator source
+        run: |
+          python estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstruct_navigator_bridge.py
+      - name: Re-prove canonical source before export
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1')
+          body=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1'
+          archive=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1.public.tar.xz'
+          expected='c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==expected
+          assert len([p for p in body.rglob('*') if p.is_file()])==35
+          print('canonical Navigator source re-proof PASS')
+          PY
+      - name: Emit transport inspection receipt
+        run: |
+          B=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1
+          {
+            echo '=== requirements.txt ==='
+            cat "$B/requirements.txt"
+            echo
+            echo '=== server.py ==='
+            cat "$B/server.py"
+            echo
+            echo '=== bridge/core.py ==='
+            cat "$B/bridge/core.py"
+          } > navigator-live-contact-inspection.txt
+      - name: Upload exact reconstructed source and inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigator-live-contact-source
+          path: |
+            estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1/
+            navigator-live-contact-inspection.txt
+          if-no-files-found: error
+          retention-days: 7

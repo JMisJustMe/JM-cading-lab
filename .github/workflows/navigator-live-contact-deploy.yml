@@ -1,0 +1,236 @@
+name: Navigator live-contact HTTPS MCP proof
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - '.github/workflows/navigator-live-contact-deploy.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/**'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/navigator-live-contact-deploy.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/**'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Reconstruct canonical Navigator source
+        run: |
+          set -euo pipefail
+          python estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/source-carriage/reconstruct_navigator_bridge.py
+
+      - name: Re-prove canonical source identity and corpus
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1')
+          body=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1'
+          manifest=json.loads((root/'SOURCE_PUBLICATION_MANIFEST.json').read_text())
+          assert len([p for p in body.rglob('*') if p.is_file()]) == 35
+          sm=json.loads((body/'data/SOURCE_MANIFEST.json').read_text())
+          assert sm['counts']['lexicon_entries'] == 640
+          assert sm['counts']['browser_bodies'] == 20
+          assert sm['counts']['search_documents'] == 881
+          for name, expected in manifest['source_authorities'].items():
+              assert hashlib.sha256((body/'source_authorities'/name).read_bytes()).hexdigest() == expected
+          print('canonical source + 640 lexicon + 881 search + 35 members PASS')
+          PY
+
+      - name: Build isolated Pages descendant
+        run: |
+          set -euo pipefail
+          ROOT=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1
+          B="$ROOT/source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1"
+          OUT="$ROOT/live-contact/pages-navigator"
+          rm -rf "$OUT"
+          mkdir -p "$OUT/data"
+          cp "$ROOT/live-contact/worker.mjs" "$OUT/_worker.js"
+          cp "$B/data/search_index.json" "$OUT/data/search_index.json"
+          cp "$B/data/SOURCE_MANIFEST.json" "$OUT/data/SOURCE_MANIFEST.json"
+          cp "$B/data/build_meta.json" "$OUT/data/build_meta.json"
+          cp "$B/public/navigator-stringdoor-v0.1.html" "$OUT/navigator-stringdoor-v0.1.html"
+          cp "$B/00_OPEN_FIRST.html" "$OUT/index.html"
+          node --check "$OUT/_worker.js"
+          test "$(python -c 'import json;print(len(json.load(open("'$OUT'/data/search_index.json"))))')" = 881
+
+      - name: Install Wrangler
+        run: npm install --no-save --no-audit --no-fund wrangler@4
+
+      - name: Local Pages MCP + durable-state smoke
+        run: |
+          set -euo pipefail
+          ROOT=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact
+          npx wrangler pages dev "$ROOT/pages-navigator" --ip 127.0.0.1 --port 8790 --kv=NAV_RUNTIME > /tmp/nav-pages.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          for ATTEMPT in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:8790/health > /tmp/nav-health.json 2>/dev/null; then break; fi
+            sleep 1
+          done
+          test -s /tmp/nav-health.json || { cat /tmp/nav-pages.log; exit 1; }
+          node - <<'NODE'
+          const base='http://127.0.0.1:8790';
+          async function rpc(id,method,params={}){
+            const r=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});
+            const j=await r.json(); if(!r.ok||j.error) throw new Error(JSON.stringify(j)); return j.result;
+          }
+          const init=await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'Navigator CI',version:'1'}});
+          if(init.serverInfo?.name?.includes('Navigator')!==true) throw new Error('initialize identity mismatch');
+          const tools=await rpc(2,'tools/list'); if(tools.tools.length!==10) throw new Error('expected 10 tools');
+          const resources=await rpc(3,'resources/list'); if(resources.resources.length!==1) throw new Error('expected widget resource');
+          const read=await rpc(4,'resources/read',{uri:'ui://jm3232-navigator/stringdoor-v0.1.html'}); if(!read.contents[0].text.includes('JM3232')) throw new Error('widget read failed');
+          const search=await rpc(5,'tools/call',{name:'search',arguments:{query:'Radius Lexicon',limit:3}}); if(!search.structuredContent?.results?.length) throw new Error('search empty');
+          const receipt=await rpc(6,'tools/call',{name:'navigator_create_stringreceipt',arguments:{action:'LOCAL_LIVE_CONTACT_PROOF',target_id:'RL-RADIUS-LEXICON',outcome:'PASS',evidence:{surface:'wrangler-pages-dev'}}}); if(!receipt.structuredContent?.hash) throw new Error('receipt not persisted');
+          const status=await rpc(7,'tools/call',{name:'navigator_bridge_status',arguments:{}}); if(status.structuredContent?.runtime?.receipts<1||status.structuredContent?.runtime?.receipt_chain_valid!==true) throw new Error('runtime state/chain failed');
+          console.log('local initialize + 10 tools + resource + search + durable receipt PASS');
+          NODE
+
+      - name: Ensure isolated Cloudflare Pages project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          set +e
+          OUT=$(npx wrangler pages project create jm-navigator-live-contact --production-branch=main 2>&1)
+          CODE=$?
+          set -e
+          printf '%s\n' "$OUT"
+          if [ "$CODE" -ne 0 ] && ! printf '%s\n' "$OUT" | grep -Eqi 'already exists|project.*exists'; then exit "$CODE"; fi
+
+      - name: Resolve or create Navigator KV runtime namespace
+        id: kv
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          LIST=$(npx wrangler kv namespace list 2>&1)
+          printf '%s\n' "$LIST"
+          KV_ID=$(printf '%s\n' "$LIST" | node -e '
+            let s=""; process.stdin.on("data",d=>s+=d).on("end",()=>{
+              const a=s.indexOf("["); const b=s.lastIndexOf("]"); if(a<0||b<a) return;
+              try { const rows=JSON.parse(s.slice(a,b+1)); const hit=rows.find(x=>x.title==="jm-navigator-live-contact-runtime"); if(hit) process.stdout.write(hit.id); } catch {}
+            });')
+          if [ -z "$KV_ID" ]; then
+            OUT=$(npx wrangler kv namespace create jm-navigator-live-contact-runtime 2>&1)
+            printf '%s\n' "$OUT"
+            KV_ID=$(printf '%s\n' "$OUT" | grep -Eo '[a-f0-9]{32}' | tail -n 1 || true)
+          fi
+          test -n "$KV_ID" || { echo 'Could not resolve Navigator KV namespace id' >&2; exit 1; }
+          echo "kv_id=$KV_ID" >> "$GITHUB_OUTPUT"
+          echo "Navigator durable runtime namespace resolved."
+
+      - name: Write Pages binding configuration
+        env:
+          KV_ID: ${{ steps.kv.outputs.kv_id }}
+        run: |
+          set -euo pipefail
+          ROOT=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact
+          cat > "$ROOT/wrangler.jsonc" <<EOF
+          {
+            "name": "jm-navigator-live-contact",
+            "pages_build_output_dir": "./pages-navigator",
+            "compatibility_date": "2026-08-29",
+            "kv_namespaces": [
+              { "binding": "NAV_RUNTIME", "id": "$KV_ID" }
+            ]
+          }
+          EOF
+
+      - name: Deploy isolated Navigator live-contact preview
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          ROOT=estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact
+          pushd "$ROOT" >/dev/null
+          OUT=$(npx wrangler pages deploy pages-navigator --project-name=jm-navigator-live-contact --branch=live-contact --commit-dirty=true 2>&1)
+          popd >/dev/null
+          printf '%s\n' "$OUT"
+          CLEAN=$(printf '%s\n' "$OUT" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+          URL=$(printf '%s\n' "$CLEAN" | grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' | tail -n 1 || true)
+          test -n "$URL" || { echo 'No Cloudflare Pages preview URL recovered.' >&2; exit 1; }
+          echo "preview_url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve stable live-contact alias
+        id: alias
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: |
+          set -euo pipefail
+          ALIAS='https://live-contact.jm-navigator-live-contact.pages.dev'
+          PUBLIC_BASE="$PREVIEW_URL"
+          for ATTEMPT in $(seq 1 15); do
+            STATUS=$(curl --silent --show-error --output /tmp/nav-alias-health.json --write-out '%{http_code}' "$ALIAS/health" || true)
+            if [ "$STATUS" = '200' ] && grep -q 'LIVE_HTTPS_MCP_READY' /tmp/nav-alias-health.json; then PUBLIC_BASE="$ALIAS"; break; fi
+            sleep 2
+          done
+          echo "public_base=$PUBLIC_BASE" >> "$GITHUB_OUTPUT"
+          echo "stable_alias=$ALIAS" >> "$GITHUB_OUTPUT"
+          echo "public_base=$PUBLIC_BASE"
+
+      - name: Public HTTPS MCP exact-contact proof
+        env:
+          PUBLIC_BASE: ${{ steps.alias.outputs.public_base }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$PUBLIC_BASE/health" | tee /tmp/nav-public-health.json
+          grep -q 'LIVE_HTTPS_MCP_READY' /tmp/nav-public-health.json
+          node - <<'NODE'
+          import fs from 'node:fs';
+          const base=process.env.PUBLIC_BASE;
+          async function rpc(id,method,params={}){
+            const r=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});
+            const j=await r.json(); if(!r.ok||j.error) throw new Error(`${method}: ${JSON.stringify(j)}`); return j.result;
+          }
+          const init=await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'Navigator Public Contact Proof',version:'1'}});
+          const tools=await rpc(2,'tools/list');
+          const resources=await rpc(3,'resources/list');
+          const read=await rpc(4,'resources/read',{uri:'ui://jm3232-navigator/stringdoor-v0.1.html'});
+          const search=await rpc(5,'tools/call',{name:'search',arguments:{query:'Radius Lexicon',limit:3}});
+          const receipt=await rpc(6,'tools/call',{name:'navigator_create_stringreceipt',arguments:{action:'PUBLIC_HTTPS_MCP_CONTACT_PROOF',target_id:'RL-RADIUS-LEXICON',outcome:'PASS',evidence:{surface:'Cloudflare Pages',mcpUrl:base+'/mcp'}}});
+          const mark=await rpc(7,'tools/call',{name:'navigator_create_stringmark',arguments:{target_id:'RL-RADIUS-LEXICON',label:'Live-contact proof',note:'Created by public HTTPS MCP proof'}});
+          const save=await rpc(8,'tools/call',{name:'navigator_export_savepack',arguments:{name:'JM3232_NAVIGATOR_LIVE_CONTACT_PROOF',include_receipts:true}});
+          const status=await rpc(9,'tools/call',{name:'navigator_bridge_status',arguments:{}});
+          if(!init.serverInfo?.name?.includes('Navigator')) throw new Error('initialize identity mismatch');
+          if(tools.tools.length!==10) throw new Error(`tool count ${tools.tools.length}`);
+          if(resources.resources.length!==1||!read.contents[0].text.includes('JM3232')) throw new Error('resource proof failed');
+          if(!search.structuredContent?.results?.length) throw new Error('search proof failed');
+          if(!receipt.structuredContent?.hash||!mark.structuredContent?.stringmark?.id||!save.structuredContent?.sha256) throw new Error('write/export proof failed');
+          if(status.structuredContent?.runtime?.receipt_chain_valid!==true||status.structuredContent?.runtime?.receipts<3) throw new Error('durable chain proof failed');
+          const proof={pass:true,publicBase:base,mcpUrl:base+'/mcp',protocol:init.protocolVersion,toolCount:tools.tools.length,resourceCount:resources.resources.length,searchTop:search.structuredContent.results[0].id,receiptId:receipt.structuredContent.id,stringmarkId:mark.structuredContent.stringmark.id,savepackSha256:save.structuredContent.sha256,runtime:status.structuredContent.runtime,canonicalArchive:{bytes:433440,sha256:'c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283',members:35},chatgptAccountApprovalProvenHere:false,ownerInProductContactProvenHere:false};
+          fs.writeFileSync('NAVIGATOR_LIVE_HTTPS_MCP_PROOF_v0_1.json',JSON.stringify(proof,null,2)+'\n');
+          console.log(JSON.stringify(proof,null,2));
+          NODE
+
+      - name: Upload live-contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigator-live-https-mcp-proof-v0.1
+          path: NAVIGATOR_LIVE_HTTPS_MCP_PROOF_v0_1.json
+          if-no-files-found: error
+          retention-days: 30

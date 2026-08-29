@@ -7,6 +7,10 @@ on:
     paths:
       - '.github/workflows/navigator-live-contact-recover.yml'
       - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/**'
+  pull_request:
+    paths:
+      - '.github/workflows/navigator-live-contact-recover.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/**'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +31,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib, json
+          import hashlib
           root=Path('estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1')
           body=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1'
           archive=root/'source-carriage/reconstructed/JM3232_NAVIGATOR_BROWSER_BRIDGE_v0_1.public.tar.xz'

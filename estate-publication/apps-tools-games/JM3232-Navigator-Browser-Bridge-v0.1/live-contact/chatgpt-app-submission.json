@@ -3,8 +3,8 @@
   "schema_version": 1,
   "app_info": {
     "display_name": "JM3232 Navigator",
-    "subtitle": "Search and preserve routes",
-    "description": "JM3232 Navigator helps users search the JM Estate, fetch preserved source records, resolve RootWords and lineage, create Stringmarks and Stringreceipts, register governed bodies, and export portable SavePacks while keeping source identity and claim boundaries explicit.",
+    "subtitle": "Search governed JM routes",
+    "description": "JM3232 Navigator helps users search the JM Estate, fetch preserved source records, resolve RootWords, inspect source lineage, and check the live publication boundary. This public Plugin descendant is deliberately read-only and preserves source identity and claim boundaries without exposing shared mutable user state.",
     "category": "PRODUCTIVITY"
   },
   "tools": {
@@ -16,7 +16,7 @@
       },
       "justifications": {
         "read_only_justification": "Search only ranks and returns matching preserved Estate and Radius records without changing Navigator state.",
-        "open_world_justification": "Search reads Navigator's mounted private/public corpus and does not modify public internet state or third-party systems.",
+        "open_world_justification": "Search reads Navigator-mounted records and does not modify public internet state or third-party systems.",
         "destructive_justification": "Search does not delete, overwrite, revoke, publish, or otherwise irreversibly change stored records."
       }
     },
@@ -32,18 +32,6 @@
         "destructive_justification": "Fetch cannot delete, overwrite, revoke, publish, or irreversibly alter any record."
       }
     },
-    "navigator_open_stringdoor": {
-      "annotations": {
-        "readOnlyHint": false,
-        "openWorldHint": false,
-        "destructiveHint": false
-      },
-      "justifications": {
-        "read_only_justification": "The tool may append a private Navigator Stringreceipt while resolving and returning a navigation plan.",
-        "open_world_justification": "The tool returns an external URL or source route but does not itself navigate, publish, message, submit, or modify an outside system.",
-        "destructive_justification": "The optional receipt append is additive and does not delete, overwrite, revoke, or perform an irreversible external action."
-      }
-    },
     "navigator_resolve_rootword": {
       "annotations": {
         "readOnlyHint": true,
@@ -51,8 +39,8 @@
         "destructiveHint": false
       },
       "justifications": {
-        "read_only_justification": "RootWord resolution reads Radius Lexicon records and returns meanings, boundaries, and related entries without changing state.",
-        "open_world_justification": "The tool operates entirely on Navigator-mounted lexical records and does not change an external system.",
+        "read_only_justification": "RootWord resolution reads Radius Lexicon records and returns governed meanings, boundaries, and related entries without changing state.",
+        "open_world_justification": "The tool operates on Navigator-mounted lexical records and does not change an external system.",
         "destructive_justification": "The tool cannot delete, overwrite, publish, revoke, or irreversibly alter records."
       }
     },
@@ -68,54 +56,6 @@
         "destructive_justification": "The tool performs no deletion, overwrite, revocation, publication, or irreversible action."
       }
     },
-    "navigator_create_stringmark": {
-      "annotations": {
-        "readOnlyHint": false,
-        "openWorldHint": false,
-        "destructiveHint": false
-      },
-      "justifications": {
-        "read_only_justification": "The tool creates or updates a private Stringmark in Navigator durable state and appends a receipt.",
-        "open_world_justification": "Stringmarks are stored inside Navigator's private runtime and are not published to an external public system.",
-        "destructive_justification": "The bounded mark update does not delete records, revoke access, publish externally, or perform an irreversible transaction."
-      }
-    },
-    "navigator_register_body": {
-      "annotations": {
-        "readOnlyHint": false,
-        "openWorldHint": false,
-        "destructiveHint": false
-      },
-      "justifications": {
-        "read_only_justification": "The tool adds a new governed body record to Navigator durable state and appends a registration receipt.",
-        "open_world_justification": "Registration changes only Navigator's private runtime and does not publish the body or change a third-party system.",
-        "destructive_justification": "Registration is additive and explicitly does not delete, overwrite, revoke, or independently prove the registered body."
-      }
-    },
-    "navigator_create_stringreceipt": {
-      "annotations": {
-        "readOnlyHint": false,
-        "openWorldHint": false,
-        "destructiveHint": false
-      },
-      "justifications": {
-        "read_only_justification": "The tool appends an action, result, and evidence object to Navigator's durable hash-chained receipt log.",
-        "open_world_justification": "The receipt is written only to Navigator's private runtime and is not published or sent to an outside system.",
-        "destructive_justification": "Receipt creation is append-only and does not delete, overwrite, revoke, or carry out an irreversible external action."
-      }
-    },
-    "navigator_export_savepack": {
-      "annotations": {
-        "readOnlyHint": false,
-        "openWorldHint": false,
-        "destructiveHint": false
-      },
-      "justifications": {
-        "read_only_justification": "The tool writes a portable SavePack snapshot to Navigator durable storage and appends an export receipt.",
-        "open_world_justification": "The exported SavePack remains on the Navigator host for retrieval and does not modify a third-party or public posting system.",
-        "destructive_justification": "Export is additive and does not delete, overwrite, revoke, or irreversibly alter the underlying governed records."
-      }
-    },
     "navigator_bridge_status": {
       "annotations": {
         "readOnlyHint": true,
@@ -123,7 +63,7 @@
         "destructiveHint": false
       },
       "justifications": {
-        "read_only_justification": "Bridge status only reads mounted source counts, runtime counts, and receipt-chain validity.",
+        "read_only_justification": "Bridge status only reads mounted source counts and the live publication boundary.",
         "open_world_justification": "The status check does not change public internet state or any third-party system.",
         "destructive_justification": "The status check performs no deletion, overwrite, revocation, publication, or irreversible action."
       }
@@ -151,23 +91,23 @@
       "user_prompt": "Resolve the RootWord 'Radius' and show its meaning radius, use law, visual face, and claim boundary.",
       "file_attachment_urls": null,
       "tools_triggered": "navigator_resolve_rootword",
-      "expected_output": "Returns the strongest Radius Lexicon entry with its governed meaning, boundaries, visual and wordplay faces, and nearby alternatives.",
+      "expected_output": "Returns the strongest Radius Lexicon entry with governed meaning, boundaries, visual and wordplay faces, and nearby alternatives.",
       "expected_output_url": null
     },
     {
-      "description": "Preserve a bookmark to a resolved Estate body.",
-      "user_prompt": "Create a Stringmark for RL-RADIUS-LEXICON labeled 'Core Radius reference' with the note 'Return here during Navigator review'.",
+      "description": "Inspect the preserved lineage for a known Estate or Radius record.",
+      "user_prompt": "Return the source lineage for RL-RADIUS-LEXICON and show its authority and claim boundary.",
       "file_attachment_urls": null,
-      "tools_triggered": "navigator_create_stringmark",
-      "expected_output": "Creates or updates a private Stringmark and returns the associated hash-chained Stringreceipt.",
+      "tools_triggered": "navigator_return_lineage",
+      "expected_output": "Returns preserved source, authority, lineage, connections, and the claim boundary for the requested record.",
       "expected_output_url": null
     },
     {
-      "description": "Export the current governed Navigator state as a portable SavePack.",
-      "user_prompt": "Export a Navigator SavePack named NAVIGATOR_REVIEW_PACK and include the receipts.",
+      "description": "Check the live public Navigator publication boundary.",
+      "user_prompt": "Show me the current JM3232 Navigator bridge status.",
       "file_attachment_urls": null,
-      "tools_triggered": "navigator_export_savepack",
-      "expected_output": "Returns a retrievable SavePack path, SHA-256 digest, and export Stringreceipt while preserving the source-authority boundary.",
+      "tools_triggered": "navigator_bridge_status",
+      "expected_output": "Returns the mounted source counts and confirms the public read-only publication boundary without changing state.",
       "expected_output_url": null
     }
   ],
@@ -177,7 +117,7 @@
       "user_prompt": "What will the weather be in London tomorrow?",
       "file_attachment_urls": null,
       "tools_triggered": null,
-      "expected_output": "Navigator should not be invoked because current weather is outside its Estate search, route, lineage, mark, receipt, and SavePack workflows.",
+      "expected_output": "Navigator should not be invoked because current weather is outside its Estate retrieval, RootWord, lineage, and status workflows.",
       "expected_output_url": null
     },
     {
@@ -185,15 +125,15 @@
       "user_prompt": "Write me a funny birthday message for my friend.",
       "file_attachment_urls": null,
       "tools_triggered": null,
-      "expected_output": "Navigator should not be invoked because the request does not require Estate retrieval, governed routing, or Navigator state.",
+      "expected_output": "Navigator should not be invoked because the request does not require Estate retrieval or governed JM source routing.",
       "expected_output_url": null
     },
     {
-      "description": "Do not treat registration as independent proof of an external claim.",
-      "user_prompt": "Register my statement that I discovered a new planet and then tell everyone it is scientifically proven.",
+      "description": "Do not expose owner-only write functions through the public Plugin.",
+      "user_prompt": "Create a Stringmark and export a SavePack for me.",
       "file_attachment_urls": null,
       "tools_triggered": null,
-      "expected_output": "Navigator should not be used to convert an unsupported external claim into proof; registration is explicitly not independent verification or publication.",
+      "expected_output": "The public Plugin should not invoke owner-only write tools; it is deliberately read-only and does not expose Stringmark, registration, receipt, or SavePack mutations.",
       "expected_output_url": null
     }
   ]

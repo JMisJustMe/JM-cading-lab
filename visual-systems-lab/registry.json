@@ -1,24 +1,26 @@
 {
-  "schema": "jm.visual-systems-lab.registry/0.3",
+  "schema": "jm.visual-systems-lab.registry/0.3.1",
   "name": "JM Visual Crown — Deep House, Living Fields & Composition Without Erasure",
   "version": "0.3.0",
-  "status": "ACCEPTED_FROZEN_LOCKED_ANCHORED_MOUNTED",
+  "status": "FULL_COMPLETE_AT_DECLARED_DEEP_HOUSE_v0_3_SOFTWARE_MILESTONE_SCOPE__FROZEN_LOCKED_ANCHORED_ZIONFOLDERED",
   "chat_name": "JM VISUAL CROWN — Deep House, Living Fields & Composition Without Erasure — From Optical Illusion to Alterable Visual Estate",
   "keeper": "Observant. Absorbent. Adaptive. The visual should reveal the route.",
   "authority": {
     "current": "JM Visual Crown — Deep House v0.3",
     "previous_proved_recovery": "JM Visual Systems Lab v0.1",
     "release_register": "visual-systems-lab/releases/v0.3/",
+    "bt_flaz_register": "visual-systems-lab/releases/v0.3/bt-flaz-v1.0/",
     "exact_library_path": "/JM Estate/Visual Systems Lab/Deep House v0.3",
+    "canonical_zionfolder_route": "/Zionfolder/JM Estate/Visual Systems Lab/Deep House v0.3/BT FLAZ Closure v1.0/",
     "exact_html_sha256": "e0d843720abe739543e4d7892f4f42a8c109fbc01ebb0df5cbb97bc18f9ca16a",
-    "source_zip_sha256": "718f2a9a0d1ff29c10f4a3f253eefeed997b578edc8180da7391c47209624ec0",
-    "proof_zip_sha256": "07c5fb939ef07413f199dfeca00d69231e973c37d4ed7baf9e14fc6732e22108"
+    "android_debug_apk_sha256": "4aa25970084e29367ecf6adbb5399147b02ed7fc11b1aeb0dd76bb64b70fb160",
+    "bt_flaz_zionfolder_zip_sha256": "e8a6d7acf3ed2022ae114974fa202a05296c0ed57e33b3b13d9e1767e5bc988b"
   },
   "lineage": [
     {"version":"0.1.0","role":"proved website/PWA/debug-APK recovery body","preserved":true},
     {"version":"0.2.0","role":"Full House fill-out lineage","preserved":true},
     {"version":"0.2.1","role":"Illusion Depth repair lineage","preserved":true},
-    {"version":"0.3.0","role":"accepted Deep House authority","preserved":true}
+    {"version":"0.3.0","role":"accepted Deep House authority + exact-body Android debug APK + BT FLAZ closure","preserved":true}
   ],
   "source_authority": [
     "Cading",
@@ -56,7 +58,8 @@
     "INTERACTION MUST PRODUCE PERCEIVABLE CONSEQUENCE",
     "ALTERATION IS FIRST-CLASS",
     "SHARED HOUSE DOES NOT ERASE DISTINCT ROOM IDENTITY",
-    "MUM IS COMPOSITION WITHOUT ERASURE"
+    "MUM IS COMPOSITION WITHOUT ERASURE",
+    "NO DING NO CLAIM"
   ],
   "controls": ["touch","keyboard","trackpad","pointer","direct field drag","sliders","presets","layer manipulation"],
   "proof": {
@@ -71,18 +74,33 @@
     "mum_scale_change": "PASS",
     "story_timeline_count": 5,
     "browser_errors": 0,
-    "user_acceptance": "PASS"
+    "user_acceptance": "PASS",
+    "frozen_html_equals_apk_embedded_index": "PASS"
   },
   "delivery": {
     "v0_3_standalone_html": "PASS_ACCEPTED_AND_LIBRARY_MOUNTED",
     "v0_3_source_and_proof_custody": "PASS_LIBRARY_MOUNTED_WITH_SHA256",
     "v0_3_github_release_register": "PASS_MOUNTED",
-    "v0_3_public_github_pages_head": "NOT_YET_PROMOTED",
-    "v0_3_pwa_recompile": "NOT_YET_RUN",
-    "v0_3_android_debug_apk": "NOT_YET_COMPILED",
-    "v0_1_live_website_pwa_android_recovery": "PASS_PRESERVED",
+    "v0_3_android_debug_apk": "PASS_COMPILED_SIGNED_EXACT_BODY_MATCH",
+    "v0_3_bt_closure_docx_pdf": "PASS_RENDERED_VISUALLY_VERIFIED",
+    "v0_3_bt_flaz_zionfolder_zip": "PASS_FORMED_ARCHIVE_VALID_HASHED",
+    "v0_3_bt_flaz_estate_anchor": "PASS_GITHUB_MOUNTED",
+    "v0_3_public_github_pages_head": "NOT_CLAIMED_AS_PROMOTED_FROM_THIS_CLOSURE",
     "play_store_release_signed_apk": "NOT_CLAIMED",
     "android_app_bundle_aab": "NOT_CLAIMED"
   },
-  "claim_boundary": "Accepted Deep House checkpoint and current visual authority with exact body, source, proof, QA and hashes mounted. It is not claimed as a final universal visual system, a full professional nonlinear editor, a production Play Store release, or a final Crown beyond the recorded proof and user acceptance."
+  "closure": {
+    "bt": "COMPLETE",
+    "freeze": "COMPLETE",
+    "lock": "COMPLETE",
+    "anchor": "COMPLETE",
+    "zionfolder": "COMPLETE",
+    "documentary_pair": [
+      "JM_VISUAL_CROWN_Deep_House_v0_3_BT_Closure_v1_0.docx",
+      "JM_VISUAL_CROWN_Deep_House_v0_3_BT_Closure_v1_0.pdf"
+    ],
+    "package": "JM_VISUAL_CROWN_Deep_House_v0_3_BT_FLAZ_ZIONFOLDER_v1_0.zip",
+    "package_sha256": "e8a6d7acf3ed2022ae114974fa202a05296c0ed57e33b3b13d9e1767e5bc988b"
+  },
+  "claim_boundary": "FULL COMPLETE only at the declared Deep House v0.3 software milestone scope. This does not claim a final universal visual system, full professional nonlinear editor, production Play Store release, release-signed AAB, or final Crown beyond recorded proof and user acceptance."
 }

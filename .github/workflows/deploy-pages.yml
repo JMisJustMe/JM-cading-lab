@@ -21,73 +21,27 @@ jobs:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
 
-      - name: Build and validate BeatBody v2.5.2 direct document runtime
+      - name: Run JM Multi-Carrier Control Organ
+        run: python tools/jm_carrier_control.py --plan beatbody/carrier-plan.json
+
+      - name: Verify direct-launch floor
         shell: python
         run: |
-          import base64, gzip, hashlib, json
+          import hashlib, json
           from pathlib import Path
-
-          root = Path("beatbody")
-          manifest = json.loads((root / "body-manifest.json").read_text())
-          encoded = "".join((root / n).read_text() for n in manifest["chunks"])
-          encoded = "".join(encoded.split())
-          if len(encoded) % 4 == 1:
-              raise SystemExit("BeatBody source HOLD: impossible Base64 length")
-          if len(encoded) % 4:
-              encoded += "=" * (4 - len(encoded) % 4)
-
-          source = gzip.decompress(base64.b64decode(encoded, validate=True)).decode()
-          source_sha = hashlib.sha256(source.encode()).hexdigest()
-          source_expected = "c3292f10b98c9239caf7cd6c266e8279f8003818d2b3f5782561a887a6e307ec"
-          if source_sha != source_expected or source_sha != manifest["body_sha256"]:
-              raise SystemExit(f"BeatBody source HOLD: {source_sha}")
-
-          patches = [
-              ['<title>JM BEATBODY STUDIO v2.5</title>', '<title>JM BEATBODY STUDIO v2.5.2</title>'],
-              ['"name":"JM BEATBODY STUDIO v2.5","version":"2.5.0"', '"name":"JM BEATBODY STUDIO v2.5.2","version":"2.5.2"'],
-              ['JM BEATBODY STUDIO <em>v2.4</em>', 'JM BEATBODY STUDIO <em>v2.5.2</em>'],
-              ['v2.4 · HTTPS/PWA PRODUCTION RAIL', 'v2.5.2 · DIRECT HTTPS/PWA PRODUCTION RAIL'],
-              ["body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'", "body:'JM BEATBODY STUDIO v2.5.2 — DIRECT DOCUMENT RUNTIME'"],
-              ["project.version='2.4.0'", "project.version='2.5.2'"],
-              ["function normalizeProject(p){p.version='2.5.0';", "function normalizeProject(p){p.version='2.5.2';"],
-              ["schema:'jm.tracebox.receipt/beatbody-2.4'", "schema:'jm.tracebox.receipt/beatbody-2.5.2'"],
-              ["schema:'jm.jm32-1da.build-gate/beatbody-2.4'", "schema:'jm.jm32-1da.build-gate/beatbody-2.5.2'"],
-              ["r.schema='jm.onebody.contract/beatbody-2.4'", "r.schema='jm.onebody.contract/beatbody-2.5.2'"],
-              ["trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')", "trace('BOOT','BeatBody Studio v2.5.2 direct document runtime opened')"],
-              ['refreshMicPermission().finally(()=>{syncTransport();renderAll()});', "/* v2.5.2: BODY FIRST + DIRECT DOCUMENT — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"]
-          ]
-
-          body = source
-          for old, new in patches:
-              if body.count(old) != 1:
-                  raise SystemExit(f"BeatBody v2.5.2 PATCH HOLD ({body.count(old)}): {old[:70]}")
-              body = body.replace(old, new)
-
-          got = hashlib.sha256(body.encode()).hexdigest()
-          expected = "f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad"
+          receipt = json.loads(Path('_carrier_outputs/beatbody/JM-BEATBODY-STUDIO-v2.5.2-CARRIER-RECEIPT.json').read_text())
+          if receipt['status'] != 'DING':
+              raise SystemExit('BeatBody carrier HOLD: receipt is not DING')
+          direct = Path('beatbody/index.html')
+          got = hashlib.sha256(direct.read_bytes()).hexdigest()
+          expected = 'f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad'
           if got != expected:
-              raise SystemExit(f"BeatBody v2.5.2 BODY HOLD: {got} != {expected}")
-
-          stale = [
-              '<em>v2.4</em>',
-              'refreshMicPermission().finally(()=>{syncTransport();renderAll()});',
-              "p.version='2.5.0'",
-              "project.version='2.4.0'"
-          ]
-          if any(x in body for x in stale):
-              raise SystemExit("BeatBody v2.5.2 stale boot/version HOLD")
-          if 'id="room-play"' not in body or 'syncTransport();renderAll();refreshMicPermission()' not in body:
-              raise SystemExit("BeatBody v2.5.2 room/boot invariant HOLD")
-
-          # Production correction: publish the verified app body as the actual Pages
-          # document. The browser no longer has to reconstruct and document.write()
-          # BeatBody at runtime.
-          (root / "index.html").write_text(body)
-          published_sha = hashlib.sha256((root / "index.html").read_bytes()).hexdigest()
-          if published_sha != expected:
-              raise SystemExit(f"BeatBody v2.5.2 publish-file HOLD: {published_sha}")
-          (root / "DEPLOYED_BODY_SHA256.txt").write_text(expected + "  index.html\n")
-          print(f"BeatBody v2.5.2 DIRECT DOCUMENT DING: {len(body.encode())} bytes · SHA-256 {got}")
+              raise SystemExit(f'BeatBody direct-launch HOLD: {got} != {expected}')
+          if receipt['outputs']['direct_https']['runtime_reconstruction'] is not False:
+              raise SystemExit('BeatBody direct-launch HOLD: runtime reconstruction returned')
+          if not Path('_carrier_outputs/beatbody/JM-BEATBODY-STUDIO-v2.5.2-portable.html').exists():
+              raise SystemExit('BeatBody portable carrier HOLD')
+          print('JM Multi-Carrier DING: direct HTTPS + PWA enhancement + portable carrier verified')
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

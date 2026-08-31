@@ -1,0 +1,67 @@
+{
+  "schema": "jm.multi-carrier-build-mode.operational-closure/1.0",
+  "body": "JM Multi-Carrier Build Mode v1.0",
+  "status": [
+    "FOUNDING_BODY_COMPLETE",
+    "FROZEN",
+    "LOCKED",
+    "ANCHORED",
+    "ZIONFOLDERED",
+    "OPERATIONAL_RAIL_PROVED"
+  ],
+  "keeper": "DO NOT CHOOSE A FORMAT. CHOOSE THE POWERS THE BODY NEEDS.",
+  "laws": [
+    "BODY != CARRIER",
+    "DIRECT FIRST. ENHANCE SECOND. ESCALATE THIRD.",
+    "BUILD COMPLEXITY MAY BE HIGH; LAUNCH COMPLEXITY SHOULD BE LOW.",
+    "PORTABILITY IS A PROPERTY, NOT THE PRODUCTION HOST.",
+    "PWA IS AN ENHANCEMENT LAYER, NOT A REQUIRED BOOTLOADER.",
+    "NATIVE AUTHORITY IS ESCALATION, NOT DEFAULT MASS."
+  ],
+  "default_route": [
+    "SOVEREIGN_BODY",
+    "VERIFY",
+    "DIRECT_HTTPS",
+    "PWA_WHERE_EARNED",
+    "PORTABLE_RECOVERY_CARRIER",
+    "NATIVE_WHERE_EARNED",
+    "OPTIONAL_MIRROR_WHERE_EARNED"
+  ],
+  "implementation": {
+    "control_organ": "tools/jm_carrier_control.py",
+    "registry_runner": "tools/jm_carrier_registry.py",
+    "registry": "carrier-control/registry.json",
+    "plan_schema": "carrier-control/plan.schema.json",
+    "first_registered_body": "beatbody/carrier-plan.json",
+    "first_registered_version": "2.5.2",
+    "first_registered_body_sha256": "f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad",
+    "primary_host": "GitHub Pages",
+    "secondary_mirror": "OPTIONAL_DEFERRED_NOT_REQUIRED"
+  },
+  "proof": {
+    "pages_deployment_run": 33434486524,
+    "pages_deployment_result": "SUCCESS",
+    "registry_gate": "DING",
+    "direct_runtime_reconstruction": false,
+    "pwa_layer": "ENABLED_AS_ENHANCEMENT",
+    "portable_output": "ENABLED",
+    "native_boundary": "READY_NOT_FORCED"
+  },
+  "frozen_carriers": {
+    "docx_sha256": "f4dd7c7d88d01530e2eb43466715e96677f51ada25e46de1a500c912a90cf589",
+    "pdf_sha256": "2f177aa1a8d24d5956e8fbaaa4a2df503731875eb5e9ccd582a24f1bf27d78c5",
+    "zionfolder": "/Zionfolder/JM Estate/Software/Architecture/JM Multi-Carrier Build Mode/v1.0 Founding Body/"
+  },
+  "scope_boundary": {
+    "closed": "founding architecture, carrier laws, reusable control organ, registry gate, direct HTTPS + PWA + portable proving route",
+    "future_descendants_allowed": true,
+    "future_examples": [
+      "additional registered apps",
+      "optional mirror hosts",
+      "native/APK carrier adapters",
+      "additional capability profiles"
+    ],
+    "note": "Future descendants extend the frozen founding body; they do not reopen or invalidate it."
+  },
+  "closure": "COMPLETE"
+}

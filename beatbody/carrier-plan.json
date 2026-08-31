@@ -9,66 +9,18 @@
     "expected_sha256": "c3292f10b98c9239caf7cd6c266e8279f8003818d2b3f5782561a887a6e307ec"
   },
   "transforms": [
-    {
-      "op": "replace",
-      "old": "<title>JM BEATBODY STUDIO v2.5</title>",
-      "new": "<title>JM BEATBODY STUDIO v2.5.2</title>"
-    },
-    {
-      "op": "replace",
-      "old": "\"name\":\"JM BEATBODY STUDIO v2.5\",\"version\":\"2.5.0\"",
-      "new": "\"name\":\"JM BEATBODY STUDIO v2.5.2\",\"version\":\"2.5.2\""
-    },
-    {
-      "op": "replace",
-      "old": "JM BEATBODY STUDIO <em>v2.4</em>",
-      "new": "JM BEATBODY STUDIO <em>v2.5.2</em>"
-    },
-    {
-      "op": "replace",
-      "old": "v2.4 · HTTPS/PWA PRODUCTION RAIL",
-      "new": "v2.5.2 · DIRECT HTTPS/PWA PRODUCTION RAIL"
-    },
-    {
-      "op": "replace",
-      "old": "body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'",
-      "new": "body:'JM BEATBODY STUDIO v2.5.2 — DIRECT DOCUMENT RUNTIME'"
-    },
-    {
-      "op": "replace",
-      "old": "project.version='2.4.0'",
-      "new": "project.version='2.5.2'"
-    },
-    {
-      "op": "replace",
-      "old": "function normalizeProject(p){p.version='2.5.0';",
-      "new": "function normalizeProject(p){p.version='2.5.2';"
-    },
-    {
-      "op": "replace",
-      "old": "schema:'jm.tracebox.receipt/beatbody-2.4'",
-      "new": "schema:'jm.tracebox.receipt/beatbody-2.5.2'"
-    },
-    {
-      "op": "replace",
-      "old": "schema:'jm.jm32-1da.build-gate/beatbody-2.4'",
-      "new": "schema:'jm.jm32-1da.build-gate/beatbody-2.5.2'"
-    },
-    {
-      "op": "replace",
-      "old": "r.schema='jm.onebody.contract/beatbody-2.4'",
-      "new": "r.schema='jm.onebody.contract/beatbody-2.5.2'"
-    },
-    {
-      "op": "replace",
-      "old": "trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')",
-      "new": "trace('BOOT','BeatBody Studio v2.5.2 direct document runtime opened')"
-    },
-    {
-      "op": "replace",
-      "old": "refreshMicPermission().finally(()=>{syncTransport();renderAll()});",
-      "new": "/* v2.5.2: BODY FIRST + DIRECT DOCUMENT — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"
-    }
+    {"op":"replace","old":"<title>JM BEATBODY STUDIO v2.5</title>","new":"<title>JM BEATBODY STUDIO v2.5.2</title>"},
+    {"op":"replace","old":"\"name\":\"JM BEATBODY STUDIO v2.5\",\"version\":\"2.5.0\"","new":"\"name\":\"JM BEATBODY STUDIO v2.5.2\",\"version\":\"2.5.2\""},
+    {"op":"replace","old":"JM BEATBODY STUDIO <em>v2.4</em>","new":"JM BEATBODY STUDIO <em>v2.5.2</em>"},
+    {"op":"replace","old":"v2.4 · HTTPS/PWA PRODUCTION RAIL","new":"v2.5.2 · DIRECT HTTPS/PWA PRODUCTION RAIL"},
+    {"op":"replace","old":"body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'","new":"body:'JM BEATBODY STUDIO v2.5.2 — DIRECT DOCUMENT RUNTIME'"},
+    {"op":"replace","old":"project.version='2.4.0'","new":"project.version='2.5.2'"},
+    {"op":"replace","old":"function normalizeProject(p){p.version='2.5.0';","new":"function normalizeProject(p){p.version='2.5.2';"},
+    {"op":"replace","old":"schema:'jm.tracebox.receipt/beatbody-2.4'","new":"schema:'jm.tracebox.receipt/beatbody-2.5.2'"},
+    {"op":"replace","old":"schema:'jm.jm32-1da.build-gate/beatbody-2.4'","new":"schema:'jm.jm32-1da.build-gate/beatbody-2.5.2'"},
+    {"op":"replace","old":"r.schema='jm.onebody.contract/beatbody-2.4'","new":"r.schema='jm.onebody.contract/beatbody-2.5.2'"},
+    {"op":"replace","old":"trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')","new":"trace('BOOT','BeatBody Studio v2.5.2 direct document runtime opened')"},
+    {"op":"replace","old":"refreshMicPermission().finally(()=>{syncTransport();renderAll()});","new":"/* v2.5.2: BODY FIRST + DIRECT DOCUMENT — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"}
   ],
   "validate": {
     "expected_sha256": "f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad",
@@ -86,17 +38,13 @@
     ]
   },
   "powers": {
-    "direct_https": {
-      "enabled": true
-    },
+    "direct_https": {"enabled": true},
     "pwa": {
       "enabled": true,
       "manifest": "beatbody/manifest.webmanifest",
       "service_worker": "beatbody/sw.js"
     },
-    "portable": {
-      "enabled": true
-    },
+    "portable": {"enabled": true},
     "native": {
       "ready": true,
       "rule": "ESCALATE ONLY WHEN DEVICE AUTHORITY EARNS IT"
@@ -104,8 +52,9 @@
     "mirrors": [
       {
         "role": "secondary",
-        "provider": "UNASSIGNED",
-        "status": "READY_FOR_BINDING"
+        "provider": "NONE",
+        "status": "OPTIONAL_DEFERRED_NOT_REQUIRED",
+        "rule": "BIND ONLY WHEN REDUNDANCY EARNS THE EXTRA HOST"
       }
     ]
   },

@@ -21,27 +21,26 @@ jobs:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
 
-      - name: Run JM Multi-Carrier Control Organ
-        run: python tools/jm_carrier_control.py --plan beatbody/carrier-plan.json
+      - name: Run JM Multi-Carrier Registry
+        run: python tools/jm_carrier_registry.py --registry carrier-control/registry.json
 
-      - name: Verify direct-launch floor
+      - name: Verify Estate carrier registry DING
         shell: python
         run: |
-          import hashlib, json
+          import json
           from pathlib import Path
-          receipt = json.loads(Path('_carrier_outputs/beatbody/JM-BEATBODY-STUDIO-v2.5.2-CARRIER-RECEIPT.json').read_text())
+          receipt = json.loads(Path('_carrier_outputs/JM-CARRIER-REGISTRY-RECEIPT.json').read_text())
           if receipt['status'] != 'DING':
-              raise SystemExit('BeatBody carrier HOLD: receipt is not DING')
-          direct = Path('beatbody/index.html')
-          got = hashlib.sha256(direct.read_bytes()).hexdigest()
-          expected = 'f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad'
-          if got != expected:
-              raise SystemExit(f'BeatBody direct-launch HOLD: {got} != {expected}')
-          if receipt['outputs']['direct_https']['runtime_reconstruction'] is not False:
-              raise SystemExit('BeatBody direct-launch HOLD: runtime reconstruction returned')
-          if not Path('_carrier_outputs/beatbody/JM-BEATBODY-STUDIO-v2.5.2-portable.html').exists():
-              raise SystemExit('BeatBody portable carrier HOLD')
-          print('JM Multi-Carrier DING: direct HTTPS + PWA enhancement + portable carrier verified')
+              raise SystemExit('JM carrier registry HOLD')
+          if receipt['enabled_plans'] < 1:
+              raise SystemExit('JM carrier registry HOLD: no enabled plans')
+          for item in receipt['results']:
+              if item['status'] != 'DING':
+                  raise SystemExit(f"JM carrier HOLD: {item['id']}")
+              direct = item.get('direct_https') or {}
+              if direct and direct.get('runtime_reconstruction') is not False:
+                  raise SystemExit(f"JM direct-launch HOLD: {item['id']} runtime reconstruction returned")
+          print(f"JM CARRIER REGISTRY DING: {receipt['enabled_plans']} verified body plan(s)")
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

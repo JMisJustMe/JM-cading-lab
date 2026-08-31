@@ -19,6 +19,7 @@ on:
       - "apps/**"
       - "author/**"
       - "coding-estate/**"
+      - "earn-now/**"
       - "estate/**"
       - "fresh-app-lab/**"
       - "games-beyond/**"
@@ -65,9 +66,12 @@ jobs:
           actual="$(sha256sum money-menu/index.html | awk '{print $1}')"
           expected='7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d'
           test "$actual" = "$expected"
+          test -s earn-now/index.html
           test -s shims-reader/index.html
           test -s apps/showcase/index.html
           test -s games-beyond/showcase/index.html
+          grep -Fq 'Things you can hire JM for today' earn-now/index.html
+          grep -Fq 'Hire JM now' author-home-door.js
           grep -Fq 'SHIMS Reader' shims-reader/index.html
           grep -Fq 'JM Apps & Tools' apps/showcase/index.html
           grep -Fq 'JM Games' games-beyond/showcase/index.html
@@ -87,7 +91,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in apps author coding-estate estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
+          for dir in apps author coding-estate earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -122,6 +126,8 @@ jobs:
           /404.html
             Cache-Control: no-store, no-cache, must-revalidate
             Clear-Site-Data: "cache"
+          /earn-now/*
+            Cache-Control: no-store, no-cache, must-revalidate
           /money-menu/*
             Cache-Control: no-store, no-cache, must-revalidate
           /shims-reader/*
@@ -141,6 +147,8 @@ jobs:
           EOF
 
           cat > cloudflare-estate/_redirects <<'EOF'
+          /earn-now /earn-now/index.html 200
+          /earn-now/ /earn-now/index.html 200
           /money-menu /money-menu/index.html 200
           /money-menu/ /money-menu/index.html 200
           /shims-reader /shims-reader/index.html 200
@@ -174,7 +182,10 @@ jobs:
 
           checks = [
               ('index.html', 'Your work no longer lives as scattered HTMLs'),
+              ('author-home-door.js', 'Hire JM now'),
               ('author-home-door.js', 'SHIMS Reader'),
+              ('earn-now/index.html', 'Things you can hire JM for today'),
+              ('earn-now/index.html', 'Published offer ≠ sale. One payment ≠ proven market.'),
               ('money-menu/index.html', 'JM Money Menu · Public Contact Carrier v1.2'),
               ('money-menu/index.html', '242 routes'),
               ('money-menu/index.html', 'Enquiry → brief → scope → receipt'),
@@ -251,6 +262,7 @@ jobs:
           base = 'https://jmisjustme-estate.pages.dev'
           checks = [
               ('/', 'Your work no longer lives as scattered HTMLs'),
+              ('/earn-now/', 'Things you can hire JM for today'),
               ('/money-menu/', 'JM Money Menu · Public Contact Carrier v1.2'),
               ('/shims-reader/', 'SHIMS Reader'),
               ('/apps/', 'NON-GAME APPS HOUSE'),
@@ -340,15 +352,17 @@ jobs:
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'host': 'https://jmisjustme-estate.pages.dev',
               'routes': [
-                  '/', '/money-menu/', '/shims-reader/', '/apps/', '/apps/showcase/',
+                  '/', '/earn-now/', '/money-menu/', '/shims-reader/', '/apps/', '/apps/showcase/',
                   '/games-beyond/', '/games-beyond/showcase/', '/theory/', '/lyrics/', '/recent/',
                   '/estate/authoritative/all-body-first-pass-v1.0/',
                   '/estate/authoritative/all-body-first-pass-v1.0/command-register/'
               ],
               'release_extension': {
+                  'earn_now': 'LIVE_PASS',
                   'shims_reader': 'LIVE_PASS',
                   'apps_showcase': 'LIVE_PASS',
                   'games_showcase': 'LIVE_PASS',
+                  'root_earn_now_door_source': 'PRESENT',
                   'root_shims_door_source': 'PRESENT'
               },
               'exact_command_register': {
@@ -363,7 +377,7 @@ jobs:
               'self_erasure': False,
               'silent_parallel_lane': False,
               'ding': False,
-              'claim_boundary': 'Current public release source, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate.'
+              'claim_boundary': 'Current public release source, Earn-Now, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Offer publication and live-route contact do not establish buyer contact, payment, market proof or JM Ding. Owner-side physical acceptance remains separate.'
           }
           path = Path('registry/cloudflare-authoritative-route-receipt-v1.3.json')
           path.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')

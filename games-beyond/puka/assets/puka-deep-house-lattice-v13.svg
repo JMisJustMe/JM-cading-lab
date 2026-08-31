@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-label="PUKA Deep House field lattice">
+  <defs>
+    <radialGradient id="field" cx="50%" cy="48%" r="62%">
+      <stop offset="0" stop-color="#f0d28f" stop-opacity=".16"/>
+      <stop offset=".36" stop-color="#67bfd9" stop-opacity=".08"/>
+      <stop offset=".72" stop-color="#2b725f" stop-opacity=".04"/>
+      <stop offset="1" stop-color="#020706" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="route" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#f1d68f" stop-opacity=".52"/>
+      <stop offset=".5" stop-color="#7cc7d8" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#a47735" stop-opacity=".42"/>
+    </linearGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+  <ellipse cx="600" cy="350" rx="520" ry="270" fill="url(#field)"/>
+  <g fill="none" stroke="url(#route)" opacity=".5">
+    <ellipse cx="600" cy="350" rx="486" ry="246" stroke-width="2"/>
+    <ellipse cx="600" cy="350" rx="420" ry="205" stroke-width="1"/>
+    <ellipse cx="600" cy="350" rx="350" ry="164" stroke-width="1" stroke-dasharray="5 13"/>
+    <path d="M114 350h972M600 104v492" stroke-width=".8" opacity=".35"/>
+    <path d="M176 215C360 330 840 330 1024 215M176 485C360 370 840 370 1024 485" stroke-width="1" opacity=".28"/>
+  </g>
+  <g fill="#f0d28f" opacity=".46">
+    <circle cx="114" cy="350" r="3"/><circle cx="1086" cy="350" r="3"/>
+    <circle cx="600" cy="104" r="3"/><circle cx="600" cy="596" r="3"/>
+  </g>
+  <ellipse cx="600" cy="350" rx="280" ry="118" fill="none" stroke="#f0d28f" stroke-opacity=".12" stroke-width="16" filter="url(#soft)"/>
+</svg>

@@ -1,12 +1,13 @@
 {
   "schema": "JM.CloudflareAuthoritativeRouteReceipt/1.3",
-  "verified_utc": "2026-08-31T18:41:40.614051+00:00",
+  "verified_utc": "2026-08-31T18:46:05.751150+00:00",
   "state": "PASS_CURRENT_PUBLIC_RELEASE_SOURCE_LIVE_CONTACT_AND_EXACT_COMMAND_REGISTER",
-  "source_commit": "5c4ecf4b9dc932a1f5b69cc0b88eb7c0fcf7d065",
-  "workflow_run": "33426377095",
+  "source_commit": "2b681fa2afdc068fd55680b6c3f09cb3b783dc7d",
+  "workflow_run": "33426772121",
   "host": "https://jmisjustme-estate.pages.dev",
   "routes": [
     "/",
+    "/earn-now/",
     "/money-menu/",
     "/shims-reader/",
     "/apps/",
@@ -20,9 +21,11 @@
     "/estate/authoritative/all-body-first-pass-v1.0/command-register/"
   ],
   "release_extension": {
+    "earn_now": "LIVE_PASS",
     "shims_reader": "LIVE_PASS",
     "apps_showcase": "LIVE_PASS",
     "games_showcase": "LIVE_PASS",
+    "root_earn_now_door_source": "PRESENT",
     "root_shims_door_source": "PRESENT"
   },
   "exact_command_register": {
@@ -37,5 +40,5 @@
   "self_erasure": false,
   "silent_parallel_lane": false,
   "ding": false,
-  "claim_boundary": "Current public release source, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Owner-side physical acceptance and JM Ding remain separate."
+  "claim_boundary": "Current public release source, Earn-Now, SHIMS, Apps showcase, Games showcase, named Estate routes and exact Command Register sibling bytes passed Cloudflare contact. Offer publication and live-route contact do not establish buyer contact, payment, market proof or JM Ding. Owner-side physical acceptance remains separate."
 }

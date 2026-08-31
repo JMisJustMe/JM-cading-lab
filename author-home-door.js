@@ -3,6 +3,7 @@
   const MONEY_ID = 'money-menu-house';
   const SHIMS_ID = 'shims-reader-house';
   const LYRICS_ID = 'lyrics-house';
+  const EARN_NOW_ID = 'earn-now-house';
 
   function trackVisit(entry) {
     try {
@@ -29,6 +30,16 @@
     `;
     door.addEventListener('click', () => trackVisit({id,name:visitName,path:href,route:null}));
     return door;
+  }
+
+  function makeEarnNowDoor() {
+    return makeDoor({
+      id:EARN_NOW_ID,href:'./earn-now/',accent:'#ffd166',
+      label:'Open the JM Earn-Now hire window',
+      state:'HIRE JM NOW · CLEAR STARTING OFFERS',title:'Hire JM · Earn-Now',
+      copy:'Start with a buyer-readable service: writing, naming, audits, game/app testing, project rescue or a bounded OneBody build. The full governed Money Menu stays behind this front window.',
+      action:'See what you can hire now',visitName:'JM Earn-Now Window v1.0'
+    });
   }
 
   function makeAuthorDoor() {
@@ -71,13 +82,27 @@
     });
   }
 
+  function mountHeroHire() {
+    const actions = document.querySelector('.hero-actions');
+    if (!actions || actions.querySelector('.jm-hire-now-button')) return;
+    const hire = document.createElement('a');
+    hire.className = 'button primary jm-hire-now-button';
+    hire.href = './earn-now/';
+    hire.textContent = 'Hire JM now';
+    hire.setAttribute('aria-label', 'Open the JM Earn-Now hire window');
+    hire.addEventListener('click', () => trackVisit({id:EARN_NOW_ID,name:'JM Earn-Now Window v1.0',path:'./earn-now/',route:null}));
+    actions.prepend(hire);
+  }
+
   function mountDoors() {
     const host = document.getElementById('featureDoors');
     if (!host) return;
     if (!host.querySelector(`[data-card-id="${MONEY_ID}"]`)) host.prepend(makeMoneyDoor());
     if (!host.querySelector(`[data-card-id="${SHIMS_ID}"]`)) host.prepend(makeShimsDoor());
+    if (!host.querySelector(`[data-card-id="${EARN_NOW_ID}"]`)) host.prepend(makeEarnNowDoor());
     if (!host.querySelector(`[data-card-id="${LYRICS_ID}"]`)) host.append(makeLyricsDoor());
     if (!host.querySelector(`[data-card-id="${AUTHOR_ID}"]`)) host.append(makeAuthorDoor());
+    mountHeroHire();
   }
 
   function watchFrontDoors() {

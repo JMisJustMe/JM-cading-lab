@@ -1,6 +1,6 @@
-# PUKA v0.12A — FULL TABLE LEARNING LOOP BUILD RECEIPT
+# PUKA v0.13A — DEEP HOUSE VISUAL CONVERGENCE BUILD RECEIPT
 
-**Parent:** PUKA v0.11A / Games&Beyond / JM-cading-lab  
+**Parent:** PUKA v0.12A / Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
 **Front door:** `00_OPEN_FIRST.html`  
 **Live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
@@ -19,70 +19,75 @@
 - v0.9 dealer medallion, community runway and table theatre
 - v0.10 living-table visible-state physicality
 - v0.11 real-context Android/desktop fit, contact and viewport-screenshot proof
+- v0.12 active-hand continuity, deliberate raise sizing, visible-card equity, review/history and mastery
 - one singular live direct door
 
-## Completion jump
+## Full-complete jump target
 
-v0.12A targets the table-learning loop itself rather than another wholesale visual rewrite.
+v0.13A brings PUKA through the current JM Visual Crown — Deep House laws without copying Visual Lab identity or replacing the poker body.
 
-### Active-hand continuity
+**Donated laws:** maximal visual depth is functional; depth carries meaning; contact produces perceivable consequence; composition enriches without erasure; no Ding, no claim.
 
-- `persistable()` now carries the validated current hand state, trace and latest-20 history as well as profile, XP, mode and purse.
-- restore accepts a hand only when the deck + board + both hole-card sets reconstruct exactly 52 canonical unique card identities.
-- browser proof must reload an active hand and recover the same hand number, player cards and pot before lifecycle continuity may Ding.
-- this browser continuity remains separate from installed physical Android lifecycle proof.
+### Meaningful depth roles
 
-### Deliberate raise sizing and all-in closure
+- D0 page atmosphere responds to court tier and route ambience.
+- D1 protected room field frames the table with the PUKA Deep House lattice and may not cover the field centre or primary actions.
+- D2 active bodies separate seats, board, pot, cards and teacher by readable depth rather than ornament density.
+- D3 contact bodies carry action/raise/deal/review response and remain above passive atmosphere.
+- street progression and hand resolution visibly change the board/field depth so state change is perceivable.
 
-- one opaque `RAISE` consequence is replaced by temporary MIN / half-pot / pot / all-in raise-to choices.
-- the betting state remains authoritative in `puka-core.js`; the presentation tray does not create another bankroll or betting authority.
-- minimum raise and stack bounds are enforced by core normalization rather than trusted from button text.
-- heads-up all-in closure runs remaining board cards only after no further betting decision is possible and then resolves showdown.
+### Living field contact
 
-### Visible-card equity teaching
+- `puka-deep-house-v13.js` reads only rendered DOM/state attributes and visible controls.
+- direct pointer/touch contact moves a bounded light response inside the table field.
+- deal, fold, check, call, raise-open, sized raise, review and suit contacts produce an edge-anchored consequence chip.
+- the consequence chip is pointer-transparent, brief and visually subordinate; it cannot block the table centre or primary action.
+- reduced-motion mode retains state meaning while suppressing nonessential transition/ambient behaviour.
 
-- a deterministic Monte Carlo estimate is built from the player's visible hole cards and currently visible board only.
-- the estimate samples an unknown random opponent range from the unseen canonical deck.
-- it does **not** read, inspect or condition on House Mind's actual hidden hole cards.
-- therefore `equity estimate != hidden fact` remains an explicit law.
-- PUKA Teacher now carries made hand, price to call, pot odds, estimated equity, price read and position together.
+### Identity preservation
 
-### Review, history and mastery
+- Portrait Academy keeps its warmer illustrated/suit-character world.
+- Royal Table keeps its ceremonial/physical court world.
+- the shared Deep House law changes depth grammar, not game identity.
+- the poker core, House Mind hidden state, bankroll authority, evaluator, history and equity boundaries are untouched by the v0.13 presentation organ.
 
-- the royal ladder now has an aligned eight-stage lesson ladder from Cards & Price through Independent Table Read.
-- each player decision records the street, visible made hand, price and visible-card equity estimate at the decision moment.
-- completed hands gain a compact decision review.
-- latest-20 local hand history carries House cards only when they were actually revealed; a fold does not retroactively expose them.
-- Profile carries compact hands / showdowns / decisions / sized-raises mastery counts without turning the playfield into a dashboard.
+### Crown-size proof convergence
 
-## Presentation law
+The browser matrix now includes both Games&Beyond and current Deep House crown proof contexts:
 
-`puka-v12.css` is a small final capability layer. Raise sizing is temporary contact chrome, while mastery stays inside Profile and history/review stays inside Evidence. Existing v0.9/v0.10 living-table selectors remain intact.
+- 360×800 Android compact touch
+- 390×844 Games&Beyond Android portrait touch
+- 412×915 Deep House Android standard touch
+- 768×1024 Deep House tablet portrait touch
+- 844×390 Games&Beyond Android landscape touch
+- 1366×768 Deep House laptop
+- 1440×900 Deep House desktop
+- 1440×1000 Games&Beyond desktop
 
-**Protect playfield before setup chrome. Clear body, quiet trace.**
+Every context must preserve exact viewport identity, zero horizontal overflow, contact floor, protected table field, and error-free rendered contact.
 
 ## Proof target
 
-The v0.12A source/browser rail must prove, on the exact descendant:
+The exact v0.13A descendant must prove:
 
-- original deck/evaluator regression suite
-- active-hand state reconstruction
-- unrevealed-House-card history boundary
-- sized raise and all-in runout correctness
-- visible-card equity estimator boundary
-- v0.11 estate contact/overflow/real-context standards
-- Android-touch active-hand reload continuity
-- raise-tray 44px contact and zero-overflow behaviour
+- all inherited core/evaluator/full-table regression suites
+- exact v0.12 active-hand reload, sized raise, review/history and fold-secrecy gates
+- v0.13 files, mount order, cache and registry markers
+- separate Android-touch/tablet/laptop/desktop real-output contexts
+- 360×800 and 412×915 protected field floor of at least 300 px
+- direct field contact changes the v0.13 contact-state marker
+- raise contact produces a visible v0.13 consequence state without hidden-state access
+- Portrait/Royal identity remains distinct
 - viewport-only screenshot evidence
 - production HTTP contact after authoritative mount
 
-No source or branch test is allowed to imply production contact before the exact descendant is mounted.
-
 ## Proof boundary
 
-Automated browser lifecycle proof can establish that a web reload reconstructs the same validated hand. It cannot establish installed Android lifecycle behaviour across OS process death, storage eviction or device-specific browser/PWA behaviour without the corresponding physical-device evidence.
+Automated Deep House conformance can prove source presence, rendered depth structure, contact consequence, viewport geometry, reduced-motion-safe source law and real-context screenshot evidence. It cannot establish owner aesthetic acceptance or a final visual crown.
 
-Real-context structural visual proof likewise does not equal owner-side aesthetic acceptance. `cold_ding` and `crowned` remain false unless their separate evidence gates are met.
+Automated web lifecycle proof also remains separate from installed physical Android lifecycle behaviour across OS process death, storage eviction and device-specific browser/PWA behaviour.
+
+`cold_ding` and `crowned` therefore remain false unless their separate evidence gates are met.
 
 ## Delivery default
 
@@ -92,4 +97,4 @@ For estate-hosted HTML/web builds, the proved live URL is the normal owner-facin
 
 ## Claim boundary
 
-PUKA v0.12A is a full-table learning-loop stage descendant. Source/core and browser gates may Ding independently before publication; public HTTP contact becomes true only after the exact descendant is mounted and contacted at the stable live door. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence and Cold Ding remain separate. No real-money wagering layer is present.
+PUKA v0.13A is a Deep House visual-convergence stage descendant over the v0.12 full-table learning loop. Passing automated source/browser/viewport/contact gates does not equal owner aesthetic acceptance, installed physical Android lifecycle proof, Cold Ding or final crown. No real-money wagering layer is present.

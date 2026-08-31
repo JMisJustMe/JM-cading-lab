@@ -1,0 +1,149 @@
+/* PUKA v0.13A — Deep House Visual Convergence
+   Donated law: depth carries meaning; contact produces perceivable consequence;
+   composition enriches without erasing the protected playfield. */
+
+:root{
+  --puka-d0:0;
+  --puka-d1:10;
+  --puka-d2:20;
+  --puka-d3:30;
+  --puka-depth-shadow:0 24px 80px rgba(0,0,0,.58);
+  --puka-contact-x:50%;
+  --puka-contact-y:50%;
+  --puka-field-energy:.18;
+  --puka-route-glow:#d6aa55;
+  --puka-signal:#67bfd9;
+}
+
+/* D0 — page atmosphere. Court progression changes the world, not the rules. */
+.app{position:relative;isolation:isolate}
+.app:before,.app:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:var(--puka-d0)}
+.app:before{
+  background:
+    radial-gradient(circle at 14% 18%,color-mix(in srgb,var(--puka-route-glow) 18%,transparent),transparent 31%),
+    radial-gradient(circle at 86% 12%,color-mix(in srgb,var(--puka-signal) 15%,transparent),transparent 28%),
+    linear-gradient(180deg,rgba(255,255,255,.018),transparent 38%,rgba(0,0,0,.24));
+  opacity:.78
+}
+.app:after{
+  background:repeating-linear-gradient(118deg,transparent 0 38px,rgba(255,255,255,.012) 39px 40px);
+  mix-blend-mode:screen;opacity:.32
+}
+html[data-court-tier="lower"]{--puka-field-energy:.10;--puka-route-glow:#98764a;--puka-signal:#5b8f8c}
+html[data-court-tier="middle"]{--puka-field-energy:.15;--puka-route-glow:#c59643;--puka-signal:#63a8b4}
+html[data-court-tier="high"]{--puka-field-energy:.20;--puka-route-glow:#d6aa55;--puka-signal:#67bfd9}
+html[data-court-tier="heir"]{--puka-field-energy:.25;--puka-route-glow:#e2bc66;--puka-signal:#78cde1}
+html[data-court-tier="throne"]{--puka-field-energy:.31;--puka-route-glow:#f0d28f;--puka-signal:#91d9ea}
+
+/* D1 — protected room field. The lattice frames action around the centre, never over it. */
+.table-wrap{
+  z-index:var(--puka-d1);
+  min-height:max(460px,clamp(300px,56vh,690px));
+  transform:translateZ(0);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    inset 0 0 0 6px rgba(36,18,38,.72),
+    inset 0 0 0 9px color-mix(in srgb,var(--puka-route-glow) 74%,#543b18),
+    inset 0 0 54px rgba(0,0,0,.74),
+    0 28px 84px rgba(0,0,0,.58),
+    0 0 56px color-mix(in srgb,var(--puka-route-glow) 9%,transparent)
+}
+.table-wrap>.deep-house-field{position:absolute;inset:10px;z-index:0;border-radius:20px;overflow:hidden;pointer-events:none}
+.deep-house-field:before,.deep-house-field:after{content:"";position:absolute;inset:0}
+.deep-house-field:before{
+  background:url('./assets/puka-deep-house-lattice-v13.svg') center/108% 108% no-repeat;
+  opacity:calc(.34 + var(--puka-field-energy));
+  filter:saturate(1.08) contrast(1.04)
+}
+.deep-house-field:after{
+  background:
+    radial-gradient(circle at var(--puka-contact-x) var(--puka-contact-y),color-mix(in srgb,var(--puka-signal) 28%,transparent) 0 3%,transparent 15%),
+    radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(0,0,0,.18) 71%,rgba(0,0,0,.52));
+  opacity:.84
+}
+
+/* D2 — active bodies: board, seats, pot and teacher gain readable separation. */
+.table-state{z-index:var(--puka-d2);perspective:900px}
+.zone,.board,.pot,.result,.empty-state{position:relative}
+.opponent.zone,.you.zone{
+  padding:7px 12px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(3,10,8,.28),rgba(3,8,7,.08));
+  border:1px solid rgba(255,255,255,.045);
+  box-shadow:0 12px 28px rgba(0,0,0,.16)
+}
+.board{padding:7px 10px;border-radius:17px;transition:filter .26s ease,transform .26s ease,box-shadow .26s ease}
+.pot{min-width:86px;margin:auto;padding:7px 16px;border-radius:999px;background:rgba(4,10,8,.48);border:1px solid color-mix(in srgb,var(--puka-route-glow) 30%,transparent);box-shadow:0 10px 28px rgba(0,0,0,.25),inset 0 0 18px rgba(255,255,255,.025)}
+.playing-card{transform-style:preserve-3d;transition:transform .18s ease,filter .18s ease,box-shadow .18s ease}
+.playing-card:not(.back){box-shadow:0 6px 0 rgba(0,0,0,.28),0 14px 30px rgba(0,0,0,.32),inset 0 0 0 1px rgba(255,255,255,.45)}
+.you .playing-card.hero-card{filter:drop-shadow(0 12px 18px rgba(0,0,0,.34))}
+.coach{position:relative;z-index:var(--puka-d2);overflow:hidden}
+.coach:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,color-mix(in srgb,var(--puka-signal) 6%,transparent),transparent 34%,color-mix(in srgb,var(--puka-route-glow) 7%,transparent));opacity:.8}
+.coach>*{position:relative}
+
+/* D3 — contact body. Presses and decisions must create a visible but bounded consequence. */
+.actions,.raise-tray{z-index:var(--puka-d3)}
+.action,.raise-size,.table-deal,.deal,.entry-suits button,.suit,.modes button,.secondary{
+  position:relative;overflow:hidden;
+  transition:transform .14s ease,box-shadow .18s ease,border-color .18s ease,filter .18s ease
+}
+.action:active,.raise-size:active,.table-deal:active,.deal:active,.entry-suits button:active,.suit:active,.modes button:active,.secondary:active{transform:scale(.97);filter:brightness(1.08)}
+.action:after,.raise-size:after,.table-deal:after,.deal:after{
+  content:"";position:absolute;inset:-55%;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(255,244,198,.18),transparent 34%);
+  opacity:0;transform:scale(.45)
+}
+html[data-contact-consequence]:not([data-contact-consequence="idle"]) .action:focus-visible:after,
+html[data-contact-consequence="raise-open"] .raise:after,
+html[data-contact-consequence="raise-sized"] .raise-size:after{opacity:1;transform:scale(1);transition:opacity .14s ease,transform .28s ease}
+
+/* Street and outcome are state changes, therefore the field changes too. */
+html[data-table-street="flop"] .board{box-shadow:0 0 34px color-mix(in srgb,var(--puka-signal) 13%,transparent)}
+html[data-table-street="turn"] .board{box-shadow:0 0 42px color-mix(in srgb,var(--puka-signal) 17%,transparent);transform:translateY(-1px)}
+html[data-table-street="river"] .board{box-shadow:0 0 52px color-mix(in srgb,var(--puka-route-glow) 17%,transparent);transform:translateY(-2px)}
+html[data-hand-state="ended"] .table-wrap{box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset 0 0 0 6px rgba(36,18,38,.72),inset 0 0 0 9px color-mix(in srgb,var(--puka-route-glow) 78%,#543b18),inset 0 0 62px rgba(0,0,0,.68),0 30px 92px rgba(0,0,0,.63),0 0 72px color-mix(in srgb,var(--puka-route-glow) 14%,transparent)}
+html[data-hand-state="ended"] .result{box-shadow:0 16px 42px rgba(0,0,0,.46),0 0 30px color-mix(in srgb,var(--puka-route-glow) 15%,transparent)}
+
+/* Bounded contact flare: edge-anchored and pointer-transparent, never covers decisions. */
+.deep-house-consequence{
+  position:absolute;right:14px;top:48px;z-index:var(--puka-d3);pointer-events:none;
+  max-width:min(210px,46vw);min-height:28px;padding:6px 9px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--puka-route-glow) 42%,transparent);
+  background:rgba(4,11,9,.78);backdrop-filter:blur(12px);
+  color:#f3e5ba;font:850 .48rem ui-monospace,monospace;letter-spacing:.08em;text-transform:uppercase;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  opacity:0;transform:translateY(-4px) scale(.96);transition:opacity .14s ease,transform .18s ease
+}
+.deep-house-consequence[data-show="true"]{opacity:1;transform:none}
+
+/* Portrait remains an Academy, Royal remains a court. Shared depth law ≠ identity merge. */
+html[data-puka-mode="portrait"]{--puka-signal:#c39bd4}
+html[data-puka-mode="portrait"] .deep-house-field:before{filter:hue-rotate(38deg) saturate(.88);opacity:calc(.26 + var(--puka-field-energy))}
+html[data-puka-mode="portrait"] .table-wrap{border-color:color-mix(in srgb,var(--puka-route-glow) 72%,#785988)}
+html[data-puka-mode="royal"] .table-wrap{border-color:color-mix(in srgb,var(--puka-route-glow) 85%,#6d522c)}
+html[data-puka-mode="royal"][data-court-tier="throne"] .deep-house-field:before{opacity:.64;filter:saturate(1.16) brightness(1.06)}
+
+/* Crown proof sizes: keep the field first, let tools compress around it. */
+@media(max-width:779px){
+  .shell{padding-inline:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}
+  .table-wrap{min-height:max(300px,52dvh)}
+  .deep-house-consequence{top:42px;right:10px;max-width:52vw}
+}
+@media(max-width:380px){
+  .table-wrap{border-radius:22px;padding:9px;min-height:max(300px,50dvh)}
+  .table-wrap>.deep-house-field{inset:7px;border-radius:17px}
+  .deep-house-consequence{font-size:.43rem;padding:5px 7px}
+}
+@media(min-width:700px) and (max-width:900px) and (orientation:portrait){
+  .shell{max-width:760px}
+  .table-wrap{min-height:560px}
+}
+@media(orientation:landscape) and (max-height:650px){
+  .table-wrap{min-height:calc(100dvh - 78px)}
+  .deep-house-consequence{top:38px;right:10px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app:after{display:none}
+  .playing-card,.board,.action,.raise-size,.table-deal,.deal,.entry-suits button,.suit,.modes button,.secondary,.deep-house-consequence{transition-duration:.01ms!important;animation:none!important}
+  .deep-house-field:after{background:radial-gradient(ellipse at 50% 45%,transparent 38%,rgba(0,0,0,.18) 71%,rgba(0,0,0,.52))}
+}

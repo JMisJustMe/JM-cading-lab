@@ -1,7 +1,8 @@
-# JM GAME STANDARD BUILD ORDER — PUKA-Proved Production Ladder v1.0
+# JM GAME STANDARD BUILD ORDER — PUKA-Proved Production Ladder v1.1
 
-**Status:** ESTATE DEFAULT GAME-BUILD ORDER  
-**Scope:** JM Games&Beyond game bodies and descendants unless Theodore/JM explicitly overrides the order for a specific body.  
+**Status:** ESTATE DEFAULT GAME-BUILD ORDER — ALL OLD + NEW JM ESTATE GAMES  
+**Scope:** Every JM Estate game body, whether created before or after this standard, unless Theodore/JM explicitly overrides the order for a specific body.  
+**Parent Estate law:** `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`  
 **Reference proof lineage:** PUKA through v0.13A Deep House Visual Convergence.  
 **Keeper:** **BUILD THE BODY. PROTECT THE PLAYFIELD. DEEPEN THE WORLD. PROVE THE CONTACT. DONATE WHAT WAS LEARNED.**
 
@@ -9,11 +10,33 @@
 
 PUKA demonstrated that a game can start later than older Estate games and still overtake them in professional/polished appearance when the build order carries forward what earlier bodies already learned.
 
-This document turns that proved route into the Estate default. It does **not** make PUKA the identity, theme, mechanics or visual furniture of future games. Future games inherit the **order, organs, quality floor and proof discipline** only.
+This document turns that proved route into the Estate default for **all JM Estate games — old and new**. It does **not** make PUKA the identity, theme, mechanics or visual furniture of any other game. Games inherit the **order, organs, quality floor and proof discipline** only.
+
+This standard is **retroactive-forward**: an older game is not exempt because it predates the rule, and it is not required to restart from its earliest rung. Recover its current authority, locate where it genuinely stands, inherit newer Estate organs where relevant, prove the receiving context, and continue forward through a clean descendant.
 
 **STEAL THE MACHINERY, NOT THE FURNITURE.**  
 **MESH != MERGE.**  
-**BUILD ON THE ESTATE; DO NOT RESTART BENEATH IT.**
+**BUILD ON THE ESTATE; DO NOT RESTART BENEATH IT.**  
+**OLD BODY != EXEMPT BODY.**
+
+---
+
+# Existing-game recovery rule
+
+For an existing game:
+
+1. recover the strongest current authoritative body and frozen lineage;
+2. identify which ladder stages it already proves;
+3. locate the first materially missing, weak or obsolete stage;
+4. recover newer Estate donors/standards that can lawfully raise that stage;
+5. upgrade from the current body rather than recreating its childhood;
+6. run the relevant proof gates in that game's actual context;
+7. promote a clean descendant without rewriting frozen parents;
+8. donate any new learning back into the Estate.
+
+A game built before PUKA may therefore inherit production intelligence proved after it was born. A donor can raise the starting floor; it cannot manufacture proof for the receiver.
+
+**DONOR PROOF ENABLES A HIGHER START; RECEIVER CONTACT EARNS THE RECEIVER CLAIM.**
 
 ---
 
@@ -21,12 +44,14 @@ This document turns that proved route into the Estate default. It does **not** m
 
 ## 0. RECOVER / ORIENT / DECLARE AUTHORITY
 
-Before building:
+Before building or materially upgrading:
 
 - recover the strongest current parent/body and donor organs;
 - identify the game's sovereign mechanic/state authority;
 - identify what is reused, adapted, mounted or newly authored;
 - preserve frozen donor identities and lineage;
+- for an existing game, locate its truthful current rung rather than forcing a restart;
+- for a new game, begin at the highest lawful floor supported by recovered Estate donors;
 - define one canonical front door / OPEN_FIRST;
 - define the owner-facing live route when the body is estate-hosted.
 
@@ -296,10 +321,10 @@ After a successful jump:
 - identify reusable mechanisms;
 - donate them to the Estate as organs/standards/tests;
 - preserve the source game's identity;
-- make the next game start higher;
+- let every relevant old or new game start or continue higher where the donation applies;
 - upgrade the standard if a newer body proves a stronger order.
 
-**BUILD ONCE -> LEARN ONCE -> DONATE MECHANISM -> NEW BODY STARTS HIGHER.**
+**BUILD ONCE -> LEARN ONCE -> DONATE MECHANISM -> EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
 ---
 
@@ -323,7 +348,7 @@ Version trace:
 - v0.12A — full-table learning/product-depth loop
 - v0.13A — current Deep House visual convergence
 
-This trace is evidence for the production ladder, **not a requirement that future games reproduce these version numbers or PUKA-specific features**.
+This trace is evidence for the production ladder, **not a requirement that any other game reproduce these version numbers or PUKA-specific features**.
 
 ---
 
@@ -331,7 +356,9 @@ This trace is evidence for the production ladder, **not a requirement that futur
 
 Development should prefer **full-complete jumps** over tiny cosmetic version churn.
 
-A jump may combine several adjacent stages when the body is strong enough, but it must still preserve the corresponding gates. Existing Estate donors may allow a new game to begin above earlier stages; they do not allow proof to be silently skipped.
+A jump may combine several adjacent stages when the body is strong enough, but it must still preserve the corresponding gates. Existing Estate donors may allow a game to begin — or an older game to resume — above earlier stages already genuinely satisfied; they do not allow proof to be silently skipped.
+
+For old games, use the ladder as a maturity locator and forward-upgrade route, not as an excuse to rebuild already-proved foundations.
 
 **FULL BODY -> STRAIGHT RUN -> CORRECT AFTER.**  
 **CONTACT BEFORE CROWN.**  

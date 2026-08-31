@@ -21,36 +21,36 @@ jobs:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
 
-      - name: Validate BeatBody carrier before publish
+      - name: Validate BeatBody v2.5.1 runtime body before publish
         shell: python
         run: |
           import base64, gzip, hashlib, json
           from pathlib import Path
-
           root = Path("beatbody")
           manifest = json.loads((root / "body-manifest.json").read_text())
-          pieces = [(root / name).read_text() for name in manifest["chunks"]]
-          encoded = "".join(pieces)
+          encoded = "".join((root / n).read_text() for n in manifest["chunks"])
           encoded = "".join(encoded.split())
-
-          remainder = len(encoded) % 4
-          if remainder == 1:
-              raise SystemExit("BeatBody carrier HOLD: impossible Base64 length")
-          if remainder:
-              encoded += "=" * (4 - remainder)
-
-          try:
-              packed = base64.b64decode(encoded, validate=True)
-              body = gzip.decompress(packed)
-          except Exception as exc:
-              raise SystemExit(f"BeatBody carrier HOLD: decode/decompress failed: {exc}")
-
-          got = hashlib.sha256(body).hexdigest()
-          expected = manifest["body_sha256"]
+          if len(encoded) % 4 == 1:
+              raise SystemExit("BeatBody source HOLD: impossible Base64 length")
+          if len(encoded) % 4:
+              encoded += "=" * (4 - len(encoded) % 4)
+          source = gzip.decompress(base64.b64decode(encoded, validate=True)).decode()
+          source_sha = hashlib.sha256(source.encode()).hexdigest()
+          if source_sha != "c3292f10b98c9239caf7cd6c266e8279f8003818d2b3f5782561a887a6e307ec" or source_sha != manifest["body_sha256"]:
+              raise SystemExit(f"BeatBody source HOLD: {source_sha}")
+          patches = [['<title>JM BEATBODY STUDIO v2.5</title>', '<title>JM BEATBODY STUDIO v2.5.1</title>'], ['"name":"JM BEATBODY STUDIO v2.5","version":"2.5.0"', '"name":"JM BEATBODY STUDIO v2.5.1","version":"2.5.1"'], ['JM BEATBODY STUDIO <em>v2.4</em>', 'JM BEATBODY STUDIO <em>v2.5.1</em>'], ['v2.4 · HTTPS/PWA PRODUCTION RAIL', 'v2.5.1 · HTTPS/PWA PRODUCTION RAIL'], ["body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'", "body:'JM BEATBODY STUDIO v2.5.1 — ANDROID BOOT/INSCRIPTION HOTFIX'"], ["project.version='2.4.0'", "project.version='2.5.1'"], ["schema:'jm.tracebox.receipt/beatbody-2.4'", "schema:'jm.tracebox.receipt/beatbody-2.5.1'"], ["schema:'jm.jm32-1da.build-gate/beatbody-2.4'", "schema:'jm.jm32-1da.build-gate/beatbody-2.5.1'"], ["r.schema='jm.onebody.contract/beatbody-2.4'", "r.schema='jm.onebody.contract/beatbody-2.5.1'"], ["trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')", "trace('BOOT','BeatBody Studio v2.5.1 Android boot hotfix opened')"], ['refreshMicPermission().finally(()=>{syncTransport();renderAll()});', "/* v2.5.1: BODY FIRST — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"]]
+          body = source
+          for old, new in patches:
+              if old not in body:
+                  raise SystemExit(f"BeatBody hotfix PATCH HOLD: {old[:50]}")
+              body = body.replace(old, new)
+          got = hashlib.sha256(body.encode()).hexdigest()
+          expected = "f32f5cb15545a6b2b6fbd3ff46d560925b8e37b076899079145b7ce20ceccf56"
           if got != expected:
-              raise SystemExit(f"BeatBody carrier HOLD: SHA mismatch {got} != {expected}")
-
-          print(f"BeatBody carrier DING: {len(body)} bytes · SHA-256 {got}")
+              raise SystemExit(f"BeatBody v2.5.1 HOTFIX HOLD: {got} != {expected}")
+          if '<em>v2.4</em>' in body or 'refreshMicPermission().finally(()=>{syncTransport();renderAll()});' in body:
+              raise SystemExit("BeatBody v2.5.1 stale-inscription/boot-gate HOLD")
+          print(f"BeatBody v2.5.1 DING: {len(body.encode())} bytes · SHA-256 {got}")
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

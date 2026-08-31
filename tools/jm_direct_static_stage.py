@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """JM Direct Static Stage
 
-Build-time carrier adapter for bodies stored as base64(gzip(html)) chunks.
-Heavy reconstruction happens in CI; the published runtime receives normal HTML directly.
+Build-time body/ carrier adapter for source bodies stored as base64(gzip(html)) chunks.
+Heavy reconstruction and deterministic forward patches happen in CI; the published
+runtime receives ordinary HTML directly.
 
 Law: BODY != CARRIER. BUILD COMPLEXITY MAY BE HIGH; LAUNCH COMPLEXITY SHOULD BE LOW.
 """
@@ -52,13 +53,39 @@ def decode_body(manifest_path: Path) -> tuple[bytes, dict]:
     return body, manifest
 
 
+def apply_patch_spec(text: str, patch_path: Path | None) -> tuple[str, dict | None]:
+    if patch_path is None:
+        return text, None
+    spec = json.loads(patch_path.read_text(encoding="utf-8"))
+    out = text
+    applied = []
+    for item in spec.get("replacements", []):
+        old = item["old"]
+        new = item["new"]
+        count = int(item.get("count", 1))
+        present = out.count(old)
+        if present < count:
+            raise SystemExit(f"HOLD: forward patch source missing: {old[:80]!r}")
+        out = out.replace(old, new, count)
+        applied.append({"old": old[:120], "new": new[:120], "count": count})
+
+    expected = str(spec.get("expected_body_sha256") or "").lower()
+    got = sha256_bytes(out.encode("utf-8"))
+    if expected and got != expected:
+        raise SystemExit(f"HOLD: patched body hash mismatch expected={expected} got={got}")
+    spec["applied"] = applied
+    spec["result_body_sha256"] = got
+    return out, spec
+
+
 def inject_manifest_link(html: str, href: str) -> tuple[str, bool]:
     if "rel=\"manifest\"" in html or "rel='manifest'" in html:
         return html, False
     marker = "</head>"
-    if marker.lower() not in html.lower():
+    low = html.lower()
+    if marker not in low:
         raise SystemExit("HOLD: HTML has no </head> for PWA metadata injection")
-    idx = html.lower().index(marker.lower())
+    idx = low.index(marker)
     tag = f'\n<link rel="manifest" href="{href}" />\n'
     return html[:idx] + tag + html[idx:], True
 
@@ -69,13 +96,19 @@ def main() -> None:
     ap.add_argument("--output", required=True)
     ap.add_argument("--receipt", required=True)
     ap.add_argument("--manifest-href", default="./manifest.webmanifest")
+    ap.add_argument("--patches")
     args = ap.parse_args()
 
     manifest_path = Path(args.manifest)
     body, manifest = decode_body(manifest_path)
     source_sha = sha256_bytes(body)
     source_text = body.decode("utf-8")
-    staged_text, injected = inject_manifest_link(source_text, args.manifest_href)
+
+    patched_text, patch_spec = apply_patch_spec(source_text, Path(args.patches) if args.patches else None)
+    body_for_carrier = patched_text.encode("utf-8")
+    body_for_carrier_sha = sha256_bytes(body_for_carrier)
+
+    staged_text, injected = inject_manifest_link(patched_text, args.manifest_href)
     staged = staged_text.encode("utf-8")
 
     out = Path(args.output)
@@ -83,13 +116,19 @@ def main() -> None:
     out.write_bytes(staged)
 
     receipt = {
-        "schema": "jm.direct-static-carrier/1.0",
+        "schema": "jm.direct-static-carrier/1.1",
         "law": "BODY != CARRIER; BUILD COMPLEXITY MAY BE HIGH; LAUNCH COMPLEXITY SHOULD BE LOW",
         "source": {
             "manifest": str(manifest_path),
             "version": manifest.get("version"),
             "body_sha256": source_sha,
             "bytes": len(body),
+        },
+        "forward_body": {
+            "patch_spec": str(args.patches) if args.patches else None,
+            "body_sha256": body_for_carrier_sha,
+            "bytes": len(body_for_carrier),
+            "target_version": (patch_spec or {}).get("target_version"),
         },
         "carrier": {
             "kind": "DIRECT_HTTPS_STATIC_HTML",

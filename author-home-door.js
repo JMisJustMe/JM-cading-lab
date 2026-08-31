@@ -4,6 +4,7 @@
   const SHIMS_ID = 'shims-reader-house';
   const LYRICS_ID = 'lyrics-house';
   const EARN_NOW_ID = 'earn-now-house';
+  const EARN_PROOF_ID = 'earn-now-proof';
 
   function trackVisit(entry) {
     try {
@@ -94,6 +95,18 @@
     actions.prepend(hire);
   }
 
+  function mountHeroProof() {
+    const actions = document.querySelector('.hero-actions');
+    if (!actions || actions.querySelector('.jm-proof-button')) return;
+    const proof = document.createElement('a');
+    proof.className = 'button ghost jm-proof-button';
+    proof.href = './earn-now/proof/';
+    proof.textContent = 'See work proof';
+    proof.setAttribute('aria-label', 'Open public-safe JM Earn-Now proof samples');
+    proof.addEventListener('click', () => trackVisit({id:EARN_PROOF_ID,name:'JM Earn-Now Proof Samples v1.0',path:'./earn-now/proof/',route:null}));
+    actions.append(proof);
+  }
+
   function mountDoors() {
     const host = document.getElementById('featureDoors');
     if (!host) return;
@@ -103,6 +116,7 @@
     if (!host.querySelector(`[data-card-id="${LYRICS_ID}"]`)) host.append(makeLyricsDoor());
     if (!host.querySelector(`[data-card-id="${AUTHOR_ID}"]`)) host.append(makeAuthorDoor());
     mountHeroHire();
+    mountHeroProof();
   }
 
   function watchFrontDoors() {

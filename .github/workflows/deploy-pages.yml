@@ -20,6 +20,38 @@ jobs:
     steps:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
+
+      - name: Validate BeatBody carrier before publish
+        shell: python
+        run: |
+          import base64, gzip, hashlib, json
+          from pathlib import Path
+
+          root = Path("beatbody")
+          manifest = json.loads((root / "body-manifest.json").read_text())
+          pieces = [(root / name).read_text() for name in manifest["chunks"]]
+          encoded = "".join(pieces)
+          encoded = "".join(encoded.split())
+
+          remainder = len(encoded) % 4
+          if remainder == 1:
+              raise SystemExit("BeatBody carrier HOLD: impossible Base64 length")
+          if remainder:
+              encoded += "=" * (4 - remainder)
+
+          try:
+              packed = base64.b64decode(encoded, validate=True)
+              body = gzip.decompress(packed)
+          except Exception as exc:
+              raise SystemExit(f"BeatBody carrier HOLD: decode/decompress failed: {exc}")
+
+          got = hashlib.sha256(body).hexdigest()
+          expected = manifest["body_sha256"]
+          if got != expected:
+              raise SystemExit(f"BeatBody carrier HOLD: SHA mismatch {got} != {expected}")
+
+          print(f"BeatBody carrier DING: {len(body)} bytes · SHA-256 {got}")
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload complete website

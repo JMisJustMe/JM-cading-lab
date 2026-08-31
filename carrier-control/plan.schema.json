@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jmisjustme.github.io/JM-cading-lab/carrier-control/plan.schema.json",
+  "title": "JM Multi-Carrier Plan v1.0",
+  "type": "object",
+  "required": ["schema", "app_id", "name", "version", "source", "validate", "powers", "outputs"],
+  "properties": {
+    "schema": {"const": "jm.multi-carrier-plan/1.0"},
+    "app_id": {"type": "string", "minLength": 1},
+    "name": {"type": "string", "minLength": 1},
+    "version": {"type": "string", "minLength": 1},
+    "source": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["html", "gzip_base64_manifest"]},
+        "path": {"type": "string"},
+        "manifest": {"type": "string"},
+        "expected_sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"}
+      }
+    },
+    "transforms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["old", "new"],
+        "properties": {
+          "op": {"const": "replace"},
+          "old": {"type": "string"},
+          "new": {"type": "string"},
+          "count": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "validate": {
+      "type": "object",
+      "properties": {
+        "expected_sha256": {"type": "string", "pattern": "^[a-fA-F0-9]{64}$"},
+        "required_strings": {"type": "array", "items": {"type": "string"}},
+        "forbidden_strings": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "powers": {
+      "type": "object",
+      "properties": {
+        "direct_https": {"type": "object"},
+        "pwa": {"type": "object"},
+        "portable": {"type": "object"},
+        "native": {"type": "object"},
+        "mirrors": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "outputs": {
+      "type": "object",
+      "required": ["receipt"],
+      "properties": {
+        "direct_https": {"type": "string"},
+        "portable_html": {"type": "string"},
+        "receipt": {"type": "string"}
+      }
+    }
+  },
+  "additionalProperties": true
+}

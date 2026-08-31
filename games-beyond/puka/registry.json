@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.12A",
+  "schema":"JM.PUKA.Room/0.13A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,14 +10,17 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js"],
-  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
+  "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg","assets/puka-deep-house-lattice-v13.svg"],
   "browserProofContexts":[
-    "390x844 Android touch portrait",
-    "844x390 Android touch landscape",
-    "1440x1000 Games&Beyond desktop",
-    "412x915 Visual Lab Android touch",
-    "1440x900 Visual Lab desktop"
+    "360x800 Deep House Android compact touch",
+    "390x844 Games&Beyond Android touch portrait",
+    "412x915 Deep House Android standard touch",
+    "768x1024 Deep House tablet portrait touch",
+    "844x390 Games&Beyond Android touch landscape",
+    "1366x768 Deep House laptop",
+    "1440x900 Deep House desktop",
+    "1440x1000 Games&Beyond desktop"
   ],
   "v12Changes":[
     "preserved the shared evaluator, 52-card deck authority, royal ladder, two presentation routes and v0.11 estate-conformance proof rail",
@@ -31,6 +34,18 @@
     "added an eight-stage lesson ladder aligned with the existing royal progression",
     "added end-of-hand decision review and compact mastery counts for hands, showdowns, decisions and sized raises",
     "kept raise sizing temporary and review/history inside existing Profile/Evidence bodies so the playfield remains primary"
+  ],
+  "v13Changes":[
+    "converged PUKA with the current JM Visual Crown Deep House laws without copying Visual Lab identity",
+    "added explicit D0 atmosphere D1 protected room field D2 active body and D3 contact depth roles",
+    "added a PUKA-specific field lattice around the table centre so depth frames rather than erases the playfield",
+    "made court tier alter ambient visual energy while leaving poker rules and bankroll authority unchanged",
+    "made street and hand-state changes produce perceivable field and board consequences",
+    "added bounded edge-anchored action consequence feedback for deal fold check call raise sizing review and identity contact",
+    "added direct pointer and touch field contact which moves a local light response without reading hidden game state",
+    "preserved Portrait Academy and Royal Table as distinct visual identities under one shared depth law",
+    "expanded automated proof to the current Deep House crown viewport set while retaining Games&Beyond acceptance sizes",
+    "kept owner aesthetic acceptance Cold Ding and any final visual crown separate from automated structural proof"
   ],
   "laws":[
     "No restart: restore before rebuild",
@@ -47,6 +62,10 @@
     "Portrait Academy may personify cards; Royal Table remains ceremonial and more realistic",
     "Premium composition must improve focal clarity rather than merely add ornament",
     "Both presentation routes deserve authored environments rather than primary and fallback status",
+    "Deep House depth must carry game or progression meaning rather than exist as decoration alone",
+    "Direct contact must produce a perceivable bounded visual consequence without obscuring the field centre or primary action",
+    "Composition enrichment must preserve PUKA identity and the protected poker field",
+    "Shared Deep House law does not merge PUKA with JM Visual Crown or erase route identity",
     "Phone portrait routes to Portrait Academy; phone landscape routes to Royal Table",
     "Protect playfield before setup chrome",
     "Visible interactive contacts use a 44px minimum estate floor",
@@ -62,5 +81,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Full-table learning-loop stage. Automated source/core/layout/art/world/material/theatre/living-table, active-hand browser reload continuity, sized-raise contact, visible-card equity boundary, separate desktop and Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence and Cold Ding remain separate."
+  "claimBoundary":"Deep House visual-convergence stage over the v0.12 full-table learning loop. Automated source/core/layout/art/world/material/theatre/living-table/depth/contact, active-hand browser reload continuity, sized-raise contact, visible-card equity boundary, separate desktop/tablet/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate."
 }

@@ -21,11 +21,12 @@ jobs:
       - name: Checkout JM Estate
         uses: actions/checkout@v4
 
-      - name: Validate BeatBody v2.5.1 runtime body before publish
+      - name: Build and validate BeatBody v2.5.2 direct document runtime
         shell: python
         run: |
           import base64, gzip, hashlib, json
           from pathlib import Path
+
           root = Path("beatbody")
           manifest = json.loads((root / "body-manifest.json").read_text())
           encoded = "".join((root / n).read_text() for n in manifest["chunks"])
@@ -34,23 +35,59 @@ jobs:
               raise SystemExit("BeatBody source HOLD: impossible Base64 length")
           if len(encoded) % 4:
               encoded += "=" * (4 - len(encoded) % 4)
+
           source = gzip.decompress(base64.b64decode(encoded, validate=True)).decode()
           source_sha = hashlib.sha256(source.encode()).hexdigest()
-          if source_sha != "c3292f10b98c9239caf7cd6c266e8279f8003818d2b3f5782561a887a6e307ec" or source_sha != manifest["body_sha256"]:
+          source_expected = "c3292f10b98c9239caf7cd6c266e8279f8003818d2b3f5782561a887a6e307ec"
+          if source_sha != source_expected or source_sha != manifest["body_sha256"]:
               raise SystemExit(f"BeatBody source HOLD: {source_sha}")
-          patches = [['<title>JM BEATBODY STUDIO v2.5</title>', '<title>JM BEATBODY STUDIO v2.5.1</title>'], ['"name":"JM BEATBODY STUDIO v2.5","version":"2.5.0"', '"name":"JM BEATBODY STUDIO v2.5.1","version":"2.5.1"'], ['JM BEATBODY STUDIO <em>v2.4</em>', 'JM BEATBODY STUDIO <em>v2.5.1</em>'], ['v2.4 · HTTPS/PWA PRODUCTION RAIL', 'v2.5.1 · HTTPS/PWA PRODUCTION RAIL'], ["body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'", "body:'JM BEATBODY STUDIO v2.5.1 — ANDROID BOOT/INSCRIPTION HOTFIX'"], ["project.version='2.4.0'", "project.version='2.5.1'"], ["schema:'jm.tracebox.receipt/beatbody-2.4'", "schema:'jm.tracebox.receipt/beatbody-2.5.1'"], ["schema:'jm.jm32-1da.build-gate/beatbody-2.4'", "schema:'jm.jm32-1da.build-gate/beatbody-2.5.1'"], ["r.schema='jm.onebody.contract/beatbody-2.4'", "r.schema='jm.onebody.contract/beatbody-2.5.1'"], ["trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')", "trace('BOOT','BeatBody Studio v2.5.1 Android boot hotfix opened')"], ['refreshMicPermission().finally(()=>{syncTransport();renderAll()});', "/* v2.5.1: BODY FIRST — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"]]
+
+          patches = [
+              ['<title>JM BEATBODY STUDIO v2.5</title>', '<title>JM BEATBODY STUDIO v2.5.2</title>'],
+              ['"name":"JM BEATBODY STUDIO v2.5","version":"2.5.0"', '"name":"JM BEATBODY STUDIO v2.5.2","version":"2.5.2"'],
+              ['JM BEATBODY STUDIO <em>v2.4</em>', 'JM BEATBODY STUDIO <em>v2.5.2</em>'],
+              ['v2.4 · HTTPS/PWA PRODUCTION RAIL', 'v2.5.2 · DIRECT HTTPS/PWA PRODUCTION RAIL'],
+              ["body:'JM BEATBODY STUDIO v2.5 — APP FOUNDATION PROVING COHORT 001'", "body:'JM BEATBODY STUDIO v2.5.2 — DIRECT DOCUMENT RUNTIME'"],
+              ["project.version='2.4.0'", "project.version='2.5.2'"],
+              ["function normalizeProject(p){p.version='2.5.0';", "function normalizeProject(p){p.version='2.5.2';"],
+              ["schema:'jm.tracebox.receipt/beatbody-2.4'", "schema:'jm.tracebox.receipt/beatbody-2.5.2'"],
+              ["schema:'jm.jm32-1da.build-gate/beatbody-2.4'", "schema:'jm.jm32-1da.build-gate/beatbody-2.5.2'"],
+              ["r.schema='jm.onebody.contract/beatbody-2.4'", "r.schema='jm.onebody.contract/beatbody-2.5.2'"],
+              ["trace('BOOT','BeatBody Studio v2.4 App Foundation proving cohort opened')", "trace('BOOT','BeatBody Studio v2.5.2 direct document runtime opened')"],
+              ['refreshMicPermission().finally(()=>{syncTransport();renderAll()});', "/* v2.5.2: BODY FIRST + DIRECT DOCUMENT — microphone permission can never gate room rendering. */syncTransport();renderAll();refreshMicPermission().then(()=>{if(ui.room==='record')renderRecord()}).catch(e=>trace('MIC PERMISSION PROBE HOLD',String(e?.message||e)));"]
+          ]
+
           body = source
           for old, new in patches:
-              if old not in body:
-                  raise SystemExit(f"BeatBody hotfix PATCH HOLD: {old[:50]}")
+              if body.count(old) != 1:
+                  raise SystemExit(f"BeatBody v2.5.2 PATCH HOLD ({body.count(old)}): {old[:70]}")
               body = body.replace(old, new)
+
           got = hashlib.sha256(body.encode()).hexdigest()
-          expected = "f32f5cb15545a6b2b6fbd3ff46d560925b8e37b076899079145b7ce20ceccf56"
+          expected = "f076ef88eb971022418ce0be483f7586c868c5daa698bdab0f3013f961c3f1ad"
           if got != expected:
-              raise SystemExit(f"BeatBody v2.5.1 HOTFIX HOLD: {got} != {expected}")
-          if '<em>v2.4</em>' in body or 'refreshMicPermission().finally(()=>{syncTransport();renderAll()});' in body:
-              raise SystemExit("BeatBody v2.5.1 stale-inscription/boot-gate HOLD")
-          print(f"BeatBody v2.5.1 DING: {len(body.encode())} bytes · SHA-256 {got}")
+              raise SystemExit(f"BeatBody v2.5.2 BODY HOLD: {got} != {expected}")
+
+          stale = [
+              '<em>v2.4</em>',
+              'refreshMicPermission().finally(()=>{syncTransport();renderAll()});',
+              "p.version='2.5.0'",
+              "project.version='2.4.0'"
+          ]
+          if any(x in body for x in stale):
+              raise SystemExit("BeatBody v2.5.2 stale boot/version HOLD")
+          if 'id="room-play"' not in body or 'syncTransport();renderAll();refreshMicPermission()' not in body:
+              raise SystemExit("BeatBody v2.5.2 room/boot invariant HOLD")
+
+          # Production correction: publish the verified app body as the actual Pages
+          # document. The browser no longer has to reconstruct and document.write()
+          # BeatBody at runtime.
+          (root / "index.html").write_text(body)
+          published_sha = hashlib.sha256((root / "index.html").read_bytes()).hexdigest()
+          if published_sha != expected:
+              raise SystemExit(f"BeatBody v2.5.2 publish-file HOLD: {published_sha}")
+          (root / "DEPLOYED_BODY_SHA256.txt").write_text(expected + "  index.html\n")
+          print(f"BeatBody v2.5.2 DIRECT DOCUMENT DING: {len(body.encode())} bytes · SHA-256 {got}")
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5

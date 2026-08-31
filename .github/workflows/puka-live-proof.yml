@@ -1,9 +1,9 @@
-name: PUKA Source + Browser + Visual Viewport + Live Contact Proof
+name: PUKA Source + Browser + Deep House Viewport + Live Contact Proof
 
 on:
   workflow_dispatch:
   push:
-    branches: [main, puka-v11-estate-conformance, build/puka-v0-12a-full-table-learning-loop]
+    branches: [main, puka-v11-estate-conformance, build/puka-v0-12a-full-table-learning-loop, build/puka-v0-13a-deep-house-convergence]
     paths:
       - ".github/workflows/puka-live-proof.yml"
       - "games-beyond/puka/**"
@@ -22,7 +22,7 @@ concurrency:
 jobs:
   prove:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - name: Checkout current PUKA descendant
         uses: actions/checkout@v6
@@ -36,17 +36,21 @@ jobs:
           set -euo pipefail
           must_file(){ test -s "$1" || { echo "PUKA DING FAIL missing file: $1"; exit 1; }; echo "FILE PASS $1"; }
           must_have(){ grep -Fq "$2" "$1" || { echo "PUKA DING FAIL marker [$2] missing from $1"; exit 1; }; echo "MARKER PASS $1 :: $2"; }
-          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-v08-academy.css puka-v09.css puka-v10.css puka-v11.css puka-v12.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js puka-table-theatre-v09.js puka-living-table-v10.js puka-core.test.js puka-layout.test.js puka-theatre.test.js puka-living-table.test.js puka-estate-conformance.test.js puka-full-table.test.js manifest.webmanifest sw.js registry.json BUILD_RECEIPT.md; do must_file "games-beyond/puka/$f"; done
+          for f in 00_OPEN_FIRST.html index.html puka-core.js puka-ui.js puka.css puka-art.css puka-v05.css puka-v05-room.css puka-v06.css puka-v07.css puka-v08.css puka-v08-academy.css puka-v09.css puka-v10.css puka-v11.css puka-v12.css puka-v13.css puka-cards-v05.js puka-character-v06.js puka-world-v07.js puka-table-theatre-v09.js puka-living-table-v10.js puka-deep-house-v13.js puka-core.test.js puka-layout.test.js puka-theatre.test.js puka-living-table.test.js puka-estate-conformance.test.js puka-full-table.test.js puka-deep-house.test.js manifest.webmanifest sw.js registry.json BUILD_RECEIPT.md; do must_file "games-beyond/puka/$f"; done
           must_file games-beyond/tests/puka-estate-conformance.spec.mjs
-          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg puka-academy-banner-v08.svg puka-dealer-medallion-v09.svg puka-board-runway-v09.svg puka-chip-column-v10.svg; do must_file "games-beyond/puka/assets/$f"; done
-          must_have games-beyond/puka/00_OPEN_FIRST.html 'PUKA v0.12A'
-          must_have games-beyond/puka/index.html 'PUKA v0.12A'
+          for f in puka-card-back.svg royal-felt-medallion.svg royal-room-backdrop.svg portrait-academy-backdrop.svg puka-chip-stack.svg felt-grain.svg court-lower-v07.svg court-middle-v07.svg court-high-v07.svg court-heir-v07.svg court-throne-v07.svg puka-table-inlay-v08.svg puka-treasury-v08.svg puka-academy-banner-v08.svg puka-dealer-medallion-v09.svg puka-board-runway-v09.svg puka-chip-column-v10.svg puka-deep-house-lattice-v13.svg; do must_file "games-beyond/puka/assets/$f"; done
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'PUKA v0.13A'
+          must_have games-beyond/puka/index.html 'PUKA v0.13A'
           must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-v11.css'
           must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-v12.css'
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-v13.css'
           must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-living-table-v10.js'
-          must_have games-beyond/puka/sw.js 'jm-puka-v12a'
+          must_have games-beyond/puka/00_OPEN_FIRST.html 'puka-deep-house-v13.js'
+          must_have games-beyond/puka/sw.js 'jm-puka-v13a'
           must_have games-beyond/puka/puka-v11.css 'button,summary{min-height:44px}'
           must_have games-beyond/puka/puka-v12.css 'Full Table Learning Loop'
+          must_have games-beyond/puka/puka-v13.css 'Deep House Visual Convergence'
+          must_have games-beyond/puka/puka-v13.css 'puka-deep-house-lattice-v13.svg'
           must_have games-beyond/puka/puka-core.js 'PUKA CORE v0.12A'
           must_have games-beyond/puka/puka-core.js 'function estimateEquity('
           must_have games-beyond/puka/puka-core.js 'function validSavedState('
@@ -54,6 +58,8 @@ jobs:
           must_have games-beyond/puka/puka-v10.css 'puka-chip-column-v10.svg'
           must_have games-beyond/puka/puka-living-table-v10.js 'root.dataset.boardCount'
           must_have games-beyond/puka/puka-living-table-v10.js "pot.querySelector('b')"
+          must_have games-beyond/puka/puka-deep-house-v13.js "root.dataset.deepHouse='active'"
+          must_have games-beyond/puka/puka-deep-house-v13.js 'root.dataset.contactConsequence'
           node --check games-beyond/puka/puka-core.js
           node --check games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-cards-v05.js
@@ -61,11 +67,13 @@ jobs:
           node --check games-beyond/puka/puka-world-v07.js
           node --check games-beyond/puka/puka-table-theatre-v09.js
           node --check games-beyond/puka/puka-living-table-v10.js
+          node --check games-beyond/puka/puka-deep-house-v13.js
           node games-beyond/puka/puka-core.test.js
           node games-beyond/puka/puka-layout.test.js
           node games-beyond/puka/puka-theatre.test.js
           node games-beyond/puka/puka-living-table.test.js
           node games-beyond/puka/puka-full-table.test.js
+          node games-beyond/puka/puka-deep-house.test.js
           node games-beyond/puka/puka-estate-conformance.test.js
 
       - name: Set up browser acceptance environment
@@ -81,15 +89,15 @@ jobs:
         working-directory: games-beyond
         run: npx playwright install --with-deps chromium
 
-      - name: Prove PUKA real-context estate, lifecycle and visual viewport acceptance
+      - name: Prove PUKA Deep House real-context lifecycle and visual viewport acceptance
         working-directory: games-beyond
         run: npx playwright test tests/puka-estate-conformance.spec.mjs --project=desktop-chromium
 
-      - name: Upload PUKA real-viewport and lifecycle proof evidence
+      - name: Upload PUKA Deep House real-viewport lifecycle proof evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: puka-v012-real-viewport-lifecycle-proof-${{ github.run_id }}
+          name: puka-v013-deep-house-real-viewport-proof-${{ github.run_id }}
           path: |
             games-beyond/test-results
             games-beyond/playwright-report
@@ -106,8 +114,12 @@ jobs:
           from urllib.request import Request,urlopen
           base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks=[
-            ('','PUKA v0.12A'),
-            ('00_OPEN_FIRST.html','puka-v12.css'),
+            ('','PUKA v0.13A'),
+            ('00_OPEN_FIRST.html','puka-v13.css'),
+            ('puka-v13.css','Deep House Visual Convergence'),
+            ('puka-v13.css','puka-deep-house-lattice-v13.svg'),
+            ('puka-deep-house-v13.js',"root.dataset.deepHouse='active'"),
+            ('assets/puka-deep-house-lattice-v13.svg','PUKA Deep House field lattice'),
             ('puka-v12.css','Full Table Learning Loop'),
             ('puka-core.js','PUKA CORE v0.12A'),
             ('puka-core.js','function estimateEquity('),
@@ -130,7 +142,7 @@ jobs:
             nxt=[]
             for rel,marker in pending:
               try:
-                req=Request(f'{base}{rel}?jm-puka-proof={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Proof/0.12A','Cache-Control':'no-cache'})
+                req=Request(f'{base}{rel}?jm-puka-proof={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Proof/0.13A','Cache-Control':'no-cache'})
                 with urlopen(req,timeout=15) as r: body=r.read().decode('utf-8','replace'); code=r.status
               except Exception as exc:
                 print('WAIT',rel or '/',type(exc).__name__); nxt.append((rel,marker)); continue
@@ -151,7 +163,7 @@ jobs:
           from datetime import datetime,timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.ProofReceipt/0.12A',
+            'schema':'JM.PUKA.ProofReceipt/0.13A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
@@ -161,23 +173,25 @@ jobs:
             'browser_runtime_ding':'PASS',
             'lifecycle_browser_ding':'PASS',
             'raise_sizing_ding':'PASS',
+            'deep_house_source_boundary':'PASS — presentation organ reads rendered DOM/state only and does not access PUKA game authority or persistence stores',
+            'deep_house_contact_consequence':'PASS — direct field contact and raise contact produce bounded visible consequence state',
             'visible_equity_boundary':'PASS — estimate uses player hole cards + visible board against an unknown range; it does not inspect House Mind hidden cards',
             'real_viewport_visual_proof':'PASS',
-            'browser_viewports':['390x844 Android touch portrait','844x390 Android touch landscape','1440x1000 desktop','412x915 Visual Lab Android touch','1440x900 Visual Lab desktop'],
-            'browser_gates':['exact real output viewport','separate mobile/touch and desktop contexts','zero horizontal overflow','44px visible contact floor','protected table-field floor','viewport-only ready/active screenshots','table entry','hidden House cards during active play','hidden House cards after fold','portrait-landscape-portrait hand continuity','active-hand reload preserves hand number private cards and pot','sized raise tray contact','hand review and local history contact','zero console/page errors'],
+            'browser_viewports':['360x800 Deep House Android compact touch','390x844 Games&Beyond Android touch portrait','412x915 Deep House Android standard touch','768x1024 Deep House tablet portrait touch','844x390 Games&Beyond Android touch landscape','1366x768 Deep House laptop','1440x900 Deep House desktop','1440x1000 Games&Beyond desktop'],
+            'browser_gates':['exact real output viewport','separate mobile/touch tablet laptop and desktop contexts','zero horizontal overflow','44px visible contact floor','300px protected phone/tablet field floor where crown contract applies','viewport-only ready/active screenshots','Deep House D0-D3 body mounted','direct field contact consequence','raise-open visible consequence','table entry','hidden House cards during active play','hidden House cards after fold','portrait-landscape-portrait hand continuity','active-hand reload preserves hand number private cards and pot','sized raise tray contact','hand review and local history contact','zero console/page errors'],
             'public_contact':'PASS',
-            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-v09.css','puka-v10.css','puka-v11.css','puka-v12.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js','puka-table-theatre-v09.js','puka-living-table-v10.js'],
-            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v12.css','puka-core.js','puka-ui.js','puka-v11.css','puka-v10.css','puka-living-table-v10.js','assets/puka-chip-column-v10.svg','puka-v09.css','puka-table-theatre-v09.js','assets/puka-board-runway-v09.svg','puka-v08.css','puka-v08-academy.css','puka-v07.css','puka-world-v07.js'],
+            'art_layers':['puka-art.css','puka-v05.css','puka-v05-room.css','puka-v06.css','puka-v07.css','puka-v08.css','puka-v08-academy.css','puka-v09.css','puka-v10.css','puka-v11.css','puka-v12.css','puka-v13.css','puka-cards-v05.js','puka-character-v06.js','puka-world-v07.js','puka-table-theatre-v09.js','puka-living-table-v10.js','puka-deep-house-v13.js'],
+            'contacted':['/games-beyond/puka/','00_OPEN_FIRST.html','puka-v13.css','puka-deep-house-v13.js','assets/puka-deep-house-lattice-v13.svg','puka-v12.css','puka-core.js','puka-ui.js','puka-v11.css','puka-v10.css','puka-living-table-v10.js','assets/puka-chip-column-v10.svg','puka-v09.css','puka-table-theatre-v09.js','assets/puka-board-runway-v09.svg','puka-v08.css','puka-v08-academy.css','puka-v07.css','puka-world-v07.js'],
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Source/core/layout/art/character/world/material/academy/theatre/living-table, validated web active-hand reload continuity, sized raise contact, visible-card equity boundary, separate Chromium desktop/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence and Cold Ding remain separate.'
+            'claim_boundary':'Source/core/layout/art/character/world/material/academy/theatre/living-table/full-table/deep-house, validated web active-hand reload continuity, sized raise contact, visible-card equity boundary, Deep House visible-state authority boundary, separate Chromium Android-touch/tablet/laptop/desktop real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate.'
           }
           Path('games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
           git config user.name 'JM PUKA Proof Rail'
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/PUBLIC_CONTACT_RECEIPT.json
-          git commit -m 'Seal PUKA v0.12A full table lifecycle browser viewport and public contact proof [skip ci]'
+          git commit -m 'Seal PUKA v0.13A Deep House browser viewport contact and public proof [skip ci]'
           for attempt in 1 2 3 4 5; do
             git fetch origin main; git rebase origin/main
             git push origin HEAD:main && exit 0

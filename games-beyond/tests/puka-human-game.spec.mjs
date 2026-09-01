@@ -51,7 +51,7 @@ test('@puka-human-game visible-action membrane produces revisable table reads wi
   await expect(page.locator('#tableReadCount')).toContainText('visible actions');
   await expect(page.locator('#tableReadGrid')).toContainText('PRESSURE-FORWARD SO FAR');
   await expect(page.locator('#tableReadGrid')).toContainText('NEXT TEST');
-  await expect(page.locator('#tableReadGrid')).toContainText('Card distribution');
+  await expect(page.locator('#tableReadGrid')).toContainText('Strong card distribution');
   await expect(page.locator('#tableReadWhy')).toContainText('WHY? — HAND 4');
   await expect(page.locator('#tableReadBoundary')).toContainText('do not reveal hidden cards');
 

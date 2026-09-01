@@ -1,0 +1,87 @@
+name: RouteOS JM-Generated BodyRegistry UserBoundary
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-bodyregistry-userboundary-v0-9a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-bodyregistry-userboundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.9A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v0.9A/tools/ci_prepare_bodyregistryboundary.sh
+      - name: Build and run ten-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v09a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v09a/JM_BODYREGISTRY_USERBOUNDARY_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+      - name: Freeze v0.9A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V09=systems/routeos-kernel-jm-native-v0.9A
+          KERNEL=.routeos-v09a/routeos-kernel-v0.1A
+          mkdir -p bodyregistry-userboundary-v09a-receipt
+          for f in .routeos-v09a/*_INTEGRATION_RECEIPT.json .routeos-v09a/JM_BODYREGISTRY_USERBOUNDARY_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$KERNEL/kernel/routeos_authority.h" \
+            "$V09/source/bodyregistry_userboundary.jmroute" "$V09/generated/bodyregistry_office.inc" \
+            "$V09/generated/userboundary_office.inc" "$V09/generated/bodyregistry_userboundary.json"; do
+            [[ -f "$f" ]] && cp "$f" bodyregistry-userboundary-v09a-receipt/
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_anchor=e25f338d0d0025bdf9d00d502a832702082eda71" \
+            "bodyregistry_userboundary_source_sha256=c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f" \
+            > bodyregistry-userboundary-v09a-receipt/GATE_STATUS.txt
+          (cd bodyregistry-userboundary-v09a-receipt && sha256sum * > SHA256SUMS.txt) || true
+      - name: Upload v0.9A BodyRegistry UserBoundary receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.9A-bodyregistry-userboundary-receipt
+          path: bodyregistry-userboundary-v09a-receipt
+          if-no-files-found: error
+      - name: Enforce ten-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v09a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v0.9A/tools/ci_enforce_bodyregistryboundary.py "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          for hash in c84db3d5aaad07e90b45d4ac84216cd9c60c0fbc22d25a00caeccb6354bda99f \
+            680ba2c31be8dfa7b8ebde7ea518ca385c7faa3906f5ac8af8ecb7c52c4165ea \
+            e038b1549e6831de566ef2180a1b83a5c2071aa2b3951bb415e3c1002e4d0c22 \
+            2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00 \
+            847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8 \
+            13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c \
+            2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2; do
+            strings "$ELF" | grep -F "$hash"
+          done
+          echo 'JM_GENERATED_BODYREGISTRY_USERBOUNDARY DING: PASS'

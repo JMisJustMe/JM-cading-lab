@@ -1,0 +1,231 @@
+name: RouteOS JM-Generated RouteScheduler
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-routescheduler-v0-4a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-routescheduler:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.4A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce frozen v0.3A anchor lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 2e814746c846fc5aeb45bee7bb03338d7c9a0896 HEAD
+          test -f systems/routeos-kernel-jm-native-v0.3A/proof/FREEZE_LOCK_ANCHOR_v0.3A.md
+
+      - name: Install open machine-proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Verify inherited v0.2A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$ROOT/tools/jmroutec.py" \
+            "$ROOT/source/routeos_kernel.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated PermissionGate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          python3 "$ROOT/tools/permissiongatec.py" \
+            "$ROOT/source/permissiongate.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify generated RouteScheduler body
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.4A
+          python3 "$ROOT/tools/routeschedulerc.py" \
+            "$ROOT/source/routescheduler.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Restore exact frozen v0.1A source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-v04a
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 \
+            > .routeos-v04a/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-v04a/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-v04a/source.tar.gz -C .routeos-v04a
+
+      - name: Reapply frozen v0.2A boot authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH=systems/routeos-kernel-jm-native-v0.2A
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          python3 "$AUTH/tools/integrate_boot.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --authority-header "$AUTH/generated/routeos_authority.h" \
+            --receipt .routeos-v04a/V02_BOOT_INTEGRATION_RECEIPT.json
+
+      - name: Reapply frozen v0.3A PermissionGate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          python3 "$ROOT/tools/integrate_permissiongate.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$ROOT/generated/permissiongate_office.inc" \
+            --receipt .routeos-v04a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json
+
+      - name: Replace handwritten RouteScheduler with JM output
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.4A
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          python3 "$ROOT/tools/integrate_routescheduler.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$ROOT/generated/routescheduler_office.inc" \
+            --receipt .routeos-v04a/ROUTESCHEDULER_INTEGRATION_RECEIPT.json
+          grep -F 'JM_ROUTESCHEDULER_VERSION' "$KERNEL/kernel/routeos_kernel.c"
+          test "$(grep -Fc 'static struct cpu_frame *select_next(void)' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+          test "$(grep -Fc 'static void save_current(struct cpu_frame *frame)' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+          ! grep -F 'attempt < JM_BODY_ROUTESCHEDULER_EXECUTION_BODIES' "$KERNEL/kernel/routeos_kernel.c"
+
+      - name: Build and run two-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v04a/JM_ROUTESCHEDULER_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v0.4A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.4A
+          PG=systems/routeos-kernel-jm-native-v0.3A
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          mkdir -p routescheduler-v04a-receipt
+          for f in \
+            .routeos-v04a/V02_BOOT_INTEGRATION_RECEIPT.json \
+            .routeos-v04a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json \
+            .routeos-v04a/ROUTESCHEDULER_INTEGRATION_RECEIPT.json \
+            .routeos-v04a/JM_ROUTESCHEDULER_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/kernel/routeos_authority.h" \
+            "$PG/source/permissiongate.jmroute" \
+            "$PG/generated/permissiongate_office.inc" \
+            "$ROOT/source/routescheduler.jmroute" \
+            "$ROOT/generated/routescheduler_office.inc" \
+            "$ROOT/generated/routescheduler_office.json"; do
+            if [[ -f "$f" ]]; then cp "$f" routescheduler-v04a-receipt/; fi
+          done
+          {
+            echo "machine_step_outcome=${{ steps.machine.outcome }}"
+            echo "machine_exit_status=${{ steps.machine.outputs.exit_status }}"
+            echo "frozen_anchor=2e814746c846fc5aeb45bee7bb03338d7c9a0896"
+            echo "permissiongate_source_sha256=2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2"
+            echo "routescheduler_source_sha256=13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c"
+          } > routescheduler-v04a-receipt/GATE_STATUS.txt
+          (cd routescheduler-v04a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v0.4A RouteScheduler receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.4A-routescheduler-receipt
+          path: routescheduler-v04a-receipt
+          if-no-files-found: error
+
+      - name: Enforce two-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v04a/routeos-kernel-v0.1A
+          TRACE="$KERNEL/proof/QEMU_BOOT_TRACE.txt"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          SOURCE="$KERNEL/kernel/routeos_kernel.c"
+          python3 - "$TRACE" "$SOURCE" <<'PY'
+          from pathlib import Path
+          import sys
+
+          trace = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          source = Path(sys.argv[2]).read_text(encoding="utf-8")
+          scheduler = (
+              "[JM] ROUTESCHEDULER GENERATED v0.4A SOURCE "
+              "13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c ACTIVE"
+          )
+          permission = (
+              "[JM] PERMISSIONGATE GENERATED v0.3A SOURCE "
+              "2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2 ACTIVE"
+          )
+          for marker in (scheduler, permission):
+              if trace.count(marker) != 1:
+                  raise SystemExit(f"HOLD: expected one generated marker, found {trace.count(marker)}: {marker}")
+          first_tick = "[JM] TIMER TICK"
+          if first_tick not in trace or trace.index(scheduler) > trace.index(first_tick):
+              raise SystemExit("HOLD: generated RouteScheduler did not activate before timer scheduling receipt")
+          first_pass = "PERMISSIONGATE PASS"
+          if first_pass not in trace or trace.index(permission) > trace.index(first_pass):
+              raise SystemExit("HOLD: generated PermissionGate did not activate before permission return")
+          if trace.index(scheduler) > trace.index("FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT"):
+              raise SystemExit("HOLD: generated RouteScheduler activated too late")
+          for inherited in (
+              "JM_NATIVE AUTHORITY v0.2A",
+              "USER BODY 1 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+              "USER BODY 2 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+              "FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT",
+              "RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES",
+          ):
+              if inherited not in trace:
+                  raise SystemExit(f"HOLD: inherited machine marker missing: {inherited}")
+          if "attempt < JM_BODY_ROUTESCHEDULER_EXECUTION_BODIES" in source:
+              raise SystemExit("HOLD: handwritten RouteScheduler remains")
+          if source.count("static struct cpu_frame *select_next(void)") != 1:
+              raise SystemExit("HOLD: generated select_next is not singular")
+          if source.count("static void save_current(struct cpu_frame *frame)") != 1:
+              raise SystemExit("HOLD: generated save_current is not singular")
+          print("JM_GENERATED_ROUTESCHEDULER_TRACE PASS")
+          PY
+          strings "$ELF" | grep -F '13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c'
+          strings "$ELF" | grep -F '2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2'
+          echo 'JM_GENERATED_ROUTESCHEDULER DING: PASS'

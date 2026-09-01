@@ -1,0 +1,115 @@
+name: RouteOS JM-Generated PrimitiveRoute
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-primitiveroute-v1-5a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-primitiveroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout v1.5A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify readable v1.5A authority and mount frozen v1.2A body
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "b35ecf329ca8e7336c27ac98c353ac517bec962babbc8068c273dd12174ea843  systems/routeos-kernel-jm-native-v1.5A/README.md" \
+            "d2c30dec658a22d1e329162ac3bcff28b2974dcbb47f0f8f21ba2f10746040fc  systems/routeos-kernel-jm-native-v1.5A/generated/primitiveroute.inc" \
+            "cb41607fc6b98392dd67bc0ed9186793e1c79edf9203e30d3ec081844cc15d2a  systems/routeos-kernel-jm-native-v1.5A/generated/primitiveroute.json" \
+            "62476361bed4398041d8005dd242d0344809a893a6ca5e85618f3495ca77ccbb  systems/routeos-kernel-jm-native-v1.5A/source/primitiveroute.jmroute" \
+            "afef0b924e4968f58d7c0a0f9b49f20314beb1dbd68d93625cc53c04279ddad7  systems/routeos-kernel-jm-native-v1.5A/tests/test_primitiveroute.py" \
+            "341f75259665c3afd14db59430885076da499f065641876bebd962d8b0ebcf0f  systems/routeos-kernel-jm-native-v1.5A/tools/ci_enforce_primitiveroute.py" \
+            "f45d9c2dbbd12c3433223cc38360ec49e5ff190abb39a114af1ff3a76e126245  systems/routeos-kernel-jm-native-v1.5A/tools/ci_prepare_primitiveroute.sh" \
+            "e4cba7e6c5a82a9f8659f3157f8d18c6f8dc594afb9ce098f1d3fd8d1669b756  systems/routeos-kernel-jm-native-v1.5A/tools/integrate_primitiveroute.py" \
+            "485a18b7c75bf22fcbc47e739a557211feea65ae30f278acd52c280c826d7419  systems/routeos-kernel-jm-native-v1.5A/tools/primitiveroutec.py" | sha256sum -c -
+          git merge-base --is-ancestor 78a82f77e41ff0983597e5d900369a004c4eb9de HEAD
+
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for spec in \
+            "5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  $V12/routeos-v1.2A-body.tar.gz.b64  0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/v12-base.tar.gz" \
+            "6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  $V12/routeos-v1.2A-pre-idt-correction.tar.gz.b64  9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/v12-abi.tar.gz" \
+            "8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98  $V12/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64  e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff  /tmp/v12-proof.tar.gz"; do
+            set -- $spec
+            echo "$1  $2" | sha256sum -c -
+            base64 -d "$2" > "$4"
+            echo "$3  $4" | sha256sum -c -
+            tar -xzf "$4" -C .
+          done
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.5A/tools/ci_prepare_primitiveroute.sh
+
+      - name: Build and run extended JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v15a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v15a/JM_PRIMITIVEROUTE_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v1.5A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v1.5A
+          KERNEL=.routeos-v15a/routeos-kernel-v0.1A
+          OUT=primitiveroute-v15a-receipt
+          mkdir -p "$OUT"
+          if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
+            nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v15a/JM_PRIMITIVEROUTE_SYMBOLS.txt
+            objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v15a/JM_PRIMITIVEROUTE_DISASSEMBLY.txt
+          fi
+          for f in .routeos-v15a/*_INTEGRATION_RECEIPT.json .routeos-v15a/JM_PRIMITIVEROUTE* \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$V/source/primitiveroute.jmroute" "$V/generated"/*; do
+            [[ -f "$f" ]] && cp "$f" "$OUT/"
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_parent=78a82f77e41ff0983597e5d900369a004c4eb9de" \
+            "source_sha256=62476361bed4398041d8005dd242d0344809a893a6ca5e85618f3495ca77ccbb" > "$OUT/GATE_STATUS.txt"
+          (cd "$OUT" && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.5A receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.5A-primitiveroute-receipt
+          path: primitiveroute-v15a-receipt
+          if-no-files-found: error
+
+      - name: Enforce PrimitiveRoute operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v15a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.5A/tools/ci_enforce_primitiveroute.py \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/build/routeos-kernel.elf" .routeos-v15a/PRIMITIVEROUTE_INTEGRATION_RECEIPT.json
+          echo 'JM_GENERATED_PRIMITIVEROUTE DING: PASS'

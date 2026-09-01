@@ -1,0 +1,54 @@
+{
+  "calls": [
+    {
+      "fields": {
+        "action": "trace_return",
+        "continuation": "same_body",
+        "number": "1",
+        "permission": "pass",
+        "return": "ticks",
+        "trace": "SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS -> KERNEL TRACE RETURN"
+      },
+      "name": "TRACE_READ",
+      "record_type": "CALL"
+    },
+    {
+      "fields": {
+        "action": "schedule_next",
+        "continuation": "next_body",
+        "number": "2",
+        "permission": "pass"
+      },
+      "name": "YIELD",
+      "record_type": "CALL"
+    }
+  ],
+  "deny": {
+    "fields": {
+      "continuation": "same_body",
+      "receipt": "PERMISSIONGATE DENY: UNKNOWN SYSTEM CALL",
+      "return": "-1"
+    },
+    "name": "UNKNOWN_CALL",
+    "record_type": "DENY"
+  },
+  "gate": {
+    "fields": {
+      "active_body": "current_body",
+      "from": "user",
+      "to": "supervisor",
+      "vector": "0x80"
+    },
+    "name": "PERMISSIONGATE",
+    "record_type": "GATE"
+  },
+  "laws": {
+    "CLAIM_BOUNDARY": "generated_permissiongate_operational_office",
+    "MACHINE_PARENT": "0fcb74bf1a959f3020b80511dde01cd67523fc6e",
+    "PROOF_PARENT": "f76343108422109e8aa939d785d0d88bdba61f08",
+    "SOURCE_AUTHORITY": "jm_native"
+  },
+  "schema": "JM_PERMISSIONGATE_OPERATIONAL_1",
+  "source_sha256": "2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2",
+  "version": "v0.3A"
+}

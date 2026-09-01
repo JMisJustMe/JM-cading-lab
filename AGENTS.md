@@ -22,6 +22,25 @@ Rules:
 - Prefer full-complete production jumps over cosmetic version churn.
 - **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
+## Canonical door continuity — LIVING WEB BODY IDENTITY
+
+Before materially changing the public route, persistence, PWA/install route, storage schema or owner-facing delivery of a living JM web body, read:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_CANONICAL_DOOR_CONTINUITY_STANDARD_v1.0.md`
+
+Canonical keeper:
+
+**BODY EVOLVES → DOOR STAYS → STATE RETURNS.**
+
+Rules:
+- Preserve one canonical public door across descendants whenever technically possible.
+- Treat the door as part of the living body's identity and continuity boundary, not merely a delivery address.
+- Keep development/version changes behind that door rather than minting a new owner-facing URL for each descendant.
+- Preserve or explicitly migrate state, storage keys/schemas, bookmarks, public routes, service-worker/cache behaviour and installed/PWA routes where applicable.
+- The URL does not itself store state: persistence/re-entry claims still require the actual storage/migration mechanism to be proved.
+- A changed canonical door requires an explicit reason and a continuity/migration route; do not imply automatic cross-origin state migration unless it is actually implemented and proved.
+- **THE DOOR IDENTIFIES THE LIVING BODY, NOT ONE PARTICULAR BUILD.**
+
 ## Delivery default — LIVE DIRECT DOOR FIRST
 
 For every JM estate-hosted HTML/web build, the normal owner-facing delivery route is the proved **live direct URL**.
@@ -36,6 +55,7 @@ Rules:
 - Mount through the existing JM estate publication rail when available.
 - Prove the live URL and required assets before presenting it as live.
 - Hand Theodore/JM the live direct link first, every time.
+- Keep the same canonical public door as the body evolves whenever technically possible, in accordance with the Estate Canonical Door Continuity Standard.
 - Sandbox links, ZIPs, duplicate launchers and loose-file bundles are fallback/archive/offline-transfer routes only when a truthful live estate route cannot be produced.
 - Live HTTP contact is not the same as owner-side Cold Ding.
 - Apply this delivery default to all applicable old and new Estate-hosted HTML/web bodies unless Theodore explicitly overrides it.

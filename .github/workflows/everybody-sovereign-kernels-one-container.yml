@@ -1,0 +1,85 @@
+name: JM Sovereign 100 Kernels OneContainer v0.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/**
+      - .github/workflows/everybody-sovereign-kernels-one-container.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/**
+      - .github/workflows/everybody-sovereign-kernels-one-container.yml
+
+permissions:
+  contents: read
+
+jobs:
+  sovereign-kernel-personalities:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out exact branch body
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run 100 body-authored kernel personality proof
+        run: python coding-estate/everybody/full-stack/tests/test_sovereign_kernel_factory.py
+
+      - name: Generate full-stack body packages
+        run: |
+          rm -rf build/everybody-full-stack-v0.1
+          python coding-estate/everybody/full-stack/tools/full_stack_factory.py \
+            --repo-root . \
+            --out build/everybody-full-stack-v0.1 \
+            --clean
+
+      - name: Generate sovereign kernel personalities and OneContainer
+        run: |
+          rm -rf build/everykernel-one-container-v0.1
+          python coding-estate/everybody/full-stack/tools/sovereign_kernel_factory.py \
+            --full-stack-root build/everybody-full-stack-v0.1 \
+            --out build/everykernel-one-container-v0.1 \
+            --clean
+
+      - name: Verify one hundred distinct body/compiler/kernel routes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/everykernel-one-container-v0.1")
+          container = json.loads((root / "JM_EVERYKERNEL_ONE_CONTAINER.json").read_text(encoding="utf-8"))
+          assert container["kernel_count"] == 100
+          assert len(set(container["kernel_ids"])) == 100
+          entries = container["entries"]
+          assert len({entry["compiler_namespace"] for entry in entries}) == 100
+          assert len({entry["compiler_sha256"] for entry in entries}) == 100
+          assert len({entry["source_sha256"] for entry in entries}) == 100
+          assert len({entry["personality_c_sha256"] for entry in entries}) == 100
+          assert all(entry["qemu_state"] == "OPEN" for entry in entries)
+          print("100 separate body/compiler/kernel personality routes present")
+          PY
+
+      - name: Seal OneContainer delivery
+        run: |
+          tar -czf JM_EVERYKERNEL_ONE_CONTAINER_v0.1.tar.gz -C build everykernel-one-container-v0.1
+          sha256sum JM_EVERYKERNEL_ONE_CONTAINER_v0.1.tar.gz | tee JM_EVERYKERNEL_ONE_CONTAINER_v0.1.sha256
+
+      - name: Upload sovereign kernel personality delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_EVERYKERNEL_ONE_CONTAINER_v0.1
+          path: |
+            JM_EVERYKERNEL_ONE_CONTAINER_v0.1.tar.gz
+            JM_EVERYKERNEL_ONE_CONTAINER_v0.1.sha256
+            build/everykernel-one-container-v0.1/BUILD_RECEIPT.json
+            build/everykernel-one-container-v0.1/JM_EVERYKERNEL_ONE_CONTAINER.json
+          if-no-files-found: error

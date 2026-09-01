@@ -1,0 +1,114 @@
+name: RouteOS JM-Generated KernelContractRoute
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-contractroute-v1-8a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-contractroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout v1.8A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify readable v1.8A authority and mount frozen v1.2A body
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "13ed5368d0fc777cbfdc6af34237371634ddb95b8a56f0727fc08fc0d4cd7df0  systems/routeos-kernel-jm-native-v1.8A/generated/contractroute.inc" \
+            "fce02752e117d685431cf1fb19ca3218a717956d1f9789ce9918a121d8b58d3a  systems/routeos-kernel-jm-native-v1.8A/generated/contractroute.json" \
+            "853d8ecbdacb06fd080a7d0c74ca63942324b44d826755e57ab61e3c4293c1ad  systems/routeos-kernel-jm-native-v1.8A/source/contractroute.jmroute" \
+            "f03464f6e5875b826e4f72e5aee97a93ff5a24a7a8f0ca9fec1c4ada23aa76e9  systems/routeos-kernel-jm-native-v1.8A/tests/test_contractroute.py" \
+            "a01567013a16386d3cca0992e8aea20c6daca4ff6741c8dd772fc305be635ae4  systems/routeos-kernel-jm-native-v1.8A/tools/ci_enforce_contractroute.py" \
+            "2329d19faccb0c7c8c3437028b9d690f501cb8b2c98f3df129ce31341488ca95  systems/routeos-kernel-jm-native-v1.8A/tools/ci_prepare_contractroute.sh" \
+            "af3347d8859b8fbcaf5a661cfda6b03ed42421d4dddb395a375c890433378d59  systems/routeos-kernel-jm-native-v1.8A/tools/contractroutec.py" \
+            "dafaeb4657716b71129486d11c75e14ed8b9132b4248994f9ac4e9713b3cde64  systems/routeos-kernel-jm-native-v1.8A/tools/integrate_contractroute.py" | sha256sum -c -
+          git merge-base --is-ancestor 3a3476f7b6823f814085eda19ee3fc42cd430668 HEAD
+
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for spec in \
+            "5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  $V12/routeos-v1.2A-body.tar.gz.b64  0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/v12-base.tar.gz" \
+            "6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  $V12/routeos-v1.2A-pre-idt-correction.tar.gz.b64  9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/v12-abi.tar.gz" \
+            "8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98  $V12/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64  e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff  /tmp/v12-proof.tar.gz"; do
+            set -- $spec
+            echo "$1  $2" | sha256sum -c -
+            base64 -d "$2" > "$4"
+            echo "$3  $4" | sha256sum -c -
+            tar -xzf "$4" -C .
+          done
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.8A/tools/ci_prepare_contractroute.sh
+
+      - name: Build and run extended JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v18a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v18a/JM_CONTRACTROUTE_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v1.8A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v1.8A
+          KERNEL=.routeos-v18a/routeos-kernel-v0.1A
+          OUT=contractroute-v18a-receipt
+          mkdir -p "$OUT"
+          if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
+            nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v18a/JM_CONTRACTROUTE_SYMBOLS.txt
+            objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v18a/JM_CONTRACTROUTE_DISASSEMBLY.txt
+          fi
+          for f in .routeos-v18a/*_INTEGRATION_RECEIPT.json .routeos-v18a/JM_CONTRACTROUTE* \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$V/source/contractroute.jmroute" "$V/generated"/*; do
+            [[ -f "$f" ]] && cp "$f" "$OUT/"
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_parent=3a3476f7b6823f814085eda19ee3fc42cd430668" \
+            "source_sha256=853d8ecbdacb06fd080a7d0c74ca63942324b44d826755e57ab61e3c4293c1ad" > "$OUT/GATE_STATUS.txt"
+          (cd "$OUT" && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.8A receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.8A-contractroute-receipt
+          path: contractroute-v18a-receipt
+          if-no-files-found: error
+
+      - name: Enforce KernelContractRoute operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v18a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.8A/tools/ci_enforce_contractroute.py \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/build/routeos-kernel.elf" .routeos-v18a/CONTRACTROUTE_INTEGRATION_RECEIPT.json
+          echo 'JM_GENERATED_CONTRACTROUTE DING: PASS'

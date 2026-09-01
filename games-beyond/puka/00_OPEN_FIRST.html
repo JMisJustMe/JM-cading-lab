@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-puka-mode="portrait" data-hand-state="ready" data-puka-mood="ready" data-court-tier="lower" data-dealer-seat="none" data-table-street="ready" data-table-theatre="waiting" data-board-count="0" data-deep-house="pending" data-contact-consequence="idle" data-field-contact="idle">
+<html lang="en" data-puka-mode="portrait" data-hand-state="ready" data-puka-mood="ready" data-court-tier="lower" data-dealer-seat="none" data-table-street="ready" data-table-theatre="waiting" data-board-count="0" data-deep-house="pending" data-contact-consequence="idle" data-field-contact="idle" data-table-read="waiting">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -19,7 +19,8 @@
 <link rel="stylesheet" href="puka-v11.css">
 <link rel="stylesheet" href="puka-v12.css">
 <link rel="stylesheet" href="puka-v13.css">
-<title>PUKA v0.13A — Deep House Visual Convergence</title>
+<link rel="stylesheet" href="puka-table-read-v02.css">
+<title>PUKA v0.14A — Human Game Behavioural Read Engine</title>
 </head>
 <body>
 <a class="skip-link" href="#main">SKIP TO TABLE</a>
@@ -88,6 +89,12 @@
             <b id="reviewTitle">NO COMPLETED HAND</b>
             <p id="reviewLine">Finish a hand to earn a decision review.</p>
           </section>
+          <section id="tableRead" class="table-read" aria-label="Human Game visible-action table reads">
+            <div class="table-read-head"><div><small>PUKA HUMAN GAME · v0.2</small><h3>Behavioural Table Read</h3></div><div><small id="tableReadCount">0 visible actions</small><div class="table-read-law">OBSERVATION ≠ INTERPRETATION ≠ FACT</div></div></div>
+            <div id="tableReadGrid" class="table-read-grid"></div>
+            <div id="tableReadWhy" class="table-read-why"></div>
+            <p id="tableReadBoundary" class="table-read-boundary"></p>
+          </section>
           <div class="history-head"><b>HAND HISTORY</b><small>LOCAL DEVICE · LATEST 20</small></div>
           <div id="historyList" class="history-list"></div>
           <div id="trace" class="tracegrid" aria-live="polite"></div>
@@ -95,10 +102,11 @@
       </details>
     </section>
 
-    <footer class="footer">PUKA v0.13A · JM Games&amp;Beyond descendant · Deep House visual-convergence stage · no real-money wagering layer</footer>
+    <footer class="footer">PUKA v0.14A · JM Games&amp;Beyond descendant · Human Game behavioural-read stage over Deep House · no real-money wagering layer</footer>
   </main>
 </div>
 <script src="puka-core.js"></script>
+<script src="puka-human-game-v02.js"></script>
 <script src="puka-ui.js"></script>
 <script src="puka-cards-v05.js"></script>
 <script src="puka-character-v06.js"></script>

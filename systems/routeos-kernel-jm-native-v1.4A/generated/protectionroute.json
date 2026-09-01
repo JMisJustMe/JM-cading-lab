@@ -1,0 +1,32 @@
+{
+  "generated": {
+    "descriptorinstall.inc": "1933b4545d34f6c9b34c963f82e25ea85ecc273a6e3c81d3f1bd1cd99a5a84c9",
+    "interruptcontroller.inc": "2489b9a30311b023de78a12cc5e2912d7c982444c45f4929cf52ee9eb8f72302",
+    "usermap_bodyframe.inc": "a5eb4d25d272d2349fe64f2e01cf19e56409249740ca4a558bfd123e2c25aa7e",
+    "vectorroute.inc": "e39bb94a00ddd4b46ebf2cbcabd36bd6c090ec192d0c3d54a3b2f33a197b5824"
+  },
+  "machine_parent": "e6f037ac3f3d42c4b56218307b5f738f0c6a4b70",
+  "offices": [
+    "DescriptorInstall",
+    "VectorRoute",
+    "InterruptController",
+    "UserMapRoute",
+    "BodyFrameInstall"
+  ],
+  "proof_parent": "e6f037ac3f3d42c4b56218307b5f738f0c6a4b70",
+  "removed_seams": [
+    "gdt_install",
+    "idt_set+idt_install",
+    "pic_pit_install",
+    "mark_user_page+user_boundary_install"
+  ],
+  "runtime_markers": [
+    "[JM] DESCRIPTORINSTALL GENERATED v1.4A SOURCE 50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 ACTIVE",
+    "[JM] VECTORROUTE GENERATED v1.4A SOURCE 50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 ACTIVE",
+    "[JM] INTERRUPTCONTROLLER GENERATED v1.4A SOURCE 50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 ACTIVE",
+    "[JM] USERMAPROUTE GENERATED v1.4A SOURCE 50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 ACTIVE",
+    "[JM] BODYFRAMEINSTALL GENERATED v1.4A SOURCE 50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 ACTIVE"
+  ],
+  "source_sha256": "50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14",
+  "version": "v1.4A"
+}

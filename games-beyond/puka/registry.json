@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.13A",
+  "schema":"JM.PUKA.Room/0.14A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -10,7 +10,15 @@
   "deliveryLaw":"For estate-hosted web bodies, hand the owner the singular live direct door every time. Sandbox/package routes are fallback or archival, not the primary contact path.",
   "routes":["portrait-academy","royal-table"],
   "sharedCore":"puka-core.js",
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
+  "humanGame":{
+    "foundingSnapshot":"human-game/PUKA_HUMAN_GAME_FOUNDING_SNAPSHOT_v0.1.md",
+    "engine":"puka-human-game-v02.js",
+    "presentation":"puka-table-read-v02.css",
+    "sourceBoundary":"VISIBLE_ACTION_HISTORY_ONLY",
+    "keeper":"READ THE HUMAN GAME WITHOUT PRETENDING THE READ IS THE HUMAN.",
+    "kernel":"CONTACT -> OBSERVE -> SEPARATE -> READ -> TEST -> CONSEQUENCE -> TRACE -> CORRECT"
+  },
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-table-read-v02.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg","assets/puka-deep-house-lattice-v13.svg"],
   "browserProofContexts":[
     "360x800 Deep House Android compact touch",
@@ -47,10 +55,27 @@
     "expanded automated proof to the current Deep House crown viewport set while retaining Games&Beyond acceptance sizes",
     "kept owner aesthetic acceptance Cold Ding and any final visual crown separate from automated structural proof"
   ],
+  "v14Changes":[
+    "activated the preserved PUKA Human Game founding lane as a real gameplay-adjacent reasoning organ",
+    "added a pure behavioural read engine which accepts only sanitised visible action history rather than PUKA game-state authority",
+    "added separate YOU and HOUSE MIND table reads based on action mix, sample size, confidence, alternative explanations and next tests",
+    "added recent-versus-earlier action-mix movement so later contact can weaken or strengthen a read rather than merely accumulate labels",
+    "added a post-hand WHY layer that explains what the visible line supports while explicitly keeping motive and hidden cards open",
+    "kept behavioural reads inside the existing Evidence Review body so the playfield remains primary",
+    "kept table reads bounded to gameplay behaviour and prohibited personality diagnosis or real-world identity claims",
+    "made the UI construct an action-only membrane before the Human Game engine is called so hidden House cards never enter the analyser input",
+    "added a dedicated regression suite proving unknown hidden fields and card identities are discarded by Human Game normalisation",
+    "preserved the v0.13 Deep House visual body and v0.12 full-table learning loop unchanged as parents"
+  ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
     "Presentation organs may read visible state but must not infer expose or duplicate hidden game state",
+    "Human Game receives sanitised visible action history only and does not receive the poker engine, deck, hidden House cards or persistence store",
+    "Behavioural table reads are revisable interpretations of gameplay actions, not personality diagnoses or proof of motive",
+    "Every Human Game read must preserve alternative explanations and a next-test route when a stronger claim is not earned",
+    "Low sample size must remain insufficient rather than being inflated into confidence",
+    "Later contact may strengthen weaken or reverse an earlier behavioural read",
     "Physical visualisation of chips may represent values already shown to the player but must not create a second bankroll authority",
     "Card-reveal presentation may respond to already-visible cards but must not predict or inspect undealt cards",
     "A visible-card equity estimate is an estimate against an unknown range; it is not knowledge of House Mind's hidden cards",
@@ -76,10 +101,11 @@
     "Visual quality is a completion gate, not decoration after completion",
     "Observation != interpretation != fact",
     "Estimate != hidden fact",
+    "Pattern != proof of motive",
     "Different games may share organs without sharing identities",
     "One singular live direct door is the normal owner contact route",
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Deep House visual-convergence stage over the v0.12 full-table learning loop. Automated source/core/layout/art/world/material/theatre/living-table/depth/contact, active-hand browser reload continuity, sized-raise contact, visible-card equity boundary, separate desktop/tablet/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate."
+  "claimBoundary":"Human Game behavioural-read stage over the v0.13 Deep House visual-convergence body and v0.12 full-table learning loop. Automated source/core/layout/art/world/material/theatre/living-table/depth/contact, Human Game visible-action membrane and hidden-field rejection, active-hand browser reload continuity, sized-raise contact, visible-card equity boundary, separate desktop/tablet/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently. Behavioural reads remain gameplay-context interpretations only; personality diagnosis, proof of motive, real-world person profiling, owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate and unclaimed."
 }

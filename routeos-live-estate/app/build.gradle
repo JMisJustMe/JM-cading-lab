@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jmisjustme.routeos.gameestate'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.jmisjustme.routeos.gameestate'
+        minSdk 26
+        targetSdk 35
+        versionCode 2000
+        versionName '2.0.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

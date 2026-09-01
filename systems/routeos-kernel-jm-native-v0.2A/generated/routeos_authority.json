@@ -1,0 +1,108 @@
+{
+  "laws": {
+    "CARRIER": "c_x86_64",
+    "CLAIM_BOUNDARY": "source_authority_gate_not_yet_boot_integrated",
+    "PROOF_PARENT": "54f67566036316b25515fb53fa98f06769d3850d",
+    "SOURCE_AUTHORITY": "jm_native"
+  },
+  "records": [
+    {
+      "fields": {
+        "kind": "kernel_entry",
+        "owns": "boot_handoff",
+        "privilege": "supervisor"
+      },
+      "name": "IGNITIONBODY",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "alloc": "route_alloc",
+        "kind": "memory",
+        "page_size": "4096",
+        "privilege": "supervisor",
+        "release": "route_release"
+      },
+      "name": "MEMORYBODY",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "cadence_ticks": "25",
+        "execution_bodies": "2",
+        "kind": "scheduler",
+        "privilege": "supervisor",
+        "timer": "PIT"
+      },
+      "name": "ROUTESCHEDULER",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "continuation": "safe_after_recovery",
+        "kind": "user",
+        "privilege": "user"
+      },
+      "name": "USER_BODY_1",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "kind": "user",
+        "privilege": "user",
+        "test": "deliberate_invalid_opcode"
+      },
+      "name": "USER_BODY_2",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "continues": "USER_BODY_1",
+        "kind": "recovery",
+        "privilege": "supervisor"
+      },
+      "name": "RECOVERYBODY",
+      "record_type": "BODY"
+    },
+    {
+      "fields": {
+        "from": "user",
+        "receipt": "JM_PERMISSION_GATE",
+        "to": "supervisor",
+        "vector": "0x80"
+      },
+      "name": "PERMISSIONGATE",
+      "record_type": "GATE"
+    },
+    {
+      "fields": {
+        "direction": "output",
+        "owner": "kernel",
+        "port": "0x3F8"
+      },
+      "name": "SERIALROUTE",
+      "record_type": "DEVICE"
+    },
+    {
+      "fields": {
+        "action": "block_faulting_body",
+        "recovery": "RECOVERYBODY",
+        "vector": "6"
+      },
+      "name": "FAULTHOLD",
+      "record_type": "FAULT"
+    }
+  ],
+  "requirements": [
+    "privileged_execution",
+    "kernel_owned_memory",
+    "timer_driven_scheduling",
+    "two_execution_bodies",
+    "controlled_user_kernel_boundary",
+    "jm_controlled_device_route",
+    "fault_capture_and_recovery"
+  ],
+  "schema": "JM_ROUTEOS_AUTHORITY_1",
+  "source_sha256": "0f8d44080dc6adfa855996b76efe7f538284643ead8170599809d1e0dbc10371",
+  "version": "v0.2A"
+}

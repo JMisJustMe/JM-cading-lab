@@ -1,0 +1,41 @@
+{
+  "boot_stack_bytes": 32768,
+  "elf_marker": "[JM] BOOTROUTE GENERATED v1.1A SOURCE b02be640fe482dc36633084e0e4601533ea3ed3b38892d723ab37f2bfc98a638 ACTIVE",
+  "head_sha256": "bee4f7c6e12a27c0de82ebc6369d7bc6e11e918b4f07a6b80fb57e3b40a027f2",
+  "identity_map_bytes": 67108864,
+  "leaf_entries": 16384,
+  "machine_parent": "276e9ebaa030ca3fe9eec5365d4190cd4a6a2a96",
+  "multiboot_magic": 3897708758,
+  "offices": [
+    "BootCarrier",
+    "PageRoute",
+    "LongModeRoute",
+    "PrivilegeLoader"
+  ],
+  "page_table_count": 32,
+  "page_table_storage_bytes": 143360,
+  "processor_route": [
+    "CR4.PAE",
+    "EFER.LME",
+    "CR3",
+    "CR0.PG",
+    "LGDT",
+    "far-jump",
+    "code64"
+  ],
+  "proof_parent": "276e9ebaa030ca3fe9eec5365d4190cd4a6a2a96",
+  "selectors": {
+    "code": 8,
+    "data": 16
+  },
+  "source_sha256": "b02be640fe482dc36633084e0e4601533ea3ed3b38892d723ab37f2bfc98a638",
+  "symbols": [
+    "_start",
+    "long_mode_entry",
+    "routeos_load_gdt",
+    "routeos_load_tr",
+    "routeos_reload_cr3"
+  ],
+  "tail_sha256": "a5b6f66d9f4d98973432bb1b7bc2525c5a1ebaf81466915ac6e0349e6799694b",
+  "version": "v1.1A"
+}

@@ -1,0 +1,240 @@
+name: RouteOS JM-Generated FaultHold RecoveryBody
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-faultrecovery-v0-6a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-faultrecovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.6A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce frozen v0.5A anchor lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 8b891d1f4bcdf904791588f5bb46adc31908b9d4 HEAD
+          test -f systems/routeos-kernel-jm-native-v0.5A/proof/FREEZE_LOCK_ANCHOR_v0.5A.md
+
+      - name: Install open machine-proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Verify inherited v0.2A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$ROOT/tools/jmroutec.py" "$ROOT/source/routeos_kernel.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated PermissionGate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          python3 "$ROOT/tools/permissiongatec.py" "$ROOT/source/permissiongate.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated RouteScheduler
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.4A
+          python3 "$ROOT/tools/routeschedulerc.py" "$ROOT/source/routescheduler.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated MemoryBody
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.5A
+          python3 "$ROOT/tools/memorybodyc.py" "$ROOT/source/memorybody.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify generated FaultHold and RecoveryBody
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.6A
+          python3 "$ROOT/tools/faultrecoveryc.py" "$ROOT/source/faulthold_recoverybody.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Restore exact frozen v0.1A source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-v06a
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 > .routeos-v06a/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-v06a/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-v06a/source.tar.gz -C .routeos-v06a
+
+      - name: Rebuild generated operational stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          V02=systems/routeos-kernel-jm-native-v0.2A
+          V03=systems/routeos-kernel-jm-native-v0.3A
+          V04=systems/routeos-kernel-jm-native-v0.4A
+          V05=systems/routeos-kernel-jm-native-v0.5A
+          V06=systems/routeos-kernel-jm-native-v0.6A
+          KERNEL=.routeos-v06a/routeos-kernel-v0.1A
+          python3 "$V02/tools/integrate_boot.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --authority-header "$V02/generated/routeos_authority.h" \
+            --receipt .routeos-v06a/V02_BOOT_INTEGRATION_RECEIPT.json
+          python3 "$V03/tools/integrate_permissiongate.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V03/generated/permissiongate_office.inc" \
+            --receipt .routeos-v06a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json
+          python3 "$V04/tools/integrate_routescheduler.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V04/generated/routescheduler_office.inc" \
+            --receipt .routeos-v06a/V04_ROUTESCHEDULER_INTEGRATION_RECEIPT.json
+          python3 "$V05/tools/integrate_memorybody.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V05/generated/memorybody_office.inc" \
+            --receipt .routeos-v06a/V05_MEMORYBODY_INTEGRATION_RECEIPT.json
+          python3 "$V06/tools/integrate_faultrecovery.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V06/generated/faulthold_recoverybody_office.inc" \
+            --receipt .routeos-v06a/FAULT_RECOVERY_INTEGRATION_RECEIPT.json
+          grep -F 'JM_FAULTRECOVERY_VERSION' "$KERNEL/kernel/routeos_kernel.c"
+          test "$(grep -Fc 'static struct cpu_frame *jm_generated_faulthold' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+          test "$(grep -Fc 'static struct cpu_frame *jm_generated_recoverybody' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+
+      - name: Build and run five-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v06a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v06a/JM_FAULTRECOVERY_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v0.6A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V03=systems/routeos-kernel-jm-native-v0.3A
+          V04=systems/routeos-kernel-jm-native-v0.4A
+          V05=systems/routeos-kernel-jm-native-v0.5A
+          V06=systems/routeos-kernel-jm-native-v0.6A
+          KERNEL=.routeos-v06a/routeos-kernel-v0.1A
+          mkdir -p faultrecovery-v06a-receipt
+          for f in \
+            .routeos-v06a/V02_BOOT_INTEGRATION_RECEIPT.json \
+            .routeos-v06a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json \
+            .routeos-v06a/V04_ROUTESCHEDULER_INTEGRATION_RECEIPT.json \
+            .routeos-v06a/V05_MEMORYBODY_INTEGRATION_RECEIPT.json \
+            .routeos-v06a/FAULT_RECOVERY_INTEGRATION_RECEIPT.json \
+            .routeos-v06a/JM_FAULTRECOVERY_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/kernel/routeos_authority.h" \
+            "$V03/source/permissiongate.jmroute" \
+            "$V03/generated/permissiongate_office.inc" \
+            "$V04/source/routescheduler.jmroute" \
+            "$V04/generated/routescheduler_office.inc" \
+            "$V05/source/memorybody.jmroute" \
+            "$V05/generated/memorybody_office.inc" \
+            "$V06/source/faulthold_recoverybody.jmroute" \
+            "$V06/generated/faulthold_recoverybody_office.inc" \
+            "$V06/generated/faulthold_recoverybody_office.json"; do
+            if [[ -f "$f" ]]; then cp "$f" faultrecovery-v06a-receipt/; fi
+          done
+          {
+            echo "machine_step_outcome=${{ steps.machine.outcome }}"
+            echo "machine_exit_status=${{ steps.machine.outputs.exit_status }}"
+            echo "frozen_anchor=8b891d1f4bcdf904791588f5bb46adc31908b9d4"
+            echo "faultrecovery_source_sha256=2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00"
+            echo "memorybody_source_sha256=847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8"
+            echo "routescheduler_source_sha256=13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c"
+            echo "permissiongate_source_sha256=2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2"
+          } > faultrecovery-v06a-receipt/GATE_STATUS.txt
+          (cd faultrecovery-v06a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v0.6A FaultHold RecoveryBody receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.6A-faultrecovery-receipt
+          path: faultrecovery-v06a-receipt
+          if-no-files-found: error
+
+      - name: Enforce five-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v06a/routeos-kernel-v0.1A
+          TRACE="$KERNEL/proof/QEMU_BOOT_TRACE.txt"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          SOURCE="$KERNEL/kernel/routeos_kernel.c"
+          python3 - "$TRACE" "$SOURCE" <<'PY'
+          from pathlib import Path
+          import sys
+
+          trace = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          source = Path(sys.argv[2]).read_text(encoding="utf-8")
+          fault = "[JM] FAULTHOLD GENERATED v0.6A SOURCE 2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00 ACTIVE"
+          recovery = "[JM] RECOVERYBODY GENERATED v0.6A SOURCE 2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00 SELECT SAFE NEXT"
+          memory = "[JM] MEMORYBODY GENERATED v0.5A SOURCE 847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8 ACTIVE"
+          scheduler = "[JM] ROUTESCHEDULER GENERATED v0.4A SOURCE 13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c ACTIVE"
+          permission = "[JM] PERMISSIONGATE GENERATED v0.3A SOURCE 2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2 ACTIVE"
+          for marker in (fault, recovery, memory, scheduler, permission):
+              if trace.count(marker) != 1:
+                  raise SystemExit(f"HOLD: expected one generated marker, found {trace.count(marker)}: {marker}")
+          invalid = "[JM] FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT"
+          recovered = "[JM] RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES"
+          if invalid not in trace or recovered not in trace:
+              raise SystemExit("HOLD: fault/recovery machine receipts missing")
+          if not (trace.index(fault) < trace.index(invalid) < trace.index(recovery) < trace.index(recovered)):
+              raise SystemExit("HOLD: generated fault/recovery execution order is wrong")
+          for inherited in (
+              "JM_NATIVE AUTHORITY v0.2A",
+              "MEMORY INITIALISED: ALLOCATE/RELEASE PASS",
+              "USER BODY 1 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+              "USER BODY 2 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+          ):
+              if inherited not in trace:
+                  raise SystemExit(f"HOLD: inherited machine marker missing: {inherited}")
+          if source.count("static struct cpu_frame *jm_generated_faulthold") != 1:
+              raise SystemExit("HOLD: generated FaultHold is not singular")
+          if source.count("static struct cpu_frame *jm_generated_recoverybody") != 1:
+              raise SystemExit("HOLD: generated RecoveryBody is not singular")
+          if 'receipt("RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES");\n    }\n    return select_next();' in source:
+              raise SystemExit("HOLD: handwritten fault/recovery route remains")
+          print("JM_GENERATED_FAULTRECOVERY_TRACE PASS")
+          PY
+          strings "$ELF" | grep -F '2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00'
+          strings "$ELF" | grep -F '847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8'
+          strings "$ELF" | grep -F '13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c'
+          strings "$ELF" | grep -F '2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2'
+          echo 'JM_GENERATED_FAULTRECOVERY DING: PASS'

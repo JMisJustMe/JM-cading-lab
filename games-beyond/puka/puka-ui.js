@@ -58,6 +58,43 @@
       return `<article class="history-row"><div><b>HAND ${h.handNo}</b><span>${h.winner==='player'?'WIN':h.winner==='split'?'SPLIT':'LOSS'} · ${h.street.toUpperCase()}</span></div><small>YOU ${mine} · BOARD ${board} · HOUSE ${house}</small></article>`;
     }).join(''):'<p class="empty">No completed hands yet.</p>';
   }
+  function safeTableAction(a){
+    if(!a||!['player','ai'].includes(a.who)||!['fold','check','call','raise'].includes(a.action))return null;
+    const out={who:a.who,action:a.action,street:a.street};
+    for(const key of ['potAfter','toCall','paid','totalBet','increment']){const n=Number(a[key]);if(Number.isFinite(n))out[key]=Math.max(0,n);}
+    if(a.allIn===true)out.allIn=true;
+    return out;
+  }
+  function tableReadInput(){
+    const history=snap.history.map(h=>({
+      handNo:h.handNo,endReason:h.endReason,winner:h.winner,
+      actions:(h.actions||[]).map(safeTableAction).filter(Boolean)
+    }));
+    const active=snap.state&&!snap.state.ended?(snap.state.actions||[]).map(safeTableAction).filter(Boolean):[];
+    return{history,currentActions:active,currentHandNo:snap.state?.handNo??null,currentStreet:snap.state?.street??null};
+  }
+  function actorReadHTML(read){
+    return `<article class="table-read-card">
+      <div class="table-read-top"><small>${read.label} · ${read.sample} ACTION${read.sample===1?'':'S'}</small><span class="table-read-confidence">${read.confidence.band} · ${read.confidence.score}</span></div>
+      <h4>${read.headline}</h4>
+      <p class="table-read-observation"><b>OBSERVED</b> · ${read.observation}</p>
+      <p class="table-read-interpretation"><b>READ</b> · ${read.interpretation}</p>
+      <ul class="table-read-alt">${read.alternatives.map(x=>`<li>${x}</li>`).join('')}</ul>
+      <div class="table-read-next"><b>NEXT TEST</b><p>${read.testNext}</p></div>
+      <div class="table-read-movement"><b>${read.movement.label}</b> · ${read.movement.detail}</div>
+    </article>`;
+  }
+  function renderTableRead(){
+    const panel=$('#tableRead');
+    if(!panel||!window.PUKAHumanGame)return;
+    const report=window.PUKAHumanGame.analyze(tableReadInput());
+    document.documentElement.dataset.tableRead=report.totalVisibleActions?'active':'waiting';
+    $('#tableReadCount').textContent=`${report.totalVisibleActions} visible action${report.totalVisibleActions===1?'':'s'}`;
+    $('#tableReadGrid').innerHTML=actorReadHTML(report.player)+actorReadHTML(report.house);
+    $('#tableReadWhy').innerHTML=`<small>${report.why.title}</small><p class="table-read-observation"><b>OBSERVED</b> · ${report.why.observation}</p><p><b>READ</b> · ${report.why.interpretation}</p><p><b>NEXT</b> · ${report.why.next}</p>`;
+    $('#tableReadBoundary').textContent=report.boundary;
+    $('#tendency').textContent=`TABLE READ · ${report.player.headline} · ${report.player.confidence.band} CONFIDENCE`;
+  }
   function renderCoach(){
     const t=snap.teaching;
     $('#madeHand').textContent=t.madeHand;
@@ -119,7 +156,7 @@
     $('#courtRoom').textContent=snap.room;
     $('#dealerLine').textContent=s?`HAND ${s.handNo} · ${s.dealer==='player'?'YOU':'HOUSE'} BUTTON`:`SESSION ${snap.meta.sessionNo}`;
     $('#dealBtn').hidden=!!s;
-    renderCoach();renderMastery();renderHistory();
+    renderCoach();renderMastery();renderHistory();renderTableRead();
 
     if(!s){
       $('#statusLine').textContent='READY';

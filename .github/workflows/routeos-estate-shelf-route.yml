@@ -1,0 +1,142 @@
+name: RouteOS Estate Shelf Route
+
+on:
+  push:
+    branches:
+      - agent/routeos-estate-shelf-route-v2-1a
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'routeos-live-estate/**'
+      - '.github/workflows/routeos-estate-shelf-route.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-estate-shelf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout frozen lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify frozen v2.0A ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 8cc8cb5143ec8fef766acf464ef860d00d4c0e36 HEAD
+
+      - name: Set up Java and Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Prove shelf, router and inherited cartridge
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-estate-shelf-proof
+
+          node --check routeos-live-estate/app/src/main/assets/core.js
+          node --check routeos-live-estate/app/src/main/assets/estate-router.js
+          node --check routeos-live-estate/app/src/main/assets/app.js
+
+          node routeos-live-estate/tools/test_simulation.js \
+            | tee .routeos-estate-shelf-proof/FIVE_CROWNS_SIMULATION.txt
+          node routeos-live-estate/tools/test_estate_router.js \
+            | tee .routeos-estate-shelf-proof/ESTATE_ROUTER_TEST.txt
+
+          python3 routeos-live-estate/tools/verify_live_estate.py \
+            | tee .routeos-estate-shelf-proof/INHERITED_LIVE_ESTATE_AUTHORITY.txt
+          python3 routeos-live-estate/tools/verify_estate_shelf.py \
+            | tee .routeos-estate-shelf-proof/ESTATE_SHELF_AUTHORITY.txt
+
+      - name: Build unsigned release APK
+        run: gradle --no-daemon -p routeos-live-estate :app:assembleRelease
+
+      - name: Inspect, align and freeze APK receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=routeos-live-estate/app/build/outputs/apk/release/app-release-unsigned.apk
+          test -s "$APK"
+          mkdir -p artifact
+
+          APKANALYZER="$(command -v apkanalyzer || true)"
+          if [[ -z "$APKANALYZER" ]]; then
+            APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          fi
+          test -x "$APKANALYZER"
+          test "$($APKANALYZER manifest application-id "$APK")" = 'com.jmisjustme.routeos.gameestate'
+          "$APKANALYZER" manifest print "$APK" > artifact/ANDROID_MANIFEST.xml
+
+          unzip -l "$APK" > artifact/APK_CONTENTS.txt
+          for asset in \
+            assets/index.html \
+            assets/core.js \
+            assets/app.js \
+            assets/app.css \
+            assets/estate-shelf.css \
+            assets/estate-router.js \
+            assets/cartridges.json \
+            assets/estate-registry/REGISTRY.json \
+            assets/estate-registry/COMPATIBILITY.json \
+            assets/estate-registry/registry-parts/sovereign-ten.json \
+            assets/estate-registry/registry-parts/sovereign-batch-two.json \
+            assets/estate-registry/registry-parts/sovereign-batch-three.json \
+            assets/estate-registry/registry-parts/sovereign-batch-four.json \
+            assets/estate-registry/registry-parts/sovereign-batch-five.json \
+            assets/estate-registry/registry-parts/sovereign-batch-six.json; do
+            grep -F "$asset" artifact/APK_CONTENTS.txt
+          done
+
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -f -p 4 \
+            "$APK" \
+            artifact/JM_ROUTEOS_GAME_ESTATE_SHELF_v2_1A_UNSIGNED_ALIGNED.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -p 4 \
+            artifact/JM_ROUTEOS_GAME_ESTATE_SHELF_v2_1A_UNSIGNED_ALIGNED.apk
+
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" artifact/apksigner.jar
+          cp routeos-live-estate/README.md artifact/
+          cp routeos-live-estate/compass-mount/JM_ROUTEOS_ESTATE_SHELF_v2_1A.html artifact/
+          cp routeos-live-estate/proof/ESTATE_SHELF_ROUTE_CONTRACT_v2.1A.json artifact/
+          cp routeos-live-estate/proof/ESTATE_SHELF_ROUTE_SOURCE_LINEAGE_v2.1A.json artifact/
+          cp routeos-live-estate/proof/ESTATE_SHELF_ROUTE_LOCAL_QA_v2.1A.md artifact/
+          cp .routeos-estate-shelf-proof/* artifact/
+
+          printf '%s\n' \
+            'machine_step_outcome=success' \
+            'frozen_parent=8cc8cb5143ec8fef766acf464ef860d00d4c0e36' \
+            'package=com.jmisjustme.routeos.gameestate' \
+            'five_crowns_route=jmrouteos://cartridge/five-crowns' \
+            'estate_router_route=jmrouteos://cartridge/estate-router' \
+            'canonical_bodies=100' \
+            'source_batches=6' \
+            'source_batch_failures=0' \
+            > artifact/GATE_STATUS.txt
+
+          find routeos-live-estate -type f -not -path '*/build/*' -print0 \
+            | sort -z | xargs -0 sha256sum > artifact/SOURCE_SHA256SUMS.txt
+          (cd artifact && sha256sum * > SHA256SUMS.txt)
+
+      - name: Upload Estate Shelf build receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-estate-shelf-route-v2.1A-unsigned
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 14

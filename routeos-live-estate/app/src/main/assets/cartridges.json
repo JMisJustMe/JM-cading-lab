@@ -1,0 +1,54 @@
+{
+  "schema": "jm.routeos.cartridge.registry.v1.1",
+  "hostPackage": "com.jmisjustme.routeos.gameestate",
+  "deepLinkBase": "jmrouteos://cartridge/",
+  "defaultCartridge": "library",
+  "cartridges": [
+    {
+      "id": "five-crowns",
+      "aliases": [
+        "routeos-five-crowns",
+        "routeos-v1.9a",
+        "orchestrationroute"
+      ],
+      "title": "RouteOS: Five Crowns Beyond Max",
+      "version": "2.0A",
+      "entry": "index.html#five-crowns",
+      "view": "play",
+      "description": "Play the frozen kernel lineage as a route with ordered crowns, fault containment, recovery and a permanent-anchor finish.",
+      "frozenParent": "110909c7199bcfbd7007ed56437d05a8aea5967b",
+      "permanentAnchor": "anchor/routeos-kernel-jm-native-v1-9a-orchestrationroute-ding-pass",
+      "capabilities": [
+        "offline-play",
+        "touch-and-keyboard-input",
+        "fault-recovery-loop",
+        "proof-inspection",
+        "compass-return-route",
+        "local-progress"
+      ]
+    },
+    {
+      "id": "estate-router",
+      "aliases": [
+        "sovereign-estate",
+        "estate-shelf",
+        "jm-estate-router"
+      ],
+      "title": "JM Sovereign Estate Router",
+      "version": "2.1A",
+      "entry": "index.html#estate-router",
+      "view": "router",
+      "description": "Describe a build and route it through the canonical 100-body JM registry with identity, source, trace and Ding laws intact.",
+      "frozenParent": "8cc8cb5143ec8fef766acf464ef860d00d4c0e36",
+      "sourceRegistry": "agent/sovereign-estate-integration-v1",
+      "capabilities": [
+        "offline-routing",
+        "100-body-search",
+        "compatibility-planning",
+        "proof-law-injection",
+        "compass-launch",
+        "route-receipts"
+      ]
+    }
+  ]
+}

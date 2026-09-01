@@ -1,0 +1,113 @@
+name: RouteOS Five Crowns Live Estate
+
+on:
+  push:
+    branches:
+      - agent/routeos-five-crowns-live-estate-v2-0a
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'routeos-live-estate/**'
+      - '.github/workflows/routeos-five-crowns-live-estate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-live-estate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout frozen lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify frozen parent ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 110909c7199bcfbd7007ed56437d05a8aea5967b HEAD
+
+      - name: Set up Java and Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Prove offline cartridge authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-live-estate-proof
+          node --check routeos-live-estate/app/src/main/assets/core.js
+          node --check routeos-live-estate/app/src/main/assets/app.js
+          node routeos-live-estate/tools/test_simulation.js \
+            | tee .routeos-live-estate-proof/SIMULATION_TEST.txt
+          python3 routeos-live-estate/tools/verify_live_estate.py \
+            | tee .routeos-live-estate-proof/STATIC_AUTHORITY.txt
+
+      - name: Build unsigned release APK
+        run: gradle --no-daemon -p routeos-live-estate :app:assembleRelease
+
+      - name: Inspect and align APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=routeos-live-estate/app/build/outputs/apk/release/app-release-unsigned.apk
+          test -s "$APK"
+          mkdir -p artifact
+
+          APKANALYZER="$(command -v apkanalyzer || true)"
+          if [[ -z "$APKANALYZER" ]]; then
+            APKANALYZER="$(find "$ANDROID_HOME" -type f -name apkanalyzer | head -n 1)"
+          fi
+          test -x "$APKANALYZER"
+          test "$($APKANALYZER manifest application-id "$APK")" = 'com.jmisjustme.routeos.gameestate'
+          "$APKANALYZER" manifest print "$APK" > artifact/ANDROID_MANIFEST.xml
+
+          unzip -l "$APK" > artifact/APK_CONTENTS.txt
+          grep -F 'assets/index.html' artifact/APK_CONTENTS.txt
+          grep -F 'assets/core.js' artifact/APK_CONTENTS.txt
+          grep -F 'assets/app.js' artifact/APK_CONTENTS.txt
+          grep -F 'assets/app.css' artifact/APK_CONTENTS.txt
+          grep -F 'assets/cartridges.json' artifact/APK_CONTENTS.txt
+
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -f -p 4 \
+            "$APK" \
+            artifact/JM_ROUTEOS_GAME_ESTATE_FIVE_CROWNS_v2_0A_UNSIGNED_ALIGNED.apk
+          "$ANDROID_HOME/build-tools/35.0.0/zipalign" -c -p 4 \
+            artifact/JM_ROUTEOS_GAME_ESTATE_FIVE_CROWNS_v2_0A_UNSIGNED_ALIGNED.apk
+
+          cp "$ANDROID_HOME/build-tools/35.0.0/lib/apksigner.jar" artifact/apksigner.jar
+          cp routeos-live-estate/README.md artifact/
+          cp routeos-live-estate/proof/BUILD_CONTRACT.json artifact/
+          cp routeos-live-estate/proof/LOCAL_QA_RECEIPT.md artifact/
+          cp .routeos-live-estate-proof/* artifact/
+          printf '%s\n' \
+            'machine_step_outcome=success' \
+            'frozen_parent=110909c7199bcfbd7007ed56437d05a8aea5967b' \
+            'package=com.jmisjustme.routeos.gameestate' \
+            'deep_link=jmrouteos://cartridge/five-crowns' \
+            > artifact/GATE_STATUS.txt
+          find routeos-live-estate -type f -not -path '*/build/*' -print0 \
+            | sort -z | xargs -0 sha256sum > artifact/SOURCE_SHA256SUMS.txt
+          (cd artifact && sha256sum * > SHA256SUMS.txt)
+
+      - name: Upload installable build receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-five-crowns-live-estate-v2.0A-unsigned
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 14

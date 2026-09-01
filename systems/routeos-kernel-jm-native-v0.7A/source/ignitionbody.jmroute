@@ -1,0 +1,24 @@
+ROUTEOS_IGNITION v0.7A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW PROOF_PARENT 3510c192320e40b5490681c6fc8d3a92ba13a3d6
+LAW MACHINE_PARENT f59980059d5e64def7a7893e7ded4a18078d80a3
+LAW CLAIM_BOUNDARY generated_kernel_entry_orchestration_not_assembly_or_tables
+
+STEP SERIAL_INIT order=1 call=serial_init
+STEP AUTHORITY_IDENTITY order=2 call=emit_authority
+STEP BOOT_VALIDATE order=3 call=multiboot_magic expected=0x36D76289
+STEP ENTRY_RECEIPTS order=4 call=kernel_entry_receipts
+STEP MEMORY_PROBE order=5 call=allocate_release
+STEP DESCRIPTOR_INSTALL order=6 calls=gdt_install,idt_install
+STEP USER_BOUNDARY order=7 call=user_boundary_install
+STEP TIMER_ROUTE order=8 call=pic_pit_install
+STEP ACTIVE_RECEIPTS order=9 call=runtime_receipts
+STEP FIRST_BODY order=10 body=1 state=BODY_RUNNING
+STEP ENTER_USER order=11 call=routeos_enter_frame
+
+REQUIRE ordered_ignition
+REQUIRE boot_magic_validation
+REQUIRE generated_office_activation
+REQUIRE first_body_handoff
+REQUIRE inherited_office_preservation

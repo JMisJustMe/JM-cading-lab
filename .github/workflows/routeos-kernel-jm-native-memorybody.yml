@@ -1,0 +1,220 @@
+name: RouteOS JM-Generated MemoryBody
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-memorybody-v0-5a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-memorybody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.5A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce frozen v0.4A anchor lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 52706adf66b5060b3aec17f21982d9cf5eddc23d HEAD
+          test -f systems/routeos-kernel-jm-native-v0.4A/proof/FREEZE_LOCK_ANCHOR_v0.4A.md
+
+      - name: Install open machine-proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Verify inherited v0.2A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$ROOT/tools/jmroutec.py" "$ROOT/source/routeos_kernel.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated PermissionGate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          python3 "$ROOT/tools/permissiongatec.py" "$ROOT/source/permissiongate.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify inherited generated RouteScheduler
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.4A
+          python3 "$ROOT/tools/routeschedulerc.py" "$ROOT/source/routescheduler.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify generated MemoryBody
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.5A
+          python3 "$ROOT/tools/memorybodyc.py" "$ROOT/source/memorybody.jmroute" --out-dir "$ROOT/generated" --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Restore exact frozen v0.1A source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-v05a
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 > .routeos-v05a/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-v05a/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-v05a/source.tar.gz -C .routeos-v05a
+
+      - name: Rebuild generated operational stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          V02=systems/routeos-kernel-jm-native-v0.2A
+          V03=systems/routeos-kernel-jm-native-v0.3A
+          V04=systems/routeos-kernel-jm-native-v0.4A
+          V05=systems/routeos-kernel-jm-native-v0.5A
+          KERNEL=.routeos-v05a/routeos-kernel-v0.1A
+          python3 "$V02/tools/integrate_boot.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --authority-header "$V02/generated/routeos_authority.h" \
+            --receipt .routeos-v05a/V02_BOOT_INTEGRATION_RECEIPT.json
+          python3 "$V03/tools/integrate_permissiongate.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V03/generated/permissiongate_office.inc" \
+            --receipt .routeos-v05a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json
+          python3 "$V04/tools/integrate_routescheduler.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V04/generated/routescheduler_office.inc" \
+            --receipt .routeos-v05a/V04_ROUTESCHEDULER_INTEGRATION_RECEIPT.json
+          python3 "$V05/tools/integrate_memorybody.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$V05/generated/memorybody_office.inc" \
+            --receipt .routeos-v05a/MEMORYBODY_INTEGRATION_RECEIPT.json
+          grep -F 'JM_MEMORYBODY_VERSION' "$KERNEL/kernel/routeos_kernel.c"
+          test "$(grep -Fc 'static void *memory_allocate(void)' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+          test "$(grep -Fc 'static bool memory_release(void *p)' "$KERNEL/kernel/routeos_kernel.c")" -eq 1
+          ! grep -F '#define HEAP_BLOCKS 16' "$KERNEL/kernel/routeos_kernel.c"
+
+      - name: Build and run three-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v05a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v05a/JM_MEMORYBODY_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v0.5A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V03=systems/routeos-kernel-jm-native-v0.3A
+          V04=systems/routeos-kernel-jm-native-v0.4A
+          V05=systems/routeos-kernel-jm-native-v0.5A
+          KERNEL=.routeos-v05a/routeos-kernel-v0.1A
+          mkdir -p memorybody-v05a-receipt
+          for f in \
+            .routeos-v05a/V02_BOOT_INTEGRATION_RECEIPT.json \
+            .routeos-v05a/V03_PERMISSIONGATE_INTEGRATION_RECEIPT.json \
+            .routeos-v05a/V04_ROUTESCHEDULER_INTEGRATION_RECEIPT.json \
+            .routeos-v05a/MEMORYBODY_INTEGRATION_RECEIPT.json \
+            .routeos-v05a/JM_MEMORYBODY_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/kernel/routeos_authority.h" \
+            "$V03/source/permissiongate.jmroute" \
+            "$V03/generated/permissiongate_office.inc" \
+            "$V04/source/routescheduler.jmroute" \
+            "$V04/generated/routescheduler_office.inc" \
+            "$V05/source/memorybody.jmroute" \
+            "$V05/generated/memorybody_office.inc" \
+            "$V05/generated/memorybody_office.json"; do
+            if [[ -f "$f" ]]; then cp "$f" memorybody-v05a-receipt/; fi
+          done
+          {
+            echo "machine_step_outcome=${{ steps.machine.outcome }}"
+            echo "machine_exit_status=${{ steps.machine.outputs.exit_status }}"
+            echo "frozen_anchor=52706adf66b5060b3aec17f21982d9cf5eddc23d"
+            echo "memorybody_source_sha256=847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8"
+            echo "routescheduler_source_sha256=13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c"
+            echo "permissiongate_source_sha256=2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2"
+          } > memorybody-v05a-receipt/GATE_STATUS.txt
+          (cd memorybody-v05a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v0.5A MemoryBody receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.5A-memorybody-receipt
+          path: memorybody-v05a-receipt
+          if-no-files-found: error
+
+      - name: Enforce three-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v05a/routeos-kernel-v0.1A
+          TRACE="$KERNEL/proof/QEMU_BOOT_TRACE.txt"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          SOURCE="$KERNEL/kernel/routeos_kernel.c"
+          python3 - "$TRACE" "$SOURCE" <<'PY'
+          from pathlib import Path
+          import sys
+
+          trace = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          source = Path(sys.argv[2]).read_text(encoding="utf-8")
+          memory = "[JM] MEMORYBODY GENERATED v0.5A SOURCE 847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8 ACTIVE"
+          scheduler = "[JM] ROUTESCHEDULER GENERATED v0.4A SOURCE 13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c ACTIVE"
+          permission = "[JM] PERMISSIONGATE GENERATED v0.3A SOURCE 2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2 ACTIVE"
+          for marker in (memory, scheduler, permission):
+              if trace.count(marker) != 1:
+                  raise SystemExit(f"HOLD: expected one generated marker, found {trace.count(marker)}: {marker}")
+          memory_pass = "[JM] MEMORY INITIALISED: ALLOCATE/RELEASE PASS"
+          if memory_pass not in trace or trace.index(memory) > trace.index(memory_pass):
+              raise SystemExit("HOLD: generated MemoryBody did not execute before memory receipt")
+          if trace.index(scheduler) > trace.index("[JM] TIMER TICK"):
+              raise SystemExit("HOLD: generated RouteScheduler did not activate before timer receipt")
+          if trace.index(permission) > trace.index("PERMISSIONGATE PASS"):
+              raise SystemExit("HOLD: generated PermissionGate did not activate before permission return")
+          for inherited in (
+              "JM_NATIVE AUTHORITY v0.2A",
+              "USER BODY 1 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+              "USER BODY 2 -> SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS",
+              "FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT",
+              "RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES",
+          ):
+              if inherited not in trace:
+                  raise SystemExit(f"HOLD: inherited machine marker missing: {inherited}")
+          if "#define HEAP_BLOCKS 16" in source:
+              raise SystemExit("HOLD: handwritten MemoryBody remains")
+          if source.count("static void *memory_allocate(void)") != 1 or source.count("static bool memory_release(void *p)") != 1:
+              raise SystemExit("HOLD: generated MemoryBody routes are not singular")
+          print("JM_GENERATED_MEMORYBODY_TRACE PASS")
+          PY
+          strings "$ELF" | grep -F '847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8'
+          strings "$ELF" | grep -F '13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c'
+          strings "$ELF" | grep -F '2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2'
+          echo 'JM_GENERATED_MEMORYBODY DING: PASS'

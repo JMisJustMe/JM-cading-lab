@@ -1,0 +1,115 @@
+name: RouteOS JM-Generated DispatchRoute
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-dispatchroute-v1-6a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-dispatchroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout v1.6A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify readable v1.6A authority and mount frozen v1.2A body
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' \
+            "7704a08ecf6c0f20b2600ef2b179090615c50fc88971aa203a4b8413b8a5f06e  systems/routeos-kernel-jm-native-v1.6A/README.md" \
+            "83c74d882ccceaa812c0818e21519c7947acfdb2932f0b659e77bc79f2545693  systems/routeos-kernel-jm-native-v1.6A/generated/dispatchroute.inc" \
+            "0ada972e3152f6ad8a3c1927065167f96091a00388221b2176b465877bd7cbcf  systems/routeos-kernel-jm-native-v1.6A/generated/dispatchroute.json" \
+            "50a58585fab1ee1bbcd34e76ce99e4878c82a56118531144a5131f6f2c070a80  systems/routeos-kernel-jm-native-v1.6A/source/dispatchroute.jmroute" \
+            "d5406a8296f5f30a673c3d3cc2a0d0e90405d9cfe3389aa0892e129cf23baf06  systems/routeos-kernel-jm-native-v1.6A/tests/test_dispatchroute.py" \
+            "1c8a4c50a237a6fe71290dcc985f17562f59e89b226b7640cfaeeaf0bb66f81d  systems/routeos-kernel-jm-native-v1.6A/tools/ci_enforce_dispatchroute.py" \
+            "7d18096da789bdda17522c1f23d00fb82462d643d76c98b8e79875395eee7b30  systems/routeos-kernel-jm-native-v1.6A/tools/ci_prepare_dispatchroute.sh" \
+            "365272df84ad5f17fc3cb6f5b072a4c9c857dcc917f66d8dbc26bcf310b1e810  systems/routeos-kernel-jm-native-v1.6A/tools/dispatchroutec.py" \
+            "dcd9dd099227ecf0da0f79aaacbfcc298ffc65346e43ff159d4f99062ffb51c2  systems/routeos-kernel-jm-native-v1.6A/tools/integrate_dispatchroute.py" | sha256sum -c -
+          git merge-base --is-ancestor 3c759841606244876e57140254e896c9de7e927b HEAD
+
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for spec in \
+            "5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  $V12/routeos-v1.2A-body.tar.gz.b64  0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/v12-base.tar.gz" \
+            "6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  $V12/routeos-v1.2A-pre-idt-correction.tar.gz.b64  9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/v12-abi.tar.gz" \
+            "8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98  $V12/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64  e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff  /tmp/v12-proof.tar.gz"; do
+            set -- $spec
+            echo "$1  $2" | sha256sum -c -
+            base64 -d "$2" > "$4"
+            echo "$3  $4" | sha256sum -c -
+            tar -xzf "$4" -C .
+          done
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.6A/tools/ci_prepare_dispatchroute.sh
+
+      - name: Build and run extended JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v16a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v16a/JM_DISPATCHROUTE_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v1.6A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v1.6A
+          KERNEL=.routeos-v16a/routeos-kernel-v0.1A
+          OUT=dispatchroute-v16a-receipt
+          mkdir -p "$OUT"
+          if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
+            nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v16a/JM_DISPATCHROUTE_SYMBOLS.txt
+            objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v16a/JM_DISPATCHROUTE_DISASSEMBLY.txt
+          fi
+          for f in .routeos-v16a/*_INTEGRATION_RECEIPT.json .routeos-v16a/JM_DISPATCHROUTE* \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$V/source/dispatchroute.jmroute" "$V/generated"/*; do
+            [[ -f "$f" ]] && cp "$f" "$OUT/"
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_parent=3c759841606244876e57140254e896c9de7e927b" \
+            "source_sha256=50a58585fab1ee1bbcd34e76ce99e4878c82a56118531144a5131f6f2c070a80" > "$OUT/GATE_STATUS.txt"
+          (cd "$OUT" && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.6A receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.6A-dispatchroute-receipt
+          path: dispatchroute-v16a-receipt
+          if-no-files-found: error
+
+      - name: Enforce DispatchRoute operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v16a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.6A/tools/ci_enforce_dispatchroute.py \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/build/routeos-kernel.elf" .routeos-v16a/DISPATCHROUTE_INTEGRATION_RECEIPT.json
+          echo 'JM_GENERATED_DISPATCHROUTE DING: PASS'

@@ -1,0 +1,137 @@
+name: JM Estate Librarian v0.4 — build APK
+
+on:
+  push:
+    branches:
+      - agent/estate-librarian-v0-4
+    paths:
+      - ".github/workflows/estate-librarian-v0-4.yml"
+      - "tools/estate-librarian/android/**"
+      - "tools/estate-librarian/web/**"
+      - "tools/estate-librarian/OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html"
+      - "tools/estate-librarian/bootstrap/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-librarian-v0-4-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Verify the expanded source body
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f tools/estate-librarian/OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html
+          test -f tools/estate-librarian/android/app/src/main/java/com/jmestate/librarian/MainActivity.java
+          test -f tools/estate-librarian/receipts/QA_RESULTS_v0_4.json
+          python3 -m json.tool tools/estate-librarian/PACKAGE_MANIFEST.json >/dev/null
+          python3 -m json.tool tools/estate-librarian/receipts/BUILD_RECEIPT_v0_4.json >/dev/null
+          python3 -m json.tool tools/estate-librarian/receipts/QA_RESULTS_v0_4.json >/dev/null
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform 35
+        shell: bash
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        id: build
+        working-directory: tools/estate-librarian/android
+        run: gradle --no-daemon assembleDebug
+
+      - name: Create APK delivery body
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/estate-librarian-delivery
+          cp tools/estate-librarian/android/app/build/outputs/apk/debug/app-debug.apk \
+            /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk
+          sha256sum /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk \
+            > /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+          {
+            echo "JM Estate Librarian v0.4 — GitHub Actions APK receipt"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Build: PASS — debug APK compiled"
+            echo "Physical Android install: PENDING user device proof"
+          } > /tmp/estate-librarian-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt
+          cd tools/estate-librarian
+          zip -qr /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4_GITHUB_SOURCE.zip . \
+            -x "bootstrap/*" ".git/*" "android/.gradle/*" "android/app/build/*" "releases/*.apk"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_LIBRARIAN_v0_4_APK
+          path: |
+            /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk
+            /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+            /tmp/estate-librarian-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt
+          if-no-files-found: error
+
+      - name: Upload GitHub source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_LIBRARIAN_v0_4_SOURCE
+          path: /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4_GITHUB_SOURCE.zip
+          if-no-files-found: error
+
+      - name: Publish runner TraceBox receipt
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${{ github.ref_name }}"
+          git reset --hard "origin/${{ github.ref_name }}"
+          mkdir -p tools/estate-librarian/receipts tools/estate-librarian/releases
+          {
+            echo "JM Estate Librarian v0.4 — GitHub Actions runner status"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Job status before TraceBox receipt: ${{ job.status }}"
+            echo "Build-step outcome: ${{ steps.build.outcome }}"
+            echo "Package-step outcome: ${{ steps.package.outcome }}"
+            echo "Run attempt: $GITHUB_RUN_ATTEMPT"
+          } > tools/estate-librarian/receipts/GITHUB_ACTIONS_RUNNER_STATUS.txt
+          if [ -f /tmp/estate-librarian-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt ]; then
+            cp /tmp/estate-librarian-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt \
+              tools/estate-librarian/receipts/GITHUB_ACTIONS_APK_RECEIPT.txt
+          fi
+          if [ -f /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 ]; then
+            cp /tmp/estate-librarian-delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256 \
+              tools/estate-librarian/releases/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+          fi
+          git add tools/estate-librarian/receipts tools/estate-librarian/releases
+          if ! git diff --cached --quiet; then
+            git commit -m "Record JM Estate Librarian v0.4 Actions verdict"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

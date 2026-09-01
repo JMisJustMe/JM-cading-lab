@@ -14,6 +14,17 @@ async function expectNoHorizontalOverflow(page){
   expect(overflow).toBe(0);
 }
 
+const A=(who,action,street='preflop',extra={})=>({who,action,street,...extra});
+const proofSave={
+  version:'0.12A',xp:220,suit:'spades',mode:'auto',handNo:4,sessionNo:1,bankroll:{player:980,ai:1020},
+  profile:{hands:4,folds:0,calls:1,checks:0,raises:4,showdowns:2,decisions:5,sizedRaises:4,allIns:0},
+  history:[
+    {handNo:4,endReason:'showdown',winner:'player',street:'river',result:'synthetic proof hand',playerHole:['2-clubs','3-clubs'],houseHole:['A-spades','A-hearts'],board:['4-clubs'],actions:[A('player','raise'),A('ai','call'),A('player','raise','flop'),A('ai','call','flop')]},
+    {handNo:3,endReason:'fold',winner:'player',street:'flop',result:'synthetic proof fold',playerHole:['5-clubs','6-clubs'],houseHole:['K-spades','Q-spades'],board:[],actions:[A('player','raise'),A('ai','fold')]},
+    {handNo:2,endReason:'showdown',winner:'ai',street:'river',result:'synthetic proof hand',playerHole:['7-clubs','8-clubs'],houseHole:['J-spades','10-spades'],board:[],actions:[A('player','call'),A('ai','check'),A('player','raise','flop'),A('ai','call','flop')]}
+  ],trace:[],state:null
+};
+
 test('@puka-human-game visible-action membrane produces revisable table reads without hidden-card leakage',async({browser},testInfo)=>{
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const page=await context.newPage();
@@ -22,20 +33,15 @@ test('@puka-human-game visible-action membrane produces revisable table reads wi
   await expect(page.locator('#tableRead')).toBeAttached();
   await expect(page.locator('#tendency')).toContainText('NO READ EARNED YET');
 
-  await page.evaluate(()=>{
-    const A=(who,action,street='preflop',extra={})=>({who,action,street,...extra});
-    const saved={
-      version:'0.12A',xp:220,suit:'spades',mode:'auto',handNo:4,sessionNo:1,bankroll:{player:980,ai:1020},
-      profile:{hands:4,folds:0,calls:1,checks:0,raises:4,showdowns:2,decisions:5,sizedRaises:4,allIns:0},
-      history:[
-        {handNo:4,endReason:'showdown',winner:'player',street:'river',result:'synthetic proof hand',playerHole:['2-clubs','3-clubs'],houseHole:['A-spades','A-hearts'],board:['4-clubs'],actions:[A('player','raise'),A('ai','call'),A('player','raise','flop'),A('ai','call','flop')]},
-        {handNo:3,endReason:'fold',winner:'player',street:'flop',result:'synthetic proof fold',playerHole:['5-clubs','6-clubs'],houseHole:['K-spades','Q-spades'],board:[],actions:[A('player','raise'),A('ai','fold')]},
-        {handNo:2,endReason:'showdown',winner:'ai',street:'river',result:'synthetic proof hand',playerHole:['7-clubs','8-clubs'],houseHole:['J-spades','10-spades'],board:[],actions:[A('player','call'),A('ai','check'),A('player','raise','flop'),A('ai','call','flop')]}
-      ],trace:[],state:null
-    };
+  // Seed before PUKA's scripts execute on the next navigation. This avoids a delayed
+  // resize/render/save from the already-loaded page overwriting the proof fixture.
+  await page.addInitScript(saved=>{
     localStorage.setItem('jm-puka-v12a',JSON.stringify(saved));
-  });
+  },proofSave);
   await page.reload({waitUntil:'networkidle'});
+
+  // Prove the parent PUKA body restored the lawful fixture before judging Human Game.
+  await expect(page.locator('#evidenceCount')).toContainText('3 hands');
   await expect(page.locator('#tendency')).toContainText('PRESSURE-FORWARD SO FAR');
   await page.locator('#reviewBtn').click();
   await expect(page.locator('#evidenceDrawer')).toHaveAttribute('open','');

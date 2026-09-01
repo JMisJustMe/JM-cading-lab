@@ -1,0 +1,20 @@
+{
+  "functions": [
+    "PortOut",
+    "PortIn",
+    "IoWait",
+    "MemoryCopy",
+    "MemorySet"
+  ],
+  "io_wait_port": 128,
+  "office": "PrimitiveRoute",
+  "retained_symbols": [
+    "jm_generated_portout",
+    "jm_generated_portin",
+    "jm_generated_iowait",
+    "jm_generated_memorycopy",
+    "jm_generated_memoryset",
+    "jm_generated_primitiveroute_announce"
+  ],
+  "version": "v1.5A"
+}

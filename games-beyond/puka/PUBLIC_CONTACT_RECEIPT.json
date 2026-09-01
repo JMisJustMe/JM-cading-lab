@@ -1,14 +1,17 @@
 {
-  "schema": "JM.PUKA.ProofReceipt/0.13A",
-  "verified_utc": "2026-08-31T22:35:49.297646+00:00",
-  "source_commit": "e38a79d78b49cdd50604aba74dfea6f41af58b14",
-  "workflow_run": "33446850726",
+  "schema": "JM.PUKA.ProofReceipt/0.14A",
+  "verified_utc": "2026-09-01T21:12:41.828638+00:00",
+  "source_commit": "86b10a505a84df46e79e1b8a85e3637c99672ccf",
+  "workflow_run": "33559681232",
   "host": "https://jmisjustme-estate.pages.dev",
   "single_link": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "source_code_ding": "PASS",
   "browser_runtime_ding": "PASS",
   "lifecycle_browser_ding": "PASS",
   "raise_sizing_ding": "PASS",
+  "human_game_source_boundary": "PASS \u2014 pure analyser accepts sanitised visible action history only; hidden/private fields are discarded by normalisation",
+  "human_game_browser_boundary": "PASS \u2014 real Evidence/Review panel produces provisional table reads without surfacing seeded hidden-card identities",
+  "human_game_claim_boundary": "PASS \u2014 reads carry confidence, alternatives and next-test routes and do not claim personality diagnosis, motive proof or poker-state authority",
   "deep_house_source_boundary": "PASS \u2014 presentation organ reads rendered DOM/state only and does not access PUKA game authority or persistence stores",
   "deep_house_contact_consequence": "PASS \u2014 direct field contact and raise contact produce bounded visible consequence state",
   "visible_equity_boundary": "PASS \u2014 estimate uses player hole cards + visible board against an unknown range; it does not inspect House Mind hidden cards",
@@ -40,6 +43,10 @@
     "active-hand reload preserves hand number private cards and pot",
     "sized raise tray contact",
     "hand review and local history contact",
+    "Human Game initial insufficient-sample boundary",
+    "Human Game repeated-action provisional read",
+    "Human Game alternative explanations and next-test route",
+    "Human Game hidden-field/card-identity non-leakage",
     "zero console/page errors"
   ],
   "public_contact": "PASS",
@@ -56,6 +63,7 @@
     "puka-v11.css",
     "puka-v12.css",
     "puka-v13.css",
+    "puka-table-read-v02.css",
     "puka-cards-v05.js",
     "puka-character-v06.js",
     "puka-world-v07.js",
@@ -63,9 +71,15 @@
     "puka-living-table-v10.js",
     "puka-deep-house-v13.js"
   ],
+  "reasoning_layers": [
+    "puka-human-game-v02.js"
+  ],
   "contacted": [
     "/games-beyond/puka/",
     "00_OPEN_FIRST.html",
+    "puka-human-game-v02.js",
+    "puka-table-read-v02.css",
+    "registry.json",
     "puka-v13.css",
     "puka-deep-house-v13.js",
     "assets/puka-deep-house-lattice-v13.svg",
@@ -86,5 +100,5 @@
   ],
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre/living-table/full-table/deep-house, validated web active-hand reload continuity, sized raise contact, visible-card equity boundary, Deep House visible-state authority boundary, separate Chromium Android-touch/tablet/laptop/desktop real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate."
+  "claim_boundary": "Source/core/layout/art/character/world/material/academy/theatre/living-table/full-table/deep-house/Human Game, validated web active-hand reload continuity, sized raise contact, visible-card equity boundary, Human Game visible-action membrane, hidden-field rejection, revisable table-read confidence/alternatives/next-test route, separate Chromium Android-touch/tablet/laptop/desktop real-output contexts, viewport-only screenshot evidence and public HTTP contact passed. Personality diagnosis, proof of motive, real-world person profiling, owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate."
 }

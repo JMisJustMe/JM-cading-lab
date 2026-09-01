@@ -1,0 +1,25 @@
+ROUTEOS_AUTHORITY v0.2A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW CARRIER c_x86_64
+LAW PROOF_PARENT 54f67566036316b25515fb53fa98f06769d3850d
+LAW CLAIM_BOUNDARY source_authority_gate_not_yet_boot_integrated
+
+BODY IGNITIONBODY kind=kernel_entry privilege=supervisor owns=boot_handoff
+BODY MEMORYBODY kind=memory privilege=supervisor page_size=4096 alloc=route_alloc release=route_release
+BODY ROUTESCHEDULER kind=scheduler privilege=supervisor timer=PIT execution_bodies=2 cadence_ticks=25
+BODY USER_BODY_1 kind=user privilege=user continuation=safe_after_recovery
+BODY USER_BODY_2 kind=user privilege=user test=deliberate_invalid_opcode
+BODY RECOVERYBODY kind=recovery privilege=supervisor continues=USER_BODY_1
+
+GATE PERMISSIONGATE vector=0x80 from=user to=supervisor receipt=JM_PERMISSION_GATE
+DEVICE SERIALROUTE port=0x3F8 owner=kernel direction=output
+FAULT FAULTHOLD vector=6 action=block_faulting_body recovery=RECOVERYBODY
+
+REQUIRE privileged_execution
+REQUIRE kernel_owned_memory
+REQUIRE timer_driven_scheduling
+REQUIRE two_execution_bodies
+REQUIRE controlled_user_kernel_boundary
+REQUIRE jm_controlled_device_route
+REQUIRE fault_capture_and_recovery

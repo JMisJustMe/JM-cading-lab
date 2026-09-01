@@ -1,0 +1,25 @@
+{
+  "schema": "jm.gameforge-sovereign-rebuild/0.1",
+  "status": "FIRST_SOVEREIGN_FORGE_FLOOR_BUILD_NOT_FINAL_CROWN",
+  "engine": "GameForge",
+  "version": "Sovereign Rebuild v0.1",
+  "class": "multi-body creator forge and deterministic cartridge compiler",
+  "surfaces": ["phone", "laptop"],
+  "rendering": "dependency-free 2.5D isometric preview",
+  "gameBodies": ["T-Boys", "Dragon Mirror", "Route Catch", "Core Clash", "cardBORED", "Humanimals", "Blank Forge Body"],
+  "codingBodies": ["GlyphPlay", "Cading", "Quadze", "RECORP", "FlowTalk", "FormeULA"],
+  "capabilities": [
+    "body shelf", "build graph", "identity contract", "deterministic scene compilation",
+    "2.5D playtest", "difference proof", "save/load", "import/export", "cartridge export",
+    "playable export", "fault/recovery", "trace/receipt"
+  ],
+  "donors": [
+    {
+      "file": "02_GAME_ENGINE__GAMEFORGE__Multi_Game_Arcade.html",
+      "bytes": 34738,
+      "sha256": "b9ffff10993b65f91a72235d614ba7e4afee8fe9f959abbb7b4a44046e2120b6",
+      "role": "GameForge v3.13 current anchor"
+    }
+  ],
+  "claimBoundary": "This is GameForge first sovereign rebuild floor. It proves a working body-preserving build graph and cartridge route, not final native target emitters or final engine crown."
+}

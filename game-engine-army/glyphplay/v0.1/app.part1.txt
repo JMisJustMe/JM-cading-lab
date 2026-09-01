@@ -1,0 +1,35 @@
+(()=>{
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const TYPES={
+ SELECT:{glyph:'◎',color:'#55e8ff',height:0,solid:false}, FLOOR:{glyph:'◇',color:'#22435a',height:0,solid:false}, Player:{glyph:'P',color:'#55e8ff',height:1,solid:false,hp:5}, Enemy:{glyph:'E',color:'#ff6f7d',height:1,solid:false,hp:3}, Wall:{glyph:'■',color:'#70879a',height:2,solid:true}, Goal:{glyph:'G',color:'#ffd35a',height:1,solid:false}, Coin:{glyph:'●',color:'#ffd35a',height:.5,solid:false}, Hazard:{glyph:'✦',color:'#ff6f7d',height:.4,solid:false}, Mark:{glyph:'M',color:'#c69cff',height:.7,solid:false}, Signal:{glyph:'S',color:'#55e8ff',height:.8,solid:false}, RouteGate:{glyph:'R',color:'#7dffb1',height:1.2,solid:false}, StateCore:{glyph:'C',color:'#ffd35a',height:1.5,solid:false}, QuadCore:{glyph:'Q',color:'#c69cff',height:1.1,solid:false}, Fragment:{glyph:'F',color:'#ff9f68',height:.8,solid:false}, RecoveryCore:{glyph:'↻',color:'#7dffb1',height:1.4,solid:false}, Word:{glyph:'W',color:'#8ed2ff',height:.8,solid:false}, Formula:{glyph:'ƒ',color:'#ffd35a',height:1.1,solid:false}, Contact:{glyph:'✋',color:'#7dffb1',height:.8,solid:false}
+};
+const TOOLS=['SELECT','FLOOR','Player','Enemy','Wall','Goal','Coin','Hazard'];
+const BODY_PROFILES={
+ glyphplay:{name:'GLYPHPLAY',route:'glyph → stage → interaction → movement → playtest → receipt',description:'Creator-first playable logic. The source route stays visible while stage contact becomes movement and consequence.'},
+ cading:{name:'CADING',route:'mark → signal → route → state → trace',description:'A generated game must expose marks, signals, route gates and a final state instead of hiding the transition chain.'},
+ quadze:{name:'QUADZE',route:'four distinct fields → relation → balanced handoff → crown',description:'The arena is divided into four linked quarters. Each quarter remains distinct, but completion requires their relation.'},
+ recorp:{name:'RECORP',route:'scatter → recognise → recover → regroup → lock',description:'The world begins scattered. Fragments must be recovered and regrouped at the Recovery Core before the route locks.'},
+ flowtalk:{name:'FLOWTALK',route:'context → contact → response → changed meaning',description:'Meaning changes through contact. Word nodes must be touched in a contextual sequence before the goal opens.'},
+ formeula:{name:'FORMEULA',route:'formula → visible structure → movement consequence',description:'A formula becomes stage geometry. The player moves through a visible equation rather than reading a detached rule.'},
+ contactcode:{name:'CONTACTCODE',route:'contact → pressure/gesture → route action → trace',description:'Touch is treated as explicit code input. Contact nodes unlock the goal through direct pointer or movement contact.'}
+};
+const LINEAGE=[{"file": "01_GAME_ENGINE__GLYPHPLAY__Creator_Stage_Movement.html", "bytes": 337098, "sha256": "6960d280e50889707c56c6b7b279818cce66b3ba8842abf2e8908b99f7d425a1"}, {"file": "glyphplay_engine_v27_6_visual_game_body_aim_dock_foundation.html", "bytes": 287815, "sha256": "b8aa0867c7ee8b0bd15264127295c806b22fd8b59aaa853223dd68a04d14a300"}, {"file": "glyphplay_engine_v9_4_android_game_creator.html", "bytes": 52042, "sha256": "2f3833d63da2f1c5843c0df75de1f780167bffae007e84b6278e0df9de08687a"}, {"file": "glyphplay.html", "bytes": 18156, "sha256": "92053dca782e5d461089918c5a2e2b6b2257275d380b7566e79ae04b7498b5c2"}, {"file": "02_GAME_ENGINE__GAMEFORGE__Multi_Game_Arcade.html", "bytes": 34738, "sha256": "b9ffff10993b65f91a72235d614ba7e4afee8fe9f959abbb7b4a44046e2120b6"}, {"file": "03_GAME_ENGINE__GLYPHFORGE__Forge_Routing_Repair.html", "bytes": 44208, "sha256": "12447b3eca56488824878be5eb6b71ea3298a9728de3946843a8b44c486d649d"}, {"file": "PLAYFORM_SISTER_SYSTEM_v0_1_EXACT_SOURCE_IMPLEMENTATION.html", "bytes": 20222, "sha256": "6a09d5b196e0c5c9ca344f9c113be83803df87646fbb37caf1c4f5fb11d500c0"}];
+let project, mode='EDIT', tool='SELECT', selectedId=null, rotation=0, zoom=1, undoStack=[], redoStack=[], lastReceipt=null, testBackup=null;
+const canvas=$('#world'), ctx=canvas.getContext('2d');
+const uid=()=>crypto?.randomUUID?.()||('e'+Math.random().toString(36).slice(2)+Date.now());
+const hash=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')};
+const now=()=>new Date().toISOString();
+const clone=v=>JSON.parse(JSON.stringify(v));
+const baseProject=()=>({format:'GLYPHPLAY_SOVEREIGN_PROJECT/0.1',name:'GlyphPlay First Living Floor',bodyLens:'glyphplay',createdAt:now(),updatedAt:now(),scene:{w:12,h:9,tiles:Array.from({length:108},(_,i)=>({x:i%12,y:Math.floor(i/12),height:0})),entities:[],rules:[],objective:{kind:'goal',needed:1,current:0,open:true}},runtime:{hp:5,score:0,state:'ACTIVE',inventory:[],flags:{}},trace:[],receipts:[]});
+function tileAt(x,y){return project.scene.tiles.find(t=>t.x===x&&t.y===y)}
+function entitiesAt(x,y){return project.scene.entities.filter(e=>e.x===x&&e.y===y)}
+function entity(id){return project.scene.entities.find(e=>e.id===id)}
+function addEntity(type,x,y,z=0,props={}){const d=TYPES[type]||TYPES.Wall;const e={id:uid(),type,name:type,x,y,z,hp:props.hp??d.hp??1,maxHp:props.hp??d.hp??1,props:{...props}};project.scene.entities.push(e);return e}
+function pushUndo(){undoStack.push(JSON.stringify(project));if(undoStack.length>60)undoStack.shift();redoStack=[]}
+function trace(message,type='ROUTE'){const row={at:now(),type,message};project.trace.unshift(row);project.trace=project.trace.slice(0,120);renderTrace()}
+function receipt(action,detail={}){const core={schema:'jm.glyphplay-receipt/0.1',at:now(),project:project.name,body:project.bodyLens,action,detail,sceneHash:hash(JSON.stringify(project.scene))};core.receiptHash=hash(JSON.stringify(core));project.receipts.unshift(core);project.receipts=project.receipts.slice(0,60);lastReceipt=core;$('#statusReceipt').textContent=core.receiptHash;renderReceipt();return core}
+function resetProject(){project=baseProject();seedNative();undoStack=[];redoStack=[];selectedId=null;mode='EDIT';tool='SELECT';trace('First living floor opened.','RECOVERY');receipt('OPEN_FIRST',{donors:LINEAGE.length});renderAll()}
+function seedNative(){project.scene.entities=[];project.scene.tiles.forEach(t=>t.height=0);addEntity('Player',1,7);addEntity('Goal',10,1);addEntity('Coin',4,6);addEntity('Coin',7,3);addEntity('Enemy',8,6);for(let y=2;y<7;y++)if(y!==4)addEntity('Wall',5,y);project.scene.rules=['move player','collect or avoid','reach goal'];project.scene.objective={kind:'goal',needed:1,current:0,open:true};project.runtime={hp:5,score:0,state:'ACTIVE',inventory:[],flags:{}}}
+function applyBodyLens(id,fromGenerate=false){if(!BODY_PROFILES[id])return;pushUndo();project.bodyLens=id;seedNative();const P=project.scene.entities;
+ if(id==='ca

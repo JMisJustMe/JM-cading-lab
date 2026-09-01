@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PLAYFORM Sovereign Rebuild v0.1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+<header class="top"><div class="brand"><b>PLAYFORM Sovereign Rebuild v0.1</b><small>expression → role → action → consequence → repeatable playable loop</small></div><div class="badges"><span>Form <b id="formBadge">CANDIDATE</b></span><span>Loop <b id="loopBadge">OPEN</b></span><span>Cycles <b id="cycleBadge">0/2</b></span></div></header>
+<nav class="toolbar"><button id="validateBtn">Validate</button><button id="compileBtn" class="primary">Compile Playform</button><button id="editBtn" class="active">Edit</button><button id="testBtn">Playtest</button><button id="saveBtn">Save</button><button id="loadBtn">Load</button><button id="importBtn">Import</button><input id="importFile" type="file" accept="application/json" hidden><button id="exportBtn">Export Form</button><button id="playableBtn">Export Playable</button><button id="resetBtn" class="danger">Reset</button></nav>
+<main class="workspace">
+<section class="panel left"><div class="panelHead"><h3>Form the Play</h3></div><div class="panelBody">
+<div class="templates"><button data-template="tboy">T‑Boy</button><button data-template="lyric">Lyric Stage</button><button data-template="tool">Tool Route</button><button data-template="blank">Blank</button></div>
+<div class="field"><label>Actor</label><input id="actor" placeholder="T‑Boy, performer, learner…"></div>
+<div class="field"><label>Tool</label><input id="tool" placeholder="ball, card, mic, interface…"></div>
+<div class="field"><label>Gesture</label><input id="gesture" placeholder="tap, drag, aim, speak, pass…"></div>
+<div class="field"><label>Space</label><input id="space" placeholder="arena, stage, route, room…"></div>
+<div class="field"><label>Mode</label><input id="mode" placeholder="battle, performance, training…"></div>
+<div class="field"><label>Objective</label><input id="objective" placeholder="score, build, perform, learn…"></div>
+<div class="field"><label>Loop</label><textarea id="loop" placeholder="choose → act → respond → adapt → repeat"></textarea></div>
+<div class="field"><label>Expression</label><input id="expression" placeholder="tactical, playful, precise…"></div>
+<div class="field"><label>Coding body</label><select id="codingBody"><option value="playform">PLAYFORM Native</option><option value="cading">Cading</option><option value="quadze">Quadze</option><option value="recorp">RECORP</option><option value="flowtalk">FlowTalk</option><option value="formeula">FormeULA</option></select></div>
+<div class="law">A Playform is not real until it produces an observable repeatable loop.</div>
+</div></section>
+<section class="panel centre"><div class="stageHead"><div><b id="stageTitle">Candidate Playform</b><small id="routeText">actor → tool → gesture → space → objective → loop</small></div><button id="recoverBtn">RecoveryBody</button></div><div class="stage" id="stage"><canvas id="world"></canvas><div class="hud"><span>Next <b id="nextHud">COMPILE</b></span><span>Step <b id="stepHud">0/0</b></span><span>Cycles <b id="cyclesHud">0/2</b></span><span>Receipt <b id="receiptHud">OPEN</b></span></div><div id="banner" class="banner"><div id="bannerText"></div></div></div><div class="controls"><button data-move="0,-1">↑</button><button data-move="-1,0">←</button><button data-move="0,1">↓</button><button data-move="1,0">→</button><button id="actBtn">ACT</button><button id="autoBtn">Auto Run One Cycle</button></div></section>
+<section class="panel right"><div class="panelHead"><h3>Loop Proof</h3></div><div class="panelBody"><div class="section"><div class="sectionTitle">Validation</div><div id="validation" class="copy"></div></div><div class="section"><div class="sectionTitle">Compiled steps</div><div id="steps" class="steps"></div></div><div class="section"><div class="sectionTitle">Receipt</div><pre id="receipt" class="receipt">Compile to produce receipt.</pre></div><div class="section"><div class="sectionTitle">TraceBox</div><div id="trace" class="trace"></div></div><details><summary>Exact source boundary</summary><div class="copy">The recovered v0.1 source is preserved as donor authority. This rebuild implements the source law; it does not pretend the original carrier was already a 2.5D engine.</div></details></div></section>
+</main>
+<div class="mobilePad"><span></span><button data-move="0,-1">↑</button><span></span><button data-move="-1,0">←</button><button id="mobileAct">ACT</button><button data-move="1,0">→</button><span></span><button data-move="0,1">↓</button><span></span></div>
+</div>
+<script src="app-loader.js"></script>
+</body></html>

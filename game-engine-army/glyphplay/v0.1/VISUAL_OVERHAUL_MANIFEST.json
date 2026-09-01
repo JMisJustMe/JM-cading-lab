@@ -1,0 +1,34 @@
+{
+  "schema": "jm.glyphplay-visual-overhaul/0.2",
+  "engine": "GlyphPlay",
+  "status": "VISUAL_OVERHAUL_FIRST_FLOOR_CI_OPEN",
+  "base": "GlyphPlay Sovereign Rebuild v0.1",
+  "governingLaw": "Improve the visual and interaction layer without replacing GlyphPlay semantics or coding-body identity.",
+  "visualDirection": {
+    "fantasy": "luminous living-blueprint foundry",
+    "viewpoint": "2.5D isometric creator and playtest field",
+    "materialLanguage": "dark glass, luminous route lines, dimensional blocks and animated beacons",
+    "motionTone": "restrained during editing; strong on contact, danger, recovery and Ding"
+  },
+  "features": [
+    "full-playfield low-chrome layout",
+    "dynamic 2.5D tile and entity renderer",
+    "body-specific palettes and route lines",
+    "animated goal beacon, spinning coins and pulsing hazards",
+    "movement ripples, particles and damage screen shake",
+    "desktop and Android drawer controls",
+    "DPR cap and particle cap",
+    "reduced-motion support",
+    "direct-file and offline-safe runtime"
+  ],
+  "bodyLenses": [
+    "GlyphPlay",
+    "Cading",
+    "Quadze",
+    "RECORP",
+    "FlowTalk",
+    "FormeULA",
+    "ContactCode"
+  ],
+  "claimBoundary": "Visual first floor only. Original semantics remain authoritative. Real Android device contact, sustained projects, audio, richer sprite animation and final polish remain open."
+}

@@ -1,0 +1,76 @@
+name: GlyphForge Sovereign Rebuild v0.1
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/glyphforge/v0.1/**'
+      - 'game-engine-army/ENGINE_REGISTRY_v0.1.json'
+      - '.github/workflows/glyphforge-sovereign-rebuild-v0-1.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/glyphforge/v0.1/**'
+      - 'game-engine-army/ENGINE_REGISTRY_v0.1.json'
+      - '.github/workflows/glyphforge-sovereign-rebuild-v0-1.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run GlyphForge asset, route and adapter gates
+        run: python game-engine-army/glyphforge/v0.1/tools/test_glyphforge_v0_1.py
+      - name: Build HTTP and single-file GlyphForge deliveries
+        run: |
+          python game-engine-army/glyphforge/v0.1/tools/build_glyphforge_v0_1.py \
+            --source game-engine-army/glyphforge/v0.1 \
+            --out dist/glyphforge-sovereign-v0.1
+      - name: Verify deterministic delivery receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/glyphforge-sovereign-v0.1')
+          receipt=json.loads((root/'BUILD_RECEIPT.json').read_text())
+          assert receipt['status']=='GLYPHFORGE_SOVEREIGN_REBUILD_STATIC_BUILD_PASS_BROWSER_CONTACT_OPEN'
+          assert receipt['source_part_count']==5
+          assert receipt['target_count']==4
+          assert receipt['mode_count']==4
+          assert receipt['donor_count']==1
+          assert len(receipt['javascript_sha256'])==64
+          assert len(receipt['single_file_sha256'])==64
+          assert (root/receipt['single_file']).is_file()
+          print('GLYPHFORGE_SOVEREIGN_REBUILD_V0_1_BUILD_GATE_PASS')
+          PY
+      - name: Test HTTP source delivery
+        run: |
+          cd dist/glyphforge-sovereign-v0.1
+          python -m http.server 8767 >/tmp/glyphforge-http.log 2>&1 &
+          server=$!
+          trap 'kill $server' EXIT
+          sleep 1
+          curl --fail --silent http://127.0.0.1:8767/index.html | grep -q 'GlyphForge Sovereign Rebuild v0.1'
+          curl --fail --silent http://127.0.0.1:8767/app.part1.txt | grep -q 'const ACTIONS'
+          curl --fail --silent http://127.0.0.1:8767/app.part3a.txt | grep -q 'dispatchPhysical'
+          curl --fail --silent http://127.0.0.1:8767/app.part3b.txt | grep -q 'function demoDocument'
+      - name: Seal GlyphForge Zionfolder
+        run: |
+          cd dist
+          zip -qr GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip glyphforge-sovereign-v0.1
+          sha256sum GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip | tee GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER
+          path: |
+            dist/GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip
+            dist/GLYPHFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
+            dist/glyphforge-sovereign-v0.1/BUILD_RECEIPT.json
+            dist/glyphforge-sovereign-v0.1/OPEN_FIRST_GLYPHFORGE_SOVEREIGN_REBUILD_v0_1.html

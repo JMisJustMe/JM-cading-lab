@@ -43,7 +43,10 @@ test('@puka-human-game visible-action membrane produces revisable table reads wi
   // Prove the parent PUKA body restored the lawful fixture before judging Human Game.
   await expect(page.locator('#evidenceCount')).toContainText('3 hands');
   await expect(page.locator('#tendency')).toContainText('PRESSURE-FORWARD SO FAR');
-  await page.locator('#reviewBtn').click();
+
+  // Use the actual visible Evidence/Review door. #reviewBtn is intentionally inside
+  // the collapsed profile drawer and is not the primary contact at this viewport.
+  await page.locator('#evidenceDrawer > summary').click();
   await expect(page.locator('#evidenceDrawer')).toHaveAttribute('open','');
   await expect(page.locator('#tableReadCount')).toContainText('visible actions');
   await expect(page.locator('#tableReadGrid')).toContainText('PRESSURE-FORWARD SO FAR');

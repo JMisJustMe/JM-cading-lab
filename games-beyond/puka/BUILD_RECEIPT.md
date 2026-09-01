@@ -1,6 +1,6 @@
-# PUKA v0.13A — DEEP HOUSE VISUAL CONVERGENCE BUILD RECEIPT
+# PUKA v0.14A — HUMAN GAME BEHAVIOURAL READ ENGINE BUILD RECEIPT
 
-**Parent:** PUKA v0.12A / Games&Beyond / JM-cading-lab  
+**Parent:** PUKA v0.13A Deep House Visual Convergence / PUKA Human Game Founding Snapshot v0.1 / Games&Beyond / JM-cading-lab  
 **State:** STAGE BODY / NOT CROWNED  
 **Front door:** `00_OPEN_FIRST.html`  
 **Live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
@@ -20,81 +20,116 @@
 - v0.10 living-table visible-state physicality
 - v0.11 real-context Android/desktop fit, contact and viewport-screenshot proof
 - v0.12 active-hand continuity, deliberate raise sizing, visible-card equity, review/history and mastery
+- v0.13 Deep House D0-D3 meaningful depth and bounded visible contact consequence
+- PUKA Human Game Founding Snapshot v0.1 keeper and claim boundaries
 - one singular live direct door
 
 ## Full-complete jump target
 
-v0.13A brings PUKA through the current JM Visual Crown — Deep House laws without copying Visual Lab identity or replacing the poker body.
+v0.14A activates PUKA's co-original Human Game lane as a real gameplay-adjacent reasoning organ without granting it poker-state authority.
 
-**Donated laws:** maximal visual depth is functional; depth carries meaning; contact produces perceivable consequence; composition enriches without erasure; no Ding, no claim.
+**Keeper:** **READ THE HUMAN GAME WITHOUT PRETENDING THE READ IS THE HUMAN.**
 
-### Meaningful depth roles
+**Founding law:** **OBSERVATION != INTERPRETATION != FACT.**
 
-- D0 page atmosphere responds to court tier and route ambience.
-- D1 protected room field frames the table with the PUKA Deep House lattice and may not cover the field centre or primary actions.
-- D2 active bodies separate seats, board, pot, cards and teacher by readable depth rather than ornament density.
-- D3 contact bodies carry action/raise/deal/review response and remain above passive atmosphere.
-- street progression and hand resolution visibly change the board/field depth so state change is perceivable.
+**Human Game route:**
 
-### Living field contact
+**CONTACT -> OBSERVE -> SEPARATE -> READ -> TEST -> CONSEQUENCE -> TRACE -> CORRECT**
 
-- `puka-deep-house-v13.js` reads only rendered DOM/state attributes and visible controls.
-- direct pointer/touch contact moves a bounded light response inside the table field.
-- deal, fold, check, call, raise-open, sized raise, review and suit contacts produce an edge-anchored consequence chip.
-- the consequence chip is pointer-transparent, brief and visually subordinate; it cannot block the table centre or primary action.
-- reduced-motion mode retains state meaning while suppressing nonessential transition/ambient behaviour.
+## Authority membrane
 
-### Identity preservation
+The Human Game engine does not receive the `PukaGame` object, deck, House hole cards, raw game state or persistence store.
 
-- Portrait Academy keeps its warmer illustrated/suit-character world.
-- Royal Table keeps its ceremonial/physical court world.
-- the shared Deep House law changes depth grammar, not game identity.
-- the poker core, House Mind hidden state, bankroll authority, evaluator, history and equity boundaries are untouched by the v0.13 presentation organ.
+The UI constructs a deliberately reduced packet before Human Game contact:
 
-### Crown-size proof convergence
+**POKER CORE -> UI VISIBLE-ACTION SANITISER -> HUMAN GAME ENGINE**
 
-The browser matrix now includes both Games&Beyond and current Deep House crown proof contexts:
+Allowed action fields are limited to gameplay-visible action facts such as actor, action, street, visible price/size/pot metadata and known outcome. Unknown/private fields are discarded by normalisation.
 
-- 360×800 Android compact touch
-- 390×844 Games&Beyond Android portrait touch
-- 412×915 Deep House Android standard touch
-- 768×1024 Deep House tablet portrait touch
-- 844×390 Games&Beyond Android landscape touch
-- 1366×768 Deep House laptop
-- 1440×900 Deep House desktop
-- 1440×1000 Games&Beyond desktop
+The dedicated source marker is:
 
-Every context must preserve exact viewport identity, zero horizontal overflow, contact floor, protected table field, and error-free rendered contact.
+`VISIBLE_ACTION_HISTORY_ONLY`
+
+## Behavioural table reads
+
+The Human Game engine can produce bounded table-context reads for YOU and HOUSE MIND from visible action history.
+
+A read contains:
+
+- sample size;
+- confidence band and score;
+- the observation actually supporting the read;
+- a provisional interpretation;
+- competing/alternative explanations;
+- a next-test route;
+- recent-versus-earlier action-mix movement;
+- a post-hand `WHY?` explanation.
+
+Current table-context labels include:
+
+- `NO READ EARNED YET`
+- `PRESSURE-FORWARD SO FAR`
+- `SELECTIVE / RELEASE-HEAVY SO FAR`
+- `CALL-LED CONTINUATION SO FAR`
+- `LOW-COST / CHECK-HEAVY SO FAR`
+- `MIXED ACTION PROFILE`
+
+These are descriptions of observed gameplay action patterns, not personality labels.
+
+## Correction law
+
+A behavioural read is not a one-way accumulator.
+
+Later contact must be able to strengthen, weaken or reverse an earlier read. A small sample remains insufficient. A repeated pattern may earn higher confidence. A pattern that fails under new comparable situations must be corrected rather than protected by the label.
+
+**PATTERN != PROOF OF MOTIVE.**
+
+## WHY layer
+
+The post-hand `WHY?` body explains what the visible line supports while keeping hidden cause open.
+
+For example, repeated raises can support the statement that a hand was pressure-rich. They do not prove confidence, bluffing, fearlessness, a specific hidden holding or a stable personality trait.
+
+Alternative explanations such as card distribution, price, position and stack conditions remain visible when relevant.
+
+## Presentation placement
+
+Human Game lives inside the existing `EVIDENCE / REVIEW` body rather than becoming a permanent competing dashboard.
+
+The primary poker playfield remains dominant. Portrait Academy and Royal Table identities remain unchanged. Deep House visual grammar remains inherited beneath the Human Game reasoning layer.
 
 ## Proof target
 
-The exact v0.13A descendant must prove:
+The exact v0.14A descendant must prove:
 
-- all inherited core/evaluator/full-table regression suites
-- exact v0.12 active-hand reload, sized raise, review/history and fold-secrecy gates
-- v0.13 files, mount order, cache and registry markers
-- separate Android-touch/tablet/laptop/desktop real-output contexts
-- 360×800 and 412×915 protected field floor of at least 300 px
-- direct field contact changes the v0.13 contact-state marker
-- raise contact produces a visible v0.13 consequence state without hidden-state access
-- Portrait/Royal identity remains distinct
-- viewport-only screenshot evidence
-- production HTTP contact after authoritative mount
-
-## Proof boundary
-
-Automated Deep House conformance can prove source presence, rendered depth structure, contact consequence, viewport geometry, reduced-motion-safe source law and real-context screenshot evidence. It cannot establish owner aesthetic acceptance or a final visual crown.
-
-Automated web lifecycle proof also remains separate from installed physical Android lifecycle behaviour across OS process death, storage eviction and device-specific browser/PWA behaviour.
-
-`cold_ding` and `crowned` therefore remain false unless their separate evidence gates are met.
-
-## Delivery default
-
-**SOURCE → OPEN_FIRST → ESTATE MOUNT → LIVE PROOF → DIRECT DOOR**
-
-For estate-hosted HTML/web builds, the proved live URL is the normal owner-facing route. Sandbox/ZIP/download routes are fallback or archival only unless explicitly requested.
+- all inherited core/evaluator/full-table/layout/art/world/material/theatre/living-table/Deep-House regression suites;
+- Human Game source syntax and unit tests;
+- hidden/private fields are discarded by Human Game normalisation;
+- seeded hidden House card identities cannot appear in the rendered Human Game Evidence panel;
+- tiny samples remain insufficient rather than being inflated into behavioural confidence;
+- repeated visible pressure actions can earn a provisional pressure-forward read;
+- every earned read exposes alternatives and a next-test route;
+- existing v0.12 active-hand reload, sized raise, review/history and fold-secrecy gates remain intact;
+- existing v0.13 separate Android-touch/tablet/laptop/desktop real-output contexts remain intact;
+- viewport-only screenshot evidence;
+- zero horizontal overflow and existing 44px contact floor;
+- zero console/page errors;
+- production HTTP contact after authoritative mount.
 
 ## Claim boundary
 
-PUKA v0.13A is a Deep House visual-convergence stage descendant over the v0.12 full-table learning loop. Passing automated source/browser/viewport/contact gates does not equal owner aesthetic acceptance, installed physical Android lifecycle proof, Cold Ding or final crown. No real-money wagering layer is present.
+Automated Human Game proof can establish that the engine receives a bounded visible-action packet, rejects unknown/private fields, renders action-derived table reads, carries confidence/alternatives/next-test routes and does not leak seeded hidden-card identities into the Human Game panel.
+
+It cannot establish personality diagnosis, proof of motive, truth about a real-world person, clinical or protected-trait inference, owner aesthetic acceptance, installed physical Android lifecycle persistence, Cold Ding or final visual crown.
+
+The Human Game body is a gameplay-context reasoning instrument. It is not a people-diagnosis engine.
+
+## Delivery default
+
+**SOURCE -> OPEN_FIRST -> ESTATE MOUNT -> LIVE PROOF -> DIRECT DOOR**
+
+For estate-hosted HTML/web builds, the proved live URL is the normal owner-facing route. Sandbox/ZIP/download routes are fallback or archival only unless explicitly requested.
+
+## Crown boundary
+
+`cold_ding` and `crowned` remain false unless their separate evidence gates are met. v0.14A may become source/browser/public-contact proved without automatically becoming owner-crowned.

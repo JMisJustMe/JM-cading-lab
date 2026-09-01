@@ -1,0 +1,99 @@
+name: RouteOS JM-Generated IgnitionBody
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-ignitionbody-v0-7a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-ignitionbody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.7A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v0.7A/tools/ci_prepare_ignitionbody.sh
+
+      - name: Build and run six-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v07a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v07a/JM_IGNITIONBODY_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v0.7A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V03=systems/routeos-kernel-jm-native-v0.3A; V04=systems/routeos-kernel-jm-native-v0.4A
+          V05=systems/routeos-kernel-jm-native-v0.5A; V06=systems/routeos-kernel-jm-native-v0.6A
+          V07=systems/routeos-kernel-jm-native-v0.7A; KERNEL=.routeos-v07a/routeos-kernel-v0.1A
+          mkdir -p ignitionbody-v07a-receipt
+          for f in .routeos-v07a/*_INTEGRATION_RECEIPT.json .routeos-v07a/JM_IGNITIONBODY_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$KERNEL/kernel/routeos_authority.h" \
+            "$V03/source/permissiongate.jmroute" "$V03/generated/permissiongate_office.inc" \
+            "$V04/source/routescheduler.jmroute" "$V04/generated/routescheduler_office.inc" \
+            "$V05/source/memorybody.jmroute" "$V05/generated/memorybody_office.inc" \
+            "$V06/source/faulthold_recoverybody.jmroute" "$V06/generated/faulthold_recoverybody_office.inc" \
+            "$V07/source/ignitionbody.jmroute" "$V07/generated/ignitionbody_office.inc" "$V07/generated/ignitionbody_office.json"; do
+            [[ -f "$f" ]] && cp "$f" ignitionbody-v07a-receipt/
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_anchor=3510c192320e40b5490681c6fc8d3a92ba13a3d6" \
+            "ignitionbody_source_sha256=e038b1549e6831de566ef2180a1b83a5c2071aa2b3951bb415e3c1002e4d0c22" \
+            "faultrecovery_source_sha256=2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00" \
+            "memorybody_source_sha256=847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8" \
+            "routescheduler_source_sha256=13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c" \
+            "permissiongate_source_sha256=2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2" \
+            > ignitionbody-v07a-receipt/GATE_STATUS.txt
+          (cd ignitionbody-v07a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v0.7A IgnitionBody receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.7A-ignitionbody-receipt
+          path: ignitionbody-v07a-receipt
+          if-no-files-found: error
+
+      - name: Enforce six-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v07a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v0.7A/tools/ci_enforce_ignitionbody.py "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          for hash in e038b1549e6831de566ef2180a1b83a5c2071aa2b3951bb415e3c1002e4d0c22 \
+            2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00 \
+            847e3d7266a5873d099c0b3403df5e7dd6fea3f8e09ab1092bc28178083fcbe8 \
+            13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c \
+            2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2; do
+            strings "$ELF" | grep -F "$hash"
+          done
+          echo 'JM_GENERATED_IGNITIONBODY DING: PASS'

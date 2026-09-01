@@ -1,0 +1,74 @@
+name: RouteOS v2.2A Exact Carrier Repair
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  exact-carrier-repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a
+
+      - name: Restore exact content-addressed carrier blobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          C=systems/routeos-kernel-jm-native-v2.2A/carrier
+          mkdir -p "$C"
+          python3 - <<'PY'
+          import base64, json, os, pathlib, urllib.request
+
+          repo = os.environ['REPO']
+          token = os.environ['GH_TOKEN']
+          root = pathlib.Path('systems/routeos-kernel-jm-native-v2.2A/carrier')
+          blobs = {
+              'routeos-v2.2A-source.part00.b64': '0d1cbf4a48046c852754453f727e46998729b086',
+              'routeos-v2.2A-source.part01.b64': '6ef3a7dfe79351885a7f89ee53377b5d838ec9e9',
+              'routeos-v2.2A-source.part02.b64': 'd21bd0e2599b06522d1110fc7228f5a6145b1cbd',
+              'routeos-v2.2A-source.part03.b64': '5b023f4f03a477815a482cd700970eae256bd893',
+          }
+          for name, sha in blobs.items():
+              request = urllib.request.Request(
+                  f'https://api.github.com/repos/{repo}/git/blobs/{sha}',
+                  headers={
+                      'Authorization': f'Bearer {token}',
+                      'Accept': 'application/vnd.github+json',
+                      'X-GitHub-Api-Version': '2022-11-28',
+                  },
+              )
+              with urllib.request.urlopen(request) as response:
+                  payload = json.load(response)
+              if payload.get('sha') != sha or payload.get('encoding') != 'base64':
+                  raise SystemExit(f'blob identity failure for {name}')
+              (root / name).write_bytes(base64.b64decode(payload['content']))
+          PY
+
+          echo '37c1e63106bfad48a90f751e770e0c434ea2b6b061fa02dca7f4f81a361d608b  '"$C"'/routeos-v2.2A-source.part00.b64' | sha256sum -c -
+          echo '3ac97cf14827ddaf33737ffe778995c57d78a76a4184e86207f8aece5dde315d  '"$C"'/routeos-v2.2A-source.part01.b64' | sha256sum -c -
+          echo '32b9ee8889a9d3d4f2a5620574cc07fc83ad3d1075966b06a3c581fc1bb5e49d  '"$C"'/routeos-v2.2A-source.part02.b64' | sha256sum -c -
+          echo 'eab85656f3eb7cd1e8b49e20309e7cca6d224af4bc59ec526fdb80653c6b1dd6  '"$C"'/routeos-v2.2A-source.part03.b64' | sha256sum -c -
+          cat "$C"/routeos-v2.2A-source.part*.b64 > /tmp/routeos-v2.2A-source.tar.gz.b64
+          echo 'a7a9349b9710d8a5ae4d7228dcde1fc6f8f6c7bfe4de0be881fe85b87926dac1  /tmp/routeos-v2.2A-source.tar.gz.b64' | sha256sum -c -
+          base64 -d /tmp/routeos-v2.2A-source.tar.gz.b64 > /tmp/routeos-v2.2A-source.tar.gz
+          echo '78f820fba1916a4ff4e99459023a1a1259af7461b62dd3cd8d254ada40cc14c1  /tmp/routeos-v2.2A-source.tar.gz' | sha256sum -c -
+
+          if git diff --quiet -- "$C"; then
+            echo 'Exact carrier already mounted; no repair commit required.'
+            exit 0
+          fi
+          git config user.name 'JM RouteOS Carrier Repair'
+          git config user.email 'actions@users.noreply.github.com'
+          git add "$C"
+          git commit -m 'Restore exact v2.2A checksum-locked carrier blobs'
+          git push origin HEAD:agent/routeos-kernel-jm-native-faultclassrecovery-v2-2a

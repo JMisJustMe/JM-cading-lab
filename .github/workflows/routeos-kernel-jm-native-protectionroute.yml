@@ -1,0 +1,126 @@
+name: RouteOS JM-Generated ProtectionRoute
+
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-protectionroute-v1-4a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-protectionroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout v1.4A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify readable v1.4A authority and mount frozen v1.2A body
+        shell: bash
+        run: |
+          set -euo pipefail
+          V14=systems/routeos-kernel-jm-native-v1.4A
+          printf '%s\n' \
+            "50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14  $V14/source/protectionroute.jmroute" \
+            "1933b4545d34f6c9b34c963f82e25ea85ecc273a6e3c81d3f1bd1cd99a5a84c9  $V14/generated/descriptorinstall.inc" \
+            "e39bb94a00ddd4b46ebf2cbcabd36bd6c090ec192d0c3d54a3b2f33a197b5824  $V14/generated/vectorroute.inc" \
+            "2489b9a30311b023de78a12cc5e2912d7c982444c45f4929cf52ee9eb8f72302  $V14/generated/interruptcontroller.inc" \
+            "a5eb4d25d272d2349fe64f2e01cf19e56409249740ca4a558bfd123e2c25aa7e  $V14/generated/usermap_bodyframe.inc" \
+            "772a54aa7c64ed9c25b94f6af901cf7cc0e01c2d65ca4c7f147f969288d9939f  $V14/generated/office_retention.inc" \
+            "d6862304754cd3eff5f330751c965226f4bb5256ebaf7835f53469ae4def312a  $V14/generated/protectionroute.json" \
+            "9d8e68f12cf35224ae8ba823fec772c17acf13158f8c85adb8d7fbe47ce001e4  $V14/tools/protectionroutec.py" \
+            "82547917b4c31a056827db9fcf3a1353a7e2a06a068de3e5e51658c607f3428f  $V14/tools/integrate_protectionroute.py" \
+            "7357551d7a8ac5257a3a6a2d6419d90db99716e38d80c021a0ed4b3da62539ce  $V14/tests/test_protectionroute.py" \
+            "4f9519ac53726df2d53cd14994d16e00edfac5fc8c2a86af18255e5b17b3987f  $V14/tests/test_protectionroute_retention.py" \
+            "dee0461c04c241a11037ceb9dc17adc9161ed7fe082765907c796887f10e4fd9  $V14/tools/ci_prepare_protectionroute.sh" \
+            "f474a07d06a1869b8d2f163ae81ddae43bb90efdb3258bf32018c16bbcc50ee1  $V14/tools/ci_enforce_protectionroute.py" | sha256sum -c -
+          git merge-base --is-ancestor e6f037ac3f3d42c4b56218307b5f738f0c6a4b70 HEAD
+
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for spec in \
+            "5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec  $V12/routeos-v1.2A-body.tar.gz.b64  0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316  /tmp/v12-base.tar.gz" \
+            "6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730  $V12/routeos-v1.2A-pre-idt-correction.tar.gz.b64  9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3  /tmp/v12-abi.tar.gz" \
+            "8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98  $V12/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64  e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff  /tmp/v12-proof.tar.gz"; do
+            set -- $spec
+            echo "$1  $2" | sha256sum -c -
+            base64 -d "$2" > "$4"
+            echo "$3  $4" | sha256sum -c -
+            tar -xzf "$4" -C .
+          done
+
+      - name: Install open machine-proof carriers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+
+      - name: Verify and rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.4A/tools/ci_prepare_protectionroute.sh
+
+      - name: Build and run twenty-five-office JM kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v14a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v14a/JM_PROTECTIONROUTE_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v1.4A construction receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V14=systems/routeos-kernel-jm-native-v1.4A
+          KERNEL=.routeos-v14a/routeos-kernel-v0.1A
+          OUT=protectionroute-v14a-receipt
+          mkdir -p "$OUT"
+          if [[ -f "$KERNEL/build/routeos-kernel.elf" ]]; then
+            nm -n "$KERNEL/build/routeos-kernel.elf" > .routeos-v14a/JM_PROTECTIONROUTE_SYMBOLS.txt
+            objdump -d "$KERNEL/build/routeos-kernel.elf" > .routeos-v14a/JM_PROTECTIONROUTE_DISASSEMBLY.txt
+          fi
+          for f in .routeos-v14a/*_INTEGRATION_RECEIPT.json .routeos-v14a/JM_PROTECTIONROUTE* \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/build/routeos-kernel.elf" "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" "$V14/source/protectionroute.jmroute" "$V14/generated"/*; do
+            [[ -f "$f" ]] && cp "$f" "$OUT/"
+          done
+          printf '%s\n' \
+            "machine_step_outcome=${{ steps.machine.outcome }}" \
+            "machine_exit_status=${{ steps.machine.outputs.exit_status }}" \
+            "frozen_parent=e6f037ac3f3d42c4b56218307b5f738f0c6a4b70" \
+            "protectionroute_source_sha256=50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14" > "$OUT/GATE_STATUS.txt"
+          (cd "$OUT" && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v1.4A receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.4A-protectionroute-receipt
+          path: protectionroute-v14a-receipt
+          if-no-files-found: error
+
+      - name: Enforce twenty-five-office operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v14a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.4A/tools/ci_enforce_protectionroute.py \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/build/routeos-kernel.elf" .routeos-v14a/PROTECTIONROUTE_INTEGRATION_RECEIPT.json
+          for hash in \
+            50a669f100d71ff9c8b87218c12603b663129633469a1952198fa72a69b53a14 \
+            7a8f084140170c348bce0fac29e912ad9c7ea1b4a1772b1751d2ca9fbbf45190 \
+            1ab1556c2e674a42d85089b1235e353c5a694d4bdce9eafa6668efcc40845bb1; do
+            strings "$KERNEL/build/routeos-kernel.elf" | grep -F "$hash"
+          done
+          echo 'JM_GENERATED_PROTECTIONROUTE DING: PASS'

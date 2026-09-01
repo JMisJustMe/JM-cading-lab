@@ -1,0 +1,18 @@
+{
+  "body": "ObservatoryContinuityRoute",
+  "claim": "construction body; machine crown requires CI QEMU proof",
+  "fault_budget": 1,
+  "generated": {
+    "observatory_continuity.inc": "c2df272af28af21b183f06951913fd8d9ed0c3239e73b4f022ea305f4030560a"
+  },
+  "recent_dump": 8,
+  "retained_symbols": [
+    "jm_generated_observatorycontinuity_announce",
+    "jm_generated_traceledger_record",
+    "jm_generated_recoverypolicy_fault",
+    "jm_generated_healthprobe_boot"
+  ],
+  "source_sha256": "d36b935c3a5ee6b467c469045b7bfa200589f87196fac8b4dc4c611f98080271",
+  "trace_capacity": 128,
+  "version": "v2.0A"
+}

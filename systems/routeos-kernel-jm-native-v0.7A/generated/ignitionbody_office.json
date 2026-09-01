@@ -1,0 +1,99 @@
+{
+  "laws": {
+    "CLAIM_BOUNDARY": "generated_kernel_entry_orchestration_not_assembly_or_tables",
+    "MACHINE_PARENT": "f59980059d5e64def7a7893e7ded4a18078d80a3",
+    "PROOF_PARENT": "3510c192320e40b5490681c6fc8d3a92ba13a3d6",
+    "SOURCE_AUTHORITY": "jm_native"
+  },
+  "requirements": [
+    "ordered_ignition",
+    "boot_magic_validation",
+    "generated_office_activation",
+    "first_body_handoff",
+    "inherited_office_preservation"
+  ],
+  "schema": "JM_ROUTEOS_IGNITION_1",
+  "source_sha256": "e038b1549e6831de566ef2180a1b83a5c2071aa2b3951bb415e3c1002e4d0c22",
+  "steps": [
+    {
+      "fields": {
+        "call": "serial_init",
+        "order": "1"
+      },
+      "name": "SERIAL_INIT"
+    },
+    {
+      "fields": {
+        "call": "emit_authority",
+        "order": "2"
+      },
+      "name": "AUTHORITY_IDENTITY"
+    },
+    {
+      "fields": {
+        "call": "multiboot_magic",
+        "expected": "0x36D76289",
+        "order": "3"
+      },
+      "name": "BOOT_VALIDATE"
+    },
+    {
+      "fields": {
+        "call": "kernel_entry_receipts",
+        "order": "4"
+      },
+      "name": "ENTRY_RECEIPTS"
+    },
+    {
+      "fields": {
+        "call": "allocate_release",
+        "order": "5"
+      },
+      "name": "MEMORY_PROBE"
+    },
+    {
+      "fields": {
+        "calls": "gdt_install,idt_install",
+        "order": "6"
+      },
+      "name": "DESCRIPTOR_INSTALL"
+    },
+    {
+      "fields": {
+        "call": "user_boundary_install",
+        "order": "7"
+      },
+      "name": "USER_BOUNDARY"
+    },
+    {
+      "fields": {
+        "call": "pic_pit_install",
+        "order": "8"
+      },
+      "name": "TIMER_ROUTE"
+    },
+    {
+      "fields": {
+        "call": "runtime_receipts",
+        "order": "9"
+      },
+      "name": "ACTIVE_RECEIPTS"
+    },
+    {
+      "fields": {
+        "body": "1",
+        "order": "10",
+        "state": "BODY_RUNNING"
+      },
+      "name": "FIRST_BODY"
+    },
+    {
+      "fields": {
+        "call": "routeos_enter_frame",
+        "order": "11"
+      },
+      "name": "ENTER_USER"
+    }
+  ],
+  "version": "v0.7A"
+}

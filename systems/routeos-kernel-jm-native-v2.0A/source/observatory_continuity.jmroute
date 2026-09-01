@@ -1,0 +1,45 @@
+{
+  "body": "ObservatoryContinuityRoute",
+  "capabilities": [
+    "trace-ledger",
+    "recovery-policy",
+    "health-probe",
+    "capability-manifest",
+    "json-decoder",
+    "self-contained-html-observatory",
+    "spdx-sbom",
+    "sha256-ledger",
+    "qemu-launcher",
+    "gdb-launcher",
+    "zionfolder-package"
+  ],
+  "events": {
+    "BOOT_READY": 1,
+    "CONTINUE": 10,
+    "FAULT": 7,
+    "HEALTH_PASS": 2,
+    "QUARANTINE": 8,
+    "RECOVERY": 9,
+    "SCHEDULE": 3,
+    "SYSCALL_DENY": 6,
+    "SYSCALL_PASS": 4,
+    "SYSCALL_YIELD": 5
+  },
+  "fault_budget": 1,
+  "packages": [
+    "elf",
+    "iso",
+    "symbols",
+    "disassembly",
+    "trace",
+    "json",
+    "html",
+    "svg",
+    "sbom",
+    "checksums",
+    "source"
+  ],
+  "recent_dump": 8,
+  "trace_capacity": 128,
+  "version": "v2.0A"
+}

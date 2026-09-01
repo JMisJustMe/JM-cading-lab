@@ -1,0 +1,67 @@
+{
+  "assembly_sha256": "79e7171f56c84c135731eaa2bc069093b53d465b449a58a179f9ee65f042621e",
+  "dispatch_symbol": "routeos_interrupt_dispatch",
+  "enter_symbol": "routeos_enter_frame",
+  "frame_skip_qwords": 2,
+  "machine_parent": "dfa52b8e42f2511eeb3082f14fc2eb0584843e27",
+  "offices": [
+    "FrameCarrier",
+    "InterruptEntry"
+  ],
+  "pop_registers": [
+    "r15",
+    "r14",
+    "r13",
+    "r12",
+    "r11",
+    "r10",
+    "r9",
+    "r8",
+    "rsi",
+    "rdi",
+    "rbp",
+    "rdx",
+    "rcx",
+    "rbx",
+    "rax"
+  ],
+  "proof_parent": "a05b26b3901460cfa5623cbb3063d961a9952214",
+  "push_registers": [
+    "rax",
+    "rbx",
+    "rcx",
+    "rdx",
+    "rbp",
+    "rdi",
+    "rsi",
+    "r8",
+    "r9",
+    "r10",
+    "r11",
+    "r12",
+    "r13",
+    "r14",
+    "r15"
+  ],
+  "runtime_frame_marker": "[JM] FRAMECARRIER GENERATED v1.0A SOURCE 50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914 ACTIVE",
+  "runtime_interrupt_marker": "[JM] INTERRUPTENTRY GENERATED v1.0A SOURCE 50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914 ACTIVE",
+  "serial_lsr_port": 1021,
+  "serial_port": 1016,
+  "serial_tx_ready": 32,
+  "source_sha256": "50d810e82c54655df58936e17c4d0f67eee026d10de6c6a82db422fef40f1914",
+  "stubs": [
+    {
+      "symbol": "routeos_isr_ud",
+      "vector": 6
+    },
+    {
+      "symbol": "routeos_isr_timer",
+      "vector": 32
+    },
+    {
+      "symbol": "routeos_isr_syscall",
+      "vector": 128
+    }
+  ],
+  "version": "v1.0A"
+}

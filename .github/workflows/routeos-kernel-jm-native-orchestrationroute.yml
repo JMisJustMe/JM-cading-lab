@@ -1,0 +1,70 @@
+name: RouteOS JM-Generated OrchestrationRoute
+on:
+  push:
+    branches: [agent/routeos-kernel-jm-native-orchestrationroute-v1-9a]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  jm-generated-orchestrationroute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - name: Verify authority and restore frozen v1.2A body
+        shell: bash
+        run: |
+          set -euo pipefail
+          V=systems/routeos-kernel-jm-native-v1.9A
+          printf '%s\n' \
+            '9b4b4a870641acb80dec65e94d8db49f8d01464e117b700e96a831e788744ef3  '$V'/generated/orchestrationroute.inc' \
+            'd6462702cadbf26ee1209cb74b69ff83fb0dc4666a8fca8fa6f5f48581d2cdde  '$V'/generated/orchestrationroute.json' \
+            '46aa34e7ac97ebdc6d128c727c0901b890129a988fc549de005ad7c69b689507  '$V'/source/orchestrationroute.jmroute' \
+            '5828291291c36f45f5ba580ec2c740ce1e16f3d7cf766d3e0aed5bd3596a2830  '$V'/tests/test_orchestrationroute.py' \
+            'd88b09e3db6caba2840696107408f3ddb8c25cb329136129a78f1cd84f1897d3  '$V'/tools/ci_enforce_orchestrationroute.py' \
+            'fa794461a95f2dfb7eef0cb0188a4387edab6033994e807a7ad06694685d66ec  '$V'/tools/ci_prepare_orchestrationroute.sh' \
+            '4e65ebf1eeb3e2d9f8a184546f9e8ed9cc06700bb3759365403ba33a4e23eb57  '$V'/tools/integrate_orchestrationroute.py' \
+            '19e094f101baf61f8e03a241e1194be075dee83bf35a63e57eafcf58485365ce  '$V'/tools/orchestrationroutec.py' | sha256sum -c -
+          git merge-base --is-ancestor 9b36b7f526101df1b94446e632bb3d1d54fdc7b4 HEAD
+          V12=systems/routeos-kernel-jm-native-v1.2A
+          for s in \
+            '5f364d15567327a60b0d8a03ed6b78479bae313ba82b229d0a87013b2cd5c5ec '$V12'/routeos-v1.2A-body.tar.gz.b64 0be9af24c7fe7de2b0efb004a88393f23509903df2b13660afc8894517135316 /tmp/a.tgz' \
+            '6f83905abdbc6f6e438f27187a9d394e784499d5dcb727b658873f4752d6b730 '$V12'/routeos-v1.2A-pre-idt-correction.tar.gz.b64 9274ad896d84951856def1ac339d4d5d6ccc9246f642beb849941bd20f52aff3 /tmp/b.tgz' \
+            '8c88a35eb8f01f2190107a79db6e3a9f4337a43d347cd8f730398bd270d17e98 '$V12'/routeos-v1.2A-symbol-range-proof-correction.tar.gz.b64 e38a984c1fdd658796b355a897e3b998f3ea44f56b5983bb3a7bbe65c6d1e1ff /tmp/c.tgz'; do
+            set -- $s; echo "$1  $2"|sha256sum -c -; base64 -d "$2">"$4"; echo "$3  $4"|sha256sum -c -; tar -xzf "$4" -C .
+          done
+      - name: Install machine carriers
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang lld binutils grub-pc-bin grub-common grub2-common xorriso mtools qemu-system-x86
+      - name: Rebuild complete generated stack
+        run: bash systems/routeos-kernel-jm-native-v1.9A/tools/ci_prepare_orchestrationroute.sh
+      - name: Run QEMU proof
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          K=.routeos-v19a/routeos-kernel-v0.1A; chmod +x "$K"/build.sh "$K"/tests/*; set -o pipefail
+          "$K/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v19a/JM_ORCHESTRATIONROUTE_MACHINE_RUN.log
+          s=${PIPESTATUS[0]}; echo "exit_status=$s">>"$GITHUB_OUTPUT"; exit "$s"
+      - name: Capture receipt
+        if: always()
+        shell: bash
+        run: |
+          V=systems/routeos-kernel-jm-native-v1.9A; K=.routeos-v19a/routeos-kernel-v0.1A; O=orchestrationroute-v19a-receipt; mkdir -p "$O"
+          nm -n "$K/build/routeos-kernel.elf">.routeos-v19a/JM_ORCHESTRATIONROUTE_SYMBOLS.txt
+          objdump -d "$K/build/routeos-kernel.elf">.routeos-v19a/JM_ORCHESTRATIONROUTE_DISASSEMBLY.txt
+          for f in .routeos-v19a/*_INTEGRATION_RECEIPT.json .routeos-v19a/JM_ORCHESTRATIONROUTE* "$K/proof/QEMU_BOOT_TRACE.txt" "$K/build/routeos-kernel.elf" "$K/build/routeos-kernel.iso" "$K/kernel/routeos_kernel.c" "$V/source/orchestrationroute.jmroute" "$V/generated"/*; do cp "$f" "$O/"; done
+          printf 'machine_step_outcome=%s\nmachine_exit_status=%s\nfrozen_parent=%s\nsource_sha256=%s\n' '${{ steps.machine.outcome }}' '${{ steps.machine.outputs.exit_status }}' '9b36b7f526101df1b94446e632bb3d1d54fdc7b4' '46aa34e7ac97ebdc6d128c727c0901b890129a988fc549de005ad7c69b689507' >"$O/GATE_STATUS.txt"
+          (cd "$O" && sha256sum * > SHA256SUMS.txt)
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v1.9A-orchestrationroute-receipt
+          path: orchestrationroute-v19a-receipt
+      - name: Enforce operational result
+        if: always()
+        run: |
+          test '${{ steps.machine.outcome }}' = success
+          K=.routeos-v19a/routeos-kernel-v0.1A
+          python3 systems/routeos-kernel-jm-native-v1.9A/tools/ci_enforce_orchestrationroute.py "$K/proof/QEMU_BOOT_TRACE.txt" "$K/kernel/routeos_kernel.c" "$K/build/routeos-kernel.elf" .routeos-v19a/ORCHESTRATIONROUTE_INTEGRATION_RECEIPT.json

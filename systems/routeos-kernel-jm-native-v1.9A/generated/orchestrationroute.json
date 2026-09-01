@@ -1,0 +1,23 @@
+{
+  "generated": {
+    "orchestrationroute.inc": "9b4b4a870641acb80dec65e94d8db49f8d01464e117b700e96a831e788744ef3"
+  },
+  "retained_symbols": [
+    "jm_generated_ignitionbody"
+  ],
+  "sequence": [
+    "SerialRoute",
+    "KernelContractRoute",
+    "PrimitiveRoute",
+    "EntryRoute",
+    "AuthorityReceipt",
+    "MemoryProbe",
+    "DescriptorInstall",
+    "VectorRoute",
+    "UserInstall",
+    "InterruptController",
+    "FrameEntry"
+  ],
+  "source_sha256": "46aa34e7ac97ebdc6d128c727c0901b890129a988fc549de005ad7c69b689507",
+  "version": "v1.9A"
+}

@@ -1,0 +1,22 @@
+{
+  "constants": {
+    "COM1": "JM_DEVICE_SERIALROUTE_PORT",
+    "IDT_SIZE": 256,
+    "SYS_TRACE_READ": 1,
+    "SYS_YIELD": 2,
+    "TSS_SELECTOR": "0x28",
+    "USER1_CODE": "0x02000000ULL",
+    "USER1_STACK_PAGE": "0x02001000ULL",
+    "USER1_STACK_TOP": "0x02002000ULL",
+    "USER2_CODE": "0x02004000ULL",
+    "USER2_STACK_PAGE": "0x02005000ULL",
+    "USER2_STACK_TOP": "0x02006000ULL",
+    "USER_CODE_SELECTOR": "0x23",
+    "USER_DATA_SELECTOR": "0x1B"
+  },
+  "office": "KernelContractRoute",
+  "retained_symbols": [
+    "jm_generated_contractroute_announce"
+  ],
+  "version": "v1.8A"
+}

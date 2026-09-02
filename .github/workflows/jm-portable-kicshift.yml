@@ -1,0 +1,67 @@
+name: JM Portable Body — KICSHIFT
+
+on:
+  push:
+    branches:
+      - jm-portable-body-kicshift-v0.1
+    paths:
+      - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
+      - '.github/workflows/jm-portable-kicshift.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  independent-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+    steps:
+      - name: Checkout JM source mirror
+        uses: actions/checkout@v4
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install independent dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build outside Lovable
+        run: npm run build
+      - name: Record carrier contents
+        run: find dist -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
+      - name: Upload independent carrier
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-kicshift-carrier
+          path: apps-tools-games/jm-portable-body/kicshift-v0.1/dist
+          if-no-files-found: error
+      - name: Upload lean JM source body
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-kicshift-source-body
+          path: |
+            apps-tools-games/jm-portable-body/kicshift-v0.1/README.md
+            apps-tools-games/jm-portable-body/kicshift-v0.1/PORTABILITY_MANIFEST.json
+            apps-tools-games/jm-portable-body/kicshift-v0.1/package.json
+            apps-tools-games/jm-portable-body/kicshift-v0.1/vite.config.ts
+            apps-tools-games/jm-portable-body/kicshift-v0.1/index.html
+            apps-tools-games/jm-portable-body/kicshift-v0.1/src
+          if-no-files-found: error
+      - name: Mount canonical Estate carrier route
+        working-directory: .
+        run: |
+          rm -rf games-beyond/kicshift
+          mkdir -p games-beyond/kicshift
+          cp -a apps-tools-games/jm-portable-body/kicshift-v0.1/dist/. games-beyond/kicshift/
+          cp apps-tools-games/jm-portable-body/kicshift-v0.1/PORTABILITY_MANIFEST.json games-beyond/kicshift/PORTABILITY_MANIFEST.json
+          git config user.name "JM Estate Build Body"
+          git config user.email "actions@users.noreply.github.com"
+          git add games-beyond/kicshift
+          if git diff --cached --quiet; then
+            echo "Canonical carrier route already current."
+          else
+            git commit -m "Mount KICSHIFT portable carrier at Estate door [skip ci]"
+            git push origin HEAD:jm-portable-body-kicshift-v0.1
+          fi

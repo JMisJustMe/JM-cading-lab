@@ -1,7 +1,7 @@
 {
   "body": "JM Portable Body — KICSHIFT",
-  "version": "0.1-assembly",
-  "status": "INDEPENDENT_BUILD_PROVED_CONTACT_OPEN",
+  "version": "0.1-portability-proof",
+  "status": "ASSISTANT_PORTABILITY_PROVED_OWNER_DEVICE_DING_OPEN",
   "authority": "JM Estate",
   "parent": {
     "forge": "Lovable",
@@ -19,37 +19,64 @@
     "lovable_specific_package_observed": "@lovable.dev/vite-tanstack-config",
     "lovable_runtime_required_by_gameplay": false,
     "replacement_strategy": "minimal Vite React SPA harness",
+    "relocatable_asset_base": "./",
     "preserve_game_source_first_pass": true
   },
   "jm_body_organs": {
     "source_identity": "present",
     "lineage_receipt": "present",
     "lean_build_harness": "proved",
-    "independent_source_mirror": "proved_on_git_branch",
+    "independent_source_mirror": "proved_github",
     "independent_install_build": "proved_github_actions",
-    "independent_run": "carrier_shell_serves; full_webgl_contact_open",
-    "phone_contact": "open",
-    "behaviour_parity": "open",
-    "second_carrier": "open",
-    "canonical_door_binding": "open",
-    "portability_ding": "open"
+    "independent_run": "proved_webgl2_1280x720_no_runtime_errors",
+    "mobile_emulated_touch_contact": "proved_915x412_webgl2_joystick_kic_dash_guard_shift_no_runtime_errors",
+    "physical_owner_phone_contact": "open",
+    "behaviour_parity": "assistant_visual_and_control_parity_pass_owner_device_confirmation_open",
+    "second_carrier": "proved_github_pages_mirror",
+    "canonical_door_binding": "proved_cloudflare_estate_subroute",
+    "portability_ding": "assistant_scope_pass_owner_device_ding_open"
   },
   "build_proof": {
-    "workflow_run_id": 33577518085,
-    "workflow_head": "c736ac308815b3c635ac48a0a7894a5f73145d36",
+    "workflow_run_id": 33578677174,
+    "workflow_head": "be303dba5385c2ebb42d9c1942160aca2de00633",
     "result": "success",
-    "artifact": "jm-kicshift-carrier",
-    "artifact_size_bytes": 311044,
-    "artifact_sha256": "44584d697024fe061f30fc4a5ac3ece867430c87502a13667ba92e04abd45bd3"
+    "carrier_artifact": "jm-kicshift-carrier",
+    "carrier_size_bytes": 311045,
+    "carrier_sha256": "861cc7e26c0596b247126ce9f67a386d61050a889d62beff98b3b4ed75bf2c17",
+    "source_artifact": "jm-kicshift-source-body",
+    "source_size_bytes": 27780,
+    "source_sha256": "0249b63cfe269cf3545a11f7a56d26fd48e46b05118ba15ed41c8ced466429c4"
+  },
+  "runtime_proof": {
+    "webgl": "WebGL 2.0",
+    "desktop_viewport": "1280x720",
+    "desktop_initial_screenshot_sha256": "a782c721ad0e9aafd54c3176768298b86b2aeb89586310a9e91e895f9a4d91f2",
+    "desktop_interaction_screenshot_sha256": "0332750afab452fb4de4f94bae99a11201781bd9dcad4488a7f064b1bfc81cc6",
+    "mobile_emulated_viewport": "915x412",
+    "mobile_touch_screenshot_sha256": "5292a6bd903ab11d652e30bd72f07b937c93447c0b91aa18ce696db787dfdb91",
+    "runtime_errors": 0
+  },
+  "public_carrier_proof": {
+    "workflow_run_id": 33578814070,
+    "result": "success",
+    "canonical": "https://jmisjustme-estate.pages.dev/games-beyond/kicshift/",
+    "mirror": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/kicshift/",
+    "canonical_http": "pass",
+    "mirror_http": "pass",
+    "public_byte_parity": "pass"
   },
   "proof_route": [
     "CONTACTED_SOURCE",
     "SOURCE_COPY",
     "INDEPENDENT_ENVIRONMENT",
     "INSTALL_BUILD",
-    "RUN",
-    "PHONE_CONTACT",
-    "COMPARE_BEHAVIOUR",
+    "WEBGL_RUN",
+    "MOBILE_EMULATED_TOUCH_CONTACT",
+    "PUBLIC_CANONICAL_CONTACT",
+    "SECOND_CARRIER_CONTACT",
+    "PUBLIC_BYTE_PARITY",
+    "OWNER_PHONE_CONTACT",
+    "OWNER_PARITY_CONFIRMATION",
     "PORTABILITY_DING"
   ],
   "keeper": "DON'T REBUILD WHAT THE ESTATE ALREADY KNOWS — ASSEMBLE IT, THEN MAKE CONTACT PROVE THE JOIN."

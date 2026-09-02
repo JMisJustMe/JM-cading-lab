@@ -34,3 +34,15 @@ jobs:
           name: jm-kicshift-carrier
           path: apps-tools-games/jm-portable-body/kicshift-v0.1/dist
           if-no-files-found: error
+      - name: Upload lean JM source body
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-kicshift-source-body
+          path: |
+            apps-tools-games/jm-portable-body/kicshift-v0.1/README.md
+            apps-tools-games/jm-portable-body/kicshift-v0.1/PORTABILITY_MANIFEST.json
+            apps-tools-games/jm-portable-body/kicshift-v0.1/package.json
+            apps-tools-games/jm-portable-body/kicshift-v0.1/vite.config.ts
+            apps-tools-games/jm-portable-body/kicshift-v0.1/index.html
+            apps-tools-games/jm-portable-body/kicshift-v0.1/src
+          if-no-files-found: error

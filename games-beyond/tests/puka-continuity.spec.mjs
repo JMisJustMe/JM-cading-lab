@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
 const canonical='puka/';
-const front='puka/00_OPEN_FIRST.html';
 const primaryStore='jm-puka-v12a';
 const currentCache='jm-puka-v14a';
 
@@ -13,7 +12,7 @@ async function visiblePot(page){
   return page.locator('.pot b').textContent();
 }
 
-test('@puka-continuity canonical door, PWA identity and state survive service-worker re-entry', async ({ browser }) => {
+test('@puka-continuity canonical door, PWA identity and state survive service-worker re-entry', async ({ browser },testInfo) => {
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1});
   const page=await context.newPage();
   const errors=[];
@@ -53,6 +52,7 @@ test('@puka-continuity canonical door, PWA identity and state survive service-wo
   expect(cards).toHaveLength(2);
   const storedBefore=await page.evaluate(key=>localStorage.getItem(key),primaryStore);
   expect(storedBefore,'stable PUKA primary store must contain the active hand').toBeTruthy();
+  await page.screenshot({path:testInfo.outputPath('puka-continuity-before-sw-reentry.png'),fullPage:false});
 
   await page.evaluate(async(oldKey)=>{
     await caches.open(oldKey).then(c=>c.put('./legacy-proof',new Response('old')));
@@ -73,6 +73,7 @@ test('@puka-continuity canonical door, PWA identity and state survive service-wo
   const cacheKeys=await page.evaluate(async()=>await caches.keys());
   expect(cacheKeys).toContain(currentCache);
   expect(cacheKeys.filter(k=>k.startsWith('jm-puka-')&&k!==currentCache),'activation must remove stale PUKA caches only').toEqual([]);
+  await page.screenshot({path:testInfo.outputPath('puka-continuity-after-sw-reentry.png'),fullPage:false});
 
   expect(errors,'canonical continuity route must stay free of runtime errors').toEqual([]);
   await context.close();

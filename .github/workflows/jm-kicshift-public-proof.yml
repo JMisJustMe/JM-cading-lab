@@ -1,0 +1,78 @@
+name: JM KICSHIFT — Public Portability Proof
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'games-beyond/kicshift/**'
+      - '.github/workflows/jm-kicshift-public-proof.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-carrier-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Estate authority
+        uses: actions/checkout@v4
+
+      - name: Wait for canonical and mirror carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=(
+            "https://jmisjustme-estate.pages.dev/games-beyond/kicshift/"
+            "https://jmisjustme.github.io/JM-cading-lab/games-beyond/kicshift/"
+          )
+          for url in "${urls[@]}"; do
+            ok=0
+            for attempt in $(seq 1 36); do
+              code=$(curl -L --connect-timeout 10 --max-time 30 -sS -o /tmp/kic-index.html -w '%{http_code}' "$url" || true)
+              if [[ "$code" == "200" ]] && grep -q 'KICSHIFT — JM Portable Body' /tmp/kic-index.html; then
+                echo "LIVE $url"
+                ok=1
+                break
+              fi
+              echo "waiting for $url (attempt $attempt, HTTP $code)"
+              sleep 10
+            done
+            [[ "$ok" == "1" ]] || { echo "Carrier did not become live: $url"; exit 1; }
+          done
+
+      - name: Prove public bytes match Estate carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          local_root="games-beyond/kicshift"
+          js=$(sed -n 's/.*src="\.\/\([^\"]*\.js\)".*/\1/p' "$local_root/index.html")
+          css=$(sed -n 's/.*href="\.\/\([^\"]*\.css\)".*/\1/p' "$local_root/index.html")
+          test -n "$js"
+          test -n "$css"
+          files=("index.html" "$js" "$css" "PORTABILITY_MANIFEST.json")
+          bases=(
+            "https://jmisjustme-estate.pages.dev/games-beyond/kicshift"
+            "https://jmisjustme.github.io/JM-cading-lab/games-beyond/kicshift"
+          )
+          for file in "${files[@]}"; do
+            local_hash=$(sha256sum "$local_root/$file" | awk '{print $1}')
+            echo "LOCAL $file $local_hash"
+            for base in "${bases[@]}"; do
+              curl -L --fail --silent --show-error "$base/$file" -o /tmp/remote.bin
+              remote_hash=$(sha256sum /tmp/remote.bin | awk '{print $1}')
+              echo "REMOTE $base/$file $remote_hash"
+              [[ "$remote_hash" == "$local_hash" ]] || {
+                echo "Byte parity failure for $base/$file"
+                exit 1
+              }
+            done
+          done
+
+      - name: Portability receipt
+        run: |
+          echo 'CANONICAL_CLOUDFLARE=PASS'
+          echo 'SECOND_CARRIER_GITHUB_PAGES=PASS'
+          echo 'PUBLIC_BYTE_PARITY=PASS'
+          echo 'CANONICAL_ROUTE=https://jmisjustme-estate.pages.dev/games-beyond/kicshift/'
+          echo 'MIRROR_ROUTE=https://jmisjustme.github.io/JM-cading-lab/games-beyond/kicshift/'

@@ -1,0 +1,130 @@
+name: PUKA Carrier Independence + Byte Parity Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - build/puka-carrier-independence-proof
+    paths:
+      - ".github/workflows/puka-carrier-independence-proof.yml"
+      - "games-beyond/puka/**"
+      - "!games-beyond/puka/*RECEIPT*.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: puka-carrier-independence-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout current Estate authority
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Prove canonical and recovery carrier byte parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          canonical='https://jmisjustme-estate.pages.dev/games-beyond/puka'
+          recovery='https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka'
+          src='games-beyond/puka'
+          files=(
+            'index.html'
+            '00_OPEN_FIRST.html'
+            'puka-core.js'
+            'puka-ui.js'
+            'puka-human-game-v02.js'
+            'manifest.webmanifest'
+            'registry.json'
+            'sw.js'
+          )
+          mkdir -p "$RUNNER_TEMP/puka-carrier-proof"
+          pending=1
+          for attempt in $(seq 1 80); do
+            pending=0
+            echo "PUKA CARRIER PROOF ATTEMPT $attempt"
+            for f in "${files[@]}"; do
+              local_file="$src/$f"
+              cf="$RUNNER_TEMP/puka-carrier-proof/cf-${f//\//_}"
+              gh="$RUNNER_TEMP/puka-carrier-proof/gh-${f//\//_}"
+              test -s "$local_file" || { echo "SOURCE HOLD missing $local_file"; exit 1; }
+              cf_code="$(curl --silent --show-error --location --max-time 25 -H 'Cache-Control: no-cache' -o "$cf" -w '%{http_code}' "$canonical/$f?carrier-proof=$GITHUB_RUN_ID-$attempt" || true)"
+              gh_code="$(curl --silent --show-error --location --max-time 25 -H 'Cache-Control: no-cache' -o "$gh" -w '%{http_code}' "$recovery/$f?carrier-proof=$GITHUB_RUN_ID-$attempt" || true)"
+              if [ "$cf_code" != 200 ] || [ "$gh_code" != 200 ]; then
+                echo "WAIT $f canonical=$cf_code recovery=$gh_code"
+                pending=1
+                continue
+              fi
+              local_sha="$(sha256sum "$local_file" | awk '{print $1}')"
+              cf_sha="$(sha256sum "$cf" | awk '{print $1}')"
+              gh_sha="$(sha256sum "$gh" | awk '{print $1}')"
+              if [ "$local_sha" != "$cf_sha" ] || [ "$local_sha" != "$gh_sha" ]; then
+                echo "WAIT $f source=$local_sha canonical=$cf_sha recovery=$gh_sha"
+                pending=1
+              else
+                echo "PARITY PASS $f $local_sha"
+              fi
+            done
+            if [ "$pending" = 0 ]; then break; fi
+            sleep 4
+          done
+          test "$pending" = 0 || { echo 'PUKA CARRIER PARITY HOLD'; exit 1; }
+
+          grep -Fq 'PUKA v0.14A' "$src/00_OPEN_FIRST.html"
+          grep -Fq 'VISIBLE_ACTION_HISTORY_ONLY' "$src/puka-human-game-v02.js"
+          grep -Fq '"id":"./00_OPEN_FIRST.html"' "$src/manifest.webmanifest"
+          grep -Fq '"liveDoor":"https://jmisjustme-estate.pages.dev/games-beyond/puka/"' "$src/registry.json"
+          echo 'PUKA CARRIER INDEPENDENCE DING: source + canonical Cloudflare + GitHub Pages recovery carrier are byte-identical for critical body files.'
+
+      - name: Seal PUKA carrier-independence receipt
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          receipt={
+            'schema':'JM.PUKA.CarrierIndependenceProof/1.0',
+            'product_body':'PUKA v0.14A',
+            'verified_utc':datetime.now(timezone.utc).isoformat(),
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'canonical_door':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
+            'canonical_carrier':'Cloudflare Pages',
+            'recovery_carrier':'https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka/',
+            'recovery_carrier_role':'FALLBACK_BODY_RECOVERY_NOT_SECOND_IDENTITY',
+            'critical_files':['index.html','00_OPEN_FIRST.html','puka-core.js','puka-ui.js','puka-human-game-v02.js','manifest.webmanifest','registry.json','sw.js'],
+            'source_to_cloudflare_byte_parity':'PASS',
+            'source_to_github_pages_byte_parity':'PASS',
+            'cloudflare_to_github_pages_byte_parity':'PASS',
+            'canonical_door_unchanged':True,
+            'cross_origin_local_state_migration':'UNCLAIMED_NOT_IMPLEMENTED',
+            'installed_physical_android_lifecycle':'UNCLAIMED',
+            'cold_ding':False,
+            'crowned':False,
+            'claim_boundary':'Critical PUKA source files are byte-identical on the canonical Cloudflare carrier and GitHub Pages recovery carrier. This proves body/carrier independence and recovery availability, not automatic cross-origin browser-state migration, installed physical Android lifecycle, Cold Ding or final crown.'
+          }
+          Path('games-beyond/puka/CARRIER_INDEPENDENCE_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+"\n",encoding='utf-8')
+          PY
+          git config user.name 'JM PUKA Carrier Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add games-beyond/puka/CARRIER_INDEPENDENCE_RECEIPT.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seal PUKA carrier-independence byte parity [skip ci]'
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

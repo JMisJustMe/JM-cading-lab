@@ -1,0 +1,32 @@
+name: JM Portable Body — KICSHIFT
+
+on:
+  push:
+    branches:
+      - jm-portable-body-kicshift-v0.1
+    paths:
+      - 'apps-tools-games/jm-portable-body/kicshift-v0.1/**'
+      - '.github/workflows/jm-portable-kicshift.yml'
+  workflow_dispatch:
+
+jobs:
+  independent-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+    steps:
+      - name: Checkout JM source mirror
+        uses: actions/checkout@v4
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps-tools-games/jm-portable-body/kicshift-v0.1/package-lock.json
+      - name: Install independent dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build outside Lovable
+        run: npm run build
+      - name: Record carrier contents
+        run: find dist -maxdepth 2 -type f -printf '%p %s bytes\n' | sort

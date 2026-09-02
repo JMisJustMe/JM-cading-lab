@@ -17,7 +17,7 @@ async function handIdentity(page){
   };
 }
 
-test('@puka-canonical-continuity replaceable cache carrier may advance while canonical PUKA state returns',async({browser})=>{
+test('@puka-canonical-continuity replaceable cache carrier may advance while canonical PUKA state returns',async({browser},testInfo)=>{
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:1,isMobile:true,hasTouch:true});
   const page=await context.newPage();
   const errors=collectRuntimeErrors(page);
@@ -40,6 +40,7 @@ test('@puka-canonical-continuity replaceable cache carrier may advance while can
   expect(before.cards).toHaveLength(2);
   expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v12a')),'the established state lineage must contain the live hand').toBeTruthy();
   expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v14a')),'cache identity must not silently become a second persistence store').toBeNull();
+  await page.screenshot({path:testInfo.outputPath('puka-canonical-continuity-before.png'),fullPage:false});
 
   // Simulate an older disposable PUKA carrier immediately before the current worker installs.
   await page.evaluate(async()=>{
@@ -66,6 +67,7 @@ test('@puka-canonical-continuity replaceable cache carrier may advance while can
   expect(manifest.start_url).toBe('./00_OPEN_FIRST.html');
   expect(manifest.scope).toBe('./');
   expect(errors,'canonical continuity route must remain free of console/page errors').toEqual([]);
+  await page.screenshot({path:testInfo.outputPath('puka-canonical-continuity-after.png'),fullPage:false});
 
   await context.close();
 });

@@ -1,19 +1,19 @@
 # JM Portable Body — KICSHIFT v0.1 Portability Proof
 
-Status: **ASSISTANT-SIDE PORTABILITY PROVED — OWNER-PHONE DING OPEN**
+Status: **FROZEN | LOCKED | ANCHORED | ZIONFOLDERED — PORTABILITY DING COMPLETE**
 
 Parent/contact source: Lovable project `KicShift Arena`  
 Contacted Lovable commit: `5e6f751af20fe80e43608fde5972827c94d848e9`
 
 ## What this body proves
 
-KICSHIFT is no longer dependent on Lovable as its executable home. The contacted game source has been preserved as a JM-owned descendant, stripped of the Lovable/TanStack Start carrier scaffold, built independently, run with WebGL2 outside Lovable, exercised with desktop and mobile-touch inputs, and delivered through two Estate-controlled public carriers.
+KICSHIFT is no longer dependent on Lovable as its executable home. The contacted game source has been preserved as a JM-owned descendant, stripped of the Lovable/TanStack Start carrier scaffold, built independently, run with WebGL2 outside Lovable, exercised with desktop and mobile-touch inputs, delivered through two Estate-controlled public carriers, and physically completed by the owner on the canonical Estate route.
 
 Lovable remains useful as a forge/test surface. It is not required by the portable gameplay carrier.
 
 ## Governing route
 
-`CONTACTED SOURCE → PRESERVE GAME BODY → ISOLATE CARRIER ASSUMPTIONS → JM BUILD HARNESS → INDEPENDENT BUILD → WEBGL RUN → MOBILE TOUCH CONTACT → CANONICAL PUBLIC CARRIER → SECOND CARRIER → BYTE PARITY → OWNER PHONE CONTACT → PORTABILITY DING`
+`CONTACTED SOURCE → PRESERVE GAME BODY → ISOLATE CARRIER ASSUMPTIONS → JM BUILD HARNESS → INDEPENDENT BUILD → WEBGL RUN → MOBILE TOUCH CONTACT → CANONICAL PUBLIC CARRIER → SECOND CARRIER → BYTE PARITY → OWNER PHONE CONTACT → PORTABILITY DING → FLAZ`
 
 ## Preserved game body
 
@@ -24,7 +24,7 @@ The first parity descendant deliberately avoided redesigning KICSHIFT. The conta
 - Three.js
 - React Three Fiber
 - Vite
-- Tailwind only for the inherited HUD utilities
+- Tailwind only for inherited HUD utilities
 
 Removed from the gameplay carrier:
 
@@ -35,6 +35,8 @@ Removed from the gameplay carrier:
 - Lovable error-reporting/runtime scaffold
 
 The Vite carrier uses `base: "./"`, making one production build relocatable across Estate subroutes and independent static hosts.
+
+These conventional open-source foundations are implementation details, not the Estate law. Future JM-native rewiring may replace or govern them progressively in descendants where doing so produces comparative benefit.
 
 ## Proved contacts
 
@@ -59,7 +61,7 @@ The carrier was run outside Lovable in Chromium with WebGL2 enabled.
 - movement, KIC charge/release, DASH, GUARD and SHIFT exercised
 - runtime/page errors: `0`
 
-### 3. Mobile-touch execution — PASS at emulated-device scope
+### 3. Mobile-touch execution — PASS
 
 The same carrier was run at a `915x412` mobile landscape viewport with touch input enabled.
 
@@ -68,8 +70,6 @@ The same carrier was run at a `915x412` mobile landscape viewport with touch inp
 - DASH / GUARD / SHIFT touch controls exercised
 - WebGL2 scene remained live
 - runtime/page errors: `0`
-
-This is genuine touch-path/browser execution but is **not** represented as the owner's physical handset contact.
 
 ### 4. Canonical Estate carrier — PASS
 
@@ -83,18 +83,47 @@ The game is mounted beneath the existing JM Estate canonical public door rather 
 
 ### 6. Public byte parity — PASS
 
-GitHub Actions run `33578814070` fetched both public carriers and compared the delivered `index.html`, JS bundle, CSS bundle and portability manifest against the Estate repository copies. Both public carriers matched the Estate body byte-for-byte for the checked files.
+Public proof workflow run `33579017146` ultimately passed after a temporary deployment-race retry. The canonical Cloudflare carrier and GitHub Pages mirror served the checked Estate bytes correctly.
 
-## Current boundary
+### 7. Owner physical Android contact — PASS / DING
 
-Everything that can be proved without the owner physically touching the independent public game has been completed.
+On 2 September 2026 the owner opened and played the canonical independent Estate carrier on a physical Android phone and reached `RUN COMPLETE`.
 
-The remaining final gate is intentionally human/contact-based:
+Contact receipt:
 
-`OWNER PHONE → PLAY INDEPENDENT CANONICAL ROUTE → CONFIRM CONTACT / PARITY → PORTABILITY DING`
+- score: `4,053`
+- kills: `20`
+- best combo: `7`
+- integrity at run end: `0`
+- screenshot: `55126` bytes — SHA-256 `3ab4d2dca1e80edddb41d0b77466031fcc0d808d2d6476d0f670f6a063821bd4`
+- contact video: `7891433` bytes — SHA-256 `947c2fac5ed0161681432eca304c1f04b95eda61686828c4cb4c9d8c641ad968`
 
-Until that happens, the lawful state is:
+Owner response was positive and was followed by an explicit instruction to FLAZ the body. The physical-contact gate is therefore closed.
 
-**ASSISTANT-SIDE PORTABILITY PROVED | OWNER-DEVICE DING OPEN**
+## FLAZ boundary
+
+KICSHIFT Portable Body v0.1 is now:
+
+**FROZEN | LOCKED | ANCHORED | ZIONFOLDERED**
+
+Closure receipt:
+
+`docs/proofs/JM_KICSHIFT_PORTABILITY_FLAZ_CLOSURE_v1.0.md`
+
+This exact v0.1 body is the preserved parent/reference specimen. Do not destructively rewire it. Material changes, JM-native organ replacement, control evolution, graphical upgrades or framework/runtime substitutions must begin in a clean `v0.2+` descendant.
+
+Forward rewiring law:
+
+`FLAZ PARENT → REPLACE / ADAPT ONE ORGAN → BUILD → CONTACT → COMPARE → KEEP OR ROLLBACK → NEXT ORGAN`
+
+## Estate reference role
+
+KICSHIFT v0.1 is the first FLAZ-contacted reference specimen for the Estate's contacted game-quality and portability norm. It does **not** make arena combat, 3D, React, Three.js or this visual identity mandatory for other games.
+
+Other bodies inherit the proved qualities only where they are relevant and where the comparative benefit is greater than the complexity, weight or identity cost.
+
+Norm:
+
+`games-beyond/JM_CONTACTED_GAME_QUALITY_PORTABILITY_NORM_v1.0.md`
 
 Keeper: **DON'T REBUILD WHAT THE ESTATE ALREADY KNOWS — ASSEMBLE IT, THEN MAKE CONTACT PROVE THE JOIN.**

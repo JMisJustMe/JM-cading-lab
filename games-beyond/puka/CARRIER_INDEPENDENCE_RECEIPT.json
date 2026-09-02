@@ -1,0 +1,30 @@
+{
+  "schema": "JM.PUKA.CarrierIndependenceProof/1.0",
+  "product_body": "PUKA v0.14A",
+  "verified_utc": "2026-09-02T11:27:25.092532+00:00",
+  "source_commit": "d9ded5ad3bc674e8e9e3a341eee913978f2ec2c4",
+  "workflow_run": "33624674421",
+  "canonical_door": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
+  "canonical_carrier": "Cloudflare Pages",
+  "recovery_carrier": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka/",
+  "recovery_carrier_role": "FALLBACK_BODY_RECOVERY_NOT_SECOND_IDENTITY",
+  "critical_files": [
+    "index.html",
+    "00_OPEN_FIRST.html",
+    "puka-core.js",
+    "puka-ui.js",
+    "puka-human-game-v02.js",
+    "manifest.webmanifest",
+    "registry.json",
+    "sw.js"
+  ],
+  "source_to_cloudflare_byte_parity": "PASS",
+  "source_to_github_pages_byte_parity": "PASS",
+  "cloudflare_to_github_pages_byte_parity": "PASS",
+  "canonical_door_unchanged": true,
+  "cross_origin_local_state_migration": "UNCLAIMED_NOT_IMPLEMENTED",
+  "installed_physical_android_lifecycle": "UNCLAIMED",
+  "cold_ding": false,
+  "crowned": false,
+  "claim_boundary": "Critical PUKA source files are byte-identical on the canonical Cloudflare carrier and GitHub Pages recovery carrier. This proves body/carrier independence and recovery availability, not automatic cross-origin browser-state migration, installed physical Android lifecycle, Cold Ding or final crown."
+}

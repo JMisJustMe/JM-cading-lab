@@ -152,4 +152,14 @@ jobs:
           git add games-beyond/puka/CONTINUITY_PROOF_RECEIPT.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'Seal PUKA canonical-door and PWA continuity proof [skip ci]'
-          git push origin HEAD:main
+          for attempt in 1 2 3 4 5 6; do
+            echo "receipt push attempt ${attempt}"
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'PUKA continuity receipt could not be fast-forwarded after retries' >&2
+          exit 1

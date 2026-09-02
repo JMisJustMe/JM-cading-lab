@@ -50,8 +50,15 @@ test('@puka-continuity canonical door, PWA identity and state survive service-wo
   const cards=await visibleHandIdentity(page);
   const pot=await visiblePot(page);
   expect(cards).toHaveLength(2);
-  const storedBefore=await page.evaluate(key=>localStorage.getItem(key),primaryStore);
-  expect(storedBefore,'stable PUKA primary store must contain the active hand').toBeTruthy();
+  const storedBeforeRaw=await page.evaluate(key=>localStorage.getItem(key),primaryStore);
+  expect(storedBeforeRaw,'stable PUKA primary store must contain the active hand').toBeTruthy();
+  const storedBefore=JSON.parse(storedBeforeRaw);
+  const beforeState={
+    version:storedBefore.version,
+    handNo:storedBefore.state?.handNo,
+    pot:storedBefore.state?.pot,
+    playerHole:(storedBefore.state?.players?.player?.hole||[]).map(c=>c.id)
+  };
   await page.screenshot({path:testInfo.outputPath('puka-continuity-before-sw-reentry.png'),fullPage:false});
 
   await page.evaluate(async(oldKey)=>{
@@ -65,8 +72,16 @@ test('@puka-continuity canonical door, PWA identity and state survive service-wo
   await expect(page.locator('#dealerLine')).toHaveText(hand);
   expect(await visibleHandIdentity(page),'same private cards must return after service-worker reinstall').toEqual(cards);
   expect(await visiblePot(page),'same pot must return after service-worker reinstall').toBe(pot);
-  const storedAfter=await page.evaluate(key=>localStorage.getItem(key),primaryStore);
-  expect(storedAfter,'service-worker/cache replacement must not erase PUKA local state').toBe(storedBefore);
+  const storedAfterRaw=await page.evaluate(key=>localStorage.getItem(key),primaryStore);
+  expect(storedAfterRaw,'service-worker/cache replacement must not erase PUKA local state').toBeTruthy();
+  const storedAfter=JSON.parse(storedAfterRaw);
+  const afterState={
+    version:storedAfter.version,
+    handNo:storedAfter.state?.handNo,
+    pot:storedAfter.state?.pot,
+    playerHole:(storedAfter.state?.players?.player?.hole||[]).map(c=>c.id)
+  };
+  expect(afterState,'stable game state must survive while trace metadata may lawfully grow').toEqual(beforeState);
 
   await page.evaluate(async()=>navigator.serviceWorker.ready);
   await page.waitForTimeout(150);

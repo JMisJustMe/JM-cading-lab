@@ -28,3 +28,9 @@ jobs:
         run: npm run build
       - name: Record carrier contents
         run: find dist -maxdepth 2 -type f -printf '%p %s bytes\n' | sort
+      - name: Upload independent carrier
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-kicshift-carrier
+          path: apps-tools-games/jm-portable-body/kicshift-v0.1/dist
+          if-no-files-found: error

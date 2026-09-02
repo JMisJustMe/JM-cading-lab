@@ -1,0 +1,48 @@
+{
+  "body": "JM Portable Body — KICSHIFT",
+  "version": "0.1-assembly",
+  "status": "STARTED_NOT_CROWNED",
+  "authority": "JM Estate",
+  "parent": {
+    "forge": "Lovable",
+    "project": "KicShift Arena",
+    "project_id": "e1802764-2c0b-430e-8160-f02d1951109b",
+    "contacted_commit": "5e6f751af20fe80e43608fde5972827c94d848e9"
+  },
+  "game_body": {
+    "runtime": ["React 19", "TypeScript", "Three.js", "React Three Fiber"],
+    "source_root": "src/game",
+    "client_only_route_observed": true,
+    "ssr_required_by_gameplay": false
+  },
+  "carrier_boundary": {
+    "lovable_specific_package_observed": "@lovable.dev/vite-tanstack-config",
+    "lovable_runtime_required_by_gameplay": false,
+    "replacement_strategy": "minimal Vite React SPA harness",
+    "preserve_game_source_first_pass": true
+  },
+  "jm_body_organs": {
+    "source_identity": "present",
+    "lineage_receipt": "present",
+    "lean_build_harness": "started",
+    "independent_source_mirror": "started_on_git_branch",
+    "independent_install_build": "open",
+    "independent_run": "open",
+    "phone_contact": "open",
+    "behaviour_parity": "open",
+    "second_carrier": "open",
+    "canonical_door_binding": "open",
+    "portability_ding": "open"
+  },
+  "proof_route": [
+    "CONTACTED_SOURCE",
+    "SOURCE_COPY",
+    "INDEPENDENT_ENVIRONMENT",
+    "INSTALL_BUILD",
+    "RUN",
+    "PHONE_CONTACT",
+    "COMPARE_BEHAVIOUR",
+    "PORTABILITY_DING"
+  ],
+  "keeper": "DON'T REBUILD WHAT THE ESTATE ALREADY KNOWS — ASSEMBLE IT, THEN MAKE CONTACT PROVE THE JOIN."
+}

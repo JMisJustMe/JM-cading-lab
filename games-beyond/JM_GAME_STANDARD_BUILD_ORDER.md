@@ -1,16 +1,19 @@
-# JM GAME STANDARD BUILD ORDER — PUKA-Proved Production Ladder v1.1
+# JM GAME STANDARD BUILD ORDER — PUKA-Proved Production Ladder v1.2
 
 **Status:** ESTATE DEFAULT GAME-BUILD ORDER — ALL OLD + NEW JM ESTATE GAMES  
 **Scope:** Every JM Estate game body, whether created before or after this standard, unless Theodore/JM explicitly overrides the order for a specific body.  
 **Parent Estate law:** `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`  
-**Reference proof lineage:** PUKA through v0.13A Deep House Visual Convergence.  
+**Reference proof lineage:** PUKA through v0.13A Deep House Visual Convergence + KICSHIFT Portable Body v0.1 FLAZ contacted quality/portability proof.  
+**Companion quality norm:** `games-beyond/JM_CONTACTED_GAME_QUALITY_PORTABILITY_NORM_v1.0.md`  
 **Keeper:** **BUILD THE BODY. PROTECT THE PLAYFIELD. DEEPEN THE WORLD. PROVE THE CONTACT. DONATE WHAT WAS LEARNED.**
 
 ## Why this exists
 
 PUKA demonstrated that a game can start later than older Estate games and still overtake them in professional/polished appearance when the build order carries forward what earlier bodies already learned.
 
-This document turns that proved route into the Estate default for **all JM Estate games — old and new**. It does **not** make PUKA the identity, theme, mechanics or visual furniture of any other game. Games inherit the **order, organs, quality floor and proof discipline** only.
+KICSHIFT subsequently demonstrated that a richer, embodied, mobile-playable game can be separated from an external forge, preserved as JM source, independently built and run, moved across public carriers, contacted through the Estate's canonical door, and completed on the owner's physical phone. That contacted jump now raises the reference floor **where relevant and comparatively beneficial** without forcing KICSHIFT's genre, framework stack or visual furniture onto other games.
+
+This document turns those proved routes into the Estate default for **all JM Estate games — old and new**. It does **not** make PUKA or KICSHIFT the identity, theme, mechanics or visual furniture of any other game. Games inherit the **order, organs, quality floor and proof discipline** only where those inheritances improve the receiving body.
 
 This standard is **retroactive-forward**: an older game is not exempt because it predates the rule, and it is not required to restart from its earliest rung. Recover its current authority, locate where it genuinely stands, inherit newer Estate organs where relevant, prove the receiving context, and continue forward through a clean descendant.
 
@@ -34,7 +37,7 @@ For an existing game:
 7. promote a clean descendant without rewriting frozen parents;
 8. donate any new learning back into the Estate.
 
-A game built before PUKA may therefore inherit production intelligence proved after it was born. A donor can raise the starting floor; it cannot manufacture proof for the receiver.
+A game built before PUKA or KICSHIFT may therefore inherit production intelligence proved after it was born. A donor can raise the starting floor; it cannot manufacture proof for the receiver.
 
 **DONOR PROOF ENABLES A HIGHER START; RECEIVER CONTACT EARNS THE RECEIVER CLAIM.**
 
@@ -234,7 +237,7 @@ Before calling a mature visual stage complete, audit against the **current** Est
 
 Default inherited laws currently include:
 
-- maximal visual depth is a core function;
+- maximal visual depth is a core function where it materially benefits the body;
 - depth must carry meaning;
 - interaction must produce perceivable consequence;
 - shared house does not erase distinct room/game identity;
@@ -262,6 +265,15 @@ Before promotion:
 - zero console/page errors;
 - proof artifact/receipt;
 - no automated aesthetic-crown claim.
+
+For relevant release-worthy web/embodied games, additionally prefer:
+
+- source body recoverable outside the authoring forge;
+- independent install/build proof;
+- runtime proof outside the authoring forge;
+- relocatable or otherwise carrier-independent release packaging;
+- a stable canonical public door;
+- an alternate carrier/recovery route when continuity consequences justify it.
 
 **Law:** real-viewport structural proof != owner aesthetic acceptance.
 
@@ -291,7 +303,8 @@ For estate-hosted HTML/web games use:
 - contact the exact production route/assets;
 - seal the public-contact receipt;
 - keep one stable owner-facing live URL whenever possible;
-- give the proved live direct door first.
+- give the proved live direct door first;
+- when the game's consequence justifies it, keep host/carrier identity separate from the canonical public door and preserve an alternate carrier or recovery route.
 
 Sandbox/ZIP/file routes are fallback/archive/offline-transfer routes, not normal owner delivery.
 
@@ -308,6 +321,8 @@ Owner physical contact remains separate:
 - enjoyment / clarity / frustration;
 - any physical-device-only behaviour.
 
+For a relevant high-value or public game, owner device contact is the final practical gate before mature FLAZ/crown claims about the contacted experience.
+
 Automated proof must never manufacture Cold Ding or aesthetic crown.
 
 **NO DING, NO CLAIM.**
@@ -322,7 +337,8 @@ After a successful jump:
 - donate them to the Estate as organs/standards/tests;
 - preserve the source game's identity;
 - let every relevant old or new game start or continue higher where the donation applies;
-- upgrade the standard if a newer body proves a stronger order.
+- upgrade the standard if a newer body proves a stronger order;
+- apply the relevance + comparative-benefit gate before inheriting heavier capabilities.
 
 **BUILD ONCE -> LEARN ONCE -> DONATE MECHANISM -> EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
@@ -330,7 +346,7 @@ After a successful jump:
 
 # PUKA reference trace
 
-PUKA is the proved reference lineage that exposed this order:
+PUKA is the proved reference lineage that exposed the canonical production order:
 
 `core playable body -> fit/control reset -> authored card body -> presentation-route identity -> visible court/progression -> material/environment quality -> table theatre -> living visible-state feedback -> Estate conformance -> full-table product depth -> Deep House visual convergence -> real-context proof -> authoritative live door`
 
@@ -352,6 +368,57 @@ This trace is evidence for the production ladder, **not a requirement that any o
 
 ---
 
+# KICSHIFT FLAZ reference trace
+
+KICSHIFT Portable Body v0.1 is the first FLAZ-contacted reference specimen for the Estate's richer-game quality + portability norm.
+
+It proved this route:
+
+`external forge/contact -> ordinary source recovery -> JM-owned descendant -> carrier scaffold separation -> independent build -> independent WebGL run -> mobile touch execution -> canonical Estate door -> second carrier -> public byte parity -> owner physical-phone run completion -> FLAZ`
+
+Its owner-contact run receipt reached:
+
+- score `4,053`
+- kills `20`
+- best combo `7`
+- `RUN COMPLETE`
+
+This trace donates a **quality-and-portability reference**, not a mandatory implementation stack.
+
+KICSHIFT's current React / TypeScript / Three.js / React Three Fiber / Vite foundations remain replaceable implementation choices. A receiving game inherits only the capabilities that improve it.
+
+Companion norm:
+
+`games-beyond/JM_CONTACTED_GAME_QUALITY_PORTABILITY_NORM_v1.0.md`
+
+**INHERIT PROVED QUALITY WHERE RELEVANT AND COMPARATIVELY BENEFICIAL. DO NOT COPY FURNITURE OR ADD WEIGHT FOR STATUS.**
+
+---
+
+# Reference hierarchy
+
+The Estate now carries complementary floors rather than one giant mandatory template:
+
+- **PUKA Lite:** smallest practical prototype/contact floor.
+- **PUKA / production ladder:** default build-order and maturity route.
+- **KICSHIFT FLAZ:** contacted richer-game quality + portability reference where relevant and comparatively beneficial.
+
+A simple game is allowed to remain simple. A richer game is no longer allowed to start artificially low merely because the Estate used to lack a proved higher reference.
+
+---
+
+# Progressive rewiring rule
+
+A contacted body that currently uses conventional/open-source foundations may become progressively more JM-native without sacrificing its working parent.
+
+Default route:
+
+`FLAZ PARENT -> CLEAN DESCENDANT -> REPLACE / ADAPT ONE ORGAN -> BUILD -> CONTACT -> COMPARE -> KEEP OR ROLLBACK -> NEXT ORGAN`
+
+Never rewrite a frozen parent merely to increase JM-native percentage. Native rewiring must earn its place by preserving or improving contact, continuity, identity, recoverability, weight or capability.
+
+---
+
 # Full-complete jump rule
 
 Development should prefer **full-complete jumps** over tiny cosmetic version churn.
@@ -360,6 +427,9 @@ A jump may combine several adjacent stages when the body is strong enough, but i
 
 For old games, use the ladder as a maturity locator and forward-upgrade route, not as an excuse to rebuild already-proved foundations.
 
+For new games, use the highest relevant proved floor. Do not deliberately build beneath KICSHIFT-level quality/portability where that higher floor is clearly beneficial, and do not force KICSHIFT-level weight where it is not.
+
 **FULL BODY -> STRAIGHT RUN -> CORRECT AFTER.**  
 **CONTACT BEFORE CROWN.**  
-**NO RESTART.**
+**NO RESTART.**  
+**HIGHEST RELEVANT QUALITY THAT EARNS ITS WEIGHT.**

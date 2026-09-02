@@ -1,7 +1,7 @@
 {
   "body": "JM Portable Body — KICSHIFT",
   "version": "0.1-portability-proof",
-  "status": "ASSISTANT_PORTABILITY_PROVED_OWNER_DEVICE_DING_OPEN",
+  "status": "FLAZ_COMPLETE_PORTABILITY_PROVED_OWNER_DEVICE_DING_COMPLETE",
   "authority": "JM Estate",
   "parent": {
     "forge": "Lovable",
@@ -30,11 +30,11 @@
     "independent_install_build": "proved_github_actions",
     "independent_run": "proved_webgl2_1280x720_no_runtime_errors",
     "mobile_emulated_touch_contact": "proved_915x412_webgl2_joystick_kic_dash_guard_shift_no_runtime_errors",
-    "physical_owner_phone_contact": "open",
-    "behaviour_parity": "assistant_visual_and_control_parity_pass_owner_device_confirmation_open",
+    "physical_owner_phone_contact": "proved_canonical_estate_route_run_complete",
+    "behaviour_parity": "assistant_visual_control_parity_pass_plus_owner_physical_contact_acceptance",
     "second_carrier": "proved_github_pages_mirror",
     "canonical_door_binding": "proved_cloudflare_estate_subroute",
-    "portability_ding": "assistant_scope_pass_owner_device_ding_open"
+    "portability_ding": "complete"
   },
   "build_proof": {
     "workflow_run_id": 33578677174,
@@ -56,14 +56,43 @@
     "mobile_touch_screenshot_sha256": "5292a6bd903ab11d652e30bd72f07b937c93447c0b91aa18ce696db787dfdb91",
     "runtime_errors": 0
   },
+  "owner_contact_proof": {
+    "date": "2026-09-02",
+    "route": "https://jmisjustme-estate.pages.dev/games-beyond/kicshift/",
+    "device_scope": "owner_physical_android_phone",
+    "result": "RUN_COMPLETE",
+    "score": 4053,
+    "kills": 20,
+    "best_combo": 7,
+    "integrity": 0,
+    "owner_acceptance": "positive_contact_and_flaz_instruction",
+    "screenshot_size_bytes": 55126,
+    "screenshot_sha256": "3ab4d2dca1e80edddb41d0b77466031fcc0d808d2d6476d0f670f6a063821bd4",
+    "video_size_bytes": 7891433,
+    "video_sha256": "947c2fac5ed0161681432eca304c1f04b95eda61686828c4cb4c9d8c641ad968"
+  },
   "public_carrier_proof": {
-    "workflow_run_id": 33578814070,
-    "result": "success",
+    "workflow_run_id": 33579017146,
+    "result": "success_after_deploy_race_rerun",
     "canonical": "https://jmisjustme-estate.pages.dev/games-beyond/kicshift/",
     "mirror": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/kicshift/",
     "canonical_http": "pass",
     "mirror_http": "pass",
     "public_byte_parity": "pass"
+  },
+  "flaz": {
+    "frozen": true,
+    "locked": true,
+    "anchored": true,
+    "zionfoldered": true,
+    "closure_record": "docs/proofs/JM_KICSHIFT_PORTABILITY_FLAZ_CLOSURE_v1.0.md",
+    "frozen_parent_rule": "no_destructive_body_changes_after_closure",
+    "forward_change_rule": "rewires_and_material_changes_begin_in_v0.2_or_later_descendants"
+  },
+  "estate_reference_role": {
+    "role": "first_flaz_contacted_quality_and_portability_reference_specimen",
+    "norm": "games-beyond/JM_CONTACTED_GAME_QUALITY_PORTABILITY_NORM_v1.0.md",
+    "inheritance_rule": "inherit_relevant_proved_qualities_when_comparative_benefit_exceeds_cost_not_genre_or_framework_furniture"
   },
   "proof_route": [
     "CONTACTED_SOURCE",
@@ -76,8 +105,9 @@
     "SECOND_CARRIER_CONTACT",
     "PUBLIC_BYTE_PARITY",
     "OWNER_PHONE_CONTACT",
-    "OWNER_PARITY_CONFIRMATION",
-    "PORTABILITY_DING"
+    "OWNER_ACCEPTANCE",
+    "PORTABILITY_DING",
+    "FLAZ"
   ],
   "keeper": "DON'T REBUILD WHAT THE ESTATE ALREADY KNOWS — ASSEMBLE IT, THEN MAKE CONTACT PROVE THE JOIN."
 }

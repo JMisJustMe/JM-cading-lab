@@ -1,7 +1,7 @@
 {
   "body": "JM Portable Body — KICSHIFT",
   "version": "0.1-assembly",
-  "status": "STARTED_NOT_CROWNED",
+  "status": "INDEPENDENT_BUILD_PROVED_CONTACT_OPEN",
   "authority": "JM Estate",
   "parent": {
     "forge": "Lovable",
@@ -24,15 +24,23 @@
   "jm_body_organs": {
     "source_identity": "present",
     "lineage_receipt": "present",
-    "lean_build_harness": "started",
-    "independent_source_mirror": "started_on_git_branch",
-    "independent_install_build": "open",
-    "independent_run": "open",
+    "lean_build_harness": "proved",
+    "independent_source_mirror": "proved_on_git_branch",
+    "independent_install_build": "proved_github_actions",
+    "independent_run": "carrier_shell_serves; full_webgl_contact_open",
     "phone_contact": "open",
     "behaviour_parity": "open",
     "second_carrier": "open",
     "canonical_door_binding": "open",
     "portability_ding": "open"
+  },
+  "build_proof": {
+    "workflow_run_id": 33577518085,
+    "workflow_head": "c736ac308815b3c635ac48a0a7894a5f73145d36",
+    "result": "success",
+    "artifact": "jm-kicshift-carrier",
+    "artifact_size_bytes": 311044,
+    "artifact_sha256": "44584d697024fe061f30fc4a5ac3ece867430c87502a13667ba92e04abd45bd3"
   },
   "proof_route": [
     "CONTACTED_SOURCE",

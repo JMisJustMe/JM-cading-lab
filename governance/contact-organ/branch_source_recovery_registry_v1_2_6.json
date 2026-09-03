@@ -1,0 +1,44 @@
+{
+  "schema": "jm.estate.contact-organ-branch-source-recovery-registry/1.2.6",
+  "date": "2026-09-03",
+  "inherits": [
+    "source_seat_manifest_v1_2_3.json",
+    "source_seat_authority_overlay_v1_2_5.json"
+  ],
+  "law": "BRANCH PRESENCE != CURRENT SOURCE AUTHORITY. EXACT FROZEN SHA MAY MATERIALISE; SAME-BODY BRANCH WITHOUT EXACT SHA IS LINEAGE ONLY.",
+  "rows": [
+    {"recipientId":"cross-continuity","branchPatterns":["*continuity*","*device-continuity*"]},
+    {"recipientId":"phone-gold","branchPatterns":["*gold-mode*","*gold*mode*","*gold-circuit*"]},
+    {"recipientId":"phone-foundry","branchPatterns":["*foundry*"]},
+    {"recipientId":"phone-grabber","branchPatterns":["*file-grabber*","*grabber*"]},
+    {"recipientId":"phone-librarian","branchPatterns":["*estate-librarian*","*librarian*"]},
+    {"recipientId":"phone-notebook","branchPatterns":["*living-notebook*","*notebook*"]},
+    {"recipientId":"phone-kading","branchPatterns":["*kading*"]},
+    {"recipientId":"phone-source-notebook","branchPatterns":["*source-aware*","*source*notebook*"]},
+    {"recipientId":"phone-griproute","branchPatterns":["*griproute*","*ftr*grip*"]},
+    {"recipientId":"phone-zion-os","branchPatterns":["*zionfolder*","*zion*os*"]},
+    {"recipientId":"phone-game-estate","branchPatterns":["*game-estate*","*games-beyond*"]},
+    {"recipientId":"phone-legaliving","branchPatterns":["*legaliving*"]},
+    {"recipientId":"phone-source-vault","branchPatterns":["*source-vault*","*full-source*"]},
+    {"recipientId":"phone-organ-library","branchPatterns":["*organ-library*","*app-organ*"]},
+    {"recipientId":"phone-context","branchPatterns":["*contextual*","*context-lens*"]},
+    {"recipientId":"phone-contact-deck","branchPatterns":["*common-floor*","*interaction-common*","*contact-deck*"]},
+    {"recipientId":"phone-signal","branchPatterns":["*signal-engine*"]},
+    {"recipientId":"phone-compass","branchPatterns":["*estate-compass*"]},
+    {"recipientId":"phone-intertap","branchPatterns":["*intertap*"]},
+    {"recipientId":"phone-housekeeper","branchPatterns":["*housekeeper*"]},
+    {"recipientId":"phone-multihub","branchPatterns":["*multihub*"]},
+    {"recipientId":"phone-onebody","branchPatterns":["*onebody*"]}
+  ],
+  "knownStrongBranchExamples": {
+    "phone-intertap": ["intertap-clean-v0-1-4"],
+    "phone-signal": ["signal-engine-android-v2.4", "agent/estate-apps-games-publication-wave-2-signal-engine-v2-4"],
+    "phone-compass": ["jm-estate-compass-clean-v1-2", "jm-estate-compass-native-cartridge-handoff-v1-3-2"],
+    "phone-multihub": ["agent/jm-living-multihub-v5-0a", "agent/jm-living-multihub-v6-0a-apk", "agent/jm-living-multihub-v6-0a-apk-current"],
+    "phone-grabber": ["build/file-grabber-visualang-v0-3", "build/file-grabber-visualang-v0-4-exact-proof"],
+    "phone-librarian": ["agent/estate-librarian-v0-4", "agent/estate-librarian-v0-4-1", "agent/estate-librarian-v0-4-1a-install-recovery"],
+    "phone-onebody": ["agent/onebody-routeos-kernel-v0-2"],
+    "phone-source-notebook": ["coding/codifying-source-aware-maturation-v1", "coding/jmlogic-source-aware-maturation-v1", "coding/jmp-source-aware-maturation-v1", "coding/kocodifying-source-aware-maturation-v1"]
+  },
+  "claimBoundary": "Branch matching is recovery routing only. Only exact frozen byte/SHA matches may enter the existing source-seat materialisation gate. Native package matches remain native-package seats until a qualified native descendant is built."
+}

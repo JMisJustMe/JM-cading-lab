@@ -1,0 +1,89 @@
+name: Recover Contact Organ Sources from Git History v1.2.4
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_from_git_history_v1_2_4.py'
+      - 'governance/contact-organ/source_seat_manifest_v1_2_3.json'
+      - 'governance/contact-organ/seat_contact_source_v1_2_3.py'
+      - 'governance/contact-organ/seat_contact_source_v1_2_3A.py'
+      - '.github/workflows/recover-contact-organ-sources-git-history-v1-2-4.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-contact-organ-sources-git-history-v1-2-4
+  cancel-in-progress: false
+
+jobs:
+  recover-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Compile and self-test history recovery
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_git_history_v1_2_4.py
+          python3 governance/contact-organ/recover_contact_sources_from_git_history_v1_2_4.py --selftest
+
+      - name: Search every reachable Git blob and seat exact authorities
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_git_history_v1_2_4.py \
+            | tee estate-publication/contact-organ-descendants/GIT_HISTORY_SOURCE_RECOVERY_RUNTIME_v1_2_4.txt
+
+      - name: Verify accounting cannot regress or inflate
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          h=json.loads((root/'GIT_HISTORY_SOURCE_RECOVERY_RECEIPT_v1_2_4.json').read_text())
+          p=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          a=h['accountingAfterHistoryRecovery']
+          assert h['recipientRows']==22
+          assert a['totalRecipients']==28
+          assert a['materialized']==p['materialized']
+          assert a['materializationOpen']==28-a['materialized']
+          assert a['unresolved']==0
+          assert a['materialized']>=6
+          assert h['exactHistorySourcesSeated']==len(h['seatedRecipientIds'])
+          for row in h['results']:
+              if row['status']=='EXACT_GIT_HISTORY_SOURCE_SEATED':
+                  rid=row['recipientId']
+                  seat=root/rid/'SOURCE_SEAT_RECEIPT_v1_2_3.json'
+                  if not seat.exists():
+                      seat=root/rid/'SOURCE_SEAT_RECEIPT_v1_2_3A.json'
+                  assert seat.exists(), (rid,'source seat receipt missing')
+                  rec=json.loads(seat.read_text())
+                  assert rec['parentMutated'] is False
+                  if rec.get('materialized'):
+                      patch=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+                      assert patch.exists(), (rid,'patch receipt missing')
+          print(f"Git-history recovery PASS: {h['exactHistorySourcesSeated']} exact historical source(s) seated; {a['materialized']}/28 materialized")
+          PY
+
+      - name: Commit earned historical recoveries and receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Git History Recovery v1.2.4'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/source-carriage/contact-organ-v1.2 || true
+          git add estate-publication/contact-organ-descendants || true
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ v1.2.4 Git-history recovery [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

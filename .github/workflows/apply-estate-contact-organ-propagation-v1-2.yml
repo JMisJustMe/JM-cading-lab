@@ -1,0 +1,109 @@
+name: Apply Estate Contact Organ Propagation v1.2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/**'
+      - 'apps/**'
+      - 'lyrics/**'
+      - 'money-menu/**'
+      - 'games-beyond/**'
+      - 'coding-estate/**'
+      - 'recovery/**'
+      - 'estate-publication/apps-tools-games/**'
+      - 'estate-publication/source-carriage/**'
+      - '.github/workflows/apply-estate-contact-organ-propagation-v1-2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-propagation-v1-2
+  cancel-in-progress: false
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate 28 recipients and 23 typed recovery routes
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          rr=json.loads(Path('governance/contact-organ/recipient_registry_v1_1.json').read_text())['recipients']
+          sr=json.loads(Path('governance/contact-organ/source_recovery_registry_v1_2.json').read_text())['rows']
+          assert len(rr)==28 and len({x['id'] for x in rr})==28
+          assert len(sr)==23 and len({x['recipientId'] for x in sr})==23
+          assert sum(x['id'].startswith('cross-') for x in rr)==3
+          assert sum(x['id'].startswith('phone-') for x in rr)==25
+          assert all(not x['remote'] for x in rr if x['id'].startswith('phone-'))
+          classes={x['routeClass'] for x in sr}
+          assert 'FILE_LIBRARY_EXACT_SOURCE' in classes
+          assert 'FILE_LIBRARY_SOURCE_CUSTODY' in classes
+          assert 'FILE_LIBRARY_EMBEDDED_DONOR' in classes
+          assert 'DECLARED_BRIDGE_EXACT_SOURCE' in classes
+          assert 'EXACT_LINEAGE_PATCH_ROUTE' in classes
+          assert 'BODY_SPECIFIC_SOURCE_PACKAGE_REQUIRED' in classes
+          print('28 recipients + 23 typed recovery authorities PASS')
+          PY
+
+      - name: Compile v1.2 propagator
+        run: python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_2.py
+
+      - name: Check Contact Organ donors
+        run: |
+          node --check governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js
+          node --check governance/contact-organ/JM_ESTATE_CROSS_DEVICE_CONTACT_ADAPTER_v1_0.js
+
+      - name: Run recovery-aware propagation
+        run: |
+          set -euo pipefail
+          mkdir -p estate-publication/contact-organ-descendants
+          python3 governance/contact-organ/propagate_contact_organ_v1_2.py | tee estate-publication/contact-organ-descendants/PROPAGATION_RUNTIME_DIAGNOSTIC_v1_2.txt
+
+      - name: Verify absolute accounting and semantic separation
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'PROPAGATION_RECEIPT_v1_2.json').read_text())
+          assert r['totalRecipients']==28
+          assert r['materialized']+r['recoveryAuthorityConfirmed']+r['unresolved']==28
+          assert r['unresolved']==0, r
+          cross={'cross-continuity','cross-forge','cross-private-arcade'}
+          for row in r['results']:
+              if not (row['status'].startswith('MATERIALIZED_') or row['status'].startswith('CARRY_FORWARD_MATERIALIZED_')):
+                  continue
+              p=Path(row['descendant'])
+              text=p.read_text(encoding='utf-8')
+              has_cross='JMCrossDeviceContactAdapter' in text
+              if row['recipientId'] in cross:
+                  assert has_cross, (row['recipientId'],'cross donor missing')
+              else:
+                  assert not has_cross, (row['recipientId'],'cross donor leaked into phone-only body')
+          print(f"ABSOLUTE ACCOUNTING PASS: materialized={r['materialized']} recovery-authority={r['recoveryAuthorityConfirmed']} unresolved={r['unresolved']}")
+          PY
+
+      - name: Commit v1.2 receipts and recovery authorities
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Propagation Gate v1.2'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ v1.2 recovery-aware propagation [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

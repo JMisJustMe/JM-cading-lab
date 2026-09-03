@@ -1,0 +1,49 @@
+{
+  "schema": "jm.estate.contact-organ-propagation-authority/1.2.2",
+  "date": "2026-09-03",
+  "inherits": "v1.2.1 frozen-green materialisation floor",
+  "laws": {
+    "parent": "FROZEN PARENT -> CLEAN DESCENDANT",
+    "claim": "NO DING, NO CLAIM.",
+    "writableRoute": "ACCESSIBLE SOURCE != /mnt/data SOURCE. FIND THE WRITABLE ROUTE BEFORE DECLARING THE BODY UNWRITABLE."
+  },
+  "totalRecipients": 28,
+  "materialized": 6,
+  "materializationOpen": 22,
+  "strengthenedRecoveryAuthorities": 2,
+  "unresolved": 0,
+  "strengthened": [
+    {
+      "recipientId": "phone-housekeeper",
+      "state": "NATIVE_CONTACT_ADAPTER_READY__EXACT_SOURCE_PACKAGE_BYTES_NOT_REPO_SEATED",
+      "carrier": "NATIVE_ANDROID_SAF",
+      "adapter": "governance/contact-organ/android/JMHousekeeperContactAdapter.kt",
+      "adapterSha256": "cf6fcaa6accfe2ee0772dacd3b34c5d45f2d432591cdfbf53e90f7470db2742e",
+      "sourcePackageSha256": "30c0a34e7010b31cbbb1027be6cdf2404e2b09cbb745f7169046622913b991a6",
+      "carrierSourceSha256": "e161a448073d33488992e763e9f81d1e7cf1bcf6c11a75de21fb2bb9873b1432",
+      "apkSha256": "6444bc787d397ca31067883b36669e29a5e87a02f8c86c7616fcafa9f5891f54",
+      "physicalDing": "OPEN"
+    },
+    {
+      "recipientId": "cross-continuity",
+      "state": "EXACT_DONOR_EXTRACTOR_READY__BODY_DOCK_BYTES_NOT_REPO_SEATED",
+      "extractor": "governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py",
+      "extractorSha256": "bf2257070ed56cd6f682eb9676d73f90092202065122dede1e3a56011e35d13f",
+      "expectedBytes": 284399,
+      "expectedSha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+      "authorityCarrierSha256": "345038e8ece9755f55b0caa60d98b7ac63dbd43c97b422c09e2d804b3ac7fe98",
+      "physicalDing": "OPEN"
+    }
+  ],
+  "qa": {
+    "v1_2_1_absolute_accounting_preserved": "PASS",
+    "private_arcade_v1_2_1_descendant_hash_preserved": "PASS",
+    "housekeeper_native_semantic_adapter": "PASS",
+    "housekeeper_remote_authority_not_fabricated": "PASS",
+    "housekeeper_copy_hash_delete_gate": "PASS",
+    "device_continuity_extractor_python_compile": "PASS",
+    "device_continuity_extractor_parser_selftest": "PASS",
+    "exact_hash_authorities_locked": "PASS"
+  },
+  "claimBoundary": "v1.2.2 proves stronger recovery authority and executable recovery/adaptation machinery only. Materialisation remains 6/28. No missing binary/source bytes, APK build/install, SAF consequence, Phone-Laptop route, or physical Ding is synthesized."
+}

@@ -1,0 +1,94 @@
+name: Apply Estate Contact Organ Propagation v1.2.2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recovery_authority_delta_v1_2_2.json'
+      - 'governance/contact-organ/android/JMHousekeeperContactAdapter.kt'
+      - 'governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py'
+      - 'governance/contact-organ/qa_contact_organ_v1_2_2.py'
+      - 'governance/contact-organ/v1_2_2_trigger_*.txt'
+      - '.github/workflows/apply-estate-contact-organ-propagation-v1-2-2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-propagation-v1-2-2
+  cancel-in-progress: false
+
+jobs:
+  strengthen-recovery-authority:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Preserve v1.2.1 materialisation floor
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('estate-publication/contact-organ-descendants/PROPAGATION_RECEIPT_v1_2_1.json')
+          r=json.loads(p.read_text())
+          assert r['totalRecipients']==28
+          assert r['materialized']==6
+          assert r['recoveryAuthorityConfirmed']==22
+          assert r['unresolved']==0
+          print('v1.2.1 frozen-green floor PASS: 6 materialized + 22 recovery = 28')
+          PY
+
+      - name: Compile recovery tooling
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py
+          python3 -m py_compile governance/contact-organ/qa_contact_organ_v1_2_2.py
+          python3 governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py --selftest
+
+      - name: Run v1.2.2 authority strengthening QA
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/qa_contact_organ_v1_2_2.py | tee estate-publication/contact-organ-descendants/PROPAGATION_RUNTIME_DIAGNOSTIC_v1_2_2.txt
+
+      - name: Verify authority receipt and no false increment
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('estate-publication/contact-organ-descendants/PROPAGATION_AUTHORITY_RECEIPT_v1_2_2.json')
+          r=json.loads(p.read_text())
+          assert r['totalRecipients']==28
+          assert r['materialized']==6
+          assert r['materializationOpen']==22
+          assert r['strengthenedRecoveryAuthorities']==2
+          assert r['unresolved']==0
+          ids={x['recipientId'] for x in r['strengthened']}
+          assert ids=={'phone-housekeeper','cross-continuity'}
+          assert all(x['physicalDing']=='OPEN' for x in r['strengthened'])
+          assert r['qa']['housekeeper_native_semantic_adapter']=='PASS'
+          assert r['qa']['device_continuity_extractor_parser_selftest']=='PASS'
+          print('v1.2.2 authority strengthening PASS; materialisation remains honestly 6/28')
+          PY
+
+      - name: Commit v1.2.2 authority receipts
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Recovery Gate v1.2.2'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants/PROPAGATION_AUTHORITY_RECEIPT_v1_2_2.json
+          git add estate-publication/contact-organ-descendants/PROPAGATION_RUNTIME_DIAGNOSTIC_v1_2_2.txt
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ v1.2.2 strengthened recovery authority [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

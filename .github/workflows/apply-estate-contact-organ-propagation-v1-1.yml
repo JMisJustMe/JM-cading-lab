@@ -1,0 +1,98 @@
+name: Apply Estate Contact Organ Propagation v1.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/**'
+      - 'apps/**'
+      - 'lyrics/**'
+      - 'money-menu/**'
+      - 'games-beyond/**'
+      - 'coding-estate/**'
+      - 'recovery/**'
+      - 'estate-publication/apps-tools-games/**'
+      - '.github/workflows/apply-estate-contact-organ-propagation-v1-1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-propagation-v1-1
+  cancel-in-progress: false
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Syntax and donor gates
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1.py
+          python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_1.py
+          node --check governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js
+          node --check governance/contact-organ/JM_ESTATE_CROSS_DEVICE_CONTACT_ADAPTER_v1_0.js
+
+      - name: Materialise cross-aware clean descendants
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/propagate_contact_organ_v1_1.py | tee /tmp/jm-contact-propagation-v1-1.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/jm-contact-propagation-v1-1.json').read_text())
+          assert r['totalRecipients']==28, r
+          assert r['crossRecipients']==3, r
+          assert r['phoneRecipients']==25, r
+          assert r['materialized']>=5, r
+          print(f"MATERIALIZED: {r['materialized']} / 28")
+          print(f"CROSS DONOR DESCENDANTS: {r['crossMaterialized']} / 3")
+          print(f"COMMON PHONE/APP DESCENDANTS: {r['commonMaterialized']} / 25")
+          print(f"SOURCE RECOVERY OPEN: {r['recoveryOpen']}")
+          PY
+
+      - name: Verify semantic separation and frozen-parent law
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'PROPAGATION_RECEIPT_v1_1.json').read_text())
+          cross={'cross-continuity','cross-forge','cross-private-arcade'}
+          bad=[]
+          for row in r['results']:
+              if not row['status'].startswith('MATERIALIZED_'): continue
+              p=Path(row['descendant'])
+              text=p.read_text(encoding='utf-8')
+              if 'JM_ESTATE_CONTACT_ORGAN_PATCH_v1_1' not in text: bad.append((row['recipientId'],'marker'))
+              has_cross='JMCrossDeviceContactAdapter' in text
+              if row['recipientId'] in cross and not has_cross: bad.append((row['recipientId'],'cross donor missing'))
+              if row['recipientId'] not in cross and has_cross: bad.append((row['recipientId'],'cross donor leaked into phone-only body'))
+              rec=json.loads((p.parent/'PATCH_RECEIPT_v1_1.json').read_text())
+              if rec.get('parentMutated') is not False: bad.append((row['recipientId'],'parent mutation'))
+          assert not bad,bad
+          print('semantic separation + frozen-parent gates PASS')
+          PY
+
+      - name: Commit descendants, receipts and recovery queue
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Propagation Gate v1.1'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          git diff --cached --quiet && exit 0
+          git commit -m 'Propagate Contact Organ v1.1 with cross-device semantic separation [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

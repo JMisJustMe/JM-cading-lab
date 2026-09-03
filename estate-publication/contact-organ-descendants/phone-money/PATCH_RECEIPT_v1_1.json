@@ -1,0 +1,17 @@
+{
+  "schema": "jm.estate.contact-organ-patch-receipt/1.1",
+  "recipientId": "phone-money",
+  "source": "money-menu/index.html",
+  "sourceClass": "CURRENT_REPO_REAL_BODY_FALLBACK",
+  "sourceSha256": "7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d",
+  "expectedExactSourceSha256": "75fca3499525c28082abb5fecb2c314ed92cd20f8e52b1d45d11f77e487be727",
+  "descendant": "estate-publication/contact-organ-descendants/phone-money/index_CONTACT_ORGAN_v1_1_DESCENDANT.html",
+  "descendantSha256": "89522bdea47a71c44f9cfcaf3012240688b042b81e87f8f1ac1158d7cdebb028",
+  "parentMutated": false,
+  "commonOrganMounted": true,
+  "crossDeviceDonorMounted": false,
+  "crossCarrierBound": null,
+  "bodySpecificConsequenceWiring": "OPEN_UNTIL_BODY_ACTION_RESULT_IS_EXPLICITLY_OBSERVED",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN"
+}

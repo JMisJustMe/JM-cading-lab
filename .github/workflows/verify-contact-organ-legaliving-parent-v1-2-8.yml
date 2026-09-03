@@ -1,0 +1,86 @@
+name: Verify Contact Organ Legaliving Parent v1.2.8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'estate-publication/source-authority/contact-organ-v1.2.8/phone-legaliving/00_OPEN_FIRST_Legaliving_v1_0_3.html'
+      - '.github/workflows/verify-contact-organ-legaliving-parent-v1-2-8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify-parent-authority:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Verify exact frozen Legaliving parent and write custody receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+
+          src = Path('estate-publication/source-authority/contact-organ-v1.2.8/phone-legaliving/00_OPEN_FIRST_Legaliving_v1_0_3.html')
+          out = Path('estate-publication/contact-organ-descendants/phone-legaliving/PARENT_AUTHORITY_CUSTODY_RECEIPT_v1_2_8.json')
+          expected_bytes = 5953
+          expected_sha = '2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3'
+          target_bytes = 8999
+          target_sha = 'f9d4f15e9aef2e9bbcf4ba729e0c0d0a810ebd9bcd908f91b4ca7afdf8114af2'
+
+          raw = src.read_bytes()
+          actual_sha = hashlib.sha256(raw).hexdigest()
+          actual_bytes = len(raw)
+          if actual_bytes != expected_bytes or actual_sha != expected_sha:
+              raise SystemExit(f'LEGALIVING PARENT AUTHORITY FAIL: bytes={actual_bytes} sha={actual_sha}')
+
+          receipt = {
+            'schema': 'jm.estate.contact-organ-parent-authority-custody/1.2.8',
+            'date': '2026-09-03',
+            'recipientId': 'phone-legaliving',
+            'body': 'JM Legaliving v1.0.4 — Living Legal Folio Vision Embodiment Candidate',
+            'parent': {
+              'file': str(src),
+              'expectedBytes': expected_bytes,
+              'actualBytes': actual_bytes,
+              'expectedSha256': expected_sha,
+              'actualSha256': actual_sha,
+              'state': 'EXACT_PARENT_RECOVERED_TO_WRITABLE_CUSTODY',
+              'mutated': False
+            },
+            'candidate': {
+              'file': 'JM_LEGALIVING_v1_0_4_LIVING_LEGAL_FOLIO_EMBODIMENT_CANDIDATE.html',
+              'expectedBytes': target_bytes,
+              'expectedSha256': target_sha,
+              'state': 'OPEN__EXACT_TARGET_BYTES_NOT_YET_RECONSTRUCTED'
+            },
+            'materializedIncrement': 0,
+            'accountingFloorRemains': {'materialized': 6, 'open': 22, 'unresolved': 0},
+            'laws': ['RECOVER BEFORE REBUILD.', 'FROZEN PARENT -> CLEAN DESCENDANT.', 'NO DING, NO CLAIM.'],
+            'claimBoundary': 'This receipt proves exact frozen parent bytes are in writable GitHub custody. It does not prove or materialise the v1.0.4 candidate and does not increment Estate Contact Organ propagation accounting.'
+          }
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(receipt, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          print(json.dumps(receipt, indent=2, ensure_ascii=False))
+          PY
+      - name: Commit custody receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Parent Custody v1.2.8'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants/phone-legaliving/PARENT_AUTHORITY_CUSTODY_RECEIPT_v1_2_8.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record exact Legaliving parent custody v1.2.8 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

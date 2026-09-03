@@ -1,0 +1,65 @@
+{
+  "schema": "jm.estate.contact-organ-source-seat-authority-overlay/1.2.5",
+  "date": "2026-09-03",
+  "inherits": "source_seat_manifest_v1_2_3.json",
+  "authoritySource": "JM_FULL_TOOL_ESTATE_REMEDIATION_CLOSEOUT_v1_0.json",
+  "law": "RECOVER AUTHORITY BEFORE DECLARING AUTHORITY ABSENT.",
+  "rows": [
+    {
+      "recipientId": "phone-gold",
+      "expectedBytes": 111420,
+      "expectedSha256": "933c6c00e59b142490480065bcc435898728d002f6b69c9ed8789de96a1f355a",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-grabber",
+      "expectedBytes": 180123,
+      "expectedSha256": "936776855ba82a549446e2c79af2cb7c550e5fc7b54d923125635020ec3c1fb7",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-librarian",
+      "expectedBytes": 31041,
+      "expectedSha256": "0e0b5ec57bda6cbdf55f8727e4e5a1542232034908ec7381494dd2ab6ee05ffd",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_CARRIED_FORWARD_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-source-notebook",
+      "expectedBytes": 737070,
+      "expectedSha256": "d8b7fefa0e8a3af993271499122dc6c7b9490ace6c05299e7603d23c3111dbdd",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-zion-os",
+      "expectedBytes": 192435,
+      "expectedSha256": "9382f7b4198404cf692a81f73479a42126665a368f5c05361e87a615a76eeaf8",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_REPAIRED_DESCENDANT_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-game-estate",
+      "expectedBytes": 7333345,
+      "expectedSha256": "b8dec2a3a16a8f252adccf5032c5fde6ac4719a4599be118020d0c4746201d38",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-compass",
+      "expectedBytes": 58716,
+      "expectedSha256": "fb9167747f38b80cf73d3dcfd424d39e5fa1dd983f709825f51e5412d1d7e4e2",
+      "materializationEligible": true,
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_REPAIR_DESCENDANT_AND_BROWSER_CONTACT"
+    }
+  ],
+  "accountingEffect": {
+    "previousHtmlRowsWithoutFrozenSha": 7,
+    "recoveredFrozenShaAuthorities": 7,
+    "remainingHtmlRowsWithoutFrozenSha": 0,
+    "nativePackageRows": 1
+  },
+  "claimBoundary": "This overlay strengthens source identity/hash authority only. It does not provide the missing source bytes and therefore does not increment materialisation by itself."
+}

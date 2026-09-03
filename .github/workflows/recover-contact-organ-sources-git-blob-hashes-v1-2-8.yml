@@ -1,0 +1,103 @@
+name: Recover Contact Organ Sources by Git Blob Hash v1.2.8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/source_seat_authority_overlay_v1_2_8.json'
+      - 'governance/contact-organ/seat_contact_source_v1_2_8.py'
+      - 'governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_8.py'
+      - '.github/workflows/recover-contact-organ-sources-git-blob-hashes-v1-2-8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contact-organ-git-blob-hash-recovery-v1-2-8
+  cancel-in-progress: false
+
+jobs:
+  recover-content-addressed-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch all reachable refs
+        run: |
+          set -euo pipefail
+          git fetch --all --tags --prune --force
+
+      - name: Validate complete authority and recovery gate
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_8.py
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_8.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_8.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_8.py --selftest
+
+      - name: Hash plausible reachable Git blobs
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_8.py \
+            | tee estate-publication/contact-organ-descendants/GIT_BLOB_HASH_RUNTIME_DIAGNOSTIC_v1_2_8.txt
+
+      - name: Verify content identity and absolute accounting
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'GIT_BLOB_HASH_SOURCE_RECOVERY_RECEIPT_v1_2_8.json').read_text())
+          a=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          assert r['targetHtmlAuthorities']==21
+          assert r['reachableObjectsEnumerated']>0
+          assert r['reachableBlobs']>0
+          assert r['plausibleSizeMatchedBlobs']>=r['exactAuthorityBlobMatches']
+          assert a['totalRecipients']==28
+          assert a['materialized']+a['materializationOpen']==28
+          assert a['unresolved']==0
+          assert a['materialized']>=6
+          assert r['accountingAfter']['materialized']==a['materialized']
+          for hit in r['matches']:
+              assert hit['bytes']>0 and len(hit['sha256'])==64
+          for rid in r['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), rid
+              row=json.loads(pr.read_text())
+              assert row['parentMutated'] is False
+              assert row['commonOrganMounted'] is True
+              assert row['physicalDing']=='OPEN'
+          print('Git blob hash recovery v1.2.8 PASS', {
+              'objects':r['reachableObjectsEnumerated'],
+              'blobs':r['reachableBlobs'],
+              'plausible':r['plausibleSizeMatchedBlobs'],
+              'matches':r['exactAuthorityBlobMatches'],
+              'seated':r['seatedRecipientIds'],
+              'materialized':a['materialized'],
+              'open':a['materializationOpen'],
+          })
+          PY
+
+      - name: Commit exact recoveries and content-address census
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Content Address Gate v1.2.8'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          if [ -d estate-publication/source-carriage/contact-organ-v1.2.3 ]; then
+            git add estate-publication/source-carriage/contact-organ-v1.2.3
+          fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record content-addressed Contact Organ recovery v1.2.8 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

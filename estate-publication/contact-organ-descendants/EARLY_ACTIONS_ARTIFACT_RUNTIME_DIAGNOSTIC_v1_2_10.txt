@@ -1,0 +1,35 @@
+{
+  "schema": "jm.estate.contact-organ-actions-artifact-recovery/1.2.5",
+  "date": "2026-09-03",
+  "window": {
+    "start": "2026-08-27T02:45:00Z",
+    "end": "2026-08-27T04:29:59Z",
+    "target": "2026-08-27T05:01:47+00:00"
+  },
+  "law": "ARTIFACT PRESENCE != SOURCE AUTHORITY. EXACT NAME + FROZEN BYTES/SHA EARNS SOURCE SEAT.",
+  "runsScanned": 195,
+  "retainedArtifactsDiscovered": 158,
+  "artifactsInspected": 158,
+  "artifactsSkippedOversize": 0,
+  "downloadBytes": 118354186,
+  "apiCalls": 355,
+  "candidateFilenameHits": 0,
+  "exactArtifactSourcesSeated": 0,
+  "seatedRecipientIds": [],
+  "candidateHits": [],
+  "exactSeats": [],
+  "rejected": [],
+  "accountingBefore": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "accountingAfter": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "claimBoundary": "Artifact-vault recovery only promotes byte/hash-gated source authorities. Build/install, native SAF consequence, cross-device carrier consequence and physical Ding remain separate gates."
+}

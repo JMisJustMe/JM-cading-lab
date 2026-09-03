@@ -1,0 +1,50 @@
+{
+  "schema": "jm.estate.contact-organ-early-actions-artifact-recovery/1.2.10",
+  "date": "2026-09-03",
+  "window": {
+    "start": "2026-08-27T02:45:00Z",
+    "end": "2026-08-27T04:29:59Z",
+    "target": "2026-08-27T05:01:47+00:00"
+  },
+  "law": "ARTIFACT PRESENCE != SOURCE AUTHORITY. EXACT NAME + FROZEN BYTES/SHA EARNS SOURCE SEAT.",
+  "runsScanned": 195,
+  "retainedArtifactsDiscovered": 158,
+  "artifactsInspected": 158,
+  "artifactsSkippedOversize": 0,
+  "downloadBytes": 118354186,
+  "apiCalls": 355,
+  "candidateFilenameHits": 0,
+  "exactArtifactSourcesSeated": 0,
+  "seatedRecipientIds": [],
+  "candidateHits": [],
+  "exactSeats": [],
+  "rejected": [],
+  "accountingBefore": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "accountingAfter": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "claimBoundary": "v1.2.10 promotes only exact early-artifact source bytes satisfying the completed frozen authority and clean source-seat gate. Artifact/window proximity, filename presence, build/install, and physical/device consequences alone earn no claim.",
+  "inherits": "v1.2.9 contacted failure + v1.2.6 proven recursive carrier + v1.2.8 complete source authority",
+  "windowRole": "PRE_04_30_REMEDIATION_SOURCE_WINDOW",
+  "authorityGate": "21 HTML routes exact byte-count + SHA-256; native Housekeeper separate",
+  "nestedArchiveInspection": {
+    "policy": "ZIP/TAR/TGZ recursive target-name exposure only",
+    "maxDepth": 5,
+    "maxMembersPerArtifact": 30000,
+    "outerArtifactsOpened": 158,
+    "nestedArchivesOpened": 145,
+    "membersVisited": 168661,
+    "targetNameEntriesExposed": 0,
+    "oversizeTargetsSkipped": 0,
+    "oversizeNestedArchivesSkipped": 0,
+    "nestedArchiveOpenFailures": 0
+  }
+}

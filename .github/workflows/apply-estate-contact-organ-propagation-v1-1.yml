@@ -32,10 +32,23 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Compile v1 historical propagator
-        run: python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1.py
+      - name: Validate independent 28-body registry
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('governance/contact-organ/recipient_registry_v1_1.json')
+          r=json.loads(p.read_text())
+          rows=r['recipients']
+          assert len(rows)==28, len(rows)
+          assert len({x['id'] for x in rows})==28
+          assert sum(x['id'].startswith('cross-') for x in rows)==3
+          assert sum(x['id'].startswith('phone-') for x in rows)==25
+          assert all(not x['remote'] for x in rows if x['id'].startswith('phone-'))
+          print('28-body registry PASS: 3 cross + 25 phone; no phone remote-authority leakage')
+          PY
 
-      - name: Compile v1.1 cross-aware propagator
+      - name: Compile independent v1.1 propagator
         run: python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_1.py
 
       - name: Check common Contact Organ donor syntax

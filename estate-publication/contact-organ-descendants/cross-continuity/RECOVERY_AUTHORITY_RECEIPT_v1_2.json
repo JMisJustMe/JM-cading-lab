@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "cross-continuity",
+  "routeClass": "FILE_LIBRARY_EMBEDDED_DONOR",
+  "currentFile": "00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+  "expectedSha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+  "authority": "Zionfolder recovered exact current v1.1.7 body; exact donor carried by Estate Body Dock/contact-test recovery infrastructure",
+  "fileLibraryFileId": null,
+  "parentFile": null,
+  "parentSha256": null,
+  "recoveryCarrier": null,
+  "next": "Extract exact embedded donor -> verify SHA -> seat source-carriage -> mount common + cross-device organs.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

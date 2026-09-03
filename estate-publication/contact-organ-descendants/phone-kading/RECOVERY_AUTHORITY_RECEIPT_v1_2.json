@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-kading",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "KADING_ESTATE_CODE_LATTICE_RUNTIME_VISION_CANDIDATE.html",
+  "expectedSha256": "df85cf5be3168be20ee74ab15e0cdb5c229aecd8c887d9e1c5de318b972ee14a",
+  "authority": "Exact current runtime candidate and unchanged parent lineage established by remediation closeout.",
+  "fileLibraryFileId": null,
+  "parentFile": "KADING_ESTATE_3D_TRUE_3D_STANDALONE.html",
+  "parentSha256": "4fd9aa06eda16f0507478c3fe42b45368b827e271f09e9d7cd019408a6c858a2",
+  "recoveryCarrier": null,
+  "next": "Seat exact current candidate -> SHA gate -> common organ descendant.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

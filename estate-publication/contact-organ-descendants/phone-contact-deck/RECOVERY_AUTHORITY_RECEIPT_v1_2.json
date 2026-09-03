@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-contact-deck",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM_COMMON_FLOOR_v0_11_1_CONTACT_DECK_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "a46dc5c0a667938810e8dbb63f5c650a81255adb1bc71b8d2b7b453934736242",
+  "authority": "Current Contact Deck candidate passed phone+laptop browser contact QA.",
+  "fileLibraryFileId": null,
+  "parentFile": null,
+  "parentSha256": null,
+  "recoveryCarrier": null,
+  "next": "Seat exact source -> SHA gate -> common organ descendant.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

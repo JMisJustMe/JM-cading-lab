@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-griproute",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM_FTR_GRIPROUTE_v1_2_PALM_ROUTE_FIELD_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "f4aefecc5570bdef033f026028639629c1bd805b36ce1874014650d72d4e376f",
+  "authority": "Current Palm Route Field candidate passed phone+laptop browser contact QA.",
+  "fileLibraryFileId": null,
+  "parentFile": null,
+  "parentSha256": null,
+  "recoveryCarrier": null,
+  "next": "Seat exact source; common organ only unless a later real remote authority route is deliberately added.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

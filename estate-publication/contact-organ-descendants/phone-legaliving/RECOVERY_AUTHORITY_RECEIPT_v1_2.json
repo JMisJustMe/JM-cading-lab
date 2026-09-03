@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-legaliving",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM_LEGALIVING_v1_0_4_LIVING_LEGAL_FOLIO_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "f9d4f15e9aef2e9bbcf4ba729e0c0d0a810ebd9bcd908f91b4ca7afdf8114af2",
+  "authority": "Exact v1.0.4 candidate passed browser contact QA; parent remained unchanged.",
+  "fileLibraryFileId": null,
+  "parentFile": "LEGALIVING_v1_0_3.html",
+  "parentSha256": "2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3",
+  "recoveryCarrier": null,
+  "next": "Seat exact current source -> SHA gate -> common organ descendant.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

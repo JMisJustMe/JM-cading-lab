@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-notebook",
+  "routeClass": "EXACT_LINEAGE_PATCH_ROUTE",
+  "currentFile": "JM_LIVING_NOTEBOOK_v1_6_ESTATE_SWITCHYARD_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "f0109f2666ef2971d8d99ccbba332ea1c0f0ddfc661a45a460487e80a9d92068",
+  "authority": "Current v1.6 is directly retrievable; v1.5B canonical + historical exact patch lineage is preserved.",
+  "fileLibraryFileId": "file_00000000ff748210a39448ca78f7b928",
+  "parentFile": "00_OPEN_FIRST_JM_LIVING_NOTEBOOK_ESTATE_TOOL_v1_5B.html",
+  "parentSha256": "fa80d1bb9f4af04e97f9b7b04c52273f1640b549db18ab42a85a2d1f80554218",
+  "recoveryCarrier": "JM_STORAGE_FOURTH_QUASH_LIVING_NOTEBOOK_V10_V15_FROM_V15B_RECOVERY_v1_0.zip / exact zstd patch lineage",
+  "next": "Prefer exact v1.6 seat; retain v1.5B/patch route as independent reconstruction authority.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

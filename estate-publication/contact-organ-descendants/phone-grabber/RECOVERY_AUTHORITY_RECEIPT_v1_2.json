@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-grabber",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM_FILE_GRABBER_FLL_v0_4_INTAKE_DOCK_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": null,
+  "authority": "Current Intake Dock candidate is listed as an exact source descendant in the Full Tool Estate hangar/remediation line.",
+  "fileLibraryFileId": null,
+  "parentFile": null,
+  "parentSha256": null,
+  "recoveryCarrier": null,
+  "next": "Seat exact current source bytes; preserve SAF/file-intake carrier semantics.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

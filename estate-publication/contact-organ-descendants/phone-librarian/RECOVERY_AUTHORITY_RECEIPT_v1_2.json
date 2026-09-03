@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-librarian",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM_ESTATE_LIBRARIAN_v2_1_ARCHIVE_LANTERN_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": null,
+  "authority": "Exact v2.1 Archive Lantern HTML is directly retrievable in File Library; v2.0 exact parent is also preserved.",
+  "fileLibraryFileId": "file_00000000c6a481f4b905eeb1e3924942",
+  "parentFile": "JM_ESTATE_LIBRARIAN_QUADZE_GRADE_v2_0.html",
+  "parentSha256": "bda7aee7732aa510c7176d4643cdebdd1484f216b9d39d8ed8357c374a559a88",
+  "recoveryCarrier": null,
+  "next": "Seat v2.1 bytes exactly -> verify -> common organ descendant.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-organ-library",
+  "routeClass": "FILE_LIBRARY_SOURCE_CUSTODY",
+  "currentFile": "JM_APP_ORGAN_LIBRARY_v1_1_1_ANATOMICAL_BENCH_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "3e1ce7e5f4f9485d0a8020cdb62e312c48944220505ef09774486c893ca097d7",
+  "authority": "Exact App Organ Library parent is directly retrievable and contains source-custody corpus; current Anatomical Bench candidate is separately hashed.",
+  "fileLibraryFileId": null,
+  "parentFile": "00_OPEN_FIRST_JM_APP_ORGAN_LIBRARY_v1_1.html",
+  "parentSha256": "0782e46c7ad1565c3496fc2e3cc6a008930684642cffd723e52e5ab888046ed9",
+  "recoveryCarrier": null,
+  "next": "Recover/seat exact current candidate from custody lineage; verify hash before common organ mount.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

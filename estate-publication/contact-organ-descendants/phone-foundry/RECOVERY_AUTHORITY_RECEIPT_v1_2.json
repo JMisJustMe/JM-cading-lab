@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-receipt/1.2",
+  "recipientId": "phone-foundry",
+  "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+  "currentFile": "JM3241_CREATOR_FOUNDRY_v0_1_1_MAKER_FOUNDRY_EMBODIMENT_CANDIDATE.html",
+  "expectedSha256": "dcfaacc5b30f81d6e19f41c4d4e4c3b4dccd643948766c8703314b4ecf71d86b",
+  "authority": "Exact current Maker Foundry candidate is established by remediation source authority.",
+  "fileLibraryFileId": null,
+  "parentFile": null,
+  "parentSha256": null,
+  "recoveryCarrier": null,
+  "next": "Seat exact source bytes -> SHA gate -> common organ descendant.",
+  "sourceByteState": "EXTERNAL_OR_CUSTODY_AUTHORITY_CONFIRMED__NOT_YET_SEATED_AS_REPO_SOURCE",
+  "parentMutation": "NONE",
+  "commonOrganMount": "PENDING_EXACT_SOURCE_SEAT",
+  "apkBuild": "OPEN",
+  "physicalDing": "OPEN",
+  "claimBoundary": "Recovery authority receipt proves source identity/routing, not source byte materialisation, APK build/install, or physical consequence."
+}

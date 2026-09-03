@@ -1,0 +1,24 @@
+{
+  "schema": "jm.estate.contact-organ-actions-artifact-recovery-failure/1.2.5",
+  "date": "2026-09-03",
+  "workflowRunId": 33807474341,
+  "status": "CONTACTED_FAILURE_PRESERVED",
+  "search": {
+    "runsScanned": 345,
+    "retainedArtifactsDiscovered": 215,
+    "artifactsInspected": 0,
+    "candidateFilenameHits": 0,
+    "exactArtifactSourcesSeated": 0
+  },
+  "primaryFailure": "All artifact ZIP download attempts returned HTTP 401 because the GitHub Authorization header was inherited across GitHub's redirect to signed blob storage.",
+  "secondaryFailure": "The final git add used a source-carriage path that is absent when zero sources are seated, causing a pathspec failure.",
+  "accounting": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "preservationLaw": "RECOVER FORWARD. DO NOT REWRITE CONTACTED FAILURE HISTORY.",
+  "claimBoundary": "This receipt records a carrier/write-back failure only. It does not prove artifact absence, source absence, source recovery, APK build/install or physical consequence.",
+  "descendant": "v1.2.5A repairs redirect auth and conditional write-back."
+}

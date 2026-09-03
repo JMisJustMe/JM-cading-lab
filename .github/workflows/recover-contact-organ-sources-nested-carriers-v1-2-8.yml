@@ -1,0 +1,104 @@
+name: Recover Contact Organ Sources from Nested Carriers v1.2.8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_from_nested_artifacts_v1_2_8.py'
+      - '.github/workflows/recover-contact-organ-sources-nested-carriers-v1-2-8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  recover-nested-carriers:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate nested recovery and inherited source-seat gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_nested_artifacts_v1_2_8.py
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_5.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_5.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py --repair-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_nested_artifacts_v1_2_8.py --selftest
+
+      - name: Open outer Actions vault and recursively inspect APK/AAB/ZIP/JAR carriers
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_nested_artifacts_v1_2_8.py \
+            | tee estate-publication/contact-organ-descendants/NESTED_CARRIER_RUNTIME_DIAGNOSTIC_v1_2_8.txt
+
+      - name: Absolute-accounting and full-sweep gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          receipt=json.loads((root/'NESTED_CARRIER_SOURCE_RECOVERY_RECEIPT_v1_2_8.json').read_text())
+          accounting=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+
+          assert receipt['retainedArtifactsDiscovered'] <= 240, receipt
+          assert receipt['outerArtifactsSkippedOversize'] == 0, receipt
+          assert receipt['outerArtifactsInspected'] == receipt['retainedArtifactsDiscovered'], receipt
+          assert receipt['limitsExhausted'] is False, receipt
+          assert receipt['accountingBefore']['totalRecipients'] == 28
+          assert accounting['totalRecipients'] == 28
+          assert accounting['unresolved'] == 0
+          assert accounting['materialized'] + accounting['materializationOpen'] == 28
+          assert accounting['materialized'] >= receipt['accountingBefore']['materialized'] >= 6
+          assert receipt['exactHtmlSourcesSeated'] == len(receipt['seatedRecipientIds'])
+          assert receipt['accountingAfter']['materialized'] == accounting['materialized']
+
+          for rid in receipt['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), (rid, 'missing patch receipt')
+              data=json.loads(pr.read_text())
+              assert data['parentMutated'] is False
+              assert data['commonOrganMounted'] is True
+              assert data['physicalDing'] == 'OPEN'
+
+          print('Nested carrier recovery v1.2.8 PASS', {
+              'artifacts': receipt['outerArtifactsInspected'],
+              'nestedContainers': receipt['nestedContainersOpened'],
+              'sourceMembersHashed': receipt['sourceMembersHashed'],
+              'exactHits': receipt['exactAuthorityHits'],
+              'exactSeats': receipt['exactHtmlSourcesSeated'],
+              'nativeExact': receipt['exactNativePackagesFound'],
+              'materialized': accounting['materialized'],
+              'open': accounting['materializationOpen'],
+          })
+          PY
+
+      - name: Commit earned descendants and nested-carrier receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Nested Recovery v1.2.8'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          for p in estate-publication/source-carriage/contact-organ-v1.2 estate-publication/source-carriage/contact-organ-v1.2.3; do
+            [ -d "$p" ] && git add "$p"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ nested-carrier recovery v1.2.8 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

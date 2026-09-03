@@ -1,0 +1,240 @@
+{
+  "schema": "jm.estate.contact-organ-source-recovery-registry/1.2",
+  "date": "2026-09-03",
+  "inherits": "PROPAGATION_RECEIPT_v1_1 materialized=5 recoveryOpen=23",
+  "laws": {
+    "writableRoute": "ACCESSIBLE SOURCE != /mnt/data SOURCE. FIND THE WRITABLE ROUTE BEFORE DECLARING THE BODY UNWRITABLE.",
+    "parent": "FROZEN PARENT -> CLEAN DESCENDANT",
+    "claim": "NO DING, NO CLAIM.",
+    "recovery": "RECOVER BEFORE REBUILD; SOURCE ABSENCE REMAINS VISIBLE."
+  },
+  "routeClasses": {
+    "FILE_LIBRARY_EXACT_SOURCE": "Exact current descendant exists as a File Library source body. Preserve exact filename/hash and seat a repo carrier before patching.",
+    "FILE_LIBRARY_SOURCE_CUSTODY": "Exact/full parent or current body is held through an established source-custody or recovery carrier.",
+    "FILE_LIBRARY_EMBEDDED_DONOR": "Exact source bytes are embedded in an established Estate carrier and must be deterministically extracted/hash-checked.",
+    "DECLARED_BRIDGE_EXACT_SOURCE": "The declared bridge is itself the lawful current source carrier for this recipient scope.",
+    "EXACT_LINEAGE_PATCH_ROUTE": "A canonical full base plus deterministic patch route exists; rehydrate and hash-check before propagation.",
+    "BODY_SPECIFIC_SOURCE_PACKAGE_REQUIRED": "No lawful exact HTML carrier has yet been established; body-specific source/package recovery remains open."
+  },
+  "rows": [
+    {
+      "recipientId": "cross-continuity",
+      "routeClass": "FILE_LIBRARY_EMBEDDED_DONOR",
+      "currentFile": "00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+      "expectedSha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+      "expectedBytes": 284399,
+      "authority": "Zionfolder recovered exact current v1.1.7 body; exact donor carried by Estate Body Dock/contact-test recovery infrastructure",
+      "next": "Extract exact embedded donor -> verify SHA -> seat source-carriage -> mount common + cross-device organs."
+    },
+    {
+      "recipientId": "cross-private-arcade",
+      "routeClass": "BODY_SPECIFIC_SOURCE_PACKAGE_REQUIRED",
+      "currentFile": null,
+      "expectedSha256": null,
+      "authority": "JM Private Arcade — Declared Forward Bridge v0.1 identity is known; exact executable source package not yet seated in repo recovery carriage.",
+      "next": "Recover exact declared bridge/source package; do not substitute a generic arcade shell."
+    },
+    {
+      "recipientId": "phone-gold",
+      "routeClass": "FILE_LIBRARY_SOURCE_CUSTODY",
+      "currentFile": "JM_GOLD_MODE_CODING_HUB_v0_9_5_GOLD_CIRCUIT_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "parentFile": "00_OPEN_FIRST_GOLD_MODE_CODING_HUB_v0_9_4_EXPLORER_COMPOSER_MERGE.html",
+      "parentSha256": "4c0bd2bef6ea40be626dc95b11d27c89f4c975542a16be422ccd51f65c56b1e5",
+      "parentBytes": 108200,
+      "authority": "Current v0.9.5 is an exact-source descendant; v0.9.4 exact source custody is registered.",
+      "next": "Seat exact current v0.9.5 or rehydrate its lawful lineage; verify before organ mount."
+    },
+    {
+      "recipientId": "phone-foundry",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM3241_CREATOR_FOUNDRY_v0_1_1_MAKER_FOUNDRY_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "dcfaacc5b30f81d6e19f41c4d4e4c3b4dccd643948766c8703314b4ecf71d86b",
+      "authority": "Exact current Maker Foundry candidate is established by remediation source authority.",
+      "next": "Seat exact source bytes -> SHA gate -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-grabber",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_FILE_GRABBER_FLL_v0_4_INTAKE_DOCK_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "authority": "Current Intake Dock candidate is listed as an exact source descendant in the Full Tool Estate hangar/remediation line.",
+      "next": "Seat exact current source bytes; preserve SAF/file-intake carrier semantics."
+    },
+    {
+      "recipientId": "phone-librarian",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_ESTATE_LIBRARIAN_v2_1_ARCHIVE_LANTERN_EMBODIMENT_CANDIDATE.html",
+      "fileLibraryFileId": "file_00000000c6a481f4b905eeb1e3924942",
+      "expectedSha256": null,
+      "parentFile": "JM_ESTATE_LIBRARIAN_QUADZE_GRADE_v2_0.html",
+      "parentSha256": "bda7aee7732aa510c7176d4643cdebdd1484f216b9d39d8ed8357c374a559a88",
+      "parentBytes": 27346,
+      "authority": "Exact v2.1 Archive Lantern HTML is directly retrievable in File Library; v2.0 exact parent is also preserved.",
+      "next": "Seat v2.1 bytes exactly -> verify -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-notebook",
+      "routeClass": "EXACT_LINEAGE_PATCH_ROUTE",
+      "currentFile": "JM_LIVING_NOTEBOOK_v1_6_ESTATE_SWITCHYARD_EMBODIMENT_CANDIDATE.html",
+      "fileLibraryFileId": "file_00000000ff748210a39448ca78f7b928",
+      "expectedSha256": "f0109f2666ef2971d8d99ccbba332ea1c0f0ddfc661a45a460487e80a9d92068",
+      "parentFile": "00_OPEN_FIRST_JM_LIVING_NOTEBOOK_ESTATE_TOOL_v1_5B.html",
+      "parentFileLibraryFileId": "file_00000000c74c8243ada706a10cc0a5db",
+      "parentSha256": "fa80d1bb9f4af04e97f9b7b04c52273f1640b549db18ab42a85a2d1f80554218",
+      "parentBytes": 1296171,
+      "recoveryCarrier": "JM_STORAGE_FOURTH_QUASH_LIVING_NOTEBOOK_V10_V15_FROM_V15B_RECOVERY_v1_0.zip / exact zstd patch lineage",
+      "authority": "Current v1.6 is directly retrievable; v1.5B canonical + historical exact patch lineage is preserved.",
+      "next": "Prefer exact v1.6 seat; retain v1.5B/patch route as independent reconstruction authority."
+    },
+    {
+      "recipientId": "phone-kading",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "KADING_ESTATE_CODE_LATTICE_RUNTIME_VISION_CANDIDATE.html",
+      "expectedSha256": "df85cf5be3168be20ee74ab15e0cdb5c229aecd8c887d9e1c5de318b972ee14a",
+      "parentFile": "KADING_ESTATE_3D_TRUE_3D_STANDALONE.html",
+      "parentSha256": "4fd9aa06eda16f0507478c3fe42b45368b827e271f09e9d7cd019408a6c858a2",
+      "parentBytes": 42780,
+      "authority": "Exact current runtime candidate and unchanged parent lineage established by remediation closeout.",
+      "next": "Seat exact current candidate -> SHA gate -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-source-notebook",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "SOURCE_AWARE_NOTEBOOK_v2_1_PROVENANCE_FOLIO_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "authority": "Current Provenance Folio body is carried forward as an existing remediated descendant in the Inspection Hangar.",
+      "next": "Seat exact current source; preserve provenance semantics."
+    },
+    {
+      "recipientId": "phone-griproute",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_FTR_GRIPROUTE_v1_2_PALM_ROUTE_FIELD_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "f4aefecc5570bdef033f026028639629c1bd805b36ce1874014650d72d4e376f",
+      "expectedBytes": 3322554,
+      "authority": "Current Palm Route Field candidate passed phone+laptop browser contact QA.",
+      "next": "Seat exact source; common organ only unless a later real remote authority route is deliberately added."
+    },
+    {
+      "recipientId": "phone-zion-os",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_ZIONFOLDER_OS_v1_1_1R_1_LIVING_ROOMS_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "authority": "Current Living Rooms candidate is listed as EXACT_SOURCE_DESCENDANT in the Full Tool Estate Inspection Hangar.",
+      "next": "Seat exact current source; preserve room/state/recovery semantics."
+    },
+    {
+      "recipientId": "phone-game-estate",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_GAME_ESTATE_SUPERSET_v0_3_ARCADE_HANGAR_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "authority": "Current Arcade Hangar candidate is established in remediation/hangar authority.",
+      "next": "Seat exact current source; mount common organ without inventing cross-device authority."
+    },
+    {
+      "recipientId": "phone-legaliving",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_LEGALIVING_v1_0_4_LIVING_LEGAL_FOLIO_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "f9d4f15e9aef2e9bbcf4ba729e0c0d0a810ebd9bcd908f91b4ca7afdf8114af2",
+      "expectedBytes": 8999,
+      "parentFile": "LEGALIVING_v1_0_3.html",
+      "parentSha256": "2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3",
+      "parentBytes": 5953,
+      "authority": "Exact v1.0.4 candidate passed browser contact QA; parent remained unchanged.",
+      "next": "Seat exact current source -> SHA gate -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-source-vault",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "JM_FULL_SOURCE_CF_DECLARED_FORWARD_BRIDGE.html",
+      "expectedSha256": "27df9e944388da4d61c6dfffceea52fa2efddda04822e6cb58fb7593ac35d2b4",
+      "expectedBytes": 8062,
+      "authority": "Declared bridge is the lawful minimum-sufficient source carrier at current scope; browser QA PASS.",
+      "next": "Seat exact bridge bytes -> common organ descendant; do not reimplement the 15.7MB authority body."
+    },
+    {
+      "recipientId": "phone-organ-library",
+      "routeClass": "FILE_LIBRARY_SOURCE_CUSTODY",
+      "currentFile": "JM_APP_ORGAN_LIBRARY_v1_1_1_ANATOMICAL_BENCH_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "3e1ce7e5f4f9485d0a8020cdb62e312c48944220505ef09774486c893ca097d7",
+      "parentFile": "00_OPEN_FIRST_JM_APP_ORGAN_LIBRARY_v1_1.html",
+      "parentFileLibraryFileId": "file_000000004f2081f4b0b3a8d091c57ff3",
+      "parentSha256": "0782e46c7ad1565c3496fc2e3cc6a008930684642cffd723e52e5ab888046ed9",
+      "parentBytes": 1615783,
+      "authority": "Exact App Organ Library parent is directly retrievable and contains source-custody corpus; current Anatomical Bench candidate is separately hashed.",
+      "next": "Recover/seat exact current candidate from custody lineage; verify hash before common organ mount."
+    },
+    {
+      "recipientId": "phone-context",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "JM_CONTEXTUAL_CF_DECLARED_FORWARD_BRIDGE.html",
+      "expectedSha256": "1a6ab7480eff3b6e108ddcc0e393a488f66487b917ef0d2ca0e0f47b172bedac",
+      "expectedBytes": 8037,
+      "authorityHead": "JM_CONTEXTUAL_MANIFESTATION_HEAD_v0_2_SURFACE_FIRST_REPAIRED.html",
+      "authorityHeadFileLibraryFileId": "file_0000000098f881f48b7f9ef534efc228",
+      "authorityHeadSha256": "2a9a7e9659b1ebd65dc7d24aa0e547a92d741224d6b6d6ff9d90123ab527fd4d",
+      "authority": "Declared Context Lens bridge is lawful current bridge scope; exact Contextual Manifestation head is directly retrievable as independent authority.",
+      "next": "Seat exact bridge bytes for phone-context recipient; keep full Contextual head sovereign."
+    },
+    {
+      "recipientId": "phone-contact-deck",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_COMMON_FLOOR_v0_11_1_CONTACT_DECK_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "a46dc5c0a667938810e8dbb63f5c650a81255adb1bc71b8d2b7b453934736242",
+      "expectedBytes": 1887927,
+      "authority": "Current Contact Deck candidate passed phone+laptop browser contact QA.",
+      "next": "Seat exact source -> SHA gate -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-signal",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_SIGNAL_ENGINE_v2_4_1_SIGNAL_OBSERVATORY_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "976b2aeb9ddb1c917a9fe1eec431e5cfb2e4b37ff9eba1f6271e55e03767ec24",
+      "authority": "Exact current Signal Observatory candidate is established by remediation authority.",
+      "next": "Seat exact current source -> common organ descendant."
+    },
+    {
+      "recipientId": "phone-compass",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_ESTATE_COMPASS_v1_5_2_1_COMPASS_ROSE_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": null,
+      "authority": "Current Compass Rose candidate is established as the governance/navigation recipient source.",
+      "next": "Seat exact source; preserve route/select/open/continue consequence."
+    },
+    {
+      "recipientId": "phone-intertap",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "JM_INTERTAP_v0_1_4_DECLARED_FORWARD_BRIDGE.html",
+      "expectedSha256": "43e299559cbc39a462bc854563512a8fc8492a62f26d86b9f0b7b81e82e65612",
+      "expectedBytes": 8119,
+      "authority": "Custody closed at available proof scope; exact declared bridge recovered and browser-contacted; final executable source remains visibly absent.",
+      "next": "Seat exact bridge bytes -> common organ descendant; do not claim missing final executable source."
+    },
+    {
+      "recipientId": "phone-housekeeper",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "ZIONFOLDER_HOUSEKEEPER_v1_1_2_DECLARED_FORWARD_BRIDGE.html",
+      "expectedSha256": "b21db264331c77446f78be9a89aac1ff36106c9d1ed9adba30c8181a476e951c",
+      "expectedBytes": 8279,
+      "authority": "Exact declared bridge passed phone+laptop browser contact QA; bridge preserves guarded-mutation/native proof identity.",
+      "next": "Seat exact bridge -> common organ descendant; real SAF scan/quarantine/restore remains owner-device gate."
+    },
+    {
+      "recipientId": "phone-multihub",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "JM_LIVING_MULTIHUB_v6_0A_DECLARED_FORWARD_BRIDGE.html",
+      "expectedSha256": "e757adb2e2d5c751038ae4f624243c6de662873981fa34f6907b91391229c3c0",
+      "expectedBytes": 8088,
+      "authority": "Exact minimum-sufficient declared bridge passed phone+laptop browser contact QA.",
+      "next": "Seat exact bridge -> common organ descendant; preserve large source/persona authority separately."
+    },
+    {
+      "recipientId": "phone-onebody",
+      "routeClass": "FILE_LIBRARY_EXACT_SOURCE",
+      "currentFile": "JM_ONEBODY_CODING_OS_v1_0_2_SOVEREIGN_MACHINE_EMBODIMENT_CANDIDATE.html",
+      "expectedSha256": "dd0b93b7beae0d8df0a25e59023115e70fd8494aa865adc0dc5fa95843df9fd0",
+      "authority": "Exact v1.0.2 Sovereign Machine product candidate is the recipient source; keep separate role-qualified/census authorities distinct.",
+      "next": "Seat exact current product candidate -> SHA gate -> common organ descendant."
+    }
+  ]
+}

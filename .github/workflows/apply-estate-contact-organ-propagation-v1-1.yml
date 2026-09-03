@@ -32,13 +32,17 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Syntax and donor gates
-        run: |
-          set -euo pipefail
-          python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1.py
-          python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_1.py
-          node --check governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js
-          node --check governance/contact-organ/JM_ESTATE_CROSS_DEVICE_CONTACT_ADAPTER_v1_0.js
+      - name: Compile v1 historical propagator
+        run: python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1.py
+
+      - name: Compile v1.1 cross-aware propagator
+        run: python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_1.py
+
+      - name: Check common Contact Organ donor syntax
+        run: node --check governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js
+
+      - name: Check cross-device donor syntax
+        run: node --check governance/contact-organ/JM_ESTATE_CROSS_DEVICE_CONTACT_ADAPTER_v1_0.js
 
       - name: Materialise cross-aware clean descendants
         run: |

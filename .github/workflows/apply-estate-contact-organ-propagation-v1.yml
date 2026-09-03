@@ -1,0 +1,76 @@
+name: Apply Estate Contact Organ Propagation v1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js'
+      - 'governance/contact-organ/propagate_contact_organ_v1.py'
+      - '.github/workflows/apply-estate-contact-organ-propagation-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-propagation-v1
+  cancel-in-progress: false
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Propagate shared organ into clean descendants
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/propagate_contact_organ_v1.py | tee /tmp/jm-contact-propagation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/jm-contact-propagation.json').read_text())
+          assert r['totalRecipients']==28, r
+          assert r['patched'] >= 1, r
+          print(f"PATCHED DESCENDANTS: {r['patched']} / {r['totalRecipients']}")
+          print(f"EXACT MAPPED: {r['exactPatched']}")
+          print(f"REAL REPO FALLBACK/RECOVERED: {r['fallbackRealBodiesPatched']}")
+          PY
+
+      - name: Verify parents remain untouched by propagation
+        run: |
+          set -euo pipefail
+          test -f estate-publication/contact-organ-descendants/PROPAGATION_RECEIPT.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('estate-publication/contact-organ-descendants/PROPAGATION_RECEIPT.json').read_text())
+          bad=[]
+          for row in r['results']:
+              if row['status']=='PATCHED_DESCENDANT':
+                  p=Path(row['descendant'])
+                  text=p.read_text(encoding='utf-8')
+                  if 'JM_ESTATE_CONTACT_ORGAN_PATCH_v1_0' not in text:bad.append((row['recipientId'],'marker'))
+                  if '</body>' not in text.lower():bad.append((row['recipientId'],'html'))
+          assert not bad,bad
+          print('descendant marker/body gates PASS')
+          PY
+
+      - name: Commit propagation descendants and receipts
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Propagation Gate'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          git diff --cached --quiet && exit 0
+          git commit -m 'Propagate Contact Organ v1 into real Estate source descendants [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

@@ -1,0 +1,49 @@
+{
+  "schema": "jm.estate.contact-organ-actions-artifact-recovery/1.2.6",
+  "date": "2026-09-03",
+  "window": {
+    "start": "2026-08-27T04:30:00Z",
+    "end": "2026-08-27T05:20:00Z",
+    "target": "2026-08-27T05:01:47+00:00"
+  },
+  "law": "ARTIFACT PRESENCE != SOURCE AUTHORITY. EXACT NAME + FROZEN BYTES/SHA EARNS SOURCE SEAT.",
+  "runsScanned": 345,
+  "retainedArtifactsDiscovered": 215,
+  "artifactsInspected": 215,
+  "artifactsSkippedOversize": 0,
+  "downloadBytes": 140168772,
+  "apiCalls": 564,
+  "candidateFilenameHits": 0,
+  "exactArtifactSourcesSeated": 0,
+  "seatedRecipientIds": [],
+  "candidateHits": [],
+  "exactSeats": [],
+  "rejected": [],
+  "accountingBefore": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "accountingAfter": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "claimBoundary": "v1.2.6 can only promote exact target-name bytes that satisfy frozen byte/SHA authority through the source-seat gate. Archive discovery, download, or filename presence alone earns no materialisation or physical Ding.",
+  "inherits": "v1.2.5 artifact-vault scanner contacted-failure; repairs download carrier and nested archive visibility",
+  "carrierRepair": "GITHUB_API_AUTH -> SIGNED_REDIRECT -> CURL_LOCATION -> ZIP_BYTES",
+  "nestedArchiveInspection": {
+    "policy": "ZIP/TAR/TGZ recursive target-name exposure only",
+    "maxDepth": 5,
+    "maxMembersPerArtifact": 30000,
+    "outerArtifactsOpened": 215,
+    "nestedArchivesOpened": 176,
+    "membersVisited": 206207,
+    "targetNameEntriesExposed": 0,
+    "oversizeTargetsSkipped": 0,
+    "oversizeNestedArchivesSkipped": 0,
+    "nestedArchiveOpenFailures": 0
+  }
+}

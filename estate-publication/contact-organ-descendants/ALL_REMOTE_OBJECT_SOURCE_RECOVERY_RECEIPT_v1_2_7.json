@@ -1,0 +1,35 @@
+{
+  "schema": "jm.estate.contact-organ-all-remote-object-source-recovery/1.2.7",
+  "date": "2026-09-03",
+  "law": "REMOTE OBJECT PRESENCE != SOURCE AUTHORITY. EXACT FROZEN SHA ONLY.",
+  "remoteObjectEntries": 23003,
+  "uniqueBlobObjects": 4763,
+  "knownSizeAuthorityCount": 18,
+  "unknownSizeAuthorityCount": 5,
+  "knownSizeCandidateBlobs": 3,
+  "unknownSizeSourceLikeCandidateBlobs": 254,
+  "uniqueCandidateBlobsHashed": 257,
+  "candidateBytesHashed": 10245776,
+  "exactAuthorityHits": 0,
+  "exactHtmlSourcesSeated": 0,
+  "exactNativePackagesFound": 0,
+  "seatedRecipientIds": [],
+  "nativeExactRecipientIds": [],
+  "exactHits": [],
+  "exactSeats": [],
+  "nativeExact": [],
+  "seatFailures": [],
+  "accountingBefore": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "accountingAfter": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "claimBoundary": "Only exact frozen SHA/byte authority from a Git blob may enter the existing source-seat materialisation gate. Native package hits remain unmaterialised until a qualified native descendant is built. Build/install and physical Ding remain separate."
+}

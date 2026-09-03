@@ -1,0 +1,60 @@
+{
+  "schema": "jm.estate.contact-organ-propagation-flaz/1.2.7",
+  "date": "2026-09-03",
+  "status": [
+    "BT_COMPLETE_AT_RECOVERY_PROPAGATION_FLOOR",
+    "FROZEN",
+    "LOCKED",
+    "ANCHORED",
+    "ZIONFOLDERED"
+  ],
+  "flazRecordCommit": "a7e6c92de4d1cce64905d68122dcc603b6b1e5b9",
+  "scope": "Estate-wide Contact Organ propagation + passive recovery floor through v1.2.7 only",
+  "accounting": {
+    "registeredRecipients": 28,
+    "materializedDescendants": 6,
+    "openMaterializationRoutes": 22,
+    "unknownRoutes": 0,
+    "mutatedFrozenParents": 0
+  },
+  "materializedRecipientIds": [
+    "cross-forge",
+    "cross-private-arcade",
+    "phone-browser",
+    "phone-lyricstudio",
+    "phone-money",
+    "phone-studios"
+  ],
+  "passiveRecoveryLayersFrozen": [
+    "default-branch/current-tree search",
+    "reachable Git history recovery",
+    "GitHub Actions artifact vault recovery v1.2.5A",
+    "body-specific branch recovery v1.2.6",
+    "all-remote-object SHA-first recovery v1.2.7"
+  ],
+  "v1_2_7RemoteObjectReceipt": {
+    "remoteObjectEntries": 23003,
+    "uniqueBlobObjects": 4763,
+    "uniqueCandidateBlobsHashed": 257,
+    "exactAuthorityHits": 0,
+    "exactHtmlSourcesSeated": 0,
+    "exactNativePackagesFound": 0
+  },
+  "excludedFromCrown": [
+    "deterministic reconstruction of the remaining 22 sources",
+    "Legaliving parent-to-candidate replay",
+    "new APK builds",
+    "APK installs",
+    "owner-device physical contact",
+    "public deployment",
+    "physical consequence Dings"
+  ],
+  "nextDescendant": {
+    "name": "Deterministic Reconstruction Descendant",
+    "firstTarget": "Legaliving",
+    "route": "RECOVER GENERATOR + RECOVER PARENT -> REPLAY DECLARED TRANSFORMATION -> REQUIRE FROZEN SHA -> SOURCE SEAT -> CONTACT ORGAN DESCENDANT -> RECEIPT"
+  },
+  "reopenLaw": "Later recovery/materialisation mounts above this freeze. Reopen v1.2.7 only for a proved defect inside frozen scope or an explicit superseding governance decision.",
+  "canonicalZionfolderRoute": "/Zionfolder/JM Estate/Governance & Shared Organs/Contact Organ/Propagation Closure v1.2.7/",
+  "keeper": "SIX MATERIALISED. TWENTY-TWO OPEN. ZERO UNKNOWN. RECOVERY EXHAUSTED BEFORE RECONSTRUCTION."
+}

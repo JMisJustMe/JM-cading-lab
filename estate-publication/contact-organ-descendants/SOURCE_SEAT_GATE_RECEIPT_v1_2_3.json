@@ -1,0 +1,16 @@
+{
+  "schema": "jm.estate.contact-organ-source-seat-gate/1.2.3",
+  "date": "2026-09-03",
+  "manifestRows": 22,
+  "knownHashEligible": 14,
+  "unknownHashFailClosed": 7,
+  "nativeRoutes": 1,
+  "runRows": [],
+  "accounting": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "claimBoundary": "An empty intake is a green gate with no count change. A source mismatch is preserved as a failure and cannot earn a descendant."
+}

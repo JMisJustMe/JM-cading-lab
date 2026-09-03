@@ -1,0 +1,109 @@
+name: Recover Contact Organ Sources from Early Actions Artifacts v1.2.10
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_from_early_actions_artifacts_v1_2_10.py'
+      - '.github/workflows/recover-contact-organ-sources-early-actions-artifacts-v1-2-10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: contact-organ-early-actions-artifact-recovery-v1-2-10
+  cancel-in-progress: false
+
+jobs:
+  recover-early-artifact-vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate repaired early-window descendant
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_early_actions_artifacts_v1_2_10.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_8.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_early_actions_artifacts_v1_2_10.py --wrapper-selftest
+          command -v curl >/dev/null
+
+      - name: Sweep pre-04:30 remediation artifact vault recursively
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_early_actions_artifacts_v1_2_10.py \
+            --start 2026-08-27T02:45:00Z \
+            --end 2026-08-27T04:29:59Z \
+            --max-artifacts 320 \
+            --max-artifact-bytes 188743680 \
+            --max-download-bytes 1073741824 \
+            | tee estate-publication/contact-organ-descendants/EARLY_ACTIONS_ARTIFACT_RUNTIME_DIAGNOSTIC_v1_2_10.txt
+
+      - name: Verify early vault contact and absolute accounting
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'EARLY_ACTIONS_ARTIFACT_SOURCE_RECOVERY_RECEIPT_v1_2_10.json').read_text())
+          a=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          nested=r['nestedArchiveInspection']
+          assert r['runsScanned']>0
+          assert r['retainedArtifactsDiscovered']>0
+          assert r['artifactsInspected']>0
+          assert r['downloadBytes']>0
+          assert nested['outerArtifactsOpened']==r['artifactsInspected']
+          assert nested['membersVisited']>0
+          assert a['totalRecipients']==28
+          assert a['materialized']+a['materializationOpen']==28
+          assert a['unresolved']==0
+          assert a['materialized']>=6
+          assert r['exactArtifactSourcesSeated']==len(r['seatedRecipientIds'])
+          for rid in r['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), rid
+              row=json.loads(pr.read_text())
+              assert row['parentMutated'] is False
+              assert row['commonOrganMounted'] is True
+              assert row['physicalDing']=='OPEN'
+          print('Early artifact vault v1.2.10 PASS', {
+              'runs':r['runsScanned'],
+              'retained':r['retainedArtifactsDiscovered'],
+              'inspected':r['artifactsInspected'],
+              'members':nested['membersVisited'],
+              'targetNames':nested['targetNameEntriesExposed'],
+              'hits':r['candidateFilenameHits'],
+              'exactSeats':r['exactArtifactSourcesSeated'],
+              'seated':r['seatedRecipientIds'],
+              'materialized':a['materialized'],
+              'open':a['materializationOpen'],
+          })
+          PY
+
+      - name: Commit earned early-window recoveries and receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Early Artifact Gate v1.2.10'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          if [ -d estate-publication/source-carriage/contact-organ-v1.2.3 ]; then
+            git add estate-publication/source-carriage/contact-organ-v1.2.3
+          fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record early Contact Organ artifact recovery v1.2.10 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

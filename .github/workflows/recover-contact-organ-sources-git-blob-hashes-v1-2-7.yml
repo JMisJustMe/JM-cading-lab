@@ -1,0 +1,97 @@
+name: Recover Contact Organ Sources by Git Blob Hash v1.2.7
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_7.py'
+      - '.github/workflows/recover-contact-organ-sources-git-blob-hashes-v1-2-7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contact-organ-git-blob-hash-recovery-v1-2-7
+  cancel-in-progress: false
+
+jobs:
+  recover-content-addressed-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch all reachable refs
+        run: |
+          set -euo pipefail
+          git fetch --all --tags --prune --force
+
+      - name: Validate content-addressed recovery gate
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_7.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_5.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_7.py --selftest
+
+      - name: Hash plausible reachable Git blobs
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_git_blob_hashes_v1_2_7.py \
+            | tee estate-publication/contact-organ-descendants/GIT_BLOB_HASH_RUNTIME_DIAGNOSTIC_v1_2_7.txt
+
+      - name: Verify exact-hash accounting boundary
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          receipt=json.loads((root/'GIT_BLOB_HASH_SOURCE_RECOVERY_RECEIPT_v1_2_7.json').read_text())
+          accounting=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          assert receipt['targetHtmlAuthorities'] == 21
+          assert receipt['reachableObjectsEnumerated'] > 0
+          assert receipt['reachableBlobs'] > 0
+          assert receipt['plausibleSizeMatchedBlobs'] >= 0
+          assert receipt['bytesHashed'] >= 0
+          assert accounting['totalRecipients'] == 28
+          assert accounting['materialized'] + accounting['materializationOpen'] == 28
+          assert accounting['unresolved'] == 0
+          assert accounting['materialized'] >= 6
+          for rid in receipt['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), rid
+              row=json.loads(pr.read_text())
+              assert row['parentMutated'] is False
+              assert row['commonOrganMounted'] is True
+              assert row['physicalDing'] == 'OPEN'
+          print('Git blob hash recovery v1.2.7 PASS', {
+              'objects':receipt['reachableObjectsEnumerated'],
+              'blobs':receipt['reachableBlobs'],
+              'plausible':receipt['plausibleSizeMatchedBlobs'],
+              'matches':receipt['exactAuthorityBlobMatches'],
+              'materialized':accounting['materialized'],
+              'open':accounting['materializationOpen'],
+          })
+          PY
+
+      - name: Commit exact recoveries and hash census
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Content Address Gate v1.2.7'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          if [ -d estate-publication/source-carriage/contact-organ-v1.2.3 ]; then
+            git add estate-publication/source-carriage/contact-organ-v1.2.3
+          fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record content-addressed Contact Organ recovery v1.2.7 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

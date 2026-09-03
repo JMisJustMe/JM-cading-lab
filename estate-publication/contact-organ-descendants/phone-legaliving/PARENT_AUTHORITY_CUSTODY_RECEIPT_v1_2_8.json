@@ -1,0 +1,33 @@
+{
+  "schema": "jm.estate.contact-organ-parent-authority-custody/1.2.8",
+  "date": "2026-09-03",
+  "recipientId": "phone-legaliving",
+  "body": "JM Legaliving v1.0.4 — Living Legal Folio Vision Embodiment Candidate",
+  "parent": {
+    "file": "estate-publication/source-authority/contact-organ-v1.2.8/phone-legaliving/00_OPEN_FIRST_Legaliving_v1_0_3.html",
+    "expectedBytes": 5953,
+    "actualBytes": 5953,
+    "expectedSha256": "2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3",
+    "actualSha256": "2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3",
+    "state": "EXACT_PARENT_RECOVERED_TO_WRITABLE_CUSTODY",
+    "mutated": false
+  },
+  "candidate": {
+    "file": "JM_LEGALIVING_v1_0_4_LIVING_LEGAL_FOLIO_EMBODIMENT_CANDIDATE.html",
+    "expectedBytes": 8999,
+    "expectedSha256": "f9d4f15e9aef2e9bbcf4ba729e0c0d0a810ebd9bcd908f91b4ca7afdf8114af2",
+    "state": "OPEN__EXACT_TARGET_BYTES_NOT_YET_RECONSTRUCTED"
+  },
+  "materializedIncrement": 0,
+  "accountingFloorRemains": {
+    "materialized": 6,
+    "open": 22,
+    "unresolved": 0
+  },
+  "laws": [
+    "RECOVER BEFORE REBUILD.",
+    "FROZEN PARENT -> CLEAN DESCENDANT.",
+    "NO DING, NO CLAIM."
+  ],
+  "claimBoundary": "This receipt proves exact frozen parent bytes are in writable GitHub custody. It does not prove or materialise the v1.0.4 candidate and does not increment Estate Contact Organ propagation accounting."
+}

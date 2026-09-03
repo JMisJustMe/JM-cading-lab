@@ -1,0 +1,69 @@
+{
+  "schema": "jm.estate.contact-organ-file-library-direct-source-frontier/1.3.0",
+  "date": "2026-09-03",
+  "status": "RECOVERED_TRACE_REJOINED__DIRECT_SOURCE_FRONTIER_ACTIVE",
+  "accounting": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "recoveredErasedProgression": {
+    "latestPassiveRecoveryFrontier": "v1.2.9 Body Dock nested carrier recovery",
+    "latestPassiveResult": "No exact new source seats; 6/28 preserved",
+    "doNotRepeat": [
+      "v1.2.5A Actions artifact sweep",
+      "v1.2.6 body-specific branch scan",
+      "v1.2.7 all-remote-object SHA scan",
+      "v1.2.8 nested artifact scan",
+      "v1.2.9 Body Dock package-window scan",
+      "v1.2.10 early remediation artifact scan",
+      "v1.2.11 whole artifact census"
+    ]
+  },
+  "directSourceAuthorities": [
+    {
+      "recipientId": "phone-librarian",
+      "state": "DIRECT_RAW_SOURCE_CARD__SECTION_RECOVERABLE_EXACT_SOURCE",
+      "file": "JM_ESTATE_LIBRARIAN_v2_1_ARCHIVE_LANTERN_EMBODIMENT_CANDIDATE.html",
+      "bytes": 31041,
+      "sha256": "0e0b5ec57bda6cbdf55f8727e4e5a1542232034908ec7381494dd2ab6ee05ffd",
+      "notes": "Raw File Library HTML is directly readable. Whole-file viewer truncates, but named source sections and exact tail are recoverable through chunked retrieval. No materialization claim until reassembled bytes hash exactly and are source-seated."
+    },
+    {
+      "recipientId": "phone-notebook",
+      "state": "DIRECT_RAW_SOURCE_CARD__EXACT_SOURCE",
+      "file": "JM_LIVING_NOTEBOOK_v1_6_ESTATE_SWITCHYARD_EMBODIMENT_CANDIDATE.html",
+      "bytes": 1299927,
+      "sha256": "f0109f2666ef2971d8d99ccbba332ea1c0f0ddfc661a45a460487e80a9d92068",
+      "notes": "Exact raw HTML is directly readable in File Library; remaining issue is large-byte carrier hop into writable source carriage."
+    },
+    {
+      "recipientId": "cross-continuity",
+      "state": "RECOVERABLE_EMBEDDED_EXACT_SOURCE",
+      "file": "00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+      "bytes": 284399,
+      "sha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+      "notes": "Exact source is preserved as sourceB64 inside the File Library Body Dock. Existing v1.2.2 extractor remains the lawful route once the carrier body reaches a writable execution surface."
+    },
+    {
+      "recipientId": "phone-legaliving",
+      "state": "EXACT_PARENT_SEATED__FINAL_PERSONA_LAYER_REPLAY_OPEN",
+      "parentFile": "LEGALIVING_v1_0_3.html",
+      "parentBytes": 5953,
+      "parentSha256": "2d6e52f3a8061a4574798b39b837fca1e7081ca5a117555539b5198a641219b3",
+      "candidateFile": "JM_LEGALIVING_v1_0_4_LIVING_LEGAL_FOLIO_EMBODIMENT_CANDIDATE.html",
+      "candidateBytes": 8999,
+      "candidateSha256": "f9d4f15e9aef2e9bbcf4ba729e0c0d0a810ebd9bcd908f91b4ca7afdf8114af2",
+      "notes": "Exact frozen parent already seated. Accessibility + ecosystem precursor recovered; only final Living Legal Folio persona/vision transform remains to reproduce exactly."
+    }
+  ],
+  "nextExecutionOrder": [
+    "Reassemble phone-librarian from exact File Library chunks and require SHA 0e0b5e...05ffd",
+    "Source-seat Librarian and run existing Contact Organ materializer; if exact, accounting becomes 7/28",
+    "Then exploit next smallest direct raw-source card before large Notebook carrier work",
+    "Keep Legaliving deterministic replay and Continuity sourceB64 extraction as parallel lanes"
+  ],
+  "law": "ACCESSIBLE SOURCE != /mnt/data SOURCE. FIND THE WRITABLE ROUTE BEFORE DECLARING THE BODY UNWRITABLE.",
+  "claimBoundary": "This frontier receipt strengthens source recovery classification only. It does not claim any new materialized descendant, APK build/install, owner-device run or physical Ding."
+}

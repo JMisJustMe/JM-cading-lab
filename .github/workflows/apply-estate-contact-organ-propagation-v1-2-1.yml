@@ -1,0 +1,89 @@
+name: Apply Estate Contact Organ Propagation v1.2.1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/source_recovery_overrides_v1_2_1.json'
+      - 'governance/contact-organ/propagate_contact_organ_v1_2_1.py'
+      - 'estate-publication/source-carriage/contact-organ-v1.2/**'
+      - '.github/workflows/apply-estate-contact-organ-propagation-v1-2-1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-propagation-v1-2-1
+  cancel-in-progress: false
+
+jobs:
+  propagate-source-seats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify exact Private Arcade source seat
+        run: |
+          set -euo pipefail
+          FILE='estate-publication/source-carriage/contact-organ-v1.2/cross-private-arcade/00_OPEN_FIRST_JM_PRIVATE_ARCADE_DECLARED_FORWARD_BRIDGE_v0_1.html'
+          test -f "$FILE"
+          test "$(wc -c < "$FILE")" -eq 15588
+          test "$(sha256sum "$FILE" | awk '{print $1}')" = 'dcc22f803afa8dd3f00709fb2ecc983c541d58b8ee64c0eac72ff457030378ac'
+          echo 'Private Arcade exact source seat PASS'
+
+      - name: Validate continuation and donors
+        run: |
+          python3 -m py_compile governance/contact-organ/propagate_contact_organ_v1_2_1.py
+          node --check governance/contact-organ/JM_ESTATE_CONTACT_ORGAN_v1_0.js
+          node --check governance/contact-organ/JM_ESTATE_CROSS_DEVICE_CONTACT_ADAPTER_v1_0.js
+
+      - name: Run v1.2.1 exact-source-seat continuation
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/propagate_contact_organ_v1_2_1.py | tee estate-publication/contact-organ-descendants/PROPAGATION_RUNTIME_DIAGNOSTIC_v1_2_1.txt
+
+      - name: Verify Private Arcade materialisation and absolute accounting
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'PROPAGATION_RECEIPT_v1_2_1.json').read_text())
+          assert r['totalRecipients']==28
+          assert r['materialized']>=6, r
+          assert r['materialized']+r['recoveryAuthorityConfirmed']+r['unresolved']==28
+          assert r['unresolved']==0
+          row=next(x for x in r['results'] if x['recipientId']=='cross-private-arcade')
+          assert row['status']=='MATERIALIZED_V1_2_1_CROSS_DESCENDANT', row
+          p=Path(row['descendant'])
+          text=p.read_text(encoding='utf-8')
+          assert 'JMContactOrgan' in text
+          assert 'JMCrossDeviceContactAdapter' in text
+          assert 'DECLARED FORWARD BRIDGE' in text.upper()
+          pr=json.loads((root/'cross-private-arcade'/'PATCH_RECEIPT_v1_2_1.json').read_text())
+          assert pr['parentMutated'] is False
+          assert pr['commonOrganMounted'] is True
+          assert pr['crossDeviceDonorMounted'] is True
+          assert pr['apkBuild']=='OPEN' and pr['physicalDing']=='OPEN'
+          print(f"v1.2.1 PASS materialized={r['materialized']} recovery={r['recoveryAuthorityConfirmed']} unresolved={r['unresolved']}")
+          PY
+
+      - name: Commit v1.2.1 descendants and receipts
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Source Seat Gate v1.2.1'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          git diff --cached --quiet && exit 0
+          git commit -m 'Materialize Contact Organ v1.2.1 exact source seats [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

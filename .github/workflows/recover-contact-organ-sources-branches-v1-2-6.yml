@@ -1,0 +1,104 @@
+name: Recover Contact Organ Sources from Branches v1.2.6
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/branch_source_recovery_registry_v1_2_6.json'
+      - 'governance/contact-organ/recover_contact_sources_from_branches_v1_2_6.py'
+      - '.github/workflows/recover-contact-organ-sources-branches-v1-2-6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contact-organ-branch-source-recovery-v1-2-6
+  cancel-in-progress: false
+
+jobs:
+  recover-branch-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch every Estate branch carrier
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          echo "remote branches: $(git for-each-ref --format='%(refname:short)' refs/remotes/origin | wc -l)"
+
+      - name: Validate branch recovery and source-seat gates
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_branches_v1_2_6.py
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_5.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_5.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_branches_v1_2_6.py --selftest
+
+      - name: Scan body-specific branch/source-package carriers by frozen SHA
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_branches_v1_2_6.py \
+            | tee estate-publication/contact-organ-descendants/BRANCH_SOURCE_RUNTIME_DIAGNOSTIC_v1_2_6.txt
+
+      - name: Verify exact-vs-lineage accounting
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          receipt=json.loads((root/'BRANCH_SOURCE_RECOVERY_RECEIPT_v1_2_6.json').read_text())
+          accounting=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          assert receipt['recipientsScanned'] == 22, receipt
+          assert receipt['remoteBranchesAvailable'] > 0
+          assert receipt['accountingBefore']['totalRecipients'] == 28
+          assert accounting['totalRecipients'] == 28
+          assert accounting['unresolved'] == 0
+          assert accounting['materialized'] + accounting['materializationOpen'] == 28
+          assert accounting['materialized'] >= 6
+          assert receipt['exactHtmlSourcesSeated'] == len(receipt['seatedRecipientIds'])
+          assert accounting['materialized'] == 6 + len(set(accounting.get('v1_2_3MaterializedIds', [])))
+          for row in receipt['rows']:
+              if row['state'] == 'LINEAGE_BRANCH_FOUND__NOT_EXACT_CURRENT_AUTHORITY':
+                  assert row['matchedBranches'] and not row['exactMatches']
+          for rid in receipt['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), (rid, 'missing patch receipt')
+              data=json.loads(pr.read_text())
+              assert data['parentMutated'] is False
+              assert data['commonOrganMounted'] is True
+              assert data['physicalDing'] == 'OPEN'
+          print('Branch source recovery v1.2.6 PASS', {
+              'branches': receipt['remoteBranchesAvailable'],
+              'routedRecipients': receipt['recipientsWithMatchedBranches'],
+              'exactHits': receipt['exactAuthorityHits'],
+              'exactSeats': receipt['exactHtmlSourcesSeated'],
+              'nativeExact': receipt['exactNativePackagesFound'],
+              'materialized': accounting['materialized'],
+              'open': accounting['materializationOpen'],
+          })
+          PY
+
+      - name: Commit earned descendants and branch recovery receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Branch Recovery v1.2.6'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          for p in estate-publication/source-carriage/contact-organ-v1.2 estate-publication/source-carriage/contact-organ-v1.2.3; do
+            [ -d "$p" ] && git add "$p"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ branch-source recovery v1.2.6 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

@@ -1,0 +1,107 @@
+name: Recover Contact Organ Sources from Actions Artifacts v1.2.5A
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py'
+      - '.github/workflows/recover-contact-organ-sources-actions-artifacts-v1-2-5a.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: contact-organ-actions-artifact-recovery-v1-2-5a
+  cancel-in-progress: false
+
+jobs:
+  recover-artifact-vault-v1-2-5a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate repaired recovery carrier and source-seat gates
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5.py
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_5.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_5.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py --repair-selftest
+
+      - name: Sweep retained Actions artifact vault with redirect-safe downloader
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_from_actions_artifacts_v1_2_5A.py \
+            --start 2026-08-27T04:30:00Z \
+            --end 2026-08-27T05:20:00Z \
+            --max-artifacts 240 \
+            --max-artifact-bytes 188743680 \
+            --max-download-bytes 786432000 \
+            | tee estate-publication/contact-organ-descendants/ACTIONS_ARTIFACT_RUNTIME_DIAGNOSTIC_v1_2_5A.txt
+
+      - name: Verify vault was actually opened and accounting remains absolute
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          receipt=json.loads((root/'ACTIONS_ARTIFACT_SOURCE_RECOVERY_RECEIPT_v1_2_5.json').read_text())
+          accounting=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          assert receipt['runsScanned'] > 0, receipt
+          assert receipt['retainedArtifactsDiscovered'] > 0, receipt
+          assert receipt['artifactsInspected'] > 0, 'artifact redirect repair failed to open any ZIP'
+          auth_401=[x for x in receipt.get('rejected',[]) if x.get('state')=='DOWNLOAD_FAILED' and '401' in x.get('error','')]
+          assert not auth_401, ('redirect-auth bug persists', auth_401[:3])
+          assert receipt['accountingBefore']['totalRecipients'] == 28
+          assert accounting['totalRecipients'] == 28
+          assert accounting['unresolved'] == 0
+          assert accounting['materialized'] >= 6
+          assert accounting['materialized'] + accounting['materializationOpen'] == 28
+          assert receipt['exactArtifactSourcesSeated'] == len(receipt['seatedRecipientIds'])
+          assert accounting['materialized'] == 6 + len(set(accounting.get('v1_2_3MaterializedIds', [])))
+          for rid in receipt['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), (rid, 'missing patch receipt')
+              data=json.loads(pr.read_text())
+              assert data['parentMutated'] is False
+              assert data['commonOrganMounted'] is True
+              assert data['physicalDing'] == 'OPEN'
+          print('Actions artifact recovery v1.2.5A gate PASS', {
+              'runs': receipt['runsScanned'],
+              'discovered': receipt['retainedArtifactsDiscovered'],
+              'inspected': receipt['artifactsInspected'],
+              'hits': receipt['candidateFilenameHits'],
+              'exactSeats': receipt['exactArtifactSourcesSeated'],
+              'materialized': accounting['materialized'],
+              'open': accounting['materializationOpen'],
+          })
+          PY
+
+      - name: Commit earned recoveries and receipts safely
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Artifact Vault Gate v1.2.5A'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          if [ -d estate-publication/source-carriage/contact-organ-v1.2.3 ]; then
+            git add estate-publication/source-carriage/contact-organ-v1.2.3
+          fi
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ Actions artifact recovery v1.2.5A [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

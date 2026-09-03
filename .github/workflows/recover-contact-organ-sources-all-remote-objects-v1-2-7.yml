@@ -1,0 +1,104 @@
+name: Recover Contact Organ Sources from All Remote Objects v1.2.7
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/recover_contact_sources_all_remote_objects_v1_2_7.py'
+      - '.github/workflows/recover-contact-organ-sources-all-remote-objects-v1-2-7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contact-organ-all-remote-object-recovery-v1-2-7
+  cancel-in-progress: false
+
+jobs:
+  recover-all-remote-objects:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Fetch every Estate remote branch/object carrier
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*' --prune
+          echo "remote branches: $(git for-each-ref --format='%(refname:short)' refs/remotes/origin | wc -l)"
+          echo "remote object entries: $(git rev-list --objects --remotes | wc -l)"
+
+      - name: Validate all-remote recovery and source-seat gates
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/recover_contact_sources_all_remote_objects_v1_2_7.py
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_5.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_5.py --authority-selftest
+          python3 governance/contact-organ/recover_contact_sources_all_remote_objects_v1_2_7.py --selftest
+
+      - name: SHA-scan every unique source-like blob across all remote branches
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/recover_contact_sources_all_remote_objects_v1_2_7.py \
+            | tee estate-publication/contact-organ-descendants/ALL_REMOTE_OBJECT_RUNTIME_DIAGNOSTIC_v1_2_7.txt
+
+      - name: Verify exact-source accounting
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          receipt=json.loads((root/'ALL_REMOTE_OBJECT_SOURCE_RECOVERY_RECEIPT_v1_2_7.json').read_text())
+          accounting=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          assert receipt['remoteObjectEntries'] > 0, receipt
+          assert receipt['uniqueBlobObjects'] > 0, receipt
+          assert receipt['uniqueCandidateBlobsHashed'] > 0, receipt
+          assert receipt['accountingBefore']['totalRecipients'] == 28
+          assert accounting['totalRecipients'] == 28
+          assert accounting['unresolved'] == 0
+          assert accounting['materialized'] + accounting['materializationOpen'] == 28
+          assert accounting['materialized'] >= 6
+          assert receipt['exactHtmlSourcesSeated'] == len(receipt['seatedRecipientIds'])
+          assert not receipt['seatFailures'], receipt['seatFailures']
+          assert accounting['materialized'] == 6 + len(set(accounting.get('v1_2_3MaterializedIds', [])))
+          for rid in receipt['seatedRecipientIds']:
+              pr=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              assert pr.exists(), (rid, 'missing patch receipt')
+              data=json.loads(pr.read_text())
+              assert data['parentMutated'] is False
+              assert data['commonOrganMounted'] is True
+              assert data['physicalDing'] == 'OPEN'
+          print('All-remote-object recovery v1.2.7 PASS', {
+              'objects': receipt['remoteObjectEntries'],
+              'blobs': receipt['uniqueBlobObjects'],
+              'candidates': receipt['uniqueCandidateBlobsHashed'],
+              'exactHits': receipt['exactAuthorityHits'],
+              'exactSeats': receipt['exactHtmlSourcesSeated'],
+              'nativeExact': receipt['exactNativePackagesFound'],
+              'materialized': accounting['materialized'],
+              'open': accounting['materializationOpen'],
+          })
+          PY
+
+      - name: Commit earned exact descendants and recovery receipt
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ All Remote Recovery v1.2.7'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/contact-organ-descendants
+          for p in estate-publication/source-carriage/contact-organ-v1.2 estate-publication/source-carriage/contact-organ-v1.2.3; do
+            [ -d "$p" ] && git add "$p"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record Contact Organ all-remote-object recovery v1.2.7 [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

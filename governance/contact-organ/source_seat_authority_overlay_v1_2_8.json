@@ -1,0 +1,39 @@
+{
+  "schema": "jm.estate.contact-organ-source-seat-authority-overlay/1.2.8",
+  "date": "2026-09-03",
+  "inherits": "source_seat_authority_overlay_v1_2_5.json",
+  "authoritySource": "JM_FULL_TOOL_ESTATE_REMEDIATION_CLOSEOUT_v1_0.json",
+  "law": "RECOVER AUTHORITY BEFORE DECLARING AUTHORITY ABSENT.",
+  "rows": [
+    {
+      "recipientId": "phone-foundry",
+      "expectedBytes": 2971284,
+      "expectedSha256": "dcfaacc5b30f81d6e19f41c4d4e4c3b4dccd643948766c8703314b4ecf71d86b",
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-kading",
+      "expectedBytes": 47178,
+      "expectedSha256": "df85cf5be3168be20ee74ab15e0cdb5c229aecd8c887d9e1c5de318b972ee14a",
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-signal",
+      "expectedBytes": 478192,
+      "expectedSha256": "976b2aeb9ddb1c917a9fe1eec431e5cfb2e4b37ff9eba1f6271e55e03767ec24",
+      "authorityClass": "REMEDIATION_CLOSEOUT_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    },
+    {
+      "recipientId": "phone-onebody",
+      "expectedBytes": 345174,
+      "expectedSha256": "dd0b93b7beae0d8df0a25e59023115e70fd8494aa865adc0dc5fa95843df9fd0",
+      "authorityClass": "REMEDIATION_CLOSEOUT_CARRIED_FORWARD_EXACT_CANDIDATE_AND_BROWSER_CONTACT"
+    }
+  ],
+  "accountingEffect": {
+    "htmlRowsWithFrozenSha": 21,
+    "htmlRowsWithFrozenByteCount": 21,
+    "nativePackageRows": 1
+  },
+  "claimBoundary": "This overlay completes byte-count authority only. It does not provide source bytes, build/install evidence, or physical/device Ding."
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "jm.estate.contact-organ-source-recovery-overrides/1.2.1",
+  "date": "2026-09-03",
+  "inherits": "source_recovery_registry_v1_2",
+  "rows": [
+    {
+      "recipientId": "cross-private-arcade",
+      "routeClass": "DECLARED_BRIDGE_EXACT_SOURCE",
+      "currentFile": "00_OPEN_FIRST_JM_PRIVATE_ARCADE_DECLARED_FORWARD_BRIDGE_v0_1.html",
+      "fileLibraryFileId": "file_000000008ed8820a91fa24fd997f7ef5",
+      "expectedSha256": "dcc22f803afa8dd3f00709fb2ecc983c541d58b8ee64c0eac72ff457030378ac",
+      "expectedBytes": 15588,
+      "seatedSource": "estate-publication/source-carriage/contact-organ-v1.2/cross-private-arcade/00_OPEN_FIRST_JM_PRIVATE_ARCADE_DECLARED_FORWARD_BRIDGE_v0_1.html",
+      "authority": "Exact declared forward bridge recovered from File Library and seated byte-for-byte as the lawful current Private Arcade bridge. Historical Private Arcade source remains unrecovered and must not be impersonated.",
+      "next": "Verify seated bytes/hash, then mount the common Contact Organ plus cross-device protocol donor into a clean descendant.",
+      "claimBoundary": "This promotes the declared forward bridge only. It does not claim recovery of the lost historical Private Arcade source or any owner/browser/device consequence."
+    }
+  ]
+}

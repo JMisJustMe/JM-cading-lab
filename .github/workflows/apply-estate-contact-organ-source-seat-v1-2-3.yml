@@ -1,0 +1,128 @@
+name: Apply Estate Contact Organ Source Seat v1.2.3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'governance/contact-organ/source_seat_manifest_v1_2_3.json'
+      - 'governance/contact-organ/seat_contact_source_v1_2_3.py'
+      - 'governance/contact-organ/seat_contact_source_v1_2_3A.py'
+      - 'governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py'
+      - 'estate-publication/source-intake/contact-organ-v1.2.3/**'
+      - '.github/workflows/apply-estate-contact-organ-source-seat-v1-2-3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-contact-organ-source-seat-v1-2-3
+  cancel-in-progress: false
+
+jobs:
+  source-seat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Freeze inherited accounting floor
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          floor=json.loads(Path('estate-publication/contact-organ-descendants/PROPAGATION_RECEIPT_v1_2_1.json').read_text())
+          authority=json.loads(Path('estate-publication/contact-organ-descendants/PROPAGATION_AUTHORITY_RECEIPT_v1_2_2.json').read_text())
+          assert floor['totalRecipients']==28
+          assert floor['materialized']==6
+          assert floor['recoveryAuthorityConfirmed']==22
+          assert floor['unresolved']==0
+          assert authority['materialized']==6
+          assert authority['materializationOpen']==22
+          assert authority['strengthenedRecoveryAuthorities']==2
+          assert authority['unresolved']==0
+          print('Inherited floor PASS: 28 = 6 materialized + 22 open; 0 unresolved')
+          PY
+
+      - name: Validate v1.2.3 source-seat manifest
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('governance/contact-organ/source_seat_manifest_v1_2_3.json').read_text())
+          rows=m['rows']
+          assert len(rows)==22 and len({r['recipientId'] for r in rows})==22
+          assert {r['recipientId'] for r in rows if r['carrierClass']=='NATIVE_ANDROID_SAF'}=={'phone-housekeeper'}
+          assert {r['recipientId'] for r in rows if r['carrierClass']=='HTML_CROSS_EXTRACTABLE'}=={'cross-continuity'}
+          assert all(r['materializationEligible'] is False for r in rows if not r.get('expectedSha256'))
+          assert all(r['expectedSha256'] for r in rows if r.get('materializationEligible'))
+          print('22-row source-seat manifest PASS')
+          PY
+
+      - name: Compile and self-test intake machinery
+        run: |
+          set -euo pipefail
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_3.py
+          python3 -m py_compile governance/contact-organ/seat_contact_source_v1_2_3A.py
+          python3 -m py_compile governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py
+          python3 governance/contact-organ/seat_contact_source_v1_2_3A.py --selftest
+
+      - name: Run batch source intake
+        run: |
+          set -euo pipefail
+          python3 governance/contact-organ/seat_contact_source_v1_2_3A.py \
+            --intake-dir estate-publication/source-intake/contact-organ-v1.2.3 \
+            | tee estate-publication/contact-organ-descendants/SOURCE_SEAT_RUNTIME_DIAGNOSTIC_v1_2_3.txt
+
+      - name: Verify dynamic accounting and semantic separation
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('estate-publication/contact-organ-descendants')
+          r=json.loads((root/'PROPAGATION_RECEIPT_v1_2_3.json').read_text())
+          g=json.loads((root/'SOURCE_SEAT_GATE_RECEIPT_v1_2_3.json').read_text())
+          assert r['totalRecipients']==28
+          assert 6 <= r['materialized'] <= 28
+          assert r['materializationOpen']==28-r['materialized']
+          assert r['unresolved']==0
+          assert g['manifestRows']==22
+          assert g['accounting']['materialized']==r['materialized']
+          assert g['accounting']['materializationOpen']==r['materializationOpen']
+          floor=set(r['floorMaterializedIds'])
+          assert len(floor)==6
+          for rid in r['v1_2_3MaterializedIds']:
+              p=root/rid/'PATCH_RECEIPT_v1_2_3.json'
+              rec=json.loads(p.read_text())
+              assert rec['parentMutated'] is False
+              assert rec['commonOrganMounted'] is True
+              if rid.startswith('cross-'):
+                  assert rec['crossDeviceDonorMounted'] is True
+              else:
+                  assert rec['crossDeviceDonorMounted'] is False
+          hk=root/'phone-housekeeper'/'PATCH_RECEIPT_v1_2_3.json'
+          assert not hk.exists(), 'native Housekeeper must not acquire a generic HTML patch receipt'
+          print(f"v1.2.3 gate PASS: {r['materialized']}/28 materialized; {r['materializationOpen']} open; 0 unresolved")
+          PY
+
+      - name: Commit earned source seats and descendants
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Contact Organ Source Seat Gate v1.2.3'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/source-carriage/contact-organ-v1.2 || true
+          git add estate-publication/contact-organ-descendants || true
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record earned Contact Organ v1.2.3 source seats [skip ci]'
+          for attempt in $(seq 1 20); do
+            git pull --rebase --autostash origin main || true
+            git push origin HEAD:main && exit 0
+            sleep 2
+          done
+          exit 1

@@ -1,0 +1,67 @@
+{
+  "schema": "jm.estate.contact-organ-recovery-authority-delta/1.2.2",
+  "date": "2026-09-03",
+  "inherits": "PROPAGATION_RECEIPT_v1_2_1 materialized=6 recoveryAuthorityConfirmed=22 unresolved=0",
+  "laws": {
+    "parent": "FROZEN PARENT -> CLEAN DESCENDANT",
+    "claim": "NO DING, NO CLAIM.",
+    "writableRoute": "ACCESSIBLE SOURCE != /mnt/data SOURCE. FIND THE WRITABLE ROUTE BEFORE DECLARING THE BODY UNWRITABLE.",
+    "transfer": "TRANSFER THE ORGAN WHERE THE MEANING SURVIVES; ADAPT THE CARRIER WHERE THE PLATFORM CHANGES."
+  },
+  "rows": [
+    {
+      "recipientId": "phone-housekeeper",
+      "authorityClass": "NATIVE_SOURCE_PACKAGE_VERIFIED__BYTES_NOT_WRITABLY_MOUNTED",
+      "body": "ZIONFOLDER ESTATE HOUSEKEEPER v1.1.2",
+      "carrier": "NATIVE_ANDROID_SAF",
+      "sourcePackage": "ZIONFOLDER_ESTATE_HOUSEKEEPER_ANDROID_NATIVE_SOURCE_v1_1_2_API36.zip",
+      "sourcePackageSha256": "30c0a34e7010b31cbbb1027be6cdf2404e2b09cbb745f7169046622913b991a6",
+      "sourceHtmlSha256": "4f166b2bf164d31be97c59260de7d2ece5230c58027a5490f4e1a21a1fb4783e",
+      "carrierSource": "ZIONFOLDER_ESTATE_HOUSEKEEPER_v1_1_2_NATIVE_GRAFT_CARRIER_SOURCE.zip",
+      "carrierSourceBytes": 51034,
+      "carrierSourceSha256": "e161a448073d33488992e763e9f81d1e7cf1bcf6c11a75de21fb2bb9873b1432",
+      "apk": "ZIONFOLDER_ESTATE_HOUSEKEEPER_v1_1_2_NATIVE_GRAFT_HARDENED_DEBUG.apk",
+      "apkBytes": 25100,
+      "apkSha256": "6444bc787d397ca31067883b36669e29a5e87a02f8c86c7616fcafa9f5891f54",
+      "android": {
+        "package": "com.jmisjustme.zionhousekeeper",
+        "versionCode": 112,
+        "versionName": "1.1.2",
+        "minSdk": 26,
+        "targetSdk": 36,
+        "compileSdk": 36
+      },
+      "transactionLaw": "COPY -> SHA VERIFY -> REMOVE SOURCE",
+      "contactOrganAdapter": "governance/contact-organ/android/JMHousekeeperContactAdapter.kt",
+      "physicalInstall": "OPEN",
+      "physicalSafTreeContact": "OPEN",
+      "physicalMutationConsequence": "OPEN",
+      "materializedCountEffect": 0,
+      "reason": "Native source/package authority is stronger than the inspection bridge. Exact package bytes are not yet seated in the writable repository carrier, so no native descendant materialisation is claimed."
+    },
+    {
+      "recipientId": "cross-continuity",
+      "authorityClass": "EMBEDDED_EXACT_DONOR_VERIFIED__EXTRACTION_PENDING_WRITABLE_CARRIER",
+      "body": "Device Continuity v1.1.7",
+      "currentFile": "00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+      "expectedBytes": 284399,
+      "expectedSha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+      "embeddedDonorId": "seed-62b14ef3fafc2085",
+      "authorityCarrier": "00_OPEN_FIRST_JM_HTML_BODY_DOCK_v1_0_FULL_COMPLETE_CONTACT_EXECUTION.html",
+      "authorityCarrierBytes": 5829675,
+      "authorityCarrierSha256": "345038e8ece9755f55b0caa60d98b7ac63dbd43c97b422c09e2d804b3ac7fe98",
+      "extractor": "governance/contact-organ/recovery/extract_device_continuity_v1_1_7.py",
+      "targetSourceCarriage": "estate-publication/source-carriage/contact-organ-v1.2/cross-continuity/00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+      "materializedCountEffect": 0,
+      "reason": "The exact donor identity, length and SHA are independently proved and embedded in Body Dock. The source bytes must still be deterministically decoded and SHA-gated into a writable carrier before propagation may increment the materialised count."
+    }
+  ],
+  "accounting": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "recoveryAuthorityConfirmed": 22,
+    "strengthenedRecoveryAuthorities": 2,
+    "unresolved": 0
+  },
+  "claimBoundary": "v1.2.2 strengthens executable recovery machinery and native carrier adaptation only. It does not synthesize missing source bytes, rebuild an APK, perform SAF mutation, complete Phone-Laptop continuity, or earn a physical Ding."
+}

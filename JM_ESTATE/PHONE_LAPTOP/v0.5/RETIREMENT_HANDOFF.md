@@ -43,6 +43,12 @@ That v0.2 founding body is already FROZEN / LOCKED / ANCHORED / ZIONFOLDERED at 
 
 No further source integration is required unless the physical test exposes a real defect or a deliberate new descendant is requested.
 
+## Deployment reality check before retirement
+
+The canonical public-launch repository `JMisJustMe/jm-cloud-contact-server-first-cloud` is still carrying the **v0.4.2** first-public-launch carrier on `main`; the exact v0.5 server/profile set is not yet visibly promoted there. The Estate does, however, retain the exact current v0.5 server, General Cloud Control, Contact Runner and Phone↔Laptop profile bodies.
+
+Therefore the open test chat should first verify/promote the exact v0.5 hosted descendant (or use another already-current v0.5 host if separately proved) before interpreting any physical v0.5 result. Do not accidentally run the v0.5 test against the older v0.4.2 public carrier and call that a v0.5 crown.
+
 ## What remains
 
 Only the **current v0.5 public/hosted or owner physical Phone↔Laptop use receipt** remains claim-gated.

@@ -1,9 +1,9 @@
-name: PUKA Canonical Door + PWA Continuity Proof
+name: PUKA v0.17A Canonical Door + PWA Continuity Proof
 
 on:
   workflow_dispatch:
   push:
-    branches: [main, build/puka-v014a-continuity-crown-readiness, build/puka-continuity-crown-readiness-current]
+    branches: [main, build/puka-continuity-crown-readiness-current]
     paths:
       - ".github/workflows/puka-continuity-proof.yml"
       - "games-beyond/puka/manifest.webmanifest"
@@ -24,7 +24,7 @@ concurrency:
 jobs:
   prove:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 14
     steps:
       - name: Checkout current PUKA continuity descendant
         uses: actions/checkout@v6
@@ -32,19 +32,20 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Prove continuity source law
+      - name: Prove v0.17A continuity source law
         shell: bash
         run: |
           set -euo pipefail
+          grep -Fq 'PUKA v0.17A' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq '"id":"./00_OPEN_FIRST.html"' games-beyond/puka/manifest.webmanifest
           grep -Fq '"start_url":"./00_OPEN_FIRST.html"' games-beyond/puka/manifest.webmanifest
           grep -Fq '"scope":"./"' games-beyond/puka/manifest.webmanifest
-          grep -Fq "const CACHE='jm-puka-v14a'" games-beyond/puka/sw.js
+          grep -Fq "const CACHE='jm-puka-v17a'" games-beyond/puka/sw.js
           grep -Fq "'jm-puka-v12a'" games-beyond/puka/puka-ui.js
           grep -Fq "location.replace('./00_OPEN_FIRST.html'+location.search+location.hash)" games-beyond/puka/index.html
           grep -Fq 'BODY EVOLVES -> DOOR STAYS -> STATE RETURNS.' games-beyond/puka/PUKA_CONTINUITY_CROWN_READINESS_v1.0.md
           test -s games-beyond/tests/puka-continuity.spec.mjs
-          echo 'PUKA CONTINUITY SOURCE DING PASS'
+          echo 'PUKA v0.17A CONTINUITY SOURCE DING PASS'
 
       - name: Set up browser proof environment
         uses: actions/setup-node@v4
@@ -67,7 +68,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: puka-continuity-crown-readiness-${{ github.run_id }}
+          name: puka-v017a-continuity-crown-readiness-${{ github.run_id }}
           path: |
             games-beyond/test-results
             games-beyond/playwright-report
@@ -84,31 +85,31 @@ jobs:
           from urllib.request import Request,urlopen
           base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks=[
-            ('','PUKA v0.14A'),
-            ('00_OPEN_FIRST.html','PUKA v0.14A'),
+            ('','PUKA v0.17A'),
+            ('00_OPEN_FIRST.html','PUKA v0.17A'),
             ('manifest.webmanifest','"id":"./00_OPEN_FIRST.html"'),
             ('manifest.webmanifest','"start_url":"./00_OPEN_FIRST.html"'),
-            ('sw.js',"const CACHE='jm-puka-v14a'"),
+            ('sw.js',"const CACHE='jm-puka-v17a'"),
             ('puka-ui.js',"'jm-puka-v12a'"),
             ('PUKA_CONTINUITY_CROWN_READINESS_v1.0.md','BODY EVOLVES -> DOOR STAYS -> STATE RETURNS.')
           ]
           run=os.environ.get('GITHUB_RUN_ID','manual'); pending=checks[:]
-          for attempt in range(1,31):
+          for attempt in range(1,51):
             nxt=[]
             for rel,marker in pending:
               try:
-                req=Request(f'{base}{rel}?jm-puka-continuity={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Continuity-Proof/1.0','Cache-Control':'no-cache'})
+                req=Request(f'{base}{rel}?jm-puka-continuity={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Continuity-Proof/1.1','Cache-Control':'no-cache'})
                 with urlopen(req,timeout=15) as r: body=r.read().decode('utf-8','replace'); code=r.status
               except Exception as exc:
                 print('WAIT',rel or '/',type(exc).__name__); nxt.append((rel,marker)); continue
               if code==200 and marker in body: print('LIVE PASS',rel or '/',marker)
               else: print('WAIT',rel or '/',code,marker); nxt.append((rel,marker))
             if not nxt: pending=[]; break
-            pending=nxt; time.sleep(2)
-          if pending: raise SystemExit('PUKA CONTINUITY LIVE CONTACT FAILED: '+', '.join(rel or '/' for rel,_ in pending))
+            pending=nxt; time.sleep(3)
+          if pending: raise SystemExit('PUKA v0.17A CONTINUITY LIVE CONTACT HOLD')
           PY
 
-      - name: Seal continuity crown-readiness receipt
+      - name: Seal v0.17A continuity crown-readiness receipt
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
@@ -118,8 +119,8 @@ jobs:
           from datetime import datetime,timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.ContinuityCrownReadiness/1.0',
-            'product_body':'PUKA v0.14A',
+            'schema':'JM.PUKA.ContinuityCrownReadiness/1.1',
+            'product_body':'PUKA v0.17A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
@@ -128,21 +129,19 @@ jobs:
             'pwa_identity':'./00_OPEN_FIRST.html',
             'pwa_scope':'./',
             'stable_primary_store':'jm-puka-v12a',
-            'current_service_worker_cache':'jm-puka-v14a',
+            'current_service_worker_cache':'jm-puka-v17a',
             'canonical_redirect_query_hash_continuity':'PASS',
             'pwa_identity_scope':'PASS',
             'service_worker_scope':'PASS',
             'stale_puka_cache_cleanup':'PASS',
             'active_hand_survives_service_worker_reentry':'PASS',
-            'exact_private_cards_and_pot_survive_reentry':'PASS',
             'local_state_survives_cache_replacement':'PASS',
             'browser_runtime_errors':'ZERO',
             'public_contact':'PASS',
-            'owner_browser_contact':'SEPARATE_OWNER_EVIDENCE_EXISTS_OUTSIDE_AUTOMATION',
             'installed_physical_android_lifecycle':'UNCLAIMED',
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Machine-side canonical-door, PWA identity/scope, service-worker scope/cache replacement, local-state re-entry and public HTTP contact passed. Installed physical Android lifecycle, owner aesthetic acceptance, Cold Ding and final crown remain separate.'
+            'claim_boundary':'Machine-side canonical-door, PWA identity/scope, v0.17A service-worker scope/cache replacement, local-state re-entry and public HTTP contact passed. Installed physical Android lifecycle, owner aesthetic acceptance, Cold Ding and final crown remain separate.'
           }
           p=Path('games-beyond/puka/CONTINUITY_PROOF_RECEIPT.json')
           p.write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
@@ -151,15 +150,11 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add games-beyond/puka/CONTINUITY_PROOF_RECEIPT.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Seal PUKA canonical-door and PWA continuity proof [skip ci]'
+          git commit -m 'Seal PUKA v0.17A canonical-door and PWA continuity proof [skip ci]'
           for attempt in 1 2 3 4 5 6; do
-            echo "receipt push attempt ${attempt}"
             git fetch origin main
             git rebase origin/main
-            if git push origin HEAD:main; then
-              exit 0
-            fi
+            if git push origin HEAD:main; then exit 0; fi
             sleep 2
           done
-          echo 'PUKA continuity receipt could not be fast-forwarded after retries' >&2
           exit 1

@@ -1,11 +1,11 @@
-name: PUKA Canonical Door Continuity Proof
+name: PUKA v0.17A Canonical Door Continuity Proof
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-      - build/puka-v0-15a-canonical-continuity-crown-readiness
+      - build/puka-canonical-continuity
     paths:
       - ".github/workflows/puka-canonical-continuity-proof.yml"
       - "games-beyond/tests/puka-canonical-continuity.spec.mjs"
@@ -13,6 +13,7 @@ on:
       - "games-beyond/puka/sw.js"
       - "games-beyond/puka/puka-ui.js"
       - "games-beyond/puka/puka-core.js"
+      - "games-beyond/puka/00_OPEN_FIRST.html"
 
 permissions:
   contents: write
@@ -32,20 +33,21 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
-      - name: Prove continuity source invariants
+      - name: Prove v0.17A continuity source invariants
         shell: bash
         run: |
           set -euo pipefail
           test -s games-beyond/tests/puka-canonical-continuity.spec.mjs
+          grep -Fq 'PUKA v0.17A' games-beyond/puka/00_OPEN_FIRST.html
           grep -Fq '"id":"./00_OPEN_FIRST.html"' games-beyond/puka/manifest.webmanifest
           grep -Fq '"start_url":"./00_OPEN_FIRST.html"' games-beyond/puka/manifest.webmanifest
           grep -Fq '"scope":"./"' games-beyond/puka/manifest.webmanifest
-          grep -Fq "const CACHE='jm-puka-v14a'" games-beyond/puka/sw.js
+          grep -Fq "const CACHE='jm-puka-v17a'" games-beyond/puka/sw.js
           grep -Fq "'jm-puka-v12a'" games-beyond/puka/puka-ui.js
           grep -Fq "keys.filter(k=>k!==CACHE&&k.startsWith('jm-puka-'))" games-beyond/puka/sw.js
           node --check games-beyond/puka/puka-ui.js
           node --check games-beyond/puka/puka-core.js
-          echo 'PUKA CANONICAL CONTINUITY SOURCE DING PASS'
+          echo 'PUKA v0.17A CANONICAL CONTINUITY SOURCE DING PASS'
 
       - name: Set up browser proof environment
         uses: actions/setup-node@v4
@@ -60,7 +62,7 @@ jobs:
         working-directory: games-beyond
         run: npx playwright install --with-deps chromium
 
-      - name: Prove same-door state return across cache-carrier replacement
+      - name: Prove same-door state return across v0.17A cache-carrier replacement
         working-directory: games-beyond
         run: npx playwright test tests/puka-canonical-continuity.spec.mjs --project=desktop-chromium
 
@@ -68,7 +70,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: puka-canonical-continuity-proof-${{ github.run_id }}
+          name: puka-v017a-canonical-continuity-proof-${{ github.run_id }}
           path: |
             games-beyond/test-results
             games-beyond/playwright-report
@@ -81,35 +83,34 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json,time
+          import os,time
           from urllib.request import Request,urlopen
           base='https://jmisjustme-estate.pages.dev/games-beyond/puka/'
           checks=[
-            ('','PUKA'),
-            ('00_OPEN_FIRST.html','puka-human-game-v02.js'),
+            ('','PUKA v0.17A'),
+            ('00_OPEN_FIRST.html','PUKA v0.17A'),
             ('manifest.webmanifest','"id":"./00_OPEN_FIRST.html"'),
             ('manifest.webmanifest','"start_url":"./00_OPEN_FIRST.html"'),
-            ('sw.js',"const CACHE='jm-puka-v14a'"),
-            ('puka-ui.js',"'jm-puka-v12a'"),
+            ('sw.js',"const CACHE='jm-puka-v17a'"),
+            ('puka-ui.js',"'jm-puka-v12a'")
           ]
-          pending=checks[:]
-          for attempt in range(1,31):
+          run=os.environ.get('GITHUB_RUN_ID','manual'); pending=checks[:]
+          for attempt in range(1,51):
             nxt=[]
             for rel,marker in pending:
               try:
-                req=Request(base+rel+f'?jm-puka-continuity={attempt}',headers={'User-Agent':'JM-PUKA-Continuity-Proof/1.0','Cache-Control':'no-cache'})
-                with urlopen(req,timeout=15) as r:
-                  body=r.read().decode('utf-8','replace'); code=r.status
+                req=Request(f'{base}{rel}?jm-puka-continuity={run}-{attempt}',headers={'User-Agent':'JM-PUKA-Continuity-Proof/1.1','Cache-Control':'no-cache'})
+                with urlopen(req,timeout=15) as r: body=r.read().decode('utf-8','replace'); code=r.status
               except Exception as exc:
                 print('WAIT',rel or '/',type(exc).__name__); nxt.append((rel,marker)); continue
               if code==200 and marker in body: print('LIVE PASS',rel or '/',marker)
               else: print('WAIT',rel or '/',code,marker); nxt.append((rel,marker))
             if not nxt: pending=[]; break
-            pending=nxt; time.sleep(2)
-          if pending: raise SystemExit('PUKA CANONICAL CONTINUITY LIVE CONTACT FAILED: '+', '.join(rel or '/' for rel,_ in pending))
+            pending=nxt; time.sleep(3)
+          if pending: raise SystemExit('PUKA v0.17A CANONICAL CONTINUITY LIVE CONTACT HOLD')
           PY
 
-      - name: Seal canonical continuity receipt
+      - name: Seal v0.17A canonical continuity receipt
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
@@ -119,31 +120,39 @@ jobs:
           from datetime import datetime,timezone
           from pathlib import Path
           receipt={
-            'schema':'JM.PUKA.CanonicalContinuityProof/1.0',
+            'schema':'JM.PUKA.CanonicalContinuityProof/1.1',
+            'product_body':'PUKA v0.17A',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
-            'source_commit':os.environ['GITHUB_SHA'],
-            'workflow_run':os.environ['GITHUB_RUN_ID'],
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'canonical_door':'https://jmisjustme-estate.pages.dev/games-beyond/puka/',
             'pwa_id':'./00_OPEN_FIRST.html',
             'start_url':'./00_OPEN_FIRST.html',
             'scope':'./',
             'state_lineage':'jm-puka-v12a',
-            'current_cache_carrier':'jm-puka-v14a',
+            'current_cache_carrier':'jm-puka-v17a',
             'source_invariants':'PASS',
-            'browser_state_return':'PASS — exact hand label, player cards and pot survived same-door reload after legacy PUKA cache-carrier replacement',
-            'cache_retirement':'PASS — earlier jm-puka-* carrier removed while current carrier mounted',
-            'state_cache_separation':'PASS — cache version did not become a second localStorage state key',
-            'pwa_identity_continuity':'PASS — explicit id preserves the previously implicit start-url identity',
+            'browser_state_return':'PASS',
+            'cache_retirement':'PASS',
+            'state_cache_separation':'PASS',
+            'pwa_identity_continuity':'PASS',
             'public_contact':'PASS',
             'cold_ding':False,
             'crowned':False,
-            'claim_boundary':'Browser proof establishes same-origin PUKA state continuity through the current service-worker cache replacement mechanism and stable PWA identity. It does not prove survival after user-cleared site data, private-browsing teardown, browser storage eviction, cross-origin door changes, uninstall/reinstall behaviour on every Android/browser combination, or owner-side Cold Ding.'
+            'claim_boundary':'Browser and public proof establish same-origin PUKA state continuity through the v0.17A service-worker cache replacement and stable PWA identity. They do not prove survival after user-cleared site data, private-browsing teardown, storage eviction, cross-origin door changes, every install lifecycle, owner Cold Ding or crown.'
           }
           path=Path('registry/puka-canonical-continuity-receipt.json')
           path.write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
           PY
-          git config user.name "JM PUKA Continuity Proof Rail"
-          git config user.email "actions@users.noreply.github.com"
+          git config user.name 'JM PUKA Continuity Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
           git add registry/puka-canonical-continuity-receipt.json
-          git commit -m "Seal PUKA canonical door continuity proof [skip ci]"
-          git push origin HEAD:main
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seal PUKA v0.17A canonical continuity proof [skip ci]'
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 2
+          done
+          exit 1

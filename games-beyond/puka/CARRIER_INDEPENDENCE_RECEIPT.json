@@ -1,9 +1,9 @@
 {
-  "schema": "JM.PUKA.CarrierIndependenceProof/1.0",
-  "product_body": "PUKA v0.14A",
-  "verified_utc": "2026-09-02T11:27:25.092532+00:00",
-  "source_commit": "d9ded5ad3bc674e8e9e3a341eee913978f2ec2c4",
-  "workflow_run": "33624674421",
+  "schema": "JM.PUKA.CarrierIndependenceProof/1.1",
+  "product_body": "PUKA v0.16A \u2014 Human Game Read Calibration / Counterread",
+  "verified_utc": "2026-09-05T16:58:36.074246+00:00",
+  "source_commit": "7995bf78f86c6bc0e6822f84bc97f34e0c2c960d",
+  "workflow_run": "33979494728",
   "canonical_door": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
   "canonical_carrier": "Cloudflare Pages",
   "recovery_carrier": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka/",
@@ -14,6 +14,11 @@
     "puka-core.js",
     "puka-ui.js",
     "puka-human-game-v02.js",
+    "puka-table-read-v02.css",
+    "puka-read-lab-v01.js",
+    "puka-read-lab-v01.css",
+    "puka-read-calibration-v01.js",
+    "puka-read-calibration-v01.css",
     "manifest.webmanifest",
     "registry.json",
     "sw.js"
@@ -22,9 +27,11 @@
   "source_to_github_pages_byte_parity": "PASS",
   "cloudflare_to_github_pages_byte_parity": "PASS",
   "canonical_door_unchanged": true,
+  "read_lab_carrier_parity": "PASS",
+  "counterread_carrier_parity": "PASS",
   "cross_origin_local_state_migration": "UNCLAIMED_NOT_IMPLEMENTED",
   "installed_physical_android_lifecycle": "UNCLAIMED",
   "cold_ding": false,
   "crowned": false,
-  "claim_boundary": "Critical PUKA source files are byte-identical on the canonical Cloudflare carrier and GitHub Pages recovery carrier. This proves body/carrier independence and recovery availability, not automatic cross-origin browser-state migration, installed physical Android lifecycle, Cold Ding or final crown."
+  "claim_boundary": "Current critical PUKA v0.16A source, Human Game, Declared Read and Counterread files are byte-identical on the canonical Cloudflare carrier and GitHub Pages recovery carrier. This proves body/carrier independence and recovery availability while retaining one canonical public identity; it does not claim automatic cross-origin browser-state migration, installed physical Android lifecycle, Cold Ding or final crown."
 }

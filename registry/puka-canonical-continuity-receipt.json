@@ -1,0 +1,22 @@
+{
+  "schema": "JM.PUKA.CanonicalContinuityProof/1.1",
+  "product_body": "PUKA v0.17A",
+  "verified_utc": "2026-09-05T18:49:27.418959+00:00",
+  "source_commit": "ede119700e3488153805993f1d588d5c03b7579b",
+  "workflow_run": "33985206442",
+  "canonical_door": "https://jmisjustme-estate.pages.dev/games-beyond/puka/",
+  "pwa_id": "./00_OPEN_FIRST.html",
+  "start_url": "./00_OPEN_FIRST.html",
+  "scope": "./",
+  "state_lineage": "jm-puka-v12a",
+  "current_cache_carrier": "jm-puka-v17a",
+  "source_invariants": "PASS",
+  "browser_state_return": "PASS",
+  "cache_retirement": "PASS",
+  "state_cache_separation": "PASS",
+  "pwa_identity_continuity": "PASS",
+  "public_contact": "PASS",
+  "cold_ding": false,
+  "crowned": false,
+  "claim_boundary": "Browser and public proof establish same-origin PUKA state continuity through the v0.17A service-worker cache replacement and stable PWA identity. They do not prove survival after user-cleared site data, private-browsing teardown, storage eviction, cross-origin door changes, every install lifecycle, owner Cold Ding or crown."
+}

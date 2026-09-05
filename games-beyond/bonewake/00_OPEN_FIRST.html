@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#061820" />
+<!-- OPEN_FIRST FIT + AIM v1.11 | JM32_DEFAULT_CODING v1.8 STRONG_USE | SOURCE: Humanimals Ground Zero + Bonewake v1.0 + approved Museum Bone Room mockups | ROUTE: Full Body → Straight Run → Correct After | PATCH, DON'T SURPRISE-REBUILD | OPEN_FIRST | NO DING, NO CLAIM | Frozen Route Freedom v1.4 remains recovery floor. -->
+<title>Humanimals: Bonewake Arena — First Wake · OPEN_FIRST Fit + Aim v1.11</title>
+<link rel="stylesheet" href="./bonewake.css">
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="mark"><i></i></div>
+    <div class="name">
+      <div class="eyebrow">HUMANIMALS</div>
+      <div class="title">BONEWAKE ARENA</div>
+      <div class="sub">FIRST WAKE · MUSEUM BONE ROOM</div>
+      <div class="originLine">AWAKEN FOSSIL MEMORY · SURVIVE WHAT ANSWERS</div>
+    </div>
+    <div class="hud">
+      <div class="hudpill"><b>CORE</b><span id="coreTop">90</span></div>
+      <div class="hudpill"><b>WAKE</b><span id="wakeTop">0/5</span></div>
+    </div>
+  </header>
+
+  <section class="supports sourceRun">
+    <button class="action" id="deepBtn"><b>DEEP CALL</b><small>Instinct Call · wake the deep route</small><span class="meter"><i id="deepMeter"></i></span></button>
+    <div class="runState"><small id="phaseRead">SLEEPFALL</small><b>CHAIN <span id="chainRead">0</span></b><em id="packageRead">MUSEUM BONE ROOM</em></div>
+    <button class="action amber" id="breathBtn"><b>BREATHGATE</b><small>Instinct Call · open the breath route</small><span class="meter"><i id="breathMeter"></i></span></button>
+  </section>
+
+  <section class="conditionBench" id="conditionBench" aria-label="Wake conditions">
+    <button class="conditionCard leaderCard" id="leaderBtn" type="button">
+      <small>MOMENT LEADER</small>
+      <b id="leaderName">KAEL</b>
+      <span id="leaderVerb">REBOUND · contact returns</span>
+    </button>
+    <div class="conditionCard answerCard">
+      <small>BONE REEL ANSWER</small>
+      <b id="answerMain">NOT YET ANSWERED</b>
+      <span id="answerSub">build conditions · then pull</span>
+    </div>
+    <button class="conditionCard poolCard" id="poolBtn" type="button">
+      <small>WAKE POOL</small>
+      <b><span id="weightedRead">0</span> WEIGHTED</b>
+      <span>influence · never own</span>
+    </button>
+  </section>
+
+  <section class="boardWrap">
+    <div class="boardShell">
+      <canvas id="game" width="720" height="920" aria-label="Bonewake Arena interactive board"></canvas>
+      <div class="boardTop">
+        <div class="coreBar" id="coreBar"><div class="coreFill" id="coreFill"></div><div class="coreLabel">ENEMY CORE</div></div>
+        <div class="boardMiniGroup">
+          <div class="wakeMini">ANCIENT <b id="wakeMini">0/5</b></div>
+          <div class="strataMini">STRATA <b id="strataMini">0/4</b></div>
+        </div>
+      </div>
+      <div class="centerReadout" id="centerReadout">PULL LEVER → WAKE → FLICK</div>
+      <div class="contactFeed" id="contactFeed"></div>
+    </div>
+  </section>
+
+  <section class="controlDeck">
+    <div class="dropCard">
+      <div class="creatureBadge"></div>
+      <div class="dropInfo">
+        <small>ACTIVE DROPWAKE</small>
+        <b id="dropName">Waiting</b>
+        <div class="tags"><span class="tag" id="speedTag">—</span><span class="tag" id="powerTag">—</span><span class="tag" id="traitTag">—</span></div>
+      </div>
+    </div>
+    <div class="leverCard">
+      <div class="leverText">
+        <small>WAKE LEVER</small>
+        <b id="leverText">HOLD → RELEASE</b>
+        <div class="tension"><i id="tensionFill"></i></div>
+      </div>
+      <button class="lever" id="leverBtn" aria-label="Hold and release Wake Lever"></button>
+    </div>
+  </section>
+
+  <section class="reflexRow">
+    <button class="reflex" id="leftBtn">← LEFT REFLEX</button>
+    <button class="reflex right" id="rightBtn">RIGHT REFLEX →</button>
+  </section>
+
+  <section class="ancientRow">
+    <div class="ancientStatus">
+      <small>ANCIENT WAKE · UNIQUE BOARD AWAKENINGS</small>
+      <div class="ancientDots" id="ancientDots">
+        <i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i>
+      </div>
+    </div>
+    <div class="ancientAuto" id="ancientAuto">AUTO AT 5/5</div>
+  </section>
+
+  <div class="status" id="status">Build conditions. Pull the lever. Guide what answers.</div>
+
+  <details class="wakePool" id="wakePool">
+    <summary>Wake Pool · 15 pieces · tap to weight the Bone Reel ▾</summary>
+    <p>5 Creature Pieces + 4 Fossil Shards + 4 Bodypath Symbols + 2 Instinct Calls. Weighting changes the odds; it never grants total ownership of the awakening.</p>
+    <div class="poolGrid" id="poolGrid"></div>
+    <div class="poolCounts"><span>5 CREATURE</span><span>4 SHARD</span><span>4 BODYPATH</span><span>2 INSTINCT</span></div>
+  </details>
+
+  <details class="info">
+    <summary>Bonewake information ▾</summary>
+    <div class="infoGrid">
+      <div class="infoBox"><b>Museum Bone Room</b>The launch room is a living natural-history machine: specimen cases, rib galleries, spine routes, amber cells and Bodypaths wake under contact.</div><div class="infoBox"><b>Core loop</b>PULL → FLICK → KEEP ALIVE → WAKE BONES → BREAK CORE.</div>
+      <div class="infoBox"><b>Keeper</b>You aim the flick. You do not own the awakening. Preparation weights the reel; live play intervenes without erasing uncertainty.</div>
+      <div class="infoBox"><b>Wake Pool → Bone Reel</b>The 15-piece pool is live. Tap pieces to weight them. Lever tension changes reel volatility and launch energy.</div>
+      <div class="infoBox"><b>Wakeflick + Reflex Arms</b>Touch the active Dropwake, pull backwards to aim/charge the opening Wakeflick, then release. Hold left/right or press the lower board halves during live play to physically swing the Reflex Arms.</div>
+      <div class="infoBox"><b>Fossils + Bodypaths</b>They begin dormant. First meaningful contact wakes them, changes the field, spawns Echo Wakes and builds Ancient Wake.</div>
+      <div class="infoBox"><b>Ancient Wake</b>At 5/5 unique board awakenings it fires automatically: restitution rises, awakened fossils answer back and multiple bodies can remain alive after the opening flick.</div>
+      <div class="infoBox"><b>Instinct Calls</b>Deep Call pulls active bodies toward the Core. Breathgate bends the whole field sideways. The reel can prime one of them for a stronger use.</div>
+      <div class="infoBox"><b>Sleepfall</b>The turn sleeps only when the main Dropwake and every Echo Wake have drained. Board awakening persists across wakes until the Core breaks.</div>
+      <div class="infoBox"><b>Fingerprint</b>Conditions shape the answer; they do not dictate it. Moment Leader movement language changes how a body survives contact. Woken specimens keep a memory response across Sleepfall, so later wakes inherit an altered room.</div>
+      <div class="infoBox"><b>JM32 build route</b>Source authority: Humanimals Ground Zero + Bonewake design body + approved Museum Bone Room mockups. Runtime route: SOURCE → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY. This descendant is working-head only; no completion claim. v1.11 inherits the PUKA-proved one-door/input-fit production pattern and the Drag & Aim Loop Kernel touch → pull → release contact organ. Bonewake keeps its own identity.</div>
+    </div>
+  </details>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="./bonewake-core.js"></script>
+<script src="./bonewake-render.js"></script>
+<script src="./bonewake-input.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # PUKA v0.16A — HUMAN GAME READ CALIBRATION / COUNTERREAD BUILD RECEIPT
 
 **Parent:** PUKA v0.15A Human Game Declared Read Lab / v0.14A Human Game Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
-**State:** STAGE BODY / SOURCE SAVED / CALIBRATION UNIT DING PASS / PIPELINE + PUBLIC CONTACT PROOF OPEN / NOT CROWNED  
+**State:** **STAGE BODY · CODE DING PASS · BROWSER DING PASS · PUBLIC CONTACT PASS · CARRIER PARITY PASS · NOT CROWNED**  
 **Front door:** `00_OPEN_FIRST.html`  
 **Canonical live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`  
 **Working rail:** `main` — canonical source descendant
@@ -39,7 +39,7 @@ The calibration organ lives inside the existing Evidence / Review body. It does 
 - MEDIUM;
 - HIGH.
 
-It then keeps separate counts for:
+It keeps separate counts for:
 
 - supported;
 - corrected;
@@ -54,14 +54,7 @@ The player can therefore see when HIGH confidence is repeatedly running ahead of
 
 Directional support never becomes proof of hidden cards, hidden motive, personality, or truth about a real-world person. A correction is feedback on the player's read model, not a judgement of the person being read.
 
-The calibration organ does **not** inspect:
-
-- House hole cards;
-- the deck;
-- poker-state authority;
-- hidden motive;
-- arbitrary private notes;
-- real-world people.
+The calibration organ does **not** inspect House hole cards, the deck, poker-state authority, hidden motive, arbitrary private notes, or real-world people.
 
 ## Carrier continuity
 
@@ -69,41 +62,61 @@ The singular PUKA route is preserved:
 
 `games-beyond/puka/` -> `index.html` -> `00_OPEN_FIRST.html`
 
-v0.16A adds:
+The canonical owner-facing door remains:
 
-- `puka-read-calibration-v01.js`;
-- `puka-read-calibration-v01.css`;
-- `puka-read-calibration-v01.test.js`.
+`https://jmisjustme-estate.pages.dev/games-beyond/puka/`
 
-`00_OPEN_FIRST.html` and `index.html` now identify v0.16A. The offline carrier advances to `jm-puka-v16a` and includes the Read Lab plus Read Calibration organs. The public root is unchanged.
+The GitHub Pages route remains a **fallback body-recovery carrier, not a second public identity**:
 
-## Proof currently earned at source-save stage
+`https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka/`
 
-The new pure calibration test has passed locally at deterministic logic scope:
+The current carrier-independence proof compares the critical v0.16A source, Human Game, Declared Read and Counterread files byte-for-byte across source, canonical Cloudflare carrier and GitHub Pages recovery carrier.
 
-`PUKA v0.16A READ CALIBRATION UNIT DING PASS`
+## Proof earned
 
-The strengthened integration test also verifies source wiring into OPEN_FIRST and the v0.16A offline carrier.
+### Source / Code Ding
 
-A Chromium browser test has been added to the existing Games&Beyond Human Game acceptance suite to verify that:
+The v0.16A source gate passed, including inherited core/layout/art/character/world/theatre/living-table/full-table/Deep-House tests, Human Game tests, Declared Read inheritance tests, Counterread tests and Estate conformance tests.
 
-- the Read Lab remains mounted;
-- the Read Your Read panel mounts in Evidence / Review;
-- declared-read consequence produces tested / supported / corrected / uncertain calibration counts;
-- repeated corrected HIGH-confidence reads produce the bounded `HIGH CONFIDENCE IS RUNNING AHEAD` feedback;
-- arbitrary seeded hidden-card/private-note fields do not appear in calibration output;
-- the 412x915 touch route has no horizontal overflow;
-- runtime console/page errors remain empty.
+### Browser / real-context Ding
 
-The canonical GitHub proof workflow is being advanced to v0.16A so source, browser and public-contact claims are earned on this descendant rather than inherited from v0.14A.
+GitHub workflow run `33979389856` passed the Chromium acceptance rail, including:
+
+- Android touch portrait / landscape contexts;
+- tablet, laptop and desktop contexts;
+- zero horizontal overflow;
+- 44px visible interaction floor;
+- active-hand reload continuity;
+- sized raise contact;
+- visible-card equity honesty boundary;
+- Human Game visible-action membrane;
+- Declared Read Lab mounting;
+- Read Calibration mounting;
+- LOW / MEDIUM / HIGH confidence calibration;
+- hidden-card/private-field non-leakage;
+- zero runtime console/page errors.
+
+During this proof push, the rail exposed a real compact-route regression where Read Lab controls fell below the 44px Estate contact floor. The body was corrected rather than weakening the test; the subsequent proof passed.
+
+### Public contact
+
+`PUBLIC_CONTACT_RECEIPT.json` now records `JM.PUKA.ProofReceipt/0.16A`, public contact **PASS**, source commit `593963c42ae38549f18302a3b4268c59e7e9390e`, workflow run `33979389856`, and the unchanged singular public door.
+
+### Carrier independence / multi-carrier single identity
+
+The carrier proof was advanced from its stale v0.14A marker to current v0.16A and extended to include the Read Lab and Counterread bodies.
+
+Workflow run `33979494728` passed. `CARRIER_INDEPENDENCE_RECEIPT.json` now records `JM.PUKA.CarrierIndependenceProof/1.1` with source-to-Cloudflare, source-to-GitHub-Pages and Cloudflare-to-GitHub-Pages byte parity all **PASS**, while retaining Cloudflare as the canonical public identity and GitHub Pages as fallback recovery only.
 
 ## Current proof truth
 
-**CALIBRATION UNIT DING: PASS**  
-**v0.16A GITHUB PIPELINE DING: OPEN UNTIL THE UPDATED RAIL PASSES**  
-**v0.16A PUBLIC CONTACT: OPEN UNTIL THE UPDATED RAIL PASSES**  
-**OWNER PHYSICAL COLD DING: FALSE**  
-**CROWNED: FALSE**
+**PUKA v0.16A CODE DING: PASS**  
+**PUKA v0.16A BROWSER / REAL-VIEWPORT DING: PASS**  
+**PUKA v0.16A PUBLIC CONTACT: PASS**  
+**PUKA v0.16A CARRIER PARITY: PASS**  
+**CANONICAL PUBLIC DOOR: UNCHANGED**  
+**OWNER PHYSICAL COLD DING: FALSE / OPEN**  
+**CROWNED: FALSE / NOT CLAIMED**
 
 ## Delivery law
 
@@ -113,4 +126,4 @@ Sandbox and ZIP outputs are fallback/archive routes, not the normal owner-facing
 
 ## Crown boundary
 
-Automated browser/public proof may establish a mounted, contacted web descendant. It still does not establish owner physical contact, installed Android lifecycle proof, aesthetic crown, Cold Ding or final completion.
+The current proof establishes a mounted, browser-contacted, publicly-contacted v0.16A web descendant with current multi-carrier byte parity. It does **not** establish owner physical contact, installed Android lifecycle persistence, aesthetic crown, Cold Ding, final visual crown, proof of hidden motive, or truth about a real-world person.

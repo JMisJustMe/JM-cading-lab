@@ -36,8 +36,8 @@ assert(s.law.includes('SUPPORTED != PROVED'),'claim boundary missing');
 const html=fs.readFileSync(path.join(__dirname,'00_OPEN_FIRST.html'),'utf8');
 const sw=fs.readFileSync(path.join(__dirname,'sw.js'),'utf8');
 assert(html.includes('puka-read-calibration-v01.css')&&html.includes('puka-read-calibration-v01.js'),'Canonical OPEN_FIRST door does not load read calibration');
-assert(html.includes('PUKA v0.16A'),'OPEN_FIRST version not advanced to v0.16A');
-assert(sw.includes("jm-puka-v16a")&&sw.includes('puka-read-calibration-v01.js')&&sw.includes('puka-read-calibration-v01.css'),'Offline carrier does not include v0.16A calibration organ');
+assert(html.includes('PUKA v0.17A'),'OPEN_FIRST descendant did not preserve v0.16A calibration');
+assert(sw.includes("jm-puka-v17a")&&sw.includes('puka-read-calibration-v01.js')&&sw.includes('puka-read-calibration-v01.css'),'Offline carrier does not include inherited v0.16A calibration organ');
 assert(!R.summarise([{signal:'bluff',confidence:'high',resolution:{kind:'supported'}}]).detail.match(/proved|known motive/i),'Calibration language promoted a read into hidden motive proof');
 
-console.log('PUKA v0.16A READ CALIBRATION CODE DING PASS');
+console.log('PUKA v0.16A READ CALIBRATION INHERITANCE DING PASS UNDER v0.17A');

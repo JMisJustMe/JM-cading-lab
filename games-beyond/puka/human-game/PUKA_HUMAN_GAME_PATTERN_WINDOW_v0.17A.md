@@ -1,6 +1,6 @@
 # PUKA HUMAN GAME — Pattern Window / Contradiction Handling v0.17A
 
-**State:** FORWARD DESCENDANT CANDIDATE · PURE ORGAN CODE DING PASS · NOT YET MOUNTED · NOT CROWNED  
+**State:** MOUNTED CANDIDATE · PURE ORGAN CODE DING PASS · PROOF RAIL ARMED · NOT YET PUBLICLY PROVED · NOT CROWNED  
 **Parent:** PUKA v0.16A Human Game Read Calibration / Counterread  
 **Canonical game identity remains:** PUKA — Royal Card Learning, Poker Psychology & the Human Game
 
@@ -10,11 +10,11 @@
 
 ## Joint opened
 
-v0.16A calibrated the reader's confidence against public consequence. v0.17A begins the next founding Human Game route: compare bounded recent read windows so repetition, correction and contradiction stay visible together.
+v0.16A calibrated the reader's confidence against public consequence. v0.17A opens the next founding Human Game route: compare bounded recent read windows so repetition, correction and contradiction stay visible together.
 
 **TRACE → COMPARE → CONTRADICT → CONTEXT → RE-READ**
 
-The new organ compares the latest 3 / 6 / 12 resolved declared reads and can surface:
+The mounted organ compares the latest 3 / 6 / 12 resolved declared reads and can surface:
 
 - repeated directional support without promoting it into proof;
 - repeated correction that should change the reading model;
@@ -30,14 +30,24 @@ The organ receives only the declared-read ledger exposed by `PUKAReadLab`. It do
 **CONTRADICTION != FAILURE.**  
 **CONTEXT MAY CHANGE THE READ.**
 
-## Candidate source
+## Mounted source
 
 - `puka-pattern-window-v01.js`
 - `puka-pattern-window-v01.css`
 - `puka-pattern-window-v01.test.js`
+- `games-beyond/tests/puka-pattern-window.spec.mjs`
+- `00_OPEN_FIRST.html` — shared mount after Counterread / Read Calibration
+- `sw.js` — v0.17A offline carrier
+- `registry.json` — `JM.PUKA.Room/0.17A`
 
 Local pure-organ regression: **PASS** — `PUKA v0.17A PATTERN WINDOW CODE DING PASS`.
 
-## Claim boundary
+## Proof boundary
 
-This snapshot records an additive candidate organ only. It does not yet claim canonical OPEN_FIRST mounting, browser/viewport Ding, public contact, carrier parity, Cold Ding, crown or FLAZ. PUKA v0.16A remains the current public proved head until those continuation gates are actually crossed.
+Mounting is not browser/public proof. The v0.17A proof rail must still earn source conformance, actual Chromium runtime / viewport contact, canonical public contact and multi-carrier byte parity before v0.17A can replace v0.16A as the publicly proved head.
+
+Until those gates pass:
+
+**MOUNTED != PUBLICLY PROVED.**  
+**SYNTAX / PURE-ORGAN PASS != RUNTIME PASS.**  
+**NOT CROWNED.**

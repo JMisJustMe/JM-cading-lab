@@ -47,7 +47,7 @@ assert(read.resolution?.status==='DISCIPLINED UNCERTAINTY','Uncertainty was not 
 const html=fs.readFileSync(path.join(__dirname,'00_OPEN_FIRST.html'),'utf8');
 const sw=fs.readFileSync(path.join(__dirname,'sw.js'),'utf8');
 assert(html.includes('puka-read-lab-v01.css')&&html.includes('puka-read-lab-v01.js'),'Canonical OPEN_FIRST door does not load Read Lab');
-assert(html.includes('PUKA v0.16A'),'Inherited Read Lab is not carried by current OPEN_FIRST descendant');
-assert(sw.includes("jm-puka-v16a")&&sw.includes('puka-read-lab-v01.js')&&sw.includes('puka-read-lab-v01.css'),'Current offline carrier does not preserve the v0.15A Read Lab');
+assert(html.includes('PUKA v0.17A'),'Inherited Read Lab is not carried by current OPEN_FIRST descendant');
+assert(sw.includes("jm-puka-v17a")&&sw.includes('puka-read-lab-v01.js')&&sw.includes('puka-read-lab-v01.css'),'Current offline carrier does not preserve the v0.15A Read Lab');
 
-console.log('PUKA v0.15A READ LAB INHERITANCE DING PASS UNDER v0.16A');
+console.log('PUKA v0.15A READ LAB INHERITANCE DING PASS UNDER v0.17A');

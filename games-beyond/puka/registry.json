@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.16A",
+  "schema":"JM.PUKA.Room/0.17A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -18,16 +18,21 @@
     "readLabPresentation":"puka-read-lab-v01.css",
     "readCalibration":"puka-read-calibration-v01.js",
     "readCalibrationPresentation":"puka-read-calibration-v01.css",
+    "patternWindow":"puka-pattern-window-v01.js",
+    "patternWindowPresentation":"puka-pattern-window-v01.css",
     "declaredReadStore":"jm-puka-read-lab-v01",
     "sourceBoundary":"VISIBLE_ACTION_HISTORY_ONLY",
     "declaredReadBoundary":"A locked read is a provisional interpretation of public table behaviour. Later public consequence may support, correct or leave it unresolved; it never becomes proof of motive or personality.",
     "calibrationBoundary":"Read calibration receives only the declared-read ledger. Supported means later public consequence moved in the same direction; it never means hidden state or motive became fact.",
+    "patternWindowBoundary":"Pattern comparison receives only resolved declared-read signal, confidence, street and public-consequence outcomes. Repetition, correction, contradiction and recent-versus-longer movement remain provisional and never become hidden-state, motive, personality or real-person proof.",
     "keeper":"READ THE HUMAN GAME WITHOUT PRETENDING THE READ IS THE HUMAN.",
     "counterreadKeeper":"READ THE TABLE -> READ YOUR READ.",
-    "kernel":"CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CALIBRATE -> CORRECT"
+    "patternWindowKeeper":"A PATTERN MAY EARN ATTENTION. CONTRADICTION KEEPS IT CORRIGIBLE.",
+    "kernel":"CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CALIBRATE -> CORRECT",
+    "patternKernel":"TRACE -> COMPARE -> CONTRADICT -> CONTEXT -> RE-READ"
   },
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-table-read-v02.css","puka-read-lab-v01.css","puka-read-calibration-v01.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
-  "reasoningLayers":["puka-human-game-v02.js","puka-read-lab-v01.js","puka-read-calibration-v01.js"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-table-read-v02.css","puka-read-lab-v01.css","puka-read-calibration-v01.css","puka-pattern-window-v01.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
+  "reasoningLayers":["puka-human-game-v02.js","puka-read-lab-v01.js","puka-read-calibration-v01.js","puka-pattern-window-v01.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg","assets/puka-deep-house-lattice-v13.svg"],
   "browserProofContexts":["360x800 Deep House Android compact touch","390x844 Games&Beyond Android touch portrait","412x915 Deep House Android standard touch","768x1024 Deep House tablet portrait touch","844x390 Games&Beyond Android touch landscape","1366x768 Deep House laptop","1440x900 Deep House desktop","1440x1000 Games&Beyond desktop"],
   "lineage":[
@@ -35,7 +40,8 @@
     "v0.13A — Deep House Visual Convergence",
     "v0.14A — Human Game Behavioural Read Engine",
     "v0.15A — Human Game Declared Read Lab",
-    "v0.16A — Human Game Read Calibration / Counterread"
+    "v0.16A — Human Game Read Calibration / Counterread",
+    "v0.17A — Human Game Pattern Window / Contradiction Handling"
   ],
   "v12Changes":[
     "preserved the shared evaluator, 52-card deck authority, royal ladder, two presentation routes and v0.11 estate-conformance proof rail",
@@ -100,6 +106,20 @@
     "advances the singular OPEN_FIRST redirect and offline carrier to v0.16A without changing the canonical public root",
     "preserves v0.15A declared reads v0.14A behavioural analyser v0.13A Deep House and v0.12A poker authority as inherited parents"
   ],
+  "v17Changes":[
+    "adds a bounded comparative Pattern Window over resolved declared-read traces without giving it poker-state or hidden-state authority",
+    "lets the player compare the latest 3 6 or 12 resolved reads rather than treating the full accumulated history as one undifferentiated pattern",
+    "keeps supported corrected open and disciplined-uncertainty outcomes visible together inside each selected window",
+    "surfaces when the same declared signal receives both support and correction so contradiction remains evidence rather than being erased",
+    "detects when the recent three-read direction differs from a longer resolved window and treats that as a re-read prompt rather than proof that either window is absolute",
+    "allows repeated support to earn attention while preserving PATTERN != PROOF and SUPPORTED != PROVED",
+    "treats repeated correction as a reason to change the reading model rather than defend the earlier label",
+    "preserves repeated uncertainty as disciplined restraint when public evidence does not earn a stronger interpretation",
+    "mounts one shared Pattern Window inside Evidence Review for Portrait Academy and Royal Table without forking game authority",
+    "rejects arbitrary private notes hidden cards and unknown fields from comparative output",
+    "advances OPEN_FIRST registry and offline carrier to v0.17A while retaining the same singular canonical public door",
+    "preserves v0.16A Counterread v0.15A Read Lab v0.14A behavioural analyser v0.13A Deep House and v0.12A poker authority as inherited parents"
+  ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
@@ -109,6 +129,11 @@
     "A declared read must be committed before its later consequence if it is to count as a tested read",
     "A declared read may be supported corrected or unresolved; it is never retroactively promoted into motive fact",
     "Read calibration may evaluate the player's declared confidence against public consequence but may not promote support into hidden-state proof",
+    "Pattern windows may compare bounded resolved declared reads but may not promote repetition into hidden-state motive personality or real-person proof",
+    "A pattern may earn attention; contradiction keeps it corrigible",
+    "Same-signal support and correction must remain visible together rather than being averaged into fake certainty",
+    "Recent contact may differ from a longer pattern window and must remain available as a re-reading route",
+    "Context may change the read without changing the mechanical game truth",
     "Correction is feedback on the read model, not judgement of the person being read",
     "BLUFF? is always a candidate interpretation and requires visible pressure evidence before it can be locked",
     "UNCERTAIN is a valid earned state and must remain available when the public evidence does not support a stronger read",
@@ -142,11 +167,13 @@
     "Observation != interpretation != fact",
     "Estimate != hidden fact",
     "Pattern != proof of motive",
+    "Pattern != proof",
+    "Contradiction != failure",
     "Supported != proved",
     "Different games may share organs without sharing identities",
     "One singular live direct door is the normal owner contact route",
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Human Game read-calibration stage over the v0.15A Declared Read Lab, v0.14A behavioural-read engine, v0.13A Deep House visual-convergence body and v0.12A full-table learning loop. Automated syntax/core/Human-Game/Read-Lab/Calibration proof may establish the visible-action membrane, hidden-field rejection, declared-read trace, public-consequence correction and confidence-calibration logic. It does not establish motive, personality diagnosis, truth about a real-world person, owner-side aesthetic acceptance, installed physical Android lifecycle persistence, Cold Ding or final visual crown. Those remain separate and unclaimed."
+  "claimBoundary":"Human Game comparative Pattern Window stage over the v0.16A Counterread calibration organ, v0.15A Declared Read Lab, v0.14A behavioural-read engine, v0.13A Deep House visual-convergence body and v0.12A full-table learning loop. Automated syntax/core/Human-Game/Read-Lab/Calibration/Pattern-Window proof may establish the visible-action membrane, hidden-field rejection, declared-read trace, public-consequence correction, confidence calibration, bounded recent-window comparison, same-signal contradiction handling and recent-versus-longer directional change. It does not establish motive, personality diagnosis, truth about a real-world person, owner-side aesthetic acceptance, installed physical Android lifecycle persistence, Cold Ding or final visual crown. Those remain separate and unclaimed."
 }

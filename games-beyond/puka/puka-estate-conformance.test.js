@@ -6,6 +6,8 @@ const css12=fs.readFileSync(__dirname+'/puka-v12.css','utf8');
 const css13=fs.readFileSync(__dirname+'/puka-v13.css','utf8');
 const tableRead=fs.readFileSync(__dirname+'/puka-table-read-v02.css','utf8');
 const human=fs.readFileSync(__dirname+'/puka-human-game-v02.js','utf8');
+const readLab=fs.readFileSync(__dirname+'/puka-read-lab-v01.js','utf8');
+const calibration=fs.readFileSync(__dirname+'/puka-read-calibration-v01.js','utf8');
 const deep=fs.readFileSync(__dirname+'/puka-deep-house-v13.js','utf8');
 const ui=fs.readFileSync(__dirname+'/puka-ui.js','utf8');
 const sw=fs.readFileSync(__dirname+'/sw.js','utf8');
@@ -16,13 +18,15 @@ const humanBrowser=fs.readFileSync(__dirname+'/../tests/puka-human-game.spec.mjs
 const fail=m=>{throw new Error(m)};
 const has=(body,needle,msg)=>{if(!body.includes(needle))fail(msg)};
 
-has(html,'PUKA v0.14A','v0.14A front-door marker missing');
+has(html,'PUKA v0.16A','v0.16A front-door marker missing');
 has(html,'puka-v11.css','v0.11 conformance layer must remain mounted');
 has(html,'puka-v12.css','v0.12 capability layer must remain mounted');
 has(html,'puka-v13.css','v0.13 Deep House layer must remain mounted');
 has(html,'puka-deep-house-v13.js','v0.13 Deep House organ must remain mounted');
 has(html,'puka-table-read-v02.css','v0.14 Human Game presentation layer not mounted');
 has(html,'puka-human-game-v02.js','v0.14 Human Game reasoning organ not mounted');
+has(html,'puka-read-lab-v01.js','v0.15 Declared Read Lab not mounted');
+has(html,'puka-read-calibration-v01.js','v0.16 Counterread calibration not mounted');
 has(html,'viewport-fit=cover','safe viewport-fit marker missing');
 has(html,'class="skip-link"','skip-link door missing');
 has(html,'href="#main"','skip-link must route to main play body');
@@ -44,26 +48,33 @@ has(css13,'@media(prefers-reduced-motion:reduce)','Deep House reduced-motion gua
 has(tableRead,'.table-read-grid','Human Game table-read composition missing');
 has(human,'VISIBLE_ACTION_HISTORY_ONLY','Human Game source membrane marker missing');
 has(human,'OBSERVATION != INTERPRETATION != FACT','Human Game founding law missing');
+has(readLab,'INTERPRETATION ONLY','Declared Read Lab interpretation boundary missing');
+has(calibration,'READ THE TABLE -> READ YOUR READ.','Counterread keeper missing');
+has(calibration,'SUPPORTED != PROVED','Counterread support/proof boundary missing');
 has(deep,"root.dataset.deepHouse='active'",'Deep House runtime activation marker missing');
 has(deep,'root.dataset.contactConsequence','Deep House action consequence marker missing');
 has(deep,'root.dataset.fieldContact','Deep House direct field-contact marker missing');
 
 has(ui,"const hideAI=!s.ended||s.endReason==='fold'",'folded hands must not reveal House cards in presentation');
 has(ui,'function tableReadInput()','Human Game visible-action packet builder missing');
-has(sw,"jm-puka-v14a",'v0.14 service-worker cache marker missing');
+has(sw,"jm-puka-v16a",'v0.16 service-worker cache marker missing');
 has(sw,'puka-v11.css','v0.11 conformance CSS not cached');
 has(sw,'puka-v12.css','v0.12 capability CSS not cached');
 has(sw,'puka-v13.css','v0.13 Deep House CSS not cached');
 has(sw,'puka-deep-house-v13.js','v0.13 Deep House JS not cached');
 has(sw,'puka-table-read-v02.css','v0.14 Human Game CSS not cached');
 has(sw,'puka-human-game-v02.js','v0.14 Human Game JS not cached');
-has(registry,'JM.PUKA.Room/0.14A','v0.14 registry schema missing');
+has(sw,'puka-read-lab-v01.js','v0.15 Read Lab JS not cached');
+has(sw,'puka-read-calibration-v01.js','v0.16 Counterread JS not cached');
+has(registry,'JM.PUKA.Room/0.16A','v0.16 registry schema missing');
 has(registry,'Pattern != proof of motive','Human Game pattern/motive boundary missing');
+has(registry,'Supported != proved','Counterread support/proof law missing');
 
 for(const marker of ['360,height:800','390,height:844','412,height:915','768,height:1024','844,height:390','1366,height:768','1440,height:900','1440,height:1000','scrollWidth','pageerror','console','data-puka-mode','data-next-hand','isMobile:mobile','hasTouch:touch','fullPage:false','protected PUKA table field','page.reload','data-open-raise','data-raise-to','history-row','data-deep-house','data-field-contact','data-contact-consequence']) has(browser,marker,`browser/visual acceptance marker missing: ${marker}`);
-for(const marker of ['#tableRead','NO READ EARNED YET','PRESSURE-FORWARD SO FAR','NEXT TEST','houseHole','not.toContain','scrollWidth','pageerror','console']) has(humanBrowser,marker,`Human Game browser acceptance marker missing: ${marker}`);
+for(const marker of ['#tableRead','NO READ EARNED YET','PRESSURE-FORWARD SO FAR','NEXT TEST','houseHole','not.toContain','scrollWidth','pageerror','console','#pukaReadCalibration','HIGH CONFIDENCE IS RUNNING AHEAD','SUPPORTED ≠ PROVED']) has(humanBrowser,marker,`Human Game/Counterread browser acceptance marker missing: ${marker}`);
 has(workflow,'puka-estate-conformance.spec.mjs','browser acceptance spec not invoked by proof rail');
 has(workflow,'puka-human-game.spec.mjs','Human Game browser acceptance spec not invoked by proof rail');
 has(workflow,'playwright install --with-deps chromium','Chromium proof environment missing');
+has(workflow,'JM.PUKA.ProofReceipt/0.16A','v0.16 proof receipt schema missing from proof rail');
 
-console.log('PUKA v0.14A ESTATE + DEEP HOUSE + HUMAN GAME CONFORMANCE SOURCE DING PASS');
+console.log('PUKA v0.16A ESTATE + DEEP HOUSE + HUMAN GAME + DECLARED READ + COUNTERREAD CONFORMANCE SOURCE DING PASS');

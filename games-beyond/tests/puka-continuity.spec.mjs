@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const canonical='puka/';
 const primaryStore='jm-puka-v12a';
-const currentCache='jm-puka-v14a';
+const currentCache='jm-puka-v17a';
 
 async function visibleHandIdentity(page){
   return page.locator('.you .playing-card').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('aria-label')));

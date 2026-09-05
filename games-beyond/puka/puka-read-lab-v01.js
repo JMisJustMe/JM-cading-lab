@@ -251,15 +251,15 @@
   }
 
   function boot(){
-    if(!document?.body)return;
+    if(!document.body)return;
     render();
-    const target=document.querySelector('.app')||document.body;
     let pending=false;
     const observer=new MutationObserver(()=>{
       if(pending)return;pending=true;
       requestAnimationFrame(()=>{pending=false;render();});
     });
-    observer.observe(target,{childList:true,subtree:true,characterData:true});
+    const watch=[document.getElementById('tableState'),document.getElementById('actions')].filter(Boolean);
+    watch.forEach(target=>observer.observe(target,{childList:true,subtree:true,characterData:true}));
     addEventListener('storage',e=>{if(e.key===LAB_STORE||GAME_STORES.includes(e.key))render();});
     addEventListener('pagehide',saveLab,{passive:true});
   }

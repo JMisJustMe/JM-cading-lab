@@ -41,6 +41,25 @@ Rules:
 - A changed canonical door requires an explicit reason and a continuity/migration route; do not imply automatic cross-origin state migration unless it is actually implemented and proved.
 - **THE DOOR IDENTIFIES THE LIVING BODY, NOT ONE PARTICULAR BUILD.**
 
+## Ground zero — OWNER CONTACT & ON-DEMAND DEPLOYMENT
+
+Before handing over, repairing, redeploying or re-proving a live Estate door, read:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_OWNER_CONTACT_DEPLOYMENT_GROUND_ZERO_v1.0.md`
+
+Canonical keeper:
+
+**OWNER CONTACT OUTRANKS ASSUMED CONTACT.**
+
+Rules:
+- When JM asks for a live link, the job is to produce a currently reachable door, not merely recall a previously valid URL.
+- If current connected deployment/redeployment tooling is available and deployment is required, use it in the current chat rather than only explaining what could be deployed.
+- If JM reports a failed owner-side contact, treat that as a real failed contact event even if an earlier CI/live probe passed.
+- Prefer repairing/redeploying the singular canonical door. Use a governed recovery carrier for immediate access when necessary without silently minting a new canonical identity.
+- Do not call owner contact / Cold Ding from automation alone; owner-side evidence remains the final authority for present owner access.
+- Apply this rule to future work and to any older Estate body/chat when it is reopened or continued. Historical transcripts remain historical; continuation inherits this stronger operational default.
+- **DON'T HAND OVER A LINK. HAND OVER CONTACT.**
+
 ## Delivery default — LIVE DIRECT DOOR FIRST
 
 For every JM estate-hosted HTML/web build, the normal owner-facing delivery route is the proved **live direct URL**.

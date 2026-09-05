@@ -1,5 +1,5 @@
 {
-  "schema":"JM.PUKA.Room/0.14A",
+  "schema":"JM.PUKA.Room/0.15A",
   "name":"PUKA",
   "authority":"Theodore Benjamin Scott / JM",
   "status":"STAGE_BODY_NOT_CROWNED",
@@ -14,11 +14,15 @@
     "foundingSnapshot":"human-game/PUKA_HUMAN_GAME_FOUNDING_SNAPSHOT_v0.1.md",
     "engine":"puka-human-game-v02.js",
     "presentation":"puka-table-read-v02.css",
+    "readLab":"puka-read-lab-v01.js",
+    "readLabPresentation":"puka-read-lab-v01.css",
+    "declaredReadStore":"jm-puka-read-lab-v01",
     "sourceBoundary":"VISIBLE_ACTION_HISTORY_ONLY",
+    "declaredReadBoundary":"A locked read is a provisional interpretation of public table behaviour. Later public consequence may support, correct or leave it unresolved; it never becomes proof of motive or personality.",
     "keeper":"READ THE HUMAN GAME WITHOUT PRETENDING THE READ IS THE HUMAN.",
     "kernel":"CONTACT -> OBSERVE -> SEPARATE -> READ -> TEST -> CONSEQUENCE -> TRACE -> CORRECT"
   },
-  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-table-read-v02.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
+  "artLayers":["puka-art.css","puka-v05.css","puka-v05-room.css","puka-v06.css","puka-v07.css","puka-v08.css","puka-v08-academy.css","puka-v09.css","puka-v10.css","puka-v11.css","puka-v12.css","puka-v13.css","puka-table-read-v02.css","puka-read-lab-v01.css","puka-cards-v05.js","puka-character-v06.js","puka-world-v07.js","puka-table-theatre-v09.js","puka-living-table-v10.js","puka-deep-house-v13.js"],
   "visualAssets":["assets/puka-card-back.svg","assets/royal-felt-medallion.svg","assets/royal-room-backdrop.svg","assets/portrait-academy-backdrop.svg","assets/puka-chip-stack.svg","assets/felt-grain.svg","assets/court-lower-v07.svg","assets/court-middle-v07.svg","assets/court-high-v07.svg","assets/court-heir-v07.svg","assets/court-throne-v07.svg","assets/puka-table-inlay-v08.svg","assets/puka-treasury-v08.svg","assets/puka-academy-banner-v08.svg","assets/puka-dealer-medallion-v09.svg","assets/puka-board-runway-v09.svg","assets/puka-chip-column-v10.svg","assets/puka-deep-house-lattice-v13.svg"],
   "browserProofContexts":[
     "360x800 Deep House Android compact touch",
@@ -67,12 +71,31 @@
     "added a dedicated regression suite proving unknown hidden fields and card identities are discarded by Human Game normalisation",
     "preserved the v0.13 Deep House visual body and v0.12 full-table learning loop unchanged as parents"
   ],
+  "v15Changes":[
+    "turned Human Game from passive read display into active declared-read practice while preserving the poker core as sole game-state authority",
+    "added a shared Read Lab dock to Portrait Academy and Royal Table without forking either presentation route",
+    "lets the player declare STRONG? WEAK? PRESSURE BLUFF? or UNCERTAIN with explicit confidence before the public outcome is known",
+    "requires non-UNCERTAIN reads to be earned from visible House action evidence and keeps BLUFF? as a candidate interpretation rather than a motive assertion",
+    "limits a declared read to one lock per street so later streets create fresh test points instead of silently rewriting the earlier trace",
+    "stores declared reads separately from the poker state and records only sanitised visible-action context",
+    "resolves reads through public consequence as supported corrected not confirmed disciplined uncertainty or unresolved rather than manufacturing hidden certainty",
+    "treats showdown result as directional support or correction only and explicitly states that result support is not proof of motive",
+    "adds a Read Ledger inside Evidence Review so observation declared interpretation and later consequence remain inspectable",
+    "carries the Read Lab through the canonical OPEN_FIRST route and the v0.15A offline cache",
+    "adds a dedicated Read Lab regression gate proving hidden fields and card identities do not cross the declared-read membrane",
+    "preserves the v0.14A Human Game analyser v0.13 Deep House body and v0.12 full-table learning loop as inherited parents"
+  ],
   "laws":[
     "No restart: restore before rebuild",
     "One game state, multiple presentation routes",
     "Presentation organs may read visible state but must not infer expose or duplicate hidden game state",
     "Human Game receives sanitised visible action history only and does not receive the poker engine, deck, hidden House cards or persistence store",
     "Behavioural table reads are revisable interpretations of gameplay actions, not personality diagnoses or proof of motive",
+    "A declared read must be committed before its later consequence if it is to count as a tested read",
+    "A declared read may be supported corrected or unresolved; it is never retroactively promoted into motive fact",
+    "BLUFF? is always a candidate interpretation and requires visible pressure evidence before it can be locked",
+    "UNCERTAIN is a valid earned state and must remain available when the public evidence does not support a stronger read",
+    "One declared read per street preserves the trace instead of silently overwriting an earlier interpretation",
     "Every Human Game read must preserve alternative explanations and a next-test route when a stronger claim is not earned",
     "Low sample size must remain insufficient rather than being inflated into confidence",
     "Later contact may strengthen weaken or reverse an earlier behavioural read",
@@ -107,5 +130,5 @@
     "No Ding, no completion claim",
     "No real-money wagering in this stage body"
   ],
-  "claimBoundary":"Human Game behavioural-read stage over the v0.13 Deep House visual-convergence body and v0.12 full-table learning loop. Automated source/core/layout/art/world/material/theatre/living-table/depth/contact, Human Game visible-action membrane and hidden-field rejection, active-hand browser reload continuity, sized-raise contact, visible-card equity boundary, separate desktop/tablet/Android-touch real-output contexts, viewport-only screenshot evidence and public HTTP contact may Ding independently. Behavioural reads remain gameplay-context interpretations only; personality diagnosis, proof of motive, real-world person profiling, owner-side aesthetic visual-quality acceptance, installed physical Android lifecycle persistence, Cold Ding and final visual crown remain separate and unclaimed."
+  "claimBoundary":"Human Game declared-read stage over the v0.14A behavioural-read engine, v0.13 Deep House visual-convergence body and v0.12 full-table learning loop. Automated syntax/core/Human-Game/Read-Lab proof may establish the visible-action membrane, hidden-field rejection, declared-read trace and public-consequence correction logic. It does not establish motive, personality diagnosis, truth about a real-world person, owner-side aesthetic acceptance, installed physical Android lifecycle persistence, public deployment of this descendant, Cold Ding or final visual crown. Those remain separate and unclaimed."
 }

@@ -1,128 +1,109 @@
-# PUKA v0.15A — HUMAN GAME DECLARED READ LAB BUILD RECEIPT
+# PUKA v0.16A — HUMAN GAME READ CALIBRATION / COUNTERREAD BUILD RECEIPT
 
-**Parent:** PUKA v0.14A Human Game Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
-**State:** STAGE BODY / CODE DING / NOT CROWNED  
+**Parent:** PUKA v0.15A Human Game Declared Read Lab / v0.14A Human Game Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
+**State:** STAGE BODY / SOURCE SAVED / CALIBRATION UNIT DING PASS / PIPELINE + PUBLIC CONTACT PROOF OPEN / NOT CROWNED  
 **Front door:** `00_OPEN_FIRST.html`  
 **Canonical live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`  
-**Working branch:** `puka-v015a-bluff-counterread`
+**Working rail:** `main` — canonical source descendant
 
 ## Preserved body
 
-- one shared 52-card poker/state authority
-- Portrait Academy + Royal Table reading the same state
-- heads-up Texas Hold'em learning loop, bankroll persistence and royal progression
-- active-hand reload, deliberate raise sizing, visible-card equity, hand history and review
-- Deep House meaningful visual depth and bounded contact consequence
-- Human Game v0.2 behavioural table reads from sanitised visible action history only
-- Observation / Interpretation / Fact separation
-- one singular OPEN_FIRST / live-door route
-- no real-money wagering layer
+- one shared 52-card poker/state authority;
+- Portrait Academy + Royal Table reading the same state;
+- heads-up Texas Hold'em learning loop, bankroll persistence and royal progression;
+- active-hand reload, deliberate raise sizing, visible-card equity, hand history and review;
+- Deep House meaningful visual depth and bounded contact consequence;
+- Human Game v0.2 behavioural table reads from sanitised visible action history only;
+- v0.15A declared Read Lab with STRONG? / WEAK? / PRESSURE / BLUFF? / UNCERTAIN and LOW / MEDIUM / HIGH confidence;
+- strict Observation / Interpretation / Fact separation;
+- one singular OPEN_FIRST / live-door route;
+- no real-money wagering layer.
 
-## v0.15A material jump
+## v0.16A material jump — READ YOUR READ
 
-v0.14A could show bounded behavioural reads. v0.15A makes the player **commit a provisional read before the later public consequence**.
+v0.15A made the player commit a provisional read before later public consequence. v0.16A adds the next lawful joint: **calibrate the reader's own confidence against what later public contact actually did.**
 
-**Keeper:** **READ IT. LOCK IT. TEST IT. CORRECT IT.**
+**Keeper:** **READ THE TABLE -> READ YOUR READ.**
 
 **Route:**
 
-**CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CORRECT**
+**CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CALIBRATE -> CORRECT**
 
-The shared Read Lab appears in both Portrait Academy and Royal Table without creating a second poker state or a second game.
+The calibration organ lives inside the existing Evidence / Review body. It does not create a second poker game, second bankroll, second deck, or second hidden-state authority.
 
-### Declared read choices
+## Calibration body
 
-- `STRONG?`
-- `WEAK?`
-- `PRESSURE`
-- `BLUFF?`
-- `UNCERTAIN`
+`puka-read-calibration-v01.js` receives only the declared-read ledger exposed by `PUKAReadLab.state()` and groups tested reads by declared confidence:
 
-Each lock carries LOW / MEDIUM / HIGH declared confidence.
+- LOW;
+- MEDIUM;
+- HIGH.
 
-A non-UNCERTAIN read needs visible House action evidence. `BLUFF?` is deliberately phrased as a candidate and requires visible pressure evidence; it is never presented as proof of motive.
+It then keeps separate counts for:
 
-One read may be locked per street. A later street is a fresh test point rather than permission to silently rewrite the earlier trace.
+- supported;
+- corrected;
+- open;
+- disciplined uncertainty.
 
-## Authority membrane
+The player can therefore see when HIGH confidence is repeatedly running ahead of later public consequence, when HIGH confidence is earning directional support, or when UNCERTAIN was the more disciplined read.
 
-The Read Lab does not receive poker-state authority and does not inspect House hole cards.
+### Claim boundary
 
-Its public-action packet is reduced through the same safe action grammar used by Human Game:
+**SUPPORTED != PROVED.**
 
-`who / action / street / visible price-size-pot fields / all-in flag`
+Directional support never becomes proof of hidden cards, hidden motive, personality, or truth about a real-world person. A correction is feedback on the player's read model, not a judgement of the person being read.
 
-Unknown fields, hidden-card identities, private notes, motives and arbitrary extra fields are discarded.
+The calibration organ does **not** inspect:
 
-The Read Lab persists its own declared-read ledger under:
-
-`jm-puka-read-lab-v01`
-
-That ledger is not a second poker authority.
-
-## Consequence grammar
-
-Later public contact may resolve a declared read as:
-
-- supported by later visible action;
-- supported by showdown result;
-- contradicted by showdown result;
-- consistent but not proved;
-- not confirmed;
-- disciplined uncertainty;
-- unresolved.
-
-Even a supported result remains directional support. It is not promoted into proof of hidden motive, fixed personality or truth about a real-world person.
-
-## Read Ledger
-
-The Evidence / Review body now receives a Declared Read Trace showing:
-
-- the public observation available when the read was locked;
-- the player's declared interpretation;
-- confidence;
-- street / hand location;
-- later public consequence;
-- correction or unresolved status.
-
-This preserves the Human Game founding law:
-
-**OBSERVATION != INTERPRETATION != FACT.**
+- House hole cards;
+- the deck;
+- poker-state authority;
+- hidden motive;
+- arbitrary private notes;
+- real-world people.
 
 ## Carrier continuity
 
-`00_OPEN_FIRST.html` now loads:
+The singular PUKA route is preserved:
 
-- `puka-read-lab-v01.css`
-- `puka-read-lab-v01.js`
+`games-beyond/puka/` -> `index.html` -> `00_OPEN_FIRST.html`
 
-The service-worker carrier advances to `jm-puka-v15a` and pre-caches both Read Lab files while preserving the existing singular door.
+v0.16A adds:
 
-## Automated proof
+- `puka-read-calibration-v01.js`;
+- `puka-read-calibration-v01.css`;
+- `puka-read-calibration-v01.test.js`.
 
-GitHub Actions run `33969371724` completed successfully on the exact v0.15A descendant source commit used for the proof rail.
+`00_OPEN_FIRST.html` and `index.html` now identify v0.16A. The offline carrier advances to `jm-puka-v16a` and includes the Read Lab plus Read Calibration organs. The public root is unchanged.
 
-Passed gates:
+## Proof currently earned at source-save stage
 
-- JavaScript syntax: core, Human Game, UI, Read Lab and service worker;
-- inherited full-table core test;
-- Human Game visible-action authority test;
-- v0.15A Read Lab test;
-- hidden/unknown fields rejected by the Read Lab sanitiser;
-- hidden card identities absent from the Read Lab packet;
-- STRONG?/WEAK? showdown support/correction remains bounded;
-- PRESSURE is supported only by later visible pressure contact;
-- BLUFF? remains `CONSISTENT, NOT PROVED` rather than motive fact;
-- UNCERTAIN remains a valid disciplined state;
-- canonical OPEN_FIRST and offline carrier include the v0.15A organ.
+The new pure calibration test has passed locally at deterministic logic scope:
 
-**CODE DING: PASS**
+`PUKA v0.16A READ CALIBRATION UNIT DING PASS`
 
-## Claim boundary
+The strengthened integration test also verifies source wiring into OPEN_FIRST and the v0.16A offline carrier.
 
-This receipt does **not** claim v0.15A public deployment, owner physical contact, installed Android lifecycle proof, Cold Ding, visual crown or final completion.
+A Chromium browser test has been added to the existing Games&Beyond Human Game acceptance suite to verify that:
 
-It also does not claim that gameplay behaviour reveals a real person's motives or personality.
+- the Read Lab remains mounted;
+- the Read Your Read panel mounts in Evidence / Review;
+- declared-read consequence produces tested / supported / corrected / uncertain calibration counts;
+- repeated corrected HIGH-confidence reads produce the bounded `HIGH CONFIDENCE IS RUNNING AHEAD` feedback;
+- arbitrary seeded hidden-card/private-note fields do not appear in calibration output;
+- the 412x915 touch route has no horizontal overflow;
+- runtime console/page errors remain empty.
+
+The canonical GitHub proof workflow is being advanced to v0.16A so source, browser and public-contact claims are earned on this descendant rather than inherited from v0.14A.
+
+## Current proof truth
+
+**CALIBRATION UNIT DING: PASS**  
+**v0.16A GITHUB PIPELINE DING: OPEN UNTIL THE UPDATED RAIL PASSES**  
+**v0.16A PUBLIC CONTACT: OPEN UNTIL THE UPDATED RAIL PASSES**  
+**OWNER PHYSICAL COLD DING: FALSE**  
+**CROWNED: FALSE**
 
 ## Delivery law
 
@@ -132,7 +113,4 @@ Sandbox and ZIP outputs are fallback/archive routes, not the normal owner-facing
 
 ## Crown boundary
 
-`cold_ding = false`  
-`crowned = false`
-
-v0.15A is a tested descendant ready for estate mount/public-contact proof; it is not yet crowned.
+Automated browser/public proof may establish a mounted, contacted web descendant. It still does not establish owner physical contact, installed Android lifecycle proof, aesthetic crown, Cold Ding or final completion.

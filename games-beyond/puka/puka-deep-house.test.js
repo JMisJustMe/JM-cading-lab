@@ -11,10 +11,12 @@ const sw=read('sw.js');
 const registry=JSON.parse(read('registry.json'));
 const lattice=read('assets/puka-deep-house-lattice-v13.svg');
 
-must(html.includes('PUKA v0.14A'),'front door identifies current v0.14A descendant');
+must(html.includes('PUKA v0.16A'),'front door identifies current v0.16A descendant');
 must(html.includes('puka-v12.css')&&html.includes('puka-v13.css'),'v0.12 learning loop remains mounted beneath v0.13 Deep House');
 must(html.indexOf('puka-v13.css')>html.indexOf('puka-v12.css'),'Deep House CSS loads after v0.12 capability layer');
-must(html.includes('puka-human-game-v02.js'),'v0.14 Human Game organ is mounted over inherited Deep House body');
+must(html.includes('puka-human-game-v02.js'),'v0.14 Human Game organ remains mounted over inherited Deep House body');
+must(html.includes('puka-read-lab-v01.js'),'v0.15 Declared Read Lab remains mounted over inherited Deep House body');
+must(html.includes('puka-read-calibration-v01.js'),'v0.16 Counterread calibration is mounted over inherited Deep House body');
 must(html.indexOf('puka-deep-house-v13.js')>html.indexOf('puka-living-table-v10.js'),'Deep House visible-state organ loads after inherited living-table organ');
 must(css.includes('--puka-d0')&&css.includes('--puka-d3'),'meaningful D0-D3 depth roles are declared');
 must(css.includes('puka-deep-house-lattice-v13.svg'),'protected field lattice is mounted');
@@ -26,12 +28,14 @@ must(js.includes('root.dataset.fieldContact'),'direct field contact state is exp
 must(!/\bPUKA\s*\./.test(js),'Deep House organ does not access PUKA game authority');
 must(!/localStorage|sessionStorage|indexedDB/i.test(js),'Deep House organ does not read persistence authority');
 must(!/players\.ai|houseHole|hidden hole|deck\b/i.test(js),'Deep House organ does not inspect hidden poker state');
-must(sw.includes("const CACHE='jm-puka-v14a'"),'service-worker cache advances with current v0.14A descendant');
+must(sw.includes("const CACHE='jm-puka-v16a'"),'service-worker cache advances with current v0.16A descendant');
 must(sw.includes('./puka-v13.css')&&sw.includes('./puka-deep-house-v13.js')&&sw.includes('./assets/puka-deep-house-lattice-v13.svg'),'v0.13 Deep House body remains offline-cached');
-must(registry.schema==='JM.PUKA.Room/0.14A','registry advances to current v0.14A descendant');
+must(registry.schema==='JM.PUKA.Room/0.16A','registry advances to current v0.16A descendant');
 must(registry.status==='STAGE_BODY_NOT_CROWNED','automated convergence does not self-crown');
 must(Array.isArray(registry.v13Changes)&&registry.v13Changes.length>=8,'v0.13 convergence delta remains receipted');
-must(Array.isArray(registry.v14Changes)&&registry.v14Changes.length>=8,'v0.14 Human Game delta is receipted without erasing v0.13');
+must(Array.isArray(registry.v14Changes)&&registry.v14Changes.length>=8,'v0.14 Human Game delta remains receipted without erasing v0.13');
+must(Array.isArray(registry.v15Changes)&&registry.v15Changes.length>=8,'v0.15 Declared Read delta remains receipted');
+must(Array.isArray(registry.v16Changes)&&registry.v16Changes.length>=8,'v0.16 Counterread delta is receipted without erasing Deep House');
 must(lattice.includes('PUKA Deep House field lattice'),'original PUKA field lattice asset is identified');
 
-console.log('PUKA v0.13A DEEP HOUSE SOURCE DING PASS INSIDE CURRENT v0.14A DESCENDANT');
+console.log('PUKA v0.13A DEEP HOUSE SOURCE DING PASS INSIDE CURRENT v0.16A DESCENDANT');

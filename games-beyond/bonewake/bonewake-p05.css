@@ -1,0 +1,9 @@
+
+/* JM32 Full Body v1.9 — readable active board systems */
+.boardMiniGroup{display:flex;gap:5px;align-items:flex-start}
+.strataMini{padding:5px 8px;border-radius:7px;border:1px solid rgba(80,228,221,.28);background:rgba(3,18,22,.94);font-size:8px;letter-spacing:.07em;color:#d8caa7}
+.strataMini b{color:#76e4dc}
+@media(max-width:520px){
+ .boardMiniGroup{gap:4px}
+ .wakeMini,.strataMini{padding:4px 6px!important;font-size:7px!important}
+}

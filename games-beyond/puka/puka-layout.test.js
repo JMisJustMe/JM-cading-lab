@@ -25,7 +25,7 @@ has(css,'.game{min-width:0;order:1}','table-first portrait order missing');
 has(ui,"if(isPhone()) return matchMedia('(orientation: portrait)').matches?'portrait':'royal';",'phone orientation must select the presentation route');
 has(ui,"$('#identityDetails').open=false",'identity drawer must not block the playfield');
 has(ui,'data-quick-suit','ready-table quick suit selector missing');
-has(html,'PUKA v0.14A','current descendant front-door marker missing');
+has(html,'PUKA v0.16A','current descendant front-door marker missing');
 has(html,'puka-v11.css','v0.11 estate-conformance layer must remain mounted');
 has(html,'puka-v12.css','v0.12 full-table layer must remain mounted');
 has(html,'puka-v13.css','v0.13 Deep House layer must remain mounted');
@@ -36,7 +36,7 @@ has(html,'puka-v08.css','v0.8 material layer not mounted');
 has(html,'puka-v08-academy.css','v0.8 Academy environment not mounted');
 has(html,'puka-v07.css','v0.7 world styling not mounted');
 has(html,'puka-world-v07.js','v0.7 world organ not mounted');
-has(sw,"jm-puka-v14a",'current service worker cache version not bumped');
+has(sw,"jm-puka-v16a",'current service worker cache version not bumped');
 has(sw,'puka-v11.css','v0.11 conformance style not cached');
 has(sw,'puka-v12.css','v0.12 full-table style not cached');
 has(sw,'puka-v13.css','v0.13 Deep House style not cached');
@@ -80,4 +80,4 @@ has(academyBanner,'PUKA Academy guild banner','Academy banner accessibility labe
 has(academy,'@media(max-width:380px)','Academy narrow-phone guard missing');
 has(academy,'@media(prefers-reduced-motion:reduce)','Academy reduced-motion guard missing');
 
-console.log('PUKA INHERITED LAYOUT + ART + CHARACTER + WORLD + MATERIAL + ACADEMY SOURCE DING PASS');
+console.log('PUKA INHERITED LAYOUT + ART + CHARACTER + WORLD + MATERIAL + ACADEMY SOURCE DING PASS UNDER v0.16A');

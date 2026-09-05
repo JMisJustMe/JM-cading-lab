@@ -1,0 +1,75 @@
+name: PUKA Post-Cloudflare Canonical Door Proof
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/puka-post-cloudflare-door-proof.yml"
+  workflow_run:
+    workflows: ["Deploy Authoritative Public JM Estate to Cloudflare"]
+    types: [completed]
+
+concurrency:
+  group: puka-post-cloudflare-door-proof
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  prove-puka-after-cloudflare:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Prove canonical PUKA root and deep front door
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          import time
+          from urllib.request import Request, urlopen
+
+          base = 'https://jmisjustme-estate.pages.dev/games-beyond/puka'
+          checks = [
+              ('/', 'PUKA v0.17A'),
+              ('/index.html', 'PUKA v0.17A'),
+              ('/00_OPEN_FIRST.html', 'puka-pattern-window-v01.js'),
+              ('/00_OPEN_FIRST.html', 'puka-pattern-window-v01.css'),
+              ('/registry.json', 'JM.PUKA.Room/0.17A'),
+              ('/sw.js', 'jm-puka-v17a'),
+          ]
+          run = os.environ.get('GITHUB_RUN_ID', 'manual')
+          pending = checks[:]
+          for attempt in range(1, 81):
+              next_pending = []
+              for path, marker in pending:
+                  url = f'{base}{path}?jm-puka-post-deploy={run}-{attempt}'
+                  try:
+                      req = Request(url, headers={
+                          'User-Agent': 'JM-PUKA-Post-Cloudflare-Proof/1.0',
+                          'Cache-Control': 'no-cache',
+                      })
+                      with urlopen(req, timeout=20) as response:
+                          body = response.read().decode('utf-8', 'replace')
+                          code = response.status
+                  except Exception as exc:
+                      print('WAIT', path, type(exc).__name__)
+                      next_pending.append((path, marker))
+                      continue
+                  if code == 200 and marker in body:
+                      print('PUKA LIVE PASS', path, marker)
+                  else:
+                      print('WAIT', path, code, marker)
+                      next_pending.append((path, marker))
+              if not next_pending:
+                  pending = []
+                  break
+              pending = next_pending
+              time.sleep(3)
+          if pending:
+              raise SystemExit('PUKA POST-CLOUDFLARE CONTACT FAILED: ' + ', '.join(path for path, _ in pending))
+          print('PUKA POST-CLOUDFLARE CANONICAL DOOR DING PASS')
+          PY

@@ -1,0 +1,46 @@
+name: PUKA Owner Recovery Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/puka-owner-recovery-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: puka-owner-recovery-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current PUKA source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Prove PUKA v0.17A source exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s games-beyond/puka/index.html
+          test -s games-beyond/puka/00_OPEN_FIRST.html
+          grep -Fq 'PUKA v0.17A' games-beyond/puka/index.html
+          grep -Fq 'puka-pattern-window-v01.js' games-beyond/puka/00_OPEN_FIRST.html
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload current Estate for recovery carrier
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy PUKA recovery carrier
+        id: deployment
+        uses: actions/deploy-pages@v4

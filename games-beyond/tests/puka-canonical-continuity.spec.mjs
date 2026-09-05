@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 const door='puka/00_OPEN_FIRST.html';
+const CURRENT_CACHE='jm-puka-v17a';
+const STATE_STORE='jm-puka-v12a';
 
 function collectRuntimeErrors(page){
   const errors=[];
@@ -26,20 +28,22 @@ test('@puka-canonical-continuity replaceable cache carrier may advance while can
   await expect(page.locator('#tableState')).toBeVisible();
 
   // Start from a clean local proof context. This affects only the isolated test browser.
-  await page.evaluate(async()=>{
-    for(const registration of await navigator.serviceWorker.getRegistrations()) await registration.unregister();
-    for(const key of await caches.keys()) if(key.startsWith('jm-puka-')) await caches.delete(key);
-    localStorage.removeItem('jm-puka-v12a');
-    localStorage.removeItem('jm-puka-v14a');
-  });
+  await page.evaluate(({stateStore,currentCache})=>{
+    return (async()=>{
+      for(const registration of await navigator.serviceWorker.getRegistrations()) await registration.unregister();
+      for(const key of await caches.keys()) if(key.startsWith('jm-puka-')) await caches.delete(key);
+      localStorage.removeItem(stateStore);
+      localStorage.removeItem(currentCache);
+    })();
+  },{stateStore:STATE_STORE,currentCache:CURRENT_CACHE});
   await page.reload({waitUntil:'networkidle'});
   await expect(page.locator('[data-next-hand]')).toBeVisible();
   await page.locator('[data-next-hand]').click();
   await expect(page.locator('html')).toHaveAttribute('data-hand-state','active');
   const before=await handIdentity(page);
   expect(before.cards).toHaveLength(2);
-  expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v12a')),'the established state lineage must contain the live hand').toBeTruthy();
-  expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v14a')),'cache identity must not silently become a second persistence store').toBeNull();
+  expect(await page.evaluate(key=>localStorage.getItem(key),STATE_STORE),'the established state lineage must contain the live hand').toBeTruthy();
+  expect(await page.evaluate(key=>localStorage.getItem(key),CURRENT_CACHE),'cache identity must not silently become a second persistence store').toBeNull();
   await page.screenshot({path:testInfo.outputPath('puka-canonical-continuity-before.png'),fullPage:false});
 
   // Simulate an older disposable PUKA carrier immediately before the current worker installs.
@@ -55,11 +59,11 @@ test('@puka-canonical-continuity replaceable cache carrier may advance while can
   await expect(page.locator('html')).toHaveAttribute('data-hand-state','active');
   const after=await handIdentity(page);
   expect(after,'canonical-door descendant reload must restore the exact contacted hand').toEqual(before);
-  expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v12a')),'established state lineage must remain present after worker/carrier upgrade').toBeTruthy();
-  expect(await page.evaluate(()=>localStorage.getItem('jm-puka-v14a')),'cache version and persistence version must remain separate concerns').toBeNull();
+  expect(await page.evaluate(key=>localStorage.getItem(key),STATE_STORE),'established state lineage must remain present after worker/carrier upgrade').toBeTruthy();
+  expect(await page.evaluate(key=>localStorage.getItem(key),CURRENT_CACHE),'cache version and persistence version must remain separate concerns').toBeNull();
 
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
-  await expect.poll(async()=>page.evaluate(async()=>await caches.keys()),{message:'current PUKA worker must mount its cache carrier without touching saved state'}).toContain('jm-puka-v14a');
+  await expect.poll(async()=>page.evaluate(async()=>await caches.keys()),{message:'current PUKA worker must mount its cache carrier without touching saved state'}).toContain(CURRENT_CACHE);
   await expect.poll(async()=>page.evaluate(async()=>await caches.keys()),{message:'current PUKA worker must retire earlier PUKA cache carriers'}).not.toContain('jm-puka-v13a');
 
   const manifest=await page.evaluate(async()=>await (await fetch('manifest.webmanifest',{cache:'no-store'})).json());

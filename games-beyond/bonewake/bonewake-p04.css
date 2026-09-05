@@ -1,0 +1,131 @@
+.coreBar{height:27px!important}
+.wakeMini{padding:5px 8px!important}
+@media(max-width:520px){
+ .centerReadout{bottom:10px!important;max-width:70%!important;font-size:6.5px!important}
+ .contactFeed{font-size:8.5px!important;top:10%!important}
+}
+
+/* OPEN_FIRST v1.11 — donated production machinery, not PUKA furniture.
+   Goal: one obvious phone entry, game-first fit, safe areas, no horizontal overflow. */
+html,body{width:100%;max-width:100%;min-height:100%;overflow-x:hidden}
+body{
+  overscroll-behavior-x:none;
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right)
+}
+button,summary{touch-action:manipulation}
+.app{
+  width:min(100%,560px)!important;
+  margin:0 auto!important;
+  min-height:100dvh!important;
+  padding-bottom:max(8px,env(safe-area-inset-bottom))!important
+}
+.header{
+  position:sticky!important;top:0;z-index:40!important;
+  backdrop-filter:blur(14px)
+}
+.boardWrap{display:grid!important;place-items:center!important;min-width:0!important}
+.boardShell{
+  width:min(100%,calc((100dvh - 315px) * .7826087))!important;
+  min-width:0!important;aspect-ratio:720/920!important
+}
+.boardShell canvas{
+  width:100%!important;height:100%!important;aspect-ratio:auto!important
+}
+.reflexRow{
+  position:sticky!important;
+  bottom:max(4px,env(safe-area-inset-bottom))!important;
+  z-index:35!important;
+  background:linear-gradient(180deg,rgba(2,12,16,.10),rgba(2,12,16,.96) 34%)!important;
+  padding-top:5px!important
+}
+.wakePool,.info{scroll-margin-top:70px}
+
+@media(max-width:520px) and (orientation:portrait){
+  .header{
+    grid-template-columns:34px minmax(0,1fr) auto!important;
+    gap:6px!important;padding:6px 7px 5px!important
+  }
+  .mark{width:34px!important;height:38px!important;border-radius:10px!important}
+  .title{font-size:17px!important}.sub{font-size:6.8px!important;letter-spacing:.16em!important}
+  .originLine{font-size:5.2px!important;margin-top:2px!important}
+  .hud{gap:4px!important}.hudpill{min-width:48px!important;padding:4px 5px!important;border-radius:8px!important}
+  .hudpill b{font-size:6px!important}.hudpill span{font-size:14px!important}
+
+  .sourceRun{padding:4px 5px 3px!important;gap:4px!important}
+  .sourceRun .action,.runState{min-height:38px!important;padding:4px!important;border-radius:8px!important}
+  .sourceRun .action b,.runState b{font-size:8px!important}
+  .sourceRun .action small,.runState small,.runState em{font-size:5.3px!important}
+
+  .conditionBench{padding:3px 5px 2px!important;gap:4px!important}
+  .conditionCard{min-height:43px!important;padding:4px 5px!important;border-radius:8px!important}
+  .conditionCard small{font-size:5.3px!important}.conditionCard b{font-size:7.8px!important}.conditionCard span{font-size:5.2px!important}
+
+  .boardWrap{padding:3px 5px 0!important}
+  .boardShell{
+    width:min(100%,calc((100dvh - 292px) * .7826087))!important;
+    border-radius:15px!important
+  }
+
+  .controlDeck{gap:5px!important;padding:4px 5px!important}
+  .dropCard,.leverCard{min-height:58px!important;padding:5px!important;border-radius:9px!important}
+  .creatureBadge{width:48px!important;height:48px!important}
+  .dropInfo small,.leverText small{font-size:5.5px!important}
+  .dropInfo>b,.leverText>b{font-size:13px!important}
+  .tag{font-size:5.5px!important;padding:2px 4px!important}
+  .lever{width:48px!important;height:48px!important;min-width:48px!important}
+
+  .reflexRow{gap:5px!important;padding:4px 5px max(5px,env(safe-area-inset-bottom))!important}
+  .reflex{min-height:46px!important;padding:5px!important;border-radius:9px!important;font-size:9px!important}
+  .reflex small{font-size:7px!important;margin-top:2px!important}
+
+  .ancientRow{padding:2px 5px 4px!important}.ancientStatus,.ancientAuto{min-height:34px!important}
+  .status{font-size:7px!important;padding:4px 7px!important}
+
+  html[data-bonewake-phase="live"] .conditionBench{max-height:38px!important;overflow:hidden!important}
+  html[data-bonewake-phase="live"] .controlDeck{grid-template-columns:1fr!important}
+  html[data-bonewake-phase="live"] .leverCard{display:none!important}
+  html[data-bonewake-phase="live"] .dropCard{min-height:46px!important;grid-template-columns:38px 1fr!important}
+  html[data-bonewake-phase="live"] .creatureBadge{width:36px!important;height:36px!important}
+  html[data-bonewake-phase="live"] .boardShell{
+    width:min(100%,calc((100dvh - 242px) * .7826087))!important
+  }
+}
+@media(max-height:690px) and (orientation:portrait){
+  .originLine{display:none!important}.sourceRun .action small{display:none!important}.conditionCard span{display:none!important}
+  .boardShell{width:min(100%,calc((100dvh - 245px) * .7826087))!important}
+  .ancientRow,.status{display:none!important}
+}
+
+/* v1.7 fingerprint rejoin */
+.conditionBench{
+  display:grid;grid-template-columns:.9fr 1.25fr .8fr;gap:6px;padding:6px 7px 1px;
+  background:linear-gradient(180deg,rgba(3,15,20,.96),rgba(4,20,25,.72))
+}
+.conditionCard{
+  min-width:0;min-height:55px;border:1px solid rgba(216,177,108,.28);border-radius:11px;
+  background:linear-gradient(180deg,#0a262d,#05181e);color:#f1e8d2;padding:6px 7px;text-align:left
+}
+button.conditionCard{touch-action:manipulation}
+.conditionCard small{display:block;color:#cdb77f;font-size:6.5px;font-weight:900;letter-spacing:.12em}
+.conditionCard b{display:block;margin-top:2px;font-size:9.5px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conditionCard span{display:block;margin-top:2px;color:#9eb5b8;font-size:6.5px;line-height:1.15}
+.leaderCard{border-color:rgba(80,228,221,.34)}
+.leaderCard b{color:#73e4dd}
+.answerCard{border-color:rgba(216,177,108,.38)}
+.answerCard b{color:#efd298}
+.poolCard{border-color:rgba(243,169,71,.30)}
+.poolCard b{color:#f3b45d}
+.conditionCard:disabled{opacity:.55}
+.memoryTag{
+  position:absolute;pointer-events:none;font:800 7px/1 system-ui;letter-spacing:.07em;
+  padding:3px 5px;border-radius:6px;background:rgba(2,12,15,.82);
+  border:1px solid rgba(216,177,108,.25);color:#ead8ad
+}
+@media(max-width:520px){
+ .conditionBench{grid-template-columns:.92fr 1.18fr .78fr;padding-left:5px;padding-right:5px;gap:5px}
+ .conditionCard{min-height:50px;padding:5px 6px}
+ .conditionCard small{font-size:5.8px}
+ .conditionCard b{font-size:8.5px}
+ .conditionCard span{font-size:5.8px}
+}

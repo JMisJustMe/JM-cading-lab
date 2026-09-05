@@ -1,0 +1,78 @@
+@media(max-width:520px){.sourceRun{gap:4px}.runState{min-height:54px}.poolGrid{gap:4px}.poolPiece{min-height:43px;padding:4px 2px}.title{font-size:17px}}
+
+/* Identity Rejoin — Museum Bone Room */
+.header{background:linear-gradient(180deg,rgba(13,31,34,.98),rgba(6,24,30,.96));border-bottom-color:rgba(217,180,109,.22)}
+.mark{background:linear-gradient(145deg,#36504c,#142e34 55%,#332719);box-shadow:inset 0 0 0 2px rgba(255,235,191,.05),0 4px 12px rgba(0,0,0,.2)}
+.eyebrow{color:#d8c89d}.sub{color:#71ded5}
+.boardShell{border-color:rgba(217,180,109,.48);box-shadow:0 16px 40px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,239,205,.025)}
+.contactFeed{top:22%;font-size:12px;letter-spacing:.08em;padding:4px 7px;border-radius:8px;background:rgba(5,20,26,.72);border:1px solid rgba(255,255,255,.07)}
+.contactFeed.show{transform:translate(-50%,-54%)}
+.centerReadout{top:auto;bottom:7px;font-size:7px;letter-spacing:.09em;color:#d7c89f;background:rgba(6,21,27,.70);padding:4px 7px;border-radius:7px;border:1px solid rgba(217,180,109,.16)}
+.coreBar{background:linear-gradient(180deg,#2a332e,#121f20);border-color:rgba(217,180,109,.72);box-shadow:inset 0 0 0 1px rgba(255,236,191,.05)}
+.coreFill{background:linear-gradient(90deg,#c99f55,#f0b75d)}
+.coreLabel{color:#0c1c20;font-family:Georgia,serif;letter-spacing:.04em}
+.wakeMini{border-color:rgba(217,180,109,.34);background:linear-gradient(180deg,rgba(27,38,34,.94),rgba(8,30,34,.92));color:#ddcfaa}
+.action,.dropCard,.leverCard,.runState,.ancientStatus,.wakePool,.info{background:linear-gradient(180deg,#0d2b30,#081d23)}
+.action{border-color:rgba(217,180,109,.24)}
+.action small{letter-spacing:.02em;text-transform:none}
+.creatureBadge{background:linear-gradient(135deg,#c59a5d,#274a4d 72%);border-color:rgba(224,192,126,.58)}
+.wakePool summary,.info summary{color:#dfc782}
+.poolPiece{background:linear-gradient(160deg,#102c31,#0a2026);border-color:rgba(217,180,109,.17);box-shadow:inset 0 0 0 1px rgba(255,255,255,.018)}
+.poolPiece:nth-child(-n+5){border-bottom:2px solid rgba(85,221,213,.35)}
+.poolPiece:nth-child(n+6):nth-child(-n+9){border-bottom:2px solid rgba(217,180,109,.42)}
+.poolPiece:nth-child(n+10):nth-child(-n+13){border-bottom:2px solid rgba(91,161,149,.35)}
+.poolPiece:nth-child(n+14){border-bottom:2px solid rgba(255,178,76,.38)}
+
+/* v1.5 approved-face overrides */
+.sourceRun{padding:7px 8px 5px;gap:6px;background:rgba(3,13,17,.72)}
+.sourceRun .action{min-height:46px;border-radius:10px;padding:5px 5px;background:linear-gradient(180deg,#0a252c,#06191f);border-color:rgba(80,228,221,.22)}
+.sourceRun .action.amber{border-color:rgba(243,169,71,.26)}
+.sourceRun .action b{font-size:9px;letter-spacing:.06em}
+.sourceRun .action small{font-size:6.5px;line-height:1.05}
+.runState{border-radius:10px!important;min-height:46px!important;padding:5px 4px!important;background:linear-gradient(180deg,#0b252b,#06171c)!important;border:1px solid rgba(216,177,108,.25)!important}
+.runState small{color:#d2ba83!important;font-size:6.5px!important;letter-spacing:.12em}
+.runState b{font-size:10px!important}
+.runState em{font-size:6.5px!important}
+.boardWrap{padding:5px 7px 0}
+.boardShell{border-radius:20px;border:1px solid rgba(216,177,108,.50);background:#041317;box-shadow:0 16px 38px rgba(0,0,0,.42),inset 0 0 0 1px rgba(80,228,221,.05)}
+.boardShell:before{content:"";position:absolute;inset:3px;border-radius:17px;border:1px solid rgba(238,210,154,.14);z-index:3;pointer-events:none}
+.boardTop{top:8px;left:9px;right:9px}
+.coreBar{height:29px;border-radius:7px;background:rgba(3,15,19,.94);border-color:rgba(216,177,108,.62);box-shadow:0 4px 14px rgba(0,0,0,.26)}
+.coreFill{background:linear-gradient(90deg,#c8873d,#f0b253,#f4c36d)}
+.wakeMini{border-radius:7px;border-color:rgba(216,177,108,.45);background:rgba(3,18,22,.94);color:#d8caa7}
+.centerReadout{top:44px;font-size:7.5px;color:#e7d7ad;background:rgba(2,12,15,.52);padding:3px 7px;border-radius:6px;border:1px solid rgba(216,177,108,.14)}
+.contactFeed{top:18%;font-size:12px;padding:5px 8px;border-radius:8px;background:rgba(3,15,19,.78);border:1px solid rgba(80,228,221,.18)}
+.controlDeck{gap:7px;padding:7px 7px 6px}
+.dropCard,.leverCard{border-radius:11px;min-height:82px;background:linear-gradient(180deg,#09252c,#04171c);border-color:rgba(216,177,108,.23)}
+.leverCard{border-color:rgba(243,169,71,.30)}
+.creatureBadge{border-radius:12px;background:radial-gradient(circle at 32% 22%,rgba(239,209,148,.9) 0 8%,transparent 9%),linear-gradient(145deg,#9b7138,#21474d 72%)}
+.reflexRow{gap:7px;padding:0 7px 6px}
+.reflex{min-height:54px;border-radius:11px;background:linear-gradient(180deg,#0a252b,#04181d);border-color:rgba(80,228,221,.34)}
+.reflex.right{border-color:rgba(243,169,71,.38)}
+.ancientRow{padding:0 7px 6px}.ancientStatus{border-radius:10px;background:#071d22}.status{font-size:8.5px;color:#aebcba;padding-top:5px}
+.wakePool,.info{margin-left:7px!important;margin-right:7px!important;border-radius:11px!important;background:#05191e!important;border-color:rgba(216,177,108,.18)!important}
+@media(max-width:520px){
+ .header{grid-template-columns:38px minmax(0,1fr) auto;padding:7px 8px 6px}
+ .mark{width:38px;height:42px}
+ .originLine{font-size:5.5px;letter-spacing:.09em}
+ .sourceRun{padding-top:5px}
+ .sourceRun .action{min-height:42px}
+ .boardWrap{padding-left:5px;padding-right:5px}
+ .controlDeck{padding-left:5px;padding-right:5px}
+ .reflexRow{padding-left:5px;padding-right:5px}
+}
+
+/* v1.6 museum readability / approved mockup rejoin */
+.centerReadout{
+  top:auto!important;bottom:12px!important;left:50%!important;
+  max-width:64%;font-size:7px!important;line-height:1.15!important;
+  letter-spacing:.07em!important;padding:4px 8px!important;
+  background:rgba(2,12,15,.78)!important;border-color:rgba(216,177,108,.20)!important;
+  color:#e5d6ac!important
+}
+.contactFeed{
+  top:11%!important;font-size:9px!important;letter-spacing:.06em!important;
+  padding:4px 7px!important;background:rgba(3,15,19,.74)!important;
+  border-color:rgba(80,228,221,.14)!important
+}
+.boardTop{top:9px!important}

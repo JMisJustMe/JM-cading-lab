@@ -1,7 +1,7 @@
-# PUKA v0.16A — HUMAN GAME READ CALIBRATION / COUNTERREAD BUILD RECEIPT
+# PUKA v0.17A — HUMAN GAME PATTERN WINDOW / CONTRADICTION HANDLING BUILD RECEIPT
 
-**Parent:** PUKA v0.15A Human Game Declared Read Lab / v0.14A Human Game Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
-**State:** **STAGE BODY · CODE DING PASS · BROWSER DING PASS · PUBLIC CONTACT PASS · CARRIER PARITY PASS · NOT CROWNED**  
+**Parent:** PUKA v0.16A Human Game Read Calibration / Counterread / v0.15A Declared Read Lab / v0.14A Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
+**State:** **STAGE BODY · CODE DING PASS · BROWSER / REAL-VIEWPORT DING PASS · PUBLIC CONTACT PASS · CARRIER PARITY PASS · CANONICAL CONTINUITY PASS · NOT CROWNED**  
 **Front door:** `00_OPEN_FIRST.html`  
 **Canonical live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`  
 **Working rail:** `main` — canonical source descendant
@@ -11,119 +11,166 @@
 - one shared 52-card poker/state authority;
 - Portrait Academy + Royal Table reading the same state;
 - heads-up Texas Hold'em learning loop, bankroll persistence and royal progression;
-- active-hand reload, deliberate raise sizing, visible-card equity, hand history and review;
+- active-hand reload/re-entry, deliberate raise sizing, visible-card equity, hand history and review;
 - Deep House meaningful visual depth and bounded contact consequence;
-- Human Game v0.2 behavioural table reads from sanitised visible action history only;
-- v0.15A declared Read Lab with STRONG? / WEAK? / PRESSURE / BLUFF? / UNCERTAIN and LOW / MEDIUM / HIGH confidence;
-- strict Observation / Interpretation / Fact separation;
-- one singular OPEN_FIRST / live-door route;
+- Human Game behavioural reads from sanitised visible action history only;
+- v0.15A Declared Read Lab with STRONG? / WEAK? / PRESSURE / BLUFF? / UNCERTAIN and LOW / MEDIUM / HIGH confidence;
+- v0.16A Counterread / Read Your Read confidence calibration;
+- strict `OBSERVATION != INTERPRETATION != FACT` and `SUPPORTED != PROVED` separation;
+- one singular canonical PUKA public door;
 - no real-money wagering layer.
 
-## v0.16A material jump — READ YOUR READ
+## v0.17A material jump — PATTERN WINDOW / CONTRADICTION HANDLING
 
-v0.15A made the player commit a provisional read before later public consequence. v0.16A adds the next lawful joint: **calibrate the reader's own confidence against what later public contact actually did.**
+v0.16A taught the player to calibrate the confidence of a declared read against later public consequence. v0.17A adds the next lawful joint: **compare bounded recent read windows without allowing repetition to impersonate proof or contradiction to disappear.**
 
-**Keeper:** **READ THE TABLE -> READ YOUR READ.**
+**Keeper:** **A PATTERN MAY EARN ATTENTION. CONTRADICTION KEEPS IT CORRIGIBLE.**
 
 **Route:**
 
-**CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CALIBRATE -> CORRECT**
+**TRACE -> COMPARE -> CONTRADICT -> CONTEXT -> RE-READ**
 
-The calibration organ lives inside the existing Evidence / Review body. It does not create a second poker game, second bankroll, second deck, or second hidden-state authority.
+The Pattern Window lives inside the existing Evidence / Review body shared by Portrait Academy and Royal Table. It does not create a second poker game, second bankroll, second deck, second persistence authority or hidden-state authority.
 
-## Calibration body
+## Pattern Window body
 
-`puka-read-calibration-v01.js` receives only the declared-read ledger exposed by `PUKAReadLab.state()` and groups tested reads by declared confidence:
+`puka-pattern-window-v01.js` receives only the resolved declared-read ledger exposed by `PUKAReadLab`. It compares bounded windows of the latest:
 
-- LOW;
-- MEDIUM;
-- HIGH.
+- 3 resolved reads;
+- 6 resolved reads;
+- 12 resolved reads.
 
-It keeps separate counts for:
+Within a selected window it keeps separate:
 
-- supported;
-- corrected;
-- open;
+- supported outcomes;
+- corrected outcomes;
+- open outcomes;
 - disciplined uncertainty.
 
-The player can therefore see when HIGH confidence is repeatedly running ahead of later public consequence, when HIGH confidence is earning directional support, or when UNCERTAIN was the more disciplined read.
+It can surface:
+
+- repeated directional support while remaining provisional;
+- repeated correction that should change the read model;
+- the same declared signal receiving both support and correction;
+- recent three-read direction moving differently from the longer window;
+- recurring uncertainty as disciplined restraint when public evidence does not earn more certainty.
 
 ### Claim boundary
 
-**SUPPORTED != PROVED.**
+**PATTERN != PROOF.**  
+**CONTRADICTION != FAILURE.**  
+**CONTEXT MAY CHANGE THE READ.**
 
-Directional support never becomes proof of hidden cards, hidden motive, personality, or truth about a real-world person. A correction is feedback on the player's read model, not a judgement of the person being read.
+The comparative organ does not inspect the poker engine, deck, House hole cards, hidden motive, personality, arbitrary private notes or real-world people. Repetition may earn attention; it never silently becomes knowledge of hidden state.
 
-The calibration organ does **not** inspect House hole cards, the deck, poker-state authority, hidden motive, arbitrary private notes, or real-world people.
+## Canonical mounting and continuity
 
-## Carrier continuity
-
-The singular PUKA route is preserved:
+The singular PUKA route remains:
 
 `games-beyond/puka/` -> `index.html` -> `00_OPEN_FIRST.html`
 
-The canonical owner-facing door remains:
+Canonical owner-facing door:
 
 `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
 
-The GitHub Pages route remains a **fallback body-recovery carrier, not a second public identity**:
+Recovery carrier:
 
 `https://jmisjustme.github.io/JM-cading-lab/games-beyond/puka/`
 
-The current carrier-independence proof compares the critical v0.16A source, Human Game, Declared Read and Counterread files byte-for-byte across source, canonical Cloudflare carrier and GitHub Pages recovery carrier.
+The recovery carrier is fallback body custody, **not a second public identity**.
+
+PWA / persistence continuity remains separated correctly:
+
+- PWA identity: `./00_OPEN_FIRST.html`;
+- PWA scope: `./`;
+- stable primary state store: `jm-puka-v12a`;
+- current replaceable service-worker cache carrier: `jm-puka-v17a`.
+
+State-store identity does not advance merely because the disposable cache carrier advances.
 
 ## Proof earned
 
-### Source / Code Ding
+### Source + Chromium runtime + real viewport + public contact
 
-The v0.16A source gate passed, including inherited core/layout/art/character/world/theatre/living-table/full-table/Deep-House tests, Human Game tests, Declared Read inheritance tests, Counterread tests and Estate conformance tests.
+`PUBLIC_CONTACT_RECEIPT.json` records `JM.PUKA.ProofReceipt/0.17A`.
 
-### Browser / real-context Ding
+- proved source commit: `35f999b3a98a8240ce8950e463c3adb3b8c2bc87`;
+- workflow run: `33985130181`;
+- Code Ding: **PASS**;
+- browser runtime Ding: **PASS**;
+- real-viewport visual proof: **PASS**;
+- public contact: **PASS**;
+- visible-action membrane: **PASS**;
+- Declared Read inheritance: **PASS**;
+- Counterread inheritance: **PASS**;
+- Pattern Window runtime mount: **PASS**;
+- LAST 3 / LAST 6 / LAST 12 selector route: **PASS**;
+- same-signal contradiction visibility: **PASS**;
+- hidden/private field non-leakage: **PASS**;
+- horizontal overflow: **ZERO IN PROVED CONTEXTS**;
+- Pattern Window selector contact floor: **44px minimum retained**.
 
-GitHub workflow run `33979389856` passed the Chromium acceptance rail, including:
+This is an actual Chromium/runtime result, not a syntax-only claim.
 
-- Android touch portrait / landscape contexts;
-- tablet, laptop and desktop contexts;
-- zero horizontal overflow;
-- 44px visible interaction floor;
-- active-hand reload continuity;
-- sized raise contact;
-- visible-card equity honesty boundary;
-- Human Game visible-action membrane;
-- Declared Read Lab mounting;
-- Read Calibration mounting;
-- LOW / MEDIUM / HIGH confidence calibration;
-- hidden-card/private-field non-leakage;
-- zero runtime console/page errors.
+### Multi-carrier single identity / byte parity
 
-During this proof push, the rail exposed a real compact-route regression where Read Lab controls fell below the 44px Estate contact floor. The body was corrected rather than weakening the test; the subsequent proof passed.
+`CARRIER_INDEPENDENCE_RECEIPT.json` records `JM.PUKA.CarrierIndependenceProof/1.2`.
 
-### Public contact
+- source commit: `35f999b3a98a8240ce8950e463c3adb3b8c2bc87`;
+- workflow run: `33985130137`;
+- source -> Cloudflare byte parity: **PASS**;
+- source -> GitHub Pages byte parity: **PASS**;
+- Cloudflare -> GitHub Pages byte parity: **PASS**;
+- Read Lab carrier parity: **PASS**;
+- Counterread carrier parity: **PASS**;
+- Pattern Window carrier parity: **PASS**;
+- canonical door unchanged: **TRUE**.
 
-`PUBLIC_CONTACT_RECEIPT.json` now records `JM.PUKA.ProofReceipt/0.16A`, public contact **PASS**, source commit `593963c42ae38549f18302a3b4268c59e7e9390e`, workflow run `33979389856`, and the unchanged singular public door.
+### Canonical door / PWA / state continuity
 
-### Carrier independence / multi-carrier single identity
+Two independent continuity rails passed after stale cache-version assertions in inherited tests were corrected to current v0.17A truth rather than weakening the checks.
 
-The carrier proof was advanced from its stale v0.14A marker to current v0.16A and extended to include the Read Lab and Counterread bodies.
+`CONTINUITY_PROOF_RECEIPT.json` records `JM.PUKA.ContinuityCrownReadiness/1.1`:
 
-Workflow run `33979494728` passed. `CARRIER_INDEPENDENCE_RECEIPT.json` now records `JM.PUKA.CarrierIndependenceProof/1.1` with source-to-Cloudflare, source-to-GitHub-Pages and Cloudflare-to-GitHub-Pages byte parity all **PASS**, while retaining Cloudflare as the canonical public identity and GitHub Pages as fallback recovery only.
+- source commit: `89102527762725968285ce5f7183eb35b87e18cb`;
+- workflow run: `33985219885`;
+- canonical redirect query/hash continuity: **PASS**;
+- PWA identity/scope: **PASS**;
+- service-worker scope: **PASS**;
+- stale PUKA cache cleanup: **PASS**;
+- active hand survives service-worker re-entry: **PASS**;
+- local state survives cache replacement: **PASS**;
+- browser runtime errors: **ZERO**;
+- public contact: **PASS**.
+
+`registry/puka-canonical-continuity-receipt.json` records `JM.PUKA.CanonicalContinuityProof/1.1`:
+
+- source commit: `ede119700e3488153805993f1d588d5c03b7579b`;
+- workflow run: `33985206442`;
+- source invariants: **PASS**;
+- browser state return: **PASS**;
+- cache retirement: **PASS**;
+- state/cache separation: **PASS**;
+- PWA identity continuity: **PASS**;
+- public contact: **PASS**.
 
 ## Current proof truth
 
-**PUKA v0.16A CODE DING: PASS**  
-**PUKA v0.16A BROWSER / REAL-VIEWPORT DING: PASS**  
-**PUKA v0.16A PUBLIC CONTACT: PASS**  
-**PUKA v0.16A CARRIER PARITY: PASS**  
+**PUKA v0.17A CODE DING: PASS**  
+**PUKA v0.17A BROWSER / REAL-VIEWPORT DING: PASS**  
+**PUKA v0.17A PUBLIC CONTACT: PASS**  
+**PUKA v0.17A CARRIER PARITY: PASS**  
+**PUKA v0.17A CANONICAL CONTINUITY: PASS**  
 **CANONICAL PUBLIC DOOR: UNCHANGED**  
 **OWNER PHYSICAL COLD DING: FALSE / OPEN**  
 **CROWNED: FALSE / NOT CLAIMED**
 
 ## Delivery law
 
-**SOURCE -> OPEN_FIRST -> ESTATE MOUNT -> LIVE PROOF -> DIRECT DOOR**
+**SOURCE -> OPEN_FIRST -> ESTATE MOUNT -> RUNTIME PROOF -> PUBLIC CONTACT -> CARRIER PARITY -> CONTINUITY -> DIRECT DOOR**
 
 Sandbox and ZIP outputs are fallback/archive routes, not the normal owner-facing PUKA door.
 
 ## Crown boundary
 
-The current proof establishes a mounted, browser-contacted, publicly-contacted v0.16A web descendant with current multi-carrier byte parity. It does **not** establish owner physical contact, installed Android lifecycle persistence, aesthetic crown, Cold Ding, final visual crown, proof of hidden motive, or truth about a real-world person.
+The current proof establishes a mounted, runtime-proved, real-viewport-proved, publicly contacted, multi-carrier-parity-proved and same-origin continuity-proved v0.17A web descendant. It does **not** establish installed physical Android lifecycle persistence, survival after user-cleared site data/private browsing/storage eviction, cross-origin state migration, owner physical Cold Ding, owner aesthetic acceptance, final visual crown, hidden motive, personality diagnosis or truth about a real-world person.

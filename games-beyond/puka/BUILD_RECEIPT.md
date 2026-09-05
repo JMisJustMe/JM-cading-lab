@@ -1,135 +1,138 @@
-# PUKA v0.14A — HUMAN GAME BEHAVIOURAL READ ENGINE BUILD RECEIPT
+# PUKA v0.15A — HUMAN GAME DECLARED READ LAB BUILD RECEIPT
 
-**Parent:** PUKA v0.13A Deep House Visual Convergence / PUKA Human Game Founding Snapshot v0.1 / Games&Beyond / JM-cading-lab  
-**State:** STAGE BODY / NOT CROWNED  
+**Parent:** PUKA v0.14A Human Game Behavioural Read Engine / v0.13A Deep House / Games&Beyond / JM-cading-lab  
+**State:** STAGE BODY / CODE DING / NOT CROWNED  
 **Front door:** `00_OPEN_FIRST.html`  
-**Live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`
+**Canonical live door:** `https://jmisjustme-estate.pages.dev/games-beyond/puka/`  
+**Working branch:** `puka-v015a-bluff-counterread`
 
 ## Preserved body
 
 - one shared 52-card poker/state authority
-- Portrait Academy + Royal Table presentation routes reading the same state
-- heads-up Texas Hold'em teaching loop
-- bankroll persistence and royal XP/room ladder
-- observation / interpretation / fact separation
-- v0.5 illustrated playing-card body
-- v0.6 Portrait character / Royal realism split
-- v0.7 visible court ascent
-- v0.8 cinematic materials, treasury, table inlay and Academy guild environment
-- v0.9 dealer medallion, community runway and table theatre
-- v0.10 living-table visible-state physicality
-- v0.11 real-context Android/desktop fit, contact and viewport-screenshot proof
-- v0.12 active-hand continuity, deliberate raise sizing, visible-card equity, review/history and mastery
-- v0.13 Deep House D0-D3 meaningful depth and bounded visible contact consequence
-- PUKA Human Game Founding Snapshot v0.1 keeper and claim boundaries
-- one singular live direct door
+- Portrait Academy + Royal Table reading the same state
+- heads-up Texas Hold'em learning loop, bankroll persistence and royal progression
+- active-hand reload, deliberate raise sizing, visible-card equity, hand history and review
+- Deep House meaningful visual depth and bounded contact consequence
+- Human Game v0.2 behavioural table reads from sanitised visible action history only
+- Observation / Interpretation / Fact separation
+- one singular OPEN_FIRST / live-door route
+- no real-money wagering layer
 
-## Full-complete jump target
+## v0.15A material jump
 
-v0.14A activates PUKA's co-original Human Game lane as a real gameplay-adjacent reasoning organ without granting it poker-state authority.
+v0.14A could show bounded behavioural reads. v0.15A makes the player **commit a provisional read before the later public consequence**.
 
-**Keeper:** **READ THE HUMAN GAME WITHOUT PRETENDING THE READ IS THE HUMAN.**
+**Keeper:** **READ IT. LOCK IT. TEST IT. CORRECT IT.**
 
-**Founding law:** **OBSERVATION != INTERPRETATION != FACT.**
+**Route:**
 
-**Human Game route:**
+**CONTACT -> OBSERVE -> DECLARE -> TEST -> CONSEQUENCE -> TRACE -> CORRECT**
 
-**CONTACT -> OBSERVE -> SEPARATE -> READ -> TEST -> CONSEQUENCE -> TRACE -> CORRECT**
+The shared Read Lab appears in both Portrait Academy and Royal Table without creating a second poker state or a second game.
+
+### Declared read choices
+
+- `STRONG?`
+- `WEAK?`
+- `PRESSURE`
+- `BLUFF?`
+- `UNCERTAIN`
+
+Each lock carries LOW / MEDIUM / HIGH declared confidence.
+
+A non-UNCERTAIN read needs visible House action evidence. `BLUFF?` is deliberately phrased as a candidate and requires visible pressure evidence; it is never presented as proof of motive.
+
+One read may be locked per street. A later street is a fresh test point rather than permission to silently rewrite the earlier trace.
 
 ## Authority membrane
 
-The Human Game engine does not receive the `PukaGame` object, deck, House hole cards, raw game state or persistence store.
+The Read Lab does not receive poker-state authority and does not inspect House hole cards.
 
-The UI constructs a deliberately reduced packet before Human Game contact:
+Its public-action packet is reduced through the same safe action grammar used by Human Game:
 
-**POKER CORE -> UI VISIBLE-ACTION SANITISER -> HUMAN GAME ENGINE**
+`who / action / street / visible price-size-pot fields / all-in flag`
 
-Allowed action fields are limited to gameplay-visible action facts such as actor, action, street, visible price/size/pot metadata and known outcome. Unknown/private fields are discarded by normalisation.
+Unknown fields, hidden-card identities, private notes, motives and arbitrary extra fields are discarded.
 
-The dedicated source marker is:
+The Read Lab persists its own declared-read ledger under:
 
-`VISIBLE_ACTION_HISTORY_ONLY`
+`jm-puka-read-lab-v01`
 
-## Behavioural table reads
+That ledger is not a second poker authority.
 
-The Human Game engine can produce bounded table-context reads for YOU and HOUSE MIND from visible action history.
+## Consequence grammar
 
-A read contains:
+Later public contact may resolve a declared read as:
 
-- sample size;
-- confidence band and score;
-- the observation actually supporting the read;
-- a provisional interpretation;
-- competing/alternative explanations;
-- a next-test route;
-- recent-versus-earlier action-mix movement;
-- a post-hand `WHY?` explanation.
+- supported by later visible action;
+- supported by showdown result;
+- contradicted by showdown result;
+- consistent but not proved;
+- not confirmed;
+- disciplined uncertainty;
+- unresolved.
 
-Current table-context labels include:
+Even a supported result remains directional support. It is not promoted into proof of hidden motive, fixed personality or truth about a real-world person.
 
-- `NO READ EARNED YET`
-- `PRESSURE-FORWARD SO FAR`
-- `SELECTIVE / RELEASE-HEAVY SO FAR`
-- `CALL-LED CONTINUATION SO FAR`
-- `LOW-COST / CHECK-HEAVY SO FAR`
-- `MIXED ACTION PROFILE`
+## Read Ledger
 
-These are descriptions of observed gameplay action patterns, not personality labels.
+The Evidence / Review body now receives a Declared Read Trace showing:
 
-## Correction law
+- the public observation available when the read was locked;
+- the player's declared interpretation;
+- confidence;
+- street / hand location;
+- later public consequence;
+- correction or unresolved status.
 
-A behavioural read is not a one-way accumulator.
+This preserves the Human Game founding law:
 
-Later contact must be able to strengthen, weaken or reverse an earlier read. A small sample remains insufficient. A repeated pattern may earn higher confidence. A pattern that fails under new comparable situations must be corrected rather than protected by the label.
+**OBSERVATION != INTERPRETATION != FACT.**
 
-**PATTERN != PROOF OF MOTIVE.**
+## Carrier continuity
 
-## WHY layer
+`00_OPEN_FIRST.html` now loads:
 
-The post-hand `WHY?` body explains what the visible line supports while keeping hidden cause open.
+- `puka-read-lab-v01.css`
+- `puka-read-lab-v01.js`
 
-For example, repeated raises can support the statement that a hand was pressure-rich. They do not prove confidence, bluffing, fearlessness, a specific hidden holding or a stable personality trait.
+The service-worker carrier advances to `jm-puka-v15a` and pre-caches both Read Lab files while preserving the existing singular door.
 
-Alternative explanations such as card distribution, price, position and stack conditions remain visible when relevant.
+## Automated proof
 
-## Presentation placement
+GitHub Actions run `33969371724` completed successfully on the exact v0.15A descendant source commit used for the proof rail.
 
-Human Game lives inside the existing `EVIDENCE / REVIEW` body rather than becoming a permanent competing dashboard.
+Passed gates:
 
-The primary poker playfield remains dominant. Portrait Academy and Royal Table identities remain unchanged. Deep House visual grammar remains inherited beneath the Human Game reasoning layer.
+- JavaScript syntax: core, Human Game, UI, Read Lab and service worker;
+- inherited full-table core test;
+- Human Game visible-action authority test;
+- v0.15A Read Lab test;
+- hidden/unknown fields rejected by the Read Lab sanitiser;
+- hidden card identities absent from the Read Lab packet;
+- STRONG?/WEAK? showdown support/correction remains bounded;
+- PRESSURE is supported only by later visible pressure contact;
+- BLUFF? remains `CONSISTENT, NOT PROVED` rather than motive fact;
+- UNCERTAIN remains a valid disciplined state;
+- canonical OPEN_FIRST and offline carrier include the v0.15A organ.
 
-## Proof target
-
-The exact v0.14A descendant must prove:
-
-- all inherited core/evaluator/full-table/layout/art/world/material/theatre/living-table/Deep-House regression suites;
-- Human Game source syntax and unit tests;
-- hidden/private fields are discarded by Human Game normalisation;
-- seeded hidden House card identities cannot appear in the rendered Human Game Evidence panel;
-- tiny samples remain insufficient rather than being inflated into behavioural confidence;
-- repeated visible pressure actions can earn a provisional pressure-forward read;
-- every earned read exposes alternatives and a next-test route;
-- existing v0.12 active-hand reload, sized raise, review/history and fold-secrecy gates remain intact;
-- existing v0.13 separate Android-touch/tablet/laptop/desktop real-output contexts remain intact;
-- viewport-only screenshot evidence;
-- zero horizontal overflow and existing 44px contact floor;
-- zero console/page errors;
-- production HTTP contact after authoritative mount.
+**CODE DING: PASS**
 
 ## Claim boundary
 
-Automated Human Game proof can establish that the engine receives a bounded visible-action packet, rejects unknown/private fields, renders action-derived table reads, carries confidence/alternatives/next-test routes and does not leak seeded hidden-card identities into the Human Game panel.
+This receipt does **not** claim v0.15A public deployment, owner physical contact, installed Android lifecycle proof, Cold Ding, visual crown or final completion.
 
-It cannot establish personality diagnosis, proof of motive, truth about a real-world person, clinical or protected-trait inference, owner aesthetic acceptance, installed physical Android lifecycle persistence, Cold Ding or final visual crown.
+It also does not claim that gameplay behaviour reveals a real person's motives or personality.
 
-The Human Game body is a gameplay-context reasoning instrument. It is not a people-diagnosis engine.
-
-## Delivery default
+## Delivery law
 
 **SOURCE -> OPEN_FIRST -> ESTATE MOUNT -> LIVE PROOF -> DIRECT DOOR**
 
-For estate-hosted HTML/web builds, the proved live URL is the normal owner-facing route. Sandbox/ZIP/download routes are fallback or archival only unless explicitly requested.
+Sandbox and ZIP outputs are fallback/archive routes, not the normal owner-facing PUKA door.
 
 ## Crown boundary
 
-`cold_ding` and `crowned` remain false unless their separate evidence gates are met. v0.14A may become source/browser/public-contact proved without automatically becoming owner-crowned.
+`cold_ding = false`  
+`crowned = false`
+
+v0.15A is a tested descendant ready for estate mount/public-contact proof; it is not yet crowned.

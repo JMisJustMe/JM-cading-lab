@@ -56,6 +56,6 @@ assert(registry.includes('v14Changes'),'v0.14 Human Game delta must remain recei
 assert(registry.includes('v15Changes'),'v0.15 Declared Read delta must remain receipted');
 assert(registry.includes('v16Changes'),'v0.16 Counterread delta must be receipted');
 assert(receipt.includes('PUKA v0.16A'),'current v0.16A build receipt missing');
-assert(receipt.includes('v0.12A full-table learning loop'),'build receipt must preserve the learning-loop parent capability');
+assert(receipt.includes("heads-up Texas Hold'em learning loop"),'build receipt must preserve the inherited full-table learning-loop capability');
 
 console.log('PUKA v0.12A FULL TABLE SOURCE DING PASS INSIDE CURRENT v0.16A DESCENDANT');

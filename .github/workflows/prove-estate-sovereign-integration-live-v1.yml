@@ -1,0 +1,32 @@
+name: Prove Estate Sovereign Integration Live v1
+
+on:
+  push:
+    branches:
+      - agent/estate-integration-live-proof-v1
+    paths:
+      - "governance/estate-integration/probe_live_integration_v1.mjs"
+      - ".github/workflows/prove-estate-sovereign-integration-live-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Probe canonical Estate, deployment aliases and Navigator public MCP
+        run: node governance/estate-integration/probe_live_integration_v1.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: estate-sovereign-integration-live-proof-v1
+          path: ESTATE_SOVEREIGN_INTEGRATION_LIVE_PROOF_v1.json
+          if-no-files-found: error
+          retention-days: 30

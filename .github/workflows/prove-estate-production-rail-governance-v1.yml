@@ -1,0 +1,61 @@
+name: Prove Estate Production Rail Governance v1
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "navigator/estate-integration/public-registry.json"
+      - "registry/estate-production-rail-authority-v1.0.json"
+      - ".github/workflows/estate-production-rail-arbiter-v1.yml"
+      - ".github/workflows/prove-estate-production-rail-governance-v1.yml"
+  push:
+    branches: [main]
+    paths:
+      - "navigator/estate-integration/public-registry.json"
+      - "registry/estate-production-rail-authority-v1.0.json"
+      - ".github/workflows/estate-production-rail-arbiter-v1.yml"
+      - ".github/workflows/prove-estate-production-rail-governance-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-governance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prove live registry promotion and production-rail authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          public=json.loads(Path('navigator/estate-integration/public-registry.json').read_text())
+          assert public['schema']=='JM.Estate.PublicNervousSystem/1'
+          assert public['version']=='v1.1-live-proven'
+          assert public['status']=='LIVE_PROVEN_CANONICAL_ESTATE_AND_NAVIGATOR_MCP_CONNECTED'
+          assert public['live_proof']['overall']=='PASS'
+          assert public['live_proof']['public_tool_count']==5
+          assert public['live_proof']['public_write_exposed'] is False
+          assert public['privacy_boundary']['contains_private_owner_data'] is False
+          assert public['privacy_boundary']['contains_owner_write_endpoint'] is False
+
+          authority=json.loads(Path('registry/estate-production-rail-authority-v1.0.json').read_text())
+          assert authority['schema']=='JM.Estate.ProductionRailAuthority/1.0'
+          assert authority['canonical_production_workflow']['path']=='.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+          legacy=authority['legacy_specialist_workflows']
+          assert len(legacy)==12
+          assert len({x['name'] for x in legacy})==12
+          assert len({x['path'] for x in legacy})==12
+
+          arbiter=Path('.github/workflows/estate-production-rail-arbiter-v1.yml').read_text()
+          for row in legacy:
+              assert row['name'] in arbiter, row['name']
+          assert 'deploy-estate-sovereign-integrated-v1.yml' in arbiter
+          assert 'actions: write' in arbiter
+          print('Estate production rail governance v1 PASS')
+          PY

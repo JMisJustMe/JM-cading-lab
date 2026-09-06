@@ -1,0 +1,154 @@
+name: Navigator Public MCP Estate Integration v1
+
+on:
+  push:
+    branches:
+      - agent/estate-sovereign-integration-v1
+      - main
+    paths:
+      - "navigator/mcp-public-v1/**"
+      - "navigator/estate-integration/**"
+      - ".github/workflows/navigator-public-mcp-estate-integration-v1.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "navigator/mcp-public-v1/**"
+      - "navigator/estate-integration/**"
+      - ".github/workflows/navigator-public-mcp-estate-integration-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: navigator-public-mcp-estate-integration-v1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Prove five-tool public boundary and shared-registry consumption
+        run: |
+          set -euo pipefail
+          node --check navigator/mcp-public-v1/worker.mjs
+          node navigator/mcp-public-v1/test.mjs
+          python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
+
+  deploy-live:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: unit-proof
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --no-save --no-audit --no-fund wrangler@4
+
+      - name: Assemble public read-only MCP descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "$RUNNER_TEMP/nav-public-mcp"
+          mkdir -p "$RUNNER_TEMP/nav-public-mcp/privacy" "$RUNNER_TEMP/nav-public-mcp/support"
+          cp navigator/mcp-public-v1/worker.mjs "$RUNNER_TEMP/nav-public-mcp/_worker.js"
+          cp navigator/mcp-public-v1/index.html "$RUNNER_TEMP/nav-public-mcp/index.html"
+          cp navigator/mcp-public-v1/privacy/index.html "$RUNNER_TEMP/nav-public-mcp/privacy/index.html"
+          cp navigator/mcp-public-v1/support/index.html "$RUNNER_TEMP/nav-public-mcp/support/index.html"
+          node --check "$RUNNER_TEMP/nav-public-mcp/_worker.js"
+
+      - name: Deploy existing Navigator public Plugin branch
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx wrangler pages deploy "$RUNNER_TEMP/nav-public-mcp" \
+            --project-name=jm-inline-contact-probe \
+            --branch=navigator-plugin-public \
+            --commit-dirty=true
+
+      - name: Prove canonical Estate integration and live public MCP
+        env:
+          ESTATE: https://jmisjustme-estate.pages.dev
+          MCP: https://navigator-plugin-public.jm-inline-contact-probe.pages.dev
+        shell: bash
+        run: |
+          set -euo pipefail
+          ready=0
+          for attempt in $(seq 1 60); do
+            registry="$(curl --fail --silent --show-error "$ESTATE/navigator/estate-integration/public-registry.json?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+            health="$(curl --fail --silent --show-error "$MCP/health?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+            if printf '%s' "$registry" | grep -q 'JM.Estate.PublicNervousSystem/1' \
+              && printf '%s' "$health" | grep -q '0.2.0-estate-integration.1' \
+              && printf '%s' "$health" | grep -q '"state":"CONNECTED"'; then
+              ready=1
+              printf '%s' "$registry" > "$RUNNER_TEMP/public-registry.json"
+              printf '%s' "$health" > "$RUNNER_TEMP/mcp-health.json"
+              break
+            fi
+            sleep 5
+          done
+          test "$ready" = 1
+
+          for route in navigator apps recovery lyrics; do
+            curl --fail --silent --show-error "$ESTATE/$route/?integration-proof=${GITHUB_RUN_ID}" > "$RUNNER_TEMP/$route.html"
+            grep -q 'data-jm-estate-integration="v1"' "$RUNNER_TEMP/$route.html"
+          done
+          curl --fail --silent --show-error "$ESTATE/navigator/stringline.json?integration-proof=${GITHUB_RUN_ID}" > "$RUNNER_TEMP/stringline.json"
+          grep -q 'estate-sovereign-integration' "$RUNNER_TEMP/stringline.json"
+
+          node - <<'NODE'
+          import fs from 'node:fs';
+          const base=process.env.MCP;
+          async function rpc(id,method,params={}){
+            const r=await fetch(base+'/mcp',{method:'POST',headers:{'content-type':'application/json','accept':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id,method,params})});
+            const j=await r.json(); return {r,j};
+          }
+          let x=await rpc(1,'initialize',{protocolVersion:'2025-06-18',capabilities:{},clientInfo:{name:'JM Estate integration live proof',version:'1'}});
+          if(!x.r.ok||x.j.error) throw new Error('initialize failed');
+          x=await rpc(2,'tools/list');
+          if(!x.r.ok||x.j.result.tools.length!==5) throw new Error('five-tool boundary failed');
+          if(x.j.result.tools.some(t=>t.annotations?.readOnlyHint!==true||t.annotations?.openWorldHint!==false||t.annotations?.destructiveHint!==false)) throw new Error('read-only annotations failed');
+          x=await rpc(3,'tools/call',{name:'navigator_bridge_status',arguments:{}});
+          if(!x.r.ok||x.j.error) throw new Error('bridge status failed');
+          const s=x.j.result.structuredContent;
+          if(s.estate_integration?.state!=='CONNECTED') throw new Error('Estate registry not connected');
+          if(s.estate_integration?.private_owner_write_published!==false) throw new Error('private owner/write boundary failed');
+          const text=JSON.stringify(s);
+          for(const forbidden of ['receipt_chain_head','registered_bodies','stringmarks','navigator-live-contact.jm-inline-contact-probe.pages.dev']) if(text.includes(forbidden)) throw new Error('private/upstream detail leaked: '+forbidden);
+          x=await rpc(4,'tools/call',{name:'navigator_create_stringreceipt',arguments:{action:'NOPE',target_id:'X',outcome:'NOPE'}});
+          if(x.r.ok||!x.j.error) throw new Error('write tool became public');
+          fs.writeFileSync('NAVIGATOR_PUBLIC_MCP_ESTATE_INTEGRATION_LIVE_PROOF_v1.json',JSON.stringify({
+            pass:true,
+            at:new Date().toISOString(),
+            canonicalEstate:process.env.ESTATE+'/',
+            integrationRegistry:process.env.ESTATE+'/navigator/estate-integration/public-registry.json',
+            navigatorPublicMcp:base+'/mcp',
+            version:'0.2.0-estate-integration.1',
+            toolCount:5,
+            readOnly:true,
+            estateIntegration:s.estate_integration,
+            ownerWriteExposed:false,
+            ownerRuntimeExposed:false,
+            integratedWebSurfaces:['navigator','apps','recovery','lyrics']
+          },null,2)+'\n');
+          console.log('LIVE ESTATE INTEGRATION PASS');
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: navigator-public-mcp-estate-integration-live-proof-v1
+          path: NAVIGATOR_PUBLIC_MCP_ESTATE_INTEGRATION_LIVE_PROOF_v1.json
+          if-no-files-found: error
+          retention-days: 30

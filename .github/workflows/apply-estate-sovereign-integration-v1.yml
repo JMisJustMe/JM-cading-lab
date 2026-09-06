@@ -35,10 +35,14 @@ jobs:
       - name: Preserve inherited Stringline authority label
         run: python3 governance/estate-integration/repair_stringline_inherited_version.py
 
+      - name: Regenerate dependent source-to-living governance outputs
+        run: python3 governance/enforce_source_to_living.py write --root .
+
       - name: Verify integration and inherited Estate contracts
         run: |
           set -euo pipefail
           python3 governance/estate-integration/verify_sovereign_integration_v1.py
+          python3 governance/enforce_source_to_living.py check --root .
           python3 governance/verify_estate_classification.py --root .
           node --check navigator/estate-integration/bridge.js
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
@@ -59,6 +63,8 @@ jobs:
             recovery/index.html \
             lyrics/index.html \
             registry/jm3232-navigator.json \
+            registry/source-to-living-governance-register-v1.0.json \
+            registry/source-to-living-governance-receipt-v1.0.json \
             estate-integration/APPLY_RECEIPT.json
           if git diff --cached --quiet; then
             echo "Integration already applied; no commit required."

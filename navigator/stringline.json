@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.9 sovereign integration seed",
+  "version": "v0.1.8 QUADZE v4 authority reconciliation seed + Estate Sovereign Integration v1",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -549,6 +549,7 @@
     "schema": "JM.Estate.PublicNervousSystem/1",
     "source": "estate-integration/public-registry.json",
     "publicRoute": "./estate-integration/public-registry.json",
-    "boundary": "Public-safe route state only; private owner/write state is excluded."
+    "boundary": "Public-safe route state only; private owner/write state is excluded.",
+    "inheritance_boundary": "Estate integration is additive. It does not replace or demote the v0.1.8 QUADZE v4 authority reconciliation seed."
   }
 }

@@ -40,5 +40,7 @@ document.querySelector("#reset").onclick=()=>{q.value="";category.value="all";se
 document.querySelector("#export").onclick=()=>{const receipt={schema:"JM.NonGameAppsPublicRegistry/1.1",generated:new Date().toISOString(),total:APPS.length,boundary:"Private app payloads remain owner-side.",apps:APPS.map(a=>({name:a[0],version:a[1],category:a[2],status:a[3]}))},url=URL.createObjectURL(new Blob([JSON.stringify(receipt,null,2)],{type:"application/json"})),a=Object.assign(document.createElement("a"),{href:url,download:"JM_NON_GAME_APPS_PUBLIC_REGISTRY.json"});a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 render();
 </script>
-<script src="../estate-head-public-consumer.js" data-jm-estate-head-consumer></script></body>
+<script src="../estate-head-public-consumer.js" data-jm-estate-head-consumer></script>
+<script defer src="/navigator/estate-integration/bridge.js" data-jm-surface="apps" data-jm-estate-integration="v1"></script>
+</body>
 </html>

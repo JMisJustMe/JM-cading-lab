@@ -1,0 +1,44 @@
+{
+  "schema": "JM.Estate.SovereignIntegrationApplyReceipt/1",
+  "created_utc": "2026-09-06T01:41:04.450045+00:00",
+  "state": "APPLIED_ON_INTEGRATION_BRANCH_NOT_LIVE_PROOF",
+  "canonical_root": "https://jmisjustme-estate.pages.dev/",
+  "public_registry": "navigator/estate-integration/public-registry.json",
+  "bridge_marker": "data-jm-estate-integration=\"v1\"",
+  "target_surfaces": {
+    "navigator/index.html": "navigator",
+    "apps/index.html": "apps",
+    "recovery/index.html": "recovery",
+    "lyrics/index.html": "lyrics"
+  },
+  "changed": [
+    "navigator/index.html",
+    "apps/index.html",
+    "recovery/index.html",
+    "lyrics/index.html",
+    "navigator/stringline.json",
+    "registry/jm3232-navigator.json"
+  ],
+  "before_sha256": {
+    "navigator/index.html": "afdcbd945b676eefe002d52a69efff4ae6991cb830ff76c2e2476bc476217aa3",
+    "apps/index.html": "17e6bb75fbc412f8ba325922c9c3ea3f1226d9f9bff98881d86ebefcdc8478a6",
+    "recovery/index.html": "0a67c28e0ed778f81d82b5ab6b24c0884fbbd809e1208289650dc4d9eeaa2207",
+    "lyrics/index.html": "59c28f7ea99be50e681e995b2350175b19d0700764ffcceb933f1d77ba629a7e",
+    "navigator/stringline.json": "dbb21e32b614ea82d33c2f81f5bc912c1093d809cde0fb246e814baf4b51b045",
+    "registry/jm3232-navigator.json": "1196b4f2be81ef5820d2d9db529c7a75543e06261eadbd1003f832bdf2b4fc07",
+    "navigator/estate-integration/public-registry.json": "30d4834705ccf37897da3f98c3d3b0e84eb5703cbfa455cc3d205d3d3369767f"
+  },
+  "after_sha256": {
+    "navigator/index.html": "d43586a7633f2910ea22f1e70f0d812ac2fb285e2f0518db68615351bbded9b7",
+    "apps/index.html": "be6af7a8c4cf3206ea0f2d01651117655a79fdbd3abbda7ce8008b796f8ee50e",
+    "recovery/index.html": "20754f67e6f821df20f333b799d151c31b82845d078745b19e8b293009fd0ec0",
+    "lyrics/index.html": "93d4876de7de1786624332f6f5bfc8aaf85ff1aa82a7438a015fdd76d5ee09b7",
+    "navigator/stringline.json": "0fe06efd65999353f85e156bc2e1bf2d20aca1a19dc948bf0f565cdb19e019b2",
+    "registry/jm3232-navigator.json": "c827b7783bde752174a7822d725fe52d23b649d7f5b1c3610008582cd0a1d5bb",
+    "navigator/estate-integration/public-registry.json": "30d4834705ccf37897da3f98c3d3b0e84eb5703cbfa455cc3d205d3d3369767f"
+  },
+  "private_owner_write_published": false,
+  "ancestor_mutation_claimed": false,
+  "live_deployment_claimed": false,
+  "next_gate": "CI integrity PASS, then merge/deploy, then canonical-host contact proof."
+}

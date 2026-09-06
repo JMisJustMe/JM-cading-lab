@@ -79,5 +79,7 @@ $('#exportBtn').onclick=()=>{const pack={schema:'JM.NavigatorSavePack/1.0',gener
 $('#importInput').onchange=async e=>{try{const pack=JSON.parse(await e.target.files[0].text());if(pack.navigator)nav=pack.navigator;if(pack.stringline)stringline=pack.stringline;if(Array.isArray(pack.receipts))receipts=pack.receipts;persist();renderAll();receipt('IMPORT_SAVEPACK','Navigator SavePack imported and restored.');toast('SavePack restored.')}catch{toast('Import failed: expected a JM Navigator SavePack.')}e.target.value=''};
 window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='l'){e.preventDefault();$('#addressInput').focus();$('#addressInput').select()}});window.addEventListener('storage',()=>{nav=load(KEYS.state,defaultNav);receipts=load(KEYS.receipts,[]);stringline=load(KEYS.stringline,stringline);renderAll()});renderAll();hydrateStringline();})();
 </script>
+
+<script defer src="/navigator/estate-integration/bridge.js" data-jm-surface="navigator" data-jm-estate-integration="v1"></script>
 </body>
 </html>

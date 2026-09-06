@@ -1,0 +1,294 @@
+name: One-shot finish legacy rail demotion v1
+
+on:
+  push:
+    branches:
+      - governance/legacy-production-rail-manual-demotion-v1
+    paths:
+      - ".github/workflows/_one-shot-finish-legacy-rail-demotion-v1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  finish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact governance descendant
+        uses: actions/checkout@v6
+        with:
+          ref: governance/legacy-production-rail-manual-demotion-v1
+          fetch-depth: 0
+
+      - name: Demote all 12 legacy rails and write forward authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          BASE='579a842f0f121a4fb70d7b30955ea61e0709fd76'
+          CANONICAL='.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+          rows=[
+            ('Deploy Canonical Cloudflare Estate','.github/workflows/deploy-cloudflare-estate.yml'),
+            ('Public Route Repair Wave 01 Final Seal','.github/workflows/public-route-repair-wave-01-final.yml'),
+            ('Public Route Repair Wave 01','.github/workflows/public-route-repair-wave-01.yml'),
+            ('Deploy Pass 14 Closure-Synced Lyrics House','.github/workflows/deploy-cloudflare-lyrics.yml'),
+            ('Deploy Estate Head v0.2.1 to Cloudflare','.github/workflows/deploy-cloudflare-estate-head-v021.yml'),
+            ('Deploy Android-Safe JM Estate Route Repair','.github/workflows/deploy-cloudflare-route-repair.yml'),
+            ('Deploy Recent Convergence to Canonical Cloudflare Estate','.github/workflows/deploy-cloudflare-recent-convergence.yml'),
+            ('Deploy Money Menu Public Contact v1.2','.github/workflows/deploy-money-menu-public-contact-v1-2.yml'),
+            ('Deploy Money Menu Public Contact v1.2 Final','.github/workflows/deploy-money-menu-public-contact-v1-2-final.yml'),
+            ('Deploy Live-Preserving Cloudflare Estate','.github/workflows/deploy-cloudflare-estate-live-preserving.yml'),
+            ('Deploy Authoritative Public JM Estate to Cloudflare','.github/workflows/deploy-cloudflare-authoritative-public-source.yml'),
+            ('Deploy Classification-Integrity Cloudflare Estate','.github/workflows/deploy-cloudflare-estate-classification-integrity.yml'),
+          ]
+
+          manual_comment=(
+            '# Legacy specialist rail retained for manual recovery/proof only.\n'
+            '# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.\n'
+          )
+
+          def split_on(text):
+              m=re.search(r'(?m)^on:\s*$',text)
+              if not m: raise AssertionError('missing top-level on:')
+              nxt=re.search(r'(?m)^(concurrency|permissions|jobs):\s*$',text[m.end():])
+              if not nxt: raise AssertionError('missing section after on:')
+              end=m.end()+nxt.start()
+              return m.start(), end
+
+          def body_after_on(text):
+              _, end=split_on(text)
+              return text[end:]
+
+          import subprocess
+          for name,path in rows:
+              p=Path(path)
+              current=p.read_text(encoding='utf-8')
+              base=subprocess.check_output(['git','show',f'{BASE}:{path}'],text=True)
+              # Prove the specialist body outside its trigger block has not changed.
+              assert body_after_on(current)==body_after_on(base), f'non-trigger body changed: {path}'
+              start,end=split_on(current)
+              prefix=current[:start]
+              prefix=re.sub(r'(?m)^# Legacy specialist rail retained for manual recovery/proof only\.\n# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1\.\n$', '', prefix)
+              replacement=manual_comment+'on:\n  workflow_dispatch:\n\n'
+              p.write_text(prefix+replacement+current[end:],encoding='utf-8')
+
+          authority={
+            'schema':'JM.Estate.ProductionRailAuthority/1.1',
+            'version':'v1.1-manual-specialist-demotion',
+            'status':'COMPLETE_12_OF_12_LEGACY_SPECIALIST_RAILS_MANUAL_ONLY',
+            'ancestor':'registry/estate-production-rail-authority-v1.0.json',
+            'demotion_base_commit':BASE,
+            'canonical_public_project':'jmisjustme-estate',
+            'canonical_public_root':'https://jmisjustme-estate.pages.dev/',
+            'canonical_production_workflow':{
+              'path':CANONICAL,
+              'name':'Deploy Estate Sovereign Integrated v1',
+              'role':'SOLE_FORWARD_CANONICAL_ASSEMBLY_DEPLOY_AND_LIVE_PROOF_RAIL',
+              'automatic_production_trigger':True,
+              'source_commit_first_live_pass':'ce035c01c7f7699cae8038d2ecf4a72e18a26b83',
+              'first_live_pass_run':'34005367627'
+            },
+            'legacy_specialist_workflows':[
+              {
+                'name':name,'path':path,
+                'trigger_mode':'WORKFLOW_DISPATCH_ONLY',
+                'automatic_production_trigger':False,
+                'retained_manual_specialist_capability':True,
+                'ancestor_history_preserved':True
+              } for name,path in rows
+            ],
+            'governance':{
+              'manual_demotion_complete':True,
+              'manual_demotion_count':12,
+              'rule':'Legacy specialist rails retain manual recovery/proof capability but cannot auto-deploy from repository pushes.',
+              'reassertion':'Completion of any manually invoked listed legacy specialist workflow is still observed by the arbiter, which re-dispatches the canonical forward rail unless it is already queued or running.',
+              'arbiter_after_manual_run':True,
+              'no_silent_new_production_rail':True,
+              'ancestor_preservation':True,
+              'canonical_door_changed':False,
+              'private_owner_capability_changed':False
+            },
+            'laws':[
+              'ONE_CANONICAL_PUBLIC_DOOR','ONE_FORWARD_CANONICAL_PRODUCTION_RAIL',
+              'SPECIALIST_RAIL_MANUAL_ONLY','SPECIALIST_RAIL_NOT_PUBLIC_AUTHORITY',
+              'MESH_NOT_MERGE','NO_DING_NO_CLAIM','ANCESTOR_HISTORY_REMAINS_IN_GIT'
+            ]
+          }
+          Path('registry/estate-production-rail-authority-v1.1.json').write_text(json.dumps(authority,indent=2)+'\n',encoding='utf-8')
+
+          receipt={
+            'schema':'JM.Estate.LegacySpecialistRailManualDemotionReceipt/1.0',
+            'status':'PASS_12_OF_12_MANUAL_ONLY',
+            'date':'2026-09-06',
+            'source_branch':'governance/legacy-production-rail-manual-demotion-v1',
+            'demotion_base_commit':BASE,
+            'canonical_workflow':CANONICAL,
+            'legacy_count':12,
+            'legacy_specialist_workflows':authority['legacy_specialist_workflows'],
+            'boundaries':{
+              'workflow_files_deleted':0,
+              'specialist_bodies_rewritten_beyond_trigger_block':False,
+              'canonical_public_door_changed':False,
+              'private_owner_write_exposure_changed':False,
+              'manual_specialist_execution_retained':True,
+              'arbiter_reassertion_retained':True
+            },
+            'keeper':'ONE FORWARD CANONICAL PRODUCTION RAIL. SPECIALIST HISTORY STAYS; AUTOMATIC RIVAL DEPLOYMENT DOES NOT.'
+          }
+          Path('registry/estate-legacy-specialist-rail-manual-demotion-receipt-v1.0.json').write_text(json.dumps(receipt,indent=2)+'\n',encoding='utf-8')
+          PY
+
+      - name: Add executable governance proof descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > .github/workflows/prove-estate-production-rail-manual-demotion-v1.yml <<'YAML'
+          name: Prove Estate Production Rail Manual Demotion v1
+
+          on:
+            pull_request:
+              branches: [main]
+              paths:
+                - "registry/estate-production-rail-authority-v1.1.json"
+                - "registry/estate-legacy-specialist-rail-manual-demotion-receipt-v1.0.json"
+                - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+                - ".github/workflows/estate-production-rail-arbiter-v1.yml"
+                - ".github/workflows/deploy-cloudflare-estate.yml"
+                - ".github/workflows/public-route-repair-wave-01-final.yml"
+                - ".github/workflows/public-route-repair-wave-01.yml"
+                - ".github/workflows/deploy-cloudflare-lyrics.yml"
+                - ".github/workflows/deploy-cloudflare-estate-head-v021.yml"
+                - ".github/workflows/deploy-cloudflare-route-repair.yml"
+                - ".github/workflows/deploy-cloudflare-recent-convergence.yml"
+                - ".github/workflows/deploy-money-menu-public-contact-v1-2.yml"
+                - ".github/workflows/deploy-money-menu-public-contact-v1-2-final.yml"
+                - ".github/workflows/deploy-cloudflare-estate-live-preserving.yml"
+                - ".github/workflows/deploy-cloudflare-authoritative-public-source.yml"
+                - ".github/workflows/deploy-cloudflare-estate-classification-integrity.yml"
+                - ".github/workflows/prove-estate-production-rail-manual-demotion-v1.yml"
+            push:
+              branches: [main]
+              paths:
+                - "registry/estate-production-rail-authority-v1.1.json"
+                - "registry/estate-legacy-specialist-rail-manual-demotion-receipt-v1.0.json"
+                - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+                - ".github/workflows/estate-production-rail-arbiter-v1.yml"
+                - ".github/workflows/deploy-cloudflare-estate.yml"
+                - ".github/workflows/public-route-repair-wave-01-final.yml"
+                - ".github/workflows/public-route-repair-wave-01.yml"
+                - ".github/workflows/deploy-cloudflare-lyrics.yml"
+                - ".github/workflows/deploy-cloudflare-estate-head-v021.yml"
+                - ".github/workflows/deploy-cloudflare-route-repair.yml"
+                - ".github/workflows/deploy-cloudflare-recent-convergence.yml"
+                - ".github/workflows/deploy-money-menu-public-contact-v1-2.yml"
+                - ".github/workflows/deploy-money-menu-public-contact-v1-2-final.yml"
+                - ".github/workflows/deploy-cloudflare-estate-live-preserving.yml"
+                - ".github/workflows/deploy-cloudflare-authoritative-public-source.yml"
+                - ".github/workflows/deploy-cloudflare-estate-classification-integrity.yml"
+                - ".github/workflows/prove-estate-production-rail-manual-demotion-v1.yml"
+            workflow_dispatch:
+
+          permissions:
+            contents: read
+
+          jobs:
+            prove:
+              runs-on: ubuntu-latest
+              timeout-minutes: 5
+              steps:
+                - uses: actions/checkout@v6
+                  with:
+                    fetch-depth: 0
+                - name: Prove 12 of 12 legacy rails are manual-only and bodies preserved
+                  shell: bash
+                  run: |
+                    set -euo pipefail
+                    python3 - <<'PY'
+                    import json,re,subprocess
+                    from pathlib import Path
+                    authority=json.loads(Path('registry/estate-production-rail-authority-v1.1.json').read_text())
+                    receipt=json.loads(Path('registry/estate-legacy-specialist-rail-manual-demotion-receipt-v1.0.json').read_text())
+                    assert authority['schema']=='JM.Estate.ProductionRailAuthority/1.1'
+                    assert authority['status']=='COMPLETE_12_OF_12_LEGACY_SPECIALIST_RAILS_MANUAL_ONLY'
+                    assert authority['governance']['manual_demotion_complete'] is True
+                    assert authority['governance']['manual_demotion_count']==12
+                    assert receipt['status']=='PASS_12_OF_12_MANUAL_ONLY'
+                    assert receipt['legacy_count']==12
+                    rows=authority['legacy_specialist_workflows']
+                    assert len(rows)==12 and len({r['path'] for r in rows})==12 and len({r['name'] for r in rows})==12
+                    base=authority['demotion_base_commit']
+                    forbidden={'push:','pull_request:','schedule:','workflow_run:','repository_dispatch:'}
+
+                    def split_on(text):
+                        m=re.search(r'(?m)^on:\s*$',text); assert m
+                        nxt=re.search(r'(?m)^(concurrency|permissions|jobs):\s*$',text[m.end():]); assert nxt
+                        return m.start(),m.end()+nxt.start()
+                    def body_after_on(text): return text[split_on(text)[1]:]
+
+                    for row in rows:
+                        assert row['trigger_mode']=='WORKFLOW_DISPATCH_ONLY'
+                        assert row['automatic_production_trigger'] is False
+                        assert row['retained_manual_specialist_capability'] is True
+                        path=row['path']; text=Path(path).read_text()
+                        s,e=split_on(text); block=[x.strip() for x in text[s:e].splitlines() if x.strip()]
+                        assert block==['on:','workflow_dispatch:'], (path,block)
+                        assert not forbidden.intersection(block), (path,forbidden.intersection(block))
+                        assert 'Legacy specialist rail retained for manual recovery/proof only.' in text
+                        ancestor=subprocess.check_output(['git','show',f'{base}:{path}'],text=True)
+                        assert body_after_on(text)==body_after_on(ancestor), f'body drift outside trigger block: {path}'
+
+                    canonical=Path(authority['canonical_production_workflow']['path']).read_text()
+                    cs,ce=split_on(canonical); cblock=canonical[cs:ce]
+                    assert 'push:' in cblock
+                    assert authority['canonical_production_workflow']['automatic_production_trigger'] is True
+                    assert authority['canonical_production_workflow']['path'] not in {r['path'] for r in rows}
+
+                    arbiter=Path('.github/workflows/estate-production-rail-arbiter-v1.yml').read_text()
+                    for row in rows: assert row['name'] in arbiter
+                    assert 'deploy-estate-sovereign-integrated-v1.yml' in arbiter
+                    assert 'actions: write' in arbiter
+                    print('PASS 12/12 manual-only; canonical auto rail retained; arbiter retained; specialist bodies preserved')
+                    PY
+          YAML
+
+      - name: Self-audit, remove one-shot helper, commit descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,re
+          from pathlib import Path
+          a=json.loads(Path('registry/estate-production-rail-authority-v1.1.json').read_text())
+          assert len(a['legacy_specialist_workflows'])==12
+          for row in a['legacy_specialist_workflows']:
+              text=Path(row['path']).read_text()
+              m=re.search(r'(?ms)^on:\s*\n(.*?)(?=^(?:concurrency|permissions|jobs):)',text); assert m,row['path']
+              block=m.group(1)
+              assert 'workflow_dispatch:' in block,row['path']
+              assert 'push:' not in block,row['path']
+          print('LOCAL DEMOTION AUDIT PASS 12/12')
+          PY
+          git rm .github/workflows/_one-shot-finish-legacy-rail-demotion-v1.yml
+          git config user.name 'JM Estate Production Rail Governance'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/deploy-cloudflare-estate.yml
+          git add .github/workflows/public-route-repair-wave-01-final.yml
+          git add .github/workflows/public-route-repair-wave-01.yml
+          git add .github/workflows/deploy-cloudflare-lyrics.yml
+          git add .github/workflows/deploy-cloudflare-estate-head-v021.yml
+          git add .github/workflows/deploy-cloudflare-route-repair.yml
+          git add .github/workflows/deploy-cloudflare-recent-convergence.yml
+          git add .github/workflows/deploy-money-menu-public-contact-v1-2.yml
+          git add .github/workflows/deploy-money-menu-public-contact-v1-2-final.yml
+          git add .github/workflows/deploy-cloudflare-estate-live-preserving.yml
+          git add .github/workflows/deploy-cloudflare-authoritative-public-source.yml
+          git add .github/workflows/deploy-cloudflare-estate-classification-integrity.yml
+          git add .github/workflows/prove-estate-production-rail-manual-demotion-v1.yml
+          git add registry/estate-production-rail-authority-v1.1.json
+          git add registry/estate-legacy-specialist-rail-manual-demotion-receipt-v1.0.json
+          git commit -m 'Complete 12-of-12 legacy production rail manual demotion'
+          git push origin HEAD:governance/legacy-production-rail-manual-demotion-v1

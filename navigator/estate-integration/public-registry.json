@@ -1,7 +1,7 @@
 {
   "schema": "JM.Estate.PublicNervousSystem/1",
-  "version": "v1.0-staged",
-  "status": "STAGED_ON_INTEGRATION_BRANCH_NOT_YET_LIVE_PROVEN",
+  "version": "v1.1-live-proven",
+  "status": "LIVE_PROVEN_CANONICAL_ESTATE_AND_NAVIGATOR_MCP_CONNECTED",
   "canonical_root": "https://jmisjustme-estate.pages.dev/",
   "registry_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json",
   "integration_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/",
@@ -11,50 +11,66 @@
     "PUBLIC_ROUTE_NOT_ROOT_BODY",
     "CARRIER_NOT_BODY",
     "NO_DING_NO_CLAIM",
-    "PRIVATE_WRITE_CAPABILITY_STAYS_PRIVATE"
+    "PRIVATE_WRITE_CAPABILITY_STAYS_PRIVATE",
+    "ONE_CANONICAL_PRODUCTION_RAIL_MAY_REASSERT_AFTER_LEGACY_SPECIALIST_RAILS"
   ],
+  "live_proof": {
+    "earned_at_utc": "2026-09-06T02:01:32Z",
+    "source_commit": "ce035c01c7f7699cae8038d2ecf4a72e18a26b83",
+    "workflow_run": "34005367627",
+    "artifact_id": "9980757395",
+    "canonical_estate": "PASS",
+    "navigator_public_mcp": "PASS",
+    "overall": "PASS",
+    "canonical_estate_deployment_alias": "https://a58025c3.jmisjustme-estate.pages.dev",
+    "navigator_mcp_deployment_alias": "https://3ea489dd.jm-inline-contact-probe.pages.dev",
+    "public_tool_count": 5,
+    "public_write_exposed": false,
+    "private_owner_write_published": false,
+    "note": "Live proof establishes the public nervous-system connection. It does not claim OpenAI directory approval or expose private owner runtime/write authority."
+  },
   "routes": [
     {
       "id": "estate",
       "name": "JMISJUSTME — The Living Estate",
       "role": "CANONICAL_PUBLIC_ESTATE_DOOR",
       "url": "https://jmisjustme-estate.pages.dev/",
-      "state": "PUBLIC_CANONICAL"
+      "state": "PUBLIC_CANONICAL_LIVE_PROVEN"
     },
     {
       "id": "navigator",
       "name": "JM3232 Navigator",
       "role": "PUBLIC_ESTATE_NAVIGATION_SURFACE",
       "url": "https://jmisjustme-estate.pages.dev/navigator/",
-      "state": "PUBLIC"
+      "state": "PUBLIC_LIVE_PROVEN"
     },
     {
       "id": "apps",
       "name": "Non-Game Apps House",
       "role": "PUBLIC_APPS_ROUTE",
       "url": "https://jmisjustme-estate.pages.dev/apps/",
-      "state": "PUBLIC"
+      "state": "PUBLIC_LIVE_PROVEN"
     },
     {
       "id": "theory",
       "name": "Theory Multihub",
       "role": "PUBLIC_THEORY_ROUTE",
       "url": "https://jmisjustme-estate.pages.dev/theory/",
-      "state": "PUBLIC"
+      "state": "PUBLIC_LIVE_PROVEN"
     },
     {
       "id": "lyrics",
       "name": "Lyrics & Music House",
       "role": "PUBLIC_LYRICS_MUSIC_ROUTE",
       "url": "https://jmisjustme-estate.pages.dev/lyrics/",
-      "state": "PUBLIC"
+      "state": "PUBLIC_LIVE_PROVEN"
     },
     {
       "id": "recovery",
       "name": "Recovery House",
       "role": "PUBLIC_RECOVERY_ROUTE",
       "url": "https://jmisjustme-estate.pages.dev/recovery/",
-      "state": "PUBLIC"
+      "state": "PUBLIC_LIVE_PROVEN"
     },
     {
       "id": "freestanding-website",
@@ -77,7 +93,7 @@
       "name": "JM3232 Navigator public OpenAI descendant",
       "role": "PUBLIC_READ_ONLY_MCP_SURFACE",
       "url": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp",
-      "state": "DOMAIN_VERIFIED_SUBMISSION_COMPLETION_NOT_CLAIMED",
+      "state": "LIVE_PROVEN_5_TOOL_READ_ONLY_DOMAIN_VERIFIED_SUBMISSION_COMPLETION_NOT_CLAIMED",
       "capability": "READ_ONLY_5_TOOL_PUBLIC_SURFACE"
     }
   ],

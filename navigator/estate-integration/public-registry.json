@@ -1,0 +1,129 @@
+{
+  "schema": "JM.Estate.PublicNervousSystem/1",
+  "version": "v1.0-staged",
+  "status": "STAGED_ON_INTEGRATION_BRANCH_NOT_YET_LIVE_PROVEN",
+  "canonical_root": "https://jmisjustme-estate.pages.dev/",
+  "registry_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json",
+  "integration_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/",
+  "laws": [
+    "ONE_CANONICAL_DOOR_MANY_SOVEREIGN_BODIES",
+    "MESH_NOT_MERGE",
+    "PUBLIC_ROUTE_NOT_ROOT_BODY",
+    "CARRIER_NOT_BODY",
+    "NO_DING_NO_CLAIM",
+    "PRIVATE_WRITE_CAPABILITY_STAYS_PRIVATE"
+  ],
+  "routes": [
+    {
+      "id": "estate",
+      "name": "JMISJUSTME — The Living Estate",
+      "role": "CANONICAL_PUBLIC_ESTATE_DOOR",
+      "url": "https://jmisjustme-estate.pages.dev/",
+      "state": "PUBLIC_CANONICAL"
+    },
+    {
+      "id": "navigator",
+      "name": "JM3232 Navigator",
+      "role": "PUBLIC_ESTATE_NAVIGATION_SURFACE",
+      "url": "https://jmisjustme-estate.pages.dev/navigator/",
+      "state": "PUBLIC"
+    },
+    {
+      "id": "apps",
+      "name": "Non-Game Apps House",
+      "role": "PUBLIC_APPS_ROUTE",
+      "url": "https://jmisjustme-estate.pages.dev/apps/",
+      "state": "PUBLIC"
+    },
+    {
+      "id": "theory",
+      "name": "Theory Multihub",
+      "role": "PUBLIC_THEORY_ROUTE",
+      "url": "https://jmisjustme-estate.pages.dev/theory/",
+      "state": "PUBLIC"
+    },
+    {
+      "id": "lyrics",
+      "name": "Lyrics & Music House",
+      "role": "PUBLIC_LYRICS_MUSIC_ROUTE",
+      "url": "https://jmisjustme-estate.pages.dev/lyrics/",
+      "state": "PUBLIC"
+    },
+    {
+      "id": "recovery",
+      "name": "Recovery House",
+      "role": "PUBLIC_RECOVERY_ROUTE",
+      "url": "https://jmisjustme-estate.pages.dev/recovery/",
+      "state": "PUBLIC"
+    },
+    {
+      "id": "freestanding-website",
+      "name": "JMISJUSTME Independent Website v1.5 H1",
+      "role": "FREESTANDING_SOVEREIGN_WEBSITE_HEAD",
+      "url": "https://jmisjustme.xo.je/",
+      "state": "PUBLIC_SEPARATE_HOST_LINEAGE"
+    },
+    {
+      "id": "github-source",
+      "name": "JMisJustMe/JM-cading-lab",
+      "role": "SOURCE_VERSION_RECOVERY_CORRIDOR",
+      "url": "https://github.com/JMisJustMe/JM-cading-lab",
+      "state": "PUBLIC_SOURCE_CORRIDOR"
+    }
+  ],
+  "services": [
+    {
+      "id": "navigator-public-mcp",
+      "name": "JM3232 Navigator public OpenAI descendant",
+      "role": "PUBLIC_READ_ONLY_MCP_SURFACE",
+      "url": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp",
+      "state": "DOMAIN_VERIFIED_SUBMISSION_COMPLETION_NOT_CLAIMED",
+      "capability": "READ_ONLY_5_TOOL_PUBLIC_SURFACE"
+    }
+  ],
+  "authorities": [
+    {
+      "id": "whole-estate-control",
+      "name": "JM ESTATE Global x Local Recursive Organisation Reconciliation v2.0",
+      "role": "WHOLE_ESTATE_CONTROL_AND_SEATING_AUTHORITY",
+      "public_route": false
+    },
+    {
+      "id": "living-estate-owner",
+      "name": "JMISJUSTME Living Estate Owner Unified v1.11.1",
+      "role": "PRIVATE_LOGICAL_OWNER_SOURCE_AUTHORITY",
+      "public_route": false
+    },
+    {
+      "id": "living-multihub",
+      "name": "JM Living MultiHub v6.0A",
+      "role": "CURRENT_WEB_SOURCE_NAVIGATION_HEAD",
+      "public_route": false
+    },
+    {
+      "id": "unified-browser",
+      "name": "JM3232 Unified Browser v1.1.2",
+      "role": "SEPARATE_OWNER_BROWSER_AND_DEVICE_CONTINUITY_BODY",
+      "public_route": false
+    },
+    {
+      "id": "navigator-source",
+      "name": "JM3232 Navigator Browser Bridge v0.1",
+      "role": "NAVIGATOR_CANONICAL_SOURCE_AUTHORITY",
+      "public_route": false
+    },
+    {
+      "id": "inline-contact",
+      "name": "JM Inline Contact",
+      "role": "SEPARATE_IN_CHATGPT_INTERACTIVE_CONTACT_LINEAGE",
+      "public_route": false,
+      "state": "THIRD_DING_PROVED"
+    }
+  ],
+  "privacy_boundary": {
+    "contains_private_owner_data": false,
+    "contains_owner_write_endpoint": false,
+    "contains_mutable_owner_state": false,
+    "public_registry_is_authority_subset_only": true
+  }
+}

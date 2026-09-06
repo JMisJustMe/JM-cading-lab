@@ -1,0 +1,58 @@
+name: Run one-shot legacy rail finisher on PR
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/_run-one-shot-legacy-rail-finisher-on-pr.yml"
+      - ".github/workflows/_one-shot-finish-legacy-rail-demotion-v1.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  run-helper:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Execute the helper run blocks exactly once
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          path=Path('.github/workflows/_one-shot-finish-legacy-rail-demotion-v1.yml')
+          lines=path.read_text(encoding='utf-8').splitlines(True)
+          blocks=[]; i=0
+          while i<len(lines):
+              if lines[i].startswith('        run: |'):
+                  i+=1; buf=[]
+                  while i<len(lines):
+                      line=lines[i]
+                      if line.strip() and len(line)-len(line.lstrip(' ')) <= 8:
+                          break
+                      buf.append(line[10:] if line.startswith('          ') else line)
+                      i+=1
+                  blocks.append(''.join(buf))
+                  continue
+              i+=1
+          assert len(blocks)==3, f'expected 3 helper run blocks, found {len(blocks)}'
+          for n,block in enumerate(blocks,1):
+              print(f'--- executing helper block {n}/3 ---')
+              subprocess.run(['/bin/bash','-euo','pipefail','-c',block],check=True)
+          PY
+      - name: Remove PR trigger helper after successful finish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/_run-one-shot-legacy-rail-finisher-on-pr.yml
+          git config user.name 'JM Estate Production Rail Governance'
+          git config user.email 'actions@users.noreply.github.com'
+          git commit -m 'Remove one-shot PR finisher [skip ci]'
+          git push origin HEAD:${{ github.head_ref }}

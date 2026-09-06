@@ -32,10 +32,14 @@ jobs:
       - name: Apply idempotent bridge to current living surfaces
         run: python3 governance/estate-integration/apply_sovereign_integration_v1.py
 
-      - name: Verify integration contract
+      - name: Preserve inherited Stringline authority label
+        run: python3 governance/estate-integration/repair_stringline_inherited_version.py
+
+      - name: Verify integration and inherited Estate contracts
         run: |
           set -euo pipefail
           python3 governance/estate-integration/verify_sovereign_integration_v1.py
+          python3 governance/verify_estate_classification.py --root .
           node --check navigator/estate-integration/bridge.js
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
           python3 -m json.tool navigator/stringline.json >/dev/null

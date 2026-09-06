@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-jm-surface="estate-integration">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b10">
+<title>JM Estate Integration v1</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#080b10;color:#f5f7fb}*{box-sizing:border-box}body{margin:0}main{width:min(980px,100%);margin:auto;padding:20px}.hero,.card{border:1px solid #273140;border-radius:18px;background:#101720}.hero{padding:24px}.hero h1{margin:.1em 0;font-size:clamp(2rem,8vw,4.6rem);line-height:.92}.muted{color:#aab5c5}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:14px}.card{padding:15px}.pill{display:inline-block;border:1px solid #344258;border-radius:999px;padding:4px 8px;font-size:.72rem}.ok{color:#8df3ad}.hold{color:#ffd27a}a{color:#9de9ff;word-break:break-word}.route{display:block;text-decoration:none}.route:hover{border-color:#65dffc}.k{font-size:.72rem;color:#93a1b5;text-transform:uppercase;letter-spacing:.06em}.v{font-weight:800;margin:.25rem 0}.top{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.btn{display:inline-block;padding:10px 12px;border-radius:12px;background:#172337;border:1px solid #30405c;color:#fff;text-decoration:none;font-weight:800}pre{white-space:pre-wrap;word-break:break-word;background:#070a0f;padding:12px;border-radius:12px;border:1px solid #273140}</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<div class="pill hold" id="state">LOADING</div>
+<h1>One Estate.<br>Many bodies.<br>One live line.</h1>
+<p class="muted">This is the public-safe integration surface. It exposes governed routes and authority boundaries without exposing private owner/write capability.</p>
+<div class="top"><a class="btn" href="../../">Estate</a><a class="btn" href="../">Navigator</a><a class="btn" href="../../recovery/">Recovery</a></div>
+</section>
+<section class="grid" id="routes"></section>
+<section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
+</main>
+<script defer src="./bridge.js" data-jm-surface="estate-integration"></script>
+<script>
+window.addEventListener('jm-estate-integration-ready',e=>{
+  const d=e.detail.registry;
+  const state=document.getElementById('state');
+  state.textContent=d.status;
+  state.className='pill '+(String(d.status).includes('PROVEN')?'ok':'hold');
+  const rows=[...(d.routes||[]),...(d.services||[])];
+  document.getElementById('routes').innerHTML=rows.map(r=>`<a class="card route" href="${r.url}"><div class="k">${r.role}</div><div class="v">${r.name}</div><div class="muted">${r.state||''}</div></a>`).join('');
+  document.getElementById('trace').textContent=JSON.stringify(window.JMEstateIntegration.trace().slice(0,8),null,2);
+});
+window.addEventListener('jm-estate-integration-hold',e=>{
+  const s=document.getElementById('state');s.textContent='INTEGRATION HOLD';s.className='pill hold';
+  document.getElementById('trace').textContent=e.detail.error;
+});
+</script>
+</body>
+</html>

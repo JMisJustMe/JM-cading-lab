@@ -2,7 +2,7 @@
   "schema": "JM.Stringline/1.0",
   "generated": "2026-07-20",
   "name": "JM Stringline",
-  "version": "v0.1.8 QUADZE v4 authority reconciliation seed",
+  "version": "v0.1.8 QUADZE v4 authority reconciliation seed + Estate Sovereign Integration v1",
   "method": "Structured Single-Stringling",
   "tbs": "Threading Bodies Steadily",
   "crown": "Many bodies. One living line. None erased.",
@@ -492,7 +492,64 @@
           "status": "THREADING"
         }
       ]
+    },
+    {
+      "id": "estate-sovereign-integration",
+      "name": "Estate Sovereign Integration",
+      "headChat": "Estate integration continuation",
+      "headRecord": "JM Estate Sovereign Integration v1",
+      "status": "THREADING",
+      "keeper": "One canonical public door. Many sovereign bodies. Shared live route state without authority collapse.",
+      "bodies": [
+        {
+          "id": "estate-integration-public-registry",
+          "name": "Estate Public Nervous System Registry",
+          "type": "Public-safe route and authority registry",
+          "role": "Shared machine-readable route state consumed by integrated public surfaces",
+          "status": "THREADING",
+          "route": "./estate-integration/"
+        },
+        {
+          "id": "estate-canonical-root",
+          "name": "JMISJUSTME — The Living Estate",
+          "type": "Canonical public Estate door",
+          "role": "Stable public root; descendants update behind governed routes",
+          "status": "PROVEN",
+          "route": "../"
+        },
+        {
+          "id": "navigator-public-mcp",
+          "name": "JM3232 Navigator public OpenAI descendant",
+          "type": "Read-only MCP service",
+          "role": "Public AI/search bridge kept separate from owner mutable state",
+          "status": "THREADING",
+          "route": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp"
+        },
+        {
+          "id": "freestanding-website-v1-5-h1",
+          "name": "JMISJUSTME Independent Website v1.5 H1",
+          "type": "Freestanding sovereign website lineage",
+          "role": "Separate live host lineage; not a replacement canonical root",
+          "status": "PROVEN",
+          "route": "https://jmisjustme.xo.je/"
+        },
+        {
+          "id": "github-source-corridor",
+          "name": "JMisJustMe/JM-cading-lab",
+          "type": "Source/version/recovery corridor",
+          "role": "Source and recovery rail; not Estate landlord",
+          "status": "STANDING",
+          "route": "https://github.com/JMisJustMe/JM-cading-lab"
+        }
+      ]
     }
   ],
-  "boundary": "This seed powers local-first Stringline navigation and classification authority. Public projections may summarize private bodies, but they may not replace governing identity, source authority or proof-lane distinctions."
+  "boundary": "This seed powers local-first Stringline navigation and classification authority. Public projections may summarize private bodies, but they may not replace governing identity, source authority or proof-lane distinctions.",
+  "integration_registry": {
+    "schema": "JM.Estate.PublicNervousSystem/1",
+    "source": "estate-integration/public-registry.json",
+    "publicRoute": "./estate-integration/public-registry.json",
+    "boundary": "Public-safe route state only; private owner/write state is excluded.",
+    "inheritance_boundary": "Estate integration is additive. It does not replace or demote the v0.1.8 QUADZE v4 authority reconciliation seed."
+  }
 }

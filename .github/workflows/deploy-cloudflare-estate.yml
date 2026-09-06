@@ -1,12 +1,8 @@
 name: Deploy Canonical Cloudflare Estate
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "cloudflare-estate/**"
-      - ".github/workflows/deploy-cloudflare-estate.yml"
   workflow_dispatch:
 
 concurrency:

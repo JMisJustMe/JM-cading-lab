@@ -1,0 +1,43 @@
+{
+  "schema": "JM.Estate.ProductionRailAuthority/1.0",
+  "version": "v1.0",
+  "status": "FORWARD_GOVERNANCE_DESCENDANT",
+  "canonical_public_project": "jmisjustme-estate",
+  "canonical_public_root": "https://jmisjustme-estate.pages.dev/",
+  "canonical_production_workflow": {
+    "path": ".github/workflows/deploy-estate-sovereign-integrated-v1.yml",
+    "name": "Deploy Estate Sovereign Integrated v1",
+    "role": "SOLE_FORWARD_CANONICAL_ASSEMBLY_DEPLOY_AND_LIVE_PROOF_RAIL",
+    "source_commit_first_live_pass": "ce035c01c7f7699cae8038d2ecf4a72e18a26b83",
+    "first_live_pass_run": "34005367627"
+  },
+  "legacy_specialist_workflows": [
+    {"name":"Deploy Canonical Cloudflare Estate","path":".github/workflows/deploy-cloudflare-estate.yml"},
+    {"name":"Public Route Repair Wave 01 Final Seal","path":".github/workflows/public-route-repair-wave-01-final.yml"},
+    {"name":"Public Route Repair Wave 01","path":".github/workflows/public-route-repair-wave-01.yml"},
+    {"name":"Deploy Pass 14 Closure-Synced Lyrics House","path":".github/workflows/deploy-cloudflare-lyrics.yml"},
+    {"name":"Deploy Estate Head v0.2.1 to Cloudflare","path":".github/workflows/deploy-cloudflare-estate-head-v021.yml"},
+    {"name":"Deploy Android-Safe JM Estate Route Repair","path":".github/workflows/deploy-cloudflare-route-repair.yml"},
+    {"name":"Deploy Recent Convergence to Canonical Cloudflare Estate","path":".github/workflows/deploy-cloudflare-recent-convergence.yml"},
+    {"name":"Deploy Money Menu Public Contact v1.2","path":".github/workflows/deploy-money-menu-public-contact-v1-2.yml"},
+    {"name":"Deploy Money Menu Public Contact v1.2 Final","path":".github/workflows/deploy-money-menu-public-contact-v1-2-final.yml"},
+    {"name":"Deploy Live-Preserving Cloudflare Estate","path":".github/workflows/deploy-cloudflare-estate-live-preserving.yml"},
+    {"name":"Deploy Authoritative Public JM Estate to Cloudflare","path":".github/workflows/deploy-cloudflare-authoritative-public-source.yml"},
+    {"name":"Deploy Classification-Integrity Cloudflare Estate","path":".github/workflows/deploy-cloudflare-estate-classification-integrity.yml"}
+  ],
+  "governance": {
+    "rule": "Legacy specialist rails may preserve their historical proof/build role, but they do not outrank the canonical forward production rail.",
+    "reassertion": "Completion of any listed legacy specialist workflow schedules the canonical forward production workflow unless one is already queued or running.",
+    "no_silent_new_production_rail": true,
+    "ancestor_preservation": true,
+    "future_manual_demotion_target": "Once each specialist workflow's non-deployment duties are individually audited, its automatic canonical deploy capability may be demoted to manual/specialist-only without deleting its history."
+  },
+  "laws": [
+    "ONE_CANONICAL_PUBLIC_DOOR",
+    "ONE_FORWARD_CANONICAL_PRODUCTION_RAIL",
+    "SPECIALIST_RAIL_NOT_PUBLIC_AUTHORITY",
+    "MESH_NOT_MERGE",
+    "NO_DING_NO_CLAIM",
+    "ANCESTOR_HISTORY_REMAINS_IN_GIT"
+  ]
+}

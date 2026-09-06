@@ -1,0 +1,55 @@
+name: Estate Production Rail Arbiter v1
+
+on:
+  workflow_run:
+    workflows:
+      - "Deploy Canonical Cloudflare Estate"
+      - "Public Route Repair Wave 01 Final Seal"
+      - "Public Route Repair Wave 01"
+      - "Deploy Pass 14 Closure-Synced Lyrics House"
+      - "Deploy Estate Head v0.2.1 to Cloudflare"
+      - "Deploy Android-Safe JM Estate Route Repair"
+      - "Deploy Recent Convergence to Canonical Cloudflare Estate"
+      - "Deploy Money Menu Public Contact v1.2"
+      - "Deploy Money Menu Public Contact v1.2 Final"
+      - "Deploy Live-Preserving Cloudflare Estate"
+      - "Deploy Authoritative Public JM Estate to Cloudflare"
+      - "Deploy Classification-Integrity Cloudflare Estate"
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: jm-estate-production-rail-arbiter-v1
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  reassert-canonical-forward-rail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Explain authority boundary
+        run: |
+          echo "Legacy specialist workflow completed: ${{ github.event.workflow_run.name || 'manual arbiter run' }}"
+          echo "Canonical forward production authority: Deploy Estate Sovereign Integrated v1"
+          echo "This arbiter does not delete or rewrite legacy workflow history."
+
+      - name: Dispatch canonical production rail unless already active
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="${GITHUB_REPOSITORY}"
+          workflow="deploy-estate-sovereign-integrated-v1.yml"
+          in_progress="$(gh api "repos/${repo}/actions/workflows/${workflow}/runs?status=in_progress&per_page=1" --jq '.total_count')"
+          queued="$(gh api "repos/${repo}/actions/workflows/${workflow}/runs?status=queued&per_page=1" --jq '.total_count')"
+          if [ "$in_progress" -gt 0 ] || [ "$queued" -gt 0 ]; then
+            echo "Canonical production rail already active; no duplicate dispatch."
+            exit 0
+          fi
+          gh api --method POST "repos/${repo}/actions/workflows/${workflow}/dispatches" -f ref=main
+          echo "Canonical forward production rail dispatched."

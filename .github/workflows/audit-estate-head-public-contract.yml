@@ -15,6 +15,7 @@ on:
       - "registry/estate-gap-governance-breach-v0.2.json"
       - "registry/estate-head-games-beyond-canonical-v0.2.json"
       - "navigator/stringline.json"
+      - ".github/workflows/audit-estate-head-public-contract.yml"
 
 permissions:
   contents: read
@@ -41,10 +42,11 @@ jobs:
           annex=json.loads(Path('registry/estate-head-games-beyond-canonical-v0.2.json').read_text())
           gaps=json.loads(Path('registry/estate-gap-governance-breach-v0.2.json').read_text())
 
-          if current.get('current_public_subset_version')!='v0.2.1':
-              errors.append('Current Estate Head public contract is not v0.2.1')
+          version=current.get('current_public_subset_version')
+          if version not in {'v0.3.0','v0.3.1'}:
+              errors.append(f'Current Estate Head public contract has unsupported current version: {version!r}')
           if current.get('body_count')!=61:
-              errors.append('Estate Head v0.2.1 body count drift')
+              errors.append('Estate Head governed body count drift')
           if current.get('project_head_count')!=11:
               errors.append('Project Head count drift')
 
@@ -69,8 +71,16 @@ jobs:
           pipeline=current.get('source_authority_pipeline',{})
           if pipeline.get('stages')!=6 or pipeline.get('owner_gate')!='MOUNTED':
               errors.append('Source-authority pipeline contract weakened')
-          if current.get('deployment_state') not in {'PUBLIC_CONSUMPTION_NEXT','PUBLIC_CONSUMED'}:
-              errors.append('Unknown public deployment state')
+          allowed_deployment_states={
+              'PUBLIC_CONSUMPTION_NEXT',
+              'PUBLIC_CONSUMED',
+              'PUBLIC_ROUTE_REPAIR_WAVE_01_CANDIDATE_DEPLOYMENT',
+          }
+          if current.get('deployment_state') not in allowed_deployment_states:
+              errors.append(f"Unknown public deployment state: {current.get('deployment_state')!r}")
+
+          if version=='v0.3.1' and current.get('public_route_repair_wave_01',{}).get('status')!='SOURCE_REPAIRED_LIVE_PROOF_PENDING':
+              errors.append('v0.3.1 public-route repair boundary is missing')
 
           forbidden={'owner_mount','owner_registry_sha256','private_source_paths','owner_notes','raw_gap_evidence'}
           if forbidden & set(current):
@@ -79,5 +89,5 @@ jobs:
           if errors:
               print('\n'.join('ERROR: '+e for e in errors))
               raise SystemExit(1)
-          print('Estate Head public contract PASS: v0.2.1; 61 bodies; 56 gaps; 8 Games&Beyond bodies; six-stage owner gate mounted.')
+          print(f'Estate Head public contract PASS: {version}; 61 bodies; 56 gaps; 8 Games&Beyond bodies; six-stage owner gate mounted; deployment={current.get("deployment_state")}.')
           PY

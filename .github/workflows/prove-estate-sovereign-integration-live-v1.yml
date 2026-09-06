@@ -6,11 +6,13 @@ on:
     paths:
       - "governance/estate-integration/probe_live_integration_v1.mjs"
       - ".github/workflows/prove-estate-sovereign-integration-live-v1.yml"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
   push:
     branches: [main]
     paths:
       - "governance/estate-integration/probe_live_integration_v1.mjs"
       - ".github/workflows/prove-estate-sovereign-integration-live-v1.yml"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
   workflow_dispatch:
 
 permissions:
@@ -25,7 +27,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Probe canonical Estate, deployment aliases and Navigator public MCP
+      - name: Pre-merge diagnostic of currently standing live system
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set +e
+          node governance/estate-integration/probe_live_integration_v1.mjs
+          rc=$?
+          echo "Pre-merge live diagnostic exit=$rc; post-merge deployment is the strict gate."
+          exit 0
+      - name: Strict post-merge live proof
+        if: ${{ github.event_name != 'pull_request' }}
         run: node governance/estate-integration/probe_live_integration_v1.mjs
       - uses: actions/upload-artifact@v4
         if: always()

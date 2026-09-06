@@ -1,3 +1,4 @@
+// Canonical live proof v1 — intentional rerun trigger after the production deployment race settled.
 import fs from 'node:fs';
 
 const estateHosts = [

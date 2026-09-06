@@ -1,4 +1,4 @@
-// Canonical live proof v1 — intentional rerun trigger after the production deployment race settled.
+// Canonical live proof v1 — current authority markers, not stale deployment markers.
 import fs from 'node:fs';
 
 const estateHosts = [
@@ -16,7 +16,7 @@ const estateRoutes = [
   ['integration','/navigator/estate-integration/','One Estate.'],
   ['registry','/navigator/estate-integration/public-registry.json','JM.Estate.PublicNervousSystem/1'],
   ['apps','/apps/','NON-GAME APPS HOUSE'],
-  ['theory','/theory/','Human Pattern Calibration'],
+  ['theory','/theory/','JM Theory Multihub v0.20.1'],
   ['lyrics','/lyrics/','data-jm-estate-integration="v1"'],
   ['recovery','/recovery/','data-jm-estate-integration="v1"'],
 ];
@@ -38,13 +38,7 @@ async function rpc(base,id,method,params={}){
   }catch(e){return {ok:false,status:0,error:String(e?.message||e)}}
 }
 
-const result={
-  schema:'JM.Estate.LiveIntegrationProbe/1',
-  at:new Date().toISOString(),
-  estate:{},
-  mcp:{},
-  pass:false,
-};
+const result={schema:'JM.Estate.LiveIntegrationProbe/1',at:new Date().toISOString(),estate:{},mcp:{},pass:false};
 
 for(const host of estateHosts){
   const rows=[];

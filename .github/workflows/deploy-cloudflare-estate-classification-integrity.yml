@@ -1,17 +1,8 @@
 name: Deploy Classification-Integrity Cloudflare Estate
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "apps/**"
-      - "navigator/**"
-      - "registry/estate-classification-authority-v1.0.json"
-      - "registry/estate-classification-integrity-receipt-v1.0.json"
-      - "registry/portal-engine-access-line-authority.json"
-      - "governance/verify_estate_classification.py"
-      - ".github/workflows/deploy-cloudflare-estate-classification-integrity.yml"
   workflow_dispatch:
 
 concurrency:

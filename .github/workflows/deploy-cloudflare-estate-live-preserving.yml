@@ -1,16 +1,8 @@
 name: Deploy Live-Preserving Cloudflare Estate
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "apps/**"
-      - "navigator/**"
-      - "lyrics/**"
-      - "recovery/**"
-      - "registry/jm3232-navigator.json"
-      - ".github/workflows/deploy-cloudflare-estate-live-preserving.yml"
   workflow_dispatch:
 
 concurrency:

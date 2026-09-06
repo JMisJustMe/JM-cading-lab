@@ -1,0 +1,64 @@
+name: Apply Estate Sovereign Integration v1
+
+on:
+  push:
+    branches:
+      - agent/estate-sovereign-integration-v1
+    paths:
+      - "navigator/estate-integration/**"
+      - "governance/estate-integration/**"
+      - ".github/workflows/apply-estate-sovereign-integration-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: estate-sovereign-integration-v1
+  cancel-in-progress: false
+
+jobs:
+  apply-and-prove:
+    if: ${{ !contains(github.event.head_commit.message || '', '[integration-apply]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out integration descendant
+        uses: actions/checkout@v6
+        with:
+          ref: agent/estate-sovereign-integration-v1
+          fetch-depth: 0
+
+      - name: Apply idempotent bridge to current living surfaces
+        run: python3 governance/estate-integration/apply_sovereign_integration_v1.py
+
+      - name: Verify integration contract
+        run: |
+          set -euo pipefail
+          python3 governance/estate-integration/verify_sovereign_integration_v1.py
+          node --check navigator/estate-integration/bridge.js
+          python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
+          python3 -m json.tool navigator/stringline.json >/dev/null
+          python3 -m json.tool registry/jm3232-navigator.json >/dev/null
+
+      - name: Commit applied descendant only when bytes changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM Estate Integration Rail"
+          git config user.email "actions@users.noreply.github.com"
+          git add \
+            navigator/index.html \
+            navigator/stringline.json \
+            navigator/estate-integration \
+            apps/index.html \
+            recovery/index.html \
+            lyrics/index.html \
+            registry/jm3232-navigator.json \
+            estate-integration/APPLY_RECEIPT.json
+          if git diff --cached --quiet; then
+            echo "Integration already applied; no commit required."
+            exit 0
+          fi
+          git commit -m "Apply live Estate integration bridge [integration-apply]"
+          git push origin HEAD:agent/estate-sovereign-integration-v1

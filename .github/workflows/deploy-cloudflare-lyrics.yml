@@ -1,12 +1,8 @@
 name: Deploy Pass 14 Closure-Synced Lyrics House
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "lyrics/**"
-      - ".github/workflows/deploy-cloudflare-lyrics.yml"
   workflow_dispatch:
 
 concurrency:

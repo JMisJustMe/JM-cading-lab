@@ -1,21 +1,8 @@
 name: Public Route Repair Wave 01 Final Seal
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/public-route-repair-wave-01-final.yml"
-      - "governance/assemble_public_route_wave_01.sh"
-      - "governance/verify_public_route_wave_01.sh"
-      - "governance/finalize_public_route_wave_01.py"
-      - "governance/cdp_theory_wave01_probe.mjs"
-      - "estate-head-public-consumer.js"
-      - "theory/index.html"
-      - "theory/source-body-integrity-v12.js"
-      - "theory/data/v0_4/**"
-      - "theory/BODY_STANDALONES/10_THEOVERTIME_APPROACH_MODEL.md"
-      - "registry/theovertime-record-10-source-restoration-wave01.json"
   workflow_dispatch:
 
 concurrency:

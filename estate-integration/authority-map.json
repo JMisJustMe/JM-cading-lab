@@ -1,0 +1,122 @@
+{
+  "schema": "JM.Estate.SovereignIntegration/1",
+  "integration_version": "v1",
+  "status": "WORKING_INTEGRATION_DESCENDANT",
+  "canonical_public_root": "https://jmisjustme-estate.pages.dev/",
+  "laws": [
+    "ACCESS_DUPLICATE != AUTHORITY_DUPLICATE",
+    "MESH != MERGE",
+    "PUBLIC_ROUTE != ROOT_BODY",
+    "CARRIER != BODY",
+    "NO_DING_NO_CLAIM",
+    "DESCENDANTS_SHOULD_PRESERVE_CANONICAL_DOORS_WHERE_POSSIBLE"
+  ],
+  "authorities": [
+    {
+      "id": "whole-estate-control",
+      "name": "JM ESTATE Global x Local Recursive Organisation Reconciliation v2.0",
+      "role": "WHOLE_ESTATE_CONTROL_AND_SEATING_AUTHORITY",
+      "state": "FLAZ_COMPLETE",
+      "public": false
+    },
+    {
+      "id": "living-estate-owner",
+      "name": "JMISJUSTME Living Estate Owner Unified v1.11.1",
+      "role": "PRIVATE_LOGICAL_OWNER_SOURCE_AUTHORITY",
+      "state": "CURRENT_OWNER_SOURCE_BODY",
+      "public": false
+    },
+    {
+      "id": "canonical-public-estate",
+      "name": "JMISJUSTME The Living Estate",
+      "role": "INDEPENDENT_PRIMARY_ESTATE_DOOR",
+      "state": "PUBLIC_CANONICAL_ESTATE_DOOR",
+      "version": "v1.14.0-CF4",
+      "url": "https://jmisjustme-estate.pages.dev/",
+      "public": true
+    },
+    {
+      "id": "recovery-house",
+      "name": "Recovery House",
+      "role": "PUBLIC_RECOVERY_ROUTE",
+      "state": "PUBLIC",
+      "url": "https://jmisjustme-estate.pages.dev/recovery/",
+      "public": true
+    },
+    {
+      "id": "freestanding-website",
+      "name": "JMISJUSTME Independent Website Current Estate Convergence",
+      "role": "FREESTANDING_SOVEREIGN_WEBSITE_HEAD",
+      "state": "V1_5_H1_PUBLIC_DING",
+      "url": "https://jmisjustme.xo.je/",
+      "public": true
+    },
+    {
+      "id": "living-multihub",
+      "name": "JM Living MultiHub v6.0A",
+      "role": "CURRENT_WEB_SOURCE_NAVIGATION_HEAD",
+      "state": "WEB_SOURCE_GATE_CLOSED_ANDROID_RELEASE_GATE_OPEN",
+      "public": true
+    },
+    {
+      "id": "unified-browser",
+      "name": "JM3232 Unified Browser v1.1.2 Opaque-Host Continuity",
+      "role": "OWNER_BROWSER_AND_DEVICE_CONTINUITY_BODY",
+      "state": "WORKING_MOUNTED_NOT_FROZEN",
+      "public": false
+    },
+    {
+      "id": "navigator-source",
+      "name": "JM3232 Navigator Browser Bridge v0.1",
+      "role": "NAVIGATOR_CANONICAL_SOURCE_AUTHORITY",
+      "state": "PUBLISHED_PRESERVED",
+      "public": false
+    },
+    {
+      "id": "navigator-owner-live",
+      "name": "JM3232 Navigator owner/live MCP descendant",
+      "role": "OWNER_MUTABLE_MCP_RUNTIME",
+      "state": "LIVE_HTTPS_PROVEN_SEPARATE_FROM_PUBLIC_PLUGIN",
+      "url": "https://navigator-live-contact.jm-inline-contact-probe.pages.dev/mcp",
+      "public": false
+    },
+    {
+      "id": "navigator-public-plugin",
+      "name": "JM3232 Navigator public OpenAI descendant",
+      "role": "PUBLIC_READ_ONLY_MCP_SURFACE",
+      "state": "DOMAIN_VERIFIED_SUBMISSION_NOT_CLAIMED_COMPLETE",
+      "url": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp",
+      "public": true,
+      "tool_count": 5
+    },
+    {
+      "id": "inline-contact",
+      "name": "JM Inline Contact",
+      "role": "IN_CHATGPT_INTERACTIVE_CONTACT_BODY",
+      "state": "THIRD_DING_PROVED",
+      "public": false
+    },
+    {
+      "id": "singular-link-registry",
+      "name": "JM Singular Link MultiHub Registry",
+      "role": "CANONICAL_DOOR_AND_MULTI_DESTINATION_ROUTING_GOVERNANCE",
+      "state": "WORKING_CANON_DONOR",
+      "public": false
+    },
+    {
+      "id": "github-source-corridor",
+      "name": "JMisJustMe/JM-cading-lab",
+      "role": "PUBLIC_SOURCE_VERSION_RECOVERY_CORRIDOR",
+      "state": "CONNECTED",
+      "url": "https://github.com/JMisJustMe/JM-cading-lab",
+      "public": true
+    }
+  ],
+  "integration_rules": {
+    "public_reads": "May expose only public-safe route and status metadata.",
+    "owner_writes": "Remain behind owner/private capability boundaries.",
+    "navigator_reconciliation": "Port unique PR #184 live-contact/submission capability forward onto current main; do not merge the stale branch wholesale.",
+    "canonical_door": "Do not create a new public root merely because a descendant advances.",
+    "proof": "Deployment, review, listing, owner contact and Ding states remain separately earned."
+  }
+}

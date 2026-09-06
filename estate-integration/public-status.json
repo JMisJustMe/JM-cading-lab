@@ -1,0 +1,18 @@
+{
+  "schema": "JM.Estate.PublicIntegrationStatus/1",
+  "canonical_root": "https://jmisjustme-estate.pages.dev/",
+  "routes": {
+    "estate": "https://jmisjustme-estate.pages.dev/",
+    "recovery": "https://jmisjustme-estate.pages.dev/recovery/",
+    "freestanding_website": "https://jmisjustme.xo.je/",
+    "source_corridor": "https://github.com/JMisJustMe/JM-cading-lab",
+    "navigator_public_mcp": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp"
+  },
+  "separations": {
+    "private_owner_body_public": false,
+    "navigator_owner_write_surface_public": false,
+    "inline_contact_substitutable_by_link": false,
+    "github_is_estate_front_door": false
+  },
+  "status": "INTEGRATION_BRANCH_ACTIVE_NOT_YET_DEPLOYMENT_PROOF"
+}

@@ -1,9 +1,13 @@
 name: Prove Estate Sovereign Integration Live v1
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "governance/estate-integration/probe_live_integration_v1.mjs"
+      - ".github/workflows/prove-estate-sovereign-integration-live-v1.yml"
   push:
-    branches:
-      - agent/estate-integration-live-proof-v1
+    branches: [main]
     paths:
       - "governance/estate-integration/probe_live_integration_v1.mjs"
       - ".github/workflows/prove-estate-sovereign-integration-live-v1.yml"

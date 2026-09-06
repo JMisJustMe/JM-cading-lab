@@ -1,10 +1,8 @@
 name: Deploy Money Menu Public Contact v1.2
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/deploy-money-menu-public-contact-v1-2.yml"
   workflow_dispatch:
 
 concurrency:

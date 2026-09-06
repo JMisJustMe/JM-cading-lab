@@ -1,0 +1,135 @@
+{
+  "schema": "JM.Estate.ProductionRailAuthority/1.1",
+  "version": "v1.1-manual-specialist-demotion",
+  "status": "COMPLETE_12_OF_12_LEGACY_SPECIALIST_RAILS_MANUAL_ONLY",
+  "ancestor": "registry/estate-production-rail-authority-v1.0.json",
+  "demotion_base_commit": "579a842f0f121a4fb70d7b30955ea61e0709fd76",
+  "canonical_public_project": "jmisjustme-estate",
+  "canonical_public_root": "https://jmisjustme-estate.pages.dev/",
+  "canonical_production_workflow": {
+    "path": ".github/workflows/deploy-estate-sovereign-integrated-v1.yml",
+    "name": "Deploy Estate Sovereign Integrated v1",
+    "role": "SOLE_FORWARD_CANONICAL_ASSEMBLY_DEPLOY_AND_LIVE_PROOF_RAIL",
+    "automatic_production_trigger": true,
+    "source_commit_first_live_pass": "ce035c01c7f7699cae8038d2ecf4a72e18a26b83",
+    "first_live_pass_run": "34005367627"
+  },
+  "legacy_specialist_workflows": [
+    {
+      "name": "Deploy Canonical Cloudflare Estate",
+      "path": ".github/workflows/deploy-cloudflare-estate.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Public Route Repair Wave 01 Final Seal",
+      "path": ".github/workflows/public-route-repair-wave-01-final.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Public Route Repair Wave 01",
+      "path": ".github/workflows/public-route-repair-wave-01.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Pass 14 Closure-Synced Lyrics House",
+      "path": ".github/workflows/deploy-cloudflare-lyrics.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Estate Head v0.2.1 to Cloudflare",
+      "path": ".github/workflows/deploy-cloudflare-estate-head-v021.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Android-Safe JM Estate Route Repair",
+      "path": ".github/workflows/deploy-cloudflare-route-repair.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Recent Convergence to Canonical Cloudflare Estate",
+      "path": ".github/workflows/deploy-cloudflare-recent-convergence.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Money Menu Public Contact v1.2",
+      "path": ".github/workflows/deploy-money-menu-public-contact-v1-2.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Money Menu Public Contact v1.2 Final",
+      "path": ".github/workflows/deploy-money-menu-public-contact-v1-2-final.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Live-Preserving Cloudflare Estate",
+      "path": ".github/workflows/deploy-cloudflare-estate-live-preserving.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Authoritative Public JM Estate to Cloudflare",
+      "path": ".github/workflows/deploy-cloudflare-authoritative-public-source.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    },
+    {
+      "name": "Deploy Classification-Integrity Cloudflare Estate",
+      "path": ".github/workflows/deploy-cloudflare-estate-classification-integrity.yml",
+      "trigger_mode": "WORKFLOW_DISPATCH_ONLY",
+      "automatic_production_trigger": false,
+      "retained_manual_specialist_capability": true,
+      "ancestor_history_preserved": true
+    }
+  ],
+  "governance": {
+    "manual_demotion_complete": true,
+    "manual_demotion_count": 12,
+    "rule": "Legacy specialist rails retain manual recovery/proof capability but cannot auto-deploy from repository pushes.",
+    "reassertion": "Completion of any manually invoked listed legacy specialist workflow is still observed by the arbiter, which re-dispatches the canonical forward rail unless it is already queued or running.",
+    "arbiter_after_manual_run": true,
+    "no_silent_new_production_rail": true,
+    "ancestor_preservation": true,
+    "canonical_door_changed": false,
+    "private_owner_capability_changed": false
+  },
+  "laws": [
+    "ONE_CANONICAL_PUBLIC_DOOR",
+    "ONE_FORWARD_CANONICAL_PRODUCTION_RAIL",
+    "SPECIALIST_RAIL_MANUAL_ONLY",
+    "SPECIALIST_RAIL_NOT_PUBLIC_AUTHORITY",
+    "MESH_NOT_MERGE",
+    "NO_DING_NO_CLAIM",
+    "ANCESTOR_HISTORY_REMAINS_IN_GIT"
+  ]
+}

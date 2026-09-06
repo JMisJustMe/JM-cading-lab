@@ -1,10 +1,8 @@
 name: Deploy Recent Convergence to Canonical Cloudflare Estate
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/deploy-cloudflare-recent-convergence.yml"
   workflow_dispatch:
 
 concurrency:

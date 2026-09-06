@@ -1,41 +1,9 @@
 name: Deploy Authoritative Public JM Estate to Cloudflare
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/deploy-cloudflare-authoritative-public-source.yml"
-      - "index.html"
-      - "estate-*.js"
-      - "estate*.css"
-      - "author-home-door.js"
-      - "manifest.webmanifest"
-      - "icon.svg"
-      - "sw.js"
-      - "robots.txt"
-      - "sitemap.xml"
-      - "404.html"
-      - "apps/**"
-      - "author/**"
-      - "coding-estate/**"
-      - "earn-now/**"
-      - "estate/**"
-      - "fresh-app-lab/**"
-      - "games-beyond/**"
-      - "lyrics/**"
-      - "money-menu/**"
-      - "navigator/**"
-      - "recent/**"
-      - "recovery/**"
-      - "shims-reader/**"
-      - "theory/**"
-      - "registry/estate-map.json"
-      - "registry/estate-head-public-current.json"
-      - "registry/theory-wing.json"
-      - "registry/lyrics-house.json"
-      - "registry/money-menu-publication-receipt-v1.2.json"
-      - "registry/public-release-current.json"
 
 concurrency:
   group: jmisjustme-estate-production

@@ -1,14 +1,9 @@
 # Settled-state route: checksum-segmented carrier + structural Lyrics House proof
 name: Deploy Estate Head v0.2.1 to Cloudflare
 
+# Legacy specialist rail retained for manual recovery/proof only.
+# Automatic production authority belongs to Deploy Estate Sovereign Integrated v1.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "estate-head-public/**"
-      - "scripts/deploy_estate_head_public.py"
-      - "scripts/deploy_estate_head_public_resilient.py"
-      - ".github/workflows/deploy-cloudflare-estate-head-v021.yml"
   workflow_dispatch:
 
 concurrency:

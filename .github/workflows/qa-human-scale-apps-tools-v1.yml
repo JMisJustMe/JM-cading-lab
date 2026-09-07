@@ -1,0 +1,63 @@
+name: QA Human-Scale Apps Tools v1
+
+on:
+  push:
+    paths:
+      - 'governance/human-scale/**'
+      - 'estate-publication/human-scale-apps-tools/**'
+      - '.github/workflows/qa-human-scale-apps-tools-v1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python graft pipeline syntax
+        run: python -m py_compile governance/human-scale/propagate_human_scale_v1_0.py
+      - name: Shared organ JavaScript syntax
+        run: node --check governance/human-scale/JM_HUMAN_SCALE_INTERACTION_ORGAN_v1_0.js
+      - name: Registry and descendant integrity
+        shell: python
+        run: |
+          from pathlib import Path
+          import json, re, sys
+          root=Path('.')
+          errors=[]
+          required=[
+            root/'governance/human-scale/JM_HUMAN_SCALE_INTERACTION_STANDARD_v1_0.md',
+            root/'governance/human-scale/JM_HUMAN_SCALE_INTERACTION_ORGAN_v1_0.js',
+            root/'governance/human-scale/propagate_human_scale_v1_0.py',
+            root/'estate-publication/human-scale-apps-tools/JM_HUMAN_SCALE_PROPAGATION_REGISTRY_v1_0.json',
+            root/'estate-publication/human-scale-apps-tools/HUMAN_SCALE_PROPAGATION_DELTA_v1_0_1.json',
+            root/'estate-publication/human-scale-apps-tools/index.html',
+          ]
+          for p in required:
+            if not p.exists(): errors.append(f'MISSING {p}')
+          for p in required:
+            if p.suffix=='.json' and p.exists():
+              try: json.loads(p.read_text(encoding='utf-8'))
+              except Exception as e: errors.append(f'JSON {p}: {e}')
+          wave=sorted((root/'estate-publication/human-scale-apps-tools/wave1').glob('*_HUMAN_SCALE_v1_0_DESCENDANT.html'))
+          if len(wave)!=5: errors.append(f'EXPECTED 5 Wave1 descendants, found {len(wave)}')
+          for p in wave:
+            t=p.read_text(encoding='utf-8')
+            checks={
+              'viewport':'name="viewport"' in t,
+              'config':'JM_HUMAN_SCALE_CONFIG' in t,
+              'organ':'JM_HUMAN_SCALE_INTERACTION_ORGAN_v1_0.js' in t,
+              'owner_boundary':'OWNER CONTACT OPEN' in t,
+              'body_close':'</body>' in t.lower(),
+              'html_close':'</html>' in t.lower(),
+              'no_external_http': not bool(re.search(r'(?:src|href)=["\']https?://',t,re.I)),
+            }
+            for k,v in checks.items():
+              if not v: errors.append(f'{p}: {k}=FAIL')
+          delta=json.loads((root/'estate-publication/human-scale-apps-tools/HUMAN_SCALE_PROPAGATION_DELTA_v1_0_1.json').read_text())
+          if len(delta.get('materializedNow',[]))!=5: errors.append('delta materializedNow != 5')
+          if errors:
+            print('\n'.join(errors)); sys.exit(1)
+          print(f'PASS: {len(wave)} materialized Wave1 descendants + shared organ + registry/delta/control door')

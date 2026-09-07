@@ -1,0 +1,15 @@
+{
+  "schema": "jm.estate.perfect-polish-qa/1.0",
+  "date": "2026-09-07",
+  "docxPages": 8,
+  "pdfPages": 8,
+  "docxVisualQA": "PASS_8_OF_8",
+  "pdfVisualQA": "PASS_8_OF_8",
+  "accessibility": {
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "knownVisualDefects": 0,
+  "note": "One unsupported arrow glyph was found during the first render, replaced with ASCII phone-laptop wording, then the final DOCX/PDF were re-rendered and re-inspected. Table header semantics were also repaired before final accessibility closure."
+}

@@ -1,5 +1,6 @@
 /* JM APPS & TOOLS SHARED PACKET SPINE v0.1
  * Capability convergence above the 21 strengthened donors.
+ * THREADWELL donor law: the user carries continuity; the device contributes capability; the interface contributes form.
  * PRESERVE THE PARTS. ADVANCE THE WHOLE.
  */
 (()=>{
@@ -24,6 +25,15 @@
   const stateKey=(env)=>`jm.apps.tools.env.${env}.v1`;
   const loadState=(env,fallback={})=>safeParse(localStorage.getItem(stateKey(env)),fallback)||fallback;
   const saveState=(env,state)=>{localStorage.setItem(stateKey(env),JSON.stringify(state));return state};
+  const exportEnvironment=(env)=>({schema:'jm.apps.tools.portable-environment/1.0',environment:env,exported_at:now(),state:loadState(env,{}),packets:read()});
+  const importEnvironment=(env,obj)=>{
+    if(!obj||obj.schema!=='jm.apps.tools.portable-environment/1.0') throw new Error('Portable environment packet required');
+    if(obj.environment&&obj.environment!==env) throw new Error(`Packet belongs to ${obj.environment}`);
+    saveState(env,obj.state||{});
+    const importedPackets=importBus(obj.packets||[]);
+    return {state:loadState(env,{}),packets:importedPackets};
+  };
+  const readFile=async(file)=>JSON.parse(await file.text());
   const receipt=(source,action,status='ok',details={})=>emit('estate.receipt',source,{action,status,details},{class:'quiet-trace'});
-  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,download,loadState,saveState,receipt,uid,now};
+  window.JMAppsToolsSpine={BUS_KEY,read,send,packet,emit,clear,exportBus,importBus,download,loadState,saveState,exportEnvironment,importEnvironment,readFile,receipt,uid,now};
 })();

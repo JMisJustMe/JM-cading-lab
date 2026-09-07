@@ -1,23 +1,46 @@
 {
   "schema": "jm.apps-tools.capability-convergence/0.1",
   "date": "2026-09-07",
-  "status": "ASSISTANT_SIDE_INTEGRATED_ENVIRONMENTS_MATERIALIZED__OWNER_CONTACT_OPEN",
+  "status": "ASSISTANT_SIDE_INTEGRATED_ENVIRONMENTS_MATERIALIZED__PORTABLE_STATE_WIRED__OWNER_CONTACT_OPEN",
   "authority": "JM_ESTATE_ACTIVE_MAINTENANCE_PASS_2026_09_07_v0_5.md",
+  "structuralDonors": [
+    {
+      "body": "THREADWELL v0.2 — Apps & Tools Surface Convergence",
+      "role": "proved Apps & Tools convergence / portable-continuity / self-feeding production ecology donor",
+      "keepers": [
+        "The user carries continuity. The device contributes capability. The interface contributes form.",
+        "Apps & Tools = production ecology."
+      ],
+      "boundary": "THREADWELL remains its own frozen body. This convergence line inherits machinery/law, not identity."
+    },
+    {
+      "body": "JM Human-Scale Interaction Standard v1.0",
+      "role": "intention-first interaction and progressive-disclosure donor"
+    },
+    {
+      "body": "Apps & Tools Strengthening Programme v1.0",
+      "role": "21 strengthened capability donors + jm.packet/1.0 interchange floor"
+    }
+  ],
   "laws": [
     "CAPABILITIES MULTIPLY. FRONT DOORS DO NOT HAVE TO.",
     "PRESERVE THE PARTS. ADVANCE THE WHOLE.",
     "CAPABILITY INVENTORY != LAUNCHER INVENTORY.",
     "STANDALONE EXPORT FORM != PERMANENT PRODUCT BOUNDARY.",
     "THE BODY CARRIES THE COMPLEXITY. THE PERSON CARRIES THE INTENTION.",
+    "THE USER CARRIES CONTINUITY. THE DEVICE CONTRIBUTES CAPABILITY. THE INTERFACE CONTRIBUTES FORM.",
     "NO DING, NO CLAIM."
   ],
   "sharedSpine": {
     "packetSchema": "jm.packet/1.0",
+    "busSchema": "jm.apps.tools.bus/1.0",
+    "portableEnvironmentSchema": "jm.apps.tools.portable-environment/1.0",
     "busKey": "jm.apps.tools.shared.bus.v1",
     "runtime": "JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js",
     "environmentRuntime": "JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js",
     "statePattern": "jm.apps.tools.env.<environment>.v1",
-    "donorStateConventionObserved": "jm_complete_<organ>_v1"
+    "donorStateConventionObserved": "jm_complete_<organ>_v1",
+    "portableContinuity": ["export whole environment state + packet bus","import same environment with environment-ID gate","reject wrong-environment portable packet","preserve local state without requiring identical host"]
   },
   "frontDoor": "estate-publication/apps-tools-convergence/index.html",
   "environments": [
@@ -51,7 +74,7 @@
   "recoveryHolds": "The historical 20 Recovery Holds remain source-recovery conditions, not a mandatory 20-app build backlog.",
   "laptopBoundary": {
     "open": ["owner laptop interaction acceptance","phone-laptop live consequence","laptop browser/file lifecycle acceptance"],
-    "notRequiredForThisAssistantSideMaterialization": ["shared packet spine","four integrated environments","source/static QA","lineage registry"]
+    "notRequiredForThisAssistantSideMaterialization": ["shared packet spine","portable state carriage","four integrated environments","source/static QA","lineage registry"]
   },
   "nextAfterAssistantSideQA": "Owner contact should target the integrated/current environments actually chosen for use. Cloud/cross-device reach follows body readiness rather than preceding it.",
   "claimBoundary": "This registry records source-side convergence implementation. It is not an owner-device Ding, cross-device crown, deployment crown, or claim that every donor-specific capability has been physically accepted in the converged surfaces."

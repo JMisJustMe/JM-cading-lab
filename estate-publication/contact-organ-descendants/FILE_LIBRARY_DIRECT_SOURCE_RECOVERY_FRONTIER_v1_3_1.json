@@ -1,0 +1,55 @@
+{
+  "schema": "jm.estate.contact-organ-file-library-direct-source-frontier/1.3.1",
+  "date": "2026-09-07",
+  "inherits": "v1.3.0 direct-source frontier; no rewrite of contacted recovery history",
+  "status": "DIRECT_RAW_SOURCE_CARDS_RECONFIRMED__WRITABLE_CARRIER_HOP_OPEN",
+  "accounting": {
+    "totalRecipients": 28,
+    "materialized": 6,
+    "materializationOpen": 22,
+    "unresolved": 0
+  },
+  "newlyReconfirmedDirectSourceCards": [
+    {
+      "recipientId": "phone-librarian",
+      "file": "JM_ESTATE_LIBRARIAN_v2_1_ARCHIVE_LANTERN_EMBODIMENT_CANDIDATE.html",
+      "bytes": 31041,
+      "sha256": "0e0b5ec57bda6cbdf55f8727e4e5a1542232034908ec7381494dd2ab6ee05ffd",
+      "evidenceState": "DIRECT_FILE_LIBRARY_SOURCE_FILE_LOCATED",
+      "independentReceiptSupport": [
+        "JM_VISION_REMEDIATION_WAVE_02_RECEIPT_v1_0.json",
+        "JM_FULL_TOOL_ESTATE_BROWSER_CONTACT_QA_v1_2.json",
+        "JM_FULL_TOOL_ESTATE_REMEDIATION_CLOSEOUT_v1_0.json"
+      ],
+      "writableSourceSeat": "OPEN",
+      "reason": "The exact raw HTML is present as a File Library source object and independently carries the same frozen byte count/SHA. The present connector exposes the file for retrieval/inspection but does not hand its exact bytes into the writable repository/source-seat runtime."
+    },
+    {
+      "recipientId": "cross-continuity",
+      "file": "00_OPEN_FIRST_DEVICE_CONTINUITY_v1_1_7.html",
+      "bytes": 284399,
+      "sha256": "62b14ef3fafc208561ad493f383c8c6b3d0486b9f00c2ae8b4b816cd6f4c8e54",
+      "evidenceState": "DIRECT_FILE_LIBRARY_SOURCE_FILE_LOCATED__EMBEDDED_DONOR_ROUTE_STILL_VALID",
+      "independentReceiptSupport": [
+        "SHA256SUMS.txt",
+        "JM_HTML_BODY_DOCK_CURRENT_FIELD_KIT_MANIFEST.json",
+        "JM_HTML_BODY_DOCK_v1_0_BUILD_QA_RECEIPT.json"
+      ],
+      "writableSourceSeat": "OPEN",
+      "reason": "The exact current v1.1.7 HTML now resolves as a direct File Library source file in addition to the previously governed Body Dock sourceB64 recovery path. Full writable byte carriage is still required before a clean descendant is materialized."
+    }
+  ],
+  "strengtheningWaveSearch": {
+    "state": "EXACT_PACKAGE_IDENTITIES_AND_BYTE_COUNTS_CONFIRMED__INDIVIDUAL_WAVE2_3_4_HTML_BYTES_NOT_DIRECTLY_SURFACED",
+    "remainingStrengtheningTargets": 16,
+    "law": "DO NOT SUBSTITUTE OLDER SIMILARLY NAMED BODIES FOR THE 5-SEPTEMBER STRENGTHENING DESCENDANTS."
+  },
+  "nextExecutionOrder": [
+    "Acquire a writable exact-byte hop for phone-librarian; verify 31041 bytes + SHA 0e0b5e...05ffd; source-seat; apply existing Contact Organ / Human-Scale donor as a clean descendant.",
+    "Acquire a writable exact-byte hop for cross-continuity; verify 284399 bytes + SHA 62b14e...c8e54; source-seat; build the Human-Scale/Contact forward descendant without exposing numbered choreography.",
+    "Continue exact package-byte recovery for the 16 Wave 2-4 strengthening descendants; do not rebuild from titles or old antecedents.",
+    "Run owner laptop/cross-device consequence only when the required laptop is physically present."
+  ],
+  "law": "ACCESSIBLE SOURCE != WRITABLE SOURCE. DIRECT LOCATION EARNS RECOVERY AUTHORITY; EXACT BYTES + HASH EARN SOURCE SEAT.",
+  "claimBoundary": "This is a forward recovery frontier only. It adds no materialized descendant, APK build, install, owner-device contact or Ding."
+}

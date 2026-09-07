@@ -1,0 +1,62 @@
+name: QA Apps Tools Capability Convergence v0.1
+
+on:
+  push:
+    paths:
+      - 'estate-publication/apps-tools-convergence/**'
+      - 'governance/human-scale/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_ADDENDUM_v0_1.md'
+      - '.github/workflows/qa-apps-tools-capability-convergence-v0-1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Shared JavaScript syntax
+        run: |
+          node --check estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js
+          node --check estate-publication/apps-tools-convergence/JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js
+      - name: Environment integrity
+        shell: python
+        run: |
+          from pathlib import Path
+          import json,re,subprocess,tempfile,sys
+          root=Path('estate-publication/apps-tools-convergence')
+          errors=[]
+          envs=['evidence-governance','creation-publication','contact-practice','route-ftr']
+          required=[root/'index.html',root/'JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js',root/'JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js',root/'JM_CAPABILITY_ENVIRONMENT_v0_1.css',root/'JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json']+[root/e/'index.html' for e in envs]
+          for p in required:
+            if not p.exists(): errors.append(f'MISSING {p}')
+          try:
+            reg=json.loads((root/'JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_REGISTRY_v0_1.json').read_text())
+            if len(reg.get('environments',[]))!=4: errors.append('registry environment count != 4')
+            if reg.get('sharedSpine',{}).get('packetSchema')!='jm.packet/1.0': errors.append('packet schema drift')
+          except Exception as e: errors.append(f'registry JSON: {e}')
+          for e in envs:
+            p=root/e/'index.html'; t=p.read_text(encoding='utf-8') if p.exists() else ''
+            checks={
+              'viewport':'name="viewport"' in t,
+              'config':'JM_ENV_CONFIG' in t,
+              'spine':'JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js' in t,
+              'runtime':'JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js' in t,
+              'local_only':not bool(re.search(r'(?:src|href)=["\']https?://',t,re.I)),
+              'body_close':'</body>' in t.lower(),
+              'html_close':'</html>' in t.lower(),
+            }
+            for k,v in checks.items():
+              if not v: errors.append(f'{p}: {k}=FAIL')
+            for i,s in enumerate(re.findall(r'<script>(.*?)</script>',t,re.S|re.I)):
+              f=Path(tempfile.gettempdir())/f'jm_env_{e}_{i}.js'; f.write_text(s,encoding='utf-8')
+              r=subprocess.run(['node','--check',str(f)],capture_output=True,text=True)
+              if r.returncode: errors.append(f'{p}: inline script {i}: {r.stderr.strip()}')
+          front=(root/'index.html').read_text(encoding='utf-8') if (root/'index.html').exists() else ''
+          for e in envs:
+            if f'{e}/index.html' not in front: errors.append(f'front door missing {e}')
+          if 'CAPABILITIES MULTIPLY. FRONT DOORS DO NOT HAVE TO.' not in front: errors.append('front door keeper missing')
+          if errors:
+            print('\n'.join(errors)); sys.exit(1)
+          print('PASS: shared spine + four environments + local-only refs + config syntax + registry integrity')

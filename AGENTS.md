@@ -109,6 +109,27 @@ Rules:
 - Real-context proof means the actual target device/browser/files/inputs/lifecycle, not source inspection alone.
 - Existing apps/tools should be brought forward from their current authoritative state rather than restarted.
 
+## Apps + tools capability convergence — FRONT-DOOR REDUCTION
+
+Before turning a recovered app/tool capability into another owner-facing launcher, read:
+
+`governance/human-scale/JM_APPS_TOOLS_CAPABILITY_CONVERGENCE_ADDENDUM_v0_1.md`
+
+Current forward convergence source door:
+
+`estate-publication/apps-tools-convergence/index.html`
+
+Rules:
+- Treat the 21 strengthened Apps & Tools descendants as **capability inventory**, not 21 mandatory permanent front doors.
+- Preserve standalone descendants as donor/export/recovery bodies.
+- Reuse the existing `jm.packet/1.0` grammar and shared state conventions before inventing replacement plumbing.
+- Prefer coherent work environments/rooms where capabilities share a workflow or jurisdiction.
+- Restore or retain a separate app door only when independent authority, release, contact or use earns that boundary.
+- Recovery Holds remain source-authority conditions, not a mandatory app-development backlog.
+- Human-Scale interaction still governs the lived route inside each environment.
+- **CAPABILITIES MULTIPLY. FRONT DOORS DO NOT HAVE TO.**
+- **PRESERVE THE PARTS. ADVANCE THE WHOLE.**
+
 ## Quality floor
 
 A build is not complete merely because it functions. Preserve the Estate's visual quality standard, responsive fit, source lineage, proof receipts, recoverability, real-context proof, and owner-side acceptance boundary.

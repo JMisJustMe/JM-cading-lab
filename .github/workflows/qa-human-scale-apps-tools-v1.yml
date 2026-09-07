@@ -21,8 +21,9 @@ jobs:
       - name: Shared organ JavaScript syntax
         run: node --check governance/human-scale/JM_HUMAN_SCALE_INTERACTION_ORGAN_v1_0.js
       - name: Registry and descendant integrity
-        shell: python
+        shell: bash
         run: |
+          python - <<'PY'
           from pathlib import Path
           import json, re, sys
           root=Path('.')
@@ -56,8 +57,9 @@ jobs:
             }
             for k,v in checks.items():
               if not v: errors.append(f'{p}: {k}=FAIL')
-          delta=json.loads((root/'estate-publication/human-scale-apps-tools/HUMAN_SCALE_PROPAGATION_DELTA_v1_0_1.json').read_text())
+          delta=json.loads((root/'estate-publication/human-scale-apps-tools/HUMAN_SCALE_PROPAGATION_DELTA_v1_0_1.json').read_text(encoding='utf-8'))
           if len(delta.get('materializedNow',[]))!=5: errors.append('delta materializedNow != 5')
           if errors:
             print('\n'.join(errors)); sys.exit(1)
           print(f'PASS: {len(wave)} materialized Wave1 descendants + shared organ + registry/delta/control door')
+          PY

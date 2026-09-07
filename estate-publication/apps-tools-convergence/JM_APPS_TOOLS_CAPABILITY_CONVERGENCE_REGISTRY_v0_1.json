@@ -1,0 +1,58 @@
+{
+  "schema": "jm.apps-tools.capability-convergence/0.1",
+  "date": "2026-09-07",
+  "status": "ASSISTANT_SIDE_INTEGRATED_ENVIRONMENTS_MATERIALIZED__OWNER_CONTACT_OPEN",
+  "authority": "JM_ESTATE_ACTIVE_MAINTENANCE_PASS_2026_09_07_v0_5.md",
+  "laws": [
+    "CAPABILITIES MULTIPLY. FRONT DOORS DO NOT HAVE TO.",
+    "PRESERVE THE PARTS. ADVANCE THE WHOLE.",
+    "CAPABILITY INVENTORY != LAUNCHER INVENTORY.",
+    "STANDALONE EXPORT FORM != PERMANENT PRODUCT BOUNDARY.",
+    "THE BODY CARRIES THE COMPLEXITY. THE PERSON CARRIES THE INTENTION.",
+    "NO DING, NO CLAIM."
+  ],
+  "sharedSpine": {
+    "packetSchema": "jm.packet/1.0",
+    "busKey": "jm.apps.tools.shared.bus.v1",
+    "runtime": "JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js",
+    "environmentRuntime": "JM_CAPABILITY_ENVIRONMENT_RUNTIME_v0_1.js",
+    "statePattern": "jm.apps.tools.env.<environment>.v1",
+    "donorStateConventionObserved": "jm_complete_<organ>_v1"
+  },
+  "frontDoor": "estate-publication/apps-tools-convergence/index.html",
+  "environments": [
+    {
+      "id": "evidence-governance",
+      "path": "estate-publication/apps-tools-convergence/evidence-governance/index.html",
+      "route": "SOURCE -> EXTRACT -> CLASSIFY -> HANDLE -> RECEIPT -> KEEPER",
+      "primaryDonors": ["JM Gem Extraction App v0.1","JM FlowTalk Claim Checker v0.1","JM Truth Handling Toolkit v0.1","JM Receipt Generator v0.1","JM Active Keeper Dashboard v0.1"],
+      "crossGrafts": ["JM Collector Protocol App v0.1","JM Loose Notes Triage Tool v0.1"]
+    },
+    {
+      "id": "creation-publication",
+      "path": "estate-publication/apps-tools-convergence/creation-publication/index.html",
+      "route": "RE-ENTER -> COLLECT -> TRIAGE -> BUILD -> STAGE -> OUTPUT",
+      "primaryDonors": ["JM Action-First Re-Entry App v0.1","JM Collector Protocol App v0.1","JM Public Output Tool v0.1","JM Books / Manuscripts Builder v0.1","JM Loose Notes Triage Tool v0.1","JM The B Stage v0.1"]
+    },
+    {
+      "id": "contact-practice",
+      "path": "estate-publication/apps-tools-convergence/contact-practice/index.html",
+      "route": "CONTACT -> COMPARE -> PRACTISE -> RECOGNISE -> TEACH -> DEEPEN",
+      "primaryDonors": ["JM JumpMotion v0.1","JM Expectation Reality Gap Engine v0.1","JM Contact-Reactivation App v0.1","JM Environment-First Logic App v0.1","JM Thought-Route Teaching Tool v0.1"]
+    },
+    {
+      "id": "route-ftr",
+      "path": "estate-publication/apps-tools-convergence/route-ftr/index.html",
+      "route": "SENSE -> MAP -> TEST -> REMEMBER -> REINTERPRET INPUT",
+      "primaryDonors": ["JM RouteDeck v0.1","JM RouteSense v0.1","JM RouteVault v0.1","JM RouteWrite v0.1","JM Input Layer Editor v0.1"]
+    }
+  ],
+  "donorBoundary": "The 21 strengthened standalone descendants remain valid donor/export/recovery forms. Integrated environments are forward convergence bodies, not retroactive replacements or evidence that every donor-specific deep function has been physically owner-tested inside the new environment.",
+  "recoveryHolds": "The historical 20 Recovery Holds remain source-recovery conditions, not a mandatory 20-app build backlog.",
+  "laptopBoundary": {
+    "open": ["owner laptop interaction acceptance","phone-laptop live consequence","laptop browser/file lifecycle acceptance"],
+    "notRequiredForThisAssistantSideMaterialization": ["shared packet spine","four integrated environments","source/static QA","lineage registry"]
+  },
+  "nextAfterAssistantSideQA": "Owner contact should target the integrated/current environments actually chosen for use. Cloud/cross-device reach follows body readiness rather than preceding it.",
+  "claimBoundary": "This registry records source-side convergence implementation. It is not an owner-device Ding, cross-device crown, deployment crown, or claim that every donor-specific capability has been physically accepted in the converged surfaces."
+}

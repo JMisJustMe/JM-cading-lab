@@ -1,0 +1,48 @@
+name: Build JM File Grabber Visualang v0.4 Magic Return APK
+on:
+  push:
+    branches: ["build/file-grabber-visualang-v0-3"]
+    paths:
+      - "android/JMFileGrabberVisualang-v0.4-source.zip.b64"
+      - ".github/workflows/jm-file-grabber-visualang-apk.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "android/JMFileGrabberVisualang-v0.4-source.zip.b64"
+      - ".github/workflows/jm-file-grabber-visualang-apk.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+      - name: Decode exact source carrier
+        run: |
+          mkdir -p build-v04
+          base64 -d android/JMFileGrabberVisualang-v0.4-source.zip.b64 > build-v04/source.zip
+          unzip -q build-v04/source.zip -d build-v04
+      - name: Build debug APK
+        working-directory: build-v04/JM_FILE_GRABBER_VISUALANG_ANDROID_NATIVE_v0_4_MAGIC_RETURN_SOURCE
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Rename and checksum
+        run: |
+          mkdir -p dist
+          cp build-v04/JM_FILE_GRABBER_VISUALANG_ANDROID_NATIVE_v0_4_MAGIC_RETURN_SOURCE/app/build/outputs/apk/debug/app-debug.apk dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.apk
+          sha256sum dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.apk | tee dist/JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG.sha256
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_FILE_GRABBER_VISUALANG_v0_4_MAGIC_RETURN_DEBUG_APK
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 90

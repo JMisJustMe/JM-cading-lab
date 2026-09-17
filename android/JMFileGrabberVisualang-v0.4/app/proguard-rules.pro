@@ -1,0 +1,1 @@
+-keepclassmembers class com.jmisjustme.filegrabbervisualang.MainActivity$NativeBridge { @android.webkit.JavascriptInterface <methods>; }

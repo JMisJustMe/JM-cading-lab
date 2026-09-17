@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050911">
+<title>JM Living MultiHub v6.0A Field APK</title>
+<style>
+:root{color-scheme:dark;--bg:#03060b;--panel:#09111e;--panel2:#101c2e;--line:#2b405f;--ink:#f8f5ef;--muted:#9eb1c7;--gold:#e8bd65;--cyan:#6de5ff;--green:#79efb0;--red:#ff8c96;--nav:74px}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at 50% -15%,#37236499,transparent 34%),var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom));overflow-x:hidden}button,input,textarea{font:inherit;color:inherit}button{cursor:pointer}.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:12px 14px;background:#050911ee;border-bottom:1px solid var(--line);backdrop-filter:blur(14px)}.mark{display:grid;place-items:center;width:48px;height:48px;border:1px solid #9f793c;border-radius:16px;background:#211a0e;color:var(--gold);font-weight:1000}.brand{min-width:0}.brand strong,.brand small{display:block}.brand strong{font-size:1.05rem;letter-spacing:.04em}.brand small{color:var(--muted);font-size:.72rem}.bridge{margin-left:auto;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.7rem;white-space:nowrap}.bridge.live{color:var(--green);border-color:#3d785d}.wrap{width:min(100%,1080px);margin:auto;padding:14px}.view{display:none}.view.active{display:block}.card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#0b1422,#07101b);padding:16px;box-shadow:0 18px 50px #0005}.hero{padding:22px}.eyebrow{text-transform:uppercase;letter-spacing:.16em;color:var(--gold);font-size:.69rem;font-weight:900}.hero h1{margin:.35rem 0 .7rem;font-size:clamp(2.35rem,11vw,5rem);line-height:.92;letter-spacing:-.055em}.hero p,.muted{color:var(--muted);line-height:1.48}.keeper{margin:14px 0;padding:12px;border-left:4px solid var(--gold);background:#1a160d;border-radius:0 14px 14px 0}.actions{display:flex;flex-wrap:wrap;gap:9px}.btn{min-height:48px;border:1px solid var(--line);border-radius:16px;background:var(--panel2);padding:10px 14px;font-weight:900}.btn.primary{background:var(--gold);color:#171108;border-color:var(--gold)}.btn.cyan{border-color:#367387;color:var(--cyan)}.btn.red{border-color:#81454d;color:var(--red)}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.stat{padding:14px;border:1px solid var(--line);border-radius:20px;background:#08111e}.stat b,.stat span{display:block}.stat b{font-size:2rem}.stat span{color:var(--muted);font-size:.78rem}.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:22px 2px 10px}.sectionHead h2{margin:.25rem 0 0;font-size:1.6rem}.grid{display:grid;gap:10px}.route{width:100%;text-align:left;border:1px solid var(--line);border-radius:18px;background:#0b1626;padding:13px}.route b,.route span,.route small{display:block}.route b{margin:5px 0}.route span,.route small{color:var(--muted);font-size:.72rem}.tools{display:grid;gap:8px;margin-bottom:10px}.search,textarea{width:100%;border:1px solid var(--line);border-radius:16px;background:#030810;padding:12px;outline:none}.search:focus,textarea:focus{border-color:var(--gold)}textarea{min-height:270px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.8rem;line-height:1.45;resize:vertical}.reader{margin-top:10px}.reader h3{margin:.3rem 0}.line{padding:10px 0;border-bottom:1px solid #20324d}.line:last-child{border:0}.line b,.line span{display:block}.line span{color:var(--muted);font-size:.76rem}.fileInput{display:block;width:100%;padding:18px;border:1px dashed #557397;border-radius:18px;background:#08111e}.fileGrid{margin-top:10px}.codeGrid{display:grid;gap:10px}.output{min-height:230px;max-height:500px;overflow:auto;white-space:pre-wrap;border:1px solid var(--line);border-radius:18px;background:#02060a;padding:13px;color:#cbe8f1;font:12px/1.45 ui-monospace,SFMono-Regular,Consolas,monospace}.updateState{font-size:.9rem}.mobileNav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px 7px calc(7px + env(safe-area-inset-bottom));background:#050911f5;border-top:1px solid var(--line);backdrop-filter:blur(14px)}.mobileNav button{min-width:0;min-height:56px;border:1px solid transparent;border-radius:15px;background:transparent;color:var(--muted);font-size:.72rem;font-weight:900}.mobileNav button.active{background:#211a0e;color:var(--gold);border-color:#624d28}.toast{position:fixed;left:50%;bottom:calc(var(--nav) + 16px);z-index:50;translate:-50% 20px;opacity:0;pointer-events:none;max-width:min(90vw,520px);padding:12px 16px;border:1px solid var(--line);border-radius:999px;background:#111d2d;transition:.2s}.toast.show{translate:-50% 0;opacity:1}@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.codeGrid{grid-template-columns:1fr 1fr}.mobileNav{left:50%;right:auto;translate:-50%;width:min(720px,96vw);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0}}
+</style>
+</head>
+<body>
+<header class="top"><div class="mark">JM</div><div class="brand"><strong>JM LIVING MULTIHUB</strong><small>v6.0A · FIELD APK · current-head route</small></div><div id="bridge" class="bridge">browser carrier</div></header>
+<main class="wrap">
+<section class="view active" data-view="home">
+<article class="hero card"><div class="eyebrow">The Estate is the donor now</div><h1>Same living line.<br>Now installed.</h1><p>This field APK begins from the current Estate Head, the current Theory Multihub, the mounted chat-room registry, File Grabber contact, and actual JM <code>.cading</code> source. It is the Android proof limb of v6.0A—not a replacement for the full OneBody.</p><div class="keeper">Source → route → state → signal → output → trace → recovery → next action.</div><div class="actions"><button class="btn primary" data-url="https://jmisjustme-estate.pages.dev/">Open Living Estate</button><button class="btn" data-url="https://jmisjustme.github.io/JM-cading-lab/theory/">Open Theory v0.20.1</button><button class="btn cyan" data-go="cading">Run Cading</button></div></article>
+<div class="stats"><div class="stat"><b>77</b><span>Estate Head bodies</span></div><div class="stat"><b>42</b><span>mounted chat rooms</span></div><div class="stat"><b>300</b><span>Theory census routes</span></div><div class="stat"><b>6001</b><span>field version code</span></div></div>
+<div class="sectionHead"><div><div class="eyebrow">Current doors</div><h2>Existing houses—not blank tiles</h2></div></div>
+<div class="grid"><button class="route" data-url="https://jmisjustme.github.io/JM-cading-lab/theory/"><span>H02 · Current public body</span><b>JM Theory Multihub v0.20.1</b><small>17 full bodies · 42 rooms · 256 First Stage routes</small></button><button class="route" data-url="https://jmisjustme.github.io/JM-cading-lab/games-beyond/"><span>H04 · Sovereign house</span><b>Games &amp; Beyond</b><small>RouteOS / AmaCore and current playable lines</small></button><button class="route" data-url="https://jmisjustme-estate.pages.dev/apps/"><span>H05 · Apps &amp; Tools</span><b>Non-Game Apps House</b><small>File Grabber, Estate Librarian and operational bodies</small></button><button class="route" data-go="files"><span>Native Android contact</span><b>File Grabber Field Intake</b><small>Files, folders, SHA-256, receipt and restoration route</small></button></div>
+</section>
+
+<section class="view" data-view="rooms"><div class="sectionHead"><div><div class="eyebrow">Mounted ChatGPT rooms</div><h2>Titles are door handles</h2></div><span id="roomCount" class="muted">loading…</span></div><div class="tools"><input id="roomSearch" class="search" type="search" placeholder="Search rooms, roles, status, keeper…"></div><div id="rooms" class="grid"></div><article id="roomReader" class="reader card"><div class="eyebrow">Room reader</div><h3>Select a mounted room.</h3><p class="muted">The room’s role, current state, keeper and connected body remain distinct.</p></article></section>
+
+<section class="view" data-view="files"><div class="sectionHead"><div><div class="eyebrow">File Grabber</div><h2>Acquire. Hash. Retain.</h2></div></div><article class="card"><input id="files" class="fileInput" type="file" multiple><div class="actions" style="margin-top:10px"><button id="chooseFolder" class="btn primary">Choose Android folder</button><button id="exportFiles" class="btn">Export receipt</button><button id="clearFiles" class="btn red">Clear field</button></div><p class="muted">Browser file contact and native recursive folder contact remain separate routes. Neither overwrites the source.</p></article><div id="fileSummary" class="stats"></div><div id="fileRows" class="fileGrid card"><p class="muted">No current intake.</p></div></section>
+
+<section class="view" data-view="cading"><div class="sectionHead"><div><div class="eyebrow">Actual JM source contact</div><h2>Cading → Contact IR → TraceBox</h2></div></div><div class="actions" style="margin-bottom:10px"><button id="loadFuture" class="btn primary">JM SOURCE 04</button><button id="loadOwnmade" class="btn">OWNMADE v0.2</button><button id="runCading" class="btn cyan">Run route</button><button id="exportCading" class="btn">Export receipt</button></div><div class="codeGrid"><textarea id="cadingSource" spellcheck="false"></textarea><pre id="cadingOut" class="output">Ready.</pre></div></section>
+
+<section class="view" data-view="update"><div class="sectionHead"><div><div class="eyebrow">Update gate</div><h2>Check before replace</h2></div></div><article class="card updateState"><div class="line"><b>Installed body</b><span id="installed">6.0A-field / 6001</span></div><div class="line"><b>Signing boundary</b><span>This is the field/debug lineage for physical proof. Production automatic replacement is not crowned until one permanent private signing key is retained.</span></div><div class="line"><b>Update source</b><span>GitHub corridor may carry the manifest and APK. It does not become the sovereign identity.</span></div><div class="actions" style="margin-top:12px"><button id="checkUpdate" class="btn primary">Check update manifest</button><button id="exportTrace" class="btn">Export TraceBox</button></div></article><article id="updateResult" class="reader card"><p class="muted">No update check in this session.</p></article><div class="sectionHead"><div><div class="eyebrow">TraceBox</div><h2>Current session</h2></div></div><article id="traceRows" class="card"><p class="muted">No current receipts.</p></article></section>
+</main>
+<nav class="mobileNav" aria-label="MultiHub rooms"><button class="active" data-go="home">Home</button><button data-go="rooms">Rooms</button><button data-go="files">Grab</button><button data-go="cading">Cading</button><button data-go="update">Update</button></nav><div id="toast" class="toast"></div>
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const UPDATE_MANIFEST='https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/agent/jm-living-multihub-v6-0a-apk/apps/living-multihub/update/field-manifest.json';
+const FUTURE=`OWNMADE FUTURE COMPUTER 04
+STATUS = JM SOURCE-FIRST WORKING MACHINE GRAMMAR
+
+BOOT
+Power.contact {pre},
+RouteOS=Continuity,
+GlyphPlay=Field,
+GameForge=State,
+CodeHand=CadingCommand,
+TraceBox=ReceiptRecovery {post}.✓
+
+DUAL ENTRY
+Touch.field {pre},
+Tap=Route,
+Drag=ContactMovement,
+Hold=Inspect,
+Release=Output {post}.✓
+
+Command.line {pre},
+POWER,
+ROUTE,
+INSPECT,
+BUILD,
+TEST,
+NEXT,
+PULSE,
+FORGE,
+SAVE,
+RESTORE,
+STATUS,
+BOUNDARY,
+RECEIPT,
+RESET {post}.✓
+
+MODULE CONVERSION
+Other.function {pre},
+Need=Capability,
+Own.version {post}.✓
+
+COLD DING
+MOVE,
+CONTACT,
+MEMORY,
+SIGNAL,
+FORGE {post}.✓`;
+const OWNMADE=`OWNMADE — ECOSYSTEM EXTRACT SOURCE v0.2
+STATUS = WORKING JM SOURCE-FIRST GAME GRAMMAR
+
+Extract.Route {pre},
+RouteOS=ControlModeRouter,
+GlyphPlay=ContactField,
+GameForge=MovementFeel,
+CodeHand=FunctionRoute,
+TraceBox=Input_State_Ding_Recovery,
+Measure128=BoundedViewport,
+OWNMADE=CapabilityMirrorLaw {post}.✓
+
+CONTROL MODE
+TouchArena {pre},
+Tap=Route,
+Drag=DirectionAndMovement,
+Hold=PressureAndInspect,
+Release=Output,
+Own.contactInput {post}.✓
+
+HELPER MODE
+GestureHub {pre},
+Hold,
+Pulse,
+Inspect,
+FallbackSwitch,
+Own.helperInput {post}.✓
+
+FALLBACK MODE
+Visible8Way {pre},
+Optional=True,
+Primary=False,
+Own.recoveryInput {post}.✓
+
+FUNCTION CONVERSION
+Other.function {pre},
+Need=Capability,
+Own.version {post}.✓
+
+COLD DING
+Input,
+Contact,
+StateChange,
+VisibleFeedback,
+Trace,
+Recovery,
+Output {post}.✓`;
+const fallbackRooms=[
+{i:'room-001',t:'Coding Becomes Cold Ding',r:'PROOF / GOVERNANCE PROJECT ROOM',s:'ACTIVE / SOURCE-BUILD ROOM',k:'No Ding, no claim.'},
+{i:'room-006',t:'First Stage / Step Into / Out of the Jungle',r:'PROJECT TRUNK / RECOVERY ROOM',s:'FROZEN ANCESTOR + ACTIVE RE-ENTRY',k:'The jungle grows from the archive.'},
+{i:'room-008',t:'Personal Tarot Analysis — JMLogic / SHIMS Route Formula Room',r:'METHOD / ROUTE-READING FORMULA ROOM',s:'ACTIVE METHOD BODY / SOURCE EXAMPLE',k:'Route-reading, not fortune-telling.'},
+{i:'room-009',t:'JM Living Diagram & Motion Layer',r:'VISUAL RUNTIME / PROOF ROOM',s:'ACTIVE BUILD / TEST BODY',k:'The diagram carries the body; it does not replace it.'},
+{i:'room-012',t:'SIGNUANCES — App Build & Speech-Body Routing',r:'APP / SPEECH-BODY BUILD ROOM',s:'ACTIVE BUILD BODY',k:'Build the behaviour; preserve the speech-body source.'},
+{i:'room-013',t:'JM BIOHOUSE — THE LIVING SIGNAL',r:'BODY ARCHITECTURE / TOOL ROOM',s:'ACTIVE MAP / TOOL BODY',k:'Show routes through the body, not a replacement for the body.'},
+{i:'room-016',t:'Theory Hub Status',r:'GOVERNING THEORY-HUB CHAMBER',s:'AUTHORITATIVE BUILD SOURCE',k:'Fill the existing routes from their bodies; do not build another empty hub.'},
+{i:'room-019',t:'Body and Probability',r:'CONTINUATION / HUMAN-FIRST CORRECTION ROOM',s:'MOUNTED INTO BODY-PARTICIPATION ROUTE',k:'The body is the carrier; probability is one route through it.'},
+{i:'room-020',t:'JM Change–Continuation Spine',r:'FULL GOVERNING BODY ENTRANCE',s:'FROZEN v1.0',k:'Controlled Change → Chained Constant → Carried Crossover → Continued Creation.'}
+];
+const state={rooms:fallbackRooms,files:[],trace:JSON.parse(localStorage.getItem('JM_V6_FIELD_TRACE')||'[]')};
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1800)}
+function trace(event,detail={}){state.trace.unshift({event,at:new Date().toISOString(),detail});state.trace=state.trace.slice(0,100);localStorage.setItem('JM_V6_FIELD_TRACE',JSON.stringify(state.trace));renderTrace()}
+function go(name){$$('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===name));$$('[data-go]').forEach(b=>b.classList.toggle('active',b.dataset.go===name));scrollTo({top:0,behavior:'smooth'});trace('ROUTE_OPEN',{view:name})}
+function openUrl(url){if(window.JMAndroid?.openExternal)window.JMAndroid.openExternal(url);else window.open(url,'_blank','noopener')}
+function saveText(name,type,text){if(window.JMAndroid?.saveText)window.JMAndroid.saveText(name,type,text);else{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}}
+function renderRooms(){const q=$('#roomSearch').value.trim().toLowerCase();const rows=state.rooms.filter(r=>JSON.stringify(r).toLowerCase().includes(q));$('#roomCount').textContent=`${rows.length} / ${state.rooms.length} rooms`;$('#rooms').innerHTML=rows.map(r=>`<button class="route" data-room="${esc(r.i)}"><span>${esc(r.i)} · ${esc(r.c||r.l||'MOUNTED')}</span><b>${esc(r.t)}</b><small>${esc(r.r)} · ${esc(r.s)}</small></button>`).join('')||'<p class="muted">No matching rooms.</p>';$$('[data-room]').forEach(b=>b.onclick=()=>showRoom(b.dataset.room))}
+function showRoom(id){const r=state.rooms.find(x=>x.i===id);if(!r)return;$('#roomReader').innerHTML=`<div class="eyebrow">${esc(r.r)}</div><h3>${esc(r.t)}</h3><div class="line"><b>Current state</b><span>${esc(r.s)}</span></div><div class="line"><b>Keeper</b><span>${esc(r.k)}</span></div><div class="line"><b>Connected body</b><span>${esc(r.b||'Body selection / source reconciliation remains governed separately')}</span></div>`;trace('CHAT_ROOM_CONTACT',{id:r.i,title:r.t,role:r.r,status:r.s})}
+function loadMountedRooms(){const s=document.createElement('script');s.src='https://jmisjustme.github.io/JM-cading-lab/theory/data/chat-room-recovery/mounted-rooms.js?v=2001';s.onload=()=>{if(Array.isArray(window.JMTheoryMountedRoomsCompact)){state.rooms=window.JMTheoryMountedRoomsCompact;renderRooms();trace('CHAT_REGISTRY_CONTACT',{rooms:state.rooms.length,source:'current mounted-rooms.js'})}};s.onerror=()=>{renderRooms();trace('CHAT_REGISTRY_FALLBACK',{rooms:state.rooms.length})};document.head.appendChild(s)}
+async function hashFile(file){const buf=await file.arrayBuffer();const h=await crypto.subtle.digest('SHA-256',buf);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function takeFiles(list){const next=[];for(const f of list){next.push({name:f.name,path:f.webkitRelativePath||f.name,size:f.size,type:f.type||'',lastModified:f.lastModified,hash:await hashFile(f)})}state.files.push(...next);renderFiles();trace('FILE_CONTACT',{count:next.length,totalBytes:next.reduce((a,b)=>a+b.size,0),route:'browser-picker'})}
+window.JMReceiveNativeFolder=rows=>{state.files.push(...rows);renderFiles();trace('FOLDER_CONTACT',{count:rows.length,totalBytes:rows.reduce((a,b)=>a+(b.size||0),0),route:'Android Storage Access Framework'})};
+function renderFiles(){const total=state.files.reduce((a,b)=>a+(Number(b.size)||0),0);const hashes=state.files.filter(x=>x.hash&&x.hash!=='HASH_FAILED').length;$('#fileSummary').innerHTML=`<div class="stat"><b>${state.files.length}</b><span>files contacted</span></div><div class="stat"><b>${(total/1048576).toFixed(1)}</b><span>MiB read</span></div><div class="stat"><b>${hashes}</b><span>SHA-256 traces</span></div><div class="stat"><b>${new Set(state.files.map(x=>x.hash)).size}</b><span>distinct hashes</span></div>`;$('#fileRows').innerHTML=state.files.length?state.files.slice(0,300).map(f=>`<div class="line"><b>${esc(f.path||f.name)}</b><span>${Number(f.size||0).toLocaleString()} bytes · ${esc(f.type||'unknown')} · ${esc((f.hash||'').slice(0,24))}${f.hash?'…':''}</span></div>`).join(''):'<p class="muted">No current intake.</p>'}
+function parseCading(source){const blocks=[];const re=/([^\n]+?)\s*\{pre\},([\s\S]*?)\{post\}\.✓/g;let m;while((m=re.exec(source))){const body=m[2].split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);const routes=body.map(x=>{const i=x.indexOf('=');return i>0?{mark:x.slice(0,i).trim(),route:x.slice(i+1).trim()}:{command:x}});blocks.push({organ:m[1].trim(),routes})}return {schema:'JM.Cading.ContactIR/1.0',sourceStatus:(source.match(/^STATUS\s*=\s*(.+)$/m)||[])[1]||'UNDECLARED',blocks,blockCount:blocks.length,routeCount:blocks.reduce((n,b)=>n+b.routes.length,0),ding:blocks.length>0?'PASS':'NO_DING'} }
+function runCading(){const source=$('#cadingSource').value;const ir=parseCading(source);const receipt={schema:'JM.Cading.FieldRuntimeReceipt/1.0',at:new Date().toISOString(),sourceShaPending:'browser-source-contact',ir,execution:ir.blocks.map((b,index)=>({step:index+1,organ:b.organ,state:Object.fromEntries(b.routes.filter(x=>x.mark).map(x=>[x.mark,x.route])),commands:b.routes.filter(x=>x.command).map(x=>x.command)}))};$('#cadingOut').textContent=JSON.stringify(receipt,null,2);trace('CADING_DING',{ding:ir.ding,blocks:ir.blockCount,routes:ir.routeCount});return receipt}
+function renderTrace(){$('#traceRows').innerHTML=state.trace.length?state.trace.slice(0,40).map(r=>`<div class="line"><b>${esc(r.event)}</b><span>${esc(r.at)} · ${esc(JSON.stringify(r.detail))}</span></div>`).join(''):'<p class="muted">No current receipts.</p>'}
+window.JMReceiveUpdate=result=>{let manifest=null;try{manifest=JSON.parse(result.manifest||'{}')}catch(e){}const installed=Number(result.installedVersionCode||6001),available=Number(manifest?.versionCode||0),newer=available>installed;$('#updateResult').innerHTML=`<div class="eyebrow">Update contact ${result.ok?'PASS':'FAIL'}</div><h3>${newer?'A newer field body is declared.':'This field body is current against the manifest.'}</h3><div class="line"><b>Installed</b><span>${esc(result.installedVersionName)} / ${installed}</span></div><div class="line"><b>Manifest</b><span>${esc(manifest?.versionName||'unread')} / ${available||'unread'}</span></div><div class="line"><b>Boundary</b><span>${esc(manifest?.boundary||result.error||'No extra boundary supplied.')}</span></div>${newer&&manifest?.apkUrl?`<button id="openApk" class="btn primary">Open APK route</button>`:''}`;if(newer&&manifest?.apkUrl)$('#openApk').onclick=()=>window.JMAndroid?.openUpdateDownload?window.JMAndroid.openUpdateDownload(manifest.apkUrl):openUrl(manifest.apkUrl);trace('UPDATE_CHECK',{ok:result.ok,installed,available,newer})};
+function boot(){const native=!!window.JMAndroid;$('#bridge').textContent=native?window.JMAndroid.getBridgeVersion():'browser carrier';$('#bridge').classList.toggle('live',native);if(native)$('#installed').textContent=`${window.JMAndroid.getAppVersionName()} / ${window.JMAndroid.getAppVersionCode()}`;$('#cadingSource').value=FUTURE;renderRooms();renderFiles();renderTrace();loadMountedRooms();trace('FIELD_BOOT',{native,version:'6.0A-field',code:6001})}
+$$('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));$$('[data-url]').forEach(b=>b.addEventListener('click',()=>openUrl(b.dataset.url)));$('#roomSearch').oninput=renderRooms;$('#files').onchange=e=>takeFiles([...e.target.files]);$('#chooseFolder').onclick=()=>window.JMAndroid?.chooseFolder?window.JMAndroid.chooseFolder():toast('Native folder route is available inside the APK');$('#exportFiles').onclick=()=>saveText('JM_MULTIHUB_FILE_GRABBER_RECEIPT.json','application/json',JSON.stringify({schema:'JM.FileGrabber.FieldReceipt/1.0',exportedAt:new Date().toISOString(),files:state.files},null,2));$('#clearFiles').onclick=()=>{state.files=[];renderFiles();trace('FILE_FIELD_CLEAR')};$('#loadFuture').onclick=()=>{$('#cadingSource').value=FUTURE;toast('JM SOURCE 04 loaded')};$('#loadOwnmade').onclick=()=>{$('#cadingSource').value=OWNMADE;toast('OWNMADE v0.2 loaded')};$('#runCading').onclick=runCading;$('#exportCading').onclick=()=>saveText('JM_CADING_FIELD_RECEIPT.json','application/json',JSON.stringify(runCading(),null,2));$('#checkUpdate').onclick=()=>window.JMAndroid?.checkUpdate?window.JMAndroid.checkUpdate(UPDATE_MANIFEST):fetch(UPDATE_MANIFEST).then(r=>r.text()).then(t=>window.JMReceiveUpdate({ok:true,manifest:t,installedVersionCode:6001,installedVersionName:'6.0A-browser'})).catch(e=>window.JMReceiveUpdate({ok:false,error:String(e)}));$('#exportTrace').onclick=()=>saveText('JM_MULTIHUB_TRACEBOX.json','application/json',JSON.stringify({schema:'JM.MultiHub.TraceBox/1.0',exportedAt:new Date().toISOString(),receipts:state.trace},null,2));boot();
+</script>
+</body>
+</html>

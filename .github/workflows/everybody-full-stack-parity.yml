@@ -1,0 +1,73 @@
+name: JM EveryBody Full-Stack Parity v0.1
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/**
+      - .github/workflows/everybody-full-stack-parity.yml
+  pull_request:
+    paths:
+      - coding-estate/everybody/body-registry*.json
+      - coding-estate/everybody/full-stack/**
+      - .github/workflows/everybody-full-stack-parity.yml
+
+permissions:
+  contents: read
+
+jobs:
+  full-stack-factory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact branch body
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run 100-body compiler SDK kernel-source federation proof
+        run: python coding-estate/everybody/full-stack/tests/test_full_stack_factory.py
+
+      - name: Generate deliverable body packages
+        run: |
+          rm -rf build/everybody-full-stack-v0.1
+          python coding-estate/everybody/full-stack/tools/full_stack_factory.py \
+            --repo-root . \
+            --out build/everybody-full-stack-v0.1 \
+            --clean
+
+      - name: Verify exact body count and named bodies
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("build/everybody-full-stack-v0.1")
+          federation = json.loads((root / "federation.json").read_text(encoding="utf-8"))
+          assert federation["body_count"] == 100
+          assert len(set(federation["body_ids"])) == 100
+          for body_id in ("cading", "quadze", "recorp", "routeos", "jmlogic", "flowtalk", "kading", "kocodifying", "formeula", "cadenvm", "wakeforge"):
+              assert body_id in federation["body_ids"], body_id
+          print("100 unique bodies and required named bodies present")
+          PY
+
+      - name: Seal generated package
+        run: |
+          tar -czf JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.tar.gz -C build everybody-full-stack-v0.1
+          sha256sum JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.tar.gz | tee JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.sha256
+
+      - name: Upload generated full-stack packages and receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_EVERYBODY_FULL_STACK_FACTORY_v0.1
+          path: |
+            JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.tar.gz
+            JM_EVERYBODY_FULL_STACK_FACTORY_v0.1.sha256
+            build/everybody-full-stack-v0.1/BUILD_RECEIPT.json
+            build/everybody-full-stack-v0.1/federation.json
+          if-no-files-found: error

@@ -1,0 +1,62 @@
+name: Sovereign Coding Census
+
+on:
+  pull_request:
+    paths:
+      - "coding-estate/everybody/body-registry*.json"
+      - "coding-estate/everybody/sovereign-census/**"
+      - ".github/workflows/sovereign-coding-census.yml"
+  push:
+    branches:
+      - "agent/everybody-full-stack-parity-v0-1"
+    paths:
+      - "coding-estate/everybody/body-registry*.json"
+      - "coding-estate/everybody/sovereign-census/**"
+      - ".github/workflows/sovereign-coding-census.yml"
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test append-only census
+        run: python -m unittest coding-estate/everybody/sovereign-census/tests/test_sovereign_census.py -v
+
+      - name: Generate census receipt
+        run: |
+          python coding-estate/everybody/sovereign-census/sovereign_census.py \
+            --repo . \
+            --out build/JM_SOVEREIGN_CODING_CENSUS
+          cat build/JM_SOVEREIGN_CODING_CENSUS/SHA256SUMS.txt
+
+      - name: Verify Body 101 and open count
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("build/JM_SOVEREIGN_CODING_CENSUS/sovereign-census.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          assert data["first_engineering_batch_count"] == 100
+          assert data["current_total"] >= 101
+          assert data["status"] == "OPEN_APPEND_ONLY_NOT_CROWNED"
+          jagged = next(body for body in data["bodies"] if body["id"] == "jaggedmirror")
+          assert jagged["ordinal"] == 101
+          assert jagged["parity_floor"] == "CADING_QUADZE_PLUS"
+          print({"current_total": data["current_total"], "body_101": jagged["name"]})
+          PY
+
+      - name: Upload census artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_SOVEREIGN_CODING_CENSUS
+          path: build/JM_SOVEREIGN_CODING_CENSUS
+          if-no-files-found: error

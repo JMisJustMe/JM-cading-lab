@@ -1,0 +1,16 @@
+ROUTEOS_FAULT_RECOVERY v0.6A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW PROOF_PARENT 8b891d1f4bcdf904791588f5bb46adc31908b9d4
+LAW MACHINE_PARENT 3cd46fdfa825391c99f0999bb4939231e03ad619
+LAW CLAIM_BOUNDARY generated_faulthold_and_recoverybody_not_whole_kernel
+
+FAULT FAULTHOLD vector=6 class=invalid_opcode action=block_current state=BODY_BLOCKED
+RECOVERY RECOVERYBODY trigger=FAULTHOLD select=next_runnable continuation=safe_body
+FALLBACK UNHANDLED_FAULT action=receipt_and_return receipt=FAULTHOLD_UNHANDLED_VECTOR
+
+REQUIRE save_fault_frame
+REQUIRE block_faulting_body
+REQUIRE preserve_safe_body
+REQUIRE select_next_runnable
+REQUIRE unhandled_vector_receipt

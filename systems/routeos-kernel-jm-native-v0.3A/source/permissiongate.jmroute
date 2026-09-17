@@ -1,0 +1,11 @@
+ROUTEOS_PERMISSIONGATE v0.3A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW PROOF_PARENT f76343108422109e8aa939d785d0d88bdba61f08
+LAW MACHINE_PARENT 0fcb74bf1a959f3020b80511dde01cd67523fc6e
+LAW CLAIM_BOUNDARY generated_permissiongate_operational_office
+
+GATE PERMISSIONGATE vector=0x80 from=user to=supervisor active_body=current_body
+CALL TRACE_READ number=1 permission=pass action=trace_return return=ticks continuation=same_body trace="SYSTEM CALL TRACE_READ -> PERMISSIONGATE PASS -> KERNEL TRACE RETURN"
+CALL YIELD number=2 permission=pass action=schedule_next continuation=next_body
+DENY UNKNOWN_CALL return=-1 continuation=same_body receipt="PERMISSIONGATE DENY: UNKNOWN SYSTEM CALL"

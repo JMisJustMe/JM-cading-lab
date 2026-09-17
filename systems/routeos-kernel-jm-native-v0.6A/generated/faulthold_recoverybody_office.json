@@ -1,0 +1,47 @@
+{
+  "laws": {
+    "CLAIM_BOUNDARY": "generated_faulthold_and_recoverybody_not_whole_kernel",
+    "MACHINE_PARENT": "3cd46fdfa825391c99f0999bb4939231e03ad619",
+    "PROOF_PARENT": "8b891d1f4bcdf904791588f5bb46adc31908b9d4",
+    "SOURCE_AUTHORITY": "jm_native"
+  },
+  "records": [
+    {
+      "fields": {
+        "action": "block_current",
+        "class": "invalid_opcode",
+        "state": "BODY_BLOCKED",
+        "vector": "6"
+      },
+      "name": "FAULTHOLD",
+      "record_type": "FAULT"
+    },
+    {
+      "fields": {
+        "continuation": "safe_body",
+        "select": "next_runnable",
+        "trigger": "FAULTHOLD"
+      },
+      "name": "RECOVERYBODY",
+      "record_type": "RECOVERY"
+    },
+    {
+      "fields": {
+        "action": "receipt_and_return",
+        "receipt": "FAULTHOLD_UNHANDLED_VECTOR"
+      },
+      "name": "UNHANDLED_FAULT",
+      "record_type": "FALLBACK"
+    }
+  ],
+  "requirements": [
+    "save_fault_frame",
+    "block_faulting_body",
+    "preserve_safe_body",
+    "select_next_runnable",
+    "unhandled_vector_receipt"
+  ],
+  "schema": "JM_ROUTEOS_FAULT_RECOVERY_1",
+  "source_sha256": "2bbcf026b977de46e10ea9d8a337b96a901e69bd6514880fb32fb8d79dedfd00",
+  "version": "v0.6A"
+}

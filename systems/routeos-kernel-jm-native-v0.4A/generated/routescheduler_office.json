@@ -1,0 +1,41 @@
+{
+  "hold": {
+    "fields": {
+      "action": "halt",
+      "receipt": "FAULTHOLD: NO RUNNABLE BODY"
+    },
+    "name": "NO_RUNNABLE",
+    "record_type": "HOLD"
+  },
+  "laws": {
+    "CLAIM_BOUNDARY": "generated_routescheduler_operational_office",
+    "MACHINE_PARENT": "bb31256906b3db76a78993367ce0d38cb7418153",
+    "PROOF_PARENT": "2e814746c846fc5aeb45bee7bb03338d7c9a0896",
+    "SOURCE_AUTHORITY": "jm_native"
+  },
+  "save": {
+    "fields": {
+      "blocked_state": "BODY_BLOCKED",
+      "copy": "frame",
+      "minimum_current": "0",
+      "ready_state": "BODY_READY"
+    },
+    "name": "CURRENT",
+    "record_type": "SAVE"
+  },
+  "scheduler": {
+    "fields": {
+      "bodies": "2",
+      "current_initial": "-1",
+      "policy": "round_robin",
+      "run_accounting": "increment",
+      "selected_state": "BODY_RUNNING",
+      "skip_state": "BODY_BLOCKED"
+    },
+    "name": "ROUTESCHEDULER",
+    "record_type": "SCHEDULER"
+  },
+  "schema": "JM_ROUTESCHEDULER_OPERATIONAL_1",
+  "source_sha256": "13d2d2cc90d338cd7a1177caa150dd16f3ec2aa32d0f0fb5c1959e11898b632c",
+  "version": "v0.4A"
+}

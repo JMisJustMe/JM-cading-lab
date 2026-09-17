@@ -1,0 +1,52 @@
+{
+  "GDT_ENTRIES": "7",
+  "IDT_SIZE": "256",
+  "INTERRUPT_STACK_BYTES": "32768",
+  "MACHINE_PARENT": "8d9749a32171542f849976f8ec6bac50f11daf15",
+  "PIC_MASTER_COMMAND": "0x20",
+  "PIC_MASTER_DATA": "0x21",
+  "PIC_MASTER_OFFSET": "0x20",
+  "PIC_SLAVE_COMMAND": "0xA0",
+  "PIC_SLAVE_DATA": "0xA1",
+  "PIC_SLAVE_OFFSET": "0x28",
+  "PIT_BASE_HZ": "1193182",
+  "PIT_CHANNEL0": "0x40",
+  "PIT_COMMAND": "0x43",
+  "PIT_MODE": "0x36",
+  "PIT_TARGET_HZ": "100",
+  "PROOF_PARENT": "313a66c461a55c7aebe24807254d8ef263101661",
+  "TSS_ACCESS": "0x89",
+  "TSS_SELECTOR": "0x28",
+  "VERSION": "v0.8A",
+  "gdt_entries": {
+    "1": 49427445715107839,
+    "2": 49418649622085631,
+    "3": 49524202738352127,
+    "4": 49532998831374335
+  },
+  "idt_gates": [
+    {
+      "attr": 142,
+      "handler": "routeos_isr_ud",
+      "name": "FAULTHOLD",
+      "vector": "JM_FAULT_FAULTHOLD_VECTOR"
+    },
+    {
+      "attr": 142,
+      "handler": "routeos_isr_timer",
+      "name": "TIMER",
+      "vector": "32"
+    },
+    {
+      "attr": 238,
+      "handler": "routeos_isr_syscall",
+      "name": "PERMISSIONGATE",
+      "vector": "JM_GATE_PERMISSIONGATE_VECTOR"
+    }
+  ],
+  "offices": [
+    "DescriptorBody",
+    "InterruptRoute"
+  ],
+  "source_sha256": "680ba2c31be8dfa7b8ebde7ea518ca385c7faa3906f5ac8af8ecb7c52c4165ea"
+}

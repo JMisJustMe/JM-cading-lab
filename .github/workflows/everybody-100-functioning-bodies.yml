@@ -1,0 +1,76 @@
+name: JM 100 Functioning Bodies
+
+on:
+  push:
+    branches:
+      - agent/everybody-full-stack-parity-v0-1
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/functioning-bodies/**'
+      - '.github/workflows/everybody-100-functioning-bodies.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/everybody/body-registry*.json'
+      - 'coding-estate/everybody/functioning-bodies/**'
+      - '.github/workflows/everybody-100-functioning-bodies.yml'
+  workflow_dispatch:
+
+jobs:
+  functioning-bodies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run functioning-body tests
+        run: python -m unittest discover -s coding-estate/everybody/functioning-bodies/tests -v
+
+      - name: Generate all first 100 functioning bodies
+        run: |
+          python coding-estate/everybody/functioning-bodies/tools/functioning_body_factory_v0_1_2.py \
+            --repo . \
+            --out dist/functioning-bodies
+
+      - name: Verify Cading Quadze functioning floor
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('dist/functioning-bodies')
+          manifest = json.loads((root / 'FUNCTIONING_BODY_MANIFEST.json').read_text())
+          assert manifest['body_count'] == 100
+          assert manifest['status'] == 'PORTABLE_FUNCTIONING_PARITY_PASS_NOT_FULL_NATIVE_CROWN'
+          assert manifest['all_state_changed'] is True
+          assert manifest['all_capabilities_executed'] is True
+          receipts = {item['body_id']: item for item in manifest['receipts']}
+          assert 'cading' in receipts and 'quadze' in receipts
+          assert len(list((root / 'bodies').glob('*/dialect.json'))) == 100
+          assert len(list((root / 'bodies').glob('*/source/proof.jmfn'))) == 100
+          assert len(list((root / 'bodies').glob('*/ast/proof.ast.json'))) == 100
+          assert len(list((root / 'bodies').glob('*/ir/proof.ir.json'))) == 100
+          assert len(list((root / 'bodies').glob('*/run/state.json'))) == 100
+          assert len(list((root / 'bodies').glob('*/receipt.json'))) == 100
+          assert all(item['state_changed'] for item in manifest['receipts'])
+          assert all(item['capability_executed'] for item in manifest['receipts'])
+          assert all(item['machine_kernel_ding'] == 'OPEN' for item in manifest['receipts'])
+          print('JM_100_FUNCTIONING_BODIES_GATE_PASS')
+          PY
+
+      - name: Seal functioning-body artifact
+        run: |
+          tar -czf JM_100_FUNCTIONING_BODIES_v0.1.2.tar.gz -C dist functioning-bodies
+          sha256sum JM_100_FUNCTIONING_BODIES_v0.1.2.tar.gz | tee JM_100_FUNCTIONING_BODIES_v0.1.2.sha256
+
+      - name: Upload functioning-body artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_100_FUNCTIONING_BODIES_v0.1.2
+          path: |
+            JM_100_FUNCTIONING_BODIES_v0.1.2.tar.gz
+            JM_100_FUNCTIONING_BODIES_v0.1.2.sha256
+            dist/functioning-bodies/FUNCTIONING_BODY_MANIFEST.json

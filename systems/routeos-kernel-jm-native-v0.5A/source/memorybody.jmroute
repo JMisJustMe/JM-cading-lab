@@ -1,0 +1,10 @@
+ROUTEOS_MEMORYBODY v0.5A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW PROOF_PARENT 52706adf66b5060b3aec17f21982d9cf5eddc23d
+LAW MACHINE_PARENT ba60cc66c1cfa622971301af7b84f35f5ad570c9
+LAW CLAIM_BOUNDARY generated_memorybody_operational_office
+
+MEMORY MEMORYBODY blocks=16 block_size=256 alignment=16 ownership=kernel initial_state=free
+ALLOC ALLOCATE scan=first_free mark=used return=block exhaustion=null
+RELEASE RELEASE validate=exact_block require=used mark=free success=true failure=false

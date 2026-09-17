@@ -1,0 +1,149 @@
+name: RouteOS JM-Native Boot Integration
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-v0-2a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-native-boot-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.2A integration branch
+        uses: actions/checkout@v4
+
+      - name: Verify JM source authority and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$AUTH/tools/jmroutec.py" \
+            "$AUTH/source/routeos_kernel.jmroute" \
+            --out-dir "$AUTH/generated" \
+            --check
+          python3 -m unittest discover -s "$AUTH/tests" -v
+
+      - name: Restore exact frozen hard-body source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-integration
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 \
+            > .routeos-integration/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-integration/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-integration/source.tar.gz -C .routeos-integration
+
+      - name: Integrate generated JM authority into kernel source
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH=systems/routeos-kernel-jm-native-v0.2A
+          KERNEL=.routeos-integration/routeos-kernel-v0.1A
+          python3 "$AUTH/tools/integrate_boot.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --authority-header "$AUTH/generated/routeos_authority.h" \
+            --receipt .routeos-integration/BOOT_INTEGRATION_RECEIPT.json
+          grep -F '#include "routeos_authority.h"' "$KERNEL/kernel/routeos_kernel.c"
+          grep -F 'JM_BODY_ROUTESCHEDULER_CADENCE_TICKS' "$KERNEL/kernel/routeos_kernel.c"
+          grep -F 'JM_GATE_PERMISSIONGATE_VECTOR' "$KERNEL/kernel/routeos_kernel.c"
+          grep -F 'JM_FAULT_FAULTHOLD_VECTOR' "$KERNEL/kernel/routeos_kernel.c"
+
+      - name: Install open machine-proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Build and run JM-authority kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-integration/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-integration/JM_NATIVE_BOOT_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze JM-native machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          KERNEL=.routeos-integration/routeos-kernel-v0.1A
+          mkdir -p jm-native-boot-receipt
+          for f in \
+            .routeos-integration/BOOT_INTEGRATION_RECEIPT.json \
+            .routeos-integration/JM_NATIVE_BOOT_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/kernel/routeos_authority.h"; do
+            if [[ -f "$f" ]]; then cp "$f" jm-native-boot-receipt/; fi
+          done
+          {
+            echo "machine_step_outcome=${{ steps.machine.outcome }}"
+            echo "machine_exit_status=${{ steps.machine.outputs.exit_status }}"
+            echo "proof_parent=54f67566036316b25515fb53fa98f06769d3850d"
+            echo "authority_source_sha256=0f8d44080dc6adfa855996b76efe7f538284643ead8170599809d1e0dbc10371"
+          } > jm-native-boot-receipt/GATE_STATUS.txt
+          (cd jm-native-boot-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload JM-native boot receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.2A-boot-receipt
+          path: jm-native-boot-receipt
+          if-no-files-found: error
+
+      - name: Enforce JM-native boot result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-integration/routeos-kernel-v0.1A
+          TRACE="$KERNEL/proof/QEMU_BOOT_TRACE.txt"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          python3 - "$TRACE" <<'PY'
+          from pathlib import Path
+          import sys
+
+          trace = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          expected = (
+              "[JM] JM_NATIVE AUTHORITY v0.2A SOURCE "
+              "0f8d44080dc6adfa855996b76efe7f538284643ead8170599809d1e0dbc10371 "
+              "PARENT 54f67566036316b25515fb53fa98f06769d3850d"
+          )
+          if trace.count(expected) != 1:
+              raise SystemExit(f"HOLD: expected one JM authority trace, found {trace.count(expected)}")
+          boot = "[JM] JM BOOT IMAGE LOADED"
+          if boot not in trace or trace.index(expected) > trace.index(boot):
+              raise SystemExit("HOLD: authority identity was not emitted at kernel ignition")
+          for marker in (
+              "PERMISSIONGATE PASS",
+              "TIMER TICK",
+              "FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT",
+              "RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES",
+          ):
+              if marker not in trace:
+                  raise SystemExit(f"HOLD: inherited hard-body marker missing: {marker}")
+          print("JM_NATIVE_BOOT_TRACE PASS")
+          PY
+          strings "$ELF" | grep -F '0f8d44080dc6adfa855996b76efe7f538284643ead8170599809d1e0dbc10371'
+          echo 'JM_NATIVE_BOOT_INTEGRATION DING: PASS'

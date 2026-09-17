@@ -1,0 +1,189 @@
+name: RouteOS JM-Generated PermissionGate
+
+on:
+  push:
+    branches:
+      - agent/routeos-kernel-jm-native-permissiongate-v0-3a
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-generated-permissiongate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout v0.3A branch with lineage
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enforce frozen anchor lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor f76343108422109e8aa939d785d0d88bdba61f08 HEAD
+          test -f systems/routeos-kernel-jm-native-v0.2A/proof/FREEZE_LOCK_ANCHOR_v0.2A.md
+
+      - name: Install open machine-proof carriers
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang lld binutils grub-pc-bin grub-common grub2-common \
+            xorriso mtools qemu-system-x86
+
+      - name: Verify inherited v0.2A authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.2A
+          python3 "$ROOT/tools/jmroutec.py" \
+            "$ROOT/source/routeos_kernel.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Verify generated PermissionGate body
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          python3 "$ROOT/tools/permissiongatec.py" \
+            "$ROOT/source/permissiongate.jmroute" \
+            --out-dir "$ROOT/generated" \
+            --check
+          python3 -m unittest discover -s "$ROOT/tests" -v
+
+      - name: Restore exact frozen v0.1A source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .routeos-v03a
+          base64 -d systems/routeos-kernel-convergence-v0.1A/routeos-kernel-v0.1A-ci-source.tar.gz.b64 \
+            > .routeos-v03a/source.tar.gz
+          echo 'b54dc630332255667e099ce2bafb00e3b927b5b5ff966e6e0898bbb2e2c54654  .routeos-v03a/source.tar.gz' | sha256sum -c -
+          tar -xzf .routeos-v03a/source.tar.gz -C .routeos-v03a
+
+      - name: Reapply frozen v0.2A boot authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUTH=systems/routeos-kernel-jm-native-v0.2A
+          KERNEL=.routeos-v03a/routeos-kernel-v0.1A
+          python3 "$AUTH/tools/integrate_boot.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --authority-header "$AUTH/generated/routeos_authority.h" \
+            --receipt .routeos-v03a/V02_BOOT_INTEGRATION_RECEIPT.json
+
+      - name: Replace handwritten PermissionGate with JM output
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          KERNEL=.routeos-v03a/routeos-kernel-v0.1A
+          python3 "$ROOT/tools/integrate_permissiongate.py" \
+            --kernel "$KERNEL/kernel/routeos_kernel.c" \
+            --office "$ROOT/generated/permissiongate_office.inc" \
+            --receipt .routeos-v03a/PERMISSIONGATE_INTEGRATION_RECEIPT.json
+          grep -F 'static struct cpu_frame *jm_generated_permissiongate' "$KERNEL/kernel/routeos_kernel.c"
+          grep -F 'return jm_generated_permissiongate(frame);' "$KERNEL/kernel/routeos_kernel.c"
+          ! grep -F 'if (active->frame.rax == SYS_TRACE_READ)' "$KERNEL/kernel/routeos_kernel.c"
+
+      - name: Build and run generated PermissionGate kernel in QEMU
+        id: machine
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          KERNEL=.routeos-v03a/routeos-kernel-v0.1A
+          chmod +x "$KERNEL"/build.sh "$KERNEL"/tests/*.sh "$KERNEL"/tests/*.py
+          "$KERNEL/tests/run_qemu_proof.sh" 2>&1 | tee .routeos-v03a/JM_PERMISSIONGATE_MACHINE_RUN.log
+          status=${PIPESTATUS[0]}
+          echo "exit_status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Freeze v0.3A machine receipt
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=systems/routeos-kernel-jm-native-v0.3A
+          KERNEL=.routeos-v03a/routeos-kernel-v0.1A
+          mkdir -p permissiongate-v03a-receipt
+          for f in \
+            .routeos-v03a/V02_BOOT_INTEGRATION_RECEIPT.json \
+            .routeos-v03a/PERMISSIONGATE_INTEGRATION_RECEIPT.json \
+            .routeos-v03a/JM_PERMISSIONGATE_MACHINE_RUN.log \
+            "$KERNEL/proof/QEMU_BOOT_TRACE.txt" \
+            "$KERNEL/build/routeos-kernel.elf" \
+            "$KERNEL/build/routeos-kernel.iso" \
+            "$KERNEL/kernel/routeos_kernel.c" \
+            "$KERNEL/kernel/routeos_authority.h" \
+            "$ROOT/source/permissiongate.jmroute" \
+            "$ROOT/generated/permissiongate_office.inc" \
+            "$ROOT/generated/permissiongate_office.json"; do
+            if [[ -f "$f" ]]; then cp "$f" permissiongate-v03a-receipt/; fi
+          done
+          {
+            echo "machine_step_outcome=${{ steps.machine.outcome }}"
+            echo "machine_exit_status=${{ steps.machine.outputs.exit_status }}"
+            echo "frozen_anchor=f76343108422109e8aa939d785d0d88bdba61f08"
+            echo "permissiongate_source_sha256=2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2"
+          } > permissiongate-v03a-receipt/GATE_STATUS.txt
+          (cd permissiongate-v03a-receipt && sha256sum * > SHA256SUMS.txt) || true
+
+      - name: Upload v0.3A PermissionGate receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: routeos-kernel-jm-native-v0.3A-permissiongate-receipt
+          path: permissiongate-v03a-receipt
+          if-no-files-found: error
+
+      - name: Enforce generated operational result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test '${{ steps.machine.outcome }}' = 'success'
+          KERNEL=.routeos-v03a/routeos-kernel-v0.1A
+          TRACE="$KERNEL/proof/QEMU_BOOT_TRACE.txt"
+          ELF="$KERNEL/build/routeos-kernel.elf"
+          SOURCE="$KERNEL/kernel/routeos_kernel.c"
+          python3 - "$TRACE" "$SOURCE" <<'PY'
+          from pathlib import Path
+          import sys
+
+          trace = Path(sys.argv[1]).read_text(encoding="utf-8", errors="replace")
+          source = Path(sys.argv[2]).read_text(encoding="utf-8")
+          marker = (
+              "[JM] PERMISSIONGATE GENERATED v0.3A SOURCE "
+              "2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2 ACTIVE"
+          )
+          if trace.count(marker) != 1:
+              raise SystemExit(f"HOLD: expected one generated PermissionGate marker, found {trace.count(marker)}")
+          permission_pass = "PERMISSIONGATE PASS"
+          if permission_pass not in trace or trace.index(marker) > trace.index(permission_pass):
+              raise SystemExit("HOLD: generated PermissionGate did not activate before permission return")
+          for inherited in (
+              "JM_NATIVE AUTHORITY v0.2A",
+              "TIMER TICK",
+              "FAULTHOLD: USER BODY 2 INVALID OPCODE CAUGHT",
+              "RECOVERYBODY: FAULTING BODY BLOCKED; SAFE BODY CONTINUES",
+          ):
+              if inherited not in trace:
+                  raise SystemExit(f"HOLD: inherited machine marker missing: {inherited}")
+          if "if (active->frame.rax == SYS_TRACE_READ)" in source:
+              raise SystemExit("HOLD: handwritten PermissionGate block remains")
+          if source.count("return jm_generated_permissiongate(frame);") != 1:
+              raise SystemExit("HOLD: generated PermissionGate dispatch is not singular")
+          print("JM_GENERATED_PERMISSIONGATE_TRACE PASS")
+          PY
+          strings "$ELF" | grep -F '2bc50156fe908d6bb9eff42e27296736c2235ecd5a065dec75bccbb15fa7fac2'
+          echo 'JM_GENERATED_PERMISSIONGATE DING: PASS'

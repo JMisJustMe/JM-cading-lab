@@ -1,0 +1,10 @@
+ROUTEOS_SCHEDULER v0.4A
+
+LAW SOURCE_AUTHORITY jm_native
+LAW PROOF_PARENT 2e814746c846fc5aeb45bee7bb03338d7c9a0896
+LAW MACHINE_PARENT bb31256906b3db76a78993367ce0d38cb7418153
+LAW CLAIM_BOUNDARY generated_routescheduler_operational_office
+
+SCHEDULER ROUTESCHEDULER bodies=2 policy=round_robin current_initial=-1 skip_state=BODY_BLOCKED selected_state=BODY_RUNNING run_accounting=increment
+SAVE CURRENT minimum_current=0 blocked_state=BODY_BLOCKED copy=frame ready_state=BODY_READY
+HOLD NO_RUNNABLE receipt="FAULTHOLD: NO RUNNABLE BODY" action=halt

@@ -1,0 +1,58 @@
+name: Build JM Estate Librarian v0.4 APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "android/**"
+      - "web/**"
+      - "OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html"
+      - ".github/workflows/build-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify source body
+        run: |
+          test -f OPEN_FIRST_JM_ESTATE_LIBRARIAN_v0_4.html
+          test -f android/app/src/main/java/com/jmestate/librarian/MainActivity.java
+          python3 -m json.tool PACKAGE_MANIFEST.json >/dev/null
+          python3 -m json.tool receipts/BUILD_RECEIPT_v0_4.json >/dev/null
+          python3 -m json.tool receipts/QA_RESULTS_v0_4.json >/dev/null
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK 35
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        working-directory: android
+        run: gradle --no-daemon assembleDebug
+
+      - name: Prepare named APK and checksum
+        run: |
+          mkdir -p delivery
+          cp android/app/build/outputs/apk/debug/app-debug.apk delivery/JM_ESTATE_LIBRARIAN_v0_4.apk
+          sha256sum delivery/JM_ESTATE_LIBRARIAN_v0_4.apk > delivery/JM_ESTATE_LIBRARIAN_v0_4.apk.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_ESTATE_LIBRARIAN_v0_4_APK
+          path: delivery/
+          if-no-files-found: error

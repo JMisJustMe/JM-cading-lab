@@ -1,0 +1,33 @@
+{
+  "schema": "jm.tboys.identity-lock/0.2",
+  "status": "RESTORED_WORKING_CANON_FIRST_FLOOR",
+  "sourceAuthority": [
+    "User correction: aim-and-drag, snooker/pinball, Smashing Four action",
+    "Mounted GlyphPlay generator: T-Boys/Smashing Four/rebound/pinball/flick maps to FlickLaunch",
+    "Mounted Rebound Arena: flick/release, rebound, HP targets and arena walls"
+  ],
+  "coreInteraction": [
+    "select active T-Boy",
+    "drag backward",
+    "preview launch and first rebound",
+    "release",
+    "ricochet",
+    "body collision",
+    "chain smash",
+    "resolve four-body state"
+  ],
+  "bodyCount": 4,
+  "teams": 2,
+  "visualDirection": "Luminous tabletop arena with tactile body silhouettes, readable trajectory, impacts, trails, team HUD and mobile-first direct manipulation.",
+  "explicitlyNot": [
+    "side-view fighter",
+    "walk-and-collect maze",
+    "generic four-node goal route"
+  ],
+  "openQuestions": [
+    "Exact historical character roster beyond Theo/Jax/Mirror/Rival",
+    "Final scoring and elimination rules",
+    "Whether original play was strictly turn-based, simultaneous, or supported both",
+    "Final arena objects, abilities and long-term progression"
+  ]
+}

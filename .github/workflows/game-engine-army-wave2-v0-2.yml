@@ -1,0 +1,45 @@
+name: JM Game Engine Army Five Max Pushes v0.2
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/wave2/v0.2/**'
+      - '.github/workflows/game-engine-army-wave2-v0-2.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/wave2/v0.2/**'
+      - '.github/workflows/game-engine-army-wave2-v0-2.yml'
+
+jobs:
+  source-build-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run 25 semantic assertions across five pushes
+        run: node game-engine-army/wave2/v0.2/tools/test_wave2.mjs
+      - name: Build five standalone offline bodies
+        run: python game-engine-army/wave2/v0.2/tools/build_wave2.py
+      - name: Verify standalone hashes and claim boundaries
+        run: python game-engine-army/wave2/v0.2/tools/test_dist.py
+      - name: Seal source-visible Zionfolder
+        run: |
+          cd game-engine-army/wave2/v0.2
+          find . -type f -not -path './dist/SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > dist/SHA256SUMS.txt
+          zip -qr /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER.zip .
+          sha256sum /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER.zip > /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER.sha256
+      - name: Upload verified Five Max Pushes v0.2
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER
+          path: |
+            /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER.zip
+            /tmp/JM_GAME_ENGINE_ARMY_FIVE_MAX_PUSHES_v0.2_ZIONFOLDER.sha256
+            game-engine-army/wave2/v0.2/dist/

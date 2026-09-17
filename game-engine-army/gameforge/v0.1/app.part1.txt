@@ -1,0 +1,38 @@
+
+(()=>{'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const GAME_BODIES=[
+{id:'tboys',name:'T‑Boys',tag:'fighter / roles / pressure',input:['Aim‑Drag','Melee','Run'],play:['Collision','Round Loop','Combo Chain'],cons:['Pressure','State Shift','Ring Out'],palette:['#55e8ff','#ff6b78'],law:'Different role bodies meet inside one fight without becoming interchangeable.',entities:['Jax','Theo','Mirror','Rival']},
+{id:'dragon-mirror',name:'Dragon Mirror',tag:'mirror / movement / transformation',input:['Aim‑Drag','Orbit','Reflect'],play:['Mirror Route','Shard Chase','Dragon Wake'],cons:['Reflection','Transformation','Return'],palette:['#c69cff','#65eaff'],law:'A reflected route changes what returns; it does not merely reverse the picture.',entities:['Dragon','Mirror','Shard','Gate']},
+{id:'route-catch',name:'Route Catch',tag:'aim / catch / reroute',input:['Aim‑Drag','Fling','Tap Route'],play:['Catch Loop','Route Shift','Timing Window'],cons:['Capture','Reroute','Miss Receipt'],palette:['#65eaff','#ffd166'],law:'Aim becomes route; route becomes catch; failure stays readable.' ,entities:['Catcher','Signal','Route','Target']},
+{id:'core-clash',name:'Core Clash',tag:'arena / core / pressure',input:['Aim‑Drag','Melee','Guard'],play:['Core Collision','Energy Loop','Turn Loop'],cons:['Core Damage','Pressure','Recovery'],palette:['#ff6b78','#ffd166'],law:'The core may be pressured, damaged and recovered without erasing the body around it.',entities:['Core','Striker','Guard','Rival']},
+{id:'cardbored',name:'cardBORED',tag:'cards / boredom / route choice',input:['Card','Drag Card','Tap Choice'],play:['Draw Loop','Choice Chain','Board Route'],cons:['Hand State','Route Lock','Discard'],palette:['#ffd166','#7fffb0'],law:'A card is a route carrier, not merely a picture with a number.',entities:['Card','Hand','Board','Dealer']},
+{id:'humanimals',name:'Humanimals',tag:'traits / bodies / switching',input:['Run','Swap','Pounce'],play:['Trait Loop','Pack Route','Body Switch'],cons:['Trait Shift','Pack State','Recovery'],palette:['#7fffb0','#ff9f68'],law:'Shared play does not collapse distinct creature and human traits.',entities:['Human','Animal','Hybrid','Pack']},
+{id:'blank',name:'Blank Forge Body',tag:'clean project / no inherited lore',input:['Aim‑Drag','Run','Card'],play:['Collision','Round Loop','Route Loop'],cons:['Score','Pressure','Receipt'],palette:['#cbd5e1','#65eaff'],law:'Blank means available for authored identity, not empty of governance.',entities:['Player','Target','Obstacle','Goal']}
+];
+const CODING={
+glyphplay:{name:'GlyphPlay',stages:['Glyph','Stage','Interaction','Play'],law:'creator-first playable logic'},
+cading:{name:'Cading',stages:['Mark','Signal','Route','State'],law:'marks become signals, routes, state and trace'},
+quadze:{name:'Quadze',stages:['Quarter A','Quarter B','Quarter C','Quarter D'],law:'four distinct functions complete through relation'},
+recorp:{name:'RECORP',stages:['Scatter','Recognise','Recover','Regroup'],law:'scattered parts return through explicit recovery'},
+flowtalk:{name:'FlowTalk',stages:['Context','Contact','Response','Meaning'],law:'meaning changes through contextual flow'},
+formeula:{name:'FormeULA',stages:['Formula','Visible Form','Movement','Output'],law:'formula must form visible playable structure'}
+};
+const COLORS={player:'#65eaff',goal:'#ffd166',node:'#c69cff',wall:'#587086',hazard:'#ff6b78'};
+let state,mode='EDIT',compiled=null,testBackup=null,history=[];
+const clone=v=>JSON.parse(JSON.stringify(v));const now=()=>new Date().toISOString();
+function stable(v){return JSON.stringify(v,Object.keys(v).sort())}
+function hash(text){let h=2166136261;for(const c of String(text)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return(h>>>0).toString(16).padStart(8,'0')}
+function fresh(){return{schema:'jm.gameforge-project/0.1',name:'GameForge First Cartridge',bodyId:'tboys',input:'Aim‑Drag',play:'Collision',consequence:'Pressure',coding:'glyphplay',target:'GlyphPlay Cartridge',seed:32,notes:'Preserve the selected game body while changing the build route.',builds:[],trace:[],runtime:{player:{x:1,y:7},progress:0,state:'ACTIVE'},scene:null}}
+function body(){return GAME_BODIES.find(b=>b.id===state.bodyId)||GAME_BODIES[0]}function coding(){return CODING[state.coding]||CODING.glyphplay}
+function trace(message,type='BUILD'){state.trace.unshift({at:now(),type,message});state.trace=state.trace.slice(0,80);renderTrace()}
+function syncForm(){state.name=$('#projectName').value||state.name;state.input=$('#inputLoop').value;state.play=$('#playLoop').value;state.consequence=$('#consequence').value;state.coding=$('#codingBody').value;state.target=$('#target').value;state.seed=Number($('#seed').value)||1;state.notes=$('#notes').value;renderGraph();renderIdentity()}
+function setBody(id){state.bodyId=id;const b=body();state.name=b.name+' Forge Build';state.input=b.input[0];state.play=b.play[0];state.consequence=b.cons[0];fillForm();trace('Selected sovereign game body: '+b.name);compile(false)}
+function fillForm(){const b=body();$('#projectName').value=state.name;$('#inputLoop').innerHTML=b.input.map(x=>`<option ${x===state.input?'selected':''}>${x}</option>`).join('');$('#playLoop').innerHTML=b.play.map(x=>`<option ${x===state.play?'selected':''}>${x}</option>`).join('');$('#consequence').innerHTML=b.cons.map(x=>`<option ${x===state.consequence?'selected':''}>${x}</option>`).join('');$('#codingBody').innerHTML=Object.entries(CODING).map(([id,c])=>`<option value="${id}" ${id===state.coding?'selected':''}>${c.name}</option>`).join('');$('#target').value=state.target;$('#seed').value=state.seed;$('#notes').value=state.notes;renderBodies();renderGraph();renderIdentity()}
+function buildGraph(){const b=body(),c=coding();const identity=hash([b.id,b.law,...b.entities].join('|'));const route=hash([state.input,state.play,state.consequence,c.name,state.seed].join('|'));const nodes=[{kind:'GAME BODY',value:b.name,hash:identity},{kind:'INPUT LOOP',value:state.input,hash:hash(state.input)},{kind:'PLAY LOOP',value:state.play,hash:hash(state.play)},{kind:'CONSEQUENCE',value:state.consequence,hash:hash(state.consequence)},{kind:'CODING BODY',value:c.name,hash:hash(c.stages.join('|'))},{kind:'TARGET',value:state.target,hash:route}];return{nodes,identity,route}}
+function seeded(n){let x=(Number(n)||1)>>>0;return()=>((x=Math.imul(1664525,x)+1013904223>>>0)/4294967296)}
+function buildScene(){const b=body(),c=coding(),rnd=seeded(state.seed+parseInt(hash(b.id),16));const w=12,h=9,tiles=Array.from({length:w*h},(_,i)=>({x:i%w,y:Math.floor(i/w),z:0}));const entities=[{id:'player',kind:'player',name:b.entities[0],x:1,y:7,z:0},{id:'goal',kind:'goal',name:b.entities[3]||'Goal',x:10,y:1,z:1}];
+for(let i=0;i<4;i++){const x=2+i*2,y=6-(i%3);entities.push({id:'node'+i,kind:'node',name:c.stages[i],x,y,z:i%2,order:i});tiles[y*w+x].z=i%2}
+for(let i=0;i<5;i++){const x=2+Math.floor(rnd()*8),y=1+Math.floor(rnd()*7);if(!entities.some(e=>e.x===x&&e.y===y))entities.push({id:'wall'+i,kind:i%3===0?'hazard':'wall',name:i%3===0?'Pressure':'Boundary',x,y,z:i%2})}
+return{w,h,tiles,entities,objective:{needed:4,current:0,open:false},bodyId:b.id,coding:state.coding,bodyIdentity:hash([b.id,b.law].join('|'))}}
+function compile(record=true){syncForm();const b=body(),c=coding(),graph=buildGraph(),scene=buildScene();scene.bodyIdentity=graph.identity;const core={schema:'jm.gameforge-cartridge/0.1',builtAt:now(),project:state.name,gameBody:{id:b.id,name:b.name,law:b.law,entities:b.entities,identityHash:graph.identity},composition:{input:state.input,play:state.play,consequence:st

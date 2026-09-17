@@ -1,0 +1,17 @@
+name: JM Game Engine Army Five Max Pushes v0.1 — legacy carrier trace
+
+# v0.1 is retained only as an auditable failed carrier route. It is no longer
+# an automatic required check because the clipped package transport was
+# replaced by the source-visible v0.2 lane.
+on:
+  workflow_dispatch:
+
+jobs:
+  legacy-trace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Preserve the superseded route boundary
+        run: |
+          echo 'LEGACY_V0_1_CARRIER_SUPERSEDED_BY_SOURCE_VISIBLE_V0_2'
+          echo 'The v0.1 package-parts remain in history as a failed transport receipt.'
+          echo 'Do not use this workflow as the current delivery gate.'

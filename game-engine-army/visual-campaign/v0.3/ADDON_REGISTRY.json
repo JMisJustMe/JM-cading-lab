@@ -1,0 +1,30 @@
+{
+  "schema": "jm.game-engine-army.visual-addons/0.3",
+  "status": "BUILTIN_MODULAR_ADDONS_CURRENT_SCOPE",
+  "governingLaw": "Visual add-ons raise presentation and contact without becoming the source of gameplay truth.",
+  "addons": [
+    {"id":"theme.obsidian-forge","category":"theme","name":"Obsidian Forge","targets":"all-nine","offline":true},
+    {"id":"theme.aurora-circuit","category":"theme","name":"Aurora Circuit","targets":"all-nine","offline":true},
+    {"id":"theme.paper-glyph","category":"theme","name":"Paper Glyph","targets":"all-nine","offline":true},
+    {"id":"theme.high-energy","category":"theme","name":"High Energy","targets":"all-nine","offline":true},
+    {"id":"identity.engine-palettes","category":"identity","name":"Nine Engine Identity Palettes","targets":"all-nine","offline":true},
+    {"id":"fx.particle-field","category":"fx","name":"Bounded Particle Field","targets":"all-nine","offline":true},
+    {"id":"fx.route-trails","category":"fx","name":"Route and Handoff Trails","targets":"all-nine","offline":true},
+    {"id":"fx.contact-ripple","category":"fx","name":"Pointer and Action Contact Ripples","targets":"all-nine","offline":true},
+    {"id":"fx.screen-response","category":"fx","name":"Fault, Recovery and Ding Screen Response","targets":"all-nine","offline":true},
+    {"id":"audio.procedural-synth","category":"audio","name":"Procedural Web Audio Cue Pack","targets":"all-nine","offline":true,"requiresUserGesture":true},
+    {"id":"input.haptics","category":"input","name":"Optional Android Haptic Cues","targets":"all-nine","offline":true,"capability":"navigator.vibrate"},
+    {"id":"access.reduced-motion","category":"accessibility","name":"Reduced Motion","targets":"all-nine","offline":true},
+    {"id":"access.high-contrast","category":"accessibility","name":"High Contrast","targets":"all-nine","offline":true},
+    {"id":"access.large-touch","category":"accessibility","name":"Large Touch Targets","targets":"all-nine","offline":true},
+    {"id":"access.live-status","category":"accessibility","name":"ARIA Live Engine Status","targets":"all-nine","offline":true},
+    {"id":"perf.auto-governor","category":"performance","name":"Automatic DPR and FX Governor","targets":"all-nine","offline":true},
+    {"id":"debug.frame-meter","category":"debug","name":"Frame and Quality Meter","targets":"all-nine","offline":true},
+    {"id":"export.visual-receipt","category":"export","name":"Visual Settings Receipt Export","targets":"all-nine","offline":true},
+    {"id":"delivery.portable-launcher","category":"delivery","name":"Embedded Nine-Engine Direct-File Launcher","targets":"army","offline":true},
+    {"id":"delivery.pwa","category":"delivery","name":"Installable HTTP/HTTPS PWA Package","targets":"army","offline":true,"requiresSecureContext":true},
+    {"id":"fx.engine-first-frame-scenes","category":"fx","name":"Nine Engine-Specific First-Frame Scenes","targets":"all-nine","offline":true},
+    {"id":"delivery.layout-rescue","category":"delivery","name":"Delayed Resize and Direct-File Layout Recovery","targets":"all-nine","offline":true}
+  ],
+  "claimBoundary": "The registry describes shipped browser add-ons. It does not claim authored commercial art, recorded audio, native GPU pipelines or device-certified performance."
+}

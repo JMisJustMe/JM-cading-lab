@@ -1,0 +1,21 @@
+{
+  "schema": "jm.game-engine-army-wave2/0.1",
+  "status": "FIVE_MAX_PUSHES_LOCAL_GATES_PASS_GITHUB_CI_PENDING",
+  "donors": [
+    {"name":"JM GameCore v0.2I-B2 TRUE Singlefile","sha256":"0ba657883d52d591cee17839ade6b421213527cdf645de81724535d720b4db4d","bytes":1073408},
+    {"name":"Kading Game Estate Engine Loop Mass Mount v1.0","sha256":"bdd7e5231148f682728c2b94a27695d1ee93d049fb2b9f2c274d38b1ceb2f183","bytes":7282557},
+    {"name":"JM Game Engine Console v0.3 Phone Safe","sha256":"5de836ceb4131923bcf86ea2a0ce22636a6a3b24fc43bba40aaec5fa61bb5c69","bytes":32685379},
+    {"name":"GlyphPlay Sovereign v0.1","sha256":"7f6c1b74344d75b4ece32b2d5c826852ff34eadc2e431eb7854ce6e6c123dcf4","bytes":39154},
+    {"name":"GameForge Sovereign v0.1","sha256":"c52d8fadf5e9f52def452947a6bff0bfda1904a112f59fac821077c4770d9346","bytes":33342},
+    {"name":"GlyphForge Sovereign v0.1","sha256":"a26c1e7126fb352d964ed14feaf696f42e7a8e5ff525c7680758ddf823e03246","bytes":44051},
+    {"name":"PLAYFORM Sovereign v0.1","sha256":"43ac7d82a4e22a1fd78e2b3f53975ffb46277e0c3ab2842a4405c371495c368b","bytes":27722}
+  ],
+  "pushes": [
+    {"id":5,"body":"JM GameCore","route":"BodyRegistry → ServiceBus → namespaced state/trace/recovery/host"},
+    {"id":6,"body":"JM GAME NATIVE CORE","route":"profile → fixed-step simulation → fault/recovery → target ABI"},
+    {"id":7,"body":"Kading Game Estate Engine","route":"Kading source → AST → Game IR → runtime receipt"},
+    {"id":8,"body":"JM Game Engine Console","route":"select → launch → service request → engine-owned receipt"},
+    {"id":9,"body":"Army Federation","route":"asset → cartridge → creator → repeatability → language → native → host"}
+  ],
+  "claimBoundary": "Five functional first floors and cross-engine trials are constructed. Final native binaries, self-hosting, direct user phone/laptop contact, sustained projects and crowns remain open."
+}

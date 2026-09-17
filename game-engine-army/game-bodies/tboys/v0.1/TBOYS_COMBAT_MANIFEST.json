@@ -1,0 +1,14 @@
+{
+  "schema": "jm.tboys-combat-anchor/0.1",
+  "status": "TBOYS_DISTINCT_COMBAT_RUNTIME_FIRST_FLOOR",
+  "gameIdentity": "T‑Boys",
+  "law": "Different role bodies meet inside one fight without becoming interchangeable.",
+  "states": ["IDLE", "MOVE", "STRIKE", "GUARD", "HIT", "BLOCK", "BURST", "LAUNCHED", "DOWN", "VICTORY"],
+  "controls": {
+    "keyboard": {"move": ["A", "D", "ArrowLeft", "ArrowRight"], "strike": "J", "guard": "K", "burst": "L"},
+    "touch": ["LEFT", "RIGHT", "STRIKE", "GUARD", "BURST"]
+  },
+  "systems": ["combat arena", "attack range", "guard resolution", "damage", "pressure", "burst", "enemy AI", "round timer", "win state", "hit particles", "screen shake", "mobile HUD"],
+  "forbiddenGenericRouteMarkers": ["needed:4", "Coding stage contacted", "Goal held until all coding stages complete"],
+  "claimBoundary": "First distinct T‑Boys combat runtime. Final character art, animation, balance, multiplayer, authored audio and real-device profiling remain open."
+}

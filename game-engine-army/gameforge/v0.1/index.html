@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GameForge Sovereign Rebuild v0.1</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+<header class="top"><div class="brand"><b>GameForge Sovereign Rebuild v0.1</b><small>multi-body build graph · deterministic cartridges · identity-preserving export</small></div><div class="topStats"><span class="pill">Body <strong id="topBody">T‑BOYS</strong></span><span class="pill">Coding <strong id="topCoding">GLYPHPLAY</strong></span><span class="pill">Build <strong id="topBuild">OPEN</strong></span></div></header>
+<nav class="toolbar"><button id="compileBtn" class="primary">Compile Build</button><button id="testBtn">Playtest</button><button id="editBtn" class="active">Edit</button><button id="saveBtn">Save</button><button id="loadBtn">Load</button><button id="importBtn">Import</button><input id="importFile" type="file" accept="application/json" hidden><button id="exportBtn">Export Cartridge</button><button id="playableBtn">Export Playable</button><button id="receiptBtn">Build Receipt</button><button id="resetBtn">Reset</button></nav>
+<main class="workspace">
+<section class="panel"><div class="panelHead"><h3>Game Bodies</h3></div><div class="panelBody"><div class="section"><div class="sectionTitle">Sovereign body shelf</div><div class="bodyList" id="bodyList"></div></div><div class="section"><div class="sectionTitle">Identity contract</div><div id="identityText" style="font-size:.76rem;color:var(--mut);line-height:1.5"></div></div></div></section>
+<section class="panel forge"><div class="graph" id="graph"></div><div class="previewWrap" id="previewWrap"><canvas id="preview"></canvas><div class="hud"><span>Mode <b id="modeHud">EDIT</b></span><span>Seed <b id="seedHud">32</b></span><span>Progress <b id="progressHud">0/1</b></span><span>Cartridge <b id="cartridgeHud">OPEN</b></span></div><div class="overlay" id="overlay"><div id="overlayText"></div></div></div><div class="previewFooter"><button data-step="0,-1">↑</button><button data-step="-1,0">←</button><button data-step="0,1">↓</button><button data-step="1,0">→</button><button id="actBtn">ACT</button><button id="retryBtn">Retry</button><span style="color:var(--mut);font-size:.72rem;padding:10px">WASD/arrows · tap preview</span></div></section>
+<section class="panel"><div class="panelHead"><h3>Build Inspector</h3></div><div class="panelBody"><div class="section"><div class="sectionTitle">Composition</div><div class="field"><label>Project</label><input id="projectName"></div><div class="field"><label>Input</label><select id="inputLoop"></select></div><div class="field"><label>Play</label><select id="playLoop"></select></div><div class="field"><label>Consequence</label><select id="consequence"></select></div><div class="field"><label>Coding body</label><select id="codingBody"></select></div><div class="field"><label>Target</label><select id="target"><option>GlyphPlay Cartridge</option><option>Standalone Playable</option><option>JM GameCore Body</option><option>RouteOS Game Package</option></select></div><div class="field"><label>Seed</label><input id="seed" type="number" value="32"></div><div class="field"><label>Notes</label><textarea id="notes">Preserve the selected game body while changing the build route.</textarea></div><div class="miniGrid"><button class="miniBtn" id="randomBtn">New Seed</button><button class="miniBtn" id="proveBtn">Prove Difference</button></div></div><div class="section"><div class="sectionTitle">Build graph output</div><div class="buildList" id="buildList"></div></div><div class="section"><div class="sectionTitle">Receipt</div><div class="receipt" id="receipt"></div></div><div class="section"><div class="sectionTitle">TraceBox</div><div class="trace" id="trace"></div></div></div></section>
+</main>
+<div class="dpad"><span></span><button data-step="0,-1">↑</button><span></span><button data-step="-1,0">←</button><button id="mobileAct">ACT</button><button data-step="1,0">→</button><span></span><button data-step="0,1">↓</button><span></span></div>
+</div>
+<script src="app-loader.js"></script>
+</body></html>

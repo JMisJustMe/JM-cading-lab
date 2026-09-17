@@ -1,0 +1,5 @@
+@media(max-width:760px){
+ #jmvc-root{font-size:14px}.jmvc-status{left:6px;right:112px;bottom:max(6px,env(safe-area-inset-bottom));max-width:none;border-radius:15px}.jmvc-status small,#jmvc-fps{display:none}.jmvc-dock{right:6px;bottom:max(6px,env(safe-area-inset-bottom))}.jmvc-dock button{padding:7px 9px;min-height:42px}.jmvc-dock button:nth-child(2){display:none}#jmvc-drawer{right:5px;bottom:58px;width:calc(100vw - 10px);max-height:72svh;border-radius:18px}.jmvc-actions{grid-template-columns:1fr}
+ body{padding-bottom:58px!important}.workspace{min-height:calc(100svh - 58px)!important}.canvasWrap,.previewWrap{min-height:58svh!important}.toolbar{scroll-snap-type:x proximity}.toolbar>*{scroll-snap-align:start}.panel:not(.stagePanel):not(.forge){max-height:70svh}
+}
+@media(max-width:420px){.jmvc-status{right:100px}.jmvc-status .jmvc-mark{width:26px;height:26px}.jmvc-status b{font-size:.7rem}#jmvc-signal{font-size:.58rem}.jmvc-dock button{font-size:.58rem;padding:6px 8px}}

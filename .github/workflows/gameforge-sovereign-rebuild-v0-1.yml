@@ -1,0 +1,75 @@
+name: GameForge Sovereign Rebuild v0.1
+
+on:
+  push:
+    branches:
+      - agent/game-engine-army-glyphplay-sovereign-v0-1
+    paths:
+      - 'game-engine-army/gameforge/v0.1/**'
+      - 'game-engine-army/ENGINE_REGISTRY_v0.1.json'
+      - '.github/workflows/gameforge-sovereign-rebuild-v0-1.yml'
+  pull_request:
+    paths:
+      - 'game-engine-army/gameforge/v0.1/**'
+      - 'game-engine-army/ENGINE_REGISTRY_v0.1.json'
+      - '.github/workflows/gameforge-sovereign-rebuild-v0-1.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run GameForge identity and build gates
+        run: python game-engine-army/gameforge/v0.1/tools/test_gameforge_v0_1.py
+      - name: Build HTTP and single-file forge deliveries
+        run: |
+          python game-engine-army/gameforge/v0.1/tools/build_gameforge_v0_1.py \
+            --source game-engine-army/gameforge/v0.1 \
+            --out dist/gameforge-sovereign-v0.1
+      - name: Verify deterministic delivery receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('dist/gameforge-sovereign-v0.1')
+          receipt=json.loads((root/'BUILD_RECEIPT.json').read_text())
+          assert receipt['status']=='GAMEFORGE_SOVEREIGN_REBUILD_STATIC_BUILD_PASS_BROWSER_CONTACT_OPEN'
+          assert receipt['source_part_count']==3
+          assert receipt['game_body_count']==7
+          assert receipt['coding_body_count']==6
+          assert receipt['donor_count']==1
+          assert len(receipt['javascript_sha256'])==64
+          assert len(receipt['single_file_sha256'])==64
+          assert (root/receipt['single_file']).is_file()
+          print('GAMEFORGE_SOVEREIGN_REBUILD_V0_1_BUILD_GATE_PASS')
+          PY
+      - name: Test HTTP source delivery
+        run: |
+          cd dist/gameforge-sovereign-v0.1
+          python -m http.server 8766 >/tmp/gameforge-http.log 2>&1 &
+          server=$!
+          trap 'kill $server' EXIT
+          sleep 1
+          curl --fail --silent http://127.0.0.1:8766/index.html | grep -q 'GameForge Sovereign Rebuild v0.1'
+          curl --fail --silent http://127.0.0.1:8766/app.part1.txt | grep -q 'GAME_BODIES'
+          curl --fail --silent http://127.0.0.1:8766/style.css | grep -q 'previewWrap'
+      - name: Seal GameForge Zionfolder
+        run: |
+          cd dist
+          zip -qr GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip gameforge-sovereign-v0.1
+          sha256sum GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip | tee GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER
+          path: |
+            dist/GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.zip
+            dist/GAMEFORGE_SOVEREIGN_REBUILD_v0.1_ZIONFOLDER.sha256
+            dist/gameforge-sovereign-v0.1/BUILD_RECEIPT.json
+            dist/gameforge-sovereign-v0.1/OPEN_FIRST_GAMEFORGE_SOVEREIGN_REBUILD_v0_1.html

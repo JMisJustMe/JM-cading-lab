@@ -1,0 +1,108 @@
+name: JM Universal Forge v2.1 AAB Proof
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'proof/universal-forge-v2_1-aab/**'
+      - '.github/workflows/jm-universal-forge-v2_1-aab.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-aab-proof:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proof/universal-forge-v2_1-aab
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install API 36 toolchain
+        run: yes | sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Create ephemeral proof signing identity
+        run: |
+          keytool -genkeypair -noprompt \
+            -keystore proof-upload.jks \
+            -storepass jm-proof-only \
+            -keypass jm-proof-only \
+            -alias jmproof \
+            -keyalg RSA -keysize 4096 -validity 3650 \
+            -dname 'CN=JM Universal Forge v2.1 CI Proof,O=JM,C=GB'
+          keytool -list -v -keystore proof-upload.jks -storepass jm-proof-only > proof-key.txt
+
+      - name: Build genuine release AAB and APK
+        env:
+          ORG_GRADLE_PROJECT_JM_STORE_FILE: proof-upload.jks
+          ORG_GRADLE_PROJECT_JM_STORE_PASSWORD: jm-proof-only
+          ORG_GRADLE_PROJECT_JM_KEY_ALIAS: jmproof
+          ORG_GRADLE_PROJECT_JM_KEY_PASSWORD: jm-proof-only
+        run: gradle --no-daemon :app:bundleRelease :app:assembleRelease
+
+      - name: Validate AAB and derive universal APK
+        run: |
+          curl -L --fail --retry 3 \
+            -o bundletool.jar \
+            https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar
+          AAB=app/build/outputs/bundle/release/app-release.aab
+          APK=app/build/outputs/apk/release/app-release.apk
+          java -jar bundletool.jar validate --bundle "$AAB"
+          java -jar bundletool.jar build-apks \
+            --bundle "$AAB" \
+            --output jm-universal-forge-v2_1.apks \
+            --mode universal \
+            --ks proof-upload.jks \
+            --ks-pass pass:jm-proof-only \
+            --ks-key-alias jmproof \
+            --key-pass pass:jm-proof-only
+          unzip -p jm-universal-forge-v2_1.apks universal.apk > JM_UNIVERSAL_FORGE_v2_1_0_FROM_AAB.apk
+          APKSIGNER="${ANDROID_SDK_ROOT}/build-tools/36.0.0/apksigner"
+          "$APKSIGNER" verify --verbose --print-certs "$APK" > release-apk-signature.txt
+          "$APKSIGNER" verify --verbose --print-certs JM_UNIVERSAL_FORGE_v2_1_0_FROM_AAB.apk > aab-universal-apk-signature.txt
+          sha256sum "$AAB" "$APK" JM_UNIVERSAL_FORGE_v2_1_0_FROM_AAB.apk > SHA256SUMS.txt
+          unzip -t "$AAB" > AAB_ZIP_TEST.txt
+          unzip -t JM_UNIVERSAL_FORGE_v2_1_0_FROM_AAB.apk > UNIVERSAL_APK_ZIP_TEST.txt
+
+      - name: Write bounded proof receipt
+        run: |
+          cat > JM_UNIVERSAL_FORGE_v2_1_0_AAB_PROOF_RECEIPT.md <<'RECEIPT'
+          # JM Universal Forge v2.1.0 — AAB Proof Receipt
+
+          - Official Android Gradle Plugin route: PASS
+          - compileSdk / targetSdk: 36
+          - Release AAB: built and bundletool-validated
+          - Release APK: built and apksigner-verified
+          - Universal APK derived from AAB: built and apksigner-verified
+          - Signing identity: ephemeral 4096-bit CI proof key
+          - Owner production identity: not committed and not claimed
+          - Google Play acceptance: external and not claimed
+          RECEIPT
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_UNIVERSAL_FORGE_v2_1_0_AAB_PROOF
+          if-no-files-found: error
+          path: |
+            proof/universal-forge-v2_1-aab/app/build/outputs/bundle/release/app-release.aab
+            proof/universal-forge-v2_1-aab/app/build/outputs/apk/release/app-release.apk
+            proof/universal-forge-v2_1-aab/JM_UNIVERSAL_FORGE_v2_1_0_FROM_AAB.apk
+            proof/universal-forge-v2_1-aab/JM_UNIVERSAL_FORGE_v2_1_0_AAB_PROOF_RECEIPT.md
+            proof/universal-forge-v2_1-aab/SHA256SUMS.txt
+            proof/universal-forge-v2_1-aab/proof-key.txt
+            proof/universal-forge-v2_1-aab/release-apk-signature.txt
+            proof/universal-forge-v2_1-aab/aab-universal-apk-signature.txt
+            proof/universal-forge-v2_1-aab/AAB_ZIP_TEST.txt
+            proof/universal-forge-v2_1-aab/UNIVERSAL_APK_ZIP_TEST.txt

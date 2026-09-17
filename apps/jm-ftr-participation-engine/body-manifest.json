@@ -1,0 +1,26 @@
+{
+  "schema": "JM.PermanentBodyManifest/1.0",
+  "body_id": "jm-ftr-participation-engine-v9",
+  "title": "JM FTR Participation Engine v9.0 — Fivefold Beyond Maximum",
+  "version": "9.0",
+  "office": "apps",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "repository_path": "apps/jm-ftr-participation-engine/",
+  "stable_route": "https://jmisjustme-estate.pages.dev/apps/jm-ftr-participation-engine/",
+  "entry_loader": "index.html",
+  "payload_parts": [
+    "payload/payload-000.b64",
+    "payload/pair-001-002.b64",
+    "payload/pair-003-004.b64",
+    "payload/pair-005-006.b64",
+    "payload/pair-007-008.b64"
+  ],
+  "payload_encoding": "base64(gzip(utf8-html))",
+  "runtime_sha256": "0F5B389757D5BDBA2F7B0248673F19B02430528E255E8784D82A292ACE7739EF",
+  "payload_gzip_sha256": "91746AA0141E207144CB540A96C17EF8FACE8C4C0B8D520ECFE63F8D7F5DDC43",
+  "loader_sha256": "E4B04F0C0ABE312A409D4A82C9C70CFB2B946A8FD93822D201CE1B6028846A0C",
+  "source_package_sha256": "6B8AA7D9C46A2EE4296A12EBDD817F40A8D1C5099492E754481B32CA3E37D694",
+  "promoted_at_utc": "2026-08-01T14:00:00Z",
+  "status": "PROMOTION_PR_PENDING",
+  "claim_boundary": "Permanent software custody and deployable source. No real sensor, material mechanism, operator field run, or physical GEO / AMA-Pro Ding is claimed."
+}

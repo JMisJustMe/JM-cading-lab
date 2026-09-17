@@ -1,0 +1,52 @@
+{
+  "schema": "JM.WixAuthorityRoomReconciliationReceipt/0.2",
+  "recorded_utc": "2026-08-14T16:42:46.624511+00:00",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "wix_site_id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
+  "wix_rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
+  "source_event_commit": "65a17a7b9cced9be60e48b633ffb7ce173e31665",
+  "current_room_file": "governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2.html",
+  "current_room_size_bytes": 27778,
+  "current_room_sha256": "4507f8d5bb07ae9fac819711f6783750a0a7c3e157d7131f66c8a9ba2852d94c",
+  "proved_donor_v0_1": {
+    "file": "JM_WIX_AUTHORITY_ROOM_v0_1.html",
+    "size_bytes": 21941,
+    "sha256": "aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062",
+    "preserved": true
+  },
+  "whole_estate_control": {
+    "lineages": "1074/1074",
+    "houses": "14/14 PASS",
+    "residual_blockers": 973,
+    "final_corpus": "OPEN_BY_LAW"
+  },
+  "rooms": [
+    "OPEN FIRST",
+    "ESTATE MAP",
+    "COMMAND ROOM",
+    "USE / ENGINEERING",
+    "PLAY / PUBLIC OFFICES",
+    "READ / CONVERGENCE",
+    "VERIFY / OPEN SEAMS",
+    "OWNER / RETURN"
+  ],
+  "checks": {
+    "html_parser_contact": "PASS",
+    "eight_room_navigation": "PASS",
+    "unique_room_identity": "PASS",
+    "mobile_first_bottom_rail": "PASS",
+    "command_search": "PASS",
+    "authority_scope_filters": "PASS",
+    "javascript_syntax": "PASS",
+    "current_authority_markers": "PASS",
+    "open_seams_visible": "PASS",
+    "live_wix_untouched": "PASS"
+  },
+  "state": "CURRENT_ESTATE_AUTHORITY_ROOM_V0_2_VALIDATED_AWAITING_ISOLATED_PHONE_PREVIEW",
+  "wix_static_layout_translated": false,
+  "published": false,
+  "production_deployed": false,
+  "physical_device_accepted": false,
+  "ding": false,
+  "boundary": "v0.2 is the validated current-Estate reconciliation source. v0.1 remains a preserved proved donor. Validation is not Wix editor translation, publication, physical acceptance or JM Ding."
+}

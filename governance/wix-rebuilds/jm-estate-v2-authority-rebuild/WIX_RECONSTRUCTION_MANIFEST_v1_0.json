@@ -1,0 +1,69 @@
+{
+  "schema": "JM.WixAuthorityRebuildManifest/1.0",
+  "operation_id": "wix-v2-authority-rebuild",
+  "operation_type": "REPAIR",
+  "requested_by": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "owner_authority_statement": "Rebuild the existing Jmisjustme Living Es Wix site from the current JM Estate v2.0 authority inside an isolated editable branch, preserving the live site until explicit review and publication authority.",
+  "authoritative_site": {
+    "name": "Jmisjustme Living Es",
+    "site_id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
+    "live_url": "https://jayemmlyrikz6.wixsite.com/jmisjustme-living-es",
+    "published": true,
+    "plan": "FREE",
+    "editor_type": "ODEDITOR",
+    "velo_enabled": false
+  },
+  "source_branch": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "Original-Branch",
+    "type": "ORIGINAL_BRANCH",
+    "revision": "1"
+  },
+  "rebuild_branch": {
+    "id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
+    "name": "JM Estate v2.0 Authority Rebuild",
+    "type": "USER",
+    "source_type": "SOURCE_BRANCH",
+    "revision": "1",
+    "editor_type": "HARMONY",
+    "created_utc": "2026-08-06T08:30:14.453Z"
+  },
+  "current_authority_heads": {
+    "master_tool_register": "v2.0",
+    "register_of_registers": "v1.0",
+    "command_register": "v1.0 — First Pass Finished"
+  },
+  "current_counts": {
+    "source_records": 1122,
+    "governed_lineages": 1074,
+    "final_dispositions": 1074,
+    "houses_passed": 14,
+    "highways_preserved": 2298,
+    "delivery_manifests": 69,
+    "executable_route_specs": 25,
+    "waves_completed": 7
+  },
+  "command_register_dependency": {
+    "draft_pr": 111,
+    "proposal_head_sha": "80629b9d5f02a32ed1da4a073d0ed0a1c5c0f00e",
+    "size_bytes": 2530896,
+    "sha256": "abfffcc82f2aad630ce065702334366cd4b713a282add523a1d973b702871410",
+    "current_public_use": "BLOCKED_UNTIL_SEPARATE_MERGE_DEPLOYMENT_AND_PHYSICAL_TEST"
+  },
+  "rooms": [
+    "OPEN_FIRST",
+    "ESTATE_MAP",
+    "COMMAND_ROOM",
+    "USE",
+    "PLAY",
+    "READ",
+    "VERIFY",
+    "OWNER_RETURN"
+  ],
+  "non_overwrite_boundary": "The original published Wix branch remains live. The rebuild branch is not default and must not be published before explicit JM review and publication authority.",
+  "physical_proof_condition": "JM opens the branch preview on phone and laptop, tests every primary door, confirms authority labels and explicitly authorises publication. JM Ding remains separate.",
+  "deployment_targets": [],
+  "publication_authority": null,
+  "ding": false,
+  "state": "WIX_REBUILD_BRANCH_CREATED_AWAITING_EDITOR_BUILD"
+}

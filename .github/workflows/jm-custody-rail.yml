@@ -1,0 +1,52 @@
+name: JM Custody Rail Probe
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/jm-custody-rail.yml"
+      - "estate-custody/**"
+
+permissions:
+  contents: write
+
+jobs:
+  custody-probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build proof packet
+        shell: bash
+        run: |
+          cat > JM_CUSTODY_ARTIFACT_PROBE.txt <<'EOF'
+          JM SECONDARY CUSTODY RAIL PROBE
+          date=2026-09-18
+          version=1.0
+          purpose=prove ordinary permitted account surfaces can preserve and return an Estate recovery receipt
+          authority=non-canonical access rail; does not replace Estate authority
+          EOF
+          sha256sum JM_CUSTODY_ARTIFACT_PROBE.txt > JM_CUSTODY_ARTIFACT_PROBE.sha256
+
+      - name: Preserve as Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-custody-probe-${{ github.sha }}
+          path: |
+            JM_CUSTODY_ARTIFACT_PROBE.txt
+            JM_CUSTODY_ARTIFACT_PROBE.sha256
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Bootstrap draft Release Asset
+        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.added, '.github/workflows/jm-custody-rail.yml') }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          SHORT="${GITHUB_SHA::12}"
+          TAG="jm-custody-${SHORT}"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG"               JM_CUSTODY_ARTIFACT_PROBE.txt               JM_CUSTODY_ARTIFACT_PROBE.sha256               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "JM Custody Bootstrap ${SHORT}"               --notes "Secondary-purpose custody rail proof. Draft release; non-canonical access carrier."               --draft
+          fi

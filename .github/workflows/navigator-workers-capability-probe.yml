@@ -1,0 +1,58 @@
+name: Navigator Workers capability probe
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - ".github/workflows/navigator-workers-capability-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Read Workers capability without mutation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_NAME: jm-navigator-live-contact-state-v0-1
+    steps:
+      - name: Probe Workers Scripts read authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="$RUNNER_TEMP/workers-list.json"
+          status="$(curl -sS -o "$response" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json')"
+          STATUS="$status" FILE="$response" TARGET_NAME="$TARGET_NAME" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              payload = json.loads(Path(os.environ['FILE']).read_text(encoding='utf-8'))
+          except Exception:
+              payload = {}
+          rows = payload.get('result') or []
+          names = sorted(row.get('id') for row in rows if isinstance(row, dict) and row.get('id')) if isinstance(rows, list) else []
+          errors = []
+          for err in payload.get('errors') or []:
+              if isinstance(err, dict):
+                  errors.append({'code': err.get('code'), 'message': err.get('message')})
+          print(json.dumps({
+              'http_status': int(os.environ['STATUS']),
+              'api_success': payload.get('success') is True,
+              'worker_count': len(names),
+              'target_present': os.environ['TARGET_NAME'] in names,
+              'target_name': os.environ['TARGET_NAME'],
+              'errors': errors,
+              'mutation_performed': False
+          }, indent=2))
+          PY
+
+      - name: Assert read-only probe
+        run: echo 'Workers capability probe issued GET only; no Worker, Durable Object namespace, route, migration, or binding mutation was requested.'

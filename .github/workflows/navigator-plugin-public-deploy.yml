@@ -1,0 +1,49 @@
+name: Navigator public plugin submission proof
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - '.github/workflows/navigator-plugin-public-deploy.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/plugin-public-worker.mjs'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/deploy-plugin-public.sh'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/navigator-plugin-public-deploy.yml'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/plugin-public-worker.mjs'
+      - 'estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/deploy-plugin-public.sh'
+  workflow_dispatch:
+    inputs:
+      openai_apps_challenge:
+        description: 'Optional OpenAI plugin domain-verification token'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-audit --no-fund wrangler@4
+      - name: Deploy and prove public read-only Navigator plugin descendant
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          OPENAI_APPS_CHALLENGE: ${{ secrets.OPEN_AI_APPS_CHALLENGE || github.event.inputs.openai_apps_challenge || '' }}
+        run: bash estate-publication/apps-tools-games/JM3232-Navigator-Browser-Bridge-v0.1/live-contact/deploy-plugin-public.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: navigator-plugin-public-proof-v0.1
+          path: NAVIGATOR_PLUGIN_PUBLIC_PROOF_v0_1.json
+          if-no-files-found: error
+          retention-days: 30

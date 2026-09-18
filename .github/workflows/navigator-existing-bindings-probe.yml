@@ -1,0 +1,94 @@
+name: Navigator existing Cloudflare binding probe
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - ".github/workflows/navigator-existing-bindings-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Read existing Pages bindings without mutation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Inspect sanitized binding names on existing projects
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/navigator-binding-probe"
+          for project in jm-inline-contact-probe jmisjustme-estate; do
+            status="$(curl -sS -o "$RUNNER_TEMP/navigator-binding-probe/${project}.json" -w '%{http_code}' \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${project}" \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H 'Content-Type: application/json')"
+            PROJECT="$project" STATUS="$status" FILE="$RUNNER_TEMP/navigator-binding-probe/${project}.json" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          path = Path(os.environ['FILE'])
+          try:
+              payload = json.loads(path.read_text(encoding='utf-8'))
+          except Exception:
+              payload = {}
+          result = payload.get('result') or {}
+          configs = result.get('deployment_configs') or {}
+
+          def names(config, key):
+              value = config.get(key) or {}
+              if isinstance(value, dict):
+                  return sorted(value.keys())
+              if isinstance(value, list):
+                  out = []
+                  for item in value:
+                      if isinstance(item, dict):
+                          candidate = item.get('binding') or item.get('name')
+                          if candidate:
+                              out.append(candidate)
+                  return sorted(set(out))
+              return []
+
+          def env_types(config):
+              value = config.get('env_vars') or {}
+              if not isinstance(value, dict):
+                  return {}
+              return {k: ((v or {}).get('type') if isinstance(v, dict) else type(v).__name__) for k, v in sorted(value.items())}
+
+          binding_keys = [
+              'kv_namespaces',
+              'r2_buckets',
+              'd1_databases',
+              'durable_object_namespaces',
+              'services',
+              'analytics_engine_datasets',
+              'queues',
+              'hyperdrive_bindings',
+              'vectorize_bindings',
+          ]
+          summary = {
+              'project': os.environ['PROJECT'],
+              'http_status': int(os.environ['STATUS']),
+              'success': payload.get('success') is True,
+              'uses_functions': result.get('uses_functions'),
+              'production_branch': result.get('production_branch'),
+              'production': {},
+              'preview': {},
+          }
+          for lane in ('production', 'preview'):
+              cfg = configs.get(lane) or {}
+              summary[lane] = {key: names(cfg, key) for key in binding_keys if names(cfg, key)}
+              summary[lane]['env_var_types_by_name'] = env_types(cfg)
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+          done
+
+      - name: Assert probe was read-only
+        run: echo 'Navigator binding probe performed project-metadata GETs only; no storage or project mutation was requested.'

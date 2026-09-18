@@ -1,0 +1,60 @@
+name: Navigator D1 capability probe
+
+on:
+  push:
+    branches:
+      - agent/navigator-live-contact-stage-v0-1
+    paths:
+      - ".github/workflows/navigator-d1-capability-probe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    name: Read D1 capability without mutation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_NAME: jm-navigator-live-contact-v0-1
+    steps:
+      - name: Probe D1 list permission and target presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="$RUNNER_TEMP/d1-list.json"
+          status="$(curl -sS -o "$response" -w '%{http_code}' \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database?name=${TARGET_NAME}&per_page=10" \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H 'Content-Type: application/json')"
+          STATUS="$status" FILE="$response" TARGET_NAME="$TARGET_NAME" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          try:
+              payload = json.loads(Path(os.environ['FILE']).read_text(encoding='utf-8'))
+          except Exception:
+              payload = {}
+          rows = payload.get('result') or []
+          matches = []
+          for row in rows if isinstance(rows, list) else []:
+              if isinstance(row, dict) and row.get('name') == os.environ['TARGET_NAME']:
+                  matches.append({'name': row.get('name'), 'uuid': row.get('uuid') or row.get('id'), 'jurisdiction': row.get('jurisdiction')})
+          errors = []
+          for err in payload.get('errors') or []:
+              if isinstance(err, dict):
+                  errors.append({'code': err.get('code'), 'message': err.get('message')})
+          print(json.dumps({
+              'http_status': int(os.environ['STATUS']),
+              'api_success': payload.get('success') is True,
+              'target_name': os.environ['TARGET_NAME'],
+              'target_matches': matches,
+              'errors': errors,
+              'mutation_performed': False
+          }, indent=2))
+          PY
+
+      - name: Assert read-only probe
+        run: echo 'D1 capability probe issued GET only; no database, binding, schema, row, or project mutation was requested.'

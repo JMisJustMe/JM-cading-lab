@@ -1,0 +1,140 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "JM3232 Navigator",
+    "subtitle": "Search governed JM routes",
+    "description": "JM3232 Navigator helps users search the JM Estate, fetch preserved source records, resolve RootWords, inspect source lineage, and check the live publication boundary. This public Plugin descendant is deliberately read-only and preserves source identity and claim boundaries without exposing shared mutable user state.",
+    "category": "PRODUCTIVITY"
+  },
+  "tools": {
+    "search": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Search only ranks and returns matching preserved Estate and Radius records without changing Navigator state.",
+        "open_world_justification": "Search reads Navigator-mounted records and does not modify public internet state or third-party systems.",
+        "destructive_justification": "Search does not delete, overwrite, revoke, publish, or otherwise irreversibly change stored records."
+      }
+    },
+    "fetch": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Fetch retrieves one preserved source record by stable ID and does not change Navigator state.",
+        "open_world_justification": "Fetch returns data already mounted in Navigator and does not write to external systems or public internet state.",
+        "destructive_justification": "Fetch cannot delete, overwrite, revoke, publish, or irreversibly alter any record."
+      }
+    },
+    "navigator_resolve_rootword": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "RootWord resolution reads Radius Lexicon records and returns governed meanings, boundaries, and related entries without changing state.",
+        "open_world_justification": "The tool operates on Navigator-mounted lexical records and does not change an external system.",
+        "destructive_justification": "The tool cannot delete, overwrite, publish, revoke, or irreversibly alter records."
+      }
+    },
+    "navigator_return_lineage": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Lineage lookup only returns preserved source, authority, relationships, and claim-boundary information.",
+        "open_world_justification": "The tool reads Navigator data and does not write to public internet state or a third-party service.",
+        "destructive_justification": "The tool performs no deletion, overwrite, revocation, publication, or irreversible action."
+      }
+    },
+    "navigator_bridge_status": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Bridge status only reads mounted source counts and the live publication boundary.",
+        "open_world_justification": "The status check does not change public internet state or any third-party system.",
+        "destructive_justification": "The status check performs no deletion, overwrite, revocation, publication, or irreversible action."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Search the governed Estate for a known conceptual body.",
+      "user_prompt": "Search the JM Estate for Radius Lexicon and show me the strongest matching records.",
+      "file_attachment_urls": null,
+      "tools_triggered": "search",
+      "expected_output": "Returns ranked matching records with stable IDs and source information without merging distinct source bodies.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Fetch a known preserved source record after a stable ID is available.",
+      "user_prompt": "Fetch the full Navigator record with ID RL-RADIUS-LEXICON.",
+      "file_attachment_urls": null,
+      "tools_triggered": "fetch",
+      "expected_output": "Returns the preserved record, metadata, relationships, flags, and source route for the requested stable ID.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Resolve a JM RootWord through the Radius Lexicon.",
+      "user_prompt": "Resolve the RootWord 'Radius' and show its meaning radius, use law, visual face, and claim boundary.",
+      "file_attachment_urls": null,
+      "tools_triggered": "navigator_resolve_rootword",
+      "expected_output": "Returns the strongest Radius Lexicon entry with governed meaning, boundaries, visual and wordplay faces, and nearby alternatives.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Inspect the preserved lineage for a known Estate or Radius record.",
+      "user_prompt": "Return the source lineage for RL-RADIUS-LEXICON and show its authority and claim boundary.",
+      "file_attachment_urls": null,
+      "tools_triggered": "navigator_return_lineage",
+      "expected_output": "Returns preserved source, authority, lineage, connections, and the claim boundary for the requested record.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Check the live public Navigator publication boundary.",
+      "user_prompt": "Show me the current JM3232 Navigator bridge status.",
+      "file_attachment_urls": null,
+      "tools_triggered": "navigator_bridge_status",
+      "expected_output": "Returns the mounted source counts and confirms the public read-only publication boundary without changing state.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not invoke Navigator for unrelated weather information.",
+      "user_prompt": "What will the weather be in London tomorrow?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "Navigator should not be invoked because current weather is outside its Estate retrieval, RootWord, lineage, and status workflows.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not invoke Navigator merely to draft unrelated prose.",
+      "user_prompt": "Write me a funny birthday message for my friend.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "Navigator should not be invoked because the request does not require Estate retrieval or governed JM source routing.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not expose owner-only write functions through the public Plugin.",
+      "user_prompt": "Create a Stringmark and export a SavePack for me.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The public Plugin should not invoke owner-only write tools; it is deliberately read-only and does not expose Stringmark, registration, receipt, or SavePack mutations.",
+      "expected_output_url": null
+    }
+  ]
+}

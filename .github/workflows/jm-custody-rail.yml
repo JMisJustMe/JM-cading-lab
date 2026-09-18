@@ -39,14 +39,12 @@ jobs:
           retention-days: 90
           if-no-files-found: error
 
-      - name: Bootstrap draft Release Asset
-        if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.added, '.github/workflows/jm-custody-rail.yml') }}
+      - name: Ensure draft Release Asset rail exists
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          SHORT="${GITHUB_SHA::12}"
-          TAG="jm-custody-${SHORT}"
+          TAG="jm-custody-bootstrap-2026-09-18"
           if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release create "$TAG"               JM_CUSTODY_ARTIFACT_PROBE.txt               JM_CUSTODY_ARTIFACT_PROBE.sha256               --repo "$GITHUB_REPOSITORY"               --target "$GITHUB_SHA"               --title "JM Custody Bootstrap ${SHORT}"               --notes "Secondary-purpose custody rail proof. Draft release; non-canonical access carrier."               --draft
+            gh release create "$TAG" JM_CUSTODY_ARTIFACT_PROBE.txt JM_CUSTODY_ARTIFACT_PROBE.sha256 --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "JM Custody Bootstrap — 2026-09-18" --notes "Secondary-purpose custody rail proof. Draft release; non-canonical access carrier." --draft
           fi

@@ -1,0 +1,43 @@
+{
+  "pass": true,
+  "proofClass": "MCP_RUNTIME_TRANSPORT_WITH_MARKED_FIXTURE",
+  "sourceAuthorityProvenHere": false,
+  "chatgptContactProvenHere": false,
+  "health": {
+    "ok": true,
+    "adapterVersion": "0.1.1",
+    "bodyId": "jm.untitled-field-branch/v0.9",
+    "sourceSha256": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea",
+    "playableIrSchema": "jm.gamecore.playable-ir/v0.3",
+    "oneBodyAbi": "jm.onebody-abi/v0.1",
+    "claim": "HOST_ADAPTER_BUILT_NOT_CHATGPT_CONTACT_PROVEN"
+  },
+  "serverVersion": {
+    "name": "JM ChatGPT Host Adapter",
+    "version": "0.1.1"
+  },
+  "tools": [
+    "render-jm-game"
+  ],
+  "resources": [
+    "ui://jm/untitled-field-branch-v0.9.html"
+  ],
+  "renderReceipt": {
+    "schema": "jm.chatgpt-host-adapter/render-receipt/v0.1",
+    "bodyId": "jm.untitled-field-branch/v0.9",
+    "sourceSha256": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea",
+    "playableIrSchema": "jm.gamecore.playable-ir/v0.3",
+    "oneBodyAbi": "jm.onebody-abi/v0.1",
+    "hostRole": "CARRIER_NOT_SOURCE_AUTHORITY",
+    "mergeForbidden": true,
+    "keeper": "The estate donates. The game remains sovereign. The host serves play. Trace proves consequence."
+  },
+  "fixtureMarker": "JM_HOST_TRANSPORT_TEST_FIXTURE_NOT_SOURCE_AUTHORITY",
+  "githubActions": {
+    "runId": 32448200625,
+    "runNumber": 5,
+    "conclusion": "success",
+    "artifactId": 9434767790,
+    "artifactDigest": "sha256:fbd0870da86c2478ed9b879ec02aacb24a11e6275cfef4fc279b9a61e703daee"
+  }
+}

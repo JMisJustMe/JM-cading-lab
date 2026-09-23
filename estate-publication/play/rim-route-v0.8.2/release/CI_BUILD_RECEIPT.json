@@ -1,0 +1,32 @@
+{
+  "schema": "jm.rim-route.play-prep-build/v0.8.2",
+  "status": "CI_BUILD_PASS__PHYSICAL_DEVICE_AND_PLAY_CONSOLE_OPEN",
+  "sourceCommit": "bfdfe327ec0a6c56e8b24c265abed0ef35548384",
+  "workflowRun": "35817926348",
+  "sourceSha256": "86d30d56ce9a1e54d1d0eb981fb7a2cf4ee6d125fccaa77cbd8478d555246a63",
+  "package": "com.jmisjustme.rimroute",
+  "versionCode": 82,
+  "versionName": "0.8.2",
+  "targetSdk": 36,
+  "debugApk": {
+    "name": "JM_RIM_ROUTE_v0.8.2_DEBUG.apk",
+    "bytes": 115505,
+    "sha256": "0a9a916c99843924126222892e15ca8e0584593ff590769874b0dca9be4a93f0"
+  },
+  "proofAab": {
+    "name": "JM_RIM_ROUTE_v0.8.2_PROOF.aab",
+    "bytes": 95363,
+    "sha256": "503ff6694c72bb6d202280ebf2e9f5e89fcd7dc8200f266b5ba9db34ff7ebf62"
+  },
+  "fromAabUniversalApk": {
+    "name": "JM_RIM_ROUTE_v0.8.2_FROM_AAB_UNIVERSAL.apk",
+    "bytes": 102985,
+    "sha256": "eeb578a0fb319c2892ca15f4f8c4960460f42161f5b0836d3ab03e1b94b68696"
+  },
+  "internetPermission": "ABSENT_VERIFIED_FROM_APK",
+  "embeddedExactSource": "SHA256_MATCH_VERIFIED_FROM_APK",
+  "bundletoolValidation": "PASS",
+  "signingBoundary": "Temporary proof key generated inside CI. Not the owner permanent Play upload key.",
+  "physicalDeviceDing": "OPEN",
+  "playConsoleSubmission": "OPEN"
+}

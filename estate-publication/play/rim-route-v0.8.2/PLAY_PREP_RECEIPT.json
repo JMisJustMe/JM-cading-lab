@@ -1,0 +1,43 @@
+{
+  "schema": "jm.rim-route.play-prep/v0.8.2",
+  "status": "SOURCE_RECOVERED__ANDROID_API36_CARRIER_PREPARED__CI_BUILD_PENDING",
+  "source": {
+    "title": "JM Rim Route — Portrait Basketball v0.8.2 · Live Dribble + Ball Contact",
+    "bytes": 334728,
+    "sha256": "86d30d56ce9a1e54d1d0eb981fb7a2cf4ee6d125fccaa77cbd8478d555246a63",
+    "estateRegistryId": "CR-036",
+    "routeOsCartridgeId": "rim-route"
+  },
+  "android": {
+    "applicationId": "com.jmisjustme.rimroute",
+    "namespace": "com.jmisjustme.rimroute",
+    "minSdk": 26,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "versionCode": 82,
+    "versionName": "0.8.2",
+    "category": "game",
+    "orientation": "portrait"
+  },
+  "privacyStaticScan": {
+    "externalScripts": 0,
+    "fetch": 0,
+    "xhr": 0,
+    "websocket": 0,
+    "geolocation": 0,
+    "cameraOrMic": 0,
+    "notifications": 0,
+    "localStorage": true,
+    "webAudio": true
+  },
+  "signingBoundary": "Proof CI may use an ephemeral proof key. Permanent owner upload key intentionally not created before owner-controlled Play setup.",
+  "purchaseGate": "Google Play Console account registration/payment/identity verification remains owner-controlled and not performed.",
+  "claims": {
+    "exactSourceRecovery": "PASS",
+    "api36CarrierPrepared": "PASS",
+    "localApkBuild": "NOT_AVAILABLE_IN_CURRENT_CONTAINER",
+    "ciBuild": "PENDING",
+    "physicalPhoneDing": "OPEN",
+    "playConsoleSubmission": "OPEN"
+  }
+}

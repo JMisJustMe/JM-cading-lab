@@ -1,0 +1,157 @@
+name: JM Rim Route v0.8.2 Play Prep
+
+on:
+  push:
+    branches:
+      - 'play/rim-route-v0.8.2-prep'
+    paths:
+      - 'estate-publication/play/rim-route-v0.8.2/**'
+      - '.github/workflows/build-rim-route-v0-8-2-play-prep.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-rim-route-v0-8-2-play-prep-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: estate-publication/play/rim-route-v0.8.2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android API 36
+        run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Recover and verify exact game source from existing Games&Beyond payload
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, hashlib, json, lzma
+          root=Path('../../..').resolve()
+          payload=root/'games-beyond/GAMES_BEYOND_PAYLOAD_v0_3.lzma.b64.txt'
+          manifest=json.loads((root/'games-beyond/payload-manifest.json').read_text())
+          b64=payload.read_text().strip()
+          assert len(b64)==manifest['base64Chars'], (len(b64),manifest['base64Chars'])
+          compressed=base64.b64decode(b64,validate=True)
+          assert hashlib.sha256(compressed).hexdigest()==manifest['compressedSha256']
+          raw=lzma.decompress(compressed,format=lzma.FORMAT_ALONE)
+          assert hashlib.sha256(raw).hexdigest()==manifest['rawSha256']
+          pack=json.loads(raw)
+          body=next(x for x in pack['bodies'] if x.get('id')=='rim-route')
+          html=body['html'].encode('utf-8')
+          got=hashlib.sha256(html).hexdigest()
+          expected='86d30d56ce9a1e54d1d0eb981fb7a2cf4ee6d125fccaa77cbd8478d555246a63'
+          assert got == expected, (got, expected)
+          assert len(html)==334728, len(html)
+          out=Path('app/src/main/assets/index.html')
+          out.parent.mkdir(parents=True,exist_ok=True)
+          out.write_bytes(html)
+          print('Rim Route exact-source recovery PASS',len(html),got)
+          PY
+
+      - name: Create temporary proof signing identity
+        run: |
+          keytool -genkeypair -noprompt -keystore proof-upload.jks \
+            -storepass jm-proof-only -keypass jm-proof-only \
+            -alias jm-proof -keyalg RSA -keysize 4096 -validity 3650 \
+            -dname 'CN=JM Rim Route v0.8.2 Play Prep Proof, O=JM, C=GB'
+
+      - name: Lint, test, build debug APK and proof AAB
+        run: gradle --no-daemon clean :app:lintDebug :app:testDebugUnitTest :app:assembleDebug :app:bundleRelease
+
+      - name: Assemble proof package
+        run: |
+          set -euo pipefail
+          rm -rf release
+          mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk
+          cp app/build/outputs/bundle/release/app-release.aab release/JM_RIM_ROUTE_v0.8.2_PROOF.aab
+          "$ANDROID_HOME/build-tools/36.0.0/aapt2" dump permissions release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk > release/APK_PERMISSIONS.txt
+          if grep -q 'android.permission.INTERNET' release/APK_PERMISSIONS.txt; then
+            echo 'Unexpected INTERNET permission in merged APK' >&2
+            exit 1
+          fi
+          unzip -p release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk assets/index.html > release/EMBEDDED_INDEX.html
+          echo '86d30d56ce9a1e54d1d0eb981fb7a2cf4ee6d125fccaa77cbd8478d555246a63  release/EMBEDDED_INDEX.html' | sha256sum -c -
+          rm release/EMBEDDED_INDEX.html
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk > release/DEBUG_SIGNATURE.txt
+          curl -fsSL -o bundletool.jar 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
+          java -jar bundletool.jar validate --bundle=release/JM_RIM_ROUTE_v0.8.2_PROOF.aab > release/AAB_VALIDATION.txt
+          java -jar bundletool.jar build-apks \
+            --bundle=release/JM_RIM_ROUTE_v0.8.2_PROOF.aab \
+            --output=release/JM_RIM_ROUTE_v0.8.2_PROOF.apks \
+            --mode=universal \
+            --ks=proof-upload.jks --ks-pass=pass:jm-proof-only \
+            --ks-key-alias=jm-proof --key-pass=pass:jm-proof-only
+          unzip -p release/JM_RIM_ROUTE_v0.8.2_PROOF.apks universal.apk > release/JM_RIM_ROUTE_v0.8.2_FROM_AAB_UNIVERSAL.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/JM_RIM_ROUTE_v0.8.2_FROM_AAB_UNIVERSAL.apk > release/UNIVERSAL_SIGNATURE.txt
+          rm release/JM_RIM_ROUTE_v0.8.2_PROOF.apks
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          rel=Path('release')
+          def meta(n):
+              p=rel/n
+              return {'name':n,'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()}
+          receipt={
+            'schema':'jm.rim-route.play-prep-build/v0.8.2',
+            'status':'CI_BUILD_PASS__PHYSICAL_DEVICE_AND_PLAY_CONSOLE_OPEN',
+            'sourceCommit':os.environ['GITHUB_SHA'],
+            'workflowRun':os.environ['GITHUB_RUN_ID'],
+            'sourceSha256':'86d30d56ce9a1e54d1d0eb981fb7a2cf4ee6d125fccaa77cbd8478d555246a63',
+            'package':'com.jmisjustme.rimroute',
+            'versionCode':82,
+            'versionName':'0.8.2',
+            'targetSdk':36,
+            'debugApk':meta('JM_RIM_ROUTE_v0.8.2_DEBUG.apk'),
+            'proofAab':meta('JM_RIM_ROUTE_v0.8.2_PROOF.aab'),
+            'fromAabUniversalApk':meta('JM_RIM_ROUTE_v0.8.2_FROM_AAB_UNIVERSAL.apk'),
+            'internetPermission':'ABSENT_VERIFIED_FROM_APK',
+            'embeddedExactSource':'SHA256_MATCH_VERIFIED_FROM_APK',
+            'bundletoolValidation':'PASS',
+            'signingBoundary':'Temporary proof key generated inside CI. Not the owner permanent Play upload key.',
+            'physicalDeviceDing':'OPEN',
+            'playConsoleSubmission':'OPEN'
+          }
+          (rel/'CI_BUILD_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PY
+          sha256sum release/* > release/SHA256SUMS.txt
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_RIM_ROUTE_v0.8.2_PLAY_PREP
+          retention-days: 30
+          path: estate-publication/play/rim-route-v0.8.2/release/
+
+      - name: Seat branch-local proof
+        working-directory: .
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Rim Route Play Prep'
+          git config user.email 'actions@users.noreply.github.com'
+          git add estate-publication/play/rim-route-v0.8.2/release/
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seat Rim Route v0.8.2 Play-prep build proof [skip ci]'
+          git push origin HEAD:"$GITHUB_REF_NAME"

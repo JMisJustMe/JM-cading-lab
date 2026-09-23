@@ -1,6 +1,6 @@
 {
   "schema": "jm.rim-route.play-prep/v0.8.2",
-  "status": "SOURCE_RECOVERED__ANDROID_API36_CARRIER_PREPARED__CI_BUILD_PENDING",
+  "status": "PRE_CONSOLE_BUILD_PROVED__OWNER_DEVICE_AND_GOOGLE_GATES_OPEN",
   "source": {
     "title": "JM Rim Route — Portrait Basketball v0.8.2 · Live Dribble + Ball Contact",
     "bytes": 334728,
@@ -36,8 +36,52 @@
     "exactSourceRecovery": "PASS",
     "api36CarrierPrepared": "PASS",
     "localApkBuild": "NOT_AVAILABLE_IN_CURRENT_CONTAINER",
-    "ciBuild": "PENDING",
+    "ciBuild": "PASS_RUN_35818261765",
     "physicalPhoneDing": "OPEN",
-    "playConsoleSubmission": "OPEN"
+    "playConsoleSubmission": "OPEN",
+    "unsignedOwnerSignableAab": "PASS",
+    "proofAab": "PASS_DO_NOT_UPLOAD_TO_PLAY"
+  },
+  "ciHistory": [
+    {
+      "run": 1,
+      "id": "35817683668",
+      "result": "FAIL_ENVIRONMENT_SETUP",
+      "correction": "removed stale setup-android route"
+    },
+    {
+      "run": 2,
+      "id": "35817771072",
+      "result": "FAIL_LINT",
+      "correction": "migrated back navigation to API-33 callback plus pre-33 key route"
+    },
+    {
+      "run": 3,
+      "id": "35817926348",
+      "result": "PASS_PROOF_SIGNED_BUILD"
+    },
+    {
+      "run": 4,
+      "id": "35818261765",
+      "result": "PASS_FINAL_UNSIGNED_OWNER_SIGNABLE_PLUS_PROOF_ARTIFACTS"
+    }
+  ],
+  "finalBuild": {
+    "sourceCommit": "d3f78559596336360a5db64895f65c99cd55b085",
+    "unsignedReadyAab": {
+      "bytes": 92024,
+      "sha256": "dcffcc3cab611ef9bc97b4aca47677c2f8250bfc62d5659784075eddccbd88e2"
+    },
+    "proofAab": {
+      "bytes": 95940,
+      "sha256": "ee61871316722303cb3794b3cbcea80f06bba45d1282d6a40a21f9f6b50008c2"
+    },
+    "fromAabUniversalApk": {
+      "bytes": 102985,
+      "sha256": "7fecc7d10a3447af5ac419c0ff7494653f373a7c46cddbf3280acdf9bb80e627"
+    },
+    "internetPermission": "ABSENT_VERIFIED",
+    "embeddedExactSource": "SHA256_MATCH_VERIFIED",
+    "bundletoolValidation": "UNSIGNED_AND_PROOF_PASS"
   }
 }

@@ -90,7 +90,12 @@ jobs:
           rm -rf release
           mkdir -p release
           cp app/build/outputs/apk/debug/app-debug.apk release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk
-          cp app/build/outputs/bundle/release/app-release.aab release/JM_RIM_ROUTE_v0.8.2_PROOF.aab
+          cp app/build/outputs/bundle/release/app-release.aab release/JM_RIM_ROUTE_v0.8.2_UNSIGNED_READY.aab
+          cp release/JM_RIM_ROUTE_v0.8.2_UNSIGNED_READY.aab release/JM_RIM_ROUTE_v0.8.2_PROOF.aab
+          jarsigner -keystore proof-upload.jks -storepass jm-proof-only -keypass jm-proof-only \
+            -sigalg SHA256withRSA -digestalg SHA-256 \
+            release/JM_RIM_ROUTE_v0.8.2_PROOF.aab jm-proof
+          jarsigner -verify -verbose -certs release/JM_RIM_ROUTE_v0.8.2_PROOF.aab > release/AAB_PROOF_SIGNATURE.txt
           "$ANDROID_HOME/build-tools/36.0.0/aapt2" dump permissions release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk > release/APK_PERMISSIONS.txt
           if grep -q 'android.permission.INTERNET' release/APK_PERMISSIONS.txt; then
             echo 'Unexpected INTERNET permission in merged APK' >&2
@@ -101,7 +106,8 @@ jobs:
           rm release/EMBEDDED_INDEX.html
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/JM_RIM_ROUTE_v0.8.2_DEBUG.apk > release/DEBUG_SIGNATURE.txt
           curl -fsSL -o bundletool.jar 'https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar'
-          java -jar bundletool.jar validate --bundle=release/JM_RIM_ROUTE_v0.8.2_PROOF.aab > release/AAB_VALIDATION.txt
+          java -jar bundletool.jar validate --bundle=release/JM_RIM_ROUTE_v0.8.2_UNSIGNED_READY.aab > release/AAB_VALIDATION_UNSIGNED.txt
+          java -jar bundletool.jar validate --bundle=release/JM_RIM_ROUTE_v0.8.2_PROOF.aab > release/AAB_VALIDATION_PROOF.txt
           java -jar bundletool.jar build-apks \
             --bundle=release/JM_RIM_ROUTE_v0.8.2_PROOF.aab \
             --output=release/JM_RIM_ROUTE_v0.8.2_PROOF.apks \
@@ -129,12 +135,13 @@ jobs:
             'versionName':'0.8.2',
             'targetSdk':36,
             'debugApk':meta('JM_RIM_ROUTE_v0.8.2_DEBUG.apk'),
+            'unsignedReadyAab':meta('JM_RIM_ROUTE_v0.8.2_UNSIGNED_READY.aab'),
             'proofAab':meta('JM_RIM_ROUTE_v0.8.2_PROOF.aab'),
             'fromAabUniversalApk':meta('JM_RIM_ROUTE_v0.8.2_FROM_AAB_UNIVERSAL.apk'),
             'internetPermission':'ABSENT_VERIFIED_FROM_APK',
             'embeddedExactSource':'SHA256_MATCH_VERIFIED_FROM_APK',
-            'bundletoolValidation':'PASS',
-            'signingBoundary':'Temporary proof key generated inside CI. Not the owner permanent Play upload key.',
+            'bundletoolValidation':'UNSIGNED_AND_PROOF_PASS',
+            'signingBoundary':'Unsigned AAB is prepared for owner-controlled signing. Proof AAB uses a disposable CI key and MUST NOT be uploaded to Play.',
             'physicalDeviceDing':'OPEN',
             'playConsoleSubmission':'OPEN'
           }

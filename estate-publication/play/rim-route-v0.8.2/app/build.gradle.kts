@@ -12,19 +12,9 @@ android {
         versionName = "0.8.2"
     }
 
-    signingConfigs {
-        create("proof") {
-            storeFile = rootProject.file("proof-upload.jks")
-            storePassword = "jm-proof-only"
-            keyAlias = "jm-proof"
-            keyPassword = "jm-proof-only"
-        }
-    }
-
     buildTypes {
         getByName("release") {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("proof")
         }
     }
 

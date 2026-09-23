@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
 
 import java.io.ByteArrayInputStream;
@@ -56,6 +58,12 @@ public final class MainActivity extends Activity {
         root.addView(menu, menuParams);
         menu.setOnClickListener(v -> showMenu(menu));
         setContentView(root);
+        if (Build.VERSION.SDK_INT >= 33) {
+            getOnBackInvokedDispatcher().registerOnBackInvokedCallback(
+                android.window.OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                this::handleBack
+            );
+        }
         web.loadUrl(LOCAL_ORIGIN + "index.html");
     }
 
@@ -138,8 +146,16 @@ public final class MainActivity extends Activity {
         return mime.startsWith("text/") || mime.contains("javascript") || mime.contains("json") ? "UTF-8" : null;
     }
 
-    @Override public void onBackPressed() {
-        if (web != null && web.canGoBack()) web.goBack(); else super.onBackPressed();
+    private void handleBack() {
+        if (web != null && web.canGoBack()) web.goBack(); else finish();
+    }
+
+    @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (Build.VERSION.SDK_INT < 33 && keyCode == KeyEvent.KEYCODE_BACK) {
+            handleBack();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override protected void onDestroy() {

@@ -49,3 +49,10 @@ jobs:
           exit 1
       - name: Prove 10 surfaces x 2 viewports
         run: node tests/ecostate-contact-v4.spec.mjs
+      - name: Upload contact-story visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-contact-story-pass-004-visual-receipts
+          path: qa/ecostate-contact-v4
+          if-no-files-found: warn

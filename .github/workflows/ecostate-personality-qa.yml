@@ -57,3 +57,10 @@ jobs:
           exit 1
       - name: Mobile + desktop personality proof
         run: node tests/ecostate-personality.spec.mjs
+      - name: Upload personality visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-personality-pass-002-visual-receipts
+          path: qa/ecostate-personality
+          if-no-files-found: warn

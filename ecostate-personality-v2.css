@@ -2,7 +2,7 @@
    Pass 002: each public House should look and behave like what it is. */
 :root{--eco2-speed:12s;--eco2-soft:rgba(255,255,255,.06)}
 body[data-ecostate-personality="v2"] .hero{position:relative}
-.eco2-scene{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;pointer-events:none;isolation:isolate}
+.eco2-scene{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;pointer-events:none;isolation:isolate}body[data-ecostate-personality="v2"] .hero>.eco2-scene{position:absolute;inset:0;z-index:0}
 .eco2-scene>*{position:absolute}
 .eco2-scene+.hero-copy,.eco2-scene~*{position:relative;z-index:1}
 .eco2-label{font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in srgb,var(--eco-accent) 86%,white);opacity:.72}

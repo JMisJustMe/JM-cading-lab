@@ -1,0 +1,40 @@
+/* JM ECOSTATE Contact & Story System v4.0 — Pass 004
+   Function-aware contact states, route transitions and live visual storytelling.
+   Shared family remains accessible; sovereign Houses retain their own bodies. */
+:root{--eco4-contact-x:50%;--eco4-contact-y:50%}
+body[data-ecostate-contact="v4"] .eco4-story{position:absolute;inset:0;z-index:1;overflow:hidden;border-radius:inherit;pointer-events:none}
+body[data-ecostate-contact="v4"] .eco4-story::before{content:"";position:absolute;left:var(--eco4-contact-x);top:var(--eco4-contact-y);width:18rem;height:18rem;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--eco-accent) 13%,transparent),transparent 68%);opacity:.5}
+.eco4-route-thread{position:absolute;right:1rem;top:50%;width:min(34%,420px);height:1px;background:linear-gradient(90deg,transparent,var(--eco-accent-2),var(--eco-accent),transparent);opacity:.34;transform-origin:right center}
+.eco4-route-thread::before,.eco4-route-thread::after{content:"";position:absolute;top:50%;width:8px;height:8px;border-radius:50%;border:1px solid var(--eco-accent-2);background:#071019;transform:translateY(-50%);box-shadow:0 0 18px color-mix(in srgb,var(--eco-accent-2) 40%,transparent)}
+.eco4-route-thread::before{left:20%}.eco4-route-thread::after{right:5%}
+.eco4-state{position:fixed;z-index:1600;right:max(.8rem,env(safe-area-inset-right));bottom:max(.8rem,env(safe-area-inset-bottom));max-width:min(88vw,28rem);display:flex;align-items:center;gap:.55rem;padding:.48rem .68rem;border:1px solid color-mix(in srgb,var(--eco-accent-2) 25%,rgba(255,255,255,.08));border-radius:999px;background:rgba(5,9,15,.78);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 14px 36px rgba(0,0,0,.3);font:800 .57rem/1.2 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:#dce8f2;pointer-events:none;opacity:.82}
+.eco4-state i{width:7px;height:7px;border-radius:50%;background:var(--eco-accent);box-shadow:0 0 14px var(--eco-accent);flex:0 0 auto}
+body[data-eco4-phase="contact"] .eco4-state,body[data-eco4-phase="leaving"] .eco4-state{border-color:color-mix(in srgb,var(--eco-accent) 52%,rgba(255,255,255,.08));opacity:1}
+body[data-eco4-phase="leaving"] .eco4-state i{background:var(--eco-accent-2);box-shadow:0 0 18px var(--eco-accent-2)}
+body[data-ecostate-contact="v4"] :is(a,button,summary,[tabindex]):focus-visible{scroll-margin:6rem}
+body[data-ecostate-contact="v4"] [data-eco4-contacted]{position:relative}
+body[data-ecostate-contact="v4"] [data-eco4-contacted]::after{content:"";position:absolute;inset:-1px;border-radius:inherit;border:1px solid color-mix(in srgb,var(--eco-accent) 42%,transparent);pointer-events:none;opacity:0}
+body[data-eco4-phase="contact"] [data-eco4-contacted]::after{opacity:.7}
+body[data-ecostate-surface="games"] .eco4-route-thread{transform:skewY(-4deg);opacity:.52}
+body[data-ecostate-surface="theory"] .eco4-route-thread{background:linear-gradient(90deg,transparent,var(--eco-accent),var(--eco-accent-2));opacity:.4}
+body[data-ecostate-surface="lyrics"] .eco4-route-thread{height:2px;filter:drop-shadow(0 0 7px var(--eco-accent));opacity:.42}
+body[data-ecostate-surface="apps"] .eco4-route-thread{background:repeating-linear-gradient(90deg,var(--eco-accent) 0 14px,transparent 14px 21px);opacity:.34}
+body[data-ecostate-surface="creator"] .eco4-route-thread{transform:rotate(-2deg);opacity:.38}
+body[data-ecostate-surface="work"] .eco4-route-thread{background:linear-gradient(90deg,transparent,var(--eco-accent-2) 35%,var(--eco-accent) 35% 72%,transparent 72%);opacity:.38}
+body[data-ecostate-surface="navigator"] .eco4-route-thread{width:min(42%,520px);opacity:.52}
+body[data-ecostate-surface="recovery"] .eco4-route-thread{background:repeating-linear-gradient(90deg,var(--eco-accent) 0 7px,transparent 7px 14px);opacity:.42}
+body[data-ecostate-surface="recent"] .eco4-route-thread{opacity:.36}
+@media(prefers-reduced-motion:no-preference){
+  body[data-eco4-phase="entering"] .eco4-story{animation:eco4Enter .7s ease both}
+  body[data-eco4-phase="contact"] .eco4-story::before{animation:eco4Contact .52s ease-out both}
+  body[data-eco4-phase="leaving"] main{animation:eco4Leave .28s ease both}
+  body[data-ecostate-contact="v4"] .eco4-route-thread::after{animation:eco4Route 2.8s ease-in-out infinite alternate}
+  body[data-eco4-phase="contact"] [data-eco4-contacted]::after{animation:eco4Ring .46s ease-out both}
+}
+@keyframes eco4Enter{from{opacity:0;transform:scale(.992)}to{opacity:1;transform:none}}
+@keyframes eco4Leave{to{opacity:.7;transform:translateY(3px)}}
+@keyframes eco4Contact{0%{opacity:.15;transform:scale(.96)}100%{opacity:1;transform:none}}
+@keyframes eco4Route{to{transform:translateY(-50%) scale(1.35);box-shadow:0 0 28px var(--eco-accent-2)}}
+@keyframes eco4Ring{0%{opacity:.9;transform:scale(.985)}100%{opacity:0;transform:scale(1.025)}}
+@media(max-width:760px){.eco4-route-thread{right:-8%;width:56%;opacity:.25}.eco4-state{right:.55rem;bottom:.55rem;font-size:.5rem;max-width:calc(100vw - 1.1rem)}}
+@media(prefers-reduced-motion:reduce){.eco4-story,.eco4-story::before,.eco4-route-thread::after,.eco4-state,[data-eco4-contacted]::after,main{animation:none!important;transition:none!important}}

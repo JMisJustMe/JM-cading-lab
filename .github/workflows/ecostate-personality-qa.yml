@@ -11,6 +11,11 @@ on:
       - 'theory/index.html'
       - 'lyrics/index.html'
       - 'apps/index.html'
+      - 'author/authuser.html'
+      - 'money-menu/index.html'
+      - 'navigator/index.html'
+      - 'recovery/index.html'
+      - 'recent/index.html'
       - '.github/workflows/ecostate-personality-qa.yml'
   pull_request:
     branches: [main]
@@ -61,6 +66,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ecostate-personality-pass-002-visual-receipts
+          name: ecostate-personality-pass-002-all-public-personalities
           path: qa/ecostate-personality
           if-no-files-found: warn

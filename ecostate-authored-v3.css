@@ -1,0 +1,26 @@
+/* JM ECOSTATE Authored Graphics v3.0 — Pass 003 */
+body[data-ecostate-surface] .hero{position:relative;isolation:isolate}
+body[data-ecostate-surface] .hero>.eco3-art{position:absolute!important;z-index:0!important;right:-2%;top:4%;width:min(54%,650px);height:92%;object-fit:contain;object-position:center right;pointer-events:none;user-select:none;opacity:.68;filter:drop-shadow(0 30px 55px rgba(0,0,0,.34));mix-blend-mode:screen}
+body[data-ecostate-surface] .hero>.eco3-mark{position:absolute!important;z-index:2!important;right:1rem;bottom:1rem;width:58px;height:58px;border-radius:16px;pointer-events:none;user-select:none;opacity:.82;filter:drop-shadow(0 10px 22px rgba(0,0,0,.35))}
+body[data-ecostate-surface] .hero>:not(.eco2-scene):not(.eco3-art):not(.eco3-mark){position:relative;z-index:2}
+body[data-ecostate-surface="front-door"] .hero>.eco3-art{width:min(52%,630px);opacity:.72}
+body[data-ecostate-surface="games"] .hero>.eco3-art{width:min(55%,660px);opacity:.74}
+body[data-ecostate-surface="theory"] .hero>.eco3-art{width:min(50%,590px);opacity:.66}
+body[data-ecostate-surface="lyrics"] .hero>.eco3-art{width:min(56%,650px);opacity:.72}
+body[data-ecostate-surface="apps"] .hero>.eco3-art{width:min(54%,620px);opacity:.68}
+body[data-ecostate-surface="creator"] .hero>.eco3-art{width:min(49%,570px);opacity:.64}
+body[data-ecostate-surface="work"] .hero>.eco3-art{width:min(48%,560px);opacity:.64}
+body[data-ecostate-surface="navigator"] .hero>.eco3-art{width:min(52%,610px);opacity:.68}
+body[data-ecostate-surface="recovery"] .hero>.eco3-art{width:min(50%,590px);opacity:.66}
+body[data-ecostate-surface="recent"] .hero>.eco3-art{width:min(50%,590px);opacity:.64}
+@media(max-width:760px){
+  body[data-ecostate-surface] .hero>.eco3-art{right:-18%;top:12%;width:96%;height:76%;opacity:.25;object-position:center right}
+  body[data-ecostate-surface] .hero>.eco3-mark{width:44px;height:44px;right:.65rem;bottom:.65rem;opacity:.72}
+}
+@media(prefers-reduced-motion:no-preference){
+  body[data-ecostate-surface] .hero>.eco3-art{animation:eco3Float 9s ease-in-out infinite alternate}
+  body[data-ecostate-surface="games"] .hero>.eco3-art{animation-duration:5.8s}
+  body[data-ecostate-surface="lyrics"] .hero>.eco3-art{animation-duration:7.2s}
+}
+@keyframes eco3Float{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,-7px,0)}}
+@media(prefers-reduced-motion:reduce){body[data-ecostate-surface] .hero>.eco3-art{animation:none!important}}

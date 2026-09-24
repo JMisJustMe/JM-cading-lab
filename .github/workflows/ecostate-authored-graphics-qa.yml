@@ -35,6 +35,12 @@ jobs:
           node --check ecostate-authored-v3.js
           node -e "JSON.parse(require('fs').readFileSync('assets/ecostate-v3/manifest.json','utf8')); console.log('manifest PASS')"
           test "$(find assets/ecostate-v3 -maxdepth 1 -name '*.svg' | wc -l)" -eq 11
+          python3 - <<'PY'
+          import glob, xml.etree.ElementTree as ET
+          for p in glob.glob('assets/ecostate-v3/*.svg'):
+              ET.parse(p)
+          print('SVG XML PASS')
+          PY
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1
@@ -46,3 +52,10 @@ jobs:
           exit 1
       - name: Prove 10 surfaces x 2 viewports
         run: node tests/ecostate-authored-v3.spec.mjs
+      - name: Upload authored visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-authored-graphics-pass-003-visual-receipts
+          path: qa/ecostate-authored-v3
+          if-no-files-found: warn

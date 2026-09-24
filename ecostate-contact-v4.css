@@ -38,3 +38,16 @@ body[data-ecostate-surface="recent"] .eco4-route-thread{opacity:.36}
 @keyframes eco4Ring{0%{opacity:.9;transform:scale(.985)}100%{opacity:0;transform:scale(1.025)}}
 @media(max-width:760px){.eco4-route-thread{right:-8%;width:56%;opacity:.25}.eco4-state{right:.55rem;bottom:.55rem;font-size:.5rem;max-width:calc(100vw - 1.1rem)}}
 @media(prefers-reduced-motion:reduce){.eco4-story,.eco4-story::before,.eco4-route-thread::after,.eco4-state,[data-eco4-contacted]::after,main{animation:none!important;transition:none!important}}
+
+/* Pass 004B — professional interaction polish */
+.eco4-state{transition:opacity .22s ease,transform .22s ease,border-color .22s ease;transform:translateY(0)}
+body[data-eco4-phase="idle"] .eco4-state{opacity:0;transform:translateY(8px)}
+body[data-eco4-phase="entering"] .eco4-state,
+body[data-eco4-phase="contact"] .eco4-state,
+body[data-eco4-phase="leaving"] .eco4-state{opacity:.96;transform:translateY(0)}
+.eco4-veil{position:fixed;inset:0;z-index:1550;pointer-events:none;background:radial-gradient(circle at var(--eco4-contact-x) var(--eco4-contact-y),color-mix(in srgb,var(--eco-accent-2) 9%,transparent),transparent 35%),rgba(4,7,12,.34);opacity:0;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0);transition:opacity .22s ease,backdrop-filter .22s ease;contain:strict}
+body[data-eco4-phase="leaving"] .eco4-veil{opacity:1;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+body[data-eco4-input="keyboard"] :is(a,button,summary,[tabindex]):focus-visible{box-shadow:0 0 0 4px color-mix(in srgb,var(--eco-accent-2) 16%,transparent),0 14px 34px rgba(0,0,0,.28)}
+body[data-eco4-input="pointer"] :is(a,button,summary,[tabindex]):focus:not(:focus-visible){outline:none}
+@media(max-width:760px){body[data-eco4-phase="contact"] .eco4-state{max-width:calc(100vw - 1.1rem)}}
+@media(prefers-reduced-motion:reduce){.eco4-state,.eco4-veil{transition:none!important}.eco4-veil{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}

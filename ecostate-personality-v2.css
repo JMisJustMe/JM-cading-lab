@@ -34,6 +34,8 @@ body[data-ecostate-surface="theory"] .eco2-constellation i{position:absolute;wid
 body[data-ecostate-surface="theory"] .eco2-constellation i::after{content:"";position:absolute;left:5px;top:3px;width:var(--line-w,90px);height:1px;background:linear-gradient(90deg,rgba(114,236,255,.32),transparent);transform:rotate(var(--line-r,0deg));transform-origin:left}
 body[data-ecostate-surface="theory"] .eco2-margin-note{right:1rem;bottom:1rem;border-left:2px solid var(--eco-accent);padding:.5rem .65rem;max-width:15rem;background:rgba(6,9,16,.32);color:#c7d4df;font:700 .62rem/1.45 ui-monospace,monospace}
 body[data-ecostate-surface="theory"] .reader{scrollbar-color:color-mix(in srgb,var(--eco-accent) 55%,transparent) transparent}
+body[data-ecostate-surface="theory"] .topstats{min-width:0;max-width:calc(100vw - 350px);overflow-x:auto;overscroll-behavior-inline:contain;scrollbar-width:none}body[data-ecostate-surface="theory"] .topstats::-webkit-scrollbar{display:none}
+
 
 /* LYRICS — stage / waveform / performance light */
 body[data-ecostate-surface="lyrics"] .eco2-scene{background:radial-gradient(ellipse at 25% -10%,rgba(255,117,173,.18),transparent 42%),radial-gradient(ellipse at 80% 0,rgba(255,209,102,.08),transparent 34%)}

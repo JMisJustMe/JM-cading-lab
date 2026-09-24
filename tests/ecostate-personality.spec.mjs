@@ -5,7 +5,12 @@ const routes=[
   ['games','/games-beyond/'],
   ['theory','/theory/'],
   ['lyrics','/lyrics/'],
-  ['apps','/apps/']
+  ['apps','/apps/'],
+  ['creator','/author/authuser.html'],
+  ['work','/money-menu/'],
+  ['navigator','/navigator/'],
+  ['recovery','/recovery/'],
+  ['recent','/recent/']
 ];
 const viewports=[
   ['mobile',{width:390,height:844}],

@@ -1,0 +1,58 @@
+name: ECOSTATE Contact Story QA
+on:
+  push:
+    paths:
+      - 'ecostate-contact-v4.css'
+      - 'ecostate-contact-v4.js'
+      - 'tests/ecostate-contact-v4.spec.mjs'
+      - '.github/workflows/ecostate-contact-story-qa.yml'
+      - 'index.html'
+      - 'games-beyond/index.html'
+      - 'theory/index.html'
+      - 'lyrics/index.html'
+      - 'apps/index.html'
+      - 'author/authuser.html'
+      - 'money-menu/index.html'
+      - 'navigator/index.html'
+      - 'recovery/index.html'
+      - 'recent/index.html'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contact-story:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Estate
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static contact-story gates
+        run: |
+          node --check ecostate-contact-v4.js
+          for f in index.html games-beyond/index.html theory/index.html lyrics/index.html apps/index.html author/authuser.html money-menu/index.html navigator/index.html recovery/index.html recent/index.html; do
+            grep -q 'ecostate-contact-v4.css' "$f"
+            grep -q 'ecostate-contact-v4.js' "$f"
+          done
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot Estate
+        run: |
+          python3 -m http.server 4175 >/tmp/jm-eco4-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4175/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Prove 10 surfaces x 2 viewports
+        run: node tests/ecostate-contact-v4.spec.mjs
+      - name: Upload contact-story visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-contact-story-pass-004-visual-receipts
+          path: qa/ecostate-contact-v4
+          if-no-files-found: warn

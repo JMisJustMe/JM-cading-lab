@@ -1,0 +1,78 @@
+/* JM ECOSTATE Professional Visual System v1.0
+   Shared public presentation layer. Sovereign bodies keep their own identity. */
+:root{
+  --eco-accent:#ffd166;--eco-accent-2:#72ecff;--eco-accent-3:#b58cff;
+  --eco-panel:rgba(10,16,27,.78);--eco-hair:rgba(255,255,255,.105);
+  --eco-hair-strong:rgba(255,255,255,.18);--eco-glow:0 30px 90px rgba(0,0,0,.34);
+  --eco-ease:cubic-bezier(.2,.75,.2,1);--eco-pointer-x:50%;--eco-pointer-y:20%;
+}
+body[data-ecostate-surface="games"]{--eco-accent:#ffd166;--eco-accent-2:#70f1ff;--eco-accent-3:#ff8d63}
+body[data-ecostate-surface="theory"]{--eco-accent:#a98dff;--eco-accent-2:#72ecff;--eco-accent-3:#ffd166}
+body[data-ecostate-surface="lyrics"]{--eco-accent:#ff75ad;--eco-accent-2:#ffd166;--eco-accent-3:#a98dff}
+body[data-ecostate-surface="creator"]{--eco-accent:#ffd166;--eco-accent-2:#72ecff;--eco-accent-3:#8ef0b1}
+body[data-ecostate-surface]{
+  position:relative;isolation:isolate;background-color:#05070c!important;
+  background-image:
+    radial-gradient(900px 650px at var(--eco-pointer-x) var(--eco-pointer-y),color-mix(in srgb,var(--eco-accent-2) 9%,transparent),transparent 64%),
+    radial-gradient(720px 520px at 93% -10%,color-mix(in srgb,var(--eco-accent) 8%,transparent),transparent 68%),
+    linear-gradient(180deg,#070b12 0%,#04070c 52%,#060910 100%)!important;
+  background-attachment:fixed!important;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased
+}
+body[data-ecostate-surface]::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.34;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:64px 64px;mask-image:linear-gradient(to bottom,transparent 0,#000 18%,#000 75%,transparent 100%)
+}
+body[data-ecostate-surface]::after{
+  content:"";position:fixed;inset:0;z-index:1200;pointer-events:none;opacity:.055;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E")
+}
+body[data-ecostate-surface] ::selection{background:var(--eco-accent);color:#151109}
+body[data-ecostate-surface] h1,body[data-ecostate-surface] h2,body[data-ecostate-surface] h3{text-wrap:balance}
+body[data-ecostate-surface] p{text-wrap:pretty}
+.eco-progress{position:fixed;left:0;right:0;top:0;height:2px;z-index:2000;pointer-events:none}
+.eco-progress>i{display:block;width:var(--eco-scroll,0%);height:100%;background:linear-gradient(90deg,var(--eco-accent-2),var(--eco-accent),var(--eco-accent-3));box-shadow:0 0 16px color-mix(in srgb,var(--eco-accent-2) 70%,transparent);transition:width .06s linear}
+body[data-eco-scrolled="true"] :is(header,.topBar,.topbar,.top){box-shadow:0 14px 42px rgba(0,0,0,.28);border-bottom-color:var(--eco-hair-strong)!important}
+body[data-ecostate-surface] :is(.hero,.professionalIntro,.signatureBand,.currentEstateBand,.hostBand,.latestIntake,.liveDoors article,.visualOverview,.section-block,.card,.panel,.room,.creationCard,.moneyCard,.aboutGrid article,.current-work,.manifesto,.route,.boundary,details){
+  box-shadow:var(--eco-glow)
+}
+body[data-ecostate-surface] :is(.hero,.professionalIntro,.section-block,.card,.panel,.room,.creationCard,.moneyCard,.aboutGrid article,.liveDoors article,.route,.boundary,details){
+  border-color:var(--eco-hair)!important;background-color:var(--eco-panel);backdrop-filter:blur(18px) saturate(118%);-webkit-backdrop-filter:blur(18px) saturate(118%)
+}
+body[data-ecostate-surface] .hero{overflow:hidden}
+body[data-ecostate-surface] .hero::before{
+  content:"";position:absolute;inset:-1px;pointer-events:none;border-radius:inherit;z-index:0;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--eco-accent-2) 13%,transparent),transparent 28%,transparent 70%,color-mix(in srgb,var(--eco-accent) 11%,transparent));
+  mask-image:linear-gradient(#000,transparent 80%);opacity:.9
+}
+body[data-ecostate-surface] .hero>*{position:relative;z-index:1}
+body[data-ecostate-surface] :is(.signal,.eyebrow,.section-number,.route-line){color:var(--eco-accent-2)!important;letter-spacing:.14em;text-transform:uppercase}
+body[data-ecostate-surface="lyrics"] :is(.signal,.eyebrow,.section-number,.route-line){color:var(--eco-accent)!important}
+body[data-ecostate-surface] :is(.hero h1,.pageHead h1,.page-head h1){letter-spacing:-.06em!important;text-shadow:0 20px 60px rgba(0,0,0,.34)}
+body[data-ecostate-surface] .hero h1 :is(span,strong),body[data-ecostate-surface] .hero h1 strong{color:var(--eco-accent)!important}
+body[data-ecostate-surface] :is(button,.button,.btn,a.button){transition:transform .2s var(--eco-ease),border-color .2s var(--eco-ease),background .2s var(--eco-ease),box-shadow .2s var(--eco-ease),filter .2s var(--eco-ease)}
+body[data-ecostate-surface] :is(a,button,input,select,textarea,summary):focus-visible{outline:2px solid var(--eco-accent-2)!important;outline-offset:3px!important}
+[data-eco-reveal]{opacity:1;transform:none}
+@media (prefers-reduced-motion:no-preference){
+  html[data-eco-ready="true"] [data-eco-reveal]:not([data-eco-visible="true"]){opacity:0;transform:translateY(16px)}
+  html[data-eco-ready="true"] [data-eco-reveal]{transition:opacity .55s var(--eco-ease),transform .55s var(--eco-ease)}
+}
+body[data-ecostate-surface] :is(.statusRail,.signatureRail,.hostedRail,.gameRail,.roomRail,.filters,.filter-row,.a11yTools){scrollbar-width:none;overscroll-behavior-inline:contain}
+body[data-ecostate-surface] :is(.statusRail,.signatureRail,.hostedRail,.gameRail,.roomRail,.filters,.filter-row,.a11yTools)::-webkit-scrollbar{display:none}
+@media (hover:hover) and (pointer:fine){
+  body[data-ecostate-surface] :is(button,.button,.btn,a.button):not(:disabled):hover{transform:translateY(-2px);box-shadow:0 13px 28px rgba(0,0,0,.24)}
+  body[data-ecostate-surface] [data-eco-tilt]{transform:perspective(900px) rotateX(var(--eco-rx,0deg)) rotateY(var(--eco-ry,0deg)) translateY(var(--eco-lift,0));transform-style:preserve-3d;transition:transform .18s var(--eco-ease),border-color .18s var(--eco-ease),box-shadow .18s var(--eco-ease);will-change:transform}
+  body[data-ecostate-surface] [data-eco-tilt]:hover{--eco-lift:-3px;border-color:color-mix(in srgb,var(--eco-accent) 48%,var(--eco-hair))!important;box-shadow:0 30px 70px rgba(0,0,0,.38)}
+}
+@media (min-width:600px) and (max-width:1100px){
+  body[data-ecostate-surface][data-eco-formfactor="tablet"] :is(.hero,.professionalIntro){border-radius:24px}
+  body[data-ecostate-surface][data-eco-formfactor="tablet"] :is(.creationGrid,.professionalPillars,.liveDoors,.aboutGrid){grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  body[data-ecostate-surface][data-eco-formfactor="tablet"] :is(.signatureCard,.hostedCard,.gameCard,.room){flex-basis:min(54vw,390px)!important}
+}
+@media (max-width:599px){
+  body[data-ecostate-surface]{background-attachment:scroll!important}
+  body[data-ecostate-surface]::before{background-size:42px 42px;opacity:.22}
+  body[data-ecostate-surface] :is(.hero,.professionalIntro,.section-block,.card,.panel,.visualOverview){box-shadow:0 18px 46px rgba(0,0,0,.26)}
+  .eco-progress{height:3px}
+}
+@media (prefers-reduced-motion:reduce){.eco-progress>i{transition:none!important}body[data-ecostate-surface]::after{display:none}}

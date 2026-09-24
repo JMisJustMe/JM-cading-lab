@@ -1,0 +1,48 @@
+name: ECOSTATE Authored Graphics QA
+on:
+  push:
+    paths:
+      - 'assets/ecostate-v3/**'
+      - 'ecostate-authored-v3.css'
+      - 'ecostate-authored-v3.js'
+      - 'tests/ecostate-authored-v3.spec.mjs'
+      - 'index.html'
+      - 'games-beyond/index.html'
+      - 'theory/index.html'
+      - 'lyrics/index.html'
+      - 'apps/index.html'
+      - 'author/authuser.html'
+      - 'money-menu/index.html'
+      - 'navigator/index.html'
+      - 'recovery/index.html'
+      - 'recent/index.html'
+      - '.github/workflows/ecostate-authored-graphics-qa.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  authored-graphics-browser-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static authored-graphic gates
+        run: |
+          node --check ecostate-authored-v3.js
+          node -e "JSON.parse(require('fs').readFileSync('assets/ecostate-v3/manifest.json','utf8')); console.log('manifest PASS')"
+          test "$(find assets/ecostate-v3 -maxdepth 1 -name '*.svg' | wc -l)" -eq 11
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot Estate
+        run: |
+          python3 -m http.server 4175 >/tmp/jm-eco3-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4175/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Prove 10 surfaces x 2 viewports
+        run: node tests/ecostate-authored-v3.spec.mjs

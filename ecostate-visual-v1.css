@@ -10,6 +10,11 @@ body[data-ecostate-surface="games"]{--eco-accent:#ffd166;--eco-accent-2:#70f1ff;
 body[data-ecostate-surface="theory"]{--eco-accent:#a98dff;--eco-accent-2:#72ecff;--eco-accent-3:#ffd166}
 body[data-ecostate-surface="lyrics"]{--eco-accent:#ff75ad;--eco-accent-2:#ffd166;--eco-accent-3:#a98dff}
 body[data-ecostate-surface="creator"]{--eco-accent:#ffd166;--eco-accent-2:#72ecff;--eco-accent-3:#8ef0b1}
+body[data-ecostate-surface="navigator"]{--eco-accent:#72ecff;--eco-accent-2:#ffd166;--eco-accent-3:#9b8cff}
+body[data-ecostate-surface="apps"]{--eco-accent:#7ff0a6;--eco-accent-2:#72ecff;--eco-accent-3:#ffd166}
+body[data-ecostate-surface="recovery"]{--eco-accent:#ffb86b;--eco-accent-2:#72ecff;--eco-accent-3:#ff7896}
+body[data-ecostate-surface="recent"]{--eco-accent:#b69cff;--eco-accent-2:#72ecff;--eco-accent-3:#7ff0a6}
+body[data-ecostate-surface="work"]{--eco-accent:#ffd166;--eco-accent-2:#7ff0a6;--eco-accent-3:#72ecff}
 body[data-ecostate-surface]{
   position:relative;isolation:isolate;background-color:#05070c!important;
   background-image:

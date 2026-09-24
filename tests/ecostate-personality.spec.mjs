@@ -1,3 +1,4 @@
+import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 const routes=[
   ['front-door','/'],
@@ -10,6 +11,7 @@ const viewports=[
   ['mobile',{width:390,height:844}],
   ['desktop',{width:1440,height:960}]
 ];
+await mkdir('qa/ecostate-personality',{recursive:true});
 const browser=await chromium.launch({headless:true});
 let failed=false;
 for(const [vpName,viewport] of viewports){
@@ -28,6 +30,7 @@ for(const [vpName,viewport] of viewports){
       scene:!!document.querySelector('.eco2-scene'),
       heading:!!document.querySelector('h1')
     }));
+    await page.screenshot({path:`qa/ecostate-personality/${surface}-${vpName}.png`,fullPage:true});
     const ok=state.surface===surface&&state.personality==='v2'&&state.scene&&state.heading&&!state.overflow&&errors.length===0;
     console.log(JSON.stringify({vpName,path,...state,errors,ok}));
     if(!ok)failed=true;

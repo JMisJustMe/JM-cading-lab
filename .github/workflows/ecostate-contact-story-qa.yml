@@ -1,0 +1,28 @@
+name: ECOSTATE Contact Story QA
+on:
+  pull_request:
+    paths:
+      - 'ecostate-contact-v4.css'
+      - 'ecostate-contact-v4.js'
+      - 'index.html'
+      - 'games-beyond/index.html'
+      - 'theory/index.html'
+      - 'lyrics/index.html'
+      - 'apps/index.html'
+      - 'author/authuser.html'
+      - 'money-menu/index.html'
+      - 'navigator/index.html'
+      - 'recovery/index.html'
+      - 'recent/index.html'
+      - 'tests/ecostate-contact-v4.spec.mjs'
+  workflow_dispatch:
+jobs:
+  contact-story:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - run: npx --yes playwright@1.55.0 install --with-deps chromium
+      - run: python3 -m http.server 4175 >/tmp/ecostate-http.log 2>&1 & echo $! >/tmp/ecostate-http.pid
+      - run: node tests/ecostate-contact-v4.spec.mjs

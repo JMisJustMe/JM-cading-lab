@@ -1,0 +1,59 @@
+name: ECOSTATE Public Personality QA
+
+on:
+  push:
+    paths:
+      - 'index.html'
+      - 'ecostate-personality-v2.css'
+      - 'ecostate-personality-v2.js'
+      - 'tests/ecostate-personality.spec.mjs'
+      - 'games-beyond/index.html'
+      - 'theory/index.html'
+      - 'lyrics/index.html'
+      - 'apps/index.html'
+      - '.github/workflows/ecostate-personality-qa.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'ecostate-personality-v2.css'
+      - 'ecostate-personality-v2.js'
+      - 'tests/ecostate-personality.spec.mjs'
+      - 'games-beyond/index.html'
+      - 'theory/index.html'
+      - 'lyrics/index.html'
+      - 'apps/index.html'
+      - '.github/workflows/ecostate-personality-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  personality-browser-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Estate
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static personality gates
+        run: |
+          node --check ecostate-personality-v2.js
+          for f in index.html games-beyond/index.html theory/index.html lyrics/index.html apps/index.html; do
+            grep -q 'ecostate-personality-v2.css' "$f"
+            grep -q 'ecostate-personality-v2.js' "$f"
+          done
+      - name: Install Chromium proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot local Estate
+        run: |
+          python3 -m http.server 4174 >/tmp/jm-ecostate-personality-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4174/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Mobile + desktop personality proof
+        run: node tests/ecostate-personality.spec.mjs

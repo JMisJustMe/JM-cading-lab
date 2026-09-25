@@ -1,0 +1,192 @@
+name: Prove JM3232 v1.5.2 canonical door promotion
+
+on:
+  pull_request:
+    paths:
+      - "navigator/source-authority/v1.5.2/**"
+      - "navigator/carrier-plan.json"
+      - "navigator/manifest.webmanifest"
+      - "navigator/service-worker.js"
+      - "carrier-control/registry.json"
+      - "tools/jm_carrier_control.py"
+      - ".github/workflows/prove-navigator-v1-5-2-canonical-door.yml"
+  push:
+    branches: [main]
+    paths:
+      - "navigator/source-authority/v1.5.2/**"
+      - "navigator/carrier-plan.json"
+      - "navigator/manifest.webmanifest"
+      - "navigator/service-worker.js"
+      - "carrier-control/registry.json"
+      - "tools/jm_carrier_control.py"
+      - ".github/workflows/prove-navigator-v1-5-2-canonical-door.yml"
+      - ".github/workflows/deploy-estate-sovereign-integrated-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reconstruct:
+    name: Reconstruct and validate v1.5.2 source/carrier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct through JM carrier registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+
+      - name: Verify exact source and canonical carrier hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, re
+          from pathlib import Path
+
+          SOURCE_SHA='e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562'
+          CARRIER_SHA='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
+
+          manifest=json.loads(Path('navigator/source-authority/v1.5.2/source-manifest.json').read_text())
+          source=b''.join((Path('navigator/source-authority/v1.5.2')/name).read_bytes() for name in manifest['chunks'])
+          assert len(source)==6182887, len(source)
+          assert hashlib.sha256(source).hexdigest()==SOURCE_SHA
+          assert manifest['body_sha256']==SOURCE_SHA
+
+          carrier=Path('navigator/index.html').read_bytes()
+          assert len(carrier)==6183319, len(carrier)
+          assert hashlib.sha256(carrier).hexdigest()==CARRIER_SHA
+          text=carrier.decode('utf-8')
+          required=[
+            'JM3232 Unified Browser v1.5.2 — Canonical Door Migration',
+            'v1.5.2 · AIRBORNE',
+            'data-jm-airborne-canonical-door="v1.5.2"',
+            'data-jm-estate-integration="v1"',
+            'JM.NavigatorSavePack/1.0',
+            'jm3232-navigator-state-v01',
+            'jm3232-stringreceipts-v01',
+            'jm-stringline-local-v01',
+            '2,550',
+          ]
+          missing=[x for x in required if x not in text]
+          assert not missing, missing
+          assert "trace('APP_OPEN',{target:'JM3232 Unified Browser v1.4.0 Whole Contact Field'" not in text
+
+          scripts=re.findall(r'<script>(.*?)</script>',text,re.S)
+          assert scripts, 'no executable inline script found'
+          Path('/tmp/jm3232-v152.js').write_text(scripts[-1],encoding='utf-8')
+          print('SOURCE_SHA',SOURCE_SHA)
+          print('CARRIER_SHA',CARRIER_SHA)
+          print('INLINE_SCRIPT_BYTES',len(scripts[-1].encode()))
+          PY
+          node --check /tmp/jm3232-v152.js
+          python3 -m json.tool navigator/manifest.webmanifest >/dev/null
+          node --check navigator/service-worker.js
+
+      - name: Verify migration custody markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq "LEGACY_NAV_STATE_KEY='jm3232-navigator-state-v01'" navigator/index.html
+          grep -Fq "LEGACY_NAV_RECEIPTS_KEY='jm3232-stringreceipts-v01'" navigator/index.html
+          grep -Fq "LEGACY_STRINGLINE_KEY='jm-stringline-local-v01'" navigator/index.html
+          grep -Fq "JM.NavigatorSavePack/1.0" navigator/index.html
+          grep -Fq "legacyNavigatorV011" navigator/index.html
+          echo "STATE_RETURN_MIGRATION_MARKERS_PASS"
+
+  external-parity:
+    name: Prove v1.5.2 on both public carriers
+    if: github.event_name != 'pull_request'
+    needs: reconstruct
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct expected carrier body
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+          sha256sum navigator/index.html
+
+      - name: Wait for exact canonical-door convergence
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED=navigator/index.html
+          EXPECTED_SHA='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
+          CLOUDFLARE='https://jmisjustme-estate.pages.dev/navigator/'
+          GITHUB='https://jmisjustme.github.io/JM-cading-lab/navigator/'
+          mkdir -p /tmp/jm-v152
+
+          wait_exact() {
+            label="$1"; url="$2"; out="$3"
+            for i in $(seq 1 40); do
+              if curl -fsSL --max-time 35 -H 'cache-control: no-cache' "$url?jm-v152-proof=$GITHUB_SHA-$i" -o "$out"; then
+                got="$(sha256sum "$out" | awk '{print $1}')"
+                if [ "$got" = "$EXPECTED_SHA" ] && cmp -s "$EXPECTED" "$out"; then
+                  echo "$label CURRENT BODY PASS $got"
+                  return 0
+                fi
+                echo "$label reachable but not current: $got attempt=$i"
+              else
+                echo "$label not reachable yet attempt=$i"
+              fi
+              sleep 15
+            done
+            return 1
+          }
+
+          wait_exact CLOUDFLARE "$CLOUDFLARE" /tmp/jm-v152/cloudflare.html
+          wait_exact GITHUB_PAGES "$GITHUB" /tmp/jm-v152/github.html
+
+          grep -Fq 'v1.5.2 · AIRBORNE' /tmp/jm-v152/cloudflare.html
+          grep -Fq 'v1.5.2 · AIRBORNE' /tmp/jm-v152/github.html
+          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' /tmp/jm-v152/cloudflare.html
+          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' /tmp/jm-v152/github.html
+
+      - name: Prove public PWA support files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for base in             'https://jmisjustme-estate.pages.dev/navigator'             'https://jmisjustme.github.io/JM-cading-lab/navigator'; do
+            curl -fsSL --retry 8 --retry-delay 5 "$base/manifest.webmanifest?proof=$GITHUB_SHA" | grep -Fq '"name": "JM3232 Unified Browser"'
+            curl -fsSL --retry 8 --retry-delay 5 "$base/service-worker.js?proof=$GITHUB_SHA" | grep -Fq "jm3232-navigator-v1-5-2"
+          done
+          echo "PWA_CARRIER_FILES_PASS"
+
+      - name: Write canonical promotion receipt
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          receipt={
+            "schema":"JM.NavigatorCanonicalDoorPromotionReceipt/1.0",
+            "git_sha":os.environ.get("GITHUB_SHA",""),
+            "identity_id":"jm://navigator",
+            "promoted_body":"JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+            "source_sha256":"e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562",
+            "canonical_carrier_sha256":"b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
+            "canonical_cloudflare":"https://jmisjustme-estate.pages.dev/navigator/",
+            "github_pages_recovery":"https://jmisjustme.github.io/JM-cading-lab/navigator/",
+            "exact_dual_carrier_body_parity":True,
+            "legacy_v0_1_1_state_migration_code_present":True,
+            "legacy_savepack_import_present":True,
+            "owner_device_v1_5_2_contact":False,
+            "boundary":"This receipt proves exact deployed body parity on two public carriers and the hash-bound migration implementation. Physical owner-device contact and subjective owner acceptance remain separate Dings."
+          }
+          Path('JM3232_V1_5_2_CANONICAL_DOOR_PROMOTION_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt,indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jm3232-v1-5-2-canonical-door-promotion
+          path: JM3232_V1_5_2_CANONICAL_DOOR_PROMOTION_RECEIPT.json
+          if-no-files-found: error
+          retention-days: 30

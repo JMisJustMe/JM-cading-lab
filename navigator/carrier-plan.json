@@ -1,0 +1,82 @@
+{
+  "schema": "jm.multi-carrier-plan/1.0",
+  "app_id": "jm3232-navigator-unified-browser",
+  "name": "JM3232 Unified Browser — Navigator Canonical Door",
+  "version": "1.5.2-canonical-door",
+  "source": {
+    "kind": "text_chunks_manifest",
+    "manifest": "navigator/source-authority/v1.5.2/source-manifest.json",
+    "expected_sha256": "e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562"
+  },
+  "transforms": [
+    {
+      "op": "replace",
+      "old": "<body>",
+      "new": "<body data-ecostate-surface=\"navigator\" data-jm-airborne-canonical-door=\"v1.5.2\">"
+    },
+    {
+      "op": "replace",
+      "old": "trace('APP_OPEN',{target:'JM3232 Unified Browser v1.4.0 Whole Contact Field'",
+      "new": "trace('APP_OPEN',{target:'JM3232 Unified Browser v1.5.2 Canonical Door Migration'"
+    },
+    {
+      "op": "replace",
+      "old": "</body>",
+      "new": "\n<script defer src=\"./estate-integration/bridge.js\" data-jm-surface=\"navigator\" data-jm-estate-integration=\"v1\"></script>\n<script defer src=\"../ecostate-interaction-v1.js\"></script><script defer src=\"../ecostate-personality-v2.js\"></script><script defer src=\"../ecostate-authored-v3.js\"></script><script defer src=\"../ecostate-contact-v4.js\"></script>\n</body>"
+    }
+  ],
+  "validate": {
+    "expected_sha256": "b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
+    "required_strings": [
+      "JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+      "v1.5.2 · AIRBORNE",
+      "data-jm-airborne-canonical-door=\"v1.5.2\"",
+      "data-jm-estate-integration=\"v1\"",
+      "JM.NavigatorSavePack/1.0",
+      "jm3232-navigator-state-v01",
+      "jm3232-stringreceipts-v01",
+      "jm-stringline-local-v01",
+      "2,550",
+      "Canonical Door Migration"
+    ],
+    "forbidden_strings": [
+      "trace('APP_OPEN',{target:'JM3232 Unified Browser v1.4.0 Whole Contact Field'"
+    ]
+  },
+  "powers": {
+    "direct_https": {
+      "enabled": true
+    },
+    "pwa": {
+      "enabled": true,
+      "manifest": "navigator/manifest.webmanifest",
+      "service_worker": "navigator/service-worker.js"
+    },
+    "portable": {
+      "enabled": true
+    },
+    "native": {
+      "ready": false,
+      "rule": "WEB CANONICAL DOOR FIRST; NATIVE IS A SEPARATE EARNED CARRIER."
+    },
+    "mirrors": [
+      {
+        "role": "primary",
+        "provider": "Cloudflare Pages",
+        "route": "https://jmisjustme-estate.pages.dev/navigator/",
+        "authority": "CARRIER_ONLY"
+      },
+      {
+        "role": "recovery",
+        "provider": "GitHub Pages",
+        "route": "https://jmisjustme.github.io/JM-cading-lab/navigator/",
+        "authority": "CARRIER_ONLY"
+      }
+    ]
+  },
+  "outputs": {
+    "direct_https": "navigator/index.html",
+    "portable_html": "_carrier_outputs/navigator/JM3232_UNIFIED_BROWSER_v1_5_2_CANONICAL_DOOR.html",
+    "receipt": "_carrier_outputs/navigator/JM3232_UNIFIED_BROWSER_v1_5_2_CARRIER_RECEIPT.json"
+  }
+}

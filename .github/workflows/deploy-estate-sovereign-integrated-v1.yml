@@ -37,6 +37,9 @@ on:
       - "registry/lyrics-house.json"
       - "registry/public-release-current.json"
       - "governance/estate-integration/**"
+      - "carrier-control/**"
+      - "tools/jm_carrier_control.py"
+      - "tools/jm_carrier_registry.py"
   workflow_dispatch:
 
 concurrency:
@@ -61,6 +64,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Reconstruct governed carrier bodies from source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('_carrier_outputs/JM-CARRIER-REGISTRY-RECEIPT.json').read_text())
+          assert receipt['status']=='DING'
+          nav=[x for x in receipt['results'] if x['id']=='navigator']
+          assert len(nav)==1
+          assert nav[0]['body_sha256']=='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
+          assert nav[0]['direct_https']['runtime_reconstruction'] is False
+          print('JM3232 NAVIGATOR CARRIER DING',nav[0]['body_sha256'])
+          PY
 
       - name: Prove source authority and integration contracts
         shell: bash
@@ -98,6 +118,10 @@ jobs:
           for dir in apps author coding-estate earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
+
+          # Source carriage remains in GitHub custody; the canonical Cloudflare carrier serves the reconstructed body.
+          rm -rf cloudflare-estate/navigator/source-authority
+          rm -f cloudflare-estate/navigator/carrier-plan.json
 
           if [ -d money-menu ]; then
             mkdir -p cloudflare-estate/money-menu
@@ -187,7 +211,7 @@ jobs:
           grep -Fq '.griprail-track' cloudflare-estate/ecostate-griprail-v6.css
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/money-menu/index.html
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/earn-now/index.html
-          grep -Fq 'JM3232 NAVIGATOR' cloudflare-estate/navigator/index.html
+          grep -Fq 'JM3232 UNIFIED BROWSER' cloudflare-estate/navigator/index.html\n          grep -Fq 'v1.5.2 · AIRBORNE' cloudflare-estate/navigator/index.html\n          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' cloudflare-estate/navigator/index.html
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html
@@ -235,7 +259,7 @@ jobs:
             ['/ecostate-griprail-v6.css', '.griprail-track'],
             ['/money-menu/', 'ecostate-griprail-v6.js'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
-            ['/navigator/', 'JM3232 NAVIGATOR'],
+            ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
             ['/navigator/estate-integration/public-registry.json', 'JM.Estate.PublicNervousSystem/1'],

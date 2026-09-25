@@ -1,0 +1,39 @@
+{
+  "schema": "JM.AI.RouteOSRealContactGoal/0.1",
+  "issued_by": "JM Adaptive ECOSTATE Agent real-host phase",
+  "existing_body": {
+    "name": "RouteOS Console Home",
+    "version": "0.8",
+    "path": "games-beyond/routeos/runtime/index.html",
+    "mutate_source": false
+  },
+  "goal": "Create and recover a real RouteOS Seed Runner save using only the existing RouteOS UI/state mechanisms.",
+  "requested_route": [
+    "attempt_save_without_active_cartridge",
+    "detect_no_save",
+    "recover_by_launching_seed-runner",
+    "move_player_right",
+    "save_current",
+    "suspend_to_quick_resume",
+    "resume",
+    "cold_browser_reload",
+    "read_save_vault"
+  ],
+  "authority": {
+    "production_mutation": false,
+    "routeos_source_mutation": false,
+    "local_browser_state_mutation": true,
+    "receipt_commit_to_contact_branch": true
+  },
+  "success_requires": [
+    "premature save creates no cartridge save",
+    "seed-runner save exists",
+    "saved player x changed from default 120",
+    "save namespace is routeos.seed-runner.jm",
+    "quickResume exists after suspend",
+    "quickResume is consumed after resume",
+    "SAVE SUSPEND RESUME lifecycle receipts exist",
+    "save survives browser reload",
+    "visible Save Vault exposes the recovered namespace"
+  ]
+}

@@ -4,14 +4,14 @@ const SEL={
   rootGrid:".eco-gripcube .gc-grid",
   moneyGrid:"#grid",
   moneyFront:"#frontOffers",
-  moneyProof:".proof",
-  moneyForm:".form-grid",
-  moneySelected:".selected-list",
+  moneyProof:'body[data-ecostate-surface="work"] .proof',
+  moneyForm:'body[data-ecostate-surface="work"] .form-grid',
+  moneySelected:'body[data-ecostate-surface="work"] .selected-list',
   earnGrid:"#offerGrid",
-  earnTruth:".truth",
-  earnSteps:".steps",
-  earnForm:".formGrid",
-  earnSelected:".selection"
+  earnTruth:'body[data-ecostate-surface="work"] .truth',
+  earnSteps:'body[data-ecostate-surface="work"] .steps',
+  earnForm:'body[data-ecostate-surface="work"] .formGrid',
+  earnSelected:'body[data-ecostate-surface="work"] .selection'
 };
 
 const enhanced=new WeakSet();

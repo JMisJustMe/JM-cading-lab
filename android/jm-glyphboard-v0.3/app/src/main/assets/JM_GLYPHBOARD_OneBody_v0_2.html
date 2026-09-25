@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM GLYPHBOARD v0.2 — Deep Development Lab</title>
+<style>
+:root{font-family:system-ui,sans-serif;color-scheme:dark;background:#0b0b0f;color:#f6f6f8}
+*{box-sizing:border-box}body{margin:0;background:#0b0b0f}main{max-width:1180px;margin:auto;padding:14px}
+h1{font-size:1.55rem;margin:.25rem 0}.keeper{font-weight:800}.muted{opacity:.72;font-size:.88rem}
+.row,.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs{position:sticky;top:0;background:#0b0b0fee;padding:8px 0;z-index:3}
+button,input,select,textarea{font:inherit}button,input,select{border:1px solid #555;background:#17171d;color:#fff;border-radius:10px;padding:9px}
+button.active{outline:2px solid currentColor}.card{border:1px solid #444;background:#121218;border-radius:14px;padding:12px;margin:12px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;margin-top:10px}
+.key{min-height:92px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.key .mark{font-size:1.5rem;font-weight:800;overflow-wrap:anywhere}.key .name{font-size:.75rem;opacity:.72;margin-top:5px}
+.key .meta{font-size:.65rem;opacity:.55;margin-top:3px}.fav{border-color:#aaa}.danger{border-style:dashed}
+textarea{width:100%;min-height:105px;background:#07070a;color:#fff;border:1px solid #555;border-radius:10px;padding:10px}
+.trace{white-space:pre-wrap;background:#060609;padding:10px;border-radius:9px;max-height:300px;overflow:auto;font:12px ui-monospace,monospace}
+.pill{display:inline-block;border:1px solid #555;border-radius:999px;padding:3px 7px;margin:2px;font-size:.73rem}
+dialog{max-width:560px;width:92%;background:#15151a;color:white;border:1px solid #666;border-radius:14px}
+</style>
+</head>
+<body><main>
+<h1>JM GLYPHBOARD v0.2</h1>
+<div class="keeper">ONE TOUCH → MY SYMBOL → MY MEANING → THE RIGHT SURFACE</div>
+<p class="muted">Deep-development branch. No APK install requested yet. This body exercises registry, layered input, aliases, variants, favourites, recents, fallbacks, semantic permissions, confirmation gates and Target Bridge receipts before the phone-install gate opens.</p>
+
+<div class="tabs" id="tabs"></div>
+
+<section class="card">
+<div class="row">
+<input id="search" placeholder="Search by your words…" style="flex:1;min-width:220px">
+<select id="face"><option value="visual">Visual</option><option value="glyph">JM glyph</option><option value="fallback">Fallback</option></select>
+<select id="target"><option value="text">Plain text</option><option value="jm">JM runtime</option><option value="browser">Browser/JS</option><option value="native">Native ABI</option><option value="android">Android IME</option></select>
+<button id="favOnly">★ FAVS</button><button id="recentOnly">↺ RECENT</button>
+</div>
+<div id="stats" class="muted"></div>
+<div id="board" class="grid"></div>
+</section>
+
+<section class="card">
+<h2>Composer</h2>
+<textarea id="composer" placeholder="Build expressions here…"></textarea>
+<div class="row"><button id="copy">COPY</button><button id="clearComposer">CLEAR TEXT</button><button id="undo">UNDO INSERT</button><button id="export">EXPORT STATE</button><input id="importFile" type="file" accept=".json" hidden><button id="import">IMPORT STATE</button></div>
+</section>
+
+<section class="card">
+<h2>Selected / variants</h2>
+<div id="selected">Nothing selected.</div>
+<div class="row" id="variants"></div>
+</section>
+
+<section class="card">
+<h2>Target Bridge handoff</h2>
+<div class="trace" id="handoff">No handoff yet.</div>
+</section>
+
+<section class="card">
+<h2>Trace</h2>
+<div class="row"><button id="clearTrace">CLEAR TRACE</button><span id="status" class="pill">READY</span></div>
+<div class="trace" id="trace"></div>
+</section>
+
+<dialog id="confirmDialog">
+<h3>Confirm semantic command</h3>
+<pre id="confirmBody" class="trace"></pre>
+<div class="row"><button id="confirmYes">CONFIRM HANDOFF</button><button id="confirmNo">CANCEL</button></div>
+</dialog>
+
+<script>
+const REGISTRY = {"protocol": "JM.GlyphRegistry/0.2", "inherits": ["JM.GlyphRegistry/0.1", "JM.SemanticOps/0.1", "JM.TargetBridge/0.1", "JM.CapabilityContact/0.4"], "keeper": "ONE TOUCH → MY SYMBOL → MY MEANING → THE RIGHT SURFACE", "private_use_policy": {"plane": "BMP PUA", "range": "U+E000–U+F8FF", "current_reserved": ["U+E001", "U+E002", "U+E003"], "rule": "Private glyph identity is JM-local. Outside a JM-aware renderer, use a registered fallback."}, "permission_classes": {"text.write": "May insert inert text into the active editor.", "semantic.local": "May create a local semantic receipt but must not invoke external effects.", "semantic.confirm": "Must require an explicit confirmation before an effectful command is handed to a recipient."}, "entries": [{"id": "not_equal", "kind": "text", "category": "symbols", "label": "Not equal", "visual": "≠", "glyph": null, "fallback": "!=", "aliases": ["not equal", "different", "inequality", "neq"], "variants": ["≠", "≉", "≢"], "semantic": {"action": "INSERT_TEXT", "value": "≠", "permission": "text.write"}}, {"id": "route_right", "kind": "text", "category": "symbols", "label": "Route right", "visual": "→", "glyph": null, "fallback": "->", "aliases": ["right arrow", "route", "forward"], "variants": ["→", "⇒", "⟶", "➜"], "semantic": {"action": "INSERT_TEXT", "value": "→", "permission": "text.write"}}, {"id": "contact_pair", "kind": "text", "category": "symbols", "label": "Contact pair", "visual": "↔", "glyph": null, "fallback": "<->", "aliases": ["contact", "pair", "two way", "bidirectional"], "variants": ["↔", "⇄", "⇆", "⟷"], "semantic": {"action": "INSERT_TEXT", "value": "↔", "permission": "text.write"}}, {"id": "delta", "kind": "text", "category": "symbols", "label": "State change", "visual": "Δ", "glyph": null, "fallback": "DELTA", "aliases": ["delta", "change", "state change"], "variants": ["Δ", "∆", "δ"], "semantic": {"action": "INSERT_TEXT", "value": "Δ", "permission": "text.write"}}, {"id": "infinity", "kind": "text", "category": "symbols", "label": "Infinity", "visual": "∞", "glyph": null, "fallback": "INFINITY", "aliases": ["infinity", "endless", "loop"], "variants": ["∞"], "semantic": {"action": "INSERT_TEXT", "value": "∞", "permission": "text.write"}}, {"id": "therefore", "kind": "text", "category": "symbols", "label": "Therefore", "visual": "∴", "glyph": null, "fallback": "THEREFORE", "aliases": ["therefore", "thus", "because result"], "variants": ["∴", "∵"], "semantic": {"action": "INSERT_TEXT", "value": "∴", "permission": "text.write"}}, {"id": "jm_contact_state", "kind": "private_glyph", "category": "glyphs", "label": "Contact changed state", "visual": "◈→Δ", "glyph": "", "fallback": "CONTACT → ΔSTATE", "aliases": ["contact changed state", "contact state", "state changed"], "variants": ["", "◈→Δ", "CONTACT → ΔSTATE"], "semantic": {"action": "CONTACT_STATE_CHANGE", "value": {"delta": 1}, "permission": "semantic.local"}}, {"id": "jm_ding", "kind": "private_glyph", "category": "glyphs", "label": "Ding earned", "visual": "◉🔔", "glyph": "", "fallback": "DING", "aliases": ["ding", "proof", "earned"], "variants": ["", "🔔", "DING"], "semantic": {"action": "DING_MARK", "value": {"earned": true}, "permission": "semantic.local"}}, {"id": "jm_recover", "kind": "private_glyph", "category": "glyphs", "label": "Recover", "visual": "↶□", "glyph": "", "fallback": "RECOVER", "aliases": ["recover", "restore", "return"], "variants": ["", "↶", "RECOVER"], "semantic": {"action": "RECOVER", "value": {"mode": "preserve_state"}, "permission": "semantic.local"}}, {"id": "source_signal_contact", "kind": "expression", "category": "routes", "label": "Source to contact", "visual": "S→Σ→C", "glyph": null, "fallback": "SOURCE → SIGNAL → CONTACT", "aliases": ["source signal contact", "route start"], "variants": [], "semantic": {"action": "INSERT_TEXT", "value": "SOURCE → SIGNAL → CONTACT", "permission": "text.write"}}, {"id": "full_route", "kind": "expression", "category": "routes", "label": "JM route spine", "visual": "JM ROUTE", "glyph": null, "fallback": "SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT", "aliases": ["route spine", "full route", "source signal contact field"], "variants": [], "semantic": {"action": "INSERT_TEXT", "value": "SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT", "permission": "text.write"}}, {"id": "flaz", "kind": "expression", "category": "expressions", "label": "FLAZ", "visual": "FLAZ", "glyph": null, "fallback": "FLAZ", "aliases": ["flaz", "freeze lock anchor zionfolder"], "variants": [], "semantic": {"action": "INSERT_TEXT", "value": "FLAZ", "permission": "text.write"}}, {"id": "no_ding_no_claim", "kind": "expression", "category": "expressions", "label": "No Ding, no claim", "visual": "🔔≠?", "glyph": null, "fallback": "NO DING, NO CLAIM", "aliases": ["no ding no claim", "claim", "proof"], "variants": [], "semantic": {"action": "INSERT_TEXT", "value": "NO DING, NO CLAIM", "permission": "text.write"}}, {"id": "recover_before_rebuild", "kind": "expression", "category": "expressions", "label": "Recover before rebuild", "visual": "↶⚙", "glyph": null, "fallback": "RECOVER BEFORE REBUILD", "aliases": ["recover before rebuild", "recovery"], "variants": [], "semantic": {"action": "INSERT_TEXT", "value": "RECOVER BEFORE REBUILD", "permission": "text.write"}}, {"id": "create_body", "kind": "command", "category": "commands", "label": "Create body", "visual": "＋BODY", "glyph": null, "fallback": "CREATE BODY", "aliases": ["create body", "new body", "build body"], "variants": [], "semantic": {"action": "CREATE_BODY", "value": {"template": "default"}, "permission": "semantic.confirm"}}, {"id": "run_body", "kind": "command", "category": "commands", "label": "Run", "visual": "▶ RUN", "glyph": null, "fallback": "RUN", "aliases": ["run", "execute", "start"], "variants": [], "semantic": {"action": "RUN_BODY", "value": {"target": "active"}, "permission": "semantic.confirm"}}, {"id": "trace_body", "kind": "command", "category": "commands", "label": "Trace", "visual": "⌁ TRACE", "glyph": null, "fallback": "TRACE", "aliases": ["trace", "receipt", "inspect route"], "variants": [], "semantic": {"action": "TRACE_BODY", "value": {"scope": "active"}, "permission": "semantic.local"}}]};
+const SEM='JM.SemanticOps/0.1', TARGET='JM.TargetBridge/0.1', CONTACT='JM.CapabilityContact/0.4';
+const categories=['symbols','glyphs','routes','expressions','commands'];
+const state={category:'symbols', favs:new Set(JSON.parse(localStorage.getItem('jmGlyphFavs')||'[]')), recents:JSON.parse(localStorage.getItem('jmGlyphRecents')||'[]'), traces:[], last:null, history:[], filter:null, pending:null};
+const $=id=>document.getElementById(id);
+const entry=id=>REGISTRY.entries.find(x=>x.id===id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function saveLocal(){localStorage.setItem('jmGlyphFavs',JSON.stringify([...state.favs]));localStorage.setItem('jmGlyphRecents',JSON.stringify(state.recents.slice(0,30)))}
+function remember(id){state.recents=[id,...state.recents.filter(x=>x!==id)].slice(0,30);saveLocal()}
+function face(e){const f=$('face').value; if(f==='glyph')return e.glyph||e.visual||e.fallback; if(f==='fallback')return e.fallback; return e.visual||e.glyph||e.fallback}
+function textFor(e){const f=$('face').value; if(f==='glyph')return e.glyph||e.fallback; if(f==='fallback')return e.fallback; return e.semantic.action==='INSERT_TEXT'?e.semantic.value:(e.visual||e.fallback)}
+function matches(e,q){if(!q)return true; return [e.id,e.kind,e.category,e.label,e.visual,e.glyph,e.fallback,...(e.aliases||[])].join(' ').toLowerCase().includes(q)}
+function makeTrace(status,e,extra={}){return {protocol:CONTACT,status,source:'JM_GLYPHBOARD_v0.2',entry_id:e.id,kind:e.kind,semantic_protocol:SEM,semantic_action:e.semantic.action,permission:e.semantic.permission,target:$('target').value,ts:new Date().toISOString(),...extra}}
+function lower(e){
+ const a=e.semantic.action,v=JSON.stringify(e.semantic.value);
+ return {
+  text: a==='INSERT_TEXT'?String(e.semantic.value):e.fallback,
+  jm:`jm.semantic.dispatch(${JSON.stringify(a)}, ${v})`,
+  browser:`jm.semantic.${a.toLowerCase()}(${v})`,
+  native:`jm_native_op(${JSON.stringify(a)}, ${v})`,
+  android: a==='INSERT_TEXT'?`currentInputConnection?.commitText(${JSON.stringify(String(e.semantic.value))}, 1)`:`JMCommandRouter.request(${JSON.stringify(a)}, ${v})`
+ }[$('target').value];
+}
+function handoff(e){
+ const r={...makeTrace('PASS',e),protocol:TARGET,contact_protocol:CONTACT,registry_protocol:REGISTRY.protocol,value:e.semantic.value,lowered:lower(e),trace_id:'jm-glyph-'+crypto.randomUUID()};
+ state.last=r; state.traces.push(r); renderTrace(); return r;
+}
+function semantic(e){
+ if(e.semantic.permission==='semantic.confirm'){
+   state.pending=e; $('confirmBody').textContent=JSON.stringify({...makeTrace('PENDING_CONFIRMATION',e),value:e.semantic.value,lowered:lower(e)},null,2); $('confirmDialog').showModal(); return;
+ }
+ handoff(e);
+}
+function insertText(e,value=textFor(e)){
+ const ta=$('composer'),start=ta.selectionStart,end=ta.selectionEnd;
+ state.history.push(ta.value); ta.value=ta.value.slice(0,start)+value+ta.value.slice(end); ta.selectionStart=ta.selectionEnd=start+value.length; ta.focus();
+ remember(e.id); semantic(e); selectEntry(e); renderBoard();
+}
+function activate(e){ if(e.semantic.action==='INSERT_TEXT') insertText(e); else {remember(e.id); semantic(e); selectEntry(e); renderBoard()} }
+function selectEntry(e){
+ $('selected').innerHTML=`<strong>${esc(e.label)}</strong> · ${esc(e.kind)} · <span class="pill">${esc(e.semantic.action)}</span> <span class="pill">${esc(e.semantic.permission)}</span><br><span class="muted">Fallback: ${esc(e.fallback)} · aliases: ${esc((e.aliases||[]).join(', '))}</span>`;
+ $('variants').innerHTML='';
+ (e.variants||[]).forEach(v=>{const b=document.createElement('button');b.textContent=v;b.onclick=()=>insertText(e,v);$('variants').appendChild(b)});
+ const star=document.createElement('button');star.textContent=state.favs.has(e.id)?'★ FAVOURITED':'☆ FAVOURITE';star.onclick=()=>{state.favs.has(e.id)?state.favs.delete(e.id):state.favs.add(e.id);saveLocal();selectEntry(e);renderBoard()};$('variants').appendChild(star);
+}
+function renderTabs(){
+ $('tabs').innerHTML='';
+ categories.forEach(c=>{const b=document.createElement('button');b.textContent=c.toUpperCase();if(state.category===c&&!state.filter)b.classList.add('active');b.onclick=()=>{state.category=c;state.filter=null;renderTabs();renderBoard()};$('tabs').appendChild(b)});
+}
+function renderBoard(){
+ const q=$('search').value.trim().toLowerCase(); let list=REGISTRY.entries.filter(e=>matches(e,q));
+ if(state.filter==='fav') list=list.filter(e=>state.favs.has(e.id)); else if(state.filter==='recent') list=state.recents.map(entry).filter(Boolean); else list=list.filter(e=>e.category===state.category);
+ $('board').innerHTML='';
+ list.forEach(e=>{const b=document.createElement('button');b.className='key'+(state.favs.has(e.id)?' fav':'')+(e.semantic.permission==='semantic.confirm'?' danger':'');b.innerHTML=`<div class="mark">${esc(face(e))}</div><div class="name">${esc(e.label)}</div><div class="meta">${esc(e.kind)} · ${esc(e.semantic.permission)}</div>`;b.onclick=()=>activate(e);$('board').appendChild(b)});
+ $('stats').textContent=`${list.length} shown · ${REGISTRY.entries.length} registered · ${state.favs.size} favourites · ${state.recents.length} recents`;
+}
+function renderTrace(){ $('handoff').textContent=state.last?JSON.stringify(state.last,null,2):'No handoff yet.';$('trace').textContent=state.traces.slice(-30).map(x=>JSON.stringify(x)).join('\n');$('status').textContent=state.last?`${state.last.status} · ${state.last.entry_id}`:'READY' }
+
+$('search').oninput=renderBoard;$('face').onchange=renderBoard;$('target').onchange=()=>{if(state.last)renderTrace()};
+$('favOnly').onclick=()=>{state.filter=state.filter==='fav'?null:'fav';renderTabs();renderBoard()};
+$('recentOnly').onclick=()=>{state.filter=state.filter==='recent'?null:'recent';renderTabs();renderBoard()};
+$('copy').onclick=async()=>{await navigator.clipboard.writeText($('composer').value);$('status').textContent='COPIED'};
+$('clearComposer').onclick=()=>{state.history.push($('composer').value);$('composer').value=''};
+$('undo').onclick=()=>{if(state.history.length)$('composer').value=state.history.pop()};
+$('clearTrace').onclick=()=>{state.traces=[];state.last=null;renderTrace()};
+$('confirmYes').onclick=()=>{const e=state.pending;state.pending=null;$('confirmDialog').close();if(e)handoff(e)};
+$('confirmNo').onclick=()=>{if(state.pending)state.traces.push(makeTrace('HOLD',state.pending,{reason:'user_cancelled'}));state.pending=null;$('confirmDialog').close();renderTrace()};
+$('export').onclick=()=>{
+ const blob=new Blob([JSON.stringify({protocol:'JM.GlyphBoardState/0.1',favourites:[...state.favs],recents:state.recents,composer:$('composer').value},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='JM_GLYPHBOARD_STATE.json';a.click();URL.revokeObjectURL(a.href);
+};
+$('import').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(x.protocol!=='JM.GlyphBoardState/0.1')throw Error('protocol mismatch');state.favs=new Set(x.favourites||[]);state.recents=(x.recents||[]).filter(id=>entry(id));$('composer').value=x.composer||'';saveLocal();renderBoard()}catch(err){alert('IMPORT HOLD: '+err.message)}};
+
+renderTabs();renderBoard();renderTrace();
+</script>
+</main></body></html>

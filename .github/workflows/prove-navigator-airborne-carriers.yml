@@ -1,0 +1,99 @@
+name: Prove JM3232 Airborne carrier parity
+
+on:
+  pull_request:
+    paths:
+      - "navigator/airborne/**"
+      - ".github/workflows/prove-navigator-airborne-carriers.yml"
+  push:
+    branches: [main]
+    paths:
+      - "navigator/airborne/**"
+      - ".github/workflows/prove-navigator-airborne-carriers.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Validate host-neutral identity contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate identity law and namespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path("navigator/airborne/identity.json").read_text(encoding="utf-8"))
+          assert d["schema"]=="JM.AIRBORNE.IDENTITY/0.3"
+          assert d["identity_id"]=="jm://navigator"
+          assert d["source_authority"]=="JM"
+          assert d["host_authority"]=="NONE"
+          assert d["canonical_door"]["url"]=="https://jmisjustme-estate.pages.dev/navigator/"
+          ids={x["id"] for x in d["carriers"]}
+          assert {"cloudflare-estate","github-pages","local-browser","openai-mcp"} <= ids
+          assert d["promotion_boundary"]["v1_5_1_body_promoted_behind_canonical_door"] is False
+          print("AIRBORNE_IDENTITY_CONTRACT_PASS")
+          PY
+          grep -q "JM3232 AIRBORNE NAMESPACE" navigator/airborne/index.html
+          grep -q "HOST AUTHORITY = NONE" navigator/airborne/index.html
+
+  external-parity:
+    name: Prove same identity across independent public carriers
+    if: github.event_name != 'pull_request'
+    needs: contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for carriers and compare exact identity payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANON="https://jmisjustme-estate.pages.dev/navigator/airborne/identity.json"
+          MIRROR="https://jmisjustme.github.io/JM-cading-lab/navigator/airborne/identity.json"
+          CANON_PAGE="https://jmisjustme-estate.pages.dev/navigator/airborne/"
+          MIRROR_PAGE="https://jmisjustme.github.io/JM-cading-lab/navigator/airborne/"
+          mkdir -p /tmp/airborne
+          fetch_with_wait() {
+            url="$1"; out="$2"
+            for i in $(seq 1 24); do
+              if curl -fsSL --max-time 20 -H 'cache-control: no-cache' "$url?proof=$GITHUB_SHA" -o "$out"; then return 0; fi
+              echo "waiting for carrier: $url (attempt $i/24)"
+              sleep 15
+            done
+            return 1
+          }
+          fetch_with_wait "$CANON" /tmp/airborne/canonical.json
+          fetch_with_wait "$MIRROR" /tmp/airborne/mirror.json
+          fetch_with_wait "$CANON_PAGE" /tmp/airborne/canonical.html
+          fetch_with_wait "$MIRROR_PAGE" /tmp/airborne/mirror.html
+          cmp navigator/airborne/identity.json /tmp/airborne/canonical.json
+          cmp navigator/airborne/identity.json /tmp/airborne/mirror.json
+          grep -q "JM3232 AIRBORNE NAMESPACE" /tmp/airborne/canonical.html
+          grep -q "JM3232 AIRBORNE NAMESPACE" /tmp/airborne/mirror.html
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          paths={"source":Path("navigator/airborne/identity.json"),"canonical":Path("/tmp/airborne/canonical.json"),"mirror":Path("/tmp/airborne/mirror.json")}
+          docs={k:json.loads(v.read_text(encoding="utf-8")) for k,v in paths.items()}
+          for name,d in docs.items():
+            assert d["identity_id"]=="jm://navigator",name
+            assert d["source_authority"]=="JM",name
+            assert d["host_authority"]=="NONE",name
+          hashes={k:hashlib.sha256(v.read_bytes()).hexdigest() for k,v in paths.items()}
+          assert len(set(hashes.values()))==1,hashes
+          receipt={"schema":"JM.AIRBORNE.CARRIER_PARITY_RECEIPT/0.3","git_sha":os.environ.get("GITHUB_SHA",""),"identity_id":"jm://navigator","source_authority":"JM","host_authority":"NONE","carriers":{"canonical_cloudflare":"https://jmisjustme-estate.pages.dev/navigator/airborne/","github_pages_mirror":"https://jmisjustme.github.io/JM-cading-lab/navigator/airborne/"},"identity_sha256":hashes["source"],"exact_payload_parity":True,"page_marker_parity":True,"claim_boundary":"Proves the same namespace identity payload is externally reachable through two independent public carriers. It does not by itself prove v1.5.1 body promotion, state migration, or owner-device contact."}
+          Path("JM3232_AIRBORNE_CARRIER_PARITY_RECEIPT_v0_3.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+          print(json.dumps(receipt,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jm3232-airborne-carrier-parity-v0-3
+          path: JM3232_AIRBORNE_CARRIER_PARITY_RECEIPT_v0_3.json
+          if-no-files-found: error
+          retention-days: 30

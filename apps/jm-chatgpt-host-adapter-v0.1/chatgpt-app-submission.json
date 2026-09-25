@@ -1,0 +1,92 @@
+{
+  "$schema": "https://developers.openai.com/apps-sdk/schemas/chatgpt-app-submission.v1.json",
+  "schema_version": 1,
+  "app_info": {
+    "display_name": "JM Inline Contact",
+    "subtitle": "Interactive contact in chat",
+    "description": "JM Inline Contact renders a touch-driven interactive contact surface inside ChatGPT so users can verify that input produces visible state, consequence, and trace. The current v0.1 public body is a non-sensitive contact probe and contains no private or frozen game donor content.",
+    "category": "DEVELOPER_TOOLS"
+  },
+  "tools": {
+    "render-jm-inline-probe": {
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false,
+        "destructiveHint": false
+      },
+      "justifications": {
+        "read_only_justification": "Renders the existing interactive probe resource and returns a receipt without modifying server-side or external data.",
+        "open_world_justification": "Does not publish, send, or mutate data in any external third-party system.",
+        "destructive_justification": "Does not delete, overwrite, revoke, or perform any irreversible action."
+      }
+    }
+  },
+  "test_cases": [
+    {
+      "description": "Render the basic JM inline contact surface.",
+      "user_prompt": "Render the JM inline contact probe here.",
+      "file_attachment_urls": null,
+      "tools_triggered": "render-jm-inline-probe",
+      "expected_output": "Shows the interactive JM contact surface in the conversation with a touch field and visible contact state.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Request a touchable in-chat contact test.",
+      "user_prompt": "Give me a touchable JM contact test inside the chat.",
+      "file_attachment_urls": null,
+      "tools_triggered": "render-jm-inline-probe",
+      "expected_output": "Renders the probe inline so the user can touch or drag in the field and observe visible state changes.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Verify contact-to-consequence behavior.",
+      "user_prompt": "Show me the JM probe where touching the field creates a visible Ding.",
+      "file_attachment_urls": null,
+      "tools_triggered": "render-jm-inline-probe",
+      "expected_output": "Renders the probe with its contact field, contact counter, Ding state, and visible trace receipt.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Exercise the interactive drag surface.",
+      "user_prompt": "Open the JM inline probe so I can drag the orb around.",
+      "file_attachment_urls": null,
+      "tools_triggered": "render-jm-inline-probe",
+      "expected_output": "Renders the interactive surface containing the draggable contact orb and state display.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Repeat the contact probe without changing external state.",
+      "user_prompt": "Run the JM inline contact probe again.",
+      "file_attachment_urls": null,
+      "tools_triggered": "render-jm-inline-probe",
+      "expected_output": "Renders a fresh instance of the same non-sensitive inline contact probe.",
+      "expected_output_url": null
+    }
+  ],
+  "negative_test_cases": [
+    {
+      "description": "Do not trigger for downloadable-file creation.",
+      "user_prompt": "Create a downloadable HTML game file for me.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because its current function is inline contact rendering, not downloadable file creation.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for unrelated web information.",
+      "user_prompt": "What is the weather tomorrow?",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because weather information is outside the inline contact workflow.",
+      "expected_output_url": null
+    },
+    {
+      "description": "Do not trigger for repository inspection.",
+      "user_prompt": "Search my GitHub repository for open issues.",
+      "file_attachment_urls": null,
+      "tools_triggered": null,
+      "expected_output": "The app should not be invoked because repository search is outside the probe's supported workflow.",
+      "expected_output_url": null
+    }
+  ]
+}

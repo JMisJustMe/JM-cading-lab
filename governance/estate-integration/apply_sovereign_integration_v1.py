@@ -141,7 +141,9 @@ def patch_navigator_registry() -> bool:
             'Unified Browser': 'SEPARATE_CURRENT_BODY',
             'JM Inline Contact': 'SEPARATE_IN_CHATGPT_CONTACT_LINEAGE',
             'GitHub': 'SOURCE_CORRIDOR_NOT_PUBLIC_ESTATE_IDENTITY'
-        }
+        },
+        'currentDoorBody': 'JM3232 Unified Browser v1.5.2 — Canonical Door Migration',
+        'mounting': 'SEPARATE_BODY_MOUNTED_AT_NAVIGATOR_CANONICAL_DOOR'
     }
     connected = data.setdefault('connected_bodies', [])
     item = {
@@ -160,11 +162,15 @@ def patch_navigator_registry() -> bool:
         'navigator/estate-integration/index.html',
         'navigator/estate-integration/public-registry.json',
         'navigator/estate-integration/bridge.js',
+        'navigator/carrier-plan.json',
+        'navigator/source-authority/v1.5.2/source-manifest.json',
+        '.github/workflows/prove-navigator-v1-5-2-canonical-door.yml',
+        'registry/jm3232-navigator-v1.5.2-canonical-door-promotion.json',
     ]))
     data['boundary'] = (
-        'Navigator v0.1.2 now consumes the shared public-safe Estate integration registry while retaining its own identity. '
-        'Unified Browser and JM Inline Contact remain separate bodies. Private owner/write capability is not published. '
-        'Live deployment/contact remains separately proved after merge/deploy.'
+        'Navigator retains the stable public identity and route while JM3232 Unified Browser v1.5.2 is mounted behind that door as a separate current body. '
+        'The shared public-safe Estate integration registry remains connected and private owner/write capability is not published. '
+        'Dual-carrier web promotion is proved; owner-device v1.5.2 contact remains separate.'
     )
     after = json.dumps(data, sort_keys=True, ensure_ascii=False)
     if before == after:

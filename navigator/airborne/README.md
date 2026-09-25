@@ -13,7 +13,7 @@ The Estate already governs one canonical public door. Airborne therefore does no
 
 `BODY IDENTITY -> CANONICAL DOOR -> CARRIER / MIRROR / ADAPTER`
 
-Current boundary: the canonical public door remains the proved Navigator v0.1.1 lineage until a later descendant is actually promoted and contacted there. JM3232 Unified Browser v1.5.1 / AIRBORNE v0.2 remains the stronger owner/test descendant. v0.3 proves the namespace/carrier layer separately.
+Current boundary: JM3232 Unified Browser v1.5.2 is the proved live body mounted at the stable Navigator canonical door, with exact Cloudflare and GitHub Pages recovery carriage. Navigator v0.1.1 and Unified Browser v1.5.1 remain lineage/recovery ancestors only; they are not the current public body. Owner-device v1.5.2 contact and subjective owner acceptance remain open.
 
 ## Earned external parity and canonical-body promotion
 

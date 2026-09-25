@@ -1,0 +1,142 @@
+{
+  "schema": "jm.build-execution/0.1",
+  "name": "JM Default Execution Body v0.1",
+  "created_for": {
+    "body": "JM AI Executable Body Contact v0.1",
+    "body_type": "real-host governed execution proof",
+    "intended_destination": "JM Adaptive ECOSTATE Agent real executable-body contact",
+    "body_path": "ai-host-contact/executable-body-contact"
+  },
+  "authority": {
+    "route_manifest": "ai-host-contact/executable-body-contact/EXECUTION_MANIFEST_v0_1.json",
+    "route_manifest_sha256": "9a60757d61ed8ed793262e80c0793130bb06615a0d989a5f46cbf1316fbf5a69",
+    "work_pr": 0,
+    "head_branch": "jm-ai-executable-body-contact-v0-1",
+    "build_authorized_by_manifest": true,
+    "new_capability_creation_authorized": false
+  },
+  "state": "CLOSED",
+  "resume_state": null,
+  "gates": {
+    "host-contact": {
+      "state": "PASS",
+      "updated_at": "2026-09-25T18:54:19.632695Z",
+      "evidence": [
+        "github-run:36176353870:host-contact-pass"
+      ]
+    }
+  },
+  "no_native_gates_justification": null,
+  "history": [
+    {
+      "at": "2026-09-25T18:54:19.250659Z",
+      "from": null,
+      "to": "AUTHORIZED",
+      "evidence": [
+        "route-manifest:9a60757d61ed8ed793262e80c0793130bb06615a0d989a5f46cbf1316fbf5a69"
+      ],
+      "note": "Execution initialized from an explicitly authorized prospective Build Route Manifest. No runtime/contact/closure proof is implied."
+    },
+    {
+      "at": "2026-09-25T18:54:19.291903Z",
+      "from": "AUTHORIZED",
+      "to": "COMPOSING",
+      "evidence": [
+        "github-run:36176353870:compose"
+      ],
+      "gate_updates": [],
+      "note": ""
+    },
+    {
+      "at": "2026-09-25T18:54:19.333342Z",
+      "from": "COMPOSING",
+      "to": "CONTACTABLE",
+      "evidence": [
+        "github-run:36176353870:host-contactable"
+      ],
+      "gate_updates": [],
+      "note": ""
+    },
+    {
+      "at": "2026-09-25T18:54:19.379924Z",
+      "from": "CONTACTABLE",
+      "to": "PROVING",
+      "evidence": [
+        "github-run:36176353870:proof-start"
+      ],
+      "gate_updates": [
+        "host-contact=OPEN"
+      ],
+      "note": ""
+    },
+    {
+      "at": "2026-09-25T18:54:19.548544Z",
+      "from": "PROVING",
+      "to": "ESCALATED",
+      "evidence": [
+        "github-run:36176353870:injected-red-contact"
+      ],
+      "gate_updates": [
+        "host-contact=FAIL"
+      ],
+      "note": "Bounded injected host-contact failure to prove real recovery routing."
+    },
+    {
+      "at": "2026-09-25T18:54:19.590449Z",
+      "from": "ESCALATED",
+      "to": "PROVING",
+      "evidence": [
+        "github-run:36176353870:recovery-return"
+      ],
+      "gate_updates": [
+        "host-contact=OPEN"
+      ],
+      "note": "Return to the affected proof state; completed upstream history remains preserved."
+    },
+    {
+      "at": "2026-09-25T18:54:19.632717Z",
+      "from": "PROVING",
+      "to": "PASS",
+      "evidence": [
+        "github-run:36176353870:host-contact-pass"
+      ],
+      "gate_updates": [
+        "host-contact=PASS"
+      ],
+      "note": ""
+    },
+    {
+      "at": "2026-09-25T18:54:19.675382Z",
+      "from": "PASS",
+      "to": "CLOSING",
+      "evidence": [
+        "github-run:36176353870:close-start"
+      ],
+      "gate_updates": [],
+      "note": ""
+    },
+    {
+      "at": "2026-09-25T18:54:19.718928Z",
+      "from": "CLOSING",
+      "to": "CLOSED",
+      "evidence": [
+        "github-run:36176353870:closed"
+      ],
+      "gate_updates": [],
+      "note": ""
+    }
+  ],
+  "last_ding": {
+    "at": "2026-09-25T18:54:19.548539Z",
+    "from_state": "PROVING",
+    "evidence": [
+      "github-run:36176353870:injected-red-contact"
+    ],
+    "note": "Bounded injected host-contact failure to prove real recovery routing."
+  },
+  "closure": {
+    "execution_closed": true,
+    "freeze_lock_anchor_mount_claimed": false,
+    "rule": "CLOSED is execution-route closure only; freeze/lock/anchor/mount require separate applicable evidence/built-ins."
+  }
+}

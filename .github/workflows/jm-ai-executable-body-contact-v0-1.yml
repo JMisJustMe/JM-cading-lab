@@ -1,0 +1,145 @@
+name: JM AI Executable Body Contact v0.1
+
+on:
+  push:
+    branches:
+      - jm-ai-executable-body-contact-v0-1
+    paths:
+      - 'ai-host-contact/executable-body-contact/EXECUTION_MANIFEST_v0_1.json'
+      - '.github/workflows/jm-ai-executable-body-contact-v0-1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-ai-executable-body-contact-v0-1
+  cancel-in-progress: false
+
+jobs:
+  execute-existing-jm-body:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Check out contact branch
+        uses: actions/checkout@v4
+        with:
+          ref: jm-ai-executable-body-contact-v0-1
+          fetch-depth: 0
+
+      - name: Prove inherited execution body before contact
+        run: python3 scripts/jm_build_execution.py --self-test
+
+      - name: Execute bounded AI-issued route through existing JM body
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="ai-host-contact/executable-body-contact"
+          MANIFEST="$ROOT/EXECUTION_MANIFEST_v0_1.json"
+          STATE="$ROOT/EXECUTION_STATE_v0_1.json"
+
+          python3 scripts/jm_build_execution.py --manifest "$MANIFEST" --state-file "$STATE" --init
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to COMPOSING --evidence "github-run:${GITHUB_RUN_ID}:compose"
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to CONTACTABLE --evidence "github-run:${GITHUB_RUN_ID}:host-contactable"
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to PROVING --evidence "github-run:${GITHUB_RUN_ID}:proof-start" --gate host-contact=OPEN
+
+          if python3 scripts/jm_build_execution.py --state-file "$STATE" --to PASS --evidence "github-run:${GITHUB_RUN_ID}:premature-pass"; then
+            echo "ERROR: premature PASS was not blocked"
+            exit 1
+          else
+            echo "EXPECTED HOLD: OPEN host-contact gate blocked premature PASS"
+          fi
+
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to ESCALATED \
+            --evidence "github-run:${GITHUB_RUN_ID}:injected-red-contact" \
+            --gate host-contact=FAIL \
+            --note "Bounded injected host-contact failure to prove real recovery routing."
+
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to PROVING \
+            --evidence "github-run:${GITHUB_RUN_ID}:recovery-return" \
+            --gate host-contact=OPEN \
+            --note "Return to the affected proof state; completed upstream history remains preserved."
+
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to PASS \
+            --evidence "github-run:${GITHUB_RUN_ID}:host-contact-pass" \
+            --gate host-contact=PASS
+
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to CLOSING --evidence "github-run:${GITHUB_RUN_ID}:close-start"
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --to CLOSED --evidence "github-run:${GITHUB_RUN_ID}:closed"
+          python3 scripts/jm_build_execution.py --state-file "$STATE" --status
+
+      - name: Build and assert executable-body receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+
+          root = Path("ai-host-contact/executable-body-contact")
+          manifest_path = root / "EXECUTION_MANIFEST_v0_1.json"
+          state_path = root / "EXECUTION_STATE_v0_1.json"
+          receipt_path = root / "EXECUTION_RECEIPT_v0_1.json"
+
+          manifest = json.loads(manifest_path.read_text())
+          state = json.loads(state_path.read_text())
+          route = [x.get("to") for x in state["history"]]
+          transitions = [(x.get("from"), x.get("to")) for x in state["history"]]
+
+          checks = {
+              "execution_closed": state["state"] == "CLOSED" and state["closure"]["execution_closed"] is True,
+              "no_false_flaz": state["closure"]["freeze_lock_anchor_mount_claimed"] is False,
+              "new_capability_creation_off": state["authority"]["new_capability_creation_authorized"] is False,
+              "red_ding_observed": "ESCALATED" in route,
+              "local_recovery_observed": ("ESCALATED", "PROVING") in transitions,
+              "final_host_gate_pass": state["gates"]["host-contact"]["state"] == "PASS",
+              "expected_route_order": route == [
+                  "AUTHORIZED","COMPOSING","CONTACTABLE","PROVING",
+                  "ESCALATED","PROVING","PASS","CLOSING","CLOSED"
+              ],
+          }
+          assert all(checks.values()), checks
+
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          receipt = {
+              "schema": "JM.AI.ExecutableBodyHostContactReceipt/0.1",
+              "status": "PASS",
+              "existing_body": "JM Default Execution Body v0.1",
+              "existing_body_path": "scripts/jm_build_execution.py",
+              "goal": manifest["requested_contact"]["goal"],
+              "github": {
+                  "run_id": os.environ["GITHUB_RUN_ID"],
+                  "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                  "branch": os.environ["GITHUB_REF_NAME"],
+                  "source_commit": os.environ["GITHUB_SHA"],
+              },
+              "checks": checks,
+              "route": route,
+              "last_ding": state.get("last_ding"),
+              "manifest_sha256": sha(manifest_path),
+              "state_sha256": sha(state_path),
+              "boundary": {
+                  "production_mutated": False,
+                  "new_capability_created": False,
+                  "freeze_lock_anchor_mount_claimed": False,
+                  "claim": "Existing JM execution body executed on a real GitHub runner, blocked premature PASS, recorded a red Ding, recovered locally, and closed with host-contact PASS."
+              },
+              "ding": "JM_AI_EXISTING_EXECUTABLE_BODY_REAL_HOST_DING"
+          }
+          receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+          print(json.dumps(receipt, indent=2))
+          PY
+
+      - name: Commit host-produced state and receipt to contact branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM AI Host Contact Proof"
+          git config user.email "actions@users.noreply.github.com"
+          git add ai-host-contact/executable-body-contact/EXECUTION_STATE_v0_1.json
+          git add ai-host-contact/executable-body-contact/EXECUTION_RECEIPT_v0_1.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record JM AI executable-body real-host Ding"
+          git pull --rebase origin jm-ai-executable-body-contact-v0-1
+          git push origin HEAD:jm-ai-executable-body-contact-v0-1

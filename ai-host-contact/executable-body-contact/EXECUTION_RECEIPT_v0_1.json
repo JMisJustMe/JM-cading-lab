@@ -1,0 +1,50 @@
+{
+  "schema": "JM.AI.ExecutableBodyHostContactReceipt/0.1",
+  "status": "PASS",
+  "existing_body": "JM Default Execution Body v0.1",
+  "existing_body_path": "scripts/jm_build_execution.py",
+  "goal": "Run the existing JM Default Execution Body through a bounded red-Ding recovery cycle on a real GitHub runner.",
+  "github": {
+    "run_id": "36176353870",
+    "run_attempt": "1",
+    "branch": "jm-ai-executable-body-contact-v0-1",
+    "source_commit": "55f3c7263c6d6abb48022c45adcc1272019acf37"
+  },
+  "checks": {
+    "execution_closed": true,
+    "no_false_flaz": true,
+    "new_capability_creation_off": true,
+    "red_ding_observed": true,
+    "local_recovery_observed": true,
+    "final_host_gate_pass": true,
+    "expected_route_order": true
+  },
+  "route": [
+    "AUTHORIZED",
+    "COMPOSING",
+    "CONTACTABLE",
+    "PROVING",
+    "ESCALATED",
+    "PROVING",
+    "PASS",
+    "CLOSING",
+    "CLOSED"
+  ],
+  "last_ding": {
+    "at": "2026-09-25T18:54:19.548539Z",
+    "from_state": "PROVING",
+    "evidence": [
+      "github-run:36176353870:injected-red-contact"
+    ],
+    "note": "Bounded injected host-contact failure to prove real recovery routing."
+  },
+  "manifest_sha256": "9a60757d61ed8ed793262e80c0793130bb06615a0d989a5f46cbf1316fbf5a69",
+  "state_sha256": "0cbbcb892059a4551516c61668b250eaa7f01e25583e21e8727c2d496af4cfab",
+  "boundary": {
+    "production_mutated": false,
+    "new_capability_created": false,
+    "freeze_lock_anchor_mount_claimed": false,
+    "claim": "Existing JM execution body executed on a real GitHub runner, blocked premature PASS, recorded a red Ding, recovered locally, and closed with host-contact PASS."
+  },
+  "ding": "JM_AI_EXISTING_EXECUTABLE_BODY_REAL_HOST_DING"
+}

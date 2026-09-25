@@ -1,0 +1,47 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM AI Executable Body Contact v0.1",
+    "body_type": "real-host governed execution proof",
+    "intended_destination": "JM Adaptive ECOSTATE Agent real executable-body contact",
+    "body_path": "ai-host-contact/executable-body-contact"
+  },
+  "authority": {
+    "work_pr": 0,
+    "head_branch": "jm-ai-executable-body-contact-v0-1",
+    "source": "JM Adaptive ECOSTATE Agent real-host phase",
+    "production_mutation": false
+  },
+  "true_gaps": {
+    "new_capability_creation_authorized": false,
+    "note": "Use the existing JM Default Execution Body; do not invent a replacement runtime."
+  },
+  "state": {
+    "build_authorized_by_manifest": true
+  },
+  "requested_contact": {
+    "goal": "Run the existing JM Default Execution Body through a bounded red-Ding recovery cycle on a real GitHub runner.",
+    "expected_route": [
+      "AUTHORIZED",
+      "COMPOSING",
+      "CONTACTABLE",
+      "PROVING",
+      "ESCALATED",
+      "PROVING",
+      "PASS",
+      "CLOSING",
+      "CLOSED"
+    ],
+    "gate": "host-contact",
+    "injected_failure": "host-contact=FAIL",
+    "recovery": "return to PROVING, reopen gate, then PASS after contact evidence",
+    "success_requires": [
+      "execution_closed=true",
+      "new_capability_creation_authorized=false",
+      "history contains ESCALATED",
+      "history contains ESCALATED->PROVING",
+      "host-contact final gate=PASS"
+    ]
+  }
+}

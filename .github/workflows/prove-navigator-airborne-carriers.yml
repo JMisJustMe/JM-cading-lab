@@ -36,7 +36,8 @@ jobs:
           assert d["canonical_door"]["url"]=="https://jmisjustme-estate.pages.dev/navigator/"
           ids={x["id"] for x in d["carriers"]}
           assert {"cloudflare-estate","github-pages","local-browser","openai-mcp"} <= ids
-          assert d["promotion_boundary"]["v1_5_2_body_promoted_behind_canonical_door"] is True\n          assert d["promotion_boundary"]["owner_contact_for_v1_5_2"] is False
+          assert d["promotion_boundary"]["v1_5_2_body_promoted_behind_canonical_door"] is True
+          assert d["promotion_boundary"]["owner_contact_for_v1_5_2"] is False
           print("AIRBORNE_IDENTITY_CONTRACT_PASS")
           PY
           grep -q "JM3232 AIRBORNE NAMESPACE" navigator/airborne/index.html

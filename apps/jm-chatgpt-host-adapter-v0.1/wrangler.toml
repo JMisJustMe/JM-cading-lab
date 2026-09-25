@@ -1,0 +1,8 @@
+name = "jm-inline-contact-probe-v01"
+main = "src/worker.mjs"
+compatibility_date = "2026-08-21"
+workers_dev = true
+preview_urls = true
+
+[observability]
+enabled = true

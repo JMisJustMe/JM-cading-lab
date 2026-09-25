@@ -1,0 +1,25 @@
+{
+  "schema": "jm.chatgpt-host-adapter/receipt/v0.1",
+  "status": "BUILD_CREATED_NOT_CHATGPT_CONTACT_PROVEN",
+  "adapter_role": "NEW_HOST_TARGET_ONLY",
+  "runtime_rebuilt": false,
+  "game_engine_rebuilt": false,
+  "game_ir_rebuilt": false,
+  "source_body": {
+    "name": "Untitled Field Branch v0.9 — frozen",
+    "sha256": "7391dd5bc1c4ff1565d70b69354cfdd79a121f8e6f6a1d671d75b57d463ee7ea",
+    "playable_ir": "jm.gamecore.playable-ir/v0.3",
+    "onebody_abi": "jm.onebody-abi/v0.1"
+  },
+  "host_target": "ChatGPT / MCP Apps widget",
+  "host_law": "CARRIER_NOT_SOURCE_AUTHORITY",
+  "merge_forbidden": true,
+  "keeper": "The estate donates. The game remains sovereign. The host serves play. Trace proves consequence.",
+  "proof_boundary": {
+    "local_source_integrity": "PASS",
+    "mcp_dependency_runtime": "NOT_YET_DINGED",
+    "chatgpt_web_widget_contact": "NOT_YET_DINGED",
+    "chatgpt_android_inline_contact": "NOT_YET_DINGED",
+    "third_ding": false
+  }
+}

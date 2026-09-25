@@ -1,0 +1,146 @@
+name: JM Inline Contact Cloudflare Probe
+
+on:
+  push:
+    branches:
+      - jm-chatgpt-host-adapter-v0.1
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-probe-integration.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/worker.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/src/public-probe-integration.mjs'
+      - 'apps/jm-chatgpt-host-adapter-v0.1/package.json'
+      - '.github/workflows/jm-inline-contact-cloudflare-probe.yml'
+  workflow_dispatch:
+
+jobs:
+  public-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install MCP and Pages build dependencies
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-save --no-audit --no-fund wrangler@4 esbuild
+
+      - name: Syntax check Worker and proof client
+        run: |
+          node --check src/worker.mjs
+          node --check src/public-probe-integration.mjs
+
+      - name: Bundle MCP handler as Pages Advanced Mode worker
+        run: |
+          set -euo pipefail
+          rm -rf pages-probe
+          mkdir -p pages-probe
+          npx esbuild src/worker.mjs --bundle --format=esm --platform=browser --target=es2022 --outfile=pages-probe/_worker.js
+          printf '%s\n' '<!doctype html><meta charset="utf-8"><title>JM Inline Contact</title><p>JM Inline Contact routes are served by the Pages worker.</p>' > pages-probe/index.html
+          test -s pages-probe/_worker.js
+
+      - name: Local Pages runtime smoke
+        run: |
+          set -euo pipefail
+          npx wrangler pages dev pages-probe --ip 127.0.0.1 --port 8788 > /tmp/jm-pages-dev.log 2>&1 &
+          PID=$!
+          trap 'kill $PID 2>/dev/null || true' EXIT
+          HEALTH=''
+          for ATTEMPT in $(seq 1 30); do
+            if HEALTH=$(curl --fail --silent --show-error http://127.0.0.1:8788/health 2>/dev/null); then break; fi
+            sleep 1
+          done
+          if [ -z "$HEALTH" ]; then
+            echo '--- Pages dev log ---'
+            cat /tmp/jm-pages-dev.log
+            echo '--- direct response ---'
+            curl -i http://127.0.0.1:8788/health || true
+            exit 1
+          fi
+          printf '%s\n' "$HEALTH"
+          curl --fail --silent http://127.0.0.1:8788/privacy >/dev/null
+          curl --fail --silent http://127.0.0.1:8788/terms >/dev/null
+          curl --fail --silent http://127.0.0.1:8788/support >/dev/null
+
+      - name: Ensure isolated Pages project exists
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          set +e
+          OUT=$(npx wrangler pages project create jm-inline-contact-probe --production-branch=main 2>&1)
+          CODE=$?
+          set -e
+          printf '%s\n' "$OUT"
+          if [ "$CODE" -ne 0 ] && ! printf '%s\n' "$OUT" | grep -Eqi 'already exists|project.*exists'; then
+            exit "$CODE"
+          fi
+
+      - name: Deploy isolated Pages preview
+        id: deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          OUT=$(npx wrangler pages deploy pages-probe --project-name=jm-inline-contact-probe --branch=inline-contact 2>&1)
+          printf '%s\n' "$OUT"
+          CLEAN=$(printf '%s\n' "$OUT" | sed -r 's/\x1B\[[0-9;]*[mK]//g')
+          URL=$(printf '%s\n' "$CLEAN" | grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' | tail -n 1 || true)
+          if [ -z "$URL" ]; then
+            echo 'No Cloudflare Pages preview URL recovered.' >&2
+            exit 1
+          fi
+          printf 'preview_url=%s\n' "$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Smoke-test public HTTPS host
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: |
+          set -euo pipefail
+          HEALTH=''
+          for ATTEMPT in $(seq 1 20); do
+            STATUS=$(curl --silent --show-error --output /tmp/jm-health-body.txt --write-out '%{http_code}' "$PREVIEW_URL/health" || true)
+            if [ "$STATUS" = '200' ]; then
+              HEALTH=$(cat /tmp/jm-health-body.txt)
+              break
+            fi
+            echo "attempt=$ATTEMPT status=$STATUS body=$(cat /tmp/jm-health-body.txt 2>/dev/null || true)"
+            sleep 2
+          done
+          test -n "$HEALTH"
+          printf '%s\n' "$HEALTH"
+          for PATHNAME in / /privacy /terms /support; do
+            curl --fail --silent --show-error "$PREVIEW_URL$PATHNAME" >/dev/null
+          done
+          node -e 'const fs=require("fs"); const base=process.env.PREVIEW_URL; const health=JSON.parse(process.argv[1]); fs.writeFileSync("PUBLIC_PROBE_DEPLOYMENT_v0_1_2.json", JSON.stringify({pass:true,transport:"cloudflare-pages-advanced-mode",probeOnly:true,privateDonorBytesIncluded:false,previewUrl:base,mcpUrl:base+"/mcp",websiteUrl:base+"/",privacyUrl:base+"/privacy",termsUrl:base+"/terms",supportUrl:base+"/support",health,chatgptContactProvenHere:false},null,2)+"\n")' "$HEALTH"
+
+      - name: Public MCP tool/resource integration proof
+        env:
+          JM_PUBLIC_BASE_URL: ${{ steps.deploy.outputs.preview_url }}
+        run: node src/public-probe-integration.mjs
+
+      - name: Upload public submission proof receipts
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-inline-contact-public-submission-proof-v0.1.2
+          path: |
+            apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_PROBE_DEPLOYMENT_v0_1_2.json
+            apps/jm-chatgpt-host-adapter-v0.1/PUBLIC_SUBMISSION_READINESS_v0_1_2.json
+          if-no-files-found: error

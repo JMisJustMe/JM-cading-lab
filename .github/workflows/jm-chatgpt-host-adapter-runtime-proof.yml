@@ -1,0 +1,48 @@
+name: JM ChatGPT Host Adapter Runtime Proof
+
+on:
+  push:
+    branches:
+      - jm-chatgpt-host-adapter-v0.1
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/**'
+      - '.github/workflows/jm-chatgpt-host-adapter-runtime-proof.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/jm-chatgpt-host-adapter-v0.1/**'
+      - '.github/workflows/jm-chatgpt-host-adapter-runtime-proof.yml'
+  workflow_dispatch:
+
+jobs:
+  runtime-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/jm-chatgpt-host-adapter-v0.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install official MCP dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Static host contract
+        run: npm run contract
+
+      - name: MCP runtime transport integration
+        run: npm run integration
+
+      - name: Upload runtime proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-chatgpt-host-adapter-runtime-proof-v0.1.2
+          path: apps/jm-chatgpt-host-adapter-v0.1/artifacts/MCP_RUNTIME_PROOF_v0_1_2.json
+          if-no-files-found: error

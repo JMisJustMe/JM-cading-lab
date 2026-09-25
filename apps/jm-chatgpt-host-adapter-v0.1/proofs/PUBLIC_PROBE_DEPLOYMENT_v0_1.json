@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "transport": "cloudflare-pages-advanced-mode",
+  "probeOnly": true,
+  "privateDonorBytesIncluded": false,
+  "previewUrl": "https://inline-contact.jm-inline-contact-probe.pages.dev",
+  "mcpUrl": "https://inline-contact.jm-inline-contact-probe.pages.dev/mcp",
+  "health": {
+    "ok": true,
+    "body": "jm.inline-contact-probe/v0.1",
+    "probeOnly": true,
+    "privateDonorBytesIncluded": false,
+    "claim": "PUBLIC_MCP_PROBE_NOT_CHATGPT_CONTACT_PROOF"
+  },
+  "chatgptContactProvenHere": false,
+  "githubActions": {
+    "runId": 32448745582,
+    "conclusion": "success",
+    "artifactId": 9434934420,
+    "artifactDigest": "sha256:1d0e2a3e91203de850d9920861d9905e3a92a0ae29c5583b088ed4e5ae44f2ad"
+  },
+  "proofBoundary": "Public HTTPS MCP reachability is proved. ChatGPT inline rendering/interactivity is not proved until the probe is physically rendered and touched inside ChatGPT."
+}

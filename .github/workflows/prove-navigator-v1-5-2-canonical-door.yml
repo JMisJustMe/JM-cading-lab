@@ -57,7 +57,7 @@ jobs:
           assert manifest['body_sha256']==SOURCE_SHA
 
           carrier=Path('navigator/index.html').read_bytes()
-          assert len(carrier)==6183328, len(carrier)
+          assert len(carrier)==6183319, len(carrier)
           assert hashlib.sha256(carrier).hexdigest()==CARRIER_SHA
           text=carrier.decode('utf-8')
           required=[

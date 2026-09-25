@@ -1,5 +1,5 @@
 {
-  "schema": "JM.AIRBORNE.IDENTITY/0.3.1",
+  "schema": "JM.AIRBORNE.IDENTITY/0.4",
   "identity_id": "jm://navigator",
   "canonical_name": "JM3232 Navigator / Unified Browser",
   "owner": "JM / JMisJustMe",
@@ -39,19 +39,28 @@
     }
   ],
   "lineage": {
-    "current_canonical_public_body": "JM3232 Navigator v0.1.1",
-    "airborne_owner_descendant": "JM3232 Unified Browser v1.5.1 — Airborne Multi-Host Parity",
-    "airborne_core_stage": "JM3232 AIRBORNE v0.2 — MULTI-HOST PARITY",
-    "namespace_stage": "AIRBORNE v0.3.1 — JM NAMESPACE + LIVE DUAL-CARRIER PARITY"
+    "current_canonical_public_body": "JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+    "airborne_owner_descendant": "JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+    "airborne_core_stage": "JM3232 AIRBORNE v0.3.2 — CANONICAL DOOR PROMOTION",
+    "namespace_stage": "AIRBORNE v0.4 — LIVE CANONICAL BODY + DUAL-CARRIER PARITY"
   },
   "promotion_boundary": {
     "namespace_identity": "ACTIVE",
     "external_dual_carrier_parity": "PROVED_BY_LIVE_DUAL_CARRIER_WORKFLOW",
-    "v1_5_1_body_promoted_behind_canonical_door": false,
-    "owner_contact_for_v1_5_1": false,
-    "note": "The jm://navigator namespace has proved exact external parity across the Cloudflare Estate carrier and GitHub Pages recovery carrier. This still does not claim the 6 MB v1.5.1 owner body is promoted behind the canonical door, nor owner-device contact for that descendant.",
+    "v1_5_2_body_promoted_behind_canonical_door": true,
+    "canonical_body_source_sha256": "e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562",
+    "canonical_carrier_sha256": "b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
+    "canonical_cloudflare_body": "PROVED_EXACT",
+    "github_pages_recovery_body": "PROVED_EXACT",
+    "legacy_v0_1_1_state_migration_code": "HASH_BOUND_AND_PRESENT",
+    "legacy_savepack_import": "HASH_BOUND_AND_PRESENT",
+    "owner_contact_for_v1_5_2": false,
+    "owner_acceptance_for_v1_5_2": false,
     "proof_mode": "CONTINUOUS_ON_MAIN",
-    "proof_workflow": ".github/workflows/prove-navigator-airborne-carriers.yml"
+    "proof_workflow": ".github/workflows/prove-navigator-v1-5-2-canonical-door.yml",
+    "proof_run_id": 36196961073,
+    "proof_commit": "7020297bcda0eeda14d8c0cd569d3c4cfe294901",
+    "note": "v1.5.2 is now the live canonical Navigator-door body on Cloudflare and the exact recovery body on GitHub Pages. Owner-device contact and subjective owner acceptance remain separate open Dings."
   },
   "laws": [
     "HOST != SOURCE",

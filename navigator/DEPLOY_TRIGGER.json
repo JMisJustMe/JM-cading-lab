@@ -1,17 +1,18 @@
 {
-  "schema": "JM.NavigatorDeployTrigger/1.1",
+  "schema": "JM.NavigatorDeployTrigger/1.2",
   "target": "https://jmisjustme-estate.pages.dev/navigator/",
-  "version": "v0.1.1",
-  "triggered_at": "2026-07-20T15:32:00Z",
-  "source_commit": "3328c9a16a0da05ef6c5cd9cd165a03280536435",
+  "version": "v1.5.2 — Canonical Door Migration",
+  "triggered_at": "2026-09-25T22:29:37Z",
+  "source_commit": "7020297bcda0eeda14d8c0cd569d3c4cfe294901",
   "proof_target": [
-    "JM3232 Navigator v0.1.1",
-    "Non-Game Apps House",
-    "37 of 37 assistant-side checks passed",
-    "non-destructive Stringline seed migration",
-    "Back trail without duplicate history",
-    "Many bodies. One living line. None erased.",
-    "preserved Human Pattern Calibration Theory body"
+    "JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+    "v1.5.2 · AIRBORNE",
+    "exact source SHA-256 e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562",
+    "exact canonical carrier SHA-256 b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
+    "legacy Navigator v0.1.1 state migration",
+    "legacy JM.NavigatorSavePack/1.0 import",
+    "Cloudflare + GitHub Pages exact body parity"
   ],
-  "boundary": "This file triggers the protected deployment rail; it is not itself a success receipt."
+  "proof_receipt": "registry/jm3232-navigator-v1.5.2-canonical-door-promotion.json",
+  "boundary": "This trigger records the promoted deployment target and proof expectation. Owner-device contact and subjective owner acceptance remain separate from deployment success."
 }

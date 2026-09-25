@@ -1,4 +1,4 @@
-# JM3232 AIRBORNE NAMESPACE v0.3.1
+# JM3232 AIRBORNE NAMESPACE v0.4
 
 This directory gives the living JM3232 Navigator / Unified Browser a stable, host-neutral identity layer.
 
@@ -13,8 +13,15 @@ The Estate already governs one canonical public door. Airborne therefore does no
 
 `BODY IDENTITY -> CANONICAL DOOR -> CARRIER / MIRROR / ADAPTER`
 
-Current boundary: the canonical public door remains the proved Navigator v0.1.1 lineage until a later descendant is actually promoted and contacted there. JM3232 Unified Browser v1.5.1 / AIRBORNE v0.2 remains the stronger owner/test descendant. v0.3 proves the namespace/carrier layer separately.
+Current boundary: JM3232 Unified Browser v1.5.2 is the proved live body mounted at the stable Navigator canonical door, with exact Cloudflare and GitHub Pages recovery carriage. Navigator v0.1.1 and Unified Browser v1.5.1 remain lineage/recovery ancestors only; they are not the current public body. Owner-device v1.5.2 contact and subjective owner acceptance remain open.
 
-## Earned external parity
+## Earned external parity and canonical-body promotion
 
-The host-neutral namespace has now passed the live dual-carrier workflow against the canonical Cloudflare Estate carrier and the GitHub Pages recovery mirror. This proof is for namespace identity parity only; full v1.5.1 canonical-door promotion and owner-device contact remain separate.
+The host-neutral namespace has passed live dual-carrier identity parity and the Navigator canonical door now serves **JM3232 Unified Browser v1.5.2 — Canonical Door Migration** on Cloudflare, with an exact GitHub Pages recovery carrier.
+
+- source SHA-256: `e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562`
+- canonical carrier SHA-256: `b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569`
+- proof run: `36196961073`
+- proof commit: `7020297bcda0eeda14d8c0cd569d3c4cfe294901`
+
+The mounted Unified Browser remains a separate body in lineage; mounting it at the Navigator door is not an identity merge. Owner-device v1.5.2 contact and subjective owner acceptance remain open.

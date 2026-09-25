@@ -211,7 +211,9 @@ jobs:
           grep -Fq '.griprail-track' cloudflare-estate/ecostate-griprail-v6.css
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/money-menu/index.html
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/earn-now/index.html
-          grep -Fq 'JM3232 UNIFIED BROWSER' cloudflare-estate/navigator/index.html\n          grep -Fq 'v1.5.2 · AIRBORNE' cloudflare-estate/navigator/index.html\n          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' cloudflare-estate/navigator/index.html
+          grep -Fq 'JM3232 UNIFIED BROWSER' cloudflare-estate/navigator/index.html
+          grep -Fq 'v1.5.2 · AIRBORNE' cloudflare-estate/navigator/index.html
+          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' cloudflare-estate/navigator/index.html
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html

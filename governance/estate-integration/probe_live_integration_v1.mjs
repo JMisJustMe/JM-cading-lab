@@ -11,7 +11,7 @@ const mcpHosts = [
 ];
 const estateRoutes = [
   ['root','/','JMISJUSTME'],
-  ['navigator','/navigator/','JM3232 NAVIGATOR'],
+  ['navigator','/navigator/','v1.5.2 · AIRBORNE'],
   ['stringline','/navigator/stringline.json','estate-sovereign-integration'],
   ['integration','/navigator/estate-integration/','One Estate.'],
   ['registry','/navigator/estate-integration/public-registry.json','JM.Estate.PublicNervousSystem/1'],

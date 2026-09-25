@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.6-money-menu-public-contact';
+const CACHE='jm-web-estate-v1.4.7-gripcube-v5';
 const CORE=[
   './',
   './index.html',
@@ -6,6 +6,8 @@ const CORE=[
   './estate-accessibility.css',
   './estate-accessibility.js',
   './estate-app.js',
+  './ecostate-gripcube-v5.css',
+  './ecostate-gripcube-v5.js',
   './author-home-door.js',
   './estate-head-public-consumer.js',
   './manifest.webmanifest',

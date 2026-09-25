@@ -1,0 +1,60 @@
+name: GripCube Side-Scroll v5.1 QA
+
+on:
+  pull_request:
+    paths:
+      - 'money-menu/index.html'
+      - 'ecostate-gripcube-v5.css'
+      - 'sw.js'
+      - 'tests/gripcube-side-scroll-v5-1.spec.mjs'
+      - '.github/workflows/gripcube-side-scroll-v5-1-qa.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'money-menu/index.html'
+      - 'ecostate-gripcube-v5.css'
+      - 'sw.js'
+      - 'tests/gripcube-side-scroll-v5-1.spec.mjs'
+
+jobs:
+  side-scroll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static side-scroll gates
+        run: |
+          node --check tests/gripcube-side-scroll-v5-1.spec.mjs
+          grep -q 'GRIPCUBE_SIDE_SCROLL_REPEAT_V5_1' money-menu/index.html
+          grep -q 'function laneGroups(a)' money-menu/index.html
+          grep -q 'GRIPCUBE_SIDE_SCROLL_REPEAT_V5_1' ecostate-gripcube-v5.css
+          grep -q 'jm-web-estate-v1.4.8-gripcube-v5-1' sw.js
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Boot Estate
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-side-scroll-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4177/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-side-scroll-http.log
+          exit 1
+
+      - name: Render repeated side-scroll routes
+        env:
+          BASE_URL: http://127.0.0.1:4177
+        run: node tests/gripcube-side-scroll-v5-1.spec.mjs
+
+      - name: Upload visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gripcube-side-scroll-v5-1-visual-receipts
+          path: qa/gripcube-side-scroll-v5-1/
+          if-no-files-found: ignore

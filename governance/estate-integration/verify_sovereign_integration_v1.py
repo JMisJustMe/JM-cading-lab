@@ -58,7 +58,8 @@ def main() -> None:
     for path in TARGETS:
         text = path.read_text(encoding='utf-8')
         require(text.count(MARKER) == 1, f'{path}: expected exactly one integration bridge marker')
-        require('/navigator/estate-integration/bridge.js' in text, f'{path}: shared bridge route missing')
+        bridge_route = './estate-integration/bridge.js' if path == Path('navigator/index.html') else '/navigator/estate-integration/bridge.js'
+        require(bridge_route in text, f'{path}: shared bridge route missing: {bridge_route}')
 
     stringline = json.loads(STRINGLINE.read_text(encoding='utf-8'))
     projects = [p for p in stringline.get('seed_project_strings', []) if p.get('id') == 'estate-sovereign-integration']

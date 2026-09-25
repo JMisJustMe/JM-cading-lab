@@ -59,23 +59,40 @@ jobs:
           CANON_PAGE="https://jmisjustme-estate.pages.dev/navigator/airborne/"
           MIRROR_PAGE="https://jmisjustme.github.io/JM-cading-lab/navigator/airborne/"
           mkdir -p /tmp/airborne
-          fetch_with_wait() {
-            url="$1"; out="$2"
+          fetch_exact_with_wait() {
+            url="$1"; out="$2"; expected="$3"
             for i in $(seq 1 24); do
-              if curl -fsSL --max-time 20 -H 'cache-control: no-cache' "$url?proof=$GITHUB_SHA" -o "$out"; then return 0; fi
-              echo "waiting for carrier: $url (attempt $i/24)"
+              if curl -fsSL --max-time 20 -H 'cache-control: no-cache' "$url?proof=$GITHUB_SHA&attempt=$i" -o "$out"; then
+                if cmp -s "$expected" "$out"; then
+                  echo "carrier payload converged: $url"
+                  return 0
+                fi
+                echo "carrier reachable but serving stale payload: $url (attempt $i/24)"
+              else
+                echo "carrier not reachable yet: $url (attempt $i/24)"
+              fi
               sleep 15
             done
             return 1
           }
-          fetch_with_wait "$CANON" /tmp/airborne/canonical.json
-          fetch_with_wait "$MIRROR" /tmp/airborne/mirror.json
-          fetch_with_wait "$CANON_PAGE" /tmp/airborne/canonical.html
-          fetch_with_wait "$MIRROR_PAGE" /tmp/airborne/mirror.html
+          fetch_marker_with_wait() {
+            url="$1"; out="$2"; marker="$3"
+            for i in $(seq 1 24); do
+              if curl -fsSL --max-time 20 -H 'cache-control: no-cache' "$url?proof=$GITHUB_SHA&attempt=$i" -o "$out" && grep -Fq "$marker" "$out"; then
+                echo "carrier page converged: $url"
+                return 0
+              fi
+              echo "waiting for current carrier page: $url (attempt $i/24)"
+              sleep 15
+            done
+            return 1
+          }
+          fetch_exact_with_wait "$CANON" /tmp/airborne/canonical.json navigator/airborne/identity.json
+          fetch_exact_with_wait "$MIRROR" /tmp/airborne/mirror.json navigator/airborne/identity.json
+          fetch_marker_with_wait "$CANON_PAGE" /tmp/airborne/canonical.html "JM3232 AIRBORNE NAMESPACE · v0.3.1"
+          fetch_marker_with_wait "$MIRROR_PAGE" /tmp/airborne/mirror.html "JM3232 AIRBORNE NAMESPACE · v0.3.1"
           cmp navigator/airborne/identity.json /tmp/airborne/canonical.json
           cmp navigator/airborne/identity.json /tmp/airborne/mirror.json
-          grep -q "JM3232 AIRBORNE NAMESPACE" /tmp/airborne/canonical.html
-          grep -q "JM3232 AIRBORNE NAMESPACE" /tmp/airborne/mirror.html
           python3 - <<'PY'
           import hashlib,json,os
           from pathlib import Path

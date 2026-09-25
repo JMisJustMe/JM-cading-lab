@@ -175,15 +175,15 @@
     min-height:112px;
   }
 
-  dialog{
+  body[data-ecostate-surface="work"] dialog{
     overflow:hidden!important;
   }
-  dialog .dlgBody{
+  body[data-ecostate-surface="work"] dialog .dlgBody{
     max-height:calc(88dvh - 70px);
     overflow-y:auto;
     overscroll-behavior:contain;
   }
-  dialog .receipt{
+  body[data-ecostate-surface="work"] dialog .receipt{
     max-height:31dvh;
     overflow:auto;
   }

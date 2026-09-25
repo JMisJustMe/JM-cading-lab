@@ -60,7 +60,7 @@ jobs:
               'crown law visible': 'CAUSE MUST PASS.' in page,
               'return route visible': '../../index.html' in page,
               'theory mount listed': any(x.get('id') == 'cause-must-pass' for x in theory.get('current_best_mounts', [])),
-              'estate route live': any(x.get('path') == 'theory/cause-must-pass/00_OPEN_FIRST.html' and x.get('state') == 'LIVE_ON_MAIN' for x in estate.get('live_github_routes', [])),
+              'estate route live': any(x.get('path') == 'theory/cause-must-pass/00_OPEN_FIRST.html' and x.get('state') == 'DEDICATED_COMPLETE_BODY_LIVE' for x in estate.get('live_github_routes', [])),
               'library custody recorded': manifest.get('owner_controlled_package', {}).get('status') == 'MOUNTED_IN_CHATGPT_LIBRARY',
               'release receipt visible': 'merged to `main`' in receipt.lower(),
           }

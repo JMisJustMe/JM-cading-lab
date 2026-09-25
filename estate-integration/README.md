@@ -12,7 +12,7 @@ One canonical public door may route to many sovereign Estate bodies. Carrier, ho
 - Freestanding website lineage: InfinityFree v1.5 H1
 - Private/logical owner source authority: JMISJUSTME Living Estate Owner Unified v1.11.1
 - Current web/source navigation authority: JM Living MultiHub v6.0A
-- Unified Browser current working descendant: JM3232 Unified Browser v1.1.2
+- Unified Browser current working descendant: JM3232 Unified Browser v1.5.2 Canonical Door Migration
 - Navigator source authority: JM3232 Navigator Browser Bridge v0.1
 - Navigator owner/live MCP descendant and separate public read-only OpenAI descendant
 - JM Inline Contact as separate in-ChatGPT interaction lineage

@@ -21,6 +21,35 @@ header{position:sticky;top:0;z-index:30;background:rgba(7,10,16,.9);backdrop-fil
 
 .contact-law{display:block;margin-top:8px;padding:10px 12px;border-left:4px solid var(--mint);background:rgba(119,232,189,.07);font-size:.78rem;font-weight:850;color:#dffbf1}.front-window{margin-bottom:12px;padding:16px}.front-window-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap}.front-window h2{margin:0;font-size:1.35rem}.front-window p{margin:.25rem 0 0;color:var(--muted)}.offer-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}.offer{border:1px solid var(--line);background:#0d1420;color:var(--text);border-radius:13px;padding:11px;text-align:left}.offer b{display:block;line-height:1.15}.offer span{display:block;color:var(--gold);font-size:.78rem;margin-top:5px}.offer:hover,.offer:focus-visible{border-color:var(--gold);outline:none}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form-grid label{font-size:.75rem;font-weight:900;color:var(--muted)}.form-grid input,.form-grid select,.form-grid textarea{margin-top:5px}.form-grid .wide{grid-column:1/-1}.form-grid textarea{width:100%;min-height:100px;resize:vertical;background:#0c121d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}.scope-box{margin-top:12px}.scope-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.selected-list{display:grid;gap:6px;margin:10px 0}.selected-line{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#111a28}.selected-line small{color:var(--muted)}.notice{font-size:.77rem;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}.notice strong{color:var(--mint)}
 @media(max-width:980px){.offer-row{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.offer-row,.form-grid{grid-template-columns:1fr}.form-grid .wide{grid-column:auto}.selected-line{display:block}}
+
+/* GRIPCUBE_SIDE_SCROLL_REPEAT_V5_1 */
+.scroll-law{margin:4px 0 11px;padding:9px 12px;border:1px solid var(--line);border-radius:13px;background:rgba(131,200,255,.055);color:var(--muted);font-size:.75rem;font-weight:850}
+.scroll-law strong{color:var(--mint)}
+.route-lane{margin:0 0 14px;padding:12px;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.025)}
+.route-lane-head{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:0 2px 9px}
+.route-lane-head h2{margin:0;font-size:1rem}.route-lane-head span{color:var(--muted);font-size:.7rem;font-weight:850}
+.route-rail{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding:2px 2px 11px;scrollbar-width:thin}
+.route-rail::-webkit-scrollbar,.proof::-webkit-scrollbar,.offer-row::-webkit-scrollbar,.controls::-webkit-scrollbar,.form-grid::-webkit-scrollbar,.selected-list::-webkit-scrollbar,.scope-actions::-webkit-scrollbar,.actions::-webkit-scrollbar{height:7px}
+.route-rail::-webkit-scrollbar-thumb,.proof::-webkit-scrollbar-thumb,.offer-row::-webkit-scrollbar-thumb,.controls::-webkit-scrollbar-thumb,.form-grid::-webkit-scrollbar-thumb,.selected-list::-webkit-scrollbar-thumb,.scope-actions::-webkit-scrollbar-thumb,.actions::-webkit-scrollbar-thumb{background:rgba(255,209,102,.42);border-radius:999px}
+.route-rail .card{flex:0 0 min(370px,88vw);scroll-snap-align:start;min-height:245px}
+@media(max-width:650px){
+  html,body{overflow-x:hidden}
+  .shell{padding-bottom:48px}
+  .bar{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px}
+  .bar>.actions{grid-column:1/-1;margin-left:0;display:flex;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;padding:0 0 4px}
+  .bar>.actions>*{flex:0 0 auto;scroll-snap-align:start}
+  .hero{padding-top:10px}.heroMain{padding:14px}.hero h2{font-size:clamp(2.6rem,15vw,3.5rem)}
+  .stats,.proof,.offer-row,.controls,.form-grid,.selected-list,.scope-actions{display:flex!important;grid-template-columns:none!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding-bottom:9px}
+  .stats{padding:8px}.stat{flex:0 0 min(42vw,180px);scroll-snap-align:start}.proof>div{flex:0 0 min(74vw,290px);scroll-snap-align:start}
+  .offer{flex:0 0 min(78vw,310px);scroll-snap-align:start}.controls>*{flex:0 0 min(78vw,320px);scroll-snap-align:start}.controls input{grid-column:auto}
+  .route-lane{padding:9px;margin-bottom:9px}.route-lane-head{position:sticky;left:0}.route-rail{gap:9px;padding-bottom:9px}.route-rail .card{flex-basis:min(84vw,340px);min-height:0;padding:12px}
+  .card p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.boundary{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  dialog{width:min(100vw - 12px,760px);max-height:92dvh}.dlgHead{padding:10px}.dlgBody{padding:10px}
+  .form-grid{gap:9px;align-items:stretch}.form-grid label{flex:0 0 min(84vw,520px);scroll-snap-align:start;padding:10px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}.form-grid .wide{grid-column:auto}.form-grid textarea{min-height:145px}
+  .selected-list{gap:8px}.selected-line{flex:0 0 min(80vw,430px);scroll-snap-align:start}.scope-actions{gap:7px}.scope-actions .btn{flex:0 0 auto;scroll-snap-align:start}
+  .receipt.scope-box{max-height:34dvh;overflow:auto}
+}
+
 </style>
 <link rel="stylesheet" href="../ecostate-visual-v1.css"><link rel="stylesheet" href="../ecostate-personality-v2.css"><link rel="stylesheet" href="../ecostate-authored-v3.css"><link rel="stylesheet" href="../ecostate-contact-v4.css"></head>
 <body data-ecostate-surface="work">
@@ -32,6 +61,7 @@ header{position:sticky;top:0;z-index:30;background:rgba(7,10,16,.9);backdrop-fil
 <section class="panel front-window" aria-labelledby="frontWindowTitle"><div class="front-window-head"><div><div class="eyebrow">FRONT WINDOW · FIVE CLEAR ENTRY ROUTES</div><h2 id="frontWindowTitle">Start with a route. Keep the full 242 behind it.</h2><p>Tap an offer to shortlist its exact governed route, then build an enquiry pack.</p></div><button class="btn primary" id="frontEnquiryBtn">Build enquiry pack</button></div><div class="offer-row" id="frontOffers"></div></section>
 <section class="controls"><input id="search" type="search" placeholder="Search route, house, state, source or boundary…"><select id="house"><option value="">All houses</option></select><select id="state"><option value="">All states</option></select><select id="sort"><option value="source">Source order</option><option value="title">Title A–Z</option><option value="house">House A–Z</option><option value="state">State A–Z</option></select></section>
 <div class="statusline"><span><b id="shown">242</b> routes shown</span><span><b id="selected">0</b> shortlisted</span></div>
+<div class="scroll-law"><strong>GripCube scroll law:</strong> vertical changes context; repeated side-scroll rails move across peer routes without forcing a 242-card downward march.</div>
 <main class="grid" id="grid"></main>
 <footer>No Ding, no claim. v1.1 remains the data authority; v1.2 is the public contact descendant. Enquiry packs are requests, not accepted contracts.</footer>
 </div>
@@ -59,9 +89,22 @@ function current(){
  const s=$('#sort').value;if(s!=='source')a.sort((a,b)=>String(a[s]).localeCompare(String(b[s])));
  return a;
 }
+function routeCard(x){return `<article class="card ${selected.has(x.id)?'selected':''}"><div class="top"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.state)}</span></div><div class="meta"><span class="tag">${esc(x.house)}</span><span class="tag price">${esc(x.price)}</span><span class="tag">${esc(x.wave||'source')}</span></div><p>${esc(x.tagline)}</p><div class="boundary"><b>Boundary:</b> ${esc(x.boundary)}<br><b>Source:</b> ${esc(x.source_status)}</div><button class="btn" data-id="${esc(x.id)}">${selected.has(x.id)?'Remove from shortlist':'Add to shortlist'}</button></article>`}
+function laneGroups(a){
+ const forced=$('#house').value;
+ if(!forced){
+   const map=new Map();
+   a.forEach(x=>{if(!map.has(x.house))map.set(x.house,[]);map.get(x.house).push(x)});
+   return [...map].map(([label,items])=>({label,items}));
+ }
+ const groups=[];const size=6;
+ for(let i=0;i<a.length;i+=size)groups.push({label:`${forced} · ${i+1}–${Math.min(i+size,a.length)}`,items:a.slice(i,i+size)});
+ return groups;
+}
 function render(){
  const a=current();$('#shown').textContent=a.length;$('#selected').textContent=selected.size;
- $('#grid').innerHTML=a.length?a.map(x=>`<article class="card ${selected.has(x.id)?'selected':''}"><div class="top"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.state)}</span></div><div class="meta"><span class="tag">${esc(x.house)}</span><span class="tag price">${esc(x.price)}</span><span class="tag">${esc(x.wave||'source')}</span></div><p>${esc(x.tagline)}</p><div class="boundary"><b>Boundary:</b> ${esc(x.boundary)}<br><b>Source:</b> ${esc(x.source_status)}</div><button class="btn" data-id="${esc(x.id)}">${selected.has(x.id)?'Remove from shortlist':'Add to shortlist'}</button></article>`).join(''):'<div class="empty">No routes meet this filter.</div>';
+ const groups=laneGroups(a);
+ $('#grid').innerHTML=a.length?groups.map(g=>`<section class="route-lane"><div class="route-lane-head"><h2>${esc(g.label)}</h2><span>${g.items.length} sideways routes · swipe ↔</span></div><div class="route-rail">${g.items.map(routeCard).join('')}</div></section>`).join(''):'<div class="empty">No routes meet this filter.</div>';
  document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{selected.has(b.dataset.id)?selected.delete(b.dataset.id):selected.add(b.dataset.id);render()});
 }
 ['search','house','state','sort'].forEach(id=>$('#'+id).addEventListener(id==='search'?'input':'change',render));

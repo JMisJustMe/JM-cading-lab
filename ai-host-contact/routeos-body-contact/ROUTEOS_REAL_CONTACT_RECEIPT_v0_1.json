@@ -1,0 +1,63 @@
+{
+  "schema": "JM.AI.RouteOSRealContactReceipt/0.1",
+  "status": "PASS",
+  "existing_body": {
+    "name": "RouteOS Console Home",
+    "version": "0.8",
+    "path": "games-beyond/routeos/runtime/index.html",
+    "mutate_source": false
+  },
+  "goal": "Create and recover a real RouteOS Seed Runner save using only the existing RouteOS UI/state mechanisms.",
+  "github": {
+    "run_id": "36176942770",
+    "run_attempt": "1",
+    "branch": "jm-ai-executable-body-contact-v0-1",
+    "source_commit": "dd52a67e1dc2c0d05d75495438e5aaeb9c67b654"
+  },
+  "mismatch": {
+    "attempted": "SAVE without active cartridge",
+    "observed": "no save created",
+    "recovery": "launch Seed Runner, mutate live game state, then continue save/suspend/resume route"
+  },
+  "checks": {
+    "premature_save_refused": true,
+    "save_exists": true,
+    "namespace_exact": true,
+    "player_moved": true,
+    "quick_resume_created": true,
+    "quick_resume_consumed": true,
+    "lifecycle_receipts": true,
+    "save_survives_reload": true,
+    "visible_vault_namespace": true,
+    "visible_vault_title": true
+  },
+  "observed": {
+    "saved_player_x": 263.00000000000006,
+    "save_namespace": "routeos.seed-runner.jm",
+    "receipt_types": [
+      "RESUME",
+      "PLAY",
+      "READY",
+      "BOOT",
+      "SUSPEND",
+      "SAVE",
+      "PLAY",
+      "READY",
+      "BOOT",
+      "BOOT"
+    ],
+    "persisted_store": "JM_ROUTEOS_PUBLIC_RUNTIME_v0_8"
+  },
+  "authority": {
+    "production_mutation": false,
+    "routeos_source_mutation": false,
+    "local_browser_state_mutation": true,
+    "receipt_commit_to_contact_branch": true
+  },
+  "boundary": {
+    "routeos_source_changed": false,
+    "browser_local_storage_changed": true,
+    "claim": "Existing RouteOS UI and native persistence/lifecycle functions performed the state changes on a real hosted browser runner."
+  },
+  "ding": "JM_AI_ROUTEOS_REAL_STATE_CONTACT_DING"
+}

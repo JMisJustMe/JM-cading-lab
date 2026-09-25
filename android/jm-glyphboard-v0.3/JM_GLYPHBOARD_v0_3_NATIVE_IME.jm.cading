@@ -1,0 +1,56 @@
+# JM GLYPHBOARD v0.3 — Native IME Contact Gate
+# Human-originated, human-governed, AI-assisted carrier implementation.
+module com.jmisjustme.glyphboard
+family: JM GLYPHBOARD
+owner: JM
+version: 0.3.0
+
+body Cading
+body Kading
+body JMLogic
+body FlowTalk
+body RouteCode
+body Quadze
+body OneBody IR
+body CadenVM
+body CodeHand
+body RouteOS
+body TraceBox
+body THEO
+body Build Gates
+body Zionfolder
+
+inherits JM.GlyphRegistry/0.2
+inherits JM.SemanticOps/0.1
+inherits JM.TargetBridge/0.1
+inherits JM.CapabilityContact/0.4
+sourceAuthority JM_GLYPHBOARD_OneBody_v0_2.html sha256 8e75f92451e7382cd2c2656fb349353b5ba1ea27c21b95dc590963e5cfbee568
+
+android:
+  package: com.jmisjustme.glyphboard
+  appName: JM GLYPHBOARD
+  artifactName: JM_GLYPHBOARD_v0_3_0_NATIVE_IME_DEBUG
+  versionName: 0.3.0
+  versionCode: 3
+  minSdk: 23
+  targetSdk: 36
+  compileSdk: 36
+  carrier: InputMethodService
+  networkPermission: none
+end
+
+flow native_contact:
+  step sourceGate
+  step registryGate
+  step permissionGate
+  step nativeIME
+  step package
+  step signatureVerify
+  step physicalInstallHOLD
+  goto receipt
+end
+
+route SOURCE -> SIGNAL -> CONTACT_FIELD -> ROUTE_PRESSURE -> STATE_CHANGE -> TRACE -> RECOVERY -> OUTPUT
+law NO_DING_NO_CLAIM
+law APK_BUILT_IS_NOT_APK_LIVED
+state build_candidate

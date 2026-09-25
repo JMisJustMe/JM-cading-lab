@@ -37,6 +37,9 @@ on:
       - "registry/lyrics-house.json"
       - "registry/public-release-current.json"
       - "governance/estate-integration/**"
+      - "carrier-control/**"
+      - "tools/jm_carrier_control.py"
+      - "tools/jm_carrier_registry.py"
   workflow_dispatch:
 
 concurrency:
@@ -115,6 +118,10 @@ jobs:
           for dir in apps author coding-estate earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
+
+          # Source carriage remains in GitHub custody; the canonical Cloudflare carrier serves the reconstructed body.
+          rm -rf cloudflare-estate/navigator/source-authority
+          rm -f cloudflare-estate/navigator/carrier-plan.json
 
           if [ -d money-menu ]; then
             mkdir -p cloudflare-estate/money-menu

@@ -4,6 +4,11 @@
   "receipt": "_carrier_outputs/JM-CARRIER-REGISTRY-RECEIPT.json",
   "entries": [
     {
+      "id": "navigator",
+      "plan": "navigator/carrier-plan.json",
+      "enabled": true
+    },
+    {
       "id": "beatbody",
       "plan": "beatbody/carrier-plan.json",
       "enabled": true

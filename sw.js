@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.7-gripcube-v5';
+const CACHE='jm-web-estate-v1.4.8-gripcube-v5-1';
 const CORE=[
   './',
   './index.html',

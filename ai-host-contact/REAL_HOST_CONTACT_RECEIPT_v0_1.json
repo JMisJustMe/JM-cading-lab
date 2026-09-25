@@ -1,0 +1,49 @@
+{
+  "schema": "JM.AI.RealHostContactReceipt/0.1",
+  "date": "2026-09-25",
+  "repository": "JMisJustMe/JM-cading-lab",
+  "production_branch": "main",
+  "contact_branch": "jm-ai-real-host-contact-v0-1",
+  "base_commit_sha": "c22ca9fcf7d0df3843111e53fbd803d6892faa38",
+  "writes": [
+    {
+      "path": "ai-host-contact/GITHUB_HOST_ADAPTER_v0_1.json",
+      "commit_sha": "9bcdd39a89d7c743a9a48948f0800e9ae8a55f80",
+      "read_back_blob_sha": "699dc576453cfaa172467c9fcf8f89c9ec58c8a4",
+      "read_back": "PASS"
+    },
+    {
+      "path": "ai-host-contact/REAL_HOST_PROBE_v0_1.txt",
+      "commit_sha": "c4729c94c571c8839e52b6549a14c3889e5b3ec1",
+      "read_back_blob_sha": "07c2f3257a530b1b9c543f2c71e7295541fb7efc",
+      "expected_payload": "JM_AI_REAL_HOST_CONTACT::GITHUB::v0.1::CONTACT",
+      "actual_payload": "JM_AI_REAL_HOST_CONTACT::GITHUB::v0.1::CONTACT",
+      "exact_payload_match": true
+    }
+  ],
+  "compare_before_receipt": {
+    "status": "ahead",
+    "ahead_by": 2,
+    "behind_by": 0,
+    "changed_files": [
+      "ai-host-contact/GITHUB_HOST_ADAPTER_v0_1.json",
+      "ai-host-contact/REAL_HOST_PROBE_v0_1.txt"
+    ]
+  },
+  "authority": {
+    "production_mutated": false,
+    "merge_to_main": "HUMAN_GATE",
+    "destructive_actions": "NOT_USED"
+  },
+  "ding": {
+    "name": "JM_AI_GITHUB_REAL_HOST_CONTACT_DING",
+    "earned": true,
+    "scope": "isolated GitHub branch write + exact external read-back",
+    "not_claimed": [
+      "production deployment",
+      "main-branch integration",
+      "device control",
+      "arbitrary external autonomy"
+    ]
+  }
+}

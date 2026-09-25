@@ -48,7 +48,7 @@ jobs:
           from pathlib import Path
 
           SOURCE_SHA='e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562'
-          CARRIER_SHA='38256554267bca3f6545e16df21cea1219314f85337b386fed64f1c5808b6fdf'
+          CARRIER_SHA='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
 
           manifest=json.loads(Path('navigator/source-authority/v1.5.2/source-manifest.json').read_text())
           source=b''.join((Path('navigator/source-authority/v1.5.2')/name).read_bytes() for name in manifest['chunks'])
@@ -118,7 +118,7 @@ jobs:
         run: |
           set -euo pipefail
           EXPECTED=navigator/index.html
-          EXPECTED_SHA='38256554267bca3f6545e16df21cea1219314f85337b386fed64f1c5808b6fdf'
+          EXPECTED_SHA='b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569'
           CLOUDFLARE='https://jmisjustme-estate.pages.dev/navigator/'
           GITHUB='https://jmisjustme.github.io/JM-cading-lab/navigator/'
           mkdir -p /tmp/jm-v152
@@ -171,7 +171,7 @@ jobs:
             "identity_id":"jm://navigator",
             "promoted_body":"JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
             "source_sha256":"e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562",
-            "canonical_carrier_sha256":"38256554267bca3f6545e16df21cea1219314f85337b386fed64f1c5808b6fdf",
+            "canonical_carrier_sha256":"b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
             "canonical_cloudflare":"https://jmisjustme-estate.pages.dev/navigator/",
             "github_pages_recovery":"https://jmisjustme.github.io/JM-cading-lab/navigator/",
             "exact_dual_carrier_body_parity":True,

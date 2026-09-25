@@ -1,0 +1,24 @@
+{
+  "schema": "JM.AI.RouteOSProductionContactGoal/0.1",
+  "phase": "PRODUCTION_PUBLIC_BODY_CONTACT",
+  "body": {
+    "name": "RouteOS Console Home",
+    "version": "0.8",
+    "production_url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/runtime/",
+    "source_path": "games-beyond/routeos/runtime/index.html",
+    "source_mutation": false
+  },
+  "trigger": "after successful Deploy JM Web Estate to Pages workflow on main",
+  "goal": "Use the deployed public RouteOS body itself to reject an invalid SAVE, recover the route, mutate Seed Runner state, SAVE, SUSPEND, RESUME, cold reload, and read the Save Vault back.",
+  "authority": {
+    "human_gate": "PR #209 merge",
+    "production_body_source_mutation": false,
+    "public_browser_local_storage_mutation": true,
+    "production_receipt_commit": true,
+    "destructive_actions": false
+  },
+  "one_shot": {
+    "receipt_path": "ai-host-contact/routeos-body-contact/ROUTEOS_PRODUCTION_CONTACT_RECEIPT_v0_1.json",
+    "skip_future_runs_when_receipt_exists": true
+  }
+}

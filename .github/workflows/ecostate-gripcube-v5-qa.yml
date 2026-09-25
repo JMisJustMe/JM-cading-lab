@@ -9,6 +9,7 @@ on:
       - 'ecostate-gripcube-v5.js'
       - 'tests/ecostate-gripcube-v5.spec.mjs'
       - '.github/workflows/ecostate-gripcube-v5-qa.yml'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
   push:
     branches: [ main ]
     paths:
@@ -32,6 +33,10 @@ jobs:
           grep -q 'ecostate-gripcube-v5.js' index.html
           grep -q 'ecostate-gripcube-v5.css' sw.js
           grep -q 'ecostate-gripcube-v5.js' sw.js
+          grep -q 'ecostate-gripcube-v5.css' .github/workflows/deploy-estate-sovereign-integrated-v1.yml
+          grep -q 'ecostate-gripcube-v5.js' .github/workflows/deploy-estate-sovereign-integrated-v1.yml
+          grep -q "JMGripCube" .github/workflows/deploy-estate-sovereign-integrated-v1.yml
+          grep -q ".eco-gripcube" .github/workflows/deploy-estate-sovereign-integrated-v1.yml
           test -f games-beyond/bodies/fight-clash-v0-4.html
           test -f games-beyond/bodies/futarized-v1-2.html
           test -f games-beyond/bodies/aiming-run-v0-1a.html

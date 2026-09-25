@@ -24,6 +24,7 @@ on:
       - "games-beyond/**"
       - "lyrics/**"
       - "money-menu/**"
+      - "market-lab/**"
       - "navigator/**"
       - "recent/**"
       - "recovery/**"
@@ -87,7 +88,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in apps author coding-estate earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
+          for dir in apps author coding-estate earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -127,6 +128,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /games-beyond/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /market-lab/*
+            Cache-Control: no-store, no-cache, must-revalidate
           EOF
 
           cat > cloudflare-estate/_redirects <<'EOF'
@@ -142,6 +145,8 @@ jobs:
           /recovery/ /recovery/index.html 200
           /games-beyond /games-beyond/index.html 200
           /games-beyond/ /games-beyond/index.html 200
+          /market-lab /market-lab/index.html 200
+          /market-lab/ /market-lab/index.html 200
           /author /author/index.html 200
           /author/ /author/index.html 200
           /recent /recent/index.html 200
@@ -164,6 +169,7 @@ jobs:
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/games-beyond/index.html
+          test -s cloudflare-estate/market-lab/index.html
 
           grep -Fq 'JM3232 NAVIGATOR' cloudflare-estate/navigator/index.html
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
@@ -176,6 +182,8 @@ jobs:
           grep -Fq 'JM Theory Multihub v0.20.1' cloudflare-estate/theory/index.html
           ! grep -Fq 'JM Theory Multihub v0.4 — Touch Repair' cloudflare-estate/theory/index.html
           grep -Fq 'Games&Beyond' cloudflare-estate/games-beyond/index.html
+          grep -Fq 'JM Market Ecosystem Lab' cloudflare-estate/market-lab/index.html
+          grep -Fq 'jm-cloud-contact-server-v05.onrender.com/market' cloudflare-estate/market-lab/index.html
 
           python3 - <<'PY'
           import json
@@ -215,6 +223,7 @@ jobs:
             ['/lyrics/', 'data-jm-estate-integration="v1"'],
             ['/recovery/', 'data-jm-estate-integration="v1"'],
             ['/games-beyond/', 'Games&Beyond'],
+            ['/market-lab/', 'JM Market Ecosystem Lab'],
           ];
           let pending=checks.slice();
           for(let attempt=1;attempt<=60 && pending.length;attempt++){

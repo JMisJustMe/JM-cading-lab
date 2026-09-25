@@ -1,0 +1,10 @@
+name: Navigator live-contact HTTPS MCP proof — superseded route
+
+on:
+  workflow_dispatch:
+
+jobs:
+  superseded:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'Superseded after local 10-tool MCP PASS; new Cloudflare project creation returned API code 8000000. Continue through the already-proven jm-inline-contact-probe project instead.'

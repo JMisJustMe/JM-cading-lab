@@ -1,0 +1,42 @@
+{
+  "schema": "JM.NavigatorLiveHttpsMcpDing/0.1",
+  "status": "PASS",
+  "recorded_utc": "2026-08-30T14:27:23Z",
+  "source": {
+    "name": "JM3232 Navigator Browser Bridge v0.1",
+    "canonical_archive_bytes": 433440,
+    "canonical_archive_sha256": "c821e3fad085291d35113c9d0543aee1b1fc58435b574a1a134398824c42b283",
+    "canonical_members": 35,
+    "source_identity_reproved": true
+  },
+  "deployment": {
+    "host": "https://navigator-live-contact.jm-inline-contact-probe.pages.dev",
+    "mcp_endpoint": "https://navigator-live-contact.jm-inline-contact-probe.pages.dev/mcp",
+    "protocol": "2025-06-18",
+    "durable_runtime": "Cloudflare KV",
+    "runtime_binding": "NAV_RUNTIME",
+    "tool_count": 10,
+    "resource_count": 1
+  },
+  "proof": {
+    "github_actions_run_id": 33273290162,
+    "github_actions_attempt": 2,
+    "github_actions_job_id": 99271843639,
+    "proof_artifact_id": 9733723476,
+    "proof_artifact_name": "navigator-live-https-mcp-proof-v0.1",
+    "proof_artifact_zip_sha256": "deb4d3ea75e92e8232f63caa64875785812a3a91e60b4d373dc03b256c45d67d",
+    "search_top": "RL-RADIUS-LEXICON",
+    "first_public_receipt": "STRINGRECEIPT-000001",
+    "first_public_stringmark": "STRINGMARK-00001",
+    "savepack_sha256": "87c0fb64e798a57f5804d3e1050e4c8f70bf4178607f1e01ddbd83d5b0d9148a",
+    "receipt_chain_valid": true,
+    "https_mcp_ding": true
+  },
+  "claim_boundary": {
+    "public_durable_https_mcp_proven": true,
+    "chatgpt_account_approval_proven": false,
+    "owner_in_product_contact_proven": false,
+    "final_chatgpt_contact_ding": false
+  },
+  "keeper": "Public HTTPS MCP contact is proven. ChatGPT account approval and owner in-product contact remain separate Dings."
+}

@@ -1,7 +1,7 @@
 (()=>{const d=document,b=d.body;if(!b||!b.dataset.ecostateSurface)return;
 const surface=b.dataset.ecostateSurface;
-const names={"front-door":"ECOSTATE","games":"GAMES","theory":"THEORY","lyrics":"LYRICS","apps":"APPS","creator":"AUTHUSER","work":"WORK","navigator":"NAVIGATOR","recovery":"RECOVERY","recent":"RECENT"};
-const verbs={"front-door":"ROUTE","games":"PLAY","theory":"READ","lyrics":"HEAR","apps":"USE","creator":"AUTHOR","work":"SCOPE","navigator":"TRACE","recovery":"RECOVER","recent":"CONTINUE"};
+const names={"front-door":"ECOSTATE","games":"GAMES","theory":"THEORY","lyrics":"LYRICS","apps":"APPS","creator":"AUTHUSER","work":"WORK","navigator":"NAVIGATOR","recovery":"RECOVERY","recent":"RECENT","market":"MARKET LAB"};
+const verbs={"front-door":"ROUTE","games":"PLAY","theory":"READ","lyrics":"HEAR","apps":"USE","creator":"AUTHOR","work":"SCOPE","navigator":"TRACE","recovery":"RECOVER","recent":"CONTINUE","market":"OBSERVE"};
 b.dataset.ecostateContact="v4";b.dataset.eco4Phase="entering";
 const hero=d.querySelector(".hero");
 if(hero&&!hero.querySelector(".eco4-story")){const story=d.createElement("div");story.className="eco4-story";story.setAttribute("aria-hidden","true");const thread=d.createElement("span");thread.className="eco4-route-thread";story.append(thread);hero.prepend(story)}

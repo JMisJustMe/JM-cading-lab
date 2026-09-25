@@ -1,0 +1,85 @@
+name: JM AI RouteOS Production Public Contact v0.1
+
+on:
+  workflow_run:
+    workflows: ["Deploy JM Web Estate to Pages"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-ai-routeos-production-public-contact-v0-1
+  cancel-in-progress: false
+
+jobs:
+  production-routeos-contact:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - name: Check out deployed main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: One-shot gate
+        id: gate
+        shell: bash
+        run: |
+          if [ -f ai-host-contact/routeos-body-contact/ROUTEOS_PRODUCTION_CONTACT_RECEIPT_v0_1.json ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Production RouteOS receipt already exists; one-shot proof remains closed."
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Use Node 22
+        if: steps.gate.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install browser proof runtime
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Wait for deployed RouteOS body
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          URL="https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/runtime/"
+          for i in {1..30}; do
+            if curl -fsSL "$URL" | grep -q "RouteOS Console Home"; then
+              echo "Public RouteOS contactable."
+              exit 0
+            fi
+            sleep 4
+          done
+          echo "Public RouteOS did not become contactable in bounded window."
+          exit 1
+
+      - name: Execute native state route on deployed public body
+        if: steps.gate.outputs.run == 'true'
+        env:
+          ROUTEOS_PRODUCTION_URL: https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/runtime/
+          DEPLOYED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node tests/jm-ai-routeos-production-contact-v0-1.spec.mjs
+
+      - name: Commit one-shot production contact receipt
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "JM AI RouteOS Production Proof"
+          git config user.email "actions@users.noreply.github.com"
+          git add ai-host-contact/routeos-body-contact/ROUTEOS_PRODUCTION_STATE_SNAPSHOT_v0_1.json
+          git add ai-host-contact/routeos-body-contact/ROUTEOS_PRODUCTION_CONTACT_RECEIPT_v0_1.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record JM AI RouteOS production contact Ding"
+          git pull --rebase origin main
+          git push origin HEAD:main

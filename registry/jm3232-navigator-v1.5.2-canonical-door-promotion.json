@@ -1,0 +1,42 @@
+{
+  "schema": "JM.NavigatorCanonicalDoorPromotionReceipt/1.1",
+  "status": "LIVE_DUAL_CARRIER_PROVED_OWNER_CONTACT_OPEN",
+  "identity_id": "jm://navigator",
+  "promoted_body": "JM3232 Unified Browser v1.5.2 — Canonical Door Migration",
+  "relation_to_navigator": "SEPARATE_BODY_MOUNTED_AT_NAVIGATOR_CANONICAL_DOOR",
+  "source_sha256": "e118664cb4c8fab77a355ec610693b09b8dd077626f825ce728c5fc06cde7562",
+  "canonical_carrier_sha256": "b41d03fdc5a4fd9545ed30beac5477e70a54ddf479bb580f4650333a41387569",
+  "source_bytes": 6182887,
+  "canonical_carrier_bytes": 6183319,
+  "promotion_commit": "7020297bcda0eeda14d8c0cd569d3c4cfe294901",
+  "proof_workflow": ".github/workflows/prove-navigator-v1-5-2-canonical-door.yml",
+  "proof_run_id": 36196961073,
+  "artifact_id": 10889918333,
+  "artifact_digest": "sha256:ae0622593f9e6511d70aa1413138df192756fc8d4484a888abf6e10c9f66676d",
+  "carriers": {
+    "cloudflare": {
+      "route": "https://jmisjustme-estate.pages.dev/navigator/",
+      "exact_body_parity": true
+    },
+    "github_pages": {
+      "route": "https://jmisjustme.github.io/JM-cading-lab/navigator/",
+      "exact_body_parity": true
+    }
+  },
+  "state_return": {
+    "legacy_v0_1_1_keys_present": true,
+    "legacy_savepack_import_present": true,
+    "physical_owner_state_return_not_yet_proved": true
+  },
+  "open_boundaries": [
+    "owner-device v1.5.2 render/contact",
+    "physical state-return evidence where legacy browser state exists",
+    "subjective owner acceptance"
+  ],
+  "laws": [
+    "BODY != CARRIER",
+    "BODY EVOLVES -> DOOR STAYS -> STATE RETURNS",
+    "NO DING, NO CLAIM",
+    "MESH != MERGE"
+  ]
+}

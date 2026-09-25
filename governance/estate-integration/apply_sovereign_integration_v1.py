@@ -39,7 +39,8 @@ def insert_bridge(path: Path, surface: str) -> bool:
     pos = lower.rfind('</body>')
     if pos < 0:
         raise RuntimeError(f'{path}: </body> not found')
-    tag = f'\n<script defer src="{BRIDGE_SRC}" data-jm-surface="{surface}" {MARKER}></script>\n'
+    bridge_src = './estate-integration/bridge.js' if surface == 'navigator' else BRIDGE_SRC
+    tag = f'\n<script defer src="{bridge_src}" data-jm-surface="{surface}" {MARKER}></script>\n'
     text = text[:pos] + tag + text[pos:]
     path.write_text(text, encoding='utf-8')
     return True

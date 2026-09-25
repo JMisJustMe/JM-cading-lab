@@ -1,0 +1,47 @@
+{
+  "schema": "JM.AI.RealHostAdapter/0.1",
+  "name": "GitHub Host Adapter",
+  "phase": "REAL_HOST_CONTACT",
+  "host": {
+    "provider": "GitHub",
+    "repository": "JMisJustMe/JM-cading-lab",
+    "branch": "jm-ai-real-host-contact-v0-1",
+    "production_branch": "main"
+  },
+  "authority": {
+    "read_repo": "ALLOW",
+    "create_isolated_branch": "ALLOW",
+    "create_or_update_files_on_isolated_branch": "ALLOW",
+    "open_pull_request": "ALLOW",
+    "merge_to_production": "HUMAN_GATE",
+    "destructive_actions": "HOLD_UNLESS_EXPLICIT"
+  },
+  "route": [
+    "GOAL",
+    "PLAN",
+    "AUTHORITY_CHECK",
+    "HOST_ACTION",
+    "READ_BACK",
+    "COMPARE_EXPECTED_ACTUAL",
+    "DING_OR_HOLD",
+    "TRACE"
+  ],
+  "laws": [
+    "NO_DING_NO_CLAIM",
+    "CONTACT_BEFORE_CROWN",
+    "RECOVER_BEFORE_REBUILD",
+    "EXECUTED_HISTORY_IS_IMMUTABLE",
+    "ONLY_UNEXECUTED_FUTURE_MAY_BE_REVISED",
+    "PRODUCTION_MUTATION_REQUIRES_HUMAN_GATE"
+  ],
+  "first_contact": {
+    "operation": "CREATE_AND_READ_BACK_PROBE",
+    "expected_payload": "JM_AI_REAL_HOST_CONTACT::GITHUB::v0.1::CONTACT",
+    "success_requires": [
+      "branch_exists",
+      "write_returns_commit_sha",
+      "read_back_exact_payload_matches",
+      "read_back_blob_sha_exists"
+    ]
+  }
+}

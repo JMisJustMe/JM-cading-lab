@@ -9,7 +9,8 @@ const FALLBACK = {
       {id:'everybody',name:'JM EveryBody',path:'./coding-estate/everybody/',state:'PORTABLE CONVERGENCE',kind:'Coding',role:'Sovereign compatibility and maximisation fabric across recovered coding bodies.'},
       {id:'fresh-app-lab',name:'Fresh App Lab',path:'./fresh-app-lab/',state:'LIVE',kind:'Tools',role:'Connected 12-app proof room and application laboratory.'},
       {id:'estate-bridge',name:'Estate Bridge',path:'./estate/',state:'LEGACY LIVE',kind:'Estate',role:'Previous public corridor and registry bridge, preserved as lineage.'},
-      {id:'games-house',name:'Games & Beyond',path:'./games-beyond/',state:'EDITABLE HOST',kind:'Games',role:'Phone-first host for sovereign games, engines, loops, benchmarks and proofs.'}
+      {id:'games-house',name:'Games & Beyond',path:'./games-beyond/',state:'EDITABLE HOST',kind:'Games',role:'Phone-first host for sovereign games, engines, loops, benchmarks and proofs.'},
+      {id:'market-ecosystem-lab',name:'JM Market Ecosystem Lab',path:'./market-lab/',state:'LIVE CLOUD CORRIDOR',kind:'Markets',role:'Public Estate doorway into the sovereign JM cloud-hosted market topology, live-paper and historical research body.'}
     ]
   },
   games: [
@@ -53,6 +54,7 @@ const HOUSES = [
   {id:'games-house',name:'Games & Beyond',kind:'Games',state:'LIVE EDITABLE HOUSE',accent:'#ffd166',path:'./games-beyond/',summary:'Every playable game, engine, reusable loop, benchmark and recovery body enters through one phone-first house.',proof:'Existing PWA host and registry are live.'},
   {id:'coding-house',name:'Cading & Coding Estate',kind:'Coding',state:'LIVE WORKBENCH',accent:'#72ecff',path:'./coding-estate/everybody/',summary:'JM coding bodies remain sovereign while parsers, IR, runtimes, adapters and targets connect through the EveryBody fabric.',proof:'76 recovered entries and portable target lanes registered.'},
   {id:'tools-house',name:'Apps & Tools',kind:'Tools',state:'LIVE LAB + EXPANDING',accent:'#7ff0a6',path:'./fresh-app-lab/',summary:'Working utilities, creator tools, app proofs, operating surfaces and future product rooms.',proof:'Fresh App Lab public room is live.'},
+  {id:'market-house',name:'Market Ecosystem Lab',kind:'Markets',state:'LIVE CLOUD BODY',accent:'#5de08b',path:'./market-lab/',summary:'Marketplace-of-markets research: live order-book contact, depth-aware paper routes, historical macro series and mismatched-clock testing.',proof:'Cloud-hosted Market Lab v1.5 is live through the existing JM server; website remains the professional corridor.'},
   {id:'theory-house',name:'Theory & Publications',kind:'Theory',state:'REGISTRY CONNECTED',accent:'#b69cff',path:'./registry/theory-wing.json',summary:'Human systems, language, proof, play, story, physics and public methods remain deep bodies with readable routes.',proof:'Nine theory districts are indexed.'},
   {id:'studio-house',name:'Studios: Music, Lyrics & Creation',kind:'Studios',state:'HOUSE RESERVED / SOURCE HELD',accent:'#ff7896',path:null,summary:'LyricStudio, music, visual creation, books, performance and publication bodies gain a first-class home without false deployment claims.',proof:'Registered in the Estate; public source-normalised rooms remain to be mounted.'},
   {id:'library-house',name:'Living Library',kind:'Library',state:'PUBLIC INDEX LIVE',accent:'#ffad42',route:'library',summary:'Searchable estate memory and registry reading now, followed by deliberately connected private retrieval bodies.',proof:'Current registries searchable in this site.'},
@@ -106,7 +108,7 @@ function applyEstateHeadPublicAuthority(){
 }
 
 
-function guessKind(name){const text=normalise(name);if(text.includes('game'))return'Games';if(text.includes('cad')||text.includes('coding'))return'Coding';if(text.includes('app'))return'Tools';if(text.includes('theory'))return'Theory';return'Estate'}
+function guessKind(name){const text=normalise(name);if(text.includes('game'))return'Games';if(text.includes('cad')||text.includes('coding'))return'Coding';if(text.includes('app'))return'Tools';if(text.includes('theory'))return'Theory';if(text.includes('market'))return'Markets';return'Estate'}
 function routeTo(name,push=true){
   if(!['estate','houses','library','command','owner'].includes(name)) name='estate';
   state.route=name;
@@ -144,18 +146,18 @@ function getAllItems(){
 const slug = value => normalise(value).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 function renderFeatureDoors(){
-  const selected=['games-house','coding-house','tools-house','theory-house'].map(id=>HOUSES.find(h=>h.id===id));
+  const selected=['games-house','coding-house','tools-house','theory-house','market-house'].map(id=>HOUSES.find(h=>h.id===id));
   $('#featureDoors').innerHTML=selected.map(h=>`<a class="door-card" href="${h.path||'#'}" data-card-id="${h.id}" style="--accent:${h.accent}"><span class="door-state">${escapeHTML(h.state)}</span><h3>${escapeHTML(h.name)}</h3><p>${escapeHTML(h.summary)}</p><div class="door-foot"><span>Open house</span><span>↗</span></div></a>`).join('');
   $$('#featureDoors [data-card-id]').forEach(el=>el.addEventListener('click',event=>{const item=HOUSES.find(x=>x.id===el.dataset.cardId);if(!item.path){event.preventDefault();openItem(item)}else trackRecent(item)}));
 }
 function renderContinue(){
-  const defaults=['games-house','coding-house','fourfold-arena','futarized','theory-house','tools-house'];
+  const defaults=['games-house','coding-house','market-house','fourfold-arena','futarized','theory-house','tools-house'];
   const items=getAllItems().filter(item=>defaults.includes(item.id)).slice(0,6);
   $('#continueGrid').innerHTML=items.map(item=>`<article class="continue-card"><div class="continue-top"><div><span class="continue-status">${escapeHTML(item.state||'REGISTERED')}</span><h3>${escapeHTML(item.name)}</h3></div><button class="small-button star ${state.favourites.has(item.id)?'active':''}" data-fav="${item.id}" aria-label="Favourite ${escapeHTML(item.name)}">★</button></div><p>${escapeHTML(item.summary||item.role||'Estate body')}</p><div class="continue-actions"><button class="small-button primary" data-open="${item.id}">OPEN</button><button class="small-button" data-detail="${item.id}">PASSPORT</button></div></article>`).join('');
   bindItemControls($('#continueGrid'));
 }
 function renderFilters(){
-  const filters=['All','Games','Coding','Tools','Theory','Studios','Library','Estate','Owner','Favourites'];
+  const filters=['All','Games','Coding','Tools','Markets','Theory','Studios','Library','Estate','Owner','Favourites'];
   $('#houseFilters').innerHTML=filters.map(f=>`<button class="filter-chip ${state.filter===f?'active':''}" data-filter="${f}" type="button">${f}</button>`).join('');
   $$('#houseFilters [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{state.filter=btn.dataset.filter;renderFilters();renderDirectory()}));
 }
@@ -169,7 +171,7 @@ function renderDirectory(){
     const text=[item.name,item.kind,item.state,item.summary,item.role,item.proof,item.room,item.version].join(' ').toLowerCase();
     return favPass&&kindPass&&(!q||text.includes(q));
   });
-  const groupOrder=['Games','Coding','Tools','Theory','Studios','Library','Estate','Owner'];
+  const groupOrder=['Games','Coding','Tools','Markets','Theory','Studios','Library','Estate','Owner'];
   const groups=groupOrder.map(kind=>[kind,items.filter(i=>i.kind===kind)]).filter(([,arr])=>arr.length);
   $('#houseDirectory').innerHTML=groups.length?groups.map(([kind,arr])=>`<section class="directory-group"><header><h2>${kind}</h2><span>${arr.length} ${arr.length===1?'BODY':'BODIES'}</span></header><div class="directory-grid">${arr.map(bodyRow).join('')}</div></section>`).join(''):`<div class="empty-state"><strong>No matching body.</strong><p>Try another search or filter. Nothing has been silently invented to fill the gap.</p></div>`;
   bindItemControls($('#houseDirectory'));
@@ -183,7 +185,7 @@ function bindItemControls(root){
   root.querySelectorAll('[data-detail]').forEach(btn=>btn.addEventListener('click',()=>{const item=getAllItems().find(x=>x.id===btn.dataset.detail);if(item)showDetail(item)}));
 }
 function showDetail(item){
-  const accent=item.accent||({Games:'#ffd166',Coding:'#72ecff',Theory:'#b69cff',Tools:'#7ff0a6',Studios:'#ff7896'}[item.kind]||'#72ecff');
+  const accent=item.accent||({Games:'#ffd166',Coding:'#72ecff',Theory:'#b69cff',Tools:'#7ff0a6',Markets:'#5de08b',Studios:'#ff7896'}[item.kind]||'#72ecff');
   $('#detailContent').innerHTML=`<section class="detail-hero" style="--detail-accent:${accent}"><p class="section-number">${escapeHTML(item.kind||'ESTATE')} · ${escapeHTML(item.state||item.stage||'REGISTERED')}</p><h2>${escapeHTML(item.name)}</h2><p>${escapeHTML(item.summary||item.role||'Registered Estate body.')}</p><div class="detail-actions"><button class="button primary" id="detailOpen">${item.path||item.route?'Open route':'Keep registered'}</button><button class="button quiet" id="detailFav">${state.favourites.has(item.id)?'Remove favourite':'Add favourite'}</button></div></section><div class="detail-body"><div class="detail-block"><h3>Passport</h3><p>${escapeHTML(item.proof||item.room||'Connected through the current JM Estate registry.')}</p></div><div class="detail-block"><h3>Ownership boundary</h3><p>This shared website supplies navigation and delivery. It does not erase this body’s native source, lineage or independent authority.</p></div></div>`;
   $('#detailDialog').showModal();
   $('#detailOpen').addEventListener('click',()=>{if(item.path||item.route){$('#detailDialog').close();openItem(item)}else toast('Body preserved as registered; no false public door was claimed.')});

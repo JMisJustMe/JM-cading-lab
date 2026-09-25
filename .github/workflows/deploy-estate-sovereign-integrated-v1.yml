@@ -62,6 +62,23 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Reconstruct governed carrier bodies from source authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/jm_carrier_registry.py --registry carrier-control/registry.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('_carrier_outputs/JM-CARRIER-REGISTRY-RECEIPT.json').read_text())
+          assert receipt['status']=='DING'
+          nav=[x for x in receipt['results'] if x['id']=='navigator']
+          assert len(nav)==1
+          assert nav[0]['body_sha256']=='38256554267bca3f6545e16df21cea1219314f85337b386fed64f1c5808b6fdf'
+          assert nav[0]['direct_https']['runtime_reconstruction'] is False
+          print('JM3232 NAVIGATOR CARRIER DING',nav[0]['body_sha256'])
+          PY
+
       - name: Prove source authority and integration contracts
         shell: bash
         run: |
@@ -187,7 +204,7 @@ jobs:
           grep -Fq '.griprail-track' cloudflare-estate/ecostate-griprail-v6.css
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/money-menu/index.html
           grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/earn-now/index.html
-          grep -Fq 'JM3232 NAVIGATOR' cloudflare-estate/navigator/index.html
+          grep -Fq 'JM3232 UNIFIED BROWSER' cloudflare-estate/navigator/index.html\n          grep -Fq 'v1.5.2 · AIRBORNE' cloudflare-estate/navigator/index.html\n          grep -Fq 'data-jm-airborne-canonical-door="v1.5.2"' cloudflare-estate/navigator/index.html
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
           grep -Fq 'One Estate.' cloudflare-estate/navigator/estate-integration/index.html
@@ -235,7 +252,7 @@ jobs:
             ['/ecostate-griprail-v6.css', '.griprail-track'],
             ['/money-menu/', 'ecostate-griprail-v6.js'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
-            ['/navigator/', 'JM3232 NAVIGATOR'],
+            ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
             ['/navigator/estate-integration/public-registry.json', 'JM.Estate.PublicNervousSystem/1'],

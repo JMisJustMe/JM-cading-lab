@@ -1,0 +1,70 @@
+name: ECOSTATE GripCube v5 QA
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'sw.js'
+      - 'ecostate-gripcube-v5.css'
+      - 'ecostate-gripcube-v5.js'
+      - 'tests/ecostate-gripcube-v5.spec.mjs'
+      - '.github/workflows/ecostate-gripcube-v5-qa.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'sw.js'
+      - 'ecostate-gripcube-v5.css'
+      - 'ecostate-gripcube-v5.js'
+      - 'tests/ecostate-gripcube-v5.spec.mjs'
+
+jobs:
+  gripcube:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static GripCube gates
+        run: |
+          node --check ecostate-gripcube-v5.js
+          grep -q 'ecostate-gripcube-v5.css' index.html
+          grep -q 'ecostate-gripcube-v5.js' index.html
+          grep -q 'ecostate-gripcube-v5.css' sw.js
+          grep -q 'ecostate-gripcube-v5.js' sw.js
+          test -f games-beyond/bodies/fight-clash-v0-4.html
+          test -f games-beyond/bodies/futarized-v1-2.html
+          test -f games-beyond/bodies/aiming-run-v0-1a.html
+          test -f games-beyond/bodies/drag-aim-loop-kernel-v0-9-9.html
+          test -f author/authuser.html
+          test -f money-menu/index.html
+          test -f recovery/index.html
+          test -f recent/index.html
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Boot local Estate
+        run: |
+          python3 -m http.server 4176 >/tmp/jm-gripcube-v5-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4176/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-gripcube-v5-http.log
+          exit 1
+
+      - name: Render and contact GripCube
+        env:
+          BASE_URL: http://127.0.0.1:4176
+        run: node tests/ecostate-gripcube-v5.spec.mjs
+
+      - name: Upload visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-gripcube-v5-visual-receipts
+          path: qa/ecostate-gripcube-v5/
+          if-no-files-found: ignore

@@ -85,8 +85,14 @@ jobs:
           sha256sum "$OUT" > "$D/dist/SHA256.txt"
           BYTES=$(stat -c%s "$OUT")
           SHA=$(cut -d' ' -f1 "$D/dist/SHA256.txt")
-          cat > "$D/dist/BUILD_RECEIPT.md" <<RECEIPT
-          # JM GLYPHBOARD v0.3 — Native IME Build Receipt
+          export D BYTES SHA
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          d = Path(os.environ["D"])
+          sha = os.environ["SHA"]
+          size = os.environ["BYTES"]
+          receipt = f"""# JM GLYPHBOARD v0.3 — Native IME Build Receipt
 
           - Status: **PASS — BUILD / STATIC PACKAGE PROOF**
           - Source authority SHA-256: `8e75f92451e7382cd2c2656fb349353b5ba1ea27c21b95dc590963e5cfbee568`
@@ -99,14 +105,16 @@ jobs:
           - Internet permission: **ABSENT**
           - Unit tests: **PASS**
           - APK ZIP integrity: **PASS**
-          - Debug signature verification: **PASS**
-          - APK bytes: `$BYTES`
-          - APK SHA-256: `$SHA`
+          - Debug signature verification: **PASS (v1/v2 true in this debug build)**
+          - APK bytes: `{size}`
+          - APK SHA-256: `{sha}`
           - Physical install / enable / select / type-across-apps: **HOLD — owner phone contact required**
           - Owner Ding: **OPEN**
 
           Keeper: **APK built is not APK lived. The phone proves contact. JM holds the Ding.**
-          RECEIPT
+          """
+          (d / "dist" / "BUILD_RECEIPT.md").write_text(receipt, encoding="utf-8")
+          PY
           echo "GLYPHBOARD_NATIVE_IME_BUILD_PASS $SHA $BYTES"
 
       - name: Upload native contact package

@@ -59,6 +59,40 @@ def read_source(plan: dict[str, Any], repo: Path) -> tuple[bytes, dict[str, Any]
         body = path.read_bytes()
         provenance = {"kind": kind, "path": str(path)}
 
+    elif kind == "text_chunks_manifest":
+        manifest_path = resolve(repo, src["manifest"])
+        manifest = load_json(manifest_path)
+        chunks = manifest.get("chunks") or []
+        if not chunks:
+            raise SystemExit("HOLD: text chunk source manifest has no chunks")
+
+        parts = []
+        for name in chunks:
+            part = manifest_path.parent / name
+            if not part.is_file():
+                raise SystemExit(f"HOLD: text chunk missing: {part}")
+            parts.append(part.read_bytes())
+        body = b"".join(parts)
+
+        manifest_bytes = int(manifest.get("body_bytes") or 0)
+        if manifest_bytes and len(body) != manifest_bytes:
+            raise SystemExit(
+                f"HOLD: text chunk byte count mismatch expected={manifest_bytes} got={len(body)}"
+            )
+        manifest_expected = str(manifest.get("body_sha256") or "").lower()
+        if manifest_expected and sha256_bytes(body) != manifest_expected:
+            raise SystemExit(
+                f"HOLD: text chunk source hash mismatch expected={manifest_expected} got={sha256_bytes(body)}"
+            )
+
+        provenance = {
+            "kind": kind,
+            "manifest": str(manifest_path),
+            "manifest_version": manifest.get("version"),
+            "chunks": list(chunks),
+            "manifest_body_sha256": manifest.get("body_sha256"),
+        }
+
     elif kind == "gzip_base64_manifest":
         manifest_path = resolve(repo, src["manifest"])
         manifest = load_json(manifest_path)

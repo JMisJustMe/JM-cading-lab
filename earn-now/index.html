@@ -12,8 +12,9 @@
 @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.truth{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.shell{width:min(100% - 16px,1260px)}.brand span{display:none}.nav .hidePhone{display:none}.hero h1{font-size:3.7rem}.heroStats{grid-template-columns:repeat(4,1fr);padding:8px}.stat{padding:8px}.stat b{font-size:1.15rem}.stat span{font-size:.56rem}.grid{grid-template-columns:1fr}.card{min-height:0}.warehouse{grid-template-columns:1fr}.formGrid{grid-template-columns:1fr}.wide{grid-column:auto}.selectedBar{bottom:6px}.selectedBar .btn{padding:9px}.sel{display:block}}
 </style>
+<link rel="stylesheet" href="../ecostate-griprail-v6.css">
 </head>
-<body>
+<body data-ecostate-surface="work">
 <header class="top"><div class="bar shell"><div class="mark">£+</div><div class="brand"><b>JM · EARN-NOW WINDOW</b><span>Clear offers first · full governed warehouse behind them</span></div><nav class="nav"><a class="btn hidePhone" href="../">Estate</a><a class="btn" href="../money-menu/">242 routes</a><button class="btn primary" id="topEnquiry">Enquire</button></nav></div></header>
 <main class="shell">
 <section class="hero"><div class="heroMain"><div class="eyebrow">PUBLIC HIRE WINDOW · BOUNDED OFFERS · 31 AUGUST 2026</div><h1>Hire JM <span>now.</span></h1><p>Writing, naming, product diagnosis, mobile/game testing, project rescue and small digital builds — formed as clear buyer-facing services instead of making you search the whole Estate first.</p><div class="keeper">START SMALL ENOUGH TO PROVE. EXPAND ONLY WHEN THE WORK REQUIRES IT.</div></div><div class="heroStats"><div class="stat"><b>£25+</b><span>smallest current entry</span></div><div class="stat"><b>12</b><span>front-window offers</span></div><div class="stat"><b>242</b><span>governed routes behind</span></div><div class="stat"><b>0</b><span>fake market-proof claims</span></div></div></section>
@@ -44,7 +45,7 @@ const selected=new Set();let activeCat='All';let built=null;
 const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const cats=['All',...new Set(OFFERS.map(x=>x.cat))];
 function renderFilters(){ $('#filters').innerHTML=cats.map(c=>`<button class="chip ${c===activeCat?'active':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('');document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{activeCat=b.dataset.cat;renderFilters();renderOffers()}) }
-function renderOffers(){const list=OFFERS.filter(x=>activeCat==='All'||x.cat===activeCat);$('#offerGrid').innerHTML=list.map(x=>`<article class="card ${selected.has(x.id)?'selected':''}"><div class="cardHead"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.cat)}</span></div><div class="price">${esc(x.price)} <small>starting point</small></div><p>${esc(x.promise)}</p><div class="boundary">${esc(x.boundary)}</div><button class="btn ${selected.has(x.id)?'primary':''}" data-select="${esc(x.id)}">${selected.has(x.id)?'Selected ✓':'Select offer'}</button></article>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{selected.has(b.dataset.select)?selected.delete(b.dataset.select):selected.add(b.dataset.select);built=null;renderOffers();updateCount()});updateCount()}
+function renderOffers(){const list=OFFERS.filter(x=>activeCat==='All'||x.cat===activeCat);$('#offerGrid').innerHTML=list.map(x=>`<article class="card ${selected.has(x.id)?'selected':''}" data-grip-cat="${esc(x.cat)}"><div class="cardHead"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.cat)}</span></div><div class="price">${esc(x.price)} <small>starting point</small></div><p>${esc(x.promise)}</p><div class="boundary">${esc(x.boundary)}</div><button class="btn ${selected.has(x.id)?'primary':''}" data-select="${esc(x.id)}">${selected.has(x.id)?'Selected ✓':'Select offer'}</button></article>`).join('');document.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>{selected.has(b.dataset.select)?selected.delete(b.dataset.select):selected.add(b.dataset.select);built=null;renderOffers();updateCount()});updateCount()}
 function updateCount(){$('#selectedCount').textContent=selected.size}
 function selectionList(){return [...selected].map(id=>OFFERS.find(x=>x.id===id)).filter(Boolean)}
 function renderSelection(){const a=selectionList();$('#selection').innerHTML=a.length?a.map(x=>`<div class="sel"><span><b>${esc(x.title)}</b><small>${esc(x.promise)}</small></span><strong class="price">${esc(x.price)}</strong></div>`).join(''):'<div class="notice">No offer selected yet. Close this dialog and choose one or more starting bodies.</div>'}
@@ -55,5 +56,6 @@ $('#topEnquiry').onclick=openEnquiry;$('#openEnquiry').onclick=openEnquiry;$('#c
 try{const draft=JSON.parse(localStorage.getItem('jm-earn-now-enquiry')||'null');if(draft?.enquiry){$('#name').value=draft.enquiry.name||'';$('#reply').value=draft.enquiry.reply_contact||'';$('#budget').value=draft.enquiry.budget||'Not decided';$('#timing').value=draft.enquiry.timing||'Exploring';$('#need').value=draft.enquiry.need||'';$('#conditions').value=draft.enquiry.conditions||''}}catch(e){}
 renderFilters();renderOffers();
 </script>
+<script defer src="../ecostate-griprail-v6.js"></script>
 </body>
 </html>

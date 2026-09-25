@@ -1,0 +1,209 @@
+/* JM ECOSTATE GripRail v6 — repeated side-scroll inclusion / scroll-pressure reduction */
+:root{
+  --griprail-gap:10px;
+  --griprail-card:86%;
+  --griprail-edge:20px;
+}
+.griprail-toolbar{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:8px 0 7px;
+  min-height:36px;
+}
+.griprail-toolbar strong{
+  flex:1;
+  min-width:0;
+  font-size:.67rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--muted,#aab6ca);
+}
+.griprail-toolbar .griprail-arrow{
+  width:38px;
+  height:34px;
+  padding:0;
+  border:1px solid var(--line,#2b3850);
+  border-radius:11px;
+  background:#101a29;
+  color:var(--text,#f7f9fd);
+  font-weight:1000;
+}
+.griprail-toolbar .griprail-arrow:focus-visible{
+  outline:2px solid var(--gold,#ffd166);
+  outline-offset:2px;
+}
+.griprail-track{
+  scrollbar-width:thin;
+  scrollbar-color:color-mix(in srgb,var(--gold,#ffd166),transparent 35%) transparent;
+  overscroll-behavior-inline:contain;
+  scroll-snap-type:inline mandatory;
+  scroll-padding-inline:var(--griprail-edge);
+}
+.griprail-track::-webkit-scrollbar{height:5px}
+.griprail-track::-webkit-scrollbar-track{background:transparent}
+.griprail-track::-webkit-scrollbar-thumb{
+  background:color-mix(in srgb,var(--gold,#ffd166),transparent 34%);
+  border-radius:99px;
+}
+.griprail-group{
+  margin:0 0 16px;
+  min-width:0;
+}
+.griprail-group-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  padding:0 2px;
+}
+.griprail-group-head h3{
+  margin:0;
+  font-size:.9rem;
+}
+.griprail-group-head span{
+  color:var(--muted,#aab6ca);
+  font-size:.66rem;
+  white-space:nowrap;
+}
+.griprail-groups{
+  display:block!important;
+}
+.griprail-groups > .griprail-group > .griprail-track{
+  display:grid!important;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(270px,31%);
+  grid-template-columns:none!important;
+  gap:var(--griprail-gap)!important;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:2px var(--griprail-edge) 8px 2px;
+}
+.griprail-groups > .griprail-group > .griprail-track > *{
+  scroll-snap-align:start;
+  scroll-snap-stop:normal;
+}
+
+/* Header action rows should route sideways rather than stack into tall towers. */
+@media(max-width:760px){
+  body[data-ecostate-surface="work"] header .actions,
+  body[data-ecostate-surface="work"] header .nav{
+    flex-wrap:nowrap!important;
+    overflow-x:auto;
+    overscroll-behavior-x:contain;
+    scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  body[data-ecostate-surface="work"] header .actions::-webkit-scrollbar,
+  body[data-ecostate-surface="work"] header .nav::-webkit-scrollbar{display:none}
+  body[data-ecostate-surface="work"] header .actions > *,
+  body[data-ecostate-surface="work"] header .nav > *{
+    flex:0 0 auto;
+  }
+
+  /* Regular repeat side-scroll surfaces. */
+  .griprail-track.griprail-simple{
+    display:grid!important;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(250px,var(--griprail-card));
+    grid-template-columns:none!important;
+    gap:var(--griprail-gap)!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:2px var(--griprail-edge) 8px 2px;
+  }
+  .griprail-track.griprail-simple > *{
+    scroll-snap-align:start;
+  }
+
+  /* GripCube local 3x3 becomes a 2-high side route: less vertical travel, same nine bodies. */
+  .eco-gripcube .gc-grid.griprail-track{
+    display:grid!important;
+    grid-auto-flow:column;
+    grid-template-rows:repeat(2,minmax(0,1fr))!important;
+    grid-template-columns:none!important;
+    grid-auto-columns:minmax(260px,82vw);
+    gap:8px!important;
+    max-height:238px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    padding:2px 18px 8px 1px!important;
+  }
+  .eco-gripcube .gc-grid.griprail-track > *{
+    min-height:104px!important;
+    scroll-snap-align:start;
+  }
+
+  /* Work cards become repeated horizontal lanes instead of one huge vertical stack. */
+  #grid.griprail-groups,
+  #offerGrid.griprail-groups{
+    display:block!important;
+  }
+  .griprail-groups > .griprail-group > .griprail-track{
+    grid-auto-columns:minmax(272px,88vw);
+    padding-right:18px;
+  }
+
+  /* Enquiry fields move sideways one meaningful contact at a time. */
+  .form-grid.griprail-form,
+  .formGrid.griprail-form{
+    display:grid!important;
+    grid-auto-flow:column;
+    grid-template-columns:none!important;
+    grid-template-rows:1fr!important;
+    grid-auto-columns:minmax(270px,88vw);
+    gap:10px!important;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    overscroll-behavior-x:contain;
+    padding:2px 16px 9px 1px;
+  }
+  .form-grid.griprail-form > label,
+  .formGrid.griprail-form > label{
+    grid-column:auto!important;
+    scroll-snap-align:start;
+    align-self:stretch;
+    border:1px solid var(--line,#2b3850);
+    border-radius:14px;
+    background:rgba(255,255,255,.025);
+    padding:12px;
+    min-height:155px;
+  }
+  .form-grid.griprail-form textarea,
+  .formGrid.griprail-form textarea{
+    min-height:112px;
+  }
+
+  body[data-ecostate-surface="work"] dialog{
+    overflow:hidden!important;
+  }
+  body[data-ecostate-surface="work"] dialog .dlgBody{
+    max-height:calc(88dvh - 70px);
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  body[data-ecostate-surface="work"] dialog .receipt{
+    max-height:31dvh;
+    overflow:auto;
+  }
+
+  /* Repeated selected/result rows use side travel too. */
+  .selected-list.griprail-track,
+  .selection.griprail-track{
+    display:grid!important;
+    grid-auto-flow:column;
+    grid-template-columns:none!important;
+    grid-auto-columns:minmax(250px,86vw);
+    gap:8px!important;
+    overflow-x:auto;
+    overflow-y:hidden;
+  }
+  .selected-list.griprail-track > *,
+  .selection.griprail-track > *{scroll-snap-align:start}
+}
+@media(min-width:761px){
+  .griprail-toolbar.griprail-mobile-only{display:none}
+}
+/* Reduced-motion keeps route availability without animated movement. */
+html.ecostate-reduce-motion .griprail-track{scroll-behavior:auto!important}

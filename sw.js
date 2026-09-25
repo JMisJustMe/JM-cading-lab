@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.7-gripcube-v5';
+const CACHE='jm-web-estate-v1.4.8-griprail-v6';
 const CORE=[
   './',
   './index.html',
@@ -8,6 +8,8 @@ const CORE=[
   './estate-app.js',
   './ecostate-gripcube-v5.css',
   './ecostate-gripcube-v5.js',
+  './ecostate-griprail-v6.css',
+  './ecostate-griprail-v6.js',
   './author-home-door.js',
   './estate-head-public-consumer.js',
   './manifest.webmanifest',
@@ -21,6 +23,8 @@ const CORE=[
   './money-menu/',
   './money-menu/index.html',
   './money-menu/PUBLICATION_RECEIPT.json',
+  './earn-now/',
+  './earn-now/index.html',
   './author/',
   './author/index.html',
   './author/author-public.json',

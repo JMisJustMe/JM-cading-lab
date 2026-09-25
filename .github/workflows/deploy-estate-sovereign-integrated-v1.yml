@@ -90,7 +90,8 @@ jobs:
             ecostate-personality-v2.css ecostate-personality-v2.js \
             ecostate-authored-v3.css ecostate-authored-v3.js \
             ecostate-contact-v4.css ecostate-contact-v4.js \
-            ecostate-gripcube-v5.css ecostate-gripcube-v5.js; do
+            ecostate-gripcube-v5.css ecostate-gripcube-v5.js \
+            ecostate-griprail-v6.css ecostate-griprail-v6.js; do
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
@@ -173,11 +174,19 @@ jobs:
           test -s cloudflare-estate/games-beyond/index.html
           test -s cloudflare-estate/ecostate-gripcube-v5.css
           test -s cloudflare-estate/ecostate-gripcube-v5.js
+          test -s cloudflare-estate/ecostate-griprail-v6.css
+          test -s cloudflare-estate/ecostate-griprail-v6.js
 
           grep -Fq 'ecostate-gripcube-v5.css' cloudflare-estate/index.html
           grep -Fq 'ecostate-gripcube-v5.js' cloudflare-estate/index.html
           grep -Fq 'JMGripCube' cloudflare-estate/ecostate-gripcube-v5.js
           grep -Fq '.eco-gripcube' cloudflare-estate/ecostate-gripcube-v5.css
+          grep -Fq 'ecostate-griprail-v6.css' cloudflare-estate/index.html
+          grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/index.html
+          grep -Fq 'JMGripRail' cloudflare-estate/ecostate-griprail-v6.js
+          grep -Fq '.griprail-track' cloudflare-estate/ecostate-griprail-v6.css
+          grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/money-menu/index.html
+          grep -Fq 'ecostate-griprail-v6.js' cloudflare-estate/earn-now/index.html
           grep -Fq 'JM3232 NAVIGATOR' cloudflare-estate/navigator/index.html
           grep -Fq 'estate-sovereign-integration' cloudflare-estate/navigator/stringline.json
           grep -Fq 'JM.Estate.PublicNervousSystem/1' cloudflare-estate/navigator/estate-integration/public-registry.json
@@ -219,8 +228,13 @@ jobs:
           const base='https://jmisjustme-estate.pages.dev';
           const checks=[
             ['/', 'ecostate-gripcube-v5.js'],
+            ['/', 'ecostate-griprail-v6.js'],
             ['/ecostate-gripcube-v5.js', 'JMGripCube'],
             ['/ecostate-gripcube-v5.css', '.eco-gripcube'],
+            ['/ecostate-griprail-v6.js', 'JMGripRail'],
+            ['/ecostate-griprail-v6.css', '.griprail-track'],
+            ['/money-menu/', 'ecostate-griprail-v6.js'],
+            ['/earn-now/', 'ecostate-griprail-v6.js'],
             ['/navigator/', 'JM3232 NAVIGATOR'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

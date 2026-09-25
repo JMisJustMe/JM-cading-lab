@@ -1,0 +1,71 @@
+name: ECOSTATE GripRail v6 QA
+
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'money-menu/index.html'
+      - 'earn-now/index.html'
+      - 'sw.js'
+      - 'ecostate-griprail-v6.css'
+      - 'ecostate-griprail-v6.js'
+      - 'tests/ecostate-griprail-v6.spec.mjs'
+      - '.github/workflows/ecostate-griprail-v6-qa.yml'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'money-menu/index.html'
+      - 'earn-now/index.html'
+      - 'sw.js'
+      - 'ecostate-griprail-v6.css'
+      - 'ecostate-griprail-v6.js'
+      - 'tests/ecostate-griprail-v6.spec.mjs'
+
+jobs:
+  griprail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static side-route gates
+        run: |
+          node --check ecostate-griprail-v6.js
+          grep -q 'ecostate-griprail-v6.css' index.html
+          grep -q 'ecostate-griprail-v6.js' index.html
+          grep -q 'data-grip-house' money-menu/index.html
+          grep -q 'data-grip-cat' earn-now/index.html
+          grep -q 'ecostate-griprail-v6.js' money-menu/index.html
+          grep -q 'ecostate-griprail-v6.js' earn-now/index.html
+          grep -q 'ecostate-griprail-v6.css' sw.js
+          grep -q 'ecostate-griprail-v6.js' sw.js
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Boot local Estate
+        run: |
+          python3 -m http.server 4176 >/tmp/jm-griprail-v6-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4176/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-griprail-v6-http.log
+          exit 1
+
+      - name: Render repeated side-scroll contacts
+        env:
+          BASE_URL: http://127.0.0.1:4176
+        run: node tests/ecostate-griprail-v6.spec.mjs
+
+      - name: Upload visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ecostate-griprail-v6-visual-receipts
+          path: qa/ecostate-griprail-v6/
+          if-no-files-found: ignore

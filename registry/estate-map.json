@@ -135,6 +135,11 @@
       "body": "JM Money Menu — Public Contact Carrier v1.2",
       "path": "money-menu/index.html",
       "state": "LIVE_242_ROUTE_PUBLIC_CONTACT_CARRIER_160_OF_160_PARITY"
+    },
+    {
+      "body": "JM Market Ecosystem Lab — Cloud Corridor v1.5",
+      "path": "market-lab/index.html",
+      "state": "LIVE_CLOUD_CORRIDOR_MARKET_LAB_V1_5"
     }
   ],
   "registered_departments": [
@@ -558,5 +563,40 @@
     "apps_rooms": 44,
     "money_menu_public_contact": "v1.2",
     "recorded_utc": "2026-08-06T01:37:23.067500+00:00"
+  },
+  "market_ecosystem_lab": {
+    "name": "JM Market Ecosystem Lab",
+    "version": "1.5 hosted / public corridor 1.0",
+    "route": "market-lab/",
+    "cloud_body": "https://jm-cloud-contact-server-v05.onrender.com/market",
+    "cloud_root": "JM CLOUD CONTACT SERVER v0.5.1-hosted",
+    "status": "LIVE_CLOUD_BODY_PUBLIC_ESTATE_CORRIDOR",
+    "seed_topology_routes": 32,
+    "live_market_sources": [
+      "Kraken public order books",
+      "Coinbase Exchange public order books"
+    ],
+    "historical_sources": [
+      "FRED",
+      "Bank of England IADB"
+    ],
+    "live_capabilities": [
+      "autonomous public quote pulse",
+      "top-of-book price and size",
+      "full-depth paper VWAP sweep",
+      "bounded cloud snapshot history",
+      "whitelisted historical-series import",
+      "60/20/20 no-lookahead lag laboratory",
+      "duration and percentage route instrumentation",
+      "trace export"
+    ],
+    "capital_state": "ZERO_REAL_CAPITAL_BY_DESIGN",
+    "keeper_lines": [
+      "LAB DING ≠ MONEY DING",
+      "PRICE WITHOUT SIZE IS NOT YET AN EXECUTABLE ROUTE",
+      "TOP PRICE → TOP SIZE → FULL DEPTH → FRICTION → ONLY THEN SURVIVING PAPER EDGE",
+      "THE WEBSITE IS THE PROFESSIONAL DOOR; THE JM CLOUD IS THE WORKING BODY"
+    ],
+    "boundary": "Public corridor and research runtime. Historical patterns, live quotes, depth snapshots and paper routes do not constitute a profit claim, fill guarantee or automatic real-capital instruction."
   }
 }

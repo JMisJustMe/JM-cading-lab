@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.6-money-menu-public-contact';
+const CACHE='jm-web-estate-v1.4.7-market-lab-corridor';
 const CORE=[
   './',
   './index.html',
@@ -19,6 +19,8 @@ const CORE=[
   './money-menu/',
   './money-menu/index.html',
   './money-menu/PUBLICATION_RECEIPT.json',
+  './market-lab/',
+  './market-lab/index.html',
   './author/',
   './author/index.html',
   './author/author-public.json',

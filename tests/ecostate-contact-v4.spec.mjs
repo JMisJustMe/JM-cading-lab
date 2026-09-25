@@ -3,7 +3,7 @@ import { chromium } from 'playwright';
 
 const routes=[
   ['front-door','/'],['games','/games-beyond/'],['theory','/theory/'],['lyrics','/lyrics/'],['apps','/apps/'],
-  ['creator','/author/authuser.html'],['work','/money-menu/'],['navigator','/navigator/'],['recovery','/recovery/'],['recent','/recent/']
+  ['creator','/author/authuser.html'],['work','/money-menu/'],['market','/market-lab/'],['navigator','/navigator/'],['recovery','/recovery/'],['recent','/recent/']
 ];
 const viewports=[['mobile',{width:390,height:844}],['desktop',{width:1440,height:960}]];
 await mkdir('qa/ecostate-contact-v4',{recursive:true});

@@ -1,0 +1,68 @@
+name: JM AI RouteOS Real State Contact v0.1
+
+on:
+  push:
+    branches:
+      - jm-ai-executable-body-contact-v0-1
+    paths:
+      - 'ai-host-contact/routeos-body-contact/ROUTEOS_CONTACT_GOAL_v0_1.json'
+      - 'tests/jm-ai-routeos-real-contact-v0-1.spec.mjs'
+      - '.github/workflows/jm-ai-routeos-real-contact-v0-1.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: jm-ai-routeos-real-contact-v0-1
+  cancel-in-progress: false
+
+jobs:
+  routeos-real-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out AI contact branch
+        uses: actions/checkout@v4
+        with:
+          ref: jm-ai-executable-body-contact-v0-1
+          fetch-depth: 0
+
+      - name: Use Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate inherited RouteOS source before contact
+        run: |
+          grep -q "function saveCurrent" games-beyond/routeos/runtime/index.html
+          grep -q "function suspend" games-beyond/routeos/runtime/index.html
+          grep -q "function resume" games-beyond/routeos/runtime/index.html
+          grep -q "RouteOSQuickResume" games-beyond/routeos/runtime/index.html
+          grep -q "JMConsoleCartridgeSave" games-beyond/routeos/runtime/index.html
+
+      - name: Install existing browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Boot repository host
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-routeos-ai-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-routeos-ai-http.log
+          exit 1
+
+      - name: Execute AI-issued RouteOS goal through native UI/state
+        run: node tests/jm-ai-routeos-real-contact-v0-1.spec.mjs
+
+      - name: Commit RouteOS-produced state proof
+        run: |
+          set -euo pipefail
+          git config user.name "JM AI RouteOS Contact Proof"
+          git config user.email "actions@users.noreply.github.com"
+          git add ai-host-contact/routeos-body-contact/ROUTEOS_STATE_SNAPSHOT_v0_1.json
+          git add ai-host-contact/routeos-body-contact/ROUTEOS_REAL_CONTACT_RECEIPT_v0_1.json
+          git diff --cached --quiet && exit 0
+          git commit -m "Record JM AI RouteOS real-state contact Ding"
+          git pull --rebase origin jm-ai-executable-body-contact-v0-1
+          git push origin HEAD:jm-ai-executable-body-contact-v0-1

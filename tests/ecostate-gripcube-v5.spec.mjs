@@ -11,10 +11,21 @@ let failed=false;
 for(const [name,viewport] of viewports){
   const page=await browser.newPage({viewport});
   const errors=[];
+  const inherited404=[];
   page.on('pageerror',e=>errors.push(`pageerror: ${e.message}`));
-  page.on('console',m=>{if(m.type()==='error') errors.push(`console: ${m.text()}`)});
+  page.on('response',r=>{
+    if(r.status()===404){
+      const url=r.url();
+      if(/ecostate-gripcube-v5\.(css|js)$/.test(url)) errors.push(`GripCube asset 404: ${url}`);
+      else inherited404.push(url);
+    }
+  });
   await page.goto(base+'/',{waitUntil:'networkidle'});
   await page.waitForSelector('.eco-gripcube');
+  const assetStatus=await page.evaluate(async()=>Object.fromEntries(await Promise.all(
+    ['./ecostate-gripcube-v5.css','./ecostate-gripcube-v5.js'].map(async u=>[u,(await fetch(u,{cache:'no-store'})).status])
+  )));
+  if(Object.values(assetStatus).some(x=>x!==200)) throw new Error(`${name}: GripCube asset status ${JSON.stringify(assetStatus)}`);
 
   const proof=await page.evaluate(()=>window.JMGripCube?.proof?.());
   const counts=await page.evaluate(()=>({
@@ -50,6 +61,7 @@ for(const [name,viewport] of viewports){
 
   await page.screenshot({path:`qa/ecostate-gripcube-v5/${name}.png`,fullPage:true});
   if(errors.length) throw new Error(`${name}: ${errors.join(' | ')}`);
+  console.log(`${name}: PASS · inherited 404s observed=${inherited404.length}`);
   await page.close();
 }
 

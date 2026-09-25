@@ -1,0 +1,251 @@
+{
+  "version": "0.8",
+  "activePlayerId": "jm",
+  "players": [
+    {
+      "id": "jm",
+      "name": "JM"
+    }
+  ],
+  "activeCart": {
+    "id": "seed-runner",
+    "title": "Seed Runner",
+    "version": "1.0",
+    "color": "#89f0ad",
+    "role": "Traversal / collection cartridge",
+    "help": "Hold the direction pad or drag the field to steer. Collect seeds; avoid red hazards."
+  },
+  "quickResume": null,
+  "saves": {
+    "seed-runner": {
+      "recordType": "JMConsoleCartridgeSave",
+      "namespace": "routeos.seed-runner.jm",
+      "playerId": "jm",
+      "cartridgeId": "seed-runner",
+      "title": "Seed Runner",
+      "state": {
+        "id": "seed-runner",
+        "score": 1,
+        "energy": 5,
+        "time": 1.010699999999977,
+        "player": {
+          "x": 274.00000000000006,
+          "y": 310,
+          "r": 19,
+          "vx": 0,
+          "vy": 0
+        },
+        "seeds": [
+          {
+            "x": 641.7027843488847,
+            "y": 344.6423237591127,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 208.3067480415282,
+            "y": 287.58016169079553,
+            "r": 10,
+            "taken": true
+          },
+          {
+            "x": 520.492014021187,
+            "y": 498.29697158155284,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 680.6704300553772,
+            "y": 372.6804638318172,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 554.6197318005711,
+            "y": 266.61592593035624,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 542.619662094935,
+            "y": 205.86286629946747,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 632.7735050904707,
+            "y": 333.72471597062844,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 432.1530017833742,
+            "y": 90.25987024975088,
+            "r": 10,
+            "taken": false
+          },
+          {
+            "x": 352.7700132882329,
+            "y": 149.91548873922338,
+            "r": 10,
+            "taken": false
+          }
+        ],
+        "hazards": [
+          {
+            "x": 325.7513617891726,
+            "y": 321.5703782992795,
+            "r": 19
+          },
+          {
+            "x": 761.2251919405728,
+            "y": 405.24308376759313,
+            "r": 19
+          },
+          {
+            "x": 392.4459565885803,
+            "y": 143.30572096307597,
+            "r": 19
+          },
+          {
+            "x": 641.1461477130092,
+            "y": 439.4895146002269,
+            "r": 19
+          }
+        ],
+        "goal": {
+          "x": 840,
+          "y": 310,
+          "r": 28
+        }
+      },
+      "savedAt": "2026-09-25T19:09:03.473Z"
+    }
+  },
+  "installed": [],
+  "receipts": [
+    {
+      "id": "MUHC3XI63ZQRGV",
+      "time": "2026-09-25T19:09:03.966Z",
+      "type": "BOOT",
+      "text": "RouteOS public console runtime booted",
+      "extra": {
+        "version": "0.8",
+        "preloaded": [
+          "pulse-orbit",
+          "seed-runner",
+          "rebound-route"
+        ]
+      }
+    },
+    {
+      "id": "MUHC3XDRS19YVN",
+      "time": "2026-09-25T19:09:03.807Z",
+      "type": "RESUME",
+      "text": "Seed Runner resumed",
+      "extra": {
+        "suspendedAt": "2026-09-25T19:09:03.640Z"
+      }
+    },
+    {
+      "id": "MUHC3XDR426R8U",
+      "time": "2026-09-25T19:09:03.807Z",
+      "type": "PLAY",
+      "text": "Seed Runner entered play",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3XDQ5NGSA8",
+      "time": "2026-09-25T19:09:03.806Z",
+      "type": "READY",
+      "text": "Seed Runner runtime ready",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3XDQZX8ANJ",
+      "time": "2026-09-25T19:09:03.806Z",
+      "type": "BOOT",
+      "text": "Seed Runner boot requested",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3X94JTJB0W",
+      "time": "2026-09-25T19:09:03.640Z",
+      "type": "SUSPEND",
+      "text": "Seed Runner suspended",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3X4HXYGBHP",
+      "time": "2026-09-25T19:09:03.473Z",
+      "type": "SAVE",
+      "text": "Seed Runner save captured",
+      "extra": {
+        "kind": "MANUAL",
+        "namespace": "routeos.seed-runner.jm"
+      }
+    },
+    {
+      "id": "MUHC3WQ0CGT4KX",
+      "time": "2026-09-25T19:09:02.952Z",
+      "type": "SCORE",
+      "text": "Seed collected",
+      "extra": {
+        "score": 1
+      }
+    },
+    {
+      "id": "MUHC3WCAC020ZN",
+      "time": "2026-09-25T19:09:02.458Z",
+      "type": "PLAY",
+      "text": "Seed Runner entered play",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3WC9PFJMT7",
+      "time": "2026-09-25T19:09:02.457Z",
+      "type": "READY",
+      "text": "Seed Runner runtime ready",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3WC8TZZU7E",
+      "time": "2026-09-25T19:09:02.457Z",
+      "type": "BOOT",
+      "text": "Seed Runner boot requested",
+      "extra": {
+        "cartridgeId": "seed-runner"
+      }
+    },
+    {
+      "id": "MUHC3VQ1CU2G3T",
+      "time": "2026-09-25T19:09:01.657Z",
+      "type": "BOOT",
+      "text": "RouteOS public console runtime booted",
+      "extra": {
+        "version": "0.8",
+        "preloaded": [
+          "pulse-orbit",
+          "seed-runner",
+          "rebound-route"
+        ]
+      }
+    }
+  ],
+  "settings": {
+    "controlSide": "right"
+  },
+  "lastScreen": "vault"
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "JM.AI.RouteOSProductionContactReceipt/0.1",
+  "status": "PASS",
+  "public_url": "https://jmisjustme.github.io/JM-cading-lab/games-beyond/routeos/runtime/",
+  "deployed_head_sha": "09d6cefa85cac8f087de71edcffb808fbb5c7ba3",
+  "github_workflow_run": "36177697130",
+  "body": {
+    "name": "RouteOS Console Home",
+    "version": "0.8",
+    "source": "games-beyond/routeos/runtime/index.html"
+  },
+  "mismatch": {
+    "attempted": "SAVE without active cartridge",
+    "observed": "no cartridge save created",
+    "recovery": "launch Seed Runner and continue only after native precondition is satisfied"
+  },
+  "checks": {
+    "public_routeos_identity": true,
+    "premature_save_refused": true,
+    "save_exists": true,
+    "namespace_exact": true,
+    "player_moved": true,
+    "quick_resume_created": true,
+    "quick_resume_consumed": true,
+    "lifecycle_receipts": true,
+    "save_survives_reload": true,
+    "visible_vault_namespace": true,
+    "visible_vault_title": true
+  },
+  "observed": {
+    "saved_player_x": 274.00000000000006,
+    "namespace": "routeos.seed-runner.jm",
+    "persisted_store": "JM_ROUTEOS_PUBLIC_RUNTIME_v0_8",
+    "lifecycle_types": [
+      "BOOT",
+      "RESUME",
+      "PLAY",
+      "READY",
+      "BOOT",
+      "SUSPEND",
+      "SAVE",
+      "SCORE",
+      "PLAY",
+      "READY",
+      "BOOT",
+      "BOOT"
+    ]
+  },
+  "boundary": {
+    "routeos_source_changed": false,
+    "public_client_state_changed": true,
+    "owner_device_contact": false,
+    "arbitrary_autonomy_claimed": false
+  },
+  "ding": "JM_AI_ROUTEOS_PRODUCTION_PUBLIC_STATE_DING"
+}

@@ -1,5 +1,5 @@
 {
-  "schema": "JM.AIRBORNE.IDENTITY/0.3",
+  "schema": "JM.AIRBORNE.IDENTITY/0.3.1",
   "identity_id": "jm://navigator",
   "canonical_name": "JM3232 Navigator / Unified Browser",
   "owner": "JM / JMisJustMe",
@@ -12,24 +12,53 @@
     "version_identity_rule": "BODY EVOLVES -> DOOR STAYS -> STATE RETURNS"
   },
   "carriers": [
-    {"id":"cloudflare-estate","url":"https://jmisjustme-estate.pages.dev/navigator/","role":"CANONICAL_PUBLIC_CARRIER","authority":"CARRIER_ONLY"},
-    {"id":"github-pages","url":"https://jmisjustme.github.io/JM-cading-lab/navigator/","role":"RECOVERY_MIRROR_CARRIER","authority":"CARRIER_ONLY"},
-    {"id":"local-browser","url":"","role":"OWNER_OFFLINE_CARRIER","authority":"CARRIER_ONLY"},
-    {"id":"openai-mcp","url":"https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp","role":"PUBLIC_READ_ONLY_ADAPTER_DESCENDANT","authority":"ADAPTER_ONLY","fresh_contact_required":true}
+    {
+      "id": "cloudflare-estate",
+      "url": "https://jmisjustme-estate.pages.dev/navigator/",
+      "role": "CANONICAL_PUBLIC_CARRIER",
+      "authority": "CARRIER_ONLY"
+    },
+    {
+      "id": "github-pages",
+      "url": "https://jmisjustme.github.io/JM-cading-lab/navigator/",
+      "role": "RECOVERY_MIRROR_CARRIER",
+      "authority": "CARRIER_ONLY"
+    },
+    {
+      "id": "local-browser",
+      "url": "",
+      "role": "OWNER_OFFLINE_CARRIER",
+      "authority": "CARRIER_ONLY"
+    },
+    {
+      "id": "openai-mcp",
+      "url": "https://navigator-plugin-public.jm-inline-contact-probe.pages.dev/mcp",
+      "role": "PUBLIC_READ_ONLY_ADAPTER_DESCENDANT",
+      "authority": "ADAPTER_ONLY",
+      "fresh_contact_required": true
+    }
   ],
   "lineage": {
     "current_canonical_public_body": "JM3232 Navigator v0.1.1",
     "airborne_owner_descendant": "JM3232 Unified Browser v1.5.1 — Airborne Multi-Host Parity",
     "airborne_core_stage": "JM3232 AIRBORNE v0.2 — MULTI-HOST PARITY",
-    "namespace_stage": "AIRBORNE v0.3 — JM NAMESPACE + REAL CARRIER SWAP"
+    "namespace_stage": "AIRBORNE v0.3.1 — JM NAMESPACE + LIVE DUAL-CARRIER PARITY"
   },
   "promotion_boundary": {
-    "namespace_identity": "ACTIVE_CANDIDATE",
-    "external_dual_carrier_parity": "AWAITING_POST_MERGE_PROOF",
+    "namespace_identity": "ACTIVE",
+    "external_dual_carrier_parity": "PROVED_BY_LIVE_DUAL_CARRIER_WORKFLOW",
     "v1_5_1_body_promoted_behind_canonical_door": false,
     "owner_contact_for_v1_5_1": false,
-    "note": "This identity layer does not silently claim that the 6 MB v1.5.1 owner body is already the live canonical Navigator. It gives the living body a host-neutral identity and lets carriers prove they are serving that identity."
+    "note": "The jm://navigator namespace has proved exact external parity across the Cloudflare Estate carrier and GitHub Pages recovery carrier. This still does not claim the 6 MB v1.5.1 owner body is promoted behind the canonical door, nor owner-device contact for that descendant.",
+    "proof_mode": "CONTINUOUS_ON_MAIN",
+    "proof_workflow": ".github/workflows/prove-navigator-airborne-carriers.yml"
   },
-  "laws": ["HOST != SOURCE","CARRIER != BODY","MESH != MERGE","NO DING, NO CLAIM","RECOVER BEFORE REBUILD"],
+  "laws": [
+    "HOST != SOURCE",
+    "CARRIER != BODY",
+    "MESH != MERGE",
+    "NO DING, NO CLAIM",
+    "RECOVER BEFORE REBUILD"
+  ],
   "updated": "2026-09-25"
 }

@@ -1,0 +1,120 @@
+name: JM GlyphBoard v0.3 Native IME Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'android/jm-glyphboard-v0.3/**'
+      - '.github/workflows/jm-glyphboard-v0-3-native-ime.yml'
+  pull_request:
+    paths:
+      - 'android/jm-glyphboard-v0.3/**'
+      - '.github/workflows/jm-glyphboard-v0-3-native-ime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-native-ime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android API 36
+        shell: bash
+        run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0'
+
+      - name: Set up Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: JM source and governance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='android/jm-glyphboard-v0.3'
+          cd "$D"
+          sha256sum -c SOURCE_AUTHORITY_SHA256.txt
+          test "$(grep -c 'new GlyphEntry(' app/src/main/java/com/jmisjustme/glyphboard/GlyphRegistry.java)" -eq 17
+          for body in 'Cading' 'Kading' 'JMLogic' 'FlowTalk' 'RouteCode' 'Quadze' 'OneBody IR' 'CadenVM' 'CodeHand' 'RouteOS' 'TraceBox' 'THEO' 'Build Gates' 'Zionfolder'; do
+            grep -Fq "body $body" JM_GLYPHBOARD_v0_3_NATIVE_IME.jm.cading
+          done
+          grep -Fq 'android.permission.BIND_INPUT_METHOD' app/src/main/AndroidManifest.xml
+          grep -Fq 'android.view.InputMethod' app/src/main/AndroidManifest.xml
+          if grep -Fq 'android.permission.INTERNET' app/src/main/AndroidManifest.xml; then
+            echo 'INTERNET permission must remain absent' >&2
+            exit 1
+          fi
+          echo 'JM_SOURCE_AND_GOVERNANCE_GATES_PASS'
+
+      - name: Unit tests and APK build
+        working-directory: android/jm-glyphboard-v0.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:testDebugUnitTest :app:assembleDebug
+          test -s app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Verify native IME APK and form bounded receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='android/jm-glyphboard-v0.3'
+          APK="$D/app/build/outputs/apk/debug/app-debug.apk"
+          mkdir -p "$D/dist"
+          OUT="$D/dist/JM_GLYPHBOARD_v0_3_0_NATIVE_IME_DEBUG.apk"
+          cp "$APK" "$OUT"
+          unzip -t "$OUT" > "$D/dist/ZIP_INTEGRITY.txt"
+          BT="$ANDROID_HOME/build-tools/36.0.0"
+          "$BT/aapt2" dump badging "$OUT" > "$D/dist/AAPT_BADGING.txt"
+          "$BT/apksigner" verify --verbose --print-certs "$OUT" > "$D/dist/APKSIGNER_VERIFY.txt"
+          grep -Fq "package: name='com.jmisjustme.glyphboard'" "$D/dist/AAPT_BADGING.txt"
+          grep -Fq "application-label:'JM GLYPHBOARD'" "$D/dist/AAPT_BADGING.txt"
+          grep -Fq 'Verified using' "$D/dist/APKSIGNER_VERIFY.txt"
+          sha256sum "$OUT" > "$D/dist/SHA256.txt"
+          BYTES=$(stat -c%s "$OUT")
+          SHA=$(cut -d' ' -f1 "$D/dist/SHA256.txt")
+          cat > "$D/dist/BUILD_RECEIPT.md" <<RECEIPT
+          # JM GLYPHBOARD v0.3 — Native IME Build Receipt
+
+          - Status: **PASS — BUILD / STATIC PACKAGE PROOF**
+          - Source authority SHA-256: `8e75f92451e7382cd2c2656fb349353b5ba1ea27c21b95dc590963e5cfbee568`
+          - Registry: **17/17 recovered entries**
+          - JM governing-body gate: **14/14 present**
+          - Android carrier: **InputMethodService**
+          - Package: `com.jmisjustme.glyphboard`
+          - Version: `0.3.0` (`versionCode 3`)
+          - Min / target / compile SDK: `23 / 36 / 36`
+          - Internet permission: **ABSENT**
+          - Unit tests: **PASS**
+          - APK ZIP integrity: **PASS**
+          - Debug signature verification: **PASS**
+          - APK bytes: `$BYTES`
+          - APK SHA-256: `$SHA`
+          - Physical install / enable / select / type-across-apps: **HOLD — owner phone contact required**
+          - Owner Ding: **OPEN**
+
+          Keeper: **APK built is not APK lived. The phone proves contact. JM holds the Ding.**
+          RECEIPT
+          echo "GLYPHBOARD_NATIVE_IME_BUILD_PASS $SHA $BYTES"
+
+      - name: Upload native contact package
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_GLYPHBOARD_v0_3_0_NATIVE_IME_CONTACT_PACKAGE
+          path: android/jm-glyphboard-v0.3/dist/
+          if-no-files-found: error
+          retention-days: 14

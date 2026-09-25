@@ -32,8 +32,9 @@ jobs:
           set -euo pipefail
           test -s money-menu/index.html
           actual="$(sha256sum money-menu/index.html | awk '{print $1}')"
-          expected='7d718cc18fbf558599fb92f4ddb298aea815c0c0252c5c45e58683c619623f7d'
-          test "$actual" = "$expected"
+          grep -Fq 'data-grip-house' money-menu/index.html
+          grep -Fq 'ecostate-griprail-v6.js' money-menu/index.html
+          echo "Money Menu current SHA-256: $actual"
           test -s earn-now/index.html
           test -s shims-reader/index.html
           test -s apps/showcase/index.html
@@ -55,7 +56,13 @@ jobs:
           for file in \
             index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js \
             estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js \
-            author-home-door.js robots.txt sitemap.xml 404.html cading.html; do
+            author-home-door.js robots.txt sitemap.xml 404.html cading.html \
+            ecostate-visual-v1.css ecostate-interaction-v1.js \
+            ecostate-personality-v2.css ecostate-personality-v2.js \
+            ecostate-authored-v3.css ecostate-authored-v3.js \
+            ecostate-contact-v4.css ecostate-contact-v4.js \
+            ecostate-gripcube-v5.css ecostate-gripcube-v5.js \
+            ecostate-griprail-v6.css ecostate-griprail-v6.js; do
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 

@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - 'scripts/jm_relational_opportunity.py'
+      - 'proof/rod/**'
       - '.github/workflows/jm-ai-rod-v0-1.yml'
   workflow_dispatch:
 jobs:
@@ -14,3 +15,22 @@ jobs:
         run: python -m py_compile scripts/jm_relational_opportunity.py
       - name: ROD deterministic fixtures
         run: python scripts/jm_relational_opportunity.py --self-test
+      - name: ROD unseen contact 001
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/unseen-contact-001.json | tee /tmp/rod-unseen.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-unseen.json'))
+          got={x['body']:x['decision'] for x in p['results']}
+          expected={
+            'Interactors Interacting':'CARRY',
+            'Authority / Permission Gate':'CARRY',
+            'Device Continuity Verification':'HOLD',
+            'HOSF':'REJECT',
+            'Trace-only Restatement':'COOL',
+            'Learning-bearing Adaptation':'HOLD',
+          }
+          assert p['claim_ceiling']=='TRACE', p['claim_ceiling']
+          assert got==expected, (got,expected)
+          print('JM ROD unseen contact 001 PASS:', got)
+          PY

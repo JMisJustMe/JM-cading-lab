@@ -1,0 +1,16 @@
+name: JM AI ROD v0.1 bounded proof
+on:
+  pull_request:
+    paths:
+      - 'scripts/jm_relational_opportunity.py'
+      - '.github/workflows/jm-ai-rod-v0-1.yml'
+  workflow_dispatch:
+jobs:
+  bounded-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Python syntax
+        run: python -m py_compile scripts/jm_relational_opportunity.py
+      - name: ROD deterministic fixtures
+        run: python scripts/jm_relational_opportunity.py --self-test

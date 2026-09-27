@@ -293,7 +293,7 @@ def self_test():
       "evidence":["consequence","trace"],"registry":[
         {"body":"Contact Field","office":"EXPLAIN","mechanisms":["mismatch","state_transition"],"adds":["condition_shift"]},
         {"body":"HOSF","office":"RECOVER","mechanisms":["support"],"adds":["scaffold"]}]})
-    assert r["grounding_mode"]=="BOUNDED_LEXICON"
+    assert r["grounding_mode"]=="REGISTRY_AWARE_LEXICON"
     assert r["opportunity_inlet"]=="ANOMALY"
     assert [x["body"] for x in r["results"]]==["Contact Field"]
 

@@ -230,6 +230,8 @@ def main():
     p.add_argument("--self-test",action="store_true")
     p.add_argument("--input")
     p.add_argument("--registry")
+    p.add_argument("--ledger")
+    p.add_argument("--write-ledger")
     a=p.parse_args()
     if a.self_test:
         self_test(); return
@@ -237,6 +239,18 @@ def main():
     with open(a.input,encoding="utf-8") as f: payload=json.load(f)
     if a.registry and "candidates" not in payload:
         with open(a.registry,encoding="utf-8") as f: payload["registry"]=json.load(f)
-    print(json.dumps(detect(payload),indent=2))
+    ledger={}
+    if a.ledger and Path(a.ledger).exists():
+        with open(a.ledger,encoding="utf-8") as f: ledger=json.load(f)
+        payload.setdefault("prior_status",ledger.get("current_status",{}))
+    result=detect(payload)
+    if a.write_ledger:
+        history=list(ledger.get("events",[]))
+        history.extend(result.get("relation_history",[]))
+        current=dict(ledger.get("current_status",{}))
+        current.update({r["body"]:r["decision"] for r in result["results"]})
+        out={"schema":"jm.rod.ledger/0.1","current_status":current,"events":history}
+        with open(a.write_ledger,"w",encoding="utf-8") as f: json.dump(out,f,indent=2)
+    print(json.dumps(result,indent=2))
 
 if __name__=="__main__": main()

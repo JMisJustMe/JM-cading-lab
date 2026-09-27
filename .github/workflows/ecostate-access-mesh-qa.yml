@@ -1,0 +1,105 @@
+name: ECOSTATE Current Access Mesh QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'access/**'
+      - 'books/**'
+      - 'visual-story/**'
+      - 'index.html'
+      - 'estate-app.js'
+      - 'author/authuser.html'
+      - 'sitemap.xml'
+      - 'sw.js'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+      - '.github/workflows/ecostate-access-mesh-qa.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'access/**'
+      - 'books/**'
+      - 'visual-story/**'
+      - 'index.html'
+      - 'estate-app.js'
+      - 'author/authuser.html'
+      - 'sitemap.xml'
+      - 'sw.js'
+      - '.github/workflows/deploy-estate-sovereign-integrated-v1.yml'
+      - '.github/workflows/ecostate-access-mesh-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  access-mesh-browser-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static route gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s access/index.html
+          test -s books/index.html
+          test -s visual-story/index.html
+          grep -Fq 'One door.' access/index.html
+          grep -Fq '56 ≠ 98 ≠ 45' books/index.html
+          grep -Fq 'FIRST WATCHABLE SCENE' visual-story/index.html
+          grep -Fq './access/' index.html
+          grep -Fq "'./books/'" estate-app.js
+          grep -Fq "'./visual-story/'" estate-app.js
+          grep -Fq 'https://jmisjustme-estate.pages.dev/access/' sitemap.xml
+          grep -Fq 'https://jmisjustme-estate.pages.dev/books/' sitemap.xml
+          grep -Fq 'https://jmisjustme-estate.pages.dev/visual-story/' sitemap.xml
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot local Estate
+        run: |
+          python3 -m http.server 4178 >/tmp/jm-access-mesh-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4178/access/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Six-contact phone and desktop proof
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const { chromium } = require('playwright');
+          const surfaces=[
+            ['/access/','One door.'],
+            ['/books/','56 ≠ 98 ≠ 45'],
+            ['/visual-story/','FIRST WATCHABLE SCENE']
+          ];
+          const viewports=[
+            {name:'phone',width:390,height:844},
+            {name:'desktop',width:1366,height:900}
+          ];
+          (async()=>{
+            const browser=await chromium.launch({headless:true});
+            let pass=0;
+            for(const vp of viewports){
+              for(const [path,needle] of surfaces){
+                const page=await browser.newPage({viewport:{width:vp.width,height:vp.height}});
+                const errors=[];
+                page.on('pageerror',e=>errors.push(String(e)));
+                page.on('console',m=>{if(m.type()==='error') errors.push(m.text())});
+                const response=await page.goto('http://127.0.0.1:4178'+path,{waitUntil:'networkidle'});
+                const body=await page.textContent('body');
+                const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth+1);
+                if(!response?.ok()||!body.includes(needle)||overflow||errors.length){
+                  throw new Error(`${vp.name} ${path} failed: status=${response?.status()} needle=${body.includes(needle)} overflow=${overflow} errors=${errors.join('|')}`);
+                }
+                pass++;
+                await page.close();
+              }
+            }
+            await browser.close();
+            if(pass!==6) throw new Error('Expected 6 contacts, got '+pass);
+            console.log('DING — CURRENT ACCESS MESH: 6/6 browser contacts PASS · 100%');
+          })();
+          NODE

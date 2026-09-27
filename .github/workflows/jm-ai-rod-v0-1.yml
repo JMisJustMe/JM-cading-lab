@@ -140,3 +140,18 @@ jobs:
           assert l['current_status']['HOSF']=='CARRY', l
           print('JM ROD productive quiet/return 008 PASS: CARRY -> COOL -> CARRY with history retained')
           PY
+      - name: ROD raw evidence grounding 009
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/raw-evidence-009.json --registry registry/rod-bodies-v0-1.json | tee /tmp/rod-009.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-009.json'))
+          assert p['grounding_mode']=='REGISTRY_AWARE_LEXICON', p
+          assert p['evidence_mode']=='BOUNDED_EVIDENCE_LEXICON', p
+          assert p['claim_ceiling']=='REENTRY_CHANGE', p
+          assert set(p['grounded_evidence'])=={'consequence','trace','retention','reentry_change'}, p
+          got={x['body']:x['decision'] for x in p['results']}
+          assert got.get('Interactors Interacting')=='CARRY', got
+          assert got.get('TraceBox')=='CARRY', got
+          print('JM ROD raw evidence grounding 009 PASS:',p['grounded_evidence'],got)
+          PY

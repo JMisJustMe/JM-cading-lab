@@ -8,6 +8,7 @@ a trace suitable for later re-entry.
 """
 from __future__ import annotations
 import argparse, json
+from pathlib import Path
 from dataclasses import dataclass, asdict
 from typing import Iterable
 
@@ -95,18 +96,35 @@ def transition_trace(prior:str|None,current:str,inlet:str)->dict:
       "law":"STATUS MAY CHANGE; HISTORY MUST NOT"
     }
 
+def discover_candidates(signals:Iterable[str], registry:list[dict])->list[dict]:
+    """Bounded registry discovery: retrieve bodies sharing grounded mechanisms."""
+    sig=norm(signals)
+    ranked=[]
+    for item in registry:
+        overlap=sorted(sig & norm(item.get("mechanisms",[])))
+        if overlap:
+            ranked.append((len(overlap),item["body"],item))
+    ranked.sort(key=lambda x:(-x[0],x[1]))
+    return [item for _,_,item in ranked]
+
 def detect(contact:dict)->dict:
     inlet=infer_inlet(contact)
     signals=contact.get("signals",[])
     evidence=contact.get("evidence",[])
     prior_status=contact.get("prior_status",{})
+    candidates=contact.get("candidates")
+    discovery_mode="SUPPLIED"
+    if candidates is None:
+        registry=contact.get("registry",[])
+        candidates=discover_candidates(signals,registry)
+        discovery_mode="BOUNDED_REGISTRY"
     results=[evaluate(signals,evidence,Candidate(
       body=x["body"], office=x["office"],
       mechanisms=tuple(x.get("mechanisms",[])), adds=tuple(x.get("adds",[])),
       excludes=tuple(x.get("excludes",[])), required_evidence=tuple(x.get("required_evidence",[])),
       identity_risk=bool(x.get("identity_risk",False)),
       representation_options=tuple(x.get("representation_options",[]))
-    )) for x in contact.get("candidates",[])]
+    )) for x in candidates]
     relation_history=[
       {"body":r["body"],**transition_trace(prior_status.get(r["body"]),r["decision"],inlet)}
       for r in results if r["body"] in prior_status
@@ -114,6 +132,7 @@ def detect(contact:dict)->dict:
     return {
       "schema":"jm.rod/0.1","grounded_contact":contact.get("grounded_contact",""),
       "opportunity_inlet":inlet,
+      "candidate_discovery":discovery_mode,
       "claim_ceiling":evidence_ceiling(evidence),"results":results,
       "relation_history":relation_history,
       "trace":{
@@ -194,7 +213,17 @@ def self_test():
       "candidates":[]})
     assert r["opportunity_inlet"]=="RETRIEVAL"
 
-    print("JM ROD v0.1 self-test PASS: 11/11 bounded fixtures")
+    # Candidate bodies can be discovered from a bounded registry when none are supplied.
+    r=detect({"grounded_contact":"registry discovery","signals":["mismatch","trace"],
+      "evidence":["consequence","trace"],"registry":[
+        {"body":"Contact Field","office":"EXPLAIN","mechanisms":["mismatch","state_transition"],"adds":["condition_shift"]},
+        {"body":"HOSF","office":"RECOVER","mechanisms":["support","agency"],"adds":["scaffold"]},
+        {"body":"TraceBox","office":"REPRESENT","mechanisms":["trace"],"adds":["retained_route"]}]})
+    assert r["candidate_discovery"]=="BOUNDED_REGISTRY"
+    assert [x["body"] for x in r["results"]]==["Contact Field","TraceBox"]
+    assert [x["decision"] for x in r["results"]]==["CARRY","CARRY"]
+
+    print("JM ROD v0.1 self-test PASS: 12/12 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

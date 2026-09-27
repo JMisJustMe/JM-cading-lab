@@ -7,6 +7,7 @@ on:
       - 'access/**'
       - 'books/**'
       - 'visual-story/**'
+      - 'market-lab/**'
       - 'index.html'
       - 'estate-app.js'
       - 'author/authuser.html'
@@ -20,6 +21,7 @@ on:
       - 'access/**'
       - 'books/**'
       - 'visual-story/**'
+      - 'market-lab/**'
       - 'index.html'
       - 'estate-app.js'
       - 'author/authuser.html'
@@ -47,15 +49,19 @@ jobs:
           test -s access/index.html
           test -s books/index.html
           test -s visual-story/index.html
+          test -s market-lab/index.html
           grep -Fq 'One door.' access/index.html
           grep -Fq '56 ≠ 98 ≠ 45' books/index.html
           grep -Fq 'FIRST WATCHABLE SCENE' visual-story/index.html
+          grep -Fq 'JM Market Ecosystem Lab' market-lab/index.html
           grep -Fq './access/' index.html
           grep -Fq "'./books/'" estate-app.js
           grep -Fq "'./visual-story/'" estate-app.js
+          grep -Fq "'./market-lab/'" estate-app.js
           grep -Fq 'https://jmisjustme-estate.pages.dev/access/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/books/' sitemap.xml
           grep -Fq 'https://jmisjustme-estate.pages.dev/visual-story/' sitemap.xml
+          grep -Fq 'https://jmisjustme-estate.pages.dev/market-lab/' sitemap.xml
       - name: Install browser proof runtime
         run: |
           npm install --no-save playwright@1.54.1
@@ -65,7 +71,7 @@ jobs:
           python3 -m http.server 4178 >/tmp/jm-access-mesh-http.log 2>&1 &
           for i in {1..20}; do curl -fsS http://127.0.0.1:4178/access/ >/dev/null && exit 0; sleep 1; done
           exit 1
-      - name: Six-contact phone and desktop proof
+      - name: Eight-contact phone and desktop proof
         shell: bash
         run: |
           node - <<'NODE'
@@ -73,7 +79,8 @@ jobs:
           const surfaces=[
             ['/access/','One door.'],
             ['/books/','56 ≠ 98 ≠ 45'],
-            ['/visual-story/','FIRST WATCHABLE SCENE']
+            ['/visual-story/','FIRST WATCHABLE SCENE'],
+            ['/market-lab/','JM Market Ecosystem Lab']
           ];
           const viewports=[
             {name:'phone',width:390,height:844},
@@ -99,7 +106,7 @@ jobs:
               }
             }
             await browser.close();
-            if(pass!==6) throw new Error('Expected 6 contacts, got '+pass);
-            console.log('DING — CURRENT ACCESS MESH: 6/6 browser contacts PASS · 100%');
+            if(pass!==8) throw new Error('Expected 8 contacts, got '+pass);
+            console.log('DING — CURRENT ACCESS MESH: 8/8 browser contacts PASS · 100%');
           })();
           NODE

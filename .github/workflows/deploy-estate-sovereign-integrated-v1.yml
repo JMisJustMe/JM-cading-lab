@@ -31,6 +31,7 @@ on:
       - "games-beyond/**"
       - "lyrics/**"
       - "money-menu/**"
+      - "market-lab/**"
       - "navigator/**"
       - "recent/**"
       - "recovery/**"
@@ -121,7 +122,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory visual-story; do
+          for dir in access apps author books coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -173,6 +174,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /games-beyond/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /market-lab/*
+            Cache-Control: no-store, no-cache, must-revalidate
           EOF
 
           cat > cloudflare-estate/_redirects <<'EOF'
@@ -194,6 +197,8 @@ jobs:
           /recovery/ /recovery/index.html 200
           /games-beyond /games-beyond/index.html 200
           /games-beyond/ /games-beyond/index.html 200
+          /market-lab /market-lab/index.html 200
+          /market-lab/ /market-lab/index.html 200
           /author /author/index.html 200
           /author/ /author/index.html 200
           /recent /recent/index.html 200
@@ -224,6 +229,7 @@ jobs:
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/games-beyond/index.html
+          test -s cloudflare-estate/market-lab/index.html
           test -s cloudflare-estate/ecostate-gripcube-v5.css
           test -s cloudflare-estate/ecostate-gripcube-v5.js
           test -s cloudflare-estate/ecostate-griprail-v6.css
@@ -252,6 +258,8 @@ jobs:
           grep -Fq 'JM Theory Multihub v0.20.1' cloudflare-estate/theory/index.html
           ! grep -Fq 'JM Theory Multihub v0.4 — Touch Repair' cloudflare-estate/theory/index.html
           grep -Fq 'Games&Beyond' cloudflare-estate/games-beyond/index.html
+          grep -Fq 'JM Market Ecosystem Lab' cloudflare-estate/market-lab/index.html
+          grep -Fq 'jm-cloud-contact-server-v05.onrender.com/market' cloudflare-estate/market-lab/index.html
           grep -Fq 'One door.' cloudflare-estate/access/index.html
           grep -Fq '56 ≠ 98 ≠ 45' cloudflare-estate/books/index.html
           grep -Fq 'FIRST WATCHABLE SCENE' cloudflare-estate/visual-story/index.html
@@ -304,6 +312,7 @@ jobs:
             ['/lyrics/', 'data-jm-estate-integration="v1"'],
             ['/recovery/', 'data-jm-estate-integration="v1"'],
             ['/games-beyond/', 'Games&Beyond'],
+            ['/market-lab/', 'JM Market Ecosystem Lab'],
             ['/visual-story/', 'FIRST WATCHABLE SCENE'],
           ];
           let pending=checks.slice();

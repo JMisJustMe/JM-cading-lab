@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.9-current-access-mesh';
+const CACHE='jm-web-estate-v1.4.10-market-lab-current-main';
 const CORE=[
   './',
   './index.html',
@@ -29,6 +29,8 @@ const CORE=[
   './money-menu/',
   './money-menu/index.html',
   './money-menu/PUBLICATION_RECEIPT.json',
+  './market-lab/',
+  './market-lab/index.html',
   './earn-now/',
   './earn-now/index.html',
   './author/',

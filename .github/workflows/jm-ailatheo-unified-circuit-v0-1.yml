@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Syntax
-        run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py
+        run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py scripts/jm_teo_os_recovered_runtime.py scripts/jm_intelligence_federation_cross_contact.py
       - name: ROD regression
         run: python scripts/jm_relational_opportunity.py --self-test
       - name: Teo OS recovered-spec runtime re-proof
@@ -47,7 +47,7 @@ jobs:
           assert members['rod']['class']=='INNER_ORGAN'
           assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED'
           assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod'}
-          assert 'teo-os' in fed['execution_policy']['donor_only']
+          assert 'teo-os' in fed['execution_policy']['cross_contact_proven']
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'
           assert members['ai-latheo-search']['relation']=='AILATHEO_OFFICE_NOT_SEPARATE_AI'

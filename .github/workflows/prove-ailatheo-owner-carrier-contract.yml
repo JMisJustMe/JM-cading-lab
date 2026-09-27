@@ -1,0 +1,35 @@
+name: Prove AILatheo Owner Carrier Contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "unified-browser/**"
+      - "scripts/jm_ailatheo_owner_carrier_contract.py"
+      - ".github/workflows/prove-ailatheo-owner-carrier-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Prove persistence/re-entry contract
+        run: python scripts/jm_ailatheo_owner_carrier_contract.py
+      - name: Prove browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re,pathlib
+          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
+          js='\n'.join(re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
+          pathlib.Path('/tmp/ailatheo-owner-carrier.js').write_text(js)
+          PY
+          node --check /tmp/ailatheo-owner-carrier.js
+      - name: Ding
+        run: echo JM_AILATHEO_OWNER_CARRIER_CONTRACT_HOST_DING

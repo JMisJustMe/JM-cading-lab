@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import json,tempfile,subprocess
 from pathlib import Path
-from jm_ailatheo_unified_circuit import run\n\ndef load_registry():\n return json.loads(Path('registry/rod-bodies-v0-1.json').read_text())
+from jm_ailatheo_unified_circuit import run
+
+def load_registry():
+ return json.loads(Path('registry/rod-bodies-v0-1.json').read_text())
 from jm_teo_os_recovered_runtime import TeoKernel
 CONTACT="The stored evidence says the route caused a consequence, left a trace, persisted, and re-entry changed the next action."
 def main():

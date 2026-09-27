@@ -45,7 +45,7 @@ jobs:
           python - <<'PY'
           import re,pathlib
           s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
-          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>',s,re.I))
+          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
           pathlib.Path('/tmp/unified-browser.js').write_text(js)
           assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in js
           assert 'localStorage.setItem' in js

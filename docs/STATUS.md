@@ -27,6 +27,9 @@ These are governed public-route totals, not a claim that the complete private Es
 ## Current public houses and routes
 
 - Root Web Estate
+- JM Current Access Mesh — current cross-House routing door
+- JM Books & Written Bodies — public written-body access projection
+- JM Comics, Cartoons & Visual Story — public moving/static visual-story access projection
 - Theodore Benjamin Scott / JM — Author & Source Creator
 - Theodore Benjamin Scott / JM — Press, Book & Collaboration Pack
 - JM Non-Game Apps House — 40-room public-safe catalogue
@@ -80,3 +83,16 @@ The latest bounded repairs and extensions are:
 The complete AUTHOR MASTER BODY v0.3 Zionfolder, including the private source profile and v0.2 restore anchor, remains owner-controlled.
 
 Publicly registered does not mean every protected source body is committed to GitHub. Historical originals, private biography, private lyrics, source vaults, owner notes, large multimedia bodies, Zionfolders, APK signing and unpublished rooms remain owner-controlled until deliberately delivered.
+
+
+## 27 September 2026 — Current access mesh
+
+The public Estate now exposes first-class doors for **Books & Written Bodies** and **Comics, Cartoons & Visual Story**, plus a single **Current Access Mesh** across the major current Houses.
+
+This is an access/currentness correction, not a new sovereign-body census.
+
+- Books door preserves the Stage-07 distinctions: **56 primary written bodies ≠ 98 Bookcase routes ≠ 45 GREEN connection routes**.
+- Visual Story door preserves Stage-09 routing, FTR's **32/32 issues / 704/704 functional pages**, WORDWALK's FLAZ source state, Visual Story Studio's software/production-routing crown and Sketchions' explicit **FIRST WATCHABLE SCENE** open creative frontier.
+- Theory remains routed through the current Theory House; the 26 September pairwise strengthening result is **21/21 unique bridge pairs tested** at its declared scope.
+- Cloudflare remains the canonical public Estate. GitHub Pages remains the mirror, InfinityFree remains the separately proven freestanding lineage, and the published Wix Living Estate remains a secondary/legacy surface.
+- Public projection ≠ private source custody. Exact protected source bodies remain owner-controlled until deliberately published.

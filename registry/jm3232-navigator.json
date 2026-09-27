@@ -194,5 +194,25 @@
       "status": "HISTORICAL_PLATFORM_RECEIPT_NOT_CURRENT_NAVIGATOR_HEAD",
       "deployed_at_utc": "2026-09-06T02:09:16Z"
     }
+  },
+  "stage_closure": {
+    "status": "FLAZ_COMPLETE_POST_PROMOTION_RECONCILIATION_SCOPE",
+    "flaz_date": "2026-09-27",
+    "receipt": "navigator/airborne/FLAZ_RECEIPT_v1.0.md",
+    "closed_scope": [
+      "repository truth reconciliation",
+      "Airborne v0.4 identity reconciliation",
+      "Estate integration reconciliation",
+      "obsolete descendant promotion-rail retirement",
+      "current deployment-receipt pointer reconciliation"
+    ],
+    "open_scope": [
+      "owner-device v1.5.2 render/contact",
+      "physical reload/state-return evidence",
+      "legacy-state migration contact where applicable",
+      "owner interaction after reload",
+      "subjective owner acceptance"
+    ],
+    "restart_rail": "RECOVER FLAZ -> OPEN LIVE /navigator/ ON OWNER PHONE -> CONFIRM v1.5.2 BODY -> REAL INTERACTION -> RELOAD -> CHECK STATE RETURN / LEGACY MIGRATION -> OWNER RESULT -> DING OR BOUNDED CORRECTION"
   }
 }

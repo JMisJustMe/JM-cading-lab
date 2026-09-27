@@ -87,8 +87,8 @@ def detect(contact:dict)->dict:
         "law":"CANDIDATE != ACCEPTED RELATION; OBSERVED FIT != FIXED IDENTITY"
       }}
 
-def fixture(signals,evidence,candidates):
-    return {"grounded_contact":"deterministic proof fixture","signals":signals,"evidence":evidence,"candidates":candidates}
+def fixture(signals,evidence,candidates,inlet="RETRIEVAL"):
+    return {"grounded_contact":"deterministic proof fixture","signals":signals,"evidence":evidence,"candidates":candidates,"inlet":inlet}
 
 def self_test():
     # 001 human/support: II + HOSF carry; irrelevant CMP rejected.

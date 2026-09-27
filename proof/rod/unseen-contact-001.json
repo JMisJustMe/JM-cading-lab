@@ -1,0 +1,13 @@
+{
+  "grounded_contact":"An authorised phone-laptop session is live; the phone later receives SESSION REVOKED, so subsequent state/action must be blocked rather than treated as still authorised.",
+  "signals":["contact","authority","revocation","state_transition","later_action","verification","trace"],
+  "evidence":["consequence","trace"],
+  "candidates":[
+    {"body":"Interactors Interacting","office":"EXPLAIN","mechanisms":["contact","state_transition","trace"],"adds":["changed_nextness"],"excludes":["authorization_policy"]},
+    {"body":"Authority / Permission Gate","office":"GOVERN","mechanisms":["authority","revocation","later_action"],"adds":["post_revocation_block"],"excludes":["why_contact_changed_participants"]},
+    {"body":"Device Continuity Verification","office":"VERIFY","mechanisms":["verification","state_transition","revocation"],"adds":["cross_surface_readback"],"required_evidence":["cross_surface_readback"]},
+    {"body":"HOSF","office":"RECOVER","mechanisms":["support","agency","scaffold"],"adds":["scaffolded_reentry"]},
+    {"body":"Trace-only Restatement","office":"EXPLAIN","mechanisms":["trace"],"adds":["trace"]},
+    {"body":"Learning-bearing Adaptation","office":"EXPLAIN","mechanisms":["trace","later_action"],"adds":["adaptation"],"required_evidence":["reentry_change"]}
+  ]
+}

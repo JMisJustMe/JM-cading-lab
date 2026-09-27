@@ -1,0 +1,110 @@
+{
+  "schema": "jm.ailatheo.federation/0.1",
+  "law": [
+    "MESH != MERGE",
+    "RECOVER BEFORE REBUILD",
+    "PROOF SCOPE MUST TRAVEL WITH BODY",
+    "ORGAN != AI",
+    "DONOR != CURRENT HEAD"
+  ],
+  "members": [
+    {
+      "id": "jm-adaptive-ecostate-agent",
+      "name": "JM Adaptive ECOSTATE Agent",
+      "class": "AI_AGENT_RUNTIME",
+      "status": "PROVEN_CURRENT_FLOOR",
+      "office": "EXECUTE_PLAN_VERIFY_RECOVER",
+      "relation": "HOST_RUNTIME"
+    },
+    {
+      "id": "ailatheo",
+      "name": "AILatheo / AITheO",
+      "class": "AI_OPERATOR_TEACHING_RUNTIME",
+      "status": "PROVEN_RECOVERED_AND_ADVANCED",
+      "office": "VISIBLE_ROUTE_TEACH_OPERATE",
+      "relation": "OPERATOR_IDENTITY"
+    },
+    {
+      "id": "jm-ai-lab",
+      "name": "JM AI Lab v2.0 / JM Virgin Model lineage",
+      "class": "AI_AGENT_LAB_PRODUCTION_RUNTIME",
+      "status": "EXACT_V2_BODY_MOUNTED_AND_CROSS_CONTACTED",
+      "office": "MODEL_KNOWLEDGE_ROUTE_AGENT_TOOL_USE_EVALUATE_PRODUCE_DEPLOY_CONTINUITY",
+      "relation": "ACTIVE_ROUTE_CLASSIFICATION_OFFICE",
+      "evidence": {
+        "production_body": "FULL COMPLETE",
+        "completion_gates": "31/31 PASS",
+        "agent_scenarios": "8/8 PASS",
+        "field_acceptance": "DEFERRED"
+      },
+      "mount": "ai-federation/jm-ai-lab-v2.0/00_OPEN_FIRST_JM_AI_LAB_v2_0_FULL_COMPLETE.html",
+      "mount_blob_sha": "2b3243cdd2a65e76e7a2bc27f48d875fca89a06a"
+    },
+    {
+      "id": "teo-os",
+      "name": "Teo OS cognitive system",
+      "class": "COGNITIVE_OS_ARCHITECTURE",
+      "status": "RECOVERED_SPEC_RUNTIME_REPROVED_AND_CROSS_CONTACTED",
+      "office": "BODIES_DINGS_ROUTES_STANCE_CONTINUITY_INFERENCE",
+      "relation": "CROSS_CONTACTED_COGNITIVE_CONTINUITY_OFFICE",
+      "reproof": "scripts/jm_teo_os_recovered_runtime.py"
+    },
+    {
+      "id": "ehilatheo",
+      "name": "Ehilatheo Connected Build Cockpit",
+      "class": "BUILD_COMMAND_COCKPIT",
+      "status": "RECOVERED_ROLE_GITHUB_STAGED_CONCEPT",
+      "office": "INTAKE_BUILD_EDIT_TEST_ROUTE_STAGE_DOCUMENT",
+      "relation": "MOBILE_BUILD_COCKPIT_NOT_AI_CROWN",
+      "recovery_evidence": [
+        "_registry/GITHUB_STATUS_MATRIX.md",
+        "_registry/GITHUB_INTAKE_LAW.md",
+        "_registry/PHONE_DOWNLOADS_INTAKE.md"
+      ]
+    },
+    {
+      "id": "rod",
+      "name": "Relational Opportunity Detection",
+      "class": "INNER_ORGAN",
+      "status": "PROVEN_BOUNDED_ORGAN",
+      "office": "DETECT_PRODUCTIVE_RELATIONS",
+      "relation": "ORGAN_NOT_AI"
+    },
+    {
+      "id": "ai-latheo-search",
+      "name": "Search Bar / AI Latheo registry route",
+      "class": "SEARCH_AI_INTERFACE",
+      "status": "RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE",
+      "office": "FIND_ROUTE_EXPLAIN_TRANSLATE_GUARD_CUSTODY",
+      "relation": "AILATHEO_OFFICE_NOT_SEPARATE_AI",
+      "resolution": "Recovered house architecture explicitly separates Search Bar (finds route) from AI Latheo (explains route); AI Latheo is an external-facing guide/interpreter."
+    }
+  ],
+  "execution_policy": {
+    "active": [
+      "jm-adaptive-ecostate-agent",
+      "ailatheo",
+      "rod",
+      "teo-os",
+      "jm-ai-lab"
+    ],
+    "donor_only": [
+      "ai-latheo-search"
+    ],
+    "hold": [
+      "ehilatheo"
+    ],
+    "rule": "All recovered executable intelligence offices except Ehilatheo now have bounded active/contact status. Ehilatheo remains exact-body HOLD. Visible browser is a descendant of recovered AILatheo Sentence-Lamp lineage.",
+    "cross_contact_proven": [
+      "ailatheo",
+      "rod",
+      "teo-os",
+      "jm-ai-lab"
+    ],
+    "separately_runtime_proven": [
+      "jm-adaptive-ecostate-agent"
+    ],
+    "persistence": "FILE_WRITE_READBACK_PLUS_AILATHEO_REENTRY_PROOF_ADDED",
+    "visible_field": "unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html"
+  }
+}

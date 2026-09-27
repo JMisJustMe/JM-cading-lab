@@ -1,0 +1,31 @@
+{
+  "schema": "JM.WixAuthorityRoomCloudflarePreviewReceipt/0.2-R2",
+  "recorded_utc": "2026-08-14T17:29:39.749113+00:00",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "source_commit": "c8dafd7fbb29488de8bee71b448ea77789c25b6e",
+  "wix_site_id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
+  "wix_rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
+  "cloudflare_project": "jmisjustme-estate",
+  "cloudflare_branch": "wix-room-v02",
+  "preview_url": "https://wix-room-v02.jmisjustme-estate.pages.dev",
+  "current_room_size_bytes": 29309,
+  "current_room_sha256": "8792d69cf56ee27e19d6e6abc1fab8a697000026f289c7fefd17d01f9bcebfb8",
+  "preserved_prior_preview_receipt": "JM_WIX_AUTHORITY_ROOM_CLOUDFLARE_PREVIEW_RECEIPT_v0_2.json",
+  "checks": {
+    "exact_r2_source_body": "PASS",
+    "cloudflare_preview_deployment": "PASS",
+    "native_authority_marker_contact": "PASS",
+    "live_sha256_match": "PASS",
+    "noindex_nofollow_header": "PASS",
+    "production_branch_untouched": "PASS",
+    "prior_preview_lineage_preserved": "PASS",
+    "wix_live_branch_untouched": "PASS"
+  },
+  "state": "CURRENT_ESTATE_AUTHORITY_ROOM_V0_2_R2_ISOLATED_PHONE_PREVIEW_READY",
+  "production": false,
+  "wix_published": false,
+  "wix_static_layout_translated": false,
+  "physical_device_accepted": false,
+  "ding": false,
+  "boundary": "Non-production exact-byte Cloudflare preview of validated v0.2 R2. Prior previews, Cloudflare production and published Wix remain untouched; not owner physical acceptance or Ding."
+}

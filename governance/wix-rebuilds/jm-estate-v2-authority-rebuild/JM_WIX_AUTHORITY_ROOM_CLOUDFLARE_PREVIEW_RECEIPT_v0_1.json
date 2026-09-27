@@ -1,0 +1,29 @@
+{
+  "schema": "JM.WixAuthorityRoomCloudflarePreviewReceipt/0.1",
+  "recorded_utc": "2026-08-06T10:25:31.909979+00:00",
+  "authority": "Theodore Benjamin Scott / JM / JMISJUSTME",
+  "source_commit": "cb1cded39decacadae48cca0ec2b81182aa70020",
+  "wix_site_id": "7724b482-0a61-41bb-8d78-cb6587d6e3e7",
+  "wix_rebuild_branch_id": "ec3edba7-2e32-4a4b-8359-637e5fa2c789",
+  "wix_branch_revision_checked": "1",
+  "cloudflare_project": "jmisjustme-estate",
+  "cloudflare_branch": "wix-authority-room-preview",
+  "preview_url": "https://wix-authority-room-preview.jmisjustme-estate.pages.dev",
+  "prototype_size_bytes": 21941,
+  "prototype_sha256": "aeae292bf1ae8f4164cd7b2b1f16938f8c144c8415855c0c918a873b09a5a062",
+  "checks": {
+    "exact_source_body": "PASS",
+    "cloudflare_preview_deployment": "PASS",
+    "live_marker_contact": "PASS",
+    "live_sha256_match": "PASS",
+    "noindex_nofollow_header": "PASS",
+    "production_branch_untouched": "PASS",
+    "wix_live_branch_untouched": "PASS"
+  },
+  "state": "ISOLATED_LIVE_PHONE_PREVIEW_READY_FOR_JM_PHYSICAL_CONTACT",
+  "production": false,
+  "wix_published": false,
+  "physical_device_tested": false,
+  "ding": false,
+  "boundary": "This is a non-production Cloudflare Pages branch preview of the exact validated Wix authority-room prototype. It is not the published Wix site, not the Cloudflare production branch, and not JM physical acceptance or Ding."
+}

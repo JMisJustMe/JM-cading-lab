@@ -5,6 +5,7 @@ on:
       - 'scripts/jm_ailatheo_unified_circuit.py'
       - 'scripts/jm_relational_opportunity.py'
       - 'registry/rod-bodies-v0-1.json'
+      - 'registry/ailatheo-federation-v0-1.json'
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
@@ -30,5 +31,10 @@ jobs:
           assert any(r["body"]=="RouteCode" for r in x["coding_spine"]["receipts"])
           assert x["rod"]["claim_ceiling"]=="REENTRY_CHANGE"
           assert x["ding"]=="AILATHEO_UNIFIED_CIRCUIT_DING"
-          print("AILatheo fresh circuit proof PASS")
+          fed=json.load(open('registry/ailatheo-federation-v0-1.json'))
+          members={m['id']:m for m in fed['members']}
+          assert members['rod']['class']=='INNER_ORGAN'
+          assert members['teo-os']['status']=='RECOVERED_SOURCE_HOLD_RUNTIME_REPROOF'
+          assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod'}
+          print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

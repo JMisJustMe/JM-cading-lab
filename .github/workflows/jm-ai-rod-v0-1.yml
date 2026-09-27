@@ -34,3 +34,19 @@ jobs:
           assert got==expected, (got,expected)
           print('JM ROD unseen contact 001 PASS:', got)
           PY
+      - name: ROD check-in re-entry 002
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/reentry-checkin-002.json | tee /tmp/rod-reentry.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-reentry.json'))
+          got={x['body']:x['decision'] for x in p['results']}
+          assert p['opportunity_inlet']=='CHECK_IN', p['opportunity_inlet']
+          assert p['claim_ceiling']=='REENTRY_CHANGE', p['claim_ceiling']
+          assert got['Learning-bearing adaptation']=='CARRY', got
+          assert got['Check-in alone proves fit']=='REJECT', got
+          h=p['relation_history']
+          assert len(h)==1, h
+          assert h[0]['prior_decision']=='HOLD' and h[0]['current_decision']=='CARRY' and h[0]['changed'], h
+          print('JM ROD check-in re-entry 002 PASS:', got, h)
+          PY

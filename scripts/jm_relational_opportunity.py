@@ -229,11 +229,14 @@ def main():
     p=argparse.ArgumentParser()
     p.add_argument("--self-test",action="store_true")
     p.add_argument("--input")
+    p.add_argument("--registry")
     a=p.parse_args()
     if a.self_test:
         self_test(); return
     if not a.input: p.error("use --self-test or --input FILE")
     with open(a.input,encoding="utf-8") as f: payload=json.load(f)
+    if a.registry and "candidates" not in payload:
+        with open(a.registry,encoding="utf-8") as f: payload["registry"]=json.load(f)
     print(json.dumps(detect(payload),indent=2))
 
 if __name__=="__main__": main()

@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - 'index.html'
+      - 'access/index.html'
+      - 'books/index.html'
+      - 'visual-story/index.html'
       - 'ecostate-personality-v2.css'
       - 'ecostate-personality-v2.js'
       - 'tests/ecostate-personality.spec.mjs'
@@ -21,6 +24,9 @@ on:
     branches: [main]
     paths:
       - 'index.html'
+      - 'access/index.html'
+      - 'books/index.html'
+      - 'visual-story/index.html'
       - 'ecostate-personality-v2.css'
       - 'ecostate-personality-v2.js'
       - 'tests/ecostate-personality.spec.mjs'
@@ -47,7 +53,7 @@ jobs:
       - name: Static personality gates
         run: |
           node --check ecostate-personality-v2.js
-          for f in index.html games-beyond/index.html theory/index.html lyrics/index.html apps/index.html; do
+          for f in index.html access/index.html books/index.html visual-story/index.html games-beyond/index.html theory/index.html lyrics/index.html apps/index.html; do
             grep -q 'ecostate-personality-v2.css' "$f"
             grep -q 'ecostate-personality-v2.js' "$f"
           done

@@ -8,6 +8,8 @@ on:
       - 'registry/ailatheo-federation-v0-1.json'
       - 'scripts/jm_teo_os_recovered_runtime.py'
       - 'scripts/jm_intelligence_federation_cross_contact.py'
+      - 'scripts/jm_ai_lab_v2_mount_proof.py'
+      - 'ai-federation/jm-ai-lab-v2.0/**'
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
@@ -22,6 +24,11 @@ jobs:
         run: python scripts/jm_relational_opportunity.py --self-test
       - name: Teo OS recovered-spec runtime re-proof
         run: python scripts/jm_teo_os_recovered_runtime.py --json
+
+      - name: Exact JM AI Lab v2.0 mount proof
+        run: |
+          python scripts/jm_ai_lab_v2_mount_proof.py
+          node --check /tmp/jm_ai_lab_v2_inline.js
 
       - name: Intelligence federation cross-contact
         run: python scripts/jm_intelligence_federation_cross_contact.py
@@ -51,7 +58,7 @@ jobs:
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'
           assert members['ai-latheo-search']['relation']=='AILATHEO_OFFICE_NOT_SEPARATE_AI'
-          assert members['jm-ai-lab']['status']=='PROVEN_FULL_SCOPED_PRODUCTION_BODY_INTEGRATION_HOLD'
+          assert members['jm-ai-lab']['status']=='EXACT_V2_BODY_MOUNTED_PENDING_CROSS_CONTACT'
           assert members['jm-ai-lab']['evidence']['completion_gates']=='31/31 PASS'
           print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

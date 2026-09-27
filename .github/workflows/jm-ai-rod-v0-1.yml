@@ -100,3 +100,17 @@ jobs:
           assert ledger['events'][-1]['law']=='STATUS MAY CHANGE; HISTORY MUST NOT', ledger
           print('JM ROD cross-process persistent re-entry 005 PASS: HOLD -> CARRY with append-only history')
           PY
+      - name: ROD raw-contact bounded route 006
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/raw-contact-006.json --registry registry/rod-bodies-v0-1.json | tee /tmp/rod-raw.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-raw.json'))
+          got={x['body']:x['decision'] for x in p['results']}
+          assert p['grounding_mode']=='BOUNDED_LEXICON', p['grounding_mode']
+          assert p['opportunity_inlet']=='ANOMALY', p['opportunity_inlet']
+          assert p['candidate_discovery']=='BOUNDED_REGISTRY', p['candidate_discovery']
+          assert p['claim_ceiling']=='TRACE', p['claim_ceiling']
+          assert got=={'Contact Field':'CARRY','Interactors Interacting':'CARRY','TraceBox':'CARRY'}, got
+          print('JM ROD raw-contact bounded route 006 PASS:', p['grounded_signals'], got)
+          PY

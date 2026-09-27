@@ -28,9 +28,9 @@
       "id": "jm-ai-lab",
       "name": "JM AI Lab v2.0 / JM Virgin Model lineage",
       "class": "AI_AGENT_LAB_PRODUCTION_RUNTIME",
-      "status": "EXACT_V2_BODY_MOUNTED_PENDING_CROSS_CONTACT",
+      "status": "EXACT_V2_BODY_MOUNTED_AND_CROSS_CONTACTED",
       "office": "MODEL_KNOWLEDGE_ROUTE_AGENT_TOOL_USE_EVALUATE_PRODUCE_DEPLOY_CONTINUITY",
-      "relation": "EXACT_PROVEN_BODY_MOUNTED_NOT_YET_CROSS_CONTACTED",
+      "relation": "ACTIVE_ROUTE_CLASSIFICATION_OFFICE",
       "evidence": {
         "production_body": "FULL COMPLETE",
         "completion_gates": "31/31 PASS",
@@ -85,23 +85,26 @@
       "jm-adaptive-ecostate-agent",
       "ailatheo",
       "rod",
-      "teo-os"
+      "teo-os",
+      "jm-ai-lab"
     ],
     "donor_only": [
       "ai-latheo-search"
     ],
     "hold": [
-      "ehilatheo",
-      "jm-ai-lab"
+      "ehilatheo"
     ],
-    "rule": "AI Lab v2.0 exact recovered production HTML is now mounted; activation still requires current cross-contact proof. Ehilatheo remains exact-body HOLD.",
+    "rule": "All recovered executable intelligence offices except Ehilatheo now have bounded active/contact status. Ehilatheo remains exact-body HOLD. Visible browser is a descendant of recovered AILatheo Sentence-Lamp lineage.",
     "cross_contact_proven": [
       "ailatheo",
       "rod",
-      "teo-os"
+      "teo-os",
+      "jm-ai-lab"
     ],
     "separately_runtime_proven": [
       "jm-adaptive-ecostate-agent"
-    ]
+    ],
+    "persistence": "FILE_WRITE_READBACK_PLUS_AILATHEO_REENTRY_PROOF_ADDED",
+    "visible_field": "unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html"
   }
 }

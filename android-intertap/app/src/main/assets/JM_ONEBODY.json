@@ -1,0 +1,71 @@
+{
+  "schema": "jm.onebody.android/v1",
+  "identity": {
+    "module": "com.jmisjustme.intertaproute",
+    "family": "JM INTERTAP HTML ROUTER",
+    "version": "0.1.4"
+  },
+  "bodies": [
+    "Cading",
+    "Kading",
+    "JMLogic",
+    "FlowTalk",
+    "RouteCode",
+    "Quadze",
+    "OneBody IR",
+    "CadenVM",
+    "CodeHand",
+    "RouteOS",
+    "TraceBox",
+    "THEO",
+    "Build Gates",
+    "Zionfolder"
+  ],
+  "android": {
+    "package": "com.jmisjustme.intertaproute",
+    "appName": "JM INTERTAP Router",
+    "versionName": "0.1.4",
+    "versionCode": 14,
+    "minSdk": 26,
+    "targetSdk": 35,
+    "compileSdk": 35,
+    "asset": "assets/index.html",
+    "permissions": [
+      "android.permission.INTERNET"
+    ]
+  },
+  "donors": [
+    {
+      "body": "JM Estate Compass v1.2.2",
+      "role": "WebChromeClient file chooser, Storage Access Framework, stable local HTTPS-origin pattern, external route opening"
+    },
+    {
+      "body": "JM GUT Convergence Engine v0.2",
+      "role": "owner-lived unique child APK install/launch/persistence floor"
+    },
+    {
+      "body": "JM Browser Child v4",
+      "role": "lean browser APK route"
+    },
+    {
+      "body": "JM Singular Link MultiHub Registry v0.1",
+      "role": "embedded offline registry donor; INTERTAP descendant adds sandbox-safe memory/export fallback without mutating donor source"
+    },
+    {
+      "body": "Device Continuity",
+      "role": "HTML-first/open-first/capability-fallback law"
+    }
+  ],
+  "security": {
+    "bridge": "per-launch nonce authorised",
+    "iframe": "sandbox without allow-same-origin",
+    "fileChooser": "WebChromeClient.onShowFileChooser",
+    "localRefs": "preserve-not-fake-open",
+    "embeddedDonor": "sandbox compatibility adapts descendant storage behavior; parent iframe remains without allow-same-origin"
+  },
+  "provenance": {
+    "cadingSha256": "f53df2a5512900ea6ce82496b8dae569fbae7b3bdb988033933ded8706576aea",
+    "htmlSha256": "93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df",
+    "carrier": "clean Gradle source, not binary-patched Forge parent; CI qualification PASS pre-device-contact"
+  }
+}

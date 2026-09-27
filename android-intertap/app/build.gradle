@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jmisjustme.intertaproute'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.jmisjustme.intertaproute'
+        minSdk 26
+        targetSdk 35
+        versionCode 14
+        versionName '0.1.4'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

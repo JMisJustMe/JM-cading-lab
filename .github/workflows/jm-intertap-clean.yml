@@ -1,0 +1,142 @@
+name: Build JM INTERTAP clean Android host
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'android-intertap/**'
+      - '.github/workflows/jm-intertap-clean.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
+      - name: Reconstruct and prove exact INTERTAP HTML asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          DIR='android-intertap/app/src/main/assets'
+          ASSET="$DIR/index.html"
+          JOINED='/tmp/intertap-index.html.gz.b64'
+          GZ='/tmp/intertap-index.html.gz'
+
+          test "$(find "$DIR" -maxdepth 1 -type f -name 'index.html.gz.b64.part*' | wc -l)" -eq 7
+          echo 'ffc15aab711b79bc9159782ec061b5105c041f410e160ff9537ddd51effa65b2  '"$DIR/index.html.gz.b64.part01" | sha256sum -c -
+          echo '6ba1f4d4f74c22bd8f1845edd66b3ca8cfde81051cfd6f2138fa57ba9b955e4a  '"$DIR/index.html.gz.b64.part02" | sha256sum -c -
+          echo 'b37c45c558fee6b96300e21b938c6cc1808e74fc51d4b2defdad5709f2426f1c  '"$DIR/index.html.gz.b64.part03" | sha256sum -c -
+          echo '981795f1e729a320f8c885c0c247a3d65d2987b87a3e087ab754cca29dd04776  '"$DIR/index.html.gz.b64.part04" | sha256sum -c -
+          echo '02db7457b6c886c99c6453149e51fd844972837dd576496b5342aaaac5b19724  '"$DIR/index.html.gz.b64.part05" | sha256sum -c -
+          echo '4150e3726e686cf13084edda68c2d4faa2ab61fb8b1cfaa9a466fe6e9ac3a96c  '"$DIR/index.html.gz.b64.part06" | sha256sum -c -
+          echo '24372eedcfcd6650deae54e859d59ea0d02a97a8c13d883b5a1b998d963c44d0  '"$DIR/index.html.gz.b64.part07" | sha256sum -c -
+
+          cat "$DIR"/index.html.gz.b64.part{01..07} > "$JOINED"
+          echo 'd77723d739714b8d168cd226708b69a99e97dbfa0986c27a715f82fb44e51146  '"$JOINED" | sha256sum -c -
+          test $(( $(wc -c < "$JOINED") % 4 )) -eq 0
+
+          base64 -d "$JOINED" > "$GZ"
+          gzip -t "$GZ"
+          gzip -dc "$GZ" > "$ASSET"
+          echo '93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df  '"$ASSET" | sha256sum -c -
+          grep -q 'memory+export' "$ASSET"
+          ! grep -q 'sandbox="allow-scripts allow-same-origin"' "$ASSET"
+
+          # Transport proves the body but is not runtime payload.
+          rm -f "$DIR/index.html.gz.b64" "$DIR"/index.html.gz.b64.part*
+          test "$(find "$DIR" -maxdepth 1 -type f -name 'index.html.gz.b64*' | wc -l)" -eq 0
+
+      - name: Source identity, capability and permission gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAN='android-intertap/app/src/main/AndroidManifest.xml'
+          APP='android-intertap/app/build.gradle'
+          JAVA='android-intertap/app/src/main/java/com/jmisjustme/intertaproute/MainActivity.java'
+          CAD='android-intertap/app/src/main/assets/JM_SOURCE.jm.cading'
+          ONE='android-intertap/app/src/main/assets/JM_ONEBODY.json'
+          grep -q "applicationId 'com.jmisjustme.intertaproute'" "$APP"
+          grep -q "versionName '0.1.4'" "$APP"
+          grep -q "versionCode 14" "$APP"
+          grep -q 'android.permission.INTERNET' "$MAN"
+          test "$(grep -c '<uses-permission' "$MAN")" -eq 1
+          ! grep -Eq 'CAMERA|RECORD_AUDIO|ACCESS_(FINE|COARSE)_LOCATION|CONTACTS|CALENDAR|BLUETOOTH|REQUEST_INSTALL_PACKAGES' "$MAN"
+          grep -q 'onShowFileChooser' "$JAVA"
+          grep -q 'Intent.ACTION_VIEW' "$JAVA"
+          grep -q 'Intent.ACTION_CREATE_DOCUMENT' "$JAVA"
+          grep -q 'bridgeNonce' "$JAVA"
+          grep -q 'setMediaPlaybackRequiresUserGesture(true)' "$JAVA"
+          grep -q 'setJavaScriptCanOpenWindowsAutomatically(false)' "$JAVA"
+          grep -q 'Referrer-Policy' "$JAVA"
+          grep -q 'no-referrer' "$JAVA"
+          grep -q 'MAX_EXPORT_BASE64_CHARS' "$JAVA"
+          grep -q 'safeMime' "$JAVA"
+          grep -q 'sandbox limits instead of weakening the parent sandbox' "$CAD"
+          grep -q 'CLEAN_GRADLE_BUILD_ROUTE_CI_PASS' "$CAD"
+          grep -q 'com.jmisjustme.intertaproute' "$CAD"
+          grep -q '"package": "com.jmisjustme.intertaproute"' "$ONE"
+          grep -q 'sandbox-safe memory/export fallback' "$ONE"
+          test "$(grep -c '^body ' "$CAD")" -eq 14
+
+      - name: Lint and compile clean release
+        run: gradle --no-daemon -p android-intertap :app:lintRelease :app:assembleRelease
+
+      - name: Align and inspect APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifact
+          BT="$ANDROID_HOME/build-tools/35.0.0"
+          UNSIGNED='android-intertap/app/build/outputs/apk/release/app-release-unsigned.apk'
+          ALIGNED='artifact/JM_INTERTAP_HTML_ROUTER_v0_1_4_UNSIGNED_ALIGNED.apk'
+          "$BT/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
+          "$BT/zipalign" -c -v 4 "$ALIGNED"
+          "$BT/aapt" dump badging "$ALIGNED" > artifact/AAPT_BADGING.txt
+          "$BT/aapt" dump permissions "$ALIGNED" > artifact/AAPT_PERMISSIONS.txt
+          grep -q "package: name='com.jmisjustme.intertaproute' versionCode='14' versionName='0.1.4'" artifact/AAPT_BADGING.txt
+          grep -q "uses-permission: name='android.permission.INTERNET'" artifact/AAPT_PERMISSIONS.txt
+          test "$(grep -c '^uses-permission:' artifact/AAPT_PERMISSIONS.txt)" -eq 1
+          ! grep -Eq 'CAMERA|RECORD_AUDIO|ACCESS_(FINE|COARSE)_LOCATION|CONTACTS|CALENDAR|BLUETOOTH|REQUEST_INSTALL_PACKAGES' artifact/AAPT_PERMISSIONS.txt
+          ! unzip -l "$ALIGNED" | grep -q 'assets/index.html.gz.b64'
+          unzip -p "$ALIGNED" assets/index.html | sha256sum | tee artifact/EMBEDDED_HTML_SHA256.txt
+          grep -q '^93a925b7b8a95d2d309e8551a911a21277bb39d6f6190d54e5f11759e77868df ' artifact/EMBEDDED_HTML_SHA256.txt
+          unzip -p "$ALIGNED" assets/index.html | grep -q 'memory+export'
+          ! unzip -p "$ALIGNED" assets/index.html | grep -q 'sandbox="allow-scripts allow-same-origin"'
+          unzip -p "$ALIGNED" assets/JM_SOURCE.jm.cading | sha256sum | tee artifact/EMBEDDED_CADING_SHA256.txt
+          grep -q '^f53df2a5512900ea6ce82496b8dae569fbae7b3bdb988033933ded8706576aea ' artifact/EMBEDDED_CADING_SHA256.txt
+          unzip -p "$ALIGNED" assets/JM_ONEBODY.json | sha256sum | tee artifact/EMBEDDED_ONEBODY_SHA256.txt
+          grep -q '^08b1f48d1d195d988e568080005d32e3f78d1702d9a56a2e071038ee8e7d6c17 ' artifact/EMBEDDED_ONEBODY_SHA256.txt
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'onShowFileChooser'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'com/jmisjustme/intertaproute/MainActivity'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'intertap.jm.local'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'ACTION_CREATE_DOCUMENT\|android.intent.action.CREATE_DOCUMENT'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'Referrer-Policy'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'no-referrer'
+          unzip -p "$ALIGNED" classes.dex | strings | grep -q 'application/octet-stream'
+          cp "$BT/lib/apksigner.jar" artifact/apksigner.jar
+          sha256sum artifact/* > artifact/SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jm-intertap-v0-1-4-clean-unsigned
+          path: artifact/
+          if-no-files-found: error
+          retention-days: 7

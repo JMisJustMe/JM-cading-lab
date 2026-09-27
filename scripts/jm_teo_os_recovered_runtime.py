@@ -57,7 +57,7 @@ class TeoKernel:
             out=self.continuity[d["payload"]["id"]]["lineage"]
             self.bodies[target]["memory"]["lastResult"]=out
         elif dtype=="ding:make-receipt":
-            out={"event":d["payload"]["event"],"body":source}
+            out={"receipt_event":d["payload"]["event"],"body":source}
             self.log("receipt",**out)
         elif dtype=="ding:organize-savepacks":
             out=[x["id"] for x in self.savepacks]
@@ -79,7 +79,7 @@ def prove():
     r=k.ding("ding:make-receipt",source="body:teo-kernel-operator",
              payload={"event":"teo-current-runtime-reproof"},target="body:teo-librarian")
     k.ding("ding:query-trace",payload={"event":"receipt"},target="body:teo-librarian")
-    assert r["event"]=="teo-current-runtime-reproof"
+    assert r["receipt_event"]=="teo-current-runtime-reproof"
     assert k.bodies["body:teo-librarian"]["memory"]["lastResult"]
     k.snapshot("savepack:1")
     return {"schema":"jm.teo-os.reproof/0.1","status":"PASS",

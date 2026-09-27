@@ -45,9 +45,14 @@
       "id": "ehilatheo",
       "name": "Ehilatheo Connected Build Cockpit",
       "class": "BUILD_COMMAND_COCKPIT",
-      "status": "RECOVERED_DISTINCT_BODY_HOLD_CURRENT_SOURCE",
-      "office": "BUILD_EDIT_TEST_ROUTE_DOCUMENT",
-      "relation": "COCKPIT_NOT_AI_CROWN"
+      "status": "RECOVERED_ROLE_GITHUB_STAGED_CONCEPT",
+      "office": "INTAKE_BUILD_EDIT_TEST_ROUTE_STAGE_DOCUMENT",
+      "relation": "MOBILE_BUILD_COCKPIT_NOT_AI_CROWN",
+      "recovery_evidence": [
+        "_registry/GITHUB_STATUS_MATRIX.md",
+        "_registry/GITHUB_INTAKE_LAW.md",
+        "_registry/PHONE_DOWNLOADS_INTAKE.md"
+      ]
     },
     {
       "id": "rod",
@@ -61,9 +66,10 @@
       "id": "ai-latheo-search",
       "name": "Search Bar / AI Latheo registry route",
       "class": "SEARCH_AI_INTERFACE",
-      "status": "MEMORY_REGISTERED_HOLD_LINEAGE_RESOLUTION",
-      "office": "SEARCH_RETRIEVE_ROUTE",
-      "relation": "POSSIBLE_AILATHEO_LINEAGE_NOT_SEPARATE_CROWN"
+      "status": "RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE",
+      "office": "FIND_ROUTE_EXPLAIN_TRANSLATE_GUARD_CUSTODY",
+      "relation": "AILATHEO_OFFICE_NOT_SEPARATE_AI",
+      "resolution": "Recovered house architecture explicitly separates Search Bar (finds route) from AI Latheo (explains route); AI Latheo is an external-facing guide/interpreter."
     }
   ],
   "execution_policy": {
@@ -74,12 +80,12 @@
     ],
     "donor_only": [
       "jm-ai-lab",
-      "teo-os"
-    ],
-    "hold": [
-      "ehilatheo",
+      "teo-os",
       "ai-latheo-search"
     ],
-    "rule": "Recovered-spec Teo OS is executable again but remains a donor/cognitive-OS office until an explicit integration test earns active federation status. HOLD members may not be silently claimed as live integrated runtime."
+    "hold": [
+      "ehilatheo"
+    ],
+    "rule": "Ehilatheo remains HOLD until exact phone/source body is recovered; AI Latheo Search is resolved as an AILatheo external-door office, not a separate AI. Recovered-spec Teo OS remains donor-only until explicit integration proof."
   }
 }

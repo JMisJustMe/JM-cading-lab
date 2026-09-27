@@ -7,6 +7,7 @@ on:
       - 'registry/rod-bodies-v0-1.json'
       - 'registry/ailatheo-federation-v0-1.json'
       - 'scripts/jm_teo_os_recovered_runtime.py'
+      - 'scripts/jm_intelligence_federation_cross_contact.py'
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
@@ -21,6 +22,12 @@ jobs:
         run: python scripts/jm_relational_opportunity.py --self-test
       - name: Teo OS recovered-spec runtime re-proof
         run: python scripts/jm_teo_os_recovered_runtime.py --json
+
+      - name: Intelligence federation cross-contact
+        run: python scripts/jm_intelligence_federation_cross_contact.py
+
+      - name: Adaptive ECOSTATE inherited execution self-test
+        run: python3 scripts/jm_build_execution.py --self-test
 
       - name: AILatheo circuit self-test
         run: python scripts/jm_ailatheo_unified_circuit.py --self-test
@@ -44,5 +51,7 @@ jobs:
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'
           assert members['ai-latheo-search']['relation']=='AILATHEO_OFFICE_NOT_SEPARATE_AI'
+          assert members['jm-ai-lab']['status']=='PROVEN_FULL_SCOPED_PRODUCTION_BODY_INTEGRATION_HOLD'
+          assert members['jm-ai-lab']['evidence']['completion_gates']=='31/31 PASS'
           print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

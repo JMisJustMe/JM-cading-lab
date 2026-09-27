@@ -63,6 +63,28 @@ def evaluate(signals:Iterable[str], evidence:Iterable[str], c:Candidate)->dict:
       "identity_inference_blocked":bool(c.identity_risk),
       "representation_options":list(c.representation_options)}
 
+GROUNDING_LEXICON={
+  "mismatch":("mismatch","unexpected","does not match","wrong state"),
+  "trace":("trace","record","receipt","left behind"),
+  "state_transition":("state changed","changed state","transition"),
+  "verification":("verify","verified","verification"),
+  "feedback":("feedback","told us","reported back"),
+  "check_in":("check-in","check in"),
+  "reentry_change":("re-entry changed","reentry changed","changed on return"),
+  "support":("support","scaffold"),
+  "agency":("choice","agency"),
+  "authority":("authority","permission"),
+  "revocation":("revoked","revocation"),
+}
+
+def ground_raw_contact(contact:dict)->tuple[list[str],str]:
+    supplied=contact.get("signals")
+    if supplied is not None:
+        return list(supplied),"SUPPLIED"
+    raw=str(contact.get("raw_contact","")).lower()
+    signals=[name for name,phrases in GROUNDING_LEXICON.items() if any(p in raw for p in phrases)]
+    return signals,"BOUNDED_LEXICON"
+
 def infer_inlet(contact:dict)->str:
     """Conservative inlet inference from explicit grounded signals only."""
     explicit=contact.get("inlet")
@@ -70,7 +92,7 @@ def infer_inlet(contact:dict)->str:
         inlet=str(explicit).upper()
         if inlet not in INLETS: raise ValueError(f"invalid opportunity inlet {inlet}")
         return inlet
-    sig=norm(contact.get("signals",[]))
+    sig=norm(contact.get("_grounded_signals",contact.get("signals",[])))
     cues=[
       ("FEEDBACK",{"human_feedback","feedback"}),
       ("CHECK_IN",{"check_in"}),
@@ -108,8 +130,9 @@ def discover_candidates(signals:Iterable[str], registry:list[dict])->list[dict]:
     return [item for _,_,item in ranked]
 
 def detect(contact:dict)->dict:
+    signals,grounding_mode=ground_raw_contact(contact)
+    contact=dict(contact); contact["_grounded_signals"]=signals
     inlet=infer_inlet(contact)
-    signals=contact.get("signals",[])
     evidence=contact.get("evidence",[])
     prior_status=contact.get("prior_status",{})
     candidates=contact.get("candidates")
@@ -133,6 +156,8 @@ def detect(contact:dict)->dict:
       "schema":"jm.rod/0.1","grounded_contact":contact.get("grounded_contact",""),
       "opportunity_inlet":inlet,
       "candidate_discovery":discovery_mode,
+      "grounding_mode":grounding_mode,
+      "grounded_signals":signals,
       "claim_ceiling":evidence_ceiling(evidence),"results":results,
       "relation_history":relation_history,
       "trace":{
@@ -223,7 +248,16 @@ def self_test():
     assert [x["body"] for x in r["results"]]==["Contact Field","TraceBox"]
     assert [x["decision"] for x in r["results"]]==["CARRY","CARRY"]
 
-    print("JM ROD v0.1 self-test PASS: 12/12 bounded fixtures")
+    # Raw text can be conservatively grounded without supplied signals.
+    r=detect({"raw_contact":"The live route produced an unexpected mismatch. The state changed and left a trace.",
+      "evidence":["consequence","trace"],"registry":[
+        {"body":"Contact Field","office":"EXPLAIN","mechanisms":["mismatch","state_transition"],"adds":["condition_shift"]},
+        {"body":"HOSF","office":"RECOVER","mechanisms":["support"],"adds":["scaffold"]}]})
+    assert r["grounding_mode"]=="BOUNDED_LEXICON"
+    assert r["opportunity_inlet"]=="ANOMALY"
+    assert [x["body"] for x in r["results"]]==["Contact Field"]
+
+    print("JM ROD v0.1 self-test PASS: 13/13 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

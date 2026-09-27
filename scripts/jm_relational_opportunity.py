@@ -73,7 +73,8 @@ def detect(contact:dict)->dict:
       representation_options=tuple(x.get("representation_options",[]))
     )) for x in contact.get("candidates",[])]
     return {
-      "schema":"jm.rod/0.1","grounded_contact":contact.get("grounded_contact",""),\n      "opportunity_inlet":inlet,
+      "schema":"jm.rod/0.1","grounded_contact":contact.get("grounded_contact",""),
+      "opportunity_inlet":inlet,
       "claim_ceiling":evidence_ceiling(evidence),"results":results,
       "trace":{
         "carry":[r["body"] for r in results if r["decision"]=="CARRY"],
@@ -119,7 +120,10 @@ def self_test():
     r=detect(fixture(["trace"],["consequence","trace"],[
       {"body":"Redundant Candidate","office":"EXPLAIN","mechanisms":["trace"],"adds":["trace"]}]))
     assert r["results"][0]["decision"]=="COOL"
-    # Opportunity can enter through feedback/check-in, not retrieval alone.\n    r=detect(fixture(["trace","human_feedback"],["consequence","trace"],[\n      {"body":"Feedback-sensitive route","office":"REFLECT","mechanisms":["human_feedback"],"adds":["next_route_correction"]}],inlet="FEEDBACK"))\n    assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="CARRY"\n    print("JM ROD v0.1 self-test PASS: 7/7 bounded fixtures")
+    # Opportunity can enter through feedback/check-in, not retrieval alone.
+    r=detect(fixture(["trace","human_feedback"],["consequence","trace"],[\n      {"body":"Feedback-sensitive route","office":"REFLECT","mechanisms":["human_feedback"],"adds":["next_route_correction"]}],inlet="FEEDBACK"))
+    assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="CARRY"
+    print("JM ROD v0.1 self-test PASS: 7/7 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

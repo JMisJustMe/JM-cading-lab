@@ -1,0 +1,303 @@
+{
+  "firstLayout": "",
+  "gdVersion": {
+    "build": 99,
+    "major": 4,
+    "minor": 0,
+    "revision": 0
+  },
+  "properties": {
+    "adaptGameResolutionAtRuntime": false,
+    "folderProject": false,
+    "orientation": "landscape",
+    "packageName": "com.jmisjustme.targetbridge.gdevelopcontact001",
+    "pixelsRounding": false,
+    "projectUuid": "6d09f66e-34df-48fe-a9a2-c428813db104",
+    "scaleMode": "linear",
+    "sizeOnStartupMode": "adaptWidth",
+    "useDeprecatedZeroAsDefaultZOrder": true,
+    "useExternalSourceFiles": false,
+    "version": "0.8.0",
+    "name": "JM Target Bridge — GDevelop Contact 001",
+    "description": "Generated JM Target Bridge bounded host-contact harness. Not a source-authored GDevelop game.",
+    "author": "JM",
+    "windowWidth": 1280,
+    "windowHeight": 720,
+    "latestCompilationDirectory": "",
+    "maxFPS": 60,
+    "minFPS": 10,
+    "verticalSync": false,
+    "platformSpecificAssets": {},
+    "loadingScreen": {
+      "backgroundColor": 16777215,
+      "backgroundFadeInDuration": 0,
+      "backgroundImageResourceName": "",
+      "gdevelopLogoStyle": "light",
+      "logoAndProgressFadeInDuration": 0,
+      "logoAndProgressLogoFadeInDelay": 0,
+      "minDuration": 0,
+      "progressBarColor": 0,
+      "progressBarHeight": 20,
+      "progressBarMaxWidth": 200,
+      "progressBarMinWidth": 40,
+      "progressBarWidthPercent": 30,
+      "showGDevelopSplash": false,
+      "showProgressBar": false
+    },
+    "authorIds": [],
+    "extensionProperties": [],
+    "platforms": [
+      {
+        "name": "GDevelop JS platform"
+      }
+    ],
+    "currentPlatform": "GDevelop JS platform"
+  },
+  "resources": {
+    "resources": [],
+    "resourceFolders": []
+  },
+  "objects": [],
+  "objectsGroups": [],
+  "variables": [],
+  "layouts": [
+    {
+      "b": 245,
+      "disableInputWhenNotFocused": true,
+      "mangledName": "JM_32Contact",
+      "name": "JM Contact",
+      "oglFOV": 90,
+      "oglZFar": 500,
+      "oglZNear": 1,
+      "r": 245,
+      "standardSortMethod": true,
+      "stopSoundsOnStartup": true,
+      "title": "",
+      "v": 245,
+      "uiSettings": {
+        "grid": false,
+        "gridType": "rectangular",
+        "gridWidth": 32,
+        "gridHeight": 32,
+        "gridOffsetX": 0,
+        "gridOffsetY": 0,
+        "gridColor": 10401023,
+        "gridAlpha": 0.8,
+        "snap": false,
+        "zoomFactor": 1,
+        "windowMask": false
+      },
+      "objectsGroups": [],
+      "variables": [
+        {
+          "folded": true,
+          "name": "score",
+          "type": "number",
+          "value": 0
+        }
+      ],
+      "instances": [
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Player",
+          "persistentUuid": "93cf5881-6a14-41c7-a5e7-f29f75c019a5",
+          "width": 0,
+          "x": 100,
+          "y": 320,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Coin",
+          "persistentUuid": "5463210e-f271-476c-9e6e-7ef2e3c6544e",
+          "width": 0,
+          "x": 760,
+          "y": 320,
+          "zOrder": 2,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Status",
+          "persistentUuid": "dd7cae09-ae7b-4718-bff2-0f945d704865",
+          "width": 0,
+          "x": 40,
+          "y": 40,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        },
+        {
+          "angle": 0,
+          "customSize": false,
+          "height": 0,
+          "layer": "",
+          "locked": false,
+          "name": "Instructions",
+          "persistentUuid": "c16f5607-34ed-44ee-aa46-df8dfbd67849",
+          "width": 0,
+          "x": 40,
+          "y": 150,
+          "zOrder": 3,
+          "numberProperties": [],
+          "stringProperties": [],
+          "initialVariables": []
+        }
+      ],
+      "objects": [
+        {
+          "bold": true,
+          "italic": false,
+          "name": "Player",
+          "smoothed": true,
+          "tags": "",
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "PLAYER",
+          "font": "",
+          "characterSize": 64,
+          "color": {
+            "r": 20,
+            "g": 20,
+            "b": 20
+          }
+        },
+        {
+          "bold": true,
+          "italic": false,
+          "name": "Coin",
+          "smoothed": true,
+          "tags": "",
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "COIN",
+          "font": "",
+          "characterSize": 64,
+          "color": {
+            "r": 120,
+            "g": 90,
+            "b": 0
+          }
+        },
+        {
+          "bold": false,
+          "italic": false,
+          "name": "Status",
+          "smoothed": true,
+          "tags": "",
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "JM TARGET BRIDGE → GDEVELOP\\nmovement: WAIT | contact: WAIT | score: 0 | coin consumed: WAIT",
+          "font": "",
+          "characterSize": 28,
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0
+          }
+        },
+        {
+          "bold": false,
+          "italic": false,
+          "name": "Instructions",
+          "smoothed": true,
+          "tags": "",
+          "type": "TextObject::Text",
+          "underlined": false,
+          "variables": [],
+          "effects": [],
+          "behaviors": [],
+          "string": "HOLD RIGHT → bridge-generated host body should move PLAYER into COIN.\\nThis is a compatibility harness, not a game authored from scratch in GDevelop.",
+          "font": "",
+          "characterSize": 24,
+          "color": {
+            "r": 30,
+            "g": 30,
+            "b": 30
+          }
+        }
+      ],
+      "events": [
+        {
+          "disabled": false,
+          "folded": false,
+          "type": "BuiltinCommonInstructions::Comment",
+          "color": {
+            "b": 109,
+            "g": 230,
+            "r": 255,
+            "textB": 0,
+            "textG": 0,
+            "textR": 0
+          },
+          "comment": "JM TARGET BRIDGE v0.8 — GENERATED GDEVELOP HOST BODY. Source authority remains JM. HOLDs preserved: hazard consequence; goal-after-collecting predicate; starting Player HP.",
+          "comment2": ""
+        },
+        {
+          "type": "BuiltinCommonInstructions::JsCode",
+          "inlineCode": "const root = globalThis;\nconst players = runtimeScene.getObjects(\"Player\");\nconst coins = runtimeScene.getObjects(\"Coin\");\nconst statuses = runtimeScene.getObjects(\"Status\");\n\nconst player = players[0];\nconst coin = coins[0];\nconst status = statuses[0];\nconst scoreVar = runtimeScene.getVariables().get(\"score\");\n\nif (!root.__JM_GDEVELOP_RECEIPT__) {\n  root.__JM_GDEVELOP_RECEIPT__ = {\n    schema: \"JM.TargetBridge.GDevelopReceipt/0.2\",\n    source_authority: \"JM\",\n    host: \"GDevelop\",\n    real_host: true,\n    body_id: \"jm.target-bridge.mini-collect-contact/v0.8\",\n    observations: {\n      movement: \"WAIT\",\n      contact: \"WAIT\",\n      score_delta: \"WAIT\",\n      coin_consumption: \"WAIT\"\n    },\n    values: {\n      score_before: scoreVar.getAsNumber(),\n      score_after: scoreVar.getAsNumber()\n    },\n    unresolved_preserved: [\n      \"hazard.consequence\",\n      \"goal.after_collecting\",\n      \"starting_player_hp\"\n    ],\n    trace: []\n  };\n}\n\nconst receipt = root.__JM_GDEVELOP_RECEIPT__;\nconst pushOnce = (type, detail) => {\n  if (!receipt.trace.some(entry => entry.type === type)) {\n    receipt.trace.push({\n      seq: receipt.trace.length + 1,\n      type,\n      detail\n    });\n  }\n};\n\nif (player && gdjs.evtTools.input.isKeyPressed(runtimeScene, \"Right\")) {\n  const beforeX = player.getX();\n  const dt = gdjs.evtTools.runtimeScene.getElapsedTimeInSeconds(runtimeScene);\n  player.setX(beforeX + 300 * dt);\n  const afterX = player.getX();\n\n  if (afterX > beforeX) {\n    receipt.observations.movement = \"PASS\";\n    pushOnce(\"movement\", { before_x: beforeX, after_x: afterX, input: \"Right\" });\n  }\n}\n\nif (player && coin && gdjs.RuntimeObject.collisionTest(player, coin, false)) {\n  const scoreBefore = scoreVar.getAsNumber();\n  receipt.observations.contact = \"PASS\";\n  pushOnce(\"contact\", { left: \"Player\", right: \"Coin\", contact_true: true });\n\n  scoreVar.setNumber(1);\n  const scoreAfter = scoreVar.getAsNumber();\n  receipt.values.score_before = scoreBefore;\n  receipt.values.score_after = scoreAfter;\n\n  if (scoreBefore === 0 && scoreAfter === 1) {\n    receipt.observations.score_delta = \"PASS\";\n    pushOnce(\"score_delta\", { before: scoreBefore, after: scoreAfter });\n  }\n\n  coin.deleteFromScene();\n  receipt.observations.coin_consumption = \"PASS\";\n  pushOnce(\"coin_consumption\", { before: true, after: false });\n}\n\nif (status) {\n  const allPass =\n    receipt.observations.movement === \"PASS\" &&\n    receipt.observations.contact === \"PASS\" &&\n    receipt.observations.score_delta === \"PASS\" &&\n    receipt.observations.coin_consumption === \"PASS\";\n\n  status.setText(\n    \"JM TARGET BRIDGE → GDEVELOP\\n\" +\n    \"movement: \" + receipt.observations.movement +\n    \" | contact: \" + receipt.observations.contact +\n    \" | score: \" + scoreVar.getAsNumber() +\n    \" | coin consumed: \" + receipt.observations.coin_consumption +\n    (allPass ? \"\\nBOUNDED HOST CONTACT: PASS\" : \"\")\n  );\n\n  if (allPass && !receipt.completed) {\n    receipt.completed = true;\n    receipt.completed_at_runtime_ms = runtimeScene.getTimeManager().getTimeFromStart();\n    console.log(\"JM TARGET BRIDGE GDEVELOP CONTACT PASS\", receipt);\n  }\n}",
+          "parameterObjects": "",
+          "useStrict": true,
+          "eventsSheetExpanded": false
+        }
+      ],
+      "layers": [
+        {
+          "ambientLightColorB": 200,
+          "ambientLightColorG": 200,
+          "ambientLightColorR": 200,
+          "followBaseLayerCamera": false,
+          "isLightingLayer": false,
+          "name": "",
+          "visibility": true,
+          "cameras": [
+            {
+              "defaultSize": true,
+              "defaultViewport": true,
+              "height": 0,
+              "viewportBottom": 1,
+              "viewportLeft": 0,
+              "viewportRight": 1,
+              "viewportTop": 0,
+              "width": 0
+            }
+          ],
+          "effects": []
+        }
+      ],
+      "behaviorsSharedData": []
+    }
+  ],
+  "externalEvents": [],
+  "eventsFunctionsExtensions": [],
+  "externalLayouts": [],
+  "externalSourceFiles": [],
+  "tests": []
+}

@@ -38,6 +38,16 @@ jobs:
           http='000'
           status='{}'
           sw=''
+          expected_cache="$(python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+          source=Path('sw.js').read_text(encoding='utf-8')
+          match=re.search(r"const CACHE=['\"]([^'\"]+)['\"];", source)
+          if not match:
+              sys.exit('Could not resolve current CACHE marker from sw.js')
+          print(match.group(1))
+          PY
+          )"
           for attempt in $(seq 1 60); do
             http="$(curl --silent --show-error --location --max-time 20 -o "$RUNNER_TEMP/owner-vault-status.json" -w '%{http_code}' "$BASE/api/owner/vault?mode=status&proof=${GITHUB_RUN_ID}-${attempt}" || true)"
             status="$(cat "$RUNNER_TEMP/owner-vault-status.json" 2>/dev/null || printf '{}')"
@@ -52,7 +62,7 @@ jobs:
           sys.exit(0 if data.get('ready') is True and data.get('storage_bound') is True and data.get('owner_key_configured') is True else 1)
           PY
             then
-              if printf '%s' "$sw" | grep -q 'jm-web-estate-v1.4.6-money-menu-public-contact'; then
+              if printf '%s' "$sw" | grep -Fq "$expected_cache"; then
                 ok=1
                 break
               fi
@@ -62,6 +72,8 @@ jobs:
           printf '%s' "$status" > "$RUNNER_TEMP/owner-vault-final-status.json"
           echo "ok=$ok" >> "$GITHUB_OUTPUT"
           echo "http=$http" >> "$GITHUB_OUTPUT"
+          echo "cache=$expected_cache" >> "$GITHUB_OUTPUT"
+          echo "Expected cache marker: $expected_cache"
           echo "Final live status: $status"
 
       - name: Write live-readiness receipt
@@ -70,6 +82,7 @@ jobs:
         env:
           OK: ${{ steps.probe.outputs.ok }}
           HTTP: ${{ steps.probe.outputs.http }}
+          CACHE_MARKER: ${{ steps.probe.outputs.cache }}
         run: |
           set -euo pipefail
           mkdir -p registry
@@ -91,7 +104,7 @@ jobs:
               'host': 'https://jmisjustme-estate.pages.dev',
               'http_status': os.environ.get('HTTP'),
               'status_response': status,
-              'cache_marker': 'jm-web-estate-v1.4.6-money-menu-public-contact',
+              'cache_marker': os.environ.get('CACHE_MARKER'),
               'source_commit': os.environ.get('GITHUB_SHA'),
               'workflow_run': os.environ.get('GITHUB_RUN_ID'),
               'authenticated_write_read_delete_proof': False,

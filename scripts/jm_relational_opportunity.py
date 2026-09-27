@@ -62,6 +62,27 @@ def evaluate(signals:Iterable[str], evidence:Iterable[str], c:Candidate)->dict:
       "identity_inference_blocked":bool(c.identity_risk),
       "representation_options":list(c.representation_options)}
 
+def infer_inlet(contact:dict)->str:
+    """Conservative inlet inference from explicit grounded signals only."""
+    explicit=contact.get("inlet")
+    if explicit is not None:
+        inlet=str(explicit).upper()
+        if inlet not in INLETS: raise ValueError(f"invalid opportunity inlet {inlet}")
+        return inlet
+    sig=norm(contact.get("signals",[]))
+    cues=[
+      ("FEEDBACK",{"human_feedback","feedback"}),
+      ("CHECK_IN",{"check_in"}),
+      ("OUTCOME",{"outcome","world_response"}),
+      ("ANOMALY",{"anomaly","mismatch"}),
+      ("REENTRY",{"reentry","reentry_change"}),
+      ("QUESTION",{"question","question_pressure"}),
+      ("REFLECTION",{"reflection","self_check"}),
+      ("HUMAN_INVITATION",{"human_invitation","deliberate_comparison"}),
+    ]
+    hits=[name for name,keys in cues if sig & keys]
+    return hits[0] if len(hits)==1 else "RETRIEVAL"
+
 def transition_trace(prior:str|None,current:str,inlet:str)->dict:
     """Append-only relation-status observation; prior history is never rewritten."""
     if prior is not None and prior not in DECISIONS:
@@ -75,9 +96,7 @@ def transition_trace(prior:str|None,current:str,inlet:str)->dict:
     }
 
 def detect(contact:dict)->dict:
-    inlet=str(contact.get("inlet","RETRIEVAL")).upper()
-    if inlet not in INLETS:
-        raise ValueError(f"invalid opportunity inlet {inlet}")
+    inlet=infer_inlet(contact)
     signals=contact.get("signals",[])
     evidence=contact.get("evidence",[])
     prior_status=contact.get("prior_status",{})
@@ -163,7 +182,19 @@ def self_test():
       {"body":"Unrelated candidate","office":"EXPLAIN","mechanisms":["different_mechanism"],"adds":["novel"]}],inlet="FEEDBACK"))
     assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="REJECT"
 
-    print("JM ROD v0.1 self-test PASS: 9/9 bounded fixtures")
+    # Inlet can be conservatively inferred from a unique explicit structural cue.
+    r=detect({"grounded_contact":"unlabelled anomaly contact",
+      "signals":["mismatch","trace"],"evidence":["consequence","trace"],
+      "candidates":[{"body":"Mismatch explainer","office":"EXPLAIN","mechanisms":["mismatch"],"adds":["boundary"]}]})
+    assert r["opportunity_inlet"]=="ANOMALY" and r["results"][0]["decision"]=="CARRY"
+
+    # Ambiguous inlet cues fall back to retrieval rather than inventing provenance.
+    r=detect({"grounded_contact":"ambiguous unlabelled contact",
+      "signals":["feedback","question"],"evidence":["consequence"],
+      "candidates":[]})
+    assert r["opportunity_inlet"]=="RETRIEVAL"
+
+    print("JM ROD v0.1 self-test PASS: 11/11 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

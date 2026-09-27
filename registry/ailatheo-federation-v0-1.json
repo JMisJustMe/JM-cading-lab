@@ -26,11 +26,17 @@
     },
     {
       "id": "jm-ai-lab",
-      "name": "JM AI Lab / Virgin Model lineage",
-      "class": "MODEL_TRAINING_EVALUATION_RUNTIME",
-      "status": "PROVEN_BOUNDED_DONOR",
-      "office": "TRAIN_EVALUATE_SAMPLE",
-      "relation": "MODEL_DONOR"
+      "name": "JM AI Lab v2.0 / JM Virgin Model lineage",
+      "class": "AI_AGENT_LAB_PRODUCTION_RUNTIME",
+      "status": "PROVEN_FULL_SCOPED_PRODUCTION_BODY_INTEGRATION_HOLD",
+      "office": "MODEL_KNOWLEDGE_ROUTE_AGENT_TOOL_USE_EVALUATE_PRODUCE_DEPLOY_CONTINUITY",
+      "relation": "SEPARATE_PROVEN_BODY_NOT_YET_BRANCH_MOUNTED",
+      "evidence": {
+        "production_body": "FULL COMPLETE",
+        "completion_gates": "31/31 PASS",
+        "agent_scenarios": "8/8 PASS",
+        "field_acceptance": "DEFERRED"
+      }
     },
     {
       "id": "teo-os",
@@ -79,13 +85,21 @@
       "rod"
     ],
     "donor_only": [
-      "jm-ai-lab",
       "teo-os",
       "ai-latheo-search"
     ],
     "hold": [
-      "ehilatheo"
+      "ehilatheo",
+      "jm-ai-lab"
     ],
-    "rule": "Ehilatheo remains HOLD until exact phone/source body is recovered; AI Latheo Search is resolved as an AILatheo external-door office, not a separate AI. Recovered-spec Teo OS remains donor-only until explicit integration proof."
+    "rule": "Active/cross-contact status requires current branch contact proof. JM AI Lab v2.0 is independently proven as a full scoped production body but remains integration HOLD until its exact executable is mounted. Ehilatheo remains exact-body HOLD.",
+    "cross_contact_proven": [
+      "ailatheo",
+      "rod",
+      "teo-os"
+    ],
+    "separately_runtime_proven": [
+      "jm-adaptive-ecostate-agent"
+    ]
   }
 }

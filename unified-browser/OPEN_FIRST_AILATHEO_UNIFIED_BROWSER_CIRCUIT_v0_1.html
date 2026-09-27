@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AILatheo Unified Browser Circuit v0.1</title><style>
+body{margin:0;background:#070b11;color:#eef3ff;font-family:system-ui}main{max-width:1100px;margin:auto;padding:18px}h1{font-size:clamp(30px,7vw,68px)}.law,.trace{white-space:pre-wrap;background:#0d131d;border:1px solid #2b374b;border-radius:14px;padding:12px}.field{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}.node{border:1px solid #2b374b;border-radius:18px;padding:14px;opacity:.42;transition:.2s}.node.contactable{opacity:.7}.node.on{opacity:1;border-color:#74f7a4;box-shadow:0 0 18px rgba(116,247,164,.25)}.node.hold{opacity:.85;border-color:#ffd166}.node.reject{opacity:.5;border-color:#ff7d7d}button,textarea{background:#172233;color:#eef3ff;border:1px solid #2b374b;border-radius:12px;padding:11px}textarea{width:100%;min-height:100px;box-sizing:border-box}.pulse{font-weight:900;color:#74f7a4}</style></head><body><main>
+<div>AILATHEO DESCENDANT · RECOVERED SENTENCE-LAMP LINEAGE</div><h1>Unified Browser Circuit</h1><div class="law">Touch first. Language after Ding.\nMESH != MERGE · CANDIDATE != ACCEPTED RELATION · NO DING, NO CLAIM</div>
+<p>This visible field is a descendant of the recovered AILatheo light-loop: state changes first; route explanation follows. Nodes illuminate only when the current contact earns their office.</p>
+<textarea id="contact">The stored evidence says the route caused a consequence, left a trace, persisted, and re-entry changed the next action.</textarea><p><button id="run">Conduct contact</button> <button id="reset">Reset</button></p>
+<div class="field" id="field"></div><div class="trace" id="trace">No Ding yet.</div>
+<script>
+const N=[
+{id:'ailatheo',label:'AILatheo',office:'visible operator',test:s=>s.length>0},
+{id:'rod',label:'ROD',office:'relational opportunity',test:s=>/(route|relation|trace|consequence|re-entry)/i.test(s)},
+{id:'ai-lab',label:'JM AI Lab v2.0',office:'route agent / model / knowledge',test:s=>/(stored|evidence|source|knowledge|write|generate|status|trace)/i.test(s)},
+{id:'teo',label:'Teo OS',office:'continuity / trace',test:s=>/(trace|persist|continuity|re-entry|receipt)/i.test(s)},
+{id:'adaptive',label:'Adaptive ECOSTATE',office:'execute / verify / recover',test:s=>/(action|execute|build|recover|route|next)/i.test(s)},
+{id:'ehilatheo',label:'Ehilatheo',office:'mobile build cockpit',hold:true,test:s=>/(phone|cockpit|mobile build)/i.test(s)}
+];
+const KEY='jm-ailatheo-unified-circuit-v0.1';
+function draw(state={}){field.innerHTML=N.map(n=>{const x=state[n.id]||'dim';return '<div class="node '+x+'"><b>'+n.label+'</b><br><small>'+n.office+'</small><br><span>'+x.toUpperCase()+'</span></div>'}).join('')}
+function conduct(){const s=contact.value.trim(),state={},path=[];for(const n of N){if(!n.test(s)){state[n.id]='dim';continue}if(n.hold){state[n.id]='hold';path.push(n.id+':HOLD');continue}state[n.id]='on';path.push(n.id+':DING')}const rec={time:new Date().toISOString(),contact:s,state,path,ding:'AILATHEO_VISIBLE_CIRCUIT_DING'};localStorage.setItem(KEY,JSON.stringify(rec));draw(state);trace.textContent=JSON.stringify(rec,null,2)}
+run.onclick=conduct;reset.onclick=()=>{localStorage.removeItem(KEY);draw({});trace.textContent='No Ding yet.'};try{const old=JSON.parse(localStorage.getItem(KEY)||'null');if(old){draw(old.state);trace.textContent=JSON.stringify({...old,reentry:'PERSISTED_STATE_RELOADED'},null,2)}else draw({})}catch{draw({})}
+</script></main></body></html>

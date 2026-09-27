@@ -1,0 +1,34 @@
+name: AILatheo Unified Circuit v0.1
+on:
+  pull_request:
+    paths:
+      - 'scripts/jm_ailatheo_unified_circuit.py'
+      - 'scripts/jm_relational_opportunity.py'
+      - 'registry/rod-bodies-v0-1.json'
+      - 'proof/ailatheo/**'
+      - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
+  workflow_dispatch:
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax
+        run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py
+      - name: ROD regression
+        run: python scripts/jm_relational_opportunity.py --self-test
+      - name: AILatheo circuit self-test
+        run: python scripts/jm_ailatheo_unified_circuit.py --self-test
+      - name: Fresh circuit proof
+        run: |
+          python scripts/jm_ailatheo_unified_circuit.py --input proof/ailatheo/light-circuit-001.json > /tmp/receipt.json
+          python - <<'PY'
+          import json
+          x=json.load(open('/tmp/receipt.json'))
+          assert x["coding_spine"]["executed"] == 14
+          assert x["coding_spine"]["complete"] is True
+          assert any(r["body"]=="RouteCode" for r in x["coding_spine"]["receipts"])
+          assert x["rod"]["claim_ceiling"]=="REENTRY_CHANGE"
+          assert x["ding"]=="AILATHEO_UNIFIED_CIRCUIT_DING"
+          print("AILatheo fresh circuit proof PASS")
+          PY

@@ -34,7 +34,25 @@ jobs:
           python scripts/jm_ai_lab_v2_mount_proof.py
           node --check /tmp/jm_ai_lab_v2_inline.js
 
-      - name: Exact AI Lab cross-contact\n        run: node scripts/jm_ai_lab_exact_cross_contact.js\n\n      - name: Federation persistence and re-entry\n        run: python scripts/jm_federation_persistence_reentry.py\n\n      - name: Unified Browser inline JavaScript syntax\n        run: |\n          python - <<'PY'\n          import re,pathlib\n          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()\n          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>',s,re.I))\n          pathlib.Path('/tmp/unified-browser.js').write_text(js)\n          assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in js\n          assert 'localStorage.setItem' in js\n          PY\n          node --check /tmp/unified-browser.js\n\n      - name: Intelligence federation cross-contact
+      - name: Exact AI Lab cross-contact
+        run: node scripts/jm_ai_lab_exact_cross_contact.js
+
+      - name: Federation persistence and re-entry
+        run: python scripts/jm_federation_persistence_reentry.py
+
+      - name: Unified Browser inline JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re,pathlib
+          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
+          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>',s,re.I))
+          pathlib.Path('/tmp/unified-browser.js').write_text(js)
+          assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in js
+          assert 'localStorage.setItem' in js
+          PY
+          node --check /tmp/unified-browser.js
+
+      - name: Intelligence federation cross-contact
         run: python scripts/jm_intelligence_federation_cross_contact.py
 
       - name: Adaptive ECOSTATE inherited execution self-test
@@ -57,7 +75,7 @@ jobs:
           members={m['id']:m for m in fed['members']}
           assert members['rod']['class']=='INNER_ORGAN'
           assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED_AND_CROSS_CONTACTED'
-          assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod','teo-os'}
+          assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod','teo-os','jm-ai-lab'}
           assert 'teo-os' in fed['execution_policy']['cross_contact_proven']
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'

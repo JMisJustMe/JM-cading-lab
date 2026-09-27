@@ -77,12 +77,19 @@ GROUNDING_LEXICON={
   "revocation":("revoked","revocation"),
 }
 
-def ground_raw_contact(contact:dict)->tuple[list[str],str]:
+def ground_raw_contact(contact:dict, registry:list[dict]|None=None)->tuple[list[str],str]:
     supplied=contact.get("signals")
     if supplied is not None:
         return list(supplied),"SUPPLIED"
     raw=str(contact.get("raw_contact","")).lower()
     signals=[name for name,phrases in GROUNDING_LEXICON.items() if any(p in raw for p in phrases)]
+    if registry:
+        for item in registry:
+            for mechanism in item.get("mechanisms",[]):
+                phrase=str(mechanism).replace("_"," ").lower()
+                if phrase and phrase in raw and mechanism not in signals:
+                    signals.append(mechanism)
+        return signals,"REGISTRY_AWARE_LEXICON"
     return signals,"BOUNDED_LEXICON"
 
 def infer_inlet(contact:dict)->str:
@@ -130,7 +137,7 @@ def discover_candidates(signals:Iterable[str], registry:list[dict])->list[dict]:
     return [item for _,_,item in ranked]
 
 def detect(contact:dict)->dict:
-    signals,grounding_mode=ground_raw_contact(contact)
+    signals,grounding_mode=ground_raw_contact(contact,contact.get("registry"))
     contact=dict(contact); contact["_grounded_signals"]=signals
     inlet=infer_inlet(contact)
     evidence=contact.get("evidence",[])
@@ -257,7 +264,15 @@ def self_test():
     assert r["opportunity_inlet"]=="ANOMALY"
     assert [x["body"] for x in r["results"]]==["Contact Field"]
 
-    print("JM ROD v0.1 self-test PASS: 13/13 bounded fixtures")
+    # Registry mechanisms can extend grounding without changing the static lexicon.
+    r=detect({"raw_contact":"The observed causal route changed after passage through the mechanism.",
+      "evidence":["consequence"],"registry":[
+        {"body":"Cause Must Pass","office":"EXPLAIN","mechanisms":["causal_route","passage","mechanism"],"adds":["passage_mechanism"]}]})
+    assert r["grounding_mode"]=="REGISTRY_AWARE_LEXICON"
+    assert r["candidate_discovery"]=="BOUNDED_REGISTRY"
+    assert r["results"][0]["body"]=="Cause Must Pass" and r["results"][0]["decision"]=="CARRY"
+
+    print("JM ROD v0.1 self-test PASS: 14/14 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

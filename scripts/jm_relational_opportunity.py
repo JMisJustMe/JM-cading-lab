@@ -63,6 +63,16 @@ def evaluate(signals:Iterable[str], evidence:Iterable[str], c:Candidate)->dict:
       "identity_inference_blocked":bool(c.identity_risk),
       "representation_options":list(c.representation_options)}
 
+EVIDENCE_LEXICON={
+  "consequence":("consequence","resulted in","caused","produced"),
+  "trace":("trace","record","receipt","left behind"),
+  "retention":("retained","persisted","remained available"),
+  "reentry_change":("re-entry changed","reentry changed","changed on return"),
+  "adaptation":("adapted","adaptation"),
+  "transfer":("transferred","transfer to"),
+  "stabilisation":("stabilised","stabilized","deliberately reused"),
+}
+
 GROUNDING_LEXICON={
   "mismatch":("mismatch","unexpected","does not match","wrong state"),
   "trace":("trace","record","receipt","left behind"),
@@ -76,6 +86,14 @@ GROUNDING_LEXICON={
   "authority":("authority","permission"),
   "revocation":("revoked","revocation"),
 }
+
+def ground_evidence(contact:dict)->tuple[list[str],str]:
+    supplied=contact.get("evidence")
+    if supplied is not None:
+        return list(supplied),"SUPPLIED"
+    raw=str(contact.get("raw_contact","")).lower()
+    evidence=[name for name,phrases in EVIDENCE_LEXICON.items() if any(p in raw for p in phrases)]
+    return evidence,"BOUNDED_EVIDENCE_LEXICON"
 
 def ground_raw_contact(contact:dict, registry:list[dict]|None=None)->tuple[list[str],str]:
     supplied=contact.get("signals")
@@ -152,7 +170,7 @@ def detect(contact:dict)->dict:
     signals,grounding_mode=ground_raw_contact(contact,contact.get("registry"))
     contact=dict(contact); contact["_grounded_signals"]=signals
     inlet=infer_inlet(contact)
-    evidence=contact.get("evidence",[])
+    evidence,evidence_mode=ground_evidence(contact)
     prior_status=contact.get("prior_status",{})
     candidates=contact.get("candidates")
     discovery_mode="SUPPLIED"
@@ -178,6 +196,8 @@ def detect(contact:dict)->dict:
       "candidate_discovery":discovery_mode,
       "grounding_mode":grounding_mode,
       "grounded_signals":signals,
+      "evidence_mode":evidence_mode,
+      "grounded_evidence":evidence,
       "claim_ceiling":evidence_ceiling(evidence),"results":results,
       "relation_history":relation_history,
       "trace":{
@@ -292,7 +312,14 @@ def self_test():
     assert r["results"][0]["body"]=="HOSF" and r["results"][0]["decision"]=="CARRY"
     assert r["relation_history"][0]["prior_decision"]=="COOL" and r["relation_history"][0]["current_decision"]=="CARRY"
 
-    print("JM ROD v0.1 self-test PASS: 15/15 bounded fixtures")
+    # Raw text can conservatively establish bounded evidence as well as signals.
+    r=detect({"raw_contact":"The mismatch produced a consequence and left behind a trace. The trace persisted and remained available. Re-entry changed the next action.",
+      "registry":[{"body":"Interactors Interacting","office":"EXPLAIN","mechanisms":["mismatch","trace"],"adds":["changed_nextness"]}]})
+    assert r["evidence_mode"]=="BOUNDED_EVIDENCE_LEXICON"
+    assert r["claim_ceiling"]=="REENTRY_CHANGE"
+    assert set(r["grounded_evidence"])=={"consequence","trace","retention","reentry_change"}
+
+    print("JM ROD v0.1 self-test PASS: 16/16 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

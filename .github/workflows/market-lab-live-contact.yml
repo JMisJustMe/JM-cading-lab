@@ -1,0 +1,52 @@
+name: Prove Market Lab live Render contact
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "market-lab/**"
+      - ".github/workflows/market-lab-live-contact.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-contact:
+    name: Re-contact public Market Lab cloud body
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Probe public Render endpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://jm-cloud-contact-server-v05.onrender.com/market'
+          body="$RUNNER_TEMP/market-lab-body"
+          headers="$RUNNER_TEMP/market-lab-headers"
+          code='000'
+
+          for attempt in $(seq 1 18); do
+            code="$(curl --silent --show-error --location \
+              --connect-timeout 20 --max-time 45 \
+              -D "$headers" -o "$body" -w '%{http_code}' \
+              "$URL?proof=${GITHUB_RUN_ID}-${attempt}" || true)"
+            if [ "$code" = '200' ] && [ -s "$body" ]; then
+              break
+            fi
+            sleep 10
+          done
+
+          test "$code" = '200'
+          test -s "$body"
+
+          bytes="$(wc -c < "$body" | tr -d ' ')"
+          test "$bytes" -ge 20
+          sha="$(sha256sum "$body" | awk '{print $1}')"
+          type="$(awk 'BEGIN{IGNORECASE=1} /^content-type:/{sub(/\r$/,""); print substr($0,index($0,":")+2); exit}' "$headers" || true)"
+
+          echo "HTTP_STATUS=$code"
+          echo "CONTENT_TYPE=${type:-unknown}"
+          echo "BODY_BYTES=$bytes"
+          echo "BODY_SHA256=$sha"
+          echo "DING — MARKET LAB LIVE ENDPOINT: HTTP 200 · NONEMPTY PUBLIC BODY · FRESH CONTACT PASS"

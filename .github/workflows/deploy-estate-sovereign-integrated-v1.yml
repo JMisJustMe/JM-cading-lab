@@ -17,8 +17,10 @@ on:
       - "robots.txt"
       - "sitemap.xml"
       - "404.html"
+      - "access/**"
       - "apps/**"
       - "author/**"
+      - "books/**"
       - "coding-estate/**"
       - "unified-browser/**"
       - "ailatheo-lineage/**"
@@ -34,6 +36,7 @@ on:
       - "recovery/**"
       - "shims-reader/**"
       - "theory/**"
+      - "visual-story/**"
       - "registry/estate-map.json"
       - "registry/estate-head-public-current.json"
       - "registry/theory-wing.json"
@@ -118,7 +121,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in apps author coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory; do
+          for dir in access apps author books coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -152,11 +155,17 @@ jobs:
             Service-Worker-Allowed: /
           /navigator/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /access/*
+            Cache-Control: no-store, no-cache, must-revalidate
           /apps/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /books/*
             Cache-Control: no-store, no-cache, must-revalidate
           /unified-browser/*
             Cache-Control: no-store, no-cache, must-revalidate
           /theory/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /visual-story/*
             Cache-Control: no-store, no-cache, must-revalidate
           /lyrics/*
             Cache-Control: no-store, no-cache, must-revalidate
@@ -171,8 +180,12 @@ jobs:
           /unified-browser/ /unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html 200
           /navigator /navigator/index.html 200
           /navigator/ /navigator/index.html 200
+          /access /access/index.html 200
+          /access/ /access/index.html 200
           /apps /apps/index.html 200
           /apps/ /apps/index.html 200
+          /books /books/index.html 200
+          /books/ /books/index.html 200
           /theory /theory/index.html 200
           /theory/ /theory/index.html 200
           /lyrics /lyrics/index.html 200
@@ -185,6 +198,8 @@ jobs:
           /author/ /author/index.html 200
           /recent /recent/index.html 200
           /recent/ /recent/index.html 200
+          /visual-story /visual-story/index.html 200
+          /visual-story/ /visual-story/index.html 200
           /* /index.html 200
           EOF
 
@@ -201,8 +216,11 @@ jobs:
           test -s cloudflare-estate/navigator/estate-integration/index.html
           test -s cloudflare-estate/navigator/estate-integration/public-registry.json
           test -s cloudflare-estate/navigator/estate-integration/bridge.js
+          test -s cloudflare-estate/access/index.html
           test -s cloudflare-estate/apps/index.html
+          test -s cloudflare-estate/books/index.html
           test -s cloudflare-estate/theory/index.html
+          test -s cloudflare-estate/visual-story/index.html
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/games-beyond/index.html
@@ -234,6 +252,9 @@ jobs:
           grep -Fq 'JM Theory Multihub v0.20.1' cloudflare-estate/theory/index.html
           ! grep -Fq 'JM Theory Multihub v0.4 — Touch Repair' cloudflare-estate/theory/index.html
           grep -Fq 'Games&Beyond' cloudflare-estate/games-beyond/index.html
+          grep -Fq 'One door.' cloudflare-estate/access/index.html
+          grep -Fq '56 ≠ 98 ≠ 45' cloudflare-estate/books/index.html
+          grep -Fq 'FIRST WATCHABLE SCENE' cloudflare-estate/visual-story/index.html
 
           python3 - <<'PY'
           import json
@@ -276,11 +297,14 @@ jobs:
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],
             ['/navigator/estate-integration/public-registry.json', 'JM.Estate.PublicNervousSystem/1'],
+            ['/access/', 'One door.'],
             ['/apps/', 'data-jm-estate-integration="v1"'],
+            ['/books/', '56 ≠ 98 ≠ 45'],
             ['/theory/', 'JM Theory Multihub v0.20.1'],
             ['/lyrics/', 'data-jm-estate-integration="v1"'],
             ['/recovery/', 'data-jm-estate-integration="v1"'],
             ['/games-beyond/', 'Games&Beyond'],
+            ['/visual-story/', 'FIRST WATCHABLE SCENE'],
           ];
           let pending=checks.slice();
           for(let attempt=1;attempt<=60 && pending.length;attempt++){

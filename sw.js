@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.8-griprail-v6';
+const CACHE='jm-web-estate-v1.4.9-current-access-mesh';
 const CORE=[
   './',
   './index.html',
@@ -12,6 +12,12 @@ const CORE=[
   './ecostate-griprail-v6.js',
   './author-home-door.js',
   './estate-head-public-consumer.js',
+  './access/',
+  './access/index.html',
+  './books/',
+  './books/index.html',
+  './visual-story/',
+  './visual-story/index.html',
   './manifest.webmanifest',
   './icon.svg',
   './404.html',

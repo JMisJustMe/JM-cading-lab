@@ -1,19 +1,85 @@
 {
-  "schema":"jm.ailatheo.federation/0.1",
-  "law":["MESH != MERGE","RECOVER BEFORE REBUILD","PROOF SCOPE MUST TRAVEL WITH BODY","ORGAN != AI","DONOR != CURRENT HEAD"],
-  "members":[
-    {"id":"jm-adaptive-ecostate-agent","name":"JM Adaptive ECOSTATE Agent","class":"AI_AGENT_RUNTIME","status":"PROVEN_CURRENT_FLOOR","office":"EXECUTE_PLAN_VERIFY_RECOVER","relation":"HOST_RUNTIME"},
-    {"id":"ailatheo","name":"AILatheo / AITheO","class":"AI_OPERATOR_TEACHING_RUNTIME","status":"PROVEN_RECOVERED_AND_ADVANCED","office":"VISIBLE_ROUTE_TEACH_OPERATE","relation":"OPERATOR_IDENTITY"},
-    {"id":"jm-ai-lab","name":"JM AI Lab / Virgin Model lineage","class":"MODEL_TRAINING_EVALUATION_RUNTIME","status":"PROVEN_BOUNDED_DONOR","office":"TRAIN_EVALUATE_SAMPLE","relation":"MODEL_DONOR"},
-    {"id":"teo-os","name":"Teo OS cognitive system","class":"COGNITIVE_OS_ARCHITECTURE","status":"RECOVERED_SOURCE_HOLD_RUNTIME_REPROOF","office":"BODIES_DINGS_ROUTES_STANCE_CONTINUITY_INFERENCE","relation":"ARCHITECTURE_DONOR"},
-    {"id":"ehilatheo","name":"Ehilatheo Connected Build Cockpit","class":"BUILD_COMMAND_COCKPIT","status":"RECOVERED_DISTINCT_BODY_HOLD_CURRENT_SOURCE","office":"BUILD_EDIT_TEST_ROUTE_DOCUMENT","relation":"COCKPIT_NOT_AI_CROWN"},
-    {"id":"rod","name":"Relational Opportunity Detection","class":"INNER_ORGAN","status":"PROVEN_BOUNDED_ORGAN","office":"DETECT_PRODUCTIVE_RELATIONS","relation":"ORGAN_NOT_AI"},
-    {"id":"ai-latheo-search","name":"Search Bar / AI Latheo registry route","class":"SEARCH_AI_INTERFACE","status":"MEMORY_REGISTERED_HOLD_LINEAGE_RESOLUTION","office":"SEARCH_RETRIEVE_ROUTE","relation":"POSSIBLE_AILATHEO_LINEAGE_NOT_SEPARATE_CROWN"}
+  "schema": "jm.ailatheo.federation/0.1",
+  "law": [
+    "MESH != MERGE",
+    "RECOVER BEFORE REBUILD",
+    "PROOF SCOPE MUST TRAVEL WITH BODY",
+    "ORGAN != AI",
+    "DONOR != CURRENT HEAD"
   ],
-  "execution_policy":{
-    "active":["jm-adaptive-ecostate-agent","ailatheo","rod"],
-    "donor_only":["jm-ai-lab"],
-    "hold":["teo-os","ehilatheo","ai-latheo-search"],
-    "rule":"HOLD members may inform comparison but may not be silently claimed as live integrated runtime."
+  "members": [
+    {
+      "id": "jm-adaptive-ecostate-agent",
+      "name": "JM Adaptive ECOSTATE Agent",
+      "class": "AI_AGENT_RUNTIME",
+      "status": "PROVEN_CURRENT_FLOOR",
+      "office": "EXECUTE_PLAN_VERIFY_RECOVER",
+      "relation": "HOST_RUNTIME"
+    },
+    {
+      "id": "ailatheo",
+      "name": "AILatheo / AITheO",
+      "class": "AI_OPERATOR_TEACHING_RUNTIME",
+      "status": "PROVEN_RECOVERED_AND_ADVANCED",
+      "office": "VISIBLE_ROUTE_TEACH_OPERATE",
+      "relation": "OPERATOR_IDENTITY"
+    },
+    {
+      "id": "jm-ai-lab",
+      "name": "JM AI Lab / Virgin Model lineage",
+      "class": "MODEL_TRAINING_EVALUATION_RUNTIME",
+      "status": "PROVEN_BOUNDED_DONOR",
+      "office": "TRAIN_EVALUATE_SAMPLE",
+      "relation": "MODEL_DONOR"
+    },
+    {
+      "id": "teo-os",
+      "name": "Teo OS cognitive system",
+      "class": "COGNITIVE_OS_ARCHITECTURE",
+      "status": "RECOVERED_SPEC_RUNTIME_REPROVED",
+      "office": "BODIES_DINGS_ROUTES_STANCE_CONTINUITY_INFERENCE",
+      "relation": "ARCHITECTURE_DONOR",
+      "reproof": "scripts/jm_teo_os_recovered_runtime.py"
+    },
+    {
+      "id": "ehilatheo",
+      "name": "Ehilatheo Connected Build Cockpit",
+      "class": "BUILD_COMMAND_COCKPIT",
+      "status": "RECOVERED_DISTINCT_BODY_HOLD_CURRENT_SOURCE",
+      "office": "BUILD_EDIT_TEST_ROUTE_DOCUMENT",
+      "relation": "COCKPIT_NOT_AI_CROWN"
+    },
+    {
+      "id": "rod",
+      "name": "Relational Opportunity Detection",
+      "class": "INNER_ORGAN",
+      "status": "PROVEN_BOUNDED_ORGAN",
+      "office": "DETECT_PRODUCTIVE_RELATIONS",
+      "relation": "ORGAN_NOT_AI"
+    },
+    {
+      "id": "ai-latheo-search",
+      "name": "Search Bar / AI Latheo registry route",
+      "class": "SEARCH_AI_INTERFACE",
+      "status": "MEMORY_REGISTERED_HOLD_LINEAGE_RESOLUTION",
+      "office": "SEARCH_RETRIEVE_ROUTE",
+      "relation": "POSSIBLE_AILATHEO_LINEAGE_NOT_SEPARATE_CROWN"
+    }
+  ],
+  "execution_policy": {
+    "active": [
+      "jm-adaptive-ecostate-agent",
+      "ailatheo",
+      "rod"
+    ],
+    "donor_only": [
+      "jm-ai-lab",
+      "teo-os"
+    ],
+    "hold": [
+      "ehilatheo",
+      "ai-latheo-search"
+    ],
+    "rule": "Recovered-spec Teo OS is executable again but remains a donor/cognitive-OS office until an explicit integration test earns active federation status. HOLD members may not be silently claimed as live integrated runtime."
   }
 }

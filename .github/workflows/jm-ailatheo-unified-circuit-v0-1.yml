@@ -10,6 +10,10 @@ on:
       - 'scripts/jm_intelligence_federation_cross_contact.py'
       - 'scripts/jm_ai_lab_v2_mount_proof.py'
       - 'ai-federation/jm-ai-lab-v2.0/**'
+      - 'unified-browser/**'
+      - 'ailatheo-lineage/**'
+      - 'scripts/jm_ai_lab_exact_cross_contact.js'
+      - 'scripts/jm_federation_persistence_reentry.py'
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
@@ -19,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Syntax
-        run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py scripts/jm_teo_os_recovered_runtime.py scripts/jm_intelligence_federation_cross_contact.py
+        run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py scripts/jm_teo_os_recovered_runtime.py scripts/jm_intelligence_federation_cross_contact.py scripts/jm_federation_persistence_reentry.py
       - name: ROD regression
         run: python scripts/jm_relational_opportunity.py --self-test
       - name: Teo OS recovered-spec runtime re-proof
@@ -30,7 +34,7 @@ jobs:
           python scripts/jm_ai_lab_v2_mount_proof.py
           node --check /tmp/jm_ai_lab_v2_inline.js
 
-      - name: Intelligence federation cross-contact
+      - name: Exact AI Lab cross-contact\n        run: node scripts/jm_ai_lab_exact_cross_contact.js\n\n      - name: Federation persistence and re-entry\n        run: python scripts/jm_federation_persistence_reentry.py\n\n      - name: Unified Browser inline JavaScript syntax\n        run: |\n          python - <<'PY'\n          import re,pathlib\n          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()\n          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>',s,re.I))\n          pathlib.Path('/tmp/unified-browser.js').write_text(js)\n          assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in js\n          assert 'localStorage.setItem' in js\n          PY\n          node --check /tmp/unified-browser.js\n\n      - name: Intelligence federation cross-contact
         run: python scripts/jm_intelligence_federation_cross_contact.py
 
       - name: Adaptive ECOSTATE inherited execution self-test
@@ -58,7 +62,7 @@ jobs:
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'
           assert members['ai-latheo-search']['relation']=='AILATHEO_OFFICE_NOT_SEPARATE_AI'
-          assert members['jm-ai-lab']['status']=='EXACT_V2_BODY_MOUNTED_PENDING_CROSS_CONTACT'
+          assert members['jm-ai-lab']['status']=='EXACT_V2_BODY_MOUNTED_AND_CROSS_CONTACTED'
           assert members['jm-ai-lab']['evidence']['completion_gates']=='31/31 PASS'
           print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

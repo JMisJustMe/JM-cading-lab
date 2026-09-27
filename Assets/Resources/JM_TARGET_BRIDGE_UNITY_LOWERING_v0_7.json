@@ -1,0 +1,20 @@
+{
+  "schema":"JM.TargetBridge.HostLowering/0.1",
+  "host":"unity",
+  "body_id":"jm.target-bridge.mini-collect-contact/v0.7",
+  "source_authority":"JM",
+  "merge_forbidden":true,
+  "unresolved":[
+    {"id":"hazard.consequence","status":"UNRESOLVED"},
+    {"id":"goal.after_collecting","status":"UNRESOLVED"},
+    {"id":"starting_player_hp","status":"UNRESOLVED"}
+  ],
+  "semantic_ops":[
+    {"id":"signal.move_right","kind":"SIGNAL","actor":"Player","payload":{"dx":1,"dy":0},"host":"unity"},
+    {"id":"move.player","kind":"STATE_CHANGE","actor":"Player","effect":{"position_delta":{"x":1,"y":0}},"host":"unity"},
+    {"id":"contact.player_coin","kind":"CONTACT","left":"Player","right":"Coin","relation":"overlaps","host":"unity"},
+    {"id":"score.collect","kind":"STATE_CHANGE","target":"score","precondition":{"equals":0},"effect":{"set":1},"host":"unity"},
+    {"id":"consume.coin","kind":"STATE_CHANGE","target":"Coin.present","precondition":{"equals":true},"effect":{"set":false},"host":"unity"},
+    {"id":"ding.collect","kind":"DING","requires":["contact.player_coin","score.collect","consume.coin"],"host":"unity"}
+  ]
+}

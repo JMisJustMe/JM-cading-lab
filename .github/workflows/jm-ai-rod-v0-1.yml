@@ -114,3 +114,15 @@ jobs:
           assert got=={'Contact Field':'CARRY','Interactors Interacting':'CARRY','TraceBox':'CARRY'}, got
           print('JM ROD raw-contact bounded route 006 PASS:', p['grounded_signals'], got)
           PY
+      - name: ROD registry-aware grounding 007
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/registry-aware-grounding-007.json --registry registry/rod-bodies-v0-1.json | tee /tmp/rod-007.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-007.json'))
+          got={x['body']:x['decision'] for x in p['results']}
+          assert p['grounding_mode']=='REGISTRY_AWARE_LEXICON', p
+          assert p['candidate_discovery']=='BOUNDED_REGISTRY', p
+          assert got=={'Cause Must Pass':'CARRY'}, got
+          print('JM ROD registry-aware grounding 007 PASS:',p['grounded_signals'],got)
+          PY

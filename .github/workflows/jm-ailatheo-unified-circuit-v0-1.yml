@@ -41,5 +41,8 @@ jobs:
           assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED'
           assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod'}
           assert 'teo-os' in fed['execution_policy']['donor_only']
+          assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
+          assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'
+          assert members['ai-latheo-search']['relation']=='AILATHEO_OFFICE_NOT_SEPARATE_AI'
           print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

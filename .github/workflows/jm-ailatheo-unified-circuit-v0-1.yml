@@ -6,6 +6,7 @@ on:
       - 'scripts/jm_relational_opportunity.py'
       - 'registry/rod-bodies-v0-1.json'
       - 'registry/ailatheo-federation-v0-1.json'
+      - 'scripts/jm_teo_os_recovered_runtime.py'
       - 'proof/ailatheo/**'
       - '.github/workflows/jm-ailatheo-unified-circuit-v0-1.yml'
   workflow_dispatch:
@@ -18,6 +19,9 @@ jobs:
         run: python -m py_compile scripts/jm_relational_opportunity.py scripts/jm_ailatheo_unified_circuit.py
       - name: ROD regression
         run: python scripts/jm_relational_opportunity.py --self-test
+      - name: Teo OS recovered-spec runtime re-proof
+        run: python scripts/jm_teo_os_recovered_runtime.py --json
+
       - name: AILatheo circuit self-test
         run: python scripts/jm_ailatheo_unified_circuit.py --self-test
       - name: Fresh circuit proof
@@ -34,7 +38,8 @@ jobs:
           fed=json.load(open('registry/ailatheo-federation-v0-1.json'))
           members={m['id']:m for m in fed['members']}
           assert members['rod']['class']=='INNER_ORGAN'
-          assert members['teo-os']['status']=='RECOVERED_SOURCE_HOLD_RUNTIME_REPROOF'
+          assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED'
           assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod'}
+          assert 'teo-os' in fed['execution_policy']['donor_only']
           print("AILatheo fresh circuit + federation-boundary proof PASS")
           PY

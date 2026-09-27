@@ -121,7 +121,8 @@ def self_test():
       {"body":"Redundant Candidate","office":"EXPLAIN","mechanisms":["trace"],"adds":["trace"]}]))
     assert r["results"][0]["decision"]=="COOL"
     # Opportunity can enter through feedback/check-in, not retrieval alone.
-    r=detect(fixture(["trace","human_feedback"],["consequence","trace"],[\n      {"body":"Feedback-sensitive route","office":"REFLECT","mechanisms":["human_feedback"],"adds":["next_route_correction"]}],inlet="FEEDBACK"))
+    r=detect(fixture(["trace","human_feedback"],["consequence","trace"],[
+      {"body":"Feedback-sensitive route","office":"REFLECT","mechanisms":["human_feedback"],"adds":["next_route_correction"]}],inlet="FEEDBACK"))
     assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="CARRY"
     print("JM ROD v0.1 self-test PASS: 7/7 bounded fixtures")
 

@@ -50,3 +50,19 @@ jobs:
           assert h[0]['prior_decision']=='HOLD' and h[0]['current_decision']=='CARRY' and h[0]['changed'], h
           print('JM ROD check-in re-entry 002 PASS:', got, h)
           PY
+      - name: ROD unlabelled anomaly 003
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/unlabelled-anomaly-003.json | tee /tmp/rod-anomaly.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/rod-anomaly.json'))
+          got={x['body']:x['decision'] for x in p['results']}
+          assert p['opportunity_inlet']=='ANOMALY', p['opportunity_inlet']
+          assert p['claim_ceiling']=='TRACE', p['claim_ceiling']
+          assert got=={
+            'Contact Field':'CARRY',
+            'Anomaly means adaptation':'HOLD',
+            'Unrelated Support Route':'REJECT',
+          }, got
+          print('JM ROD unlabelled anomaly 003 PASS:', got)
+          PY

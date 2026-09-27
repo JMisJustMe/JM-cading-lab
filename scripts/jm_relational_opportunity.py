@@ -62,12 +62,25 @@ def evaluate(signals:Iterable[str], evidence:Iterable[str], c:Candidate)->dict:
       "identity_inference_blocked":bool(c.identity_risk),
       "representation_options":list(c.representation_options)}
 
+def transition_trace(prior:str|None,current:str,inlet:str)->dict:
+    """Append-only relation-status observation; prior history is never rewritten."""
+    if prior is not None and prior not in DECISIONS:
+        raise ValueError(f"invalid prior decision {prior}")
+    return {
+      "prior_decision":prior,
+      "current_decision":current,
+      "changed":prior is not None and prior != current,
+      "inlet":inlet,
+      "law":"STATUS MAY CHANGE; HISTORY MUST NOT"
+    }
+
 def detect(contact:dict)->dict:
     inlet=str(contact.get("inlet","RETRIEVAL")).upper()
     if inlet not in INLETS:
         raise ValueError(f"invalid opportunity inlet {inlet}")
     signals=contact.get("signals",[])
     evidence=contact.get("evidence",[])
+    prior_status=contact.get("prior_status",{})
     results=[evaluate(signals,evidence,Candidate(
       body=x["body"], office=x["office"],
       mechanisms=tuple(x.get("mechanisms",[])), adds=tuple(x.get("adds",[])),
@@ -75,16 +88,21 @@ def detect(contact:dict)->dict:
       identity_risk=bool(x.get("identity_risk",False)),
       representation_options=tuple(x.get("representation_options",[]))
     )) for x in contact.get("candidates",[])]
+    relation_history=[
+      {"body":r["body"],**transition_trace(prior_status.get(r["body"]),r["decision"],inlet)}
+      for r in results if r["body"] in prior_status
+    ]
     return {
       "schema":"jm.rod/0.1","grounded_contact":contact.get("grounded_contact",""),
       "opportunity_inlet":inlet,
       "claim_ceiling":evidence_ceiling(evidence),"results":results,
+      "relation_history":relation_history,
       "trace":{
         "carry":[r["body"] for r in results if r["decision"]=="CARRY"],
         "hold":[r["body"] for r in results if r["decision"]=="HOLD"],
         "cool":[r["body"] for r in results if r["decision"]=="COOL"],
         "reject":[r["body"] for r in results if r["decision"]=="REJECT"],
-        "law":"CANDIDATE != ACCEPTED RELATION; OBSERVED FIT != FIXED IDENTITY"
+        "law":"CANDIDATE != ACCEPTED RELATION; OBSERVED FIT != FIXED IDENTITY; INLET != VERDICT"
       }}
 
 def fixture(signals,evidence,candidates,inlet="RETRIEVAL"):
@@ -127,7 +145,25 @@ def self_test():
     r=detect(fixture(["trace","human_feedback"],["consequence","trace"],[
       {"body":"Feedback-sensitive route","office":"REFLECT","mechanisms":["human_feedback"],"adds":["next_route_correction"]}],inlet="FEEDBACK"))
     assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="CARRY"
-    print("JM ROD v0.1 self-test PASS: 7/7 bounded fixtures")
+    # Prior HOLD can become CARRY when later feedback supplies missing evidence.
+    r=detect({"grounded_contact":"feedback re-entry","inlet":"FEEDBACK",
+      "signals":["trace","human_feedback","reentry_change"],
+      "evidence":["consequence","trace","retention","reentry_change"],
+      "prior_status":{"Learning-bearing adaptation":"HOLD"},
+      "candidates":[{"body":"Learning-bearing adaptation","office":"EXPLAIN",
+        "mechanisms":["trace","reentry_change"],"adds":["adaptation"],
+        "required_evidence":["reentry_change"]}]})
+    assert r["results"][0]["decision"]=="CARRY"
+    assert r["relation_history"][0]["prior_decision"]=="HOLD"
+    assert r["relation_history"][0]["current_decision"]=="CARRY"
+    assert r["relation_history"][0]["changed"]
+
+    # Inlet provenance never decides fit by itself.
+    r=detect(fixture(["human_feedback"],["consequence"],[
+      {"body":"Unrelated candidate","office":"EXPLAIN","mechanisms":["different_mechanism"],"adds":["novel"]}],inlet="FEEDBACK"))
+    assert r["opportunity_inlet"]=="FEEDBACK" and r["results"][0]["decision"]=="REJECT"
+
+    print("JM ROD v0.1 self-test PASS: 9/9 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

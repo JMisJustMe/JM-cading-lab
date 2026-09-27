@@ -1,0 +1,102 @@
+name: JM Storage Census Reconciler v0.1 — build APK
+
+on:
+  push:
+    branches:
+      - agent/storage-census-reconciler-v0-1
+    paths:
+      - ".github/workflows/storage-census-reconciler-v0-1.yml"
+      - "tools/storage-census-reconciler/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/storage-census-reconciler-v0-1.yml"
+      - "tools/storage-census-reconciler/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: storage-census-reconciler-v0-1-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+
+      - name: Reconstruct Android source package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/storage-census-source"
+          cat tools/storage-census-reconciler/source/android-source.b64.part* \
+            | base64 --decode \
+            > "$RUNNER_TEMP/storage-census-source/android-source.zip"
+          echo "7422939fc855fd0e6f967bdaf2e8edb2a4d84d6db6bddf8102ed57661fc1ec79  $RUNNER_TEMP/storage-census-source/android-source.zip" \
+            | sha256sum --check --status
+          unzip -q "$RUNNER_TEMP/storage-census-source/android-source.zip" \
+            -d "$RUNNER_TEMP/storage-census-source/android"
+          test -f "$RUNNER_TEMP/storage-census-source/android/app/src/main/java/com/jmestate/storagecensus/MainActivity.java"
+          test -f "$RUNNER_TEMP/storage-census-source/android/app/src/main/assets/index.html"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android platform 35
+        shell: bash
+        run: sdkmanager --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Set up Gradle 8.9
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.9"
+
+      - name: Build debug APK
+        working-directory: ${{ runner.temp }}/storage-census-source/android
+        run: gradle --no-daemon assembleDebug
+
+      - name: Prepare delivery and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/storage-census-delivery"
+          cp "$RUNNER_TEMP/storage-census-source/android/app/build/outputs/apk/debug/app-debug.apk" \
+            "$RUNNER_TEMP/storage-census-delivery/JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1.apk"
+          sha256sum "$RUNNER_TEMP/storage-census-delivery/JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1.apk" \
+            > "$RUNNER_TEMP/storage-census-delivery/JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1.apk.sha256"
+          {
+            echo "JM Cross-Location Storage Census & Reconciler v0.1"
+            echo "Workflow run: $GITHUB_RUN_ID"
+            echo "Workflow SHA: $GITHUB_SHA"
+            echo "Source reconstruction SHA-256: PASS"
+            echo "APK compile: PASS"
+            echo "Physical Android install and field Ding: PENDING user-device proof"
+          } > "$RUNNER_TEMP/storage-census-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1_APK
+          path: |
+            ${{ runner.temp }}/storage-census-delivery/JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1.apk
+            ${{ runner.temp }}/storage-census-delivery/JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1.apk.sha256
+            ${{ runner.temp }}/storage-census-delivery/GITHUB_ACTIONS_APK_RECEIPT.txt
+          if-no-files-found: error
+
+      - name: Upload reconstructed source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_CROSS_LOCATION_STORAGE_CENSUS_RECONCILER_v0_1_ANDROID_SOURCE
+          path: ${{ runner.temp }}/storage-census-source/android-source.zip
+          if-no-files-found: error

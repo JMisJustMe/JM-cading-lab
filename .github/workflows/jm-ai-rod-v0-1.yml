@@ -126,3 +126,17 @@ jobs:
           assert got=={'Cause Must Pass':'CARRY'}, got
           print('JM ROD registry-aware grounding 007 PASS:',p['grounded_signals'],got)
           PY
+      - name: ROD productive quiet and return 008
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/quiet-return-008a.json --write-ledger /tmp/rod-quiet.json | tee /tmp/rod-008a.json
+          python scripts/jm_relational_opportunity.py --input proof/rod/quiet-return-008b.json --registry registry/rod-bodies-v0-1.json --ledger /tmp/rod-quiet.json --write-ledger /tmp/rod-return.json | tee /tmp/rod-008b.json
+          python - <<'PY'
+          import json
+          a=json.load(open('/tmp/rod-008a.json')); b=json.load(open('/tmp/rod-008b.json')); l=json.load(open('/tmp/rod-return.json'))
+          assert a['results'][0]['decision']=='COOL', a
+          assert a['relation_history'][0]['prior_decision']=='CARRY' and a['relation_history'][0]['current_decision']=='COOL', a
+          assert b['results'][0]['body']=='HOSF' and b['results'][0]['decision']=='CARRY', b
+          assert b['relation_history'][0]['prior_decision']=='COOL' and b['relation_history'][0]['current_decision']=='CARRY', b
+          assert l['current_status']['HOSF']=='CARRY', l
+          print('JM ROD productive quiet/return 008 PASS: CARRY -> COOL -> CARRY with history retained')
+          PY

@@ -42,9 +42,9 @@
       "id": "teo-os",
       "name": "Teo OS cognitive system",
       "class": "COGNITIVE_OS_ARCHITECTURE",
-      "status": "RECOVERED_SPEC_RUNTIME_REPROVED",
+      "status": "RECOVERED_SPEC_RUNTIME_REPROVED_AND_CROSS_CONTACTED",
       "office": "BODIES_DINGS_ROUTES_STANCE_CONTINUITY_INFERENCE",
-      "relation": "ARCHITECTURE_DONOR",
+      "relation": "CROSS_CONTACTED_COGNITIVE_CONTINUITY_OFFICE",
       "reproof": "scripts/jm_teo_os_recovered_runtime.py"
     },
     {
@@ -82,17 +82,17 @@
     "active": [
       "jm-adaptive-ecostate-agent",
       "ailatheo",
-      "rod"
+      "rod",
+      "teo-os"
     ],
     "donor_only": [
-      "teo-os",
       "ai-latheo-search"
     ],
     "hold": [
       "ehilatheo",
       "jm-ai-lab"
     ],
-    "rule": "Active/cross-contact status requires current branch contact proof. JM AI Lab v2.0 is independently proven as a full scoped production body but remains integration HOLD until its exact executable is mounted. Ehilatheo remains exact-body HOLD.",
+    "rule": "Active status requires current branch execution/contact proof. Teo OS has now crossed from donor to bounded cross-contact participant. JM AI Lab v2.0 is independently proven as a full scoped production body but remains integration HOLD until its exact executable is mounted. Ehilatheo remains exact-body HOLD.",
     "cross_contact_proven": [
       "ailatheo",
       "rod",

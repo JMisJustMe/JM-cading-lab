@@ -45,8 +45,8 @@ jobs:
           fed=json.load(open('registry/ailatheo-federation-v0-1.json'))
           members={m['id']:m for m in fed['members']}
           assert members['rod']['class']=='INNER_ORGAN'
-          assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED'
-          assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod'}
+          assert members['teo-os']['status']=='RECOVERED_SPEC_RUNTIME_REPROVED_AND_CROSS_CONTACTED'
+          assert set(fed['execution_policy']['active'])=={'jm-adaptive-ecostate-agent','ailatheo','rod','teo-os'}
           assert 'teo-os' in fed['execution_policy']['cross_contact_proven']
           assert members['ehilatheo']['status']=='RECOVERED_ROLE_GITHUB_STAGED_CONCEPT'
           assert members['ai-latheo-search']['status']=='RESOLVED_AS_AILATHEO_EXTERNAL_DOOR_OFFICE'

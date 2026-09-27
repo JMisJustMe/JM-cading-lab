@@ -107,7 +107,7 @@ jobs:
           import json
           p=json.load(open('/tmp/rod-raw.json'))
           got={x['body']:x['decision'] for x in p['results']}
-          assert p['grounding_mode']=='BOUNDED_LEXICON', p['grounding_mode']
+          assert p['grounding_mode']=='REGISTRY_AWARE_LEXICON', p['grounding_mode']
           assert p['opportunity_inlet']=='ANOMALY', p['opportunity_inlet']
           assert p['candidate_discovery']=='BOUNDED_REGISTRY', p['candidate_discovery']
           assert p['claim_ceiling']=='TRACE', p['claim_ceiling']

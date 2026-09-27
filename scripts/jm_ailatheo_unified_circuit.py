@@ -32,7 +32,7 @@ def coding_pass(raw:str)->list[dict]:
       "RouteOS":lambda s:s.update(route_bound=True),
       "CadenVM":lambda s:s.update(runtime="ready"),
       "TraceBox":lambda s:s.update(trace_open=True),
-      "THEO":lambda s:s.update(identity="AILatheo","authority="bounded"),
+      "THEO":lambda s:s.update(identity="AILatheo",authority="bounded"),
       "Zionfolder":lambda s:s.update(recoverable=True),
     }
     for body in CODING_SPINE:

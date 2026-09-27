@@ -63,6 +63,9 @@ def evaluate(signals:Iterable[str], evidence:Iterable[str], c:Candidate)->dict:
       "representation_options":list(c.representation_options)}
 
 def detect(contact:dict)->dict:
+    inlet=str(contact.get("inlet","RETRIEVAL")).upper()
+    if inlet not in INLETS:
+        raise ValueError(f"invalid opportunity inlet {inlet}")
     signals=contact.get("signals",[])
     evidence=contact.get("evidence",[])
     results=[evaluate(signals,evidence,Candidate(

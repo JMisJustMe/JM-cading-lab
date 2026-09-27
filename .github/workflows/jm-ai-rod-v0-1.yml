@@ -83,3 +83,20 @@ jobs:
           }, got
           print('JM ROD bounded registry discovery 004 PASS:', got)
           PY
+      - name: ROD cross-process persistent re-entry 005
+        run: |
+          python scripts/jm_relational_opportunity.py --input proof/rod/persistent-ledger-005a.json --write-ledger /tmp/rod-ledger.json | tee /tmp/rod-005a.json
+          python scripts/jm_relational_opportunity.py --input proof/rod/persistent-ledger-005b.json --ledger /tmp/rod-ledger.json --write-ledger /tmp/rod-ledger2.json | tee /tmp/rod-005b.json
+          python - <<'PY'
+          import json
+          a=json.load(open('/tmp/rod-005a.json'))
+          b=json.load(open('/tmp/rod-005b.json'))
+          ledger=json.load(open('/tmp/rod-ledger2.json'))
+          assert a['results'][0]['decision']=='HOLD', a
+          assert b['results'][0]['decision']=='CARRY', b
+          h=b['relation_history']
+          assert len(h)==1 and h[0]['prior_decision']=='HOLD' and h[0]['current_decision']=='CARRY' and h[0]['changed'], h
+          assert ledger['current_status']['Learning-bearing adaptation']=='CARRY', ledger
+          assert ledger['events'][-1]['law']=='STATUS MAY CHANGE; HISTORY MUST NOT', ledger
+          print('JM ROD cross-process persistent re-entry 005 PASS: HOLD -> CARRY with append-only history')
+          PY

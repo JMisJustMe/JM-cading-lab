@@ -54,7 +54,10 @@ const HOUSES = [
   {id:'coding-house',name:'Cading & Coding Estate',kind:'Coding',state:'LIVE WORKBENCH',accent:'#72ecff',path:'./coding-estate/everybody/',summary:'JM coding bodies remain sovereign while parsers, IR, runtimes, adapters and targets connect through the EveryBody fabric.',proof:'76 recovered entries and portable target lanes registered.'},
   {id:'tools-house',name:'Apps & Tools',kind:'Tools',state:'LIVE LAB + EXPANDING',accent:'#7ff0a6',path:'./fresh-app-lab/',summary:'Working utilities, creator tools, app proofs, operating surfaces and future product rooms.',proof:'Fresh App Lab public room is live.'},
   {id:'theory-house',name:'Theory & Publications',kind:'Theory',state:'REGISTRY CONNECTED',accent:'#b69cff',path:'./registry/theory-wing.json',summary:'Human systems, language, proof, play, story, physics and public methods remain deep bodies with readable routes.',proof:'Nine theory districts are indexed.'},
-  {id:'studio-house',name:'Studios: Music, Lyrics & Creation',kind:'Studios',state:'HOUSE RESERVED / SOURCE HELD',accent:'#ff7896',path:null,summary:'LyricStudio, music, visual creation, books, performance and publication bodies gain a first-class home without false deployment claims.',proof:'Registered in the Estate; public source-normalised rooms remain to be mounted.'},
+  {id:'studio-house',name:'Studios: Music, Lyrics & Creation',kind:'Studios',state:'LIVE PUBLIC HOUSE',accent:'#ff7896',path:'./lyrics/',summary:'LyricStudio, music, performance and language bodies connect through the current public Lyrics & Music House.',proof:'Current public creative route is live; private source remains owner-controlled.'},
+  {id:'books-house',name:'Books & Written Bodies',kind:'Books',state:'45/45 ROUTED · STAGE 07 LOCAL LOCK',accent:'#f1c879',path:'./books/',summary:'Written bodies, Bookcase routes and publication lineages are accessible without confusing readable routes with finished books.',proof:'56 primary written bodies · 98 Bookcase routes · 45/45 GREEN connection routes.'},
+  {id:'visual-story-house',name:'Comics, Cartoons & Visual Story',kind:'Visual',state:'8/8 ROUTED · PRODUCTION FORWARD',accent:'#ff8aa8',path:'./visual-story/',summary:'Comics, Visual Story Studio, Sketchions, WORDWALK and current produced-medium frontiers share one public access door.',proof:'FTR 32/32 issues · 704/704 functional pages · First Watchable Scene remains open.'},
+  {id:'access-mesh',name:'Current Access Mesh',kind:'Access',state:'CURRENT PUBLIC MESH',accent:'#78efbd',path:'./access/',summary:'One public routing surface across current Games, Apps, Coding, Theory, Books, Visual Story, Music, Work and Recovery doors.',proof:'Access layer only; source authorities remain sovereign.'},
   {id:'library-house',name:'Living Library',kind:'Library',state:'PUBLIC INDEX LIVE',accent:'#ffad42',route:'library',summary:'Searchable estate memory and registry reading now, followed by deliberately connected private retrieval bodies.',proof:'Current registries searchable in this site.'},
   {id:'command-house',name:'Command Centre',kind:'Estate',state:'LIVE',accent:'#72ecff',route:'command',summary:'Build gates, laws, receipts, public truth boundaries, device state and direct technical routes.',proof:'Receipt export and live status are working.'},
   {id:'owner-house',name:'Owner Room',kind:'Owner',state:'LOCAL-FIRST',accent:'#ffd166',route:'owner',summary:'Device-only mounting, notes, favourites, recent routes and portable receipts without pretending local storage is server security.',proof:'Local controls work without uploading private HTML.'}
@@ -144,7 +147,7 @@ function getAllItems(){
 const slug = value => normalise(value).replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 function renderFeatureDoors(){
-  const selected=['games-house','coding-house','tools-house','theory-house'].map(id=>HOUSES.find(h=>h.id===id));
+  const selected=['access-mesh','games-house','tools-house','coding-house','theory-house','books-house','visual-story-house','studio-house'].map(id=>HOUSES.find(h=>h.id===id));
   $('#featureDoors').innerHTML=selected.map(h=>`<a class="door-card" href="${h.path||'#'}" data-card-id="${h.id}" style="--accent:${h.accent}"><span class="door-state">${escapeHTML(h.state)}</span><h3>${escapeHTML(h.name)}</h3><p>${escapeHTML(h.summary)}</p><div class="door-foot"><span>Open house</span><span>↗</span></div></a>`).join('');
   $$('#featureDoors [data-card-id]').forEach(el=>el.addEventListener('click',event=>{const item=HOUSES.find(x=>x.id===el.dataset.cardId);if(!item.path){event.preventDefault();openItem(item)}else trackRecent(item)}));
 }
@@ -155,7 +158,7 @@ function renderContinue(){
   bindItemControls($('#continueGrid'));
 }
 function renderFilters(){
-  const filters=['All','Games','Coding','Tools','Theory','Studios','Library','Estate','Owner','Favourites'];
+  const filters=['All','Access','Games','Coding','Tools','Theory','Books','Visual','Studios','Library','Estate','Owner','Favourites'];
   $('#houseFilters').innerHTML=filters.map(f=>`<button class="filter-chip ${state.filter===f?'active':''}" data-filter="${f}" type="button">${f}</button>`).join('');
   $$('#houseFilters [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{state.filter=btn.dataset.filter;renderFilters();renderDirectory()}));
 }
@@ -169,7 +172,7 @@ function renderDirectory(){
     const text=[item.name,item.kind,item.state,item.summary,item.role,item.proof,item.room,item.version].join(' ').toLowerCase();
     return favPass&&kindPass&&(!q||text.includes(q));
   });
-  const groupOrder=['Games','Coding','Tools','Theory','Studios','Library','Estate','Owner'];
+  const groupOrder=['Access','Games','Coding','Tools','Theory','Books','Visual','Studios','Library','Estate','Owner'];
   const groups=groupOrder.map(kind=>[kind,items.filter(i=>i.kind===kind)]).filter(([,arr])=>arr.length);
   $('#houseDirectory').innerHTML=groups.length?groups.map(([kind,arr])=>`<section class="directory-group"><header><h2>${kind}</h2><span>${arr.length} ${arr.length===1?'BODY':'BODIES'}</span></header><div class="directory-grid">${arr.map(bodyRow).join('')}</div></section>`).join(''):`<div class="empty-state"><strong>No matching body.</strong><p>Try another search or filter. Nothing has been silently invented to fill the gap.</p></div>`;
   bindItemControls($('#houseDirectory'));
@@ -183,7 +186,7 @@ function bindItemControls(root){
   root.querySelectorAll('[data-detail]').forEach(btn=>btn.addEventListener('click',()=>{const item=getAllItems().find(x=>x.id===btn.dataset.detail);if(item)showDetail(item)}));
 }
 function showDetail(item){
-  const accent=item.accent||({Games:'#ffd166',Coding:'#72ecff',Theory:'#b69cff',Tools:'#7ff0a6',Studios:'#ff7896'}[item.kind]||'#72ecff');
+  const accent=item.accent||({Access:'#78efbd',Games:'#ffd166',Coding:'#72ecff',Theory:'#b69cff',Tools:'#7ff0a6',Books:'#f1c879',Visual:'#ff8aa8',Studios:'#ff7896'}[item.kind]||'#72ecff');
   $('#detailContent').innerHTML=`<section class="detail-hero" style="--detail-accent:${accent}"><p class="section-number">${escapeHTML(item.kind||'ESTATE')} · ${escapeHTML(item.state||item.stage||'REGISTERED')}</p><h2>${escapeHTML(item.name)}</h2><p>${escapeHTML(item.summary||item.role||'Registered Estate body.')}</p><div class="detail-actions"><button class="button primary" id="detailOpen">${item.path||item.route?'Open route':'Keep registered'}</button><button class="button quiet" id="detailFav">${state.favourites.has(item.id)?'Remove favourite':'Add favourite'}</button></div></section><div class="detail-body"><div class="detail-block"><h3>Passport</h3><p>${escapeHTML(item.proof||item.room||'Connected through the current JM Estate registry.')}</p></div><div class="detail-block"><h3>Ownership boundary</h3><p>This shared website supplies navigation and delivery. It does not erase this body’s native source, lineage or independent authority.</p></div></div>`;
   $('#detailDialog').showModal();
   $('#detailOpen').addEventListener('click',()=>{if(item.path||item.route){$('#detailDialog').close();openItem(item)}else toast('Body preserved as registered; no false public door was claimed.')});

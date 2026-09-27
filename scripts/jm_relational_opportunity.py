@@ -113,6 +113,18 @@ def infer_inlet(contact:dict)->str:
     hits=[name for name,keys in cues if sig & keys]
     return hits[0] if len(hits)==1 else "RETRIEVAL"
 
+def apply_return_pressure(contact:dict, candidates:list[dict], prior_status:dict)->list[dict]:
+    """Previously known bodies may re-enter candidate contact when the new contact names them."""
+    requested=set(contact.get("reopen_bodies",[]))
+    if not requested:
+        return candidates
+    by_body={x["body"]:x for x in candidates}
+    registry={x["body"]:x for x in contact.get("registry",[])}
+    for body in sorted(requested):
+        if body in prior_status and body not in by_body and body in registry:
+            candidates.append(registry[body])
+    return candidates
+
 def transition_trace(prior:str|None,current:str,inlet:str)->dict:
     """Append-only relation-status observation; prior history is never rewritten."""
     if prior is not None and prior not in DECISIONS:
@@ -148,6 +160,7 @@ def detect(contact:dict)->dict:
         registry=contact.get("registry",[])
         candidates=discover_candidates(signals,registry)
         discovery_mode="BOUNDED_REGISTRY"
+    candidates=apply_return_pressure(contact,list(candidates),prior_status)
     results=[evaluate(signals,evidence,Candidate(
       body=x["body"], office=x["office"],
       mechanisms=tuple(x.get("mechanisms",[])), adds=tuple(x.get("adds",[])),
@@ -272,7 +285,14 @@ def self_test():
     assert r["candidate_discovery"]=="BOUNDED_REGISTRY"
     assert r["results"][0]["body"]=="Cause Must Pass" and r["results"][0]["decision"]=="CARRY"
 
-    print("JM ROD v0.1 self-test PASS: 14/14 bounded fixtures")
+    # A quiet prior relation can be explicitly reopened without making its verdict automatic.
+    r=detect({"grounded_contact":"reopen prior relation","signals":["support"],"evidence":["consequence"],
+      "prior_status":{"HOSF":"COOL"},"reopen_bodies":["HOSF"],"registry":[
+        {"body":"HOSF","office":"RECOVER","mechanisms":["support","agency"],"adds":["scaffolded_reentry"]}]})
+    assert r["results"][0]["body"]=="HOSF" and r["results"][0]["decision"]=="CARRY"
+    assert r["relation_history"][0]["prior_decision"]=="COOL" and r["relation_history"][0]["current_decision"]=="CARRY"
+
+    print("JM ROD v0.1 self-test PASS: 15/15 bounded fixtures")
 
 def main():
     p=argparse.ArgumentParser()

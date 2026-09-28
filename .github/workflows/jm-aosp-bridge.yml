@@ -1,0 +1,33 @@
+name: JM AOSP Bridge
+
+on:
+  push:
+    branches:
+      - jm-aosp-bridge-v0.1
+    paths:
+      - 'os/aosp-bridge/**'
+      - 'coding-estate/everybody/role-qualified-61/native/os-coding.mjs'
+      - 'coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs'
+      - 'coding-estate/everybody/role-qualified-61/native/theoc.mjs'
+      - '.github/workflows/jm-aosp-bridge.yml'
+  pull_request:
+    paths:
+      - 'os/aosp-bridge/**'
+      - 'coding-estate/everybody/role-qualified-61/native/os-coding.mjs'
+      - 'coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs'
+      - 'coding-estate/everybody/role-qualified-61/native/theoc.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  bridge-selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove JM -> AOSP bridge gating
+        run: node os/aosp-bridge/selftest.mjs

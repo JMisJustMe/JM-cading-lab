@@ -125,3 +125,101 @@ jobs:
           name: JM_ROUTECORE_REAL_BOOT_CONTACT_v0_1
           path: routecore-contact/
           if-no-files-found: error
+
+      - name: Build minimal IRQ0 probe descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 routecore/boot-contact-v0-1/make_irq_probe.py \
+            routecore-contact/jm_routecore_bios_boot_v0_1.img \
+            routecore-contact/jm_routecore_irq_probe_v0_1.img
+          echo "5b796fe9a9ab52297771c625f696a2ffcc3203aab3e54d412a3bfb50b90201c4  routecore-contact/jm_routecore_irq_probe_v0_1.img" | sha256sum -c -
+
+      - name: Execute PIT IRQ0 contact under QEMU
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 3s qemu-system-i386 \
+            -machine pc \
+            -m 64M \
+            -drive file=routecore-contact/jm_routecore_irq_probe_v0_1.img,format=raw,if=ide,index=0,media=disk \
+            -boot c \
+            -display none \
+            -serial stdio \
+            -monitor none \
+            -no-reboot \
+            -no-shutdown \
+            > routecore-contact/irq-boot.log 2>&1
+          irq_qemu_exit=$?
+          set -e
+
+          cat routecore-contact/irq-boot.log
+          grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/irq-boot.log
+          grep -Fq "INITRD OK" routecore-contact/irq-boot.log
+          grep -Fq "KERNEL READY" routecore-contact/irq-boot.log
+          grep -Fq "PIT IRQ0 CONTACT" routecore-contact/irq-boot.log
+          printf '%s\n' "$irq_qemu_exit" > routecore-contact/irq-qemu-exit.txt
+
+      - name: Create IRQ contact receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          parent = d / "jm_routecore_bios_boot_v0_1.img"
+          probe = d / "jm_routecore_irq_probe_v0_1.img"
+          log = (d / "irq-boot.log").read_text(errors="replace")
+          marker = "PIT IRQ0 CONTACT"
+          receipt = {
+            "schema": "jm.routecore.irq-contact/0.1",
+            "parent_target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "probe_target": "JM_ROUTECORE_IRQ_PROBE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS + emulated 8254 PIT/8259 PIC",
+            "parent_sha256": hashlib.sha256(parent.read_bytes()).hexdigest(),
+            "expected_parent_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "probe_sha256": hashlib.sha256(probe.read_bytes()).hexdigest(),
+            "expected_probe_sha256": "5b796fe9a9ab52297771c625f696a2ffcc3203aab3e54d412a3bfb50b90201c4",
+            "markers": {
+              "kernel_ready": "KERNEL READY" in log,
+              "pit_irq0_contact": marker in log
+            },
+            "claim_scope": {
+              "emulated_pit_irq0_delivery": True,
+              "routecore_irq0_handler_execution": True,
+              "scheduler_tick_path_entered": True,
+              "pic_master_eoi_path_returned": True,
+              "emulated_timer_device_contact": True,
+              "physical_hardware": False,
+              "physical_device_driver_contact": False,
+              "irq1_keyboard_contact": False
+            },
+            "qemu_exit": int((d / "irq-qemu-exit.txt").read_text().strip())
+          }
+          receipt["marker_count"] = log.count(marker)
+          receipt["pass"] = (
+            receipt["parent_sha256"] == receipt["expected_parent_sha256"]
+            and receipt["probe_sha256"] == receipt["expected_probe_sha256"]
+            and all(receipt["markers"].values())
+            and receipt["marker_count"] > 0
+          )
+          out = d / "JM_ROUTECORE_IRQ_CONTACT_RECEIPT_v0_1.json"
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not receipt["pass"]:
+            raise SystemExit(1)
+          PY
+
+      - name: Upload IRQ contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_IRQ_CONTACT_v0_1
+          path: |
+            routecore-contact/JM_ROUTECORE_IRQ_CONTACT_RECEIPT_v0_1.json
+            routecore-contact/JM_ROUTECORE_IRQ_PROBE_PATCH_MANIFEST_v0_1.json
+            routecore-contact/jm_routecore_irq_probe_v0_1.img
+            routecore-contact/irq-boot.log
+            routecore-contact/irq-qemu-exit.txt
+            routecore-contact/qemu-version.txt
+          if-no-files-found: error

@@ -1,0 +1,82 @@
+{
+  "schema": "jm.aosp-preflight-receipt/0.1",
+  "at": "2026-09-28T03:03:36.562Z",
+  "root": "/home/runner/jm-aosp/android-latest-release",
+  "host": {
+    "os": "linux",
+    "arch": "x64",
+    "freeDiskGB": 85.95,
+    "ramGB": 15.61,
+    "glibcVersion": "2.39",
+    "repoAvailable": false,
+    "repoVersion": null,
+    "repoRaw": null,
+    "nodeAvailable": true,
+    "nodeVersion": "v22.23.2"
+  },
+  "assessment": {
+    "schema": "jm.aosp-host-assessment/0.1",
+    "ready": false,
+    "status": "HOLD_HOST_REQUIREMENTS",
+    "checks": [
+      {
+        "id": "host.os",
+        "passed": true,
+        "actual": "linux",
+        "required": "linux"
+      },
+      {
+        "id": "host.arch",
+        "passed": true,
+        "actual": "x64",
+        "required": "x86_64"
+      },
+      {
+        "id": "host.disk",
+        "passed": false,
+        "actual": 85.95,
+        "required": ">=400 GB free"
+      },
+      {
+        "id": "host.ram",
+        "passed": false,
+        "actual": 15.61,
+        "required": ">=64 GB"
+      },
+      {
+        "id": "host.glibc",
+        "passed": true,
+        "actual": "2.39",
+        "required": ">=2.17"
+      },
+      {
+        "id": "host.repo",
+        "passed": false,
+        "actual": null,
+        "required": "Repo >=2.4"
+      },
+      {
+        "id": "host.node",
+        "passed": true,
+        "actual": "v22.23.2",
+        "required": "Node available for current JM JS-native bodies"
+      }
+    ],
+    "failed": [
+      "host.disk",
+      "host.ram",
+      "host.repo"
+    ],
+    "requirements": {
+      "os": "linux",
+      "arch": "x86_64",
+      "minFreeDiskGB": 400,
+      "minRamGB": 64,
+      "minGlibc": "2.17",
+      "minRepo": "2.4"
+    }
+  },
+  "controlClaim": "HOLD_BEFORE_REAL_AOSP_CONTACT",
+  "planStatus": "HOLD",
+  "boundary": "Preflight/control-plane receipt only; no AOSP build or boot claim."
+}

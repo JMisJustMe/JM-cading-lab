@@ -57,9 +57,11 @@ jobs:
           unzip -q routecore-ahci/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip -d routecore-ahci/work
 
           base64 -d routecore/ahci-v0-14/v014.patch.gz.b64 | gzip -d > routecore-ahci/v014.patch
+          base64 -d routecore/ahci-v0-14/q35fix.patch.gz.b64 | gzip -d > routecore-ahci/q35fix.patch
           cd routecore-ahci/work
           cp INSPECT_ATA_DISK.py INSPECT_AHCI_DISK.py
           patch -p1 < ../v014.patch
+          patch -p1 < ../q35fix.patch
 
       - name: Fresh-build v0.14 and enforce construction court
         shell: bash
@@ -71,7 +73,7 @@ jobs:
           import json, hashlib
           p=json.load(open('JM_ROUTECORE_NATIVE64_AHCI_v0_14_PROOF.json'))
           assert p['status']=='PASS', p
-          assert p['passed']==223 and p['total']==223, (p['passed'],p['total'])
+          assert p['passed']==224 and p['total']==224, (p['passed'],p['total'])
           assert p['checks']['deterministic_rebuild'] is True
           print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
           for f in [
@@ -112,60 +114,20 @@ jobs:
           PY
           sha256sum ../JM_ROUTECORE_NATIVE64_AHCI_v0_14.zip
 
-      - name: Diagnose pre-AHCI boot boundary
+      - name: Two-boot AHCI persistence court
         shell: bash
         run: |
           set -euo pipefail
           cd routecore-ahci/work
-          mkdir -p runtime/diagnostic
-          IMG="build/jm_routecore_native64_ahci_v0_14.img"
-
-          run_diag() {
-            local name="$1"; shift
-            echo "=== DIAG $name ==="
-            set +e
-            timeout 6s qemu-system-x86_64 "$@" -m 128M \
-              -boot c -serial file:"runtime/diagnostic/$name.serial" \
-              -display none -monitor none -no-reboot -no-shutdown \
-              -d guest_errors,cpu_reset -D "runtime/diagnostic/$name.debug" \
-              >"runtime/diagnostic/$name.stdout" 2>"runtime/diagnostic/$name.stderr"
-            rc=$?
-            set -e
-            echo "$rc" > "runtime/diagnostic/$name.exit"
-            echo "--- serial ---"
-            cat "runtime/diagnostic/$name.serial" || true
-            echo "--- stderr ---"
-            cat "runtime/diagnostic/$name.stderr" || true
-            echo "--- debug tail ---"
-            tail -80 "runtime/diagnostic/$name.debug" || true
-          }
-
-          run_diag pc-legacy -machine pc \
-            -drive file="$IMG",format=raw,if=ide,index=0,media=disk
-
-          run_diag q35-parent-v013 -machine q35 \
-            -drive file="build/jm_routecore_native64_ata_v0_13.img",format=raw,if=ide,index=0,media=disk
-
-          run_diag q35-current -machine q35 \
-            -drive file="$IMG",format=raw,if=ide,index=0,media=disk
-
-          run_diag q35-explicit -machine q35 \
-            -drive if=none,id=jmdisk,file="$IMG",format=raw \
-            -device ide-hd,drive=jmdisk,bus=ide.0,bootindex=1
-
-          python3 - <<'PY'
-          from pathlib import Path
-          d=Path('runtime/diagnostic')
-          for n in ('pc-legacy','q35-parent-v013','q35-current','q35-explicit'):
-              serial=(d/f'{n}.serial').read_text(errors='replace') if (d/f'{n}.serial').exists() else ''
-              print(n, {
-                  'bytes': len(serial.encode()),
-                  'entered': 'JM_ROUTECORE_NATIVE64_ENTER' in serial,
-                  'pci': 'JM_AHCI_PCI_DISCOVERED' in serial,
-                  'port': 'JM_AHCI_PORT_READY' in serial,
-                  'identify': 'JM_AHCI_IDENTIFY_READY' in serial,
-              })
-          PY
+          chmod +x RUN_PERSISTENCE_LINUX.sh
+          ./RUN_PERSISTENCE_LINUX.sh
+          echo "=== BOOT 1 SERIAL ==="
+          cat runtime/boot1.log
+          echo "=== BOOT 2 SERIAL ==="
+          cat runtime/boot2.log
+          echo "=== FINAL RAW DISK COURT ==="
+          python3 INSPECT_AHCI_DISK.py runtime/jm_routecore_native64_ahci_v0_14.runtime.img --expect-payload
+          sha256sum runtime/jm_routecore_native64_ahci_v0_14.runtime.img
 
       - name: Upload AHCI contact artifacts
         if: always()

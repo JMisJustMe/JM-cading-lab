@@ -1,0 +1,40 @@
+name: JM AGI v1.4.4 Windows Dynamic Contract
+on:
+  pull_request:
+    paths:
+      - 'lab/jm-agi-dynamic/v1.4.4-ci/**'
+      - '.github/workflows/jm-agi-v144-windows-contract.yml'
+jobs:
+  windows-contract:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: lab/jm-agi-dynamic/v1.4.4-ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows and Edge contact
+        run: |
+          $ErrorActionPreference='Stop'
+          Write-Host "OS $([Environment]::OSVersion.VersionString)"
+          Write-Host "PowerShell $($PSVersionTable.PSVersion)"
+          $edge=@("$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe","${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe","$env:LOCALAPPDATA\Microsoft\Edge\Application\msedge.exe")|Where-Object{Test-Path $_}|Select-Object -First 1
+          if(-not $edge){throw 'Edge missing'}
+          Write-Host "Edge $edge"
+      - name: Exact R4 runner dynamic contract
+        run: |
+          & .\JM_AGI_LAB_v1_4_4_PROCESS_WITNESS_CI.ps1 -ArmTimeoutSeconds 45 -ZeroTimeoutSeconds 20
+          if(-not (Test-Path .\JM_AGI_PROCESS_WITNESS_LAST.json)){throw 'Witness JSON missing'}
+          $w=Get-Content .\JM_AGI_PROCESS_WITNESS_LAST.json -Raw|ConvertFrom-Json
+          if(-not $w.zeroObserved){throw 'zeroObserved false'}
+          if($w.prePids.Count -lt 1){throw 'no prePids'}
+          if($w.durabilitySettleSeconds -ne 12){throw 'settle seconds mismatch'}
+          Write-Host 'WINDOWS_DYNAMIC_CONTRACT_PASS'
+      - name: Upload witness
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-agi-v144-windows-contract
+          path: |
+            lab/jm-agi-dynamic/v1.4.4-ci/JM_AGI_PROCESS_WITNESS_LAST.json

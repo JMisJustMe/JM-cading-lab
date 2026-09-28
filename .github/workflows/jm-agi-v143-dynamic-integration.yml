@@ -33,24 +33,13 @@ jobs:
           Write-Host "Edge: $edgePath"
           & $edgePath --version
 
-      - name: Execute exact R3 witness end-to-end
-        id: exact_r3
+      - name: Install Playwright control layer (system Edge only)
         run: |
-          $ErrorActionPreference = 'Stop'
-          Write-Host 'DYNAMIC_CONTACT_START'
-          & .\JM_AGI_LAB_v1_4_3_PROCESS_WITNESS.ps1 -ArmTimeoutSeconds 45 -ZeroTimeoutSeconds 20
-          Write-Host 'DYNAMIC_CONTACT_RUNNER_RETURNED'
-          if (-not (Test-Path .\JM_AGI_PROCESS_WITNESS_LAST.json)) {
-            throw 'Runner returned without a witness receipt.'
-          }
-          $w = Get-Content .\JM_AGI_PROCESS_WITNESS_LAST.json -Raw | ConvertFrom-Json
-          $w | ConvertTo-Json -Depth 8
-          if ($w.zeroObserved -ne $true) { throw 'Witness did not prove process zero.' }
-          if ($w.platform -ne 'Windows') { throw 'Witness platform mismatch.' }
-          if ($w.browser -ne 'Microsoft Edge') { throw 'Witness browser mismatch.' }
-          if ($w.runnerVersion -ne '1.0.3') { throw "Unexpected runner version $($w.runnerVersion)." }
-          Write-Host 'DYNAMIC_CONTACT_WITNESS_PASS'
+          npm install --no-save playwright-core
 
+      - name: Dynamic integrate exact v1.4.3 across real Edge process death
+        run: |
+          node .\dynamic_integration.mjs
       - name: Inspect and clean isolated Edge profile
         if: always()
         run: |

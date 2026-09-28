@@ -1,0 +1,26 @@
+{
+  "schema": "JM.TargetBridge.GDevelopDirectPointer/0.5",
+  "body": "SPINBREAK v0.8 — bounded exact-source contact slice",
+  "source_sha256": "1fde14e48737e3f7cf9331a3d774e06958c670b81c0932409e4dc2c1d7db9d4c",
+  "branch": "target-bridge-spinbreak-contact-001-v0-5",
+  "raw_project_url": "https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/target-bridge-spinbreak-contact-001-v0-5/target-bridge/spinbreak-contact-001-v0-5/gdevelop/JM_TARGET_BRIDGE_SPINBREAK_GDEVELOP_v0_5.json",
+  "editor_url": "https://editor.gdevelop.io/?project=https%3A%2F%2Fraw.githubusercontent.com%2FJMisJustMe%2FJM-cading-lab%2Ftarget-bridge-spinbreak-contact-001-v0-5%2Ftarget-bridge%2Fspinbreak-contact-001-v0-5%2Fgdevelop%2FJM_TARGET_BRIDGE_SPINBREAK_GDEVELOP_v0_5.json",
+  "status": "READY_FOR_REAL_HOST_CONTACT__DING_OPEN",
+  "manual_reconstruction_required": false,
+  "required_semantics": [
+    "signal.route_right",
+    "move.you",
+    "signal.kic",
+    "kic.spin_cost",
+    "contact.you_rival_a",
+    "signal.wake",
+    "wake.stability",
+    "wake.spin",
+    "wake.integrity"
+  ],
+  "holds": [
+    "spinbreak.full_contact_pressure_model",
+    "spinbreak.full_three_body_ai",
+    "spinbreak.full_visual_history_parity"
+  ]
+}

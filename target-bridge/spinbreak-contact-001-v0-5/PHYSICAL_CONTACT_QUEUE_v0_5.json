@@ -1,0 +1,36 @@
+{
+  "schema": "JM.TargetBridge.PhysicalContactQueue/0.5",
+  "order": [
+    {
+      "id": 1,
+      "body": "SPINBREAK v0.8",
+      "host": "GDevelop",
+      "status": "READY",
+      "route": "GDevelop direct editor URL",
+      "manual_rebuild": false
+    },
+    {
+      "id": 2,
+      "body": "SPINBREAK v0.8",
+      "host": "Unity",
+      "status": "READY",
+      "route": "spinbreak-unity-contact-001-v0-5-direct",
+      "manual_rebuild": false
+    },
+    {
+      "id": 3,
+      "body": "SPINBREAK v0.8",
+      "host": "Unreal",
+      "status": "HOLD",
+      "reason": "Visual Studio C++ toolchain/storage route not yet available"
+    },
+    {
+      "id": 4,
+      "body": "other exact JM sources",
+      "host": "Target Bridge",
+      "status": "ADAPTER_OPEN",
+      "reason": "source recognized; semantic adapter must be earned from exact source contact"
+    }
+  ],
+  "law": "READY != DING. Physical recipient proof does not transfer."
+}

@@ -1,0 +1,93 @@
+{
+  "firstLayout": "",
+  "gdVersion": {"build":99,"major":4,"minor":0,"revision":0},
+  "properties": {
+    "adaptGameResolutionAtRuntime": false,
+    "folderProject": false,
+    "orientation": "landscape",
+    "packageName": "com.jmisjustme.targetbridge.spinbreak",
+    "pixelsRounding": false,
+    "projectUuid": "f74183bd-77f7-4c07-b4dd-2ab52c669e37",
+    "scaleMode": "linear",
+    "sizeOnStartupMode": "adaptWidth",
+    "useDeprecatedZeroAsDefaultZOrder": true,
+    "useExternalSourceFiles": false,
+    "version": "0.5.0",
+    "name": "SPINBREAK v0.8 — JM Target Bridge Contact Slice",
+    "description": "Exact-source registered bounded SPINBREAK contact slice. Not a full SPINBREAK port.",
+    "author": "JM",
+    "windowWidth": 1280,
+    "windowHeight": 720,
+    "latestCompilationDirectory": "",
+    "maxFPS": 60,
+    "minFPS": 10,
+    "verticalSync": false,
+    "platformSpecificAssets": {},
+    "loadingScreen": {
+      "backgroundColor": 16777215,
+      "backgroundFadeInDuration": 0,
+      "backgroundImageResourceName": "",
+      "gdevelopLogoStyle": "light",
+      "logoAndProgressFadeInDuration": 0,
+      "logoAndProgressLogoFadeInDelay": 0,
+      "minDuration": 0,
+      "progressBarColor": 0,
+      "progressBarHeight": 20,
+      "progressBarMaxWidth": 200,
+      "progressBarMinWidth": 40,
+      "progressBarWidthPercent": 30,
+      "showGDevelopSplash": false,
+      "showProgressBar": false
+    },
+    "authorIds": [],
+    "extensionProperties": [],
+    "platforms": [{"name":"GDevelop JS platform"}],
+    "currentPlatform": "GDevelop JS platform"
+  },
+  "resources": {"resources":[],"resourceFolders":[]},
+  "objects": [],
+  "objectsGroups": [],
+  "variables": [],
+  "layouts": [{
+    "b":245,
+    "disableInputWhenNotFocused":true,
+    "mangledName":"JM_SPINBREAK_CONTACT",
+    "name":"SPINBREAK Contact",
+    "oglFOV":90,
+    "oglZFar":500,
+    "oglZNear":1,
+    "r":245,
+    "standardSortMethod":true,
+    "stopSoundsOnStartup":true,
+    "title":"",
+    "v":245,
+    "uiSettings":{"grid":false,"gridType":"rectangular","gridWidth":32,"gridHeight":32,"gridOffsetX":0,"gridOffsetY":0,"gridColor":10401023,"gridAlpha":0.8,"snap":false,"zoomFactor":1,"windowMask":false},
+    "objectsGroups":[],
+    "variables":[
+      {"folded":true,"name":"spin","type":"number","value":100},
+      {"folded":true,"name":"stability","type":"number","value":100},
+      {"folded":true,"name":"integrity","type":"number","value":100}
+    ],
+    "instances":[
+      {"angle":0,"customSize":false,"height":0,"layer":"","locked":false,"name":"YOU","persistentUuid":"11111111-1111-4111-8111-111111111111","width":0,"x":100,"y":320,"zOrder":2,"numberProperties":[],"stringProperties":[],"initialVariables":[]},
+      {"angle":0,"customSize":false,"height":0,"layer":"","locked":false,"name":"RIVAL_A","persistentUuid":"22222222-2222-4222-8222-222222222222","width":0,"x":760,"y":320,"zOrder":2,"numberProperties":[],"stringProperties":[],"initialVariables":[]},
+      {"angle":0,"customSize":false,"height":0,"layer":"","locked":false,"name":"Status","persistentUuid":"33333333-3333-4333-8333-333333333333","width":0,"x":40,"y":40,"zOrder":3,"numberProperties":[],"stringProperties":[],"initialVariables":[]}
+    ],
+    "objects":[
+      {"bold":true,"italic":false,"name":"YOU","smoothed":true,"tags":"","type":"TextObject::Text","underlined":false,"variables":[],"effects":[],"behaviors":[],"string":"YOU","font":"","characterSize":64,"color":{"r":20,"g":20,"b":20}},
+      {"bold":true,"italic":false,"name":"RIVAL_A","smoothed":true,"tags":"","type":"TextObject::Text","underlined":false,"variables":[],"effects":[],"behaviors":[],"string":"RIVAL A","font":"","characterSize":64,"color":{"r":160,"g":60,"b":30}},
+      {"bold":false,"italic":false,"name":"Status","smoothed":true,"tags":"","type":"TextObject::Text","underlined":false,"variables":[],"effects":[],"behaviors":[],"string":"SPINBREAK v0.8 → GDEVELOP\nWAIT","font":"","characterSize":22,"color":{"r":0,"g":0,"b":0}}
+    ],
+    "events":[
+      {"disabled":false,"folded":false,"type":"BuiltinCommonInstructions::Comment","color":{"b":109,"g":230,"r":255,"textB":0,"textG":0,"textR":0},"comment":"EXACT-SOURCE REGISTERED SPINBREAK v0.8 CONTACT SLICE. FULL GAME PARITY NOT CLAIMED.","comment2":""},
+      {"type":"BuiltinCommonInstructions::JsCode","inlineCode":"const root=globalThis;const you=runtimeScene.getObjects(\"YOU\")[0],rival=runtimeScene.getObjects(\"RIVAL_A\")[0],status=runtimeScene.getObjects(\"Status\")[0];const spin=runtimeScene.getVariables().get(\"spin\"),stability=runtimeScene.getVariables().get(\"stability\"),integrity=runtimeScene.getVariables().get(\"integrity\");if(!root.__JM_RECEIPT__)root.__JM_RECEIPT__={schema:\"JM.TargetBridge.HostReturnReceipt/0.4\",host:\"GDevelop\",real_host:true,source_authority:\"JM\",body_id:\"jm.spinbreak.v0.8/contact-slice-v0.1\",semantic_results:{\"signal.route_right\":\"WAIT\",\"move.you\":\"WAIT\",\"signal.kic\":\"WAIT\",\"kic.spin_cost\":\"WAIT\",\"contact.you_rival_a\":\"WAIT\",\"signal.wake\":\"WAIT\",\"wake.stability\":\"WAIT\",\"wake.spin\":\"WAIT\",\"wake.integrity\":\"WAIT\"},unresolved_preserved:[\"spinbreak.full_contact_pressure_model\",\"spinbreak.full_three_body_ai\",\"spinbreak.full_visual_history_parity\"]};const r=root.__JM_RECEIPT__;const pass=id=>r.semantic_results[id]=\"PASS\";const dt=gdjs.evtTools.runtimeScene.getElapsedTimeInSeconds(runtimeScene);if(you&&gdjs.evtTools.input.isKeyPressed(runtimeScene,\"Right\")){const b=you.getX();you.setX(b+300*dt);if(you.getX()>b){pass(\"signal.route_right\");pass(\"move.you\");}}if((gdjs.evtTools.input.wasKeyReleased(runtimeScene,\"k\")||gdjs.evtTools.input.wasKeyReleased(runtimeScene,\"Space\"))&&r.semantic_results[\"signal.kic\"]!==\"PASS\"){pass(\"signal.kic\");spin.setNumber(Math.max(0,spin.getAsNumber()-4.2));pass(\"kic.spin_cost\");}if(you&&rival&&gdjs.RuntimeObject.collisionTest(you,rival,false))pass(\"contact.you_rival_a\");if(gdjs.evtTools.input.wasKeyReleased(runtimeScene,\"r\")&&r.semantic_results[\"signal.wake\"]!==\"PASS\"){pass(\"signal.wake\");stability.setNumber(Math.min(100,stability.getAsNumber()+16));pass(\"wake.stability\");spin.setNumber(Math.min(100,spin.getAsNumber()+7));pass(\"wake.spin\");integrity.setNumber(Math.max(0,integrity.getAsNumber()-3.5));pass(\"wake.integrity\");}const req=[\"signal.route_right\",\"move.you\",\"signal.kic\",\"kic.spin_cost\",\"contact.you_rival_a\",\"signal.wake\",\"wake.stability\",\"wake.spin\",\"wake.integrity\"],ok=req.every(id=>r.semantic_results[id]===\"PASS\");if(status)status.setText(\"SPINBREAK v0.8 → GDEVELOP\\nspin: \"+spin.getAsNumber().toFixed(1)+\" | stability: \"+stability.getAsNumber().toFixed(1)+\" | integrity: \"+integrity.getAsNumber().toFixed(1)+\"\\n\"+req.map(id=>id+\":\"+r.semantic_results[id]).join(\" | \")+(ok?\"\\nBOUNDED SECOND-BUILD CONTACT: PASS\":\"\\nRIGHT + K/SPACE + CONTACT + R\"));if(ok&&!r.completed){r.completed=true;console.log(\"JM TARGET BRIDGE SPINBREAK GDEVELOP PASS\",r);}","parameterObjects":"","useStrict":true,"eventsSheetExpanded":false}
+    ],
+    "layers":[{"ambientLightColorB":200,"ambientLightColorG":200,"ambientLightColorR":200,"followBaseLayerCamera":false,"isLightingLayer":false,"name":"","visibility":true,"cameras":[{"defaultSize":true,"defaultViewport":true,"height":0,"viewportBottom":1,"viewportLeft":0,"viewportRight":1,"viewportTop":0,"width":0}],"effects":[]}],
+    "behaviorsSharedData":[]
+  }],
+  "externalEvents":[],
+  "eventsFunctionsExtensions":[],
+  "externalLayouts":[],
+  "externalSourceFiles":[],
+  "tests":[]
+}

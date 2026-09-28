@@ -78,7 +78,7 @@ const PROJECTS = Object.freeze([
     sparse: ['private', 'public'],
     landmarks: {
       PrivateDomainPolicy: 'private/domain.te',
-      PublicDomainPolicy: 'public/domain.te'
+      PublicSystemServerPolicy: 'public/system_server.te'
     }
   },
   {

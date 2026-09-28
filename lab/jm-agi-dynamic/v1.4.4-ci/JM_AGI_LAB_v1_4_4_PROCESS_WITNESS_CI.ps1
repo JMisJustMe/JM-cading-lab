@@ -131,7 +131,7 @@ if (-not (Test-Path $HtmlPath)) {
 Write-Host ''
 Write-Host 'JM AGI Lab v1.4.4 — Windows runner R4 preflight' -ForegroundColor Cyan
 try {
-  # Exercise the process-tree traversal before opening Edge. This catches PowerShell runtime/name collisions early.
+ # Exercise the process-tree traversal before opening Edge. This catches PowerShell runtime/name collisions early.
   [void](Get-ProcessTreePids @())
   [void](Get-DedicatedRootPids @())
   $Edge = Find-Edge
@@ -172,4 +172,110 @@ if (-not $Token) {
 }
 
 Write-Host "Harness armed with token: $Token" -ForegroundColor Green
-Write-Host !AA
+Write-Host 'Durability settle: holding the verified browser challenge for 12 seconds before process termination.' -ForegroundColor Cyan
+for ($settleSecond = 1; $settleSecond -le 12; $settleSecond++) {
+  Start-Sleep -Seconds 1
+  Write-Host "Durability settle heartbeat: $settleSecond/12" -ForegroundColor DarkGray
+}
+Write-Host 'Durability settle complete. Process termination may proceed.' -ForegroundColor Green
+
+$Seeds = @(Get-DedicatedSeeds $ProfilePath)
+if ($Seeds.Count -lt 1) {
+  throw 'Could not identify the isolated Edge process by its dedicated user-data-dir. No process was terminated.'
+}
+$SeedPids = @($Seeds | ForEach-Object { [int]$_.ProcessId } | Sort-Object -Unique)
+$PrePids = @(Get-ProcessTreePids $SeedPids)
+if ($PrePids.Count -lt 1) {
+  throw 'Dedicated Edge process tree was empty. No restart claim can be made.'
+}
+
+$RootPids = @(Get-DedicatedRootPids $Seeds)
+if ($RootPids.Count -lt 1) {
+  throw 'Could not identify a dedicated Edge root process. No termination was attempted.'
+}
+
+Write-Host ("Dedicated Edge process tree before stop: " + ($PrePids -join ', '))
+Write-Host ("Dedicated root PID(s): " + ($RootPids -join ', '))
+Write-Host 'Terminating only that dedicated test tree…'
+$TerminationAttempts = @()
+foreach ($rootPid in $RootPids) {
+  if (Test-PidAlive $rootPid) {
+    $attempt = Invoke-TaskKillNonFatal $rootPid
+    $TerminationAttempts += $attempt
+    if ($attempt.exitCode -eq 0) {
+      Write-Host "taskkill accepted for root PID $rootPid." -ForegroundColor DarkGray
+    } else {
+      Write-Host "taskkill returned exit $($attempt.exitCode) for root PID $rootPid; zero-observation will decide the result." -ForegroundColor Yellow
+    }
+  } else {
+    $TerminationAttempts += [pscustomobject]@{targetPid=$rootPid;exitCode=128;stdout='';stderr='PID already absent before termination call.'}
+    Write-Host "Root PID $rootPid was already absent; zero-observation will decide the result." -ForegroundColor DarkGray
+  }
+}
+
+$zeroDeadline = (Get-Date).AddSeconds($ZeroTimeoutSeconds)
+$ZeroObserved = $false
+while ((Get-Date) -lt $zeroDeadline) {
+  Start-Sleep -Milliseconds 250
+  $alivePre = @($PrePids | Where-Object { Test-PidAlive $_ })
+  $remainingDedicated = @(Get-DedicatedSeeds $ProfilePath)
+  if ($alivePre.Count -eq 0 -and $remainingDedicated.Count -eq 0) {
+    $ZeroObserved = $true
+    break
+  }
+}
+if (-not $ZeroObserved) {
+  throw 'The dedicated Edge process tree did not reach zero within the timeout. Relaunch was withheld.'
+}
+
+$ZeroAt = (Get-Date).ToUniversalTime().ToString('o')
+$ReturnDebugPort = Get-FreeTcpPort
+$BodySha = (Get-FileHash -Algorithm SHA256 -Path $HtmlPath).Hash.ToLowerInvariant()
+$Witness = [ordered]@{
+  schema = 'JM_AGI_EDGE_PROCESS_WITNESS_v1'
+  runnerVersion = $RunnerVersion
+  runId = $RunId
+  token = $Token
+  platform = 'Windows'
+  browser = 'Microsoft Edge'
+  dedicatedProfile = $true
+  zeroObserved = $true
+  zeroAt = $ZeroAt
+  prePids = @($PrePids)
+  rootPids = @($RootPids)
+  terminationAttempts = @($TerminationAttempts)
+  bodyFileName = $HtmlName
+  bodySha256 = $BodySha
+  debugPort = $DebugPort
+  returnDebugPort = $ReturnDebugPort
+  durabilitySettleSeconds = 12
+}
+$WitnessJson = $Witness | ConvertTo-Json -Depth 5 -Compress
+$Witness | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 -Path $WitnessPath
+$Encoded = ConvertTo-Base64Url $WitnessJson
+$ReturnUrl = "$FileUri#jm-restart-witness=$Encoded"
+
+Write-Host 'Dedicated Edge process tree reached ZERO.' -ForegroundColor Green
+Write-Host 'Relaunching the same body with the same isolated profile…g'
+Start-Sleep -Milliseconds 700
+Start-DedicatedEdge $Edge $ProfilePath $ReturnUrl $ReturnDebugPort
+
+Write-Host ''
+Write-Host 'OS witness complete. The reopened page performs the durable read-back, fresh-session check, restore, and final scope decision.' -ForegroundColor Cyan
+Write-Host "Witness receipt: $WitnessPath"
+
+
+# CI-only final return verification: the contract page must evaluate the witness and expose PASS in its title.
+$verifyDeadline=(Get-Date).AddSeconds(20)
+$ReturnPass=$false
+while((Get-Date)-lt $verifyDeadline -and -not $ReturnPass){
+  Start-Sleep -Milliseconds 250
+  $pages=@(Get-CdpPages $ReturnDebugPort)
+  foreach($page in $pages){
+    $title=[string]$page.title
+    if($title -eq 'JMAGI_CI_RETURN_PASS'){ $ReturnPass=$true; break }
+    if($title -like 'JMAGI_CI_RETURN_FAIL*'){ throw "Returned page reported failure: $title" }
+  }
+}
+if(-not $ReturnPass){ throw 'Returned contract page did not report JMAGI_CI_RETURN_PASS within timeout.' }
+Write-Host 'CI_RETURN_VERIFY_PASS' -ForegroundColor Green

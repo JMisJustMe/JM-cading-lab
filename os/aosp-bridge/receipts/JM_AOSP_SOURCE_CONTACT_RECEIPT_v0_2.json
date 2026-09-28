@@ -1,0 +1,62 @@
+{
+  "schema": "jm.aosp-source-contact-receipt/0.2",
+  "at": "2026-09-28T02:41:50.665Z",
+  "upstream": {
+    "remote": "https://android.googlesource.com/platform/manifest",
+    "requestedAlias": "android-latest-release",
+    "checkedOutBranch": "android-latest-release",
+    "manifestCommit": "ad156f32caaa06dae91c02d443f6a8fe210eaa54",
+    "resolvedDefaultRevision": "android17-release",
+    "manifestFetch": "..",
+    "defaultXmlSha256": "370de7d48d889bcdcc8c8eb625e444eacc5990c4bf1f722d50351f52827d8c3f",
+    "projectCount": 1087,
+    "includeCount": 0
+  },
+  "checks": [
+    {
+      "id": "remote.official",
+      "passed": true,
+      "actual": "https://android.googlesource.com/platform/manifest",
+      "required": "https://android.googlesource.com/platform/manifest"
+    },
+    {
+      "id": "branch.alias",
+      "passed": true,
+      "actual": "android-latest-release",
+      "required": "android-latest-release"
+    },
+    {
+      "id": "commit.pinned",
+      "passed": true,
+      "actual": "ad156f32caaa06dae91c02d443f6a8fe210eaa54",
+      "required": "40-hex Git commit"
+    },
+    {
+      "id": "manifest.xml",
+      "passed": true,
+      "actual": "/home/runner/work/JM-cading-lab/JM-cading-lab/.jm-aosp-manifest-contact/manifest/default.xml",
+      "required": "<manifest>"
+    },
+    {
+      "id": "manifest.projects",
+      "passed": true,
+      "actual": {
+        "projectCount": 1087,
+        "includeCount": 0
+      },
+      "required": "project/include entries > 0"
+    },
+    {
+      "id": "manifest.revision",
+      "passed": true,
+      "actual": "android17-release",
+      "required": "non-empty default revision"
+    }
+  ],
+  "ding": {
+    "type": "DING",
+    "scope": "AOSP_SOURCE_MANIFEST_CONTACT",
+    "claim": "Official AOSP android-latest-release manifest returned from android.googlesource.com and was pinned/inspected."
+  },
+  "boundary": "SOURCE/MANIFEST CONTACT ONLY. This is not repo sync, AOSP compilation, image production, boot, CTS, hardware or production proof."
+}

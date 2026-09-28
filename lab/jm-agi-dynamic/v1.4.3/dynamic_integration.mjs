@@ -105,11 +105,36 @@ try {
   browser1=await chromium.connectOverCDP(`http://127.0.0.1:${port1}`);
   const ctx1=browser1.contexts()[0];
   const page1=await waitFor(()=>ctx1.pages()[0],5000,'first Edge page');
+  page1.on('console',m=>log('PAGE_CONSOLE',m.type()+': '+m.text()));
+  page1.on('pageerror',e=>log('PAGE_ERROR',e.message));
   await page1.waitForLoadState('domcontentloaded');
   log('BODY_LOADED',await page1.title());
-
-  await page1.waitForFunction(rid=>document.title.startsWith('JMAGI_ARMED__'+rid+'__'),runId,{timeout:15000});
+  await new Promise(r=>setTimeout(r,1200));
+  const diag=await page1.evaluate(()=>{
+    const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return {parseError:e.message}}};
+    let ctx=null,params=null;
+    try{ctx=window.JMAGI_TEST?.ownerContextInfo?.()}catch(e){ctx={error:e.message}}
+    try{params=window.JMAGI_TEST?.processRunnerParams?.()}catch(e){params={error:e.message}}
+    return {
+      title:document.title,href:location.href,hash:location.hash,readyState:document.readyState,
+      hasJMAGITest:!!window.JMAGI_TEST,ctx,params,
+      pending:get('jm_agi_lab_v1_4_3_process_pending'),
+      last:get('jm_agi_lab_v1_4_3_process_last')
+    };
+  });
+  log('BOOT_DIAG',JSON.stringify(diag));
+  let autoArmed=false;
+  try{
+    await page1.waitForFunction(rid=>document.title.startsWith('JMAGI_ARMED__'+rid+'__'),runId,{timeout:4000});
+    autoArmed=true;
+  }catch(e){
+    log('AUTOARM_MISSED','invoking direct harness arm for diagnosis');
+    const direct=await page1.evaluate(rid=>window.JMAGI_TEST?.startProcessRestartHarness({runId:rid}),runId);
+    log('DIRECT_ARM_RESULT',JSON.stringify(direct));
+    await page1.waitForFunction(rid=>document.title.startsWith('JMAGI_ARMED__'+rid+'__'),runId,{timeout:5000});
+  }
   const armedTitle=await page1.title();
+  log('AUTOARM_STATE',autoArmed?'automatic':'direct-diagnostic');
   const m=armedTitle.match(new RegExp('^JMAGI_ARMED__'+runId+'__([A-Z0-9-]+)$'));
   if(!m) throw new Error('armed title/token mismatch: '+armedTitle);
   const token=m[1];

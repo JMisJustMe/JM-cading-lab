@@ -1,0 +1,30 @@
+<!doctype html><meta charset="utf-8"><title>JMAGI_CI_IDLE</title><pre id="s">idle</pre><script>
+(()=>{
+const P='__jm_ci_probe__', K='jm_ci_pending';
+const load='L'+Date.now()+'_'+Math.random().toString(36).slice(2);
+const q=()=>new URLSearchParams(location.hash.slice(1));
+const dec=s=>{s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return JSON.parse(decodeURIComponent(escape(atob(s))))};
+const tok=()=>{const a=new Uint32Array(2);crypto.getRandomValues(a);return 'PROC-'+a[0].toString(36).toUpperCase()+'-'+a[1].toString(36).toUpperCase()};
+const h=q();
+if(h.get('jm-process-run')){
+ const run=h.get('jm-process-run'),t=tok(),prior=localStorage.getItem(P),had=prior!==null,payload='CI:'+run+':'+t+':'+Date.now();
+ localStorage.setItem(P,payload); if(localStorage.getItem(P)!==payload){document.title='JMAGI_CI_ARM_FAIL';return}
+ localStorage.setItem(K,JSON.stringify({run,t,payload,prior,had,load,path:location.pathname,started:Date.now()}));
+ sessionStorage.setItem('jm_ci_session',run+':'+t+':'+load);
+ document.title='JMAGI_ARMED__'+run+'__'+t; document.querySelector('#s').textContent='armed '+run;
+ return;
+}
+if(h.get('jm-restart-witness')){
+ try{
+  const w=dec(h.get('jm-restart-witness')),p=JSON.parse(localStorage.getItem(K)||'null');
+  if(!p) throw Error('no pending');
+  const newLoad=p.load!==load, exact=localStorage.getItem(P)===p.payload, run=w.runId===p.run, token=w.token===p.t, zero=w.zeroObserved===true, same=w.bodyFileName===location.pathname.split('/').pop();
+  if(p.had)localStorage.setItem(P,p.prior);else localStorage.removeItem(P);
+  const restored=localStorage.getItem(P)===(p.had?p.prior:null);
+  localStorage.removeItem(K);
+  if(run&&token&&zero&&newLoad&&exact&&restored&&same){document.title='JMAGI_CI_RETURN_PASS';document.querySelector('#s').textContent='pass'}
+  else{document.title='JMAGI_CI_RETURN_FAIL';document.querySelector('#s').textContent=JSON.stringify({run,token,zero,newLoad,exact,restored,same,w,p})}
+ }catch(e){document.title='JMAGI_CI_RETURN_FAIL__'+e.message;document.querySelector('#s').textContent=e.stack||e.message}
+}
+})();
+</script>

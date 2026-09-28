@@ -34,6 +34,8 @@ jobs:
           node-version: '22'
       - name: Prove JM -> AOSP bridge gating
         run: node os/aosp-bridge/selftest.mjs
+      - name: Validate heavy-host bootstrap shell
+        run: bash -n os/aosp-bridge/bootstrap-heavy-build-host.sh
 
   upstream-source-contact:
     runs-on: ubuntu-latest

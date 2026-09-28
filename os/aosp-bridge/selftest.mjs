@@ -7,7 +7,9 @@ import {
   buildJMControlPlane,
   createAospExecutionPlan,
   evaluateAospContactReceipt,
-  renderAospBuildScript
+  renderAospBuildScript,
+  renderAospCompileScript,
+  renderAospBootScript
 } from './jm-aosp-bridge.mjs';
 
 let pass = 0;
@@ -89,7 +91,7 @@ test('ready host emits Repo sync + envsetup + lunch + m', () => {
   const plan = createAospExecutionPlan(readyHost);
   const joined = plan.commands.join('\n');
   assert.equal(plan.status, 'READY');
-  assert.match(joined, /repo init .*android-latest-release/);
+  assert.match(joined, /repo init .*--clone-filter=blob:limit=10M .*android-latest-release/);
   assert.match(joined, /repo sync -c -j8/);
   assert.match(joined, /source build\/envsetup\.sh/);
   assert.match(joined, /lunch aosp_cf_x86_64_only_phone-aosp_current-userdebug/);
@@ -101,6 +103,22 @@ test('build script includes boot return observation', () => {
   assert.match(script, /launch_cvd --daemon/);
   assert.match(script, /sys\.boot_completed/);
   assert.match(script, /ro\.build\.fingerprint/);
+});
+
+test('compile-only script builds without attempting Cuttlefish boot', () => {
+  const script = renderAospCompileScript(createAospExecutionPlan(readyHost));
+  assert.match(script, /repo sync -c -j8/);
+  assert.match(script, /m -j/);
+  assert.doesNotMatch(script, /launch_cvd/);
+  assert.doesNotMatch(script, /sys\.boot_completed/);
+});
+
+test('boot-only script observes Cuttlefish return without resyncing source', () => {
+  const script = renderAospBootScript(createAospExecutionPlan(readyHost));
+  assert.match(script, /launch_cvd --daemon/);
+  assert.match(script, /sys\.boot_completed/);
+  assert.doesNotMatch(script, /repo sync/);
+  assert.doesNotMatch(script, /m -j/);
 });
 
 test('empty receipt earns no build Ding and no boot Ding', () => {
@@ -162,7 +180,7 @@ test('final crown stays bounded beyond real-phone/production claims', () => {
 console.log(JSON.stringify({
   schema: 'jm.aosp-bridge-selftest/0.1',
   pass,
-  total: 16,
-  state: pass === 16 ? 'PASS' : 'FAIL',
+  total: 18,
+  state: pass === 18 ? 'PASS' : 'FAIL',
   claim: 'JM AOSP bridge logic proven only; no AOSP compile/boot claimed.'
 }, null, 2));

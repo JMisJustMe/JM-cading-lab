@@ -8,7 +8,9 @@ import {
   assessAospHost,
   buildJMControlPlane,
   createAospExecutionPlan,
-  renderAospBuildScript
+  renderAospBuildScript,
+  renderAospCompileScript,
+  renderAospBootScript
 } from './jm-aosp-bridge.mjs';
 
 function tryText(command, args = []) {
@@ -67,6 +69,8 @@ function detectHost(root) {
 }
 
 const execute = process.argv.includes('--execute');
+const executeBuild = process.argv.includes('--execute-build');
+const executeBoot = process.argv.includes('--execute-boot');
 const root = process.env.JM_AOSP_ROOT ?? path.join(os.homedir(), 'jm-aosp', 'android-latest-release');
 const receiptDir = process.env.JM_AOSP_RECEIPT_DIR ?? path.resolve('jm-aosp-receipts');
 fs.mkdirSync(receiptDir, { recursive: true });
@@ -100,20 +104,33 @@ if (plan.status !== 'READY') {
   process.exitCode = 78;
 } else {
   const script = renderAospBuildScript(plan);
+  const compileScript = renderAospCompileScript(plan);
+  const bootScript = renderAospBootScript(plan);
   const scriptPath = path.join(receiptDir, 'jm-aosp-real-contact.generated.sh');
+  const compilePath = path.join(receiptDir, 'jm-aosp-compile.generated.sh');
+  const bootPath = path.join(receiptDir, 'jm-aosp-boot.generated.sh');
   fs.writeFileSync(scriptPath, script);
-  fs.chmodSync(scriptPath, 0o755);
+  fs.writeFileSync(compilePath, compileScript);
+  fs.writeFileSync(bootPath, bootScript);
+  for (const file of [scriptPath, compilePath, bootPath]) fs.chmodSync(file, 0o755);
   console.log('[JM AOSP] JM control plane READY.');
-  console.log('[JM AOSP] generated real-contact script:', scriptPath);
+  console.log('[JM AOSP] generated full-contact script:', scriptPath);
+  console.log('[JM AOSP] generated compile-only script:', compilePath);
+  console.log('[JM AOSP] generated boot-only script:', bootPath);
 
-  if (execute) {
-    console.log('[JM AOSP] --execute supplied: entering real AOSP source/build/boot route.');
-    const result = spawnSync('bash', [scriptPath], {
+  let selected = null;
+  if (execute) selected = { mode: 'source/build/boot', path: scriptPath };
+  else if (executeBuild) selected = { mode: 'source/build', path: compilePath };
+  else if (executeBoot) selected = { mode: 'boot-only', path: bootPath };
+
+  if (selected) {
+    console.log(`[JM AOSP] execution supplied: entering real AOSP ${selected.mode} route.`);
+    const result = spawnSync('bash', [selected.path], {
       stdio: 'inherit',
       env: { ...process.env, JM_AOSP_ROOT: root }
     });
     process.exitCode = result.status ?? 1;
   } else {
-    console.log('[JM AOSP] not executed: rerun with --execute when you intend to start the heavy AOSP contact.');
+    console.log('[JM AOSP] not executed: use --execute-build for compile only or --execute for source/build/boot.');
   }
 }

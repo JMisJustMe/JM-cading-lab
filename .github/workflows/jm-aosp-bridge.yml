@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - jm-aosp-bridge-v0.1
+      - jm-aosp-source-contact-v0.2
     paths:
       - 'os/aosp-bridge/**'
       - 'coding-estate/everybody/role-qualified-61/native/os-coding.mjs'
@@ -31,3 +32,20 @@ jobs:
           node-version: '22'
       - name: Prove JM -> AOSP bridge gating
         run: node os/aosp-bridge/selftest.mjs
+
+  upstream-source-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: bridge-selftest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contact and pin official AOSP manifest
+        run: node os/aosp-bridge/source-contact.mjs
+      - name: Preserve source-contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-aosp-source-contact-receipt
+          path: jm-aosp-receipts/JM_AOSP_SOURCE_CONTACT_RECEIPT_v0_2.json

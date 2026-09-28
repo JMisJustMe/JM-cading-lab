@@ -1,0 +1,95 @@
+{
+  "schema": "jm.aosp-product-layer-contact-receipt/0.7",
+  "at": "2026-09-28T03:18:45.725Z",
+  "upstream": {
+    "remote": "https://android.googlesource.com/device/google/cuttlefish",
+    "revision": "android17-release",
+    "commit": "283645aacf6cdb56cc31a9362f54d412dbc132a1",
+    "baseProduct": "device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk",
+    "baseSha256Before": "6b230155a99c97f10b132f4a61f2eff54fd3bef781a6dc8a71397d0aa0f55123",
+    "baseSha256After": "6b230155a99c97f10b132f4a61f2eff54fd3bef781a6dc8a71397d0aa0f55123"
+  },
+  "staged": {
+    "schema": "jm.aosp-product-stage-receipt/0.7",
+    "product": "jm_cf_x86_64_phone",
+    "target": "jm_cf_x86_64_phone-aosp_current-userdebug",
+    "files": {
+      "AndroidProducts.mk": {
+        "path": "device/jm/cuttlefish/AndroidProducts.mk",
+        "bytes": 217,
+        "sha256": "6dd8d428383244727ca8093475ecbb553136862cca290a1da11f1dade8bc61c2"
+      },
+      "jm_cf_x86_64_phone.mk": {
+        "path": "device/jm/cuttlefish/jm_cf_x86_64_phone.mk",
+        "bytes": 665,
+        "sha256": "815eceae7117f8f1703d6f7217b4c52501d4539d70c3b8aeb844d72819479e21"
+      },
+      "jm-os-release.txt": {
+        "path": "device/jm/cuttlefish/jm-os-release.txt",
+        "bytes": 282,
+        "sha256": "6850c8c1f838f2f97c5f918498e876b46090fd9cc8a8dbd0442b58f2bb7fdbc4"
+      }
+    },
+    "checks": [
+      {
+        "id": "inherit.verified-base",
+        "passed": true
+      },
+      {
+        "id": "product.name",
+        "passed": true
+      },
+      {
+        "id": "registry.product",
+        "passed": true
+      },
+      {
+        "id": "marker.copy",
+        "passed": true
+      },
+      {
+        "id": "marker.identity",
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "ding": {
+      "type": "DING",
+      "scope": "JM_AOSP_PRODUCT_LAYER_STAGED",
+      "claim": "JM product definition is staged into a contacted AOSP tree and inherits the verified Android 17 Cuttlefish x86_64-only phone product."
+    },
+    "boundary": "Staging proves source-tree integration only. It does not prove Soong product discovery, compilation, image inclusion or boot."
+  },
+  "checks": [
+    {
+      "id": "upstream.remote",
+      "passed": true
+    },
+    {
+      "id": "upstream.commit",
+      "passed": true
+    },
+    {
+      "id": "upstream.base-preserved",
+      "passed": true
+    },
+    {
+      "id": "repo-layout.base-preserved",
+      "passed": true
+    },
+    {
+      "id": "jm.stage",
+      "passed": true
+    },
+    {
+      "id": "jm.separate-tree",
+      "passed": true
+    }
+  ],
+  "ding": {
+    "type": "DING",
+    "scope": "JM_AOSP_PRODUCT_LAYER_REAL_SOURCE_CONTACT",
+    "claim": "The JM Cuttlefish product layer was staged beside a real Android 17 Cuttlefish base checkout while the upstream base product remained byte-identical."
+  },
+  "boundary": "Real source-tree staging contact only. Soong product discovery, compilation, image inclusion and boot remain unearned until heavy-host contact."
+}

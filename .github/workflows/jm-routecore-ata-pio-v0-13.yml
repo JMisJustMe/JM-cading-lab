@@ -1,0 +1,87 @@
+name: JM RouteCore ATA PIO v0.13 Contact
+
+on:
+  push:
+    branches:
+      - routecore-ata-pio-v0-13-contact
+    paths:
+      - ".github/workflows/jm-routecore-ata-pio-v0-13.yml"
+      - "routecore/ata-pio-v0-13/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ata-pio-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install x86 build and emulator tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 nasm binutils gcc
+
+      - name: Reconstruct exact v0.13 release and fresh-build
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-ata
+          {
+            cat routecore/ata-pio-v0-13/fix/00a.b64
+            cat routecore/ata-pio-v0-13/fix/00b.b64
+            cat routecore/ata-pio-v0-13/fix/00c.b64
+            cat routecore/ata-pio-v0-13/package/part01.b64
+            cat routecore/ata-pio-v0-13/fix/02a1.b64
+            cat routecore/ata-pio-v0-13/fix/02a2.b64
+            cat routecore/ata-pio-v0-13/fix/02b.b64
+            cat routecore/ata-pio-v0-13/fix/02c.b64
+            cat routecore/ata-pio-v0-13/fix/03a.b64
+            cat routecore/ata-pio-v0-13/fix/03b.b64
+            cat routecore/ata-pio-v0-13/fix/03c.b64
+            cat routecore/ata-pio-v0-13/package/part04.b64
+            cat routecore/ata-pio-v0-13/package/part05.b64
+          } | tr -d '\r\n\t ' > routecore-ata/release.b64
+          base64 -d routecore-ata/release.b64 > routecore-ata/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip
+          echo "2ee8e512520030359083e9bf60585f404001adac226d7621e167a5a259116c55  routecore-ata/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip" | sha256sum -c -
+          unzip -q routecore-ata/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip -d routecore-ata/work
+          cd routecore-ata/work
+          python3 build.py
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13_PROOF.json'))
+          assert p['passed'] == 216, p
+          assert p['status'] == 'PASS', p
+          print('CONSTRUCTION PASS', p['passed'], '/', p['total'])
+          PY
+          echo "8db9cc0b5efc552866554a7d5939ae978164bde95dbccf6610a8ba4c31a90ddd  build/jm_routecore_native64_ata_v0_13.img" | sha256sum -c -
+          echo "c98637383055d4f315e9d7986020ea4dcee831877f5c2850e1f5ab08e553652b  build/jm_routecore_native64_v0_13.elf" | sha256sum -c -
+
+      - name: Two-boot ATA persistence court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-ata/work
+          chmod +x RUN_PERSISTENCE_LINUX.sh
+          ./RUN_PERSISTENCE_LINUX.sh
+          echo "=== BOOT 1 SERIAL ==="
+          cat runtime/boot1.log
+          echo "=== BOOT 2 SERIAL ==="
+          cat runtime/boot2.log
+          echo "=== FINAL RAW DISK COURT ==="
+          python3 INSPECT_ATA_DISK.py runtime/jm_routecore_native64_ata_v0_13.runtime.img --expect-payload
+          sha256sum runtime/jm_routecore_native64_ata_v0_13.runtime.img
+
+      - name: Upload contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-ata-v0-13-contact
+          path: |
+            routecore-ata/work/runtime/
+            routecore-ata/work/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13_PROOF.json
+            routecore-ata/work/build/jm_routecore_native64_ata_v0_13.img
+            routecore-ata/work/build/jm_routecore_native64_v0_13.elf
+          if-no-files-found: warn

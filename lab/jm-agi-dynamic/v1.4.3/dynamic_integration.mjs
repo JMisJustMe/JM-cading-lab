@@ -140,6 +140,8 @@ try {
   if(!m) throw new Error('armed title/token mismatch: '+armedTitle);
   const token=m[1];
   log('ARMED',token);
+  log('DURABILITY_SETTLE','12-second pre-termination persistence window');
+  for(let sec=1;sec<=12;sec++){ await new Promise(r=>setTimeout(r,1000)); log('SETTLE_HEARTBEAT',sec+'/12'); }
 
   const pending=await page1.evaluate(()=>JSON.parse(localStorage.getItem('jm_agi_lab_v1_4_3_process_pending')||'null'));
   if(!pending?.writeAccepted || pending.runId!==runId || pending.token!==token) throw new Error('browser pending challenge invalid');

@@ -223,3 +223,143 @@ jobs:
             routecore-contact/irq-qemu-exit.txt
             routecore-contact/qemu-version.txt
           if-no-files-found: error
+
+      - name: Build minimal IRQ1 PS2 device probe descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 routecore/boot-contact-v0-1/make_irq1_probe.py \
+            routecore-contact/jm_routecore_bios_boot_v0_1.img \
+            routecore-contact/jm_routecore_irq1_probe_v0_1.img
+          echo "bd9da6a5d0ab919773cdc62633705b86e54eb631026072fb985f71a9c42eafa2  routecore-contact/jm_routecore_irq1_probe_v0_1.img" | sha256sum -c -
+
+      - name: Inject keyboard input and prove IRQ1 device contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          monitor=/tmp/jm-routecore-hmp.sock
+          rm -f "$monitor" routecore-contact/irq1-boot.log
+
+          qemu-system-i386 \
+            -machine pc \
+            -m 64M \
+            -drive file=routecore-contact/jm_routecore_irq1_probe_v0_1.img,format=raw,if=ide,index=0,media=disk \
+            -boot c \
+            -display none \
+            -serial stdio \
+            -monitor unix:"$monitor",server,nowait \
+            -no-reboot \
+            -no-shutdown \
+            > routecore-contact/irq1-boot.log 2>&1 &
+          qemu_pid=$!
+
+          cleanup() {
+            kill "$qemu_pid" 2>/dev/null || true
+            wait "$qemu_pid" 2>/dev/null || true
+            rm -f "$monitor"
+          }
+          trap cleanup EXIT
+
+          ready=0
+          for _ in $(seq 1 120); do
+            if [ -S "$monitor" ] && grep -Fq "KERNEL READY" routecore-contact/irq1-boot.log; then
+              ready=1
+              break
+            fi
+            sleep 0.05
+          done
+          test "$ready" -eq 1
+
+          python3 - <<'PY'
+          import socket, time
+          path = "/tmp/jm-routecore-hmp.sock"
+          s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+          s.settimeout(2)
+          s.connect(path)
+          try:
+              s.recv(4096)
+          except Exception:
+              pass
+          s.sendall(b"sendkey a\n")
+          time.sleep(0.25)
+          s.close()
+          PY
+
+          seen=0
+          for _ in $(seq 1 80); do
+            if grep -Fq "PS2 IRQ1 CONTACT" routecore-contact/irq1-boot.log; then
+              seen=1
+              break
+            fi
+            sleep 0.05
+          done
+
+          cat routecore-contact/irq1-boot.log
+          test "$seen" -eq 1
+          grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/irq1-boot.log
+          grep -Fq "KERNEL READY" routecore-contact/irq1-boot.log
+          grep -Fq "PS2 IRQ1 CONTACT" routecore-contact/irq1-boot.log
+          printf '0\n' > routecore-contact/irq1-qemu-exit.txt
+
+      - name: Create IRQ1 PS2 device-contact receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          parent = d / "jm_routecore_bios_boot_v0_1.img"
+          probe = d / "jm_routecore_irq1_probe_v0_1.img"
+          log = (d / "irq1-boot.log").read_text(errors="replace")
+          marker = "PS2 IRQ1 CONTACT"
+          receipt = {
+            "schema": "jm.routecore.irq1-device-contact/0.1",
+            "parent_target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "probe_target": "JM_ROUTECORE_IRQ1_DEVICE_PROBE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS + emulated PS/2 keyboard/8259 PIC",
+            "input_action": "QEMU HMP sendkey a",
+            "parent_sha256": hashlib.sha256(parent.read_bytes()).hexdigest(),
+            "expected_parent_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "probe_sha256": hashlib.sha256(probe.read_bytes()).hexdigest(),
+            "expected_probe_sha256": "bd9da6a5d0ab919773cdc62633705b86e54eb631026072fb985f71a9c42eafa2",
+            "markers": {
+              "kernel_ready": "KERNEL READY" in log,
+              "ps2_irq1_contact": marker in log
+            },
+            "claim_scope": {
+              "emulated_keyboard_input_injected": True,
+              "emulated_ps2_irq1_delivery": True,
+              "routecore_irq1_handler_execution": True,
+              "ps2_data_port_0x60_read_returned": True,
+              "pic_master_eoi_path_returned": True,
+              "emulated_keyboard_device_contact": True,
+              "physical_hardware": False,
+              "physical_keyboard_contact": False
+            }
+          }
+          receipt["marker_count"] = log.count(marker)
+          receipt["pass"] = (
+            receipt["parent_sha256"] == receipt["expected_parent_sha256"]
+            and receipt["probe_sha256"] == receipt["expected_probe_sha256"]
+            and all(receipt["markers"].values())
+            and receipt["marker_count"] > 0
+          )
+          out = d / "JM_ROUTECORE_IRQ1_DEVICE_CONTACT_RECEIPT_v0_1.json"
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not receipt["pass"]:
+            raise SystemExit(1)
+          PY
+
+      - name: Upload IRQ1 device-contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_IRQ1_DEVICE_CONTACT_v0_1
+          path: |
+            routecore-contact/JM_ROUTECORE_IRQ1_DEVICE_CONTACT_RECEIPT_v0_1.json
+            routecore-contact/JM_ROUTECORE_IRQ1_DEVICE_PROBE_PATCH_MANIFEST_v0_1.json
+            routecore-contact/jm_routecore_irq1_probe_v0_1.img
+            routecore-contact/irq1-boot.log
+            routecore-contact/irq1-qemu-exit.txt
+            routecore-contact/qemu-version.txt
+          if-no-files-found: error

@@ -6,11 +6,13 @@ on:
       - routecore-boot-contact-v0-1
     paths:
       - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
+      - "routecore/boot-contact-v0-1/**"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
+      - "routecore/boot-contact-v0-1/**"
   workflow_dispatch:
 
 permissions:
@@ -34,13 +36,21 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p routecore-contact
-          printf '%s' '+jHAjtiOwI7QvAB8+4gWVHy0QooWVHy+RHzNE3Ib+uSSDALmkg8BFnB8DyDAZoPIAQ8iwOp2fAgAsEW0Ds0Q9Ov9ifYQAAcAAAAAEAEAAAAAAAAAAJCJ9gAAAAAAAAAA//8AAACazwD//wAAAJLPABcAWHwAAGa4EACO2I7AjtC8AAAJALgAAAEA/+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVao=' | base64 -d > routecore-contact/stage1.bin
-          printf '%s' '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' | base64 -d > routecore-contact/kernel_direct_i386.bin
-          dd if=/dev/zero of=routecore-contact/jm_routecore_bios_boot_v0_1.img bs=512 count=2880 status=none
-          dd if=routecore-contact/stage1.bin of=routecore-contact/jm_routecore_bios_boot_v0_1.img conv=notrunc status=none
-          dd if=routecore-contact/kernel_direct_i386.bin of=routecore-contact/jm_routecore_bios_boot_v0_1.img bs=512 seek=1 conv=notrunc status=none
+
+          as --32 routecore/boot-contact-v0-1/stage1.S -o routecore-contact/stage1.o
+          ld -m elf_i386 -Ttext 0x7c00 --oformat binary             routecore-contact/stage1.o             -o routecore-contact/stage1.bin
+
+          base64 -d routecore/boot-contact-v0-1/kernel_direct_i386.bin.b64             > routecore-contact/kernel_direct_i386.bin
+
+          echo "67731f8ccfc6ac116cc988d0d9ec0c4f2f613d13606e87bd75f1914f555a62fe  routecore-contact/stage1.bin" | sha256sum -c -
+          echo "613ab8a79372f93fb24be6e840a740bf7cec526ac423c10175f7d4770befbe5f  routecore-contact/kernel_direct_i386.bin" | sha256sum -c -
+
+          dd if=/dev/zero of=routecore-contact/jm_routecore_bios_boot_v0_1.img             bs=512 count=2880 status=none
+          dd if=routecore-contact/stage1.bin             of=routecore-contact/jm_routecore_bios_boot_v0_1.img             conv=notrunc status=none
+          dd if=routecore-contact/kernel_direct_i386.bin             of=routecore-contact/jm_routecore_bios_boot_v0_1.img             bs=512 seek=1 conv=notrunc status=none
+
           echo "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80  routecore-contact/jm_routecore_bios_boot_v0_1.img" | sha256sum -c -
-          sha256sum routecore-contact/stage1.bin routecore-contact/kernel_direct_i386.bin routecore-contact/jm_routecore_bios_boot_v0_1.img
+          sha256sum             routecore-contact/stage1.bin             routecore-contact/kernel_direct_i386.bin             routecore-contact/jm_routecore_bios_boot_v0_1.img
 
       - name: Boot exact frozen image under QEMU BIOS
         id: boot
@@ -48,10 +58,12 @@ jobs:
         run: |
           set -uo pipefail
           qemu-system-i386 --version | tee routecore-contact/qemu-version.txt
+
           set +e
-          timeout 8s qemu-system-i386             -machine pc             -m 64M             -drive file=routecore-contact/jm_routecore_bios_boot_v0_1.img,format=raw,if=floppy             -boot a             -display none             -serial stdio             -monitor none             -no-reboot             -no-shutdown             > routecore-contact/boot.log 2>&1
+          timeout 8s qemu-system-i386             -machine pc             -m 64M             -drive file=routecore-contact/jm_routecore_bios_boot_v0_1.img,format=raw,if=ide,index=0,media=disk             -boot c             -display none             -serial stdio             -monitor none             -no-reboot             -no-shutdown             > routecore-contact/boot.log 2>&1
           qemu_exit=$?
           set -e
+
           cat routecore-contact/boot.log
           grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/boot.log
           grep -Fq "INITRD OK" routecore-contact/boot.log
@@ -63,42 +75,46 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import hashlib, json, pathlib, subprocess
-          d=pathlib.Path("routecore-contact")
-          img=d/"jm_routecore_bios_boot_v0_1.img"
-          boot=(d/"boot.log").read_text(errors="replace")
-          receipt={
-            "schema":"jm.routecore.real-boot-contact/0.1",
-            "target":"JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
-            "execution_surface":"GitHub Actions ubuntu-latest + QEMU system i386 + BIOS",
-            "disk_sha256":hashlib.sha256(img.read_bytes()).hexdigest(),
-            "expected_disk_sha256":"17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
-            "qemu_version":(d/"qemu-version.txt").read_text().strip(),
-            "qemu_exit":int((d/"qemu-exit.txt").read_text().strip()),
-            "markers":{
-              "freestanding_entry":"JM ROUTECORE FREESTANDING v0.2" in boot,
-              "initrd_ok":"INITRD OK" in boot,
-              "kernel_ready":"KERNEL READY" in boot
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          img = d / "jm_routecore_bios_boot_v0_1.img"
+          boot = (d / "boot.log").read_text(errors="replace")
+          receipt = {
+            "schema": "jm.routecore.real-boot-contact/0.1",
+            "target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS",
+            "disk_sha256": hashlib.sha256(img.read_bytes()).hexdigest(),
+            "expected_disk_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "stage1_sha256": hashlib.sha256((d/"stage1.bin").read_bytes()).hexdigest(),
+            "kernel_sha256": hashlib.sha256((d/"kernel_direct_i386.bin").read_bytes()).hexdigest(),
+            "qemu_version": (d/"qemu-version.txt").read_text().strip(),
+            "qemu_exit": int((d/"qemu-exit.txt").read_text().strip()),
+            "markers": {
+              "freestanding_entry": "JM ROUTECORE FREESTANDING v0.2" in boot,
+              "initrd_ok": "INITRD OK" in boot,
+              "kernel_ready": "KERNEL READY" in boot
             },
-            "claim_scope":{
-              "bios_firmware_emulator_boot":True,
-              "x86_cpu_execution":True,
-              "protected_mode_transition":True,
-              "paging_init_returned":True,
-              "idt_pic_pit_setup_returned":True,
-              "physical_hardware":False,
-              "explicit_irq_handler_receipt":False,
-              "real_device_driver_receipt":False
+            "claim_scope": {
+              "bios_firmware_emulator_boot": True,
+              "x86_cpu_execution": True,
+              "protected_mode_transition": True,
+              "paging_init_returned": True,
+              "idt_pic_pit_setup_returned": True,
+              "physical_hardware": False,
+              "explicit_irq_handler_receipt": False,
+              "real_device_driver_receipt": False
             }
           }
           receipt["pass"] = (
             receipt["disk_sha256"] == receipt["expected_disk_sha256"]
+            and receipt["stage1_sha256"] == "67731f8ccfc6ac116cc988d0d9ec0c4f2f613d13606e87bd75f1914f555a62fe"
+            and receipt["kernel_sha256"] == "613ab8a79372f93fb24be6e840a740bf7cec526ac423c10175f7d4770befbe5f"
             and all(receipt["markers"].values())
           )
           (d/"JM_ROUTECORE_REAL_BOOT_CONTACT_RECEIPT_v0_1.json").write_text(
-            json.dumps(receipt,indent=2,sort_keys=True)+"\n"
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n"
           )
-          print(json.dumps(receipt,indent=2,sort_keys=True))
+          print(json.dumps(receipt, indent=2, sort_keys=True))
           if not receipt["pass"]:
             raise SystemExit(1)
           PY

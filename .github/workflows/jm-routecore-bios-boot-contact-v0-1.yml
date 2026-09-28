@@ -6,6 +6,11 @@ on:
       - routecore-boot-contact-v0-1
     paths:
       - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
   workflow_dispatch:
 
 permissions:

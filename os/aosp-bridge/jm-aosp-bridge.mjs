@@ -232,6 +232,9 @@ export function createAospExecutionPlan(host = {}, options = {}) {
     upstream: AOSP_UPSTREAM,
     commands,
     bootCommands: [
+      `cd "${root}"`,
+      'source build/envsetup.sh',
+      `lunch ${AOSP_UPSTREAM.target}`,
       'command -v launch_cvd >/dev/null',
       'launch_cvd --daemon',
       'adb wait-for-device',

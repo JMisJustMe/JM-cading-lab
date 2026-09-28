@@ -112,20 +112,57 @@ jobs:
           PY
           sha256sum ../JM_ROUTECORE_NATIVE64_AHCI_v0_14.zip
 
-      - name: Two-boot AHCI persistence court
+      - name: Diagnose pre-AHCI boot boundary
         shell: bash
         run: |
           set -euo pipefail
           cd routecore-ahci/work
-          chmod +x RUN_PERSISTENCE_LINUX.sh
-          ./RUN_PERSISTENCE_LINUX.sh
-          echo "=== BOOT 1 SERIAL ==="
-          cat runtime/boot1.log
-          echo "=== BOOT 2 SERIAL ==="
-          cat runtime/boot2.log
-          echo "=== FINAL RAW DISK COURT ==="
-          python3 INSPECT_AHCI_DISK.py runtime/jm_routecore_native64_ahci_v0_14.runtime.img --expect-payload
-          sha256sum runtime/jm_routecore_native64_ahci_v0_14.runtime.img
+          mkdir -p runtime/diagnostic
+          IMG="build/jm_routecore_native64_ahci_v0_14.img"
+
+          run_diag() {
+            local name="$1"; shift
+            echo "=== DIAG $name ==="
+            set +e
+            timeout 6s qemu-system-x86_64 "$@" -m 128M \
+              -boot c -serial file:"runtime/diagnostic/$name.serial" \
+              -display none -monitor none -no-reboot -no-shutdown \
+              -d guest_errors,cpu_reset -D "runtime/diagnostic/$name.debug" \
+              >"runtime/diagnostic/$name.stdout" 2>"runtime/diagnostic/$name.stderr"
+            rc=$?
+            set -e
+            echo "$rc" > "runtime/diagnostic/$name.exit"
+            echo "--- serial ---"
+            cat "runtime/diagnostic/$name.serial" || true
+            echo "--- stderr ---"
+            cat "runtime/diagnostic/$name.stderr" || true
+            echo "--- debug tail ---"
+            tail -80 "runtime/diagnostic/$name.debug" || true
+          }
+
+          run_diag pc-legacy -machine pc \
+            -drive file="$IMG",format=raw,if=ide,index=0,media=disk
+
+          run_diag q35-current -machine q35 \
+            -drive file="$IMG",format=raw,if=ide,index=0,media=disk
+
+          run_diag q35-explicit -machine q35 \
+            -drive if=none,id=jmdisk,file="$IMG",format=raw \
+            -device ide-hd,drive=jmdisk,bus=ide.0,bootindex=1
+
+          python3 - <<'PY'
+          from pathlib import Path
+          d=Path('runtime/diagnostic')
+          for n in ('pc-legacy','q35-current','q35-explicit'):
+              serial=(d/f'{n}.serial').read_text(errors='replace') if (d/f'{n}.serial').exists() else ''
+              print(n, {
+                  'bytes': len(serial.encode()),
+                  'entered': 'JM_ROUTECORE_NATIVE64_ENTER' in serial,
+                  'pci': 'JM_AHCI_PCI_DISCOVERED' in serial,
+                  'port': 'JM_AHCI_PORT_READY' in serial,
+                  'identify': 'JM_AHCI_IDENTIFY_READY' in serial,
+              })
+          PY
 
       - name: Upload AHCI contact artifacts
         if: always()

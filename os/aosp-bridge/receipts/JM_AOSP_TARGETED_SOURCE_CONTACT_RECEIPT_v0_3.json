@@ -1,0 +1,138 @@
+{
+  "schema": "jm.aosp-targeted-source-contact-receipt/0.3",
+  "at": "2026-09-28T02:53:17.999Z",
+  "host": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.23.2",
+    "hostname": "runnervmtr4k5"
+  },
+  "upstreamRevision": "android17-release",
+  "contacts": [
+    {
+      "id": "frameworks-base",
+      "remote": "https://android.googlesource.com/platform/frameworks/base",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "94b4c163b7dfe5ce3607f7bb8456f9573f7de57d",
+      "sparsePaths": [
+        "core/java/android/app",
+        "services/core/java/com/android/server",
+        "packages/SystemUI/src"
+      ],
+      "fileCount": 9128,
+      "bytes": 103552660,
+      "treeSha256": "89948dab49a86e788c8fb40331c09c8678e1c1e87cfdc68ace04f49e336296f5",
+      "landmarks": {
+        "ActivityThread.java": "core/java/android/app/ActivityThread.java",
+        "SystemServer.java": null,
+        "SystemUIInitializer.java": "packages/SystemUI/src/com/android/systemui/SystemUIInitializer.java"
+      },
+      "passed": true
+    },
+    {
+      "id": "system-core",
+      "remote": "https://android.googlesource.com/platform/system/core",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "545d2487e38192a2ce25040897ced877cf6b4f53",
+      "sparsePaths": [
+        "init",
+        "adb"
+      ],
+      "fileCount": 216,
+      "bytes": 1440382,
+      "treeSha256": "c073135ac5307c962f8bbe88a6e64a4cc91de81cc460a74dfb0d63250f3049e2",
+      "landmarks": {
+        "main.cpp": "init/main.cpp",
+        "init.cpp": "init/init.cpp"
+      },
+      "passed": true
+    },
+    {
+      "id": "frameworks-native",
+      "remote": "https://android.googlesource.com/platform/frameworks/native",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "ae266dcb706d083868578cfedce381ef44488a07",
+      "sparsePaths": [
+        "libs/binder",
+        "services/surfaceflinger"
+      ],
+      "fileCount": 1104,
+      "bytes": 13014586,
+      "treeSha256": "7cea2fdb9ac7e1119cf0eb328eb22960839c47255bf8e92b3146f0f95ca87400",
+      "landmarks": {
+        "ProcessState.cpp": "libs/binder/ProcessState.cpp",
+        "SurfaceFlinger.cpp": "services/surfaceflinger/SurfaceFlinger.cpp"
+      },
+      "passed": true
+    },
+    {
+      "id": "settings",
+      "remote": "https://android.googlesource.com/platform/packages/apps/Settings",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "213829fb67f5e070029e0513a088f31bc8f5c1ed",
+      "sparsePaths": [
+        "src",
+        "res"
+      ],
+      "fileCount": 6864,
+      "bytes": 126240577,
+      "treeSha256": "bcec64d8f00504075d5e1ef2a1a239a1a935808861eae111e4cef5d4f21bb90c",
+      "landmarks": {
+        "SettingsActivity.java": "src/com/android/settings/SettingsActivity.java"
+      },
+      "passed": true
+    },
+    {
+      "id": "launcher3",
+      "remote": "https://android.googlesource.com/platform/packages/apps/Launcher3",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "c612e6ece389f21c40f8cb9cd9a4b44239f00009",
+      "sparsePaths": [
+        "src",
+        "res"
+      ],
+      "fileCount": 1248,
+      "bytes": 9717301,
+      "treeSha256": "6f3a541f11fa5fce14ebc3ed62ca5eaa5f1b355e05101fec1ecd411d32dc1c80",
+      "landmarks": {
+        "Launcher.java": "src/com/android/launcher3/Launcher.java"
+      },
+      "passed": true
+    },
+    {
+      "id": "build-soong",
+      "remote": "https://android.googlesource.com/platform/build/soong",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "6722dd8833db7482df1a2543ca3fcf67ddf0f7b1",
+      "sparsePaths": [
+        "android",
+        "cmd"
+      ],
+      "fileCount": 372,
+      "bytes": 3711977,
+      "treeSha256": "f9aa6619e64fb36bda8bc19be551ba49efccb9d53ee9a14e51b768d555878c76",
+      "landmarks": {
+        "soong_build.go": null,
+        "androidmk.go": "android/androidmk.go"
+      },
+      "passed": true
+    }
+  ],
+  "totals": {
+    "projects": 6,
+    "files": 18932,
+    "bytes": 257677483
+  },
+  "ding": {
+    "type": "DING",
+    "scope": "AOSP_TARGETED_SOURCE_CONTACT",
+    "claim": "Selected Android 17 AOSP framework, init/adb, native/Binder/SurfaceFlinger, Settings, Launcher3 and Soong source returned from official android.googlesource.com repositories."
+  },
+  "boundary": "TARGETED SOURCE CONTACT ONLY. Sparse source is not the full AOSP tree and does not prove full repo sync, compilation, image production, boot, CTS, hardware support or production readiness."
+}

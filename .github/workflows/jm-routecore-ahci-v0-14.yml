@@ -143,6 +143,9 @@ jobs:
           run_diag pc-legacy -machine pc \
             -drive file="$IMG",format=raw,if=ide,index=0,media=disk
 
+          run_diag q35-parent-v013 -machine q35 \
+            -drive file="build/jm_routecore_native64_ata_v0_13.img",format=raw,if=ide,index=0,media=disk
+
           run_diag q35-current -machine q35 \
             -drive file="$IMG",format=raw,if=ide,index=0,media=disk
 
@@ -153,7 +156,7 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           d=Path('runtime/diagnostic')
-          for n in ('pc-legacy','q35-current','q35-explicit'):
+          for n in ('pc-legacy','q35-parent-v013','q35-current','q35-explicit'):
               serial=(d/f'{n}.serial').read_text(errors='replace') if (d/f'{n}.serial').exists() else ''
               print(n, {
                   'bytes': len(serial.encode()),

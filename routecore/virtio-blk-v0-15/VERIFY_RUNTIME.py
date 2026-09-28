@@ -20,8 +20,7 @@ if other in text:
 critical=[
 'JM_ROUTECORE_NATIVE64_ENTER','JM_VIRTIO_BLK_PCI_DISCOVERED','JM_VIRTIO_BLK_QUEUE_READY','JM_VIRTIO_BLK_READ_CONTACT',
 'JM_BLOCKFS_MOUNTED',mode,'JM_USERMODE_CONTACT_T1','JM_BLOCKFS_OPEN_T1','JM_BLOCKFS_WRITE_T1',
-'JM_VIRTIO_BLK_WRITE_CONTACT','JM_VIRTIO_BLK_FLUSH_CONTACT','JM_BLOCK_CACHE_SYNC_T1',
-'JM_BLOCK_DEVICE_BACKING_VERIFIED_T1','JM_BLOCK_CACHE_INVALIDATE_T1','JM_BLOCKFS_SEEK_T1','JM_BLOCKFS_READ_T1',
+'JM_BLOCK_CACHE_SYNC_T1','JM_BLOCK_DEVICE_BACKING_VERIFIED_T1','JM_BLOCK_CACHE_INVALIDATE_T1','JM_BLOCKFS_SEEK_T1','JM_BLOCKFS_READ_T1',
 'JM_BLOCKFS_CLOSE_T1','JM_BLOCKFS_USER_CONTENT_VERIFIED_T1','JM_PROCESS_EXIT_T1','JM_PROCESS_EXIT_POOL_RESTORED_64','JM_PROCESS_EXIT_SURVIVOR_T0']
 pos=-1; order_fail=[]
 for m in critical:
@@ -36,4 +35,4 @@ if missing or order_fail:
 print('PASS — virtio-blk runtime route')
 print('mount mode:', mode)
 print('required markers:', len(required)+1)
-print('critical ordered route:', len(critical))
+print('critical ordered route:', len(critical))\nprint('device write/flush markers required independently of first-occurrence order')

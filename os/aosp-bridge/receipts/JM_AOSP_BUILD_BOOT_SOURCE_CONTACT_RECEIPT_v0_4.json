@@ -1,0 +1,272 @@
+{
+  "schema": "jm.aosp-build-boot-source-contact-receipt/0.4",
+  "at": "2026-09-28T03:00:09.090Z",
+  "host": {
+    "platform": "linux",
+    "arch": "x64",
+    "node": "v22.23.2",
+    "hostname": "runnervmtr4k5"
+  },
+  "upstreamRevision": "android17-release",
+  "documentedLunchTarget": "aosp_cf_x86_64_only_phone-aosp_current-userdebug",
+  "productAuthority": {
+    "product": "aosp_cf_x86_64_only_phone",
+    "declaredByCuttlefishAndroidProducts": true
+  },
+  "contacts": [
+    {
+      "id": "frameworks-base-systemserver",
+      "remote": "https://android.googlesource.com/platform/frameworks/base",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "94b4c163b7dfe5ce3607f7bb8456f9573f7de57d",
+      "sparsePaths": [
+        "services/java/com/android/server"
+      ],
+      "fileCount": 75,
+      "bytes": 4879675,
+      "treeSha256": "a1c9e4c2849b84bc130f47dc95753b15cfe6a4dce9d23309d30edeaa5585a0c8",
+      "landmarks": {
+        "SystemServer": {
+          "path": "services/java/com/android/server/SystemServer.java",
+          "exists": true,
+          "bytes": 173627,
+          "sha256": "5138c483c8495bac185e1bdbd328d287a1235ff0549e124e8c3d2d3a4fc473bd"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "build-soong-entrypoints",
+      "remote": "https://android.googlesource.com/platform/build/soong",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "6722dd8833db7482df1a2543ca3fcf67ddf0f7b1",
+      "sparsePaths": [
+        "cmd/soong_build",
+        "cmd/soong_ui"
+      ],
+      "fileCount": 25,
+      "bytes": 103494,
+      "treeSha256": "4ad61351f8e91c055b01b9e4fb40dccbaa7010d43ec38600d9fc2fdc31016b1a",
+      "landmarks": {
+        "SoongBuildMain": {
+          "path": "cmd/soong_build/main.go",
+          "exists": true,
+          "bytes": 17359,
+          "sha256": "fa57972b284800393e78b9b452604c28576350e63ce0d8f3dd1fd93b66fb9faf"
+        },
+        "SoongUiMain": {
+          "path": "cmd/soong_ui/main.go",
+          "exists": true,
+          "bytes": 22031,
+          "sha256": "6c97d2aa3ff006de5967f0de031bfec4032cf10803f5d4974120f611628fb8bb"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "build-make",
+      "remote": "https://android.googlesource.com/platform/build",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "5ce6f787337d0223710bf7d4a16dbe6d2a35f777",
+      "sparsePaths": [
+        "core",
+        "target/product",
+        "tools/releasetools"
+      ],
+      "fileCount": 524,
+      "bytes": 9580806,
+      "treeSha256": "1c9c7b8279e4c7956a804d5027fd9d409b84cc9f0c673f1a1fa1d446ba75604b",
+      "landmarks": {
+        "EnvSetup": {
+          "path": "envsetup.sh",
+          "exists": true,
+          "bytes": 38355,
+          "sha256": "b33ca1b7b2d7fb5ec5e4d60293ae728932c6ff90855cc1b81345d7cc31ed099e"
+        },
+        "CoreMain": {
+          "path": "core/main.mk",
+          "exists": true,
+          "bytes": 79628,
+          "sha256": "577d3492a9909b590d1ce59cef98b0ab34b727b81d9d91c54605fa737f82a3f7"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "cuttlefish-device",
+      "remote": "https://android.googlesource.com/device/google/cuttlefish",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "283645aacf6cdb56cc31a9362f54d412dbc132a1",
+      "sparsePaths": [
+        "vsoc_x86_64_only/phone",
+        "shared"
+      ],
+      "fileCount": 500,
+      "bytes": 850164,
+      "treeSha256": "2f9c55ec69e1abc62074e22c98c97a2c9691dd2a7f8e918eb981b776b406e5b8",
+      "landmarks": {
+        "AndroidProducts": {
+          "path": "AndroidProducts.mk",
+          "exists": true,
+          "bytes": 3936,
+          "sha256": "52e73f5764c2ba86d48bf0637a53ca98f9ab65be3793cbabe178cb486ef4329d"
+        },
+        "X8664OnlyPhoneProduct": {
+          "path": "vsoc_x86_64_only/phone/aosp_cf.mk",
+          "exists": true,
+          "bytes": 2832,
+          "sha256": "6b230155a99c97f10b132f4a61f2eff54fd3bef781a6dc8a71397d0aa0f55123"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "art-runtime",
+      "remote": "https://android.googlesource.com/platform/art",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "b753cf97923c3695338d21466fa14c57b480a59a",
+      "sparsePaths": [
+        "runtime",
+        "libartbase"
+      ],
+      "fileCount": 1055,
+      "bytes": 14614539,
+      "treeSha256": "07ad9bbabc38cafbdc9b325734ad5e724df9c092116b58a91139bc7911d1d2c3",
+      "landmarks": {
+        "Runtime": {
+          "path": "runtime/runtime.cc",
+          "exists": true,
+          "bytes": 147701,
+          "sha256": "5b10319787af6fbcee27e6bac3e1a7637f18392e669bb52cd04db831ebe3a083"
+        },
+        "RuntimeBlueprint": {
+          "path": "runtime/Android.bp",
+          "exists": true,
+          "bytes": 47222,
+          "sha256": "06f9b10ba9689f530f8a8b63e7820e441dc77fd82c8970b5b2f05c7478ec097b"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "bionic",
+      "remote": "https://android.googlesource.com/platform/bionic",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "06356e41c5ed7b12220b24c05ba4fdb873b126a7",
+      "sparsePaths": [
+        "libc",
+        "libdl"
+      ],
+      "fileCount": 2271,
+      "bytes": 159845508,
+      "treeSha256": "a74edd6d2f15b67431a441307324103147b5a7991d09fd55730a80952aa46883",
+      "landmarks": {
+        "LibcBlueprint": {
+          "path": "libc/Android.bp",
+          "exists": true,
+          "bytes": 88298,
+          "sha256": "2d0cdb26a1546694d1cded95ba84b10b3ba2bda78f783a3a9830d0e47661ac10"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "system-sepolicy",
+      "remote": "https://android.googlesource.com/platform/system/sepolicy",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "e066568e98d86db31a9346d30977f3632fa7073c",
+      "sparsePaths": [
+        "private",
+        "public"
+      ],
+      "fileCount": 571,
+      "bytes": 2842171,
+      "treeSha256": "7540c030e90cb2f55516749a846fe1f0f2757e2c8193efbd863dc78fa3f64c59",
+      "landmarks": {
+        "PrivateDomainPolicy": {
+          "path": "private/domain.te",
+          "exists": true,
+          "bytes": 83027,
+          "sha256": "793eb29f8621bc3318cdb9c40cce39f954999d2152b2bd45b812955ce5b1de16"
+        },
+        "PublicSystemServerPolicy": {
+          "path": "public/system_server.te",
+          "exists": true,
+          "bytes": 447,
+          "sha256": "78dd1b7904d6238bf7d684a804f3d2940edf2ccac719152079180fba7968e512"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "bootable-recovery",
+      "remote": "https://android.googlesource.com/platform/bootable/recovery",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "080f671785c84ae1ac38797fe1fa7364d158fab4",
+      "sparsePaths": [
+        "recovery_utils",
+        "install"
+      ],
+      "fileCount": 45,
+      "bytes": 232686,
+      "treeSha256": "134f90567cf9c4eb958973d65426e40682f4bebe62e7e69f173feac0f77ba428",
+      "landmarks": {
+        "RecoveryMain": {
+          "path": "recovery.cpp",
+          "exists": true,
+          "bytes": 33436,
+          "sha256": "f79cbed90bff7cfef1585bdf3a6ca3c488e392713c1d2d6dbbcbee79ea71a208"
+        }
+      },
+      "passed": true
+    },
+    {
+      "id": "avb",
+      "remote": "https://android.googlesource.com/platform/external/avb",
+      "branch": "android17-release",
+      "revisionRequested": "android17-release",
+      "commit": "ba2dec4b035b0a3b61c5f8f8a74d86bcd450b1ee",
+      "sparsePaths": [
+        "libavb",
+        "avbtool"
+      ],
+      "fileCount": 56,
+      "bytes": 661990,
+      "treeSha256": "b41d33b8529d044496d12b8fb13cbabebc14b19990c2ed8f0bd03d5ef5fbb8d6",
+      "landmarks": {
+        "AvbSlotVerify": {
+          "path": "libavb/avb_slot_verify.c",
+          "exists": true,
+          "bytes": 68469,
+          "sha256": "44b9bc1311aeb5a39c44e800f3a74068034bde94dc6e29c77ad173cd570cc72d"
+        },
+        "AvbTool": {
+          "path": "avbtool.py",
+          "exists": true,
+          "bytes": 241912,
+          "sha256": "1aa6f2b462aa67aa3fdf488bee83ab517de8ad9d8228c7b45c35267ab2cf6781"
+        }
+      },
+      "passed": true
+    }
+  ],
+  "totals": {
+    "projects": 9,
+    "files": 5122,
+    "bytes": 193611033
+  },
+  "ding": {
+    "type": "DING",
+    "scope": "AOSP_BUILD_BOOT_SOURCE_ANATOMY_CONTACT",
+    "claim": "Android 17 build/boot anatomy returned from official AOSP source, including SystemServer, Soong/build entrypoints, the documented Cuttlefish x86_64-only phone product, ART, Bionic, SELinux policy, recovery and AVB."
+  },
+  "boundary": "SOURCE ANATOMY CONTACT ONLY. Does not prove full repo sync, Soong/Ninja compilation, image generation, Cuttlefish boot, CTS, physical hardware or production readiness."
+}

@@ -100,14 +100,15 @@ const launchUrl=`${bodyUrl}#jm-process-run=${runId}&jm-autoarm=1`;
 
 let edge1, edge2, browser1, browser2;
 try {
-  edge1=launchEdge(edge,profilePath,port1,launchUrl);
+  edge1=launchEdge(edge,profilePath,port1,'about:blank');
   await cdpEndpoint(port1);
   browser1=await chromium.connectOverCDP(`http://127.0.0.1:${port1}`);
   const ctx1=browser1.contexts()[0];
   const page1=await waitFor(()=>ctx1.pages()[0],5000,'first Edge page');
   page1.on('console',m=>log('PAGE_CONSOLE',m.type()+': '+m.text()));
-  page1.on('pageerror',e=>log('PAGE_ERROR',e.message));
-  await page1.waitForLoadState('domcontentloaded');
+  page1.on('pageerror',e=>log('PAGE_ERROR',e.stack||e.message));
+  log('NAVIGATE_EXACT_BODY',launchUrl);
+  await page1.goto(launchUrl,{waitUntil:'load',timeout:15000});
   log('BODY_LOADED',await page1.title());
   await new Promise(r=>setTimeout(r,1200));
   const diag=await page1.evaluate(()=>{
@@ -159,12 +160,15 @@ try {
   };
   const port2=9322;
   const returnUrl=`${bodyUrl}#jm-restart-witness=${b64url(witness)}`;
-  edge2=launchEdge(edge,profilePath,port2,returnUrl);
+  edge2=launchEdge(edge,profilePath,port2,'about:blank');
   await cdpEndpoint(port2);
   browser2=await chromium.connectOverCDP(`http://127.0.0.1:${port2}`);
   const ctx2=browser2.contexts()[0];
   const page2=await waitFor(()=>ctx2.pages()[0],5000,'returned Edge page');
-  await page2.waitForLoadState('domcontentloaded');
+  page2.on('console',m=>log('RETURN_CONSOLE',m.type()+': '+m.text()));
+  page2.on('pageerror',e=>log('RETURN_PAGE_ERROR',e.stack||e.message));
+  log('NAVIGATE_RETURN_BODY',returnUrl);
+  await page2.goto(returnUrl,{waitUntil:'load',timeout:15000});
   log('RETURN_LOADED',await page2.title());
 
   const result=await waitFor(async()=>{

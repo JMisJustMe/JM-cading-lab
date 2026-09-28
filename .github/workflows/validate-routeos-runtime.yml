@@ -69,9 +69,12 @@ jobs:
           assert not absent, f'Missing runtime organs: {absent}'
 
           assert "const RUNTIME='routeos/runtime/'" in launcher
-          assert 'LAUNCH RUNNABLE ROUTEOS' in launcher
+          assert 'OPEN DERIVED PUBLIC RUNTIME' in launcher
           assert 'routeos/runtime/index.html' in sw
-          assert "games-beyond-v0-8-routeos-runtime-r1" in sw
+          assert "const SEED_WORLD=Object.freeze({w:900,h:620})" in runtime
+          assert 'function seedCamera()' in runtime
+          assert 'const {w,h}=SEED_WORLD' in runtime
+          assert "games-beyond-v0-9-whole-estate-current-r1" in sw
 
           receipt = {
               'schema':'JM.RouteOSRunnableRuntimeValidation/1.0',

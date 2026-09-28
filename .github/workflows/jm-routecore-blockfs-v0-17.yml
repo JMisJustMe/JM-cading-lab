@@ -69,6 +69,16 @@ jobs:
           (
             cd routecore-v17/work
             patch -p1 < ../v016.patch
+            rm -rf build runtime __pycache__
+            mkdir -p build runtime
+            python3 build.py > ../v016-parent-build.stdout
+            python3 - <<'PY'
+import json
+p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_16_PROOF.json'))
+assert p['status']=='PASS' and p['passed']==237 and p['total']==237, (p['status'],p['passed'],p['total'])
+print('RECOVERED V0.16 PARENT BUILD PASS',p['passed'],'/',p['total'])
+PY
+            rm -rf build runtime __pycache__
           )
 
           for n in 01 02 03 04; do tr -d '\r\n\t ' < "routecore/blockfs-v0-17/package/part${n}.b64" > "routecore-v17/pieces/v017-${n}"; done

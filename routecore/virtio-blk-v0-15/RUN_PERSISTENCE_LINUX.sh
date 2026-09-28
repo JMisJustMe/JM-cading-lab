@@ -13,7 +13,7 @@ run_boot(){
   local log="$1" mode="$2"
   rm -f "$log"
   qemu-system-x86_64 -machine pc -m 128M \
-    -drive if=none,id=jmboot,format=raw,file="$BOOT",readonly=on \
+    -drive if=none,id=jmboot,format=raw,file="$BOOT",snapshot=on \
     -device ide-hd,drive=jmboot,bus=ide.0,bootindex=1 \
     -drive if=none,id=jmdata,format=raw,file="$DATA" \
     -device virtio-blk-pci,drive=jmdata,disable-modern=on \

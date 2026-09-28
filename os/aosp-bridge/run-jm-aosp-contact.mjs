@@ -28,7 +28,12 @@ function repoVersion() {
 }
 
 function diskFreeGB(target) {
-  const probe = fs.existsSync(target) ? target : path.dirname(target);
+  let probe = path.resolve(target);
+  while (!fs.existsSync(probe)) {
+    const parent = path.dirname(probe);
+    if (parent === probe) break;
+    probe = parent;
+  }
   const text = tryText('df', ['-Pk', probe]);
   const lines = text.split(/\r?\n/).filter(Boolean);
   if (lines.length < 2) return 0;

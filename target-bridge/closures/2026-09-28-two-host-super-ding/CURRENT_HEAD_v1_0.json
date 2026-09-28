@@ -1,0 +1,59 @@
+{
+  "schema": "JM.TargetBridge.CrossHostFLAZ/1.0",
+  "date": "2026-09-28",
+  "status": [
+    "FLAZ_COMPLETE_TWO_HOST_SCOPE",
+    "FROZEN",
+    "LOCKED",
+    "ANCHORED"
+  ],
+  "measured": {
+    "first_three_hosts": {
+      "passed": 2,
+      "total": 3,
+      "percent": 66.7
+    },
+    "full_ten_host_real_runtime": {
+      "passed": 2,
+      "total": 10,
+      "percent": 20
+    },
+    "prepared_host_faces": {
+      "prepared": 10,
+      "total": 10,
+      "percent": 100
+    },
+    "local_qa": {
+      "passed": 18,
+      "total": 18,
+      "percent": 100
+    }
+  },
+  "hosts": {
+    "GDevelop": {
+      "real_host": true,
+      "bounded_contact": "PASS",
+      "scoped_ding": "EARNED"
+    },
+    "Unity": {
+      "real_host": true,
+      "editor": "6000.4.31f1",
+      "actual_jm_lowering": "PASS",
+      "bounded_contact": "PASS",
+      "scoped_ding": "EARNED"
+    },
+    "Unreal": {
+      "status": "STORAGE_TOOLCHAIN_HOLD",
+      "real_host_ding": "OPEN",
+      "candidate_generated": true,
+      "blocker": "Visual Studio 2022 Game development with C++ workload",
+      "observed_storage_requirement_gb_approx": 20.9
+    }
+  },
+  "composite_super_ding": "EARNED_AT_BOUNDED_TWO_HOST_SCOPE",
+  "preserved_holds": [
+    "hazard.consequence",
+    "goal.after_collecting",
+    "starting_player_hp"
+  ]
+}

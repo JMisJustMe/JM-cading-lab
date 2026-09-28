@@ -1,0 +1,365 @@
+name: JM RouteCore BIOS Boot Contact v0.1
+
+on:
+  push:
+    branches:
+      - routecore-boot-contact-v0-1
+    paths:
+      - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
+      - "routecore/boot-contact-v0-1/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-bios-boot-contact-v0-1.yml"
+      - "routecore/boot-contact-v0-1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qemu-boot-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install QEMU x86
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86
+
+      - name: Reconstruct exact frozen RouteCore BIOS image
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-contact
+
+          as --32 routecore/boot-contact-v0-1/stage1.S -o routecore-contact/stage1.o
+          ld -m elf_i386 -Ttext 0x7c00 --oformat binary             routecore-contact/stage1.o             -o routecore-contact/stage1.bin
+
+          base64 -d routecore/boot-contact-v0-1/kernel_direct_i386.bin.b64             > routecore-contact/kernel_direct_i386.bin
+
+          echo "67731f8ccfc6ac116cc988d0d9ec0c4f2f613d13606e87bd75f1914f555a62fe  routecore-contact/stage1.bin" | sha256sum -c -
+          echo "613ab8a79372f93fb24be6e840a740bf7cec526ac423c10175f7d4770befbe5f  routecore-contact/kernel_direct_i386.bin" | sha256sum -c -
+
+          dd if=/dev/zero of=routecore-contact/jm_routecore_bios_boot_v0_1.img             bs=512 count=2880 status=none
+          dd if=routecore-contact/stage1.bin             of=routecore-contact/jm_routecore_bios_boot_v0_1.img             conv=notrunc status=none
+          dd if=routecore-contact/kernel_direct_i386.bin             of=routecore-contact/jm_routecore_bios_boot_v0_1.img             bs=512 seek=1 conv=notrunc status=none
+
+          echo "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80  routecore-contact/jm_routecore_bios_boot_v0_1.img" | sha256sum -c -
+          sha256sum             routecore-contact/stage1.bin             routecore-contact/kernel_direct_i386.bin             routecore-contact/jm_routecore_bios_boot_v0_1.img
+
+      - name: Boot exact frozen image under QEMU BIOS
+        id: boot
+        shell: bash
+        run: |
+          set -uo pipefail
+          qemu-system-i386 --version | tee routecore-contact/qemu-version.txt
+
+          set +e
+          timeout 8s qemu-system-i386             -machine pc             -m 64M             -drive file=routecore-contact/jm_routecore_bios_boot_v0_1.img,format=raw,if=ide,index=0,media=disk             -boot c             -display none             -serial stdio             -monitor none             -no-reboot             -no-shutdown             > routecore-contact/boot.log 2>&1
+          qemu_exit=$?
+          set -e
+
+          cat routecore-contact/boot.log
+          grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/boot.log
+          grep -Fq "INITRD OK" routecore-contact/boot.log
+          grep -Fq "KERNEL READY" routecore-contact/boot.log
+          printf '%s\n' "$qemu_exit" > routecore-contact/qemu-exit.txt
+
+      - name: Create boot receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          img = d / "jm_routecore_bios_boot_v0_1.img"
+          boot = (d / "boot.log").read_text(errors="replace")
+          receipt = {
+            "schema": "jm.routecore.real-boot-contact/0.1",
+            "target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS",
+            "disk_sha256": hashlib.sha256(img.read_bytes()).hexdigest(),
+            "expected_disk_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "stage1_sha256": hashlib.sha256((d/"stage1.bin").read_bytes()).hexdigest(),
+            "kernel_sha256": hashlib.sha256((d/"kernel_direct_i386.bin").read_bytes()).hexdigest(),
+            "qemu_version": (d/"qemu-version.txt").read_text().strip(),
+            "qemu_exit": int((d/"qemu-exit.txt").read_text().strip()),
+            "markers": {
+              "freestanding_entry": "JM ROUTECORE FREESTANDING v0.2" in boot,
+              "initrd_ok": "INITRD OK" in boot,
+              "kernel_ready": "KERNEL READY" in boot
+            },
+            "claim_scope": {
+              "bios_firmware_emulator_boot": True,
+              "x86_cpu_execution": True,
+              "protected_mode_transition": True,
+              "paging_init_returned": True,
+              "idt_pic_pit_setup_returned": True,
+              "physical_hardware": False,
+              "explicit_irq_handler_receipt": False,
+              "real_device_driver_receipt": False
+            }
+          }
+          receipt["pass"] = (
+            receipt["disk_sha256"] == receipt["expected_disk_sha256"]
+            and receipt["stage1_sha256"] == "67731f8ccfc6ac116cc988d0d9ec0c4f2f613d13606e87bd75f1914f555a62fe"
+            and receipt["kernel_sha256"] == "613ab8a79372f93fb24be6e840a740bf7cec526ac423c10175f7d4770befbe5f"
+            and all(receipt["markers"].values())
+          )
+          (d/"JM_ROUTECORE_REAL_BOOT_CONTACT_RECEIPT_v0_1.json").write_text(
+            json.dumps(receipt, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not receipt["pass"]:
+            raise SystemExit(1)
+          PY
+
+      - name: Upload boot-contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_REAL_BOOT_CONTACT_v0_1
+          path: routecore-contact/
+          if-no-files-found: error
+
+      - name: Build minimal IRQ0 probe descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 routecore/boot-contact-v0-1/make_irq_probe.py \
+            routecore-contact/jm_routecore_bios_boot_v0_1.img \
+            routecore-contact/jm_routecore_irq_probe_v0_1.img
+          echo "5b796fe9a9ab52297771c625f696a2ffcc3203aab3e54d412a3bfb50b90201c4  routecore-contact/jm_routecore_irq_probe_v0_1.img" | sha256sum -c -
+
+      - name: Execute PIT IRQ0 contact under QEMU
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          timeout 3s qemu-system-i386 \
+            -machine pc \
+            -m 64M \
+            -drive file=routecore-contact/jm_routecore_irq_probe_v0_1.img,format=raw,if=ide,index=0,media=disk \
+            -boot c \
+            -display none \
+            -serial stdio \
+            -monitor none \
+            -no-reboot \
+            -no-shutdown \
+            > routecore-contact/irq-boot.log 2>&1
+          irq_qemu_exit=$?
+          set -e
+
+          cat routecore-contact/irq-boot.log
+          grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/irq-boot.log
+          grep -Fq "INITRD OK" routecore-contact/irq-boot.log
+          grep -Fq "KERNEL READY" routecore-contact/irq-boot.log
+          grep -Fq "PIT IRQ0 CONTACT" routecore-contact/irq-boot.log
+          printf '%s\n' "$irq_qemu_exit" > routecore-contact/irq-qemu-exit.txt
+
+      - name: Create IRQ contact receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          parent = d / "jm_routecore_bios_boot_v0_1.img"
+          probe = d / "jm_routecore_irq_probe_v0_1.img"
+          log = (d / "irq-boot.log").read_text(errors="replace")
+          marker = "PIT IRQ0 CONTACT"
+          receipt = {
+            "schema": "jm.routecore.irq-contact/0.1",
+            "parent_target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "probe_target": "JM_ROUTECORE_IRQ_PROBE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS + emulated 8254 PIT/8259 PIC",
+            "parent_sha256": hashlib.sha256(parent.read_bytes()).hexdigest(),
+            "expected_parent_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "probe_sha256": hashlib.sha256(probe.read_bytes()).hexdigest(),
+            "expected_probe_sha256": "5b796fe9a9ab52297771c625f696a2ffcc3203aab3e54d412a3bfb50b90201c4",
+            "markers": {
+              "kernel_ready": "KERNEL READY" in log,
+              "pit_irq0_contact": marker in log
+            },
+            "claim_scope": {
+              "emulated_pit_irq0_delivery": True,
+              "routecore_irq0_handler_execution": True,
+              "scheduler_tick_path_entered": True,
+              "pic_master_eoi_path_returned": True,
+              "emulated_timer_device_contact": True,
+              "physical_hardware": False,
+              "physical_device_driver_contact": False,
+              "irq1_keyboard_contact": False
+            },
+            "qemu_exit": int((d / "irq-qemu-exit.txt").read_text().strip())
+          }
+          receipt["marker_count"] = log.count(marker)
+          receipt["pass"] = (
+            receipt["parent_sha256"] == receipt["expected_parent_sha256"]
+            and receipt["probe_sha256"] == receipt["expected_probe_sha256"]
+            and all(receipt["markers"].values())
+            and receipt["marker_count"] > 0
+          )
+          out = d / "JM_ROUTECORE_IRQ_CONTACT_RECEIPT_v0_1.json"
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not receipt["pass"]:
+            raise SystemExit(1)
+          PY
+
+      - name: Upload IRQ contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_IRQ_CONTACT_v0_1
+          path: |
+            routecore-contact/JM_ROUTECORE_IRQ_CONTACT_RECEIPT_v0_1.json
+            routecore-contact/JM_ROUTECORE_IRQ_PROBE_PATCH_MANIFEST_v0_1.json
+            routecore-contact/jm_routecore_irq_probe_v0_1.img
+            routecore-contact/irq-boot.log
+            routecore-contact/irq-qemu-exit.txt
+            routecore-contact/qemu-version.txt
+          if-no-files-found: error
+
+      - name: Build minimal IRQ1 PS2 device probe descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 routecore/boot-contact-v0-1/make_irq1_probe.py \
+            routecore-contact/jm_routecore_bios_boot_v0_1.img \
+            routecore-contact/jm_routecore_irq1_probe_v0_1.img
+          echo "bd9da6a5d0ab919773cdc62633705b86e54eb631026072fb985f71a9c42eafa2  routecore-contact/jm_routecore_irq1_probe_v0_1.img" | sha256sum -c -
+
+      - name: Inject keyboard input and prove IRQ1 device contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          monitor=/tmp/jm-routecore-hmp.sock
+          rm -f "$monitor" routecore-contact/irq1-boot.log
+
+          qemu-system-i386 \
+            -machine pc \
+            -m 64M \
+            -drive file=routecore-contact/jm_routecore_irq1_probe_v0_1.img,format=raw,if=ide,index=0,media=disk \
+            -boot c \
+            -display none \
+            -serial stdio \
+            -monitor unix:"$monitor",server,nowait \
+            -no-reboot \
+            -no-shutdown \
+            > routecore-contact/irq1-boot.log 2>&1 &
+          qemu_pid=$!
+
+          cleanup() {
+            kill "$qemu_pid" 2>/dev/null || true
+            wait "$qemu_pid" 2>/dev/null || true
+            rm -f "$monitor"
+          }
+          trap cleanup EXIT
+
+          ready=0
+          for _ in $(seq 1 120); do
+            if [ -S "$monitor" ] && grep -Fq "KERNEL READY" routecore-contact/irq1-boot.log; then
+              ready=1
+              break
+            fi
+            sleep 0.05
+          done
+          test "$ready" -eq 1
+
+          python3 - <<'PY'
+          import socket, time
+          path = "/tmp/jm-routecore-hmp.sock"
+          s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+          s.settimeout(2)
+          s.connect(path)
+          try:
+              s.recv(4096)
+          except Exception:
+              pass
+          s.sendall(b"sendkey a\n")
+          time.sleep(0.25)
+          s.close()
+          PY
+
+          seen=0
+          for _ in $(seq 1 80); do
+            if grep -Fq "PS2 IRQ1 CONTACT" routecore-contact/irq1-boot.log; then
+              seen=1
+              break
+            fi
+            sleep 0.05
+          done
+
+          cat routecore-contact/irq1-boot.log
+          test "$seen" -eq 1
+          grep -Fq "JM ROUTECORE FREESTANDING v0.2" routecore-contact/irq1-boot.log
+          grep -Fq "KERNEL READY" routecore-contact/irq1-boot.log
+          grep -Fq "PS2 IRQ1 CONTACT" routecore-contact/irq1-boot.log
+          printf '0\n' > routecore-contact/irq1-qemu-exit.txt
+
+      - name: Create IRQ1 PS2 device-contact receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, pathlib
+          d = pathlib.Path("routecore-contact")
+          parent = d / "jm_routecore_bios_boot_v0_1.img"
+          probe = d / "jm_routecore_irq1_probe_v0_1.img"
+          log = (d / "irq1-boot.log").read_text(errors="replace")
+          marker = "PS2 IRQ1 CONTACT"
+          receipt = {
+            "schema": "jm.routecore.irq1-device-contact/0.1",
+            "parent_target": "JM_ROUTECORE_BIOS_BOOT_IMAGE_v0_1",
+            "probe_target": "JM_ROUTECORE_IRQ1_DEVICE_PROBE_v0_1",
+            "execution_surface": "GitHub Actions ubuntu-24.04 + QEMU system i386 + SeaBIOS + emulated PS/2 keyboard/8259 PIC",
+            "input_action": "QEMU HMP sendkey a",
+            "parent_sha256": hashlib.sha256(parent.read_bytes()).hexdigest(),
+            "expected_parent_sha256": "17dc85deef1bf1e2c57e29d45f764a47d9ae60553c290f6e4bf5ccdfd7216e80",
+            "probe_sha256": hashlib.sha256(probe.read_bytes()).hexdigest(),
+            "expected_probe_sha256": "bd9da6a5d0ab919773cdc62633705b86e54eb631026072fb985f71a9c42eafa2",
+            "markers": {
+              "kernel_ready": "KERNEL READY" in log,
+              "ps2_irq1_contact": marker in log
+            },
+            "claim_scope": {
+              "emulated_keyboard_input_injected": True,
+              "emulated_ps2_irq1_delivery": True,
+              "routecore_irq1_handler_execution": True,
+              "ps2_data_port_0x60_read_returned": True,
+              "pic_master_eoi_path_returned": True,
+              "emulated_keyboard_device_contact": True,
+              "physical_hardware": False,
+              "physical_keyboard_contact": False
+            }
+          }
+          receipt["marker_count"] = log.count(marker)
+          receipt["pass"] = (
+            receipt["parent_sha256"] == receipt["expected_parent_sha256"]
+            and receipt["probe_sha256"] == receipt["expected_probe_sha256"]
+            and all(receipt["markers"].values())
+            and receipt["marker_count"] > 0
+          )
+          out = d / "JM_ROUTECORE_IRQ1_DEVICE_CONTACT_RECEIPT_v0_1.json"
+          out.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(receipt, indent=2, sort_keys=True))
+          if not receipt["pass"]:
+            raise SystemExit(1)
+          PY
+
+      - name: Upload IRQ1 device-contact receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_IRQ1_DEVICE_CONTACT_v0_1
+          path: |
+            routecore-contact/JM_ROUTECORE_IRQ1_DEVICE_CONTACT_RECEIPT_v0_1.json
+            routecore-contact/JM_ROUTECORE_IRQ1_DEVICE_PROBE_PATCH_MANIFEST_v0_1.json
+            routecore-contact/jm_routecore_irq1_probe_v0_1.img
+            routecore-contact/irq1-boot.log
+            routecore-contact/irq1-qemu-exit.txt
+            routecore-contact/qemu-version.txt
+          if-no-files-found: error

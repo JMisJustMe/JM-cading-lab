@@ -9,7 +9,7 @@ def must_replace(s,a,b,label):
     return s.replace(a,b,1)
 
 p=WORK/'kernel64.c'; s=p.read_text()
-s=must_replace(s,'#define JM_AHCI_TIMEOUT 2000000u\n#define JM_AHCI_MMIO_VA 0x3F000000ULL\n#define JM_AHCI_SHARED_PT_PA 0x00074000ULL\n#define JM_AHCI_MMIO_PAGES 2u\n','#define JM_VIRTIO_TIMEOUT 2000000u\n#define JM_VIRTIO_VENDOR 0x1AF4u\n#define JM_VIRTIO_BLK_LEGACY_DEVICE 0x1001u\n#define JM_VIRTIO_BLK_F_FLUSH 9u\n#define JM_VIRTQ_MAX 128u\n','carrier constants')
+s=must_replace(s,'#define JM_AHCI_TIMEOUT 2000000u\n#define JM_AHCI_MMIO_VA 0x3F000000ULL\n#define JM_AHCI_SHARED_PT_PA 0x00074000ULL\n#define JM_AHCI_MMIO_PAGES 2u\n','#define JM_VIRTIO_TIMEOUT 2000000u\n#define JM_VIRTIO_VENDOR 0x1AF4u\n#define JM_VIRTIO_BLK_LEGACY_DEVICE 0x1001u\n#define JM_VIRTIO_BLK_F_FLUSH 9u\n#define JM_VIRTQ_MAX 256u\n','carrier constants')
 s=must_replace(s,'static inline uint8_t inb(uint16_t p){uint8_t r;__asm__ volatile("inb %1, %0":"=a"(r):"Nd"(p));return r;}\n','static inline uint8_t inb(uint16_t p){uint8_t r;__asm__ volatile("inb %1, %0":"=a"(r):"Nd"(p));return r;}\nstatic inline uint16_t inw(uint16_t p){uint16_t r;__asm__ volatile("inw %1, %0":"=a"(r):"Nd"(p));return r;}\nstatic inline void outw(uint16_t p,uint16_t v){__asm__ volatile("outw %0, %1"::"a"(v),"Nd"(p));}\n','legacy virtio word io')
 s=must_replace(s,'pd[1]=pt_pa|JM_PTE_P|JM_PTE_RW|JM_PTE_US;pd[504]=JM_AHCI_SHARED_PT_PA|JM_PTE_P|JM_PTE_RW;pt[0]=','pd[1]=pt_pa|JM_PTE_P|JM_PTE_RW|JM_PTE_US;pt[0]=','remove ahci shared mapping')
 a=s.index('struct route_block_device{'); b=s.index('\nstruct route_cache_line',a)
@@ -39,7 +39,7 @@ checks="""'virtio_pci_config_io':all(x in csrc for x in ['0xCF8u','0xCFCu','rout
 'virtio_flush_feature':'JM_VIRTIO_BLK_F_FLUSH 9u' in csrc and '1u<<JM_VIRTIO_BLK_F_FLUSH' in csrc,
 'virtio_queue_select_size':'outw((uint16_t)(io+0x0Eu),0u)' in csrc and 'route_virtio_qsz=inw((uint16_t)(io+0x0Cu))' in csrc,
 'virtio_queue_pfn':'outl((uint16_t)(io+0x08u),(uint32_t)((uint64_t)route_virtq_mem>>12))' in csrc,
-'virtio_queue_4k_alignment':'route_virtq_mem[8192]' in csrc and 'aligned(4096)' in csrc,
+'virtio_queue_4k_alignment':'route_virtq_mem[12288]' in csrc and 'aligned(4096)' in csrc,
 'virtio_queue_bounded':'JM_VIRTQ_MAX 128u' in csrc and 'route_virtio_qsz>JM_VIRTQ_MAX' in csrc,
 'virtio_descriptor_shape':'struct route_virtq_desc' in csrc and 'uint64_t addr;uint32_t len;uint16_t flags,next' in csrc,
 'virtio_request_shape':'struct route_virtio_blk_req' in csrc and 'uint32_t type,reserved;uint64_t sector' in csrc,

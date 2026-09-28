@@ -1,0 +1,62 @@
+{
+  "schema": "jm.aosp-frontier-receipt/0.7",
+  "date": "2026-09-28",
+  "project": "JM Android-derived OS",
+  "state": "JM_PRODUCT_READY_FOR_FIRST_HEAVY_COMPILE",
+  "currentMain": {
+    "v07Merge": "ef77657dc056959a8ee079a3903968ebee1df3d7",
+    "v07SourceContactReceiptSeat": "a15dd8152017928e5ec292388b8e6d9ef958b15b"
+  },
+  "upstream": {
+    "manifestAlias": "android-latest-release",
+    "resolvedRevision": "android17-release",
+    "manifestCommit": "ad156f32caaa06dae91c02d443f6a8fe210eaa54",
+    "cuttlefishCommit": "283645aacf6cdb56cc31a9362f54d412dbc132a1",
+    "baseProduct": "aosp_cf_x86_64_only_phone",
+    "baseProductSha256": "6b230155a99c97f10b132f4a61f2eff54fd3bef781a6dc8a71397d0aa0f55123"
+  },
+  "jmProduct": {
+    "product": "jm_cf_x86_64_phone",
+    "lunchTarget": "jm_cf_x86_64_phone-aosp_current-userdebug",
+    "productTree": "device/jm/cuttlefish",
+    "markerBuildPath": "/product/etc/jm-os-release.txt",
+    "upstreamBaseMutation": false
+  },
+  "proof": {
+    "bridgeProductBattery": "22/22 PASS",
+    "latestHeadJobs": {
+      "bridgeSelftest": "success",
+      "upstreamSourceContact": "success",
+      "targetedSourceContact": "success",
+      "buildBootSourceContact": "success",
+      "productLayerRealSourceContact": "success"
+    }
+  },
+  "earned": [
+    "AOSP_SOURCE_MANIFEST_CONTACT",
+    "AOSP_TARGETED_SOURCE_CONTACT",
+    "AOSP_BUILD_BOOT_SOURCE_ANATOMY_CONTACT",
+    "JM_AOSP_PRODUCT_LAYER_STAGED",
+    "JM_AOSP_PRODUCT_LAYER_REAL_SOURCE_CONTACT"
+  ],
+  "nextUnearned": [
+    "AOSP_FULL_REPO_SYNC",
+    "JM_AOSP_PRODUCT_BUILD",
+    "JM_AOSP_SYSTEM_OR_SUPER_IMAGE",
+    "JM_AOSP_PRODUCT_BOOT"
+  ],
+  "heavyCarrierGate": {
+    "minimum": "64-bit x86 Linux; >=400 GB free disk; >=64 GB RAM; glibc >=2.17; Repo >=2.4",
+    "measuredStandardGitHubRunner": "85.95 GB free; 15.61 GB RAM; glibc 2.39; Repo absent",
+    "state": "HOLD_UNDERSIZED"
+  },
+  "execution": {
+    "preflight": "node os/aosp-bridge/run-jm-aosp-contact.mjs",
+    "bootstrap": "bash os/aosp-bridge/bootstrap-heavy-build-host.sh preflight",
+    "firstCompile": "bash os/aosp-bridge/bootstrap-heavy-build-host.sh --execute-build",
+    "laterBoot": "node os/aosp-bridge/run-jm-aosp-contact.mjs --execute-boot",
+    "combined": "node os/aosp-bridge/run-jm-aosp-contact.mjs --execute"
+  },
+  "noRebuild": "Resume from heavy carrier contact. Do not rebuild the AOSP bridge, source census, build/boot anatomy, carrier probe or JM product layer.",
+  "claimBoundary": "No full Repo sync, AOSP/Soong compilation, built image, Cuttlefish boot, CTS, physical-device support or production-release claim has yet been earned."
+}

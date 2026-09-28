@@ -6,6 +6,7 @@ on:
       - jm-aosp-bridge-v0.1
       - jm-aosp-source-contact-v0.2
       - jm-aosp-targeted-source-v0.3
+      - jm-aosp-build-boot-source-v0.4
     paths:
       - 'os/aosp-bridge/**'
       - 'coding-estate/everybody/role-qualified-61/native/os-coding.mjs'
@@ -67,3 +68,20 @@ jobs:
         with:
           name: jm-aosp-targeted-source-contact-receipt
           path: jm-aosp-receipts/JM_AOSP_TARGETED_SOURCE_CONTACT_RECEIPT_v0_3.json
+
+  build-boot-source-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: targeted-source-contact
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pull Android 17 build and boot anatomy
+        run: node os/aosp-bridge/build-boot-source-contact.mjs
+      - name: Preserve build-boot source receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-aosp-build-boot-source-contact-receipt
+          path: jm-aosp-receipts/JM_AOSP_BUILD_BOOT_SOURCE_CONTACT_RECEIPT_v0_4.json

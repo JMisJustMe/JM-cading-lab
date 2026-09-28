@@ -1,0 +1,44 @@
+name: JM AOSP Carrier Probe
+
+on:
+  push:
+    branches:
+      - jm-aosp-carrier-probe-v0.5
+    paths:
+      - 'os/aosp-bridge/**'
+      - '.github/workflows/jm-aosp-carrier-probe.yml'
+  pull_request:
+    paths:
+      - 'os/aosp-bridge/**'
+      - '.github/workflows/jm-aosp-carrier-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  carrier-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Probe actual hosted runner against AOSP heavy-build gate
+        shell: bash
+        run: |
+          set +e
+          node os/aosp-bridge/run-jm-aosp-contact.mjs
+          code=$?
+          set -e
+          if [ "$code" -ne 0 ] && [ "$code" -ne 78 ]; then
+            echo "Unexpected preflight failure: $code"
+            exit "$code"
+          fi
+          test -f jm-aosp-receipts/JM_AOSP_PREFLIGHT_RECEIPT_v0_1.json
+          node -e 'const fs=require("fs"); const r=JSON.parse(fs.readFileSync("jm-aosp-receipts/JM_AOSP_PREFLIGHT_RECEIPT_v0_1.json")); console.log(JSON.stringify(r,null,2)); if(r.assessment.ready) console.log("READY carrier observed"); else console.log("HOLD carrier observed:", r.assessment.failed.join(","));'
+      - name: Preserve carrier receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-aosp-carrier-preflight-receipt
+          path: jm-aosp-receipts/JM_AOSP_PREFLIGHT_RECEIPT_v0_1.json

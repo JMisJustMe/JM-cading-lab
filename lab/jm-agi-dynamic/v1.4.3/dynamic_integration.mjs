@@ -171,3 +171,5 @@ try {
     for(const pid of rootPids(rows)) killTree(pid);
   }
 }
+
+// synchronization trigger: dynamic integration run 3

@@ -27,4 +27,4 @@ console.log('VISIBLE_STATUS',status);
 console.log('VISIBLE_HEARTBEAT',heartbeat);
 console.log('VISIBLE_REASON',reason);
 if(!/PROCESS DING/i.test(status)||!/COMPLETE/i.test(heartbeat)||!/Windows Edge dedicated process tree reached zero/i.test(reason))throw new Error('final visible proof surface incomplete');
-console.log('R4_EXACT_WINDOWS_DYNAMIC_INTEGRATION_PASS');
+console.log('R4_EXACT_WINDOWS_DYNAMIC_INTEGRATION_PASS');\nawait browser.close();\nprocess.exit(0);

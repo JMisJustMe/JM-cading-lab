@@ -1,0 +1,139 @@
+name: JM RouteCore AHCI v0.14 Contact
+
+on:
+  push:
+    branches:
+      - routecore-ahci-v0-14-contact
+    paths:
+      - ".github/workflows/jm-routecore-ahci-v0-14.yml"
+      - "routecore/ahci-v0-14/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ahci-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build, patch, and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact v0.13 parent and apply v0.14 descendant patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-ahci/pieces routecore-ahci/work
+
+          check_piece() {
+            local label="$1" path="$2" expected="$3"
+            tr -d '\r\n\t ' < "$path" > "routecore-ahci/pieces/$label"
+            echo "$expected  routecore-ahci/pieces/$label" | sha256sum -c -
+          }
+
+          check_piece 00a routecore/ata-pio-v0-13/fix/00a.b64 40cedefd86fee512975cd9a474dfbcb1158c60dcd9279a2629ef515bc2dde6e3
+          check_piece 00b routecore/ata-pio-v0-13/fix/00b.b64 2b8d98c6d83b92030c362691de098d1e84d401842313e7b938741189a689c109
+          check_piece 00c routecore/ata-pio-v0-13/fix/00c.b64 d496e03cff56993eaf6b43274b7a5f87285cf20f60015c8fcc3b4793dd3762ef
+          check_piece 01  routecore/ata-pio-v0-13/package/part01.b64 8f67a481669e7b318d95fb5ffa7adf979455284d1daa6005cd4196d8adb59f81
+          check_piece 02a1 routecore/ata-pio-v0-13/fix/02a1.b64 c691001c43be82c9946e39351b93b246f15771072e5873247b5a920a73a6b51b
+          check_piece 02a2 routecore/ata-pio-v0-13/fix/02a2.b64 8aaf2ea4bd507d788f3a49dbf147b72b86d8ebd28260e0b9830179332cb326b7
+          check_piece 02b routecore/ata-pio-v0-13/fix/02b.b64 caad037e7adb9dd78f3dcf4f98af4791da4b0d0fc9e409f24b3230ddd0ca9bda
+          check_piece 02c routecore/ata-pio-v0-13/fix/02c.b64 03734fce7a853ee943cebf6a143f9508f25c75a24dbc57c74150d2083c0dee40
+          check_piece 03a routecore/ata-pio-v0-13/fix/03a.b64 cf20a5243d6c549754f2ca9052420833e773e329b08cd1ad0146433fe3392b66
+          check_piece 03b routecore/ata-pio-v0-13/fix/03b.b64 dc292926b605dacba198b4f0ccb201d5b42d7abc2a5684228e8f1c4e5c014c6f
+          check_piece 03c routecore/ata-pio-v0-13/fix/03c.b64 acf96fdc659ea359d0d432a34d96a75e8648f99913f49a71b14f6cf22df2a25f
+          check_piece 04 routecore/ata-pio-v0-13/package/part04.b64 496aa4c9fa5afbf7055399d84178b43301afae28f94f485b957a2cccaef120e8
+          check_piece 05 routecore/ata-pio-v0-13/package/part05.b64 73043cca8284d8f8e94c832d776667ed45f27388754640a5e799a75033278bf7
+
+          cat routecore-ahci/pieces/00a routecore-ahci/pieces/00b routecore-ahci/pieces/00c               routecore-ahci/pieces/01               routecore-ahci/pieces/02a1 routecore-ahci/pieces/02a2 routecore-ahci/pieces/02b routecore-ahci/pieces/02c               routecore-ahci/pieces/03a routecore-ahci/pieces/03b routecore-ahci/pieces/03c               routecore-ahci/pieces/04 routecore-ahci/pieces/05 > routecore-ahci/v013-release.b64
+          echo "613232f9c88cdcdd833941011c2183a48353c40831e75e749c841ae726b2d59a  routecore-ahci/v013-release.b64" | sha256sum -c -
+          base64 -d routecore-ahci/v013-release.b64 > routecore-ahci/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip
+          echo "2ee8e512520030359083e9bf60585f404001adac226d7621e167a5a259116c55  routecore-ahci/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip" | sha256sum -c -
+          unzip -q routecore-ahci/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip -d routecore-ahci/work
+
+          base64 -d routecore/ahci-v0-14/v014.patch.gz.b64 | gzip -d > routecore-ahci/v014.patch
+          base64 -d routecore/ahci-v0-14/q35fix.patch.gz.b64 | gzip -d > routecore-ahci/q35fix.patch
+          cd routecore-ahci/work
+          cp INSPECT_ATA_DISK.py INSPECT_AHCI_DISK.py
+          patch -p1 < ../v014.patch
+          patch -p1 < ../q35fix.patch
+
+      - name: Fresh-build v0.14 and enforce construction court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-ahci/work
+          python3 build.py
+          python3 - <<'PY'
+          import json, hashlib
+          p=json.load(open('JM_ROUTECORE_NATIVE64_AHCI_v0_14_PROOF.json'))
+          assert p['status']=='PASS', p
+          assert p['passed']==224 and p['total']==224, (p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          for f in [
+            'build/jm_routecore_native64_ahci_v0_14.img',
+            'build/jm_routecore_native64_ahci_v0_14.rebuild.img',
+            'build/jm_routecore_native64_v0_14.elf'
+          ]:
+            b=open(f,'rb').read()
+            print(hashlib.sha256(b).hexdigest(), f)
+          PY
+
+      - name: Create deterministic pre-contact package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-ahci/work
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile, hashlib
+          root=Path('.')
+          out=Path('../JM_ROUTECORE_NATIVE64_AHCI_v0_14.zip')
+          skip_prefixes=('runtime/','frozen/','__pycache__/')
+          names=[]
+          for p in root.rglob('*'):
+              if not p.is_file(): continue
+              rel=p.as_posix()
+              if any(rel.startswith(x) for x in skip_prefixes): continue
+              names.append(rel)
+          with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for rel in sorted(names):
+                  data=(root/rel).read_bytes()
+                  zi=zipfile.ZipInfo(rel,(2026,9,28,0,0,0))
+                  zi.compress_type=zipfile.ZIP_DEFLATED
+                  zi.external_attr=0o100644<<16
+                  z.writestr(zi,data,compress_type=zipfile.ZIP_DEFLATED,compresslevel=9)
+          print('PACKAGE SHA256',hashlib.sha256(out.read_bytes()).hexdigest())
+          print('PACKAGE BYTES',out.stat().st_size)
+          PY
+          sha256sum ../JM_ROUTECORE_NATIVE64_AHCI_v0_14.zip
+
+      - name: Two-boot AHCI persistence court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-ahci/work
+          chmod +x RUN_PERSISTENCE_LINUX.sh
+          ./RUN_PERSISTENCE_LINUX.sh
+          echo "=== BOOT 1 SERIAL ==="
+          cat runtime/boot1.log
+          echo "=== BOOT 2 SERIAL ==="
+          cat runtime/boot2.log
+          echo "=== FINAL RAW DISK COURT ==="
+          python3 INSPECT_AHCI_DISK.py runtime/jm_routecore_native64_ahci_v0_14.runtime.img --expect-payload
+          sha256sum runtime/jm_routecore_native64_ahci_v0_14.runtime.img
+
+      - name: Upload AHCI contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-ahci-v0-14-contact
+          path: |
+            routecore-ahci/
+          if-no-files-found: error

@@ -40,7 +40,7 @@ checks="""'virtio_pci_config_io':all(x in csrc for x in ['0xCF8u','0xCFCu','rout
 'virtio_queue_select_size':'outw((uint16_t)(io+0x0Eu),0u)' in csrc and 'route_virtio_qsz=inw((uint16_t)(io+0x0Cu))' in csrc,
 'virtio_queue_pfn':'outl((uint16_t)(io+0x08u),(uint32_t)((uint64_t)route_virtq_mem>>12))' in csrc,
 'virtio_queue_4k_alignment':'route_virtq_mem[12288]' in csrc and 'aligned(4096)' in csrc,
-'virtio_queue_bounded':'JM_VIRTQ_MAX 128u' in csrc and 'route_virtio_qsz>JM_VIRTQ_MAX' in csrc,
+'virtio_queue_bounded':'JM_VIRTQ_MAX 256u' in csrc and 'route_virtio_qsz>JM_VIRTQ_MAX' in csrc,
 'virtio_descriptor_shape':'struct route_virtq_desc' in csrc and 'uint64_t addr;uint32_t len;uint16_t flags,next' in csrc,
 'virtio_request_shape':'struct route_virtio_blk_req' in csrc and 'uint32_t type,reserved;uint64_t sector' in csrc,
 'virtio_read_request':'route_virtio_read' in nm and 'route_virtio_submit(0u,lba,out,0,1)' in csrc,

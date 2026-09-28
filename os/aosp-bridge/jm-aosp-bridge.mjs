@@ -210,7 +210,7 @@ export function createAospExecutionPlan(host = {}, options = {}) {
   const commands = [
     `mkdir -p "${root}"`,
     `cd "${root}"`,
-    `repo init --partial-clone --no-use-superproject -b ${AOSP_UPSTREAM.branch} -u ${AOSP_UPSTREAM.manifestUrl}`,
+    `repo init --partial-clone --clone-filter=blob:limit=10M --no-use-superproject -b ${AOSP_UPSTREAM.branch} -u ${AOSP_UPSTREAM.manifestUrl}`,
     `repo sync -c -j${syncJobs}`,
     'repo manifest -r -o jm-aosp-manifest.xml',
     'source build/envsetup.sh',

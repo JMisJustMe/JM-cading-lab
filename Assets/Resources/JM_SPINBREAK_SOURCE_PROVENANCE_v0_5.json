@@ -1,0 +1,24 @@
+{
+  "schema": "JM.TargetBridge.SourceProvenance/0.5",
+  "body_id": "jm.spinbreak.v0.8/contact-slice-v0.1",
+  "source_file": "SPINBREAK_v0_8_JM_INLINE_SAME_BODY.html",
+  "source_sha256": "1fde14e48737e3f7cf9331a3d774e06958c670b81c0932409e4dc2c1d7db9d4c",
+  "source_authority": "JM",
+  "required_semantics": [
+    "signal.route_right",
+    "move.you",
+    "signal.kic",
+    "kic.spin_cost",
+    "contact.you_rival_a",
+    "signal.wake",
+    "wake.stability",
+    "wake.spin",
+    "wake.integrity"
+  ],
+  "unresolved": [
+    "spinbreak.full_contact_pressure_model",
+    "spinbreak.full_three_body_ai",
+    "spinbreak.full_visual_history_parity"
+  ],
+  "claim_boundary": "Direct branch is a host-ingestible prepared carrier. No SPINBREAK Unity Ding until real runtime contact."
+}

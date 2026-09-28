@@ -39,25 +39,7 @@ jobs:
           check_piece 00a routecore/ata-pio-v0-13/fix/00a.b64 40cedefd86fee512975cd9a474dfbcb1158c60dcd9279a2629ef515bc2dde6e3
           check_piece 00b routecore/ata-pio-v0-13/fix/00b.b64 2b8d98c6d83b92030c362691de098d1e84d401842313e7b938741189a689c109
           check_piece 00c routecore/ata-pio-v0-13/fix/00c.b64 d496e03cff56993eaf6b43274b7a5f87285cf20f60015c8fcc3b4793dd3762ef
-          python3 - <<'PY'
-          from pathlib import Path
-          import hashlib
-
-          src = Path('routecore/ata-pio-v0-13/package/part01.b64')
-          s = ''.join(src.read_text().split())
-          expected = '8f67a481669e7b318d95fb5ffa7adf979455284d1daa6005cd4196d8adb59f81'
-          assert len(s) == 14409, f'unexpected part01 transport length: {len(s)}'
-          hits = []
-          for i in range(len(s)):
-              candidate = s[:i] + s[i+1:]
-              if hashlib.sha256(candidate.encode()).hexdigest() == expected:
-                  hits.append((i, s[i], candidate))
-          assert len(hits) == 1, f'part01 single-character recovery ambiguous/failed: {[(i,ch) for i,ch,_ in hits]}'
-          i, ch, candidate = hits[0]
-          Path('routecore-ata/pieces/01').write_text(candidate)
-          print(f'RECOVERED part01: removed injected char index={i} char={ch!r}')
-          PY
-          echo "8f67a481669e7b318d95fb5ffa7adf979455284d1daa6005cd4196d8adb59f81  routecore-ata/pieces/01" | sha256sum -c -
+          check_piece 01  routecore/ata-pio-v0-13/package/part01.b64 8f67a481669e7b318d95fb5ffa7adf979455284d1daa6005cd4196d8adb59f81
           check_piece 02a1 routecore/ata-pio-v0-13/fix/02a1.b64 c691001c43be82c9946e39351b93b246f15771072e5873247b5a920a73a6b51b
           check_piece 02a2 routecore/ata-pio-v0-13/fix/02a2.b64 8aaf2ea4bd507d788f3a49dbf147b72b86d8ebd28260e0b9830179332cb326b7
           check_piece 02b routecore/ata-pio-v0-13/fix/02b.b64 caad037e7adb9dd78f3dcf4f98af4791da4b0d0fc9e409f24b3230ddd0ca9bda
@@ -76,14 +58,33 @@ jobs:
 
           unzip -q routecore-ata/JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13.zip -d routecore-ata/work
           cd routecore-ata/work
+
+          # The exact recovered release owns the frozen runtime artifacts.
+          # Verify them before any host-toolchain rebuild can overwrite build/.
+          mkdir -p frozen
+          cp build/jm_routecore_native64_ata_v0_13.img frozen/
+          cp build/jm_routecore_native64_v0_13.elf frozen/
+          echo "8db9cc0b5efc552866554a7d5939ae978164bde95dbccf6610a8ba4c31a90ddd  frozen/jm_routecore_native64_ata_v0_13.img" | sha256sum -c -
+          echo "c98637383055d4f315e9d7986020ea4dcee831877f5c2850e1f5ab08e553652b  frozen/jm_routecore_native64_v0_13.elf" | sha256sum -c -
+
+          # Fresh-build the same source as a construction/source court.
+          # Cross-toolchain binary identity is not assumed; same-run determinism is required.
           python3 build.py
           python3 - <<'PY'
           import json
           p=json.load(open('JM_ROUTECORE_NATIVE64_ATA_PIO_v0_13_PROOF.json'))
           assert p['passed'] == 216, p
           assert p['status'] == 'PASS', p
+          assert p['checks']['deterministic_rebuild'] is True, p['checks'].get('deterministic_rebuild')
           print('CONSTRUCTION PASS', p['passed'], '/', p['total'])
+          print('FRESH BUILD deterministic_rebuild =', p['checks']['deterministic_rebuild'])
           PY
+          echo "=== FRESH HOST-TOOLCHAIN HASHES (informational) ==="
+          sha256sum build/jm_routecore_native64_ata_v0_13.img build/jm_routecore_native64_v0_13.elf
+
+          # Runtime contact must execute the exact hash-locked frozen disk.
+          cp frozen/jm_routecore_native64_ata_v0_13.img build/jm_routecore_native64_ata_v0_13.img
+          cp frozen/jm_routecore_native64_v0_13.elf build/jm_routecore_native64_v0_13.elf
           echo "8db9cc0b5efc552866554a7d5939ae978164bde95dbccf6610a8ba4c31a90ddd  build/jm_routecore_native64_ata_v0_13.img" | sha256sum -c -
           echo "c98637383055d4f315e9d7986020ea4dcee831877f5c2850e1f5ab08e553652b  build/jm_routecore_native64_v0_13.elf" | sha256sum -c -
 

@@ -35,4 +35,5 @@ if missing or order_fail:
 print('PASS — virtio-blk runtime route')
 print('mount mode:', mode)
 print('required markers:', len(required)+1)
-print('critical ordered route:', len(critical))\nprint('device write/flush markers required independently of first-occurrence order')
+print('critical ordered route:', len(critical))
+print('device write/flush markers required independently of first-occurrence order')

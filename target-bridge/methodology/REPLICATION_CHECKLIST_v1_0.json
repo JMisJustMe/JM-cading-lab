@@ -1,0 +1,27 @@
+{
+  "schema": "JM.TargetBridge.ReplicationChecklist/1.0",
+  "steps": [
+    "Recover current Target Bridge head and prior receipts",
+    "Recover exact source body",
+    "Verify/source-passport exact SHA-256",
+    "Use only source-supported semantics; preserve HOLDs",
+    "Run actual JM Coding Estate / Route-Code / ContactCode preflight",
+    "Compile semantic execution plan",
+    "Emit actual host-ingestible body",
+    "Run static/local QA without claiming runtime proof",
+    "Verify exact host delivery/checkout",
+    "Run physical recipient",
+    "Observe each declared semantic consequence",
+    "Write runtime receipt",
+    "Ding only on observed PASS; otherwise BUGG",
+    "Return corrections into bridge",
+    "Redundify proof-only media after durable receipt/lineage"
+  ],
+  "unity_fallback": [
+    "git clone exact branch with --single-branch into fresh directory",
+    "verify local fileset",
+    "Unity Hub Add project from disk",
+    "open declared editor",
+    "Play generated harness"
+  ]
+}

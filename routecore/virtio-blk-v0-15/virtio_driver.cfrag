@@ -1,7 +1,7 @@
 struct route_block_device{uint32_t block_size,block_count;int(*read_block)(uint32_t,void*);int(*write_block)(uint32_t,const void*);};
 struct __attribute__((packed)) route_virtq_desc{uint64_t addr;uint32_t len;uint16_t flags,next;};
 struct __attribute__((packed)) route_virtio_blk_req{uint32_t type,reserved;uint64_t sector;};
-static uint8_t route_virtq_mem[8192] __attribute__((aligned(4096)));
+static uint8_t route_virtq_mem[12288] __attribute__((aligned(4096)));
 static uint8_t route_virtio_data[JM_BLOCK_SIZE] __attribute__((aligned(512)));
 static struct route_virtio_blk_req route_virtio_req __attribute__((aligned(16)));
 static volatile uint8_t route_virtio_status=0xFFu;

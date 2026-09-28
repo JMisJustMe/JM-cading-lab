@@ -49,11 +49,11 @@ jobs:
           npm install --no-save playwright-core
 
       - name: Windows Edge persistence matrix
+        if: false
         run: |
           node .\persistence_matrix.mjs
 
       - name: Dynamic integrate exact v1.4.3 across real Edge process death
-        if: false
         run: |
           node .\dynamic_integration.mjs
 

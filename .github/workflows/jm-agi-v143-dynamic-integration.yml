@@ -33,6 +33,17 @@ jobs:
           Write-Host "Edge: $edgePath"
           & $edgePath --version
 
+      - name: Canonical carrier integrity
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $body = Get-Content .\JM_AGI_LAB_v1_4_3_PROCESS_RESTART_PROOF_CORRECTED.html -Raw
+          Write-Host "Carrier characters: $($body.Length)"
+          if ($body.Length -lt 190000) { throw 'v1.4.3 carrier is unexpectedly short/truncated.' }
+          if ($body -notmatch 'window\.JMAGI_TEST=') { throw 'v1.4.3 bootstrap export missing.' }
+          if ($body -notmatch '</script>') { throw 'v1.4.3 closing script tag missing.' }
+          if ($body -notmatch '</html>') { throw 'v1.4.3 closing html tag missing.' }
+          Write-Host 'CARRIER_INTEGRITY_PASS'
+
       - name: Install Playwright control layer (system Edge only)
         run: |
           npm install --no-save playwright-core

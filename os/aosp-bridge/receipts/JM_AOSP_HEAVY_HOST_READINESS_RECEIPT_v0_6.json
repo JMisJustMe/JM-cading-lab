@@ -1,0 +1,64 @@
+{
+  "schema": "jm.aosp-heavy-host-readiness-receipt/0.6",
+  "date": "2026-09-28",
+  "project": "JM Android-derived OS",
+  "state": "HEAVY_BUILD_ROUTE_READY_CARRIER_REQUIRED",
+  "merge": {
+    "pr": 238,
+    "commit": "107a7caf5b8b0865211dbf734c535b277dee15d8"
+  },
+  "proof": {
+    "bridgeSelftest": {
+      "passed": 18,
+      "total": 18,
+      "state": "PASS"
+    },
+    "upstreamSourceContact": "PASS",
+    "targetedSourceContact": "PASS",
+    "buildBootSourceAnatomyContact": "PASS",
+    "heavyHostBootstrapShellSyntax": "PASS"
+  },
+  "route": {
+    "full": "source sync -> AOSP compile -> Cuttlefish boot -> returned JM verdict",
+    "compileOnly": "source sync -> AOSP compile -> build evidence",
+    "bootOnly": "existing built images -> Cuttlefish -> boot evidence",
+    "separationLaw": "BUILD CARRIER != BOOT CARRIER; evidence gates remain independent."
+  },
+  "source": {
+    "alias": "android-latest-release",
+    "resolvedRevision": "android17-release",
+    "target": "aosp_cf_x86_64_only_phone-aosp_current-userdebug",
+    "fullSyncOptimisation": "--partial-clone --clone-filter=blob:limit=10M --no-use-superproject"
+  },
+  "hostedCarrierObserved": {
+    "freeDiskGB": 85.95,
+    "ramGB": 15.61,
+    "glibcVersion": "2.39",
+    "repoAvailable": false,
+    "state": "HOLD",
+    "failures": [
+      "host.disk",
+      "host.ram",
+      "host.repo"
+    ]
+  },
+  "requiredHeavyBuildCarrier": {
+    "os": "64-bit x86 Linux",
+    "freeDiskGB": 400,
+    "ramGB": 64,
+    "repoMinimum": "2.4"
+  },
+  "dingsEarned": [
+    "AOSP_SOURCE_MANIFEST_CONTACT",
+    "AOSP_TARGETED_SOURCE_CONTACT",
+    "AOSP_BUILD_BOOT_SOURCE_ANATOMY_CONTACT"
+  ],
+  "dingsNotYetEarned": [
+    "AOSP_FULL_REPO_SYNC",
+    "AOSP_BUILD",
+    "AOSP_SYSTEM_IMAGE",
+    "AOSP_BOOT"
+  ],
+  "boundary": "Readiness and real upstream source contact are proven. No full AOSP compilation, system-image production, Cuttlefish boot, CTS, physical-device support, or production release claim is made.",
+  "nextGate": "Attach a qualifying heavy Linux build carrier, run bootstrap-heavy-build-host.sh --execute-build, preserve build evidence, then route produced images to a Cuttlefish-capable boot carrier."
+}

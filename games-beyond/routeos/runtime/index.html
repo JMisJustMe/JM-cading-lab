@@ -43,6 +43,7 @@ const STORE='JM_ROUTEOS_PUBLIC_RUNTIME_v0_8';
 const clone=o=>JSON.parse(JSON.stringify(o));
 const baseState=()=>({version:'0.8.1',activePlayerId:'jm',players:[{id:'jm',name:'JM'}],activeCart:null,quickResume:null,saves:{},installed:[],receipts:[],settings:{controlSide:'right'},lastScreen:'home'});
 let os;try{os=Object.assign(baseState(),JSON.parse(localStorage.getItem(STORE)||'{}'))}catch{os=baseState()}
+os.version='0.8.1';
 const $=id=>document.getElementById(id), canvas=$('game'),ctx=canvas.getContext('2d');
 const controls={up:false,down:false,left:false,right:false};let raf=0,last=performance.now(),paused=false,pointer=null;
 const SEED_WORLD=Object.freeze({w:900,h:620});

@@ -1,0 +1,8 @@
+JM_ANDROID_DERIVED_OS
+schema=jm.android-derived-os/product-marker/0.7
+upstream=AOSP
+upstream_release=android17-release
+base_product=aosp_cf_x86_64_only_phone
+product=jm_cf_x86_64_phone
+ownership_boundary=JM product layer; AOSP remains declared upstream
+proof_rule=NO DING, NO CLAIM

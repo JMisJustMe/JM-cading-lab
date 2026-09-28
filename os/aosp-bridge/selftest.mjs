@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 import {
   AOSP_UPSTREAM,
@@ -11,6 +14,7 @@ import {
   renderAospCompileScript,
   renderAospBootScript
 } from './jm-aosp-bridge.mjs';
+import { stageJMProduct } from './install-jm-aosp-product.mjs';
 
 let pass = 0;
 const test = (name, fn) => {
@@ -37,12 +41,28 @@ const blockedHost = {
   ramGB: 32
 };
 
+function buildEvidence(extra = {}) {
+  return {
+    buildExitCode: 0,
+    systemImageObserved: true,
+    branch: AOSP_UPSTREAM.branch,
+    target: AOSP_UPSTREAM.target,
+    manifestRevision: 'platform/build@deadbeef',
+    jmProductMarkerObserved: true,
+    ...extra
+  };
+}
+
 test('AOSP route uses current android-latest-release alias', () => {
   assert.equal(AOSP_UPSTREAM.branch, 'android-latest-release');
 });
 
-test('AOSP route uses current Cuttlefish phone target', () => {
-  assert.equal(AOSP_UPSTREAM.target, 'aosp_cf_x86_64_only_phone-aosp_current-userdebug');
+test('declared upstream base target remains current Cuttlefish x86_64-only phone', () => {
+  assert.equal(AOSP_UPSTREAM.baseTarget, 'aosp_cf_x86_64_only_phone-aosp_current-userdebug');
+});
+
+test('heavy route now targets the JM-derived Cuttlefish product', () => {
+  assert.equal(AOSP_UPSTREAM.target, 'jm_cf_x86_64_phone-aosp_current-userdebug');
 });
 
 test('dependency ledger keeps AOSP as declared upstream, not JM authorship', () => {
@@ -87,36 +107,67 @@ test('held host emits no real AOSP commands', () => {
   assert.deepEqual(plan.commands, []);
 });
 
-test('ready host emits Repo sync + envsetup + lunch + m', () => {
+test('ready plan stages JM product then lunches JM target before m', () => {
   const plan = createAospExecutionPlan(readyHost);
   const joined = plan.commands.join('\n');
   assert.equal(plan.status, 'READY');
   assert.match(joined, /repo init .*--clone-filter=blob:limit=10M .*android-latest-release/);
   assert.match(joined, /repo sync -c -j8/);
+  assert.match(joined, /install-jm-aosp-product\.mjs/);
   assert.match(joined, /source build\/envsetup\.sh/);
-  assert.match(joined, /lunch aosp_cf_x86_64_only_phone-aosp_current-userdebug/);
+  assert.match(joined, /lunch jm_cf_x86_64_phone-aosp_current-userdebug/);
   assert.match(joined, /m -j/);
+  assert.match(joined, /product\/etc\/jm-os-release\.txt/);
 });
 
-test('build script includes boot return observation', () => {
+test('JM product layer stages independently without mutating upstream product file', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'jm-aosp-product-test-'));
+  try {
+    const baseDir = path.join(root, 'device', 'google', 'cuttlefish', 'vsoc_x86_64_only', 'phone');
+    fs.mkdirSync(baseDir, { recursive: true });
+    const baseFile = path.join(baseDir, 'aosp_cf.mk');
+    fs.writeFileSync(baseFile, '# fake contacted upstream base for staging test\n');
+    const before = fs.readFileSync(baseFile, 'utf8');
+
+    const receipt = stageJMProduct(root);
+    assert.equal(receipt.passed, true);
+    assert.ok(receipt.ding);
+    assert.equal(fs.readFileSync(baseFile, 'utf8'), before);
+    assert.ok(fs.existsSync(path.join(root, 'device', 'jm', 'cuttlefish', 'AndroidProducts.mk')));
+    assert.ok(fs.existsSync(path.join(root, 'device', 'jm', 'cuttlefish', 'jm_cf_x86_64_phone.mk')));
+    assert.match(
+      fs.readFileSync(path.join(root, 'device', 'jm', 'cuttlefish', 'jm-os-release.txt'), 'utf8'),
+      /product=jm_cf_x86_64_phone/
+    );
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('full build script observes boot return and live JM marker', () => {
   const script = renderAospBuildScript(createAospExecutionPlan(readyHost));
   assert.match(script, /launch_cvd --daemon/);
   assert.match(script, /sys\.boot_completed/);
   assert.match(script, /ro\.build\.fingerprint/);
+  assert.match(script, /\/product\/etc\/jm-os-release\.txt/);
 });
 
-test('compile-only script builds without attempting Cuttlefish boot', () => {
+test('compile-only script stages and builds JM product without attempting Cuttlefish boot', () => {
   const script = renderAospCompileScript(createAospExecutionPlan(readyHost));
   assert.match(script, /repo sync -c -j8/);
+  assert.match(script, /install-jm-aosp-product\.mjs/);
+  assert.match(script, /lunch jm_cf_x86_64_phone-aosp_current-userdebug/);
   assert.match(script, /m -j/);
   assert.doesNotMatch(script, /launch_cvd/);
   assert.doesNotMatch(script, /sys\.boot_completed/);
 });
 
-test('boot-only script observes Cuttlefish return without resyncing source', () => {
+test('boot-only script re-enters JM target and observes marker without resyncing/rebuilding', () => {
   const script = renderAospBootScript(createAospExecutionPlan(readyHost));
+  assert.match(script, /lunch jm_cf_x86_64_phone-aosp_current-userdebug/);
   assert.match(script, /launch_cvd --daemon/);
   assert.match(script, /sys\.boot_completed/);
+  assert.match(script, /jm-aosp-boot-product-marker/);
   assert.doesNotMatch(script, /repo sync/);
   assert.doesNotMatch(script, /m -j/);
 });
@@ -125,62 +176,67 @@ test('empty receipt earns no build Ding and no boot Ding', () => {
   const verdict = evaluateAospContactReceipt({});
   assert.equal(verdict.build.ding, null);
   assert.equal(verdict.boot.ding, null);
-  assert.equal(verdict.crown, 'NO_AOSP_BUILD_BOOT_CROWN');
+  assert.equal(verdict.crown, 'NO_JM_AOSP_PRODUCT_BUILD_BOOT_CROWN');
 });
 
-test('build evidence can earn bounded build Ding without boot Ding', () => {
+test('generic AOSP build evidence without JM marker cannot earn JM build Ding', () => {
   const verdict = evaluateAospContactReceipt({
-    buildExitCode: 0,
-    systemImageObserved: true,
-    branch: AOSP_UPSTREAM.branch,
-    target: AOSP_UPSTREAM.target,
-    manifestRevision: 'platform/build@deadbeef'
+    ...buildEvidence(),
+    jmProductMarkerObserved: false
   });
-  assert.ok(verdict.build.ding);
+  assert.equal(verdict.build.ding, null);
+});
+
+test('JM image evidence can earn bounded JM build Ding without boot Ding', () => {
+  const verdict = evaluateAospContactReceipt(buildEvidence());
+  assert.equal(verdict.build.ding?.scope, 'JM_AOSP_PRODUCT_BUILD');
   assert.equal(verdict.boot.ding, null);
 });
 
-test('boot Ding requires build evidence first', () => {
+test('boot return cannot earn boot Ding without build evidence first', () => {
   const verdict = evaluateAospContactReceipt({
     bootCompleted: '1',
-    buildFingerprint: 'jm/test/fingerprint'
+    buildFingerprint: 'JM/jm_cf_x86_64_phone/vsoc_x86_64_only:test',
+    jmProductMarkerBootObserved: true
   });
   assert.equal(verdict.boot.ding, null);
 });
 
-test('full returned contact earns bounded build + boot Dings', () => {
-  const verdict = evaluateAospContactReceipt({
-    buildExitCode: 0,
-    systemImageObserved: true,
-    branch: AOSP_UPSTREAM.branch,
-    target: AOSP_UPSTREAM.target,
-    manifestRevision: 'platform/build@deadbeef',
+test('running JM product must return its live marker before boot Ding', () => {
+  const verdict = evaluateAospContactReceipt(buildEvidence({
     bootCompleted: '1',
-    buildFingerprint: 'aosp/cf_x86_64_only_phone/jm-contact'
-  });
-  assert.ok(verdict.build.ding);
-  assert.ok(verdict.boot.ding);
-  assert.equal(verdict.crown, 'BOUNDED_AOSP_BUILD_BOOT_CONTACT');
+    buildFingerprint: 'JM/jm_cf_x86_64_phone/vsoc_x86_64_only:test',
+    jmProductMarkerBootObserved: false
+  }));
+  assert.equal(verdict.build.ding?.scope, 'JM_AOSP_PRODUCT_BUILD');
+  assert.equal(verdict.boot.ding, null);
+});
+
+test('full returned JM product contact earns bounded build + boot Dings', () => {
+  const verdict = evaluateAospContactReceipt(buildEvidence({
+    bootCompleted: '1',
+    buildFingerprint: 'JM/jm_cf_x86_64_phone/vsoc_x86_64_only:test',
+    jmProductMarkerBootObserved: true
+  }));
+  assert.equal(verdict.build.ding?.scope, 'JM_AOSP_PRODUCT_BUILD');
+  assert.equal(verdict.boot.ding?.scope, 'JM_AOSP_PRODUCT_BOOT');
+  assert.equal(verdict.crown, 'BOUNDED_JM_AOSP_PRODUCT_BUILD_BOOT_CONTACT');
 });
 
 test('final crown stays bounded beyond real-phone/production claims', () => {
-  const verdict = evaluateAospContactReceipt({
-    buildExitCode: 0,
-    systemImageObserved: true,
-    branch: AOSP_UPSTREAM.branch,
-    target: AOSP_UPSTREAM.target,
-    manifestRevision: 'platform/build@deadbeef',
+  const verdict = evaluateAospContactReceipt(buildEvidence({
     bootCompleted: '1',
-    buildFingerprint: 'aosp/cf_x86_64_only_phone/jm-contact'
-  });
+    buildFingerprint: 'JM/jm_cf_x86_64_phone/vsoc_x86_64_only:test',
+    jmProductMarkerBootObserved: true
+  }));
   assert.match(verdict.boundary, /real-phone hardware support/);
   assert.match(verdict.boundary, /CTS compatibility/);
 });
 
 console.log(JSON.stringify({
-  schema: 'jm.aosp-bridge-selftest/0.1',
+  schema: 'jm.aosp-bridge-selftest/0.2',
   pass,
-  total: 18,
-  state: pass === 18 ? 'PASS' : 'FAIL',
-  claim: 'JM AOSP bridge logic proven only; no AOSP compile/boot claimed.'
+  total: 22,
+  state: pass === 22 ? 'PASS' : 'FAIL',
+  claim: 'JM AOSP product integration logic proven only; no full AOSP compile/boot claimed.'
 }, null, 2));

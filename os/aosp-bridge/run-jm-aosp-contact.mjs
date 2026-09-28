@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { execFileSync, spawnSync } from 'node:child_process';
 import {
   assessAospHost,
@@ -69,6 +70,7 @@ function detectHost(root) {
 }
 
 const execute = process.argv.includes('--execute');
+const controlRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const executeBuild = process.argv.includes('--execute-build');
 const executeBoot = process.argv.includes('--execute-boot');
 const root = process.env.JM_AOSP_ROOT ?? path.join(os.homedir(), 'jm-aosp', 'android-latest-release');
@@ -127,7 +129,7 @@ if (plan.status !== 'READY') {
     console.log(`[JM AOSP] execution supplied: entering real AOSP ${selected.mode} route.`);
     const result = spawnSync('bash', [selected.path], {
       stdio: 'inherit',
-      env: { ...process.env, JM_AOSP_ROOT: root }
+      env: { ...process.env, JM_AOSP_ROOT: root, JM_AOSP_CONTROL_ROOT: controlRoot }
     });
     process.exitCode = result.status ?? 1;
   } else {

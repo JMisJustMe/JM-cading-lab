@@ -1,99 +1,141 @@
-# JM AOSP Bridge v0.1
+# JM AOSP Bridge v0.7
 
 **Project:** JM Android-derived OS  
-**State:** real-contact bridge implemented; full AOSP compile/boot is **not yet claimed**.
+**State:** real Android 17 source contact + JM product-layer contact proven; heavy compile/boot still gated by carrier.
 
-## What this body does
-
-This bridge routes the next Android-derived OS contact through recovered JM bodies instead of treating AOSP as a detached foreign build:
+## Route
 
 ```text
-AOSP source upstream
-  -> OS_CODING service/permission route
+AOSP android-latest-release
+  -> live manifest pin (currently android17-release)
+  -> OS_CODING
   -> OneBody IR
-  -> TheoC contract
-  -> official AOSP Repo/Soong build carrier
-  -> Cuttlefish boot contact
-  -> JM receipt evaluation
-  -> DING only if returned evidence passes
+  -> TheoC
+  -> Repo sync (partial clone + blob limit)
+  -> stage device/jm/cuttlefish
+  -> lunch jm_cf_x86_64_phone-aosp_current-userdebug
+  -> Soong/Ninja m
+  -> built JM product marker
+  -> Cuttlefish
+  -> sys.boot_completed + fingerprint + live JM product marker
+  -> bounded JM build/boot Dings
 ```
 
-The bridge deliberately preserves **MESH != MERGE**:
+## Sovereignty boundary
 
-- JM owns/governs the route, contracts, meaning, preflight, proof and claim boundary.
-- AOSP remains the declared open-source platform upstream.
-- Repo/Soong/Ninja/AOSP prebuilts remain declared upstream tooling in this stage.
-- Linux/Cuttlefish/KVM/Node remain host carriers at this stage.
-- No claim of external-toolchain independence is made.
+**MESH != MERGE.**
 
-## Current AOSP contact
+JM owns/governs:
+- OS_CODING / OneBody IR / TheoC control route;
+- product definition under `device/jm/cuttlefish`;
+- product identity/provenance marker;
+- host preflight;
+- build/boot evidence gates;
+- JM receipts and claim boundary.
 
-The route follows the current public AOSP setup:
+Declared carriers/upstream:
+- AOSP source/platform;
+- Repo / Soong / Ninja / AOSP prebuilts;
+- Linux build host;
+- Cuttlefish/KVM boot host;
+- ADB contact tool.
 
-- manifest alias: `android-latest-release`
-- manifest URL: `https://android.googlesource.com/platform/manifest`
-- Cuttlefish target: `aosp_cf_x86_64_only_phone-aosp_current-userdebug`
-- build: `m`
-- boot return: `launch_cvd --daemon` + `sys.boot_completed=1`
+The JM product inherits the verified Android 17 base:
 
-The bridge records the currently observed release family as `android17-release`, but uses the stable `android-latest-release` alias for execution.
-
-## Hard host gate
-
-The full source/build route is intentionally blocked unless the contacted host meets the current AOSP baseline encoded by this bridge:
-
-- Linux x86_64
-- >= 400 GB free disk
-- >= 64 GB RAM
-- glibc >= 2.17
-- Repo >= 2.4
-- Node available for the current JS-native JM control body
-
-If the gate fails, **no real AOSP build commands are emitted or executed** by the runner.
-
-## Proof locally
-
-```bash
-node os/aosp-bridge/selftest.mjs
+```text
+device/google/cuttlefish/vsoc_x86_64_only/phone/aosp_cf.mk
 ```
 
-This proves bridge logic only. It does not compile AOSP.
+The upstream base is not overwritten. Real source contact proved it stayed byte-identical while the JM layer was staged separately at:
 
-## Real host preflight
+```text
+device/jm/cuttlefish/
+```
+
+## Product
+
+```text
+PRODUCT_NAME = jm_cf_x86_64_phone
+lunch target = jm_cf_x86_64_phone-aosp_current-userdebug
+marker = /product/etc/jm-os-release.txt
+```
+
+A generic AOSP image cannot earn a JM build Ding. The build output must return the JM marker.
+
+A merely booted Android cannot earn a JM boot Ding. The running `/product` partition must return the same marker.
+
+## Current earned contacts
+
+- `AOSP_SOURCE_MANIFEST_CONTACT`
+- `AOSP_TARGETED_SOURCE_CONTACT`
+- `AOSP_BUILD_BOOT_SOURCE_ANATOMY_CONTACT`
+- `JM_AOSP_PRODUCT_LAYER_REAL_SOURCE_CONTACT`
+
+Not yet earned:
+- full Repo sync;
+- `JM_AOSP_PRODUCT_BUILD`;
+- system/super image Ding;
+- `JM_AOSP_PRODUCT_BOOT`;
+- CTS / physical-device / production-release proof.
+
+## Heavy host gate
+
+Current AOSP baseline encoded by the bridge:
+- 64-bit x86 Linux;
+- >= 400 GB free disk;
+- >= 64 GB RAM;
+- glibc >= 2.17;
+- Repo >= 2.4;
+- Node for the current JM control body.
+
+The measured standard GitHub hosted runner returned:
+- 85.95 GB free disk;
+- 15.61 GB RAM;
+- glibc 2.39;
+- no Repo installed.
+
+So it is deliberately held before full sync/build.
+
+## Preflight
 
 ```bash
 node os/aosp-bridge/run-jm-aosp-contact.mjs
 ```
 
-This detects the contacted host, writes a preflight receipt and, only on a passing host, emits:
+## Heavy build host bootstrap
 
-```text
-jm-aosp-receipts/jm-aosp-real-contact.generated.sh
+On a qualifying Debian/Ubuntu-class build carrier:
+
+```bash
+bash os/aosp-bridge/bootstrap-heavy-build-host.sh preflight
 ```
 
-## Start the heavy real contact
+Then:
 
-On a deliberately chosen capable Linux host:
+```bash
+bash os/aosp-bridge/bootstrap-heavy-build-host.sh --execute-build
+```
+
+Compile and boot are intentionally separable. A compile carrier does not need to prove Cuttlefish/KVM boot capability.
+
+For a carrier that already holds the synced tree + build output:
+
+```bash
+node os/aosp-bridge/run-jm-aosp-contact.mjs --execute-boot
+```
+
+The full combined route remains:
 
 ```bash
 node os/aosp-bridge/run-jm-aosp-contact.mjs --execute
 ```
 
-That route performs Repo init/sync, pins the manifest, sources `build/envsetup.sh`, selects the current Cuttlefish phone target, runs `m`, locates built images, launches Cuttlefish, waits for ADB boot completion and captures the build fingerprint.
+## Proof
 
-**NO DING, NO CLAIM:** a generated script, a successful sync, or even a completed build command is not automatically the final boot Ding. The returned evidence must be passed into `evaluateAospContactReceipt()`.
+```bash
+node os/aosp-bridge/selftest.mjs
+```
 
-## Claim ceiling
+Current v0.7 bridge/product battery: **22/22 PASS** at logic/staging scope.
 
-Even a successful bounded AOSP build + Cuttlefish boot does **not** prove:
-
-- real-phone hardware support;
-- production release readiness;
-- CTS compatibility;
-- driver breadth;
-- production signing;
-- independence from AOSP;
-- independence from Linux/KVM/Cuttlefish;
-- complete native compiler/self-host sovereignty.
-
-Those remain later contacts.
+**NO DING, NO CLAIM:** source contact, staging, compilation, image inclusion and boot remain separate earned states.

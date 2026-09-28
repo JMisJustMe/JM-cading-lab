@@ -39,7 +39,8 @@ export const AOSP_UPSTREAM = Object.freeze({
   manifestUrl: 'https://android.googlesource.com/platform/manifest',
   branch: 'android-latest-release',
   currentReleaseFamilyObserved: 'android17-release',
-  target: 'aosp_cf_x86_64_only_phone-aosp_current-userdebug'
+  baseTarget: 'aosp_cf_x86_64_only_phone-aosp_current-userdebug',
+  target: 'jm_cf_x86_64_phone-aosp_current-userdebug'
 });
 
 export const AOSP_HOST_REQUIREMENTS = Object.freeze({
@@ -213,11 +214,15 @@ export function createAospExecutionPlan(host = {}, options = {}) {
     `repo init --partial-clone --clone-filter=blob:limit=10M --no-use-superproject -b ${AOSP_UPSTREAM.branch} -u ${AOSP_UPSTREAM.manifestUrl}`,
     `repo sync -c -j${syncJobs}`,
     'repo manifest -r -o jm-aosp-manifest.xml',
+    'test -n "${JM_AOSP_CONTROL_ROOT:-}"',
+    'node "$JM_AOSP_CONTROL_ROOT/os/aosp-bridge/install-jm-aosp-product.mjs" "$PWD"',
     'source build/envsetup.sh',
     `lunch ${AOSP_UPSTREAM.target}`,
     `m -j"${buildJobs}"`,
     'test -n "${OUT_DIR:-}"',
-    'find "$OUT_DIR" -maxdepth 4 -type f \\( -name "system.img" -o -name "super.img" \\) -print | tee jm-aosp-built-images.txt'
+    'find "$OUT_DIR" -maxdepth 4 -type f \\( -name "system.img" -o -name "super.img" \\) -print | tee jm-aosp-built-images.txt',
+    'test -f "$OUT_DIR/product/etc/jm-os-release.txt"',
+    'cat "$OUT_DIR/product/etc/jm-os-release.txt" | tee jm-aosp-product-marker.txt'
   ];
 
   return {
@@ -227,12 +232,17 @@ export function createAospExecutionPlan(host = {}, options = {}) {
     upstream: AOSP_UPSTREAM,
     commands,
     bootCommands: [
+      `cd "${root}"`,
+      'source build/envsetup.sh',
+      `lunch ${AOSP_UPSTREAM.target}`,
       'command -v launch_cvd >/dev/null',
       'launch_cvd --daemon',
       'adb wait-for-device',
       'until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d "\\r")" = "1" ]; do sleep 5; done',
       'adb shell getprop ro.build.fingerprint | tee jm-aosp-build-fingerprint.txt',
-      'adb shell getprop sys.boot_completed | tee jm-aosp-boot-completed.txt'
+      'adb shell getprop sys.boot_completed | tee jm-aosp-boot-completed.txt',
+      'adb shell test -f /product/etc/jm-os-release.txt',
+      'adb shell cat /product/etc/jm-os-release.txt | tee jm-aosp-boot-product-marker.txt'
     ],
     claimBoundary: 'Executing this plan is still not a Ding. A build/boot receipt must be evaluated.'
   };
@@ -295,13 +305,15 @@ export function evaluateAospContactReceipt(receipt = {}) {
     check('build.image', Boolean(receipt.systemImageObserved), receipt.systemImageObserved ?? false, true),
     check('build.branch', receipt.branch === AOSP_UPSTREAM.branch, receipt.branch ?? null, AOSP_UPSTREAM.branch),
     check('build.target', receipt.target === AOSP_UPSTREAM.target, receipt.target ?? null, AOSP_UPSTREAM.target),
-    check('build.manifest', Boolean(String(receipt.manifestRevision ?? '').trim()), receipt.manifestRevision ?? null, 'non-empty pinned manifest revision')
+    check('build.manifest', Boolean(String(receipt.manifestRevision ?? '').trim()), receipt.manifestRevision ?? null, 'non-empty pinned manifest revision'),
+    check('build.jm-marker', Boolean(receipt.jmProductMarkerObserved), receipt.jmProductMarkerObserved ?? false, true)
   ];
   const buildPassed = buildChecks.every(item => item.passed);
 
   const bootChecks = [
     check('boot.completed', String(receipt.bootCompleted ?? '').trim() === '1', receipt.bootCompleted ?? null, '1'),
-    check('boot.fingerprint', Boolean(String(receipt.buildFingerprint ?? '').trim()), receipt.buildFingerprint ?? null, 'non-empty build fingerprint')
+    check('boot.fingerprint', Boolean(String(receipt.buildFingerprint ?? '').trim()), receipt.buildFingerprint ?? null, 'non-empty build fingerprint'),
+    check('boot.jm-marker', Boolean(receipt.jmProductMarkerBootObserved), receipt.jmProductMarkerBootObserved ?? false, true)
   ];
   const bootPassed = buildPassed && bootChecks.every(item => item.passed);
 
@@ -312,8 +324,8 @@ export function evaluateAospContactReceipt(receipt = {}) {
       checks: buildChecks,
       ding: buildPassed ? {
         type: 'DING',
-        scope: 'AOSP_BUILD',
-        claim: 'AOSP source compiled to an observed platform image through the JM-governed route.'
+        scope: 'JM_AOSP_PRODUCT_BUILD',
+        claim: 'The JM Android-derived AOSP product compiled to an observed platform image and its JM product marker returned from the built product image.'
       } : null
     },
     boot: {
@@ -321,11 +333,11 @@ export function evaluateAospContactReceipt(receipt = {}) {
       checks: bootChecks,
       ding: bootPassed ? {
         type: 'DING',
-        scope: 'AOSP_BOOT',
-        claim: 'The built image returned sys.boot_completed=1 with an observed build fingerprint.'
+        scope: 'JM_AOSP_PRODUCT_BOOT',
+        claim: 'The built JM Android-derived image returned sys.boot_completed=1, a build fingerprint and the JM product marker from the running /product partition.'
       } : null
     },
-    crown: bootPassed ? 'BOUNDED_AOSP_BUILD_BOOT_CONTACT' : 'NO_AOSP_BUILD_BOOT_CROWN',
+    crown: bootPassed ? 'BOUNDED_JM_AOSP_PRODUCT_BUILD_BOOT_CONTACT' : 'NO_JM_AOSP_PRODUCT_BUILD_BOOT_CROWN',
     boundary: 'Does not prove real-phone hardware support, production release readiness, CTS compatibility, or independence from AOSP/host carriers.'
   };
 }

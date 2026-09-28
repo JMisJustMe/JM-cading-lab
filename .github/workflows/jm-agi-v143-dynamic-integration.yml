@@ -1,0 +1,70 @@
+name: JM AGI v1.4.3 Windows Dynamic Integration
+
+on:
+  pull_request:
+    paths:
+      - 'lab/jm-agi-dynamic/v1.4.3/**'
+      - '.github/workflows/jm-agi-v143-dynamic-integration.yml'
+
+jobs:
+  exact-r3-windows-edge:
+    runs-on: windows-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: lab/jm-agi-dynamic/v1.4.3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Windows and Edge pre-contact
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host "OS: $([System.Environment]::OSVersion.VersionString)"
+          Write-Host "PowerShell: $($PSVersionTable.PSVersion)"
+          $candidates = @(
+            "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",
+            "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
+            "$env:LOCALAPPDATA\Microsoft\Edge\Application\msedge.exe"
+          ) | Where-Object { Test-Path $_ }
+          if (-not $candidates) { throw 'Microsoft Edge not found on windows-latest.' }
+          Write-Host "Edge: $($candidates[0])"
+          & $candidates[0] --version
+
+      - name: Execute exact R3 witness end-to-end
+        id: exact_r3
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host 'DYNAMIC_CONTACT_START'
+          & .\JM_AGI_LAB_v1_4_3_PROCESS_WITNESS.ps1 -ArmTimeoutSeconds 45 -ZeroTimeoutSeconds 20
+          Write-Host 'DYNAMIC_CONTACT_RUNNER_RETURNED'
+          if (-not (Test-Path .\JM_AGI_PROCESS_WITNESS_LAST.json)) {
+            throw 'Runner returned without a witness receipt.'
+          }
+          $w = Get-Content .\JM_AGI_PROCESS_WITNESS_LAST.json -Raw | ConvertFrom-Json
+          $w | ConvertTo-Json -Depth 8
+          if ($w.zeroObserved -ne $true) { throw 'Witness did not prove process zero.' }
+          if ($w.platform -ne 'Windows') { throw 'Witness platform mismatch.' }
+          if ($w.browser -ne 'Microsoft Edge') { throw 'Witness browser mismatch.' }
+          if ($w.runnerVersion -ne '1.0.3') { throw "Unexpected runner version $($w.runnerVersion)." }
+          Write-Host 'DYNAMIC_CONTACT_WITNESS_PASS'
+
+      - name: Inspect and clean isolated Edge profile
+        if: always()
+        run: |
+          $profile = (Resolve-Path .\JM_AGI_EDGE_TEST_PROFILE -ErrorAction SilentlyContinue)
+          if ($profile) {
+            $needle = [Regex]::Escape($profile.Path)
+            $dedicated = @(Get-CimInstance Win32_Process -Filter "Name='msedge.exe'" -ErrorAction SilentlyContinue |
+              Where-Object { $_.CommandLine -and ($_.CommandLine -match $needle) })
+            Write-Host "Remaining dedicated Edge processes: $($dedicated.Count)"
+            foreach ($p in $dedicated) {
+              Write-Host "Cleanup PID $($p.ProcessId)"
+              Stop-Process -Id $p.ProcessId -Force -ErrorAction SilentlyContinue
+            }
+          }
+          if (Test-Path .\JM_AGI_PROCESS_WITNESS_LAST.json) {
+            Write-Host '--- witness receipt ---'
+            Get-Content .\JM_AGI_PROCESS_WITNESS_LAST.json -Raw
+          }

@@ -238,6 +238,38 @@ export function createAospExecutionPlan(host = {}, options = {}) {
   };
 }
 
+export function renderAospCompileScript(plan) {
+  if (plan?.status !== 'READY') {
+    throw new Error('AOSP plan is not READY; no compile script may be emitted.');
+  }
+  return [
+    '#!/usr/bin/env bash',
+    'set -euo pipefail',
+    '',
+    'echo "[JM AOSP] compile contact route started"',
+    ...plan.commands,
+    '',
+    'echo "[JM AOSP] compile route returned; evaluate build evidence before claiming a build Ding"',
+    ''
+  ].join('\n');
+}
+
+export function renderAospBootScript(plan) {
+  if (plan?.status !== 'READY') {
+    throw new Error('AOSP plan is not READY; no boot script may be emitted.');
+  }
+  return [
+    '#!/usr/bin/env bash',
+    'set -euo pipefail',
+    '',
+    'echo "[JM AOSP] boot contact route started"',
+    ...plan.bootCommands,
+    '',
+    'echo "[JM AOSP] boot route returned; evaluate runtime evidence before claiming a boot Ding"',
+    ''
+  ].join('\n');
+}
+
 export function renderAospBuildScript(plan) {
   if (plan?.status !== 'READY') {
     throw new Error('AOSP plan is not READY; no build script may be emitted.');

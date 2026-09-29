@@ -1,0 +1,131 @@
+name: JM RouteCore BlockFS v0.21 Fragmented Allocation Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-21-fragmented-allocation-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-21.yml"
+      - "routecore/blockfs-v0-21/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-21.yml"
+      - "routecore/blockfs-v0-21/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blockfs-v021-fragmented-allocation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.20 Actions body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf routecore-v21
+          mkdir -p routecore-v21/parent
+          gh run download 36510188647 -n jm-routecore-blockfs-v0-20-recovery-reentry-contact -D routecore-v21/parent
+          test -d routecore-v21/parent/work
+          cp -a routecore-v21/parent/work routecore-v21/work
+          cd routecore-v21/work
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_20_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==272 and p['total']==272
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.20 PASS',p['passed'],'/',p['total'])
+          PY
+          rm -rf build runtime runtime-v020 runtime-v021 __pycache__
+          mkdir -p build runtime
+
+      - name: Reassemble and verify exact-parent v0.21 descendant
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-v21/pieces
+          for n in 01 02 03 04 05; do
+            tr -d '\r\n\t ' < "routecore/blockfs-v0-21/package/part${n}.b64" > "routecore-v21/pieces/part${n}"
+          done
+          cat routecore-v21/pieces/part{01,02,03,04,05} > routecore-v21/v021.patch.gz.b64
+          echo "91f2dcff9a2b2f7919fe99b65601c5941ff1e81ce2b1313871ebad42d3a80120  routecore-v21/v021.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v21/v021.patch.gz.b64 | gzip -d > routecore-v21/v021.patch
+          echo "7538aa09ea674a1edbcb850ec109dd277744afa75c7bc985b2accf49e4848494  routecore-v21/v021.patch" | sha256sum -c -
+          (
+            cd routecore-v21/work
+            patch -p1 < ../v021.patch
+          )
+
+      - name: Fresh-build v0.21 construction court
+        run: |
+          set -euo pipefail
+          cd routecore-v21/work
+          python3 -m py_compile build.py VERIFY_RUNTIME.py ARM_JOURNAL.py ARM_REENTRY.py INSPECT_BLOCKFS_V6.py INSPECT_REENTRY.py CORRUPT_JOURNAL.py
+          bash -n RUN_REENTRY_MATRIX_LINUX.sh
+          rm -rf build runtime runtime-v021 __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_21_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==288 and p['total']==288, (p['status'],p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          for k in [
+            'blockfs_v6_contiguous_growth_preserved',
+            'blockfs_v6_fragment_exact_reuse',
+            'blockfs_v6_fragment_fallback',
+            'blockfs_v6_fragment_unlink_map_and_data',
+            'blockfs_v6_map_helpers',
+            'blockfs_v6_pressure_exact_free_set',
+            'blockfs_v6_pressure_map_shape',
+            'blockfs_v6_pressure_release',
+            'blockfs_v6_raw_pressure_full_bitmap',
+            'blockfs_v6_validation_dual_layout',
+            'user_blockfs_v6_fragment_pattern',
+            'user_blockfs_v6_pressure_syscall',
+            'user_blockfs_v6_reuse_pattern'
+          ]:
+              assert p['checks'][k] is True, k
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          PY
+          test -s build/jm_routecore_native64_blockfs_v0_21.img
+          test -s build/jm_routecore_native64_v0_21.elf
+          test -s build/jm_routecore_native64_blockfs_v0_21.data.img
+
+      - name: Fragmentation pressure plus inherited recovery matrix
+        run: |
+          set -euo pipefail
+          cd routecore-v21/work
+          chmod +x RUN_REENTRY_MATRIX_LINUX.sh
+          ./RUN_REENTRY_MATRIX_LINUX.sh
+
+      - name: Runtime hashes
+        if: always()
+        run: |
+          cd routecore-v21/work
+          echo "=== RUNTIME FILES ==="
+          find runtime-v021 -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime-v021 -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum || true
+
+      - name: Upload BlockFS v0.21 contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-21-fragmented-allocation-contact
+          path: routecore-v21/
+          if-no-files-found: error

@@ -1,0 +1,117 @@
+name: JM RouteCore BlockFS v0.21 Fragmentation Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-21-fragmentation-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-21.yml"
+      - "routecore/blockfs-v0-21/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-21.yml"
+      - "routecore/blockfs-v0-21/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blockfs-v021-fragmentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.20 Actions body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf routecore-v21
+          mkdir -p routecore-v21/parent
+          gh run download 36510188647 -n jm-routecore-blockfs-v0-20-recovery-reentry-contact -D routecore-v21/parent
+          test -d routecore-v21/parent/work
+          cp -a routecore-v21/parent/work routecore-v21/work
+          cd routecore-v21/work
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_20_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==272 and p['total']==272
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.20 PASS',p['passed'],'/',p['total'])
+          PY
+          rm -rf build runtime runtime-v020 runtime-v021 __pycache__
+          mkdir -p build runtime
+
+      - name: Apply exact-parent v0.21 descendant
+        run: |
+          set -euo pipefail
+          cat routecore/blockfs-v0-21/package/v021.patch.gz.b64.part* | tr -d '\r\n\t ' > routecore-v21/v021.patch.gz.b64
+          echo "e76421bd62b9f75d5a3c3ed47d451434ac597fb1a2aedad88f43160757aeab2c  routecore-v21/v021.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v21/v021.patch.gz.b64 | gzip -d > routecore-v21/v021.patch
+          echo "9643b88346da5f5283424680443fc7c7f2beb61f3d28944f7aa97526712dff07  routecore-v21/v021.patch" | sha256sum -c -
+          (
+            cd routecore-v21/work
+            patch -p1 < ../v021.patch
+          )
+
+      - name: Fresh-build v0.21 construction court
+        run: |
+          set -euo pipefail
+          cd routecore-v21/work
+          python3 -m py_compile build.py VERIFY_FRAGMENTATION.py INSPECT_BLOCKFS_V6.py
+          bash -n RUN_FRAGMENTATION_LINUX.sh
+          rm -rf build runtime runtime-v021 __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_21_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==277 and p['total']==277, (p['status'],p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          for k in [
+            'blockfs_v6_packed_four_slot_map',
+            'blockfs_v6_fragment_detection',
+            'blockfs_v6_free_space_pressure',
+            'blockfs_v6_hole_reuse',
+            'blockfs_v6_fragment_runtime_gate',
+            'blockfs_v6_nonzero_journal_guard'
+          ]:
+              assert p['checks'][k] is True, k
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          PY
+
+      - name: Fragmentation persistence court
+        run: |
+          set -euo pipefail
+          cd routecore-v21/work
+          chmod +x RUN_FRAGMENTATION_LINUX.sh
+          ./RUN_FRAGMENTATION_LINUX.sh
+
+      - name: Runtime hashes
+        if: always()
+        run: |
+          cd routecore-v21/work
+          echo "=== RUNTIME FILES ==="
+          find runtime-v021 -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime-v021 -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum || true
+
+      - name: Upload BlockFS v0.21 contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-21-fragmentation-contact
+          path: routecore-v21/
+          if-no-files-found: error

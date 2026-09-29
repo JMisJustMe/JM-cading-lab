@@ -54,9 +54,9 @@ jobs:
             tr -d '\r\n\t ' < "routecore/blockfs-v0-19/package/part${n}.b64" > "routecore-v19/pieces/v019-${n}"
           done
           cat routecore-v19/pieces/v019-{01,02,03,04} > routecore-v19/v019.patch.gz.b64
-          echo "a5bbd0e56b668085ddd9c3102acc097f060e24b83d738f6796295174128a8b8a  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
+          echo "fe5c2498116fdcaebc3ae70a7327cfd3f3a56df81c800f17de289534577934da  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
           base64 -d routecore-v19/v019.patch.gz.b64 | gzip -d > routecore-v19/v019.patch
-          echo "276b5fad9670cec24248af07359113e36bb6235491d43d37f0215f40587c658e  routecore-v19/v019.patch" | sha256sum -c -
+          echo "bbb4d46dc6cd9a331f57b66ce9161bd26dabd759beb48bbde749e5653634c2a7  routecore-v19/v019.patch" | sha256sum -c -
           (
             cd routecore-v19/work
             patch -p1 < ../v019.patch

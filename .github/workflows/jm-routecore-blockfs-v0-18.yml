@@ -169,7 +169,7 @@ jobs:
           set -euo pipefail
           cd routecore-v18/work
           runner=""
-          for f in RUN_RECOVERY_LINUX.sh RUN_CRASH_RECOVERY_LINUX.sh; do
+          for f in RUN_RECOVERY_LINUX.sh RUN_CRASH_RECOVERY_LINUX.sh RUN_PERSISTENCE_LINUX.sh; do
             if [ -f "$f" ]; then runner="$f"; break; fi
           done
           if [ -z "$runner" ]; then

@@ -98,6 +98,7 @@ jobs:
           python3 governance/enforce_source_to_living.py check --root .
           python3 governance/verify_estate_classification.py --root .
           node --check navigator/estate-integration/bridge.js
+          node --check estate-return-route.js
           node navigator/mcp-public-v1/test.mjs
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
           python3 -m json.tool navigator/stringline.json >/dev/null
@@ -111,7 +112,7 @@ jobs:
           mkdir -p cloudflare-estate/registry
 
           for file in \
-            index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js \
+            index.html estate-app.js estate-accessibility.js estate-head-public-consumer.js estate-return-route.js \
             estate.css estate-accessibility.css icon.svg manifest.webmanifest sw.js \
             author-home-door.js robots.txt sitemap.xml 404.html cading.html \
             ecostate-visual-v1.css ecostate-interaction-v1.js \
@@ -137,6 +138,32 @@ jobs:
               [ ! -f "money-menu/$file" ] || cp "money-menu/$file" "cloudflare-estate/money-menu/$file"
             done
           fi
+
+          # Overlay one contextual return-route organ on public front doors only.
+          # The source bodies remain sovereign; this is carrier navigation, not body replacement.
+          python3 - <<'PY'
+          from pathlib import Path
+          marker='data-jm-context-return-route="v0.1"'
+          tag='<script defer src="/estate-return-route.js" data-jm-context-return-route="v0.1"></script>'
+          targets=[
+              'index.html','access/index.html','career/index.html','recovery/index.html',
+              'money-menu/index.html','games-beyond/index.html','author/index.html',
+              'navigator/index.html','apps/index.html','books/index.html','theory/index.html',
+              'lyrics/index.html','market-lab/index.html','visual-story/index.html','recent/index.html'
+          ]
+          for rel in targets:
+              path=Path('cloudflare-estate')/rel
+              if not path.exists():
+                  continue
+              text=path.read_text(encoding='utf-8')
+              if marker in text:
+                  continue
+              if '</body>' not in text.lower():
+                  raise SystemExit(f'Context-return target has no body close: {rel}')
+              idx=text.lower().rfind('</body>')
+              text=text[:idx]+tag+'\n'+text[idx:]
+              path.write_text(text,encoding='utf-8')
+          PY
 
           for file in \
             estate-map.json estate-head-public-current.json theory-wing.json lyrics-house.json \
@@ -218,6 +245,13 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/estate-return-route.js
+          grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
+          grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html
+          grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/recovery/index.html
+          grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/money-menu/index.html
+          grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/games-beyond/index.html
+          grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/author/index.html
           test -s cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
           grep -Fq "AILATHEO_VISIBLE_CIRCUIT_DING" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
           grep -Fq "localStorage.setItem" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
@@ -302,6 +336,7 @@ jobs:
           const checks=[
             ['/', 'ecostate-gripcube-v5.js'],
             ['/', 'ecostate-griprail-v6.js'],
+            ['/estate-return-route.js', 'JM.EstateReturnRoute/0.1'],
             ['/ecostate-gripcube-v5.js', 'JMGripCube'],
             ['/ecostate-gripcube-v5.css', '.eco-gripcube'],
             ['/ecostate-griprail-v6.js', 'JMGripRail'],
@@ -316,7 +351,11 @@ jobs:
             ['/access/', 'One door.'],
             ['/apps/', 'data-jm-estate-integration="v1"'],
             ['/books/', '56 ≠ 98 ≠ 45'],
-            ['/career/', 'I study where people meet systems.'],
+            ['/career/', 'data-jm-context-return-route="v0.1"'],
+            ['/recovery/', 'data-jm-context-return-route="v0.1"'],
+            ['/money-menu/', 'data-jm-context-return-route="v0.1"'],
+            ['/games-beyond/', 'data-jm-context-return-route="v0.1"'],
+            ['/author/', 'data-jm-context-return-route="v0.1"'],
             ['/theory/', 'JM Theory Multihub v0.20.1'],
             ['/lyrics/', 'data-jm-estate-integration="v1"'],
             ['/recovery/', 'data-jm-estate-integration="v1"'],

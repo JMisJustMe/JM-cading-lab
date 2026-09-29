@@ -41,9 +41,9 @@ jobs:
           wc -c routecore-v19/pieces/v019-{01,02,03,04}
           cat routecore-v19/pieces/v019-{01,02,03,04} > routecore-v19/v019.patch.gz.b64
           sha256sum routecore-v19/v019.patch.gz.b64
-          echo "77b26c5c9d0f567ef73d023ae748fae773769e46baf7c2bfaeaeff1ad9bab197  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
+          echo "5f7c6470742ec91590d49fc67eac2d378708851cf8f37d57bb9c32d00ca82b41  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
           base64 -d routecore-v19/v019.patch.gz.b64 | gzip -d > routecore-v19/v019.patch
-          echo "3b25549e744d8c6a2a3f100d0924bdbaa167f504695d22dbab5c50d2bf81ddeb  routecore-v19/v019.patch" | sha256sum -c -
+          echo "891ce1f57e56d22748b2de0962e7bad8dc462c7ad77fa89ff3049aae0a5b631e  routecore-v19/v019.patch" | sha256sum -c -
           (
             cd routecore-v19/work
             patch -p1 < ../v019.patch

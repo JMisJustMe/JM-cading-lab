@@ -1,0 +1,120 @@
+name: JM RouteCore BlockFS v0.20 Recovery Re-entry Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-20-recovery-reentry-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-20.yml"
+      - "routecore/blockfs-v0-20/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-20.yml"
+      - "routecore/blockfs-v0-20/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blockfs-v020-reentry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.19 Actions body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf routecore-v20
+          mkdir -p routecore-v20/parent
+          gh run download 36507274226 -n jm-routecore-blockfs-v0-19-phase-recovery-contact -D routecore-v20/parent
+          test -d routecore-v20/parent/work
+          cp -a routecore-v20/parent/work routecore-v20/work
+          cd routecore-v20/work
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_19_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==265 and p['total']==265
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.19 PASS',p['passed'],'/',p['total'])
+          PY
+          rm -rf build runtime runtime-v020 __pycache__
+          mkdir -p build runtime
+
+      - name: Apply exact-parent v0.20 descendant
+        run: |
+          set -euo pipefail
+          tr -d '\r\n\t ' < routecore/blockfs-v0-20/package/v020.patch.gz.b64 > routecore-v20/v020.patch.gz.b64
+          echo "d2bd78220aea96d66869250e26cc473f18dfde1cf15e18f79b48956fe2a0ddcf  routecore-v20/v020.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v20/v020.patch.gz.b64 | gzip -d > routecore-v20/v020.patch
+          echo "b4df7eb528945cc430018b4258a7e1bfc34e6b685ee0e344e812a2a1308b4ec5  routecore-v20/v020.patch" | sha256sum -c -
+          (
+            cd routecore-v20/work
+            patch -p1 < ../v020.patch
+          )
+
+      - name: Fresh-build v0.20 construction court
+        run: |
+          set -euo pipefail
+          cd routecore-v20/work
+          python3 -m py_compile build.py VERIFY_RUNTIME.py ARM_JOURNAL.py ARM_REENTRY.py INSPECT_BLOCKFS_V5.py INSPECT_REENTRY.py CORRUPT_JOURNAL.py
+          bash -n RUN_REENTRY_MATRIX_LINUX.sh
+          rm -rf build runtime runtime-v020 __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_20_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==272 and p['total']==272, (p['status'],p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          for k in [
+            'blockfs_v5_reentry_codes',
+            'blockfs_v5_reentry_consumer',
+            'blockfs_v5_reentry_rollback_marker',
+            'blockfs_v5_reentry_commit_meta_marker',
+            'blockfs_v5_reentry_commit_zero_marker',
+            'blockfs_v5_reentry_one_shot',
+            'blockfs_v5_reentry_sync_boundaries'
+          ]:
+              assert p['checks'][k] is True, k
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          PY
+          test -s build/jm_routecore_native64_blockfs_v0_20.img
+          test -s build/jm_routecore_native64_v0_20.elf
+
+      - name: Interrupted recovery re-entry matrix
+        run: |
+          set -euo pipefail
+          cd routecore-v20/work
+          chmod +x RUN_REENTRY_MATRIX_LINUX.sh
+          ./RUN_REENTRY_MATRIX_LINUX.sh
+
+      - name: Runtime hashes
+        if: always()
+        run: |
+          cd routecore-v20/work
+          echo "=== RUNTIME FILES ==="
+          find runtime-v020 -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime-v020 -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum || true
+
+      - name: Upload BlockFS v0.20 re-entry artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-20-recovery-reentry-contact
+          path: routecore-v20/
+          if-no-files-found: error

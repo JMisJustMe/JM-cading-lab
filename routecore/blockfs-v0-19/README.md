@@ -8,16 +8,16 @@ Advance recovery semantics above the already-proved filesystem and storage-carri
 
 v0.19 evolves the bounded recovery journal into a checksummed phase-aware record. It distinguishes rollback intent from durable COMMITTING intent, exposes separate crash points, supports either exact rollback to the old committed body or forward completion to the staged shadow body, and rejects a deliberately damaged journal rather than guessing.
 
-## Construction status before runtime contact
+## Construction and runtime status
 
 Local recovered-descendant replay:
 
 - **265 / 265 PASS**
 - deterministic same-host rebuild: **PASS**
-- raw v0.19 patch SHA-256: `276b5fad9670cec24248af07359113e36bb6235491d43d37f0215f40587c658e`
-- normalized Base64 carrier SHA-256: `a5bbd0e56b668085ddd9c3102acc097f060e24b83d738f6796295174128a8b8a`
+- raw v0.19 patch SHA-256: `bbb4d46dc6cd9a331f57b66ce9161bd26dabd759beb48bbde749e5653634c2a7`
+- normalized Base64 carrier SHA-256: `fe5c2498116fdcaebc3ae70a7327cfd3f3a56df81c800f17de289534577934da`
 
-Construction is not runtime contact. No v0.19 Ding is claimed until the QEMU matrix returns.
+Construction is not runtime contact. The QEMU matrix returned on Actions run `36507274226`: rollback, forward commit, and torn-journal rejection all PASS. The formal contact receipt carries the earned scope.
 
 ## Crown gate
 

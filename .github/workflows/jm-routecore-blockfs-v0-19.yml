@@ -37,7 +37,10 @@ jobs:
           for n in 01 02 03 04; do
             tr -d '\r\n\t ' < "routecore/blockfs-v0-19/package/part${n}.b64" > "routecore-v19/pieces/v019-${n}"
           done
+          sha256sum routecore-v19/pieces/v019-{01,02,03,04}
+          wc -c routecore-v19/pieces/v019-{01,02,03,04}
           cat routecore-v19/pieces/v019-{01,02,03,04} > routecore-v19/v019.patch.gz.b64
+          sha256sum routecore-v19/v019.patch.gz.b64
           echo "77b26c5c9d0f567ef73d023ae748fae773769e46baf7c2bfaeaeff1ad9bab197  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
           base64 -d routecore-v19/v019.patch.gz.b64 | gzip -d > routecore-v19/v019.patch
           echo "3b25549e744d8c6a2a3f100d0924bdbaa167f504695d22dbab5c50d2bf81ddeb  routecore-v19/v019.patch" | sha256sum -c -

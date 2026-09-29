@@ -1,0 +1,113 @@
+name: JM RouteCore BlockFS v0.20 Recovery Boundary Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-20-recovery-boundary-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-20.yml"
+      - "routecore/blockfs-v0-20/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blockfs-v020-recovery-boundary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.19 Actions body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf routecore-v20
+          mkdir -p routecore-v20/parent
+          gh run download 36507274226 -n jm-routecore-blockfs-v0-19-phase-recovery-contact -D routecore-v20/parent
+          test -d routecore-v20/parent/work
+          cp -a routecore-v20/parent/work routecore-v20/work
+          cd routecore-v20/work
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_19_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==265 and p['total']==265
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.19 PASS',p['passed'],'/',p['total'])
+          PY
+          rm -rf build runtime __pycache__
+          mkdir -p build runtime
+
+      - name: Apply exact-parent v0.20 descendant
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-v20/pieces
+          for n in 01 02 03 04; do
+            tr -d '\r\n\t ' < "routecore/blockfs-v0-20/package/part${n}.b64" > "routecore-v20/pieces/v020-${n}"
+          done
+          cat routecore-v20/pieces/v020-{01,02,03,04} > routecore-v20/v020.patch.gz.b64
+          echo "062e9d7de6a55235a321a07a4a2d6f91e3e6da677ff6a2e4ca1d11c385b03333  routecore-v20/v020.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v20/v020.patch.gz.b64 | gzip -d > routecore-v20/v020.patch
+          echo "dd51e74945f1885449794a5e3bdad633bfdd98942f9674db991541e541161811  routecore-v20/v020.patch" | sha256sum -c -
+          (
+            cd routecore-v20/work
+            patch -p2 < ../v020.patch
+          )
+
+      - name: Fresh-build v0.20 construction court
+        run: |
+          set -euo pipefail
+          cd routecore-v20/work
+          python3 -m py_compile build.py VERIFY_RUNTIME.py ARM_JOURNAL.py INSPECT_BLOCKFS_V5.py CORRUPT_JOURNAL.py
+          bash -n RUN_RECOVERY_MATRIX_LINUX.sh
+          rm -rf build runtime __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_20_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==270 and p['total']==270, (p['status'],p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          for k in [
+            'blockfs_v5_prepare_crash_boundary','blockfs_v5_recovery_meta_boundary',
+            'blockfs_v5_recovery_zero_boundary','blockfs_v5_resume_new_shape_marker',
+            'blockfs_v5_test_selector_guard','blockfs_v5_forward_idempotent_shapes',
+            'blockfs_v5_checksum','blockfs_v5_clear_journal_last'
+          ]:
+              assert p['checks'][k] is True, k
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          PY
+
+      - name: Wider interruption and idempotent-recovery matrix
+        run: |
+          set -euo pipefail
+          cd routecore-v20/work
+          chmod +x RUN_RECOVERY_MATRIX_LINUX.sh
+          ./RUN_RECOVERY_MATRIX_LINUX.sh
+
+      - name: Runtime hashes
+        if: always()
+        run: |
+          cd routecore-v20/work
+          echo "=== RUNTIME FILES ==="
+          find runtime -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum || true
+
+      - name: Upload BlockFS v0.20 recovery-boundary artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-20-recovery-boundary-contact
+          path: routecore-v20/
+          if-no-files-found: error

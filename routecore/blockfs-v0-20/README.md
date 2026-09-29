@@ -20,10 +20,10 @@ Exact-parent local replay against the proved v0.19 Actions work body:
 
 - **272 / 272 PASS**
 - deterministic same-host rebuild: **PASS**
-- boot image SHA-256: `71f688d9bbcf8fdd31bf8e91dc350ca182a5c37057a910beaa5987e125530ac4`
-- kernel ELF SHA-256: `bf89592a76d276a5a1a4df67f1a617a5fa42eecf64efba3b1d34586b6a549607`
-- raw v0.20 patch SHA-256: `b87cbc70bf02b8e2e6710b2e38bf34c01dfe6d94e87da8454d37b6a149632cb9`
-- normalized Base64 carrier SHA-256: `2c93daca0917c0ff42513598adca2a9cdd2e0a511558b25eb2d1feb23b7873d6`
+- boot image SHA-256: `3e7bff02b6e5128d442f2f9aa4e43fa2cc7517a52708b76535ad651a04a3ade5`
+- kernel ELF SHA-256: `15cd7cb420eb1ce7abd7703d102948593e13d39227d8e729b0bfbdd83e936cd6`
+- raw v0.20 patch SHA-256: `b4df7eb528945cc430018b4258a7e1bfc34e6b685ee0e344e812a2a1308b4ec5`
+- normalized Base64 carrier SHA-256: `d2bd78220aea96d66869250e26cc473f18dfde1cf15e18f79b48956fe2a0ddcf`
 
 Construction is not runtime contact. The crown gate is the returned QEMU re-entry matrix.
 

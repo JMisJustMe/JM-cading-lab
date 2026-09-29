@@ -12,11 +12,11 @@ The journal is checksummed and carries an explicit rollback/commit mode. Forward
 
 Descendant carrier:
 
-- raw patch SHA-256: `3b25549e744d8c6a2a3f100d0924bdbaa167f504695d22dbab5c50d2bf81ddeb`
-- normalized concatenated Base64 SHA-256: `77b26c5c9d0f567ef73d023ae748fae773769e46baf7c2bfaeaeff1ad9bab197`
+- raw patch SHA-256: `891ce1f57e56d22748b2de0962e7bad8dc462c7ad77fa89ff3049aae0a5b631e`
+- normalized concatenated Base64 SHA-256: `5f7c6470742ec91590d49fc67eac2d378708851cf8f37d57bb9c32d00ca82b41`
 - local deterministic reapplication: **265 / 265 PASS**
-- local boot image SHA-256: `8827d7ff4c2fb32e0aca6d4719c4fc5c18e4a8cc1bacc7376db26ac1fdb23250`
-- local kernel ELF SHA-256: `2ae7eaf12f039dcc0c83d677602d0f62f215e27a93334eeaae95512313743494`
+- local boot image SHA-256: `dd10c1669b441cb7ed4b0821946bcaeb7e61c9cce55011fb53ccee204a19befd`
+- local kernel ELF SHA-256: `3c9130cebcfdc99368719b8f27d5a8864b87772069f01ea22b2f52f799b26e30`
 
 Runtime claim remains **OPEN** until the GitHub Actions QEMU matrix returns.
 

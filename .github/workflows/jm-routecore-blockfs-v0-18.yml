@@ -1,0 +1,193 @@
+name: JM RouteCore BlockFS v0.18 Crash Recovery Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-18-crash-recovery-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-18.yml"
+      - "routecore/blockfs-v0-18/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  blockfs-v018-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.17 parent
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-v18/pieces routecore-v18/work
+          check_piece() {
+            local label="$1" path="$2" expected="$3"
+            tr -d '\r\n\t ' < "$path" > "routecore-v18/pieces/$label"
+            echo "$expected  routecore-v18/pieces/$label" | sha256sum -c -
+          }
+          check_piece 00a routecore/ata-pio-v0-13/fix/00a.b64 40cedefd86fee512975cd9a474dfbcb1158c60dcd9279a2629ef515bc2dde6e3
+          check_piece 00b routecore/ata-pio-v0-13/fix/00b.b64 2b8d98c6d83b92030c362691de098d1e84d401842313e7b938741189a689c109
+          check_piece 00c routecore/ata-pio-v0-13/fix/00c.b64 d496e03cff56993eaf6b43274b7a5f87285cf20f60015c8fcc3b4793dd3762ef
+          check_piece 01 routecore/ata-pio-v0-13/package/part01.b64 8f67a481669e7b318d95fb5ffa7adf979455284d1daa6005cd4196d8adb59f81
+          check_piece 02a1 routecore/ata-pio-v0-13/fix/02a1.b64 c691001c43be82c9946e39351b93b246f15771072e5873247b5a920a73a6b51b
+          check_piece 02a2 routecore/ata-pio-v0-13/fix/02a2.b64 8aaf2ea4bd507d788f3a49dbf147b72b86d8ebd28260e0b9830179332cb326b7
+          check_piece 02b routecore/ata-pio-v0-13/fix/02b.b64 caad037e7adb9dd78f3dcf4f98af4791da4b0d0fc9e409f24b3230ddd0ca9bda
+          check_piece 02c routecore/ata-pio-v0-13/fix/02c.b64 03734fce7a853ee943cebf6a143f9508f25c75a24dbc57c74150d2083c0dee40
+          check_piece 03a routecore/ata-pio-v0-13/fix/03a.b64 cf20a5243d6c549754f2ca9052420833e773e329b08cd1ad0146433fe3392b66
+          check_piece 03b routecore/ata-pio-v0-13/fix/03b.b64 dc292926b605dacba198b4f0ccb201d5b42d7abc2a5684228e8f1c4e5c014c6f
+          check_piece 03c routecore/ata-pio-v0-13/fix/03c.b64 acf96fdc659ea359d0d432a34d96a75e8648f99913f49a71b14f6cf22df2a25f
+          check_piece 04 routecore/ata-pio-v0-13/package/part04.b64 496aa4c9fa5afbf7055399d84178b43301afae28f94f485b957a2cccaef120e8
+          check_piece 05 routecore/ata-pio-v0-13/package/part05.b64 73043cca8284d8f8e94c832d776667ed45f27388754640a5e799a75033278bf7
+
+          cat routecore-v18/pieces/{00a,00b,00c,01,02a1,02a2,02b,02c,03a,03b,03c,04,05} > routecore-v18/v013-release.b64
+          echo "613232f9c88cdcdd833941011c2183a48353c40831e75e749c841ae726b2d59a  routecore-v18/v013-release.b64" | sha256sum -c -
+          base64 -d routecore-v18/v013-release.b64 > routecore-v18/v013.zip
+          echo "2ee8e512520030359083e9bf60585f404001adac226d7621e167a5a259116c55  routecore-v18/v013.zip" | sha256sum -c -
+          unzip -q routecore-v18/v013.zip -d routecore-v18/work
+
+          base64 -d routecore/ahci-v0-14/v014.patch.gz.b64 | gzip -d > routecore-v18/v014.patch
+          base64 -d routecore/ahci-v0-14/q35fix.patch.gz.b64 | gzip -d > routecore-v18/q35fix.patch
+          (
+            cd routecore-v18/work
+            cp INSPECT_ATA_DISK.py INSPECT_AHCI_DISK.py
+            patch -p1 < ../v014.patch
+            patch -p1 < ../q35fix.patch
+          )
+          python3 routecore/virtio-blk-v0-15/make_v015.py routecore-v18/work
+
+          tr -d '\r\n\t ' < routecore/blockfs-v0-16/v016.patch.gz.b64 | base64 -d | gzip -d > routecore-v18/v016.patch
+          echo "4a73b2e9414dd799939747959ae72154d73c2a9085bd74de7226e57e181af92c  routecore-v18/v016.patch" | sha256sum -c -
+          (
+            cd routecore-v18/work
+            patch -p1 < ../v016.patch
+            rm -rf build runtime __pycache__
+            mkdir -p build runtime
+            python3 build.py > ../v016-parent-build.stdout
+            python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_16_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==237 and p['total']==237
+          print('RECOVERED V0.16 PASS',p['passed'],'/',p['total'])
+          PY
+            rm -rf build runtime __pycache__
+          )
+
+          for n in 01 02 03 04; do tr -d '\r\n\t ' < "routecore/blockfs-v0-17/package/part${n}.b64" > "routecore-v18/pieces/v017-${n}"; done
+          cat routecore-v18/pieces/v017-{01,02,03,04} > routecore-v18/v017.patch.gz.b64
+          echo "04ebec2c8f835afdc2841c94b4d69002852e38b6975d6935ff7afcc5ca12a7c7  routecore-v18/v017.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v18/v017.patch.gz.b64 | gzip -d > routecore-v18/v017.patch
+          echo "9411d3f234084bbf2ec6fe50b170ae0d372634cec563cd779201777097134d58  routecore-v18/v017.patch" | sha256sum -c -
+          (
+            cd routecore-v18/work
+            patch -p1 < ../v017.patch
+            rm -rf build runtime __pycache__
+            mkdir -p build runtime
+            python3 build.py > ../v017-parent-build.stdout
+            python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_17_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==245 and p['total']==245
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.17 PASS',p['passed'],'/',p['total'])
+          PY
+            rm -rf build runtime __pycache__
+          )
+
+      - name: Apply recovered v0.18 descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 01 02 03 04; do
+            tr -d '\r\n\t ' < "routecore/blockfs-v0-18/package/part${n}.b64" > "routecore-v18/pieces/v018-${n}"
+          done
+          cat routecore-v18/pieces/v018-{01,02,03,04} > routecore-v18/v018.patch.gz.b64
+          sha256sum routecore-v18/v018.patch.gz.b64 | tee routecore-v18/v018-b64.sha256
+          base64 -d routecore-v18/v018.patch.gz.b64 | gzip -d > routecore-v18/v018.patch
+          sha256sum routecore-v18/v018.patch | tee routecore-v18/v018-patch.sha256
+          (
+            cd routecore-v18/work
+            patch -p1 < ../v018.patch
+          )
+
+      - name: Fresh-build v0.18 construction court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v18/work
+          rm -rf build runtime __pycache__
+          mkdir -p build runtime
+          python3 -m py_compile build.py VERIFY_RUNTIME.py
+          for f in ARM_JOURNAL.py INSPECT_BLOCKFS_V4.py; do [ ! -f "$f" ] || python3 -m py_compile "$f"; done
+          for f in RUN_RECOVERY_LINUX.sh RUN_CRASH_RECOVERY_LINUX.sh RUN_PERSISTENCE_LINUX.sh; do [ ! -f "$f" ] || bash -n "$f"; done
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json,glob,hashlib,os
+          fs=glob.glob('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_18_PROOF.json')
+          assert len(fs)==1, fs
+          p=json.load(open(fs[0]))
+          assert p['status']=='PASS', p.get('status')
+          assert p['checks'].get('deterministic_rebuild') is True
+          assert p['passed']==p['total'] and p['total']>245, (p['passed'],p['total'])
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          seed=glob.glob('build/*v0_18.data.img')
+          assert len(seed)==1
+          print('SEED',hashlib.sha256(open(seed[0],'rb').read()).hexdigest())
+          PY
+
+      - name: Create deterministic pre-contact package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v18/work
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib
+          root=Path('.'); out=Path('../JM_ROUTECORE_NATIVE64_BLOCKFS_v0_18.zip')
+          names=[p.as_posix() for p in root.rglob('*') if p.is_file() and not p.as_posix().startswith(('runtime/','__pycache__/'))]
+          with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for rel in sorted(names):
+                  zi=zipfile.ZipInfo(rel,(2026,9,29,0,0,0)); zi.compress_type=zipfile.ZIP_DEFLATED; zi.external_attr=0o100644<<16
+                  z.writestr(zi,(root/rel).read_bytes(),compress_type=zipfile.ZIP_DEFLATED,compresslevel=9)
+          print('PACKAGE SHA256',hashlib.sha256(out.read_bytes()).hexdigest())
+          print('PACKAGE BYTES',out.stat().st_size)
+          PY
+
+      - name: Deliberate interruption and rollback court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v18/work
+          runner=""
+          for f in RUN_RECOVERY_LINUX.sh RUN_CRASH_RECOVERY_LINUX.sh; do
+            if [ -f "$f" ]; then runner="$f"; break; fi
+          done
+          if [ -z "$runner" ]; then
+            echo "No v0.18 recovery runner found"
+            ls -la
+            exit 9
+          fi
+          chmod +x "$runner"
+          "./$runner"
+          echo "=== RUNTIME FILES ==="
+          find runtime -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum || true
+
+      - name: Upload BlockFS v0.18 recovery artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-18-crash-recovery-contact
+          path: routecore-v18/
+          if-no-files-found: error

@@ -21,6 +21,7 @@ on:
       - "apps/**"
       - "author/**"
       - "books/**"
+      - "career/**"
       - "coding-estate/**"
       - "unified-browser/**"
       - "ailatheo-lineage/**"
@@ -122,7 +123,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
+          for dir in access apps author books career coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -162,6 +163,8 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /books/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /career/*
+            Cache-Control: no-store, no-cache, must-revalidate
           /unified-browser/*
             Cache-Control: no-store, no-cache, must-revalidate
           /theory/*
@@ -189,6 +192,8 @@ jobs:
           /apps/ /apps/index.html 200
           /books /books/index.html 200
           /books/ /books/index.html 200
+          /career /career/index.html 200
+          /career/ /career/index.html 200
           /theory /theory/index.html 200
           /theory/ /theory/index.html 200
           /lyrics /lyrics/index.html 200
@@ -224,6 +229,7 @@ jobs:
           test -s cloudflare-estate/access/index.html
           test -s cloudflare-estate/apps/index.html
           test -s cloudflare-estate/books/index.html
+          test -s cloudflare-estate/career/index.html
           test -s cloudflare-estate/theory/index.html
           test -s cloudflare-estate/visual-story/index.html
           test -s cloudflare-estate/lyrics/index.html
@@ -262,6 +268,8 @@ jobs:
           grep -Fq 'jm-cloud-contact-server-v05.onrender.com/market' cloudflare-estate/market-lab/index.html
           grep -Fq 'One door.' cloudflare-estate/access/index.html
           grep -Fq '56 ≠ 98 ≠ 45' cloudflare-estate/books/index.html
+          grep -Fq 'I study where people meet systems.' cloudflare-estate/career/index.html
+          grep -Fq 'Return to…' cloudflare-estate/career/index.html
           grep -Fq 'FIRST WATCHABLE SCENE' cloudflare-estate/visual-story/index.html
 
           python3 - <<'PY'
@@ -308,6 +316,7 @@ jobs:
             ['/access/', 'One door.'],
             ['/apps/', 'data-jm-estate-integration="v1"'],
             ['/books/', '56 ≠ 98 ≠ 45'],
+            ['/career/', 'I study where people meet systems.'],
             ['/theory/', 'JM Theory Multihub v0.20.1'],
             ['/lyrics/', 'data-jm-estate-integration="v1"'],
             ['/recovery/', 'data-jm-estate-integration="v1"'],

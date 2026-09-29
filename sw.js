@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.10-market-lab-current-main';
+const CACHE='jm-web-estate-v1.4.11-career-front-door';
 const CORE=[
   './',
   './index.html',
@@ -13,7 +13,7 @@ const CORE=[
   './author-home-door.js',
   './estate-head-public-consumer.js',
   './access/',
-  './access/index.html',
+  './access/index.html',\n  './career/',\n  './career/index.html',
   './books/',
   './books/index.html',
   './visual-story/',

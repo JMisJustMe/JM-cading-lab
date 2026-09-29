@@ -2,9 +2,20 @@
 
 **Current source:** JM CAREER HIRE-ME FRONT DOOR v0.5.1 — Return Route
 
-**Route:** /career/
+**Route:** https://jmisjustme-estate.pages.dev/career/
 
-**State:** SOURCE MOUNTED ON FORWARD PUBLIC BRANCH · LIVE PROOF PENDING MERGE/DEPLOY
+**State:** PUBLIC LIVE PROVEN · CANONICAL CLOUDFLARE PRODUCTION RAIL PASS
+
+## Live publication evidence
+
+- source merge commit: `91b20c2539681d7ab93023800f2e744556554fd5`
+- canonical workflow: **Deploy Estate Sovereign Integrated v1**
+- workflow run: `36637494554`
+- deploy-and-prove job: **SUCCESS**
+- assembled Estate proof: **SUCCESS**
+- Cloudflare deployment: **SUCCESS**
+- canonical live proof: **SUCCESS**
+- live proof included `/career/` requiring the text **“I study where people meet systems.”**
 
 ## Owner contact carried forward
 
@@ -16,6 +27,6 @@ Adds the owner-requested persistent **Return to…** menu with direct routes to 
 
 ## Boundary
 
-Assistant Chromium QA is complete for v0.5.1. Hosted /career/ contact is not claimed until the canonical production rail deploys and live proof passes.
+Hosted /career/ is now live-proven at carrier/routing scope. The new **Return to…** interaction itself still awaits direct owner contact on v0.5.1 before an owner-UI FLAZ is claimed.
 
 **No Ding, no claim.**

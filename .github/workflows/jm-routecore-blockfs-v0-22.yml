@@ -1,0 +1,119 @@
+name: JM RouteCore BlockFS v0.22 Fragment Recovery Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-22-fragment-recovery-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-22.yml"
+      - "routecore/blockfs-v0-22/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-22.yml"
+      - "routecore/blockfs-v0-22/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blockfs-v022-fragment-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.21 Actions body
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -rf routecore-v22
+          mkdir -p routecore-v22/parent
+          gh run download 36596217966 -n jm-routecore-blockfs-v0-21-fragmentation-contact -D routecore-v22/parent
+          test -d routecore-v22/parent/work
+          cp -a routecore-v22/parent/work routecore-v22/work
+          cd routecore-v22/work
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_21_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==277 and p['total']==277
+          assert p['checks']['deterministic_rebuild'] is True
+          print('RECOVERED V0.21 PASS',p['passed'],'/',p['total'])
+          PY
+          rm -rf build runtime runtime-v020 runtime-v021 runtime-v022 __pycache__
+          mkdir -p build runtime
+
+      - name: Apply exact-parent v0.22 descendant
+        run: |
+          set -euo pipefail
+          cat routecore/blockfs-v0-22/package/v022.patch.gz.b64.part* | tr -d '\r\n\t ' > routecore-v22/v022.patch.gz.b64
+          echo "8cc52baa6650fa06f98db22fd85dd65829d4cde96bf8c091a180ce5e13ec3a5c  routecore-v22/v022.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v22/v022.patch.gz.b64 | gzip -d > routecore-v22/v022.patch
+          echo "fff4b3c4fc474b38453aaa211d6113e040e675bde0120a0e859f586715e3a8e4  routecore-v22/v022.patch" | sha256sum -c -
+          (
+            cd routecore-v22/work
+            patch -p1 < ../v022.patch
+          )
+
+      - name: Fresh-build v0.22 construction court
+        run: |
+          set -euo pipefail
+          cd routecore-v22/work
+          python3 -m py_compile build.py VERIFY_RUNTIME_V022.py INSPECT_BLOCKFS_V6_RECOVERY.py ARM_JOURNAL.py ARM_REENTRY.py CORRUPT_JOURNAL.py
+          bash -n RUN_FRAGMENT_RECOVERY_MATRIX_LINUX.sh
+          rm -rf build runtime runtime-v020 runtime-v021 runtime-v022 __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_22_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==283 and p['total']==283, (p['status'],p['passed'],p['total'])
+          assert p['checks']['deterministic_rebuild'] is True
+          for k in [
+            'blockfs_v6_fragment_journal_execution',
+            'blockfs_v6_fragment_recovery_map_aware',
+            'blockfs_v6_fragment_journal_guard',
+            'blockfs_v6_fragment_journal_packed_maps',
+            'blockfs_v6_fragment_journal_requires_disjoint_maps',
+            'blockfs_v6_fragment_shadow_write_by_map',
+            'blockfs_v6_fragment_reentry_new_shape',
+            'blockfs_v6_fragment_shadow_user_pattern'
+          ]:
+              assert p['checks'][k] is True, k
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          PY
+
+      - name: Fragment-aware recovery matrix
+        run: |
+          set -euo pipefail
+          cd routecore-v22/work
+          chmod +x RUN_FRAGMENT_RECOVERY_MATRIX_LINUX.sh
+          ./RUN_FRAGMENT_RECOVERY_MATRIX_LINUX.sh
+
+      - name: Runtime hashes
+        if: always()
+        run: |
+          cd routecore-v22/work
+          echo "=== RUNTIME FILES ==="
+          find runtime-v022 -maxdepth 1 -type f -printf '%f\n' | sort || true
+          echo "=== RUNTIME HASHES ==="
+          find runtime-v022 -maxdepth 1 -type f -print0 | sort -z | xargs -0 -r sha256sum || true
+
+      - name: Upload BlockFS v0.22 contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-22-fragment-recovery-contact
+          path: routecore-v22/
+          if-no-files-found: error

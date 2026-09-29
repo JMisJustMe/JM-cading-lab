@@ -1,0 +1,105 @@
+name: JM RouteCore BlockFS v0.19 Recovery Matrix Contact
+
+on:
+  push:
+    branches:
+      - routecore-blockfs-v0-19-recovery-matrix-contact
+    paths:
+      - ".github/workflows/jm-routecore-blockfs-v0-19.yml"
+      - "routecore/blockfs-v0-19/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  blockfs-v019-recovery-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build and QEMU tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 gcc binutils patch gzip unzip
+
+      - name: Recover exact proved v0.18 parent
+        run: |
+          set -euo pipefail
+          python3 routecore/blockfs-v0-19/recover_v018.py routecore-v19
+
+      - name: Apply hash-locked v0.19 descendant
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p routecore-v19/pieces
+          for n in 01 02 03 04; do
+            tr -d '\r\n\t ' < "routecore/blockfs-v0-19/package/part${n}.b64" > "routecore-v19/pieces/v019-${n}"
+          done
+          cat routecore-v19/pieces/v019-{01,02,03,04} > routecore-v19/v019.patch.gz.b64
+          echo "77b26c5c9d0f567ef73d023ae748fae773769e46baf7c2bfaeaeff1ad9bab197  routecore-v19/v019.patch.gz.b64" | sha256sum -c -
+          base64 -d routecore-v19/v019.patch.gz.b64 | gzip -d > routecore-v19/v019.patch
+          echo "3b25549e744d8c6a2a3f100d0924bdbaa167f504695d22dbab5c50d2bf81ddeb  routecore-v19/v019.patch" | sha256sum -c -
+          (
+            cd routecore-v19/work
+            patch -p1 < ../v019.patch
+            rm -f JM_ROUTECORE_NATIVE64_BLOCKFS_v0_18_PROOF.json INSPECT_BLOCKFS_V4.py RUN_RECOVERY_LINUX.sh
+            python3 -m py_compile build.py VERIFY_RUNTIME.py ARM_JOURNAL.py CORRUPT_JOURNAL.py INSPECT_BLOCKFS_V5.py
+            bash -n RUN_RECOVERY_MATRIX_LINUX.sh
+          )
+
+      - name: Fresh-build v0.19 construction court
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v19/work
+          rm -rf build runtime __pycache__
+          mkdir -p build runtime
+          python3 build.py > build-proof.stdout
+          python3 - <<'PY'
+          import json,hashlib
+          p=json.load(open('JM_ROUTECORE_NATIVE64_BLOCKFS_v0_19_PROOF.json'))
+          assert p['status']=='PASS' and p['passed']==265 and p['total']==265
+          assert p['checks']['deterministic_rebuild'] is True
+          print('CONSTRUCTION PASS',p['passed'],'/',p['total'])
+          print('DISK',p['artifacts']['disk_sha256'])
+          print('ELF',p['artifacts']['kernel_elf_sha256'])
+          print('SEED',hashlib.sha256(open('build/jm_routecore_native64_blockfs_v0_19.data.img','rb').read()).hexdigest())
+          PY
+
+      - name: Create deterministic pre-contact package
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v19/work
+          python3 - <<'PY'
+          from pathlib import Path
+          import zipfile,hashlib
+          root=Path('.');out=Path('../JM_ROUTECORE_NATIVE64_BLOCKFS_v0_19.zip')
+          names=[p.as_posix() for p in root.rglob('*') if p.is_file() and not p.as_posix().startswith(('runtime/','__pycache__/'))]
+          with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for rel in sorted(names):
+                  zi=zipfile.ZipInfo(rel,(2026,9,29,0,0,0));zi.compress_type=zipfile.ZIP_DEFLATED;zi.external_attr=0o100644<<16
+                  z.writestr(zi,(root/rel).read_bytes(),compress_type=zipfile.ZIP_DEFLATED,compresslevel=9)
+          print('PACKAGE SHA256',hashlib.sha256(out.read_bytes()).hexdigest())
+          print('PACKAGE BYTES',out.stat().st_size)
+          PY
+
+      - name: Rollback commit and torn-journal runtime matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd routecore-v19/work
+          chmod +x RUN_RECOVERY_MATRIX_LINUX.sh
+          ./RUN_RECOVERY_MATRIX_LINUX.sh
+          echo "=== RUNTIME HASHES ==="
+          find runtime -maxdepth 1 -type f -print0 | sort -z | xargs -0 sha256sum
+
+      - name: Upload BlockFS v0.19 contact artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-routecore-blockfs-v0-19-recovery-matrix-contact
+          path: routecore-v19/
+          if-no-files-found: error

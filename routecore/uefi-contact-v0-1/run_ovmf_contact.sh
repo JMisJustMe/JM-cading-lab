@@ -82,7 +82,7 @@ for i in $(seq 1 36); do
   hmp "screendump $OUT/frame-entry-$i.ppm" >/dev/null
   tesseract "$OUT/frame-entry-$i.ppm" stdout --psm 6 2>/dev/null > "$OUT/frame-entry-$i.txt" || true
   cat "$OUT/frame-entry-$i.txt"
-  if grep -Fqi "UEFI FIRMWARE ENTRY CONTACT" "$OUT/frame-entry-$i.txt"; then
+  if grep -Fqi "JM ROUTECORE PHYSICAL CONTACT GATE v0.1" "$OUT/frame-entry-$i.txt"; then
     cp "$OUT/frame-entry-$i.ppm" "$OUT/frame-entry.ppm"
     cp "$OUT/frame-entry-$i.txt" "$OUT/frame-entry.txt"
     found=1
@@ -126,8 +126,10 @@ receipt = {
   "source_sha256": hashlib.sha256(pathlib.Path("routecore/uefi-contact-v0-1/jm_routecore_uefi_physical_witness_v0_1.c").read_bytes()).hexdigest(),
   "expected_source_sha256": "c21b5fb92c9c937a5244dd0f1bbad0c485252ee0e201996ae4a249102d34a6f7",
   "witness_sha256": hashlib.sha256(efi.read_bytes()).hexdigest(),
+  "entry_ocr_text": entry.strip(),
+  "keyboard_ocr_text": key.strip(),
   "markers": {
-    "uefi_firmware_entry_contact": "UEFI FIRMWARE ENTRY CONTACT" in entry.upper(),
+    "uefi_firmware_entry_contact": "JM ROUTECORE PHYSICAL CONTACT GATE V0.1" in entry.upper(),
     "uefi_keyboard_protocol_contact": "UEFI KEYBOARD PROTOCOL CONTACT" in key.upper(),
     "safe_return_marker": "SAFE RETURN TO FIRMWARE" in key.upper()
   },

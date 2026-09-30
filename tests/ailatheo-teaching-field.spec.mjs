@@ -17,9 +17,11 @@ for(const [width,height] of sizes){
  if(!(await page.locator('#meaning').evaluate(e=>e.classList.contains('show')))) errors.push('light consequence missing');
  if(!((await page.locator('#state').textContent())||'').includes('DING')) errors.push('light Ding missing');
  await page.locator('[data-mode="shape"]').click(); await page.locator('#primary').click();
- if(!((await page.locator('#meaningText').textContent())||'').includes('visible form')) errors.push('shape consequence missing');
+ const shapeProof=await page.evaluate(()=>({state:document.querySelector('#state').textContent,text:document.querySelector('#meaningText').textContent,code:document.querySelector('#meaningCode').textContent,shape:document.querySelector('#object').getAttribute('aria-label')}));
+ if(!shapeProof.state.includes('DING')||!shapeProof.text.includes('Form changed')||!shapeProof.code.includes('FORM shape:')||shapeProof.shape==='CIRCLE') errors.push('shape consequence missing');
  await page.locator('[data-mode="animal"]').click(); await page.locator('#primary').click();
- if(!((await page.locator('#meaningText').textContent())||'').includes('downstream trace')) errors.push('cause consequence missing');
+ const causeProof=await page.evaluate(()=>({state:document.querySelector('#state').textContent,text:document.querySelector('#meaningText').textContent,code:document.querySelector('#meaningCode').textContent,paw:document.querySelector('.paw').classList.contains('on'),ball:document.querySelector('#ball').classList.contains('moved')}));
+ if(!causeProof.state.includes('DING')||!causeProof.text.includes('paw trace')||!causeProof.code.includes('CAUSE ball:move')||!causeProof.paw||!causeProof.ball) errors.push('cause consequence missing');
  const before=await page.evaluate(()=>localStorage.getItem('jm-ailatheo-teaching-field-v1.1')); if(!before) errors.push('persistence missing');
  await page.reload();
  if(!((await page.locator('#trace').textContent())||'').includes('PERSISTED_STATE_RELOADED')) errors.push('re-entry marker missing');

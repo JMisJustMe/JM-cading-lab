@@ -26,7 +26,7 @@ jobs:
         run: |
           python - <<'PY'
           import re,pathlib
-          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
+          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html').read_text()
           js='\n'.join(re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
           pathlib.Path('/tmp/ailatheo-owner-carrier.js').write_text(js)
           PY

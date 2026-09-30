@@ -87,4 +87,5 @@ $('tools').addEventListener('click',()=>{$('drawer').classList.toggle('open')});
 function restore(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&MODES[x.mode]){app={...app,...x,lastSafe:null};log('REENTRY',{status:'PERSISTED_STATE_RELOADED'});$('state').textContent='RETURN'}}catch(e){app.trace=[{event:'RECOVERY_ERROR',error:String(e)}]}render()}
 function fit(){const vv=window.visualViewport;if(vv)document.documentElement.style.setProperty('--vh',vv.height+'px')}
 window.visualViewport?.addEventListener('resize',fit);fit();restore();
-</script></body></html>
+</script><!-- RECOVERED_V2_PROMOTION_CONTACT -->
+</body></html>

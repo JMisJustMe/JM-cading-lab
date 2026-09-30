@@ -1,0 +1,45 @@
+name: JM RouteCore UEFI Contact Witness v0.1
+
+on:
+  push:
+    branches:
+      - routecore-uefi-contact-v0-1
+    paths:
+      - ".github/workflows/jm-routecore-uefi-contact-v0-1.yml"
+      - "routecore/uefi-contact-v0-1/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/jm-routecore-uefi-contact-v0-1.yml"
+      - "routecore/uefi-contact-v0-1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ovmf-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install UEFI/QEMU witness tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 ovmf dosfstools mtools tesseract-ocr clang-17 lld-17
+
+      - name: Execute exact UEFI witness under OVMF
+        shell: bash
+        run: bash routecore/uefi-contact-v0-1/run_ovmf_contact.sh
+
+      - name: Upload UEFI contact evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_ROUTECORE_UEFI_OBSERVABLE_WITNESS_v0_1
+          path: |
+            routecore-contact-uefi/
+          if-no-files-found: error

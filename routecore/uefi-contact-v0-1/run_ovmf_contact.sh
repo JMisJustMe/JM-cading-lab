@@ -3,7 +3,10 @@ set -euo pipefail
 
 OUT=routecore-contact-uefi
 mkdir -p "$OUT/EFI/BOOT"
-base64 -d routecore/uefi-contact-v0-1/BOOTX64.EFI.b64 > "$OUT/EFI/BOOT/BOOTX64.EFI"
+SRC=routecore/uefi-contact-v0-1/jm_routecore_uefi_physical_witness_v0_1.c
+echo "c21b5fb92c9c937a5244dd0f1bbad0c485252ee0e201996ae4a249102d34a6f7  $SRC" | sha256sum -c -
+clang-17 --target=x86_64-pc-win32-coff -ffreestanding -fshort-wchar -mno-red-zone -fno-stack-protector -fno-builtin -Wall -Wextra -c "$SRC" -o "$OUT/witness.obj"
+lld-link-17 /subsystem:efi_application /entry:efi_main /nodefaultlib /machine:x64 /timestamp:0 /out:"$OUT/EFI/BOOT/BOOTX64.EFI" "$OUT/witness.obj"
 echo "c28cb26b2cbd0ba3feb084e590da1a0edd61cf2b4309a52a82cf3d9cc52aae51  $OUT/EFI/BOOT/BOOTX64.EFI" | sha256sum -c -
 file "$OUT/EFI/BOOT/BOOTX64.EFI" | tee "$OUT/file.txt"
 grep -Fq "PE32+ executable for EFI (application), x86-64" "$OUT/file.txt"

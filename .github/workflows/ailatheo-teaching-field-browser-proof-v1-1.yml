@@ -1,0 +1,31 @@
+name: AILatheo Teaching Field Browser Proof v1.1
+on:
+  push:
+    branches: [main]
+    paths:
+      - "unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html"
+      - "tests/ailatheo-teaching-field.spec.mjs"
+      - ".github/workflows/ailatheo-teaching-field-browser-proof-v1-1.yml"
+  workflow_dispatch:
+jobs:
+  browser-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot local Estate
+        run: |
+          python3 -m http.server 4181 >/tmp/jm-ailatheo-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4181/unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Five-viewport interaction and re-entry proof
+        run: node tests/ailatheo-teaching-field.spec.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ailatheo-teaching-field-v1-1-browser-proof
+          path: qa/ailatheo-teaching-field/
+      - name: Browser proof Ding
+        run: echo JM_AILATHEO_TEACHING_FIELD_BROWSER_DING

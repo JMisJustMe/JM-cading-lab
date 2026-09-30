@@ -11,7 +11,9 @@ sha256sum "$OUT/EFI/BOOT/BOOTX64.EFI" | tee "$OUT/witness-sha256.txt"
 clang-17 --version > "$OUT/clang-version.txt"
 lld-link-17 --version > "$OUT/lld-version.txt"
 file "$OUT/EFI/BOOT/BOOTX64.EFI" | tee "$OUT/file.txt"
-grep -Fq "PE32+ executable for EFI (application), x86-64" "$OUT/file.txt"
+grep -Fq "PE32+ executable" "$OUT/file.txt"
+grep -Fq "EFI application" "$OUT/file.txt"
+grep -Fq "x86-64" "$OUT/file.txt"
 
 dd if=/dev/zero of="$OUT/uefi-contact.img" bs=1M count=64 status=none
 mkfs.vfat -F 32 "$OUT/uefi-contact.img" >/dev/null

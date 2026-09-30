@@ -14,7 +14,7 @@ checks={
  "reset_delete": "localStorage.removeItem(KEY)" in s,
  "return_receipt_schema": "jm.ailatheo.return-receipt/0.1" in s,
  "payload_sha256": "payload_sha256" in s and "crypto.subtle.digest('SHA-256'" in s,
- "second_surface_packet": "AILATHEO_RETURN_PACKET_READY" in s,
+ "second_surface_packet": "AILATHEO_RETURN_PACKET_READY" in s,\n "explicit_dom_binding": "getElementById" in s and "addEventListener" in s,\n "visible_contact_error": "CONTACT ERROR:" in s,\n "visible_recovery_error": "RECOVERY ERROR:" in s,
 }
 assert all(checks.values()),checks
 print(json.dumps({"schema":"jm.ailatheo.owner-carrier-contract/0.1","status":"PASS","checks":checks,

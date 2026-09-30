@@ -379,7 +379,7 @@ jobs:
       - name: Install OVMF contact tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y qemu-system-x86 ovmf dosfstools mtools tesseract-ocr
+          sudo apt-get install -y qemu-system-x86 ovmf dosfstools mtools tesseract-ocr clang-17 lld-17
 
       - name: Execute exact UEFI witness
         shell: bash

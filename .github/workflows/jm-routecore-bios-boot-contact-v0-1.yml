@@ -386,6 +386,7 @@ jobs:
         run: bash routecore/uefi-contact-v0-1/run_ovmf_contact.sh
 
       - name: Upload UEFI witness receipt
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: JM_ROUTECORE_UEFI_OBSERVABLE_WITNESS_v0_1

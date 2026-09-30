@@ -1,0 +1,27 @@
+name: Prove AILatheo Living Federation v1
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html"
+      - "scripts/jm_ailatheo_living_federation_conformance.py"
+      - ".github/workflows/prove-ailatheo-living-federation-v1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - name: Conformance
+        run: python scripts/jm_ailatheo_living_federation_conformance.py
+      - name: JavaScript syntax
+        run: node --check /tmp/ailatheo-living.js
+      - name: Ding
+        run: echo JM_AILATHEO_LIVING_FEDERATION_HOST_DING

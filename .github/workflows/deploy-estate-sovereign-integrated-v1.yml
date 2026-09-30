@@ -209,8 +209,8 @@ jobs:
           EOF
 
           cat > cloudflare-estate/_redirects <<'EOF'
-          /unified-browser /unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html 200
-          /unified-browser/ /unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html 200
+          /unified-browser /unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html 200
+          /unified-browser/ /unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html 200
           /navigator /navigator/index.html 200
           /navigator/ /navigator/index.html 200
           /access /access/index.html 200
@@ -252,9 +252,9 @@ jobs:
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/money-menu/index.html
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/games-beyond/index.html
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/author/index.html
-          test -s cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
-          grep -Fq "AILATHEO_VISIBLE_CIRCUIT_DING" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
-          grep -Fq "localStorage.setItem" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
+          test -s cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html
+          grep -Fq "AILATHEO_LIVING_FEDERATION_DING" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html
+          grep -Fq "localStorage.setItem" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html
           test -s cloudflare-estate/navigator/index.html
           test -s cloudflare-estate/navigator/stringline.json
           test -s cloudflare-estate/navigator/estate-integration/index.html
@@ -343,7 +343,7 @@ jobs:
             ['/ecostate-griprail-v6.css', '.griprail-track'],
             ['/money-menu/', 'ecostate-griprail-v6.js'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
-            ['/unified-browser/', 'AILATHEO_VISIBLE_CIRCUIT_DING'],
+            ['/unified-browser/', 'AILATHEO_LIVING_FEDERATION_DING'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

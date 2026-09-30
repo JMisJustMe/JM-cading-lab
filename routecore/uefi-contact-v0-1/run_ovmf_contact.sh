@@ -7,7 +7,9 @@ SRC=routecore/uefi-contact-v0-1/jm_routecore_uefi_physical_witness_v0_1.c
 echo "c21b5fb92c9c937a5244dd0f1bbad0c485252ee0e201996ae4a249102d34a6f7  $SRC" | sha256sum -c -
 clang-17 --target=x86_64-pc-win32-coff -ffreestanding -fshort-wchar -mno-red-zone -fno-stack-protector -fno-builtin -Wall -Wextra -c "$SRC" -o "$OUT/witness.obj"
 lld-link-17 /subsystem:efi_application /entry:efi_main /nodefaultlib /machine:x64 /timestamp:0 /out:"$OUT/EFI/BOOT/BOOTX64.EFI" "$OUT/witness.obj"
-echo "c28cb26b2cbd0ba3feb084e590da1a0edd61cf2b4309a52a82cf3d9cc52aae51  $OUT/EFI/BOOT/BOOTX64.EFI" | sha256sum -c -
+sha256sum "$OUT/EFI/BOOT/BOOTX64.EFI" | tee "$OUT/witness-sha256.txt"
+clang-17 --version > "$OUT/clang-version.txt"
+lld-link-17 --version > "$OUT/lld-version.txt"
 file "$OUT/EFI/BOOT/BOOTX64.EFI" | tee "$OUT/file.txt"
 grep -Fq "PE32+ executable for EFI (application), x86-64" "$OUT/file.txt"
 
@@ -110,8 +112,9 @@ key = (d/"frame-key.txt").read_text(errors="replace")
 receipt = {
   "schema": "jm.routecore.uefi-observable-witness/0.1",
   "execution_surface": "GitHub Actions + QEMU x86_64 + OVMF",
+  "source_sha256": hashlib.sha256(pathlib.Path("routecore/uefi-contact-v0-1/jm_routecore_uefi_physical_witness_v0_1.c").read_bytes()).hexdigest(),
+  "expected_source_sha256": "c21b5fb92c9c937a5244dd0f1bbad0c485252ee0e201996ae4a249102d34a6f7",
   "witness_sha256": hashlib.sha256(efi.read_bytes()).hexdigest(),
-  "expected_witness_sha256": "c28cb26b2cbd0ba3feb084e590da1a0edd61cf2b4309a52a82cf3d9cc52aae51",
   "markers": {
     "uefi_firmware_entry_contact": "UEFI FIRMWARE ENTRY CONTACT" in entry.upper(),
     "uefi_keyboard_protocol_contact": "UEFI KEYBOARD PROTOCOL CONTACT" in key.upper(),
@@ -129,7 +132,7 @@ receipt = {
     "physical_device_driver_contact": False
   }
 }
-receipt["pass"] = receipt["witness_sha256"] == receipt["expected_witness_sha256"] and all(receipt["markers"].values())
+receipt["pass"] = receipt["source_sha256"] == receipt["expected_source_sha256"] and all(receipt["markers"].values())
 (d/"JM_ROUTECORE_UEFI_OBSERVABLE_WITNESS_RECEIPT_v0_1.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
 print(json.dumps(receipt,indent=2,sort_keys=True))
 if not receipt["pass"]:

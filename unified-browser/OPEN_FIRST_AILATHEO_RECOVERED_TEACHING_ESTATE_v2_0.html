@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b12">
+<title>AILatheo — Recovered Teaching Estate v2.0</title>
+<style>
+:root{color-scheme:dark;--bg:#070b12;--panel:#101823;--line:#2a3b50;--text:#f4f7fb;--muted:#9eb0c4;--live:#7ff2ad;--gold:#ffd56a;--fault:#ff8f8f;--safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100%;overflow-x:hidden}button{font:inherit;color:inherit}
+.app{min-height:100dvh;min-height:100vh;display:grid;grid-template-rows:auto 1fr auto;padding:calc(8px + var(--safe-t)) 10px calc(8px + var(--safe-b));gap:8px}
+header{height:52px;display:flex;align-items:center;gap:10px;min-width:0}.mark{width:40px;height:40px;border:1px solid var(--gold);border-radius:13px;display:grid;place-items:center;font-weight:900;color:var(--gold)}.identity{min-width:0;flex:1}.identity b{display:block;font-size:18px}.identity small{display:block;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.state{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:6px 8px;color:var(--muted)}
+main{min-height:0;display:grid;grid-template-rows:auto minmax(300px,1fr) auto;gap:8px}.modes{display:flex;gap:6px;overflow:auto;scrollbar-width:none}.modes button,.actionbar button,.choice{min-height:44px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:8px 12px}.modes button[aria-selected="true"]{border-color:var(--gold);color:var(--gold)}
+.world{position:relative;min-height:300px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:radial-gradient(circle at 50% 38%,#152b3a 0,#0a111b 46%,#060a10 100%);display:grid;place-items:center;isolation:isolate}.world:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 95%,rgba(255,255,255,.04) 95%),linear-gradient(90deg,transparent 95%,rgba(255,255,255,.04) 95%);background-size:28px 28px;opacity:.18;z-index:-1}
+.stage{width:min(92%,620px);height:min(88%,520px);min-height:260px;display:grid;place-items:center;position:relative}.object{user-select:none;-webkit-user-select:none;touch-action:manipulation;cursor:pointer;transition:transform .18s ease,filter .18s ease,background .18s ease}.lamp{font-size:clamp(110px,34vw,210px);filter:grayscale(1) brightness(.55);background:none;border:0}.lamp.on{filter:grayscale(0) brightness(1.35) drop-shadow(0 0 34px #ffd56a);transform:scale(1.04)}
+.shape{width:150px;height:150px;border:4px solid #7bbcff;background:rgba(123,188,255,.12);border-radius:50%;display:grid;place-items:center;font-weight:900}.shape.square{border-radius:20px;transform:rotate(0)}.shape.triangle{width:0;height:0;border-left:90px solid transparent;border-right:90px solid transparent;border-bottom:160px solid #7bbcff;border-top:0;background:none;border-radius:0}.shape.triangle span{position:absolute;transform:translate(-50%,100px);color:#07101a}.shape.pulse{box-shadow:0 0 0 18px rgba(123,188,255,.12);transform:scale(1.08)}
+.animal{font-size:clamp(110px,32vw,190px);background:none;border:0}.ball{position:absolute;font-size:52px;right:8%;bottom:12%;border:0;background:none;touch-action:none}.ball.moved{right:54%;bottom:25%}.paw{position:absolute;font-size:42px;left:8%;bottom:15%;opacity:.45}.paw.on{opacity:1;filter:drop-shadow(0 0 12px var(--live))}
+.prompt{position:absolute;top:12px;left:12px;right:12px;text-align:center;color:var(--muted);font-size:14px}.meaning{position:absolute;left:10px;right:10px;bottom:10px;border:1px solid rgba(127,242,173,.35);background:rgba(5,12,18,.88);border-radius:15px;padding:10px;transform:translateY(130%);transition:transform .22s ease}.meaning.show{transform:translateY(0)}.meaning b{color:var(--live)}.meaning code{display:block;color:#c9d8e8;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.actionbar{display:grid;grid-template-columns:1fr auto;gap:7px}.actionbar .primary{border-color:var(--gold);background:#251f11;color:#ffe39a;font-weight:850}.actionbar .recover{min-width:48px}
+.drawer{display:none;border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:10px;max-height:28dvh;overflow:auto}.drawer.open{display:block}.choices{display:flex;gap:7px;flex-wrap:wrap}.choice{flex:1;min-width:90px}.trace{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;color:#c7d5e4;margin:0}
+footer{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px;min-width:0}.law{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tools{border:0;background:none;color:var(--muted);padding:0;min-height:28px}
+@media(min-width:800px){.app{max-width:1180px;margin:auto;padding-left:18px;padding-right:18px}main{grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:auto minmax(420px,1fr) auto}.modes{grid-column:1/-1}.world{grid-column:1;grid-row:2/4;min-height:520px}.actionbar{grid-column:2;grid-row:2;align-content:start;grid-template-columns:1fr}.drawer{grid-column:2;grid-row:3;display:block;max-height:260px}.actionbar button{min-height:52px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style></head>
+<body><div class="app">
+<header><div class="mark">AI</div><div class="identity"><b>AILatheo</b><small id="subtitle">Teaching Field · touch first, language after Ding</small></div><span class="state" id="state">READY</span></header>
+<main>
+<nav class="modes" aria-label="Teaching models"><button data-mode="light" aria-selected="true">LIGHT</button><button data-mode="shape">SHAPE</button><button data-mode="animal">CAUSE</button><button data-mode="build">BUILD</button></nav>
+<section class="world" id="world" aria-live="polite">
+<div class="stage" id="stage"></div>
+<div class="meaning" id="meaning"><b id="meaningTitle">DING</b><span id="meaningText"></span><code id="meaningCode"></code></div>
+</section>
+<div class="actionbar"><button class="primary" id="primary">TURN ON THE LAMP</button><button class="recover" id="recover" aria-label="Recover last safe state">↶</button><button id="explain">TRACE</button><button id="copy">COPY RETURN</button></div>
+<section class="drawer" id="drawer"><strong>Route / Trace</strong><pre class="trace" id="trace">No Ding yet. Contact the object first.</pre><div id="buildTools" hidden><hr><strong>Self-Discovery Build</strong><p class="tiny">Try first. Help opens after.</p><textarea id="commandInput" style="width:100%;min-height:76px">Bedroom Lamp : lamp [green] :: ToggleLight</textarea><div class="choices" id="palette"></div><button class="choice" id="buildCommand">BUILD FROM MY COMMAND</button><button class="choice" id="needHelp" hidden>NEED MORE HELP?</button><div id="hintReveal" hidden class="trace">Small hint: replace only the word inside [square brackets], then build.</div></div></section>
+</main>
+<footer><span class="law">B1.2.2 × v1.4G · TOUCH FIRST · VISIBLE CONSEQUENCE · LANGUAGE AFTER DING</span><button class="tools" id="tools">DETAILS</button></footer>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const KEY='jm-ailatheo-recovered-teaching-estate-v2.0';
+const MODES={
+ light:{label:'Light',instruction:'Touch the lamp, or use the primary action.',action:'TURN ON THE LAMP'},
+ shape:{label:'Shape',instruction:'Touch the form to change it. Consequence comes before explanation.',action:'CHANGE THE SHAPE'},
+ animal:{label:'Cause',instruction:'Choose a cause. Watch mood, energy and tail change.',action:'BALL → DOG'},
+ build:{label:'Build',instruction:'Change the command yourself. Help waits until after your attempt.',action:'BUILD FROM MY COMMAND'}
+};
+const LIGHTS=['lamp','torch','bulb','colour','saber','lighter','star'];const SHAPES=['circle','square','triangle','cube','sphere','line','portal'];const ANIMALS=['ball','food','sound','door','paw','tail','rest','reset'];const COLOURS=['green','gold','orange','pink','cyan','lime','yellow','white','teal','magenta'];let app={mode:'light',step:0,dings:0,trace:[],lastSafe:null,lightObject:'lamp',colour:'green',animal:{mood:'waiting',energy:50,tail:false},attempts:0};
+function snapshot(){return JSON.parse(JSON.stringify({...app,lastSafe:null}))}
+async function sha256(text){const bytes=new TextEncoder().encode(text),hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function returnReceipt(){const payload={schema:'jm.ailatheo.return-receipt/0.1',mode:app.mode,step:app.step,dings:app.dings,last_event:app.trace.at(-1)||null};const canonical=JSON.stringify(payload);const packet={...payload,payload_sha256:await sha256(canonical),return_ding:'AILATHEO_RETURN_PACKET_READY'};const out=JSON.stringify(packet,null,2);try{await navigator.clipboard.writeText(out);$('state').textContent='RETURN READY';meaning('RETURN','Receipt copied. Compare payload_sha256 on the second authorised surface.','AILATHEO_RETURN_PACKET_READY')}catch(e){$('drawer').classList.add('open');$('trace').textContent=out+'\n\nClipboard unavailable — copy this packet manually.'}log('RETURN_PACKET',{payload_sha256:packet.payload_sha256});save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(snapshot()))}catch(e){log('PERSIST_HOLD',{error:String(e)})}}
+function log(event,data={}){app.trace.push({at:new Date().toISOString(),mode:app.mode,event,...data});if(app.trace.length>40)app.trace=app.trace.slice(-40);renderTrace()}
+function renderTrace(){const t=app.trace.slice(-8);$('trace').textContent=t.length?JSON.stringify(t,null,2):'No Ding yet. Contact the object first.'}
+function meaning(title,text,code){$('meaningTitle').textContent=title;$('meaningText').textContent=' · '+text;$('meaningCode').textContent=code;$('meaning').classList.add('show')}
+function hideMeaning(){$('meaning').classList.remove('show')}
+function ding(event,text,code){app.dings++;$('state').textContent='DING '+app.dings;log(event,{status:'DING',consequence:text});meaning('DING',text,code);save()}
+function setSafe(){app.lastSafe=snapshot()}
+function render(){
+ const m=MODES[app.mode];$('subtitle').textContent=m.label+' model · '+m.instruction;$('primary').textContent=m.action;hideMeaning();
+ document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.mode===app.mode)));
+ $('buildTools').hidden=app.mode!=='build';if(app.mode==='light')renderLight();else if(app.mode==='shape')renderShape();else if(app.mode==='animal')renderAnimal();else renderBuild();
+ renderTrace();
+}
+function renderLight(){const icon={lamp:'💡',torch:'🔦',bulb:'💡',colour:'🌈',saber:'⚔️',lighter:'🔥',star:'⭐'}[app.lightObject];$('stage').innerHTML='<div class="prompt">'+MODES.light.instruction+'</div><div class="choices" style="position:absolute;top:42px;z-index:2">'+LIGHTS.map(x=>'<button class="choice" data-light="'+x+'">'+x.toUpperCase()+'</button>').join('')+'</div><button class="object lamp '+(app.step?'on':'')+'" id="object" aria-label="'+app.lightObject+'">'+icon+'</button>';document.querySelectorAll('[data-light]').forEach(b=>b.addEventListener('click',()=>{app.lightObject=b.dataset.light;app.step=0;log('LIGHT_OBJECT',{object:app.lightObject});renderLight()}));
+ $('object').addEventListener('click',lightContact);
+ if(app.step)meaning('DING','Lamp state changed OFF → ON.','STATE lamp:on · route: contact → consequence → explain');
+}
+function lightContact(){setSafe();app.step=app.step?0:1;if(app.step)ding('LIGHT_ON','The lamp visibly changed state.','lamp.turnOn();');else{log('LIGHT_OFF',{status:'STATE_CHANGE'});save();render()}renderLight()}
+function renderShape(){
+ const name=SHAPES[app.step%SHAPES.length].toUpperCase(),k=name==='SQUARE'?'square':name==='TRIANGLE'?'triangle':'';
+ $('stage').innerHTML='<div class="prompt">'+MODES.shape.instruction+'</div><button class="object shape '+k+'" id="object" aria-label="'+name+'"><span>'+name+'</span></button>';
+ $('object').addEventListener('click',shapeContact);
+ if(app.step)meaning('DING','Form changed to '+name+'.','FORM shape:'+name.toLowerCase()+' · visible geometry changed');
+}
+function shapeContact(){setSafe();app.step=(app.step+1)%SHAPES.length;ding('SHAPE_CHANGE','The visible form changed.','shape.next();');renderShape()}
+function renderAnimal(){const a=app.animal;$('stage').innerHTML='<div class="prompt">'+MODES.animal.instruction+'</div><div style="text-align:center"><div class="animal">🐕</div><b>'+a.mood.toUpperCase()+'</b><div>ENERGY '+a.energy+' · TAIL '+(a.tail?'ON':'OFF')+'</div><div class="choices">'+ANIMALS.map(x=>'<button class="choice" data-animal="'+x+'">'+x.toUpperCase()+'</button>').join('')+'</div></div>';document.querySelectorAll('[data-animal]').forEach(b=>b.addEventListener('click',()=>animalContact(b.dataset.animal)))}
+function animalContact(action='ball'){setSafe();const a=app.animal;if(action==='ball'){a.mood='chasing';a.energy=Math.max(0,a.energy-8);a.tail=true}else if(action==='food'){a.mood='eating';a.energy=Math.min(100,a.energy+16);a.tail=true}else if(action==='sound'){a.mood='alert/barking';a.energy=Math.max(0,a.energy-4);a.tail=false}else if(action==='door'){a.mood='running to door';a.energy=Math.max(0,a.energy-7);a.tail=true}else if(action==='paw'){a.mood='asking/connecting';a.energy=Math.max(0,a.energy-2);a.tail=true}else if(action==='tail'){a.mood='happy/wagging';a.energy=Math.max(0,a.energy-1);a.tail=true}else if(action==='reset'){app.animal={mood:'waiting',energy:50,tail:false}}else{a.mood='resting';a.energy=Math.min(100,a.energy+5);a.tail=false}ding('ANIMAL_CAUSE',action+' changed mood/energy/tail.','CAUSE '+action+' → RESPONSE '+app.animal.mood+' → STATE energy:'+app.animal.energy);renderAnimal()}
+function parseCommand(t){const m=t.trim().match(/^(.+?)\s*:\s*(\w+)\s*\[(.+?)\]\s*::\s*(\w+)$/);return m?{label:m[1].trim(),type:m[2],colour:m[3].trim(),action:m[4],ok:true}:{ok:false}}
+function renderBuild(){const p=$('palette');p.innerHTML=COLOURS.map(c=>'<button class="choice" data-colour="'+c+'">'+c.toUpperCase()+'</button>').join('');p.querySelectorAll('[data-colour]').forEach(b=>b.addEventListener('click',()=>{app.colour=b.dataset.colour;app.attempts++;log('SELF_DISCOVERY_COLOUR',{colour:app.colour,help:'delayed'});$('state').textContent='TRY FIRST';setTimeout(()=>{$('needHelp').hidden=false},9000)}));$('stage').innerHTML='<div class="prompt">NAME : TYPE [STYLE] :: ACTION</div><div style="text-align:center"><div class="lamp on">💡</div><b>COMMAND → OBJECT → STATE</b><p>Choose a colour below, then edit the command yourself.</p></div>'}
+function buildFromCommand(){const p=parseCommand($('commandInput').value);app.attempts++;if(!p.ok){$('state').textContent='SOFT RESIST';log('BUILD_RESIST',{reason:'command unreadable'});meaning('TRY AGAIN','Keep the route shape: NAME : TYPE [COLOUR] :: ACTION','No Ding — route not yet readable.');return}app.colour=p.colour;ding('BUILD_DING','Your command was read and produced a visible teaching state.','COMMAND '+p.label+' → '+p.type+' ['+p.colour+'] :: '+p.action);save()}
+function switchMode(mode){if(!MODES[mode])return;setSafe();app.mode=mode;app.step=0;if(mode==='build'){$('drawer').classList.add('open')}$('state').textContent='READY';log('MODEL_SWITCH',{to:mode});save();render()}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>switchMode(b.dataset.mode)));
+$('primary').addEventListener('click',()=>app.mode==='light'?lightContact():app.mode==='shape'?shapeContact():app.mode==='animal'?animalContact('ball'):buildFromCommand());$('buildCommand').addEventListener('click',buildFromCommand);$('needHelp').addEventListener('click',()=>{$('hintReveal').hidden=false;ding('HINT_GATE_DING','Help opened because you asked for it.','HINT → square brackets hold colour')});
+$('recover').addEventListener('click',()=>{if(app.lastSafe){const keepTrace=app.trace;app={...app.lastSafe,trace:keepTrace,lastSafe:null};log('RECOVERY_PASS',{status:'RECOVERED'});save();render()}else{app.step=0;log('RECOVERY_BASELINE',{status:'SAFE_BASE'});save();render()}});
+$('explain').addEventListener('click',()=>{$('drawer').classList.toggle('open');log('TRACE_OPEN',{open:$('drawer').classList.contains('open')})});
+$('copy').addEventListener('click',()=>returnReceipt().catch(e=>{log('RETURN_ERROR',{error:String(e)});$('state').textContent='RETURN HOLD'}));
+$('tools').addEventListener('click',()=>{$('drawer').classList.toggle('open')});
+function restore(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&MODES[x.mode]){app={...app,...x,lastSafe:null};log('REENTRY',{status:'PERSISTED_STATE_RELOADED'});$('state').textContent='RETURN'}}catch(e){app.trace=[{event:'RECOVERY_ERROR',error:String(e)}]}render()}
+function fit(){const vv=window.visualViewport;if(vv)document.documentElement.style.setProperty('--vh',vv.height+'px')}
+window.visualViewport?.addEventListener('resize',fit);fit();restore();
+</script></body></html>

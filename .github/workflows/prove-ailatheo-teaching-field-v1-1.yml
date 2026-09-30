@@ -1,0 +1,35 @@
+name: Prove AILatheo Teaching Field v1.1
+on:
+  push:
+    branches: [main]
+    paths:
+      - "unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html"
+      - "scripts/jm_ailatheo_teaching_field_conformance.py"
+      - ".github/workflows/prove-ailatheo-teaching-field-v1-1.yml"
+  workflow_dispatch:
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Estate static conformance
+        run: python scripts/jm_ailatheo_teaching_field_conformance.py
+      - name: Extract inline JavaScript
+        run: |
+          python - <<'PY'
+          import pathlib,re
+          s=pathlib.Path("unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html").read_text()
+          js="\n".join(re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>",s,re.I|re.S))
+          pathlib.Path("/tmp/ailatheo-teaching-field.js").write_text(js)
+          assert "LIGHT_ON" in js
+          assert "SHAPE_CHANGE" in js
+          assert "CAUSE_CONTACT" in js
+          assert "PERSISTED_STATE_RELOADED" in js
+          PY
+      - name: JavaScript syntax
+        run: node --check /tmp/ailatheo-teaching-field.js
+      - name: Host proof Ding
+        run: echo JM_AILATHEO_TEACHING_FIELD_HOST_DING

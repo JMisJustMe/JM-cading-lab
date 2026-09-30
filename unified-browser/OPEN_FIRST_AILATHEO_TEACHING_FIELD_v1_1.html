@@ -28,7 +28,7 @@ footer{display:flex;justify-content:space-between;gap:8px;color:var(--muted);fon
 <div class="stage" id="stage"></div>
 <div class="meaning" id="meaning"><b id="meaningTitle">DING</b><span id="meaningText"></span><code id="meaningCode"></code></div>
 </section>
-<div class="actionbar"><button class="primary" id="primary">TURN ON THE LAMP</button><button class="recover" id="recover" aria-label="Recover last safe state">↶</button><button id="explain">TRACE</button></div>
+<div class="actionbar"><button class="primary" id="primary">TURN ON THE LAMP</button><button class="recover" id="recover" aria-label="Recover last safe state">↶</button><button id="explain">TRACE</button><button id="copy">COPY RETURN</button></div>
 <section class="drawer" id="drawer"><strong>Route / Trace</strong><pre class="trace" id="trace">No Ding yet. Contact the object first.</pre></section>
 </main>
 <footer><span class="law">TOUCH FIRST · VISIBLE CONSEQUENCE · LANGUAGE AFTER DING</span><button class="tools" id="tools">DETAILS</button></footer>
@@ -44,6 +44,8 @@ const MODES={
 };
 let app={mode:'light',step:0,dings:0,trace:[],lastSafe:null};
 function snapshot(){return JSON.parse(JSON.stringify({...app,lastSafe:null}))}
+async function sha256(text){const bytes=new TextEncoder().encode(text),hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function returnReceipt(){const payload={schema:'jm.ailatheo.return-receipt/0.1',mode:app.mode,step:app.step,dings:app.dings,last_event:app.trace.at(-1)||null};const canonical=JSON.stringify(payload);const packet={...payload,payload_sha256:await sha256(canonical),return_ding:'AILATHEO_RETURN_PACKET_READY'};const out=JSON.stringify(packet,null,2);try{await navigator.clipboard.writeText(out);$('state').textContent='RETURN READY';meaning('RETURN','Receipt copied. Compare payload_sha256 on the second authorised surface.','AILATHEO_RETURN_PACKET_READY')}catch(e){$('drawer').classList.add('open');$('trace').textContent=out+'\n\nClipboard unavailable — copy this packet manually.'}log('RETURN_PACKET',{payload_sha256:packet.payload_sha256});save()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(snapshot()))}catch(e){log('PERSIST_HOLD',{error:String(e)})}}
 function log(event,data={}){app.trace.push({at:new Date().toISOString(),mode:app.mode,event,...data});if(app.trace.length>40)app.trace=app.trace.slice(-40);renderTrace()}
 function renderTrace(){const t=app.trace.slice(-8);$('trace').textContent=t.length?JSON.stringify(t,null,2):'No Ding yet. Contact the object first.'}
@@ -81,6 +83,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',(
 $('primary').addEventListener('click',()=>app.mode==='light'?lightContact():app.mode==='shape'?shapeContact():animalContact());
 $('recover').addEventListener('click',()=>{if(app.lastSafe){const keepTrace=app.trace;app={...app.lastSafe,trace:keepTrace,lastSafe:null};log('RECOVERY_PASS',{status:'RECOVERED'});save();render()}else{app.step=0;log('RECOVERY_BASELINE',{status:'SAFE_BASE'});save();render()}});
 $('explain').addEventListener('click',()=>{$('drawer').classList.toggle('open');log('TRACE_OPEN',{open:$('drawer').classList.contains('open')})});
+$('copy').addEventListener('click',()=>returnReceipt().catch(e=>{log('RETURN_ERROR',{error:String(e)});$('state').textContent='RETURN HOLD'}));
 $('tools').addEventListener('click',()=>{$('drawer').classList.toggle('open')});
 function restore(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&MODES[x.mode]){app={...app,...x,lastSafe:null};log('REENTRY',{status:'PERSISTED_STATE_RELOADED'});$('state').textContent='RETURN'}}catch(e){app.trace=[{event:'RECOVERY_ERROR',error:String(e)}]}render()}
 function fit(){const vv=window.visualViewport;if(vv)document.documentElement.style.setProperty('--vh',vv.height+'px')}

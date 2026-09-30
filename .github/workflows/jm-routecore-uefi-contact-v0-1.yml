@@ -41,14 +41,5 @@ jobs:
         with:
           name: JM_ROUTECORE_UEFI_OBSERVABLE_WITNESS_v0_1
           path: |
-            routecore-contact/JM_ROUTECORE_UEFI_OBSERVABLE_WITNESS_RECEIPT_v0_1.json
-            routecore-contact/EFI/BOOT/BOOTX64.EFI
-            routecore-contact/frame-entry.ppm
-            routecore-contact/frame-entry.txt
-            routecore-contact/frame-key.ppm
-            routecore-contact/frame-key.txt
-            routecore-contact/qemu-version.txt
-            routecore-contact/qemu.log
-            routecore-contact/serial.log
-            routecore-contact/fat-directory.txt
+            routecore-contact-uefi/
           if-no-files-found: error

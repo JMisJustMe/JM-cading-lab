@@ -1,9 +1,9 @@
-name: AILatheo Teaching Field Browser Proof v1.1
+name: AILatheo Recovered Teaching Estate Browser Proof v2.0
 on:
   push:
     branches: [main]
     paths:
-      - "unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html"
+      - "unified-browser/OPEN_FIRST_AILATHEO_RECOVERED_TEACHING_ESTATE_v2_0.html"
       - "tests/ailatheo-teaching-field.spec.mjs"
       - ".github/workflows/ailatheo-teaching-field-browser-proof-v1-1.yml"
   workflow_dispatch:
@@ -19,13 +19,13 @@ jobs:
       - name: Boot local Estate
         run: |
           python3 -m http.server 4181 >/tmp/jm-ailatheo-http.log 2>&1 &
-          for i in {1..20}; do curl -fsS http://127.0.0.1:4181/unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html >/dev/null && exit 0; sleep 1; done
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4181/unified-browser/OPEN_FIRST_AILATHEO_RECOVERED_TEACHING_ESTATE_v2_0.html >/dev/null && exit 0; sleep 1; done
           exit 1
       - name: Five-viewport interaction and re-entry proof
         run: node tests/ailatheo-teaching-field.spec.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: ailatheo-teaching-field-v1-1-browser-proof
-          path: qa/ailatheo-teaching-field/
+          name: ailatheo-recovered-v2-browser-proof
+          path: qa/ailatheo-recovered-v2/
       - name: Browser proof Ding
-        run: echo JM_AILATHEO_TEACHING_FIELD_BROWSER_DING
+        run: echo JM_AILATHEO_RECOVERED_V2_BROWSER_DING

@@ -1,22 +1,25 @@
 #!/usr/bin/env python3
-"""Static/runtime-contract proof for the deployed AILatheo Unified Browser carrier."""
+"""Static owner-carrier contract for the current AILatheo Teaching Field."""
 from pathlib import Path
-import re, json
-p=Path("unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html")
+import json
+p=Path("unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html")
 s=p.read_text()
 checks={
- "owner_contact_nodes": all(x in s for x in ["AILatheo","ROD","JM AI Lab v2.0","Teo OS","Adaptive ECOSTATE","Ehilatheo"]),
- "ding": "AILATHEO_VISIBLE_CIRCUIT_DING" in s,
- "write": "localStorage.setItem(KEY" in s,
- "read": "localStorage.getItem(KEY)" in s,
- "reentry_marker": "PERSISTED_STATE_RELOADED" in s,
- "ehilatheo_hold": "hold:true" in s,
- "reset_delete": "localStorage.removeItem(KEY)" in s,
- "return_receipt_schema": "jm.ailatheo.return-receipt/0.1" in s,
- "payload_sha256": "payload_sha256" in s and "crypto.subtle.digest('SHA-256'" in s,
- "second_surface_packet": "AILATHEO_RETURN_PACKET_READY" in s,\n "explicit_dom_binding": "getElementById" in s and "addEventListener" in s,\n "visible_contact_error": "CONTACT ERROR:" in s,\n "visible_recovery_error": "RECOVERY ERROR:" in s,
+ "ailatheo_identity":"<b>AILatheo</b>" in s,
+ "teaching_models":all(x in s for x in ["LIGHT_ON","SHAPE_CHANGE","CAUSE_CONTACT"]),
+ "ding":"DING" in s,
+ "write":"localStorage.setItem(KEY" in s,
+ "read":"localStorage.getItem(KEY)" in s,
+ "reentry_marker":"PERSISTED_STATE_RELOADED" in s,
+ "recovery":all(x in s for x in ["RECOVERY_PASS","RECOVERY_BASELINE"]),
+ "return_receipt_schema":"jm.ailatheo.return-receipt/0.1" in s,
+ "payload_sha256":"payload_sha256" in s and "crypto.subtle.digest('SHA-256'" in s,
+ "second_surface_packet":"AILATHEO_RETURN_PACKET_READY" in s,
+ "explicit_dom_binding":"getElementById" in s and "addEventListener" in s,
+ "touch_first_law":"TOUCH FIRST · VISIBLE CONSEQUENCE · LANGUAGE AFTER DING" in s,
 }
-assert all(checks.values()),checks
-print(json.dumps({"schema":"jm.ailatheo.owner-carrier-contract/0.1","status":"PASS","checks":checks,
- "boundary":"Static carrier contract proves persistence/re-entry implementation, not a fresh physical reload observation.",
+bad=[k for k,v in checks.items() if not v]
+assert not bad,{"failed":bad,"checks":checks}
+print(json.dumps({"schema":"jm.ailatheo.owner-carrier-contract/1.1","status":"PASS","checks":checks,
+ "boundary":"Static carrier contract plus paired host/browser proofs. It does not claim fresh physical owner-device reload or second-surface return.",
  "ding":"JM_AILATHEO_OWNER_CARRIER_CONTRACT_DING"},indent=2))

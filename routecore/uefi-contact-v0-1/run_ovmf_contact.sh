@@ -108,7 +108,7 @@ for i in $(seq 1 24); do
   sleep 0.35
 done
 test "$found" -eq 1
-grep -Fqi "SAFE RETURN TO FIRMWARE" "$OUT/frame-key.txt"
+grep -Fqi "Press a second key to return" "$OUT/frame-key.txt"
 
 hmp "sendkey b" >/dev/null
 sleep 0.3
@@ -131,7 +131,7 @@ receipt = {
   "markers": {
     "uefi_firmware_entry_contact": "JM ROUTECORE PHYSICAL CONTACT GATE V0.1" in entry.upper(),
     "uefi_keyboard_protocol_contact": "UEFI KEYBOARD PROTOCOL CONTACT" in key.upper(),
-    "safe_return_marker": "SAFE RETURN TO FIRMWARE" in key.upper()
+    "safe_return_marker": "PRESS A SECOND KEY TO RETURN" in key.upper()
   },
   "claim_scope": {
     "exact_observable_descendant_executed_under_ovmf": True,

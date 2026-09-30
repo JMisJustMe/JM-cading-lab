@@ -22,10 +22,19 @@ mmd -i "$OUT/uefi-contact.img" ::/EFI/BOOT
 mcopy -i "$OUT/uefi-contact.img" "$OUT/EFI/BOOT/BOOTX64.EFI" ::/EFI/BOOT/BOOTX64.EFI
 mdir -i "$OUT/uefi-contact.img" ::/EFI/BOOT | tee "$OUT/fat-directory.txt"
 
-CODE=/usr/share/OVMF/OVMF_CODE.fd
-VARS=/usr/share/OVMF/OVMF_VARS.fd
-test -f "$CODE"
-test -f "$VARS"
+if [ -f /usr/share/OVMF/OVMF_CODE.fd ] && [ -f /usr/share/OVMF/OVMF_VARS.fd ]; then
+  CODE=/usr/share/OVMF/OVMF_CODE.fd
+  VARS=/usr/share/OVMF/OVMF_VARS.fd
+elif [ -f /usr/share/OVMF/OVMF_CODE_4M.fd ] && [ -f /usr/share/OVMF/OVMF_VARS_4M.fd ]; then
+  CODE=/usr/share/OVMF/OVMF_CODE_4M.fd
+  VARS=/usr/share/OVMF/OVMF_VARS_4M.fd
+else
+  echo "Available OVMF files:"
+  find /usr/share/OVMF -maxdepth 1 -type f -printf '%f\n' | sort
+  exit 1
+fi
+echo "OVMF_CODE=$CODE"
+echo "OVMF_VARS=$VARS"
 cp "$VARS" "$OUT/OVMF_VARS.fd"
 
 monitor=/tmp/jm-routecore-uefi-hmp.sock

@@ -1,0 +1,37 @@
+import { chromium } from 'playwright';
+import fs from 'node:fs/promises';
+const sizes=[[360,800],[412,915],[768,1024],[1366,768],[1440,900]];
+const browser=await chromium.launch({headless:true});
+const report={schema:'jm.ailatheo.teaching-field-browser-proof/1.1',views:[],errors:[]};
+await fs.mkdir('qa/ailatheo-teaching-field',{recursive:true});
+for(const [width,height] of sizes){
+ const page=await browser.newPage({viewport:{width,height}});
+ const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+ await page.goto('http://127.0.0.1:4181/unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html');
+ const initial=await page.evaluate(()=>({vw:innerWidth,vh:innerHeight,scrollW:document.documentElement.scrollWidth,worldH:document.querySelector('.world').getBoundingClientRect().height,primary:document.querySelector('#primary').getBoundingClientRect(),recover:document.querySelector('#recover').getBoundingClientRect()}));
+ if(initial.vw!==width||initial.vh!==height) errors.push('viewport mismatch');
+ if(initial.scrollW>width) errors.push('horizontal overflow '+initial.scrollW+'>'+width);
+ if(initial.worldH<300) errors.push('protected field below 300px');
+ if(initial.primary.bottom>height||initial.recover.bottom>height) errors.push('primary/recovery outside first viewport');
+ await page.locator('#primary').click();
+ if(!(await page.locator('#meaning').evaluate(e=>e.classList.contains('show')))) errors.push('light consequence missing');
+ if(!((await page.locator('#state').textContent())||'').includes('DING')) errors.push('light Ding missing');
+ await page.locator('[data-mode="shape"]').click(); await page.locator('#primary').click();
+ if(!((await page.locator('#meaningText').textContent())||'').includes('visible form')) errors.push('shape consequence missing');
+ await page.locator('[data-mode="animal"]').click(); await page.locator('#primary').click();
+ if(!((await page.locator('#meaningText').textContent())||'').includes('downstream trace')) errors.push('cause consequence missing');
+ const before=await page.evaluate(()=>localStorage.getItem('jm-ailatheo-teaching-field-v1.1')); if(!before) errors.push('persistence missing');
+ await page.reload();
+ if(!((await page.locator('#trace').textContent())||'').includes('PERSISTED_STATE_RELOADED')) errors.push('re-entry marker missing');
+ await page.screenshot({path:'qa/ailatheo-teaching-field/'+width+'x'+height+'.png',fullPage:false});
+ report.views.push({width,height,worldH:initial.worldH,errors});
+ report.errors.push(...errors.map(x=>width+'x'+height+': '+x));
+ await page.close();
+}
+await browser.close();
+report.status=report.errors.length?'FAIL':'PASS';
+report.ding=report.status==='PASS'?'JM_AILATHEO_TEACHING_FIELD_BROWSER_DING':null;
+report.boundary='Headless Chromium proves declared viewport structure, interaction consequences and local reload re-entry. It does not manufacture owner aesthetic/physical-device acceptance.';
+await fs.writeFile('qa/ailatheo-teaching-field/receipt.json',JSON.stringify(report,null,2));
+console.log(JSON.stringify(report,null,2));
+if(report.errors.length) process.exit(1);

@@ -73,7 +73,13 @@ def navigator_rpc(tool_name, arguments=None, timeout=8):
     req = urllib.request.Request(
         NAVIGATOR_MCP,
         data=json.dumps(payload).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Accept": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Origin": "https://chatgpt.com",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.5 (+https://jmisjustme-estate.pages.dev/)",
+            "MCP-Protocol-Version": DEFAULT_PROTOCOL,
+        },
         method="POST",
     )
     try:

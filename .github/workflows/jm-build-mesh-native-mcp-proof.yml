@@ -45,6 +45,8 @@ jobs:
               "build_capability_mesh",
               "detect_propagation_gaps",
               "plan_capability_inheritance",
+              "build_sync_contract",
+              "prepare_operation_gate",
           ]
 
           def get(path):
@@ -79,10 +81,10 @@ jobs:
           init = rpc(1, "initialize", {
               "protocolVersion":"2025-06-18",
               "capabilities":{},
-              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.6"},
+              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.7"},
           })
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
-          assert init["serverInfo"]["version"] == "0.6.0", init
+          assert init["serverInfo"]["version"] == "0.7.0", init
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]
@@ -93,6 +95,8 @@ jobs:
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
           assert status["capability_profiles"] >= 29, status
           assert status["navigator_cache_ttl_seconds"] >= 60, status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", status
+          assert status["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", status
 
           llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
           assert llm2["state"] == "CURRENT_DECLARED"
@@ -153,8 +157,33 @@ jobs:
           search2 = call(14, "search_builds", {"query":"RouteOS","limit":5})
           assert search2["navigator"].get("cache") == "HIT", search2["navigator"]
 
+          opportunity = call(15, "resolve_current_head", {"name":"JM Opportunity Front Door"})
+          assert opportunity["state"] == "CURRENT_CANDIDATE", opportunity
+          assert "v0.8" in (opportunity.get("current_head") or ""), opportunity
+          assert "v0.5.1" in opportunity["primary_evidence"]["boundary"], opportunity
+
+          sync = call(16, "build_sync_contract", {"name":"JM Opportunity Front Door"})
+          assert sync["hosted_snapshot"]["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", sync
+          assert sync["hosted_snapshot"]["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", sync
+          assert "local" in sync["privacy_rule"].lower(), sync
+          assert sync["mutation_performed"] is False
+
+          op_args = {
+              "target":"SHIFT//FIELD",
+              "objective":"inherit proven combat camera/input donors without rebuilding",
+              "action_type":"inherit",
+              "intended_change":"add bounded camera authority and combat-input inheritance",
+              "donors":["KICSHIFT v1.1","JM Target Bridge"],
+          }
+          op1 = call(17, "prepare_operation_gate", op_args)
+          op2 = call(18, "prepare_operation_gate", op_args)
+          assert op1["operation_id"] == op2["operation_id"], (op1,op2)
+          assert op1["phase"] == "PLAN_ONLY"
+          assert op1["mutation_performed"] is False
+          assert "performs no mutation" in op1["host_execution_rule"].lower()
+
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.6",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.7",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -166,6 +195,12 @@ jobs:
               "navigator_donor_contact":"PASS",
               "navigator_cache_second_call":"HIT",
               "capability_profiles":status["capability_profiles"],
+              "current_registry_schema":status["current_registry_schema"],
+              "current_registry_sha256":status["current_registry_sha256"],
+              "opportunity_current_head":opportunity["current_head"],
+              "sovereign_sync_contract":"PASS",
+              "operation_gate":"PASS_PLAN_ONLY",
+              "operation_id":op1["operation_id"],
               "batch_recovery":"PASS",
               "donor_recovery":"PASS",
               "propagation_gap_detection":"PASS",
@@ -174,11 +209,11 @@ jobs:
               "build_comparison":"PASS",
               "unknown_state":unknown["state"],
               "routeos_lineage_state":lineage["state"],
-              "claim_boundary":"Proves hosted v0.6 read-only capability-mesh reasoning, batching, caching and Build Mesh→Navigator contact. Does not prove private Library completeness or write/mutation authority.",
+              "claim_boundary":"Proves hosted v0.7 read-only capability-mesh reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -186,6 +221,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7.json
           if-no-files-found: error

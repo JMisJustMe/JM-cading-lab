@@ -1,0 +1,125 @@
+name: JM Build Mesh v0.7 Sovereign Sync Static Proof
+
+on:
+  push:
+    branches:
+      - build-mesh-v0-7-sovereign-sync
+    paths:
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+      - ".github/workflows/jm-build-mesh-v0-7-static-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and exercise v0.7 sovereign sync
+        shell: bash
+        run: |
+          python3 -m py_compile             services/jm-ecostate-build-mesh-mcp-v0_5/server.py             services/jm-ecostate-build-mesh-mcp-v0_5/capabilities.py
+          python3 - <<'PY'
+          import sys, json
+          sys.path.insert(0, "services/jm-ecostate-build-mesh-mcp-v0_5")
+          import server
+
+          assert server.VERSION == "0.7.0", server.VERSION
+          names = [t["name"] for t in server.TOOLS]
+          assert len(names) == 15, names
+          for required in (
+              "build_sync_contract",
+              "prepare_operation_gate",
+              "batch_recover_builds",
+              "find_capability_donors",
+              "detect_propagation_gaps",
+              "plan_capability_inheritance",
+          ):
+              assert required in names, names
+
+          assert server.CURRENT_REGISTRY_SCHEMA == "JM.CareerCurrentProjectRegistry/0.3"
+          assert server.CURRENT_REGISTRY_SHA256 == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da"
+          assert len(server.CURRENT) == 18
+          assert len(server.CAPABILITY_PROFILES) == 29
+
+          opportunity = server.resolve_current_head({"name":"JM Opportunity Front Door"})
+          assert opportunity["state"] == "CURRENT_CANDIDATE", opportunity
+          assert "v0.8" in (opportunity.get("current_head") or ""), opportunity
+          boundary = opportunity["primary_evidence"]["boundary"]
+          assert "v0.5.1" in boundary and "public/owner-contacted" in boundary, opportunity
+
+          status = server.build_mesh_status({"probe_navigator":False})
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", status
+          assert status["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", status
+
+          sync = server.build_sync_contract({"name":"JM Opportunity Front Door"})
+          hosted = sync["hosted_snapshot"]
+          assert hosted["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3"
+          assert hosted["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da"
+          assert "local" in sync["privacy_rule"].lower()
+          assert sync["mutation_performed"] is False
+          assert sync["reconciliation_order"][0] == "DIRECT PRIVATE BODY / RECEIPT"
+
+          args = {
+              "target":"SHIFT//FIELD",
+              "objective":"inherit proven combat camera/input donors without rebuilding",
+              "action_type":"inherit",
+              "intended_change":"add bounded camera authority and combat-input inheritance",
+              "donors":["KICSHIFT v1.1","JM Target Bridge"],
+          }
+          op1 = server.prepare_operation_gate(args)
+          op2 = server.prepare_operation_gate(args)
+          assert op1["operation_id"] == op2["operation_id"], (op1,op2)
+          assert op1["phase"] == "PLAN_ONLY"
+          assert op1["mutation_performed"] is False
+          assert "performs no mutation" in op1["host_execution_rule"].lower()
+          assert "raw private" in op1["privacy_rule"].lower()
+
+          batch = server.batch_recover_builds({"names":["JM LLM #2","JM AGI Lab v1.4.4","SHIFT//FIELD"]})
+          assert batch["count"] == 3
+
+          donors = server.find_capability_donors({
+              "target":"SHIFT//FIELD",
+              "objective":"mobile combat camera input and game runtime",
+              "limit":8
+          })
+          donor_names = [d["name"] for d in donors["donors"]]
+          assert any("KICSHIFT" in n or "GameCore" in n or "FOURFOLD" in n for n in donor_names), donor_names
+
+          gaps = server.detect_propagation_gaps({
+              "target":"SHIFT//FIELD",
+              "objective":"camera combat input",
+              "limit":8
+          })
+          assert gaps["target"]["id"] == "shiftfield"
+          assert len(gaps["gaps"]) >= 1
+
+          plan = server.plan_capability_inheritance({
+              "target":"SHIFT//FIELD",
+              "objective":"inherit proven combat camera and input donors without rebuilding",
+              "max_donors":5
+          })
+          assert plan["mutation_performed"] is False
+
+          mesh = server.build_capability_mesh({
+              "builds":["SHIFT//FIELD","KICSHIFT","JM Target Bridge","JM GripCube"],
+              "max_nodes":8
+          })
+          assert len(mesh["nodes"]) >= 4
+
+          print(json.dumps({
+              "version":server.VERSION,
+              "tool_count":len(names),
+              "registry_schema":server.CURRENT_REGISTRY_SCHEMA,
+              "registry_sha256":server.CURRENT_REGISTRY_SHA256,
+              "opportunity_current_head":opportunity["current_head"],
+              "sync_contract":"PASS",
+              "deterministic_operation_gate":"PASS",
+              "operation_id":op1["operation_id"],
+              "mutation_performed":op1["mutation_performed"],
+              "capability_mesh_regression":"PASS"
+          }, indent=2))
+          PY

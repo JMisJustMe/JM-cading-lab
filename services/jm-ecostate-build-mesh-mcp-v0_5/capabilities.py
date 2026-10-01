@@ -7,13 +7,13 @@ current registry / current overlay carried by Build Mesh.
 
 CAPABILITY_PROFILES = [
     {
-        "id":"career-v06",
-        "name":"JM Career Hire-Me Front Door v0.6",
-        "source":"current_project_registry",
-        "domain":"Estate / public / career",
-        "capabilities":["professional front door","portfolio UX","creator-facing interaction","return routing","public presentation"],
-        "donor_roles":["front-door UX","creator presentation","return-route pattern"],
-        "open_frontiers":["owner contact","public crown"]
+        "id":"opportunity-v08",
+        "name":"JM Opportunity Front Door v0.8 — Maximal Current",
+        "source":"current_project_registry_v0_3",
+        "domain":"Estate / opportunity / career / commerce",
+        "capabilities":["opportunity front door","purpose projection","capability projection","employment route","freelance commission route","collaboration route","licensing publishing route","research consult route","contact brief builder","GripCube projection"],
+        "donor_roles":["opportunity routing","purpose-capability projection","contact handoff","multi-route front door"],
+        "open_frontiers":["v0.8 public deployment","v0.8 owner-device runtime Ding","live inbound opportunity contact","market conversion"]
     },
     {
         "id":"gripcube-rpa",

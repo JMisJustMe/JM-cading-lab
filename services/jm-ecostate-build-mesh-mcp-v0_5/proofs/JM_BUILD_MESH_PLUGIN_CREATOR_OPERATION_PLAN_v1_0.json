@@ -1,0 +1,18 @@
+{
+  "schema": "JM.BuildMesh.HostOperationPlan/1.0",
+  "operation_id": "JMOP-934aee757c6298d9a5084790",
+  "planner_contract": "JM.BuildMesh.OperationGate/0.7",
+  "target": "JM ECOSTATE Build Mesh — Plugin Creator recipient",
+  "objective": "prove a third host recipient can perform a bounded package/account update on the same private plugin identity and be verified by account read-back",
+  "action_type": "plugin-update",
+  "intended_change": "update plugin plugins_6abed55d951081919add384ef275dd4f from v0.8.0 to v0.9.0 using the audited exact package without creating a duplicate plugin or changing MCP endpoint identity",
+  "host_connector": "Plugin Creator",
+  "plugin_id": "plugins_6abed55d951081919add384ef275dd4f",
+  "from_version": "0.8.0",
+  "to_version": "0.9.0",
+  "package_sha256": "0ce6f700d3b32388c4b71ade1f6ac402df0a7bfcb3b3a0116a07d71fa3662111",
+  "expected_mcp_endpoint": "https://jm-ecostate-build-mesh-mcp.onrender.com/mcp",
+  "phase": "PLAN_ONLY",
+  "duplicate_plugin_allowed": false,
+  "public_mcp_mutation_authority": false
+}

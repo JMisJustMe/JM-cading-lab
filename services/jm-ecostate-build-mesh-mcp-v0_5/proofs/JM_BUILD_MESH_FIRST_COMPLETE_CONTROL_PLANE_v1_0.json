@@ -1,0 +1,103 @@
+{
+  "schema": "JM.BuildMesh.FirstCompleteControlPlane/1.0",
+  "title": "JM ECOSTATE Build Mesh — First Complete Operating Control Plane",
+  "planes": [
+    {
+      "plane": "Private Estate Authority",
+      "recipient": "ChatGPT Library / Files host",
+      "consequence_class": "PRIVATE_AUTHORITY_READ_SYNC",
+      "state": "CONTACTED_READ_SIDE",
+      "proof": [
+        "registry v0.3 recovered",
+        "exact pointer/receipt searches contacted",
+        "raw private evidence kept host-local"
+      ],
+      "mutation_state": "WRITE/REPLACEMENT NOT CROWNED HERE"
+    },
+    {
+      "plane": "Public Reasoning Control",
+      "recipient": "JM ECOSTATE Build Mesh MCP",
+      "consequence_class": "READ_ONLY_CONTROL_PLANE",
+      "state": "15_TOOL_HOSTED_DING",
+      "proof": [
+        "current-head resolution",
+        "proof state",
+        "lineage",
+        "capability mesh",
+        "sovereign sync contract",
+        "PLAN_ONLY operation gate"
+      ],
+      "mutation_state": "READ_ONLY_BY_DESIGN"
+    },
+    {
+      "plane": "Source / Content Operation",
+      "recipient": "GitHub",
+      "consequence_class": "CONTENT_MUTATION",
+      "state": "DING_EARNED",
+      "operation_id": "JMOP-81448fc5c43c6ff1d206ab56",
+      "proof": [
+        "write",
+        "exact readback",
+        "delta match",
+        "receipt write",
+        "receipt readback"
+      ]
+    },
+    {
+      "plane": "Deployment Operation",
+      "recipient": "Render",
+      "consequence_class": "DEPLOYMENT_STATE_MUTATION",
+      "state": "DING_EARNED",
+      "operation_id": "JMOP-3e8172867b73fbbeb5711397",
+      "proof": [
+        "bounded redeploy",
+        "server blob identity",
+        "runtime 0.7.0",
+        "HEAD 200",
+        "LIVE",
+        "endpoint unchanged"
+      ]
+    },
+    {
+      "plane": "Plugin Package / Account Operation",
+      "recipient": "Plugin Creator",
+      "consequence_class": "PACKAGE_ACCOUNT_MUTATION",
+      "state": "DING_EARNED",
+      "operation_id": "JMOP-934aee757c6298d9a5084790",
+      "proof": [
+        "same plugin ID",
+        "0.8→0.9 update",
+        "account readback",
+        "MCP endpoint unchanged",
+        "recipient receipts preserved"
+      ]
+    }
+  ],
+  "retained_bodies": {
+    "historical_lineages": 1074,
+    "current_project_registry": "JM.CareerCurrentProjectRegistry/0.3",
+    "current_project_count": 18,
+    "capability_profiles": 29,
+    "hosted_tools": 15
+  },
+  "open_jurisdictions": [
+    "Private Library mutation/write-back",
+    "Owner-device mutation/runtime",
+    "Additional external connectors/actions not separately contacted",
+    "Broad automatic current-pointer mutation"
+  ],
+  "governing_laws": [
+    "NO DING, NO CLAIM",
+    "CONTACT BEFORE CROWN",
+    "RECOVER BEFORE REBUILD",
+    "MESH ≠ MERGE",
+    "SEARCH ≠ AUTHORITY",
+    "DONOR RELEVANCE ≠ PROOF TRANSFER",
+    "PLAN ≠ ACT",
+    "ACT ≠ VERIFIED",
+    "VERIFIED ≠ CROWN UNTIL RECEIPT",
+    "RECIPIENT A DING ≠ RECIPIENT B DING",
+    "HOST ACT ≠ PUBLIC MCP OWNERSHIP"
+  ],
+  "crown_boundary": "First Complete means the operating spine is closed across recovery, private sync, public reasoning, deterministic planning, and three distinct verified host-operation recipient classes. It does not mean every Estate carrier or future connector is already writable or runtime-proved."
+}

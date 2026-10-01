@@ -222,5 +222,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6.json
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7.json
           if-no-files-found: error

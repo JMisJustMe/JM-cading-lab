@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AILatheo Creation Workbench v3.0-alpha</title>
+<style>
+:root{color-scheme:dark;--bg:#070b12;--p:#101827;--l:#263650;--ink:#f5f7fb;--mut:#9fb0c7;--cyan:#72e6ff;--gold:#ffd36f;--green:#7ae7a9}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#173452,var(--bg) 38rem);color:var(--ink);font-family:system-ui}.app{min-height:100dvh;display:grid;grid-template-rows:auto auto 1fr auto}.top,.rail,.status{display:flex;gap:8px;align-items:center;padding:10px;border-bottom:1px solid var(--l)}.top b{font-size:1.05rem}.top small{color:var(--mut)}.rail{overflow:auto}.rail button,.actions button{border:1px solid var(--l);background:#142034;color:var(--ink);border-radius:10px;padding:9px 11px;font-weight:800}.rail button.on{background:var(--cyan);color:#061018}.world{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:10px;padding:10px;min-height:0}.field,.side{border:1px solid var(--l);border-radius:18px;background:#0c1421;min-height:0}.field{display:grid;grid-template-rows:auto 1fr auto}.head{padding:12px;border-bottom:1px solid var(--l)}.head span{color:var(--mut)}.stage{display:grid;place-items:center;min-height:330px;padding:18px}.object{width:min(250px,65vw);aspect-ratio:1;border-radius:28%;display:grid;place-items:center;background:radial-gradient(circle,#dffaff 0 8%,#58d7ff 10%,#163250 56%,#0a111c 70%);box-shadow:0 0 70px #58d7ff55;transition:.25s}.object.live{background:radial-gradient(circle,#fffbd0 0 9%,#ffd36f 12%,#76591f 55%,#0a111c 72%);box-shadow:0 0 90px #ffd36f88}.actions{display:flex;gap:8px;padding:12px;border-top:1px solid var(--l);overflow:auto}.actions .primary{background:var(--gold);color:#151006}.side{display:grid;grid-template-rows:auto auto 1fr}.tabs{display:flex;gap:5px;padding:8px;border-bottom:1px solid var(--l)}.tabs button{flex:1;border:0;border-radius:8px;padding:8px;background:#111d30;color:var(--mut)}.tabs button.on{color:var(--cyan);background:#183149}.route{padding:12px;font:12px/1.55 ui-monospace,monospace;color:#d6e4f5;overflow:auto}.code{width:100%;min-height:180px;background:#070d16;color:#eaf3ff;border:0;border-top:1px solid var(--l);padding:12px;font:12px/1.5 ui-monospace,monospace;resize:none}.status{border-top:1px solid var(--l);border-bottom:0;color:var(--mut);font-size:.72rem}.status strong{color:var(--green)}@media(max-width:760px){.world{grid-template-columns:1fr}.stage{min-height:310px}.side{min-height:360px}.top small{display:none}}
+</style></head><body><main class="app">
+<header class="top"><b>AILatheo · Creation Workbench</b><small>v3.0-alpha · recovered capability integration</small></header>
+<nav class="rail" id="modes"><button class="on">PLAY</button><button>BUILD</button><button>LEARN</button><button>DEBUG</button><button>SAVE</button><button>FORGE</button><button>TARGET</button></nav>
+<section class="world"><article class="field"><div class="head"><b id="lesson">Light → state → route</b><br><span id="state">WAITING · touch first</span></div><div class="stage"><div class="object" id="object">CONTACT</div></div><div class="actions"><button class="primary" id="contact">TOGGLE LIGHT</button><button id="build">BUILD BODY</button><button id="recover">RECOVER</button></div></article>
+<aside class="side"><div class="tabs"><button class="on">ROUTE</button><button>CODE</button><button>TRACE</button></div><div class="route" id="route">SOURCE: AILatheo teaching intent
+→ Estate Router
+→ Cading / FlowTalk / JMLogic
+→ OneBody IR
+→ Visual Interaction Runtime
+→ consequence
+→ TraceBox / Ding
+
+No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [gold] :: ToggleLight</textarea></aside></section>
+<footer class="status"><strong id="ding">READY</strong><span> · source authority preserved · receiver proof pending · MESH ≠ MERGE</span></footer>
+</main><script>
+const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
+let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');
+function paint(){o.classList.toggle('live',on);o.textContent=on?'LIGHT ON':'CONTACT';s.textContent=on?'LIVE · visible consequence first':'WAITING · touch first'}
+paint();
+document.querySelector('#contact').onclick=()=>{on=!on;localStorage.setItem('jm.ailatheo.v3.light',JSON.stringify(on));paint();d.textContent='CONTACT DING';r.textContent='CONTACT → STATE_CHANGE → VISIBLE CONSEQUENCE → TRACE\nLight='+on+'\n\nLanguage follows Ding.'};
+document.querySelector('#build').onclick=()=>{const v=src.value.trim();if(!/^.+\s:\s.+\s\[[^\]]+\]\s::\s.+$/.test(v)){d.textContent='SOFT RESIST';s.textContent='BUILD HELD · grammar not yet valid';return}d.textContent='BUILD ROUTE READY';s.textContent='BUILD · source accepted for routing';r.textContent='AILatheo command\n→ Estate Router\n→ Coding Estate preflight\n→ OneBody IR\n→ Forge carrier\n\nRuntime/package Ding remains separate.'};
+document.querySelector('#recover').onclick=()=>{on=false;paint();d.textContent='RECOVERED';r.textContent='RECOVERY → last safe teaching state\nSource text preserved.'};
+document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#modes button').forEach(x=>x.classList.remove('on'));b.classList.add('on');s.textContent=b.textContent+' · organ selected';});
+</script></body></html>

@@ -1,0 +1,142 @@
+name: JM Build Mesh Native MCP Hosted Proof
+
+on:
+  push:
+    branches:
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - ".github/workflows/jm-build-mesh-native-mcp-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Cross-host MCP proof
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, hashlib, datetime, os
+
+          BASE = "https://jm-ecostate-build-mesh-mcp.onrender.com"
+          MCP = BASE + "/mcp"
+          EXPECTED = [
+              "search_builds",
+              "recover_build",
+              "resolve_current_head",
+              "proof_state",
+              "trace_lineage",
+              "continue_build_plan",
+              "build_mesh_status",
+          ]
+
+          def get(path, method="GET"):
+              req = urllib.request.Request(BASE + path, method=method)
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  raw = r.read()
+                  return r.status, json.loads(raw.decode("utf-8")) if raw else None
+
+          def rpc(i, method, params=None):
+              payload = {"jsonrpc":"2.0","id":i,"method":method,"params":params or {}}
+              req = urllib.request.Request(
+                  MCP,
+                  data=json.dumps(payload).encode("utf-8"),
+                  headers={"Content-Type":"application/json","Accept":"application/json"},
+                  method="POST",
+              )
+              with urllib.request.urlopen(req, timeout=45) as r:
+                  body = json.loads(r.read().decode("utf-8"))
+              if "error" in body:
+                  raise AssertionError(f"RPC error for {method}: {body['error']}")
+              return body["result"]
+
+          def call(i, name, arguments=None):
+              result = rpc(i, "tools/call", {"name":name,"arguments":arguments or {}})
+              if result.get("isError"):
+                  raise AssertionError(f"Tool {name} returned isError: {result}")
+              return result.get("structuredContent") or {}
+
+          ready_status, ready = get("/ready")
+          assert ready_status == 200 and ready.get("ready") is True, (ready_status, ready)
+
+          init = rpc(1, "initialize", {
+              "protocolVersion":"2025-06-18",
+              "capabilities":{},
+              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.5"},
+          })
+          assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP", init
+          assert init["serverInfo"]["version"] == "0.5.0", init
+
+          listed = rpc(2, "tools/list", {})
+          names = [t["name"] for t in listed["tools"]]
+          assert names == EXPECTED, names
+
+          status = call(3, "build_mesh_status", {"probe_navigator":True})
+          nav = status["navigator_contact"]
+          assert nav.get("ok") is True and nav.get("state") == "PASS", nav
+
+          llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
+          assert llm2["state"] == "CURRENT_DECLARED", llm2
+          assert "v2.0" in (llm2.get("current_head") or ""), llm2
+
+          agi = call(5, "proof_state", {"name":"JM AGI Lab v1.4.4"})
+          assert "60/60" in (agi.get("proof") or ""), agi
+          boundary = (agi.get("boundary") or "").lower()
+          assert "no agi" in boundary and "human-level" in boundary, agi
+
+          unknown = call(6, "resolve_current_head", {"name":"ZZZ totally nonexistent build qqq"})
+          assert unknown["state"] == "ABSENCE_NOT_PROVEN", unknown
+
+          lineage = call(7, "trace_lineage", {"name":"RouteOS","limit":4})
+          assert lineage["state"] == "PUBLIC_LINEAGE_CONTACT", lineage
+          assert len(lineage.get("matches") or []) >= 1, lineage
+          assert any(
+              (m.get("lineage") or {}).get("ok") is True
+              for m in lineage["matches"]
+          ), lineage
+
+          continuation = call(8, "continue_build_plan", {
+              "name":"JM LLM #2",
+              "objective":"strengthen without rebuilding the proved v2.0 head",
+          })
+          assert continuation.get("mutation_performed") is False, continuation
+          assert continuation["route"][0] == "RECOVER BEST PROVEN STATE", continuation
+
+          receipt = {
+              "schema":"JM.BuildMesh.HostedMCPProof/0.5",
+              "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "source_commit":os.environ.get("GITHUB_SHA"),
+              "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
+              "endpoint":MCP,
+              "ready":"PASS",
+              "initialize":"PASS",
+              "tool_count":len(names),
+              "tools":names,
+              "navigator_donor_contact":"PASS",
+              "llm2_current_head":llm2.get("current_head"),
+              "llm2_state":llm2.get("state"),
+              "agi_proof":agi.get("proof"),
+              "agi_boundary":agi.get("boundary"),
+              "unknown_state":unknown.get("state"),
+              "routeos_lineage_state":lineage.get("state"),
+              "routeos_lineage_count":len(lineage.get("matches") or []),
+              "continue_mutation_performed":continuation.get("mutation_performed"),
+              "claim_boundary":"Proves public hosted Build Mesh MCP protocol/tool contact and Build Mesh→Navigator public donor contact. Does not prove private Library completeness or any write/mutation consequence.",
+          }
+          raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
+          receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5.json","w",encoding="utf-8") as f:
+              json.dump(receipt,f,ensure_ascii=False,indent=2)
+          print(json.dumps(receipt,ensure_ascii=False,indent=2))
+          PY
+
+      - name: Upload proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5.json
+          if-no-files-found: error

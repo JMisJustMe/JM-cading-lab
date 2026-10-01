@@ -92,7 +92,9 @@ jobs:
           nav = status["navigator_contact"]
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
           assert status["capability_profiles"] >= 29, status
-          assert status["navigator_cache_ttl_seconds"] >= 60, status\n          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", status\n          assert status["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", status
+          assert status["navigator_cache_ttl_seconds"] >= 60, status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", status
+          assert status["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", status
 
           llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
           assert llm2["state"] == "CURRENT_DECLARED"
@@ -190,7 +192,13 @@ jobs:
               "tools":names,
               "navigator_donor_contact":"PASS",
               "navigator_cache_second_call":"HIT",
-              "capability_profiles":status["capability_profiles"],\n              "current_registry_schema":status["current_registry_schema"],\n              "current_registry_sha256":status["current_registry_sha256"],\n              "opportunity_current_head":opportunity["current_head"],\n              "sovereign_sync_contract":"PASS",\n              "operation_gate":"PASS_PLAN_ONLY",\n              "operation_id":op1["operation_id"],
+              "capability_profiles":status["capability_profiles"],
+              "current_registry_schema":status["current_registry_schema"],
+              "current_registry_sha256":status["current_registry_sha256"],
+              "opportunity_current_head":opportunity["current_head"],
+              "sovereign_sync_contract":"PASS",
+              "operation_gate":"PASS_PLAN_ONLY",
+              "operation_id":op1["operation_id"],
               "batch_recovery":"PASS",
               "donor_recovery":"PASS",
               "propagation_gap_detection":"PASS",

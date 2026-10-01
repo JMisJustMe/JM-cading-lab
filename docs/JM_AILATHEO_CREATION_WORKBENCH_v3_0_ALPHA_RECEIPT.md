@@ -20,3 +20,13 @@ The receiver body has been created with PLAY/BUILD/LEARN/DEBUG/SAVE/FORGE/TARGET
 
 ## What it does not prove
 Buttons naming Forge/Target do not prove live Forge/Target execution. The next implementation pass must replace those selection surfaces with actual adapters into recovered Estate organs. No receiver crown is claimed.
+
+
+## Integration advance
+- Live Coding Estate router contact wired.
+- Native GameForge / PLAYFORM / Seedform / Pattern-Tapping / JMVisualGraft / JM Visual Interaction Runtime execution route added.
+- Cading IR / OneBody IR lowering added.
+- 8-gate Build Gates route added.
+- OneBody Delivery recoverable package state added.
+- Browser preview carrier and Android Forge build contract emitted.
+- Dedicated PR proof workflow added; runtime PASS remains withheld until observed.

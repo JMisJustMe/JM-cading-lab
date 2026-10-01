@@ -1,0 +1,58 @@
+{
+  "schema": "JM.BuildMesh.RecipientOperationMatrix/0.9",
+  "operating_law": "Recipient proof is typed by consequence. One recipient's Ding does not silently transfer to another.",
+  "recipients": [
+    {
+      "recipient": "GitHub",
+      "consequence_class": "CONTENT_MUTATION",
+      "operation_id": "JMOP-81448fc5c43c6ff1d206ab56",
+      "act": "CREATE_NON_AUTHORITATIVE_PROOF_MARKER",
+      "verification": [
+        "EXACT_CONTENT_READBACK",
+        "INTENDED_VS_ACTUAL_DELTA_MATCH",
+        "RECEIPT_EXACT_READBACK"
+      ],
+      "state": "DING_EARNED_AT_BENIGN_GITHUB_SCOPE",
+      "public_mcp_mutation_authority": false
+    },
+    {
+      "recipient": "Render",
+      "consequence_class": "DEPLOYMENT_STATE_MUTATION",
+      "operation_id": "JMOP-3e8172867b73fbbeb5711397",
+      "act": "BOUNDED_REDEPLOY",
+      "verification": [
+        "SERVER_LOGIC_BLOB_IDENTITY",
+        "RUNTIME_VERSION_0.7.0",
+        "HEAD_200",
+        "SERVICE_LIVE",
+        "ENDPOINT_UNCHANGED"
+      ],
+      "state": "DING_EARNED_AT_BOUNDED_REDEPLOY_SCOPE",
+      "public_mcp_mutation_authority": false
+    },
+    {
+      "recipient": "Build Mesh Public MCP",
+      "consequence_class": "READ_ONLY_CONTROL_PLANE",
+      "act": "NONE",
+      "verification": [
+        "15_TOOL_HOSTED_PROOF",
+        "SOVEREIGN_SYNC_CONTRACT",
+        "PLAN_ONLY_OPERATION_GATE"
+      ],
+      "state": "READ_ONLY_BY_DESIGN",
+      "public_mcp_mutation_authority": false
+    }
+  ],
+  "unresolved_recipients": [
+    "Private Library mutation/write-back",
+    "Owner-device mutation",
+    "Additional external connectors not separately contacted"
+  ],
+  "laws": [
+    "PLAN ≠ ACT",
+    "ACT ≠ VERIFIED",
+    "VERIFIED ≠ CROWN UNTIL RECEIPT",
+    "RECIPIENT A DING ≠ RECIPIENT B DING",
+    "HOST ACT ≠ PUBLIC MCP OWNERSHIP"
+  ]
+}

@@ -1,0 +1,19 @@
+name: Prove AILatheo v3 Creation Workbench
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'tests/ailatheo-v3-*.mjs'
+      - 'coding-estate/**'
+permissions: {contents: read}
+jobs:
+  native-route:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node tests/ailatheo-v3-estate-route.mjs
+      - run: node tests/ailatheo-v3-native-execution.mjs

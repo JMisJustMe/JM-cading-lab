@@ -45,6 +45,8 @@ jobs:
               "build_capability_mesh",
               "detect_propagation_gaps",
               "plan_capability_inheritance",
+              "build_sync_contract",
+              "prepare_operation_gate",
           ]
 
           def get(path):

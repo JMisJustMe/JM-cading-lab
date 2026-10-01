@@ -1,0 +1,17 @@
+{
+  "schema": "JM.BuildMesh.HostOperationPlan/1.0",
+  "operation_id": "JMOP-b487bb0eb4f93f9b26c60505",
+  "planner_contract": "JM.BuildMesh.OperationGate/0.7",
+  "target": "JM ECOSTATE Build Mesh v1.0 — Plugin Creator publication",
+  "objective": "publish the First Complete Operating Control Plane over the same private plugin identity and verify the account body after publication",
+  "action_type": "plugin-update",
+  "intended_change": "update plugin plugins_6abed55d951081919add384ef275dd4f from v0.9.0 to v1.0.0 using package SHA-256 72566d6ecf53587f5908a08697c7d83cf7560f669dabdfb6c881442295fa575a while preserving the MCP endpoint and private plugin identity",
+  "host_connector": "Plugin Creator",
+  "plugin_id": "plugins_6abed55d951081919add384ef275dd4f",
+  "from_version": "0.9.0",
+  "to_version": "1.0.0",
+  "package_sha256": "72566d6ecf53587f5908a08697c7d83cf7560f669dabdfb6c881442295fa575a",
+  "expected_mcp_endpoint": "https://jm-ecostate-build-mesh-mcp.onrender.com/mcp",
+  "phase": "PLAN_ONLY",
+  "public_mcp_mutation_authority": false
+}

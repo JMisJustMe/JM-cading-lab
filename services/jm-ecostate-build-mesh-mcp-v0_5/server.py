@@ -107,6 +107,12 @@ def navigator_rpc(tool_name, arguments=None, timeout=8):
 def navigator_search(query, limit=8):
     return navigator_rpc("search", {"query": query, "limit": max(1, min(int(limit), 25))})
 
+def meaningful_navigator_results(contact, minimum_score=40):
+    if not contact.get("ok"):
+        return []
+    results = (contact.get("data") or {}).get("results") or []
+    return [r for r in results if float(r.get("score") or 0) >= float(minimum_score)]
+
 def search_builds(args):
     query = (args.get("query") or "").strip()
     if not query:
@@ -130,9 +136,10 @@ def recover_build(args):
     nav = navigator_search(query, limit)
     best = local[0] if local else None
     state = authority_state(best)
-    if not best and nav.get("ok") and (nav.get("data") or {}).get("results"):
+    public_matches = meaningful_navigator_results(nav)
+    if not best and public_matches:
         state = "SNAPSHOT_ONLY"
-    if not best and not (nav.get("ok") and (nav.get("data") or {}).get("results")):
+    if not best and not public_matches:
         state = "ABSENCE_NOT_PROVEN"
     return {
         "query": query,
@@ -167,12 +174,14 @@ def resolve_current_head(args):
             "boundary": "Hosted current declaration; stronger direct current pointer/receipt can supersede it.",
         }
     nav = navigator_search(query, 5)
-    has_public = nav.get("ok") and bool((nav.get("data") or {}).get("results"))
+    public_matches = meaningful_navigator_results(nav)
+    has_public = bool(public_matches)
     return {
         "query": query,
         "state": "SNAPSHOT_ONLY" if has_public else "ABSENCE_NOT_PROVEN",
         "current_head": None,
         "public_evidence": nav,
+        "meaningful_public_matches": public_matches,
         "boundary": "No hosted current declaration found. Absence is not proved across the private Estate.",
     }
 
@@ -196,7 +205,7 @@ def proof_state(args):
     nav = navigator_search(query, 5)
     return {
         "query": query,
-        "state": "SNAPSHOT_ONLY" if nav.get("ok") and (nav.get("data") or {}).get("results") else "ABSENCE_NOT_PROVEN",
+        "state": "SNAPSHOT_ONLY" if meaningful_navigator_results(nav) else "ABSENCE_NOT_PROVEN",
         "navigator_contact": nav,
         "note": "Public source discovery does not itself prove runtime/current authority.",
     }
@@ -208,7 +217,7 @@ def trace_lineage(args):
     search = navigator_search(query, int(args.get("limit") or 8))
     if not search.get("ok"):
         return {"query": query, "state": "HOLD", "navigator_contact": search}
-    results = (search.get("data") or {}).get("results") or []
+    results = meaningful_navigator_results(search)
     if not results:
         return {"query": query, "state": "ABSENCE_NOT_PROVEN", "matches": []}
     lineages = []

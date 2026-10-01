@@ -1,0 +1,14 @@
+{
+  "schema": "JM.BuildMesh.HostOperationContact/0.8",
+  "operation_id": "JMOP-81448fc5c43c6ff1d206ab56",
+  "target": "JM ECOSTATE Build Mesh — host operation proof lane",
+  "objective": "prove host-authorized write, read-back, exact-delta verification and receipt seating without granting mutation authority to the public MCP",
+  "action_type": "proof-marker",
+  "intended_change": "create one non-authoritative host-operation contact marker on a dedicated Git branch, read it back exactly, then seat a verified receipt",
+  "authority": "NON_AUTHORITATIVE_PROOF_MARKER",
+  "public_mcp_mutation_performed": false,
+  "host_connector": "GitHub",
+  "branch": "build-mesh-v0-8-host-operation",
+  "state": "PLANNED_FOR_HOST_WRITE",
+  "claim_boundary": "This marker proves only that an authorized host connector can carry an explicitly planned benign write for later read-back verification. It changes no current-project authority or runtime claim."
+}

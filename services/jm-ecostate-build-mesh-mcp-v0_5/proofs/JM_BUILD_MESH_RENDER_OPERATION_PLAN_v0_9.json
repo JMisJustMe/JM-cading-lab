@@ -1,0 +1,15 @@
+{
+  "schema": "JM.BuildMesh.HostOperationPlan/0.9",
+  "operation_id": "JMOP-3e8172867b73fbbeb5711397",
+  "planner_contract": "JM.BuildMesh.OperationGate/0.7",
+  "target": "JM ECOSTATE Build Mesh MCP — Render recipient",
+  "objective": "prove a second host recipient can execute a bounded non-code redeploy and be independently verified live without granting write authority to the public MCP",
+  "action_type": "redeploy",
+  "intended_change": "redeploy the existing Build Mesh MCP service from its current deployment branch without changing source logic, environment, project authority or endpoint",
+  "host_connector": "Render",
+  "service_id": "srv-dave2chsrm7s73bl3p50",
+  "expected_runtime_version": "0.7.0",
+  "expected_endpoint": "https://jm-ecostate-build-mesh-mcp.onrender.com/mcp",
+  "phase": "PLAN_ONLY",
+  "public_mcp_mutation_authority": false
+}

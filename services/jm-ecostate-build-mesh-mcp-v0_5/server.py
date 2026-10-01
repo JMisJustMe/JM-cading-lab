@@ -328,10 +328,25 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
         self.end_headers()
 
+    def do_HEAD(self):
+        path = urlparse(self.path).path
+        if path in ("/", "/health", "/ready", "/meta"):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        self.send_response(404)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self):
         path = urlparse(self.path).path
         if path == "/health":
             return self.send_json(200, {"ok": True, "name": SERVER_NAME, "version": VERSION})
+        if path == "/ready":
+            return self.send_json(200, {"ready": True, "name": SERVER_NAME, "version": VERSION})
         if path in ("/", "/meta"):
             return self.send_json(200, build_mesh_status({"probe_navigator": False}))
         if path == "/mcp":

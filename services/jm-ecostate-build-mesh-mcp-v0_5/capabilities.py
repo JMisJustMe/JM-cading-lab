@@ -1,0 +1,272 @@
+"""Typed capability cues for JM ECOSTATE Build Mesh.
+
+These profiles are routing aids, not independent proof receipts.
+They describe capabilities already named or strongly implied by the
+current registry / current overlay carried by Build Mesh.
+"""
+
+CAPABILITY_PROFILES = [
+    {
+        "id":"career-v06",
+        "name":"JM Career Hire-Me Front Door v0.6",
+        "source":"current_project_registry",
+        "domain":"Estate / public / career",
+        "capabilities":["professional front door","portfolio UX","creator-facing interaction","return routing","public presentation"],
+        "donor_roles":["front-door UX","creator presentation","return-route pattern"],
+        "open_frontiers":["owner contact","public crown"]
+    },
+    {
+        "id":"gripcube-rpa",
+        "name":"JM GripCube — Relational Projection Architecture v0.1.1",
+        "source":"current_project_registry",
+        "domain":"Interaction / architecture",
+        "capabilities":["relational projection","one body many projections","affordance integrity","projection legibility","responsive projection"],
+        "donor_roles":["projection grammar","affordance law","multi-view body pattern"],
+        "open_frontiers":["wider real-body pressure tests"]
+    },
+    {
+        "id":"llm-core-v1",
+        "name":"JM LLM Core v1.0 — First Complete Edition",
+        "source":"current_project_registry",
+        "domain":"AI / language model",
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response"],
+        "donor_roles":["language-model core","retrieval route","bounded generation"],
+        "open_frontiers":["broader free generation","broader reasoning"]
+    },
+    {
+        "id":"llm2-v2",
+        "name":"JM LLM #2 v2.0 — Unified Executable Program Edition",
+        "source":"current_project_registry",
+        "domain":"AI / executable program",
+        "capabilities":["program emission","action interpreter","task shaping","bounded program compilation","deterministic reacquisition","unified action program"],
+        "donor_roles":["program-head architecture","bounded action interpreter","task compiler"],
+        "open_frontiers":["broader program induction","non-fixed ISA expansion"]
+    },
+    {
+        "id":"agi-v144",
+        "name":"JM AGI Lab v1.4.4 — Durability Settle / Live Integration",
+        "source":"current_project_registry",
+        "domain":"AI / agent lab",
+        "capabilities":["agent persistence","process restart durability","consequence verification","integration harness","state restore","durability testing"],
+        "donor_roles":["durability harness","consequence verification","persistence test pattern"],
+        "open_frontiers":["OS reboot durability","real compatible model endpoint","cross-device persistence","broader capability tests"]
+    },
+    {
+        "id":"legal-v11",
+        "name":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1",
+        "source":"current_project_registry",
+        "domain":"Legal / workflow",
+        "capabilities":["matter routing","third-party-data gate","operating gate","workflow triage","external-pilot gating","privacy-aware routing"],
+        "donor_roles":["gate architecture","matter router","third-party data handling"],
+        "open_frontiers":["controlled external pilot","provider/privacy/commercial gates"]
+    },
+    {
+        "id":"secrets-v13",
+        "name":"Secrets of Silence — Flagship Master v1.3",
+        "source":"current_project_registry",
+        "domain":"Writing / publishing",
+        "capabilities":["publication mastering","reader interface","DOCX packaging","PDF packaging","EPUB packaging","artifact QA","reader-first presentation"],
+        "donor_roles":["publication pipeline","reader interface","multi-format mastering"],
+        "open_frontiers":["live reader contact","owner-device contact","market contact"]
+    },
+    {
+        "id":"rukquss-v1",
+        "name":"RUKQUSS REALITY — Business Formation Decision v1.0",
+        "source":"current_project_registry",
+        "domain":"Business / commercial",
+        "capabilities":["commercial topology","licence gate","creator-owned source model","limited-company formation architecture","customer sovereignty"],
+        "donor_roles":["commercial separation","licensing topology","sovereignty boundary"],
+        "open_frontiers":["registered-office privacy choice","Companies House incorporation"]
+    },
+    {
+        "id":"targetbridge",
+        "name":"JM Target Bridge — Cross-Build × Cross-Engine Stage",
+        "source":"current_project_registry",
+        "domain":"Games / portability",
+        "capabilities":["cross-engine portability","protocol bridge","recipient execution","engine adapter","source-body transport","cross-build transport"],
+        "donor_roles":["engine bridge","recipient adapter","portable specimen route"],
+        "open_frontiers":["additional engine faces","recipient-specific proof"]
+    },
+    {
+        "id":"kicshift-v11",
+        "name":"KICSHIFT v1.1 — Frame Authority / Contact Parity",
+        "source":"current_project_registry",
+        "domain":"Games / combat",
+        "capabilities":["dual-vector movement","combat input","camera frame authority","AI pressure","one-thumb combat","arena readability","articulated contact"],
+        "donor_roles":["combat controls","camera authority","mobile input pattern"],
+        "open_frontiers":["native release","commercial release"]
+    },
+    {
+        "id":"ecostate-v2",
+        "name":"JMISJUSTME — JM ECOSTATE Professional Convergence v2.0",
+        "source":"current_project_registry",
+        "domain":"Estate / public",
+        "capabilities":["professional convergence","public front door","multi-body routing","creator bridge","source-to-public routing","estate presentation"],
+        "donor_roles":["Estate front door","multi-body convergence","creator bridge"],
+        "open_frontiers":["independent deployment/contact gate"]
+    },
+    {
+        "id":"authuser-v11",
+        "name":"JM AUTHUSER — Hawk-Read Successor v1.1",
+        "source":"current_project_registry",
+        "domain":"Identity / provenance",
+        "capabilities":["creator-source attribution","participatory contact","formation loop","purpose reasoning","event-loop-practice distinction","authorial intent preservation"],
+        "donor_roles":["creator attribution","purpose reasoning","formation grammar"],
+        "open_frontiers":["broader applied contact"]
+    },
+    {
+        "id":"routecore-contact",
+        "name":"JM RouteCore — Execution Contact Checkpoint",
+        "source":"current_project_registry",
+        "domain":"OS / low-level runtime",
+        "capabilities":["x86 boot","protected-mode transition","paging initialization","interrupt handling","PIT IRQ contact","PS/2 IRQ contact","emulator execution proof"],
+        "donor_roles":["boot proof","IRQ observability","freestanding runtime"],
+        "open_frontiers":["physical-machine boot","physical IRQ contact","UEFI execution"]
+    },
+    {
+        "id":"coding-control-plane",
+        "name":"JM Coding / Cading / Runtime / OS Control Plane",
+        "source":"current_project_registry",
+        "domain":"Coding / runtime / OS",
+        "capabilities":["compiler-runtime orchestration","onebody workbench","coding estate routing","specialist organ integration","authority routing","build control plane"],
+        "donor_roles":["control-plane pattern","runtime orchestration","specialist-organ integration"],
+        "open_frontiers":["continued specialist integration","new executable descendants"]
+    },
+    {
+        "id":"theory-second-order",
+        "name":"JM Theory Estate — First + Second-Order Strengthening",
+        "source":"current_project_registry",
+        "domain":"Theory / methodology",
+        "capabilities":["theory pressure testing","bridge-to-bridge comparison","claim jurisdiction","non-merge strengthening","conceptual reconciliation","second-order testing"],
+        "donor_roles":["pressure-test grammar","claim jurisdiction","mesh-not-merge discipline"],
+        "open_frontiers":["external scientific validation where applicable"]
+    },
+    {
+        "id":"social-economy",
+        "name":"JM ECOSTATE Social Economy Study v1.0",
+        "source":"current_project_registry",
+        "domain":"Research / social",
+        "capabilities":["social analytics","metric qualification","cross-platform research","claim audit","retention analysis","economic-value separation"],
+        "donor_roles":["metric discipline","cross-platform comparison","claim audit"],
+        "open_frontiers":["controlled publishing experiments"]
+    },
+    {
+        "id":"music-release-run",
+        "name":"JM Release Run — Music Keeps the Mic",
+        "source":"current_project_registry",
+        "domain":"Music / release",
+        "capabilities":["lyric-source recovery","release sequencing","performance contact","music master index","written-live distinction","creative authority routing"],
+        "donor_roles":["release sequencing","source recovery","performance/written separation"],
+        "open_frontiers":["Wisdom's Loading runtime","public music release"]
+    },
+    {
+        "id":"teaching-v52",
+        "name":"JM Teaching / Learning Engine v5.2",
+        "source":"current_project_registry",
+        "domain":"Learning / human systems",
+        "capabilities":["adaptive learning","hints and recovery","co-op learning","contact modes","skill tracing","learner choice","parent choice","non-ranking cooperation"],
+        "donor_roles":["adaptive route","recovery pedagogy","co-op logic","skill trace"],
+        "open_frontiers":["continued family contact","wider learner pressure tests"]
+    },
+    {
+        "id":"living-estate-apk",
+        "name":"JM Living Estate v1.3.0 Universal APK",
+        "source":"current_overlay",
+        "domain":"Estate / Android",
+        "capabilities":["Android delivery","universal APK rail","Estate-on-device","mobile packaging"],
+        "donor_roles":["Android carrier","mobile Estate surface"],
+        "open_frontiers":["newer descendant contact if present"]
+    },
+    {
+        "id":"android-forge-v141",
+        "name":"Android Forge v1.4.1",
+        "source":"current_overlay",
+        "domain":"Coding / Android",
+        "capabilities":["dual-surface workshop","project shelf","onebody route","APK build route","Android project handling"],
+        "donor_roles":["Android workshop","project shelf","APK route"],
+        "open_frontiers":["continued project coverage"]
+    },
+    {
+        "id":"game-runtime-family",
+        "name":"PLAYFORM / JM GameCore / GameForge / GlyphPlay / GlyphForge / Kading Engine / JumpMotion",
+        "source":"current_overlay",
+        "domain":"Games / engines",
+        "capabilities":["game runtime","game creation","playable-system orchestration","input runtime","engine donor family","creator forge","movement runtime"],
+        "donor_roles":["game runtime donor","engine donor","creator forge","movement donor"],
+        "open_frontiers":["per-body current-head resolution before inheritance"]
+    },
+    {
+        "id":"western-sniper-house-siege",
+        "name":"Western Sniper × House Siege executable v0.2",
+        "source":"current_overlay",
+        "domain":"Games / executable",
+        "capabilities":["executable game descendant","sniper interaction","house-siege loop","release-descendant packaging"],
+        "donor_roles":["executable flagship","game-shell donor"],
+        "open_frontiers":["higher-polish runtime"]
+    },
+    {
+        "id":"fourfold-fightclash",
+        "name":"FOURFOLD / Fight Clash executable descendants",
+        "source":"current_overlay",
+        "domain":"Games / combat",
+        "capabilities":["touch physics","combat runtime","roster abilities","arena interaction","playable combat descendants"],
+        "donor_roles":["combat donor","touch-physics donor","roster/ability donor"],
+        "open_frontiers":["current-best descendant resolution"]
+    },
+    {
+        "id":"shiftfield",
+        "name":"SHIFT//FIELD",
+        "source":"current_overlay",
+        "domain":"Games / mutable interaction",
+        "capabilities":["mutable interaction grammar","dynamic controls","interaction-state mutation","game-first engine extraction","donor inheritance"],
+        "donor_roles":["active integration target","mutable-interaction test bed"],
+        "open_frontiers":["recover prior donors","stronger real game","mega-check only after inherited-baseline comparison"]
+    },
+    {
+        "id":"lyricstudio-v04",
+        "name":"LyricStudio v0.4 BT",
+        "source":"current_overlay",
+        "domain":"Music / tooling",
+        "capabilities":["lyric editing","lyric packaging","DOCX output","PDF output","read-write-studio workflow"],
+        "donor_roles":["lyric tool","document packaging"],
+        "open_frontiers":["newer live-language processing integration if desired"]
+    },
+    {
+        "id":"navigator-public",
+        "name":"JM3232 Navigator public-safe MCP donor",
+        "source":"current_overlay",
+        "domain":"Cloud / retrieval",
+        "capabilities":["public-safe search","public-safe fetch","rootword resolution","lineage return","bridge status","meaning-first retrieval"],
+        "donor_roles":["public retrieval donor","lineage donor"],
+        "open_frontiers":["private Estate is intentionally outside donor scope"]
+    },
+    {
+        "id":"cloud-contact-server",
+        "name":"JM CLOUD CONTACT SERVER",
+        "source":"current_overlay",
+        "domain":"Cloud / contact",
+        "capabilities":["public cloud contact","health route","ready route","metadata route","versioned public routes"],
+        "donor_roles":["cloud contact pattern","public server donor"],
+        "open_frontiers":["do not infer MCP route without direct proof"]
+    },
+    {
+        "id":"lietouch-p1b",
+        "name":"JM LIETOUCH P1B Separated-Device Semantic Ding v1.0",
+        "source":"current_overlay",
+        "domain":"Cross-device / contact",
+        "capabilities":["separated-device contact","semantic Ding receipt","release completion","cross-device proof"],
+        "donor_roles":["cross-device proof pattern","receipt pattern"],
+        "open_frontiers":["new recipient/device routes only with fresh contact"]
+    },
+    {
+        "id":"storage-census",
+        "name":"JM bounded anti-crash census",
+        "source":"current_overlay",
+        "domain":"Storage / recovery",
+        "capabilities":["bounded traversal","checkpointed pagination","anti-crash census","carrier accounting","terminal-cursor closure","recovery-safe scanning"],
+        "donor_roles":["bounded traversal donor","checkpoint pattern","storage audit pattern"],
+        "open_frontiers":["continued outside-Estate reconciliation where open"]
+    }
+]
+
+PROFILE_BY_ID = {p["id"]: p for p in CAPABILITY_PROFILES}

@@ -1,0 +1,92 @@
+name: JM Build Mesh v0.6 Static Capability Proof
+
+on:
+  push:
+    branches:
+      - build-mesh-v0-6-capability-mesh
+    paths:
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+      - ".github/workflows/jm-build-mesh-v0-6-static-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and exercise v0.6 reasoning
+        shell: bash
+        run: |
+          python3 -m py_compile             services/jm-ecostate-build-mesh-mcp-v0_5/server.py             services/jm-ecostate-build-mesh-mcp-v0_5/capabilities.py
+          python3 - <<'PY'
+          import sys, json
+          sys.path.insert(0, "services/jm-ecostate-build-mesh-mcp-v0_5")
+          import server
+          assert server.VERSION == "0.6.0", server.VERSION
+          names = [t["name"] for t in server.TOOLS]
+          assert len(names) == 13, names
+          expected = {
+            "batch_recover_builds","find_capability_donors","compare_builds",
+            "build_capability_mesh","detect_propagation_gaps","plan_capability_inheritance"
+          }
+          assert expected.issubset(set(names)), names
+          assert len(server.CAPABILITY_PROFILES) >= 29
+
+          batch = server.batch_recover_builds({"names":["JM LLM #2","JM AGI Lab v1.4.4","SHIFT//FIELD"]})
+          assert batch["count"] == 3
+          assert batch["results"][0]["state"] == "CURRENT_DECLARED"
+          assert batch["results"][1]["state"] == "CURRENT_DECLARED"
+
+          donors = server.find_capability_donors({
+            "target":"SHIFT//FIELD",
+            "objective":"mobile combat camera input and game runtime",
+            "limit":8
+          })
+          donor_names = [d["name"] for d in donors["donors"]]
+          assert any("KICSHIFT" in n or "GameCore" in n or "FOURFOLD" in n for n in donor_names), donor_names
+
+          gaps = server.detect_propagation_gaps({
+            "target":"SHIFT//FIELD",
+            "objective":"camera combat input",
+            "limit":8
+          })
+          assert gaps["target"]["id"] == "shiftfield", gaps
+          assert any(
+            any(c in ("camera frame authority","combat input","one-thumb combat") for c in g["candidate_capabilities"])
+            for g in gaps["gaps"]
+          ), gaps
+
+          plan = server.plan_capability_inheritance({
+            "target":"SHIFT//FIELD",
+            "objective":"inherit proven combat camera and input donors without rebuilding",
+            "max_donors":5
+          })
+          assert plan["mutation_performed"] is False
+          assert plan["route"][0] == "TARGET CURRENT HEAD"
+          assert len(plan["donor_plan"]) >= 1
+
+          mesh = server.build_capability_mesh({
+            "builds":["SHIFT//FIELD","KICSHIFT","JM Target Bridge","JM GripCube"],
+            "max_nodes":8
+          })
+          assert len(mesh["nodes"]) >= 4, mesh
+
+          comp = server.compare_builds({"builds":["JM LLM Core","JM LLM #2","JM AGI Lab"]})
+          assert len(comp["builds"]) == 3
+
+          print(json.dumps({
+            "version":server.VERSION,
+            "tool_count":len(names),
+            "capability_profiles":len(server.CAPABILITY_PROFILES),
+            "batch":"PASS",
+            "donors":"PASS",
+            "gaps":"PASS",
+            "inheritance_plan":"PASS",
+            "mesh":"PASS",
+            "compare":"PASS"
+          }, indent=2))
+          PY

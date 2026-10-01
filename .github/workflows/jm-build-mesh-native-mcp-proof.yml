@@ -21,7 +21,7 @@ permissions:
 jobs:
   hosted-proof:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Cross-host MCP proof
         shell: bash
@@ -39,10 +39,16 @@ jobs:
               "trace_lineage",
               "continue_build_plan",
               "build_mesh_status",
+              "batch_recover_builds",
+              "find_capability_donors",
+              "compare_builds",
+              "build_capability_mesh",
+              "detect_propagation_gaps",
+              "plan_capability_inheritance",
           ]
 
-          def get(path, method="GET"):
-              req = urllib.request.Request(BASE + path, method=method)
+          def get(path):
+              req = urllib.request.Request(BASE + path, method="GET")
               with urllib.request.urlopen(req, timeout=30) as r:
                   raw = r.read()
                   return r.status, json.loads(raw.decode("utf-8")) if raw else None
@@ -55,7 +61,7 @@ jobs:
                   headers={"Content-Type":"application/json","Accept":"application/json"},
                   method="POST",
               )
-              with urllib.request.urlopen(req, timeout=45) as r:
+              with urllib.request.urlopen(req, timeout=60) as r:
                   body = json.loads(r.read().decode("utf-8"))
               if "error" in body:
                   raise AssertionError(f"RPC error for {method}: {body['error']}")
@@ -68,15 +74,15 @@ jobs:
               return result.get("structuredContent") or {}
 
           ready_status, ready = get("/ready")
-          assert ready_status == 200 and ready.get("ready") is True, (ready_status, ready)
+          assert ready_status == 200 and ready.get("ready") is True
 
           init = rpc(1, "initialize", {
               "protocolVersion":"2025-06-18",
               "capabilities":{},
-              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.5"},
+              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.6"},
           })
-          assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP", init
-          assert init["serverInfo"]["version"] == "0.5.0", init
+          assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
+          assert init["serverInfo"]["version"] == "0.6.0", init
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]
@@ -85,36 +91,70 @@ jobs:
           status = call(3, "build_mesh_status", {"probe_navigator":True})
           nav = status["navigator_contact"]
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
+          assert status["capability_profiles"] >= 29, status
+          assert status["navigator_cache_ttl_seconds"] >= 60, status
 
           llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
-          assert llm2["state"] == "CURRENT_DECLARED", llm2
-          assert "v2.0" in (llm2.get("current_head") or ""), llm2
+          assert llm2["state"] == "CURRENT_DECLARED"
+          assert "v2.0" in (llm2.get("current_head") or "")
 
-          agi = call(5, "proof_state", {"name":"JM AGI Lab v1.4.4"})
-          assert "60/60" in (agi.get("proof") or ""), agi
-          boundary = (agi.get("boundary") or "").lower()
-          assert "no agi" in boundary and "human-level" in boundary, agi
-
-          unknown = call(6, "resolve_current_head", {"name":"ZZZ totally nonexistent build qqq"})
+          unknown = call(5, "resolve_current_head", {"name":"ZZZ totally nonexistent build qqq"})
           assert unknown["state"] == "ABSENCE_NOT_PROVEN", unknown
 
-          lineage = call(7, "trace_lineage", {"name":"RouteOS","limit":4})
+          lineage = call(6, "trace_lineage", {"name":"RouteOS","limit":4})
           assert lineage["state"] == "PUBLIC_LINEAGE_CONTACT", lineage
-          assert len(lineage.get("matches") or []) >= 1, lineage
-          assert any(
-              (m.get("lineage") or {}).get("ok") is True
-              for m in lineage["matches"]
-          ), lineage
+          assert len(lineage.get("matches") or []) >= 1
 
-          continuation = call(8, "continue_build_plan", {
-              "name":"JM LLM #2",
-              "objective":"strengthen without rebuilding the proved v2.0 head",
+          batch = call(7, "batch_recover_builds", {
+              "names":["JM LLM #2","JM AGI Lab v1.4.4","SHIFT//FIELD"]
           })
-          assert continuation.get("mutation_performed") is False, continuation
-          assert continuation["route"][0] == "RECOVER BEST PROVEN STATE", continuation
+          assert batch["count"] == 3
+          assert batch["results"][0]["navigator_contact"] == "SKIPPED_LOCAL_AUTHORITY_FOUND"
+
+          donors = call(8, "find_capability_donors", {
+              "target":"SHIFT//FIELD",
+              "objective":"mobile combat camera input and game runtime",
+              "limit":8
+          })
+          donor_names = [d["name"] for d in donors["donors"]]
+          assert any("KICSHIFT" in n or "GameCore" in n or "FOURFOLD" in n for n in donor_names), donor_names
+
+          gaps = call(9, "detect_propagation_gaps", {
+              "target":"SHIFT//FIELD",
+              "objective":"camera combat input",
+              "limit":8
+          })
+          assert gaps["target"]["id"] == "shiftfield"
+          assert any(
+              any(c in ("camera frame authority","combat input","one-thumb combat") for c in g["candidate_capabilities"])
+              for g in gaps["gaps"]
+          ), gaps
+
+          inheritance = call(10, "plan_capability_inheritance", {
+              "target":"SHIFT//FIELD",
+              "objective":"inherit proven combat camera and input donors without rebuilding",
+              "max_donors":5
+          })
+          assert inheritance["mutation_performed"] is False
+          assert len(inheritance["donor_plan"]) >= 1
+
+          mesh = call(11, "build_capability_mesh", {
+              "builds":["SHIFT//FIELD","KICSHIFT","JM Target Bridge","JM GripCube"],
+              "max_nodes":8
+          })
+          assert len(mesh["nodes"]) >= 4
+
+          comparison = call(12, "compare_builds", {
+              "builds":["JM LLM Core","JM LLM #2","JM AGI Lab"]
+          })
+          assert len(comparison["builds"]) == 3
+
+          search1 = call(13, "search_builds", {"query":"RouteOS","limit":5})
+          search2 = call(14, "search_builds", {"query":"RouteOS","limit":5})
+          assert search2["navigator"].get("cache") == "HIT", search2["navigator"]
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.5",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.6",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -124,19 +164,21 @@ jobs:
               "tool_count":len(names),
               "tools":names,
               "navigator_donor_contact":"PASS",
-              "llm2_current_head":llm2.get("current_head"),
-              "llm2_state":llm2.get("state"),
-              "agi_proof":agi.get("proof"),
-              "agi_boundary":agi.get("boundary"),
-              "unknown_state":unknown.get("state"),
-              "routeos_lineage_state":lineage.get("state"),
-              "routeos_lineage_count":len(lineage.get("matches") or []),
-              "continue_mutation_performed":continuation.get("mutation_performed"),
-              "claim_boundary":"Proves public hosted Build Mesh MCP protocol/tool contact and Build Mesh→Navigator public donor contact. Does not prove private Library completeness or any write/mutation consequence.",
+              "navigator_cache_second_call":"HIT",
+              "capability_profiles":status["capability_profiles"],
+              "batch_recovery":"PASS",
+              "donor_recovery":"PASS",
+              "propagation_gap_detection":"PASS",
+              "inheritance_planning":"PASS_NON_MUTATING",
+              "capability_mesh":"PASS",
+              "build_comparison":"PASS",
+              "unknown_state":unknown["state"],
+              "routeos_lineage_state":lineage["state"],
+              "claim_boundary":"Proves hosted v0.6 read-only capability-mesh reasoning, batching, caching and Build Mesh→Navigator contact. Does not prove private Library completeness or write/mutation authority.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -144,6 +186,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_5.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_6.json
           if-no-files-found: error

@@ -3,13 +3,15 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 import urllib.error
 from difflib import SequenceMatcher
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
+from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -17,6 +19,8 @@ NAVIGATOR_MCP = os.environ.get(
 )
 SUPPORTED_PROTOCOLS = {"2025-06-18", "2025-03-26"}
 DEFAULT_PROTOCOL = "2025-06-18"
+NAV_CACHE_TTL = int(os.environ.get("JM_NAV_CACHE_TTL", "300"))
+NAV_CACHE = {}
 
 CURRENT = [{"id":"career-v06","title":"JM Career Hire-Me Front Door v0.6","status":"CURRENT CANDIDATE · OWNER/PUBLIC CROWN OPEN","summary":"The UX branch remains the working front door while the JM-native coding-body route now owns interaction and a current-project registry is mounted into the same source body.","proof":"Built forward from v0.5.1 public/return-route lineage and v0.5.3 JM-runtime candidate.","boundary":"Candidate until owner contact; current public/owner-contacted head is not silently replaced."},{"id":"gripcube-rpa","title":"JM GripCube — Relational Projection Architecture v0.1.1","status":"LIVE REFERENCE RUNTIME · ASSISTANT QA PASS · OWNER CONTACT OPEN","summary":"GripCube was extracted from one website use into a broader one-body/many-projections architecture, then corrected by the no-dead-controls affordance law.","proof":"Current pointer names v0.1.1 as the reference runtime and preserves ONE BODY. MANY LEGIBLE PROJECTIONS.","boundary":"Universal/general architecture crown remains open pending wider real-body pressure tests."},{"id":"llm-core-v1","title":"JM LLM Core v1.0 — First Complete Edition","status":"FLAZ COMPLETE · FIRST COMPLETE EDITION","summary":"A real small causal language-model core with 4,096-token TokenBody, 256-token context and 7,875,147 learned parameters, advanced through bounded generation, retrieval and compositional routes.","proof":"Major first-edition lanes received direct contact; v0.15 retrieval exam 500/500 and v0.16 compositional/short-response exam 400/400 are preserved in the closure.","boundary":"Not claimed as frontier/general-assistant capability; free generation and broad reasoning remain advancement targets."},{"id":"llm2-v2","title":"JM LLM #2 v2.0 — Unified Executable Program Edition","status":"FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED","summary":"Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.","proof":"Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.","boundary":"Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction."},{"id":"agi-v144","title":"JM AGI Lab v1.4.4 — Durability Settle / Live Integration","status":"FLAZ COMPLETE AT OWNER WINDOWS EDGE PROCESS-RESTART SCOPE","summary":"A bounded general-agent laboratory with explicit consequence verification and persistence/process-contact harnesses.","proof":"Assistant clean-sandbox battery 60/60 PASS; owner Windows Edge exact-body process-restart Ding earned with read-back/restore/process-zero evidence.","boundary":"No AGI or human-level intelligence claim; OS reboot, broader model contact and cross-device persistence remain separate."},{"id":"legal-v11","title":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","status":"ROUTER CLOSED · PHASE A READY · EXTERNAL CONTACT OPEN","summary":"The matter-routing workbench reached corrected owner-device contact, then advanced to a bounded pre-external-pilot operating gate.","proof":"v0.8.2 deep QA 46/46 PASS and owner Test 001 auto-gate PASS; v1.1 operating gate regression 18/18 PASS.","boundary":"No live-client, regulated-activity, paid/public or incorporated-provider claim."},{"id":"secrets-v13","title":"Secrets of Silence — Flagship Master v1.3","status":"FLAGSHIP MASTERING COMPLETE AT ARTIFACT / ASSISTANT SCOPE","summary":"The flagship book was remastered around reader-first contact, agency/consequence precision and a restrained native reader interface.","proof":"69-page DOCX/interior, 71-page reader PDF, EPUB parse PASS and full visual QA are preserved in the closure.","boundary":"Live reader, owner-device and market contact remain separate."},{"id":"rukquss-v1","title":"RUKQUSS REALITY — Business Formation Decision v1.0","status":"FORMATION DECISION FLAZ COMPLETE · INCORPORATION OPEN","summary":"The commercial topology was settled as creator/source owner → licence gate → limited company → release/customer contact, with RUKQUSS REALITY LTD as the working legal name.","proof":"Decision/formation architecture frozen and re-entry ready.","boundary":"The company is not claimed incorporated or name-reserved until real Companies House evidence exists."},{"id":"targetbridge","title":"JM Target Bridge — Cross-Build × Cross-Engine Stage","status":"FLAZ COMPLETE AT DECLARED 4/4 PHYSICAL MATRIX","summary":"The bridge carries a bounded source body across host boundaries without manually reconstructing the test inside each host.","proof":"Original specimen and SPINBREAK slice each passed in GDevelop and Unity: 4/4 declared physical matrix.","boundary":"Unreal/other engines are forward expansion; recipient proof does not transfer automatically."},{"id":"kicshift-v11","title":"KICSHIFT v1.1 — Frame Authority / Contact Parity","status":"STANDARD-FLOOR FLAZ COMPLETE · HOLD / RETURN LATER","summary":"A three-way arena combat descendant preserving dual-vector movement, one-thumb combat flow, articulated contact, AI pressure and camera/frame authority.","proof":"Owner-phone contact confirmed all three fighters, full arena and primary controls visible/readable together.","boundary":"Browser/ECOSTATE standard floor, not a native/commercial release crown."},{"id":"ecostate-v2","title":"JMISJUSTME — JM ECOSTATE Professional Convergence v2.0","status":"BUILD COMPLETE · STATIC QA PASS · GITHUB SOURCE MERGED","summary":"One professional front door was built over many sovereign bodies, with Authuser as the creator-facing bridge into ECOSTATE.","proof":"Professional Convergence changes merged to main through the recorded GitHub source route.","boundary":"The retrieved v2.0 pointer keeps its independent deployment/contact gate distinct from source merge."},{"id":"authuser-v11","title":"JM AUTHUSER — Hawk-Read Successor v1.1","status":"CONCEPTUAL FLAZ COMPLETE · SUCCESSOR, NOT REWRITE","summary":"Authuser was reduced to a sharper creator→body→participatory-contact→creator-change relation while preserving stronger loop/practice/formation layers.","proof":"Five-gate hawk-read reduction and explicit event ≠ loop ≠ practice ≠ formation distinctions are frozen.","boundary":"Not an exhaustive historical-priority or universal originality claim."},{"id":"routecore-contact","title":"JM RouteCore — Execution Contact Checkpoint","status":"DING COMPLETE AT BIOS/QEMU EMULATOR SCOPE","summary":"The frozen BIOS disk was externally booted under QEMU/SeaBIOS and then pressure-tested with live PIT IRQ0 and PS/2 IRQ1 observability probes.","proof":"Kernel-ready boot markers returned; PIT IRQ0 and PS/2 IRQ1 contact receipts were observed.","boundary":"Physical-machine boot, physical IRQ/device contact and UEFI execution were not claimed by this checkpoint."},{"id":"coding-control-plane","title":"JM Coding / Cading / Runtime / OS Control Plane","status":"CURRENT CONTROL PLANE · 64 CODING IDENTITIES RECONCILED","summary":"The coding estate is routed through an integrated current head rather than a pile of rival front doors; OneBody Coding OS is the current integrated workbench, with specialist compiler/runtime/forge organs retained.","proof":"64 coding identities; 61/61 inherited maturation accounted; 3 post-census identities; 15/15 new-body executable proof; 10/10 root routes and 11/11 authority lanes connected in the control-plane closure.","boundary":"Current authority is typed by lane; specialist organs retain their own scope and owner/device gates."},{"id":"theory-second-order","title":"JM Theory Estate — First + Second-Order Strengthening","status":"51/51 STRICT BODIES · 7/7 FIRST-ORDER · 7/7 SECOND-ORDER","summary":"Completed theory bodies were pressure-tested against neighbours and then bridge-to-bridge without silently merging their offices.","proof":"51/51 strict-theory completion; 7/7 first strengthening runs; 7/7 second-order runs; strict count remained 51; silent merges 0.","boundary":"Internal conceptual completion and strengthening do not by themselves establish external scientific validation."},{"id":"social-economy","title":"JM ECOSTATE Social Economy Study v1.0","status":"RESEARCH 10/10 COMPLETE · CLAIM AUDIT 10/10 · FLAZ","summary":"A ten-run evidence-led study of public counters, active audience, retention, return, qualification and economic consequence across major social platforms.","proof":"10/10 research runs complete; 10/10 claim audit/reconstruction coverage; 0 open factual holds after reconciliation.","boundary":"Platform findings are evidence for publishing experiments, not a universal law of audience behaviour."},{"id":"music-release-run","title":"JM Release Run — Music Keeps the Mic","status":"FLAZ PARENT + LIVE RETURN CONTACT ADDENDUM","summary":"Exact lyric-source recovery shaped a release sequence, then later direct live freestyle contact produced a separate performance body without erasing the written route.","proof":"Music Master Index preserves 48 creative-work authorities; Release Run v1.0 is FLAZ; v1.1 records direct live vocal/freestyle contact.","boundary":"Wisdom’s Loading-specific mouth/body/beat runtime and public music release remain open."},{"id":"teaching-v52","title":"JM Teaching / Learning Engine v5.2","status":"ACTIVE LIVING DESCENDANT","summary":"A learner-centred engine with separate learner lanes, pressure, hints, recovery, trace, co-op, contact modes, adaptive skill traces and learner/parent choice over suggestions.","proof":"Current v5.2 carrier preserves the Engine/Pack split, Quick/Probe/Make/Read contact modes, living routes, Contact Compass and explicit non-ranking co-op logic.","boundary":"Family/learner contact remains human-governed; the person is never reduced to the route."}];
 
@@ -63,7 +67,15 @@ def authority_state(item):
         return "CURRENT_CANDIDATE"
     return "CURRENT_DECLARED"
 
-def navigator_rpc(tool_name, arguments=None, timeout=8):
+def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
+    arguments = arguments or {}
+    cache_key = json.dumps([tool_name, arguments], sort_keys=True, ensure_ascii=False)
+    if use_cache:
+        cached = NAV_CACHE.get(cache_key)
+        if cached and (time.time() - cached[0]) < NAV_CACHE_TTL:
+            out = dict(cached[1])
+            out["cache"] = "HIT"
+            return out
     payload = {
         "jsonrpc": "2.0",
         "id": 77,
@@ -77,32 +89,49 @@ def navigator_rpc(tool_name, arguments=None, timeout=8):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.5 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.6 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",
     )
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as response:
-            body = json.loads(response.read().decode("utf-8"))
-        if "error" in body:
-            return {"ok": False, "state": "HOLD", "error": body["error"]}
-        result = body.get("result") or {}
-        if result.get("isError"):
-            return {"ok": False, "state": "HOLD", "error": result}
-        data = result.get("structuredContent")
-        if data is None:
-            content = result.get("content") or []
-            for block in content:
-                if block.get("type") == "text":
-                    try:
-                        data = json.loads(block.get("text", ""))
-                    except Exception:
-                        data = {"text": block.get("text", "")}
-                    break
-        return {"ok": True, "state": "PASS", "data": data}
-    except Exception as exc:
-        return {"ok": False, "state": "HOLD", "error": f"{type(exc).__name__}: {exc}"}
+    last_error = None
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                body = json.loads(response.read().decode("utf-8"))
+            if "error" in body:
+                out = {"ok": False, "state": "HOLD", "error": body["error"]}
+                return out
+            result = body.get("result") or {}
+            if result.get("isError"):
+                return {"ok": False, "state": "HOLD", "error": result}
+            data = result.get("structuredContent")
+            if data is None:
+                content = result.get("content") or []
+                for block in content:
+                    if block.get("type") == "text":
+                        try:
+                            data = json.loads(block.get("text", ""))
+                        except Exception:
+                            data = {"text": block.get("text", "")}
+                        break
+            out = {"ok": True, "state": "PASS", "data": data, "cache": "MISS"}
+            if use_cache:
+                NAV_CACHE[cache_key] = (time.time(), out)
+            return out
+        except urllib.error.HTTPError as exc:
+            last_error = exc
+            if exc.code in (429, 500, 502, 503, 504) and attempt == 0:
+                time.sleep(0.25)
+                continue
+            break
+        except Exception as exc:
+            last_error = exc
+            if attempt == 0:
+                time.sleep(0.15)
+                continue
+            break
+    return {"ok": False, "state": "HOLD", "error": f"{type(last_error).__name__}: {last_error}"}
 
 def navigator_search(query, limit=8):
     return navigator_rpc("search", {"query": query, "limit": max(1, min(int(limit), 25))})
@@ -261,15 +290,272 @@ def continue_build_plan(args):
         "mutation_performed": False,
     }
 
+
+def profile_score(query, profile):
+    parts = [profile.get("name",""), profile.get("domain","")]
+    parts += profile.get("capabilities") or []
+    parts += profile.get("donor_roles") or []
+    scores = [similarity(query, part) for part in parts if part]
+    return max(scores or [0.0])
+
+def resolve_profile(name):
+    q = (name or "").strip()
+    if not q:
+        return None
+    ranked = sorted(
+        ((profile_score(q, p), p) for p in CAPABILITY_PROFILES),
+        key=lambda x: x[0],
+        reverse=True,
+    )
+    if not ranked or ranked[0][0] < 0.34:
+        return None
+    return {"score": round(ranked[0][0], 6), **ranked[0][1]}
+
+def current_record_for_profile(profile):
+    pid = (profile or {}).get("id")
+    for item in CURRENT:
+        if item.get("id") == pid:
+            return item
+    return None
+
+def donor_view(profile, score=None):
+    record = current_record_for_profile(profile)
+    return {
+        "id": profile.get("id"),
+        "name": profile.get("name"),
+        "domain": profile.get("domain"),
+        "capabilities": profile.get("capabilities") or [],
+        "donor_roles": profile.get("donor_roles") or [],
+        "open_frontiers": profile.get("open_frontiers") or [],
+        "profile_source": profile.get("source"),
+        "score": round(score, 6) if score is not None else None,
+        "authority": authority_state(record) if record else "DECLARED_CAPABILITY_CUE",
+        "proof": record.get("proof") if record else None,
+        "boundary": record.get("boundary") if record else "Capability cue from current overlay; direct donor contact is required before capability inheritance is crowned.",
+    }
+
+def batch_recover_builds(args):
+    names = args.get("names") or []
+    if not isinstance(names, list) or not names or len(names) > 20:
+        raise ValueError("names must be an array of 1..20 build names")
+    results = []
+    for raw in names:
+        name = str(raw).strip()
+        if not name:
+            continue
+        local = current_matches(name, 5)
+        if local:
+            best = local[0]
+            results.append({
+                "query": name,
+                "state": authority_state(best),
+                "current_head": best.get("title") or best.get("name"),
+                "proof": best.get("proof"),
+                "boundary": best.get("boundary") or best.get("summary"),
+                "source": best.get("source"),
+                "navigator_contact": "SKIPPED_LOCAL_AUTHORITY_FOUND",
+            })
+        else:
+            results.append(recover_build({"name": name, "limit": 5}))
+    return {
+        "count": len(results),
+        "results": results,
+        "optimization": "Local current authority is resolved before public donor contact; Navigator is only called for unresolved names.",
+    }
+
+def find_capability_donors(args):
+    objective = (args.get("objective") or "").strip()
+    target_name = (args.get("target") or "").strip()
+    limit = max(1, min(int(args.get("limit") or 8), 15))
+    if not objective:
+        raise ValueError("objective is required")
+    target = resolve_profile(target_name) if target_name else None
+    ranked = []
+    for profile in CAPABILITY_PROFILES:
+        if target and profile.get("id") == target.get("id"):
+            continue
+        score = profile_score(objective, profile)
+        if score >= 0.28:
+            ranked.append((score, profile))
+    ranked.sort(key=lambda x: x[0], reverse=True)
+    donors = [donor_view(p, score) for score, p in ranked[:limit]]
+    return {
+        "objective": objective,
+        "target": target,
+        "donors": donors,
+        "boundary": "Donor ranking is capability relevance, not proof transfer. Contact the donor body/receipt before inheriting a capability claim.",
+    }
+
+def compare_builds(args):
+    names = args.get("builds") or []
+    if not isinstance(names, list) or len(names) < 2 or len(names) > 8:
+        raise ValueError("builds must contain 2..8 names")
+    resolved = []
+    for raw in names:
+        p = resolve_profile(str(raw))
+        if not p:
+            resolved.append({"query": str(raw), "state": "ABSENCE_NOT_PROVEN"})
+            continue
+        record = current_record_for_profile(p)
+        resolved.append({
+            "query": str(raw),
+            "state": authority_state(record) if record else "DECLARED_CAPABILITY_CUE",
+            "profile": donor_view(p),
+        })
+    cap_sets = [
+        set(x["profile"]["capabilities"])
+        for x in resolved if x.get("profile")
+    ]
+    shared = sorted(set.intersection(*cap_sets)) if len(cap_sets) >= 2 else []
+    unique = {}
+    for x in resolved:
+        if not x.get("profile"):
+            continue
+        mine = set(x["profile"]["capabilities"])
+        others = set().union(*[
+            set(y["profile"]["capabilities"])
+            for y in resolved if y is not x and y.get("profile")
+        ])
+        unique[x["profile"]["name"]] = sorted(mine - others)
+    return {
+        "builds": resolved,
+        "shared_capabilities": shared,
+        "unique_capabilities": unique,
+        "boundary": "Capability comparison does not merge bodies or transfer proof jurisdiction.",
+    }
+
+def build_capability_mesh(args):
+    names = args.get("builds") or []
+    objective = (args.get("objective") or "").strip()
+    max_nodes = max(2, min(int(args.get("max_nodes") or 10), 20))
+    nodes = []
+    if names:
+        if not isinstance(names, list) or len(names) > 12:
+            raise ValueError("builds must contain at most 12 names")
+        for raw in names:
+            p = resolve_profile(str(raw))
+            if p and all(n.get("id") != p.get("id") for n in nodes):
+                nodes.append(p)
+    elif objective:
+        ranked = sorted(
+            ((profile_score(objective, p), p) for p in CAPABILITY_PROFILES),
+            key=lambda x: x[0],
+            reverse=True,
+        )
+        nodes = [{**p, "objective_score": round(score,6)} for score,p in ranked if score >= 0.25][:max_nodes]
+    else:
+        raise ValueError("provide builds or objective")
+    nodes = nodes[:max_nodes]
+    edges = []
+    for i, a in enumerate(nodes):
+        ac = set(a.get("capabilities") or [])
+        for b in nodes[i+1:]:
+            shared = sorted(ac & set(b.get("capabilities") or []))
+            if shared:
+                edges.append({
+                    "from": a.get("id"),
+                    "to": b.get("id"),
+                    "relation": "SHARED_CAPABILITY",
+                    "shared_capabilities": shared,
+                })
+            else:
+                role_overlap = sorted(set(a.get("donor_roles") or []) & set(b.get("donor_roles") or []))
+                if role_overlap:
+                    edges.append({
+                        "from": a.get("id"),
+                        "to": b.get("id"),
+                        "relation": "SHARED_DONOR_ROLE",
+                        "shared_roles": role_overlap,
+                    })
+    return {
+        "objective": objective or None,
+        "nodes": [donor_view(n, n.get("objective_score")) for n in nodes],
+        "edges": edges,
+        "mesh_law": "EDGE ≠ MERGE. Shared capability is a contact reason, not identity collapse.",
+    }
+
+def detect_propagation_gaps(args):
+    target_name = (args.get("target") or "").strip()
+    objective = (args.get("objective") or "").strip()
+    limit = max(1, min(int(args.get("limit") or 6), 12))
+    if not target_name:
+        raise ValueError("target is required")
+    target = resolve_profile(target_name)
+    if not target:
+        return {"target": target_name, "state": "ABSENCE_NOT_PROVEN", "gaps": []}
+    target_caps = set(target.get("capabilities") or [])
+    query = objective or " ".join(target.get("donor_roles") or target.get("capabilities") or [])
+    ranked = []
+    for donor in CAPABILITY_PROFILES:
+        if donor.get("id") == target.get("id"):
+            continue
+        score = profile_score(query, donor)
+        missing = [c for c in donor.get("capabilities") or [] if c not in target_caps]
+        if score >= 0.25 and missing:
+            ranked.append((score, donor, missing))
+    ranked.sort(key=lambda x: x[0], reverse=True)
+    gaps = []
+    for score, donor, missing in ranked[:limit]:
+        gaps.append({
+            "donor": donor_view(donor, score),
+            "candidate_capabilities": missing,
+            "classification": "PROPAGATION_CANDIDATE_NOT_REQUIREMENT",
+        })
+    return {
+        "target": donor_view(target),
+        "objective": objective or None,
+        "gaps": gaps,
+        "boundary": "A propagation gap means a relevant capability exists elsewhere and is not declared on the target profile. It does not mean the target must inherit it.",
+    }
+
+def plan_capability_inheritance(args):
+    target_name = (args.get("target") or "").strip()
+    objective = (args.get("objective") or "").strip()
+    max_donors = max(1, min(int(args.get("max_donors") or 4), 8))
+    if not target_name or not objective:
+        raise ValueError("target and objective are required")
+    gaps = detect_propagation_gaps({"target": target_name, "objective": objective, "limit": max_donors})
+    if gaps.get("state") == "ABSENCE_NOT_PROVEN":
+        return {**gaps, "mutation_performed": False}
+    steps = []
+    for gap in gaps.get("gaps") or []:
+        donor = gap["donor"]
+        steps.append({
+            "donor": donor["name"],
+            "candidate_capabilities": gap["candidate_capabilities"],
+            "contact_gate": "Recover donor current head + proof boundary before inheritance.",
+            "inheritance_gate": "Implement the smallest capability slice without replacing target identity.",
+            "proof_gate": "Test inherited behavior at the same level as the claim before crown.",
+        })
+    return {
+        "target": gaps["target"],
+        "objective": objective,
+        "donor_plan": steps,
+        "route": [
+            "TARGET CURRENT HEAD",
+            "DONOR CURRENT HEAD",
+            "CAPABILITY CONTACT",
+            "MINIMAL INHERITANCE SLICE",
+            "TARGET-SIDE CONTACT",
+            "COMPARE AGAINST PRE-INHERITANCE BASELINE",
+            "CROWN OR REJECT",
+            "TRACE DONOR + DELTA",
+        ],
+        "mutation_performed": False,
+        "boundary": "This is a governed inheritance plan. It does not modify either donor or target.",
+    }
+
 def build_mesh_status(args):
     probe = bool(args.get("probe_navigator", True))
-    nav = navigator_rpc("navigator_bridge_status", {}) if probe else {"state": "NOT_PROBED"}
+    nav = navigator_rpc("navigator_bridge_status", {}, use_cache=False) if probe else {"state": "NOT_PROBED"}
     return {
         "server": SERVER_NAME,
         "version": VERSION,
-        "mode": "read-only authority / recovery / continuation-planning service",
+        "mode": "read-only authority / capability-mesh / recovery / continuation-planning service",
         "current_project_records": len(CURRENT),
         "overlay_entries": len(OVERLAY),
+        "capability_profiles": len(CAPABILITY_PROFILES),
+        "navigator_cache_ttl_seconds": NAV_CACHE_TTL,
         "navigator_endpoint": NAVIGATOR_MCP,
         "navigator_contact": nav,
         "plugin_historical_register": "1,074 lineages retained in JM ECOSTATE Build Mesh package",
@@ -292,6 +578,12 @@ TOOLS = [
     {"name":"trace_lineage","description":"Use the public-safe Navigator donor to return preserved lineage for matching Estate bodies.","inputSchema":{"type":"object","properties":{"name":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":25}},"required":["name"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"continue_build_plan","description":"Produce a non-mutating continuation route from the strongest hosted authority/proof state.","inputSchema":{"type":"object","properties":{"name":{"type":"string"},"objective":{"type":"string"}},"required":["name"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"build_mesh_status","description":"Return native Build Mesh MCP status and optionally probe the Navigator donor.","inputSchema":{"type":"object","properties":{"probe_navigator":{"type":"boolean","default":True}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"batch_recover_builds","description":"Recover up to 20 JM builds in one call, resolving local current authority before using the public donor.","inputSchema":{"type":"object","properties":{"names":{"type":"array","minItems":1,"maxItems":20,"items":{"type":"string"}}},"required":["names"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"find_capability_donors","description":"Find existing JM bodies whose declared capabilities are relevant to a target objective, without transferring proof.","inputSchema":{"type":"object","properties":{"objective":{"type":"string"},"target":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":15}},"required":["objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"compare_builds","description":"Compare 2 to 8 JM build capability profiles while preserving separate identities and proof jurisdictions.","inputSchema":{"type":"object","properties":{"builds":{"type":"array","minItems":2,"maxItems":8,"items":{"type":"string"}}},"required":["builds"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"build_capability_mesh","description":"Construct a bounded cross-build capability mesh from named builds or an objective; edges indicate contact reasons, not merges.","inputSchema":{"type":"object","properties":{"builds":{"type":"array","maxItems":12,"items":{"type":"string"}},"objective":{"type":"string"},"max_nodes":{"type":"integer","minimum":2,"maximum":20}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
 HANDLERS = {
     "search_builds": search_builds,
@@ -301,6 +593,12 @@ HANDLERS = {
     "trace_lineage": trace_lineage,
     "continue_build_plan": continue_build_plan,
     "build_mesh_status": build_mesh_status,
+    "batch_recover_builds": batch_recover_builds,
+    "find_capability_donors": find_capability_donors,
+    "compare_builds": compare_builds,
+    "build_capability_mesh": build_capability_mesh,
+    "detect_propagation_gaps": detect_propagation_gaps,
+    "plan_capability_inheritance": plan_capability_inheritance,
 }
 
 def tool_result(data):
@@ -317,7 +615,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.5"
+    server_version = "JMBuildMeshNativeMCP/0.6"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")
@@ -393,7 +691,7 @@ class Handler(BaseHTTPRequestHandler):
                 "protocolVersion": protocol,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": SERVER_NAME, "version": VERSION},
-                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. continue_build_plan is non-mutating.",
+                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Continuation and inheritance planning are non-mutating.",
             }))
         if method == "ping":
             return self.send_json(200, rpc_result(request_id, {}))

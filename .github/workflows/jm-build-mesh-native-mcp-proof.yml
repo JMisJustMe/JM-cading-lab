@@ -6,6 +6,7 @@ on:
       - build-mesh-native-mcp-v0-5
     paths:
       - ".github/workflows/jm-build-mesh-native-mcp-proof.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
   pull_request:
     branches:
       - main

@@ -51,6 +51,10 @@ jobs:
           boundary = opportunity["primary_evidence"]["boundary"]
           assert "v0.5.1" in boundary and "public/owner-contacted" in boundary, opportunity
 
+          status = server.build_mesh_status({"probe_navigator":False})
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3", status
+          assert status["current_registry_sha256"] == "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da", status
+
           sync = server.build_sync_contract({"name":"JM Opportunity Front Door"})
           hosted = sync["hosted_snapshot"]
           assert hosted["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.3"

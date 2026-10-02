@@ -34,5 +34,9 @@ console.log(JSON.stringify({
   sourceMirrorsShape:true,
   structuralUndo:true,
   bodyShelf:true,
-  advancedControlsProgressivelyDisclosed:true,\n  visibleRelationships:true,\n  directResizeRotate:true,\n  removableRelationships:true,\n  richerConsequences:8
+  advancedControlsProgressivelyDisclosed:true,
+  visibleRelationships:true,
+  directResizeRotate:true,
+  removableRelationships:true,
+  richerConsequences:8
 },null,2));

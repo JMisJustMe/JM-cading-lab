@@ -204,6 +204,13 @@
 .creatorTier strong{display:block;margin-bottom:6px}.creatorTier small{color:var(--mut);line-height:1.45}
 .creatorTier .price{font-size:1.35rem;font-weight:950;color:var(--gold);margin:7px 0}
 .creatorPreviewHint{position:absolute;left:50%;bottom:12px;translate:-50% 0;z-index:8;max-width:min(90%,520px);padding:8px 11px;border:1px solid #35506c;border-radius:999px;background:#07111de8;color:#c9d9ea;font-size:.67rem;font-weight:800;text-align:center;pointer-events:none}
+.creatorBillingStatus{margin:12px 0;padding:10px 12px;border:1px solid #263650;border-radius:14px;background:#09131f;color:#c9d9ea;font-size:.75rem;line-height:1.45}
+.creatorBillingStatus[data-state="active"]{border-color:#2f7b55;color:#9ff0bd}
+.creatorBillingStatus[data-state="hold"]{border-color:#735e2f;color:#f3d98d}
+.creatorBillingActions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.creatorBillingActions button{padding:9px 11px;font-size:.72rem}
+.creatorRecovery{margin-top:10px;padding:10px;border:1px dashed #4a6689;border-radius:12px;background:#07111c;font-size:.68rem;line-height:1.45}
+.creatorRecovery[hidden]{display:none}.creatorRecovery code{display:block;overflow-wrap:anywhere;color:var(--cyan);margin:6px 0}
 .creatorPreviewHint[hidden]{display:none}
 @media(max-width:760px){
  .creatorPreviewCard{padding:20px}.creatorPreviewChoices,.creatorTierGrid{grid-template-columns:1fr}
@@ -229,7 +236,21 @@
     <p>Free keeps BODY → ACT → LINK → TEST → UNDO → SAVE intact. Creator is planned to expand capacity, deeper behaviours, reusable components and production/export routes.</p>
     <div class="creatorTierGrid">
       <div class="creatorTier"><strong>Free Preview</strong><div class="price">£0</div><small>Core creation loop, Signal Garden, local save/recovery and portable project export.</small></div>
-      <div class="creatorTier"><strong>Creator</strong><div class="price">£15/mo</div><small>£150/year test price. Checkout stays disabled until real account + entitlement recovery is wired; this build will not fake paid access.</small></div>
+      <div class="creatorTier"><strong>Creator</strong><div class="price">£15/mo</div><small>£150/year. Checkout is server-created and Creator only activates after Stripe state is verified by the entitlement service.</small></div>
+    </div>
+    <div class="creatorBillingStatus" id="creatorBillingStatus" data-state="hold">Checking Creator billing availability…</div>
+    <div class="creatorBillingActions">
+      <button id="creatorCreateAccount">CREATE CREATOR ACCOUNT KEY</button>
+      <button id="creatorRecoverAccount">RECOVER ACCOUNT</button>
+      <button id="creatorCheckoutMonthly" disabled>£15 / MONTH</button>
+      <button id="creatorCheckoutAnnual" disabled>£150 / YEAR</button>
+      <button id="creatorManageBilling" hidden>MANAGE BILLING</button>
+    </div>
+    <div class="creatorRecovery" id="creatorRecovery" hidden>
+      <strong>Creator Account Key</strong>
+      <code id="creatorRecoveryKey"></code>
+      <small>Keep this somewhere you control. It can recover your Creator entitlement on another device. AILatheo stores only the server-side lookup hash.</small>
+      <div class="creatorBillingActions"><button id="creatorCopyRecovery">COPY KEY</button></div>
     </div>
     <button id="creatorPlanClose">CLOSE</button>
   </div>
@@ -988,6 +1009,103 @@ function startCreatorBlank(){
   window.JMAILatheoGripUI?.setFace?.('form');
 }
 function resetSignalGarden(){loadSignalGarden({record:true})}
+const AILATHEO_CUSTOMER=Object.freeze({
+  schema:'JM.AILatheoCustomer/0.1',
+  api:'/api/ailatheo',
+  localKey:'jm.ailatheo.creator.account-key'
+});
+let creatorEntitlement=null,creatorService=null;
+function creatorAccountKey(){return localStorage.getItem(AILATHEO_CUSTOMER.localKey)||''}
+function setCreatorAccountKey(value){value?localStorage.setItem(AILATHEO_CUSTOMER.localKey,value):localStorage.removeItem(AILATHEO_CUSTOMER.localKey)}
+async function creatorApi(path='',options={},auth=true){
+  const headers=new Headers(options.headers||{});
+  if(auth){const key=creatorAccountKey();if(!key)throw Object.assign(new Error('CREATOR_ACCOUNT_KEY_REQUIRED'),{code:'CREATOR_ACCOUNT_KEY_REQUIRED'});headers.set('authorization','Bearer '+key)}
+  if(options.body&&!headers.has('content-type'))headers.set('content-type','application/json');
+  const response=await fetch(AILATHEO_CUSTOMER.api+path,{...options,headers,cache:'no-store'});
+  const type=response.headers.get('content-type')||'';
+  const payload=type.includes('application/json')?await response.json().catch(()=>null):null;
+  if(!response.ok){const error=new Error(payload?.error||('HTTP_'+response.status));error.status=response.status;error.payload=payload;throw error}
+  return payload;
+}
+function creatorBillingPaint(message,state='hold'){
+  const node=document.querySelector('#creatorBillingStatus');if(node){node.textContent=message;node.dataset.state=state}
+  const badge=document.querySelector('.creatorPlanBadge');
+  if(badge&&creatorEntitlement?.creator_active){badge.textContent='CREATOR ACTIVE';badge.style.color='var(--gold)'}
+  else if(badge){badge.textContent='FREE PREVIEW';badge.style.color='var(--green)'}
+  const canCheckout=Boolean(creatorService?.ready&&creatorAccountKey()&&!creatorEntitlement?.creator_active);
+  const monthly=document.querySelector('#creatorCheckoutMonthly'),annual=document.querySelector('#creatorCheckoutAnnual'),manage=document.querySelector('#creatorManageBilling');
+  if(monthly)monthly.disabled=!canCheckout;if(annual)annual.disabled=!canCheckout;if(manage)manage.hidden=!creatorEntitlement?.creator_active;
+}
+async function refreshCreatorEntitlement(){
+  try{creatorService=await creatorApi('?action=status',{},false)}
+  catch{creatorService={ready:false};creatorBillingPaint('Creator billing is not mounted on this host yet. Free creation remains fully available.','hold');return null}
+  if(!creatorAccountKey()){
+    creatorEntitlement=null;
+    creatorBillingPaint(creatorService.ready?'Creator billing sandbox is ready. Create an account key only when you want to upgrade.':'Creator billing rail is coded but its server storage/Stripe secrets are not mounted yet.','hold');
+    return null;
+  }
+  try{
+    const data=await creatorApi('');
+    creatorEntitlement=data?.account||null;
+    creatorBillingPaint(creatorEntitlement?.creator_active?('Creator active'+(creatorEntitlement.current_period_end?' · through '+new Date(creatorEntitlement.current_period_end).toLocaleDateString():'') ):(creatorService.ready?'Creator account recovered · Free entitlement':'Creator account recovered · billing service HOLD'),creatorEntitlement?.creator_active?'active':'hold');
+    return creatorEntitlement;
+  }catch(error){
+    if(error.status===401){setCreatorAccountKey('');creatorEntitlement=null;creatorBillingPaint('Stored Creator account key was not accepted. Recover with a valid key or create a new Free account key.','hold')}
+    else creatorBillingPaint('Creator entitlement is temporarily unavailable. Your local projects remain usable.','hold');
+    return null;
+  }
+}
+async function createCreatorAccount(){
+  try{
+    const data=await creatorApi('',{method:'POST',body:JSON.stringify({action:'account.create'})},false);
+    setCreatorAccountKey(data.recovery_key);
+    const box=document.querySelector('#creatorRecovery'),code=document.querySelector('#creatorRecoveryKey');
+    if(box)box.hidden=false;if(code)code.textContent=data.recovery_key;
+    creatorEntitlement=data.account;
+    await refreshCreatorEntitlement();
+  }catch{creatorBillingPaint('Creator account service is not mounted on this host. Free creation is unchanged.','hold')}
+}
+async function recoverCreatorAccount(){
+  const supplied=window.prompt('Paste your AILatheo Creator Account Key.');
+  if(!supplied)return;
+  const prior=creatorAccountKey();setCreatorAccountKey(supplied.trim());
+  const account=await refreshCreatorEntitlement();
+  if(!account){setCreatorAccountKey(prior);await refreshCreatorEntitlement();return}
+  creatorBillingPaint(account.creator_active?'Creator entitlement recovered.':'Creator account recovered on this device.',account.creator_active?'active':'hold');
+}
+async function startCreatorCheckout(cadence){
+  try{
+    creatorBillingPaint('Opening Stripe test checkout…','hold');
+    const data=await creatorApi('',{method:'POST',body:JSON.stringify({action:'checkout.create',cadence})});
+    if(!data?.url)throw new Error('CHECKOUT_URL_MISSING');
+    location.assign(data.url);
+  }catch(error){creatorBillingPaint(error.status===503?'Creator checkout is not mounted yet. Free creation remains available.':('Checkout could not start: '+error.message),'hold')}
+}
+async function manageCreatorBilling(){
+  try{const data=await creatorApi('',{method:'POST',body:JSON.stringify({action:'portal.create'})});if(data?.url)location.assign(data.url)}
+  catch(error){creatorBillingPaint('Billing portal unavailable: '+error.message,'hold')}
+}
+async function reconcileCreatorReturn(){
+  const q=new URLSearchParams(location.search),state=q.get('checkout'),sessionId=q.get('session_id');
+  if(state==='cancelled'){creatorBillingPaint('Checkout cancelled. Your project and Free access were unchanged.','hold');history.replaceState({},'',location.pathname+location.hash);return}
+  if(state!=='success'||!sessionId||!creatorAccountKey())return;
+  try{
+    creatorBillingPaint('Payment returned. Confirming Creator entitlement with Stripe…','hold');
+    const data=await creatorApi('',{method:'POST',body:JSON.stringify({action:'checkout.reconcile',session_id:sessionId})});
+    creatorEntitlement=data.account||null;
+    creatorBillingPaint(creatorEntitlement?.creator_active?'Creator is active ✓':'Payment is confirmed; entitlement is still reconciling.',creatorEntitlement?.creator_active?'active':'hold');
+  }catch{creatorBillingPaint('Checkout returned, but entitlement confirmation is still pending. Your Free project remains safe.','hold')}
+  finally{history.replaceState({},'',location.pathname+location.hash)}
+}
+function bindCreatorBilling(){
+  document.querySelector('#creatorCreateAccount')?.addEventListener('click',createCreatorAccount);
+  document.querySelector('#creatorRecoverAccount')?.addEventListener('click',recoverCreatorAccount);
+  document.querySelector('#creatorCheckoutMonthly')?.addEventListener('click',()=>startCreatorCheckout('monthly'));
+  document.querySelector('#creatorCheckoutAnnual')?.addEventListener('click',()=>startCreatorCheckout('annual'));
+  document.querySelector('#creatorManageBilling')?.addEventListener('click',manageCreatorBilling);
+  document.querySelector('#creatorCopyRecovery')?.addEventListener('click',async()=>{const key=creatorAccountKey();if(key){await navigator.clipboard?.writeText(key);creatorBillingPaint('Creator Account Key copied. Keep it somewhere you control.','hold')}});
+  refreshCreatorEntitlement().then(reconcileCreatorReturn);
+}
 function mountCreatorPreview(){
   const gate=document.querySelector('#creatorPreviewGate'),start=document.querySelector('#creatorStartBlank'),sample=document.querySelector('#creatorExploreSignal'),
         plan=document.querySelector('#creatorPlanButton'),dialog=document.querySelector('#creatorPlanDialog'),close=document.querySelector('#creatorPlanClose'),
@@ -1011,10 +1129,11 @@ function mountCreatorPreview(){
     startBlank:startCreatorBlank,
     loadSignalGarden,
     resetSignalGarden,
-    state:()=>({plan:'free-preview',sample:localStorage.getItem('jm.ailatheo.creatorPreview.sample')||null,bodies:bodies.length,links:links.length,checkout:'disabled-until-entitlement'})
+    state:()=>({plan:creatorEntitlement?.creator_active?'creator':'free-preview',entitlement:creatorEntitlement?.status||'free',sample:localStorage.getItem('jm.ailatheo.creatorPreview.sample')||null,bodies:bodies.length,links:links.length,checkout:creatorService?.ready?'server-verified':'server-hold'})
   });
 }
 mountGripWorkbench();
 mountCreatorPreview();
+bindCreatorBilling();
 
 </script></body></html>

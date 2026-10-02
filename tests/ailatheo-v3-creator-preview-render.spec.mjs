@@ -23,7 +23,7 @@ async function freshPage(viewport={width:390,height:844}){
   if(!await gate.isVisible()) throw new Error('FIRST_RUN_GATE_NOT_VISIBLE');
   await page.locator('#creatorStartBlank').click();
   const state=await page.evaluate(()=>window.JMAILatheoCreatorPreview?.state?.());
-  if(!state||state.bodies!==0||state.links!==0||state.checkout!=='disabled-until-entitlement') throw new Error('START_BLANK_STATE_INVALID '+JSON.stringify(state));
+  if(!state||state.bodies!==0||state.links!==0||state.checkout!=='server-hold'||state.entitlement!=='free') throw new Error('START_BLANK_STATE_INVALID '+JSON.stringify(state));
   if(await gate.isVisible()) throw new Error('START_BLANK_GATE_NOT_DISMISSED');
   await page.screenshot({path:'qa/ailatheo-v3-creator-preview/start-blank-phone.png',fullPage:true});
   if(errors.length) throw new Error('START_BLANK_BROWSER_ERRORS '+errors.join(' | '));
@@ -87,5 +87,5 @@ console.log(JSON.stringify({
   signalGardenRuntime:true,
   nativeCauseChain:true,
   resetSample:true,
-  checkoutBoundary:'disabled-until-entitlement'
+  checkoutBoundary:'server-hold'
 },null,2));

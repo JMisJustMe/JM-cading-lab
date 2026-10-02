@@ -22,7 +22,8 @@ const required=[
   "creatorPreviewHasProject",
   "sampleId:",
   "planContext:'free-preview'",
-  "checkout:'disabled-until-entitlement'",
+  "JM.AILatheoCustomer/0.1",
+  "checkout:creatorService?.ready?'server-verified':'server-hold'",
   "FREE PROVES THE CORE LOOP; PAID MUST EXPAND CAPABILITY WITHOUT CAPTURING THE CREATION."
 ];
 for(const token of required) if(!html.includes(token)) throw new Error("CREATOR_PREVIEW_MISSING_"+token);
@@ -32,11 +33,11 @@ for(const id of ["creatorPreviewGate","creatorStartBlank","creatorExploreSignal"
   if(n!==1) throw new Error("CREATOR_PREVIEW_IDENTITY_"+id+"_"+n);
 }
 
-if(html.includes("checkout_completed")||html.includes("payment_intent")||html.includes("stripe.redirectToCheckout")){
-  throw new Error("FAKE_CHECKOUT_ROUTE_PRESENT");
+if(html.includes("sk_test_")||html.includes("sk_live_")||html.includes("whsec_")||html.includes("stripe.redirectToCheckout")){
+  throw new Error("CLIENT_STRIPE_SECRET_OR_DIRECT_STRIPE_ROUTE_PRESENT");
 }
 if(!html.includes("No account wall. No payment wall before contact.")) throw new Error("FIRST_CONTACT_BOUNDARY_MISSING");
-if(!html.includes("Checkout stays disabled until real account + entitlement recovery is wired")) throw new Error("ENTITLEMENT_BOUNDARY_MISSING");
+for(const token of ["creatorCreateAccount","creatorRecoverAccount","creatorCheckoutMonthly","creatorCheckoutAnnual","creatorManageBilling","checkout.reconcile","Creator Account Key","/api/ailatheo"]) if(!html.includes(token)) throw new Error("ENTITLEMENT_UI_MISSING_"+token);
 if(!html.includes("bodies.push(...signalGardenBodies());links.push({from:0,to:1,trigger:'touch'},{from:1,to:2,trigger:'touch'})")) throw new Error("SIGNAL_GARDEN_NOT_USING_NATIVE_BODY_LINK_MODEL");
 if(!html.includes("recordProjectContact('SAMPLE DING'")) throw new Error("SAMPLE_MATERIAL_CONTACT_MISSING");
 
@@ -49,7 +50,7 @@ for(const token of [
   "Your creation stays yours.",
   "../unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html"
 ]) if(!launch.includes(token)) throw new Error("CREATOR_LAUNCH_MISSING_"+token);
-if(!launch.includes("Checkout intentionally unavailable in this build until account + entitlement continuity is real.")) throw new Error("LAUNCH_ENTITLEMENT_BOUNDARY_MISSING");
+if(!launch.includes("Creator checkout only opens when the server confirms the entitlement rail is ready.")) throw new Error("LAUNCH_ENTITLEMENT_BOUNDARY_MISSING");
 if((launch.match(/href="\.\.\/unified-browser\/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA\.html"/g)||[]).length<3) throw new Error("LAUNCH_TRY_FREE_ROUTE_TOO_WEAK");
 
 console.log(JSON.stringify({
@@ -64,7 +65,8 @@ console.log(JSON.stringify({
   resetSample:true,
   noAccountWallBeforeContact:true,
   noPaymentWallBeforeContact:true,
-  checkoutHonestlyDisabled:true,
+  checkoutServerVerified:true,
+  recoverableCreatorAccount:true,
   sampleUsesNativeBodyLinkModel:true,
   publicProductDoor:true,
   publicTryFreeRoute:true

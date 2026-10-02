@@ -1,4 +1,4 @@
-const CACHE='jm-web-estate-v1.4.12-context-return-route';
+const CACHE='jm-web-estate-v1.4.13-ailatheo-entitlement-boundary';
 const CORE=[
   './',
   './index.html',
@@ -89,6 +89,6 @@ async function fresh(request){
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  if(url.pathname.startsWith('/api/owner/')) return;
+  if(url.pathname.startsWith('/api/owner/')||url.pathname==='/api/ailatheo') return;
   event.respondWith(fresh(event.request));
 });

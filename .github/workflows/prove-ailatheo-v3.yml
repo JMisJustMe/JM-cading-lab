@@ -29,6 +29,30 @@ jobs:
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
+      - name: Install Playwright for rendered Workbench QA
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Boot local Workbench
+        run: |
+          python3 -m http.server 4177 >/tmp/ailatheo-v3-http.log 2>&1 &
+          for i in {1..20}; do
+            curl -fsS http://127.0.0.1:4177/unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/ailatheo-v3-http.log
+          exit 1
+      - name: Render and contact GripCube Workbench
+        env:
+          BASE_URL: http://127.0.0.1:4177
+        run: node tests/ailatheo-v3-gripcube-render.spec.mjs
+      - name: Upload Workbench visual receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ailatheo-v3-gripcube-render
+          path: qa/ailatheo-v3-gripcube/
+          if-no-files-found: ignore
       - name: Prove Workbench browser JavaScript syntax
         run: |
           python - <<'PY'

@@ -13,6 +13,8 @@ for(const [name,viewport] of cases){
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+path,{waitUntil:'networkidle'});
   await page.waitForTimeout(350);
+  const firstRun=page.locator('#creatorPreviewGate');
+  if(await firstRun.isVisible()) await page.locator('#creatorStartBlank').click();
   const mounted=await page.evaluate(()=>({grip:!!window.JMAILatheoGripUI,proof:window.JMAILatheoGripUI?.proof?.()||null,ready:document.readyState}));
   if(!mounted.grip||!mounted.proof?.stageDominant){
     await page.screenshot({path:'qa/ailatheo-v3-gripcube/'+name+'-mount-fault.png',fullPage:true});

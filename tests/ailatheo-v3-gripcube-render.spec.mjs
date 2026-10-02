@@ -656,7 +656,7 @@ for(const [name,viewport] of cases){
   if(operationTrace.material?.id!==operationBaseline.material?.id||operationProof.material?.id!==operationBaseline.material?.id||operationTrace.operation?.id!==buildOperation.operation.id||operationProof.operation?.id!==buildOperation.operation.id||operationTrace.operationText!==operationProof.operationText||!operationTrace.operationText.includes('LATEST OPERATION CONTACT')||!operationTrace.operationText.includes('BUILD · READY')||operationTrace.materialText!==operationProof.materialText||!operationTrace.materialText.includes('RECOVERY DING')) throw new Error(name+': TRACE/PROOF did not keep material and operation truths separate '+JSON.stringify({operationBaseline,buildOperation,operationTrace,operationProof}));
 
   await page.locator('.gcw-lens[data-face="field"]').click();
-  await page.locator('.sceneBody').nth(1).click();
+  await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();
   const redoBase=await page.evaluate(()=>({
     body:{...document.querySelectorAll('.sceneBody')[1]?._body},
     event:window.JMAILatheoGripUI.latestMaterialContact(),
@@ -702,7 +702,7 @@ for(const [name,viewport] of cases){
   if(keyboardRedoUndo.body.x!==redoBase.body.x||keyboardRedoUndo.event?.kind!=='RECOVERY DING'||keyboardRedoUndo.depth.redo!==1||!keyboardRedoUndo.active) throw new Error(name+': keyboard REDO undo failed '+JSON.stringify(keyboardRedoUndo));
 
   await page.locator('.gcw-lens[data-face="field"]').click();
-  await page.locator('.sceneBody').nth(1).click();
+  await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();
   await page.locator('#gcwFieldHalo [data-field="left"]').click();
   const branchEdit=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact(),depth:window.JMAILatheoGripUI.recoveryDepth()}));
   if(branchEdit.body.x!==redoBase.body.x-1||branchEdit.event?.kind!=='FIELD DING'||branchEdit.depth.redo!==0) throw new Error(name+': fresh branch edit did not invalidate stale redo path '+JSON.stringify({keyboardRedoUndo,branchEdit}));
@@ -721,7 +721,7 @@ for(const [name,viewport] of cases){
   if(!checkpointSaved.checkpoint?.id?.startsWith('CP-')||checkpointSaved.saved?.checkpoint?.id!==checkpointSaved.checkpoint.id||checkpointSaved.operation?.kind!=='SAVE'||checkpointSaved.operation?.detail?.includes(checkpointSaved.checkpoint.id)!==true||checkpointSaved.checkpoint.serial!==(Number(checkpointBefore?.serial||0)+1)) throw new Error(name+': SAVE did not create/increment named checkpoint identity '+JSON.stringify({checkpointBefore,checkpointSaved}));
 
   await page.locator('.gcw-lens[data-face="field"]').click();
-  await page.locator('.sceneBody').nth(1).click();
+  await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();
   await page.locator('#gcwFieldHalo [data-field="right"]').click();
   await page.locator('#gcwFieldHalo [data-field="right"]').click();
   const checkpointDrift=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact()}));

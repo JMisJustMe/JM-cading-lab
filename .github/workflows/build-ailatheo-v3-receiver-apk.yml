@@ -1,0 +1,111 @@
+name: Build AILatheo v3 Receiver APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'coding-estate/integration/**'
+      - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
+      - 'coding-estate/sovereign-batch-six/direct/game-input-native-*.mjs'
+      - 'tools/Build-JMAndroidForgeApk.ps1'
+      - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
+      - '.github/workflows/build-ailatheo-v3-receiver-apk.yml'
+  pull_request:
+    paths:
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'coding-estate/integration/**'
+      - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
+      - 'coding-estate/sovereign-batch-six/direct/game-input-native-*.mjs'
+      - 'tools/Build-JMAndroidForgeApk.ps1'
+      - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
+      - '.github/workflows/build-ailatheo-v3-receiver-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  receiver-apk:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Materialize exact AILatheo receiver carrier
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $carrier = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-carrier'
+          node scripts/build_ailatheo_v3_receiver_carrier.mjs $carrier
+          if (-not (Test-Path -LiteralPath (Join-Path $carrier 'index.html'))) { throw 'AILatheo receiver carrier index.html missing.' }
+
+      - name: Build and signature-verify AILatheo APK
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $carrier = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-carrier'
+          $buildOut = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-build'
+          $artifact = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-artifact'
+          New-Item -ItemType Directory -Path $buildOut,$artifact -Force | Out-Null
+
+          $lines = @(& 'tools/Build-JMAndroidForgeApk.ps1' `
+            -SourceDirectory $carrier `
+            -ProjectName 'AILatheo Creation' `
+            -PackageName 'com.jmisjustme.ailatheocreation' `
+            -VersionName '3.0-alpha' `
+            -VersionCode 300 `
+            -OutputRoot $buildOut 2>&1)
+          $lines | ForEach-Object { Write-Host $_ }
+          $jsonLine = $lines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
+          if (-not $jsonLine) { throw 'Forge builder returned no JSON result.' }
+          $result = $jsonLine | ConvertFrom-Json
+          if (-not $result.success) { throw 'Forge builder did not report success.' }
+          if (-not (Test-Path -LiteralPath $result.apk)) { throw 'Built APK is missing.' }
+          if (-not (Test-Path -LiteralPath $result.receipt)) { throw 'Build receipt is missing.' }
+          $actual = (Get-FileHash -LiteralPath $result.apk -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne ([string]$result.sha256).ToLowerInvariant()) { throw 'Built APK SHA-256 mismatch.' }
+          $receipt = Get-Content -LiteralPath $result.receipt -Raw | ConvertFrom-Json
+          if ($receipt.outcome -ne 'PASS') { throw 'Forge receipt is not PASS.' }
+          if ($receipt.automatic_install_to_device) { throw 'Forge receipt incorrectly claims device installation.' }
+
+          Copy-Item -LiteralPath $result.apk -Destination (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')
+          Copy-Item -LiteralPath $result.receipt -Destination (Join-Path $artifact 'ANDROID_BUILD_RECEIPT.json')
+          Copy-Item -LiteralPath (Join-Path $carrier 'AILATHEO_NATIVE_EXECUTION.json') -Destination $artifact
+          Copy-Item -LiteralPath (Join-Path $carrier 'AILatheoCreation.onebody.json') -Destination $artifact
+
+          [ordered]@{
+            schema='jm.ailatheo.receiver-build-proof/1.0'
+            status='APK_BUILD_DING'
+            source_sha='${{ github.sha }}'
+            package='com.jmisjustme.ailatheocreation'
+            version_name='3.0-alpha'
+            version_code=300
+            apk='AILatheo_Creation_v3_0_alpha.apk'
+            bytes=(Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length
+            sha256=$actual
+            forge_receipt_outcome=$receipt.outcome
+            installed=$false
+            owner_runtime_ding=$false
+            boundary='APK BUILT ≠ APK INSTALLED; APK INSTALLED ≠ OWNER RUNTIME DING'
+          } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $artifact 'AILATHEO_RECEIVER_BUILD_PROOF.json') -Encoding UTF8
+
+          Write-Host "AILATHEO_APK_BUILD_DING"
+          Write-Host "APK_BYTES=$((Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length)"
+          Write-Host "APK_SHA256=$actual"
+
+      - name: Upload receiver build
+        uses: actions/upload-artifact@v4
+        with:
+          name: ailatheo-v3-receiver-apk
+          path: '${{ runner.temp }}/ailatheo-receiver-artifact/*'
+          if-no-files-found: error
+          retention-days: 30

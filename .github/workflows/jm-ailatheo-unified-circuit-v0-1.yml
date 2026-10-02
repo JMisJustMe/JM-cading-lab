@@ -40,15 +40,19 @@ jobs:
       - name: Federation persistence and re-entry
         run: python scripts/jm_federation_persistence_reentry.py
 
-      - name: Unified Browser inline JavaScript syntax
+      - name: Unified Browser forward route and JavaScript syntax
         run: |
           python - <<'PY'
           import re,pathlib
-          s=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
-          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
+          forward=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html').read_text()
+          current=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html').read_text()
+          js='\\n'.join(re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',forward,re.I|re.S))
           pathlib.Path('/tmp/unified-browser.js').write_text(js)
-          assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in js
-          assert 'localStorage.setItem' in js
+          assert 'AILATHEO_VISIBLE_CIRCUIT_DING' in forward
+          assert 'localStorage.setItem' in forward
+          assert 'OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html' in forward
+          assert "location.replace('OPEN_FIRST_AILATHEO_TEACHING_FIELD_v1_1.html')" in js
+          assert 'localStorage.setItem' in current
           PY
           node --check /tmp/unified-browser.js
 

@@ -1,12 +1,21 @@
 name: Prove AILatheo v3 Creation Workbench
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'tests/ailatheo-v3-*.mjs'
+      - 'coding-estate/**'
+      - '.github/workflows/prove-ailatheo-v3.yml'
   pull_request:
     paths:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-v3-*.mjs'
       - 'coding-estate/**'
+      - '.github/workflows/prove-ailatheo-v3.yml'
 permissions: {contents: read}
 jobs:
   native-route:
@@ -16,4 +25,5 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - run: node tests/ailatheo-v3-estate-route.mjs
-      - run: node tests/ailatheo-v3-native-execution.mjs\n      - run: node tests/ailatheo-v3-workbench-contract.mjs
+      - run: node tests/ailatheo-v3-native-execution.mjs
+      - run: node tests/ailatheo-v3-workbench-contract.mjs

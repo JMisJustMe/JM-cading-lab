@@ -1,7 +1,7 @@
 import fs from "node:fs";
 const html=fs.readFileSync("unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html","utf8");
 const must=[
-  "JM.CreationWorkbench/0.21",
+  "JM.CreationWorkbench/0.22",
   "function mountGripWorkbench()",
   "JMAILatheoGripUI",
   "TRACE","ROUTE","FORM","FIELD","PROOF","USE",
@@ -15,18 +15,18 @@ const must=[
   "proofFace.append(proofDingFocus,proofOperationFocus,proofContext,advanced)"
 ];
 for(const x of must) if(!html.includes(x)) throw new Error("GRIP_UI_MISSING_"+x);
-for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","undoProject","saveProject"]){
+for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","undoProject","redoProject","saveProject"]){
   const n=(html.match(new RegExp('id="'+id+'"','g'))||[]).length;
   if(n!==1) throw new Error("GRIP_UI_IDENTITY_"+id+"_"+n);
 }
 if(!html.includes("grid-template-rows:minmax(0,1fr) 214px")) throw new Error("MOBILE_FINITE_VIEWPORT_ROUTE_MISSING");
 if(!html.includes("grid-auto-flow:column")) throw new Error("SIDE_TRAVEL_MISSING");
 if(!html.includes("setFace(map[b.textContent])")) throw new Error("MODE_TO_FACE_ROUTE_MISSING");
-for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","threeRowApp","starterYieldsToBodies","gcw-world","gcwApp","routeFace.querySelector(\'.linker\')","syncGripContext","scene.dataset.gcwLens","directRouteContact","contextualQuick","gcw-contactHint","route-source","TWO-FINGER GRIP","gripPointers","multiTouchGrip","onBodyContactBadge","data-gcw-contact","gcw-routeTether","gcwRoutePreview","paintRouteTether","selectionCarriesIntoRoute","routeTargetKeepsSelection","gcwTraceDingFocus","gcwProofDingFocus","latestMaterialContact","materialDingFocus","ephemeralEventPointer","traceProofFollowLatest","dingBoundRecovery","recoveryPersistsRestoredState","selectionSurvivesUndo","recordRecoveryContact","recoveryRevision","gcwFieldHalo","fieldPrecision","fieldPrecisionHalo","fieldPrecisionUndo","fieldPrecisionMaterialDing","gcwTraceContext","gcwProofContext","gcwTraceDepth","OPEN TRACE DEPTH","traceShallowContext","proofShallowContext","traceDepthEarned","proofDepthEarned","inspectionCreatesNoDing","keyboardStageContact","aria-keyshortcuts","keyboardParity","keyboardScopedToStage","keyboardFieldPrecision","keyboardUseContact","keyboardRouteCancel","keyboardRouteContact","keyboardRouteTargetHandoff","routeBodyContact","keyboardFaceTravel","keyboardUndo","rememberSnapshot","formMaterialDings","formDragRecovery","formHandleRecovery","gripMaterialRecovery","noChangeNoDing","beginFormSemanticEdit","commitFormSemanticEdit","formSemanticTransactions","formLiveEditSingleDing","formSemanticRecovery","semanticSourceSync","recordProjectContact","recordStructuralContact","structuralDingRecovery","createDuplicateDeleteRecovery","linkUnlinkRecovery","beginFieldInspectorEdit","commitFieldInspectorEdit","fieldInspectorTransactions","fieldInspectorSingleDing","fieldInspectorRecovery","fieldInspectorLiveQuiet","runCodeTransaction","applyParsedSourceControls","codeSingleTransaction","codeSemanticConsequenceRecovery","codeStarterRecovery","invalidCodeNoRevision","runStarterContact","starterContactRecovery","quickActUsesStarterContact","keyboardStarterContact","starterContactTraceProof","sceneAggregateDing","sceneChildrenNested","sceneSingleUndo","sceneHoldNoRevision","recordEvent:false","recordOperationContact","latestOperationContact","gcwTraceOperationFocus","gcwProofOperationFocus","operationLane","materialOperationSeparated","operationPointerEphemeral","operationTraceProofFocus"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
+for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","threeRowApp","starterYieldsToBodies","gcw-world","gcwApp","routeFace.querySelector(\'.linker\')","syncGripContext","scene.dataset.gcwLens","directRouteContact","contextualQuick","gcw-contactHint","route-source","TWO-FINGER GRIP","gripPointers","multiTouchGrip","onBodyContactBadge","data-gcw-contact","gcw-routeTether","gcwRoutePreview","paintRouteTether","selectionCarriesIntoRoute","routeTargetKeepsSelection","gcwTraceDingFocus","gcwProofDingFocus","latestMaterialContact","materialDingFocus","ephemeralEventPointer","traceProofFollowLatest","dingBoundRecovery","recoveryPersistsRestoredState","selectionSurvivesUndo","recordRecoveryContact","recoveryRevision","gcwFieldHalo","fieldPrecision","fieldPrecisionHalo","fieldPrecisionUndo","fieldPrecisionMaterialDing","gcwTraceContext","gcwProofContext","gcwTraceDepth","OPEN TRACE DEPTH","traceShallowContext","proofShallowContext","traceDepthEarned","proofDepthEarned","inspectionCreatesNoDing","keyboardStageContact","aria-keyshortcuts","keyboardParity","keyboardScopedToStage","keyboardFieldPrecision","keyboardUseContact","keyboardRouteCancel","keyboardRouteContact","keyboardRouteTargetHandoff","routeBodyContact","keyboardFaceTravel","keyboardUndo","rememberSnapshot","formMaterialDings","formDragRecovery","formHandleRecovery","gripMaterialRecovery","noChangeNoDing","beginFormSemanticEdit","commitFormSemanticEdit","formSemanticTransactions","formLiveEditSingleDing","formSemanticRecovery","semanticSourceSync","recordProjectContact","recordStructuralContact","structuralDingRecovery","createDuplicateDeleteRecovery","linkUnlinkRecovery","beginFieldInspectorEdit","commitFieldInspectorEdit","fieldInspectorTransactions","fieldInspectorSingleDing","fieldInspectorRecovery","fieldInspectorLiveQuiet","runCodeTransaction","applyParsedSourceControls","codeSingleTransaction","codeSemanticConsequenceRecovery","codeStarterRecovery","invalidCodeNoRevision","runStarterContact","starterContactRecovery","quickActUsesStarterContact","keyboardStarterContact","starterContactTraceProof","sceneAggregateDing","sceneChildrenNested","sceneSingleUndo","sceneHoldNoRevision","recordEvent:false","recordOperationContact","latestOperationContact","gcwTraceOperationFocus","gcwProofOperationFocus","operationLane","materialOperationSeparated","operationPointerEphemeral","operationTraceProofFocus","redoProject","recoverCheckpoint","latestCheckpoint","recoveryDepth","REDO DING","CHECKPOINT DING","RECOVER CHECKPOINT","namedCheckpoint","undoCheckpointSeparated","redoRecovery","redoKeyboard","redoInvalidatesOnEdit","checkpointRecoveryUndoable"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
 console.log(JSON.stringify({
   passed:true,
   carrier:"GripCube UI projection",
-  version:"0.21",
+  version:"0.22",
   semanticFaces:6,
   quickContacts:5,
   preservesSingleIds:true,
@@ -100,5 +100,11 @@ console.log(JSON.stringify({
   operationLane:true,
   materialOperationSeparated:true,
   operationPointerEphemeral:true,
-  operationTraceProofFocus:true
+  operationTraceProofFocus:true,
+  namedCheckpoint:true,
+  undoCheckpointSeparated:true,
+  redoRecovery:true,
+  redoKeyboard:true,
+  redoInvalidatesOnEdit:true,
+  checkpointRecoveryUndoable:true
 },null,2));

@@ -29,6 +29,18 @@ jobs:
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
+      - name: Prove Workbench browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re,pathlib
+          p=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html')
+          s=p.read_text()
+          js='\n'.join(re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
+          if not js.strip():
+              raise SystemExit('WORKBENCH_INLINE_JS_MISSING')
+          pathlib.Path('/tmp/ailatheo-v3-workbench.js').write_text(js)
+          PY
+          node --check /tmp/ailatheo-v3-workbench.js
       - name: Install Playwright for rendered Workbench QA
         run: |
           npm install --no-save playwright@1.54.1
@@ -53,15 +65,3 @@ jobs:
           name: ailatheo-v3-gripcube-render
           path: qa/ailatheo-v3-gripcube/
           if-no-files-found: ignore
-      - name: Prove Workbench browser JavaScript syntax
-        run: |
-          python - <<'PY'
-          import re,pathlib
-          p=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html')
-          s=p.read_text()
-          js='\n'.join(re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
-          if not js.strip():
-              raise SystemExit('WORKBENCH_INLINE_JS_MISSING')
-          pathlib.Path('/tmp/ailatheo-v3-workbench.js').write_text(js)
-          PY
-          node --check /tmp/ailatheo-v3-workbench.js

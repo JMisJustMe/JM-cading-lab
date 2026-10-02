@@ -63,6 +63,50 @@ for(const [name,viewport] of cases){
   await page.locator('.gcw-lens[data-face="form"]').click();
   await page.locator('.sceneBody').nth(1).click();
 
+  const semanticBaseline=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    source:document.querySelector('#source')?.value||'',
+    quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent||''
+  }));
+  await page.locator('#objectName').focus();
+  await page.evaluate(()=>{
+    const input=document.querySelector('#objectName');
+    for(const value of ['Grip','Grip Body X','Grip Body Prime']){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}))}
+  });
+  const semanticLive=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    name:document.querySelectorAll('.sceneBody')[1]?._body?.name,
+    source:document.querySelector('#source')?.value||'',
+    persisted:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]'))[1]?.name
+  }));
+  if(semanticLive.event!==semanticBaseline.event||semanticLive.name!=='Grip Body Prime'||semanticLive.persisted!=='Grip Body Prime'||!semanticLive.source.startsWith('Grip Body Prime :')) throw new Error(name+': live FORM name edit did not stay Ding-silent while source/body stayed synced '+JSON.stringify({semanticBaseline,semanticLive}));
+  await page.locator('#objectName').blur();
+  const semanticCommit=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    name:document.querySelectorAll('.sceneBody')[1]?._body?.name,
+    aria:document.querySelectorAll('.sceneBody')[1]?.getAttribute('aria-label')||''
+  }));
+  if(semanticCommit.event?.id!==semanticBaseline.event+1||semanticCommit.event?.kind!=='FORM DING'||semanticCommit.event?.body!=='Grip Body Prime'||!semanticCommit.event?.delta.includes('name Grip Body→Grip Body Prime')||!semanticCommit.event?.recoveryRevision||semanticCommit.aria!=='Grip Body Prime creation body') throw new Error(name+': committed FORM name edit did not produce one recoverable semantic Ding '+JSON.stringify({semanticBaseline,semanticCommit}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const semanticUndo=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    source:document.querySelector('#source')?.value||'',
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null
+  }));
+  if(semanticUndo.body.name!==semanticBaseline.body.name||semanticUndo.source!==semanticBaseline.source||semanticUndo.selected!==semanticBaseline.body.name||semanticUndo.event?.kind!=='RECOVERY DING'||semanticUndo.event?.recoveredEventId!==semanticCommit.event.id) throw new Error(name+': FORM semantic undo did not restore exact name/source contact '+JSON.stringify({semanticBaseline,semanticCommit,semanticUndo}));
+
+  await page.locator('.sceneBody').nth(1).click();
+  const actionBefore=await page.evaluate(()=>({action:document.querySelectorAll('.sceneBody')[1]?._body?.action,quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent,event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0}));
+  await page.locator('#action').selectOption('Grow');
+  const actionAfter=await page.evaluate(()=>({action:document.querySelectorAll('.sceneBody')[1]?._body?.action,quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent,event:window.JMAILatheoGripUI.latestMaterialContact(),source:document.querySelector('#source')?.value||''}));
+  if(actionAfter.action!=='Grow'||actionAfter.quick!=='GROW'||actionAfter.event?.kind!=='FORM DING'||actionAfter.event?.id!==actionBefore.event+1||!actionAfter.event?.delta.includes('action Spin→Grow')||!actionAfter.source.endsWith(':: Grow')) throw new Error(name+': FORM action edit did not keep body/source/context contact aligned '+JSON.stringify({actionBefore,actionAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const actionUndo=await page.evaluate(()=>({action:document.querySelectorAll('.sceneBody')[1]?._body?.action,quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(actionUndo.action!=='Spin'||actionUndo.quick!=='SPIN'||actionUndo.event?.recoveredEventId!==actionAfter.event.id) throw new Error(name+': FORM action recovery failed '+JSON.stringify({actionAfter,actionUndo}));
+
+  await page.locator('.sceneBody').nth(1).click();
   const dragBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate}});
   await page.evaluate(()=>{
     const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1],r=scene.getBoundingClientRect();
@@ -177,7 +221,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -356,4 +400,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube FORM-material render PASS — 2/2');
+console.log('AILatheo GripCube FORM-semantic render PASS — 2/2');

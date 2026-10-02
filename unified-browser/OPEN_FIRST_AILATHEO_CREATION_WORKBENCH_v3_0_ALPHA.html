@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.14 · GripCube UI projection
+/* JM.CreationWorkbench/0.15 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.14 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.15 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -144,7 +144,7 @@
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.14 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.15 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -184,14 +184,14 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.14 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.15 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.14',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.15',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null;
-function bodyMaterialState(body){return {on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
-function materialDelta(before,after){const bits=[];if(before.on!==after.on)bits.push('state '+before.on+'→'+after.on);if(before.x!==after.x)bits.push('x '+before.x+'→'+after.x);if(before.y!==after.y)bits.push('y '+before.y+'→'+after.y);if(before.size!==after.size)bits.push('size '+before.size+'→'+after.size);if(before.rotate!==after.rotate)bits.push('rotate '+before.rotate+'→'+after.rotate);return bits.length?bits.join(' · '):'visible action contact'}
+function bodyMaterialState(body){return {name:body.name||'',type:body.type||'',shape:body.shape||'',colour:body.colour||'',action:body.action||'',on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
+function materialDelta(before,after){const bits=[];if(before.name!==after.name)bits.push('name '+before.name+'→'+after.name);if(before.type!==after.type)bits.push('type '+before.type+'→'+after.type);if(before.shape!==after.shape)bits.push('shape '+before.shape+'→'+after.shape);if(before.colour!==after.colour)bits.push('colour '+before.colour+'→'+after.colour);if(before.action!==after.action)bits.push('action '+before.action+'→'+after.action);if(before.on!==after.on)bits.push('state '+before.on+'→'+after.on);if(before.x!==after.x)bits.push('x '+before.x+'→'+after.x);if(before.y!==after.y)bits.push('y '+before.y+'→'+after.y);if(before.size!==after.size)bits.push('size '+before.size+'→'+after.size);if(before.rotate!==after.rotate)bits.push('rotate '+before.rotate+'→'+after.rotate);return bits.length?bits.join(' · '):'visible action contact'}
 function recordMaterialContact(kind,body,before,after,detail='',recoveryRevision=null){lastMaterialContact={id:++materialEventSeq,kind,body:body.name,action:body.action,before,after,delta:materialDelta(before,after),detail,recoveryRevision};window.JMAILatheoGripUI?.syncMaterialContact?.();return lastMaterialContact}
 function recordRecoveryContact(reversed,revisionId){lastMaterialContact={id:++materialEventSeq,kind:'RECOVERY DING',body:reversed?.body||'PROJECT',action:'UNDO',before:reversed?.after||null,after:reversed?.before||null,delta:reversed?'reversed '+reversed.kind+' #'+reversed.id:'restored revision #'+revisionId,detail:reversed?'Recovery matched revision #'+revisionId:'Recovery restored project state',recoveryRevision:null,recoveredEventId:reversed?.id||null};window.JMAILatheoGripUI?.syncMaterialContact?.();return lastMaterialContact}
 const bodies=[];const scene=document.querySelector('#scene'),bodyShelf=document.querySelector('#bodyShelf'),linkLayer=document.querySelector('#linkLayer'),linkLines=document.querySelector('#linkLines'),linkShelf=document.querySelector('#linkShelf'),resizeHandle=document.querySelector('#resizeHandle'),rotateHandle=document.querySelector('#rotateHandle'),px=document.querySelector('#px'),py=document.querySelector('#py'),psize=document.querySelector('#psize'),prot=document.querySelector('#prot');let selected=null,selectedLink=-1;const links=[];const fromBody=document.querySelector('#fromBody'),toBody=document.querySelector('#toBody'),trigger=document.querySelector('#trigger');function bodyElement(target){return [...scene.querySelectorAll('.sceneBody')].find(x=>x._body===target)}
@@ -267,8 +267,34 @@ function bindTransformHandle(handle,mode){
 }
 bindTransformHandle(resizeHandle,'resize');bindTransformHandle(rotateHandle,'rotate');
 [px,py,psize,prot].forEach(x=>{x.oninput=()=>updateProp(false);x.onchange=()=>updateProp(true)});const lessonPick=document.querySelector('#lessonPick');function lesson(){const L={state:'STATE → touch, predict, then observe the consequence.',form:'FORM → change SHAPE and COLOUR; identity stays separate from presentation.',cause:'CAUSE → connect two bodies, trigger one, then inspect the visible result and TRACE.',create:'CREATE → make a body, drag it, edit its source, connect it, test it, save it.'};teach.textContent=L[lessonPick.value]}lessonPick.onchange=lesson;
-function sync(commitSelected=true){const draft={name:objectName.value,type:type.value,shape:shape.value,colour:colour.value,action:action.value};src.value=composeSource(draft);o.className='object '+shape.value;o.style.boxShadow='0 0 80px '+colour.value+'88';if(commitSelected&&selected){Object.assign(selected.body,draft,{source:src.value});applyBodyVisual(selected.el,selected.body);persistBodies();refreshBodyMenus()}updateExplain(draft);teach.textContent='CHANGE → source and visible body agree. Run code to test consequence.'}
-[type,colour,action,objectName].forEach(x=>x.oninput=()=>sync(true));shape.onchange=()=>{sync(true);d.textContent='SHAPE DING';trace.push('SHAPE → '+shape.value)};
+function sync(commitSelected=true){const draft={name:objectName.value,type:type.value,shape:shape.value,colour:colour.value,action:action.value};src.value=composeSource(draft);o.className='object '+shape.value;o.style.boxShadow='0 0 80px '+colour.value+'88';if(commitSelected&&selected){Object.assign(selected.body,draft,{source:src.value});selected.el.setAttribute('aria-label',(selected.body.name||'Body')+' creation body');applyBodyVisual(selected.el,selected.body);persistBodies();refreshBodyMenus();syncStageHead(selected.body);window.JMAILatheoGripUI?.syncContext?.()}updateExplain(draft);teach.textContent='CHANGE → source and visible body agree. Commit the field to earn one recoverable FORM Ding.'}
+let formEdit=null;
+function beginFormSemanticEdit(control){
+  if(!selected?.body)return;
+  if(formEdit&&formEdit.control===control&&formEdit.target===selected.body)return;
+  commitFormSemanticEdit();
+  formEdit={control,target:selected.body,before:snapshot(),beforeState:bodyMaterialState(selected.body),field:control.dataset.formField||control.id||'field'};
+}
+function commitFormSemanticEdit(){
+  if(!formEdit)return false;
+  const edit=formEdit;formEdit=null;
+  if(!edit.target||!bodies.includes(edit.target))return false;
+  const after=bodyMaterialState(edit.target);
+  if(JSON.stringify(after)===JSON.stringify(edit.beforeState))return false;
+  const recoveryRevision=rememberSnapshot(edit.before,'FORM '+edit.field.toUpperCase());
+  recordMaterialContact('FORM DING',edit.target,edit.beforeState,after,'Committed '+edit.field+' edit',recoveryRevision);
+  d.textContent='FORM DING';teach.textContent='FORM → '+materialDelta(edit.beforeState,after)+'. One live edit became one exact recovery point.';
+  trace.push('FORM '+edit.field.toUpperCase()+' → '+materialDelta(edit.beforeState,after));
+  return true;
+}
+const semanticControls=[objectName,type,colour,shape,action];
+semanticControls.forEach(control=>{
+  control.dataset.formField=control.id;
+  control.addEventListener('focus',()=>beginFormSemanticEdit(control));
+  control.addEventListener('input',()=>{beginFormSemanticEdit(control);sync(true)});
+  control.addEventListener('change',()=>{beginFormSemanticEdit(control);sync(true);commitFormSemanticEdit()});
+  control.addEventListener('blur',()=>commitFormSemanticEdit());
+});
 function paint(){o.classList.toggle('live',on);o.textContent=on?'LIGHT ON':'CONTACT';s.textContent=on?'LIVE · visible consequence first':'WAITING · touch first'}
 paint();lesson();try{const savedLinks=JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]');if(Array.isArray(savedLinks))links.push(...savedLinks)}catch{}try{const saved=JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]');saved.forEach(b=>{if(b&&b.name){Object.assign(b,{x:b.x??50,y:b.y??50,size:b.size??86,rotate:b.rotate??0});bodies.push(b);renderBody(b);refreshBodyMenus()}})}catch{}refreshBodyMenus();drawLinks();updateExplain({name:objectName.value,type:type.value,shape:shape.value,colour:colour.value,action:action.value});
 document.querySelector('#contact').onclick=()=>{on=!on;localStorage.setItem('jm.ailatheo.v3.light',JSON.stringify(on));paint();d.textContent='CONTACT DING';r.textContent='CONTACT → STATE_CHANGE → VISIBLE CONSEQUENCE → TRACE\nLight='+on+'\n\nLanguage follows Ding.'};
@@ -295,8 +321,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v14')return;
-  world.dataset.gripcubeUi='v14';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v15')return;
+  world.dataset.gripcubeUi='v15';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -607,7 +633,7 @@ function mountGripWorkbench(){
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.14',
+    version:'0.15',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
@@ -617,11 +643,13 @@ function mountGripWorkbench(){
     syncSelectedContext:renderSelectedContext,
     syncFieldHalo,
     fieldPrecision:applyFieldPrecision,
+    beginFormSemanticEdit,
+    commitFormSemanticEdit,
     routeBodyContact,
     keyboardStageContact,
     latestMaterialContact:()=>lastMaterialContact?JSON.parse(JSON.stringify(lastMaterialContact)):null,
     proof:()=>({
-      version:'0.14',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.15',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -659,6 +687,10 @@ function mountGripWorkbench(){
       formHandleRecovery:true,
       gripMaterialRecovery:true,
       noChangeNoDing:true,
+      formSemanticTransactions:true,
+      formLiveEditSingleDing:true,
+      formSemanticRecovery:true,
+      semanticSourceSync:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,
       earnedDepth:advanced.tagName==='DETAILS',

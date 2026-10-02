@@ -25,7 +25,21 @@ for(const [name,viewport] of cases){
   await page.locator('#objectName').fill('Grip Body');
   await page.locator('#action').selectOption('Spin');
   await page.locator('.gcw-quick [data-q="add"]').click();
+
+  const second=page.locator('.sceneBody').nth(1);
+  const formBefore=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
+  await second.click();
+  const formAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
+  if(formAfter!==formBefore) throw new Error(name+': FORM body tap executed action instead of selecting/manipulating');
+
+  await page.locator('.gcw-lens[data-face="use"]').click();
+  await second.click();
+  const useAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
+  if(useAfter===formAfter) throw new Error(name+': USE body tap did not execute selected body action');
+
   await page.locator('.gcw-lens[data-face="route"]').click();
+  await page.locator('.sceneBody').nth(0).click();
+  await page.locator('.sceneBody').nth(1).click();
 
   const metrics=await page.evaluate(()=>({
     proof:window.JMAILatheoGripUI.proof(),
@@ -36,6 +50,10 @@ for(const [name,viewport] of cases){
     htmlRect:(()=>{const r=document.documentElement.getBoundingClientRect(),s=getComputedStyle(document.documentElement);return {top:r.top,bottom:r.bottom,w:r.width,h:r.height,cssHeight:s.height,minHeight:s.minHeight}})(),
     viewportOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,
     bodyCount:document.querySelectorAll('.sceneBody').length,
+    linkCount:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]')).length,
+    contactLens:document.querySelector('#scene')?.dataset.gcwLens,
+    quickActText:document.querySelector('.gcw-quick [data-q="act"]')?.textContent,
+    routeSourceCount:document.querySelectorAll('.sceneBody.route-source').length,
     cube:!!document.querySelector('#gcwCubeDock'),
     visibleFace:document.querySelector('.gcw-face.active')?.dataset.face,
     stageRect:(()=>{const r=document.querySelector('.gcw-stageZone')?.getBoundingClientRect();return r&&{w:r.width,h:r.height}})(),
@@ -54,6 +72,11 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
+  if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
+  if(metrics.routeSourceCount!==0) throw new Error(name+': route source affordance did not clear after completed link '+JSON.stringify(metrics));
+  if(metrics.quickActText!=='SPIN') throw new Error(name+': contextual ACT did not follow selected body action '+JSON.stringify(metrics));
   if(metrics.starterVisible) throw new Error(name+': starter teaching body still competes with created bodies '+JSON.stringify(metrics));
   if(!metrics.lensFits) throw new Error(name+': six semantic lenses do not fit the face rail '+JSON.stringify(metrics));
   if(metrics.appRowCount!==3) throw new Error(name+': GripCube app is not three visible rows '+JSON.stringify(metrics));
@@ -64,4 +87,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify(metrics));
 }
 await browser.close();
-console.log('AILatheo GripCube render/contact PASS — 2/2');
+console.log('AILatheo GripCube owner-contact render PASS — 2/2');

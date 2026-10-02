@@ -816,5 +816,141 @@ for(const [name,viewport] of cases){
 
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:checkpointRecoveryUndo.event.id,materialEventKind:checkpointRecoveryUndo.event.kind,recoveredEventId:checkpointRecoveryUndo.event.recoveredEventId,codeTransaction:true,starterContact:true,sceneAggregate:true,sceneChildren:sceneEvent.event.children.length,operationLane:true,redoRecovery:true,checkpointId:checkpointSaved.checkpoint.id,productionPipeline:true,pipelineNext:pipelineRefreshed.snap.next}));
 }
+
+async function runStraightJourney(name,viewport){
+  const context=await browser.newContext({viewport});
+  const page=await context.newPage();
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(base+path,{waitUntil:'networkidle'});
+  await page.waitForTimeout(250);
+
+  const clean=await page.evaluate(()=>({
+    bodies:document.querySelectorAll('.sceneBody').length,
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,
+    material:window.JMAILatheoGripUI?.latestMaterialContact?.()||null,
+    operation:window.JMAILatheoGripUI?.latestOperationContact?.()||null,
+    checkpoint:window.JMAILatheoGripUI?.latestCheckpoint?.()||null
+  }));
+  if(clean.bodies!==0||clean.links!==0||clean.material!==null||clean.operation!==null||clean.checkpoint!==null) throw new Error(name+': straight run did not start from clean contact '+JSON.stringify(clean));
+
+  await page.locator('.gcw-lens[data-face="form"]').click();
+  await page.locator('#objectName').fill('Straight Source');
+  await page.locator('#action').selectOption('Spin');
+  await page.locator('.gcw-quick [data-q="add"]').click();
+  const sourceCreated=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[0]?._body}}));
+  if(sourceCreated.event?.kind!=='OBJECT DING'||sourceCreated.body.name!=='Straight Source'||sourceCreated.body.action!=='Spin') throw new Error(name+': straight source creation failed '+JSON.stringify(sourceCreated));
+
+  await page.locator('#objectName').fill('Straight Target');
+  await page.locator('#action').selectOption('Grow');
+  await page.locator('.gcw-quick [data-q="add"]').click();
+  const targetCreated=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[1]?._body}}));
+  if(targetCreated.event?.kind!=='OBJECT DING'||targetCreated.body.name!=='Straight Target'||targetCreated.body.action!=='Grow') throw new Error(name+': straight target creation failed '+JSON.stringify(targetCreated));
+
+  await page.locator('.gcw-lens[data-face="field"]').click();
+  await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();
+  const fieldBefore=await page.evaluate(()=>({...document.querySelectorAll('.sceneBody')[1]._body}));
+  await page.locator('#gcwFieldHalo [data-field="right"]').click();
+  const fieldAfter=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]._body},event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(fieldAfter.body.x!==fieldBefore.x+1||fieldAfter.event?.kind!=='FIELD DING') throw new Error(name+': straight FIELD contact failed '+JSON.stringify({fieldBefore,fieldAfter}));
+
+  await page.locator('.gcw-lens[data-face="form"]').click();
+  await page.locator('#shape').selectOption('circle');
+  const formAfter=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]._body},event:window.JMAILatheoGripUI.latestMaterialContact(),source:document.querySelector('#source').value}));
+  if(formAfter.body.shape!=='circle'||formAfter.event?.kind!=='FORM DING'||!formAfter.source.includes('<circle>')) throw new Error(name+': straight FORM semantic contact failed '+JSON.stringify(formAfter));
+
+  await page.locator('.gcw-lens[data-face="field"]').click();
+  await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(0).click();
+  await page.locator('.gcw-lens[data-face="route"]').click();
+  await page.locator('.sceneBody').nth(1).click();
+  const routeAfter=await page.evaluate(()=>({
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]'),
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null
+  }));
+  if(routeAfter.links.length!==1||routeAfter.links[0]?.from!==0||routeAfter.links[0]?.to!==1||routeAfter.links[0]?.trigger!=='touch'||routeAfter.event?.kind!=='LINK DING'||routeAfter.selected!=='Straight Target') throw new Error(name+': straight ROUTE contact failed '+JSON.stringify(routeAfter));
+
+  const useBefore=await page.evaluate(()=>({
+    sourceRotate:document.querySelectorAll('.sceneBody')[0]._body.rotate,
+    targetSize:document.querySelectorAll('.sceneBody')[1]._body.size,
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+  }));
+  await page.locator('.gcw-lens[data-face="use"]').click();
+  await page.locator('.sceneBody').nth(0).click();
+  const useAfter=await page.evaluate(()=>({
+    source:{...document.querySelectorAll('.sceneBody')[0]._body},
+    target:{...document.querySelectorAll('.sceneBody')[1]._body},
+    event:window.JMAILatheoGripUI.latestMaterialContact()
+  }));
+  if(useAfter.source.rotate!==((useBefore.sourceRotate+45)%360)||useAfter.target.size!==useBefore.targetSize+18||useAfter.event?.kind!=='CAUSE DING'||useAfter.event?.body!=='Straight Target'||!useAfter.event?.recoveryRevision) throw new Error(name+': straight USE cause/consequence failed '+JSON.stringify({useBefore,useAfter}));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const traceState=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||''}));
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const proofState=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
+  if(traceState.material?.id!==useAfter.event.id||proofState.material?.id!==useAfter.event.id||traceState.text!==proofState.text||!traceState.text.includes('CAUSE DING')) throw new Error(name+': straight TRACE/PROOF material convergence failed '+JSON.stringify({traceState,proofState}));
+
+  await page.locator('.gcw-quick [data-q="save"]').click();
+  const saved=await page.evaluate(()=>({checkpoint:window.JMAILatheoGripUI.latestCheckpoint(),operation:window.JMAILatheoGripUI.latestOperationContact(),material:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(!saved.checkpoint?.id?.startsWith('CP-')||saved.operation?.kind!=='SAVE'||saved.operation?.status!=='PASS'||saved.material?.id!==useAfter.event.id) throw new Error(name+': straight named SAVE failed '+JSON.stringify(saved));
+
+  const advanced=page.locator('.gcw-face[data-face="proof"] .advanced');
+  if(!(await advanced.evaluate(el=>el.open))) await advanced.locator('> summary').click();
+  const materialCrown=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
+
+  await page.locator('#build').click();
+  let pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='BUILD')?.status!=='READY'||pipeline.next!=='ESTATE ROUTE') throw new Error(name+': straight BUILD gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#routeEstate').click();
+  await page.waitForFunction(()=>window.JMAILatheoGripUI.latestOperationContact()?.kind==='ESTATE ROUTE');
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='ESTATE ROUTE')?.status!=='PASS'||pipeline.next!=='TEST') throw new Error(name+': straight ESTATE ROUTE gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#testProject').click();
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='TEST')?.status!=='PASS'||pipeline.next!=='PROOF') throw new Error(name+': straight TEST gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#proofProject').click();
+  await page.waitForFunction(()=>window.JMAILatheoGripUI.latestOperationContact()?.kind==='PROOF');
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='PROOF')?.status!=='PASS'||pipeline.next!=='EXECUTION') throw new Error(name+': straight PROOF gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#executeEstate').click();
+  await page.waitForFunction(()=>window.JMAILatheoGripUI.latestOperationContact()?.kind==='EXECUTION');
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='EXECUTION')?.status!=='PASS'||pipeline.next!=='PREVIEW') throw new Error(name+': straight EXECUTION gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#preview').click();
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  const previewState=await page.evaluate(()=>({display:getComputedStyle(document.querySelector('#previewFrame')).display,srcdoc:document.querySelector('#previewFrame').srcdoc.length,operation:window.JMAILatheoGripUI.latestOperationContact()}));
+  if(pipeline.stages.find(x=>x.kind==='PREVIEW')?.status!=='LIVE'||pipeline.next!=='TARGET ROUTE'||previewState.display==='none'||previewState.srcdoc<20||previewState.operation?.kind!=='PREVIEW') throw new Error(name+': straight PREVIEW gate failed '+JSON.stringify({pipeline,previewState}));
+
+  await page.locator('#targetHost').selectOption('browser');
+  await page.locator('#routeTarget').click();
+  pipeline=await page.evaluate(()=>window.JMAILatheoGripUI.pipelineSnapshot());
+  if(pipeline.stages.find(x=>x.kind==='TARGET ROUTE')?.status!=='READY'||pipeline.next!=='ANDROID ROUTE') throw new Error(name+': straight TARGET gate failed '+JSON.stringify(pipeline));
+
+  await page.locator('#buildLane').selectOption('forge');
+  await page.locator('#prepareBuild').click();
+  const finalState=await page.evaluate(()=>({
+    pipeline:window.JMAILatheoGripUI.pipelineSnapshot(),
+    material:window.JMAILatheoGripUI.latestMaterialContact(),
+    operation:window.JMAILatheoGripUI.latestOperationContact(),
+    plan:JSON.parse(localStorage.getItem('jm.ailatheo.v3.androidPlan')||'null'),
+    checkpoint:window.JMAILatheoGripUI.latestCheckpoint(),
+    overflow:document.documentElement.scrollHeight>window.innerHeight||document.documentElement.scrollWidth>window.innerWidth,
+    ding:document.querySelector('#ding')?.textContent||''
+  }));
+  if(finalState.material?.id!==materialCrown||finalState.pipeline.stages.find(x=>x.kind==='ANDROID ROUTE')?.status!=='READY'||finalState.pipeline.stages.find(x=>x.kind==='BUILD ROUTE')?.status!=='READY'||finalState.pipeline.next!=='FORGE'||finalState.operation?.kind!=='BUILD ROUTE'||finalState.plan?.requestedBuildLane!=='forge'||finalState.overflow||finalState.ding!=='BUILD ROUTE PREPARED') throw new Error(name+': straight production handoff failed '+JSON.stringify(finalState));
+
+  if(errors.length) throw new Error(name+': browser errors during straight journey '+errors.join(' | '));
+  await page.screenshot({path:'qa/ailatheo-v3-gripcube/'+name+'-straight-run.png',fullPage:true});
+  console.log(name+': STRAIGHT PASS '+JSON.stringify({checkpoint:finalState.checkpoint.id,materialEventId:materialCrown,next:finalState.pipeline.next,finalOperation:finalState.operation.kind,bodyCount:2,linkCount:1}));
+  await context.close();
+}
+
+for(const [name,viewport] of cases) await runStraightJourney(name+'-clean',viewport);
+
 await browser.close();
-console.log('AILatheo GripCube operation-vocabulary render PASS — 2/2');
+console.log('AILatheo GripCube operation-vocabulary + clean straight-run PASS — 2/2');

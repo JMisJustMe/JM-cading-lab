@@ -24,7 +24,10 @@ on:
       - "career/**"
       - "coding-estate/**"
       - "unified-browser/**"
+      - "ailatheo/**"
       - "ailatheo-lineage/**"
+      - "functions/api/ailatheo.js"
+      - "tests/ailatheo-customer-entitlement.mjs"
       - "ai-federation/**"
       - "earn-now/**"
       - "estate/**"
@@ -100,6 +103,7 @@ jobs:
           node --check navigator/estate-integration/bridge.js
           node --check estate-return-route.js
           node navigator/mcp-public-v1/test.mjs
+          node tests/ailatheo-customer-entitlement.mjs
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null
           python3 -m json.tool navigator/stringline.json >/dev/null
           python3 -m json.tool registry/jm3232-navigator.json >/dev/null
@@ -124,7 +128,7 @@ jobs:
             [ ! -f "$file" ] || cp "$file" cloudflare-estate/
           done
 
-          for dir in access apps author books career coding-estate unified-browser ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
+          for dir in access apps author books career coding-estate unified-browser ailatheo ailatheo-lineage ai-federation earn-now estate fresh-app-lab games-beyond lyrics market-lab navigator recent recovery shims-reader theory visual-story; do
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
@@ -194,6 +198,10 @@ jobs:
             Cache-Control: no-store, no-cache, must-revalidate
           /unified-browser/*
             Cache-Control: no-store, no-cache, must-revalidate
+          /ailatheo/*
+            Cache-Control: no-store, no-cache, must-revalidate
+          /api/ailatheo*
+            Cache-Control: no-store, no-cache, must-revalidate
           /theory/*
             Cache-Control: no-store, no-cache, must-revalidate
           /visual-story/*
@@ -211,6 +219,8 @@ jobs:
           cat > cloudflare-estate/_redirects <<'EOF'
           /unified-browser /unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html 200
           /unified-browser/ /unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html 200
+          /ailatheo /ailatheo/index.html 200
+          /ailatheo/ /ailatheo/index.html 200
           /navigator /navigator/index.html 200
           /navigator/ /navigator/index.html 200
           /access /access/index.html 200
@@ -254,6 +264,11 @@ jobs:
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/author/index.html
           test -s cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
           grep -Fq "AILATHEO_VISIBLE_CIRCUIT_DING" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
+          test -s cloudflare-estate/ailatheo/index.html
+          grep -Fq "Build it." cloudflare-estate/ailatheo/index.html
+          grep -Fq "Creator checkout only opens when the server confirms the entitlement rail is ready." cloudflare-estate/ailatheo/index.html
+          test -s functions/api/ailatheo.js
+          grep -Fq "JM.AILatheoCustomer/0.1" functions/api/ailatheo.js
           grep -Fq "localStorage.setItem" cloudflare-estate/unified-browser/OPEN_FIRST_AILATHEO_UNIFIED_BROWSER_CIRCUIT_v0_1.html
           test -s cloudflare-estate/navigator/index.html
           test -s cloudflare-estate/navigator/stringline.json
@@ -344,6 +359,8 @@ jobs:
             ['/money-menu/', 'ecostate-griprail-v6.js'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
             ['/unified-browser/', 'AILATHEO_VISIBLE_CIRCUIT_DING'],
+            ['/ailatheo/', 'Build it.'],
+            ['/api/ailatheo?action=status', 'JM.AILatheoCustomer/0.1'],
             ['/navigator/', 'v1.5.2 · AIRBORNE'],
             ['/navigator/stringline.json', 'estate-sovereign-integration'],
             ['/navigator/estate-integration/', 'One Estate.'],

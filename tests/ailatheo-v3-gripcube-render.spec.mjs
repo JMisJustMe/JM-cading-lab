@@ -27,6 +27,24 @@ for(const [name,viewport] of cases){
   await page.locator('.gcw-quick [data-q="add"]').click();
 
   const second=page.locator('.sceneBody').nth(1);
+  const createEvent=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact());
+  if(createEvent?.kind!=='OBJECT DING'||createEvent?.body!=='Grip Body'||createEvent?.action!=='CREATE'||!createEvent?.recoveryRevision) throw new Error(name+': created body did not publish recoverable OBJECT DING '+JSON.stringify(createEvent));
+
+  await second.click();
+  await page.evaluate(()=>document.querySelector('#duplicateObject')?.click());
+  const duplicateProof=await page.evaluate(()=>({count:document.querySelectorAll('.sceneBody').length,event:window.JMAILatheoGripUI.latestMaterialContact(),selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
+  if(duplicateProof.count!==3||duplicateProof.event?.kind!=='DUPLICATE DING'||duplicateProof.event?.action!=='DUPLICATE'||!duplicateProof.event?.recoveryRevision||duplicateProof.selected!=='Grip Body Copy') throw new Error(name+': duplicate did not publish recoverable structural Ding '+JSON.stringify(duplicateProof));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const duplicateUndo=await page.evaluate(()=>({count:document.querySelectorAll('.sceneBody').length,event:window.JMAILatheoGripUI.latestMaterialContact(),selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
+  if(duplicateUndo.count!==2||duplicateUndo.event?.kind!=='RECOVERY DING'||duplicateUndo.event?.recoveredEventId!==duplicateProof.event.id||duplicateUndo.selected!=='Grip Body') throw new Error(name+': duplicate structural recovery failed '+JSON.stringify({duplicateProof,duplicateUndo}));
+
+  await page.evaluate(()=>document.querySelector('#deleteObject')?.click());
+  const deleteProof=await page.evaluate(()=>({count:document.querySelectorAll('.sceneBody').length,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(deleteProof.count!==1||deleteProof.event?.kind!=='DELETE DING'||deleteProof.event?.body!=='Grip Body'||deleteProof.event?.action!=='DELETE'||!deleteProof.event?.recoveryRevision) throw new Error(name+': delete did not publish recoverable structural Ding '+JSON.stringify(deleteProof));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const deleteUndo=await page.evaluate(()=>({count:document.querySelectorAll('.sceneBody').length,event:window.JMAILatheoGripUI.latestMaterialContact(),selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
+  if(deleteUndo.count!==2||deleteUndo.event?.kind!=='RECOVERY DING'||deleteUndo.event?.recoveredEventId!==deleteProof.event.id||deleteUndo.selected!=='Grip Body') throw new Error(name+': delete structural recovery failed '+JSON.stringify({deleteProof,deleteUndo}));
+
   const formBefore=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
   await second.click();
   const formAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
@@ -183,9 +201,17 @@ for(const [name,viewport] of cases){
     selected:document.querySelector('.sceneBody.selected')?._body?.name||null,
     routeSourceCount:document.querySelectorAll('.sceneBody.route-source').length,
     tetherCount:document.querySelectorAll('#gcwRoutePreview .gcw-routeTether').length,
-    links:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]')).length
+    links:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]')).length,
+    event:window.JMAILatheoGripUI.latestMaterialContact()
   }));
-  if(routeDone.selected!=='Grip Body'||routeDone.routeSourceCount!==0||routeDone.tetherCount!==0||routeDone.links<1) throw new Error(name+': ROUTE target did not inherit hand contact after link '+JSON.stringify(routeDone));
+  if(routeDone.selected!=='Grip Body'||routeDone.routeSourceCount!==0||routeDone.tetherCount!==0||routeDone.links<1||routeDone.event?.kind!=='LINK DING'||routeDone.event?.action!=='LINK'||!routeDone.event?.recoveryRevision) throw new Error(name+': ROUTE target did not publish recoverable LINK DING '+JSON.stringify(routeDone));
+
+  await page.evaluate(()=>document.querySelector('#removeLink')?.click());
+  const unlinkProof=await page.evaluate(()=>({links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(unlinkProof.links!==routeDone.links-1||unlinkProof.event?.kind!=='UNLINK DING'||unlinkProof.event?.action!=='UNLINK'||!unlinkProof.event?.recoveryRevision) throw new Error(name+': unlink did not publish recoverable structural Ding '+JSON.stringify({routeDone,unlinkProof}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const unlinkUndo=await page.evaluate(()=>({links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(unlinkUndo.links!==routeDone.links||unlinkUndo.event?.kind!=='RECOVERY DING'||unlinkUndo.event?.recoveredEventId!==unlinkProof.event.id) throw new Error(name+': unlink structural recovery failed '+JSON.stringify({routeDone,unlinkProof,unlinkUndo}));
 
   const metrics=await page.evaluate(()=>({
     proof:window.JMAILatheoGripUI.proof(),
@@ -221,7 +247,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -303,16 +329,16 @@ for(const [name,viewport] of cases){
     active:document.activeElement?.classList?.contains('sceneBody')?document.activeElement._body?.name||null:null,
     source:document.querySelectorAll('.sceneBody.route-source').length,
     tether:document.querySelectorAll('#gcwRoutePreview .gcw-routeTether').length,
-    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+    event:window.JMAILatheoGripUI.latestMaterialContact()
   }));
-  if(keyboardRouteDone.links!==keyboardRouteLinksBefore+1||keyboardRouteDone.selected!==sourceName||keyboardRouteDone.active!==sourceName||keyboardRouteDone.source!==0||keyboardRouteDone.tether!==0||keyboardRouteDone.event!==routeCancelled.event) throw new Error(name+': keyboard ROUTE target contact did not complete same touch grammar '+JSON.stringify({sourceName,keyboardRouteLinksBefore,keyboardRouteDone}));
+  if(keyboardRouteDone.links!==keyboardRouteLinksBefore+1||keyboardRouteDone.selected!==sourceName||keyboardRouteDone.active!==sourceName||keyboardRouteDone.source!==0||keyboardRouteDone.tether!==0||keyboardRouteDone.event?.kind!=='LINK DING'||keyboardRouteDone.event?.id!==routeCancelled.event+1||!keyboardRouteDone.event?.recoveryRevision) throw new Error(name+': keyboard ROUTE target contact did not publish recoverable LINK DING '+JSON.stringify({sourceName,keyboardRouteLinksBefore,keyboardRouteDone}));
   await page.locator('.gcw-quick [data-q="undo"]').click();
   const keyboardRouteCleanup=await page.evaluate(()=>({
     links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]'),
     event:window.JMAILatheoGripUI.latestMaterialContact(),
     selected:document.querySelector('.sceneBody.selected')?._body?.name||null
   }));
-  if(keyboardRouteCleanup.links.length!==keyboardRouteLinksBefore||keyboardRouteCleanup.event?.kind!=='RECOVERY DING'||keyboardRouteCleanup.selected!=='Grip Body') throw new Error(name+': keyboard ROUTE proof cleanup did not restore exact pre-link graph '+JSON.stringify({keyboardRouteLinksBefore,keyboardRouteCleanup}));
+  if(keyboardRouteCleanup.links.length!==keyboardRouteLinksBefore||keyboardRouteCleanup.event?.kind!=='RECOVERY DING'||keyboardRouteCleanup.event?.recoveredEventId!==keyboardRouteDone.event.id||keyboardRouteCleanup.selected!=='Grip Body') throw new Error(name+': keyboard ROUTE proof cleanup did not restore exact pre-link graph '+JSON.stringify({keyboardRouteLinksBefore,keyboardRouteDone,keyboardRouteCleanup}));
 
   await page.locator('.gcw-lens[data-face="use"]').click();
   await page.locator('.sceneBody').nth(1).focus();
@@ -400,4 +426,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube FORM-semantic render PASS — 2/2');
+console.log('AILatheo GripCube structural-Ding render PASS — 2/2');

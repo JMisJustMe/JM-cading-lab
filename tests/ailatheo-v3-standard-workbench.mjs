@@ -2,7 +2,7 @@ import fs from "node:fs";
 const html=fs.readFileSync("unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html","utf8");
 
 const required=[
-  "JM.CreationWorkbench/0.15",
+  "JM.CreationWorkbench/0.16",
   "SELECT_OR_CREATE","CHANGE","SEE","UNDERSTAND","CONNECT","TEST","SAVE",
   "bodyShelf","duplicateObject","deleteObject","DIRECT MOVE","linkLayer","resizeHandle","rotateHandle","removeLink",
   "composeSource","parseSource","applyBodyVisual","rememberRevision",
@@ -26,11 +26,11 @@ if(html.includes("</details></div></article>")) throw new Error("ACTION_GROUP_MA
 for(const token of ["function consequence","function fireLink","function distance","runBodyAction","_suppressClick","preDrag=snapshot()"]) if(!html.includes(token)) throw new Error("RUNTIME_CONTACT_MISSING_"+token);
 for(const token of ["drawLinks","refreshLinkShelf","bindTransformHandle","linkArrow","Spin","Grow","Shrink","Bounce","UNLINK →"]) if(!html.includes(token)) throw new Error("STAGE_DEPTH_MISSING_"+token);
 
-for(const token of ["gcw-shell","gcw-lenses","JMAILatheoGripUI","GRIP BODY · DRAG / PINCH / TWIST","singleWorldCarrier","starterYieldsToBodies","gcw-world","scene.dataset.gcwLens","syncGripContext","gripPointers","finishMultiGrip","paintRouteTether","carried forward as CAUSE","recordMaterialContact","bodyMaterialState","materialDelta","LATEST MATERIAL DING","rememberRevision('USE CONTACT')","recordRecoveryContact","selectedIndex:selected?bodies.indexOf(selected.body):-1","recoveryRevision","applyFieldPrecision","FIELD PRECISION","Precision ","FIELD DING","renderSelectedContext","SELECTED BODY · LIVE STATE","PROOF TARGET · CURRENT CLAIM","OPEN TRACE DEPTH","keyboardStageContact","stageZone.addEventListener('keydown'","ArrowLeft:'left'","current==='use'","e.key==='Escape'","routeBodyContact","current==='route'&&(e.key==='Enter'||e.key===' ')","rememberSnapshot","recordMaterialContact('MOVE DING'","recordMaterialContact(kind,target","recordMaterialContact('GRIP DING'","beginFormSemanticEdit","commitFormSemanticEdit","Committed '+edit.field+' edit","FORM DING"]) if(!html.includes(token)) throw new Error("GRIPCUBE_UI_MISSING_"+token);
+for(const token of ["gcw-shell","gcw-lenses","JMAILatheoGripUI","GRIP BODY · DRAG / PINCH / TWIST","singleWorldCarrier","starterYieldsToBodies","gcw-world","scene.dataset.gcwLens","syncGripContext","gripPointers","finishMultiGrip","paintRouteTether","carried forward as CAUSE","recordMaterialContact","bodyMaterialState","materialDelta","LATEST MATERIAL DING","rememberRevision('USE CONTACT')","recordRecoveryContact","selectedIndex:selected?bodies.indexOf(selected.body):-1","recoveryRevision","applyFieldPrecision","FIELD PRECISION","Precision ","FIELD DING","renderSelectedContext","SELECTED BODY · LIVE STATE","PROOF TARGET · CURRENT CLAIM","OPEN TRACE DEPTH","keyboardStageContact","stageZone.addEventListener('keydown'","ArrowLeft:'left'","current==='use'","e.key==='Escape'","routeBodyContact","current==='route'&&(e.key==='Enter'||e.key===' ')","rememberSnapshot","recordMaterialContact('MOVE DING'","recordMaterialContact(kind,target","recordMaterialContact('GRIP DING'","beginFormSemanticEdit","commitFormSemanticEdit","Committed '+edit.field+' edit","FORM DING","recordStructuralContact","CREATE BODY","DUPLICATE BODY","DELETE BODY","CREATE LINK","REMOVE LINK","UNLINK DING"]) if(!html.includes(token)) throw new Error("GRIPCUBE_UI_MISSING_"+token);
 
 console.log(JSON.stringify({
   passed:true,
-  standard:"JM.CreationWorkbench/0.15",
+  standard:"JM.CreationWorkbench/0.16",
   routeStages:7,
   directManipulation:true,
   sourceMirrorsShape:true,
@@ -57,5 +57,6 @@ console.log(JSON.stringify({
   sharedRouteContact:true,
   keyboardRouteCompletion:true,
   formGeometryMaterialRecovery:true,
-  formSemanticSingleTransaction:true
+  formSemanticSingleTransaction:true,
+  structuralDingsRecoverable:true
 },null,2));

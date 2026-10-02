@@ -120,7 +120,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -163,12 +163,40 @@ for(const [name,viewport] of cases){
   if(!directEvent||directEvent.kind!=='BODY DING'||directEvent.body!=='Grip Body'||directEvent.action!=='Spin') throw new Error(name+': USE did not publish latest material body Ding '+JSON.stringify(directEvent));
 
   await page.locator('.gcw-lens[data-face="trace"]').click();
-  const traceFocus=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||'',live:document.querySelector('#gcwTraceDingFocus')?.dataset.live}));
-  if(traceFocus.event?.id!==directEvent.id||traceFocus.live!=='true'||!traceFocus.text.includes('BODY DING')||!traceFocus.text.includes('Grip Body')) throw new Error(name+': TRACE did not follow latest material Ding '+JSON.stringify(traceFocus));
+  const traceFocus=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    text:document.querySelector('#gcwTraceDingFocus')?.textContent||'',
+    live:document.querySelector('#gcwTraceDingFocus')?.dataset.live,
+    context:document.querySelector('#gcwTraceContext')?.textContent||'',
+    depthOpen:!!document.querySelector('#gcwTraceDepth')?.open
+  }));
+  if(traceFocus.event?.id!==directEvent.id||traceFocus.live!=='true'||!traceFocus.text.includes('BODY DING')||!traceFocus.text.includes('Grip Body')||!traceFocus.context.includes('Grip Body')||traceFocus.depthOpen) throw new Error(name+': TRACE shallow contact/depth mismatch '+JSON.stringify(traceFocus));
+
+  await page.locator('#gcwTraceDepth > summary').click();
+  const traceDepthOpened=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    open:!!document.querySelector('#gcwTraceDepth')?.open,
+    routeInside:!!document.querySelector('#gcwTraceDepth #route'),
+    tabsInside:!!document.querySelector('#gcwTraceDepth .tabs')
+  }));
+  if(!traceDepthOpened.open||!traceDepthOpened.routeInside||!traceDepthOpened.tabsInside||traceDepthOpened.event?.id!==directEvent.id) throw new Error(name+': opening TRACE depth changed event or lost deep carriers '+JSON.stringify(traceDepthOpened));
 
   await page.locator('.gcw-lens[data-face="proof"]').click();
-  const proofFocus=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||'',live:document.querySelector('#gcwProofDingFocus')?.dataset.live}));
-  if(proofFocus.event?.id!==directEvent.id||proofFocus.live!=='true'||!proofFocus.text.includes('BODY DING')||proofFocus.text!==traceFocus.text) throw new Error(name+': PROOF did not carry same material Ding without inventing a new event '+JSON.stringify({traceFocus,proofFocus}));
+  const proofFocus=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    text:document.querySelector('#gcwProofDingFocus')?.textContent||'',
+    live:document.querySelector('#gcwProofDingFocus')?.dataset.live,
+    context:document.querySelector('#gcwProofContext')?.textContent||'',
+    depthOpen:!!document.querySelector('.gcw-face[data-face="proof"] .advanced')?.open
+  }));
+  if(proofFocus.event?.id!==directEvent.id||proofFocus.live!=='true'||!proofFocus.text.includes('BODY DING')||proofFocus.text!==traceFocus.text||!proofFocus.context.includes('Grip Body')||proofFocus.depthOpen) throw new Error(name+': PROOF shallow contact/depth mismatch '+JSON.stringify({traceFocus,proofFocus}));
+
+  await page.locator('.gcw-face[data-face="proof"] .advanced > summary').click();
+  const proofDepthOpened=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    open:!!document.querySelector('.gcw-face[data-face="proof"] .advanced')?.open
+  }));
+  if(!proofDepthOpened.open||proofDepthOpened.event?.id!==directEvent.id) throw new Error(name+': opening PROOF depth manufactured evidence or failed to open '+JSON.stringify(proofDepthOpened));
 
   const beforeCausalContact=await page.evaluate(()=>({
     bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({name:x._body?.name,on:!!x._body?.on,size:Math.round(x._body?.size||0),rotate:Math.round(x._body?.rotate||0)})),
@@ -211,4 +239,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube FIELD-precision render PASS — 2/2');
+console.log('AILatheo GripCube earned-depth render PASS — 2/2');

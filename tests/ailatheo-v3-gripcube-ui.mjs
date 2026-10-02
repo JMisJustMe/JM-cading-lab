@@ -10,9 +10,9 @@ const must=[
   "formFace.append(lab,source,explain)",
   "fieldFace.append(bodyShelf,inspector)",
   "routeFace.append(linker,linkShelf)",
-  "traceFace.append(tabs,route,teach)",
+  "traceFace.append(traceDingFocus,tabs,route,teach)",
   "useFace.append(core)",
-  "proofFace.append(advanced)"
+  "proofFace.append(proofDingFocus,advanced)"
 ];
 for(const x of must) if(!html.includes(x)) throw new Error("GRIP_UI_MISSING_"+x);
 for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","undoProject","saveProject"]){

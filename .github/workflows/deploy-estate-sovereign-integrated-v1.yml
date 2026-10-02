@@ -385,7 +385,8 @@ jobs:
             const next=[];
             for(const [path,needle] of pending){
               try{
-                const r=await fetch(base+path+'?sovereign-proof='+process.env.GITHUB_RUN_ID+'-'+attempt,{headers:{'cache-control':'no-cache','user-agent':'JM-Sovereign-Integrated-Deploy/1'}});
+                const joiner=path.includes('?')?'&':'?';
+                const r=await fetch(base+path+joiner+'sovereign-proof='+process.env.GITHUB_RUN_ID+'-'+attempt,{headers:{'cache-control':'no-cache','user-agent':'JM-Sovereign-Integrated-Deploy/1'}});
                 const text=await r.text();
                 if(r.ok&&text.includes(needle)){console.log('LIVE PASS',path,r.status,needle)}
                 else {console.log('WAIT',path,r.status,'needle',text.includes(needle));next.push([path,needle])}

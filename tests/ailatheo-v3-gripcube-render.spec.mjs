@@ -120,7 +120,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -148,10 +148,14 @@ for(const [name,viewport] of cases){
   const proofFocus=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||'',live:document.querySelector('#gcwProofDingFocus')?.dataset.live}));
   if(proofFocus.event?.id!==directEvent.id||proofFocus.live!=='true'||!proofFocus.text.includes('BODY DING')||proofFocus.text!==traceFocus.text) throw new Error(name+': PROOF did not carry same material Ding without inventing a new event '+JSON.stringify({traceFocus,proofFocus}));
 
+  const beforeCausalContact=await page.evaluate(()=>({
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({name:x._body?.name,on:!!x._body?.on,size:Math.round(x._body?.size||0),rotate:Math.round(x._body?.rotate||0)})),
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length
+  }));
   await page.locator('.gcw-lens[data-face="use"]').click();
   await page.locator('.sceneBody').nth(0).click();
   const causeEvent=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact());
-  if(!causeEvent||causeEvent.id<=directEvent.id||causeEvent.kind!=='CAUSE DING'||causeEvent.body!=='Grip Body'||!causeEvent.detail.includes('--touch-->')) throw new Error(name+': linked USE contact did not replace pointer with causal Ding '+JSON.stringify(causeEvent));
+  if(!causeEvent||causeEvent.id<=directEvent.id||causeEvent.kind!=='CAUSE DING'||causeEvent.body!=='Grip Body'||!causeEvent.detail.includes('--touch-->')||!causeEvent.recoveryRevision) throw new Error(name+': linked USE contact did not replace pointer with recoverable causal Ding '+JSON.stringify(causeEvent));
 
   await page.locator('.gcw-lens[data-face="trace"]').click();
   const causeTrace=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||''}));
@@ -161,7 +165,28 @@ for(const [name,viewport] of cases){
   const persistedMaterialEvent=await page.evaluate(()=>localStorage.getItem('jm.ailatheo.v3.materialContact'));
   if(persistedMaterialEvent!==null) throw new Error(name+': material event pointer was persisted; it must remain ephemeral');
 
-  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:causeEvent.id,materialEventKind:causeEvent.kind}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const recovery=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({name:x._body?.name,on:!!x._body?.on,size:Math.round(x._body?.size||0),rotate:Math.round(x._body?.rotate||0)})),
+    persistedBodies:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]')).map(x=>({name:x.name,on:!!x.on,size:Math.round(x.size||0),rotate:Math.round(x.rotate||0)})),
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null,
+    ding:document.querySelector('#ding')?.textContent
+  }));
+  if(recovery.event?.kind!=='RECOVERY DING'||recovery.event?.recoveredEventId!==causeEvent.id||recovery.event?.action!=='UNDO') throw new Error(name+': UNDO did not bind recovery to latest causal Ding '+JSON.stringify({causeEvent,recovery}));
+  if(JSON.stringify(recovery.bodies)!==JSON.stringify(beforeCausalContact.bodies)) throw new Error(name+': UNDO did not restore exact pre-contact body state '+JSON.stringify({beforeCausalContact,recovery}));
+  if(JSON.stringify(recovery.persistedBodies)!==JSON.stringify(beforeCausalContact.bodies)) throw new Error(name+': recovered body state was not persisted '+JSON.stringify({beforeCausalContact,recovery}));
+  if(recovery.links!==beforeCausalContact.links) throw new Error(name+': UNDO damaged relationship state '+JSON.stringify({beforeCausalContact,recovery}));
+  if(recovery.selected!==sourceName||recovery.ding!=='RECOVERY DING') throw new Error(name+': UNDO did not preserve hand contact on recovered source '+JSON.stringify({sourceName,recovery}));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const recoveryTrace=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||''}));
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const recoveryProof=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
+  if(recoveryTrace.event?.id!==recovery.event.id||recoveryProof.event?.id!==recovery.event.id||recoveryTrace.text!==recoveryProof.text||!recoveryTrace.text.includes('RECOVERY DING')) throw new Error(name+': recovered Ding did not carry into TRACE/PROOF '+JSON.stringify({recovery,recoveryTrace,recoveryProof}));
+
+  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube Ding-focus render PASS — 2/2');
+console.log('AILatheo GripCube Ding-recovery render PASS — 2/2');

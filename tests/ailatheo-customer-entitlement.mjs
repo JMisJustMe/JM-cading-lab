@@ -110,6 +110,10 @@ async function sign(payload,timestamp){
   assert.equal(bad.status,400);
 }
 
+
+const serviceWorker=await fs.readFile(new URL('../sw.js',import.meta.url),'utf8');
+assert.ok(serviceWorker.includes("url.pathname==='/api/ailatheo'"),'entitlement API must bypass service-worker cache');
+
 globalThis.fetch=originalFetch;
 console.log(JSON.stringify({
   passed:true,
@@ -124,5 +128,6 @@ console.log(JSON.stringify({
   webhookIdempotent:true,
   cancelAtPeriodEndPreservesAccess:true,
   failClosedWithoutBindings:true,
-  projectOwnershipIndependent:true
+  projectOwnershipIndependent:true,
+  serviceWorkerBypass:true
 },null,2));

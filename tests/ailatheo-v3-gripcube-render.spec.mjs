@@ -158,7 +158,8 @@ for(const [name,viewport] of cases){
   await page.locator('.gcw-lens[data-face="proof"]').click();
   const causeProof=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
   if(causeTrace.event?.id!==causeEvent.id||causeProof.event?.id!==causeEvent.id||causeTrace.text!==causeProof.text||!causeTrace.text.includes('CAUSE DING')) throw new Error(name+': TRACE/PROOF did not converge on same causal material Ding '+JSON.stringify({causeEvent,causeTrace,causeProof}));
-  if(localStorage.getItem('jm.ailatheo.v3.materialContact')!==null) throw new Error(name+': material event pointer was persisted; it must remain ephemeral');
+  const persistedMaterialEvent=await page.evaluate(()=>localStorage.getItem('jm.ailatheo.v3.materialContact'));
+  if(persistedMaterialEvent!==null) throw new Error(name+': material event pointer was persisted; it must remain ephemeral');
 
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:causeEvent.id,materialEventKind:causeEvent.kind}));
 }

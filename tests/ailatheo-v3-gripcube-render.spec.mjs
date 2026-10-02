@@ -120,7 +120,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -185,6 +185,26 @@ for(const [name,viewport] of cases){
   await page.keyboard.press('Escape');
   const routeCancelled=await page.evaluate(()=>({source:document.querySelectorAll('.sceneBody.route-source').length,tether:document.querySelectorAll('#gcwRoutePreview .gcw-routeTether').length,event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
   if(routeBeforeCancel.source!==1||routeCancelled.source!==0||routeCancelled.tether!==0||routeCancelled.event!==routeBeforeCancel.event||routeCancelled.selected!=='Grip Body') throw new Error(name+': keyboard ROUTE cancel broke selection/evidence '+JSON.stringify({routeBeforeCancel,routeCancelled}));
+
+  const keyboardRouteLinksBefore=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length);
+  await page.keyboard.press('Enter');
+  const keyboardRouteArmed=await page.evaluate(()=>({
+    source:document.querySelectorAll('.sceneBody.route-source').length,
+    sourceName:document.querySelector('.sceneBody.route-source')?._body?.name||null,
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+  }));
+  if(keyboardRouteArmed.source!==1||keyboardRouteArmed.sourceName!=='Grip Body'||keyboardRouteArmed.event!==routeCancelled.event) throw new Error(name+': keyboard Enter did not arm focused selected body as ROUTE cause '+JSON.stringify({routeCancelled,keyboardRouteArmed}));
+  await page.locator('.sceneBody').nth(0).focus();
+  await page.keyboard.press('Enter');
+  const keyboardRouteDone=await page.evaluate(()=>({
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null,
+    active:document.activeElement?.classList?.contains('sceneBody')?document.activeElement._body?.name||null:null,
+    source:document.querySelectorAll('.sceneBody.route-source').length,
+    tether:document.querySelectorAll('#gcwRoutePreview .gcw-routeTether').length,
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+  }));
+  if(keyboardRouteDone.links!==keyboardRouteLinksBefore+1||keyboardRouteDone.selected!==sourceName||keyboardRouteDone.active!==sourceName||keyboardRouteDone.source!==0||keyboardRouteDone.tether!==0||keyboardRouteDone.event!==routeCancelled.event) throw new Error(name+': keyboard ROUTE target contact did not complete same touch grammar '+JSON.stringify({sourceName,keyboardRouteLinksBefore,keyboardRouteDone}));
 
   await page.locator('.gcw-lens[data-face="use"]').click();
   await page.locator('.sceneBody').nth(1).focus();
@@ -272,4 +292,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube keyboard-parity render PASS — 2/2');
+console.log('AILatheo GripCube keyboard-ROUTE render PASS — 2/2');

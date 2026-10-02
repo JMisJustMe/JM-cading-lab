@@ -40,6 +40,18 @@ if(!html.includes("Checkout stays disabled until real account + entitlement reco
 if(!html.includes("bodies.push(...signalGardenBodies());links.push({from:0,to:1,trigger:'touch'},{from:1,to:2,trigger:'touch'})")) throw new Error("SIGNAL_GARDEN_NOT_USING_NATIVE_BODY_LINK_MODEL");
 if(!html.includes("recordProjectContact('SAMPLE DING'")) throw new Error("SAMPLE_MATERIAL_CONTACT_MISSING");
 
+
+const launch=fs.readFileSync("ailatheo/index.html","utf8");
+for(const token of [
+  "Build it.","Connect it.","See it work.",
+  "JM.CreationWorkbench/0.25","CREATOR PREVIEW v0.1",
+  "BODY","ACT","LINK","Signal Garden","FREE PREVIEW","£15/mo","£150/year",
+  "Your creation stays yours.",
+  "../unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html"
+]) if(!launch.includes(token)) throw new Error("CREATOR_LAUNCH_MISSING_"+token);
+if(!launch.includes("Checkout intentionally unavailable in this build until account + entitlement continuity is real.")) throw new Error("LAUNCH_ENTITLEMENT_BOUNDARY_MISSING");
+if((launch.match(/href="\.\.\/unified-browser\/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA\.html"/g)||[]).length<3) throw new Error("LAUNCH_TRY_FREE_ROUTE_TOO_WEAK");
+
 console.log(JSON.stringify({
   passed:true,
   release:"Creator Preview v0.1",
@@ -53,5 +65,7 @@ console.log(JSON.stringify({
   noAccountWallBeforeContact:true,
   noPaymentWallBeforeContact:true,
   checkoutHonestlyDisabled:true,
-  sampleUsesNativeBodyLinkModel:true
+  sampleUsesNativeBodyLinkModel:true,
+  publicProductDoor:true,
+  publicTryFreeRoute:true
 },null,2));

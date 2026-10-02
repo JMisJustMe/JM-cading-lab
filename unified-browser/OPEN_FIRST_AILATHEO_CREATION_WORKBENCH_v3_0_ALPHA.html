@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.9 · GripCube UI projection
+/* JM.CreationWorkbench/0.10 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.9 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.10 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -117,6 +117,14 @@
 .gcw-dingFocus strong{display:block;font-size:.61rem;letter-spacing:.08em;color:var(--gcw-face,var(--cyan));margin-bottom:4px}
 .gcw-dingFocus span{display:block;color:#dce8f3;font-size:.61rem;line-height:1.35}
 .gcw-dingFocus small{display:block;margin-top:4px;color:var(--mut);font-size:.52rem;letter-spacing:.03em}
+.gcw-fieldHalo{position:absolute;z-index:11;width:136px;padding:5px;border:1px solid color-mix(in srgb,var(--gcw-field),transparent 34%);border-radius:16px;background:#06131de8;backdrop-filter:blur(10px);box-shadow:0 10px 28px #0008,0 0 24px #3ce0cf1f;transform:translate(-50%,-50%)}
+.gcw-fieldHalo[hidden]{display:none}
+.gcw-fieldMove{display:grid;grid-template-columns:repeat(3,34px);grid-template-rows:repeat(3,34px);justify-content:center;gap:2px}
+.gcw-fieldMove span{display:grid;place-items:center;color:var(--gcw-field);font:950 .46rem/1 system-ui;letter-spacing:.06em}
+.gcw-fieldFine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;margin-top:4px}
+.gcw-fieldHalo button{min-width:0;min-height:32px;padding:0;border:1px solid #274458;border-radius:9px;background:#0d2130;color:#eefcff;font:950 .55rem/1 system-ui;touch-action:manipulation}
+.gcw-fieldHalo button:active{transform:scale(.94);border-color:var(--gcw-field);color:var(--gcw-field)}
+@media(max-width:760px){.gcw-fieldHalo{width:128px}.gcw-fieldMove{grid-template-columns:repeat(3,32px);grid-template-rows:repeat(3,32px)}.gcw-fieldHalo button{min-height:30px}}
 .sceneBody.selected[data-gcw-contact]::after{content:attr(data-gcw-contact);position:absolute;right:-9px;top:-11px;z-index:8;min-width:38px;padding:4px 6px;border:1px solid currentColor;border-radius:999px;background:#06111ee8;color:#f4f8ff;font:900 .48rem/1 system-ui;letter-spacing:.07em;white-space:nowrap;box-shadow:0 5px 16px #0008;pointer-events:none}
 .gcw-stageZone.gcw-multitouch .sceneBody.selected{filter:brightness(1.18);box-shadow:0 0 0 3px #72e6ff4a,0 0 34px #72e6ff33,0 12px 35px #0008}
 .gcw-quick button[data-q="act"].contextual{box-shadow:0 0 0 2px #ffd36f24 inset,0 0 20px #ffd36f16}
@@ -125,7 +133,7 @@
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.9 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.10 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -165,14 +173,14 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.9 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.10 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.9',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.10',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null;
-function bodyMaterialState(body){return {on:!!body.on,size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
-function materialDelta(before,after){const bits=[];if(before.on!==after.on)bits.push('state '+before.on+'→'+after.on);if(before.size!==after.size)bits.push('size '+before.size+'→'+after.size);if(before.rotate!==after.rotate)bits.push('rotate '+before.rotate+'→'+after.rotate);return bits.length?bits.join(' · '):'visible action contact'}
+function bodyMaterialState(body){return {on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
+function materialDelta(before,after){const bits=[];if(before.on!==after.on)bits.push('state '+before.on+'→'+after.on);if(before.x!==after.x)bits.push('x '+before.x+'→'+after.x);if(before.y!==after.y)bits.push('y '+before.y+'→'+after.y);if(before.size!==after.size)bits.push('size '+before.size+'→'+after.size);if(before.rotate!==after.rotate)bits.push('rotate '+before.rotate+'→'+after.rotate);return bits.length?bits.join(' · '):'visible action contact'}
 function recordMaterialContact(kind,body,before,after,detail='',recoveryRevision=null){lastMaterialContact={id:++materialEventSeq,kind,body:body.name,action:body.action,before,after,delta:materialDelta(before,after),detail,recoveryRevision};window.JMAILatheoGripUI?.syncMaterialContact?.();return lastMaterialContact}
 function recordRecoveryContact(reversed,revisionId){lastMaterialContact={id:++materialEventSeq,kind:'RECOVERY DING',body:reversed?.body||'PROJECT',action:'UNDO',before:reversed?.after||null,after:reversed?.before||null,delta:reversed?'reversed '+reversed.kind+' #'+reversed.id:'restored revision #'+revisionId,detail:reversed?'Recovery matched revision #'+revisionId:'Recovery restored project state',recoveryRevision:null,recoveredEventId:reversed?.id||null};window.JMAILatheoGripUI?.syncMaterialContact?.();return lastMaterialContact}
 const bodies=[];const scene=document.querySelector('#scene'),bodyShelf=document.querySelector('#bodyShelf'),linkLayer=document.querySelector('#linkLayer'),linkLines=document.querySelector('#linkLines'),linkShelf=document.querySelector('#linkShelf'),resizeHandle=document.querySelector('#resizeHandle'),rotateHandle=document.querySelector('#rotateHandle'),px=document.querySelector('#px'),py=document.querySelector('#py'),psize=document.querySelector('#psize'),prot=document.querySelector('#prot');let selected=null,selectedLink=-1;const links=[];const fromBody=document.querySelector('#fromBody'),toBody=document.querySelector('#toBody'),trigger=document.querySelector('#trigger');function bodyElement(target){return [...scene.querySelectorAll('.sceneBody')].find(x=>x._body===target)}
@@ -227,8 +235,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v09')return;
-  world.dataset.gripcubeUi='v09';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v10')return;
+  world.dataset.gripcubeUi='v10';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -246,7 +254,9 @@ function mountGripWorkbench(){
   const stageFrame=document.createElement('div');stageFrame.className='gcw-stageFrame';stageFrame.append(scene);
   const gripHint=document.createElement('div');gripHint.className='gcw-gripHint';gripHint.textContent='GRIP BODY · DRAG / RESIZE / ROTATE';
   const contactHint=document.createElement('div');contactHint.className='gcw-contactHint';contactHint.id='gcwContactHint';contactHint.textContent='FORM · select / drag / resize / rotate';
-  stageFrame.append(gripHint,contactHint);
+  const fieldHalo=document.createElement('div');fieldHalo.className='gcw-fieldHalo';fieldHalo.id='gcwFieldHalo';fieldHalo.hidden=true;fieldHalo.setAttribute('aria-label','FIELD precision controls');
+  fieldHalo.innerHTML='<div class="gcw-fieldMove"><span></span><button data-field="up" aria-label="Nudge up">↑</button><span></span><button data-field="left" aria-label="Nudge left">←</button><span>1%</span><button data-field="right" aria-label="Nudge right">→</button><span></span><button data-field="down" aria-label="Nudge down">↓</button><span></span></div><div class="gcw-fieldFine"><button data-field="smaller" aria-label="Shrink two pixels">S−</button><button data-field="larger" aria-label="Grow two pixels">S+</button><button data-field="rotateLeft" aria-label="Rotate left one degree">R−</button><button data-field="rotateRight" aria-label="Rotate right one degree">R+</button></div>';
+  stageFrame.append(gripHint,contactHint,fieldHalo);
   const cubeDock=document.createElement('div');cubeDock.className='gcw-cubeDock';cubeDock.id='gcwCubeDock';cubeDock.setAttribute('aria-label','GripCube lens control. Drag and release to change face.');
   cubeDock.innerHTML='<div class="gcw-cube" id="gcwCube"><div class="gcw-cubeFace" data-cube-face="trace">TRACE</div><div class="gcw-cubeFace" data-cube-face="route">ROUTE</div><div class="gcw-cubeFace" data-cube-face="form">FORM</div><div class="gcw-cubeFace" data-cube-face="field">FIELD</div><div class="gcw-cubeFace" data-cube-face="proof">PROOF</div><div class="gcw-cubeFace" data-cube-face="use">USE</div></div>';
   stageFrame.append(cubeDock);
@@ -332,6 +342,28 @@ function mountGripWorkbench(){
     if(fromBody)fromBody.value='';
     if(toBody)toBody.value='';
   }
+  function syncFieldHalo(){
+    const show=current==='field'&&!!selected?.body;if(!show){fieldHalo.hidden=true;return}
+    const b=selected.body,rect=scene.getBoundingClientRect();if(!rect.width||!rect.height){fieldHalo.hidden=true;return}
+    const side=b.x>56?-1:1,offset=(b.size||86)/2+78;
+    const x=Math.max(70,Math.min(rect.width-70,rect.width*b.x/100+side*offset));
+    const y=Math.max(58,Math.min(rect.height-58,rect.height*b.y/100));
+    fieldHalo.style.left=x+'px';fieldHalo.style.top=y+'px';fieldHalo.hidden=false;
+  }
+  function applyFieldPrecision(cmd){
+    if(current!=='field'||!selected?.body)return false;
+    const b=selected.body,before=bodyMaterialState(b),recoveryRevision=rememberRevision('FIELD PRECISION');
+    if(cmd==='left')b.x=Math.max(0,b.x-1);if(cmd==='right')b.x=Math.min(100,b.x+1);
+    if(cmd==='up')b.y=Math.max(0,b.y-1);if(cmd==='down')b.y=Math.min(100,b.y+1);
+    if(cmd==='smaller')b.size=Math.max(24,b.size-2);if(cmd==='larger')b.size=Math.min(220,b.size+2);
+    if(cmd==='rotateLeft')b.rotate=(b.rotate||0)-1;if(cmd==='rotateRight')b.rotate=(b.rotate||0)+1;
+    px.value=Math.round(b.x);py.value=Math.round(b.y);psize.value=Math.round(b.size);prot.value=Math.round(b.rotate);
+    applyBodyVisual(selected.el,b);positionHandles();drawLinks();persistBodies();
+    const after=bodyMaterialState(b);recordMaterialContact('FIELD DING',b,before,after,'Precision '+cmd,recoveryRevision);
+    d.textContent='FIELD DING';teach.textContent='FIELD → '+b.name+' '+materialDelta(before,after)+'. Exact recovery point earned.';
+    syncFieldHalo();syncGripContext();return true;
+  }
+  fieldHalo.addEventListener('click',e=>{const b=e.target.closest('button[data-field]');if(b)applyFieldPrecision(b.dataset.field)});
   function syncGripContext(){
     scene.dataset.gcwLens=current;stageZone.dataset.contactLens=current;
     const body=selected?.body||null;
@@ -350,8 +382,8 @@ function mountGripWorkbench(){
     }
     if(routeQuick)routeQuick.textContent=current==='route'&&routeAnchor>=0?'TO BODY':'LINK';
     contactHint.textContent=(contactCopy[current]||current.toUpperCase())+(body?' · '+body.name:'');
-    gripHint.textContent=(current==='use'?'TAP BODY · EXECUTE':current==='route'?'TOUCH BODY · LINK':current==='form'||current==='field'?'GRIP BODY · DRAG / PINCH / TWIST':'BODY STAYS · LENS CHANGES');
-    positionHandles();
+    gripHint.textContent=(current==='use'?'TAP BODY · EXECUTE':current==='route'?'TOUCH BODY · LINK':current==='field'?'FIELD · NUDGE / SIZE ±2 / ROTATE ±1°':current==='form'?'GRIP BODY · DRAG / PINCH / TWIST':'BODY STAYS · LENS CHANGES');
+    positionHandles();syncFieldHalo();
   }
   function beginRouteFromSelected(){
     const i=selected?bodies.indexOf(selected.body):-1;if(i<0)return false;
@@ -471,16 +503,18 @@ function mountGripWorkbench(){
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.9',
+    version:'0.10',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
     current:()=>current,
     syncContext:syncGripContext,
     syncMaterialContact:renderMaterialContact,
+    syncFieldHalo,
+    fieldPrecision:applyFieldPrecision,
     latestMaterialContact:()=>lastMaterialContact?JSON.parse(JSON.stringify(lastMaterialContact)):null,
     proof:()=>({
-      version:'0.9',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.10',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -496,6 +530,9 @@ function mountGripWorkbench(){
       dingBoundRecovery:true,
       recoveryPersistsRestoredState:true,
       selectionSurvivesUndo:true,
+      fieldPrecisionHalo:!!document.querySelector('#gcwFieldHalo'),
+      fieldPrecisionUndo:true,
+      fieldPrecisionMaterialDing:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,
       earnedDepth:advanced.tagName==='DETAILS',

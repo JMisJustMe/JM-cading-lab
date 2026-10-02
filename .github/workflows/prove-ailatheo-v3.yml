@@ -7,6 +7,8 @@ on:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-v3-*.mjs'
+      - 'tests/ailatheo-customer-entitlement.mjs'
+      - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
       - '.github/workflows/prove-ailatheo-v3.yml'
@@ -15,6 +17,8 @@ on:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-v3-*.mjs'
+      - 'tests/ailatheo-customer-entitlement.mjs'
+      - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
       - '.github/workflows/prove-ailatheo-v3.yml'
@@ -32,6 +36,7 @@ jobs:
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
       - run: node tests/ailatheo-v3-creator-preview.mjs
+      - run: node tests/ailatheo-customer-entitlement.mjs
       - name: Prove Workbench browser JavaScript syntax
         run: |
           python - <<'PY'

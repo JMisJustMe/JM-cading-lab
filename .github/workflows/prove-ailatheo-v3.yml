@@ -28,3 +28,15 @@ jobs:
       - run: node tests/ailatheo-v3-native-execution.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
+      - name: Prove Workbench browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          import re,pathlib
+          p=pathlib.Path('unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html')
+          s=p.read_text()
+          js='\n'.join(re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
+          if not js.strip():
+              raise SystemExit('WORKBENCH_INLINE_JS_MISSING')
+          pathlib.Path('/tmp/ailatheo-v3-workbench.js').write_text(js)
+          PY
+          node --check /tmp/ailatheo-v3-workbench.js

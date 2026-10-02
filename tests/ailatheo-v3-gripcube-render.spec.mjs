@@ -277,7 +277,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet||!metrics.proof.codeSingleTransaction||!metrics.proof.codeSemanticConsequenceRecovery||!metrics.proof.codeStarterRecovery||!metrics.proof.invalidCodeNoRevision||!metrics.proof.starterContactRecovery||!metrics.proof.quickActUsesStarterContact||!metrics.proof.keyboardStarterContact||!metrics.proof.starterContactTraceProof||!metrics.proof.sceneAggregateDing||!metrics.proof.sceneChildrenNested||!metrics.proof.sceneSingleUndo||!metrics.proof.sceneHoldNoRevision) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet||!metrics.proof.codeSingleTransaction||!metrics.proof.codeSemanticConsequenceRecovery||!metrics.proof.codeStarterRecovery||!metrics.proof.invalidCodeNoRevision||!metrics.proof.starterContactRecovery||!metrics.proof.quickActUsesStarterContact||!metrics.proof.keyboardStarterContact||!metrics.proof.starterContactTraceProof||!metrics.proof.sceneAggregateDing||!metrics.proof.sceneChildrenNested||!metrics.proof.sceneSingleUndo||!metrics.proof.sceneHoldNoRevision||!metrics.proof.operationLane||!metrics.proof.materialOperationSeparated||!metrics.proof.operationPointerEphemeral||!metrics.proof.operationTraceProofFocus) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -617,7 +617,42 @@ for(const [name,viewport] of cases){
   }));
   if(sceneUndo.event?.kind!=='RECOVERY DING'||sceneUndo.event?.recoveredEventId!==sceneEvent.event.id||JSON.stringify(sceneUndo.bodies)!==JSON.stringify(sceneBefore.bodies)||JSON.stringify(sceneUndo.persisted)!==JSON.stringify(sceneBefore.bodies)||sceneUndo.links!==sceneBefore.links) throw new Error(name+': one UNDO did not reverse the whole aggregate SCENE transaction '+JSON.stringify({sceneBefore,sceneEvent,sceneUndo}));
 
-  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:sceneUndo.event.id,materialEventKind:sceneUndo.event.kind,recoveredEventId:sceneUndo.event.recoveredEventId,codeTransaction:true,starterContact:true,sceneAggregate:true,sceneChildren:sceneEvent.event.children.length}));
+  const operationBaseline=await page.evaluate(()=>({
+    material:window.JMAILatheoGripUI.latestMaterialContact(),
+    operation:window.JMAILatheoGripUI.latestOperationContact(),
+    persisted:localStorage.getItem('jm.ailatheo.v3.operationContact')
+  }));
+  if(operationBaseline.operation!==null||operationBaseline.persisted!==null) throw new Error(name+': operation pointer was not initially ephemeral/empty '+JSON.stringify(operationBaseline));
+
+  await page.locator('#testProject').click();
+  const testOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));
+  if(testOperation.material?.id!==operationBaseline.material?.id||testOperation.operation?.id!==1||testOperation.operation?.kind!=='TEST'||testOperation.operation?.status!=='PASS') throw new Error(name+': TEST operation contaminated material lane or failed operation lane '+JSON.stringify({operationBaseline,testOperation}));
+
+  await page.locator('#saveProject').click();
+  const saveOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));
+  if(saveOperation.material?.id!==operationBaseline.material?.id||saveOperation.operation?.id!==2||saveOperation.operation?.kind!=='SAVE'||saveOperation.operation?.status!=='PASS') throw new Error(name+': SAVE operation contaminated material lane '+JSON.stringify({operationBaseline,saveOperation}));
+
+  await page.locator('#build').click();
+  const buildOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact(),persisted:localStorage.getItem('jm.ailatheo.v3.operationContact')}));
+  if(buildOperation.material?.id!==operationBaseline.material?.id||buildOperation.operation?.id!==3||buildOperation.operation?.kind!=='BUILD'||buildOperation.operation?.status!=='READY'||buildOperation.persisted!==null) throw new Error(name+': BUILD operation lane failed separation/ephemerality '+JSON.stringify({operationBaseline,buildOperation}));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const operationTrace=await page.evaluate(()=>({
+    material:window.JMAILatheoGripUI.latestMaterialContact(),
+    operation:window.JMAILatheoGripUI.latestOperationContact(),
+    materialText:document.querySelector('#gcwTraceDingFocus')?.textContent||'',
+    operationText:document.querySelector('#gcwTraceOperationFocus')?.textContent||''
+  }));
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const operationProof=await page.evaluate(()=>({
+    material:window.JMAILatheoGripUI.latestMaterialContact(),
+    operation:window.JMAILatheoGripUI.latestOperationContact(),
+    materialText:document.querySelector('#gcwProofDingFocus')?.textContent||'',
+    operationText:document.querySelector('#gcwProofOperationFocus')?.textContent||''
+  }));
+  if(operationTrace.material?.id!==operationBaseline.material?.id||operationProof.material?.id!==operationBaseline.material?.id||operationTrace.operation?.id!==buildOperation.operation.id||operationProof.operation?.id!==buildOperation.operation.id||operationTrace.operationText!==operationProof.operationText||!operationTrace.operationText.includes('LATEST OPERATION CONTACT')||!operationTrace.operationText.includes('BUILD · READY')||operationTrace.materialText!==operationProof.materialText||!operationTrace.materialText.includes('RECOVERY DING')) throw new Error(name+': TRACE/PROOF did not keep material and operation truths separate '+JSON.stringify({operationBaseline,buildOperation,operationTrace,operationProof}));
+
+  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:operationBaseline.material.id,materialEventKind:operationBaseline.material.kind,recoveredEventId:operationBaseline.material.recoveredEventId,codeTransaction:true,starterContact:true,sceneAggregate:true,sceneChildren:sceneEvent.event.children.length,operationLane:true,operationEventId:buildOperation.operation.id,operationKind:buildOperation.operation.kind}));
 }
 await browser.close();
-console.log('AILatheo GripCube SCENE-aggregate render PASS — 2/2');
+console.log('AILatheo GripCube operation-lane render PASS — 2/2');

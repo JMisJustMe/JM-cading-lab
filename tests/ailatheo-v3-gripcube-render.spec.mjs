@@ -624,11 +624,14 @@ for(const [name,viewport] of cases){
   }));
   if(operationBaseline.operation!==null||operationBaseline.persisted!==null) throw new Error(name+': operation pointer was not initially ephemeral/empty '+JSON.stringify(operationBaseline));
 
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const proofDepth=page.locator('.gcw-face[data-face="proof"] .advanced');
+  if(!(await proofDepth.evaluate(el=>el.open))) await proofDepth.locator('> summary').click();
   await page.locator('#testProject').click();
   const testOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));
   if(testOperation.material?.id!==operationBaseline.material?.id||testOperation.operation?.id!==1||testOperation.operation?.kind!=='TEST'||testOperation.operation?.status!=='HOLD'||!testOperation.operation?.detail.includes('DUPLICATE_BODY_NAME')||testOperation.operation?.claim!=='No proof claim earned') throw new Error(name+': TEST HOLD did not stay honestly isolated in operation lane '+JSON.stringify({operationBaseline,testOperation}));
 
-  await page.locator('#saveProject').click();
+  await page.locator('.gcw-quick [data-q="save"]').click();
   const saveOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));
   if(saveOperation.material?.id!==operationBaseline.material?.id||saveOperation.operation?.id!==2||saveOperation.operation?.kind!=='SAVE'||saveOperation.operation?.status!=='PASS') throw new Error(name+': SAVE operation contaminated material lane '+JSON.stringify({operationBaseline,saveOperation}));
 

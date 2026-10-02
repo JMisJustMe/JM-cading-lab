@@ -29,6 +29,7 @@ jobs:
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
+      - run: node tests/ailatheo-v3-creator-preview.mjs
       - name: Prove Workbench browser JavaScript syntax
         run: |
           python - <<'PY'
@@ -58,10 +59,14 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4177
         run: node tests/ailatheo-v3-gripcube-render.spec.mjs
+      - name: Prove Creator Preview first contact
+        env:
+          BASE_URL: http://127.0.0.1:4177
+        run: node tests/ailatheo-v3-creator-preview-render.spec.mjs
       - name: Upload Workbench visual receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ailatheo-v3-gripcube-render
-          path: qa/ailatheo-v3-gripcube/
+          path: |\n            qa/ailatheo-v3-gripcube/\n            qa/ailatheo-v3-creator-preview/
           if-no-files-found: ignore

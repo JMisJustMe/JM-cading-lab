@@ -111,6 +111,7 @@
 .gcw-cube{--half:34px;width:68px;height:68px}
 .gcw-gripHint{left:10px;right:auto;bottom:10px}
 @media(max-width:760px){
+  .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
   .world.gcw-world{height:auto!important;min-height:0!important;align-self:stretch;justify-self:stretch}
   .world.gcw-world>.gcw-shell{height:auto!important;min-height:0;align-self:stretch}
   .gcw-cubeDock{width:88px;height:88px;right:6px;top:6px;bottom:auto;border-radius:18px}
@@ -192,7 +193,7 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
   if(!world||!field||!side||world.dataset.gripcubeUi==='v03')return;
-  world.dataset.gripcubeUi='v04';world.classList.add('gcw-world');
+  world.dataset.gripcubeUi='v04';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -299,7 +300,7 @@ function mountGripWorkbench(){
     setFace,
     current:()=>current,
     proof:()=>({
-      version:'0.4',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.4',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       formCarrier:!!formFace.querySelector('#source'),

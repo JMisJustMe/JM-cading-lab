@@ -319,7 +319,7 @@ function mountGripWorkbench(){
     }
     const i=bodies.indexOf(b),outgoing=links.filter(L=>L.from===i).length,incoming=links.filter(L=>L.to===i).length,state=bodyMaterialState(b);
     traceContext.innerHTML='<strong>SELECTED BODY · LIVE STATE</strong><span>'+b.name+' · '+b.action+'</span><small>x='+state.x+' · y='+state.y+' · size='+state.size+' · rotate='+state.rotate+' · state='+(state.on?'ON':'OFF')+' · links '+incoming+'← / '+outgoing+'→</small>';
-    proofContext.innerHTML='<strong>PROOF TARGET · CURRENT CLAIM</strong><span>'+b.name+' exists as source-linked visible body.</span><small>Current state: '+materialDelta(state,state)+' · '+incoming+' incoming / '+outgoing+' outgoing link(s). Open depth only for machinery/build proof.</small>';
+    proofContext.innerHTML='<strong>PROOF TARGET · CURRENT CLAIM</strong><span>'+b.name+' exists as source-linked visible body.</span><small>x='+state.x+' · y='+state.y+' · size='+state.size+' · rotate='+state.rotate+' · state='+(state.on?'ON':'OFF')+' · '+incoming+' incoming / '+outgoing+' outgoing link(s). Open depth only for machinery/build proof.</small>';
   }
   formFace.append(lab,source,explain);
   fieldFace.append(bodyShelf,inspector);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AILatheo Creation Workbench v3.0-alpha</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>AILatheo Creation Workbench · Creator Preview v0.1</title>
 <style>
 :root{color-scheme:dark;--bg:#070b12;--p:#101827;--l:#263650;--ink:#f5f7fb;--mut:#9fb0c7;--cyan:#72e6ff;--gold:#ffd36f;--green:#7ae7a9}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#173452,var(--bg) 38rem);color:var(--ink);font-family:system-ui}.app{min-height:100dvh;display:grid;grid-template-rows:auto auto 1fr auto}.top,.rail,.status{display:flex;gap:8px;align-items:center;padding:10px;border-bottom:1px solid var(--l)}.top b{font-size:1.05rem}.top small{color:var(--mut)}.rail{overflow:auto}.rail button,.actions button{border:1px solid var(--l);background:#142034;color:var(--ink);border-radius:10px;padding:9px 11px;font-weight:800}.rail button.on{background:var(--cyan);color:#061018}.world{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:10px;padding:10px;min-height:0}.field,.side{border:1px solid var(--l);border-radius:18px;background:#0c1421;min-height:0}.field{display:grid;grid-template-rows:auto 1fr auto}.head{padding:12px;border-bottom:1px solid var(--l)}.head span{color:var(--mut)}.stage{display:grid;place-items:center;min-height:330px;padding:18px}.object{width:min(250px,65vw);aspect-ratio:1;border-radius:28%;display:grid;place-items:center;background:radial-gradient(circle,#dffaff 0 8%,#58d7ff 10%,#163250 56%,#0a111c 70%);box-shadow:0 0 70px #58d7ff55;transition:.25s}.object.live{background:radial-gradient(circle,#fffbd0 0 9%,#ffd36f 12%,#76591f 55%,#0a111c 72%);box-shadow:0 0 90px #ffd36f88}.actions{display:flex;gap:8px;padding:12px;border-top:1px solid var(--l);overflow:auto}.actions .primary{background:var(--gold);color:#151006}.side{display:grid;grid-template-rows:auto auto 1fr}.tabs{display:flex;gap:5px;padding:8px;border-bottom:1px solid var(--l)}.tabs button{flex:1;border:0;border-radius:8px;padding:8px;background:#111d30;color:var(--mut)}.tabs button.on{color:var(--cyan);background:#183149}.route{padding:12px;font:12px/1.55 ui-monospace,monospace;color:#d6e4f5;overflow:auto}.code{width:100%;min-height:180px;background:#070d16;color:#eaf3ff;border:0;border-top:1px solid var(--l);padding:12px;font:12px/1.5 ui-monospace,monospace;resize:none}.status{border-top:1px solid var(--l);border-bottom:0;color:var(--mut);font-size:.72rem}.status strong{color:var(--green)}@media(max-width:760px){.gcw-cubeDock{width:108px;height:108px;right:8px;bottom:50px;border-radius:20px}.gcw-cube{--half:33px;width:66px;height:66px}.gcw-cubeFace{font-size:.48rem}.world{grid-template-columns:1fr}.stage{min-height:310px}.side{min-height:360px}.top small{display:none}}
@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.24 · GripCube UI projection
+/* JM.CreationWorkbench/0.25 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.24 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.25 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -155,7 +155,7 @@
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.24 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.25 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -180,8 +180,62 @@
   .gcw-lens{min-width:0!important;flex:1 1 0!important;padding:0 2px;font-size:.47rem;letter-spacing:.035em}
   .gcw-faceReadout{max-width:58%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 }
-</style></head><body><main class="app">
-<header class="top"><b>AILatheo · Creation Workbench</b><small>v3.0-alpha · recovered capability integration</small></header>
+
+/* JM.AILatheo.CreatorPreview/0.1 · product packaging layer */
+.creatorPreviewGate{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 10%,#173452ee,#050911f5 58%);backdrop-filter:blur(14px)}
+.creatorPreviewGate[hidden]{display:none}
+.creatorPreviewCard{width:min(620px,100%);border:1px solid #37506e;border-radius:24px;background:#0a1320f7;box-shadow:0 28px 90px #000b;padding:24px}
+.creatorPreviewEyebrow{font-size:.68rem;font-weight:950;letter-spacing:.12em;color:var(--cyan);text-transform:uppercase}
+.creatorPreviewCard h1{margin:8px 0 6px;font-size:clamp(1.8rem,7vw,3.1rem);line-height:.98}
+.creatorPreviewCard p{margin:8px 0;color:#c5d5e7;line-height:1.55}
+.creatorPreviewChoices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.creatorPreviewChoices button,.creatorPlanButton,.sampleResetButton,.creatorDialog button{border:1px solid #35506c;background:#101c2c;color:var(--ink);border-radius:14px;padding:13px 14px;font-weight:900}
+.creatorPreviewChoices .primary{background:var(--gold);color:#151006;border-color:var(--gold)}
+.creatorPreviewNote{margin-top:14px;font-size:.72rem;color:var(--mut)}
+.creatorPlanBadge{margin-left:auto;border:1px solid #35506c;border-radius:999px;padding:5px 8px;font-size:.62rem;font-weight:950;letter-spacing:.06em;color:var(--green);white-space:nowrap}
+.creatorPlanButton,.sampleResetButton{padding:6px 9px;font-size:.65rem;white-space:nowrap}
+.sampleResetButton[hidden]{display:none}
+.creatorDialog{max-width:min(560px,calc(100vw - 28px));border:1px solid #37506e;border-radius:20px;background:#0a1320;color:var(--ink);padding:0;box-shadow:0 24px 80px #000c}
+.creatorDialog::backdrop{background:#03070cc7;backdrop-filter:blur(9px)}
+.creatorDialogBody{padding:20px}
+.creatorDialog h2{margin:0 0 8px}.creatorDialog p{color:#c5d5e7;line-height:1.5}
+.creatorTierGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.creatorTier{border:1px solid #263650;border-radius:16px;padding:14px;background:#0d1827}
+.creatorTier strong{display:block;margin-bottom:6px}.creatorTier small{color:var(--mut);line-height:1.45}
+.creatorTier .price{font-size:1.35rem;font-weight:950;color:var(--gold);margin:7px 0}
+.creatorPreviewHint{position:absolute;left:50%;bottom:12px;translate:-50% 0;z-index:8;max-width:min(90%,520px);padding:8px 11px;border:1px solid #35506c;border-radius:999px;background:#07111de8;color:#c9d9ea;font-size:.67rem;font-weight:800;text-align:center;pointer-events:none}
+.creatorPreviewHint[hidden]{display:none}
+@media(max-width:760px){
+ .creatorPreviewCard{padding:20px}.creatorPreviewChoices,.creatorTierGrid{grid-template-columns:1fr}
+ .creatorPlanBadge{display:none}.creatorPlanButton,.sampleResetButton{padding:7px 8px}
+}
+</style></head><body>
+<section class="creatorPreviewGate" id="creatorPreviewGate" hidden aria-label="AILatheo Creator Preview first run">
+  <div class="creatorPreviewCard">
+    <div class="creatorPreviewEyebrow">Creator Preview v0.1</div>
+    <h1>Build it.<br>Connect it.<br>See it work.</h1>
+    <p>Start with a blank stage or open an editable sample made from the same BODY · ACT · LINK machinery you will use in your own projects.</p>
+    <div class="creatorPreviewChoices">
+      <button class="primary" id="creatorStartBlank">START BLANK</button>
+      <button id="creatorExploreSignal">EXPLORE SIGNAL GARDEN</button>
+    </div>
+    <div class="creatorPreviewNote">No account wall. No payment wall before contact. Your work stays local in this preview unless you deliberately export or route it.</div>
+  </div>
+</section>
+<dialog class="creatorDialog" id="creatorPlanDialog">
+  <div class="creatorDialogBody">
+    <div class="creatorPreviewEyebrow">Free ↔ Creator boundary</div>
+    <h2>Experience the core loop free.</h2>
+    <p>Free keeps BODY → ACT → LINK → TEST → UNDO → SAVE intact. Creator is planned to expand capacity, deeper behaviours, reusable components and production/export routes.</p>
+    <div class="creatorTierGrid">
+      <div class="creatorTier"><strong>Free Preview</strong><div class="price">£0</div><small>Core creation loop, Signal Garden, local save/recovery and portable project export.</small></div>
+      <div class="creatorTier"><strong>Creator</strong><div class="price">£15/mo</div><small>£150/year test price. Checkout stays disabled until real account + entitlement recovery is wired; this build will not fake paid access.</small></div>
+    </div>
+    <button id="creatorPlanClose">CLOSE</button>
+  </div>
+</dialog>
+<main class="app">
+<header class="top"><b>AILatheo · Creation Workbench</b><small>Creator Preview v0.1 · JM.CreationWorkbench/0.25</small><span class="creatorPlanBadge">FREE PREVIEW</span><button class="creatorPlanButton" id="creatorPlanButton">CREATOR</button><button class="sampleResetButton" id="sampleResetButton" hidden>RESET SAMPLE</button></header>
 <nav class="rail" id="modes"><button class="on">PLAY</button><button>BUILD</button><button>LEARN</button><button>DEBUG</button><button>SAVE</button><button>FORGE</button><button>TARGET</button></nav>
 <section class="world"><article class="field"><div class="head"><b id="lesson">Light → state → route</b><br><span id="state">WAITING · touch first</span></div><div class="lab"><label>TYPE<select id="type"><option>lamp</option><option>torch</option><option>bulb</option><option>lightsaber</option><option>lighter</option><option>star</option></select></label><label>SHAPE<select id="shape"><option>square</option><option>circle</option><option>triangle</option><option>line</option><option>portal</option></select></label><label>COLOUR<input id="colour" type="color" value="#58d7ff"></label><label>ACTION<select id="action"><option>ToggleLight</option><option>TurnOn</option><option>TurnOff</option><option>Pulse</option><option>Spin</option><option>Grow</option><option>Shrink</option><option>Bounce</option></select></label><label>NAME<input id="objectName" value="Bedroom Lamp"></label><label>LESSON<select id="lessonPick"><option value="state">1 · State</option><option value="form">2 · Form</option><option value="cause">3 · Cause</option><option value="create">4 · Create</option></select></label></div><div class="stage" id="scene"><svg class="linkLayer" id="linkLayer" aria-label="Visible body relationships"><defs><marker id="linkArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs><g id="linkLines"></g></svg><div class="object square" id="object">CONTACT</div><button class="transformHandle resizeHandle" id="resizeHandle" aria-label="Resize selected body" hidden>↘</button><button class="transformHandle rotateHandle" id="rotateHandle" aria-label="Rotate selected body" hidden>⟳</button></div><div class="linker"><select id="fromBody"><option value="">FROM BODY</option></select><select id="trigger"><option value="touch">touch</option><option value="near">near</option><option value="state-on">state-on</option></select><select id="toBody"><option value="">TO BODY</option></select><button id="removeLink">REMOVE SELECTED LINK</button></div><div class="linkShelf" id="linkShelf"><span class="inspectorHint">CONNECT bodies to make cause visible on the stage</span></div><details class="inspector"><summary>PRECISION INSPECTOR · X / Y / SIZE / ROTATE</summary><div class="prop"><label>X<input id="px" type="number" value="50"></label><label>Y<input id="py" type="number" value="50"></label><label>SIZE<input id="psize" type="number" value="86" min="24" max="220"></label><label>ROTATE<input id="prot" type="number" value="0"></label></div></details><div class="bodyShelf" id="bodyShelf" aria-label="Created bodies"><span class="inspectorHint">CREATE A BODY · select it here or directly on the stage</span></div>
 <div class="actions coreActions"><button class="primary" id="contact">TOGGLE LIGHT</button><button id="addObject">ADD OBJECT</button><button id="duplicateObject">DUPLICATE</button><button id="deleteObject">DELETE</button><button id="runCode">RUN CODE</button><button id="linkBodies">LINK BODIES</button><button id="runScene">RUN SCENE</button><button id="saveProject">SAVE PROJECT</button><button id="undoProject">UNDO</button><button id="exportProject">EXPORT</button></div>
@@ -195,10 +249,10 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.24 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.25 · Creator Preview v0.1 · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.24',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.25',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null,operationEventSeq=0,lastOperationContact=null;
 const PIPELINE_ORDER=['BUILD','ESTATE ROUTE','TEST','PROOF','EXECUTION','PREVIEW','TARGET ROUTE','ANDROID ROUTE','BUILD ROUTE','FORGE'],pipelineState={};
@@ -399,7 +453,7 @@ scene.addEventListener('click',e=>{const el=e.target.closest('.sceneBody');if(!e
 document.querySelector('#build').onclick=()=>{const v=src.value.trim();if(!parseSource(v)){d.textContent='SOFT RESIST';s.textContent='BUILD HELD · grammar not yet valid';recordOperationContact('BUILD','HOLD','Source grammar invalid','No build claim earned');return}d.textContent='BUILD ROUTE READY';s.textContent='BUILD · source accepted for routing';r.textContent='AILatheo command\n→ Estate Router\n→ Coding Estate preflight\n→ OneBody IR\n→ Forge carrier\n\nRuntime/package Ding remains separate.';recordOperationContact('BUILD','READY','Source accepted for build routing','Prepared ≠ built')};
 document.querySelector('#routeEstate').onclick=async()=>{const q='game touch visual compile proof recover delivery '+src.value.trim();d.textContent='ROUTING';s.textContent='ESTATE ROUTER · contacting current 100-body registry';try{const [reg,mod]=await Promise.all([loadEstateRegistry(),import('../coding-estate/integration/router-core.mjs')]);const plan=mod.planEstateRoute(q,reg,{limit:7,includeDelivery:true});const names=plan.route.map(x=>x.name);r.textContent='LIVE ESTATE ROUTE\n'+names.map((n,i)=>(i+1)+'. '+n).join('\n')+'\n\nLAWS\n'+plan.lawsApplied.join(' · ');d.textContent='ROUTE RECEIPT';s.textContent=plan.route.length+' bodies selected · Trace/Ding/source authority injected';localStorage.setItem('jm.ailatheo.v3.lastRoute',JSON.stringify(plan));recordOperationContact('ESTATE ROUTE','PASS',plan.route.length+' bodies selected','Route receipt earned; creation state unchanged')}catch(e){d.textContent='ROUTE HOLD';s.textContent='Estate router unavailable in this carrier';r.textContent='FAULT HOLD\n'+e.message+'\nSource and teaching state preserved.';recordOperationContact('ESTATE ROUTE','HOLD',e.message,'No route claim earned')}};
 let lastExecution=null;function inspectProject(){const faults=[],warn=[];const v=src.value.trim();if(!parseSource(v))faults.push('SOURCE_GRAMMAR');const names=bodies.map(b=>b.name);if(new Set(names).size!==names.length)faults.push('DUPLICATE_BODY_NAME');links.forEach((L,i)=>{if(!bodies[L.from]||!bodies[L.to])faults.push('BROKEN_LINK_'+i);if(L.from===L.to)warn.push('SELF_LINK_'+i)});bodies.forEach((b,i)=>{if(!b.name||!b.type||!b.action)faults.push('INCOMPLETE_BODY_'+i);if(b.x<0||b.x>100||b.y<0||b.y>100)warn.push('OFF_FIELD_'+i)});return {schema:'jm.ailatheo.debug/1.0',pass:faults.length===0,faults,warnings:warn,bodies:bodies.length,links:links.length,source:v}}function showDebug(q){r.textContent='DEBUG / PROOF\nstatus='+(q.pass?'PASS':'HOLD')+'\nbodies='+q.bodies+' · links='+q.links+'\nfaults='+(q.faults.join(', ')||'none')+'\nwarnings='+(q.warnings.join(', ')||'none')+'\n\nSOURCE\n'+q.source} const revisions=[],redoRevisions=[];let revisionSerial=0,checkpointSerial=0;
-function snapshot(){return {schema:'jm.ailatheo.project/1.0',workbenchStandard:WORKBENCH_STANDARD.schema,source:src.value,shape:shape.value,on,bodies:JSON.parse(JSON.stringify(bodies)),links:JSON.parse(JSON.stringify(links)),selectedIndex:selected?bodies.indexOf(selected.body):-1,saved:new Date().toISOString()}}
+function snapshot(){return {schema:'jm.ailatheo.project/1.0',workbenchStandard:WORKBENCH_STANDARD.schema,creatorPreview:'JM.AILatheo.CreatorPreview/0.1',sampleId:localStorage.getItem('jm.ailatheo.creatorPreview.sample')||null,planContext:'free-preview',source:src.value,shape:shape.value,on,bodies:JSON.parse(JSON.stringify(bodies)),links:JSON.parse(JSON.stringify(links)),selectedIndex:selected?bodies.indexOf(selected.body):-1,saved:new Date().toISOString()}}
 function clearRedo(){redoRevisions.splice(0,redoRevisions.length)}
 function rememberSnapshot(p,reason='EDIT'){if(!p)return null;clearRedo();p.revisionId=++revisionSerial;p.revisionReason=reason;revisions.push(p);if(revisions.length>40)revisions.shift();return p.revisionId}
 function rememberRevision(reason='EDIT'){return rememberSnapshot(snapshot(),reason)}
@@ -433,8 +487,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v24')return;
-  world.dataset.gripcubeUi='v24';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v25')return;
+  world.dataset.gripcubeUi='v25';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -760,7 +814,7 @@ function mountGripWorkbench(){
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.24',
+    version:'0.25',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
@@ -790,7 +844,7 @@ function mountGripWorkbench(){
     recoveryDepth:()=>({undo:revisions.length,redo:redoRevisions.length}),
     pipelineSnapshot:()=>JSON.parse(JSON.stringify(pipelineSnapshot())),
     proof:()=>({
-      version:'0.24',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.25',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -880,6 +934,87 @@ function mountGripWorkbench(){
   };
   renderMaterialContact();renderOperationContact();renderPipelineState();paintCube();setFace('form');
 }
+
+const CREATOR_PREVIEW=Object.freeze({
+  schema:'JM.AILatheo.CreatorPreview/0.1',
+  release:'Creator Preview v0.1',
+  workbench:'JM.CreationWorkbench/0.25',
+  plan:'free-preview',
+  priceTest:{monthlyGBP:15,annualGBP:150},
+  sample:'signal-garden',
+  law:'FREE PROVES THE CORE LOOP; PAID MUST EXPAND CAPABILITY WITHOUT CAPTURING THE CREATION.'
+});
+function creatorPreviewHasProject(){return bodies.length>0||links.length>0||!!localStorage.getItem('jm.ailatheo.v3.project')}
+function creatorPreviewClearScene(){
+  selected=null;selectedLink=-1;
+  bodies.splice(0,bodies.length);links.splice(0,links.length);
+  scene.querySelectorAll('.sceneBody').forEach(x=>x.remove());
+  resizeHandle.hidden=true;rotateHandle.hidden=true;
+  persistBodies();localStorage.setItem('jm.ailatheo.v3.links','[]');
+  refreshBodyMenus();drawLinks();positionHandles();syncStagePopulation();syncStageHead();
+}
+function signalGardenBodies(){
+  const specs=[
+    {name:'Pulse Pad',type:'lamp',shape:'square',colour:'#ffd36f',action:'ToggleLight',x:22,y:68,size:76,rotate:0,on:false},
+    {name:'Glow Orb',type:'star',shape:'circle',colour:'#72e6ff',action:'Pulse',x:50,y:44,size:92,rotate:0,on:false},
+    {name:'Gate Bloom',type:'torch',shape:'portal',colour:'#b879ff',action:'Grow',x:78,y:30,size:88,rotate:0,on:false}
+  ];
+  return specs.map(b=>({...b,source:composeSource(b)}))
+}
+function loadSignalGarden({record=true}={}){
+  commitFormSemanticEdit();commitFieldInspectorEdit();
+  const before=record?snapshot():null,recoveryRevision=record?rememberSnapshot(before,'LOAD SIGNAL GARDEN'):null;
+  creatorPreviewClearScene();
+  bodies.push(...signalGardenBodies());links.push({from:0,to:1,trigger:'touch'},{from:1,to:2,trigger:'touch'});
+  bodies.forEach(renderBody);persistBodies();localStorage.setItem('jm.ailatheo.v3.links',JSON.stringify(links));
+  refreshBodyMenus();drawLinks();syncStagePopulation();syncStageHead();
+  localStorage.setItem('jm.ailatheo.creatorPreview.sample','signal-garden');
+  localStorage.setItem('jm.ailatheo.creatorPreview.seen','1');
+  const reset=document.querySelector('#sampleResetButton');if(reset)reset.hidden=false;
+  const hint=document.querySelector('#creatorPreviewHint');if(hint){hint.hidden=false;hint.textContent='SIGNAL GARDEN · tap Pulse Pad in USE, then tap Glow Orb · edit either link in ROUTE'}
+  const el=bodyElement(bodies[0]);if(el)selectBody(el,bodies[0]);
+  window.JMAILatheoGripUI?.setFace?.('use');
+  if(record)recordProjectContact('SAMPLE DING',{body:'SIGNAL GARDEN',action:'LOAD_SAMPLE',before,after:snapshot(),delta:'loaded 3 bodies · 2 editable touch links',detail:'Sample uses the same BODY / ACT / LINK project structures as ordinary creation',recoveryRevision});
+  d.textContent='SAMPLE READY';teach.textContent='Signal Garden is editable. USE: tap Pulse Pad, then Glow Orb. ROUTE: change or remove either relationship.';
+  trace.push('SAMPLE → Signal Garden · 3 bodies · 2 ordinary links');
+}
+function startCreatorBlank(){
+  localStorage.setItem('jm.ailatheo.creatorPreview.seen','1');
+  localStorage.removeItem('jm.ailatheo.creatorPreview.sample');
+  document.querySelector('#creatorPreviewGate').hidden=true;
+  const reset=document.querySelector('#sampleResetButton');if(reset)reset.hidden=true;
+  if(!creatorPreviewHasProject())creatorPreviewClearScene();
+  d.textContent='READY';teach.textContent='Create your first body. + BODY → ACT → LINK stays in front of you.';
+  window.JMAILatheoGripUI?.setFace?.('form');
+}
+function resetSignalGarden(){loadSignalGarden({record:true})}
+function mountCreatorPreview(){
+  const gate=document.querySelector('#creatorPreviewGate'),start=document.querySelector('#creatorStartBlank'),sample=document.querySelector('#creatorExploreSignal'),
+        plan=document.querySelector('#creatorPlanButton'),dialog=document.querySelector('#creatorPlanDialog'),close=document.querySelector('#creatorPlanClose'),
+        reset=document.querySelector('#sampleResetButton'),stageFrame=document.querySelector('.gcw-stageFrame');
+  if(stageFrame&&!document.querySelector('#creatorPreviewHint')){const hint=document.createElement('div');hint.id='creatorPreviewHint';hint.className='creatorPreviewHint';hint.hidden=true;stageFrame.appendChild(hint)}
+  if(start)start.onclick=startCreatorBlank;
+  if(sample)sample.onclick=()=>{gate.hidden=true;loadSignalGarden({record:creatorPreviewHasProject()})};
+  if(plan)plan.onclick=()=>dialog?.showModal();
+  if(close)close.onclick=()=>dialog?.close();
+  if(reset)reset.onclick=resetSignalGarden;
+  const has=creatorPreviewHasProject(),seen=localStorage.getItem('jm.ailatheo.creatorPreview.seen')==='1';
+  if(gate)gate.hidden=seen||has;
+  const sampleActive=localStorage.getItem('jm.ailatheo.creatorPreview.sample')==='signal-garden';
+  if(reset)reset.hidden=!sampleActive;
+  const hint=document.querySelector('#creatorPreviewHint');
+  if(hint&&sampleActive){hint.hidden=false;hint.textContent='SIGNAL GARDEN · tap Pulse Pad in USE, then tap Glow Orb · edit either link in ROUTE'}
+  window.JMAILatheoCreatorPreview=Object.freeze({
+    schema:CREATOR_PREVIEW.schema,
+    release:CREATOR_PREVIEW.release,
+    workbench:CREATOR_PREVIEW.workbench,
+    startBlank:startCreatorBlank,
+    loadSignalGarden,
+    resetSignalGarden,
+    state:()=>({plan:'free-preview',sample:localStorage.getItem('jm.ailatheo.creatorPreview.sample')||null,bodies:bodies.length,links:links.length,checkout:'disabled-until-entitlement'})
+  });
+}
 mountGripWorkbench();
+mountCreatorPreview();
 
 </script></body></html>

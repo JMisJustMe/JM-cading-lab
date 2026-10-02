@@ -2,7 +2,7 @@ import fs from "node:fs";
 const html=fs.readFileSync("unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html","utf8");
 
 const required=[
-  "JM.CreationWorkbench/0.24",
+  "JM.CreationWorkbench/0.25",
   "SELECT_OR_CREATE","CHANGE","SEE","UNDERSTAND","CONNECT","TEST","SAVE",
   "bodyShelf","duplicateObject","deleteObject","DIRECT MOVE","linkLayer","resizeHandle","rotateHandle","removeLink",
   "composeSource","parseSource","applyBodyVisual","rememberRevision",
@@ -32,7 +32,7 @@ for(const token of ["gcw-shell","gcw-lenses","JMAILatheoGripUI","GRIP BODY · DR
 
 console.log(JSON.stringify({
   passed:true,
-  standard:"JM.CreationWorkbench/0.24",
+  standard:"JM.CreationWorkbench/0.25",
   routeStages:7,
   directManipulation:true,
   sourceMirrorsShape:true,

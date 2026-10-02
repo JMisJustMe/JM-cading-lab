@@ -685,7 +685,7 @@ function mountGripWorkbench(){
       const cmd=map[e.key];if(cmd){e.preventDefault();applyFieldPrecision(cmd);return}
     }
     if(current==='use'&&(e.key==='Enter'||e.key===' ')){
-      if(selected?.el){e.preventDefault();selected.el.click();syncGripContext()}
+      e.preventDefault();if(selected?.el)selected.el.click();else document.querySelector('#contact')?.click();syncGripContext();return
     }
   }
   stageZone.addEventListener('keydown',keyboardStageContact);
@@ -772,6 +772,7 @@ function mountGripWorkbench(){
       invalidCodeNoRevision:true,
       starterContactRecovery:true,
       quickActUsesStarterContact:true,
+      keyboardStarterContact:true,
       starterContactTraceProof:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,

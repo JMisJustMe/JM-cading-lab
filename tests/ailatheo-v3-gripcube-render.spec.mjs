@@ -205,9 +205,13 @@ for(const [name,viewport] of cases){
     event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
   }));
   if(keyboardRouteDone.links!==keyboardRouteLinksBefore+1||keyboardRouteDone.selected!==sourceName||keyboardRouteDone.active!==sourceName||keyboardRouteDone.source!==0||keyboardRouteDone.tether!==0||keyboardRouteDone.event!==routeCancelled.event) throw new Error(name+': keyboard ROUTE target contact did not complete same touch grammar '+JSON.stringify({sourceName,keyboardRouteLinksBefore,keyboardRouteDone}));
-  await page.locator('#removeLink').click();
-  const keyboardRouteCleanup=await page.evaluate(()=>({links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0}));
-  if(keyboardRouteCleanup.links!==keyboardRouteLinksBefore||keyboardRouteCleanup.event!==routeCancelled.event) throw new Error(name+': keyboard ROUTE proof cleanup changed material evidence or failed to restore graph '+JSON.stringify({keyboardRouteLinksBefore,keyboardRouteCleanup}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const keyboardRouteCleanup=await page.evaluate(()=>({
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]'),
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null
+  }));
+  if(keyboardRouteCleanup.links.length!==keyboardRouteLinksBefore||keyboardRouteCleanup.event?.kind!=='RECOVERY DING'||keyboardRouteCleanup.selected!=='Grip Body') throw new Error(name+': keyboard ROUTE proof cleanup did not restore exact pre-link graph '+JSON.stringify({keyboardRouteLinksBefore,keyboardRouteCleanup}));
 
   await page.locator('.gcw-lens[data-face="use"]').click();
   await page.locator('.sceneBody').nth(1).focus();

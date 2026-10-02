@@ -68,5 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ailatheo-v3-gripcube-render
-          path: |\n            qa/ailatheo-v3-gripcube/\n            qa/ailatheo-v3-creator-preview/
+          path: |
+            qa/ailatheo-v3-gripcube/
+            qa/ailatheo-v3-creator-preview/
           if-no-files-found: ignore

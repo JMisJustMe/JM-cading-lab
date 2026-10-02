@@ -841,11 +841,13 @@ async function runStraightJourney(name,viewport){
   const sourceCreated=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[0]?._body}}));
   if(sourceCreated.event?.kind!=='OBJECT DING'||sourceCreated.body.name!=='Straight Source'||sourceCreated.body.action!=='Spin') throw new Error(name+': straight source creation failed '+JSON.stringify(sourceCreated));
 
+  await page.locator('.gcw-quick [data-q="add"]').click();
+  const targetRaw=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[1]?._body}}));
+  if(targetRaw.event?.kind!=='OBJECT DING'||targetRaw.body.name!=='Straight Source'||targetRaw.body.action!=='Spin') throw new Error(name+': straight second-body creation did not inherit current draft '+JSON.stringify(targetRaw));
   await page.locator('#objectName').fill('Straight Target');
   await page.locator('#action').selectOption('Grow');
-  await page.locator('.gcw-quick [data-q="add"]').click();
-  const targetCreated=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[1]?._body}}));
-  if(targetCreated.event?.kind!=='OBJECT DING'||targetCreated.body.name!=='Straight Target'||targetCreated.body.action!=='Grow') throw new Error(name+': straight target creation failed '+JSON.stringify(targetCreated));
+  const targetCreated=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),body:{...document.querySelectorAll('.sceneBody')[1]?._body},source:document.querySelector('#source').value}));
+  if(targetCreated.body.name!=='Straight Target'||targetCreated.body.action!=='Grow'||!targetCreated.source.startsWith('Straight Target :')||!targetCreated.source.endsWith(':: Grow')) throw new Error(name+': straight target configure-after-create failed '+JSON.stringify(targetCreated));
 
   await page.locator('.gcw-lens[data-face="field"]').click();
   await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();

@@ -65,5 +65,7 @@ console.log(JSON.stringify({
   noAccountWallBeforeContact:true,
   noPaymentWallBeforeContact:true,
   checkoutHonestlyDisabled:true,
-  sampleUsesNativeBodyLinkModel:true,\n  publicProductDoor:true,\n  publicTryFreeRoute:true
+  sampleUsesNativeBodyLinkModel:true,
+  publicProductDoor:true,
+  publicTryFreeRoute:true
 },null,2));

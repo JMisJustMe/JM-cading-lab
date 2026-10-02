@@ -277,7 +277,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet||!metrics.proof.codeSingleTransaction||!metrics.proof.codeSemanticConsequenceRecovery||!metrics.proof.codeStarterRecovery||!metrics.proof.invalidCodeNoRevision||!metrics.proof.starterContactRecovery||!metrics.proof.quickActUsesStarterContact||!metrics.proof.keyboardStarterContact||!metrics.proof.starterContactTraceProof) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet||!metrics.proof.codeSingleTransaction||!metrics.proof.codeSemanticConsequenceRecovery||!metrics.proof.codeStarterRecovery||!metrics.proof.invalidCodeNoRevision||!metrics.proof.starterContactRecovery||!metrics.proof.quickActUsesStarterContact||!metrics.proof.keyboardStarterContact||!metrics.proof.starterContactTraceProof||!metrics.proof.sceneAggregateDing||!metrics.proof.sceneChildrenNested||!metrics.proof.sceneSingleUndo||!metrics.proof.sceneHoldNoRevision) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -566,7 +566,58 @@ for(const [name,viewport] of cases){
   const starterRestored=await page.evaluate(()=>({bodies:document.querySelectorAll('.sceneBody').length,selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
   if(starterRestored.bodies!==2) throw new Error(name+': starter proof cleanup did not restore original body graph '+JSON.stringify(starterRestored));
 
-  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:starterKeyUndo.event.id,materialEventKind:starterKeyUndo.event.kind,recoveredEventId:starterKeyUndo.event.recoveredEventId,codeTransaction:true,starterContact:true}));
+  await page.locator('.gcw-lens[data-face="use"]').click();
+  const sceneHoldBefore=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({...x._body}))
+  }));
+  await page.locator('#runScene').click();
+  const sceneHoldAfter=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({...x._body})),
+    ding:document.querySelector('#ding')?.textContent||''
+  }));
+  if(sceneHoldAfter.ding!=='SCENE HOLD'||sceneHoldAfter.event!==sceneHoldBefore.event||JSON.stringify(sceneHoldAfter.bodies)!==JSON.stringify(sceneHoldBefore.bodies)) throw new Error(name+': SCENE HOLD minted evidence/revision or changed bodies '+JSON.stringify({sceneHoldBefore,sceneHoldAfter}));
+
+  const automaticLinksBefore=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length);
+  await page.evaluate(()=>{
+    const from=document.querySelector('#fromBody'),to=document.querySelector('#toBody'),trigger=document.querySelector('#trigger'),link=document.querySelector('#linkBodies');
+    for(let i=0;i<2;i++){from.value='0';to.value='1';trigger.value='near';link.click()}
+  });
+  const sceneBefore=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({...x._body})),
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length
+  }));
+  if(sceneBefore.links!==automaticLinksBefore+2||sceneBefore.event?.kind!=='LINK DING') throw new Error(name+': automatic SCENE setup did not create two near links '+JSON.stringify({automaticLinksBefore,sceneBefore}));
+
+  await page.locator('#runScene').click();
+  const sceneEvent=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({...x._body})),
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length,
+    ding:document.querySelector('#ding')?.textContent||''
+  }));
+  const beforeTarget=sceneBefore.bodies[1],afterTarget=sceneEvent.bodies[1];
+  if(sceneEvent.ding!=='SCENE DING'||sceneEvent.event?.kind!=='SCENE DING'||sceneEvent.event?.body!=='SCENE'||sceneEvent.event?.action!=='RUN_SCENE'||sceneEvent.event?.id!==sceneBefore.event.id+1||sceneEvent.event?.children?.length!==2||!sceneEvent.event?.recoveryRevision||sceneEvent.links!==sceneBefore.links) throw new Error(name+': automatic causes did not aggregate into one SCENE DING '+JSON.stringify({sceneBefore,sceneEvent}));
+  if(beforeTarget.action!=='Spin'||afterTarget.rotate!==((beforeTarget.rotate+90)%360)||sceneEvent.event.children.some(x=>x.kind!=='CAUSE'||x.trigger!=='near'||x.to!==beforeTarget.name)) throw new Error(name+': SCENE child causes did not execute twice under aggregate event '+JSON.stringify({beforeTarget,afterTarget,children:sceneEvent.event.children}));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const sceneTrace=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||''}));
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const sceneProof=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
+  if(sceneTrace.event?.id!==sceneEvent.event.id||sceneProof.event?.id!==sceneEvent.event.id||sceneTrace.text!==sceneProof.text||!sceneTrace.text.includes('SCENE DING')||!sceneTrace.text.includes('2 automatic relationship')) throw new Error(name+': TRACE/PROOF did not follow aggregate SCENE DING '+JSON.stringify({sceneEvent,sceneTrace,sceneProof}));
+
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const sceneUndo=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    bodies:[...document.querySelectorAll('.sceneBody')].map(x=>({...x._body})),
+    persisted:JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]'),
+    links:JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]').length
+  }));
+  if(sceneUndo.event?.kind!=='RECOVERY DING'||sceneUndo.event?.recoveredEventId!==sceneEvent.event.id||JSON.stringify(sceneUndo.bodies)!==JSON.stringify(sceneBefore.bodies)||JSON.stringify(sceneUndo.persisted)!==JSON.stringify(sceneBefore.bodies)||sceneUndo.links!==sceneBefore.links) throw new Error(name+': one UNDO did not reverse the whole aggregate SCENE transaction '+JSON.stringify({sceneBefore,sceneEvent,sceneUndo}));
+
+  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:sceneUndo.event.id,materialEventKind:sceneUndo.event.kind,recoveredEventId:sceneUndo.event.recoveredEventId,codeTransaction:true,starterContact:true,sceneAggregate:true,sceneChildren:sceneEvent.event.children.length}));
 }
 await browser.close();
-console.log('AILatheo GripCube starter-contact render PASS — 2/2');
+console.log('AILatheo GripCube SCENE-aggregate render PASS — 2/2');

@@ -28,6 +28,7 @@ jobs:
       - run: node tests/ailatheo-v3-native-execution.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
+      - run: node tests/ailatheo-v3-gripcube-ui.mjs
       - name: Prove Workbench browser JavaScript syntax
         run: |
           python - <<'PY'

@@ -10,6 +10,91 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
+
+/* JM.CreationWorkbench/0.3 · GripCube UI projection
+   Same project/runtime body; new navigation carrier.
+   HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
+:root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
+.gcw-shell{height:100%;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,390px);gap:10px}
+.gcw-stageZone,.gcw-faceZone{min-height:0;border:1px solid var(--l);border-radius:20px;background:linear-gradient(155deg,#0b1624,#07101b);overflow:hidden;box-shadow:0 22px 55px #0005}
+.gcw-stageZone{display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative}
+.gcw-stageHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;border-bottom:1px solid var(--l);background:#09131f}
+.gcw-stageHead .head{padding:0;border:0;min-width:0}.gcw-stageHead .head b{font-size:.86rem}.gcw-stageHead .head span{font-size:.68rem}
+.gcw-faceReadout{flex:0 0 auto;border:1px solid var(--gcw-face,var(--cyan));border-radius:12px;padding:7px 9px;background:#07111c;color:var(--gcw-face,var(--cyan));font-size:.62rem;font-weight:950;letter-spacing:.08em}
+.gcw-stageFrame{min-height:0;position:relative;overflow:hidden}.gcw-stageFrame .stage{height:100%;min-height:0!important;max-height:none!important;border:0;border-radius:0}
+.gcw-quick{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:7px;border-top:1px solid var(--l);background:#08121e}
+.gcw-quick button{min-height:42px;border:1px solid var(--l);border-radius:11px;background:#101d2d;color:var(--ink);font-size:.62rem;font-weight:950;letter-spacing:.04em}
+.gcw-quick button[data-q="act"]{border-color:var(--gold);color:#111;background:var(--gold)}
+.gcw-quick button:active{transform:translateY(1px)}
+.gcw-faceZone{display:grid;grid-template-rows:auto minmax(0,1fr);--gcw-face:var(--gcw-form)}
+.gcw-lenses{display:flex;gap:6px;padding:7px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--l);background:#08121e;scroll-snap-type:x proximity}
+.gcw-lenses::-webkit-scrollbar{display:none}
+.gcw-lens{flex:0 0 auto;min-width:78px;min-height:39px;border:1px solid var(--l);border-radius:12px;background:#0d1928;color:var(--mut);font-size:.64rem;font-weight:950;letter-spacing:.07em;scroll-snap-align:center}
+.gcw-lens[data-face="trace"]{--face:var(--gcw-trace)}.gcw-lens[data-face="route"]{--face:var(--gcw-route)}.gcw-lens[data-face="form"]{--face:var(--gcw-form)}.gcw-lens[data-face="field"]{--face:var(--gcw-field)}.gcw-lens[data-face="proof"]{--face:var(--gcw-proof)}.gcw-lens[data-face="use"]{--face:var(--gcw-use)}
+.gcw-lens.active{color:var(--face);border-color:var(--face);background:color-mix(in srgb,var(--face),transparent 92%);box-shadow:0 0 18px color-mix(in srgb,var(--face),transparent 84%)}
+.gcw-faceViewport{min-height:0;position:relative;overflow:hidden}
+.gcw-face{position:absolute;inset:0;display:none;min-height:0;overflow:auto;overscroll-behavior:contain;padding:8px;background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--gcw-face),transparent 93%),transparent 42%)}
+.gcw-face.active{display:block}
+.gcw-faceTitle{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:3px 3px 8px;color:var(--gcw-face);font-size:.64rem;font-weight:950;letter-spacing:.1em}
+.gcw-faceTitle small{color:var(--mut);font-size:.57rem;letter-spacing:.04em;font-weight:800}
+.gcw-face .lab{border:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.gcw-face .lab label{padding:8px;border:1px solid var(--l);border-radius:12px;background:#0b1726}
+.gcw-face .code{border:1px solid var(--l);border-radius:13px;margin-top:8px;min-height:110px}
+.gcw-face .explain,.gcw-face .teach,.gcw-face .route{border:1px solid var(--l);border-radius:13px;margin-top:8px;background:#07111c}
+.gcw-face .linker{border:0;padding:0;display:grid;grid-template-columns:1fr;gap:7px}
+.gcw-face .linker select,.gcw-face .linker button{min-height:44px}
+.gcw-face .linkShelf,.gcw-face .bodyShelf{border:0;padding:8px 0 0}
+.gcw-face .inspector{border:1px solid var(--l);border-radius:13px;margin-top:8px;overflow:hidden}
+.gcw-face .prop{border:0}
+.gcw-face .tabs{display:none}
+.gcw-face .coreActions,.gcw-face .advanced .actions{border:0;padding:0;margin:0}
+.gcw-face .coreActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.gcw-face .coreActions button{min-height:46px;padding:7px 5px;font-size:.61rem}
+.gcw-face .advanced{border:1px solid var(--l);border-radius:14px;overflow:hidden;background:#08121d}
+.gcw-face .advanced summary{min-height:42px;display:flex;align-items:center}
+.gcw-depthNote{margin:8px 1px 0;color:var(--mut);font-size:.62rem;line-height:1.45}
+.gcw-gripHint{position:absolute;z-index:8;right:8px;bottom:56px;padding:6px 8px;border:1px solid #ffffff21;border-radius:999px;background:#07111ccc;color:#aebed0;font-size:.52rem;font-weight:900;letter-spacing:.08em;pointer-events:none}
+.gcw-faceViewport::after{content:"SWIPE FACE ↔";position:absolute;right:8px;bottom:5px;color:#ffffff45;font-size:.48rem;font-weight:950;letter-spacing:.12em;pointer-events:none}
+.gcw-face[data-face="trace"]{--gcw-face:var(--gcw-trace)}.gcw-face[data-face="route"]{--gcw-face:var(--gcw-route)}.gcw-face[data-face="form"]{--gcw-face:var(--gcw-form)}.gcw-face[data-face="field"]{--gcw-face:var(--gcw-field)}.gcw-face[data-face="proof"]{--gcw-face:var(--gcw-proof)}.gcw-face[data-face="use"]{--gcw-face:var(--gcw-use)}
+.gcw-faceZone[data-face="trace"]{--gcw-face:var(--gcw-trace)}.gcw-faceZone[data-face="route"]{--gcw-face:var(--gcw-route)}.gcw-faceZone[data-face="form"]{--gcw-face:var(--gcw-form)}.gcw-faceZone[data-face="field"]{--gcw-face:var(--gcw-field)}.gcw-faceZone[data-face="proof"]{--gcw-face:var(--gcw-proof)}.gcw-faceZone[data-face="use"]{--gcw-face:var(--gcw-use)}
+@media(max-width:760px){
+  html,body{height:100%;overflow:hidden}
+  body{overscroll-behavior:none}
+  .app{height:100dvh!important;min-height:100dvh!important;overflow:hidden!important;grid-template-rows:auto auto minmax(0,1fr) auto}
+  .top{min-height:40px;padding:7px 9px;background:#07111df2}.top small{display:none!important}
+  .rail{min-height:45px;padding:6px 8px;flex-wrap:nowrap!important;overflow-x:auto!important;scroll-snap-type:x proximity;background:#07111df2}
+  .rail button{flex:0 0 auto;min-width:72px;min-height:35px;padding:7px 9px;scroll-snap-align:center}
+  .world{height:100%!important;min-height:0!important;overflow:hidden!important;padding:6px!important;display:block!important}
+  .gcw-shell{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 214px;height:100%;gap:6px}
+  .gcw-stageZone,.gcw-faceZone{border-radius:16px}
+  .gcw-stageHead{padding:6px 8px}.gcw-stageHead .head b{font-size:.78rem}.gcw-stageHead .head span{font-size:.59rem}
+  .gcw-stageFrame .stage{padding:8px!important}
+  .gcw-gripHint{bottom:50px}
+  .gcw-quick{padding:5px;gap:4px}.gcw-quick button{min-height:38px;font-size:.54rem;padding:4px}
+  .gcw-lenses{padding:5px;gap:4px}.gcw-lens{min-width:64px;min-height:34px;font-size:.54rem}
+  .gcw-face{padding:6px}
+  .gcw-faceTitle{display:none}
+  .gcw-face .lab{display:grid!important;grid-auto-flow:column;grid-template-columns:none!important;grid-template-rows:repeat(2,minmax(0,1fr));grid-auto-columns:minmax(150px,43vw);gap:6px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;padding:0 4px 4px 0}
+  .gcw-face .lab label{min-height:72px;scroll-snap-align:start;padding:6px}
+  .gcw-face .lab select,.gcw-face .lab input{min-height:36px;padding:5px}
+  .gcw-face .code{min-height:86px;max-height:86px;margin-top:5px;font-size:10px}
+  .gcw-face .explain,.gcw-face .teach,.gcw-face .route{margin-top:5px;padding:7px;font-size:.63rem;max-height:112px;overflow:auto}
+  .gcw-face .coreActions{display:grid!important;grid-auto-flow:column;grid-template-columns:none!important;grid-template-rows:repeat(2,42px);grid-auto-columns:minmax(126px,38vw);gap:5px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory}
+  .gcw-face .coreActions > *{scroll-snap-align:start}
+  .gcw-face .linker{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(175px,55vw);overflow-x:auto;scroll-snap-type:x mandatory}
+  .gcw-face .linker > *{scroll-snap-align:start}
+  .gcw-face .advanced .actions{display:grid!important;grid-auto-flow:column;grid-template-columns:none!important;grid-template-rows:repeat(2,42px);grid-auto-columns:minmax(145px,44vw);gap:5px;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory}
+  .gcw-face .advanced .actions > *{scroll-snap-align:start}
+  .gcw-face .bodyShelf,.gcw-face .linkShelf{overflow-x:auto;white-space:nowrap;min-height:43px}
+  .gcw-face .inspector summary{padding:7px 9px}
+  .gcw-face .prop{grid-template-columns:repeat(4,minmax(90px,1fr));overflow-x:auto;padding:6px}
+  .gcw-face .prop label{min-width:90px}
+  .status{min-height:28px;padding:5px 8px;font-size:.57rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media(min-width:761px){
+  .world{height:calc(100dvh - 122px);overflow:hidden}
+  .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
+}
 </style></head><body><main class="app">
 <header class="top"><b>AILatheo · Creation Workbench</b><small>v3.0-alpha · recovered capability integration</small></header>
 <nav class="rail" id="modes"><button class="on">PLAY</button><button>BUILD</button><button>LEARN</button><button>DEBUG</button><button>SAVE</button><button>FORGE</button><button>TARGET</button></nav>
@@ -25,10 +110,10 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.2 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.3 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.2',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.3',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];const bodies=[];const scene=document.querySelector('#scene'),bodyShelf=document.querySelector('#bodyShelf'),linkLayer=document.querySelector('#linkLayer'),linkLines=document.querySelector('#linkLines'),linkShelf=document.querySelector('#linkShelf'),resizeHandle=document.querySelector('#resizeHandle'),rotateHandle=document.querySelector('#rotateHandle'),px=document.querySelector('#px'),py=document.querySelector('#py'),psize=document.querySelector('#psize'),prot=document.querySelector('#prot');let selected=null,selectedLink=-1;const links=[];const fromBody=document.querySelector('#fromBody'),toBody=document.querySelector('#toBody'),trigger=document.querySelector('#trigger');function bodyElement(target){return [...scene.querySelectorAll('.sceneBody')].find(x=>x._body===target)}
 function flashBody(el,kind='consequence'){if(!el)return;el.classList.remove('consequence','bounce');void el.offsetWidth;el.classList.add(kind);setTimeout(()=>el.classList.remove(kind),420)}
@@ -74,4 +159,118 @@ document.querySelector('#preview').onclick=()=>{if(!lastExecution){d.textContent
 document.querySelector('#forge').onclick=async()=>{if(!lastExecution){d.textContent='FORGE HOLD';s.textContent='Execute Estate first';return}d.textContent='FORGE CONTACT';s.textContent='whole project → browser carrier → local JM Android Forge bridge';try{const status=await fetch('http://127.0.0.1:3232/api/status').then(x=>x.json());if(!status.available)throw new Error('LOCAL_FORGE_TOOLS_NOT_READY');const fc=lastExecution.carrier.forgeContract,p=snapshot();const projectCarrier='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+fc.projectName+'</title><style>body{margin:0;background:#08111d;color:white;font-family:system-ui}.scene{position:relative;min-height:100vh;overflow:hidden}.b{position:absolute;display:grid;place-items:center;border:1px solid #ffffff55;border-radius:16px;transform:translate(-50%,-50%);text-align:center}</style></head><body><main class="scene" id="s"></main><script>const P='+JSON.stringify(p).replace(/</g,'\\u003c')+';const S=document.querySelector("#s");P.bodies.forEach((b,i)=>{const e=document.createElement("button");e.className="b";e.textContent=b.name;e.style.cssText="left:"+b.x+"%;top:"+b.y+"%;width:"+b.size+"px;height:"+b.size+"px;background:"+b.colour+";transform:translate(-50%,-50%) rotate("+b.rotate+"deg)";e.onclick=()=>{P.links.filter(L=>L.from===i&&L.trigger==="touch").forEach(L=>{const t=S.children[L.to];if(t)t.dataset.on=t.dataset.on==="1"?"0":"1",t.style.filter=t.dataset.on==="1"?"brightness(1.7)":"none"})};S.appendChild(e)});<\\/script></body></html>';const body={name:fc.projectName,slug:'ailatheo-creation',package_name:fc.packageName,version_name:fc.versionName,files:[{path:'index.html',content:projectCarrier},{path:'project.jmproject.json',content:JSON.stringify(p,null,2)},{path:'onebody.json',content:JSON.stringify(lastExecution.oneBody,null,2)},{path:'delivery.json',content:JSON.stringify(lastExecution.delivery,null,2)},{path:'project-proof.json',content:localStorage.getItem('jm.ailatheo.v3.projectProof')||'{}'}]};const res=await fetch('http://127.0.0.1:3232/api/build',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const out=await res.json();if(!res.ok||!out.success)throw new Error(out.error||'FORGE_BUILD_FAILED');localStorage.setItem('jm.ailatheo.v3.forgeReceipt',JSON.stringify(out));d.textContent='APK BUILD DING';s.textContent='APK '+out.bytes+' bytes · SHA-256 '+out.sha256;r.textContent='JM ANDROID FORGE · WHOLE PROJECT PASS\nAPK: '+out.apk+'\nReceipt: '+out.receipt+'\nSHA-256: '+out.sha256+'\n\nDevice install/runtime remain separate.';}catch(e){d.textContent='FORGE HOLD';s.textContent=e.message;r.textContent='FORGE CONTACT HELD\nStart the local JM Android Forge bridge and ensure its existing Java/Android tools are available.\nNo APK claimed.';}};
 document.querySelector('#recover').onclick=()=>{const p=JSON.parse(localStorage.getItem('jm.ailatheo.v3.project')||'null');if(p)restoreProject(p);else{on=false;paint();d.textContent='RECOVERED';r.textContent='RECOVERY → teaching baseline\nNo saved project body yet.'}};
 document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#modes button').forEach(x=>x.classList.remove('on'));b.classList.add('on');const m=b.textContent;s.textContent=m+' · live mode';if(m==='PLAY')teach.textContent='PLAY → touch the object and observe consequence.';if(m==='BUILD')teach.textContent='BUILD → SELECT/CREATE → CHANGE → SEE. Drag the body or edit properties; source stays in contact.';if(m==='LEARN')teach.textContent='LEARN → NAME : TYPE [COLOUR] <SHAPE> :: ACTION. Each token maps to something visible or executable.';if(m==='DEBUG'){const q=inspectProject();showDebug(q);teach.textContent='DEBUG inspects source grammar, body identity, relationships and field bounds. TEST PROJECT re-runs it after edits.'};if(m==='SAVE'){localStorage.setItem('jm.ailatheo.v3.lesson',JSON.stringify({source:src.value,shape:shape.value,on}));d.textContent='SAVE DING';teach.textContent='Lesson body saved locally.'}if(m==='FORGE'){teach.textContent='FORGE → execute Estate, then BUILD APK contacts the real local Forge bridge.';document.querySelector('#forge').scrollIntoView({behavior:'smooth'})}if(m==='TARGET'){r.textContent='TARGETS\nBrowser: LIVE\nAndroid Forge: wired\nJMGradle / Gradle+AAB: parallel lane\nTarget Bridge: receiver contact required';teach.textContent='TARGET exposes proof boundaries; it does not pretend every host is proven.'}});document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));b.classList.add('on');if(b.textContent==='CODE')r.textContent='LIVE CODE\n'+src.value+'\n\nNAME : TYPE [COLOUR] <SHAPE> :: ACTION\n\n'+WORKBENCH_STANDARD.route.join(' → ');if(b.textContent==='TRACE')r.textContent='TRACE\n'+(trace.length?trace.join('\n'):'No property/contact trace yet.');if(b.textContent==='ROUTE')r.textContent='ROUTE\nSOURCE → CONTACT → STATE CHANGE → VISIBLE CONSEQUENCE → TRACE → DING'});
+
+function mountGripWorkbench(){
+  const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v03')return;
+  world.dataset.gripcubeUi='v03';
+
+  const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
+        linker=field.querySelector('.linker'),linkShelf=document.querySelector('#linkShelf'),inspector=field.querySelector('.inspector'),
+        bodyShelf=document.querySelector('#bodyShelf'),core=field.querySelector('.coreActions'),advanced=field.querySelector('.advanced'),
+        tabs=side.querySelector('.tabs'),route=document.querySelector('#route'),source=document.querySelector('#source'),
+        teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),preview=document.querySelector('#previewFrame');
+  if(!head||!scene||!lab||!linker||!linkShelf||!inspector||!bodyShelf||!core||!advanced||!route||!source||!teach||!explain)return;
+
+  const shell=document.createElement('div');shell.className='gcw-shell';
+  const stageZone=document.createElement('section');stageZone.className='gcw-stageZone';
+  const stageHead=document.createElement('div');stageHead.className='gcw-stageHead';
+  const faceReadout=document.createElement('div');faceReadout.className='gcw-faceReadout';faceReadout.id='gcwFaceReadout';faceReadout.textContent='FORM · WHAT SHAPE NOW?';
+  stageHead.append(head,faceReadout);
+  const stageFrame=document.createElement('div');stageFrame.className='gcw-stageFrame';stageFrame.append(scene);
+  const gripHint=document.createElement('div');gripHint.className='gcw-gripHint';gripHint.textContent='GRIP BODY · DRAG / RESIZE / ROTATE';
+  stageFrame.append(gripHint);
+  const quick=document.createElement('nav');quick.className='gcw-quick';quick.setAttribute('aria-label','GripCube quick contact');
+  quick.innerHTML='<button data-q="add">+ BODY</button><button data-q="act">ACT</button><button data-q="route">LINK</button><button data-q="undo">UNDO</button><button data-q="save">SAVE</button>';
+  stageZone.append(stageHead,stageFrame,quick);
+
+  const faceZone=document.createElement('aside');faceZone.className='gcw-faceZone';faceZone.id='gcwFaceZone';
+  const lenses=document.createElement('nav');lenses.className='gcw-lenses';lenses.setAttribute('aria-label','GripCube semantic lenses');
+  const faces=[
+    ['trace','TRACE','What remains?'],
+    ['route','ROUTE','Where does it go?'],
+    ['form','FORM','What shape now?'],
+    ['field','FIELD','What holds it?'],
+    ['proof','PROOF','What confirms it?'],
+    ['use','USE','What does it do?']
+  ];
+  lenses.innerHTML=faces.map(([id,name])=>'<button class="gcw-lens" data-face="'+id+'">'+name+'</button>').join('');
+  const viewport=document.createElement('div');viewport.className='gcw-faceViewport';
+
+  function makeFace(id,title,question){
+    const p=document.createElement('section');p.className='gcw-face';p.dataset.face=id;
+    const h=document.createElement('div');h.className='gcw-faceTitle';h.innerHTML='<span>'+title+' LENS</span><small>'+question+'</small>';
+    p.append(h);viewport.append(p);return p;
+  }
+  const traceFace=makeFace('trace','TRACE','What remains?');
+  const routeFace=makeFace('route','ROUTE','Where does it go?');
+  const formFace=makeFace('form','FORM','What shape now?');
+  const fieldFace=makeFace('field','FIELD','What holds it?');
+  const proofFace=makeFace('proof','PROOF','What confirms it?');
+  const useFace=makeFace('use','USE','What does it do?');
+
+  formFace.append(lab,source,explain);
+  fieldFace.append(bodyShelf,inspector);
+  routeFace.append(linker,linkShelf);
+  traceFace.append(tabs,route,teach);
+  useFace.append(core);
+  proofFace.append(advanced);
+  if(preview)proofFace.append(preview);
+  const depth=document.createElement('p');depth.className='gcw-depthNote';depth.textContent='DEPTH stays secondary: routing, proof, build and target tools remain available without taking over the creation viewport.';
+  proofFace.append(depth);
+
+  faceZone.append(lenses,viewport);shell.append(stageZone,faceZone);
+  world.replaceChildren(shell);
+
+  let current='form',swipe=null;
+  const meta=Object.fromEntries(faces.map(x=>[x[0],x]));
+  function setFace(id){
+    if(!meta[id])return;
+    current=id;faceZone.dataset.face=id;
+    viewport.querySelectorAll('.gcw-face').forEach(x=>x.classList.toggle('active',x.dataset.face===id));
+    lenses.querySelectorAll('.gcw-lens').forEach(x=>x.classList.toggle('active',x.dataset.face===id));
+    const [,name,q]=meta[id];faceReadout.textContent=name+' · '+q.toUpperCase();
+    const active=lenses.querySelector('[data-face="'+id+'"]');active?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+  }
+  lenses.addEventListener('click',e=>{const b=e.target.closest('.gcw-lens');if(b)setFace(b.dataset.face)});
+  viewport.addEventListener('pointerdown',e=>{if(e.target.closest('button,input,select,textarea,summary'))return;swipe={x:e.clientX,y:e.clientY}});
+  viewport.addEventListener('pointerup',e=>{if(!swipe)return;const dx=e.clientX-swipe.x,dy=e.clientY-swipe.y;swipe=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25){const ids=faces.map(x=>x[0]),i=ids.indexOf(current),n=(i+(dx<0?1:-1)+ids.length)%ids.length;setFace(ids[n])}});
+
+  quick.addEventListener('click',e=>{
+    const b=e.target.closest('button');if(!b)return;
+    const q=b.dataset.q;
+    if(q==='add')document.querySelector('#addObject')?.click();
+    if(q==='act'){if(selected?.body)runBodyAction(selected.body);else document.querySelector('#contact')?.click()}
+    if(q==='route')setFace('route');
+    if(q==='undo')document.querySelector('#undoProject')?.click();
+    if(q==='save')document.querySelector('#saveProject')?.click();
+  });
+
+  document.querySelectorAll('#modes button').forEach(b=>b.addEventListener('click',()=>{
+    const map={PLAY:'use',BUILD:'form',LEARN:'form',DEBUG:'trace',SAVE:'use',FORGE:'proof',TARGET:'proof'};
+    if(map[b.textContent])setFace(map[b.textContent]);
+  }));
+
+  window.JMAILatheoGripUI={
+    version:'0.3',
+    law:'HORIZONTAL/FACE TRAVEL REDUCES UNNECESSARY VERTICAL BROWSING; THE CREATION REMAINS THE PRIMARY VIEWPORT.',
+    faces:faces.map(x=>x[0]),
+    setFace,
+    current:()=>current,
+    proof:()=>({
+      version:'0.3',faces:faces.length,
+      stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
+      quickContacts:quick.querySelectorAll('button').length,
+      formCarrier:!!formFace.querySelector('#source'),
+      routeCarrier:!!routeFace.querySelector('#linker'),
+      fieldCarrier:!!fieldFace.querySelector('#bodyShelf'),
+      traceCarrier:!!traceFace.querySelector('#route'),
+      proofCarrier:!!proofFace.querySelector('.advanced'),
+      useCarrier:!!useFace.querySelector('.coreActions')
+    })
+  };
+  setFace('form');
+}
+mountGripWorkbench();
+
 </script></body></html>

@@ -32,6 +32,19 @@ for(const [name,viewport] of cases){
   const formAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
   if(formAfter!==formBefore) throw new Error(name+': FORM body tap executed action instead of selecting/manipulating');
 
+  const gripBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate}});
+  await page.evaluate(()=>{
+    const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1];
+    const send=(target,type,id,x,y)=>target.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId:id,pointerType:'touch',clientX:x,clientY:y,buttons:type==='pointerup'?0:1}));
+    send(body,'pointerdown',41,120,120);
+    send(scene,'pointerdown',42,220,120);
+    send(scene,'pointermove',42,280,180);
+    send(scene,'pointerup',42,280,180);
+    send(body,'pointerup',41,120,120);
+  });
+  const gripAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected'),badge:document.querySelectorAll('.sceneBody')[1]?.dataset.gcwContact||null,ding:document.querySelector('#ding')?.textContent}});
+  if(!gripAfter?.selected||gripAfter.size<=gripBefore.size||gripAfter.rotate===gripBefore.rotate||gripAfter.ding!=='GRIP DING') throw new Error(name+': two-finger grip did not resize/twist selected body '+JSON.stringify({gripBefore,gripAfter}));
+
   await page.locator('.gcw-lens[data-face="use"]').click();
   await second.click();
   const useAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
@@ -53,6 +66,7 @@ for(const [name,viewport] of cases){
     linkCount:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.links')||'[]')).length,
     contactLens:document.querySelector('#scene')?.dataset.gcwLens,
     quickActText:document.querySelector('.gcw-quick [data-q="act"]')?.textContent,
+    contactBadge:document.querySelector('.sceneBody.selected')?.dataset.gcwContact||null,
     routeSourceCount:document.querySelectorAll('.sceneBody.route-source').length,
     cube:!!document.querySelector('#gcwCubeDock'),
     visibleFace:document.querySelector('.gcw-face.active')?.dataset.face,
@@ -72,11 +86,12 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0) throw new Error(name+': route source affordance did not clear after completed link '+JSON.stringify(metrics));
   if(metrics.quickActText!=='SPIN') throw new Error(name+': contextual ACT did not follow selected body action '+JSON.stringify(metrics));
+  if(!metrics.contactBadge) throw new Error(name+': selected body lost its on-body contact affordance '+JSON.stringify(metrics));
   if(metrics.starterVisible) throw new Error(name+': starter teaching body still competes with created bodies '+JSON.stringify(metrics));
   if(!metrics.lensFits) throw new Error(name+': six semantic lenses do not fit the face rail '+JSON.stringify(metrics));
   if(metrics.appRowCount!==3) throw new Error(name+': GripCube app is not three visible rows '+JSON.stringify(metrics));
@@ -87,4 +102,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify(metrics));
 }
 await browser.close();
-console.log('AILatheo GripCube owner-contact render PASS — 2/2');
+console.log('AILatheo GripCube multitouch render PASS — 2/2');

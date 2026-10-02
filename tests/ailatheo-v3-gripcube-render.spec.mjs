@@ -247,7 +247,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -283,6 +283,56 @@ for(const [name,viewport] of cases){
   await page.locator('.gcw-quick [data-q="undo"]').click();
   const precisionUndo3=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
   if(precisionUndo3.x!==precisionBefore.x||precisionUndo3.size!==precisionBefore.size||precisionUndo3.rotate!==precisionBefore.rotate||precisionUndo3.event?.kind!=='RECOVERY DING') throw new Error(name+': FIELD third undo did not recover position step '+JSON.stringify({precisionBefore,precisionUndo3}));
+
+  await page.locator('.gcw-face[data-face="field"] .inspector > summary').click();
+  const inspectorBaseline=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    px:document.querySelector('#px')?.value,
+    open:!!document.querySelector('.gcw-face[data-face="field"] .inspector')?.open
+  }));
+  if(!inspectorBaseline.open) throw new Error(name+': FIELD precision inspector did not open');
+  await page.locator('#px').focus();
+  await page.evaluate(()=>{
+    const input=document.querySelector('#px');
+    for(const value of ['58','61','63']){input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}))}
+  });
+  const inspectorLive=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,
+    x:document.querySelectorAll('.sceneBody')[1]?._body?.x,
+    persisted:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]'))[1]?.x
+  }));
+  if(inspectorLive.event!==inspectorBaseline.event||inspectorLive.x!==63||inspectorLive.persisted!==63) throw new Error(name+': live FIELD inspector edit did not stay Ding-silent while geometry persisted '+JSON.stringify({inspectorBaseline,inspectorLive}));
+  await page.locator('#px').blur();
+  const inspectorCommit=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    x:document.querySelectorAll('.sceneBody')[1]?._body?.x,
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null
+  }));
+  if(inspectorCommit.event?.id!==inspectorBaseline.event+1||inspectorCommit.event?.kind!=='FIELD DING'||!inspectorCommit.event?.delta.includes('x '+inspectorBaseline.body.x+'→63')||!inspectorCommit.event?.recoveryRevision||inspectorCommit.selected!=='Grip Body') throw new Error(name+': FIELD inspector commit did not produce one recoverable Ding '+JSON.stringify({inspectorBaseline,inspectorCommit}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const inspectorUndo=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    x:document.querySelectorAll('.sceneBody')[1]?._body?.x,
+    px:+document.querySelector('#px')?.value,
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null
+  }));
+  if(inspectorUndo.x!==inspectorBaseline.body.x||inspectorUndo.px!==Math.round(inspectorBaseline.body.x)||inspectorUndo.event?.kind!=='RECOVERY DING'||inspectorUndo.event?.recoveredEventId!==inspectorCommit.event.id||inspectorUndo.selected!=='Grip Body') throw new Error(name+': FIELD inspector exact recovery failed '+JSON.stringify({inspectorBaseline,inspectorCommit,inspectorUndo}));
+
+  const inspectorNoChange=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
+  await page.locator('#py').focus();await page.locator('#py').blur();
+  const inspectorNoChangeAfter=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
+  if(inspectorNoChangeAfter!==inspectorNoChange) throw new Error(name+': unchanged FIELD inspector contact minted false Ding '+JSON.stringify({inspectorNoChange,inspectorNoChangeAfter}));
+
+  const rotateInspectorBefore=await page.evaluate(()=>({rotate:document.querySelectorAll('.sceneBody')[1]?._body?.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0}));
+  await page.locator('#prot').focus();
+  await page.evaluate(()=>{const input=document.querySelector('#prot');input.value=String(Number(input.value)+17);input.dispatchEvent(new Event('input',{bubbles:true}))});
+  await page.locator('#prot').blur();
+  const rotateInspectorAfter=await page.evaluate(()=>({rotate:document.querySelectorAll('.sceneBody')[1]?._body?.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(rotateInspectorAfter.rotate!==rotateInspectorBefore.rotate+17||rotateInspectorAfter.event?.id!==rotateInspectorBefore.event+1||rotateInspectorAfter.event?.kind!=='FIELD DING'||!rotateInspectorAfter.event?.delta.includes('rotate '+rotateInspectorBefore.rotate+'→'+rotateInspectorAfter.rotate)) throw new Error(name+': FIELD rotate inspector transaction failed '+JSON.stringify({rotateInspectorBefore,rotateInspectorAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const rotateInspectorUndo=await page.evaluate(()=>({rotate:document.querySelectorAll('.sceneBody')[1]?._body?.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}));
+  if(rotateInspectorUndo.rotate!==rotateInspectorBefore.rotate||rotateInspectorUndo.event?.recoveredEventId!==rotateInspectorAfter.event.id) throw new Error(name+': FIELD rotate inspector recovery failed '+JSON.stringify({rotateInspectorBefore,rotateInspectorAfter,rotateInspectorUndo}));
 
   await page.locator('.sceneBody').nth(1).focus();
   const keyboardEventBefore=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
@@ -426,4 +476,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube structural-Ding render PASS — 2/2');
+console.log('AILatheo GripCube FIELD-inspector render PASS — 2/2');

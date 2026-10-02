@@ -525,7 +525,7 @@ function mountGripWorkbench(){
   function keyboardStageContact(e){
     const t=e.target;if(t?.matches?.('input,select,textarea,button,summary')||t?.isContentEditable||e.repeat)return;
     const ids=faces.map(x=>x[0]),i=ids.indexOf(current);
-    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();document.querySelector('#undoProject')?.click();syncGripContext();return}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();document.querySelector('#undoProject')?.click();syncGripContext();const focusTarget=selected?.el||stageZone;try{focusTarget.focus({preventScroll:true})}catch(_){focusTarget.focus?.()}return}
     if(e.key==='['||e.key===']'){e.preventDefault();setFace(ids[(i+(e.key===']'?1:-1)+ids.length)%ids.length]);return}
     if(e.key==='Escape'&&current==='route'){e.preventDefault();clearRouteContact();teach.textContent='ROUTE CONTACT CANCELLED · selected body remains in hand.';syncGripContext();return}
     if(current==='field'){

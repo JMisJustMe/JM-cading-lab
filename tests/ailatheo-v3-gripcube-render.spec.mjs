@@ -45,7 +45,14 @@ for(const [name,viewport] of cases){
   const gripAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected'),badge:document.querySelectorAll('.sceneBody')[1]?.dataset.gcwContact||null,ding:document.querySelector('#ding')?.textContent}});
   if(!gripAfter?.selected||gripAfter.size<=gripBefore.size||gripAfter.rotate===gripBefore.rotate||gripAfter.ding!=='GRIP DING') throw new Error(name+': two-finger grip did not resize/twist selected body '+JSON.stringify({gripBefore,gripAfter}));
 
+  await page.evaluate(()=>{
+    const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1];
+    const send=(target,type,id,x,y)=>target.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId:id,pointerType:'touch',clientX:x,clientY:y,buttons:1}));
+    send(body,'pointerdown',51,130,130);send(scene,'pointerdown',52,230,130);
+  });
   await page.locator('.gcw-lens[data-face="use"]').click();
+  const cancelled=await page.evaluate(()=>({multi:!!document.querySelector('#scene')._gcwMultiTransform,suppressed:!!document.querySelectorAll('.sceneBody')[1]?._gcwGestureSuppressed}));
+  if(cancelled.multi||cancelled.suppressed) throw new Error(name+': face change did not release active two-finger grip '+JSON.stringify(cancelled));
   await second.click();
   const useAfter=await page.evaluate(()=>document.querySelectorAll('.sceneBody')[1]?._body?.rotate??null);
   if(useAfter===formAfter) throw new Error(name+': USE body tap did not execute selected body action');

@@ -378,7 +378,7 @@ function mountGripWorkbench(){
   function setFace(id){
     if(!meta[id])return;
     if(current==='route'&&id!=='route')clearRouteContact();
-    gripPointers.clear();if(multiGrip){multiGrip=null;scene._gcwMultiTransform=false;stageZone.classList.remove('gcw-multitouch')}
+    gripPointers.clear();if(multiGrip){multiGrip=null;scene._gcwMultiTransform=false;stageZone.classList.remove('gcw-multitouch');scene.querySelectorAll('.sceneBody').forEach(x=>{x._gcwGestureSuppressed=false;x._suppressClick=false})}
     current=id;faceZone.dataset.face=id;const pose=cubePose[id];if(pose){cubeX=pose[0];cubeY=pose[1];paintCube()}
     viewport.querySelectorAll('.gcw-face').forEach(x=>{
       const active=x.dataset.face===id;x.classList.toggle('active',active);

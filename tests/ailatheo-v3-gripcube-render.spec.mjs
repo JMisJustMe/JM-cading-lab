@@ -134,7 +134,34 @@ for(const [name,viewport] of cases){
   if(name==='phone'&&(metrics.shellRect?.h??0)<viewport.height*.62) throw new Error(name+': GripCube shell no longer owns the available phone height '+JSON.stringify(metrics));
   if(name==='phone'&&Math.abs((metrics.footerTop??0)-(metrics.shellRect?.bottom??0))>16) throw new Error(name+': dead vertical gap remains before footer '+JSON.stringify(metrics));
   if(name==='desktop'&&(metrics.stageRect?.w??0)<viewport.width*.58) throw new Error(name+': creation stage still trapped in legacy left column '+JSON.stringify(metrics));
-  console.log(name+': PASS '+JSON.stringify(metrics));
+
+  await page.locator('.gcw-lens[data-face="use"]').click();
+  await page.locator('.sceneBody').nth(1).click();
+  const directEvent=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact());
+  if(!directEvent||directEvent.kind!=='BODY DING'||directEvent.body!=='Grip Body'||directEvent.action!=='Spin') throw new Error(name+': USE did not publish latest material body Ding '+JSON.stringify(directEvent));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const traceFocus=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||'',live:document.querySelector('#gcwTraceDingFocus')?.dataset.live}));
+  if(traceFocus.event?.id!==directEvent.id||traceFocus.live!=='true'||!traceFocus.text.includes('BODY DING')||!traceFocus.text.includes('Grip Body')) throw new Error(name+': TRACE did not follow latest material Ding '+JSON.stringify(traceFocus));
+
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const proofFocus=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||'',live:document.querySelector('#gcwProofDingFocus')?.dataset.live}));
+  if(proofFocus.event?.id!==directEvent.id||proofFocus.live!=='true'||!proofFocus.text.includes('BODY DING')||proofFocus.text!==traceFocus.text) throw new Error(name+': PROOF did not carry same material Ding without inventing a new event '+JSON.stringify({traceFocus,proofFocus}));
+
+  await page.locator('.gcw-lens[data-face="use"]').click();
+  await page.locator('.sceneBody').nth(0).click();
+  const causeEvent=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact());
+  if(!causeEvent||causeEvent.id<=directEvent.id||causeEvent.kind!=='CAUSE DING'||causeEvent.body!=='Grip Body'||!causeEvent.detail.includes('--touch-->')) throw new Error(name+': linked USE contact did not replace pointer with causal Ding '+JSON.stringify(causeEvent));
+
+  await page.locator('.gcw-lens[data-face="trace"]').click();
+  const causeTrace=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwTraceDingFocus')?.textContent||''}));
+  await page.locator('.gcw-lens[data-face="proof"]').click();
+  const causeProof=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
+  if(causeTrace.event?.id!==causeEvent.id||causeProof.event?.id!==causeEvent.id||causeTrace.text!==causeProof.text||!causeTrace.text.includes('CAUSE DING')) throw new Error(name+': TRACE/PROOF did not converge on same causal material Ding '+JSON.stringify({causeEvent,causeTrace,causeProof}));
+  const persistedMaterialEvent=await page.evaluate(()=>localStorage.getItem('jm.ailatheo.v3.materialContact'));
+  if(persistedMaterialEvent!==null) throw new Error(name+': material event pointer was persisted; it must remain ephemeral');
+
+  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:causeEvent.id,materialEventKind:causeEvent.kind}));
 }
 await browser.close();
-console.log('AILatheo GripCube route-continuity render PASS — 2/2');
+console.log('AILatheo GripCube Ding-focus render PASS — 2/2');

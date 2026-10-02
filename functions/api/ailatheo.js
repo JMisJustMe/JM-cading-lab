@@ -100,8 +100,12 @@ function canonicalOrigin(request,env){
   const configured=String(env.AILATHEO_PUBLIC_ORIGIN||'').replace(/\/$/,'');
   return configured||new URL(request.url).origin;
 }
+function workbenchUrl(request,env){
+  return canonicalOrigin(request,env)+'/unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html';
+}
+function entitlementReady(env){return Boolean(env.AILATHEO_CUSTOMERS&&stripeReady(env)&&env.AILATHEO_STRIPE_WEBHOOK_SECRET)}
 async function createAccount(env){
-  if(!env.AILATHEO_CUSTOMERS)return json({schema:SCHEMA,error:'CUSTOMER_STORAGE_NOT_CONFIGURED'},503);
+  if(!entitlementReady(env))return json({schema:SCHEMA,error:'CREATOR_ENTITLEMENT_NOT_CONFIGURED'},503);
   const raw=new Uint8Array(TOKEN_BYTES);crypto.getRandomValues(raw);
   const token=TOKEN_PREFIX+bytesToBase64Url(raw),token_hash=await sha256(token),created=now();
   const account=await saveAccount(env.AILATHEO_CUSTOMERS,{
@@ -133,8 +137,8 @@ async function createCheckout(request,env,account,payload){
     'metadata[ailatheo_cadence]':cadence,
     'subscription_data[metadata][ailatheo_account_id]':account.account_id,
     'subscription_data[metadata][ailatheo_cadence]':cadence,
-    success_url:origin+'/ailatheo/?checkout=success&session_id={CHECKOUT_SESSION_ID}',
-    cancel_url:origin+'/ailatheo/?checkout=cancelled',
+    success_url:workbenchUrl(request,env)+'?checkout=success&session_id={CHECKOUT_SESSION_ID}',
+    cancel_url:workbenchUrl(request,env)+'?checkout=cancelled',
     locale:'en-GB'
   };
   if(account.stripe_customer_id)params.customer=account.stripe_customer_id;
@@ -161,7 +165,7 @@ async function reconcileCheckout(env,account,payload){
 async function createPortal(request,env,account){
   if(!account.stripe_customer_id)return json({schema:SCHEMA,error:'NO_STRIPE_CUSTOMER'},409);
   if(!stripeReady(env))return json({schema:SCHEMA,error:'STRIPE_TEST_MODE_NOT_CONFIGURED'},503);
-  const session=await stripePost(env,'/v1/billing_portal/sessions',{customer:account.stripe_customer_id,return_url:canonicalOrigin(request,env)+'/ailatheo/'});
+  const session=await stripePost(env,'/v1/billing_portal/sessions',{customer:account.stripe_customer_id,return_url:workbenchUrl(request,env)});
   return json({schema:SCHEMA,outcome:'PORTAL_CREATED',url:session.url});
 }
 function subscriptionState(object,type){
@@ -243,7 +247,7 @@ async function webhook(request,env){
 export async function onRequest(context){
   const {request,env}=context,url=new URL(request.url),queryAction=url.searchParams.get('action');
   if(request.method==='GET'&&queryAction==='status'){
-    return json({schema:SCHEMA,service:'AILatheo Creator entitlement',storage_bound:Boolean(env.AILATHEO_CUSTOMERS),stripe_secret_configured:Boolean(env.AILATHEO_STRIPE_SECRET_KEY),webhook_secret_configured:Boolean(env.AILATHEO_STRIPE_WEBHOOK_SECRET),monthly_price_configured:Boolean(env.AILATHEO_STRIPE_MONTHLY_PRICE_ID),annual_price_configured:Boolean(env.AILATHEO_STRIPE_ANNUAL_PRICE_ID),ready:Boolean(env.AILATHEO_CUSTOMERS&&stripeReady(env)&&env.AILATHEO_STRIPE_WEBHOOK_SECRET),mode:env.AILATHEO_STRIPE_MODE||'unset',boundary:'Billing controls capability only. Project ownership and local project bytes are not stored in this service.'});
+    return json({schema:SCHEMA,service:'AILatheo Creator entitlement',storage_bound:Boolean(env.AILATHEO_CUSTOMERS),stripe_secret_configured:Boolean(env.AILATHEO_STRIPE_SECRET_KEY),webhook_secret_configured:Boolean(env.AILATHEO_STRIPE_WEBHOOK_SECRET),monthly_price_configured:Boolean(env.AILATHEO_STRIPE_MONTHLY_PRICE_ID),annual_price_configured:Boolean(env.AILATHEO_STRIPE_ANNUAL_PRICE_ID),ready:entitlementReady(env),mode:env.AILATHEO_STRIPE_MODE||'unset',boundary:'Billing controls capability only. Project ownership and local project bytes are not stored in this service.'});
   }
   if(request.method==='POST'&&queryAction==='stripe-webhook')return webhook(request,env);
   if(request.method==='POST'){

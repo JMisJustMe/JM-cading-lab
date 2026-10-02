@@ -22,6 +22,8 @@ if(!html.includes("selected.body")||!html.includes("persistBodies()")) {
   throw new Error("INSPECTOR_BODY_CONTACT_MISSING");
 }
 if(!html.includes("older source")) throw new Error("BACKWARD_COMPATIBILITY_GUIDANCE_MISSING");
+if(html.includes("</details></div></article>")) throw new Error("ACTION_GROUP_MARKUP_EXTRA_CLOSE");
+for(const token of ["function consequence","function fireLink","function distance","runBodyAction","_suppressClick","preDrag=snapshot()"]) if(!html.includes(token)) throw new Error("RUNTIME_CONTACT_MISSING_"+token);
 
 console.log(JSON.stringify({
   passed:true,

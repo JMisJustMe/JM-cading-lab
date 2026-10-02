@@ -31,5 +31,8 @@ console.log(JSON.stringify({
   quickContacts:5,
   preservesSingleIds:true,
   horizontalFaceTravel:true,
-  stagePrimary:true,\n  grippableCube:true,\n  legacyModeStripHidden:true,\n  cubeReleaseSnapsFace:true
+  stagePrimary:true,
+  grippableCube:true,
+  legacyModeStripHidden:true,
+  cubeReleaseSnapsFace:true
 },null,2));

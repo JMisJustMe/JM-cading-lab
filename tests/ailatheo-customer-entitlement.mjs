@@ -78,8 +78,8 @@ let token='';
 {
   const r=await call({method:'POST',token,body:{action:'checkout.create',cadence:'monthly'}});
   assert.equal(r.status,200);const j=await r.json();assert.equal(j.outcome,'CHECKOUT_CREATED');assert.equal(j.url,'https://checkout.stripe.test/session');
-  const call=stripeCalls.find(x=>x.href.endsWith('/v1/checkout/sessions')&&x.method==='POST');
-  assert.ok(call.body.includes('price_month'));assert.ok(call.body.includes(encodeURIComponent(currentAccountId)));
+  const stripeCall=stripeCalls.find(x=>x.href.endsWith('/v1/checkout/sessions')&&x.method==='POST');
+  assert.ok(stripeCall.body.includes('price_month'));assert.ok(stripeCall.body.includes(encodeURIComponent(currentAccountId)));
 }
 {
   const r=await call({method:'POST',token,body:{action:'checkout.reconcile',session_id:'cs_test_paid'}});

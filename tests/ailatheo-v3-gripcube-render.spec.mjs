@@ -42,8 +42,11 @@ for(const [name,viewport] of cases){
     send(scene,'pointerup',42,280,180);
     send(body,'pointerup',41,120,120);
   });
-  const gripAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected'),badge:document.querySelectorAll('.sceneBody')[1]?.dataset.gcwContact||null,ding:document.querySelector('#ding')?.textContent}});
-  if(!gripAfter?.selected||gripAfter.size<=gripBefore.size||gripAfter.rotate===gripBefore.rotate||gripAfter.ding!=='GRIP DING') throw new Error(name+': two-finger grip did not resize/twist selected body '+JSON.stringify({gripBefore,gripAfter}));
+  const gripAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected'),badge:document.querySelectorAll('.sceneBody')[1]?.dataset.gcwContact||null,ding:document.querySelector('#ding')?.textContent,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(!gripAfter?.selected||gripAfter.size<=gripBefore.size||gripAfter.rotate===gripBefore.rotate||gripAfter.ding!=='GRIP DING'||gripAfter.event?.kind!=='GRIP DING'||!gripAfter.event?.recoveryRevision) throw new Error(name+': two-finger grip did not enter material recovery chain '+JSON.stringify({gripBefore,gripAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const gripRecovered=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact(),selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected')}});
+  if(gripRecovered.size!==gripBefore.size||gripRecovered.rotate!==gripBefore.rotate||gripRecovered.event?.kind!=='RECOVERY DING'||gripRecovered.event?.recoveredEventId!==gripAfter.event.id||!gripRecovered.selected) throw new Error(name+': GRIP exact recovery failed '+JSON.stringify({gripBefore,gripAfter,gripRecovered}));
 
   await page.evaluate(()=>{
     const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1];
@@ -58,6 +61,60 @@ for(const [name,viewport] of cases){
   if(useAfter===formAfter) throw new Error(name+': USE body tap did not execute selected body action');
 
   await page.locator('.gcw-lens[data-face="form"]').click();
+  await page.locator('.sceneBody').nth(1).click();
+
+  const dragBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate}});
+  await page.evaluate(()=>{
+    const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1],r=scene.getBoundingClientRect();
+    const x=r.left+r.width*body._body.x/100,y=r.top+r.height*body._body.y/100;
+    const send=(type,cx,cy)=>body.dispatchEvent(new PointerEvent(type,{bubbles:true,cancelable:true,pointerId:91,pointerType:'mouse',button:0,buttons:type==='pointerup'?0:1,clientX:cx,clientY:cy}));
+    send('pointerdown',x,y);send('pointermove',x+r.width*.04,y+r.height*.03);send('pointerup',x+r.width*.04,y+r.height*.03);
+  });
+  const dragAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(dragAfter.x===dragBefore.x&&dragAfter.y===dragBefore.y||dragAfter.event?.kind!=='MOVE DING'||!dragAfter.event?.recoveryRevision) throw new Error(name+': FORM drag did not publish recoverable MOVE DING '+JSON.stringify({dragBefore,dragAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const dragRecovered=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(dragRecovered.x!==dragBefore.x||dragRecovered.y!==dragBefore.y||dragRecovered.event?.kind!=='RECOVERY DING'||dragRecovered.event?.recoveredEventId!==dragAfter.event.id) throw new Error(name+': FORM drag recovery failed '+JSON.stringify({dragBefore,dragAfter,dragRecovered}));
+
+  await page.locator('.sceneBody').nth(1).click();
+  const noChangeEvent=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
+  await page.evaluate(()=>{
+    const h=document.querySelector('#resizeHandle'),r=h.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+    h.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:92,pointerType:'mouse',button:0,buttons:1,clientX:x,clientY:y}));
+    h.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:92,pointerType:'mouse',button:0,buttons:0,clientX:x,clientY:y}));
+  });
+  const noChangeAfter=await page.evaluate(()=>window.JMAILatheoGripUI.latestMaterialContact()?.id||0);
+  if(noChangeAfter!==noChangeEvent) throw new Error(name+': unchanged transform handle minted false material Ding '+JSON.stringify({noChangeEvent,noChangeAfter}));
+
+  const resizeBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate}});
+  await page.evaluate(()=>{
+    const scene=document.querySelector('#scene'),h=document.querySelector('#resizeHandle'),b=document.querySelectorAll('.sceneBody')[1]._body,r=scene.getBoundingClientRect();
+    const cx=r.left+r.width*b.x/100,cy=r.top+r.height*b.y/100;
+    h.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:93,pointerType:'mouse',button:0,buttons:1,clientX:cx+40,clientY:cy+40}));
+    h.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,cancelable:true,pointerId:93,pointerType:'mouse',button:0,buttons:1,clientX:cx+95,clientY:cy+95}));
+    h.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:93,pointerType:'mouse',button:0,buttons:0,clientX:cx+95,clientY:cy+95}));
+  });
+  const resizeAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(resizeAfter.size===resizeBefore.size||resizeAfter.event?.kind!=='RESIZE DING'||!resizeAfter.event?.recoveryRevision) throw new Error(name+': resize handle did not publish recoverable material Ding '+JSON.stringify({resizeBefore,resizeAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const resizeRecovered=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(resizeRecovered.size!==resizeBefore.size||resizeRecovered.rotate!==resizeBefore.rotate||resizeRecovered.event?.recoveredEventId!==resizeAfter.event.id) throw new Error(name+': resize handle recovery failed '+JSON.stringify({resizeBefore,resizeAfter,resizeRecovered}));
+
+  await page.locator('.sceneBody').nth(1).click();
+  const rotateBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate}});
+  await page.evaluate(()=>{
+    const scene=document.querySelector('#scene'),h=document.querySelector('#rotateHandle'),b=document.querySelectorAll('.sceneBody')[1]._body,r=scene.getBoundingClientRect();
+    const cx=r.left+r.width*b.x/100,cy=r.top+r.height*b.y/100;
+    h.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:94,pointerType:'mouse',button:0,buttons:1,clientX:cx,clientY:cy-80}));
+    h.dispatchEvent(new PointerEvent('pointermove',{bubbles:true,cancelable:true,pointerId:94,pointerType:'mouse',button:0,buttons:1,clientX:cx+100,clientY:cy}));
+    h.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:94,pointerType:'mouse',button:0,buttons:0,clientX:cx+100,clientY:cy}));
+  });
+  const rotateAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(rotateAfter.rotate===rotateBefore.rotate||rotateAfter.event?.kind!=='ROTATE DING'||!rotateAfter.event?.recoveryRevision) throw new Error(name+': rotate handle did not publish recoverable material Ding '+JSON.stringify({rotateBefore,rotateAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const rotateRecovered=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(rotateRecovered.rotate!==rotateBefore.rotate||rotateRecovered.size!==rotateBefore.size||rotateRecovered.event?.recoveredEventId!==rotateAfter.event.id) throw new Error(name+': rotate handle recovery failed '+JSON.stringify({rotateBefore,rotateAfter,rotateRecovered}));
+
   await page.locator('.sceneBody').nth(0).click();
   const sourceName=await page.evaluate(()=>document.querySelector('.sceneBody.selected')?._body?.name||null);
   await page.locator('.gcw-lens[data-face="route"]').click();
@@ -120,7 +177,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -299,4 +356,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube keyboard-ROUTE render PASS — 2/2');
+console.log('AILatheo GripCube FORM-material render PASS — 2/2');

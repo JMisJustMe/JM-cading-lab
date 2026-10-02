@@ -103,6 +103,10 @@
 }
 
 /* JM.CreationWorkbench/0.4 · render-led GripCube polish */
+.app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
+.world.gcw-world{height:auto!important;align-self:stretch}
+.gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
+
 .world.gcw-world{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important;width:100%;min-width:0;min-height:0}
 .world.gcw-world>.gcw-shell{width:100%;max-width:none;height:auto;min-height:0;align-self:stretch}
 .stage.hasBodies>#object{display:none!important;opacity:0;visibility:hidden;pointer-events:none}

@@ -826,6 +826,8 @@ async function runStraightJourney(name,viewport){
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+path,{waitUntil:'networkidle'});
   await page.waitForTimeout(250);
+  const firstRun=page.locator('#creatorPreviewGate');
+  if(await firstRun.isVisible()) await page.locator('#creatorStartBlank').click();
 
   const clean=await page.evaluate(()=>({
     bodies:document.querySelectorAll('.sceneBody').length,

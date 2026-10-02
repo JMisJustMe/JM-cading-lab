@@ -78,9 +78,9 @@ function publicAccount(a){
     updated_at:a.updated_at
   };
 }
-function stripeReady(env){return Boolean(env.AILATHEO_STRIPE_SECRET_KEY&&env.AILATHEO_STRIPE_MONTHLY_PRICE_ID&&env.AILATHEO_STRIPE_ANNUAL_PRICE_ID)}
+function stripeReady(env){return Boolean(env.AILATHEO_STRIPE_MODE==='test'&&String(env.AILATHEO_STRIPE_SECRET_KEY||'').startsWith('sk_test_')&&env.AILATHEO_STRIPE_MONTHLY_PRICE_ID&&env.AILATHEO_STRIPE_ANNUAL_PRICE_ID)}
 async function stripePost(env,path,params){
-  if(!env.AILATHEO_STRIPE_SECRET_KEY)throw new Error('STRIPE_NOT_CONFIGURED');
+  if(!stripeReady(env))throw new Error('STRIPE_TEST_MODE_NOT_CONFIGURED');
   const body=new URLSearchParams();
   for(const [k,v] of Object.entries(params||{}))if(v!==undefined&&v!==null)body.set(k,String(v));
   const r=await fetch('https://api.stripe.com'+path,{method:'POST',headers:{authorization:'Bearer '+env.AILATHEO_STRIPE_SECRET_KEY,'content-type':'application/x-www-form-urlencoded'},body});
@@ -89,7 +89,7 @@ async function stripePost(env,path,params){
   return payload;
 }
 async function stripeGet(env,path){
-  if(!env.AILATHEO_STRIPE_SECRET_KEY)throw new Error('STRIPE_NOT_CONFIGURED');
+  if(!stripeReady(env))throw new Error('STRIPE_TEST_MODE_NOT_CONFIGURED');
   const r=await fetch('https://api.stripe.com'+path,{headers:{authorization:'Bearer '+env.AILATHEO_STRIPE_SECRET_KEY}});
   const payload=await r.json().catch(()=>({}));
   if(!r.ok)throw Object.assign(new Error(payload?.error?.message||'STRIPE_HTTP_'+r.status),{status:r.status,payload});
@@ -160,7 +160,7 @@ async function reconcileCheckout(env,account,payload){
 }
 async function createPortal(request,env,account){
   if(!account.stripe_customer_id)return json({schema:SCHEMA,error:'NO_STRIPE_CUSTOMER'},409);
-  if(!env.AILATHEO_STRIPE_SECRET_KEY)return json({schema:SCHEMA,error:'STRIPE_NOT_CONFIGURED'},503);
+  if(!stripeReady(env))return json({schema:SCHEMA,error:'STRIPE_TEST_MODE_NOT_CONFIGURED'},503);
   const session=await stripePost(env,'/v1/billing_portal/sessions',{customer:account.stripe_customer_id,return_url:canonicalOrigin(request,env)+'/ailatheo/'});
   return json({schema:SCHEMA,outcome:'PORTAL_CREATED',url:session.url});
 }

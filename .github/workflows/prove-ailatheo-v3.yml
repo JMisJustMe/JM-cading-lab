@@ -27,3 +27,4 @@ jobs:
       - run: node tests/ailatheo-v3-estate-route.mjs
       - run: node tests/ailatheo-v3-native-execution.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
+      - run: node tests/ailatheo-v3-standard-workbench.mjs

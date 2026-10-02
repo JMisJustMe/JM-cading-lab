@@ -120,7 +120,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -134,6 +134,28 @@ for(const [name,viewport] of cases){
   if(name==='phone'&&(metrics.shellRect?.h??0)<viewport.height*.62) throw new Error(name+': GripCube shell no longer owns the available phone height '+JSON.stringify(metrics));
   if(name==='phone'&&Math.abs((metrics.footerTop??0)-(metrics.shellRect?.bottom??0))>16) throw new Error(name+': dead vertical gap remains before footer '+JSON.stringify(metrics));
   if(name==='desktop'&&(metrics.stageRect?.w??0)<viewport.width*.58) throw new Error(name+': creation stage still trapped in legacy left column '+JSON.stringify(metrics));
+
+  await page.locator('.gcw-lens[data-face="field"]').click();
+  const precisionBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;const h=document.querySelector('#gcwFieldHalo');return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,haloVisible:h&&!h.hidden,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected')}});
+  if(!precisionBefore?.haloVisible||!precisionBefore.selected) throw new Error(name+': FIELD precision halo did not follow selected body '+JSON.stringify(precisionBefore));
+  await page.locator('#gcwFieldHalo [data-field="right"]').click();
+  await page.locator('#gcwFieldHalo [data-field="larger"]').click();
+  await page.locator('#gcwFieldHalo [data-field="rotateRight"]').click();
+  const precisionAfter=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact(),persisted:(JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')||'[]'))[1]}});
+  if(precisionAfter.x!==precisionBefore.x+1||precisionAfter.size!==precisionBefore.size+2||precisionAfter.rotate!==precisionBefore.rotate+1||precisionAfter.event?.kind!=='FIELD DING'||precisionAfter.event?.body!=='Grip Body') throw new Error(name+': FIELD precision controls did not apply exact steps '+JSON.stringify({precisionBefore,precisionAfter}));
+  if(Math.round(precisionAfter.persisted?.x)!==Math.round(precisionAfter.x)||Math.round(precisionAfter.persisted?.size)!==Math.round(precisionAfter.size)||Math.round(precisionAfter.persisted?.rotate)!==Math.round(precisionAfter.rotate)) throw new Error(name+': FIELD precision did not persist live body state '+JSON.stringify(precisionAfter));
+
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const precisionUndo=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact(),haloVisible:!document.querySelector('#gcwFieldHalo')?.hidden,selected:document.querySelectorAll('.sceneBody')[1]?.classList.contains('selected')}});
+  if(precisionUndo.rotate!==precisionBefore.rotate||precisionUndo.size!==precisionBefore.size+2||precisionUndo.x!==precisionBefore.x+1||precisionUndo.event?.kind!=='RECOVERY DING'||!precisionUndo.haloVisible||!precisionUndo.selected) throw new Error(name+': FIELD precision undo did not recover last exact precision step '+JSON.stringify({precisionBefore,precisionAfter,precisionUndo}));
+
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const precisionUndo2=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(precisionUndo2.size!==precisionBefore.size||precisionUndo2.x!==precisionBefore.x+1||precisionUndo2.event?.kind!=='RECOVERY DING') throw new Error(name+': FIELD second undo did not recover size step '+JSON.stringify({precisionBefore,precisionUndo2}));
+
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const precisionUndo3=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate,event:window.JMAILatheoGripUI.latestMaterialContact()}});
+  if(precisionUndo3.x!==precisionBefore.x||precisionUndo3.size!==precisionBefore.size||precisionUndo3.rotate!==precisionBefore.rotate||precisionUndo3.event?.kind!=='RECOVERY DING') throw new Error(name+': FIELD third undo did not recover position step '+JSON.stringify({precisionBefore,precisionUndo3}));
 
   await page.locator('.gcw-lens[data-face="use"]').click();
   await page.locator('.sceneBody').nth(1).click();
@@ -189,4 +211,4 @@ for(const [name,viewport] of cases){
   console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
 }
 await browser.close();
-console.log('AILatheo GripCube Ding-recovery render PASS — 2/2');
+console.log('AILatheo GripCube FIELD-precision render PASS — 2/2');

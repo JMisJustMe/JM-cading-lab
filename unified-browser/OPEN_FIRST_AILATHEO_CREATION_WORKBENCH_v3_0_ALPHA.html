@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.13 · GripCube UI projection
+/* JM.CreationWorkbench/0.14 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.13 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.14 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -144,7 +144,7 @@
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.13 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.14 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -184,10 +184,10 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.13 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.14 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.13',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.14',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null;
 function bodyMaterialState(body){return {on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
@@ -214,9 +214,57 @@ function shapeVisual(el,b){el.dataset.shape=b.shape||'square';el.style.clipPath=
 function applyBodyVisual(el,b){el.textContent=b.name;el.style.color=b.colour;el.style.background='linear-gradient(145deg,color-mix(in srgb,'+b.colour+',white 16%),color-mix(in srgb,'+b.colour+',black 34%))';el.style.textShadow='0 1px 4px #000';el.style.left=b.x+'%';el.style.top=b.y+'%';el.style.width=b.size+'px';el.style.height=b.size+'px';el.style.transform='translate(-50%,-50%) rotate('+b.rotate+'deg)';el.dataset.state=b.on?'on':'off';shapeVisual(el,b)}
 function positionHandles(){const lens=scene.dataset.gcwLens,manip=!lens||lens==='form'||lens==='field';if(!selected||!manip){resizeHandle.hidden=true;rotateHandle.hidden=true;return}const b=selected.body;resizeHandle.hidden=false;rotateHandle.hidden=false;resizeHandle.style.left='calc('+b.x+'% + '+Math.max(18,b.size/2)+'px)';resizeHandle.style.top='calc('+b.y+'% + '+Math.max(18,b.size/2)+'px)';rotateHandle.style.left=b.x+'%';rotateHandle.style.top='calc('+b.y+'% - '+(Math.max(18,b.size/2)+34)+'px)';resizeHandle.style.transform='translate(-50%,-50%)';rotateHandle.style.transform='translate(-50%,-50%)'}
 function selectBody(el,body){scene.querySelectorAll('.sceneBody').forEach(x=>x.classList.remove('selected'));selected={el,body};el.classList.add('selected');objectName.value=body.name;type.value=[...type.options].some(x=>x.value===body.type)?body.type:type.value;shape.value=[...shape.options].some(x=>x.value===body.shape)?body.shape:shape.value;colour.value=/^#[0-9a-f]{6}$/i.test(body.colour)?body.colour:'#58d7ff';action.value=[...action.options].some(x=>x.value===body.action)?body.action:action.value;px.value=Math.round(body.x);py.value=Math.round(body.y);psize.value=body.size;prot.value=body.rotate;src.value=body.source||composeSource(body);updateExplain(body);refreshBodyShelf();positionHandles();syncStageHead(body);window.JMAILatheoGripUI?.syncContext?.();teach.textContent='SELECT → '+body.name+'. '+((scene.dataset.gcwLens==='form'||scene.dataset.gcwLens==='field'||!scene.dataset.gcwLens)?'Drag to move; gold handles resize/rotate; inspector gives exact values.':'Selected on the live stage; the active GripCube face decides what contact does.')}
-function renderBody(body){const el=document.createElement('div');el.className='sceneBody';el.tabIndex=0;el.setAttribute('aria-label',(body.name||'Body')+' creation body');el._body=body;applyBodyVisual(el,body);let dragging=false,dragMoved=false,preDrag=null;el.onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;selectBody(el,body);const lens=scene.dataset.gcwLens;if(lens&&lens!=='form'&&lens!=='field'){dragging=false;return}dragging=true;dragMoved=false;preDrag=snapshot();try{el.setPointerCapture(e.pointerId)}catch(_){}};el.onpointermove=e=>{if(!dragging||scene._gcwMultiTransform)return;const rect=scene.getBoundingClientRect(),nx=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100)),ny=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));if(!dragMoved&&(Math.abs(nx-body.x)>0.5||Math.abs(ny-body.y)>0.5)){dragMoved=true;if(preDrag){revisions.push(preDrag);if(revisions.length>40)revisions.shift()}}body.x=nx;body.y=ny;px.value=Math.round(body.x);py.value=Math.round(body.y);applyBodyVisual(el,body);positionHandles();drawLinks()};el.onpointerup=e=>{if(el._gcwGestureSuppressed){dragging=false;el._suppressClick=true;setTimeout(()=>{el._gcwGestureSuppressed=false;el._suppressClick=false},0);return}if(!dragging)return;dragging=false;persistBodies();if(dragMoved){el._suppressClick=true;setTimeout(()=>{el._suppressClick=false},0);trace.push('DIRECT MOVE → '+body.name+' x='+Math.round(body.x)+' y='+Math.round(body.y));d.textContent='MOVE DING';teach.textContent='CHANGE → direct movement updated the inspector and saved project state.'}};el.onclick=()=>selectBody(el,body);scene.appendChild(el);return el}
+function renderBody(body){
+  const el=document.createElement('div');el.className='sceneBody';el.tabIndex=0;el.setAttribute('aria-label',(body.name||'Body')+' creation body');el._body=body;applyBodyVisual(el,body);
+  let dragging=false,dragMoved=false,preDrag=null,preDragState=null,preDragRevision=null;
+  el.onpointerdown=e=>{
+    if(e.button!==undefined&&e.button!==0)return;selectBody(el,body);
+    const lens=scene.dataset.gcwLens;if(lens&&lens!=='form'&&lens!=='field'){dragging=false;return}
+    dragging=true;dragMoved=false;preDrag=snapshot();preDragState=bodyMaterialState(body);preDragRevision=null;
+    try{el.setPointerCapture(e.pointerId)}catch(_){}
+  };
+  el.onpointermove=e=>{
+    if(!dragging||scene._gcwMultiTransform)return;
+    const rect=scene.getBoundingClientRect(),nx=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100)),ny=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));
+    if(!dragMoved&&(Math.abs(nx-body.x)>0.5||Math.abs(ny-body.y)>0.5)){dragMoved=true;preDragRevision=rememberSnapshot(preDrag,'DIRECT MOVE')}
+    body.x=nx;body.y=ny;px.value=Math.round(body.x);py.value=Math.round(body.y);applyBodyVisual(el,body);positionHandles();drawLinks()
+  };
+  el.onpointerup=e=>{
+    if(el._gcwGestureSuppressed){dragging=false;el._suppressClick=true;setTimeout(()=>{el._gcwGestureSuppressed=false;el._suppressClick=false},0);return}
+    if(!dragging)return;dragging=false;persistBodies();
+    if(dragMoved){
+      el._suppressClick=true;setTimeout(()=>{el._suppressClick=false},0);
+      const after=bodyMaterialState(body);recordMaterialContact('MOVE DING',body,preDragState,after,'Direct '+(scene.dataset.gcwLens||'form').toUpperCase()+' drag',preDragRevision);
+      trace.push('DIRECT MOVE → '+body.name+' x='+Math.round(body.x)+' y='+Math.round(body.y));d.textContent='MOVE DING';teach.textContent='CHANGE → direct movement updated the visible body, TRACE and exact recovery state.'
+    }
+  };
+  el.onclick=()=>selectBody(el,body);scene.appendChild(el);return el
+}
 function updateProp(record=true){if(!selected)return;const b=selected.body;b.x=Math.max(0,Math.min(100,+px.value));b.y=Math.max(0,Math.min(100,+py.value));b.size=Math.max(24,Math.min(220,+psize.value));b.rotate=+prot.value;applyBodyVisual(selected.el,b);positionHandles();drawLinks();persistBodies();if(record){trace.push('PROPERTY → '+b.name+' x='+b.x+' y='+b.y+' size='+b.size+' rotate='+b.rotate);d.textContent='PROPERTY DING'}}
-function bindTransformHandle(handle,mode){let active=false,initial=null;handle.onpointerdown=e=>{if(!selected)return;e.preventDefault();e.stopPropagation();active=true;initial=snapshot();try{handle.setPointerCapture(e.pointerId)}catch(_){}};handle.onpointermove=e=>{if(!active||!selected)return;const rect=scene.getBoundingClientRect(),b=selected.body,cx=rect.left+rect.width*b.x/100,cy=rect.top+rect.height*b.y/100;if(mode==='resize'){b.size=Math.max(24,Math.min(220,Math.max(Math.abs(e.clientX-cx),Math.abs(e.clientY-cy))*2));psize.value=Math.round(b.size)}else{b.rotate=Math.round((Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI)+90);prot.value=b.rotate}applyBodyVisual(selected.el,b);positionHandles();drawLinks()};handle.onpointerup=e=>{if(!active||!selected)return;active=false;if(initial){revisions.push(initial);if(revisions.length>40)revisions.shift()}persistBodies();trace.push((mode==='resize'?'RESIZE':'ROTATE')+' → '+selected.body.name+' size='+Math.round(selected.body.size)+' rotate='+Math.round(selected.body.rotate));d.textContent=mode==='resize'?'RESIZE DING':'ROTATE DING';teach.textContent='CHANGE → direct '+mode+' updated visible form + precise inspector + saved state.'}}
+function bindTransformHandle(handle,mode){
+  let active=false,initial=null,initialState=null,target=null;
+  handle.onpointerdown=e=>{
+    if(!selected)return;e.preventDefault();e.stopPropagation();active=true;target=selected.body;initial=snapshot();initialState=bodyMaterialState(target);
+    try{handle.setPointerCapture(e.pointerId)}catch(_){}
+  };
+  handle.onpointermove=e=>{
+    if(!active||!selected||selected.body!==target)return;
+    const rect=scene.getBoundingClientRect(),b=target,cx=rect.left+rect.width*b.x/100,cy=rect.top+rect.height*b.y/100;
+    if(mode==='resize'){b.size=Math.max(24,Math.min(220,Math.max(Math.abs(e.clientX-cx),Math.abs(e.clientY-cy))*2));psize.value=Math.round(b.size)}
+    else{b.rotate=Math.round((Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI)+90);prot.value=b.rotate}
+    applyBodyVisual(selected.el,b);positionHandles();drawLinks()
+  };
+  handle.onpointerup=e=>{
+    if(!active||!target)return;active=false;
+    const after=bodyMaterialState(target),changed=JSON.stringify(after)!==JSON.stringify(initialState);
+    if(changed){
+      const recoveryRevision=rememberSnapshot(initial,mode==='resize'?'DIRECT RESIZE':'DIRECT ROTATE');persistBodies();
+      const kind=mode==='resize'?'RESIZE DING':'ROTATE DING';recordMaterialContact(kind,target,initialState,after,'Direct FORM '+mode+' handle',recoveryRevision);
+      trace.push((mode==='resize'?'RESIZE':'ROTATE')+' → '+target.name+' size='+Math.round(target.size)+' rotate='+Math.round(target.rotate));d.textContent=kind;teach.textContent='CHANGE → direct '+mode+' updated visible form, TRACE and exact recovery state.'
+    }else{positionHandles()}
+    initial=null;initialState=null;target=null
+  }
+}
 bindTransformHandle(resizeHandle,'resize');bindTransformHandle(rotateHandle,'rotate');
 [px,py,psize,prot].forEach(x=>{x.oninput=()=>updateProp(false);x.onchange=()=>updateProp(true)});const lessonPick=document.querySelector('#lessonPick');function lesson(){const L={state:'STATE → touch, predict, then observe the consequence.',form:'FORM → change SHAPE and COLOUR; identity stays separate from presentation.',cause:'CAUSE → connect two bodies, trigger one, then inspect the visible result and TRACE.',create:'CREATE → make a body, drag it, edit its source, connect it, test it, save it.'};teach.textContent=L[lessonPick.value]}lessonPick.onchange=lesson;
 function sync(commitSelected=true){const draft={name:objectName.value,type:type.value,shape:shape.value,colour:colour.value,action:action.value};src.value=composeSource(draft);o.className='object '+shape.value;o.style.boxShadow='0 0 80px '+colour.value+'88';if(commitSelected&&selected){Object.assign(selected.body,draft,{source:src.value});applyBodyVisual(selected.el,selected.body);persistBodies();refreshBodyMenus()}updateExplain(draft);teach.textContent='CHANGE → source and visible body agree. Run code to test consequence.'}
@@ -236,7 +284,8 @@ document.querySelector('#build').onclick=()=>{const v=src.value.trim();if(!parse
 document.querySelector('#routeEstate').onclick=async()=>{const q='game touch visual compile proof recover delivery '+src.value.trim();d.textContent='ROUTING';s.textContent='ESTATE ROUTER · contacting current 100-body registry';try{const [reg,mod]=await Promise.all([loadEstateRegistry(),import('../coding-estate/integration/router-core.mjs')]);const plan=mod.planEstateRoute(q,reg,{limit:7,includeDelivery:true});const names=plan.route.map(x=>x.name);r.textContent='LIVE ESTATE ROUTE\n'+names.map((n,i)=>(i+1)+'. '+n).join('\n')+'\n\nLAWS\n'+plan.lawsApplied.join(' · ');d.textContent='ROUTE RECEIPT';s.textContent=plan.route.length+' bodies selected · Trace/Ding/source authority injected';localStorage.setItem('jm.ailatheo.v3.lastRoute',JSON.stringify(plan));}catch(e){d.textContent='ROUTE HOLD';s.textContent='Estate router unavailable in this carrier';r.textContent='FAULT HOLD\n'+e.message+'\nSource and teaching state preserved.';}};
 let lastExecution=null;function inspectProject(){const faults=[],warn=[];const v=src.value.trim();if(!parseSource(v))faults.push('SOURCE_GRAMMAR');const names=bodies.map(b=>b.name);if(new Set(names).size!==names.length)faults.push('DUPLICATE_BODY_NAME');links.forEach((L,i)=>{if(!bodies[L.from]||!bodies[L.to])faults.push('BROKEN_LINK_'+i);if(L.from===L.to)warn.push('SELF_LINK_'+i)});bodies.forEach((b,i)=>{if(!b.name||!b.type||!b.action)faults.push('INCOMPLETE_BODY_'+i);if(b.x<0||b.x>100||b.y<0||b.y>100)warn.push('OFF_FIELD_'+i)});return {schema:'jm.ailatheo.debug/1.0',pass:faults.length===0,faults,warnings:warn,bodies:bodies.length,links:links.length,source:v}}function showDebug(q){r.textContent='DEBUG / PROOF\nstatus='+(q.pass?'PASS':'HOLD')+'\nbodies='+q.bodies+' · links='+q.links+'\nfaults='+(q.faults.join(', ')||'none')+'\nwarnings='+(q.warnings.join(', ')||'none')+'\n\nSOURCE\n'+q.source} const revisions=[];let revisionSerial=0;
 function snapshot(){return {schema:'jm.ailatheo.project/1.0',workbenchStandard:WORKBENCH_STANDARD.schema,source:src.value,shape:shape.value,on,bodies:JSON.parse(JSON.stringify(bodies)),links:JSON.parse(JSON.stringify(links)),selectedIndex:selected?bodies.indexOf(selected.body):-1,saved:new Date().toISOString()}}
-function rememberRevision(reason='EDIT'){const p=snapshot();p.revisionId=++revisionSerial;p.revisionReason=reason;revisions.push(p);if(revisions.length>40)revisions.shift();return p.revisionId}
+function rememberSnapshot(p,reason='EDIT'){if(!p)return null;p.revisionId=++revisionSerial;p.revisionReason=reason;revisions.push(p);if(revisions.length>40)revisions.shift();return p.revisionId}
+function rememberRevision(reason='EDIT'){return rememberSnapshot(snapshot(),reason)}
 function restoreProject(p){if(!p)return;src.value=p.source||src.value;shape.value=p.shape||shape.value;on=!!p.on;selected=null;selectedLink=-1;bodies.splice(0,bodies.length,...(p.bodies||[]));links.splice(0,links.length,...(p.links||[]));scene.querySelectorAll('.sceneBody').forEach(x=>x.remove());bodies.forEach(renderBody);refreshBodyMenus();persistBodies();localStorage.setItem('jm.ailatheo.v3.links',JSON.stringify(links));drawLinks();positionHandles();syncStagePopulation();syncStageHead();paint();const selectedIndex=Number.isInteger(p.selectedIndex)?p.selectedIndex:-1;if(selectedIndex>=0&&bodies[selectedIndex]){const el=bodyElement(bodies[selectedIndex]);if(el)selectBody(el,bodies[selectedIndex])}d.textContent='RECOVERY DING';teach.textContent='RECOVER → source, bodies, relationships and visible state returned together.'}const targetHost=document.querySelector('#targetHost'),buildLane=document.querySelector('#buildLane'),androidLane=document.querySelector('#androidLane'),claimBoundary='Prepared ≠ built. Built ≠ installed. Installed ≠ owner runtime Ding.';document.querySelector('#prepareAndroid').onclick=()=>{const p=snapshot(),lane=androidLane.value;const base={schema:'jm.ailatheo.android-production/1.0',project:p,sourceAuthority:'JM',packageName:'com.jmisjustme.ailatheocreation',versionName:'3.0-alpha',versionCode:300,minSdk:23,compileSdk:36,targetSdk:36,oneBody:lastExecution?.oneBody||null,projectProof:JSON.parse(localStorage.getItem('jm.ailatheo.v3.projectProof')||'null')};const plan=lane==='official'?{...base,lane:'official-gradle',conductor:'JMGradle',gradle:'8.13',agp:'8.13.2',buildTools:'36.0.0',bundletool:'1.18.3',outputs:['release APK','AAB','AAB-derived APK'],status:'PRODUCTION_ROUTE_READY',boundary:claimBoundary+' AILatheo receiver build has not yet run; owner production key and Play Console remain HOLD'}:{...base,lane:'jm-offline',conductor:'JMGradle',outputs:['signed APK','build receipt'],status:'FORGE_ROUTE_READY',boundary:claimBoundary+' Receiver APK still requires actual Forge build contact'};localStorage.setItem('jm.ailatheo.v3.androidPlan',JSON.stringify(plan));r.textContent='ANDROID PRODUCTION PLAN\nLANE: '+plan.lane+'\nCONDUCTOR: '+plan.conductor+'\nSDK: '+plan.compileSdk+' / target '+plan.targetSdk+'\nOUTPUTS: '+plan.outputs.join(' · ')+'\nSTATE: '+plan.status+'\n\n'+plan.boundary;d.textContent='ANDROID ROUTE READY';teach.textContent=lane==='official'?'Same project body is prepared for the proven Universal Forge Gradle/AAB lane. Preparation is not an AILatheo build Ding.':'Same project body is prepared for the JM offline APK lane; actual package contact still decides Ding.'};document.querySelector('#prepareBuild').onclick=()=>{const lane=buildLane.value;androidLane.value=lane==='forge'?'jm-offline':'official';document.querySelector('#prepareAndroid').click();const plan=JSON.parse(localStorage.getItem('jm.ailatheo.v3.androidPlan')||'null');if(plan){plan.requestedBuildLane=lane;localStorage.setItem('jm.ailatheo.v3.androidPlan',JSON.stringify(plan));r.textContent+='\nREQUESTED BUILD LANE: '+lane}d.textContent='BUILD ROUTE PREPARED';teach.textContent=claimBoundary+' Preparation records a route; receiver contact still decides build/install/runtime proof.'};document.querySelector('#routeTarget').onclick=()=>{const host=targetHost.value,p=snapshot();const proven={gdevelop:'bounded prior host proof exists; this AILatheo project still requires receiver contact',unity:'bounded prior host proof exists; this AILatheo project still requires receiver contact',browser:'current project carrier route available'};const holds={unreal:'toolchain/storage HOLD',godot:'adapter/receiver proof OPEN',phaser:'adapter/receiver proof OPEN',construct3:'adapter/receiver proof OPEN',gamemaker:'adapter/receiver proof OPEN',defold:'adapter/receiver proof OPEN',bevy:'adapter/receiver proof OPEN',monogame:'adapter/receiver proof OPEN'};const passport={schema:'JM.TargetBridge/0.1',source:'AILatheo Creation Workbench',host,project:p,authority:'JM',status:host==='browser'?'CARRIER_READY':(proven[host]?'SOURCE_PASSPORT_READY':'HOLD'),boundary:proven[host]||holds[host]};localStorage.setItem('jm.ailatheo.v3.targetPassport',JSON.stringify(passport));r.textContent='TARGET BRIDGE\nHOST: '+host.toUpperCase()+'\nSTATE: '+passport.status+'\n\n'+passport.boundary+'\n\nSOURCE STAYS JM. HOST BECOMES CAPABILITY. CONTACT DECIDES COMPATIBILITY.';d.textContent=passport.status==='HOLD'?'TARGET HOLD':'TARGET ROUTE READY';teach.textContent='Target routing preserves the JM source body. A prior host proof does not automatically prove this project crossed that host.'};document.querySelector('#testProject').onclick=()=>{const q=inspectProject();showDebug(q);d.textContent=q.pass?'TEST DING':'TEST HOLD';teach.textContent=q.pass?'Project structure survived executable preflight. Change something and test again.':'Debug found: '+q.faults.join(', ')};document.querySelector('#proofProject').onclick=async()=>{const q=inspectProject();if(!q.pass){showDebug(q);d.textContent='PROOF HOLD';return}d.textContent='PROVING';try{const [reg,run]=await Promise.all([loadEstateRegistry(),import('./ailatheo-creation-runtime.mjs')]);const out=run.executeAILatheoCreation('visual compile proof recover delivery '+src.value,reg);const receipt={schema:'jm.ailatheo.project-proof/1.0',local:q,nativePassed:out.passed,receipts:out.receipts,buildGates:out.buildGates,delivery:out.delivery};localStorage.setItem('jm.ailatheo.v3.projectProof',JSON.stringify(receipt));r.textContent='PROJECT PROOF\nlocal='+q.pass+'\nnative='+out.passed+'\nreceipts='+out.receipts.length+'\nbuild gates='+out.buildGates.passed.length+'/8\nrecoverable='+out.delivery.recoverable;d.textContent=out.passed?'PROOF DING':'PROOF HOLD';teach.textContent='Proof runs the current project through the Coding Estate receiver rather than merely inspecting labels.'}catch(e){d.textContent='PROOF HOLD';r.textContent='PROJECT PROOF FAULT\n'+e.message}};document.querySelector('#saveProject').onclick=()=>{const p=snapshot();localStorage.setItem('jm.ailatheo.v3.project',JSON.stringify(p));d.textContent='SAVE DING';teach.textContent='Whole project saved: source + scene + relationships + state.'};document.querySelector('#undoProject').onclick=()=>{const p=revisions.length?revisions.pop():JSON.parse(localStorage.getItem('jm.ailatheo.v3.project')||'null');if(!p){d.textContent='UNDO HOLD';teach.textContent='No recovery point exists yet.';return}const reversed=lastMaterialContact&&p.revisionId&&lastMaterialContact.recoveryRevision===p.revisionId?JSON.parse(JSON.stringify(lastMaterialContact)):null;restoreProject(p);recordRecoveryContact(reversed,p.revisionId||'saved');trace.push('RECOVERY → '+(reversed?'event #'+reversed.id+' '+reversed.kind:'project checkpoint'))};document.querySelector('#exportProject').onclick=()=>{const p=snapshot(),blob=new Blob([JSON.stringify(p,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='AILatheo_Project.jmproject.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);d.textContent='EXPORT DING'};
 document.querySelector('#executeEstate').onclick=async()=>{d.textContent='EXECUTING';s.textContent='native Estate bodies → OneBody → Build Gates → Delivery';try{const [reg,run]=await Promise.all([loadEstateRegistry(),import('./ailatheo-creation-runtime.mjs')]);lastExecution=run.executeAILatheoCreation('game touch visual compile proof recover delivery '+src.value.trim(),reg);if(!lastExecution.passed)throw new Error('NATIVE_EXECUTION_NOT_PASS');localStorage.setItem('jm.ailatheo.v3.execution',JSON.stringify({schema:lastExecution.schema,receipts:lastExecution.receipts,delivery:lastExecution.delivery,forge:lastExecution.carrier.forgeContract}));d.textContent='EXECUTION DING';s.textContent=lastExecution.receipts.length+' receipts · '+lastExecution.buildGates.passed.length+'/8 gates · recoverable='+lastExecution.delivery.recoverable;r.textContent='NATIVE EXECUTION PASS\n'+lastExecution.executedBodies.join(' → ')+'\n→ OneBody IR\n→ Build Gates '+lastExecution.buildGates.passed.length+'/8\n→ OneBody Delivery\n→ preview carrier';}catch(e){d.textContent='EXECUTION HOLD';s.textContent=e.message;}};
 document.querySelector('#preview').onclick=()=>{if(!lastExecution){d.textContent='PREVIEW HOLD';s.textContent='Execute Estate first';return}const frame=document.querySelector('#previewFrame');frame.style.display='block';frame.srcdoc=lastExecution.carrier.html;d.textContent='PREVIEW LIVE';s.textContent='generated carrier mounted · interaction proof remains inside carrier';};
@@ -246,8 +295,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v13')return;
-  world.dataset.gripcubeUi='v13';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v14')return;
+  world.dataset.gripcubeUi='v14';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -425,7 +474,7 @@ function mountGripWorkbench(){
   function startMultiGrip(){
     if((current!=='form'&&current!=='field')||!selected||gripPointers.size!==2)return;
     const pts=[...gripPointers.values()],dist=gripDistance(pts[0],pts[1]);if(dist<8)return;
-    multiGrip={dist,angle:gripAngle(pts[0],pts[1]),size:selected.body.size,rotate:selected.body.rotate||0,before:snapshot(),recorded:false,changed:false};
+    multiGrip={dist,angle:gripAngle(pts[0],pts[1]),size:selected.body.size,rotate:selected.body.rotate||0,before:snapshot(),beforeState:bodyMaterialState(selected.body),recoveryRevision:null,recorded:false,changed:false};
     scene._gcwMultiTransform=true;selected.el._gcwGestureSuppressed=true;stageZone.classList.add('gcw-multitouch');
     contactHint.textContent=(current==='field'?'FIELD':'FORM')+' · TWO-FINGER GRIP · PINCH SIZE / TWIST ROTATE';
   }
@@ -436,7 +485,7 @@ function mountGripWorkbench(){
     const nextSize=Math.max(24,Math.min(220,multiGrip.size*(dist/multiGrip.dist)));
     const nextRotate=Math.round(multiGrip.rotate+delta);
     if(!multiGrip.recorded&&(Math.abs(nextSize-multiGrip.size)>1||Math.abs(nextRotate-multiGrip.rotate)>1)){
-      revisions.push(multiGrip.before);if(revisions.length>40)revisions.shift();multiGrip.recorded=true;
+      multiGrip.recoveryRevision=rememberSnapshot(multiGrip.before,'TWO-FINGER GRIP');multiGrip.recorded=!!multiGrip.recoveryRevision;
     }
     if(multiGrip.recorded)multiGrip.changed=true;
     selected.body.size=nextSize;selected.body.rotate=nextRotate;psize.value=Math.round(nextSize);prot.value=nextRotate;
@@ -447,8 +496,9 @@ function mountGripWorkbench(){
     const g=multiGrip;multiGrip=null;scene._gcwMultiTransform=false;stageZone.classList.remove('gcw-multitouch');
     if(selected?.el){selected.el._gcwGestureSuppressed=true;selected.el._suppressClick=true;setTimeout(()=>{if(selected?.el){selected.el._gcwGestureSuppressed=false;selected.el._suppressClick=false}},0)}
     if(g.changed&&selected){
-      persistBodies();trace.push('TWO-FINGER GRIP → '+selected.body.name+' size='+Math.round(selected.body.size)+' rotate='+Math.round(selected.body.rotate));
-      d.textContent='GRIP DING';teach.textContent='CHANGE → pinch/twist updated size + rotation while the body stayed selected.';
+      persistBodies();const after=bodyMaterialState(selected.body);recordMaterialContact('GRIP DING',selected.body,g.beforeState,after,'Two-finger pinch/twist transform',g.recoveryRevision);
+      trace.push('TWO-FINGER GRIP → '+selected.body.name+' size='+Math.round(selected.body.size)+' rotate='+Math.round(selected.body.rotate));
+      d.textContent='GRIP DING';teach.textContent='CHANGE → pinch/twist updated size + rotation while the body stayed selected and recoverable.';
     }
     syncGripContext();
   }
@@ -557,7 +607,7 @@ function mountGripWorkbench(){
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.13',
+    version:'0.14',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
@@ -571,7 +621,7 @@ function mountGripWorkbench(){
     keyboardStageContact,
     latestMaterialContact:()=>lastMaterialContact?JSON.parse(JSON.stringify(lastMaterialContact)):null,
     proof:()=>({
-      version:'0.13',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.14',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -604,6 +654,11 @@ function mountGripWorkbench(){
       keyboardRouteTargetHandoff:true,
       keyboardFaceTravel:true,
       keyboardUndo:true,
+      formMaterialDings:true,
+      formDragRecovery:true,
+      formHandleRecovery:true,
+      gripMaterialRecovery:true,
+      noChangeNoDing:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,
       earnedDepth:advanced.tagName==='DETAILS',

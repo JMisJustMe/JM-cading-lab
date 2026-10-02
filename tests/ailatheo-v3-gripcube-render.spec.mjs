@@ -125,6 +125,36 @@ for(const [name,viewport] of cases){
   if(actionUndo.action!=='Spin'||actionUndo.quick!=='SPIN'||actionUndo.event?.recoveredEventId!==actionAfter.event.id) throw new Error(name+': FORM action recovery failed '+JSON.stringify({actionAfter,actionUndo}));
 
   await page.locator('.sceneBody').nth(1).click();
+  const codeBefore=await page.evaluate(()=>({
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    source:document.querySelector('#source')?.value||'',
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+  }));
+  const codeCommand='Grip Coded : object [#ff00aa] <circle> :: Grow';
+  await page.evaluate(v=>{document.querySelector('#source').value=v;document.querySelector('#runCode').click()},codeCommand);
+  const codeAfter=await page.evaluate(()=>({
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    source:document.querySelector('#source')?.value||'',
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent||''
+  }));
+  if(codeAfter.body.name!=='Grip Coded'||codeAfter.body.action!=='Grow'||codeAfter.body.size!==codeBefore.body.size+18||codeAfter.source!==codeCommand||codeAfter.quick!=='GROW'||codeAfter.event?.kind!=='CODE DING'||codeAfter.event?.id!==codeBefore.event+1||!codeAfter.event?.recoveryRevision||!codeAfter.event?.delta.includes('name Grip Body→Grip Coded')||!codeAfter.event?.delta.includes('action Spin→Grow')||!codeAfter.event?.delta.includes('size '+codeBefore.body.size+'→'+codeAfter.body.size)) throw new Error(name+': selected-body CODE run was not one semantic+consequence transaction '+JSON.stringify({codeBefore,codeAfter}));
+  await page.locator('.gcw-quick [data-q="undo"]').click();
+  const codeUndo=await page.evaluate(()=>({
+    body:{...document.querySelectorAll('.sceneBody')[1]?._body},
+    source:document.querySelector('#source')?.value||'',
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    selected:document.querySelector('.sceneBody.selected')?._body?.name||null,
+    quick:document.querySelector('.gcw-quick [data-q="act"]')?.textContent||''
+  }));
+  if(codeUndo.body.name!==codeBefore.body.name||codeUndo.body.action!==codeBefore.body.action||codeUndo.body.size!==codeBefore.body.size||codeUndo.source!==codeBefore.body.source||codeUndo.selected!=='Grip Body'||codeUndo.quick!=='SPIN'||codeUndo.event?.kind!=='RECOVERY DING'||codeUndo.event?.recoveredEventId!==codeAfter.event.id) throw new Error(name+': CODE undo did not restore whole pre-run body/source state '+JSON.stringify({codeBefore,codeAfter,codeUndo}));
+
+  const invalidBefore=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,body:{...document.querySelectorAll('.sceneBody')[1]?._body}}));
+  await page.evaluate(()=>{document.querySelector('#source').value='this is not AILatheo source';document.querySelector('#runCode').click()});
+  const invalidAfter=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0,body:{...document.querySelectorAll('.sceneBody')[1]?._body},ding:document.querySelector('#ding')?.textContent}));
+  if(invalidAfter.event!==invalidBefore.event||JSON.stringify(invalidAfter.body)!==JSON.stringify(invalidBefore.body)||invalidAfter.ding!=='SOFT RESIST') throw new Error(name+': invalid CODE input minted event/revision or changed body '+JSON.stringify({invalidBefore,invalidAfter}));
+  await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;if(b)document.querySelector('#source').value=b.source});
+
   const dragBefore=await page.evaluate(()=>{const b=document.querySelectorAll('.sceneBody')[1]?._body;return b&&{x:b.x,y:b.y,size:b.size,rotate:b.rotate}});
   await page.evaluate(()=>{
     const scene=document.querySelector('#scene'),body=document.querySelectorAll('.sceneBody')[1],r=scene.getBoundingClientRect();
@@ -247,7 +277,7 @@ for(const [name,viewport] of cases){
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
-  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
+  if(!metrics.proof.stageContactGrammar||!metrics.proof.contextualQuick||!metrics.proof.directRouteContact||!metrics.proof.earnedDepth||!metrics.proof.multiTouchGrip||!metrics.proof.onBodyContactBadge||!metrics.proof.selectionCarriesIntoRoute||!metrics.proof.liveRouteTether||!metrics.proof.routeTargetKeepsSelection||!metrics.proof.dingBoundRecovery||!metrics.proof.recoveryPersistsRestoredState||!metrics.proof.selectionSurvivesUndo||!metrics.proof.fieldPrecisionHalo||!metrics.proof.fieldPrecisionUndo||!metrics.proof.fieldPrecisionMaterialDing||!metrics.proof.traceShallowContext||!metrics.proof.proofShallowContext||!metrics.proof.traceDepthEarned||!metrics.proof.proofDepthEarned||!metrics.proof.inspectionCreatesNoDing||!metrics.proof.keyboardParity||!metrics.proof.keyboardScopedToStage||!metrics.proof.keyboardFieldPrecision||!metrics.proof.keyboardUseContact||!metrics.proof.keyboardRouteCancel||!metrics.proof.keyboardRouteContact||!metrics.proof.keyboardRouteTargetHandoff||!metrics.proof.keyboardFaceTravel||!metrics.proof.keyboardUndo||!metrics.proof.formMaterialDings||!metrics.proof.formDragRecovery||!metrics.proof.formHandleRecovery||!metrics.proof.gripMaterialRecovery||!metrics.proof.noChangeNoDing||!metrics.proof.formSemanticTransactions||!metrics.proof.formLiveEditSingleDing||!metrics.proof.formSemanticRecovery||!metrics.proof.semanticSourceSync||!metrics.proof.structuralDingRecovery||!metrics.proof.createDuplicateDeleteRecovery||!metrics.proof.linkUnlinkRecovery||!metrics.proof.fieldInspectorTransactions||!metrics.proof.fieldInspectorSingleDing||!metrics.proof.fieldInspectorRecovery||!metrics.proof.fieldInspectorLiveQuiet||!metrics.proof.codeSingleTransaction||!metrics.proof.codeSemanticConsequenceRecovery||!metrics.proof.codeStarterRecovery||!metrics.proof.invalidCodeNoRevision) throw new Error(name+': owner-contact proof mismatch '+JSON.stringify(metrics));
   if(metrics.contactLens!=='route'||metrics.proof.contactLens!=='route') throw new Error(name+': semantic stage lens did not follow face '+JSON.stringify(metrics));
   if(metrics.linkCount<1) throw new Error(name+': ROUTE body-to-body contact did not create relationship '+JSON.stringify(metrics));
   if(metrics.routeSourceCount!==0||metrics.routeTetherCount!==0) throw new Error(name+': route source/tether affordance did not clear after completed link '+JSON.stringify(metrics));
@@ -473,7 +503,43 @@ for(const [name,viewport] of cases){
   const recoveryProof=await page.evaluate(()=>({event:window.JMAILatheoGripUI.latestMaterialContact(),text:document.querySelector('#gcwProofDingFocus')?.textContent||''}));
   if(recoveryTrace.event?.id!==recovery.event.id||recoveryProof.event?.id!==recovery.event.id||recoveryTrace.text!==recoveryProof.text||!recoveryTrace.text.includes('RECOVERY DING')) throw new Error(name+': recovered Ding did not carry into TRACE/PROOF '+JSON.stringify({recovery,recoveryTrace,recoveryProof}));
 
-  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:recovery.event.id,materialEventKind:recovery.event.kind,recoveredEventId:recovery.event.recoveredEventId}));
+  await page.locator('.gcw-lens[data-face="form"]').click();
+  const starterDeleteA=await page.evaluate(()=>{document.querySelector('#deleteObject').click();return window.JMAILatheoGripUI.latestMaterialContact()});
+  if(starterDeleteA?.kind!=='DELETE DING') throw new Error(name+': starter setup first delete did not enter structural chain '+JSON.stringify(starterDeleteA));
+  if(await page.locator('.sceneBody').count()){
+    await page.locator('.sceneBody').first().click();
+    const starterDeleteB=await page.evaluate(()=>{document.querySelector('#deleteObject').click();return window.JMAILatheoGripUI.latestMaterialContact()});
+    if(starterDeleteB?.kind!=='DELETE DING') throw new Error(name+': starter setup second delete did not enter structural chain '+JSON.stringify(starterDeleteB));
+  }
+  const starterBefore=await page.evaluate(()=>({
+    bodies:document.querySelectorAll('.sceneBody').length,
+    on:JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false'),
+    source:document.querySelector('#source')?.value||'',
+    event:window.JMAILatheoGripUI.latestMaterialContact()?.id||0
+  }));
+  if(starterBefore.bodies!==0) throw new Error(name+': starter CODE proof did not reach no-body state '+JSON.stringify(starterBefore));
+  const starterCommand='Starter Code : object [#58d7ff] <square> :: ToggleLight';
+  await page.evaluate(v=>{document.querySelector('#source').value=v;document.querySelector('#runCode').click()},starterCommand);
+  const starterAfter=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    on:JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false'),
+    source:document.querySelector('#source')?.value||''
+  }));
+  if(starterAfter.event?.kind!=='CODE DING'||starterAfter.event?.body!=='Starter Code'||starterAfter.event?.action!=='ToggleLight'||starterAfter.event?.id!==starterBefore.event+1||starterAfter.on===starterBefore.on||starterAfter.source!==starterCommand||!starterAfter.event?.recoveryRevision) throw new Error(name+': starter CODE run did not publish one recoverable transaction '+JSON.stringify({starterBefore,starterAfter}));
+  await page.evaluate(()=>document.querySelector('#undoProject').click());
+  const starterUndo=await page.evaluate(()=>({
+    event:window.JMAILatheoGripUI.latestMaterialContact(),
+    on:JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false'),
+    source:document.querySelector('#source')?.value||'',
+    bodies:document.querySelectorAll('.sceneBody').length
+  }));
+  if(starterUndo.event?.kind!=='RECOVERY DING'||starterUndo.event?.recoveredEventId!==starterAfter.event.id||starterUndo.on!==starterBefore.on||starterUndo.source!==starterBefore.source||starterUndo.bodies!==0) throw new Error(name+': starter CODE undo did not restore source + persisted light state '+JSON.stringify({starterBefore,starterAfter,starterUndo}));
+  await page.evaluate(()=>document.querySelector('#undoProject').click());
+  await page.evaluate(()=>document.querySelector('#undoProject').click());
+  const starterRestored=await page.evaluate(()=>({bodies:document.querySelectorAll('.sceneBody').length,selected:document.querySelector('.sceneBody.selected')?._body?.name||null}));
+  if(starterRestored.bodies!==2) throw new Error(name+': starter proof cleanup did not restore original body graph '+JSON.stringify(starterRestored));
+
+  console.log(name+': PASS '+JSON.stringify({...metrics,materialEventId:starterUndo.event.id,materialEventKind:starterUndo.event.kind,recoveredEventId:starterUndo.event.recoveredEventId,codeTransaction:true}));
 }
 await browser.close();
-console.log('AILatheo GripCube FIELD-inspector render PASS — 2/2');
+console.log('AILatheo GripCube CODE-transaction render PASS — 2/2');

@@ -50,6 +50,8 @@ for(const [name,viewport] of cases){
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
   if(metrics.starterVisible) throw new Error(name+': starter teaching body still competes with created bodies '+JSON.stringify(metrics));
   if(name==='phone'&&!metrics.lensFits) throw new Error(name+': six semantic lenses do not fit the phone face rail');
+  if(name==='phone'&&(metrics.stageRect?.h??0)<300) throw new Error(name+': creation stage collapsed below 300px '+JSON.stringify(metrics));
+  if(name==='phone'&&(metrics.shellRect?.h??0)<viewport.height*.62) throw new Error(name+': GripCube shell no longer owns the available phone height '+JSON.stringify(metrics));
   if(name==='phone'&&Math.abs((metrics.footerTop??0)-(metrics.shellRect?.bottom??0))>16) throw new Error(name+': dead vertical gap remains before footer '+JSON.stringify(metrics));
   if(name==='desktop'&&(metrics.stageRect?.w??0)<viewport.width*.58) throw new Error(name+': creation stage still trapped in legacy left column '+JSON.stringify(metrics));
   console.log(name+': PASS '+JSON.stringify(metrics));

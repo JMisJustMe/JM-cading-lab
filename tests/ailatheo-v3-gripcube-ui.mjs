@@ -22,7 +22,7 @@ for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","u
 if(!html.includes("grid-template-rows:minmax(0,1fr) 214px")) throw new Error("MOBILE_FINITE_VIEWPORT_ROUTE_MISSING");
 if(!html.includes("grid-auto-flow:column")) throw new Error("SIDE_TRAVEL_MISSING");
 if(!html.includes("setFace(map[b.textContent])")) throw new Error("MODE_TO_FACE_ROUTE_MISSING");
-for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","starterYieldsToBodies","gcw-world"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
+for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","starterYieldsToBodies","gcw-world","routeFace.querySelector(\'.linker\')"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
 console.log(JSON.stringify({
   passed:true,
   carrier:"GripCube UI projection",

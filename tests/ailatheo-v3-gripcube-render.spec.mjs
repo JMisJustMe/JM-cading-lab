@@ -15,12 +15,12 @@ for(const [name,viewport] of cases){
   await page.waitForFunction(()=>window.JMAILatheoGripUI?.proof?.().stageDominant===true);
   const before=await page.evaluate(()=>window.JMAILatheoGripUI.proof());
 
-  await page.locator('[data-face="form"]').click();
+  await page.locator('.gcw-lens[data-face="form"]').click();
   await page.locator('#addObject').click();
   await page.locator('#objectName').fill('Grip Body');
   await page.locator('#action').selectOption('Spin');
   await page.locator('#addObject').click();
-  await page.locator('[data-face="route"]').click();
+  await page.locator('.gcw-lens[data-face="route"]').click();
 
   const metrics=await page.evaluate(()=>({
     proof:window.JMAILatheoGripUI.proof(),

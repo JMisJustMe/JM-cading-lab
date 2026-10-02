@@ -626,7 +626,7 @@ for(const [name,viewport] of cases){
 
   await page.locator('#testProject').click();
   const testOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));
-  if(testOperation.material?.id!==operationBaseline.material?.id||testOperation.operation?.id!==1||testOperation.operation?.kind!=='TEST'||testOperation.operation?.status!=='PASS') throw new Error(name+': TEST operation contaminated material lane or failed operation lane '+JSON.stringify({operationBaseline,testOperation}));
+  if(testOperation.material?.id!==operationBaseline.material?.id||testOperation.operation?.id!==1||testOperation.operation?.kind!=='TEST'||testOperation.operation?.status!=='HOLD'||!testOperation.operation?.detail.includes('DUPLICATE_BODY_NAME')||testOperation.operation?.claim!=='No proof claim earned') throw new Error(name+': TEST HOLD did not stay honestly isolated in operation lane '+JSON.stringify({operationBaseline,testOperation}));
 
   await page.locator('#saveProject').click();
   const saveOperation=await page.evaluate(()=>({material:window.JMAILatheoGripUI.latestMaterialContact(),operation:window.JMAILatheoGripUI.latestOperationContact()}));

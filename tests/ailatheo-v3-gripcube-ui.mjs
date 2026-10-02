@@ -1,7 +1,7 @@
 import fs from "node:fs";
 const html=fs.readFileSync("unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html","utf8");
 const must=[
-  "JM.CreationWorkbench/0.24",
+  "JM.CreationWorkbench/0.25",
   "function mountGripWorkbench()",
   "JMAILatheoGripUI",
   "TRACE","ROUTE","FORM","FIELD","PROOF","USE",
@@ -26,7 +26,7 @@ for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","
 console.log(JSON.stringify({
   passed:true,
   carrier:"GripCube UI projection",
-  version:"0.24",
+  version:"0.25",
   semanticFaces:6,
   quickContacts:5,
   preservesSingleIds:true,

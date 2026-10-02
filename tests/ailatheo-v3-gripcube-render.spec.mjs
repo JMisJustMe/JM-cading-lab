@@ -12,7 +12,12 @@ for(const [name,viewport] of cases){
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+path,{waitUntil:'networkidle'});
-  await page.waitForFunction(()=>window.JMAILatheoGripUI?.proof?.().stageDominant===true);
+  await page.waitForTimeout(350);
+  const mounted=await page.evaluate(()=>({grip:!!window.JMAILatheoGripUI,proof:window.JMAILatheoGripUI?.proof?.()||null,ready:document.readyState}));
+  if(!mounted.grip||!mounted.proof?.stageDominant){
+    await page.screenshot({path:'qa/ailatheo-v3-gripcube/'+name+'-mount-fault.png',fullPage:true});
+    throw new Error(name+': GripCube UI did not mount '+JSON.stringify(mounted)+' browserErrors='+errors.join(' | '));
+  }
   const before=await page.evaluate(()=>window.JMAILatheoGripUI.proof());
 
   await page.locator('.gcw-lens[data-face="form"]').click();

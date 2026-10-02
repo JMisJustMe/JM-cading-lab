@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.10 · GripCube UI projection
+/* JM.CreationWorkbench/0.11 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.10 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.11 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -124,6 +124,15 @@
 .gcw-fieldFine{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;margin-top:4px}
 .gcw-fieldHalo button{min-width:0;min-height:32px;padding:0;border:1px solid #274458;border-radius:9px;background:#0d2130;color:#eefcff;font:950 .55rem/1 system-ui;touch-action:manipulation}
 .gcw-fieldHalo button:active{transform:scale(.94);border-color:var(--gcw-field);color:var(--gcw-field)}
+.gcw-contextCard{margin:0 0 8px;padding:9px 10px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 58%);border-radius:13px;background:#081520d6}
+.gcw-contextCard strong{display:block;color:var(--gcw-face,var(--cyan));font-size:.59rem;letter-spacing:.08em;margin-bottom:4px}
+.gcw-contextCard span{display:block;color:#e7f1fa;font-size:.6rem;line-height:1.35}
+.gcw-contextCard small{display:block;color:var(--mut);font-size:.52rem;line-height:1.35;margin-top:4px}
+.gcw-traceDepth{border:1px solid var(--l);border-radius:13px;background:#08131f;overflow:hidden}
+.gcw-traceDepth>summary{cursor:pointer;list-style:none;padding:9px 10px;color:var(--gcw-trace);font-size:.58rem;font-weight:950;letter-spacing:.08em}
+.gcw-traceDepth>summary::-webkit-details-marker{display:none}
+.gcw-traceDepth[open]>summary{border-bottom:1px solid var(--l)}
+.gcw-traceDepth .tabs{margin-top:6px}
 @media(max-width:760px){.gcw-fieldHalo{width:128px}.gcw-fieldMove{grid-template-columns:repeat(3,32px);grid-template-rows:repeat(3,32px)}.gcw-fieldHalo button{min-height:30px}}
 .sceneBody.selected[data-gcw-contact]::after{content:attr(data-gcw-contact);position:absolute;right:-9px;top:-11px;z-index:8;min-width:38px;padding:4px 6px;border:1px solid currentColor;border-radius:999px;background:#06111ee8;color:#f4f8ff;font:900 .48rem/1 system-ui;letter-spacing:.07em;white-space:nowrap;box-shadow:0 5px 16px #0008;pointer-events:none}
 .gcw-stageZone.gcw-multitouch .sceneBody.selected{filter:brightness(1.18);box-shadow:0 0 0 3px #72e6ff4a,0 0 34px #72e6ff33,0 12px 35px #0008}
@@ -133,7 +142,7 @@
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.10 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.11 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -173,10 +182,10 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.10 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.11 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.10',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.11',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null;
 function bodyMaterialState(body){return {on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
@@ -235,8 +244,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v10')return;
-  world.dataset.gripcubeUi='v10';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v11')return;
+  world.dataset.gripcubeUi='v11';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -291,6 +300,10 @@ function mountGripWorkbench(){
 
   const traceDingFocus=document.createElement('div');traceDingFocus.className='gcw-dingFocus';traceDingFocus.id='gcwTraceDingFocus';
   const proofDingFocus=document.createElement('div');proofDingFocus.className='gcw-dingFocus';proofDingFocus.id='gcwProofDingFocus';
+  const traceContext=document.createElement('div');traceContext.className='gcw-contextCard';traceContext.id='gcwTraceContext';
+  const proofContext=document.createElement('div');proofContext.className='gcw-contextCard';proofContext.id='gcwProofContext';
+  const traceDepth=document.createElement('details');traceDepth.className='gcw-traceDepth';traceDepth.id='gcwTraceDepth';
+  const traceDepthSummary=document.createElement('summary');traceDepthSummary.textContent='OPEN TRACE DEPTH · route / code / full trace';traceDepth.append(traceDepthSummary,tabs,route,teach);
   function renderMaterialContact(){
     const e=lastMaterialContact;
     [traceDingFocus,proofDingFocus].forEach(box=>{
@@ -298,12 +311,22 @@ function mountGripWorkbench(){
       box.innerHTML=e?'<strong>LATEST MATERIAL DING · #'+e.id+'</strong><span>'+e.kind+' · '+e.body+' · '+e.action+'</span><small>'+e.delta+(e.detail?' · '+e.detail:'')+'</small>':'<strong>NO MATERIAL DING YET</strong><span>Use the creation first; TRACE/PROOF will follow the latest meaningful consequence.</span><small>Ephemeral live pointer · not a durable receipt.</small>';
     });
   }
+  function renderSelectedContext(){
+    const b=selected?.body||null;
+    if(!b){
+      traceContext.innerHTML='<strong>SELECTED BODY</strong><span>No body selected.</span><small>Contact a body on-stage; TRACE will follow its current state.</small>';
+      proofContext.innerHTML='<strong>PROOF TARGET</strong><span>No body selected.</span><small>Select first; deeper proof remains closed until deliberately opened.</small>';return;
+    }
+    const i=bodies.indexOf(b),outgoing=links.filter(L=>L.from===i).length,incoming=links.filter(L=>L.to===i).length,state=bodyMaterialState(b);
+    traceContext.innerHTML='<strong>SELECTED BODY · LIVE STATE</strong><span>'+b.name+' · '+b.action+'</span><small>x='+state.x+' · y='+state.y+' · size='+state.size+' · rotate='+state.rotate+' · state='+(state.on?'ON':'OFF')+' · links '+incoming+'← / '+outgoing+'→</small>';
+    proofContext.innerHTML='<strong>PROOF TARGET · CURRENT CLAIM</strong><span>'+b.name+' exists as source-linked visible body.</span><small>Current state: '+materialDelta(state,state)+' · '+incoming+' incoming / '+outgoing+' outgoing link(s). Open depth only for machinery/build proof.</small>';
+  }
   formFace.append(lab,source,explain);
   fieldFace.append(bodyShelf,inspector);
   routeFace.append(linker,linkShelf);
-  traceFace.append(traceDingFocus,tabs,route,teach);
+  traceFace.append(traceDingFocus,traceContext,traceDepth);
   useFace.append(core);
-  proofFace.append(proofDingFocus,advanced);
+  proofFace.append(proofDingFocus,proofContext,advanced);
   if(preview)proofFace.append(preview);
   const depth=document.createElement('p');depth.className='gcw-depthNote';depth.textContent='DEPTH stays secondary: routing, proof, build and target tools remain available without taking over the creation viewport.';
   proofFace.append(depth);
@@ -383,7 +406,7 @@ function mountGripWorkbench(){
     if(routeQuick)routeQuick.textContent=current==='route'&&routeAnchor>=0?'TO BODY':'LINK';
     contactHint.textContent=(contactCopy[current]||current.toUpperCase())+(body?' · '+body.name:'');
     gripHint.textContent=(current==='use'?'TAP BODY · EXECUTE':current==='route'?'TOUCH BODY · LINK':current==='field'?'FIELD · NUDGE / SIZE ±2 / ROTATE ±1°':current==='form'?'GRIP BODY · DRAG / PINCH / TWIST':'BODY STAYS · LENS CHANGES');
-    positionHandles();syncFieldHalo();
+    positionHandles();syncFieldHalo();renderSelectedContext();
   }
   function beginRouteFromSelected(){
     const i=selected?bodies.indexOf(selected.body):-1;if(i<0)return false;
@@ -459,7 +482,7 @@ function mountGripWorkbench(){
     });
     lenses.querySelectorAll('.gcw-lens').forEach(x=>x.classList.toggle('active',x.dataset.face===id));
     const [,name,q]=meta[id];faceReadout.textContent=name+' · '+q.toUpperCase();
-    if(id==='trace'||id==='proof')renderMaterialContact();
+    if(id==='trace'||id==='proof'){renderMaterialContact();renderSelectedContext()}
     syncGripContext();
     const active=lenses.querySelector('[data-face="'+id+'"]');active?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
   }
@@ -503,18 +526,19 @@ function mountGripWorkbench(){
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.10',
+    version:'0.11',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
     current:()=>current,
     syncContext:syncGripContext,
     syncMaterialContact:renderMaterialContact,
+    syncSelectedContext:renderSelectedContext,
     syncFieldHalo,
     fieldPrecision:applyFieldPrecision,
     latestMaterialContact:()=>lastMaterialContact?JSON.parse(JSON.stringify(lastMaterialContact)):null,
     proof:()=>({
-      version:'0.10',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.11',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -533,6 +557,11 @@ function mountGripWorkbench(){
       fieldPrecisionHalo:!!document.querySelector('#gcwFieldHalo'),
       fieldPrecisionUndo:true,
       fieldPrecisionMaterialDing:true,
+      traceShallowContext:!!document.querySelector('#gcwTraceContext'),
+      proofShallowContext:!!document.querySelector('#gcwProofContext'),
+      traceDepthEarned:traceDepth.tagName==='DETAILS'&&!traceDepth.open,
+      proofDepthEarned:advanced.tagName==='DETAILS'&&!advanced.open,
+      inspectionCreatesNoDing:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,
       earnedDepth:advanced.tagName==='DETAILS',

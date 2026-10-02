@@ -29,6 +29,11 @@ for(const [name,viewport] of cases){
 
   const metrics=await page.evaluate(()=>({
     proof:window.JMAILatheoGripUI.proof(),
+    viewport:{w:innerWidth,h:innerHeight,dpr:devicePixelRatio},
+    appRect:(()=>{const e=document.querySelector('.app'),r=e?.getBoundingClientRect(),s=e&&getComputedStyle(e);return r&&{top:r.top,bottom:r.bottom,w:r.width,h:r.height,cssHeight:s.height,minHeight:s.minHeight,display:s.display,rows:s.gridTemplateRows}})(),
+    worldRect:(()=>{const e=document.querySelector('.world'),r=e?.getBoundingClientRect(),s=e&&getComputedStyle(e);return r&&{top:r.top,bottom:r.bottom,w:r.width,h:r.height,cssHeight:s.height,minHeight:s.minHeight,display:s.display,rows:s.gridTemplateRows,alignSelf:s.alignSelf}})(),
+    bodyRect:(()=>{const r=document.body.getBoundingClientRect(),s=getComputedStyle(document.body);return {top:r.top,bottom:r.bottom,w:r.width,h:r.height,cssHeight:s.height,minHeight:s.minHeight}})(),
+    htmlRect:(()=>{const r=document.documentElement.getBoundingClientRect(),s=getComputedStyle(document.documentElement);return {top:r.top,bottom:r.bottom,w:r.width,h:r.height,cssHeight:s.height,minHeight:s.minHeight}})(),
     viewportOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth,
     bodyCount:document.querySelectorAll('.sceneBody').length,
     cube:!!document.querySelector('#gcwCubeDock'),

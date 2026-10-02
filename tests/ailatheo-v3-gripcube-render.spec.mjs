@@ -29,12 +29,20 @@ for(const [name,viewport] of cases){
     cube:!!document.querySelector('#gcwCubeDock'),
     visibleFace:document.querySelector('.gcw-face.active')?.dataset.face,
     stageRect:(()=>{const r=document.querySelector('.gcw-stageZone')?.getBoundingClientRect();return r&&{w:r.width,h:r.height}})(),
-    faceRect:(()=>{const r=document.querySelector('.gcw-faceZone')?.getBoundingClientRect();return r&&{w:r.width,h:r.height}})()
+    faceRect:(()=>{const r=document.querySelector('.gcw-faceZone')?.getBoundingClientRect();return r&&{w:r.width,h:r.height}})(),
+    shellRect:(()=>{const r=document.querySelector('.gcw-shell')?.getBoundingClientRect();return r&&{left:r.left,right:r.right,top:r.top,bottom:r.bottom,w:r.width,h:r.height}})(),
+    footerTop:document.querySelector('.status')?.getBoundingClientRect().top,
+    lensFits:(()=>{const e=document.querySelector('.gcw-lenses');return e?e.scrollWidth<=e.clientWidth+2:false})(),
+    starterVisible:(()=>{const e=document.querySelector('#object');return e?getComputedStyle(e).visibility!=='hidden'&&getComputedStyle(e).opacity!=='0':false})()
   }));
   if(errors.length) throw new Error(name+': page errors '+errors.join(' | '));
   if(metrics.viewportOverflow) throw new Error(name+': horizontal viewport overflow');
   if(metrics.bodyCount<2) throw new Error(name+': created bodies not rendered');
   if(!metrics.cube||metrics.proof.faces!==6||metrics.proof.quickContacts!==5) throw new Error(name+': GripCube carrier proof mismatch '+JSON.stringify(metrics));
+  if(metrics.starterVisible) throw new Error(name+': starter teaching body still competes with created bodies');
+  if(name==='phone'&&!metrics.lensFits) throw new Error(name+': six semantic lenses do not fit the phone face rail');
+  if(name==='phone'&&Math.abs((metrics.footerTop??0)-(metrics.shellRect?.bottom??0))>16) throw new Error(name+': dead vertical gap remains before footer '+JSON.stringify(metrics));
+  if(name==='desktop'&&(metrics.stageRect?.w??0)<viewport.width*.58) throw new Error(name+': creation stage still trapped in legacy left column '+JSON.stringify(metrics));
   await page.screenshot({path:'qa/ailatheo-v3-gripcube/'+name+'.png',fullPage:true});
   console.log(name+': PASS '+JSON.stringify(metrics));
 }

@@ -5,7 +5,7 @@ const must=[
   "function mountGripWorkbench()",
   "JMAILatheoGripUI",
   "TRACE","ROUTE","FORM","FIELD","PROOF","USE",
-  "gcw-stageFrame","gcw-faceViewport","gcw-quick",
+  "gcw-stageFrame","gcw-faceViewport","gcw-quick","gcw-cubeDock","gcw-cubeFace","gcwLegacyModes",
   "SWIPE FACE ↔","GRIP BODY · DRAG / RESIZE / ROTATE",
   "formFace.append(lab,source,explain)",
   "fieldFace.append(bodyShelf,inspector)",
@@ -22,6 +22,7 @@ for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","u
 if(!html.includes("grid-template-rows:minmax(0,1fr) 214px")) throw new Error("MOBILE_FINITE_VIEWPORT_ROUTE_MISSING");
 if(!html.includes("grid-auto-flow:column")) throw new Error("SIDE_TRAVEL_MISSING");
 if(!html.includes("setFace(map[b.textContent])")) throw new Error("MODE_TO_FACE_ROUTE_MISSING");
+for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
 console.log(JSON.stringify({
   passed:true,
   carrier:"GripCube UI projection",
@@ -30,5 +31,5 @@ console.log(JSON.stringify({
   quickContacts:5,
   preservesSingleIds:true,
   horizontalFaceTravel:true,
-  stagePrimary:true
+  stagePrimary:true,\n  grippableCube:true,\n  legacyModeStripHidden:true,\n  cubeReleaseSnapsFace:true
 },null,2));

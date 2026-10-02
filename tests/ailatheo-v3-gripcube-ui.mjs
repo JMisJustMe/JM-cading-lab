@@ -1,7 +1,7 @@
 import fs from "node:fs";
 const html=fs.readFileSync("unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html","utf8");
 const must=[
-  "JM.CreationWorkbench/0.4",
+  "JM.CreationWorkbench/0.5",
   "function mountGripWorkbench()",
   "JMAILatheoGripUI",
   "TRACE","ROUTE","FORM","FIELD","PROOF","USE",
@@ -22,11 +22,11 @@ for(const id of ["scene","source","route","bodyShelf","linkShelf","addObject","u
 if(!html.includes("grid-template-rows:minmax(0,1fr) 214px")) throw new Error("MOBILE_FINITE_VIEWPORT_ROUTE_MISSING");
 if(!html.includes("grid-auto-flow:column")) throw new Error("SIDE_TRAVEL_MISSING");
 if(!html.includes("setFace(map[b.textContent])")) throw new Error("MODE_TO_FACE_ROUTE_MISSING");
-for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","threeRowApp","starterYieldsToBodies","gcw-world","gcwApp","routeFace.querySelector(\'.linker\')"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
+for(const token of ["cubeFaceFromPose","releaseCube","pointermove","paintCube","grippableCube","singleWorldCarrier","threeRowApp","starterYieldsToBodies","gcw-world","gcwApp","routeFace.querySelector(\'.linker\')","syncGripContext","scene.dataset.gcwLens","directRouteContact","contextualQuick","gcw-contactHint","route-source"]) if(!html.includes(token)) throw new Error("GRIP_CUBE_CONTACT_MISSING_"+token);
 console.log(JSON.stringify({
   passed:true,
   carrier:"GripCube UI projection",
-  version:"0.4",
+  version:"0.5",
   semanticFaces:6,
   quickContacts:5,
   preservesSingleIds:true,
@@ -36,5 +36,9 @@ console.log(JSON.stringify({
   legacyModeStripHidden:true,
   cubeReleaseSnapsFace:true,
   singleWorldCarrier:true,
-  starterYieldsToBodies:true
+  starterYieldsToBodies:true,
+  stageContactGrammar:true,
+  contextualQuick:true,
+  directRouteContact:true,
+  earnedDepth:true
 },null,2));

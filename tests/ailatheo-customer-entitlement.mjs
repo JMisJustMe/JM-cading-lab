@@ -56,6 +56,10 @@ async function call({method='GET',query='',env=baseEnv,token='',body=null,header
   const r=await call({method:'POST',env:{},body:{action:'account.create'}});
   assert.equal(r.status,503);
 }
+{
+  const r=await call({method:'POST',env:{AILATHEO_CUSTOMERS:bucket},body:{action:'account.create'}});
+  assert.equal(r.status,503,'account creation must remain closed until the whole entitlement rail is configured');
+}
 let token='';
 {
   const r=await call({method:'POST',body:{action:'account.create'}});
@@ -85,6 +89,7 @@ let token='';
   assert.equal(r.status,200);const j=await r.json();assert.equal(j.outcome,'CHECKOUT_CREATED');assert.equal(j.url,'https://checkout.stripe.test/session');
   const stripeCall=stripeCalls.find(x=>x.href.endsWith('/v1/checkout/sessions')&&x.method==='POST');
   assert.ok(stripeCall.body.includes('price_month'));assert.ok(stripeCall.body.includes(encodeURIComponent(currentAccountId)));
+  assert.ok(stripeCall.body.includes(encodeURIComponent('/unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html?checkout=success')),'checkout must return to the stateful Workbench');
 }
 {
   const r=await call({method:'POST',token,body:{action:'checkout.reconcile',session_id:'cs_test_paid'}});
@@ -133,6 +138,8 @@ console.log(JSON.stringify({
   webhookIdempotent:true,
   cancelAtPeriodEndPreservesAccess:true,
   failClosedWithoutBindings:true,
+  fullRailRequiredBeforeAccountCreation:true,
+  checkoutReturnsToWorkbench:true,
   liveMoneyHardLocked:true,
   projectOwnershipIndependent:true,
   serviceWorkerBypass:true

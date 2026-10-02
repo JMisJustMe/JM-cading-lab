@@ -11,7 +11,7 @@
 
 .linkLayer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible}.linkLine{stroke:#72e6ff99;stroke-width:2.2;stroke-dasharray:7 5;vector-effect:non-scaling-stroke;marker-end:url(#linkArrow)}#linkArrow path{fill:#72e6ff}.linker button{border:1px solid var(--l);background:#121d2d;color:var(--ink);border-radius:8px;padding:7px;font-weight:850}.linkLine.hot{stroke:#ffd36f;stroke-width:3;stroke-dasharray:none}.linkLabel{fill:#bcd2e8;font:700 10px system-ui;paint-order:stroke;stroke:#07101b;stroke-width:3px;stroke-linejoin:round}.sceneBody{z-index:2}.object{z-index:1}.transformHandle{position:absolute;z-index:5;width:34px;height:34px;border-radius:50%;border:2px solid var(--gold);background:#101827;color:var(--gold);font-weight:1000;display:grid;place-items:center;touch-action:none;box-shadow:0 8px 22px #0009}.transformHandle[hidden]{display:none}.resizeHandle{cursor:nwse-resize}.rotateHandle{cursor:grab}.linkShelf{display:flex;gap:6px;overflow:auto;padding:7px 8px;border-top:1px solid var(--l);min-height:42px}.linkShelf button{white-space:nowrap;border:1px solid #35506c;background:#0d1725;color:#c9d8e7;border-radius:999px;padding:6px 9px;font-size:.66rem}.linkShelf button:hover,.linkShelf button.on{border-color:var(--gold);color:var(--gold)}.inspector{border-top:1px solid var(--l);background:#0a1320}.inspector summary{cursor:pointer;padding:9px 10px;color:var(--mut);font-size:.66rem;font-weight:900;letter-spacing:.05em}.sceneBody.consequence{animation:bodyConsequence .34s ease}.sceneBody.bounce{animation:bodyBounce .38s ease}.sceneBody[data-shape="portal"]{box-shadow:inset 0 0 0 7px #08111d,0 0 28px currentColor}.sceneBody[data-shape="line"]{min-height:14px}@keyframes bodyConsequence{50%{filter:brightness(2) saturate(1.5);scale:1.08}}@keyframes bodyBounce{35%{translate:0 -18px}70%{translate:0 5px}}@media(max-width:760px){.top{position:sticky;top:0;z-index:20;background:#08111df2}.rail{position:sticky;top:48px;z-index:19;background:#08111df2}.coreActions{position:sticky;bottom:0;z-index:18;background:#0b1421f5;backdrop-filter:blur(10px)}.transformHandle{width:42px;height:42px}.lab select,.lab input{min-height:44px}.linker{grid-template-columns:1fr}.linker select{min-height:44px}.bodyShelf,.linkShelf{scrollbar-width:none}.bodyShelf::-webkit-scrollbar,.linkShelf::-webkit-scrollbar{display:none}}
 
-/* JM.CreationWorkbench/0.11 · GripCube UI projection
+/* JM.CreationWorkbench/0.12 · GripCube UI projection
    Same project/runtime body; new navigation carrier.
    HORIZONTAL = major/face travel · CONTACT = action · DEPTH = secondary detail. */
 :root{--gcw-trace:#b879ff;--gcw-route:#ffc857;--gcw-form:#58bfff;--gcw-field:#3ce0cf;--gcw-proof:#ff78b1;--gcw-use:#ffe16a}
@@ -102,7 +102,7 @@
   .gcw-face .bodyShelf,.gcw-face .linkShelf{flex-wrap:wrap}
 }
 
-/* JM.CreationWorkbench/0.11 · owner-contact / grip-feel pass */
+/* JM.CreationWorkbench/0.12 · owner-contact / grip-feel pass */
 .gcw-contactHint{position:absolute;z-index:9;left:10px;top:10px;max-width:min(62%,430px);padding:7px 9px;border:1px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),transparent 50%);border-radius:999px;background:#06111bd9;backdrop-filter:blur(9px);color:#dbe9f7;font-size:.54rem;font-weight:900;letter-spacing:.055em;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gcw-stageZone[data-contact-lens="form"] .sceneBody.selected,.gcw-stageZone[data-contact-lens="field"] .sceneBody.selected{outline:2px solid color-mix(in srgb,var(--gcw-form),white 14%);outline-offset:4px}
 .gcw-stageZone[data-contact-lens="use"] .sceneBody{cursor:pointer}
@@ -136,13 +136,15 @@
 @media(max-width:760px){.gcw-fieldHalo{width:128px}.gcw-fieldMove{grid-template-columns:repeat(3,32px);grid-template-rows:repeat(3,32px)}.gcw-fieldHalo button{min-height:30px}}
 .sceneBody.selected[data-gcw-contact]::after{content:attr(data-gcw-contact);position:absolute;right:-9px;top:-11px;z-index:8;min-width:38px;padding:4px 6px;border:1px solid currentColor;border-radius:999px;background:#06111ee8;color:#f4f8ff;font:900 .48rem/1 system-ui;letter-spacing:.07em;white-space:nowrap;box-shadow:0 5px 16px #0008;pointer-events:none}
 .gcw-stageZone.gcw-multitouch .sceneBody.selected{filter:brightness(1.18);box-shadow:0 0 0 3px #72e6ff4a,0 0 34px #72e6ff33,0 12px 35px #0008}
+.gcw-stageZone:focus-visible{outline:2px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),white 12%);outline-offset:-3px}
+.sceneBody:focus-visible{outline:3px solid color-mix(in srgb,var(--gcw-face,var(--cyan)),white 24%)!important;outline-offset:5px}
 .gcw-quick button[data-q="act"].contextual{box-shadow:0 0 0 2px #ffd36f24 inset,0 0 20px #ffd36f16}
 .gcw-face.entering{animation:gcwFaceIn .18s ease both}
 @keyframes gcwFaceIn{from{opacity:.35;transform:translateX(10px)}to{opacity:1;transform:none}}
 @media(max-width:760px){.gcw-contactHint{left:6px;top:6px;max-width:58%;font-size:.46rem;padding:5px 7px}}
 @media(prefers-reduced-motion:reduce){.gcw-face.entering{animation:none!important}}
 
-/* JM.CreationWorkbench/0.11 · render-led GripCube polish */
+/* JM.CreationWorkbench/0.12 · render-led GripCube polish */
 .app.gcwApp{grid-template-rows:auto minmax(0,1fr) auto!important}
 .world.gcw-world{height:auto!important;align-self:stretch}
 .gcw-lens{min-width:54px;flex:1 1 0;padding-left:4px;padding-right:4px}
@@ -182,10 +184,10 @@
 → TraceBox / Ding
 
 No build has been claimed yet.</div><textarea class="code" id="source" spellcheck="false">Bedroom Lamp : lamp [#58d7ff] &lt;square&gt; :: ToggleLight</textarea><div class="teach" id="teach">Touch first. After Ding, AILatheo exposes the code that caused the visible change.</div><div class="explain" id="explain"><b>CODE MAP</b> · NAME → identity · TYPE → role · [COLOUR] → presentation · &lt;SHAPE&gt; → form · ACTION → consequence</div><iframe id="previewFrame" title="AILatheo generated preview" style="display:none;width:100%;min-height:260px;border:0;border-top:1px solid var(--l);background:white"></iframe></aside></section>
-<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.11 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
+<footer class="status"><strong id="ding">READY</strong><span> · JM.CreationWorkbench/0.12 candidate · direct stage grammar · source authority preserved · MESH ≠ MERGE</span></footer>
 </main><script>
 const o=document.querySelector('#object'),s=document.querySelector('#state'),d=document.querySelector('#ding'),r=document.querySelector('#route'),src=document.querySelector('#source');
-const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.11',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
+const WORKBENCH_STANDARD=Object.freeze({schema:'JM.CreationWorkbench/0.12',route:['SELECT_OR_CREATE','CHANGE','SEE','UNDERSTAND','CONNECT','TEST','SAVE'],law:'CONTROL GRAMMAR SURVIVES THE CARRIER; CREATION EARNS CLAIM THROUGH VISIBLE CONSEQUENCE.'});
 async function loadEstateRegistry(){const base='../coding-estate/integration/';const manifest=await fetch(base+'REGISTRY.json').then(x=>x.json());if(manifest.bodies?.length)return manifest;const parts=await Promise.all((manifest.parts??[]).map(rel=>fetch(base+rel).then(x=>x.json())));const registry={...manifest,bodies:parts.flatMap(part=>part.bodies??[])};if(registry.bodies.length!==manifest.count)throw new Error('REGISTRY_PART_COUNT_MISMATCH');return registry}
 let on=JSON.parse(localStorage.getItem('jm.ailatheo.v3.light')||'false');const teach=document.querySelector('#teach'),explain=document.querySelector('#explain'),type=document.querySelector('#type'),shape=document.querySelector('#shape'),colour=document.querySelector('#colour'),action=document.querySelector('#action'),objectName=document.querySelector('#objectName');const trace=[];let materialEventSeq=0,lastMaterialContact=null;
 function bodyMaterialState(body){return {on:!!body.on,x:+(+body.x||0).toFixed(2),y:+(+body.y||0).toFixed(2),size:Math.round(body.size||0),rotate:Math.round(body.rotate||0)}}
@@ -212,7 +214,7 @@ function shapeVisual(el,b){el.dataset.shape=b.shape||'square';el.style.clipPath=
 function applyBodyVisual(el,b){el.textContent=b.name;el.style.color=b.colour;el.style.background='linear-gradient(145deg,color-mix(in srgb,'+b.colour+',white 16%),color-mix(in srgb,'+b.colour+',black 34%))';el.style.textShadow='0 1px 4px #000';el.style.left=b.x+'%';el.style.top=b.y+'%';el.style.width=b.size+'px';el.style.height=b.size+'px';el.style.transform='translate(-50%,-50%) rotate('+b.rotate+'deg)';el.dataset.state=b.on?'on':'off';shapeVisual(el,b)}
 function positionHandles(){const lens=scene.dataset.gcwLens,manip=!lens||lens==='form'||lens==='field';if(!selected||!manip){resizeHandle.hidden=true;rotateHandle.hidden=true;return}const b=selected.body;resizeHandle.hidden=false;rotateHandle.hidden=false;resizeHandle.style.left='calc('+b.x+'% + '+Math.max(18,b.size/2)+'px)';resizeHandle.style.top='calc('+b.y+'% + '+Math.max(18,b.size/2)+'px)';rotateHandle.style.left=b.x+'%';rotateHandle.style.top='calc('+b.y+'% - '+(Math.max(18,b.size/2)+34)+'px)';resizeHandle.style.transform='translate(-50%,-50%)';rotateHandle.style.transform='translate(-50%,-50%)'}
 function selectBody(el,body){scene.querySelectorAll('.sceneBody').forEach(x=>x.classList.remove('selected'));selected={el,body};el.classList.add('selected');objectName.value=body.name;type.value=[...type.options].some(x=>x.value===body.type)?body.type:type.value;shape.value=[...shape.options].some(x=>x.value===body.shape)?body.shape:shape.value;colour.value=/^#[0-9a-f]{6}$/i.test(body.colour)?body.colour:'#58d7ff';action.value=[...action.options].some(x=>x.value===body.action)?body.action:action.value;px.value=Math.round(body.x);py.value=Math.round(body.y);psize.value=body.size;prot.value=body.rotate;src.value=body.source||composeSource(body);updateExplain(body);refreshBodyShelf();positionHandles();syncStageHead(body);window.JMAILatheoGripUI?.syncContext?.();teach.textContent='SELECT → '+body.name+'. '+((scene.dataset.gcwLens==='form'||scene.dataset.gcwLens==='field'||!scene.dataset.gcwLens)?'Drag to move; gold handles resize/rotate; inspector gives exact values.':'Selected on the live stage; the active GripCube face decides what contact does.')}
-function renderBody(body){const el=document.createElement('div');el.className='sceneBody';el._body=body;applyBodyVisual(el,body);let dragging=false,dragMoved=false,preDrag=null;el.onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;selectBody(el,body);const lens=scene.dataset.gcwLens;if(lens&&lens!=='form'&&lens!=='field'){dragging=false;return}dragging=true;dragMoved=false;preDrag=snapshot();try{el.setPointerCapture(e.pointerId)}catch(_){}};el.onpointermove=e=>{if(!dragging||scene._gcwMultiTransform)return;const rect=scene.getBoundingClientRect(),nx=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100)),ny=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));if(!dragMoved&&(Math.abs(nx-body.x)>0.5||Math.abs(ny-body.y)>0.5)){dragMoved=true;if(preDrag){revisions.push(preDrag);if(revisions.length>40)revisions.shift()}}body.x=nx;body.y=ny;px.value=Math.round(body.x);py.value=Math.round(body.y);applyBodyVisual(el,body);positionHandles();drawLinks()};el.onpointerup=e=>{if(el._gcwGestureSuppressed){dragging=false;el._suppressClick=true;setTimeout(()=>{el._gcwGestureSuppressed=false;el._suppressClick=false},0);return}if(!dragging)return;dragging=false;persistBodies();if(dragMoved){el._suppressClick=true;setTimeout(()=>{el._suppressClick=false},0);trace.push('DIRECT MOVE → '+body.name+' x='+Math.round(body.x)+' y='+Math.round(body.y));d.textContent='MOVE DING';teach.textContent='CHANGE → direct movement updated the inspector and saved project state.'}};el.onclick=()=>selectBody(el,body);scene.appendChild(el);return el}
+function renderBody(body){const el=document.createElement('div');el.className='sceneBody';el.tabIndex=0;el.setAttribute('aria-label',(body.name||'Body')+' creation body');el._body=body;applyBodyVisual(el,body);let dragging=false,dragMoved=false,preDrag=null;el.onpointerdown=e=>{if(e.button!==undefined&&e.button!==0)return;selectBody(el,body);const lens=scene.dataset.gcwLens;if(lens&&lens!=='form'&&lens!=='field'){dragging=false;return}dragging=true;dragMoved=false;preDrag=snapshot();try{el.setPointerCapture(e.pointerId)}catch(_){}};el.onpointermove=e=>{if(!dragging||scene._gcwMultiTransform)return;const rect=scene.getBoundingClientRect(),nx=Math.max(0,Math.min(100,(e.clientX-rect.left)/rect.width*100)),ny=Math.max(0,Math.min(100,(e.clientY-rect.top)/rect.height*100));if(!dragMoved&&(Math.abs(nx-body.x)>0.5||Math.abs(ny-body.y)>0.5)){dragMoved=true;if(preDrag){revisions.push(preDrag);if(revisions.length>40)revisions.shift()}}body.x=nx;body.y=ny;px.value=Math.round(body.x);py.value=Math.round(body.y);applyBodyVisual(el,body);positionHandles();drawLinks()};el.onpointerup=e=>{if(el._gcwGestureSuppressed){dragging=false;el._suppressClick=true;setTimeout(()=>{el._gcwGestureSuppressed=false;el._suppressClick=false},0);return}if(!dragging)return;dragging=false;persistBodies();if(dragMoved){el._suppressClick=true;setTimeout(()=>{el._suppressClick=false},0);trace.push('DIRECT MOVE → '+body.name+' x='+Math.round(body.x)+' y='+Math.round(body.y));d.textContent='MOVE DING';teach.textContent='CHANGE → direct movement updated the inspector and saved project state.'}};el.onclick=()=>selectBody(el,body);scene.appendChild(el);return el}
 function updateProp(record=true){if(!selected)return;const b=selected.body;b.x=Math.max(0,Math.min(100,+px.value));b.y=Math.max(0,Math.min(100,+py.value));b.size=Math.max(24,Math.min(220,+psize.value));b.rotate=+prot.value;applyBodyVisual(selected.el,b);positionHandles();drawLinks();persistBodies();if(record){trace.push('PROPERTY → '+b.name+' x='+b.x+' y='+b.y+' size='+b.size+' rotate='+b.rotate);d.textContent='PROPERTY DING'}}
 function bindTransformHandle(handle,mode){let active=false,initial=null;handle.onpointerdown=e=>{if(!selected)return;e.preventDefault();e.stopPropagation();active=true;initial=snapshot();try{handle.setPointerCapture(e.pointerId)}catch(_){}};handle.onpointermove=e=>{if(!active||!selected)return;const rect=scene.getBoundingClientRect(),b=selected.body,cx=rect.left+rect.width*b.x/100,cy=rect.top+rect.height*b.y/100;if(mode==='resize'){b.size=Math.max(24,Math.min(220,Math.max(Math.abs(e.clientX-cx),Math.abs(e.clientY-cy))*2));psize.value=Math.round(b.size)}else{b.rotate=Math.round((Math.atan2(e.clientY-cy,e.clientX-cx)*180/Math.PI)+90);prot.value=b.rotate}applyBodyVisual(selected.el,b);positionHandles();drawLinks()};handle.onpointerup=e=>{if(!active||!selected)return;active=false;if(initial){revisions.push(initial);if(revisions.length>40)revisions.shift()}persistBodies();trace.push((mode==='resize'?'RESIZE':'ROTATE')+' → '+selected.body.name+' size='+Math.round(selected.body.size)+' rotate='+Math.round(selected.body.rotate));d.textContent=mode==='resize'?'RESIZE DING':'ROTATE DING';teach.textContent='CHANGE → direct '+mode+' updated visible form + precise inspector + saved state.'}}
 bindTransformHandle(resizeHandle,'resize');bindTransformHandle(rotateHandle,'rotate');
@@ -244,8 +246,8 @@ document.querySelectorAll('#modes button').forEach(b=>b.onclick=()=>{document.qu
 
 function mountGripWorkbench(){
   const world=document.querySelector('.world'),field=document.querySelector('.field'),side=document.querySelector('.side');
-  if(!world||!field||!side||world.dataset.gripcubeUi==='v11')return;
-  world.dataset.gripcubeUi='v11';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
+  if(!world||!field||!side||world.dataset.gripcubeUi==='v12')return;
+  world.dataset.gripcubeUi='v12';world.classList.add('gcw-world');document.querySelector('.app')?.classList.add('gcwApp');
   document.querySelector('#modes')?.classList.add('gcwLegacyModes');
 
   const head=field.querySelector('.head'),scene=document.querySelector('#scene'),lab=field.querySelector('.lab'),
@@ -256,7 +258,7 @@ function mountGripWorkbench(){
   if(!head||!scene||!lab||!linker||!linkShelf||!inspector||!bodyShelf||!core||!advanced||!route||!source||!teach||!explain)return;
 
   const shell=document.createElement('div');shell.className='gcw-shell';
-  const stageZone=document.createElement('section');stageZone.className='gcw-stageZone';
+  const stageZone=document.createElement('section');stageZone.className='gcw-stageZone';stageZone.tabIndex=0;stageZone.setAttribute('aria-label','Creation stage. Touch-first controls with keyboard parity when focused.');stageZone.setAttribute('aria-keyshortcuts','ArrowLeft ArrowRight ArrowUp ArrowDown Enter Space Escape [ ] - = Q E Control+Z Meta+Z');
   const stageHead=document.createElement('div');stageHead.className='gcw-stageHead';
   const faceReadout=document.createElement('div');faceReadout.className='gcw-faceReadout';faceReadout.id='gcwFaceReadout';faceReadout.textContent='FORM · WHAT SHAPE NOW?';
   stageHead.append(head,faceReadout);
@@ -520,13 +522,30 @@ function mountGripWorkbench(){
     if(q==='save')document.querySelector('#saveProject')?.click();
   });
 
+  function keyboardStageContact(e){
+    const t=e.target;if(t?.matches?.('input,select,textarea,button,summary')||t?.isContentEditable||e.repeat)return;
+    const ids=faces.map(x=>x[0]),i=ids.indexOf(current);
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();document.querySelector('#undoProject')?.click();syncGripContext();const focusTarget=selected?.el||stageZone;try{focusTarget.focus({preventScroll:true})}catch(_){focusTarget.focus?.()}return}
+    if(e.key==='['||e.key===']'){e.preventDefault();setFace(ids[(i+(e.key===']'?1:-1)+ids.length)%ids.length]);return}
+    if(e.key==='Escape'&&current==='route'){e.preventDefault();clearRouteContact();teach.textContent='ROUTE CONTACT CANCELLED · selected body remains in hand.';syncGripContext();return}
+    if(current==='field'){
+      const map={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down','-':'smaller','_':'smaller','=':'larger','+':'larger',q:'rotateLeft',Q:'rotateLeft',e:'rotateRight',E:'rotateRight'};
+      const cmd=map[e.key];if(cmd){e.preventDefault();applyFieldPrecision(cmd);return}
+    }
+    if(current==='use'&&(e.key==='Enter'||e.key===' ')){
+      if(selected?.el){e.preventDefault();selected.el.click();syncGripContext()}
+    }
+  }
+  stageZone.addEventListener('keydown',keyboardStageContact);
+  scene.addEventListener('pointerdown',e=>{const el=e.target.closest('.sceneBody');if(el)try{el.focus({preventScroll:true})}catch(_){}});
+
   document.querySelectorAll('#modes button').forEach(b=>b.addEventListener('click',()=>{
     const map={PLAY:'use',BUILD:'form',LEARN:'form',DEBUG:'trace',SAVE:'use',FORGE:'proof',TARGET:'proof'};
     if(map[b.textContent])setFace(map[b.textContent]);
   }));
 
   window.JMAILatheoGripUI={
-    version:'0.11',
+    version:'0.12',
     law:'HORIZONTAL CHANGES THE VIEW; CONTACT CHANGES THE BODY; DEPTH REVEALS MORE AUTHORITY; THE CREATION DOES NOT LEAVE YOUR HAND.',
     faces:faces.map(x=>x[0]),
     setFace,
@@ -536,9 +555,10 @@ function mountGripWorkbench(){
     syncSelectedContext:renderSelectedContext,
     syncFieldHalo,
     fieldPrecision:applyFieldPrecision,
+    keyboardStageContact,
     latestMaterialContact:()=>lastMaterialContact?JSON.parse(JSON.stringify(lastMaterialContact)):null,
     proof:()=>({
-      version:'0.11',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
+      version:'0.12',faces:faces.length,grippableCube:!!document.querySelector('#gcwCubeDock'),legacyModesHidden:document.querySelector('#modes')?.classList.contains('gcwLegacyModes'),singleWorldCarrier:world.classList.contains('gcw-world'),threeRowApp:document.querySelector('.app')?.classList.contains('gcwApp'),starterYieldsToBodies:scene.classList.contains('hasBodies'),
       stageDominant:!!document.querySelector('.gcw-stageFrame #scene'),
       quickContacts:quick.querySelectorAll('button').length,
       contactLens:scene.dataset.gcwLens||current,
@@ -562,6 +582,13 @@ function mountGripWorkbench(){
       traceDepthEarned:traceDepth.tagName==='DETAILS'&&!traceDepth.open,
       proofDepthEarned:advanced.tagName==='DETAILS'&&!advanced.open,
       inspectionCreatesNoDing:true,
+      keyboardParity:true,
+      keyboardScopedToStage:stageZone.tabIndex===0,
+      keyboardFieldPrecision:true,
+      keyboardUseContact:true,
+      keyboardRouteCancel:true,
+      keyboardFaceTravel:true,
+      keyboardUndo:true,
       multiTouchGrip:true,
       onBodyContactBadge:true,
       earnedDepth:advanced.tagName==='DETAILS',

@@ -695,11 +695,11 @@ for(const [name,viewport] of cases){
 
   await page.locator('.gcw-stageZone').focus();
   await page.keyboard.press('Control+Shift+z');
-  const keyboardRedo=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact(),depth:window.JMAILatheoGripUI.recoveryDepth(),active:document.activeElement?.classList?.contains('gcw-stageZone')||false}));
-  if(keyboardRedo.body.x!==redoEdit.body.x||keyboardRedo.event?.kind!=='REDO DING'||!keyboardRedo.active||keyboardRedo.depth.redo!==0) throw new Error(name+': keyboard REDO failed state/focus continuity '+JSON.stringify({redoEdit,keyboardRedo}));
+  const keyboardRedo=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact(),depth:window.JMAILatheoGripUI.recoveryDepth(),withinStage:!!document.activeElement?.closest?.('.gcw-stageZone'),focused:document.activeElement?.className||document.activeElement?.tagName||null}));
+  if(keyboardRedo.body.x!==redoEdit.body.x||keyboardRedo.event?.kind!=='REDO DING'||!keyboardRedo.withinStage||keyboardRedo.depth.redo!==0) throw new Error(name+': keyboard REDO failed state/focus continuity '+JSON.stringify({redoEdit,keyboardRedo}));
   await page.keyboard.press('Control+z');
-  const keyboardRedoUndo=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact(),depth:window.JMAILatheoGripUI.recoveryDepth(),active:document.activeElement?.classList?.contains('gcw-stageZone')||false}));
-  if(keyboardRedoUndo.body.x!==redoBase.body.x||keyboardRedoUndo.event?.kind!=='RECOVERY DING'||keyboardRedoUndo.depth.redo!==1||!keyboardRedoUndo.active) throw new Error(name+': keyboard REDO undo failed '+JSON.stringify(keyboardRedoUndo));
+  const keyboardRedoUndo=await page.evaluate(()=>({body:{...document.querySelectorAll('.sceneBody')[1]?._body},event:window.JMAILatheoGripUI.latestMaterialContact(),depth:window.JMAILatheoGripUI.recoveryDepth(),withinStage:!!document.activeElement?.closest?.('.gcw-stageZone'),focused:document.activeElement?.className||document.activeElement?.tagName||null}));
+  if(keyboardRedoUndo.body.x!==redoBase.body.x||keyboardRedoUndo.event?.kind!=='RECOVERY DING'||keyboardRedoUndo.depth.redo!==1||!keyboardRedoUndo.withinStage) throw new Error(name+': keyboard REDO undo failed '+JSON.stringify(keyboardRedoUndo));
 
   await page.locator('.gcw-lens[data-face="field"]').click();
   await page.locator('.gcw-face[data-face="field"] #bodyShelf button').nth(1).click();

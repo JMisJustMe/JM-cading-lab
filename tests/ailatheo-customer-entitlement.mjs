@@ -76,6 +76,11 @@ let token='';
   assert.equal(r.status,503);
 }
 {
+  const env={...baseEnv,AILATHEO_STRIPE_MODE:'live',AILATHEO_STRIPE_SECRET_KEY:'sk_live_never_allowed_here'};
+  const r=await call({method:'POST',token,env,body:{action:'checkout.create',cadence:'monthly'}});
+  assert.equal(r.status,503,'v0.1 sandbox rail must refuse live Stripe mode');
+}
+{
   const r=await call({method:'POST',token,body:{action:'checkout.create',cadence:'monthly'}});
   assert.equal(r.status,200);const j=await r.json();assert.equal(j.outcome,'CHECKOUT_CREATED');assert.equal(j.url,'https://checkout.stripe.test/session');
   const stripeCall=stripeCalls.find(x=>x.href.endsWith('/v1/checkout/sessions')&&x.method==='POST');
@@ -128,6 +133,7 @@ console.log(JSON.stringify({
   webhookIdempotent:true,
   cancelAtPeriodEndPreservesAccess:true,
   failClosedWithoutBindings:true,
+  liveMoneyHardLocked:true,
   projectOwnershipIndependent:true,
   serviceWorkerBypass:true
 },null,2));

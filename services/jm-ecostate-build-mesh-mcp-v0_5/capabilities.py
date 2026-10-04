@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_5 + hosted_runtime_v0_7_7",
+        "source":"external_current_registry_v0_6 + hosted_runtime_v0_7_8",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -324,7 +324,8 @@ CAPABILITY_PROFILES = [
             "delta-first Estate maintenance planning",
             "host-private Library keeper contract",
             "registry-card and body↔carrier reconciliation routing",
-            "32_Cb sovereign-donor seating"
+            "32_Cb sovereign-donor seating",
+            "JM32-1DA exact runtime-route seating"
         ],
         "donor_roles":[
             "control-plane routing",
@@ -367,6 +368,40 @@ CAPABILITY_PROFILES = [
             "new external host contacts only with fresh receipts",
             "new target profiles only through explicit embodiment",
             "no proof transfer to descendants"
+        ]
+    },
+    {
+        "id":"jm32-1da-v221",
+        "name":"JM32-1DA v2.2.1 — Mixed-Axis Embodiment Correction",
+        "aliases":["JM32-1DA","JM32 1DA","JM32-1DA compiler v2.2.1","JM32-1DA v2.2.1"],
+        "source":"external_current_registry_v0_6 + exact-private-authority-derived-seat",
+        "domain":"Coding / compiler / runtime / governance / recovery",
+        "capabilities":[
+            "145 JM-callable routes",
+            "one-body executable runtime packaging",
+            "state governance federation compiler OS recovery continuity",
+            "four-language adapters",
+            "mixed-axis interaction and movement routing",
+            "deterministic byte-identical package reproduction",
+            "clean extraction verification",
+            "rollback restore",
+            "quarantine containment",
+            "capability revocation",
+            "quota gating",
+            "receipt-chain validation"
+        ],
+        "donor_roles":[
+            "runtime-route expansion descendant",
+            "one-body runtime donor",
+            "governed execution donor",
+            "recovery and rollback donor",
+            "multi-language adapter donor"
+        ],
+        "open_frontiers":[
+            "public name remains unset",
+            "native universal OS is not claimed",
+            "cross-device adapter v0.2 remains a separate authority",
+            "new recipient or device proof requires fresh contact"
         ]
     },
 ]

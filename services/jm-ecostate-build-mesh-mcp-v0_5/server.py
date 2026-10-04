@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.1"
+VERSION = "0.7.2"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -30,6 +30,69 @@ CURRENT_REGISTRY_SHA256 = "fde60cf0274d5380115d938fc099d652af44f0747f354686b9956
 CURRENT = json.loads(r'''[{"id":"ecostate-build-mesh-v102","title":"JM ECOSTATE — Build Mesh v1.0.2 — Registered App Binding","date":"4 Oct 2026","category":"software infrastructure","tags":["ECOSTATE","Build Mesh","MCP","control plane","plugin","Navigator","Estate"],"status":"FIRST COMPLETE OPERATING CONTROL PLANE · REGISTERED APP BINDING PASS · LIVE MCP CONTACT","summary":"JM ECOSTATE Build Mesh is the recoverable Estate control plane for current-head resolution, proof boundaries, capability/donor meshing, deterministic operation planning and host-routed consequence classes. v1.0.2 binds the packaged plugin to the registered ChatGPT MCP app while preserving the portable MCP route.","proof":"Packaged plugin v1.0.2 is current at release pluginrel_6ac1974fc7a481918f187315af5441ff; .app.json binds asdk_app_6ac19605ac2c81918eb1f6567f2caa81; direct ChatGPT MCP contact returned JM ECOSTATE Build Mesh Native MCP v0.7.0 with 18 pre-self-seating current records, 41 overlay entries, 29 capability profiles and 1,074 retained lineages; JM3232 Navigator contact returned PASS and Estate integration CONNECTED / LIVE_PROVEN_CANONICAL_ESTATE_AND_NAVIGATOR_MCP_CONNECTED.","boundary":"This v0.4 registry descendant seats Build Mesh without rewriting frozen v0.3. The currently deployed MCP still reports the v0.3/18-record snapshot until its service is updated and read back. The public MCP remains read-only and does not own or ingest the private Estate/Library; universal desktop/phone invocation remains a separate proof boundary."},{"id":"opportunity-v08","title":"JM Opportunity Front Door v0.8 — Maximal Current","date":"30 Sep 2026","category":"software business","tags":["opportunity","career","freelance","GripCube","runtime"],"status":"CURRENT DEVELOPMENT CANDIDATE · OWNER/PUBLIC CROWN OPEN","summary":"The former Hire-Me/UX route now operates as an opportunity front door: purpose and capability are independent projections over one source person, with employment retained as one route alongside commission, collaboration, licensing/publishing, research/consult and open future-fancy contact.","proof":"Built forward from v0.7 multi-capability projection while preserving the JM-native runtime spine, live project registry, no-dead-controls law and source/claim boundaries.","boundary":"Development candidate until owner contact; v0.5.1 remains the owner-contacted/public career head and this page itself is not a contract, licence grant or incorporation proof."},{"id":"gripcube-rpa","title":"JM GripCube — Relational Projection Architecture v0.1.1","date":"30 Sep 2026","category":"software theory","tags":["projection","interaction","architecture"],"status":"LIVE REFERENCE RUNTIME · ASSISTANT QA PASS · OWNER CONTACT OPEN","summary":"GripCube was extracted from one website use into a broader one-body/many-projections architecture, then corrected by the no-dead-controls affordance law.","proof":"Current pointer names v0.1.1 as the reference runtime and preserves ONE BODY. MANY LEGIBLE PROJECTIONS.","boundary":"Universal/general architecture crown remains open pending wider real-body pressure tests."},{"id":"llm-core-v1","title":"JM LLM Core v1.0 — First Complete Edition","date":"28 Sep 2026","category":"ai software","tags":["LLM","TokenBody","reasoning"],"status":"FLAZ COMPLETE · FIRST COMPLETE EDITION","summary":"A real small causal language-model core with 4,096-token TokenBody, 256-token context and 7,875,147 learned parameters, advanced through bounded generation, retrieval and compositional routes.","proof":"Major first-edition lanes received direct contact; v0.15 retrieval exam 500/500 and v0.16 compositional/short-response exam 400/400 are preserved in the closure.","boundary":"Not claimed as frontier/general-assistant capability; free generation and broad reasoning remain advancement targets."},{"id":"llm2-v2","title":"JM LLM #2 v2.0 — Unified Executable Program Edition","date":"29 Sep 2026","category":"ai software","tags":["LLM2","program head","execution"],"status":"FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED","summary":"Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.","proof":"Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.","boundary":"Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction."},{"id":"agi-v144","title":"JM AGI Lab v1.4.4 — Durability Settle / Live Integration","date":"28 Sep 2026","category":"ai software","tags":["agent lab","durability","verification"],"status":"FLAZ COMPLETE AT OWNER WINDOWS EDGE PROCESS-RESTART SCOPE","summary":"A bounded general-agent laboratory with explicit consequence verification and persistence/process-contact harnesses.","proof":"Assistant clean-sandbox battery 60/60 PASS; owner Windows Edge exact-body process-restart Ding earned with read-back/restore/process-zero evidence.","boundary":"No AGI or human-level intelligence claim; OS reboot, broader model contact and cross-device persistence remain separate."},{"id":"legal-v11","title":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","date":"28 Sep 2026","category":"business software","tags":["legal workflow","triage","pilot"],"status":"ROUTER CLOSED · PHASE A READY · EXTERNAL CONTACT OPEN","summary":"The matter-routing workbench reached corrected owner-device contact, then advanced to a bounded pre-external-pilot operating gate.","proof":"v0.8.2 deep QA 46/46 PASS and owner Test 001 auto-gate PASS; v1.1 operating gate regression 18/18 PASS.","boundary":"No live-client, regulated-activity, paid/public or incorporated-provider claim."},{"id":"secrets-v13","title":"Secrets of Silence — Flagship Master v1.3","date":"23 Sep 2026","category":"writing theory","tags":["book","publication","systems inquiry"],"status":"FLAGSHIP MASTERING COMPLETE AT ARTIFACT / ASSISTANT SCOPE","summary":"The flagship book was remastered around reader-first contact, agency/consequence precision and a restrained native reader interface.","proof":"69-page DOCX/interior, 71-page reader PDF, EPUB parse PASS and full visual QA are preserved in the closure.","boundary":"Live reader, owner-device and market contact remain separate."},{"id":"rukquss-v1","title":"RUKQUSS REALITY — Business Formation Decision v1.0","date":"27 Sep 2026","category":"business","tags":["company","commercial carrier","IP"],"status":"FORMATION DECISION FLAZ COMPLETE · INCORPORATION OPEN","summary":"The commercial topology was settled as creator/source owner → licence gate → limited company → release/customer contact, with RUKQUSS REALITY LTD as the working legal name.","proof":"Decision/formation architecture frozen and re-entry ready.","boundary":"The company is not claimed incorporated or name-reserved until real Companies House evidence exists."},{"id":"targetbridge","title":"JM Target Bridge — Cross-Build × Cross-Engine Stage","date":"28 Sep 2026","category":"software game","tags":["GDevelop","Unity","engine bridge"],"status":"FLAZ COMPLETE AT DECLARED 4/4 PHYSICAL MATRIX","summary":"The bridge carries a bounded source body across host boundaries without manually reconstructing the test inside each host.","proof":"Original specimen and SPINBREAK slice each passed in GDevelop and Unity: 4/4 declared physical matrix.","boundary":"Unreal/other engines are forward expansion; recipient proof does not transfer automatically."},{"id":"kicshift-v11","title":"KICSHIFT v1.1 — Frame Authority / Contact Parity","date":"25 Sep 2026","category":"game software","tags":["game","mobile","combat"],"status":"STANDARD-FLOOR FLAZ COMPLETE · HOLD / RETURN LATER","summary":"A three-way arena combat descendant preserving dual-vector movement, one-thumb combat flow, articulated contact, AI pressure and camera/frame authority.","proof":"Owner-phone contact confirmed all three fighters, full arena and primary controls visible/readable together.","boundary":"Browser/ECOSTATE standard floor, not a native/commercial release crown."},{"id":"ecostate-v2","title":"JMISJUSTME — JM ECOSTATE Professional Convergence v2.0","date":"24 Sep 2026","category":"software business","tags":["website","public front door","convergence"],"status":"BUILD COMPLETE · STATIC QA PASS · GITHUB SOURCE MERGED","summary":"One professional front door was built over many sovereign bodies, with Authuser as the creator-facing bridge into ECOSTATE.","proof":"Professional Convergence changes merged to main through the recorded GitHub source route.","boundary":"The retrieved v2.0 pointer keeps its independent deployment/contact gate distinct from source merge."},{"id":"authuser-v11","title":"JM AUTHUSER — Hawk-Read Successor v1.1","date":"24 Sep 2026","category":"theory","tags":["creator","use","contact"],"status":"CONCEPTUAL FLAZ COMPLETE · SUCCESSOR, NOT REWRITE","summary":"Authuser was reduced to a sharper creator→body→participatory-contact→creator-change relation while preserving stronger loop/practice/formation layers.","proof":"Five-gate hawk-read reduction and explicit event ≠ loop ≠ practice ≠ formation distinctions are frozen.","boundary":"Not an exhaustive historical-priority or universal originality claim."},{"id":"routecore-contact","title":"JM RouteCore — Execution Contact Checkpoint","date":"27 Sep 2026","category":"software","tags":["kernel","QEMU","IRQ"],"status":"DING COMPLETE AT BIOS/QEMU EMULATOR SCOPE","summary":"The frozen BIOS disk was externally booted under QEMU/SeaBIOS and then pressure-tested with live PIT IRQ0 and PS/2 IRQ1 observability probes.","proof":"Kernel-ready boot markers returned; PIT IRQ0 and PS/2 IRQ1 contact receipts were observed.","boundary":"Physical-machine boot, physical IRQ/device contact and UEFI execution were not claimed by this checkpoint."},{"id":"coding-control-plane","title":"JM Coding / Cading / Runtime / OS Control Plane","date":"Sep 2026","category":"software","tags":["coding estate","OneBody","64 bodies"],"status":"CURRENT CONTROL PLANE · 64 CODING IDENTITIES RECONCILED","summary":"The coding estate is routed through an integrated current head rather than a pile of rival front doors; OneBody Coding OS is the current integrated workbench, with specialist compiler/runtime/forge organs retained.","proof":"64 coding identities; 61/61 inherited maturation accounted; 3 post-census identities; 15/15 new-body executable proof; 10/10 root routes and 11/11 authority lanes connected in the control-plane closure.","boundary":"Current authority is typed by lane; specialist organs retain their own scope and owner/device gates."},{"id":"theory-second-order","title":"JM Theory Estate — First + Second-Order Strengthening","date":"26 Sep 2026","category":"theory","tags":["51 theories","14 strengthening runs","research"],"status":"51/51 STRICT BODIES · 7/7 FIRST-ORDER · 7/7 SECOND-ORDER","summary":"Completed theory bodies were pressure-tested against neighbours and then bridge-to-bridge without silently merging their offices.","proof":"51/51 strict-theory completion; 7/7 first strengthening runs; 7/7 second-order runs; strict count remained 51; silent merges 0.","boundary":"Internal conceptual completion and strengthening do not by themselves establish external scientific validation."},{"id":"social-economy","title":"JM ECOSTATE Social Economy Study v1.0","date":"27 Sep 2026","category":"theory business","tags":["research","platforms","creator economy"],"status":"RESEARCH 10/10 COMPLETE · CLAIM AUDIT 10/10 · FLAZ","summary":"A ten-run evidence-led study of public counters, active audience, retention, return, qualification and economic consequence across major social platforms.","proof":"10/10 research runs complete; 10/10 claim audit/reconstruction coverage; 0 open factual holds after reconciliation.","boundary":"Platform findings are evidence for publishing experiments, not a universal law of audience behaviour."},{"id":"music-release-run","title":"JM Release Run — Music Keeps the Mic","date":"Sep 2026","category":"writing","tags":["lyrics","music","performance"],"status":"FLAZ PARENT + LIVE RETURN CONTACT ADDENDUM","summary":"Exact lyric-source recovery shaped a release sequence, then later direct live freestyle contact produced a separate performance body without erasing the written route.","proof":"Music Master Index preserves 48 creative-work authorities; Release Run v1.0 is FLAZ; v1.1 records direct live vocal/freestyle contact.","boundary":"Wisdom’s Loading-specific mouth/body/beat runtime and public music release remain open."},{"id":"teaching-v52","title":"JM Teaching / Learning Engine v5.2","date":"Sep 2026","category":"software","tags":["learning","adaptive","human systems"],"status":"ACTIVE LIVING DESCENDANT","summary":"A learner-centred engine with separate learner lanes, pressure, hints, recovery, trace, co-op, contact modes, adaptive skill traces and learner/parent choice over suggestions.","proof":"Current v5.2 carrier preserves the Engine/Pack split, Quick/Probe/Make/Read contact modes, living routes, Contact Compass and explicit non-ranking co-op logic.","boundary":"Family/learner contact remains human-governed; the person is never reduced to the route."}]''')
 
 OVERLAY = [{"name":"JMISJUSTME","summary":"JM ECOSTATE Professional Convergence v2.0","section":"Estate / public / device"},{"name":"JM Living Estate v1.3.0 Universal APK (API 36 rail)","summary":"","section":"Estate / public / device"},{"name":"Android Forge v1.4.1","summary":"dual-surface workshop / Project Shelf / OneBody route","section":"Estate / public / device"},{"name":"JM AUTHUSER","summary":"Hawk-Read Successor v1.1 conceptual successor; preserve creator/source-purpose lineage","section":"Estate / public / device"},{"name":"JM32-1DA compiler v2.2.1","summary":"","section":"Coding / runtime / OS"},{"name":"RouteOS Kernel Gate","summary":"PASS at proved scope","section":"Coding / runtime / OS"},{"name":"Zionfolder OS v0.5.1","summary":"","section":"Coding / runtime / OS"},{"name":"CadenVM v0.10","summary":"","section":"Coding / runtime / OS"},{"name":"JM RouteCore","summary":"BIOS/QEMU emulator-scope execution contact earned; physical-device proof not implied","section":"Coding / runtime / OS"},{"name":"JM32-1DA Cross-Device Runtime Adapter v0.2 complete at declared scope","summary":"","section":"Coding / runtime / OS"},{"name":"Coding Growth Mesh Programme","summary":"64/64 bodies; Generation 9 floor; 24,481 assertions PASS","section":"Coding / runtime / OS"},{"name":"PLAYFORM, JM GameCore, GameForge, GlyphPlay, GlyphForge, Kading Engine, JumpMotion v0.2","summary":"donor/runtime family","section":"Games / engines / interaction"},{"name":"JM Target Bridge v0.6","summary":"JM.TargetBridge/0.1; faces include GDevelop, Unity, Unreal, Godot, Phaser, Construct3, GameMaker, Defold, Bevy, MonoGame","section":"Games / engines / interaction"},{"name":"Western Sniper × House Siege executable v0.2 release descendant; standing executable flagship lane","summary":"","section":"Games / engines / interaction"},{"name":"FOURFOLD and Fight Clash executable descendants","summary":"","section":"Games / engines / interaction"},{"name":"SHIFT//FIELD active mutable-interaction lane; inherit existing donors before user mega-check","summary":"","section":"Games / engines / interaction"},{"name":"JM LLM Core v1.0 First Complete Edition protected complete ancestor","summary":"","section":"AI"},{"name":"JM LLM #2 v2.0 Unified Executable Program Edition","summary":"FLAZ complete, package-proven, Zionfoldered; current pointer dated 29 Sep 2026","section":"AI"},{"name":"JM AGI Lab v1.4.4 Durability Settle / Live Integration","summary":"owner Windows Edge exact-body process-restart durability scope; no AGI/human-level claim","section":"AI"},{"name":"JM LEGAL Matter Router Workbench v0.8.2","summary":"owner-device contact verified, current internal runtime head","section":"Legal / business"},{"name":"JM LEGAL Pre-External Pilot Operating Gate v1.1","summary":"Phase A ready; external operating contact open","section":"Legal / business"},{"name":"RUKQUSS REALITY Business Formation Decision v1.0","summary":"formation architecture closed; actual Companies House incorporation open","section":"Legal / business"},{"name":"Secrets of Silence Flagship Master v1.3","summary":"","section":"Writing / music / publishing"},{"name":"LyricStudio v0.4 BT","summary":"","section":"Writing / music / publishing"},{"name":"JM Release Run","summary":"Music Keeps the Mic FLAZ parent with live return-contact addendum","section":"Writing / music / publishing"},{"name":"Active lyric return lead: Wisdom’s Loading / SHIMS ACTION → Broke Broke → I Need A Good Time Vibe","summary":"","section":"Writing / music / publishing"},{"name":"JM Theory Estate First + Second-Order Strengthening","summary":"51/51 strict bodies; 7/7 first-order and 7/7 second-order at recorded scope","section":"Theory / human systems / research"},{"name":"JM ECOSTATE Social Economy Study v1.0","summary":"10/10 runs + claim audit complete","section":"Theory / human systems / research"},{"name":"JM Teaching / Learning Engine v5.2","summary":"","section":"Theory / human systems / research"},{"name":"HPC, Human Support Body Self, TheOverTime","summary":"BT/FLAZ at proved scopes","section":"Theory / human systems / research"},{"name":"PASSTACITIVITY","summary":"active shell → passive core","section":"Theory / human systems / research"},{"name":"ZooGate / JickMah","summary":"128-page theory edition; Twokniver 1 theory active; app lane parked","section":"Theory / human systems / research"},{"name":"JM CLOUD CONTACT SERVER public lineage; first public cloud Ding closed at v0.4.2 in recovered evidence","summary":"","section":"Cloud / contact"},{"name":"PHONE↔LAPTOP CONTACT RUNNER lineage","summary":"","section":"Cloud / contact"},{"name":"Cloud Bridge lineage","summary":"","section":"Cloud / contact"},{"name":"JM LIETOUCH P1B Separated-Device Semantic Ding v1.0 release-completed receipt preserved","summary":"","section":"Cloud / contact"},{"name":"JM3232 Navigator public-safe MCP donor","summary":"historically live-proven five-tool read-only public scope","section":"Cloud / contact"},{"name":"Bounded anti-crash census","summary":"BATCH → COUNT → CHECKPOINT → NEXT BATCH → TERMINAL CURSOR → CLOSE","section":"Storage / recovery"},{"name":"Permanent floor: BODY / IDENTITY RAIL ↔ CARRIER / BYTE RAIL","summary":"","section":"Storage / recovery"},{"name":"Retention","summary":"BYTE SIZE + FUNCTION + UNIQUENESS + RECOVERABILITY + CURRENT USE + DESCENDANT VIABILITY","section":"Storage / recovery"},{"name":"STORAGE COST MUST EARN RETRIEVAL VALUE","summary":"","section":"Storage / recovery"}];
+
+ARTIFACT_SURFACE_PROFILES = {
+    "book": {
+        "label": "BOOK",
+        "aliases": ["books", "written", "publication", "manuscript"],
+        "default_outputs": ["docx", "pdf", "epub", "web"],
+        "build_gate": "Render the recovered current body into requested publication formats without changing source identity.",
+        "proof_gate": "Open/parse each output, verify page/chapter order, text integrity, metadata/version identity and declared visual quality.",
+        "delivery_gate": "Seat only verified outputs; direct open/download routes must resolve to the intended edition.",
+        "surface_boundary": "A valid DOCX/PDF/EPUB/web edition proves only that surface; one format does not silently prove the others.",
+    },
+    "comic": {
+        "label": "COMIC",
+        "aliases": ["comics", "cartoon", "visual story", "graphic"],
+        "default_outputs": ["pdf", "cbz", "web-reader"],
+        "build_gate": "Render the recovered visual-story body with page/panel order, assets and reading direction preserved.",
+        "proof_gate": "Verify every page asset, order, crop, text legibility and reader navigation at the claimed surface.",
+        "delivery_gate": "Seat verified PDF/CBZ/web-reader descendants with direct open/download routes.",
+        "surface_boundary": "Static PDF/CBZ proof does not imply web-reader animation/runtime proof, and vice versa.",
+    },
+    "theory": {
+        "label": "THEORY",
+        "aliases": ["theories", "research", "paper", "model"],
+        "default_outputs": ["md", "pdf", "html"],
+        "build_gate": "Preserve source wording, claim boundaries, references, provenance and version while rendering publication descendants.",
+        "proof_gate": "Check section completeness, citation/reference integrity, claim-boundary preservation and rendered readability.",
+        "delivery_gate": "Publish only the intended public-safe edition; retain source/current/archival distinction.",
+        "surface_boundary": "Publication integrity is not external scientific validation.",
+    },
+    "app": {
+        "label": "APP",
+        "aliases": ["apps", "application", "web app", "tool"],
+        "default_outputs": ["web", "package"],
+        "build_gate": "Build from the recovered current source/runtime using the declared host/profile rather than reconstructing from screenshots or descriptions.",
+        "proof_gate": "Launch, exercise primary controls/state/recovery, and verify the actual runtime surface named in the claim.",
+        "delivery_gate": "Seat a direct-open app/package route only after runtime contact passes.",
+        "surface_boundary": "Browser, hosted, desktop, offline and Android behavior remain separate proof jurisdictions.",
+    },
+    "apk": {
+        "label": "APK",
+        "aliases": ["android", "android app", "apk file"],
+        "default_outputs": ["apk", "direct-download-link"],
+        "build_gate": "Build the recovered app body through the Android route with declared SDK/signing/package identity.",
+        "proof_gate": "Verify package identity and build output; install/launch/device contact is required for an install/runtime claim.",
+        "delivery_gate": "Seat the verified APK plus a direct download/install route whose bytes match the intended artifact.",
+        "surface_boundary": "APK build PASS ≠ install PASS ≠ launch/runtime PASS.",
+    },
+    "download": {
+        "label": "DOWNLOAD / ADDABLE ROUTE",
+        "aliases": ["downloadable", "download link", "direct link", "addable", "install link", "public link"],
+        "default_outputs": ["manifest", "sha256", "direct-download-link"],
+        "build_gate": "Bind an already-governed artifact to a manifest/hash and intended public or private delivery seat.",
+        "proof_gate": "Resolve the route, retrieve the intended bytes/body, compare identity/hash where available, then reopen/install at the claimed level.",
+        "delivery_gate": "Return a direct route only after read-back proves it points to the intended current artifact.",
+        "surface_boundary": "A URL existing is not proof that it delivers the correct bytes, remains available, or installs/opens successfully.",
+    },
+}
+
+ARTIFACT_TYPE_ALIASES = {
+    alias: key
+    for key, profile in ARTIFACT_SURFACE_PROFILES.items()
+    for alias in [key, profile["label"].casefold(), *(profile.get("aliases") or [])]
+}
 
 def norm(value):
     value = (value or "").casefold()
@@ -307,14 +370,51 @@ def resolve_profile(name):
     q = (name or "").strip()
     if not q:
         return None
+    qn = norm(q)
+
+    # Identity must win before capability similarity. This prevents an
+    # unrelated capability profile from being acted on merely because its
+    # vocabulary resembles the requested target.
+    identity_hits = []
+    for profile in CAPABILITY_PROFILES:
+        identities = [profile.get("id",""), profile.get("name","")]
+        identities += profile.get("aliases") or []
+        for item in CURRENT:
+            if item.get("id") == profile.get("id"):
+                identities.append(item.get("title",""))
+        best = 0.0
+        for identity in identities:
+            inode = norm(identity)
+            if not inode:
+                continue
+            if qn == inode:
+                best = max(best, 1.0)
+            elif len(qn.split()) >= 2 and (qn.startswith(inode + " ") or inode.startswith(qn + " ")):
+                best = max(best, 0.99)
+        if best:
+            identity_hits.append((best, profile))
+
+    if identity_hits:
+        identity_hits.sort(key=lambda x: x[0], reverse=True)
+        score, profile = identity_hits[0]
+        return {"score": round(score, 6), "resolution": "IDENTITY", **profile}
+
     ranked = sorted(
         ((profile_score(q, p), p) for p in CAPABILITY_PROFILES),
         key=lambda x: x[0],
         reverse=True,
     )
-    if not ranked or ranked[0][0] < 0.34:
+    if not ranked:
         return None
-    return {"score": round(ranked[0][0], 6), **ranked[0][1]}
+    top_score, top_profile = ranked[0]
+    next_score = ranked[1][0] if len(ranked) > 1 else 0.0
+    # Fuzzy capability routing remains available for human shorthand, but it
+    # fails closed when weak or ambiguous instead of silently changing target.
+    if top_score < 0.44:
+        return None
+    if top_score < 0.72 and (top_score - next_score) < 0.04:
+        return None
+    return {"score": round(top_score, 6), "resolution": "FUZZY", **top_profile}
 
 def current_record_for_profile(profile):
     pid = (profile or {}).get("id")
@@ -644,13 +744,89 @@ def prepare_operation_gate(args):
         "privacy_rule": "Do not include raw private Library content in this capsule.",
     }
 
+def plan_artifact_route(args):
+    target = (args.get("target") or "").strip()
+    requested_type = (args.get("artifact_type") or "").strip()
+    outputs = args.get("outputs") or []
+    objective = (args.get("objective") or "").strip()
+    if not target or not requested_type:
+        raise ValueError("target and artifact_type are required")
+    if not isinstance(outputs, list) or len(outputs) > 8:
+        raise ValueError("outputs must be an array of at most 8 strings")
+
+    type_key = ARTIFACT_TYPE_ALIASES.get(requested_type.casefold().strip())
+    if not type_key:
+        allowed = ", ".join(sorted(ARTIFACT_SURFACE_PROFILES))
+        raise ValueError(f"unsupported artifact_type; use one of: {allowed}")
+
+    surface = ARTIFACT_SURFACE_PROFILES[type_key]
+    authority = resolve_current_head({"name": target})
+    capability_profile = resolve_profile(target)
+    selected_outputs = [str(x).strip() for x in outputs if str(x).strip()] or list(surface["default_outputs"])
+
+    manifest_seed = {
+        "schema": "JM.ArtifactRoute/0.1",
+        "target": target,
+        "artifact_type": type_key,
+        "outputs": selected_outputs,
+        "objective": objective or None,
+        "hosted_authority_state": authority.get("state"),
+        "hosted_current_head": authority.get("current_head"),
+        "target_profile_id": capability_profile.get("id") if capability_profile else None,
+    }
+    route_id = hashlib.sha256(
+        json.dumps(manifest_seed, ensure_ascii=False, sort_keys=True, separators=(",",":")).encode("utf-8")
+    ).hexdigest()[:24]
+
+    return {
+        **manifest_seed,
+        "route_id": f"JMART-{route_id}",
+        "phase": "PLAN_ONLY",
+        "surface_profile": {
+            "label": surface["label"],
+            "default_outputs": list(surface["default_outputs"]),
+            "selected_outputs": selected_outputs,
+            "build_gate": surface["build_gate"],
+            "proof_gate": surface["proof_gate"],
+            "delivery_gate": surface["delivery_gate"],
+            "surface_boundary": surface["surface_boundary"],
+        },
+        "common_route": [
+            "RECOVER CURRENT BODY",
+            "LOCK SOURCE / IDENTITY / VERSION",
+            "SELECT SURFACE PROFILE",
+            "BUILD / RENDER",
+            "VERIFY AT CLAIM LEVEL",
+            "PACKAGE + MANIFEST / HASH",
+            "PUBLISH / INSTALL / SEAT",
+            "READ BACK ACTUAL CONSEQUENCE",
+            "RETURN DIRECT OPEN / DOWNLOAD ROUTE",
+            "WRITE RECEIPT + RECOVERY TRACE",
+        ],
+        "ownership_contract": [
+            "ROUTE MAY BUILD / PACKAGE / PUBLISH / DISTRIBUTE",
+            "ROUTE DOES NOT BECOME OWNER",
+            "SOURCE / RIGHTS / AUTHORIAL INTENT REMAIN WITH THEIR LAWFUL OWNER",
+        ],
+        "delivery_contract": {
+            "open_first": True,
+            "direct_route_required": True,
+            "link_rule": "LINK EXISTS ≠ CORRECT DELIVERY. Resolve and read back the intended body/bytes before Ding.",
+            "surface_difference_law": "SAME IDENTITY BODY ≠ SAME SURFACE BEHAVIOUR.",
+        },
+        "host_execution_rule": "This public MCP plans the artifact route only. Authorized host tools perform build/write/deploy/publish/install actions and must read back their consequences.",
+        "mutation_performed": False,
+        "boundary": "Artifact-general routing is shared; proof remains surface-specific. Mesh ≠ Merge.",
+    }
+
+
 def build_mesh_status(args):
     probe = bool(args.get("probe_navigator", True))
     nav = navigator_rpc("navigator_bridge_status", {}, use_cache=False) if probe else {"state": "NOT_PROBED"}
     return {
         "server": SERVER_NAME,
         "version": VERSION,
-        "mode": "read-only authority / capability-mesh / sovereign-sync-contract / operation-planning service",
+        "mode": "read-only authority / capability-mesh / artifact-router / sovereign-sync-contract / operation-planning service",
         "current_project_records": len(CURRENT),
         "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
         "current_registry_date": CURRENT_REGISTRY_DATE,
@@ -658,6 +834,7 @@ def build_mesh_status(args):
         "current_registry_sha256": CURRENT_REGISTRY_SHA256,
         "overlay_entries": len(OVERLAY),
         "capability_profiles": len(CAPABILITY_PROFILES),
+        "artifact_surface_profiles": len(ARTIFACT_SURFACE_PROFILES),
         "navigator_cache_ttl_seconds": NAV_CACHE_TTL,
         "navigator_endpoint": NAVIGATOR_MCP,
         "navigator_contact": nav,
@@ -688,6 +865,7 @@ TOOLS = [
     {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"build_sync_contract","description":"Return the hosted snapshot identity plus private-host search/reconciliation rules without ingesting private Library content.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"plan_artifact_route","description":"Plan one governed artifact-general route for a book, comic, theory, app, APK or downloadable/addable link while keeping proof surface-specific.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"artifact_type":{"type":"string","enum":["book","comic","theory","app","apk","download"]},"outputs":{"type":"array","maxItems":8,"items":{"type":"string"}},"objective":{"type":"string"}},"required":["target","artifact_type"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"prepare_operation_gate","description":"Create a deterministic PLAN_ONLY operation capsule for a future host-authorized action; performs no write or deploy.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"action_type":{"type":"string"},"intended_change":{"type":"string"},"donors":{"type":"array","maxItems":8,"items":{"type":"string"}}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
 HANDLERS = {
@@ -706,6 +884,7 @@ HANDLERS = {
     "plan_capability_inheritance": plan_capability_inheritance,
     "build_sync_contract": build_sync_contract,
     "prepare_operation_gate": prepare_operation_gate,
+    "plan_artifact_route": plan_artifact_route,
 }
 
 def tool_result(data):
@@ -722,7 +901,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.7"
+    server_version = "JMBuildMeshNativeMCP/0.7.2"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")
@@ -798,7 +977,7 @@ class Handler(BaseHTTPRequestHandler):
                 "protocolVersion": protocol,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": SERVER_NAME, "version": VERSION},
-                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Operation gates are PLAN_ONLY and non-mutating.",
+                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Operation gates and artifact routes are PLAN_ONLY and non-mutating. Artifact profiles share one spine while keeping surface proof separate.",
             }))
         if method == "ping":
             return self.send_json(200, rpc_result(request_id, {}))

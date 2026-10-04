@@ -121,6 +121,26 @@ Rules:
 - Cross-domain routes may mesh multiple bodies without merging their identities or transferring proof.
 - If coding is selected, descend into the Current-64 Coding Estate router rather than bypassing it.
 
+## Per-run Coding Body Activation Trace
+
+Every sovereign-agent runtime session must be able to answer **which Current-64 coding bodies actually entered that route**.
+
+Standard:
+
+`coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md`
+
+Policy:
+
+`coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json`
+
+Direct query:
+
+`python3 agent-runtime/jm_agent_runtime.py --activation-only --query "<task>" --surface "<surface>"`
+
+The record must account for all 64 identities as either `ACTIVE_ROUTE` or `AVAILABLE_NOT_SELECTED`, keep adjacent organs separate, and preserve:
+
+**SELECTED FOR THE ROUTE ≠ SPAWNED AS A SEPARATE PROCESS.**
+
 ## Coding Estate running standard — ALL 64 CURRENT CODING IDENTITIES
 
 Before materially changing a coding/runtime/OS/compiler/engine body, read:

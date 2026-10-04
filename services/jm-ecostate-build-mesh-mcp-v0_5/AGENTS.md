@@ -5,7 +5,9 @@
 
 **Purpose:** Give a compatible coding agent a lean, live operating entrance into the JM ECOSTATE Build Mesh without replacing the bodies, registries, runtimes, receipts, or authority sources it governs.
 
-**Local scope:** This file is intentionally nested at `services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md`. It specializes the repository's existing root `AGENTS.md`; it does not replace or weaken Estate-wide law.\n\n**Portable machine-readable mirror:** `JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json` carries the same agent floor in host-neutral JSON and is guarded by `validate_agent_contract.py`. The JSON is also a route carrier, not current-head authority.
+**Local scope:** This file is intentionally nested at `services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md`. It specializes the repository's existing root `AGENTS.md`; it does not replace or weaken Estate-wide law.
+
+**Portable machine-readable mirror:** `JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json` carries the same agent floor in host-neutral JSON and is guarded by `validate_agent_contract.py`. The JSON is also a route carrier, not current-head authority.
 
 **Read / inherit before material change:**
 - repository root `AGENTS.md`

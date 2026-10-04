@@ -60,5 +60,39 @@
   },
   "next_route": {
     "step": "Open PR → run full CI → repair attributable failures → merge on green → read canonical main → record promotion."
+  },
+  "true_gaps": {
+    "new_estate_domain_required": false,
+    "new_project_body_required": false,
+    "new_capability_profile_required": false,
+    "routing_integration_gap": true,
+    "gap": "The Estate already had the relevant current project heads and donor profiles; the missing piece was one explicit whole-Estate routing contract inherited by agents/builders."
+  },
+  "host_and_surfaces": {
+    "canonical_repository": "JMisJustMe/JM-cading-lab",
+    "portable_core": [
+      "Markdown",
+      "JSON",
+      "Python validator"
+    ],
+    "host_adapters": [
+      "GitHub Actions",
+      "AGENTS.md",
+      "Copilot instructions",
+      "Build Mesh MCP"
+    ],
+    "host_rule": "HOST ≠ OWNER; the whole-Estate routing contract remains readable and portable outside the repository host."
+  },
+  "escalation": {
+    "current_escalations": [
+      "If the capability validator detects drift from Build Mesh profiles, reconcile the profile field without promoting stale routing cues into authority.",
+      "If a current-project/overlay conflict appears, preserve both layers and resolve the relevant current head before execution.",
+      "If unrelated workflows fail independently, preserve attribution and do not weaken routing law merely to obtain green."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE → CORRECT RESPONSIBLE ROUTER/CARRIER → RETEST",
+    "manual_user_contact": "Only if a new owner-only authority or destructive decision appears."
+  },
+  "manifest_proof": {
+    "result": "PASS — recovered the existing Estate project/capability field, identified a genuine whole-Estate routing gap, reused existing current-head and donor machinery, and preserved current-head/profile/proof distinctions without inventing new bodies."
   }
 }

@@ -31,7 +31,7 @@ jobs:
           server = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(server)
 
-          assert server.VERSION == "0.7.7"
+          assert server.VERSION == "0.7.8"
           exact = server.resolve_profile("JM ECOSTATE — Build Mesh")
           assert exact and exact["id"] == "ecostate-build-mesh-v102", exact
           versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.4")
@@ -118,10 +118,26 @@ jobs:
           assert keeper["destructive_default"] == "HOLD", keeper
           assert keeper["mutation_performed"] is False, keeper
           assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
-          print("STATIC_ESTATE_KEEPER_V0_7_7_PASS")
+          print("STATIC_ESTATE_KEEPER_V0_7_8_PASS")
+
+          mesh = server.build_capability_mesh({"builds":["32_Cb","JM32-1DA"],"max_nodes":4})
+          declared = [
+              edge for edge in mesh["edges"]
+              if edge.get("relation") == "DECLARED_RELATION"
+              and edge.get("declared_relation") == "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION"
+          ]
+          assert len(declared) == 1, mesh
+          edge = declared[0]
+          assert edge["from"] == "32cb-v21" and edge["to"] == "jm32-1da-v221", edge
+          assert edge["merge"] is False and edge["proof_transfer"] is False, edge
+          print("STATIC_32CB_TO_JM32_1DA_DECLARED_RELATION_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
+
+      - name: Dynamic registry exact-byte proof
+        shell: bash
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/proof_dynamic_registry.py
 
       - name: Cross-host MCP proof
         shell: bash
@@ -189,9 +205,9 @@ jobs:
                       probe = rpc(900 + attempt, "initialize", {
                           "protocolVersion":"2025-06-18",
                           "capabilities":{},
-                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.7"},
+                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.8"},
                       })
-                      if probe["serverInfo"].get("version") == "0.7.7":
+                      if probe["serverInfo"].get("version") == "0.7.8":
                           candidate_status = call(1900 + attempt, "build_mesh_status", {"probe_navigator":False})
                           last_registry_sha256 = candidate_status.get("current_registry_sha256")
                           if last_registry_sha256 == expected_registry_sha256:
@@ -202,7 +218,7 @@ jobs:
               time.sleep(10)
 
           assert init is not None, (
-              f"Hosted v0.7.7 with registry {expected_registry_sha256} did not become live in time; "
+              f"Hosted v0.7.8 with registry {expected_registry_sha256} did not become live in time; "
               f"last_ready={last_ready}; last_registry_sha256={last_registry_sha256}"
           )
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
@@ -214,9 +230,10 @@ jobs:
           status = call(3, "build_mesh_status", {"probe_navigator":True})
           nav = status["navigator_contact"]
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
-          assert status["capability_profiles"] >= 31, status
+          assert status["capability_profiles"] == 33, status
+          assert status["current_project_records"] == 21, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.5", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.6", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -325,6 +342,20 @@ jobs:
           assert downloadable["hosted_authority_state"] == "CURRENT_DECLARED", downloadable
           assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"], downloadable
 
+          mesh = call(13, "build_capability_mesh", {
+              "builds":["32_Cb","JM32-1DA"],
+              "max_nodes":4,
+          })
+          declared = [
+              edge for edge in mesh["edges"]
+              if edge.get("relation") == "DECLARED_RELATION"
+              and edge.get("declared_relation") == "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION"
+          ]
+          assert len(declared) == 1, mesh
+          relation_edge = declared[0]
+          assert relation_edge["from"] == "32cb-v21" and relation_edge["to"] == "jm32-1da-v221", relation_edge
+          assert relation_edge["merge"] is False and relation_edge["proof_transfer"] is False, relation_edge
+
           op_args = {
               "target":"JM ECOSTATE — Build Mesh",
               "objective":"host-execute artifact-general production while preserving public MCP read-only authority",
@@ -338,7 +369,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.7",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.7.8",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -368,13 +399,22 @@ jobs:
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },
+              "jm32_declared_relation":{
+                  "state":"PASS",
+                  "from":relation_edge["from"],
+                  "to":relation_edge["to"],
+                  "relation":relation_edge["relation"],
+                  "declared_relation":relation_edge["declared_relation"],
+                  "merge":relation_edge["merge"],
+                  "proof_transfer":relation_edge["proof_transfer"],
+              },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.7 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
+              "claim_boundary":"Proves hosted v0.7.8 live with registry v0.6 / 21 current records / 33 capability profiles, including the directional 32_Cb → JM32-1DA DECLARED_RELATION with merge=false and proof_transfer=false, plus PLAN_ONLY route contact across all six artifact surfaces. No artifact build, publish, install or owner-device proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_8.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -382,6 +422,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_8
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_8.json
           if-no-files-found: error

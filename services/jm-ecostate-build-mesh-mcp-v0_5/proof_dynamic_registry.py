@@ -17,17 +17,17 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.7.7"
+assert server.VERSION == "0.7.8"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.5"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.6"
 assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-04"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
-assert len(server.CURRENT) == 20
+assert len(server.CURRENT) == 21
 assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
@@ -51,6 +51,21 @@ assert profile and profile["id"] == "ecostate-build-mesh-v102"
 assert "external current-registry loading" in profile["capabilities"]
 assert "dynamic exact-byte registry hashing" in profile["capabilities"]
 assert "delta-first Estate maintenance planning" in profile["capabilities"]
+assert "JM32-1DA exact runtime-route seating" in profile["capabilities"]
+assert "PACKAGE v1.0.9" in head["primary_evidence"]["status"]
+
+jm32 = server.resolve_profile("JM32-1DA")
+assert jm32 and jm32["id"] == "jm32-1da-v221", jm32
+mesh = server.build_capability_mesh({"builds":["32_Cb","JM32-1DA"],"max_nodes":4})
+declared = [
+    edge for edge in mesh["edges"]
+    if edge.get("relation") == "DECLARED_RELATION"
+    and edge.get("declared_relation") == "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION"
+]
+assert len(declared) == 1, mesh
+edge = declared[0]
+assert edge["from"] == "32cb-v21" and edge["to"] == "jm32-1da-v221", edge
+assert edge["merge"] is False and edge["proof_transfer"] is False, edge
 
 keeper = server.estate_keeper_contract({"scope":"private Library delta maintenance","last_checkpoint":"PASS_84","changed_count":0,"unresolved_count":0})
 assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6"

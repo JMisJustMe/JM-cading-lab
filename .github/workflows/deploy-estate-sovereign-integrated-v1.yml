@@ -287,6 +287,16 @@ jobs:
           grep -Fq 'LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE.' cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html
           grep -Fq 'BODY ≠ CARRIER. CARRIER ≠ NEW CREATION.' cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html
           test -s cloudflare-estate/visual-story/index.html
+          test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
+          test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css
+          test -s cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js
+          echo 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html' | sha256sum -c -
+          echo 'd650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.css' | sha256sum -c -
+          echo 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f  cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js' | sha256sum -c -
+          grep -Fq 'BACKGROUND<br>NOISE' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
+          grep -Fq 'Reader ≠ source authority.' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/index.html
+          grep -Fq 'DON’T CROWN IT' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js
+          grep -Fq 'FTR WILL RETURN' cloudflare-estate/visual-story/ftr-the-massive-push/issue-01/reader.js
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
           test -s cloudflare-estate/games-beyond/index.html
@@ -429,6 +439,43 @@ jobs:
               passed=1
               break
             fi
+            sleep 3
+          done
+          test "$passed" = '1'
+
+      - name: Prove exact manufactured FTR comic carrier on canonical Estate
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          route='/visual-story/ftr-the-massive-push/issue-01'
+          passed=0
+          for attempt in $(seq 1 60); do
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$route/index.html?ftr-factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/ftr-index.html" || true
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$route/reader.css?ftr-factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/ftr-reader.css" || true
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$route/reader.js?ftr-factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/ftr-reader.js" || true
+
+            ih="$(sha256sum "$RUNNER_TEMP/ftr-index.html" 2>/dev/null | awk '{print $1}' || true)"
+            ch="$(sha256sum "$RUNNER_TEMP/ftr-reader.css" 2>/dev/null | awk '{print $1}' || true)"
+            jh="$(sha256sum "$RUNNER_TEMP/ftr-reader.js" 2>/dev/null | awk '{print $1}' || true)"
+            ib="$(wc -c < "$RUNNER_TEMP/ftr-index.html" 2>/dev/null | tr -d ' ' || true)"
+            cb="$(wc -c < "$RUNNER_TEMP/ftr-reader.css" 2>/dev/null | tr -d ' ' || true)"
+            jb="$(wc -c < "$RUNNER_TEMP/ftr-reader.js" 2>/dev/null | tr -d ' ' || true)"
+
+            if [ "$ih" = 'd62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c' ] \
+              && [ "$ch" = 'd650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c' ] \
+              && [ "$jh" = 'f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f' ] \
+              && [ "$ib" = '4761' ] && [ "$cb" = '11501' ] && [ "$jb" = '9977' ] \
+              && grep -Fq 'BACKGROUND<br>NOISE' "$RUNNER_TEMP/ftr-index.html" \
+              && grep -Fq '22 / 22' "$RUNNER_TEMP/ftr-index.html" \
+              && grep -Fq 'Reader ≠ source authority.' "$RUNNER_TEMP/ftr-index.html" \
+              && grep -Fq 'DON’T CROWN IT' "$RUNNER_TEMP/ftr-reader.js" \
+              && grep -Fq 'FTR WILL RETURN' "$RUNNER_TEMP/ftr-reader.js"; then
+              echo "FTR FACTORY CLOUDFLARE EXACT LIVE PASS"
+              passed=1
+              break
+            fi
+            echo "FTR WAIT index=$ib/$ih css=$cb/$ch js=$jb/$jh"
             sleep 3
           done
           test "$passed" = '1'

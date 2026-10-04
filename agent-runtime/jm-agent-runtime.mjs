@@ -69,7 +69,7 @@ for(const [kind,items] of [
     if(score) candidates.push({kind,id:item.id??null,name:item.name??null,domain:item.domain??null,score});
   }
 }
-candidates.sort((a,b)=> b.score-a.score || (a.kind==="current_project_head"?0:1)-(b.kind==="current_project_head"?0:1) || String(a.name).localeCompare(String(b.name),"en",{sensitivity:"variant"}));
+candidates.sort((a,b)=> {\n  const score=b.score-a.score; if(score) return score;\n  const kind=(a.kind==="current_project_head"?0:1)-(b.kind==="current_project_head"?0:1); if(kind) return kind;\n  const an=String(a.name), bn=String(b.name); return an<bn?-1:an>bn?1:0;\n});
 
 const core={
   schema:"JM.AgentRuntimeSession/0.1",

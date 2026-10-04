@@ -215,6 +215,7 @@ export function publicSnapshot(stateInput){
   const state=normalizeState(stateInput);
   return {
     schema:state.schema,
+    version:state.version,
     revision:state.revision,
     phase:state.phase,
     facts:state.facts,

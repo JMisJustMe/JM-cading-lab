@@ -54,6 +54,28 @@ Rules:
 - **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
 
+## Whole-Estate capability routing — CURRENT PROJECT / DONOR FIELD
+
+Before materially routing work across Estate domains, read:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md`
+
+Machine-readable field:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json`
+
+Validator:
+
+`python3 JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py`
+
+Rules:
+- Do not default every problem into coding simply because coding has deep instrumentation.
+- Recover the relevant **current project head(s)** before selecting donors.
+- Treat Build Mesh capability profiles as routing cues, not permanent current-head authority.
+- Preserve **current project head ≠ overlay/donor profile ≠ capability cue ≠ execution proof**.
+- Cross-domain routes may mesh multiple bodies without merging their identities or transferring proof.
+- If coding is selected, descend into the Current-64 Coding Estate router rather than bypassing it.
+
 ## Coding Estate running standard — ALL 64 CURRENT CODING IDENTITIES
 
 Before materially changing a coding/runtime/OS/compiler/engine body, read:

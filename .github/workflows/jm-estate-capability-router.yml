@@ -1,0 +1,44 @@
+name: JM Estate Whole Capability Router
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/capabilities.py'
+      - 'AGENTS.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-estate-capability-router.yml'
+  pull_request:
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/capabilities.py'
+      - 'AGENTS.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-estate-capability-router.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  estate-capability-router:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate whole-Estate capability field
+        run: python3 JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py
+      - name: Validate JM build laws governance
+        run: python3 JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py
+      - name: Validate current 64 Coding Estate
+        run: python3 coding-estate/validate_current_64_standard.py
+      - name: Validate Build Mesh sovereign agent contract
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py

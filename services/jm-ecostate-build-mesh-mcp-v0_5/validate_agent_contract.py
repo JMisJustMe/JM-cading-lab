@@ -8,6 +8,7 @@ PATH = HERE / "JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
 ROOT = HERE.parents[1]
 CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
 BUILD_GOVERNANCE_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json"
+ESTATE_CAPABILITY_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_ESTATE_CAPABILITY_FIELD_v1.0.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -62,6 +63,28 @@ try:
 except Exception as exc:
     print(f"BUILD GOVERNANCE LOAD FAIL: {exc}")
     sys.exit(1)
+
+try:
+    estate_capability = json.loads(ESTATE_CAPABILITY_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"ESTATE CAPABILITY LOAD FAIL: {exc}")
+    sys.exit(1)
+
+estate_route = data.get("estate_capability_routing") or {}
+if estate_route.get("schema") != "JM.EstateCapabilityField/1.0":
+    errors.append("agent contract Estate capability schema missing/drifted")
+if estate_capability.get("schema") != "JM.EstateCapabilityField/1.0":
+    errors.append("canonical Estate capability schema missing/drifted")
+canonical_heads = [x.get("name") for x in (estate_capability.get("current_project_heads") or [])]
+if estate_route.get("project_heads") != canonical_heads:
+    errors.append("agent contract Estate project-head list does not exactly match canonical capability field")
+if estate_route.get("current_project_head_count") != len(canonical_heads):
+    errors.append("agent contract Estate project-head count does not match canonical capability field")
+canonical_overlays = estate_capability.get("overlay_and_donor_profiles") or []
+if estate_route.get("overlay_profile_count") != len(canonical_overlays):
+    errors.append("agent contract Estate overlay count does not match canonical capability field")
+if estate_route.get("authority_class") != "ROUTING_FIELD_NOT_CURRENT_HEAD_AUTHORITY":
+    errors.append("agent contract Estate capability authority class drift")
 
 bg = data.get("build_laws_governance") or {}
 if bg.get("schema") != "JM.BuildLawsPreferencesGovernance/1.0":

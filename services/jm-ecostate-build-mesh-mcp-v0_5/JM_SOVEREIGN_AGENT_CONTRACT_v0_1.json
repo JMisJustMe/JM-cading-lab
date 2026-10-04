@@ -6,6 +6,7 @@
   "authority_note": "This contract governs agent entry/routing behavior but does not replace live Estate authority, current pointers, receipts, runtime readback, or owner/device proof.",
   "inheritance": {
     "required": [
+      "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md",
       "../../JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md",
       "../../AGENTS.md",
       "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
@@ -414,5 +415,36 @@
       "RECEIPT AUTHORITY"
     ],
     "rule": "Build Mesh inherits and must not bypass the shared JM build/governance floor."
+  },
+  "estate_capability_routing": {
+    "schema": "JM.EstateCapabilityField/1.0",
+    "human_standard": "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md",
+    "machine_field": "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json",
+    "validator": "../../JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py",
+    "authority_class": "ROUTING_FIELD_NOT_CURRENT_HEAD_AUTHORITY",
+    "current_project_head_count": 19,
+    "overlay_profile_count": 11,
+    "routing_rule": "Recover the relevant current project head before body/donor selection; profiles route but do not crown.",
+    "project_heads": [
+      "JM Opportunity Front Door v0.8 — Maximal Current",
+      "JM GripCube — Relational Projection Architecture v0.1.1",
+      "JM LLM Core v1.0 — First Complete Edition",
+      "JM LLM #2 v2.0 — Unified Executable Program Edition",
+      "JM AGI Lab v1.4.4 — Durability Settle / Live Integration",
+      "JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1",
+      "Secrets of Silence — Flagship Master v1.3",
+      "RUKQUSS REALITY — Business Formation Decision v1.0",
+      "JM Target Bridge — Cross-Build × Cross-Engine Stage",
+      "KICSHIFT v1.1 — Frame Authority / Contact Parity",
+      "JMISJUSTME — JM ECOSTATE Professional Convergence v2.0",
+      "JM AUTHUSER — Hawk-Read Successor v1.1",
+      "JM RouteCore — Execution Contact Checkpoint",
+      "JM Coding / Cading / Runtime / OS Control Plane",
+      "JM Theory Estate — First + Second-Order Strengthening",
+      "JM ECOSTATE Social Economy Study v1.0",
+      "JM Release Run — Music Keeps the Mic",
+      "JM Teaching / Learning Engine v5.2",
+      "JM ECOSTATE — Build Mesh"
+    ]
   }
 }

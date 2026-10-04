@@ -160,10 +160,10 @@
       ],
       "role": "ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT",
       "status": "CURRENT_DECLARED",
-      "version": "package v1.0.5 / hosted MCP v0.7.2",
-      "source": "JM ECOSTATE — Build Mesh v1.0.5 Artifact-General Production Spine",
+      "version": "package v1.0.5 / hosted MCP v0.7.3",
+      "source": "JM ECOSTATE — Build Mesh v1.0.5 Artifact-General Production Spine + Hosted Dynamic Registry Spine v0.7.3",
       "source_file": "navigator/estate-integration/public-registry.json",
-      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4 → v1.0.5; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1 → v0.7.2.",
+      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4 → v1.0.5; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1 → v0.7.2 → v0.7.3.",
       "lineage": [
         {
           "source_file": "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json",
@@ -179,9 +179,9 @@
         },
         {
           "source_file": "JM ECOSTATE Build Mesh Native MCP",
-          "locator": "v0.7.2",
-          "authority": "live hosted read-only service",
-          "role": "live artifact-router runtime contact"
+          "locator": "v0.7.3",
+          "authority": "live hosted read-only service · external registry exact-byte readback",
+          "role": "live artifact-router + dynamic current-registry integrity contact"
         },
         {
           "source_file": "CROSS_SURFACE_BOUNDED_LIVING_ACTION_DING_RECEIPT_v1_0_4.json",
@@ -194,6 +194,12 @@
           "locator": "pluginrel_6ac1c3e3f9e0819197c9376462ffb9b8",
           "authority": "Plugin Creator current release + hosted proof readback",
           "role": "exact-target and six-surface artifact-router Ding receipt"
+        },
+        {
+          "source_file": "navigator/estate-integration/receipts/DYNAMIC_REGISTRY_SPINE_DING_RECEIPT_v0_7_3.md",
+          "locator": "030153d32ce8c784ea9db9dd399bd76ee368f17b8c699e403c4889a8b1183934",
+          "authority": "live hosted exact-byte registry readback + GitHub hosted proof + Render deployment receipt",
+          "role": "dynamic current-registry spine FLAZ receipt"
         }
       ],
       "connections": [
@@ -206,11 +212,11 @@
       "authority": {
         "primary": "JM.CareerCurrentProjectRegistry/0.4",
         "package_current": "v1.0.5",
-        "hosted_mcp_current": "v0.7.2",
-        "confirmation_status": "LIVE_READBACK_PASS",
+        "hosted_mcp_current": "v0.7.3",
+        "confirmation_status": "LIVE_READBACK_PASS · EXACT_BYTE_REGISTRY_HASH_PASS",
         "source_owner": "JM / JMISJUSTME"
       },
-      "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection."
+      "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection. Hosted registry authority is process-start scoped to the exact deployed bytes and does not transfer recipient/device proof."
     }
   ]
 }

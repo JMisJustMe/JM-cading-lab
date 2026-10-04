@@ -1,0 +1,60 @@
+name: JM Build Mesh Current Registry Static Proof
+
+on:
+  push:
+    branches:
+      - build-mesh-current-registry-v0-5
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - ".github/workflows/jm-build-mesh-registry-static-proof.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+
+permissions:
+  contents: read
+
+jobs:
+  static-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove additive registry and exact current head
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import importlib.util, pathlib, sys, hashlib, json
+          root = pathlib.Path("services/jm-ecostate-build-mesh-mcp-v0_5")
+          sys.path.insert(0, str(root))
+          registry_path = root / "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_5.json"
+          raw = registry_path.read_bytes()
+          doc = json.loads(raw)
+
+          assert doc["schema"] == "JM.CareerCurrentProjectRegistry/0.5"
+          assert doc["project_count"] == len(doc["projects"]) == 19
+          bm = next(x for x in doc["projects"] if x["id"] == "ecostate-build-mesh-v102")
+          assert "v1.0.5" in bm["title"], bm
+          assert "Artifact-General Production Spine" in bm["title"], bm
+
+          spec = importlib.util.spec_from_file_location("jm_build_mesh_server", root / "server.py")
+          server = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(server)
+
+          assert server.VERSION == "0.7.3"
+          assert server.CURRENT_REGISTRY_SCHEMA == doc["schema"]
+          assert server.CURRENT_REGISTRY_SHA256 == hashlib.sha256(raw).hexdigest()
+          current = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
+          assert current["state"] == "CURRENT_DECLARED", current
+          assert "v1.0.5" in (current.get("current_head") or ""), current
+          assert server.resolve_profile("JM ECOSTATE — Build Mesh")["id"] == "ecostate-build-mesh-v102"
+
+          route = server.plan_artifact_route({
+              "target":"Secrets of Silence",
+              "artifact_type":"book",
+              "outputs":["pdf","epub","web"],
+          })
+          assert route["artifact_type"] == "book"
+          assert route["phase"] == "PLAN_ONLY"
+          assert route["surface_profile"]["selected_outputs"] == ["pdf","epub","web"]
+
+          print("JM_BUILD_MESH_CURRENT_REGISTRY_V0_5_STATIC_PASS")
+          print(server.CURRENT_REGISTRY_SHA256)
+          PY

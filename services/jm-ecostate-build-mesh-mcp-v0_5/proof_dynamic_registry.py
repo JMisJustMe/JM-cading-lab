@@ -17,7 +17,7 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.7.3"
+assert server.VERSION == "0.7.4"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
@@ -32,12 +32,13 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert "v1.0.5" in head["current_head"], head
+assert "v1.0.6" in head["current_head"], head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash
 assert status["current_registry_loaded_bytes"] == len(raw)
 assert status["current_registry_path_mode"] == "SERVICE_LOCAL"
+assert status["estate_keeper_contract_schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.4"
 
 sync = server.build_sync_contract({"name":"JM ECOSTATE — Build Mesh"})
 snap = sync["hosted_snapshot"]
@@ -49,6 +50,13 @@ profile = server.resolve_profile("JM ECOSTATE — Build Mesh")
 assert profile and profile["id"] == "ecostate-build-mesh-v102"
 assert "external current-registry loading" in profile["capabilities"]
 assert "dynamic exact-byte registry hashing" in profile["capabilities"]
+assert "delta-first Estate maintenance planning" in profile["capabilities"]
+
+keeper = server.estate_keeper_contract({"scope":"private Library delta maintenance","last_checkpoint":"PASS_84","changed_count":0,"unresolved_count":0})
+assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.4"
+assert keeper["no_census_default"] is True
+assert keeper["destructive_default"] == "HOLD"
+assert keeper["mutation_performed"] is False
 
 # Prove hash follows changed bytes rather than a hardcoded constant.
 with tempfile.TemporaryDirectory() as td:

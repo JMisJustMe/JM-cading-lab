@@ -54,6 +54,28 @@ Rules:
 - **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
 
+## Sovereign agent portable runtime — HOST-NEUTRAL BOOTSTRAP
+
+Where execution is available, the sovereign agent may be bootstrapped through:
+
+`agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json`
+
+Reference implementations:
+
+- `python3 agent-runtime/jm_agent_runtime.py`
+- `node agent-runtime/jm-agent-runtime.mjs`
+
+The two implementations must produce byte-identical `--core-only` routing capsules for the same repository state and query.
+
+Rules:
+- **ADAPTER ≠ BODY**
+- **HOST ≠ OWNER**
+- **HOST-LIMITED PROOF ≠ HOST-LIMITED BODY**
+- **FUNCTION PROOF ≠ IDENTITY PROOF**
+- Runtime bootstrap validates portable carriers; it does not replace live current-head resolution.
+- Zero routing score returns no candidate rather than inventing one.
+- A host may wrap the runtime, but may not silently rewrite its authority or sovereignty boundaries.
+
 ## Whole-Estate capability routing — CURRENT PROJECT / DONOR FIELD
 
 Before materially routing work across Estate domains, read:

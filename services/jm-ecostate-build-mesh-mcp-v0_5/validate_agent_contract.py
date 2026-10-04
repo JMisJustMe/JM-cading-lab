@@ -9,6 +9,7 @@ ROOT = HERE.parents[1]
 CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
 BUILD_GOVERNANCE_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json"
 ESTATE_CAPABILITY_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_ESTATE_CAPABILITY_FIELD_v1.0.json"
+PORTABLE_RUNTIME_PATH = ROOT / "agent-runtime" / "JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -69,6 +70,28 @@ try:
 except Exception as exc:
     print(f"ESTATE CAPABILITY LOAD FAIL: {exc}")
     sys.exit(1)
+
+try:
+    portable_runtime = json.loads(PORTABLE_RUNTIME_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"PORTABLE RUNTIME LOAD FAIL: {exc}")
+    sys.exit(1)
+
+portable = data.get("portable_runtime") or {}
+if portable.get("schema") != "JM.SovereignAgentRuntime/0.1":
+    errors.append("agent contract portable-runtime schema missing/drifted")
+if portable_runtime.get("schema") != "JM.SovereignAgentRuntime/0.1":
+    errors.append("canonical portable-runtime schema missing/drifted")
+if portable.get("authority_class") != "RUNTIME_ADAPTER_NOT_SOURCE_AUTHORITY":
+    errors.append("portable runtime authority class drift")
+impl = portable_runtime.get("implementations") or {}
+for key in ("python","node"):
+    rel = impl.get(key)
+    if not rel or not (ROOT / rel).exists():
+        errors.append(f"portable runtime implementation missing: {key}")
+runtime_sources = portable_runtime.get("canonical_sources") or {}
+if runtime_sources.get("sovereign_agent") != "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json":
+    errors.append("portable runtime sovereign-agent source pointer drift")
 
 estate_route = data.get("estate_capability_routing") or {}
 if estate_route.get("schema") != "JM.EstateCapabilityField/1.0":

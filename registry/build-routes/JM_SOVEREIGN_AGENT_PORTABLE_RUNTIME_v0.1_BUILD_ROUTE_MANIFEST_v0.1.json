@@ -1,0 +1,122 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Sovereign Agent Portable Runtime",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Sovereign Agent Portable Runtime v0.1",
+    "body_type": "host-neutral agent bootstrap / cross-runtime adapter parity body",
+    "intended_destination": "Canonical JM Estate agent runtime layer on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "head_branch": "runtime/jm-sovereign-agent-portable-v0-1",
+    "source_authority": [
+      "JM Sovereign Agent Contract",
+      "JM Build Laws Preferences Governance",
+      "JM Estate Whole Capability Router",
+      "JM Coding Estate Current 64",
+      "JM Universal Hosted-Body Architecture",
+      "JM3232 AIRBORNE multi-host parity",
+      "JM ChatGPT Host Adapter historical branch"
+    ],
+    "owner_instruction": "Next — continue the sovereign agent build from the completed whole-Estate router.",
+    "source_rule": "HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "recovered_organs": [
+      "BODY / SOURCE IDENTITY ↔ ADAPTER / CAPABILITY NEGOTIATION ↔ HOST MANIFESTATION",
+      "JM32-1DA Cross-Device Runtime Adapter precedent",
+      "JM ChatGPT Host Adapter v0.1.x thin-host pattern",
+      "AIRBORNE independent Node / Python / OpenAI-MCP adapter parity"
+    ],
+    "current_gap": "The sovereign agent had portable contracts and routing standards, but no current mainline executable bootstrap proving that independent runtimes consume the same core and emit the same routing capsule.",
+    "reuse_rule": "Recover and federate existing host/body law; do not rebuild a new model, new Estate, new coding body or host-owned identity."
+  },
+  "exact_stack": {
+    "runtime_contract": "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+    "python_adapter": "agent-runtime/jm_agent_runtime.py",
+    "node_adapter": "agent-runtime/jm-agent-runtime.mjs",
+    "documentation": "agent-runtime/README.md",
+    "CI": ".github/workflows/jm-sovereign-agent-portable-runtime.yml",
+    "canonical_inputs": [
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+      "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
+      "JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json",
+      "coding-estate/JM_CODING_ESTATE_CURRENT_64.json"
+    ],
+    "inherited_surfaces": [
+      "AGENTS.md",
+      ".github/copilot-instructions.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py"
+    ]
+  },
+  "true_gaps": {
+    "new_model_required": false,
+    "new_coding_identity_required": false,
+    "new_estate_router_required": false,
+    "portable_executable_bootstrap_required": true,
+    "gap": "Independent adapters were an established Estate pattern, but the current sovereign agent contracts lacked a mainline executable cross-runtime bootstrap/parity gate."
+  },
+  "proof_lanes": {
+    "source_contract_readability": {
+      "state": "PENDING_CI",
+      "criterion": "Both runtimes must load all canonical JSON carriers and verify schema/count boundaries."
+    },
+    "node_python_core_parity": {
+      "state": "PENDING_CI",
+      "criterion": "Node and Python --core-only output must be byte-identical for multiple routing queries."
+    },
+    "bounded_routing": {
+      "state": "PENDING_CI",
+      "criterion": "Known-domain queries return candidates; unknown-domain query returns no candidate rather than fabricated routing."
+    },
+    "sovereignty": {
+      "state": "PENDING_CI",
+      "criterion": "Runtime capsule remains SESSION_ROUTER_NOT_SOURCE_AUTHORITY and host-neutral."
+    },
+    "external_host_contact": {
+      "state": "OPEN_BY_DESIGN",
+      "criterion": "Each future host/device/inline/cloud adapter earns its own direct contact proof; parity alone does not transfer that Ding."
+    }
+  },
+  "host_and_surfaces": {
+    "reference_runtimes": [
+      "Python 3",
+      "Node.js"
+    ],
+    "portable_core": true,
+    "current_host_claim": "Independent repository-runtime parity only",
+    "no_claims": [
+      "ChatGPT inline consequence",
+      "owner-device contact",
+      "other model execution",
+      "cloud deployment"
+    ],
+    "keeper": "THE HOST MAY CHANGE. THE SOVEREIGN CORE, AUTHORITY BOUNDARIES AND ROUTING MEANING MUST SURVIVE."
+  },
+  "escalation": {
+    "current_escalations": [
+      "If Node/Python capsules differ, trace serialization/tokenization/order differences and correct the adapter rather than weakening parity.",
+      "If a canonical source schema/count changes, update only after resolving the current authority that caused the change.",
+      "Do not convert a passing reference-runtime test into proof for an uncontacted external host."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE ADAPTER OR CONTRACT DRIFT → CORRECT RESPONSIBLE ORGAN → RETEST BOTH IMPLEMENTATIONS",
+    "manual_user_contact": "Only if a new owner-only/destructive authority decision appears."
+  },
+  "state": {
+    "route": "AUTHORIZED_PORTABLE_RUNTIME_INTEGRATION",
+    "build_authorized_by_manifest": true,
+    "current_contracts_reused": true,
+    "host_ownership": false,
+    "crown": "PENDING PR CI + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Open PR → run portable runtime parity and downstream gates → correct attributable failures → merge on green → read canonical main."
+  },
+  "manifest_proof": {
+    "result": "PASS — existing hosted-body and multi-host precedents were recovered and used to define a current executable agent bootstrap without granting any host source authority or inventing a new coding identity."
+  }
+}

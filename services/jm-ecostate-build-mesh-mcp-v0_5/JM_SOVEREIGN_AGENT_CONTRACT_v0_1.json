@@ -446,5 +446,14 @@
       "JM Teaching / Learning Engine v5.2",
       "JM ECOSTATE — Build Mesh"
     ]
+  },
+  "portable_runtime": {
+    "schema": "JM.SovereignAgentRuntime/0.1",
+    "contract": "../../agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+    "python_adapter": "../../agent-runtime/jm_agent_runtime.py",
+    "node_adapter": "../../agent-runtime/jm-agent-runtime.mjs",
+    "authority_class": "RUNTIME_ADAPTER_NOT_SOURCE_AUTHORITY",
+    "parity_rule": "Independent Node and Python adapters must emit byte-identical --core-only capsules for the same repository state and query.",
+    "host_rule": "A host may wrap the runtime but may not become source authority, body identity or permanent current-head authority."
   }
 }

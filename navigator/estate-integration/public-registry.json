@@ -148,5 +148,54 @@
     "contains_owner_write_endpoint": false,
     "contains_mutable_owner_state": false,
     "public_registry_is_authority_subset_only": true
-  }
+  },
+  "lineage_seats": [
+    {
+      "id": "JM-BUILD-MESH-001",
+      "name": "JM ECOSTATE — Build Mesh",
+      "aliases": [
+        "JM ECOSTATE Build Mesh",
+        "Build Mesh",
+        "JM Build Mesh"
+      ],
+      "role": "ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT",
+      "status": "CURRENT_DECLARED",
+      "version": "package v1.0.3 / hosted MCP v0.7.1",
+      "source": "JM ECOSTATE — Build Mesh v1.0.3 Self-Seating Registry Refresh",
+      "source_file": "navigator/estate-integration/public-registry.json",
+      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1.",
+      "lineage": [
+        {
+          "source_file": "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json",
+          "locator": "ecostate-build-mesh-v102",
+          "authority": "JM.CareerCurrentProjectRegistry/0.4",
+          "role": "current self-seat"
+        },
+        {
+          "source_file": "JM ECOSTATE — Build Mesh package",
+          "locator": "v1.0.3",
+          "authority": "packaged current body",
+          "role": "registered-app / self-seating descendant"
+        },
+        {
+          "source_file": "JM ECOSTATE Build Mesh Native MCP",
+          "locator": "v0.7.1",
+          "authority": "live hosted read-only service",
+          "role": "runtime contact"
+        }
+      ],
+      "connections": [
+        "JM3232 Navigator",
+        "JM Estate Public Nervous System",
+        "ChatGPT registered app",
+        "Render hosted MCP"
+      ],
+      "authority": {
+        "primary": "JM.CareerCurrentProjectRegistry/0.4",
+        "confirmation_status": "LIVE_READBACK_PASS",
+        "source_owner": "JM / JMISJUSTME"
+      },
+      "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection."
+    }
+  ]
 }

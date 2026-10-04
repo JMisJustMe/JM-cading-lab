@@ -1,9 +1,9 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.6",
+  "schema": "JM.CareerCurrentProjectRegistry/0.7",
   "date": "2026-10-04",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.8 JM32-1DA-SEAT DESCENDANT",
-  "boundary": "This hosted public snapshot seats 32_Cb and JM32-1DA as bounded current records. Direct private current pointers/receipts and stronger recipient-specific runtime evidence can still supersede the hosted snapshot.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.9 CROSS-DEVICE-ADAPTER-SEAT DESCENDANT",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats for 32_Cb, JM32-1DA and the separate JM32-1DA Cross-Device Runtime Adapter. Stronger direct private authority can outrank hosted summaries.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PACKAGE v1.0.9 · HOSTED MCP v0.7.8 JM32-1DA-SEAT DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. The current hosted descendant seats JM32-1DA v2.2.1 as an exact runtime/route node so the preserved 32_Cb ancestral relation can render without merging identity or proof.",
-      "proof": "Private plugin v1.0.9 was updated in place and read back under the existing plugin identity. Registry stack v0.4 + v0.5 + v0.6 yields 21 logical current records. Hosted source v0.7.8 carries the corresponding JM32-1DA public-safe current record and capability profile; live runtime identity/edge behavior must still be established by deployment/readback.",
-      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority. 32_Cb ancestry does not transfer proof. Fuzzy discovery is not authority."
+      "status": "CURRENT DECLARED · PACKAGE v1.0.10 · HOSTED MCP v0.7.9 CROSS-DEVICE-ADAPTER-SEAT DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. The current descendant seats the separate JM32-1DA Cross-Device Runtime Adapter v0.2 as its own capability node without merging it into JM32-1DA.",
+      "proof": "Private plugin v1.0.10 was updated in place and read back. Registry stack v0.4 + v0.5 + v0.6 + v0.7 yields 22 logical current records. Hosted source v0.7.9 carries the bounded adapter record and JM32→adapter declared relation; live runtime/edge behavior requires deployment/readback.",
+      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. The adapter is a separate authority/proof carrier. No body hash is invented for the unrecovered standalone carrier. Relation does not transfer proof."
     },
     {
       "id": "opportunity-v08",
@@ -353,8 +353,35 @@
       "status": "SEALED · CURRENT-SCOPE COMPLETE · EXACT PRIVATE RUNTIME/ROUTE DESCENDANT SEATED",
       "summary": "JM32-1DA v2.2.1 is the current sealed runtime/route descendant recovered from exact private proof. It preserves the v2.2.0 state, governance, federation, compiler, OS and recovery organs while correcting embodiment/movement interpretation and retaining 145 JM-callable routes. It is seated as a descendant of 32_Cb's sovereign multi-target embodiment line without merging identities or inheriting 32_Cb proof.",
       "proof": "Release seal and clean verification record a deterministic 17,539,390-byte / 521-file archive with SHA-256 9055aa40180028b7ec2e3acd4f54aa57de263441de5fb8819db317509e959db9; 149/149 Python tests PASS; 13/13 inherited one-body checks PASS; 16/16 embodiment checks PASS; 519 internal manifested files with 0 mismatches; clean extraction, package verifier and executable zipapp tests PASS.",
-      "boundary": "This hosted record is derived from stronger exact private authority. Public name is UNSET and NAME DING was not issued. The browser Studio is not the complete underlying architecture. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority/proof carrier. Native universal OS is not claimed. 32_Cb relation does not transfer proof.",
-      "donor_role": "RUNTIME_ROUTE_EXPANSION_DESCENDANT"
+      "boundary": "This hosted record is derived from stronger exact private authority. Public name is UNSET and NAME DING was not issued. The browser Studio is not the complete underlying architecture. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority/proof carrier. Native universal OS is not claimed. 32_Cb relation does not transfer proof, and the adapter relation does not transfer JM32 proof.",
+      "donor_role": "RUNTIME_ROUTE_EXPANSION_DESCENDANT",
+      "relations": [
+        "HAS_SEPARATE_CROSS_DEVICE_ADAPTER → JM32-1DA Cross-Device Runtime Adapter v0.2"
+      ]
+    },
+    {
+      "id": "jm32-1da-cross-device-adapter-v02",
+      "title": "JM32-1DA Cross-Device Runtime Adapter v0.2",
+      "aliases": [
+        "JM32-1DA Cross-Device Adapter",
+        "JM32-1DA Cross-Device Runtime Adapter",
+        "Cross-Device Runtime Adapter v0.2"
+      ],
+      "date": "1 Jun 2026",
+      "category": "software infrastructure",
+      "tags": [
+        "JM32-1DA",
+        "cross-device",
+        "adapter",
+        "TraceBox",
+        "runtime governance",
+        "device routing"
+      ],
+      "status": "COMPLETE · CURRENT ADAPTER PROOF CARRIER · CURRENT-BEST FOR NAMED SCOPE",
+      "summary": "JM32-1DA Cross-Device Runtime Adapter v0.2 is the separate cross-device adapter authority for JM32-1DA. Later current-best proof records identify it as H04 P05 complete with a seven-route test trace and P3 runnable/tested standing. It remains distinct from the main JM32-1DA runtime and from native universal OS claims.",
+      "proof": "Current-best proof register P05: COMPLETE / PROOF CARRIER; seven-route test trace; syntax-governed cross-device carrier. Master Tool Register: exact physical source/status authority linked, current-best for named scope, P3 runnable-tested. Live delta certification: CURRENT ADAPTER PROOF CARRIER · v0.2 · H04 P05 COMPLETE / SEVEN-ROUTE TEST TRACE · CERT-SOURCE-CONTACT.",
+      "boundary": "The early syntax-body checkpoint did not claim runtime pass; this current crown comes from later current-best proof records. The original standalone code carrier was not re-hashed in this pass. Adapter proof is separate from the main JM32-1DA runtime and does not imply native universal OS or universal device/app proof.",
+      "donor_role": "CROSS_DEVICE_ADAPTER_PROOF_CARRIER"
     }
   ]
 }

@@ -483,5 +483,30 @@
     ],
     "keeper": "CHANGE THE PLUG, NOT THE BODY.",
     "rule": "Host-specific proof advances only that adapter/surface; no host may become source or owner by carrying the body."
+  },
+  "coding_body_activation": {
+    "schema": "JM.CodingBodyActivationPolicy/0.1",
+    "policy": "../../coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json",
+    "standard": "../../coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md",
+    "validator": "../../coding-estate/validate_coding_body_activation.py",
+    "active_runtime_spine_code_ids": [
+      3,
+      6,
+      7,
+      8,
+      10,
+      26,
+      27,
+      28,
+      29,
+      62,
+      63,
+      64
+    ],
+    "active_runtime_spine_count": 12,
+    "available_not_selected_count": 52,
+    "accounting_rule": "ACTIVE_ROUTE + AVAILABLE_NOT_SELECTED = ALL 64 CURRENT CODING IDENTITIES",
+    "proof_boundary": "ACTIVE_ROUTE is deterministic coding-body route selection, not proof of a separately spawned process/binary for each body.",
+    "direct_query": "python3 agent-runtime/jm_agent_runtime.py --activation-only --surface <surface> --query <task>"
   }
 }

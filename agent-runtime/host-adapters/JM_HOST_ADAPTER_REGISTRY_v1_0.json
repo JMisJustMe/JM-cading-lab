@@ -131,50 +131,60 @@
     },
     {
       "id": "android-phone-adapter",
-      "name": "Android / Phone Sovereign Agent Adapter",
-      "adapter_class": "DECLARED_HOST_ROUTE",
+      "name": "JM Android / Phone Sovereign Agent Adapter v0.1",
+      "adapter_class": "HOST_ADAPTER",
       "target_surface": "Android / phone runtime",
-      "proof_level": "DECLARED",
+      "proof_level": "TRANSPORT",
       "gates": {
         "core_identity": "PASS",
-        "portable_contract_load": "OPEN",
-        "capability_negotiation": "OPEN",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
         "authority_preservation": "PASS",
         "routing_meaning": "OPEN",
         "host_contact": "OPEN",
-        "returned_consequence": "OPEN",
-        "recovery_reentry": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
         "owner_device": "OPEN"
       },
       "evidence": [
-        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
-        "registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json"
+        "agent-runtime/host-adapters/android/JM_ANDROID_SOVEREIGN_AGENT_ADAPTER_v0_1.json",
+        "agent-runtime/host-adapters/android/app/src/main/AndroidManifest.xml",
+        "agent-runtime/host-adapters/android/app/src/main/java/com/jmisjustme/sovereignagent/MainActivity.java",
+        ".github/workflows/jm-sovereign-agent-android-codex-adapters.yml",
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
       ],
-      "boundary": "Cross-device/Android adapter precedent exists, but the current sovereign-agent runtime has not earned Android-specific conformance.",
-      "next_gate": "Implement smallest Android wrapper over portable core and run exact phone/device contact."
+      "boundary": "Android debug APK transport/build proof only. The package carries the canonical runtime contract and a deterministic session capsule; Android execution, physical install and owner-device contact remain OPEN.",
+      "next_gate": "Run exact Android host contact (emulator or device) and verify the capsule is loaded before advancing beyond TRANSPORT.",
+      "executable": "agent-runtime/host-adapters/android/app"
     },
     {
       "id": "codex-repository-agent-adapter",
-      "name": "Codex / Repository-Agent Adapter",
-      "adapter_class": "DECLARED_HOST_ROUTE",
+      "name": "JM Codex / Repository-Agent Adapter v0.1",
+      "adapter_class": "HOST_ADAPTER",
       "target_surface": "repository coding agent",
-      "proof_level": "DECLARED",
+      "proof_level": "FUNCTION",
       "gates": {
         "core_identity": "PASS",
-        "portable_contract_load": "OPEN",
-        "capability_negotiation": "OPEN",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
         "authority_preservation": "PASS",
-        "routing_meaning": "OPEN",
+        "routing_meaning": "PASS",
         "host_contact": "OPEN",
-        "returned_consequence": "OPEN",
-        "recovery_reentry": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
         "owner_device": "OPEN"
       },
       "evidence": [
-        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
-        "AGENTS.md"
+        "agent-runtime/host-adapters/codex-repository-agent/JM_CODEX_REPOSITORY_AGENT_ADAPTER_v0_1.json",
+        "agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py",
+        "AGENTS.md",
+        ".github/copilot-instructions.md",
+        ".github/workflows/jm-sovereign-agent-android-codex-adapters.yml",
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
       ],
-      "next_gate": "Direct repository-agent bootstrap/contact against the portable runtime contract."
+      "next_gate": "Run the wrapper through the exact Codex/repository-agent host and record returned host consequence without transferring CI proof.",
+      "executable": "agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py",
+      "boundary": "Repository-wrapper FUNCTION proof only. Exact Codex host contact remains OPEN until Codex itself consumes the adapter and returns consequence."
     },
     {
       "id": "cloud-execution-adapter-family",

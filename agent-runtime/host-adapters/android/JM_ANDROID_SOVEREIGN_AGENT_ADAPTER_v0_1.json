@@ -1,0 +1,23 @@
+{
+  "schema": "JM.AndroidSovereignAgentAdapter/0.1",
+  "version": "0.1.0",
+  "authority_class": "HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+  "target_surface": "Android / phone runtime",
+  "package_name": "com.jmisjustme.sovereignagent",
+  "min_sdk": 26,
+  "target_sdk": 36,
+  "compile_sdk": 36,
+  "capabilities": {
+    "offline_capsule_carriage": true,
+    "canonical_digest_carriage": true,
+    "android_package_build": true,
+    "network_required": false,
+    "live_runtime_execution": false,
+    "physical_device_contact": false
+  },
+  "build_input": "agent-runtime/jm_agent_runtime.py --core-only --query 'android phone runtime'",
+  "capsule_asset": "app/src/main/assets/JM_AGENT_SESSION.json",
+  "runtime_contract_asset": "app/src/main/assets/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+  "proof_boundary": "TRANSPORT/build proof only: debug APK is compiled and contains the canonical session/runtime carriers. Android execution and owner-device contact remain OPEN.",
+  "keeper": "APK BUILT ≠ APK LIVED. CHANGE THE PLUG, NOT THE BODY."
+}

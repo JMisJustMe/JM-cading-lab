@@ -17,7 +17,7 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.8.0"
+assert server.VERSION == "0.8.1"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
@@ -32,7 +32,7 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.0 Symbiosis Cycle 002 Return", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.1 Authority-Tier Precedence Repair", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash
@@ -53,7 +53,7 @@ assert "dynamic exact-byte registry hashing" in profile["capabilities"]
 assert "delta-first Estate maintenance planning" in profile["capabilities"]
 assert "JM32-1DA exact runtime-route seating" in profile["capabilities"]
 assert "PRIVATE PACKAGE v1.0.10" in head["primary_evidence"]["status"]
-assert "HOSTED MCP v0.8.0" in head["primary_evidence"]["status"]
+assert "HOSTED MCP v0.8.1" in head["primary_evidence"]["status"]
 
 jm32 = server.resolve_profile("JM32-1DA")
 assert jm32 and jm32["id"] == "jm32-1da-v221", jm32
@@ -88,6 +88,10 @@ assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
 assert "cross-cycle capability retention" in llm["capabilities"], llm
 assert "strong induction" in llm["open_frontiers"], llm
 assert "mathematical induction" not in llm["open_frontiers"], llm
+llm_head = server.resolve_current_head({"name":"JM LLM Core"})
+assert llm_head["state"] == "CURRENT_DECLARED", llm_head
+assert llm_head["current_head"] == "JM LLM Core v1.2 — Symbiosis Cycle 002", llm_head
+assert llm_head.get("competing_candidates") == [], llm_head
 
 return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
 returned = [

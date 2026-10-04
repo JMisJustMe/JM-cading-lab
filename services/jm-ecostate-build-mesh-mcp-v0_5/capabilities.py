@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_8 + hosted_runtime_v0_8_0",
+        "source":"external_current_registry_v0_8 + hosted_runtime_v0_8_1",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -308,6 +308,7 @@ CAPABILITY_PROFILES = [
             "dynamic exact-byte registry hashing",
             "fail-closed registry validation",
             "current-head authority routing",
+            "authority-tier precedence: current registry over snapshot overlay",
             "proof-boundary preservation",
             "capability donor mesh",
             "deterministic operation gates",

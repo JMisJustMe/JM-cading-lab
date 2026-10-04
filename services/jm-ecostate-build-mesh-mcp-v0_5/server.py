@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.8.0"
+VERSION = "0.8.1"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -257,7 +257,7 @@ def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.8.0 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.8.1 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",
@@ -357,9 +357,14 @@ def resolve_current_head(args):
     authority = current_identity_matches(query, 10)
     if authority:
         best = authority[0]
+        # Current-registry authority is the explicit current declaration and
+        # therefore outranks a stale snapshot overlay at the same identity
+        # strength. Ambiguity within the same authority tier still fails closed.
+        best_tier = 1 if best.get("source") == "current_project_registry" else 0
         close = [
             x for x in authority[1:]
             if x["score"] == best["score"]
+            and (1 if x.get("source") == "current_project_registry" else 0) == best_tier
             and norm(x.get("title") or x.get("name")) != norm(best.get("title") or best.get("name"))
         ]
         state = authority_state(best)

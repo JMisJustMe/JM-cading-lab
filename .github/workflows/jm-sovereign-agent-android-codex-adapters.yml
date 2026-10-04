@@ -1,0 +1,172 @@
+name: JM Sovereign Agent Android + Codex Adapters
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/host-adapters/android/**'
+      - 'agent-runtime/host-adapters/codex-repository-agent/**'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json'
+      - 'agent-runtime/host-adapters/jm_host_adapter_conformance.py'
+      - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'AGENTS.md'
+      - '.github/copilot-instructions.md'
+      - '.github/workflows/jm-sovereign-agent-android-codex-adapters.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/android/**'
+      - 'agent-runtime/host-adapters/codex-repository-agent/**'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json'
+      - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json'
+      - 'agent-runtime/host-adapters/jm_host_adapter_conformance.py'
+      - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'AGENTS.md'
+      - '.github/copilot-instructions.md'
+      - '.github/workflows/jm-sovereign-agent-android-codex-adapters.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codex-repository-function:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Execute repository-agent adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py             --query "coding runtime" --target "services/jm-ecostate-build-mesh-mcp-v0_5"             > /tmp/codex-session.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/codex-session.json',encoding='utf-8'))
+          assert p['schema']=='JM.RepositoryAgentSession/0.1', p
+          assert p['authority_class']=='HOST_ADAPTER_NOT_SOURCE_AUTHORITY', p
+          assert p['adapter']['live_codex_contact'] is False, p
+          assert p['core']['schema']=='JM.AgentRuntimeSession/0.1', p
+          assert p['core']['route_candidates'], p
+          assert len(p['repository']['instruction_carriers']) == 3, p
+          assert all(len(x['sha256'])==64 for x in p['repository']['instruction_carriers']), p
+          print('JM CODEX/REPOSITORY AGENT ADAPTER: FUNCTION PASS')
+          print('exact_codex_host_contact=OPEN authority_transfer=False')
+          PY
+
+      - name: Unknown-domain honesty
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py             --query "zzzz-no-known-domain" --compact > /tmp/codex-unknown.json
+          python3 - <<'PY'
+          import json
+          p=json.load(open('/tmp/codex-unknown.json',encoding='utf-8'))
+          assert p['core']['route_candidates'] == [], p
+          print('CODEX_UNKNOWN_ROUTE: PASS — no fabricated route')
+          PY
+
+      - name: Universal plug tester
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+
+  android-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Form canonical Android capsule assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          A='agent-runtime/host-adapters/android/app/src/main/assets'
+          mkdir -p "$A"
+          python3 agent-runtime/jm_agent_runtime.py --core-only --query "android phone runtime" > "$A/JM_AGENT_SESSION.json"
+          cp agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json             "$A/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+          python3 - <<'PY'
+          import json, pathlib
+          a=pathlib.Path('agent-runtime/host-adapters/android/app/src/main/assets')
+          s=json.loads((a/'JM_AGENT_SESSION.json').read_text(encoding='utf-8'))
+          c=json.loads((a/'JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json').read_text(encoding='utf-8'))
+          assert s['schema']=='JM.AgentRuntimeSession/0.1', s
+          assert s['authority_class']=='SESSION_ROUTER_NOT_SOURCE_AUTHORITY', s
+          assert c['schema']=='JM.SovereignAgentRuntime/0.1', c
+          assert len(s['route_candidates']) > 0, s
+          print('ANDROID_CAPSULE_FORMATION: PASS')
+          PY
+          sha256sum "$A/JM_AGENT_SESSION.json" "$A/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+
+      - name: Set up Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+
+      - name: Compile Android adapter APK
+        working-directory: agent-runtime/host-adapters/android
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle --no-daemon :app:assembleDebug
+          test -s app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Verify Android transport body
+        shell: bash
+        run: |
+          set -euo pipefail
+          D='agent-runtime/host-adapters/android'
+          APK="$D/app/build/outputs/apk/debug/app-debug.apk"
+          OUT=/tmp/jm-agent-android
+          mkdir -p "$OUT"
+          cp "$APK" "$OUT/JM_SOVEREIGN_AGENT_ANDROID_ADAPTER_v0_1_DEBUG.apk"
+          unzip -t "$APK" > "$OUT/ZIP_INTEGRITY.txt"
+          unzip -l "$APK" > "$OUT/APK_CONTENTS.txt"
+          BT="$ANDROID_HOME/build-tools/36.0.0"
+          "$BT/aapt2" dump badging "$APK" > "$OUT/AAPT_BADGING.txt"
+          "$BT/apksigner" verify --verbose --print-certs "$APK" > "$OUT/APKSIGNER_VERIFY.txt"
+          grep -Fq "package: name='com.jmisjustme.sovereignagent'" "$OUT/AAPT_BADGING.txt"
+          grep -Fq 'assets/JM_AGENT_SESSION.json' "$OUT/APK_CONTENTS.txt"
+          grep -Fq 'assets/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json' "$OUT/APK_CONTENTS.txt"
+          if grep -Fq 'android.permission.INTERNET' "$D/app/src/main/AndroidManifest.xml"; then
+            echo 'INTERNET permission must remain absent' >&2
+            exit 1
+          fi
+          sha256sum "$OUT/JM_SOVEREIGN_AGENT_ANDROID_ADAPTER_v0_1_DEBUG.apk" > "$OUT/SHA256.txt"
+          BYTES=$(stat -c%s "$OUT/JM_SOVEREIGN_AGENT_ANDROID_ADAPTER_v0_1_DEBUG.apk")
+          SHA=$(cut -d' ' -f1 "$OUT/SHA256.txt")
+          cat > "$OUT/BUILD_RECEIPT.txt" <<EOF
+          JM Sovereign Agent Android Adapter v0.1
+          Status: TRANSPORT PASS
+          Package: com.jmisjustme.sovereignagent
+          APK bytes: $BYTES
+          APK SHA-256: $SHA
+          Session carrier: PASS
+          Runtime contract carrier: PASS
+          INTERNET permission: ABSENT
+          Debug signature: PASS
+          Android runtime contact: OPEN
+          Physical owner-device contact: OPEN
+          Keeper: APK BUILT != APK LIVED. CHANGE THE PLUG, NOT THE BODY.
+          EOF
+          echo "JM ANDROID SOVEREIGN AGENT ADAPTER: TRANSPORT PASS $SHA $BYTES"
+
+      - name: Universal plug tester after Android build
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+
+      - name: Upload Android transport proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_SOVEREIGN_AGENT_ANDROID_ADAPTER_v0_1_TRANSPORT
+          path: /tmp/jm-agent-android/
+          if-no-files-found: error
+          retention-days: 14

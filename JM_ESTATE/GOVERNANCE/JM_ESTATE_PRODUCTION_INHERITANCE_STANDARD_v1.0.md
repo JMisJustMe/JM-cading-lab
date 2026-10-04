@@ -5,6 +5,16 @@
 **Reference proof lineage:** PUKA exposed the first proved full game-production ladder; the Estate inherits the production intelligence, not PUKA's identity.  
 **Keeper:** **NO ESTATE BODY SHOULD HAVE TO RE-LIVE SOLVED IMMATURITY.**
 
+## Governing build-law floor
+
+This production inheritance standard operates under:
+
+`JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`
+
+Every relevant production route must preserve the six-authority build gate, consequence/readback law, sovereignty boundaries, continuity/lineage rules, anti-bloat rules and working preferences defined there.
+
+Production inheritance may raise a body's starting floor. It may **not** bypass source/entry/structure/behaviour/delivery/receipt authority or transfer a donor's proof to the receiver.
+
 ## Core law
 
 When one Estate body proves a stronger production mechanism, quality floor, proof gate or delivery route, that learning becomes available to every relevant Estate body.

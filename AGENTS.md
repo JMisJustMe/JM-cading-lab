@@ -1,5 +1,36 @@
 # JM Estate Agent Defaults
 
+## JM build laws / preferences / governance — RUNNING STANDARD
+
+Before any material Estate build, rebuild, upgrade, deployment, packaging or proof claim, read:
+
+`JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`
+
+Machine-readable contract:
+
+`JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json`
+
+Validator:
+
+`python3 JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py`
+
+This is the shared operating floor for:
+- build form and production order;
+- authority gates and preflight;
+- proof / consequence discipline;
+- sovereignty and anti-captivity;
+- human authority / delegation;
+- continuity / lineage;
+- anti-bloat / storage governance;
+- default working preferences;
+- agent participation boundaries.
+
+Core build form: **FULL BODY → STRAIGHT RUN → CORRECT AFTER**.  
+Core authority gate: **SOURCE + ENTRY + STRUCTURE + BEHAVIOUR + DELIVERY + RECEIPT → PASS / HOLD**.  
+Core consequence law: **THE UI MAY REPORT AN ATTEMPT. ONLY THE CONSEQUENCE MAY REPORT SUCCESS.**
+
+Do not downgrade this standard into mere prose guidance. If any carrier changes these operating laws, run its validator and the affected downstream gates.
+
 ## Estate production inheritance — ALL PRODUCT BODIES
 
 Before materially building, rebuilding or upgrading an Estate product body, read:

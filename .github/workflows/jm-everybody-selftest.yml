@@ -7,6 +7,9 @@ on:
   pull_request:
     paths:
       - 'coding-estate/everybody/**'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py'
       - 'coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md'
       - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
       - 'coding-estate/validate_current_64_standard.py'
@@ -26,6 +29,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+      - name: Run shared JM build laws governance gate
+        run: python3 JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py
       - name: Run current 64 role-qualified standards gate
         run: python3 coding-estate/validate_current_64_standard.py
       - name: Run sovereign registry and maximiser self-test

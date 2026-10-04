@@ -6,6 +6,7 @@
   "authority_note": "This contract governs agent entry/routing behavior but does not replace live Estate authority, current pointers, receipts, runtime readback, or owner/device proof.",
   "inheritance": {
     "required": [
+      "../../JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md",
       "../../AGENTS.md",
       "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
       "../../coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md"
@@ -396,5 +397,22 @@
     "JM JudgeMaker",
     "JM JangleMonitor",
     "JM JourMaze"
-  ]
+  ],
+  "build_laws_governance": {
+    "schema": "JM.BuildLawsPreferencesGovernance/1.0",
+    "human_standard": "../../JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md",
+    "machine_contract": "../../JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
+    "validator": "../../JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py",
+    "authority_class": "OPERATING_COMPOSITE_NOT_SOURCE_REPLACEMENT",
+    "master_runtime": "SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT",
+    "authority_gate": [
+      "SOURCE AUTHORITY",
+      "ENTRY AUTHORITY",
+      "STRUCTURE AUTHORITY",
+      "BEHAVIOUR AUTHORITY",
+      "DELIVERY AUTHORITY",
+      "RECEIPT AUTHORITY"
+    ],
+    "rule": "Build Mesh inherits and must not bypass the shared JM build/governance floor."
+  }
 }

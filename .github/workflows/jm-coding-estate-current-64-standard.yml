@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py'
       - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
       - 'coding-estate/validate_current_64_standard.py'
       - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
@@ -19,6 +22,9 @@ on:
   pull_request:
     paths:
       - 'coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py'
       - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
       - 'coding-estate/validate_current_64_standard.py'
       - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
@@ -40,6 +46,9 @@ jobs:
     steps:
       - name: Check out Estate
         uses: actions/checkout@v4
+
+      - name: Validate shared JM build laws governance
+        run: python3 JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py
 
       - name: Validate exact current 64 identity and standards coverage
         run: python3 coding-estate/validate_current_64_standard.py

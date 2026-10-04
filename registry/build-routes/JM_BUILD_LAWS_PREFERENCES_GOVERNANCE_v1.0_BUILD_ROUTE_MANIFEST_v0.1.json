@@ -1,0 +1,114 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Build Laws Preferences Governance Running Standard",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Build Laws · Preferences · Governance — Running Standard v1.0",
+    "body_type": "Estate-wide governance / standards / agent-operating contract",
+    "intended_destination": "Canonical JM Estate running standards on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 327,
+    "head_branch": "standards/jm-build-laws-governance-v1",
+    "source_authority": [
+      "03_BUILD_LAWS.md / JM Coding Zionfolder v1.0 recovered build-law body",
+      "JM Estate production inheritance",
+      "current Build Mesh sovereign agent law",
+      "current Coding Estate running standard",
+      "recovered Human-as-Authority / Differential Authority / anti-bloat governance records"
+    ],
+    "owner_instruction": "Add build laws, preferences and governance/guidelines to actual running standards.",
+    "source_rule": "COMPOSE_OPERATING_LAW_WITHOUT_REPLACING_SOURCE_BODIES",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "existing_authorities": [
+      "JM build-law source body",
+      "root AGENTS.md",
+      "Estate production inheritance",
+      "Build Mesh sovereign agent contract",
+      "Current-64 Coding Estate standard",
+      "existing proof/consequence and sovereignty laws"
+    ],
+    "estate_decision": "A real integration gap existed: many laws/preferences were individually present, but no single executable canonical contract enforced them across all current coding and agent surfaces.",
+    "reuse_rule": "Reuse and compose existing law; do not invent parallel governance for already-settled concepts."
+  },
+  "exact_stack": {
+    "human_standard": "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md",
+    "machine_contract": "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
+    "validator": "JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py",
+    "CI": ".github/workflows/jm-build-laws-governance-standard.yml",
+    "inherited_surfaces": [
+      "AGENTS.md",
+      ".github/copilot-instructions.md",
+      "JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
+      "coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
+    ],
+    "host_technology": [
+      "Markdown",
+      "JSON",
+      "Python 3",
+      "GitHub Actions adapter"
+    ],
+    "host_rule": "HOST ≠ OWNER; standards remain portable and readable outside GitHub."
+  },
+  "true_gaps": {
+    "new_build_philosophy_required": false,
+    "new_authority_model_required": false,
+    "new_proof_model_required": false,
+    "new_governance_integration_required": true,
+    "gap": "Recovered laws/preferences/governance were distributed across source bodies and operating carriers; no single machine-readable running contract enforced the combined floor across current coding/agent routes."
+  },
+  "proof_lanes": {
+    "source_recovery": {
+      "state": "PASS",
+      "evidence": "Recovered build-law source includes Full Body / Straight Run / Correct After, six-authority gate, preflight/freeze law and no-Ding boundary; existing Estate records preserve delegation, authority, sovereignty and anti-bloat laws."
+    },
+    "machine_contract": {
+      "state": "PENDING_CI",
+      "criterion": "JSON contract parses and validator confirms required laws, gate, sovereignty, current-64 pointer and human standard."
+    },
+    "downstream_inheritance": {
+      "state": "PENDING_CI",
+      "criterion": "Current-64 and Build Mesh validators pass with governance inheritance wired."
+    },
+    "merge_readback": {
+      "state": "OPEN",
+      "criterion": "After green PR and merge, read canonical main and verify all carriers are present."
+    }
+  },
+  "host_and_surfaces": {
+    "canonical_repository": "JMisJustMe/JM-cading-lab",
+    "portable_core": true,
+    "adapters": [
+      "GitHub Actions",
+      "AGENTS.md",
+      "Copilot instructions",
+      "Build Mesh MCP contract"
+    ],
+    "owner_device_runtime_claim": false
+  },
+  "escalation": {
+    "current_escalations": [
+      "If a validator catches a law/path mismatch, correct the responsible carrier and rerun.",
+      "If unrelated workflows fail independently, preserve attribution and do not weaken governance merely to obtain green."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE → CORRECT RESPONSIBLE ORGAN → RETEST",
+    "manual_user_contact": "Not required unless a new owner-only or destructive decision appears."
+  },
+  "state": {
+    "route": "AUTHORIZED_GOVERNANCE_STANDARD_INTEGRATION",
+    "build_authorized_by_manifest": true,
+    "new_capability_creation_authorized": false,
+    "crown": "PENDING FULL PR GREEN + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Run full PR CI → repair attributable failures → merge on green → canonical-main readback."
+  },
+  "manifest_proof": {
+    "result": "PASS — route recovers existing laws and authorizes their standards integration without inventing new source authority or transferring proof."
+  }
+}

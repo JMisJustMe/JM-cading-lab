@@ -11,6 +11,7 @@
 
 **Read / inherit before material change:**
 - repository root `AGENTS.md`
+- `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md` — shared build laws, preferences, authority/proof and governance floor
 - `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`
 - `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` and `coding-estate/JM_CODING_ESTATE_CURRENT_64.json` for the complete current coding-identity field
 - `coding-estate/LIVE_DIRECT_DOOR_LAW.md` when a live web delivery/contact route is involved
@@ -62,6 +63,9 @@ Examples of adapters may include:
 **ADAPTER ≠ BODY. HOST ≠ OWNER.**
 
 ---
+
+### Shared governance floor
+Build Mesh may route bodies, but it must itself obey the canonical JM Build Laws / Preferences / Governance standard. Routing convenience never outranks source authority, owner authority, the six-authority gate, or returned consequence.
 
 ## 1. First Contact
 

@@ -6,12 +6,12 @@
   "authority_note": "This contract governs agent entry/routing behavior but does not replace live Estate authority, current pointers, receipts, runtime readback, or owner/device proof.",
   "inheritance": {
     "required": [
-      "../../../AGENTS.md",
-      "../../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
-      "../../../coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md"
+      "../../AGENTS.md",
+      "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
+      "../../coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md"
     ],
     "conditional": [
-      "../../../coding-estate/LIVE_DIRECT_DOOR_LAW.md"
+      "../../coding-estate/LIVE_DIRECT_DOOR_LAW.md"
     ],
     "law": "Inherited Estate-wide law supplies the floor. This contract specializes Build Mesh agent routing without narrowing stronger current authority."
   },
@@ -321,9 +321,9 @@
   "reentry": "Recover the current body and its authority before rebuilding anything. Use the Coding Estate as a routed set of sovereign specialist bodies. Reuse proven organs, preserve identity and lineage, execute the smallest lawful change, test the actual recipient, and do not claim a Ding until returned state proves the intended consequence.",
   "coding_estate_standard": {
     "schema": "JM.CodingEstate.Current64/1.0",
-    "registry": "../../../coding-estate/JM_CODING_ESTATE_CURRENT_64.json",
-    "human_standard": "../../../coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
-    "validator": "../../../coding-estate/validate_current_64_standard.py",
+    "registry": "../../coding-estate/JM_CODING_ESTATE_CURRENT_64.json",
+    "human_standard": "../../coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
+    "validator": "../../coding-estate/validate_current_64_standard.py",
     "current_identity_count": 64,
     "inherited_role_qualified": 61,
     "post_census_new": 3,

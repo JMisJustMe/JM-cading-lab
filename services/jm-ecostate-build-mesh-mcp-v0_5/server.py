@@ -1028,7 +1028,7 @@ def build_mesh_status(args):
         "server": SERVER_NAME,
         "version": VERSION,
         "mode": "read-only authority / external-current-registry / capability-mesh / artifact-router / sovereign-sync-contract / estate-keeper-contract / operation-planning service",
-        "estate_keeper_contract_schema": "JM.BuildMesh.EstateKeeperContract/0.7.5",
+        "estate_keeper_contract_schema": "JM.BuildMesh.EstateKeeperContract/0.7.6",
         "current_project_records": len(CURRENT),
         "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
         "current_registry_date": CURRENT_REGISTRY_DATE,

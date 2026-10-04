@@ -182,3 +182,26 @@ The first routed sovereign body has now been manufactured, byte-verified, publis
 **FROZEN · LOCKED · ANCHORED · PUBLICLY CONTACTED**
 
 **FLAZ COMPLETE at first factory-manufactured public Theory-carrier scope.**
+
+## Post-cleanup public re-contact
+
+After the temporary proof rail was retired and the stale legacy root-marker expectation was corrected, the canonical GitHub Pages deployment workflow re-ran from:
+
+`fda49cceec7eb0084805716a606156b008a1ecf0`
+
+Fresh Pages run:
+
+`37215782257`
+
+Results:
+
+- build `111475879018` → **SUCCESS**
+- deploy `111475921025` → **SUCCESS**
+- exact Theory factory proof `111475957043` → **SUCCESS**
+- exact result: **THEORY FACTORY GITHUB PAGES EXACT LIVE PASS**
+- proof artifact: `11308805223`
+- proof artifact ZIP SHA-256: `896826db3a1c81bcfbf2ee1882f0d825c2b7b263d9e5ac93ff987f0963f15fb4`
+
+The canonical Pages deployment therefore re-confirmed the same manufactured HTML and Markdown identities after proof-rail cleanup.
+
+**POST-CLEANUP RE-CONTACT: PASS.**

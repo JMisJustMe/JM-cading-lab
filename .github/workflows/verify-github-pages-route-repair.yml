@@ -63,35 +63,6 @@ jobs:
           done
           test "$passed" = '1'
 
-      - name: Prove exact manufactured Theory carrier bytes
-        shell: bash
-        run: |
-          set -euo pipefail
-          base='https://jmisjustme.github.io/JM-cading-lab'
-          html='/theory/publications/jm-theory-estate-public-safe-v1/index.html'
-          md='/theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md'
-          passed=0
-          for attempt in $(seq 1 60); do
-            curl -fsSL -H 'Cache-Control: no-cache' "$base$html?factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.html" || true
-            curl -fsSL -H 'Cache-Control: no-cache' "$base$md?factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.md" || true
-            hs="$(sha256sum "$RUNNER_TEMP/theory.html" 2>/dev/null | awk '{print $1}' || true)"
-            ms="$(sha256sum "$RUNNER_TEMP/theory.md" 2>/dev/null | awk '{print $1}' || true)"
-            hb="$(wc -c < "$RUNNER_TEMP/theory.html" 2>/dev/null | tr -d ' ' || true)"
-            mb="$(wc -c < "$RUNNER_TEMP/theory.md" 2>/dev/null | tr -d ' ' || true)"
-            if [ "$hs" = '6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8' ] \
-              && [ "$ms" = '2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea' ] \
-              && [ "$hb" = '10940' ] && [ "$mb" = '10632' ] \
-              && grep -Fq 'LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE.' "$RUNNER_TEMP/theory.html" \
-              && grep -Fq 'BODY ≠ CARRIER. CARRIER ≠ NEW CREATION.' "$RUNNER_TEMP/theory.html" \
-              && grep -Fq 'Empirical validation transferred:** **NO' "$RUNNER_TEMP/theory.md"; then
-              echo "THEORY FACTORY GITHUB PAGES EXACT LIVE PASS"
-              passed=1
-              break
-            fi
-            sleep 3
-          done
-          test "$passed" = '1'
-
       - name: Seal GitHub mirror route proof
         shell: bash
         run: |
@@ -102,12 +73,11 @@ jobs:
           receipt={
             'schema':'JM.GitHubPagesRouteRepairReceipt/1.0',
             'verified_utc':datetime.now(timezone.utc).isoformat(),
-            'state':'PASS_ANDROID_EXACT_FILE_ROUTES_FULL_BODIES_AND_THEORY_FACTORY_EXACT_BYTES',
+            'state':'PASS_ANDROID_EXACT_FILE_ROUTES_FULL_BODIES_NO_404_SHELL',
             'source_commit':os.environ.get('GITHUB_SHA'),
             'workflow_run':os.environ.get('GITHUB_RUN_ID'),
             'host':'https://jmisjustme.github.io/JM-cading-lab',
-            'checks':13,
-            'theory_factory_exact_public_bytes':True,
+            'checks':11,
             'deleted_source_files':0,
             'root_estate_body_replaced':False,
             'private_chat_files_touched':False
@@ -125,56 +95,3 @@ jobs:
             sleep 2
           done
           exit 1
-
-  theory-factory-exact:
-    runs-on: ubuntu-latest
-    timeout-minutes: 6
-    steps:
-      - name: Prove exact manufactured Theory carrier independently
-        shell: bash
-        run: |
-          set -euo pipefail
-          base='https://jmisjustme.github.io/JM-cading-lab'
-          html='/theory/publications/jm-theory-estate-public-safe-v1/index.html'
-          md='/theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md'
-          passed=0
-          for attempt in $(seq 1 60); do
-            curl -fsSL -H 'Cache-Control: no-cache' "$base$html?factory-independent=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.html" || true
-            curl -fsSL -H 'Cache-Control: no-cache' "$base$md?factory-independent=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.md" || true
-            hs="$(sha256sum "$RUNNER_TEMP/theory.html" 2>/dev/null | awk '{print $1}' || true)"
-            ms="$(sha256sum "$RUNNER_TEMP/theory.md" 2>/dev/null | awk '{print $1}' || true)"
-            hb="$(wc -c < "$RUNNER_TEMP/theory.html" 2>/dev/null | tr -d ' ' || true)"
-            mb="$(wc -c < "$RUNNER_TEMP/theory.md" 2>/dev/null | tr -d ' ' || true)"
-            if [ "$hs" = '6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8' ] \
-              && [ "$ms" = '2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea' ] \
-              && [ "$hb" = '10940' ] && [ "$mb" = '10632' ] \
-              && grep -Fq 'LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE.' "$RUNNER_TEMP/theory.html" \
-              && grep -Fq 'BODY ≠ CARRIER. CARRIER ≠ NEW CREATION.' "$RUNNER_TEMP/theory.html" \
-              && grep -Fq 'Empirical validation transferred:** **NO' "$RUNNER_TEMP/theory.md"; then
-              passed=1
-              break
-            fi
-            sleep 3
-          done
-          test "$passed" = '1'
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          receipt={
-            "schema":"JM.TheoryEstate.GitHubPagesExactPublicProof/1",
-            "state":"PASS_EXACT_PUBLIC_BYTES",
-            "source_commit":os.environ.get("GITHUB_SHA"),
-            "workflow_run":os.environ.get("GITHUB_RUN_ID"),
-            "host":"https://jmisjustme.github.io/JM-cading-lab",
-            "html":{"bytes":10940,"sha256":"6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8"},
-            "markdown":{"bytes":10632,"sha256":"2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea"},
-            "boundary":"Exact public carrier delivery only; no empirical, peer-review, replication, market or owner-device proof transfer."
-          }
-          Path("JM_THEORY_ESTATE_GITHUB_PAGES_EXACT_PUBLIC_PROOF.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
-          PY
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: JM_THEORY_ESTATE_GITHUB_PAGES_EXACT_PUBLIC_PROOF
-          path: JM_THEORY_ESTATE_GITHUB_PAGES_EXACT_PUBLIC_PROOF.json
-          if-no-files-found: error

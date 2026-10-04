@@ -419,6 +419,33 @@
       ],
       "ruling": "PERMANENT_GOVERNING_OWNER_AUTHORITY_GATE",
       "severity": "CROWN_GOVERNANCE_LAW"
+    },
+    {
+      "id": "agi-lab-runtime-console-v1",
+      "name": "JM AGI Lab Runtime Contact Console v1.0",
+      "primary_seat": "Non-Game Apps House / AI & Runtime",
+      "governing_identity": "public executable runtime carrier descended from the frozen JM AGI Lab v1.4.4 authority without superseding that head",
+      "source_authority": "JM AGI Lab v1.4.4 — Durability Settle / Live Integration",
+      "source_body_sha256": "7f1fb0ad36eac37627862cb275aa3ec257d65767160915fbe5d65b0272264a67",
+      "factory_operation": "JMOP-6d66ae8f0228162e549b7934",
+      "manufacture_head": "7def54dab43d1f0d5c0435aebc9c6331ba35bcad",
+      "public_route": "/apps/jm-agi-lab-runtime-console-v1/",
+      "proof": {
+        "node_process_reentry": "PASS",
+        "chromium_runtime_execution": "PASS",
+        "chromium_persistent_profile_reentry": "PASS",
+        "real_12_second_settle": "PASS",
+        "output_hash_seal": "PASS"
+      },
+      "prohibited_reductions": [
+        "carrier renamed JM AGI Lab v1.4.5 or treated as replacement authority",
+        "CI Chromium process re-entry presented as owner Windows/Edge contact",
+        "runtime persistence presented as OS reboot or cross-device persistence",
+        "bounded state machine presented as AGI, human-level intelligence or general-intelligence equivalence",
+        "public app treated as unrestricted external-model or environment actuation"
+      ],
+      "ruling": "EXECUTABLE_RUNTIME_CARRIER_VERIFIED_AUTHORITY_HEAD_UNCHANGED",
+      "severity": "PUBLIC_EXECUTABLE_CARRIER_AUTHORITY"
     }
   ],
   "systemic_guard": {

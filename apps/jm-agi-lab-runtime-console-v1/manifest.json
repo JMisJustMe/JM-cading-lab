@@ -29,21 +29,41 @@
   },
   "outputs": {
     "index.html": {
-      "sha256": "PENDING_READBACK"
+      "bytes": 4962,
+      "sha256": "634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147"
     },
     "styles.css": {
-      "sha256": "PENDING_READBACK"
+      "bytes": 6144,
+      "sha256": "dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15"
     },
     "runtime-core.mjs": {
-      "sha256": "PENDING_READBACK"
+      "bytes": 7130,
+      "sha256": "fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26"
     },
     "app.mjs": {
-      "sha256": "PENDING_READBACK"
+      "bytes": 7034,
+      "sha256": "7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb"
     },
     "proof-node.mjs": {
-      "sha256": "PENDING_READBACK"
+      "bytes": 3030,
+      "sha256": "7b7077daaee83f617f8a87d22b6cdf8a399f6db466e61cffe66dfcd158663a0f"
     }
   },
   "boundary": "Executable runtime-carrier manufacture only. It does not supersede JM AGI Lab v1.4.4, transfer its owner Windows Edge Ding, prove OS reboot or cross-device persistence, contact an external model, perform unrestricted actuation, or claim AGI/human-level intelligence.",
-  "verification_state": "PENDING_READBACK"
+  "verification_state": "VERIFIED",
+  "verification": {
+    "workflow_run_id": "37218952585",
+    "proof_job_id": "111485167550",
+    "proof_artifact_id": "11309119606",
+    "proof_artifact_zip_sha256": "cf5c2f49a68f35e70fcbe688e77348afce1e6f75a4cd7192f496b2853c746c29",
+    "node_process_reentry": "PASS",
+    "node_state_sha256": "39258baa9ddaf56d53d295f243691644cdf78e699863014bdf7560cbce10a209",
+    "browser_runtime_execution": "PASS",
+    "browser_process_reentry": "PASS",
+    "settle": "PASS_12_OF_12_REAL_SECONDS",
+    "responsive_viewports": [
+      "390x844",
+      "1440x960"
+    ]
+  }
 }

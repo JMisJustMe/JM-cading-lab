@@ -160,10 +160,10 @@
       ],
       "role": "ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT",
       "status": "CURRENT_DECLARED",
-      "version": "package v1.0.3 / hosted MCP v0.7.1",
-      "source": "JM ECOSTATE — Build Mesh v1.0.3 Self-Seating Registry Refresh",
+      "version": "package v1.0.4 / hosted MCP v0.7.1",
+      "source": "JM ECOSTATE — Build Mesh v1.0.4 Proof-Synchronisation Refresh",
       "source_file": "navigator/estate-integration/public-registry.json",
-      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1.",
+      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1.",
       "lineage": [
         {
           "source_file": "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json",
@@ -173,25 +173,34 @@
         },
         {
           "source_file": "JM ECOSTATE — Build Mesh package",
-          "locator": "v1.0.3",
+          "locator": "v1.0.4",
           "authority": "packaged current body",
-          "role": "registered-app / self-seating descendant"
+          "role": "proof-synchronisation descendant"
         },
         {
           "source_file": "JM ECOSTATE Build Mesh Native MCP",
           "locator": "v0.7.1",
           "authority": "live hosted read-only service",
           "role": "runtime contact"
+        },
+        {
+          "source_file": "CROSS_SURFACE_BOUNDED_LIVING_ACTION_DING_RECEIPT_v1_0_4.json",
+          "locator": "JMOP-a5bc63570970c8d4d92de991",
+          "authority": "route-specific receipt",
+          "role": "bounded external-cloud consequence and returned readback"
         }
       ],
       "connections": [
         "JM3232 Navigator",
         "JM Estate Public Nervous System",
         "ChatGPT registered app",
-        "Render hosted MCP"
+        "Render hosted MCP",
+        "JM Service Mesh / JM Cloud Contact Server"
       ],
       "authority": {
         "primary": "JM.CareerCurrentProjectRegistry/0.4",
+        "package_current": "v1.0.4",
+        "hosted_mcp_current": "v0.7.1",
         "confirmation_status": "LIVE_READBACK_PASS",
         "source_owner": "JM / JMISJUSTME"
       },

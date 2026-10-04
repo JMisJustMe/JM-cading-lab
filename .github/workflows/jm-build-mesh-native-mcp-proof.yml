@@ -177,8 +177,11 @@ jobs:
                   raise AssertionError(f"Tool {name} returned isError: {result}")
               return result.get("structuredContent") or {}
 
+          registry_raw = open("services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json","rb").read()
+          expected_registry_sha256 = hashlib.sha256(registry_raw).hexdigest()
           init = None
           last_ready = None
+          last_registry_sha256 = None
           for attempt in range(60):
               try:
                   ready_status, last_ready = get("/ready")
@@ -189,13 +192,19 @@ jobs:
                           "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.7"},
                       })
                       if probe["serverInfo"].get("version") == "0.7.7":
-                          init = probe
-                          break
+                          candidate_status = call(1900 + attempt, "build_mesh_status", {"probe_navigator":False})
+                          last_registry_sha256 = candidate_status.get("current_registry_sha256")
+                          if last_registry_sha256 == expected_registry_sha256:
+                              init = probe
+                              break
               except Exception:
                   pass
               time.sleep(10)
 
-          assert init is not None, f"Hosted v0.7.7 did not become live in time; last_ready={last_ready}"
+          assert init is not None, (
+              f"Hosted v0.7.7 with registry {expected_registry_sha256} did not become live in time; "
+              f"last_ready={last_ready}; last_registry_sha256={last_registry_sha256}"
+          )
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
 
           listed = rpc(2, "tools/list", {})
@@ -208,8 +217,6 @@ jobs:
           assert status["capability_profiles"] >= 31, status
           assert status["artifact_surface_profiles"] == 6, status
           assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.5", status
-          registry_raw = open("services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json","rb").read()
-          expected_registry_sha256 = hashlib.sha256(registry_raw).hexdigest()
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status

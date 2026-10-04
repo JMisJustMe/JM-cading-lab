@@ -10,6 +10,8 @@ CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
 BUILD_GOVERNANCE_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json"
 ESTATE_CAPABILITY_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_ESTATE_CAPABILITY_FIELD_v1.0.json"
 PORTABLE_RUNTIME_PATH = ROOT / "agent-runtime" / "JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+HOST_ADAPTER_CONTRACT_PATH = ROOT / "agent-runtime" / "host-adapters" / "JM_HOST_ADAPTER_CONFORMANCE_v1_0.json"
+HOST_ADAPTER_REGISTRY_PATH = ROOT / "agent-runtime" / "host-adapters" / "JM_HOST_ADAPTER_REGISTRY_v1_0.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -76,6 +78,28 @@ try:
 except Exception as exc:
     print(f"PORTABLE RUNTIME LOAD FAIL: {exc}")
     sys.exit(1)
+
+try:
+    host_adapter_contract = json.loads(HOST_ADAPTER_CONTRACT_PATH.read_text(encoding="utf-8"))
+    host_adapter_registry = json.loads(HOST_ADAPTER_REGISTRY_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"HOST ADAPTER CONFORMANCE LOAD FAIL: {exc}")
+    sys.exit(1)
+
+host_conf = data.get("host_adapter_conformance") or {}
+if host_conf.get("schema") != "JM.HostAdapterConformance/1.0":
+    errors.append("agent contract host-adapter conformance schema missing/drifted")
+if host_adapter_contract.get("schema") != "JM.HostAdapterConformance/1.0":
+    errors.append("canonical host-adapter conformance schema missing/drifted")
+if host_adapter_registry.get("schema") != "JM.HostAdapterRegistry/1.0":
+    errors.append("canonical host-adapter registry schema missing/drifted")
+canonical_adapter_ids = [x.get("id") for x in (host_adapter_registry.get("adapters") or [])]
+if host_conf.get("registered_adapter_ids") != canonical_adapter_ids:
+    errors.append("agent contract host-adapter list does not exactly match canonical registry")
+if host_conf.get("proof_ladder") != host_adapter_contract.get("proof_levels"):
+    errors.append("agent contract host-adapter proof ladder does not match canonical conformance contract")
+if host_conf.get("keeper") != "CHANGE THE PLUG, NOT THE BODY.":
+    errors.append("host-adapter keeper drift")
 
 portable = data.get("portable_runtime") or {}
 if portable.get("schema") != "JM.SovereignAgentRuntime/0.1":

@@ -1,0 +1,110 @@
+name: FTR Issue 01 Comic Reader v1 Proof
+
+on:
+  push:
+    branches:
+      - factory/ftr-issue01-comic-reader-v1
+    paths:
+      - ".github/workflows/ftr-issue01-comic-reader-v1-proof.yml"
+      - "visual-story/ftr-the-massive-push/issue-01/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify FTR comic carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='visual-story/ftr-the-massive-push/issue-01'
+          test -s "$base/index.html"
+          test -s "$base/reader.css"
+          test -s "$base/reader.js"
+          test -s "$base/manifest.json"
+          node --check "$base/reader.js"
+          python3 -m json.tool "$base/manifest.json" >/dev/null
+
+          python3 - <<'PY'
+          import hashlib, json, pathlib, re, os
+          base=pathlib.Path('visual-story/ftr-the-massive-push/issue-01')
+          html=(base/'index.html').read_text(encoding='utf-8')
+          css=(base/'reader.css').read_text(encoding='utf-8')
+          js=(base/'reader.js').read_text(encoding='utf-8')
+          manifest=json.loads((base/'manifest.json').read_text(encoding='utf-8'))
+
+          assert manifest['schema']=='JM.FTR.WebComicCarrier/1'
+          assert manifest['operation_id']=='JMOP-76539883db9c6a5b14ab1263'
+          assert manifest['classification']=='COMIC_CARRIER_DESCENDANT_NOT_NEW_CANON_BODY'
+          assert manifest['counts']=={
+            'series_issues':32,
+            'series_functional_pages':704,
+            'issue_pages':22,
+            'public_reader_issues':1,
+          }
+          assert manifest['source_hashes']['issue01_pdf_sha256']=='6b8ed6ab22e979eaab634d68d59f28cd7741db938dd92c37461019a42f30253e'
+          assert manifest['source_hashes']['issue01_contact_sheet_sha256']=='b98709faf5ec95fcafe70e62654d4041210ab2aaadab1a4f444616652e65141b'
+          assert manifest['source_hashes']['series_704_page_master_sha256']=='dd34aebf669968927ca6949e9cce988e46677cc94731c8b4d54150cc5864a010'
+          assert len(manifest['page_source_hashes'])==22
+          assert len(set(manifest['page_source_hashes']))==22
+
+          page_nums=re.findall(r'\{n:(\d+),title:',js)
+          assert page_nums==[str(i) for i in range(1,23)], page_nums
+          issue_block=re.search(r'const issues=\[(.*?)\];',js,re.S)
+          assert issue_block
+          assert len(re.findall(r'"(?:[^"\\]|\\.)*"',issue_block.group(1)))==32
+
+          required_html=[
+            'BACKGROUND<br>NOISE',
+            'BUILD MESH COMIC MANUFACTURE',
+            '22 / 22',
+            '704 / 704',
+            'Functional comic body, not final bespoke print art.',
+            'Reader ≠ source authority.',
+          ]
+          for marker in required_html: assert marker in html, marker
+
+          required_js=[
+            'ORDINARY ROOM','SUBTITLES AS INTRUSION','DUBBED AS COOPERATION',
+            'THE PENDULUM CORRECTION','DON’T CROWN IT','THE FIRST CUT',
+            'FUNCTION BITES BACK','THREE MASKS','THE FTR CORRIDOR',
+            'THE BLACK ROOM','ONE BECOMES TWO','FTR WILL RETURN'
+          ]
+          for marker in required_js: assert marker in js, marker
+
+          for marker in ['.comic-page','.motif-room','.motif-corridor','.motif-oneTwo','@media(max-width:640px)']:
+            assert marker in css, marker
+
+          hashes={}
+          for name in ['index.html','reader.css','reader.js','manifest.json']:
+            raw=(base/name).read_bytes()
+            hashes[name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+
+          receipt={
+            'schema':'JM.FTR.WebComicCarrierProof/1',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'operation_id':'JMOP-76539883db9c6a5b14ab1263',
+            'state':'PASS_MANUFACTURED_COMIC_CARRIER',
+            'page_route':'PASS_22_OF_22',
+            'series_map':'PASS_32_OF_32',
+            'source_page_hashes':'PASS_22_UNIQUE',
+            'javascript_syntax':'PASS',
+            'manifest_parse':'PASS',
+            'responsive_reader_markers':'PASS',
+            'files':hashes,
+            'boundary':'Manufacture/readback of a comic-specific web carrier only. No new canon body, final bespoke illustration, lettering, print finishing, publication, market or owner-device claim.'
+          }
+          pathlib.Path('FTR_ISSUE01_COMIC_READER_V1_PROOF.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          print(json.dumps(receipt,indent=2,ensure_ascii=False))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FTR_ISSUE01_COMIC_READER_V1_PROOF
+          path: FTR_ISSUE01_COMIC_READER_V1_PROOF.json
+          if-no-files-found: error

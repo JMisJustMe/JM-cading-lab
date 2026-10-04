@@ -31,12 +31,16 @@ jobs:
           server = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(server)
 
-          assert server.VERSION == "0.7.2"
+          assert server.VERSION == "0.7.3"
           exact = server.resolve_profile("JM ECOSTATE — Build Mesh")
           assert exact and exact["id"] == "ecostate-build-mesh-v102", exact
-          versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.4")
+          versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.5")
           assert versioned and versioned["id"] == "ecostate-build-mesh-v102", versioned
           assert server.resolve_profile("totally unrelated weak target phrase") is None
+          assert server.CURRENT_REGISTRY_SCHEMA == "JM.CareerCurrentProjectRegistry/0.5"
+          assert server.CURRENT_REGISTRY_DOC["project_count"] == len(server.CURRENT) == 19
+          _bm = next(x for x in server.CURRENT if x["id"] == "ecostate-build-mesh-v102")
+          assert "v1.0.5" in _bm["title"], _bm
 
           book = server.plan_artifact_route({
               "target":"Secrets of Silence",
@@ -68,6 +72,8 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, urllib.request, hashlib, datetime, os, time
+          registry_path = "services/jm-ecostate-build-mesh-mcp-v0_5/JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_5.json"
+          expected_registry_sha = hashlib.sha256(open(registry_path,"rb").read()).hexdigest()
 
           BASE = "https://jm-ecostate-build-mesh-mcp.onrender.com"
           MCP = BASE + "/mcp"
@@ -125,16 +131,16 @@ jobs:
                       probe = rpc(900 + attempt, "initialize", {
                           "protocolVersion":"2025-06-18",
                           "capabilities":{},
-                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.2"},
+                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.3"},
                       })
-                      if probe["serverInfo"].get("version") == "0.7.2":
+                      if probe["serverInfo"].get("version") == "0.7.3":
                           init = probe
                           break
               except Exception:
                   pass
               time.sleep(10)
 
-          assert init is not None, f"Hosted v0.7.2 did not become live in time; last_ready={last_ready}"
+          assert init is not None, f"Hosted v0.7.3 did not become live in time; last_ready={last_ready}"
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
 
           listed = rpc(2, "tools/list", {})
@@ -146,8 +152,12 @@ jobs:
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
           assert status["capability_profiles"] >= 30, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", status
-          assert status["current_registry_sha256"] == "fde60cf0274d5380115d938fc099d652af44f0747f354686b99562836a8e905b", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.5", status
+          assert status["current_registry_sha256"] == expected_registry_sha, (status, expected_registry_sha)
+
+          current = call(30, "resolve_current_head", {"name":"JM ECOSTATE — Build Mesh"})
+          assert current["state"] == "CURRENT_DECLARED", current
+          assert "v1.0.5" in (current.get("current_head") or ""), current
 
           build_mesh = call(4, "detect_propagation_gaps", {
               "target":"JM ECOSTATE — Build Mesh",
@@ -189,7 +199,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.2",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.7.3",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -210,11 +220,11 @@ jobs:
               "apk_route_id":apk["route_id"],
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.2 exact-target identity resolution and artifact-general PLAN_ONLY dispatch for governed book/APK routes, plus existing capability-mesh, sync and operation-gate behavior. Actual artifact builds/publishes/installations remain host-executed and surface-specific.",
+              "claim_boundary":"Proves hosted v0.7.3 current-registry v0.5 reconciliation, exact-target identity resolution and artifact-general PLAN_ONLY dispatch for governed book/APK routes, plus existing capability-mesh, sync and operation-gate behavior. Actual artifact builds/publishes/installations remain host-executed and surface-specific.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -222,6 +232,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3.json
           if-no-files-found: error

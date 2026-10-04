@@ -1,0 +1,138 @@
+name: JM Theory Estate Public-Safe v1 Proof
+
+on:
+  push:
+    branches:
+      - factory/theory-estate-public-safe-v1
+    paths:
+      - ".github/workflows/jm-theory-estate-public-safe-v1-proof.yml"
+      - "theory/publications/jm-theory-estate-public-safe-v1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-manufacture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify manufactured descendant
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, re
+
+          root = pathlib.Path("theory/publications/jm-theory-estate-public-safe-v1")
+          md_path = root / "JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md"
+          html_path = root / "index.html"
+          manifest_path = root / "manifest.json"
+
+          md_raw = md_path.read_bytes()
+          html_raw = html_path.read_bytes()
+          manifest_raw = manifest_path.read_bytes()
+          md = md_raw.decode("utf-8")
+          html = html_raw.decode("utf-8")
+          manifest = json.loads(manifest_raw.decode("utf-8"))
+
+          md_sha = hashlib.sha256(md_raw).hexdigest()
+          html_sha = hashlib.sha256(html_raw).hexdigest()
+          manifest_sha = hashlib.sha256(manifest_raw).hexdigest()
+
+          assert manifest["schema"] == "JM.TheoryEstate.PublicSafePublication/1"
+          assert manifest["source_identity"] == "JM Theory Estate — First + Second-Order Strengthening"
+          assert manifest["target_profile_id"] == "theory-second-order"
+          assert manifest["operation_id"] == "JMOP-34a6830ec08dc884d9bcca49"
+          assert manifest["classification"] == "PUBLIC_SAFE_PUBLICATION_DESCENDANT_NOT_NEW_STRICT_THEORY"
+
+          counts = manifest["counts"]
+          assert counts == {
+              "strict_theories": 51,
+              "first_order_runs": 7,
+              "first_order_bridges": 7,
+              "second_order_runs": 7,
+              "second_order_bridges": 7,
+              "external_contacted_strict_bodies": 51,
+              "pairwise_safeguards_contacted": 14,
+              "constellations_contacted": 7,
+              "silent_first_order_merges": 0,
+              "silent_second_order_merges": 0,
+          }, counts
+
+          required_md = [
+              "51 / 51 strict theory bodies",
+              "7 / 7 first-order strengthening runs",
+              "7 / 7 second-order bridge-to-bridge runs",
+              "MESH ≠ MERGE",
+              "RETURN TO GROUND ≠ RETURN TO EARLIER STATE",
+              "LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE",
+              "BODY ≠ CARRIER. CARRIER ≠ NEW CREATION",
+              "Empirical validation transferred:** **NO",
+          ]
+          for marker in required_md:
+              assert marker in md, marker
+
+          first_order_names = [
+              "JM REALITY GROUND BRIDGE",
+              "JM CONTACT MECHANICS BRIDGE",
+              "JM PERCEPTION–MEANING LOOP BRIDGE",
+              "JM WHOLE-HUMAN CARRY BRIDGE",
+              "JM CONTINUITY–TRANSFORMATION BRIDGE",
+              "JM RESPONSIBLE CONTACT BRIDGE",
+              "JM COMPUTATIONAL–REFLECTIVE CONTACT BRIDGE",
+          ]
+          second_order_names = [
+              "JM REALITY–CAUSAL ACCOUNTABILITY BRIDGE",
+              "JM MECHANISM–MEANING CONTACT BRIDGE",
+              "JM EMBODIED MEANING CARRY BRIDGE",
+              "JM AGENCY–RESPONSIBILITY CARRY BRIDGE",
+              "JM RESPONSIBILITY–THROUGH–CHANGE BRIDGE",
+              "JM RECONSTRUCTIVE CONTINUITY BRIDGE",
+              "JM REALITY–REFLECTION RETURN BRIDGE",
+          ]
+          for name in first_order_names + second_order_names:
+              assert name in md, name
+              assert name in html, name
+
+          assert "<!doctype html>" in html.lower()
+          assert '<meta name="viewport"' in html
+          assert "JM Theory Estate" in html
+          assert "51 / 51" in html
+          assert "LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE." in html
+          assert "BODY ≠ CARRIER. CARRIER ≠ NEW CREATION." in html
+
+          expected_md = manifest["outputs"]["markdown"].get("sha256")
+          expected_html = manifest["outputs"]["html"].get("sha256")
+          if manifest.get("verification_state") == "VERIFIED":
+              assert expected_md == md_sha, (expected_md, md_sha)
+              assert expected_html == html_sha, (expected_html, html_sha)
+
+          receipt = {
+              "schema": "JM.TheoryEstate.PublicSafePublicationProof/1",
+              "source_commit": os.environ.get("GITHUB_SHA"),
+              "operation_id": manifest["operation_id"],
+              "target_profile_id": manifest["target_profile_id"],
+              "verification_state": "PASS",
+              "markdown": {"bytes": len(md_raw), "sha256": md_sha},
+              "html": {"bytes": len(html_raw), "sha256": html_sha},
+              "manifest": {"bytes": len(manifest_raw), "sha256": manifest_sha},
+              "counts": counts,
+              "first_order_names": "PASS_7_OF_7",
+              "second_order_names": "PASS_7_OF_7",
+              "boundary_markers": "PASS",
+              "claim_boundary": "Carrier manufacture/readback only. No new strict theory and no empirical, peer-review or replication proof transfer.",
+          }
+          pathlib.Path("JM_THEORY_ESTATE_PUBLIC_SAFE_V1_PROOF.json").write_text(
+              json.dumps(receipt, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(receipt, ensure_ascii=False, indent=2))
+          PY
+
+      - name: Upload proof receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_THEORY_ESTATE_PUBLIC_SAFE_V1_PROOF
+          path: JM_THEORY_ESTATE_PUBLIC_SAFE_V1_PROOF.json
+          if-no-files-found: error

@@ -23,6 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate portable sovereign agent contract
+        shell: bash
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
+
       - name: Cross-host MCP proof
         shell: bash
         run: |

@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.8.1"
+VERSION = "0.8.2"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -257,7 +257,7 @@ def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.8.1 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.8.2 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",

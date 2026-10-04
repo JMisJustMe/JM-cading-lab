@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.8",
+  "schema": "JM.CareerCurrentProjectRegistry/0.9",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.1 AUTHORITY-TIER-PRECEDENCE REPAIR DESCENDANT",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats for 32_Cb, JM32-1DA, the separate JM32-1DA Cross-Device Runtime Adapter, and the Cycle 002 capability return of JM LLM Core v1.2. Stronger direct private authority can outrank hosted summaries; hosted relation edges never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.2 SYMBIOSIS-CYCLE003-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "Hosted snapshot carries the current bounded public-safe seats. Explicit current-registry declarations outrank equally strong stale snapshot-overlay ancestors; same-tier ambiguity still fails closed. Capability return does not merge identities or transfer proof outside directly contacted lanes.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.1 Authority-Tier Precedence Repair",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.2 Cycle 003 Return",
       "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.10 · HOSTED MCP v0.8.1 AUTHORITY-TIER-PRECEDENCE REPAIR DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. Hosted v0.8.1 preserves the Cycle 002 capability return and repairs authority-tier precedence so an explicit current-registry declaration outranks an equally strong stale snapshot-overlay ancestor without weakening same-tier conflict HOLDs.",
-      "proof": "Private plugin v1.0.10 remains the last directly read-back private package in this lineage. Registry v0.8 keeps 22 logical current records including JM LLM Core v1.2 Cycle 002. Hosted v0.8.1 additionally proves that the generic identity `JM LLM Core` resolves CURRENT_DECLARED to v1.2 despite the stale v1.0 snapshot overlay, while equal-strength ambiguity inside the same authority tier remains fail-closed.",
-      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. Registry authority outranks snapshot overlay only at equal identity strength because it is the explicit current declaration; competing equal-strength declarations inside the same authority tier still produce CONFLICT_OPEN. Relation does not transfer proof."
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.10 · HOSTED MCP v0.8.2 SYMBIOSIS-CYCLE003-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.2 preserves the v0.8.1 authority-tier precedence repair and returns JM LLM Core v1.3 Symbiosis Cycle 003 as the current LLM donor without merging bodies or borrowing proof.",
+      "proof": "Registry v0.9 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.3 was directly built and re-contacted: Cycle002 parent floor 1629/1629 PASS; Cycle003 router 1500/1500 PASS; formal-logic skill contacts 800/800 PASS; Cycle001 modular retention through v1.3 200/200 PASS; Cycle002 induction retention through v1.3 700/700 PASS; aggregate 4836/4836 PASS.",
+      "boundary": "Public Build Mesh remains read-only. Authority-tier precedence from v0.8.1 is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof."
     },
     {
       "id": "opportunity-v08",
@@ -58,7 +58,7 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.2 — Symbiosis Cycle 002",
+      "title": "JM LLM Core v1.3 — Symbiosis Cycle 003",
       "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
@@ -67,15 +67,17 @@
         "reasoning",
         "symbiosis",
         "modular arithmetic",
-        "capability return",
         "mathematical induction",
-        "ordinary induction",
+        "formal logic",
+        "predicate logic",
+        "quantifiers",
+        "capability return",
         "retention regression"
       ],
-      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 002 · BOUNDED ORDINARY-INDUCTION CAPABILITY-RETURN DING",
-      "summary": "Forward descendant over v1.1 Symbiosis Cycle 001 and the frozen v1.0 First Complete Edition. Cycle 002 preserves bounded modular arithmetic and adds bounded ordinary mathematical induction across five theorem families through a learned induction-intent route plus an auditable symbolic executor. A first combined runtime intercepted 3/200 untouched Cycle 001 modular prompts; the activation gate was corrected before crown and the full modular set returned to 200/200.",
-      "proof": "Direct regression floor: v1.0 smoke 7/7 PASS; v1.1 smoke 7/7 PASS; untouched Cycle 001 modular retention through v1.2 200/200 PASS; Cycle 002 learned-router held-out 1000/1000 PASS; symbolic theorem-family verification 5/5 PASS; numeric induction contact 402/402 PASS; integrated execution/HOLD probes 8/8 PASS.",
-      "boundary": "Earned scope is bounded ordinary mathematical induction at learned-route + auditable-symbolic-executor system scope while retaining the bounded modular route. Strong induction, structural induction, arbitrary theorem proving, broad formal logic, unrestricted free generation, transformer-weight induction reasoning, AGI and human-level intelligence remain open.",
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 003 · THIRD CAPABILITY-RETURN DING",
+      "summary": "Current descendant over v1.2 Cycle 002. Cycle 003 preserves the bounded modular and ordinary-induction floors and adds bounded propositional truth tables, controlled predicate-quantifier translation/negation, and finite-domain quantifier evaluation through a learned formal-logic route plus auditable executors.",
+      "proof": "Direct current-parent reverify 1629/1629 PASS; Cycle003 held-out router 1500/1500 PASS; direct formal-logic skill contacts 800/800 PASS; Cycle001 modular retention through v1.3 200/200 PASS; Cycle002 induction retention through v1.3 700/700 PASS; v1.3 smoke 7/7 PASS; aggregate 4836/4836 PASS. Canonical release SHA-256 4c2ca123fbec1fa34507115f5d14c16e7fd8f85dec0d13e698811dc3778bd426.",
+      "boundary": "Earned scope is bounded propositional truth tables, controlled English-to-predicate-logic quantifier forms, leading-quantifier negation and finite-domain quantifier evaluation, while retaining prior bounded modular and induction routes. Arbitrary first-order theorem proving, modal/temporal/second-order logic, unrestricted natural-language formalization, broad formal reasoning, transformer-weight logic reasoning, AGI and human-level intelligence remain open.",
       "relations": [
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",

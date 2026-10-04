@@ -65,13 +65,15 @@ jobs:
               "outputs":["md","pdf","html"],
           })
           assert theory["target_profile_id"] == "theory-second-order", theory
+          assert theory["hosted_authority_state"] == "CURRENT_DECLARED", theory
 
           app = server.plan_artifact_route({
-              "target":"JM LEGAL",
+              "target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1",
               "artifact_type":"app",
               "outputs":["web","package"],
           })
           assert app["target_profile_id"] == "legal-v11", app
+          assert app["hosted_authority_state"] == "CURRENT_DECLARED", app
 
           apk = server.plan_artifact_route({
               "target":"JM Living Estate",
@@ -79,6 +81,7 @@ jobs:
               "outputs":["apk","direct-download-link"],
           })
           assert apk["target_profile_id"] == "living-estate-apk", apk
+          assert apk["hosted_authority_state"] == "CURRENT_DECLARED", apk
           assert "apk" in apk["surface_profile"]["selected_outputs"]
           assert "direct-download-link" in apk["surface_profile"]["selected_outputs"]
 
@@ -88,6 +91,7 @@ jobs:
               "outputs":["manifest","sha256","direct-download-link"],
           })
           assert downloadable["target_profile_id"] == "llm2-v2", downloadable
+          assert downloadable["hosted_authority_state"] == "CURRENT_DECLARED", downloadable
           assert downloadable["surface_profile"]["label"] == "DOWNLOAD / ADDABLE ROUTE"
           assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"]
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
@@ -203,6 +207,7 @@ jobs:
           assert book["surface_profile"]["selected_outputs"] == ["pdf","epub","web"], book
           assert book["delivery_contract"]["direct_route_required"] is True
           assert book["mutation_performed"] is False
+          assert book["hosted_authority_state"] == "CURRENT_DECLARED", book
 
           comic = call(6, "plan_artifact_route", {
               "target":"FTR — The Massive Push",
@@ -222,14 +227,16 @@ jobs:
               "objective":"public-safe theory descendants with claim jurisdiction preserved",
           })
           assert theory["target_profile_id"] == "theory-second-order", theory
+          assert theory["hosted_authority_state"] == "CURRENT_DECLARED", theory
 
           app = call(8, "plan_artifact_route", {
-              "target":"JM LEGAL",
+              "target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1",
               "artifact_type":"app",
               "outputs":["web","package"],
               "objective":"route current Matter Router without inflating QA into client proof",
           })
           assert app["target_profile_id"] == "legal-v11", app
+          assert app["hosted_authority_state"] == "CURRENT_DECLARED", app
 
           apk = call(9, "plan_artifact_route", {
               "target":"JM Living Estate",
@@ -239,6 +246,7 @@ jobs:
           })
           assert apk["artifact_type"] == "apk", apk
           assert apk["target_profile_id"] == "living-estate-apk", apk
+          assert apk["hosted_authority_state"] == "CURRENT_DECLARED", apk
           assert apk["surface_profile"]["selected_outputs"] == ["apk","direct-download-link"], apk
 
           downloadable = call(10, "plan_artifact_route", {
@@ -248,6 +256,7 @@ jobs:
               "objective":"bind package identity to a direct delivery route without transferring execution proof",
           })
           assert downloadable["target_profile_id"] == "llm2-v2", downloadable
+          assert downloadable["hosted_authority_state"] == "CURRENT_DECLARED", downloadable
           assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"], downloadable
 
           op_args = {
@@ -287,7 +296,7 @@ jobs:
                   "book":{"target":"Secrets of Silence","route_id":book["route_id"],"authority_state":book["hosted_authority_state"],"profile":book["target_profile_id"]},
                   "comic":{"target":"FTR — The Massive Push","route_id":comic["route_id"],"authority_state":comic["hosted_authority_state"],"profile":comic["target_profile_id"],"authority_gate":"HOLD_EXACT_COMIC_AUTHORITY"},
                   "theory":{"target":"JM Theory Estate","route_id":theory["route_id"],"authority_state":theory["hosted_authority_state"],"profile":theory["target_profile_id"]},
-                  "app":{"target":"JM LEGAL","route_id":app["route_id"],"authority_state":app["hosted_authority_state"],"profile":app["target_profile_id"]},
+                  "app":{"target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","route_id":app["route_id"],"authority_state":app["hosted_authority_state"],"profile":app["target_profile_id"]},
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },

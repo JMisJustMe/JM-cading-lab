@@ -31,7 +31,7 @@ jobs:
           server = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(server)
 
-          assert server.VERSION == "0.7.5"
+          assert server.VERSION == "0.7.7"
           exact = server.resolve_profile("JM ECOSTATE — Build Mesh")
           assert exact and exact["id"] == "ecostate-build-mesh-v102", exact
           versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.4")
@@ -113,12 +113,12 @@ jobs:
               "changed_count":0,
               "unresolved_count":0,
           })
-          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", keeper
+          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6", keeper
           assert keeper["no_census_default"] is True, keeper
           assert keeper["destructive_default"] == "HOLD", keeper
           assert keeper["mutation_performed"] is False, keeper
           assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
-          print("STATIC_ESTATE_KEEPER_V0_7_5_PASS")
+          print("STATIC_ESTATE_KEEPER_V0_7_7_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
@@ -186,16 +186,16 @@ jobs:
                       probe = rpc(900 + attempt, "initialize", {
                           "protocolVersion":"2025-06-18",
                           "capabilities":{},
-                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.5"},
+                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.7"},
                       })
-                      if probe["serverInfo"].get("version") == "0.7.5":
+                      if probe["serverInfo"].get("version") == "0.7.7":
                           init = probe
                           break
               except Exception:
                   pass
               time.sleep(10)
 
-          assert init is not None, f"Hosted v0.7.5 did not become live in time; last_ready={last_ready}"
+          assert init is not None, f"Hosted v0.7.7 did not become live in time; last_ready={last_ready}"
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
 
           listed = rpc(2, "tools/list", {})
@@ -207,7 +207,7 @@ jobs:
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
           assert status["capability_profiles"] >= 31, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.5", status
           registry_raw = open("services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json","rb").read()
           expected_registry_sha256 = hashlib.sha256(registry_raw).hexdigest()
           assert status["current_registry_sha256"] == expected_registry_sha256, status
@@ -235,14 +235,14 @@ jobs:
                   "resolution_basis":recovered["resolution_basis"],
               }
 
-          assert status["estate_keeper_contract_schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", status
+          assert status["estate_keeper_contract_schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6", status
           keeper = call(11, "estate_keeper_contract", {
               "scope":"private Library delta maintenance",
               "last_checkpoint":"PASS_84",
               "changed_count":0,
               "unresolved_count":0,
           })
-          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", keeper
+          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6", keeper
           assert keeper["no_census_default"] is True, keeper
           assert keeper["destructive_default"] == "HOLD", keeper
           assert keeper["mutation_performed"] is False, keeper
@@ -331,7 +331,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.5",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.7.7",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -363,11 +363,11 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.5 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
+              "claim_boundary":"Proves hosted v0.7.7 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_4.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -375,6 +375,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_4
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_4.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_7.json
           if-no-files-found: error

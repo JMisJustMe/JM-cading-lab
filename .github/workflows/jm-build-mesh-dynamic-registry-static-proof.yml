@@ -1,6 +1,12 @@
 name: JM Build Mesh Dynamic Registry Static Proof
 
 on:
+  push:
+    branches:
+      - build-mesh-dynamic-registry-v0-7-3
+    paths:
+      - ".github/workflows/jm-build-mesh-dynamic-registry-static-proof.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
   pull_request:
     branches:
       - build-mesh-native-mcp-v0-5

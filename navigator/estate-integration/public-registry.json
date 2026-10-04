@@ -217,6 +217,55 @@
         "source_owner": "JM / JMISJUSTME"
       },
       "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection. Hosted registry authority is process-start scoped to the exact deployed bytes and does not transfer recipient/device proof."
+    },
+    {
+      "id": "JM-FTR-MASSIVE-PUSH-001",
+      "name": "FTR — The Massive Push",
+      "aliases": [
+        "The Massive Push",
+        "FTR Comic",
+        "One Reality, Many Cuts"
+      ],
+      "role": "COMIC_CURRENT_PUBLIC_LINEAGE_SEAT",
+      "status": "CURRENT_DECLARED",
+      "version": "Series Master v1.0 · complete functional comic route",
+      "source": "FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0",
+      "source_file": "visual-story/index.html",
+      "preserved": "32/32 functional issues and 704/704 functional comic pages remain the frozen v1.0 route; final bespoke illustration, lettering and print finishing remain descendant production work.",
+      "lineage": [
+        {
+          "source_file": "visual-story/index.html",
+          "locator": "FTR — The Massive Push",
+          "authority": "public Estate visual-story projection",
+          "role": "public functional-series completion summary"
+        },
+        {
+          "source_file": "docs/STATUS.md",
+          "locator": "FTR 32/32 issues / 704/704 functional pages",
+          "authority": "public Estate status projection",
+          "role": "current visual-story routing confirmation"
+        },
+        {
+          "source_file": "navigator/estate-integration/receipts/FACTORY_FEED_BATCH_01_ROUTE_CONTACT_RECEIPT_v0_1.md",
+          "locator": "JMART-ac8508353575b35dc3bdfce9",
+          "authority": "hosted Build Mesh v0.7.3 route-contact proof",
+          "role": "comic artifact-router contact receipt"
+        }
+      ],
+      "connections": [
+        "JM ECOSTATE — Build Mesh",
+        "JM Visual Story Studio",
+        "JM SKETCHIONS",
+        "JM Estate Public Nervous System"
+      ],
+      "authority": {
+        "primary": "FTR Series Master v1.0 public-safe completion projection",
+        "hosted_build_mesh_profile": "ftr-massive-push-v1",
+        "hosted_route_state": "CURRENT_DECLARED",
+        "confirmation_status": "LIVE_BUILD_MESH_ROUTE_CONTACT_PASS",
+        "source_owner": "JM / JMISJUSTME"
+      },
+      "boundary": "Public-safe lineage metadata only. This seat does not expose private source files and does not certify final bespoke illustration, lettering, print finish, market release or owner-device contact for a new descendant."
     }
   ]
 }

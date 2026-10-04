@@ -45,17 +45,20 @@
       "criterion": "Validator must match all 29 profiles exactly and preserve current-head vs overlay distinction."
     },
     "inherited_surface_integration": {
-      "state": "BLOCKED_BY_HOST_WRITE_GATE",
-      "criterion": "Root/inherited instruction surfaces require a separately accepted write path; do not claim integration until readback."
+      "state": "SEATED_PENDING_CI",
+      "criterion": "Root AGENTS, Copilot, Production Inheritance, Build Mesh AGENTS, sovereign agent contract and validator now reference the whole-Estate router; CI/readback must verify."
     },
     "merge_readback": {
       "state": "OPEN"
     }
   },
   "state": {
-    "route": "PARTIAL_AUTHORIZED_BUILD",
+    "route": "AUTHORIZED_FULL_INTEGRATION",
     "core_router_body_created": true,
-    "inherited_surface_integration": false,
-    "crown": "HOLD — core body exists; inheritance not yet seated"
+    "inherited_surface_integration": true,
+    "crown": "PENDING FULL PR GREEN + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Open PR → run full CI → repair attributable failures → merge on green → read canonical main → record promotion."
   }
 }

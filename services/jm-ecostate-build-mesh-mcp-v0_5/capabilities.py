@@ -271,7 +271,7 @@ CAPABILITY_PROFILES = [
         "id":"ftr-massive-push-v1",
         "name":"FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0",
         "aliases":["FTR — The Massive Push","The Massive Push","One Reality, Many Cuts"],
-        "source":"current_project_registry",
+        "source":"current_overlay",
         "domain":"Comics / visual story",
         "capabilities":[
             "32-issue functional comic series architecture",

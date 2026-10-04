@@ -9,6 +9,8 @@
 
 **Portable machine-readable mirror:** `JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json` carries the same agent floor in host-neutral JSON and is guarded by `validate_agent_contract.py`. The JSON is also a route carrier, not current-head authority.
 
+**Portable running bootstrap:** `../../agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json` with independent Python and Node adapters loads the same canonical carriers and emits a deterministic routing/session capsule. Runtime parity proves carriage/routing consistency only; it does not crown live host or owner contact.
+
 **Read / inherit before material change:**
 - repository root `AGENTS.md`
 - `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md` and `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json` — whole-Estate project/domain routing field
@@ -64,6 +66,13 @@ Examples of adapters may include:
 **ADAPTER ≠ BODY. HOST ≠ OWNER.**
 
 ---
+
+### Portable host runtime
+Build Mesh may be entered through different hosts. When executable repository access exists, use the portable agent runtime to load the same canonical carriers before host-specific wrapping.
+
+`BODY / SOURCE IDENTITY ↔ ADAPTER / CAPABILITY NEGOTIATION ↔ HOST MANIFESTATION → CONTACT → FUNCTION PROOF → IDENTITY PROOF`
+
+A successful adapter run proves that adapter's tested lane only.
 
 ### Whole-Estate field
 Build Mesh must first route the actual problem to the relevant Estate domain/current project head. Its familiar coding bodies are one domain-specific field, not the automatic destination for every task.

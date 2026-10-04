@@ -68,5 +68,21 @@
       "deployment/release status outside the tested adapter"
     ]
   },
-  "keeper": "THE HOST MAY CHANGE. THE SOVEREIGN CORE, AUTHORITY BOUNDARIES AND ROUTING MEANING MUST SURVIVE."
+  "keeper": "THE HOST MAY CHANGE. THE SOVEREIGN CORE, AUTHORITY BOUNDARIES AND ROUTING MEANING MUST SURVIVE.",
+  "host_adapter_conformance": {
+    "schema": "JM.HostAdapterConformance/1.0",
+    "contract": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json",
+    "registry": "agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json",
+    "tester": "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+    "keeper": "CHANGE THE PLUG, NOT THE BODY.",
+    "proof_ladder": [
+      "DECLARED",
+      "CONTRACT",
+      "TRANSPORT",
+      "FUNCTION",
+      "HOST_CONTACT",
+      "OWNER_DEVICE"
+    ],
+    "rule": "A host adapter may claim only the highest proof level whose required gates are PASS; proof never transfers between host surfaces."
+  }
 }

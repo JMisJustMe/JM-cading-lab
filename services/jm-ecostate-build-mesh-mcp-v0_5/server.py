@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.6"
+VERSION = "0.7.7"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -257,7 +257,7 @@ def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.7.6 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.7.7 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",
@@ -660,6 +660,8 @@ def build_capability_mesh(args):
                     "to": b.get("id"),
                     "relation": "SHARED_CAPABILITY",
                     "shared_capabilities": shared,
+                    "merge": False,
+                    "proof_transfer": False,
                 })
             else:
                 role_overlap = sorted(set(a.get("donor_roles") or []) & set(b.get("donor_roles") or []))
@@ -669,12 +671,68 @@ def build_capability_mesh(args):
                         "to": b.get("id"),
                         "relation": "SHARED_DONOR_ROLE",
                         "shared_roles": role_overlap,
+                        "merge": False,
+                        "proof_transfer": False,
                     })
+
+    # Explicit current-registry relations are valid mesh edges even when two
+    # bodies intentionally do not share a capability label. Relation edges
+    # preserve direction and never transfer proof or merge identity.
+    existing_relation_keys = set()
+    for edge in edges:
+        existing_relation_keys.add((edge.get("from"), edge.get("to"), edge.get("relation"), edge.get("declared_relation")))
+
+    for source in nodes:
+        record = current_record_for_profile(source) or {}
+        for raw_relation in record.get("relations") or []:
+            relation_name = None
+            target_name = None
+            if isinstance(raw_relation, dict):
+                relation_name = str(raw_relation.get("relation") or "").strip()
+                target_name = str(raw_relation.get("target") or "").strip()
+            elif isinstance(raw_relation, str):
+                if "→" in raw_relation:
+                    relation_name, target_name = [part.strip() for part in raw_relation.split("→", 1)]
+                elif "->" in raw_relation:
+                    relation_name, target_name = [part.strip() for part in raw_relation.split("->", 1)]
+            if not relation_name or not target_name:
+                continue
+
+            target = None
+            best = 0.0
+            for candidate in nodes:
+                if candidate.get("id") == source.get("id"):
+                    continue
+                identities = [candidate.get("id",""), candidate.get("name","")]
+                identities += candidate.get("aliases") or []
+                candidate_record = current_record_for_profile(candidate) or {}
+                identities += [candidate_record.get("title","")]
+                score = max((identity_strength(target_name, identity) for identity in identities if identity), default=0.0)
+                if score > best:
+                    best = score
+                    target = candidate
+            if not target or best < 0.99:
+                continue
+
+            key = (source.get("id"), target.get("id"), "DECLARED_RELATION", relation_name)
+            if key in existing_relation_keys:
+                continue
+            edges.append({
+                "from": source.get("id"),
+                "to": target.get("id"),
+                "relation": "DECLARED_RELATION",
+                "declared_relation": relation_name,
+                "relation_source": "current_project_registry",
+                "merge": False,
+                "proof_transfer": False,
+            })
+            existing_relation_keys.add(key)
+
     return {
         "objective": objective or None,
         "nodes": [donor_view(n, n.get("objective_score")) for n in nodes],
         "edges": edges,
-        "mesh_law": "EDGE ≠ MERGE. Shared capability is a contact reason, not identity collapse.",
+        "mesh_law": "EDGE ≠ MERGE. Edges may express shared capability/role or an explicit declared relation; no edge transfers proof or collapses identity.",
     }
 
 def detect_propagation_gaps(args):
@@ -1112,7 +1170,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.7.6"
+    server_version = "JMBuildMeshNativeMCP/0.7.7"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")

@@ -9,6 +9,21 @@ const integrationRegistry = {
   registry_route: 'https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json',
   routes: [{id:'estate'}],
   services: [{id:'navigator-public-mcp'}],
+  lineage_seats: [{
+    id:'JM-BUILD-MESH-001',
+    name:'JM ECOSTATE — Build Mesh',
+    aliases:['JM ECOSTATE Build Mesh','Build Mesh','JM Build Mesh'],
+    role:'ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT',
+    status:'CURRENT_DECLARED',
+    version:'package v1.0.3 / hosted MCP v0.7.1',
+    source:'JM ECOSTATE — Build Mesh v1.0.3 Self-Seating Registry Refresh',
+    source_file:'navigator/estate-integration/public-registry.json',
+    preserved:'Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1.',
+    lineage:[{source_file:'JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json',locator:'ecostate-build-mesh-v102',authority:'JM.CareerCurrentProjectRegistry/0.4',role:'current self-seat'}],
+    connections:['JM3232 Navigator','JM Estate Public Nervous System'],
+    authority:{primary:'JM.CareerCurrentProjectRegistry/0.4',confirmation_status:'LIVE_READBACK_PASS',source_owner:'JM / JMISJUSTME'},
+    boundary:'Public-safe lineage seat only.'
+  }],
   privacy_boundary: {contains_owner_write_endpoint:false}
 };
 
@@ -64,4 +79,15 @@ const health = await healthRes.json();
 if (!health.ok || health.estate_integration?.state !== 'CONNECTED') throw new Error('health integration failed');
 if (JSON.stringify(health).includes('navigator-live-contact.jm-inline-contact-probe.pages.dev')) throw new Error('owner upstream exposed in health');
 
-console.log('Navigator public MCP v0.2 Estate integration unit proof PASS');
+x = await rpc(5,'tools/call',{name:'search',arguments:{query:'JM ECOSTATE — Build Mesh',limit:8}});
+if (!x.res.ok || x.json.error) throw new Error('Build Mesh lineage search failed');
+const rows = x.json.result.structuredContent?.results || [];
+if (rows[0]?.id !== 'JM-BUILD-MESH-001') throw new Error('Build Mesh public lineage seat did not rank first');
+
+x = await rpc(6,'tools/call',{name:'navigator_return_lineage',arguments:{id:'JM-BUILD-MESH-001'}});
+if (!x.res.ok || x.json.error) throw new Error('Build Mesh lineage return failed');
+const lineage = x.json.result.structuredContent;
+if (lineage.id !== 'JM-BUILD-MESH-001' || lineage.authority?.primary !== 'JM.CareerCurrentProjectRegistry/0.4') throw new Error('Build Mesh lineage authority mismatch');
+if (JSON.stringify(lineage).includes('receipt_chain_head')) throw new Error('private lineage state leaked');
+
+console.log('Navigator public MCP v0.2 Estate integration + Build Mesh lineage unit proof PASS');

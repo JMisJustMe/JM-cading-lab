@@ -63,6 +63,86 @@ function sanitizeStructured(name,v){
 }
 function sanitizeToolResult(name,result){if(!result||typeof result!=="object")return result; return {...result,structuredContent:sanitizeStructured(name,result.structuredContent||{})};}
 
+
+async function publicLineageSeats(){
+  try{
+    const r=await fetch(INTEGRATION_REGISTRY,{headers:{accept:"application/json"},cf:{cacheTtl:0,cacheEverything:false}});
+    if(!r.ok) return [];
+    const d=await r.json();
+    if(d?.schema!=="JM.Estate.PublicNervousSystem/1") return [];
+    return Array.isArray(d.lineage_seats)?d.lineage_seats:[];
+  }catch{return [];}
+}
+function seatNorm(value){return String(value||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function seatMatches(query,seat){
+  const q=seatNorm(query);
+  if(!q)return false;
+  const names=[seat?.name,...(Array.isArray(seat?.aliases)?seat.aliases:[])].map(seatNorm).filter(Boolean);
+  return names.some(n=>q===n||q.includes(n)||n.includes(q));
+}
+function seatSearchRow(seat){
+  return {
+    id:seat.id||"",
+    title:seat.name||"",
+    text:[seat.role,seat.status,seat.version].filter(Boolean).join(" · "),
+    url:"",
+    source_kind:"estate_public_lineage",
+    source_file:seat.source_file||"navigator/estate-integration/public-registry.json",
+    score:100,
+    flags:["public-safe","current-declared"],
+    relationships:Array.isArray(seat.connections)?seat.connections.slice(0,12):[],
+  };
+}
+function seatFetchView(seat){
+  return {
+    id:seat.id||"",
+    title:seat.name||"",
+    text:[seat.role,seat.status,seat.version,seat.preserved].filter(Boolean).join(" · "),
+    url:"",
+    metadata:{
+      source_kind:"estate_public_lineage",
+      source_file:seat.source_file||"navigator/estate-integration/public-registry.json",
+      aliases:Array.isArray(seat.aliases)?seat.aliases:[],
+      relationships:Array.isArray(seat.connections)?seat.connections:[],
+      tags:["Build Mesh","ECOSTATE","control plane","public lineage"],
+      flags:["public-safe","current-declared"],
+    },
+    record:{
+      id:seat.id||"",
+      canonical_name:seat.name||"",
+      entry_type:"public lineage seat",
+      entry_status:seat.status||"",
+      version:seat.version||"",
+      source:seat.source||"",
+      preserved:seat.preserved||"",
+      connections:Array.isArray(seat.connections)?seat.connections:[],
+      authority:seat.authority||{},
+      lineage:Array.isArray(seat.lineage)?seat.lineage:[],
+      claim:{claim_status:seat.status||"",boundary:seat.boundary||""},
+    },
+  };
+}
+function seatLineageView(seat){
+  return {
+    id:seat.id||"",
+    title:seat.name||"",
+    source:seat.source||"",
+    source_file:seat.source_file||"navigator/estate-integration/public-registry.json",
+    preserved:seat.preserved||"",
+    lineage:Array.isArray(seat.lineage)?seat.lineage:[],
+    connections:Array.isArray(seat.connections)?seat.connections:[],
+    authority:seat.authority||{},
+    boundary:seat.boundary||"",
+  };
+}
+function localToolResult(structuredContent){
+  return {
+    content:[{type:"text",text:JSON.stringify(structuredContent,null,2)}],
+    structuredContent,
+    isError:false,
+  };
+}
+
 async function integrationStatus(){
   try{
     const r=await fetch(INTEGRATION_REGISTRY,{headers:{accept:"application/json"},cf:{cacheTtl:0,cacheEverything:false}});
@@ -111,8 +191,28 @@ async function handleMcp(request){
     if(method==="tools/list") return json(rpcResult(id,{tools:TOOLS}));
     if(method==="tools/call"){
       if(!ALLOWED_TOOLS.has(params.name)) return json(rpcError(id,-32602,`Tool is not exposed on the public read-only descendant: ${params.name}`),400);
-      const result=await upstream("tools/call",{name:params.name,arguments:params.arguments||{}});
+      const args=params.arguments||{};
+      if(params.name==="fetch"||params.name==="navigator_return_lineage"){
+        const seats=await publicLineageSeats();
+        const seat=seats.find(x=>x?.id===args.id);
+        if(seat){
+          const structured=params.name==="fetch"?seatFetchView(seat):seatLineageView(seat);
+          return json(rpcResult(id,localToolResult(structured)));
+        }
+      }
+      const result=await upstream("tools/call",{name:params.name,arguments:args});
       const safe=sanitizeToolResult(params.name,result);
+      if(params.name==="search"){
+        const seats=await publicLineageSeats();
+        const local=seats.filter(x=>seatMatches(args.query,x)).map(seatSearchRow);
+        if(local.length){
+          const existing=Array.isArray(safe.structuredContent?.results)?safe.structuredContent.results:[];
+          const ids=new Set(local.map(x=>x.id));
+          safe.structuredContent.results=[...local,...existing.filter(x=>!ids.has(x.id))].slice(0,Math.max(1,Math.min(Number(args.limit||8),25)));
+          safe.structuredContent.count=safe.structuredContent.results.length;
+          safe.structuredContent.boundary=((safe.structuredContent.boundary||"")+" Public-safe lineage seats are projected from the canonical Estate integration registry and do not grant write authority.").trim();
+        }
+      }
       if(params.name==="navigator_bridge_status") safe.structuredContent.estate_integration=await integrationStatus();
       return json(rpcResult(id,safe));
     }

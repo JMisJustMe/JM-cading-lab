@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.5"
+VERSION = "0.7.6"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -257,7 +257,7 @@ def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.7.1 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.7.6 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",
@@ -943,7 +943,7 @@ def estate_keeper_contract(args):
     ).hexdigest()[:24]
 
     return {
-        "schema": "JM.BuildMesh.EstateKeeperContract/0.7.5",
+        "schema": "JM.BuildMesh.EstateKeeperContract/0.7.6",
         "contract_id": f"JMKEEP-{contract_id}",
         "phase": "HOST_CONTACT_REQUIRED",
         "scope": scope,
@@ -1112,7 +1112,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.7.2"
+    server_version = "JMBuildMeshNativeMCP/0.7.6"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")

@@ -19,7 +19,8 @@
     ],
     "owner_instruction": "Make every run prove exactly which coding bodies entered it, then use that observability as the base for later factory/bridge specialization.",
     "source_rule": "SELECTION_TRACE_NOT_PROCESS_INFLATION",
-    "merge_forbidden_at_body_level": true
+    "merge_forbidden_at_body_level": true,
+    "work_pr": 335
   },
   "foundation": {
     "recovered_gap": "The runtime could route work and expose all 64 identities, but it did not emit a durable exact per-run record of which coding identities entered the current runtime spine and which stayed available-but-unselected.",

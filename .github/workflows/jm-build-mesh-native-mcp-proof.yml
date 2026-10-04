@@ -31,7 +31,7 @@ jobs:
           server = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(server)
 
-          assert server.VERSION == "0.7.4"
+          assert server.VERSION == "0.7.5"
           exact = server.resolve_profile("JM ECOSTATE — Build Mesh")
           assert exact and exact["id"] == "ecostate-build-mesh-v102", exact
           versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.4")
@@ -107,6 +107,19 @@ jobs:
           assert downloadable["hosted_authority_state"] == "CURRENT_DECLARED", downloadable
           assert downloadable["surface_profile"]["label"] == "DOWNLOAD / ADDABLE ROUTE"
           assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"]
+          keeper = server.estate_keeper_contract({
+              "scope":"private Library delta maintenance",
+              "last_checkpoint":"PASS_84",
+              "changed_count":0,
+              "unresolved_count":0,
+          })
+          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", keeper
+          assert keeper["no_census_default"] is True, keeper
+          assert keeper["destructive_default"] == "HOLD", keeper
+          assert keeper["mutation_performed"] is False, keeper
+          assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
+          print("STATIC_ESTATE_KEEPER_V0_7_5_PASS")
+
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
 
@@ -133,6 +146,7 @@ jobs:
               "detect_propagation_gaps",
               "plan_capability_inheritance",
               "build_sync_contract",
+              "estate_keeper_contract",
               "plan_artifact_route",
               "prepare_operation_gate",
           ]
@@ -172,16 +186,16 @@ jobs:
                       probe = rpc(900 + attempt, "initialize", {
                           "protocolVersion":"2025-06-18",
                           "capabilities":{},
-                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.4"},
+                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.7.5"},
                       })
-                      if probe["serverInfo"].get("version") == "0.7.4":
+                      if probe["serverInfo"].get("version") == "0.7.5":
                           init = probe
                           break
               except Exception:
                   pass
               time.sleep(10)
 
-          assert init is not None, f"Hosted v0.7.4 did not become live in time; last_ready={last_ready}"
+          assert init is not None, f"Hosted v0.7.5 did not become live in time; last_ready={last_ready}"
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
 
           listed = rpc(2, "tools/list", {})
@@ -220,6 +234,18 @@ jobs:
                   "recover_state":recovered["resolution_state"],
                   "resolution_basis":recovered["resolution_basis"],
               }
+
+          assert status["estate_keeper_contract_schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", status
+          keeper = call(11, "estate_keeper_contract", {
+              "scope":"private Library delta maintenance",
+              "last_checkpoint":"PASS_84",
+              "changed_count":0,
+              "unresolved_count":0,
+          })
+          assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5", keeper
+          assert keeper["no_census_default"] is True, keeper
+          assert keeper["destructive_default"] == "HOLD", keeper
+          assert keeper["mutation_performed"] is False, keeper
 
           build_mesh = call(4, "detect_propagation_gaps", {
               "target":"JM ECOSTATE — Build Mesh",
@@ -305,7 +331,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.4",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.7.5",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -337,7 +363,7 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.4 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
+              "claim_boundary":"Proves hosted v0.7.5 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

@@ -26,12 +26,12 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm-core-v1",
-        "name":"JM LLM Core v1.1 — Symbiosis Cycle 001",
-        "source":"current_project_registry",
+        "name":"JM LLM Core v1.2 — Symbiosis Cycle 002",
+        "source":"external_current_registry_v0_8 + direct_cycle002_regression_receipt",
         "domain":"AI / language model",
-        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","residual-gap capability acquisition","learned-route skill integration","ECOSTATE rehearsal retention"],
-        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor"],
-        "open_frontiers":["learned-weight free modular generation","mathematical induction","predicate logic","combinatorics","matrix algebra","discrete probability","broader free generation","broader reasoning"]
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","induction-intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
+        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor"],
+        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary theorem proving","predicate logic","combinatorics","matrix algebra","discrete probability","broader free generation","broader reasoning"]
     },
     {
         "id":"llm2-v2",
@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_7 + hosted_runtime_v0_7_9",
+        "source":"external_current_registry_v0_8 + hosted_runtime_v0_8_0",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -326,7 +326,8 @@ CAPABILITY_PROFILES = [
             "registry-card and body↔carrier reconciliation routing",
             "32_Cb sovereign-donor seating",
             "JM32-1DA exact runtime-route seating",
-            "JM32-1DA Cross-Device Adapter separate-authority seating"
+            "JM32-1DA Cross-Device Adapter separate-authority seating",
+            "JM LLM Core v1.2 Cycle 002 capability-return seating"
         ],
         "donor_roles":[
             "control-plane routing",

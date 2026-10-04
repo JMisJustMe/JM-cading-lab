@@ -294,7 +294,7 @@ jobs:
               "artifact_router":"PASS_PLAN_ONLY",
               "factory_feed_batch_01":{
                   "book":{"target":"Secrets of Silence","route_id":book["route_id"],"authority_state":book["hosted_authority_state"],"profile":book["target_profile_id"]},
-                  "comic":{"target":"FTR — The Massive Push","route_id":comic["route_id"],"authority_state":comic["hosted_authority_state"],"profile":comic["target_profile_id"],"authority_gate":"HOLD_EXACT_COMIC_AUTHORITY"},
+                  "comic":{"target":"FTR — The Massive Push","route_id":comic["route_id"],"authority_state":comic["hosted_authority_state"],"profile":comic["target_profile_id"],"authority_gate":"ROUTE_READY_AT_HOSTED_AUTHORITY"},
                   "theory":{"target":"JM Theory Estate","route_id":theory["route_id"],"authority_state":theory["hosted_authority_state"],"profile":theory["target_profile_id"]},
                   "app":{"target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","route_id":app["route_id"],"authority_state":app["hosted_authority_state"],"profile":app["target_profile_id"]},
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
@@ -302,7 +302,7 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.3 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. Five selected targets resolve through current hosted authority; the comic lane deliberately withholds current-head crown because exact FTR — The Massive Push authority is not recovered by Build Mesh. No artifact build, publish, install or owner-device proof is transferred from route generation.",
+              "claim_boundary":"Proves hosted v0.7.3 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. All six selected targets resolve through current hosted authority. No artifact build, publish, install or owner-device proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

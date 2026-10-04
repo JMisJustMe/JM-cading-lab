@@ -1,0 +1,73 @@
+name: JM Sovereign Agent Portable Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/**'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-sovereign-agent-portable-runtime.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/**'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json'
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - '.github/workflows/jm-sovereign-agent-portable-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  portable-runtime-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Python bootstrap
+        run: python3 agent-runtime/jm_agent_runtime.py --query "whole estate routing" > /tmp/python.json
+      - name: Node bootstrap
+        run: node agent-runtime/jm-agent-runtime.mjs --query "whole estate routing" > /tmp/node.json
+      - name: Cross-runtime core parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/jm_agent_runtime.py --core-only --query "music release" > /tmp/py-music.json
+          node agent-runtime/jm-agent-runtime.mjs --core-only --query "music release" > /tmp/js-music.json
+          diff -u /tmp/py-music.json /tmp/js-music.json
+
+          python3 agent-runtime/jm_agent_runtime.py --core-only --query "coding runtime" > /tmp/py-code.json
+          node agent-runtime/jm-agent-runtime.mjs --core-only --query "coding runtime" > /tmp/js-code.json
+          diff -u /tmp/py-code.json /tmp/js-code.json
+
+          python3 agent-runtime/jm_agent_runtime.py --core-only --query "theory research" > /tmp/py-theory.json
+          node agent-runtime/jm-agent-runtime.mjs --core-only --query "theory research" > /tmp/js-theory.json
+          diff -u /tmp/py-theory.json /tmp/js-theory.json
+      - name: Assert routing and sovereignty boundaries
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          def run(q):
+              out=subprocess.check_output(["python3","agent-runtime/jm_agent_runtime.py","--core-only","--query",q],text=True)
+              return json.loads(out)
+          music=run("music release")
+          coding=run("coding runtime")
+          blank=run("zzzz-no-known-domain")
+          assert music["route_candidates"], music
+          assert coding["route_candidates"], coding
+          assert blank["route_candidates"] == [], blank
+          assert music["estate"]["current_project_heads"] == 19
+          assert music["estate"]["overlay_profiles"] == 11
+          assert music["coding"]["current_identities"] == 64
+          assert music["governance"]["host_neutral"] is True
+          assert music["authority_class"] == "SESSION_ROUTER_NOT_SOURCE_AUTHORITY"
+          print("JM SOVEREIGN AGENT PORTABLE RUNTIME: PASS")
+          print("node_python_core_parity=PASS heads=19 overlays=11 coding_identities=64 host_neutral=True")
+          PY

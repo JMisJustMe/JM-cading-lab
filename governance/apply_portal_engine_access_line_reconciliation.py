@@ -39,7 +39,7 @@ stats = {
     'preparation': counts['prep'],
 }
 expected_stats = {
-    'room_count': 44,
+    'room_count': 45,
     'full_plus_preserved': 29,
     'routed': 12,
     'source_needed': 0,

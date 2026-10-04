@@ -43,7 +43,7 @@ def validate_apps(text: str) -> dict[str, object]:
     }
     if shown != expected:
         raise SystemExit(f"Apps count receipt mismatch: {shown} != {expected}")
-    if len(rows) != 44:
+    if len(rows) != 45:
         raise SystemExit(f"Apps room count changed unexpectedly: {len(rows)}")
     if any(row[0] == "RouteOS" for row in rows):
         raise SystemExit("RouteOS has regressed into the literal Non-Game Apps registry")
@@ -147,7 +147,7 @@ def update_route_contract(contract: dict[str, object], candidate: bool) -> None:
             route.update(
                 {
                     "body": "JM Non-Game Apps House — Current Public Route Wave 01",
-                    "state": "LIVE_GOVERNED_44_ROOM_PUBLIC_SAFE_CATALOGUE_CURRENT_HEADS_RECONCILED",
+                    "state": "LIVE_GOVERNED_45_ROOM_PUBLIC_SAFE_CATALOGUE_CURRENT_HEADS_RECONCILED",
                 }
             )
     if not theory_seen or not apps_seen:
@@ -167,7 +167,7 @@ def update_route_contract(contract: dict[str, object], candidate: bool) -> None:
         },
         "apps": {
             "path": "apps/index.html",
-            "rooms": 44,
+            "rooms": 45,
             "money_menu": "242-route v1.1 authority / public contact v1.2",
             "routeos": "sovereign gaming-platform bridge; not counted as a non-game app",
         },
@@ -183,7 +183,7 @@ def update_estate_map(node: object) -> None:
             node["state"] = "LIVE_18_FULL_37_OF_37_SOURCE_BODIES_24_DRAFTS"
         elif node.get("path") == "apps/index.html":
             node["body"] = "JM Non-Game Apps House — Current Public Route Wave 01"
-            node["state"] = "LIVE_GOVERNED_44_ROOM_CURRENT_HEADS_RECONCILED"
+            node["state"] = "LIVE_GOVERNED_45_ROOM_CURRENT_HEADS_RECONCILED"
         for value in node.values():
             update_estate_map(value)
     elif isinstance(node, list):
@@ -288,7 +288,7 @@ def main() -> None:
     estate_map["public_route_repair_wave_01"] = {
         "status": "SOURCE_REPAIRED_LIVE_PROOF_PENDING",
         "theory": "v0.20.1 integrity over v0.19 shell",
-        "apps_rooms": 44,
+        "apps_rooms": 45,
         "money_menu_public_contact": "v1.2",
         "recorded_utc": NOW,
     }
@@ -297,7 +297,7 @@ def main() -> None:
     apps_status = """# JM Non-Game Apps House — Public Route Status v1.1
 
 **Wave:** Public Route Repair Wave 01  
-**Rooms:** 44  
+**Rooms:** 45  
 **Current-head repair:** Money Menu v1.1/v1.2 and Theory v0.20.1 seated  
 **RouteOS:** sovereign gaming-platform bridge; not counted as a non-game app  
 **State:** SOURCE REPAIRED / LIVE PROOF PENDING

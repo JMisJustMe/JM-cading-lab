@@ -268,6 +268,35 @@ CAPABILITY_PROFILES = [
         "open_frontiers":["continued outside-Estate reconciliation where open"]
     },
     {
+        "id":"ftr-massive-push-v1",
+        "name":"FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0",
+        "aliases":["FTR — The Massive Push","The Massive Push","One Reality, Many Cuts"],
+        "source":"current_overlay",
+        "domain":"Comics / visual story",
+        "capabilities":[
+            "32-issue functional comic series architecture",
+            "704-page functional comic route",
+            "issue and page-order continuity",
+            "production-master DOCX/PDF packaging",
+            "704-page visual comic master",
+            "contact-sheet QA",
+            "Visual VTS preservation",
+            "descendant illustration/lettering routing"
+        ],
+        "donor_roles":[
+            "comic production route",
+            "page and issue continuity",
+            "functional visual-story master",
+            "comic QA pattern"
+        ],
+        "open_frontiers":[
+            "high-fidelity bespoke illustration",
+            "final lettering",
+            "print-production finishing",
+            "surface-specific web-reader proof"
+        ]
+    },
+    {
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],

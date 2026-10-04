@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.4",
+  "schema": "JM.CareerCurrentProjectRegistry/0.5",
   "date": "2026-10-04",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.3 LIVE-READBACK",
-  "boundary": "Direct private current pointers/receipts and stronger recipient-specific runtime evidence can supersede this hosted snapshot.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.6 32_Cb-SEAT DESCENDANT",
+  "boundary": "This hosted public snapshot seats 32_Cb as a bounded current donor record, but direct private current pointers/receipts and stronger recipient-specific runtime evidence can still supersede the hosted snapshot.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh v1.0.6 — Estate Keeper Convergence",
+      "title": "JM ECOSTATE — Build Mesh v1.0.7 — 32_Cb Sovereign-Donor Seating",
       "date": "4 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PACKAGE v1.0.6 · HOSTED MCP v0.7.5 KEEPER-CONTRACT DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing and delta-first host-side Estate maintenance without private-Library ingestion.",
-      "proof": "Private plugin v1.0.6 was updated in-place and read back under the existing plugin identity with the Estate Keeper skill and preserved app/MCP binding. Hosted MCP v0.7.5 inherits v0.7.4 discovery≠authority separation and adds a 17th read-only estate_keeper_contract tool. Runtime deployment/readback remains the separate Ding gate and is not pre-claimed by this registry record.",
-      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. Fuzzy discovery is not authority. The Keeper returns a host/private maintenance contract only; private contact and authorized Library consequence remain host-side, with readback required before Ding."
+      "status": "CURRENT DECLARED · PACKAGE v1.0.7 · HOSTED MCP v0.7.6 32_CB-SEAT DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing and delta-first host-side Estate maintenance. v1.0.7 explicitly seats 32_Cb v2.1 as a distinct sovereign multi-target embodiment donor without merging identity or transferring proof.",
+      "proof": "Private plugin v1.0.7 was updated in place and read back under the existing plugin identity. Its v0.5 registry delta adds 32_Cb over the preserved v0.4 base for 20 logical current records. Hosted source v0.7.6 carries the corresponding public-safe current record and capability profile; live runtime identity must still be established by deployment/readback.",
+      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. 32_Cb donor relationship does not transfer its 72-profile proof matrix to descendants. Fuzzy discovery is not authority; private exact authority can outrank this hosted snapshot."
     },
     {
       "id": "opportunity-v08",
@@ -295,6 +295,36 @@
       "summary": "A learner-centred engine with separate learner lanes, pressure, hints, recovery, trace, co-op, contact modes, adaptive skill traces and learner/parent choice over suggestions.",
       "proof": "Current v5.2 carrier preserves the Engine/Pack split, Quick/Probe/Make/Read contact modes, living routes, Contact Compass and explicit non-ranking co-op logic.",
       "boundary": "Family/learner contact remains human-governed; the person is never reduced to the route."
+    },
+    {
+      "id": "32cb-v21",
+      "title": "32_Cb — Sovereign Federation Runtime v2.1",
+      "aliases": [
+        "32_Cb",
+        "32Cb",
+        "32 Cb",
+        "32_Cb v2.1"
+      ],
+      "date": "27 Sep 2026",
+      "category": "software infrastructure",
+      "tags": [
+        "32_Cb",
+        "sovereign runtime",
+        "multi-target embodiment",
+        "coding",
+        "runtime",
+        "donor"
+      ],
+      "status": "FROZEN · LOCKED · ANCHORED · CURRENT-SCOPE COMPLETE · MODERN DONOR SEATED",
+      "summary": "32_Cb v2.1 is the sovereign multi-target embodiment donor: one owner body with 72 named profiles and JM-native operational engines, with internal/native proof kept separate from external host proof. It remains a distinct frozen body while donating architecture forward into JM32-1DA runtime/route expansion and JM Target Bridge source→host adaptation.",
+      "proof": "Canonical private Library seat: /JM Estate/Sovereign Coding Bodies/32_Cb/. Runtime head SHA-256 03a237debc9f1d26efb213171cd759e35572450313a2a5636ebce46efcceeab1. Closure receipt SHA-256 582a4b7136537d13e1087d046ab4ba0e5e8ada2d6eb8ea96b3d45c4cca28d8c9. 72/72 internal DING; 72/72 JM-native DING; 35/72 external DING; 37/72 external HOLD; 0 external BUGG.",
+      "boundary": "This hosted record is a bounded public-safe seat derived from stronger exact private authority. 32_Cb proof does not transfer to JM32-1DA, Target Bridge, Build Mesh or any recipient. Host absence is HOLD, not body nonexistence.",
+      "donor_role": "SOVEREIGN_MULTI_TARGET_EMBODIMENT_DONOR",
+      "relations": [
+        "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION → JM32-1DA",
+        "DIRECT_DONOR_TO_SOURCE_HOST_ADAPTATION_EXPANSION → JM TARGET BRIDGE",
+        "DONOR_REGISTERED_FOR_DISCOVERY_COORDINATION_AND_PROOF_ROUTING → JM ECOSTATE Build Mesh"
+      ]
     }
   ]
 }

@@ -12,6 +12,7 @@ ESTATE_CAPABILITY_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_ESTATE_CAPABILI
 PORTABLE_RUNTIME_PATH = ROOT / "agent-runtime" / "JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
 HOST_ADAPTER_CONTRACT_PATH = ROOT / "agent-runtime" / "host-adapters" / "JM_HOST_ADAPTER_CONFORMANCE_v1_0.json"
 HOST_ADAPTER_REGISTRY_PATH = ROOT / "agent-runtime" / "host-adapters" / "JM_HOST_ADAPTER_REGISTRY_v1_0.json"
+CODING_ACTIVATION_POLICY_PATH = ROOT / "coding-estate" / "JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -86,6 +87,12 @@ except Exception as exc:
     print(f"HOST ADAPTER CONFORMANCE LOAD FAIL: {exc}")
     sys.exit(1)
 
+try:
+    coding_activation_policy = json.loads(CODING_ACTIVATION_POLICY_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"CODING ACTIVATION POLICY LOAD FAIL: {exc}")
+    sys.exit(1)
+
 host_conf = data.get("host_adapter_conformance") or {}
 if host_conf.get("schema") != "JM.HostAdapterConformance/1.0":
     errors.append("agent contract host-adapter conformance schema missing/drifted")
@@ -142,6 +149,21 @@ if bg.get("master_runtime") != build_governance.get("master_runtime"):
     errors.append("agent contract master runtime does not match canonical build-governance contract")
 if bg.get("authority_gate") != (build_governance.get("authority_gate") or {}).get("required"):
     errors.append("agent contract authority gate does not match canonical build-governance contract")
+
+activation = data.get("coding_body_activation") or {}
+if activation.get("schema") != "JM.CodingBodyActivationPolicy/0.1":
+    errors.append("agent contract coding-body activation schema missing/drifted")
+if coding_activation_policy.get("schema") != "JM.CodingBodyActivationPolicy/0.1":
+    errors.append("canonical coding-body activation policy schema missing/drifted")
+canonical_active_ids = [x.get("code_id") for x in (coding_activation_policy.get("baseline_active") or [])]
+if activation.get("active_runtime_spine_code_ids") != canonical_active_ids:
+    errors.append("agent contract activation IDs do not exactly match canonical activation policy")
+if activation.get("active_runtime_spine_count") != len(canonical_active_ids):
+    errors.append("agent contract active runtime-spine count drift")
+if activation.get("available_not_selected_count") != 64 - len(canonical_active_ids):
+    errors.append("agent contract available-not-selected count drift")
+if runtime_sources.get("coding_activation_policy") != "coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json":
+    errors.append("portable runtime coding-activation source pointer drift")
 
 contract64 = data.get("coding_estate_current_64") or []
 canonical64 = [x.get("name") for x in (current64.get("identities") or [])]

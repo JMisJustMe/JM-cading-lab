@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_6 + hosted_runtime_v0_7_8",
+        "source":"external_current_registry_v0_7 + hosted_runtime_v0_7_9",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -325,7 +325,8 @@ CAPABILITY_PROFILES = [
             "host-private Library keeper contract",
             "registry-card and body↔carrier reconciliation routing",
             "32_Cb sovereign-donor seating",
-            "JM32-1DA exact runtime-route seating"
+            "JM32-1DA exact runtime-route seating",
+            "JM32-1DA Cross-Device Adapter separate-authority seating"
         ],
         "donor_roles":[
             "control-plane routing",
@@ -402,6 +403,34 @@ CAPABILITY_PROFILES = [
             "native universal OS is not claimed",
             "cross-device adapter v0.2 remains a separate authority",
             "new recipient or device proof requires fresh contact"
+        ]
+    },
+    {
+        "id":"jm32-1da-cross-device-adapter-v02",
+        "name":"JM32-1DA Cross-Device Runtime Adapter v0.2",
+        "aliases":["JM32-1DA Cross-Device Adapter","JM32-1DA Cross-Device Runtime Adapter","Cross-Device Runtime Adapter v0.2"],
+        "source":"external_current_registry_v0_7 + current-best-proof-derived-seat",
+        "domain":"Cross-device / runtime adapter / TraceBox proof",
+        "capabilities":[
+            "seven-route cross-device test trace",
+            "device field adaptation",
+            "syntax-governed cross-device carrier",
+            "TraceBox receipt routing",
+            "sneeze recovery routing",
+            "export import continuity",
+            "trace replay",
+            "bounded device-route adaptation"
+        ],
+        "donor_roles":[
+            "cross-device adapter proof carrier",
+            "device-route adaptation donor",
+            "TraceBox continuity donor"
+        ],
+        "open_frontiers":[
+            "new named device runtime or app consequence requires fresh proof",
+            "standalone original code carrier hash remains unrecovered in this pass",
+            "native universal OS is not claimed",
+            "adapter proof does not transfer to the main runtime"
         ]
     },
 ]

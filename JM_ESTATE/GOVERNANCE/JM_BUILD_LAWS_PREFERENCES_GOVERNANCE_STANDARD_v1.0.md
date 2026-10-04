@@ -150,7 +150,7 @@ Unless the target proves a better route:
 
 ## Coding Estate integration
 
-All **64 current coding identities** inherit this floor through the Current-64 running standard. That does **not** force all 64 into each build.
+ALL **64 current coding identities** inherit this floor through the Current-64 running standard. That does **not** force all 64 into each build.
 
 `CURRENT 64 → TASK PRESSURE → SMALLEST RELEVANT BODY/DONOR SET → BUILD/CONTACT → RECIPIENT PROOF → TRACE → DONATE LEARNING`
 

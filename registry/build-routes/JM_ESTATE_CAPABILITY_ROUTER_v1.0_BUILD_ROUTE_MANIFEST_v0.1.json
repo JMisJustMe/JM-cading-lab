@@ -1,0 +1,61 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Whole Estate Capability Router",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Estate — Whole Capability Routing Standard v1.0",
+    "body_type": "Estate-wide domain/project/donor routing standard",
+    "intended_destination": "Canonical JM Estate routing layer"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "head_branch": "standards/jm-estate-capability-router-v1",
+    "source_authority": [
+      "JM.CareerCurrentProjectRegistry/0.4",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/capabilities.py",
+      "JM ECOSTATE Build Mesh Native MCP v0.7.1"
+    ],
+    "owner_instruction": "Continue from completed coding/build-law standards into the next unfinished lawful route.",
+    "source_rule": "CAPABILITY_PROFILE_IS_ROUTING_CUE_NOT_CURRENT_HEAD_AUTHORITY",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "live_snapshot": {
+      "current_project_records": 19,
+      "capability_profiles": 29,
+      "current_project_capability_profiles": 18,
+      "overlay_profiles": 11
+    },
+    "recovered_gap": "The sovereign agent has complete coding-body and build-governance standards, but lacks one explicit whole-Estate router across non-coding domains.",
+    "reuse_rule": "Reuse current project registry + Build Mesh capability profiles; do not invent duplicate domain bodies."
+  },
+  "exact_stack": {
+    "human_standard": "JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md",
+    "machine_field": "JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json",
+    "validator": "JM_ESTATE/GOVERNANCE/validate_estate_capability_field.py",
+    "CI": ".github/workflows/jm-estate-capability-router.yml"
+  },
+  "proof_lanes": {
+    "source_recovery": {
+      "state": "PASS",
+      "evidence": "Live Build Mesh reports 19 current project records and 29 capability profiles; capabilities.py contains 18 current-project profiles and 11 overlay profiles."
+    },
+    "machine_field": {
+      "state": "PENDING_CI",
+      "criterion": "Validator must match all 29 profiles exactly and preserve current-head vs overlay distinction."
+    },
+    "inherited_surface_integration": {
+      "state": "BLOCKED_BY_HOST_WRITE_GATE",
+      "criterion": "Root/inherited instruction surfaces require a separately accepted write path; do not claim integration until readback."
+    },
+    "merge_readback": {
+      "state": "OPEN"
+    }
+  },
+  "state": {
+    "route": "PARTIAL_AUTHORIZED_BUILD",
+    "core_router_body_created": true,
+    "inherited_surface_integration": false,
+    "crown": "HOLD — core body exists; inheritance not yet seated"
+  }
+}

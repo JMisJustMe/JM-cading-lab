@@ -267,6 +267,42 @@ CAPABILITY_PROFILES = [
         "donor_roles":["bounded traversal donor","checkpoint pattern","storage audit pattern"],
         "open_frontiers":["continued outside-Estate reconciliation where open"]
     }
+    {
+        "id":"ecostate-build-mesh-v102",
+        "name":"JM ECOSTATE — Build Mesh",
+        "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
+        "source":"hosted_runtime_v0_7_2",
+        "domain":"Estate / control plane / artifact routing",
+        "capabilities":[
+            "exact target identity resolution",
+            "current-head authority routing",
+            "proof-boundary preservation",
+            "capability donor mesh",
+            "deterministic operation gates",
+            "artifact-general production routing",
+            "book publication route planning",
+            "comic publication route planning",
+            "theory publication route planning",
+            "app delivery route planning",
+            "APK delivery route planning",
+            "download and addable-link route planning",
+            "host-routed mutation separation",
+            "receipt and recovery routing",
+            "ownership and carrier separation"
+        ],
+        "donor_roles":[
+            "control-plane routing",
+            "artifact dispatcher",
+            "proof-gate planner",
+            "host-operation planner",
+            "sovereignty boundary"
+        ],
+        "open_frontiers":[
+            "host execution of artifact plans remains connector-specific",
+            "each output surface still requires its own contact proof",
+            "private Library authority remains local to the host"
+        ]
+    },
 ]
 
 PROFILE_BY_ID = {p["id"]: p for p in CAPABILITY_PROFILES}

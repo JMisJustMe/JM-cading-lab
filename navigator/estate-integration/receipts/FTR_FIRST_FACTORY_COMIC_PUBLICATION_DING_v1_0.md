@@ -260,3 +260,53 @@ The same factory spine has now taken both a Theory body and a Comic body through
 without flattening their surface-specific forms.
 
 **FROZEN · LOCKED · ANCHORED · PUBLICLY CONTACTED · REPEATABILITY PROVED**
+
+## Post-FLAZ re-contact
+
+The saved repeatability receipt head itself was then deployed and re-contacted.
+
+Receipt head:
+
+`573ba59fa1baf13f357c0fc8aa8d70c0287daa1e`
+
+### GitHub Pages
+
+Fresh workflow run:
+
+`37218151058`
+
+Results:
+
+- build `111482810543` → **SUCCESS**
+- deploy `111482843226` → **SUCCESS**
+- Theory exact proof `111482886118` → **SUCCESS**
+- FTR exact proof `111482886148` → **SUCCESS**
+- exact FTR result: **FTR FACTORY GITHUB PAGES EXACT LIVE PASS**
+- FTR proof artifact: `11308689974`
+- FTR proof artifact ZIP SHA-256: `1d02ce697a3f4e79fe56d35db843c755a360a43550c5f5c78e8d826e21e118ea`
+- Theory proof artifact: `11309290777`
+- deployed Pages artifact: `11308674870`
+
+### Canonical Cloudflare Estate
+
+Fresh integrated workflow run:
+
+`37218151150`
+
+Job:
+
+`111482810976` → **SUCCESS**
+
+Fresh exact results:
+
+- **THEORY FACTORY CLOUDFLARE EXACT LIVE PASS**
+- **FTR FACTORY CLOUDFLARE EXACT LIVE PASS**
+
+Fresh integrated proof artifact:
+
+- artifact: `11309118289`
+- artifact ZIP SHA-256: `562aa31d1b5fbfd931df0ec00003aa5c019dbfbddfdf946ebc94f2e0c8ec193a`
+
+This post-FLAZ run proves the durable saved Estate state still serves both manufactured factory products without byte drift.
+
+**POST-FLAZ RE-CONTACT: PASS.**

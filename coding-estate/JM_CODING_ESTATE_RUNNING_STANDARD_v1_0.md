@@ -5,6 +5,16 @@
 **Machine registry:** `coding-estate/JM_CODING_ESTATE_CURRENT_64.json`  
 **Validator:** `python3 coding-estate/validate_current_64_standard.py`
 
+## Inherited build / governance floor
+
+All 64 current coding identities inherit:
+
+`JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`
+
+That floor governs build form, authority/preflight, proof/consequence, sovereignty, delegation, lineage, anti-bloat and working preferences before body-specific routing begins.
+
+**64 visible to routing ≠ 64 exempt from shared build law.**
+
 ## Crown boundary
 
 This standard converts the current **64-body role-qualified Coding Estate** into an actual operating floor for builds and agents.

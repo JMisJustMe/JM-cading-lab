@@ -1,0 +1,142 @@
+name: JM AGI Lab Runtime Console v1 Proof
+
+on:
+  push:
+    branches:
+      - factory/jm-agi-lab-runtime-console-v1
+    paths:
+      - ".github/workflows/jm-agi-lab-runtime-console-v1-proof.yml"
+      - "apps/jm-agi-lab-runtime-console-v1/**"
+      - "tests/jm-agi-lab-runtime-console-v1.spec.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prove-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Static runtime syntax and manifest gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='apps/jm-agi-lab-runtime-console-v1'
+          test -s "$base/index.html"
+          test -s "$base/styles.css"
+          test -s "$base/runtime-core.mjs"
+          test -s "$base/app.mjs"
+          test -s "$base/proof-node.mjs"
+          test -s "$base/manifest.json"
+          node --check "$base/runtime-core.mjs"
+          node --check "$base/app.mjs"
+          node --check "$base/proof-node.mjs"
+          python3 -m json.tool "$base/manifest.json" >/dev/null
+
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          base=pathlib.Path('apps/jm-agi-lab-runtime-console-v1')
+          m=json.loads((base/'manifest.json').read_text())
+          assert m['schema']=='JM.AGILab.RuntimeCarrier/1'
+          assert m['operation_id']=='JMOP-6d66ae8f0228162e549b7934'
+          assert m['authority_sha256']=='7f1fb0ad36eac37627862cb275aa3ec257d65767160915fbe5d65b0272264a67'
+          assert m['classification']=='EXECUTABLE_RUNTIME_CARRIER_DESCENDANT_NOT_NEW_AGI_LAB_HEAD'
+          hashes={}
+          for name in ['index.html','styles.css','runtime-core.mjs','app.mjs','proof-node.mjs']:
+              raw=(base/name).read_bytes()
+              hashes[name]={'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest()}
+          if m.get('verification_state')=='VERIFIED':
+              for name,actual in hashes.items():
+                  expected=m['outputs'][name]
+                  assert expected['bytes']==actual['bytes'],(name,'bytes',expected,actual)
+                  assert expected['sha256']==actual['sha256'],(name,'sha256',expected,actual)
+          pathlib.Path('/tmp/runtime-file-hashes.json').write_text(json.dumps(hashes,indent=2)+'\n')
+          print(json.dumps(hashes,indent=2))
+          PY
+
+      - name: Prove shared core across two Node processes
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='apps/jm-agi-lab-runtime-console-v1'
+          rm -f /tmp/jm-agi-runtime-state.json /tmp/jm-agi-runtime-state.json.receipt.json
+          node "$base/proof-node.mjs" arm /tmp/jm-agi-runtime-state.json
+          node "$base/proof-node.mjs" return /tmp/jm-agi-runtime-state.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/jm-agi-runtime-state.json.receipt.json'))
+          assert r['schema']=='JM.AGILab.NodeProcessProof/1'
+          assert r['state']=='PASS'
+          assert r['distinctProcess'] is True
+          assert all(r['receipt']['checks'].values())
+          print('NODE PROCESS REENTRY PASS',r['armedPid'],r['returnedPid'],r['stateSha256'])
+          PY
+
+      - name: Install Playwright Chromium
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Boot exact runtime carrier
+        shell: bash
+        run: |
+          python3 -m http.server 4188 --bind 127.0.0.1 >/tmp/jm-agi-runtime-http.log 2>&1 &
+          echo $! >/tmp/jm-agi-runtime-http.pid
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:4188/apps/jm-agi-lab-runtime-console-v1/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/jm-agi-runtime-http.log
+          exit 1
+
+      - name: Execute persistent-profile browser proof
+        env:
+          BASE_URL: http://127.0.0.1:4188
+        run: node tests/jm-agi-lab-runtime-console-v1.spec.mjs
+
+      - name: Build combined manufacture receipt
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib
+          hashes=json.load(open('/tmp/runtime-file-hashes.json'))
+          node=json.load(open('/tmp/jm-agi-runtime-state.json.receipt.json'))
+          browser=json.load(open('qa/jm-agi-lab-runtime-console-v1/browser-proof.json'))
+          receipt={
+            'schema':'JM.AGILab.RuntimeCarrierProof/1',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'operation_id':'JMOP-6d66ae8f0228162e549b7934',
+            'state':'PASS_EXECUTABLE_RUNTIME_CARRIER',
+            'shared_core_node_process_reentry':'PASS',
+            'browser_runtime_execution':'PASS',
+            'browser_process_reentry':'PASS',
+            'real_12_second_settle':'PASS',
+            'responsive_viewports':'PASS_MOBILE_DESKTOP',
+            'files':hashes,
+            'node_receipt':{
+              'distinctProcess':node['distinctProcess'],
+              'stateSha256':node['stateSha256'],
+              'checks':node['receipt']['checks']
+            },
+            'browser_receipt':browser,
+            'boundary':'Executable runtime manufacture only. No v1.4.5 crown, owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
+          }
+          pathlib.Path('JM_AGI_LAB_RUNTIME_CONSOLE_V1_PROOF.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt,indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_AGI_LAB_RUNTIME_CONSOLE_V1_PROOF
+          path: |
+            JM_AGI_LAB_RUNTIME_CONSOLE_V1_PROOF.json
+            qa/jm-agi-lab-runtime-console-v1/browser-proof.json
+            qa/jm-agi-lab-runtime-console-v1/01-armed-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/02-returned-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/03-returned-desktop.png
+            /tmp/jm-agi-runtime-state.json.receipt.json
+          if-no-files-found: error

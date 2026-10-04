@@ -48,19 +48,49 @@ jobs:
           assert book["delivery_contract"]["direct_route_required"] is True
           assert book["mutation_performed"] is False
 
+          comic = server.plan_artifact_route({
+              "target":"FTR — The Massive Push",
+              "artifact_type":"comic",
+              "outputs":["pdf","cbz","web-reader"],
+              "objective":"recover exact comic authority before descendant production",
+          })
+          assert comic["artifact_type"] == "comic"
+          assert comic["surface_profile"]["selected_outputs"] == ["pdf","cbz","web-reader"]
+          assert comic["hosted_authority_state"] != "CURRENT_DECLARED", comic
+          assert comic["target_profile_id"] is None, comic
+
+          theory = server.plan_artifact_route({
+              "target":"JM Theory Estate",
+              "artifact_type":"theory",
+              "outputs":["md","pdf","html"],
+          })
+          assert theory["target_profile_id"] == "theory-second-order", theory
+
+          app = server.plan_artifact_route({
+              "target":"JM LEGAL",
+              "artifact_type":"app",
+              "outputs":["web","package"],
+          })
+          assert app["target_profile_id"] == "legal-v11", app
+
           apk = server.plan_artifact_route({
               "target":"JM Living Estate",
               "artifact_type":"apk",
+              "outputs":["apk","direct-download-link"],
           })
+          assert apk["target_profile_id"] == "living-estate-apk", apk
           assert "apk" in apk["surface_profile"]["selected_outputs"]
           assert "direct-download-link" in apk["surface_profile"]["selected_outputs"]
 
           downloadable = server.plan_artifact_route({
-              "target":"Any governed artifact",
+              "target":"JM LLM #2",
               "artifact_type":"download",
+              "outputs":["manifest","sha256","direct-download-link"],
           })
+          assert downloadable["target_profile_id"] == "llm2-v2", downloadable
           assert downloadable["surface_profile"]["label"] == "DOWNLOAD / ADDABLE ROUTE"
-          print("STATIC_ARTIFACT_ROUTER_PASS")
+          assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"]
+          print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
 
       - name: Cross-host MCP proof
@@ -174,12 +204,51 @@ jobs:
           assert book["delivery_contract"]["direct_route_required"] is True
           assert book["mutation_performed"] is False
 
-          apk = call(6, "plan_artifact_route", {
+          comic = call(6, "plan_artifact_route", {
+              "target":"FTR — The Massive Push",
+              "artifact_type":"comic",
+              "outputs":["pdf","cbz","web-reader"],
+              "objective":"recover exact comic authority before descendant production",
+          })
+          assert comic["artifact_type"] == "comic", comic
+          assert comic["surface_profile"]["selected_outputs"] == ["pdf","cbz","web-reader"], comic
+          assert comic["hosted_authority_state"] != "CURRENT_DECLARED", comic
+          assert comic["target_profile_id"] is None, comic
+
+          theory = call(7, "plan_artifact_route", {
+              "target":"JM Theory Estate",
+              "artifact_type":"theory",
+              "outputs":["md","pdf","html"],
+              "objective":"public-safe theory descendants with claim jurisdiction preserved",
+          })
+          assert theory["target_profile_id"] == "theory-second-order", theory
+
+          app = call(8, "plan_artifact_route", {
+              "target":"JM LEGAL",
+              "artifact_type":"app",
+              "outputs":["web","package"],
+              "objective":"route current Matter Router without inflating QA into client proof",
+          })
+          assert app["target_profile_id"] == "legal-v11", app
+
+          apk = call(9, "plan_artifact_route", {
               "target":"JM Living Estate",
               "artifact_type":"apk",
+              "outputs":["apk","direct-download-link"],
+              "objective":"Android package route with install/device proof kept separate",
           })
           assert apk["artifact_type"] == "apk", apk
-          assert "direct-download-link" in apk["surface_profile"]["selected_outputs"], apk
+          assert apk["target_profile_id"] == "living-estate-apk", apk
+          assert apk["surface_profile"]["selected_outputs"] == ["apk","direct-download-link"], apk
+
+          downloadable = call(10, "plan_artifact_route", {
+              "target":"JM LLM #2",
+              "artifact_type":"download",
+              "outputs":["manifest","sha256","direct-download-link"],
+              "objective":"bind package identity to a direct delivery route without transferring execution proof",
+          })
+          assert downloadable["target_profile_id"] == "llm2-v2", downloadable
+          assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"], downloadable
 
           op_args = {
               "target":"JM ECOSTATE — Build Mesh",
@@ -187,8 +256,8 @@ jobs:
               "action_type":"artifact-build",
               "intended_change":"execute a surface-specific artifact plan through an authorized host then read back the consequence",
           }
-          op1 = call(7, "prepare_operation_gate", op_args)
-          op2 = call(8, "prepare_operation_gate", op_args)
+          op1 = call(11, "prepare_operation_gate", op_args)
+          op2 = call(12, "prepare_operation_gate", op_args)
           assert op1["operation_id"] == op2["operation_id"], (op1, op2)
           assert op1["target_profile_id"] == "ecostate-build-mesh-v102", op1
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
@@ -214,11 +283,17 @@ jobs:
               "exact_target_identity":"PASS",
               "build_mesh_profile_id":build_mesh["target"]["id"],
               "artifact_router":"PASS_PLAN_ONLY",
-              "book_route_id":book["route_id"],
-              "apk_route_id":apk["route_id"],
+              "factory_feed_batch_01":{
+                  "book":{"target":"Secrets of Silence","route_id":book["route_id"],"authority_state":book["hosted_authority_state"],"profile":book["target_profile_id"]},
+                  "comic":{"target":"FTR — The Massive Push","route_id":comic["route_id"],"authority_state":comic["hosted_authority_state"],"profile":comic["target_profile_id"],"authority_gate":"HOLD_EXACT_COMIC_AUTHORITY"},
+                  "theory":{"target":"JM Theory Estate","route_id":theory["route_id"],"authority_state":theory["hosted_authority_state"],"profile":theory["target_profile_id"]},
+                  "app":{"target":"JM LEGAL","route_id":app["route_id"],"authority_state":app["hosted_authority_state"],"profile":app["target_profile_id"]},
+                  "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
+                  "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
+              },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.7.3 exact-target identity resolution, external current-registry loading with exact-byte SHA-256 readback, and artifact-general PLAN_ONLY dispatch for governed book/APK routes, plus existing capability-mesh, sync and operation-gate behavior. Actual artifact builds/publishes/installations remain host-executed and surface-specific.",
+              "claim_boundary":"Proves hosted v0.7.3 live PLAN_ONLY route contact across all six artifact surfaces: book, comic, theory, app, APK and download/addable. Five selected targets resolve through current hosted authority; the comic lane deliberately withholds current-head crown because exact FTR — The Massive Push authority is not recovered by Build Mesh. No artifact build, publish, install or owner-device proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

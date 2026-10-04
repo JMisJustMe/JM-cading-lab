@@ -1,9 +1,9 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.5",
+  "schema": "JM.CareerCurrentProjectRegistry/0.6",
   "date": "2026-10-04",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.6 32_Cb-SEAT DESCENDANT",
-  "boundary": "This hosted public snapshot seats 32_Cb as a bounded current donor record, but direct private current pointers/receipts and stronger recipient-specific runtime evidence can still supersede the hosted snapshot.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.8 JM32-1DA-SEAT DESCENDANT",
+  "boundary": "This hosted public snapshot seats 32_Cb and JM32-1DA as bounded current records. Direct private current pointers/receipts and stronger recipient-specific runtime evidence can still supersede the hosted snapshot.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PACKAGE v1.0.7 · HOSTED MCP v0.7.7 DECLARED-RELATION MESH DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing and delta-first host-side Estate maintenance. v0.7.7 lets explicit current-registry donor/lineage relations become directional mesh edges without inventing shared capabilities, merging identities or transferring proof.",
-      "proof": "Private plugin v1.0.7 was updated in place and read back under the existing plugin identity. Registry v0.5 seats 32_Cb as record 20. Hosted source v0.7.7 adds DECLARED_RELATION edge emission from exact current-registry relations; live runtime identity and edge behavior require deployment/readback.",
-      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. DECLARED_RELATION is a contact/lineage edge only: merge=false and proof_transfer=false. Fuzzy discovery is not authority; private exact authority can outrank this hosted snapshot."
+      "status": "CURRENT DECLARED · PACKAGE v1.0.9 · HOSTED MCP v0.7.8 JM32-1DA-SEAT DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. The current hosted descendant seats JM32-1DA v2.2.1 as an exact runtime/route node so the preserved 32_Cb ancestral relation can render without merging identity or proof.",
+      "proof": "Private plugin v1.0.9 was updated in place and read back under the existing plugin identity. Registry stack v0.4 + v0.5 + v0.6 yields 21 logical current records. Hosted source v0.7.8 carries the corresponding JM32-1DA public-safe current record and capability profile; live runtime identity/edge behavior must still be established by deployment/readback.",
+      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority. 32_Cb ancestry does not transfer proof. Fuzzy discovery is not authority."
     },
     {
       "id": "opportunity-v08",
@@ -328,6 +328,33 @@
         "DIRECT_DONOR_TO_SOURCE_HOST_ADAPTATION_EXPANSION → JM TARGET BRIDGE",
         "DONOR_REGISTERED_FOR_DISCOVERY_COORDINATION_AND_PROOF_ROUTING → JM ECOSTATE Build Mesh"
       ]
+    },
+    {
+      "id": "jm32-1da-v221",
+      "title": "JM32-1DA v2.2.1 — Mixed-Axis Embodiment Correction",
+      "aliases": [
+        "JM32-1DA",
+        "JM32 1DA",
+        "JM32-1DA compiler v2.2.1",
+        "JM32-1DA v2.2.1"
+      ],
+      "date": "6 Aug 2026",
+      "category": "software infrastructure",
+      "tags": [
+        "JM32-1DA",
+        "compiler",
+        "runtime",
+        "route engine",
+        "one-body",
+        "mixed-axis",
+        "governance",
+        "recovery"
+      ],
+      "status": "SEALED · CURRENT-SCOPE COMPLETE · EXACT PRIVATE RUNTIME/ROUTE DESCENDANT SEATED",
+      "summary": "JM32-1DA v2.2.1 is the current sealed runtime/route descendant recovered from exact private proof. It preserves the v2.2.0 state, governance, federation, compiler, OS and recovery organs while correcting embodiment/movement interpretation and retaining 145 JM-callable routes. It is seated as a descendant of 32_Cb's sovereign multi-target embodiment line without merging identities or inheriting 32_Cb proof.",
+      "proof": "Release seal and clean verification record a deterministic 17,539,390-byte / 521-file archive with SHA-256 9055aa40180028b7ec2e3acd4f54aa57de263441de5fb8819db317509e959db9; 149/149 Python tests PASS; 13/13 inherited one-body checks PASS; 16/16 embodiment checks PASS; 519 internal manifested files with 0 mismatches; clean extraction, package verifier and executable zipapp tests PASS.",
+      "boundary": "This hosted record is derived from stronger exact private authority. Public name is UNSET and NAME DING was not issued. The browser Studio is not the complete underlying architecture. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority/proof carrier. Native universal OS is not claimed. 32_Cb relation does not transfer proof.",
+      "donor_role": "RUNTIME_ROUTE_EXPANSION_DESCENDANT"
     }
   ]
 }

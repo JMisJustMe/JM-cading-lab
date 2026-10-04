@@ -56,8 +56,13 @@
   },
   "proof_lanes": {
     "android_transport": {
-      "state": "PENDING_CI",
-      "criterion": "Generate canonical session/runtime assets, compile Android API 36 debug APK, verify package/signature/assets/no INTERNET, emit APK hash/receipt."
+      "state": "PASS",
+      "workflow_run": 37199773827,
+      "apk_sha256": "c6e2e308913b42c4e6095288ee61563846b4531eb11f2c0584be3c85551ff6a4",
+      "apk_bytes": 11673,
+      "artifact_id": 11302777034,
+      "artifact_digest": "sha256:739b189200d6b2fed4f5a0581ca4942d2fc4c799f8426d73a97d7c31e0274b5c",
+      "evidence": "Canonical session/runtime assets formed; API 36 debug APK compiled; package/assets/ZIP/signature/no-INTERNET gates passed."
     },
     "android_host_contact": {
       "state": "OPEN_BY_DESIGN",
@@ -68,16 +73,18 @@
       "criterion": "Owner phone contact/acceptance at exact claimed scope."
     },
     "codex_wrapper_function": {
-      "state": "PENDING_CI",
-      "criterion": "Execute repository-agent wrapper against canonical AGENTS/runtime, return deterministic repository-agent session and preserve unknown-route honesty."
+      "state": "PASS",
+      "workflow_run": 37199773827,
+      "evidence": "Repository wrapper executed against canonical AGENTS/runtime, returned JM.RepositoryAgentSession/0.1, preserved route candidates and returned no fabricated route for unknown input."
     },
     "codex_host_contact": {
       "state": "OPEN_BY_DESIGN",
       "criterion": "Exact Codex/repository-agent host consumes adapter and returns consequence."
     },
     "universal_conformance": {
-      "state": "PENDING_CI",
-      "criterion": "Canonical plug tester accepts Android=TRANSPORT and Codex=FUNCTION without proof-level inflation."
+      "state": "PASS",
+      "workflow_run": 37199773783,
+      "evidence": "Universal plug tester accepted Android=TRANSPORT and Codex=FUNCTION with OPEN host/device boundaries preserved."
     }
   },
   "host_and_surfaces": {
@@ -94,10 +101,10 @@
   "state": {
     "route": "AUTHORIZED_ADAPTER_IMPLEMENTATION",
     "build_authorized_by_manifest": true,
-    "crown": "PENDING PR CI + MERGE READBACK"
+    "crown": "PR_PROVEN_PENDING_MERGE"
   },
   "next_route": {
-    "step": "Open PR → run Android/Codex adapter workflow + universal tester + Estate gates → correct attributable failures → merge on green → canonical readback."
+    "step": "Re-run affected CI after receipt update → merge on green → read canonical main → preserve Android runtime/device and exact Codex host contact as separate OPEN Dings."
   },
   "manifest_proof": {
     "result": "PASS — two existing DECLARED host routes are advanced by thin wrappers over the same sovereign core with direct proof boundaries preserved."

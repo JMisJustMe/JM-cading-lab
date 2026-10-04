@@ -22,6 +22,27 @@ Rules:
 - Prefer full-complete production jumps over cosmetic version churn.
 - **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
+
+## Coding Estate running standard — ALL 64 CURRENT CODING IDENTITIES
+
+Before materially changing a coding/runtime/OS/compiler/engine body, read:
+
+`coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md`
+
+Machine-readable current identity authority:
+
+`coding-estate/JM_CODING_ESTATE_CURRENT_64.json`
+
+Rules:
+- Treat the **64 current role-qualified coding identities** as the available sovereign capability field.
+- Do not reduce the Coding Estate to a familiar shortlist; recover the current-64 registry before donor selection.
+- Select only the smallest relevant body/donor set for the task. Inclusion in the current 64 does **not** mean every body must run in every build.
+- Preserve the exact count boundary: **61 inherited role-qualified coding identities + 3 post-census new coding identities = 64 current coding identities**.
+- Preserve the separate ecology boundary: **44 adjacent/non-code organs** and the historical **100/105 engineering-equalisation/parity** work remain valuable evidence but are not silently reclassified as current coding identities.
+- Donor proof does not transfer. Receiver contact earns receiver claims.
+- Run `python3 coding-estate/validate_current_64_standard.py` when the current-64 registry, coding standards, routing instructions or Coding-Estate identity authority changes.
+- **ALL 64 MAY INFORM THE ROUTE. ONLY RELEVANT BODIES SHOULD ENTER THE ROUTE.**
+
 ## Canonical door continuity — LIVING WEB BODY IDENTITY
 
 Before materially changing the public route, persistence, PWA/install route, storage schema or owner-facing delivery of a living JM web body, read:

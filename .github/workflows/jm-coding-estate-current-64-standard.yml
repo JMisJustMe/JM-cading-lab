@@ -1,0 +1,48 @@
+name: JM Coding Estate Current 64 Running Standard
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/validate_current_64_standard.py'
+      - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
+      - 'AGENTS.md'
+      - '.github/copilot-instructions.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py'
+      - '.github/workflows/jm-coding-estate-current-64-standard.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/validate_current_64_standard.py'
+      - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
+      - 'AGENTS.md'
+      - '.github/copilot-instructions.md'
+      - 'JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py'
+      - '.github/workflows/jm-coding-estate-current-64-standard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  current-64-standard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Estate
+        uses: actions/checkout@v4
+
+      - name: Validate exact current 64 identity and standards coverage
+        run: python3 coding-estate/validate_current_64_standard.py
+
+      - name: Validate Build Mesh sovereign agent contract against current 64
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py

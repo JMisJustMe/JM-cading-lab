@@ -280,6 +280,12 @@ jobs:
           test -s cloudflare-estate/books/index.html
           test -s cloudflare-estate/career/index.html
           test -s cloudflare-estate/theory/index.html
+          test -s cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html
+          test -s cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md
+          echo '6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8  cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html' | sha256sum -c -
+          echo '2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea  cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md' | sha256sum -c -
+          grep -Fq 'LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE.' cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html
+          grep -Fq 'BODY ≠ CARRIER. CARRIER ≠ NEW CREATION.' cloudflare-estate/theory/publications/jm-theory-estate-public-safe-v1/index.html
           test -s cloudflare-estate/visual-story/index.html
           test -s cloudflare-estate/lyrics/index.html
           test -s cloudflare-estate/recovery/index.html
@@ -397,6 +403,35 @@ jobs:
           }
           if(pending.length) throw new Error('Canonical Estate live proof failed: '+pending.map(x=>x[0]).join(', '));
           NODE
+
+      - name: Prove exact manufactured Theory carrier on canonical Estate
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          html='/theory/publications/jm-theory-estate-public-safe-v1/index.html'
+          md='/theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md'
+          passed=0
+          for attempt in $(seq 1 60); do
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$html?factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.html" || true
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$md?factory-proof=$GITHUB_RUN_ID-$attempt" -o "$RUNNER_TEMP/theory.md" || true
+            hs="$(sha256sum "$RUNNER_TEMP/theory.html" 2>/dev/null | awk '{print $1}' || true)"
+            ms="$(sha256sum "$RUNNER_TEMP/theory.md" 2>/dev/null | awk '{print $1}' || true)"
+            hb="$(wc -c < "$RUNNER_TEMP/theory.html" 2>/dev/null | tr -d ' ' || true)"
+            mb="$(wc -c < "$RUNNER_TEMP/theory.md" 2>/dev/null | tr -d ' ' || true)"
+            if [ "$hs" = '6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8' ] \
+              && [ "$ms" = '2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea' ] \
+              && [ "$hb" = '10940' ] && [ "$mb" = '10632' ] \
+              && grep -Fq 'LITERATURE CONTACT COMPLETE ≠ EMPIRICAL VALIDATION COMPLETE.' "$RUNNER_TEMP/theory.html" \
+              && grep -Fq 'BODY ≠ CARRIER. CARRIER ≠ NEW CREATION.' "$RUNNER_TEMP/theory.html" \
+              && grep -Fq 'Empirical validation transferred:** **NO' "$RUNNER_TEMP/theory.md"; then
+              echo "THEORY FACTORY CLOUDFLARE EXACT LIVE PASS"
+              passed=1
+              break
+            fi
+            sleep 3
+          done
+          test "$passed" = '1'
 
       - name: Deploy the integrated five-tool Navigator public MCP after Estate proof
         env:

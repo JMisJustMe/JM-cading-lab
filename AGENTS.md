@@ -54,6 +54,29 @@ Rules:
 - **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
 
+## Host adapter conformance — UNIVERSAL PLUG TESTER
+
+When a JM sovereign body crosses into a new host, do **not** rebuild the body. Apply:
+
+`agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md`
+
+Machine contract / registry:
+
+- `agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json`
+- `agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json`
+
+Executable tester:
+
+`python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local`
+
+Keeper: **CHANGE THE PLUG, NOT THE BODY.**
+
+A host adapter may advance only to the highest proof level whose required gates are directly evidenced:
+
+`DECLARED → CONTRACT → TRANSPORT → FUNCTION → HOST_CONTACT → OWNER_DEVICE`
+
+Never transfer a Ding from one host/surface to another.
+
 ## Sovereign agent portable runtime — HOST-NEUTRAL BOOTSTRAP
 
 Where execution is available, the sovereign agent may be bootstrapped through:

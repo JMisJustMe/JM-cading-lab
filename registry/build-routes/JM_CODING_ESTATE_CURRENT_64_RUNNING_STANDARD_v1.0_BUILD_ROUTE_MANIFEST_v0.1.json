@@ -1,0 +1,126 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Coding Estate Current 64 Running Standard",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Coding Estate — Current 64 Running Standard v1.0",
+    "body_type": "Estate-wide coding governance / machine-readable identity standard / executable CI gate",
+    "intended_destination": "Canonical JM Estate running standards on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 326,
+    "head_branch": "standards/coding-estate-current-64-v1",
+    "source_authority": [
+      "coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json",
+      "JM Coding / Cading / Runtime / OS Control Plane",
+      "JM 64 Coding Estate Crown & Remains Closure v1.0"
+    ],
+    "owner_instruction": "Add all current JM coding bodies to actual running standards after first-agent completion.",
+    "source_rule": "CURRENT_IDENTITY_AUTHORITY_AND_PROOF_BOUNDARIES_PRESERVED",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "existing_authorities": [
+      "61-body role-qualified coding census",
+      "Estate production inheritance standard",
+      "root AGENTS.md Estate defaults",
+      "JM EveryBody conformance machinery",
+      "Build Mesh sovereign agent contract"
+    ],
+    "recovered_current_count": "61 inherited role-qualified + 3 post-census new = 64 current coding identities",
+    "donor_rule": "Use existing standards and routing organs; do not invent a parallel Coding Estate."
+  },
+  "exact_stack": {
+    "standards": [
+      "coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
+      "coding-estate/JM_CODING_ESTATE_CURRENT_64.json"
+    ],
+    "validation": [
+      "coding-estate/validate_current_64_standard.py",
+      ".github/workflows/jm-coding-estate-current-64-standard.yml",
+      ".github/workflows/jm-everybody-selftest.yml"
+    ],
+    "instruction_surfaces": [
+      "AGENTS.md",
+      ".github/copilot-instructions.md",
+      "JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
+    ],
+    "host_technology": [
+      "GitHub repository",
+      "GitHub Actions",
+      "Python 3",
+      "JSON",
+      "Markdown"
+    ],
+    "host_rule": "HOST ≠ OWNER; standards remain readable/portable outside GitHub."
+  },
+  "true_gaps": {
+    "new_coding_identity_required": false,
+    "new_runtime_required": false,
+    "new_language_required": false,
+    "running_standard_gap": true,
+    "gap": "The current 64 coding identities existed as authority/proof, but the complete current-64 set was not yet a single executable running-standard field across agent instructions, production inheritance, Build Mesh contract and CI."
+  },
+  "proof_lanes": {
+    "identity_reconciliation": {
+      "state": "PASS",
+      "evidence": "Current-64 validator matches identities 1-61 exactly to the role-qualified source census and fixes 62-64 as JudgeMaker/JangleMonitor/JourMaze."
+    },
+    "running_standard_gate": {
+      "state": "PASS",
+      "workflow_run": 37170710930,
+      "meaning": "Dedicated current-64 standard and Build Mesh current-64 contract validation passed."
+    },
+    "everybody_conformance": {
+      "state": "IN_PROGRESS",
+      "workflow_run": 37170710871,
+      "meaning": "Current-64 gate passed at entry; downstream whole-Estate target matrix remains separately running."
+    },
+    "build_mesh_hosted_contact": {
+      "state": "IN_PROGRESS",
+      "workflow_run": 37170710850,
+      "meaning": "Agent contract current-64 validation passed; live hosted MCP contact remains separately running."
+    },
+    "owner_device_contact": {
+      "state": "NOT_REQUIRED_FOR_STANDARDS_PROMOTION",
+      "boundary": "This change governs standards and CI; it does not claim a new owner-device runtime body."
+    }
+  },
+  "host_and_surfaces": {
+    "canonical_repository": "JMisJustMe/JM-cading-lab",
+    "standards_carriers": [
+      "Markdown",
+      "JSON",
+      "Python validator",
+      "GitHub Actions adapter"
+    ],
+    "portable_outside_host": true,
+    "owner_device_runtime_claim": false
+  },
+  "escalation": {
+    "current_escalations": [
+      "If full EveryBody/Build Mesh CI exposes a standards-caused failure, correct the responsible standard/adapter and rerun.",
+      "If unrelated workflows fail independently, preserve attribution and do not rewrite current-64 identity authority."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE → IDENTIFY RESPONSIBLE ORGAN → CORRECT FORWARD → RETEST",
+    "manual_user_contact": "Not required unless a new owner-only authority or destructive decision appears."
+  },
+  "state": {
+    "route": "AUTHORIZED_STANDARDS_INTEGRATION",
+    "build_authorized_by_manifest": true,
+    "new_capability_creation_authorized": false,
+    "identity_authority": "PASS",
+    "current64_standard_gate": "PASS",
+    "downstream_conformance": "IN_PROGRESS",
+    "crown": "PENDING FULL PR GREEN + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Complete PR CI → resolve only attributable failures → merge on green → read back canonical main → record standards promotion."
+  },
+  "manifest_proof": {
+    "result": "PASS — prospective route recovered existing current-64 identity authority, identified a real standards-enforcement gap, reused existing Estate/Build Mesh/EveryBody organs, authorized standards integration without inventing new coding identities or transferring proof."
+  }
+}

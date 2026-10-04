@@ -12,6 +12,7 @@
 **Read / inherit before material change:**
 - repository root `AGENTS.md`
 - `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`
+- `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` and `coding-estate/JM_CODING_ESTATE_CURRENT_64.json` for the complete current coding-identity field
 - `coding-estate/LIVE_DIRECT_DOOR_LAW.md` when a live web delivery/contact route is involved
 - any stronger current descendant or claim-specific receipt recovered during the run
 
@@ -122,6 +123,12 @@ Do not assume all 64 bodies are product-final, self-hosting, owner-device proven
 ---
 
 ## 4. Coding-Body Router
+
+### Full current-64 field
+Before selecting a coding donor, load the canonical `coding-estate/JM_CODING_ESTATE_CURRENT_64.json`. The specialist router below names common/high-value routes, but it is **not** the complete Coding Estate. Any of the 64 current coding identities may enter when its actual jurisdiction matches the task.
+
+**64 VISIBLE TO ROUTING ≠ 64 FORCED INTO EXECUTION.**
+
 
 Use the smallest body or donor set that actually matches the task.
 

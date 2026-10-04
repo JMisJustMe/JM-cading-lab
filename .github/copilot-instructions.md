@@ -1,6 +1,21 @@
 # JM Estate — default build/delivery instructions
 
-Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
+Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
+
+## JM build laws / preferences / governance
+
+Treat `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md` as an active running standard, not background documentation.
+
+For material work:
+- recover current authority before rebuilding;
+- apply the six-authority build gate;
+- preserve sovereignty / anti-captivity boundaries;
+- preserve lineage and frozen ancestors;
+- use the smallest sufficient body/donor set;
+- require returned consequence before a completion claim;
+- follow the encoded JM working preferences unless the target proves a better route.
+
+Run `python3 JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py` when build/governance instructions change.
 
 ## Estate-wide production inheritance
 

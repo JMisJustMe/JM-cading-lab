@@ -5,6 +5,20 @@
 **Reference proof lineage:** PUKA exposed the first proved full game-production ladder; the Estate inherits the production intelligence, not PUKA's identity.  
 **Keeper:** **NO ESTATE BODY SHOULD HAVE TO RE-LIVE SOLVED IMMATURITY.**
 
+## Whole-Estate routing before family inheritance
+
+Before applying a family-specific production profile, classify the real task/body domain using:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md`
+
+and its machine field:
+
+`JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json`
+
+The routing standard chooses the relevant current project head(s) and donor cues. This production standard then governs how the selected body is brought forward.
+
+**ROUTING SELECTS JURISDICTION. PRODUCTION INHERITANCE RAISES THE FLOOR. NEITHER ERASES BODY IDENTITY.**
+
 ## Governing build-law floor
 
 This production inheritance standard operates under:

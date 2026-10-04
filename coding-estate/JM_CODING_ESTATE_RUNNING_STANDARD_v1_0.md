@@ -15,6 +15,18 @@ That floor governs build form, authority/preflight, proof/consequence, sovereign
 
 **64 visible to routing ≠ 64 exempt from shared build law.**
 
+## Per-run activation truth
+
+The Current-64 field is now instrumented through:
+
+- `coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json`
+- `coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md`
+- `python3 coding-estate/validate_coding_body_activation.py`
+
+The first sovereign-agent runtime spine deterministically selects **12 bodies** and reports the other **52** as `AVAILABLE_NOT_SELECTED`.
+
+This is runtime-spine truth, not a universal factory policy and not a claim that 12 separate OS processes were spawned.
+
 ## Crown boundary
 
 This standard converts the current **64-body role-qualified Coding Estate** into an actual operating floor for builds and agents.

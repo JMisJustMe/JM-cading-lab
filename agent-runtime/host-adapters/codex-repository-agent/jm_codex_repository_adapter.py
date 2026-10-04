@@ -29,7 +29,7 @@ def main():
         return 1
 
     core_text=subprocess.check_output([
-        "python3","agent-runtime/jm_agent_runtime.py","--core-only","--query",args.query
+        "python3","agent-runtime/jm_agent_runtime.py","--core-only","--surface","codex-repository","--query",args.query
     ],cwd=ROOT,text=True).strip()
     core=json.loads(core_text)
 

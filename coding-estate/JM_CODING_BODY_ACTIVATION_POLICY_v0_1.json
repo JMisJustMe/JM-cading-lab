@@ -1,0 +1,175 @@
+{
+  "schema": "JM.CodingBodyActivationPolicy/0.1",
+  "version": "0.1.0",
+  "date": "2026-10-04",
+  "state": "ACTIVE_RUNTIME_SPINE_POLICY",
+  "authority_class": "ROUTE_SELECTION_POLICY_NOT_PROCESS_OR_CURRENT_HEAD_AUTHORITY",
+  "current64_registry": "coding-estate/JM_CODING_ESTATE_CURRENT_64.json",
+  "purpose": "Emit an exact, deterministic per-run account of which current Coding-Estate identities enter the sovereign-agent runtime spine, which remain available but unselected, and which adjacent non-code organs support the selected host surface.",
+  "keeper": "SELECTED FOR THE ROUTE ≠ SPAWNED AS A SEPARATE PROCESS.",
+  "accounting_law": "ACTIVE_ROUTE + AVAILABLE_NOT_SELECTED = ALL 64 CURRENT CODING IDENTITIES",
+  "selection_mode": "BASELINE_SOVEREIGN_AGENT_RUNTIME_SPINE",
+  "future_extension_boundary": "Task-specific factory/bridge activation rules are intentionally not invented here. They may extend this policy later only with explicit body jurisdiction and their own tests.",
+  "baseline_active": [
+    {
+      "code_id": 3,
+      "reason": "CadenVM executes the normalized Cading runtime route."
+    },
+    {
+      "code_id": 6,
+      "reason": "CodeHand RouteOS owns route/state/action/re-entry behavior."
+    },
+    {
+      "code_id": 7,
+      "reason": "JM32-1DA supplies governance runtime and proof-aware route anchoring."
+    },
+    {
+      "code_id": 8,
+      "reason": "IR / OneBody IR carries the portable body/intermediate representation."
+    },
+    {
+      "code_id": 10,
+      "reason": "Cading / Theomidul / zeze.nwona supplies the own-code route into normalized execution."
+    },
+    {
+      "code_id": 26,
+      "reason": "Route-Code carries the explicit code-route identity."
+    },
+    {
+      "code_id": 27,
+      "reason": "RouteFrame frames route boundaries and the current working route."
+    },
+    {
+      "code_id": 28,
+      "reason": "RouteScript carries deterministic route sequencing."
+    },
+    {
+      "code_id": 29,
+      "reason": "StateField carries owned runtime/session state."
+    },
+    {
+      "code_id": 62,
+      "reason": "JM JudgeMaker supplies qualification, PASS/HOLD and crown gating."
+    },
+    {
+      "code_id": 63,
+      "reason": "JM JangleMonitor checks differential identity and boundary drift."
+    },
+    {
+      "code_id": 64,
+      "reason": "JM JourMaze preserves lawful continuity across changed route/host form."
+    }
+  ],
+  "surface_support": {
+    "portable-runtime": [
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Returned route receipt, state-change visibility and proof boundary."
+      },
+      {
+        "name": "Zionfolder / recovery organs",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Source custody, recovery and lineage continuity."
+      }
+    ],
+    "android": [
+      {
+        "name": "Android Forge",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Android project/APK route and phone carrier handling."
+      },
+      {
+        "name": "JM Target Bridge",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Recipient adaptation into the Android target without identity collapse."
+      },
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Returned route receipt, state-change visibility and proof boundary."
+      },
+      {
+        "name": "Zionfolder / recovery organs",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Source custody, recovery and lineage continuity."
+      }
+    ],
+    "codex-repository": [
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Repository-session trace and proof boundary."
+      },
+      {
+        "name": "Zionfolder / recovery organs",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Repository/source recovery and lineage continuity."
+      }
+    ],
+    "chatgpt-mcp": [
+      {
+        "name": "JM Target Bridge",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Host/recipient adaptation while preserving sovereign source identity."
+      },
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Returned host consequence and proof boundary."
+      }
+    ],
+    "browser": [
+      {
+        "name": "JM Target Bridge",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Browser/web recipient adaptation."
+      },
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Browser carrier consequence trace."
+      }
+    ],
+    "github-ci": [
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "CI return-state and receipt trace."
+      },
+      {
+        "name": "Zionfolder / recovery organs",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Source/recovery continuity across CI execution."
+      }
+    ],
+    "cloud": [
+      {
+        "name": "JM Target Bridge",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Cloud recipient adaptation at the exact declared target."
+      },
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Cloud consequence/readback trace."
+      }
+    ],
+    "other": [
+      {
+        "name": "TraceBox",
+        "class": "ADJACENT_NON_CODE_ORGAN",
+        "reason": "Returned consequence and proof boundary."
+      }
+    ]
+  },
+  "activation_states": [
+    "ACTIVE_ROUTE",
+    "AVAILABLE_NOT_SELECTED"
+  ],
+  "proof_semantics": {
+    "ACTIVE_ROUTE": "The coding identity was selected into the governed runtime route for this session.",
+    "AVAILABLE_NOT_SELECTED": "The coding identity remained available in the Current-64 field but did not enter this session's runtime spine.",
+    "direct_execution_boundary": "The activation record proves deterministic route selection. It does not claim that each selected coding body is a separately spawned OS process or binary. The host-adapter envelope/workflow proves the actual executable carrier."
+  }
+}

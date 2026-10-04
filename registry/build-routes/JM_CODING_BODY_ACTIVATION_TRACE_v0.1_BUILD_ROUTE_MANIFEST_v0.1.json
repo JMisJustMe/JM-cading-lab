@@ -1,0 +1,129 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Coding Body Activation Trace",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Coding Body Activation Trace v0.1",
+    "body_type": "per-run Coding-Estate activation telemetry / proof boundary",
+    "intended_destination": "Canonical sovereign-agent runtime and Current-64 standards on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "head_branch": "runtime/jm-coding-body-activation-trace-v0-1",
+    "source_authority": [
+      "JM Coding Estate Current 64",
+      "JM Sovereign Agent Runtime v0.1",
+      "JM Sovereign Agent Contract",
+      "JM Build Laws / Preferences / Governance",
+      "JM Host Adapter Conformance"
+    ],
+    "owner_instruction": "Make every run prove exactly which coding bodies entered it, then use that observability as the base for later factory/bridge specialization.",
+    "source_rule": "SELECTION_TRACE_NOT_PROCESS_INFLATION",
+    "merge_forbidden_at_body_level": true,
+    "work_pr": 335
+  },
+  "foundation": {
+    "recovered_gap": "The runtime could route work and expose all 64 identities, but it did not emit a durable exact per-run record of which coding identities entered the current runtime spine and which stayed available-but-unselected.",
+    "reuse_rule": "Instrument the existing sovereign runtime and Current-64 registry; do not create new coding identities or infer future factory roles.",
+    "focus_boundary": "Only the current sovereign-agent runtime spine is instrumented in v0.1. Dynamic factory/bridge/body-specialization rules are explicitly deferred."
+  },
+  "exact_stack": {
+    "policy": "coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json",
+    "standard": "coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md",
+    "validator": "coding-estate/validate_coding_body_activation.py",
+    "runtime_python": "agent-runtime/jm_agent_runtime.py",
+    "runtime_node": "agent-runtime/jm-agent-runtime.mjs",
+    "CI": ".github/workflows/jm-coding-body-activation-trace.yml",
+    "inherited_surfaces": [
+      "AGENTS.md",
+      "coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py",
+      "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+      "agent-runtime/README.md",
+      ".github/workflows/jm-sovereign-agent-portable-runtime.yml",
+      ".github/workflows/jm-sovereign-agent-android-codex-adapters.yml",
+      ".github/workflows/jm-coding-estate-current-64-standard.yml"
+    ]
+  },
+  "true_gaps": {
+    "new_coding_identity_required": false,
+    "new_runtime_required": false,
+    "new_host_adapter_required": false,
+    "per_run_activation_trace_required": true,
+    "future_factory_policy_required": false,
+    "gap": "Exact current-run coding-body participation was inferable from architecture but not emitted as machine-readable proof."
+  },
+  "proof_lanes": {
+    "policy_integrity": {
+      "state": "PENDING_CI",
+      "criterion": "Activation policy must resolve exactly 12 current IDs, leave exactly 52 unselected, and keep adjacent organs outside the Current-64 count."
+    },
+    "node_python_activation_parity": {
+      "state": "PENDING_CI",
+      "criterion": "Python and Node --activation-only output must be byte-identical for portable, Android and Codex surfaces."
+    },
+    "full64_accounting": {
+      "state": "PENDING_CI",
+      "criterion": "Every run must emit exactly 64 unique body states with ACTIVE_ROUTE + AVAILABLE_NOT_SELECTED = 64."
+    },
+    "host_surface_carriage": {
+      "state": "PENDING_CI",
+      "criterion": "Android and Codex sessions must carry the activation record with their exact surface profile and preserve supporting-organ separation."
+    },
+    "direct_process_boundary": {
+      "state": "PENDING_CI",
+      "criterion": "Record must explicitly state route selection is not separate process execution."
+    }
+  },
+  "host_and_surfaces": {
+    "current_baseline_active_code_ids": [
+      3,
+      6,
+      7,
+      8,
+      10,
+      26,
+      27,
+      28,
+      29,
+      62,
+      63,
+      64
+    ],
+    "active_count": 12,
+    "available_not_selected": 52,
+    "supported_surface_profiles": [
+      "portable-runtime",
+      "android",
+      "codex-repository",
+      "chatgpt-mcp",
+      "browser",
+      "github-ci",
+      "cloud",
+      "other"
+    ],
+    "keeper": "SELECTED FOR THE ROUTE ≠ SPAWNED AS A SEPARATE PROCESS."
+  },
+  "escalation": {
+    "current_escalations": [
+      "If Node/Python activation outputs differ, fix serialization/policy interpretation rather than weakening parity.",
+      "If a selected code_id no longer exists in Current-64, resolve current identity authority before continuing.",
+      "Do not add task-specific factory rules merely to make the activation trace look richer."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE POLICY/RUNTIME/SURFACE CARRIER → CORRECT RESPONSIBLE ORGAN → RETEST",
+    "manual_user_contact": "Only if a future body role/bridge specialization requires an owner-only design decision."
+  },
+  "state": {
+    "route": "AUTHORIZED_ACTIVATION_TRACE_INTEGRATION",
+    "build_authorized_by_manifest": true,
+    "factory_specialization_deferred": true,
+    "crown": "PENDING PR CI + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Open PR → run exact activation + downstream runtime/adapter gates → correct attributable failures → merge on green → canonical readback."
+  },
+  "manifest_proof": {
+    "result": "PASS — instruments the existing runtime with exact body participation without inventing future factory roles or upgrading selection into process-execution proof."
+  }
+}

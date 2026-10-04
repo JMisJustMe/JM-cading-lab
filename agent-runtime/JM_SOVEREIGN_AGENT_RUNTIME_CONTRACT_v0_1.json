@@ -25,7 +25,8 @@
     "sovereign_agent": "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
     "build_governance": "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
     "estate_capability_field": "JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json",
-    "coding_current64": "coding-estate/JM_CODING_ESTATE_CURRENT_64.json"
+    "coding_current64": "coding-estate/JM_CODING_ESTATE_CURRENT_64.json",
+    "coding_activation_policy": "coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json"
   },
   "implementations": {
     "python": "agent-runtime/jm_agent_runtime.py",
@@ -84,5 +85,19 @@
       "OWNER_DEVICE"
     ],
     "rule": "A host adapter may claim only the highest proof level whose required gates are PASS; proof never transfers between host surfaces."
+  },
+  "coding_body_activation": {
+    "schema": "JM.CodingBodyActivation/1.0",
+    "policy": "coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json",
+    "standard": "coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md",
+    "validator": "coding-estate/validate_coding_body_activation.py",
+    "selection_mode": "BASELINE_SOVEREIGN_AGENT_RUNTIME_SPINE",
+    "expected_accounting": {
+      "current_coding_identities": 64,
+      "active_route": 12,
+      "available_not_selected": 52
+    },
+    "proof_boundary": "ACTIVE_ROUTE is deterministic governed route selection. It is not a claim that each coding identity is a separately spawned OS process/binary.",
+    "cli": "Use --activation-only [--surface <surface>] to emit the exact per-run coding-body activation record."
   }
 }

@@ -1,0 +1,72 @@
+name: JM Coding Body Activation Trace
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md'
+      - 'coding-estate/validate_coding_body_activation.py'
+      - 'agent-runtime/jm_agent_runtime.py'
+      - 'agent-runtime/jm-agent-runtime.mjs'
+      - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - '.github/workflows/jm-coding-body-activation-trace.yml'
+  pull_request:
+    paths:
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md'
+      - 'coding-estate/validate_coding_body_activation.py'
+      - 'agent-runtime/jm_agent_runtime.py'
+      - 'agent-runtime/jm-agent-runtime.mjs'
+      - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - '.github/workflows/jm-coding-body-activation-trace.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  activation-trace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Validate activation policy
+        run: python3 coding-estate/validate_coding_body_activation.py
+
+      - name: Prove Python / Node exact activation parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          for surface in portable-runtime android codex-repository; do
+            python3 agent-runtime/jm_agent_runtime.py --activation-only --surface "$surface" --query "coding runtime" > "/tmp/py-$surface.json"
+            node agent-runtime/jm-agent-runtime.mjs --activation-only --surface "$surface" --query "coding runtime" > "/tmp/js-$surface.json"
+            diff -u "/tmp/py-$surface.json" "/tmp/js-$surface.json"
+          done
+
+      - name: Assert exact 64-body accounting
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          out=subprocess.check_output([
+              "python3","agent-runtime/jm_agent_runtime.py",
+              "--activation-only","--surface","portable-runtime","--query","coding runtime"
+          ],text=True)
+          a=json.loads(out)
+          assert a["schema"]=="JM.CodingBodyActivation/1.0", a
+          assert a["accounting"]=={"active_route":12,"available_not_selected":52,"current_coding_identities":64}, a
+          expected=[3,6,7,8,10,26,27,28,29,62,63,64]
+          assert a["active_code_ids"]==expected, a
+          assert len(a["body_states"])==64, a
+          assert len({x["code_id"] for x in a["body_states"]})==64, a
+          assert sum(1 for x in a["body_states"] if x["state"]=="ACTIVE_ROUTE")==12, a
+          assert sum(1 for x in a["body_states"] if x["state"]=="AVAILABLE_NOT_SELECTED")==52, a
+          assert a["selection_is_process_execution"] is False, a
+          print("JM CODING BODY ACTIVATION TRACE: PASS")
+          print("active=12 available_not_selected=52 total=64 exact_per_run=True")
+          PY

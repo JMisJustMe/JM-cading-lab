@@ -26,12 +26,66 @@ function sortObj(v){
 }
 function stable(v){return JSON.stringify(sortObj(v));}
 
+function activationRecord(current64,policy,surface,current64Sha,policySha){
+  const identities=current64.identities??[];
+  const activeById=new Map((policy.baseline_active??[]).map(x=>[x.code_id,x.reason]));
+  const supportMap=policy.surface_support??{};
+  const surfaceKey=Object.prototype.hasOwnProperty.call(supportMap,surface)?surface:"other";
+  const bodyStates=[];
+  const activeCodeIds=[];
+  const activeBodies=[];
+  const available=[];
+
+  for(const body of identities){
+    const codeId=body.code_id;
+    const base={code_id:codeId,name:body.name??null,slug:body.slug??null};
+    if(activeById.has(codeId)){
+      const item={...base,state:"ACTIVE_ROUTE",reason:activeById.get(codeId),proof_class:"DETERMINISTIC_ROUTE_SELECTION"};
+      activeCodeIds.push(codeId);
+      activeBodies.push(item);
+      bodyStates.push(item);
+    } else {
+      const item={...base,state:"AVAILABLE_NOT_SELECTED"};
+      available.push(item);
+      bodyStates.push(item);
+    }
+  }
+
+  return {
+    schema:"JM.CodingBodyActivation/1.0",
+    authority_class:"PER_RUN_ROUTE_SELECTION_NOT_PROCESS_AUTHORITY",
+    selection_mode:policy.selection_mode??null,
+    requested_surface:surface,
+    surface_profile:surfaceKey,
+    policy_sha256:policySha,
+    current64_sha256:current64Sha,
+    accounting:{
+      active_route:activeBodies.length,
+      available_not_selected:available.length,
+      current_coding_identities:identities.length
+    },
+    active_code_ids:activeCodeIds,
+    active_bodies:activeBodies,
+    available_not_selected:available.map(x=>({code_id:x.code_id,name:x.name,slug:x.slug})),
+    body_states:bodyStates,
+    supporting_organs:supportMap[surfaceKey]??[],
+    selection_is_process_execution:false,
+    direct_execution_boundary:policy.proof_semantics?.direct_execution_boundary??null,
+    keeper:policy.keeper??null,
+    future_extension_boundary:policy.future_extension_boundary??null
+  };
+}
+
 const argv=process.argv.slice(2);
 let query="";
+let surface="portable-runtime";
 let coreOnly=false;
+let activationOnly=false;
 for(let i=0;i<argv.length;i++){
   if(argv[i]==="--query") query=argv[++i]??"";
+  else if(argv[i]==="--surface") surface=argv[++i]??"portable-runtime";
   else if(argv[i]==="--core-only") coreOnly=true;
+  else if(argv[i]==="--activation-only") activationOnly=true;
   else {console.error("Unknown argument:",argv[i]);process.exit(2);}
 }
 
@@ -47,15 +101,32 @@ const agent=docs.sovereign_agent;
 const governance=docs.build_governance;
 const estate=docs.estate_capability_field;
 const current64=docs.coding_current64;
+const policy=docs.coding_activation_policy;
 const errors=[];
 if(agent.schema!=="JM.SovereignAgentContract/0.1") errors.push("sovereign agent schema");
 if(governance.schema!=="JM.BuildLawsPreferencesGovernance/1.0") errors.push("build governance schema");
 if(estate.schema!=="JM.EstateCapabilityField/1.0") errors.push("Estate capability schema");
 if(current64.schema!=="JM.CodingEstate.Current64/1.0") errors.push("Current64 schema");
+if(policy.schema!=="JM.CodingBodyActivationPolicy/0.1") errors.push("coding activation policy schema");
 if((estate.current_project_heads??[]).length!==19) errors.push("Estate current head count");
 if((estate.overlay_and_donor_profiles??[]).length!==11) errors.push("Estate overlay count");
 if((current64.identities??[]).length!==64) errors.push("Current64 identity count");
 if(errors.length){console.error("JM AGENT RUNTIME: FAIL "+errors.join(", "));process.exit(1);}
+
+const activation=activationRecord(
+  current64,policy,surface,
+  sources.coding_current64.sha256,
+  sources.coding_activation_policy.sha256
+);
+if(activation.accounting.active_route!==12 || activation.accounting.available_not_selected!==52 || activation.accounting.current_coding_identities!==64){
+  console.error("JM AGENT RUNTIME: FAIL coding activation accounting drift");
+  process.exit(1);
+}
+
+if(activationOnly){
+  console.log(stable(activation));
+  process.exit(0);
+}
 
 const qt=tokens(query);
 const candidates=[];
@@ -91,7 +162,8 @@ const core={
   },
   coding:{
     current_identities:current64.identities.length,
-    identity_law:current64.identity_law??null
+    identity_law:current64.identity_law??null,
+    activation
   },
   query:{raw:query,tokens:qt},
   route_candidates:candidates,
@@ -107,7 +179,11 @@ if(coreOnly) console.log(stable(core));
 else {
   const coreText=stable(core);
   console.log(JSON.stringify(sortObj({
-    adapter:{implementation:"node","role":"HOST_ADAPTER_NOT_SOURCE_AUTHORITY"},
+    adapter:{
+      implementation:"node",
+      role:"HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+      executed_carrier:"agent-runtime/jm-agent-runtime.mjs"
+    },
     core,
     core_sha256:crypto.createHash("sha256").update(coreText,"utf8").digest("hex")
   }),null,2));

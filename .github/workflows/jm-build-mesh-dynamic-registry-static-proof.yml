@@ -1,0 +1,21 @@
+name: JM Build Mesh Dynamic Registry Static Proof
+
+on:
+  pull_request:
+    branches:
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - ".github/workflows/jm-build-mesh-dynamic-registry-static-proof.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dynamic-registry-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prove external registry loading and dynamic hashing
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/proof_dynamic_registry.py

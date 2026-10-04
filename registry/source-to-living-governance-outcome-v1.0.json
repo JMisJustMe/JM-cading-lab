@@ -1,10 +1,10 @@
 {
   "schema": "JM.SourceToLivingGovernanceOutcome/1.0",
   "status": "completed",
-  "conclusion": "failure",
-  "source_commit": "a9bbe230f3942ac8aa6f36fae5a59b8c76622ab0",
-  "workflow_run": "37219505509",
-  "gate_exit_code": 1,
+  "conclusion": "success",
+  "source_commit": "6c2f66536bb974ee34b2b5ee35db6b488ebdeb7c",
+  "workflow_run": "37219562435",
+  "gate_exit_code": 0,
   "register": "registry/source-to-living-governance-register-v1.0.json",
   "receipt": "registry/source-to-living-governance-receipt-v1.0.json",
   "physical_census": "registry/estate-physical-current-best-census-v0.2-wave1.json",
@@ -31,6 +31,20 @@
     "  \"hosted_complete_body_authorities\": 1,",
     "  \"full_census_crowned\": false",
     "}",
-    "ESTATE CLASSIFICATION ERROR: AGI runtime console executable-carrier proof is missing"
+    "{",
+    "  \"status\": \"PASS\",",
+    "  \"portal_phase\": \"PORTAL_ACCESS_LINE_RECOVERED\",",
+    "  \"quadze_phase\": \"QUADZE_V4_AUTHORITY_RECOVERED\",",
+    "  \"apps_stats\": {",
+    "    \"room_count\": 45,",
+    "    \"full_plus_preserved\": 29,",
+    "    \"routed\": 12,",
+    "    \"source_needed\": 0,",
+    "    \"preparation\": 2",
+    "  },",
+    "  \"stringline_version\": \"v0.1.8 QUADZE v4 authority reconciliation seed + Estate Sovereign Integration v1\",",
+    "  \"stringline_projects\": 12,",
+    "  \"public_only\": false",
+    "}"
   ]
 }

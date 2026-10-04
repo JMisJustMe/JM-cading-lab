@@ -76,6 +76,25 @@ For a new Estate body:
 
 # Family profiles
 
+
+## Coding / runtime / OS
+
+All current Coding Estate work inherits the current-64 running standard:
+
+`coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md`
+
+Machine-readable identity authority:
+
+`coding-estate/JM_CODING_ESTATE_CURRENT_64.json`
+
+The current capability field is **64 sovereign coding identities**: 61 inherited role-qualified identities plus 3 genuinely new post-census bodies. The 44 adjacent/non-code organs and historical 100/105 engineering ecology remain separate scopes.
+
+For a coding recipient:
+
+**RECOVER CURRENT AUTHORITY -> LOAD CURRENT-64 FIELD -> MATCH TASK PRESSURE -> SELECT SMALLEST RELEVANT BODY/DONOR SET -> PRESERVE IDENTITY -> BUILD/CHANGE -> RUNTIME/RECIPIENT CONTACT -> READBACK -> RECEIPT -> DONATE LEARNING**
+
+All 64 are routable candidates; they are not mandatory simultaneous dependencies. A body enters a build because its jurisdiction earns contact, not because its name exists in the registry.
+
 ## Games
 
 All JM Estate games — **old and new** — follow the detailed game profile in:

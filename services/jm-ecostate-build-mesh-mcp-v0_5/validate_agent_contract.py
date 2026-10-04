@@ -7,6 +7,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 PATH = HERE / "JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
 ROOT = HERE.parents[1]
 CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
+BUILD_GOVERNANCE_PATH = ROOT / "JM_ESTATE" / "GOVERNANCE" / "JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -55,6 +56,22 @@ try:
 except Exception as exc:
     print(f"CURRENT64 LOAD FAIL: {exc}")
     sys.exit(1)
+
+try:
+    build_governance = json.loads(BUILD_GOVERNANCE_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"BUILD GOVERNANCE LOAD FAIL: {exc}")
+    sys.exit(1)
+
+bg = data.get("build_laws_governance") or {}
+if bg.get("schema") != "JM.BuildLawsPreferencesGovernance/1.0":
+    errors.append("agent contract build-governance schema missing/drifted")
+if build_governance.get("schema") != "JM.BuildLawsPreferencesGovernance/1.0":
+    errors.append("canonical build-governance schema missing/drifted")
+if bg.get("master_runtime") != build_governance.get("master_runtime"):
+    errors.append("agent contract master runtime does not match canonical build-governance contract")
+if bg.get("authority_gate") != (build_governance.get("authority_gate") or {}).get("required"):
+    errors.append("agent contract authority gate does not match canonical build-governance contract")
 
 contract64 = data.get("coding_estate_current_64") or []
 canonical64 = [x.get("name") for x in (current64.get("identities") or [])]

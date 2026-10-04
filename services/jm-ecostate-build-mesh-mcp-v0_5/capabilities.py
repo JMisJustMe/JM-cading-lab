@@ -26,12 +26,12 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm-core-v1",
-        "name":"JM LLM Core v1.0 — First Complete Edition",
+        "name":"JM LLM Core v1.1 — Symbiosis Cycle 001",
         "source":"current_project_registry",
         "domain":"AI / language model",
-        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response"],
-        "donor_roles":["language-model core","retrieval route","bounded generation"],
-        "open_frontiers":["broader free generation","broader reasoning"]
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","residual-gap capability acquisition","learned-route skill integration","ECOSTATE rehearsal retention"],
+        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor"],
+        "open_frontiers":["learned-weight free modular generation","mathematical induction","predicate logic","combinatorics","matrix algebra","discrete probability","broader free generation","broader reasoning"]
     },
     {
         "id":"llm2-v2",

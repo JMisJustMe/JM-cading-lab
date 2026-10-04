@@ -1,6 +1,12 @@
 # JM Estate — default build/delivery instructions
 
-Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
+Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
+
+## Whole-Estate capability routing
+
+For cross-domain Estate work, load `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json` before choosing a subsystem.
+
+Capability profiles are routing aids, not proof or permanent current-head authority. Recover the relevant current project head first, then select the smallest relevant body/donor set. Do not turn every task into coding work; route to the actual Estate domain first.
 
 ## JM build laws / preferences / governance
 

@@ -57,7 +57,7 @@ assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.5"
 assert keeper["no_census_default"] is True
 assert keeper["destructive_default"] == "HOLD"
 assert keeper["mutation_performed"] is False
-assert keeper["authority_rule"] == "Identity/current-head authority must be exact or privately re-contacted. Fuzzy discovery is never promoted to authority."
+assert keeper["authority_rule"] == "Identity/current-head authority must be exact or privately re-contacted. Fuzzy discovery is never authority."
 
 # Prove hash follows changed bytes rather than a hardcoded constant.
 with tempfile.TemporaryDirectory() as td:

@@ -266,7 +266,7 @@ CAPABILITY_PROFILES = [
         "capabilities":["bounded traversal","checkpointed pagination","anti-crash census","carrier accounting","terminal-cursor closure","recovery-safe scanning"],
         "donor_roles":["bounded traversal donor","checkpoint pattern","storage audit pattern"],
         "open_frontiers":["continued outside-Estate reconciliation where open"]
-    }
+    },
     {
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",

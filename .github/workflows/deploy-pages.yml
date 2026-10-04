@@ -180,3 +180,101 @@ jobs:
           name: FTR_ISSUE01_GITHUB_PAGES_EXACT_PUBLIC_PROOF
           path: FTR_ISSUE01_GITHUB_PAGES_EXACT_PUBLIC_PROOF.json
           if-no-files-found: error
+
+  prove-agi-runtime-factory:
+    runs-on: ubuntu-latest
+    needs: deploy
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prove exact manufactured runtime bytes on Pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme.github.io/JM-cading-lab'
+          route='/apps/jm-agi-lab-runtime-console-v1'
+          declare -A sha bytes
+          sha[index.html]='634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'
+          bytes[index.html]='4962'
+          sha[styles.css]='dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'
+          bytes[styles.css]='6144'
+          sha[runtime-core.mjs]='fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'
+          bytes[runtime-core.mjs]='7130'
+          sha[app.mjs]='7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb'
+          bytes[app.mjs]='7034'
+
+          passed=0
+          for attempt in $(seq 1 60); do
+            ok=1
+            for name in index.html styles.css runtime-core.mjs app.mjs; do
+              out="$RUNNER_TEMP/runtime-$name"
+              curl -fsSL -H 'Cache-Control: no-cache' "$base$route/$name?runtime-proof=$GITHUB_RUN_ID-$attempt" -o "$out" || ok=0
+              actual_sha="$(sha256sum "$out" 2>/dev/null | awk '{print $1}' || true)"
+              actual_bytes="$(wc -c < "$out" 2>/dev/null | tr -d ' ' || true)"
+              if [ "$actual_sha" != "${sha[$name]}" ] || [ "$actual_bytes" != "${bytes[$name]}" ]; then ok=0; fi
+            done
+            if [ "$ok" = '1' ] \
+              && grep -Fq 'Contact.<br>Change.<br>Return.' "$RUNNER_TEMP/runtime-index.html" \
+              && grep -Fq 'verifyReloadChallenge' "$RUNNER_TEMP/runtime-runtime-core.mjs" \
+              && grep -Fq '__JM_RUNTIME_DEBUG__' "$RUNNER_TEMP/runtime-app.mjs"; then
+              echo 'AGI RUNTIME PAGES EXACT BYTES PASS'
+              passed=1
+              break
+            fi
+            sleep 3
+          done
+          test "$passed" = '1'
+
+      - name: Install Chromium runtime proof
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Execute runtime from public Pages
+        env:
+          BASE_URL: https://jmisjustme.github.io/JM-cading-lab
+        run: node tests/jm-agi-lab-runtime-console-v1.spec.mjs
+
+      - name: Seal public executable receipt
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib
+          browser=json.load(open('qa/jm-agi-lab-runtime-console-v1/browser-proof.json'))
+          assert browser['state']=='PASS'
+          assert browser['process_reentry']['state']=='PASS'
+          receipt={
+            'schema':'JM.AGILab.RuntimePublicProof/1',
+            'state':'PASS_PUBLIC_EXECUTABLE_RUNTIME',
+            'host':'https://jmisjustme.github.io/JM-cading-lab',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'exact_bytes':'PASS',
+            'browser_runtime_execution':'PASS',
+            'real_12_second_settle':'PASS',
+            'persistent_profile_process_reentry':'PASS',
+            'browser_receipt':browser,
+            'files':{
+              'index.html':{'bytes':4962,'sha256':'634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'},
+              'styles.css':{'bytes':6144,'sha256':'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'},
+              'runtime-core.mjs':{'bytes':7130,'sha256':'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'},
+              'app.mjs':{'bytes':7034,'sha256':'7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb'}
+            },
+            'boundary':'Public executable runtime proof only. No owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
+          }
+          pathlib.Path('JM_AGI_LAB_RUNTIME_PAGES_PUBLIC_PROOF.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt,indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_AGI_LAB_RUNTIME_PAGES_PUBLIC_PROOF
+          path: |
+            JM_AGI_LAB_RUNTIME_PAGES_PUBLIC_PROOF.json
+            qa/jm-agi-lab-runtime-console-v1/browser-proof.json
+            qa/jm-agi-lab-runtime-console-v1/01-armed-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/02-returned-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/03-returned-desktop.png
+          if-no-files-found: error

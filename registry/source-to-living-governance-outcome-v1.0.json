@@ -2,8 +2,8 @@
   "schema": "JM.SourceToLivingGovernanceOutcome/1.0",
   "status": "completed",
   "conclusion": "failure",
-  "source_commit": "6c19b0ae33c30541c042961a4fd1bba8de6bd06b",
-  "workflow_run": "37219203087",
+  "source_commit": "9bc9b8e86cd942f5108d0f60c3dc632258c69b05",
+  "workflow_run": "37219488502",
   "gate_exit_code": 1,
   "register": "registry/source-to-living-governance-register-v1.0.json",
   "receipt": "registry/source-to-living-governance-receipt-v1.0.json",
@@ -31,6 +31,6 @@
     "  \"hosted_complete_body_authorities\": 1,",
     "  \"full_census_crowned\": false",
     "}",
-    "ESTATE CLASSIFICATION ERROR: expected 44 governed non-game rooms, found 45"
+    "ESTATE CLASSIFICATION ERROR: classification authority entries missing: agi-lab-runtime-console-v1"
   ]
 }

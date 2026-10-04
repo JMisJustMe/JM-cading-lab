@@ -1,12 +1,12 @@
 {
   "schema": "JM.EstateClassificationGateOutcome/1.2",
   "status": "completed",
-  "conclusion": "success",
-  "run_id": "37219174551",
-  "head_sha": "33d8f9b3371572904013051c49be0562d34f1964",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/37219174551",
-  "updated_at": "2026-10-04T17:05:23Z",
-  "recorded_at_utc": "2026-10-04T17:05:32Z",
+  "conclusion": "failure",
+  "run_id": "37219203113",
+  "head_sha": "6c19b0ae33c30541c042961a4fd1bba8de6bd06b",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/37219203113",
+  "updated_at": "2026-10-04T17:05:48Z",
+  "recorded_at_utc": "2026-10-04T17:05:57Z",
   "steps": [
     {
       "job": "Prove current seats, versions, plurality and recovery truth",
@@ -21,7 +21,7 @@
     {
       "job": "Prove current seats, versions, plurality and recovery truth",
       "name": "Run the single classification authority verifier",
-      "conclusion": "success"
+      "conclusion": "failure"
     },
     {
       "job": "Prove current seats, versions, plurality and recovery truth",

@@ -123,7 +123,7 @@ jobs:
           assert keeper["destructive_default"] == "HOLD", keeper
           assert keeper["mutation_performed"] is False, keeper
           assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
-          print("STATIC_ESTATE_KEEPER_V0_7_8_PASS")
+          print("STATIC_ESTATE_KEEPER_V0_8_2_PASS")
 
           mesh = server.build_capability_mesh({"builds":["32_Cb","JM32-1DA"],"max_nodes":4})
           declared = [
@@ -171,7 +171,7 @@ jobs:
           assert len(returned) == 1, return_mesh
           assert returned[0]["from"] == "llm-core-v1" and returned[0]["to"] == "ecostate-build-mesh-v102", returned[0]
           assert returned[0]["merge"] is False and returned[0]["proof_transfer"] is False, returned[0]
-          print("STATIC_LLM_V1_2_CYCLE002_RETURN_PASS")
+          print("STATIC_LLM_V1_3_CYCLE003_RETURN_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY

@@ -32,7 +32,7 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.2 Authority-Tier Precedence Repair", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.2 Cycle 003 Return", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash

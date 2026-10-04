@@ -1,6 +1,6 @@
 # JM Estate — default build/delivery instructions
 
-Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` before materially changing or delivering Estate product bodies.
+Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
 
 ## Estate-wide production inheritance
 
@@ -15,6 +15,15 @@ Do not restart an older body just because stronger Estate organs were proved lat
 **BUILD ONCE → LEARN ONCE → DONATE MECHANISM → EVERY RELEVANT BODY CAN START / CONTINUE HIGHER.**
 
 Inheritance carries production intelligence, quality floors and proof discipline — not another body's theme, furniture, genre or identity. Donor proof enables a higher start; receiver contact earns the receiver claim.
+
+
+## Coding Estate — current 64 running standard
+
+For material coding/runtime/OS/compiler/engine work, load `coding-estate/JM_CODING_ESTATE_CURRENT_64.json` and apply `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md`.
+
+The full **64 current coding identities** are the available capability field. Do not collapse the Estate to only the best-known bodies, and do not force all 64 into every build. Select the smallest relevant donor/body set, preserve sovereign identities, and require receiver-specific proof.
+
+Count boundary: **61 inherited role-qualified + 3 post-census = 64 current coding identities**. The 44 adjacent/non-code organs and historical 100/105 engineering ecology stay separate.
 
 ## Games
 

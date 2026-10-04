@@ -1,0 +1,72 @@
+{
+  "schema": "JM.SovereignAgentRuntime/0.1",
+  "version": "0.1.0",
+  "state": "PORTABLE_REFERENCE_RUNTIME",
+  "authority_class": "RUNTIME_ADAPTER_NOT_SOURCE_AUTHORITY",
+  "purpose": "Load the canonical JM sovereign-agent, build-governance, whole-Estate capability and Current-64 coding contracts through independent runtimes and emit the same deterministic routing capsule.",
+  "architecture": "SOVEREIGN CORE ↔ PORTABLE CONTRACTS ↔ HOST ADAPTER / CAPABILITY NEGOTIATION ↔ HOST MANIFESTATION → CONTACT → CONSEQUENCE → RETURNED TRACE",
+  "recovered_precedents": [
+    "JM Universal Hosted-Body Architecture",
+    "JM ChatGPT Host Adapter v0.1.1 / v0.1.2 branch lineage",
+    "JM32-1DA Cross-Device Runtime Adapter precedent",
+    "JM3232 AIRBORNE multi-host parity"
+  ],
+  "laws": [
+    "BODY / SOURCE IDENTITY ≠ HOST MANIFESTATION",
+    "ADAPTER ≠ BODY",
+    "HOST ≠ OWNER",
+    "HOST-LIMITED PROOF ≠ HOST-LIMITED BODY",
+    "CAPABILITY NEGOTIATION ≠ AUTHORITY TRANSFER",
+    "FUNCTION PROOF ≠ IDENTITY PROOF",
+    "CURRENT PROJECT HEAD ≠ OVERLAY / DONOR PROFILE ≠ CAPABILITY CUE ≠ EXECUTION PROOF",
+    "NO DING, NO CLAIM"
+  ],
+  "canonical_sources": {
+    "sovereign_agent": "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+    "build_governance": "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
+    "estate_capability_field": "JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json",
+    "coding_current64": "coding-estate/JM_CODING_ESTATE_CURRENT_64.json"
+  },
+  "implementations": {
+    "python": "agent-runtime/jm_agent_runtime.py",
+    "node": "agent-runtime/jm-agent-runtime.mjs"
+  },
+  "runtime_modes": {
+    "bootstrap": "Load and validate canonical carriers; emit a deterministic session capsule.",
+    "route": "Score the whole-Estate capability field against an explicit query and return bounded routing candidates.",
+    "core_only": "Emit the host-neutral core capsule so independent adapters can be byte-compared."
+  },
+  "matching_contract": {
+    "tokenizer": "lowercase ASCII alphanumeric tokens; non-alphanumeric characters become spaces; duplicate query tokens removed",
+    "candidate_fields": [
+      "name",
+      "domain",
+      "capabilities",
+      "donor_roles"
+    ],
+    "score": "number of unique query tokens present in candidate token set",
+    "tie_break": [
+      "score descending",
+      "current_project_head before overlay",
+      "name ascending"
+    ],
+    "zero_score_policy": "return no candidate rather than invent a route"
+  },
+  "proof_boundary": {
+    "this_runtime_can_prove": [
+      "canonical carrier readability",
+      "schema/count invariants",
+      "deterministic routing behavior",
+      "independent Node/Python parity",
+      "source-carrier digest agreement"
+    ],
+    "this_runtime_cannot_prove": [
+      "model consciousness or human-style agency",
+      "live current-head truth without fresh contact",
+      "host/device consequence not directly contacted",
+      "owner acceptance",
+      "deployment/release status outside the tested adapter"
+    ]
+  },
+  "keeper": "THE HOST MAY CHANGE. THE SOVEREIGN CORE, AUTHORITY BOUNDARIES AND ROUTING MEANING MUST SURVIVE."
+}

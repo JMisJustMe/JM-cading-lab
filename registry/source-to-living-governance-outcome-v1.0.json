@@ -2,8 +2,8 @@
   "schema": "JM.SourceToLivingGovernanceOutcome/1.0",
   "status": "completed",
   "conclusion": "failure",
-  "source_commit": "9bc9b8e86cd942f5108d0f60c3dc632258c69b05",
-  "workflow_run": "37219488502",
+  "source_commit": "a9bbe230f3942ac8aa6f36fae5a59b8c76622ab0",
+  "workflow_run": "37219505509",
   "gate_exit_code": 1,
   "register": "registry/source-to-living-governance-register-v1.0.json",
   "receipt": "registry/source-to-living-governance-receipt-v1.0.json",
@@ -14,14 +14,14 @@
     "  \"governed_records\": 72,",
     "  \"stage_receipts\": 432,",
     "  \"public_promotions_guarded\": 27,",
-    "  \"register_digest\": \"2c865cde2d89bdb566da25be99006560024df057084c5b1ef70944a1e2dd22aa\"",
+    "  \"register_digest\": \"7cb45bef3cc4f989bbaaf374cb06d6cfad96154bdf80328881a8f14ef25a793c\"",
     "}",
     "{",
     "  \"status\": \"PASS_REPOSITORY_WIDE_SIX_STAGE_GOVERNANCE\",",
     "  \"governed_records\": 72,",
     "  \"stage_receipts\": 432,",
     "  \"public_promotions_guarded\": 27,",
-    "  \"register_digest\": \"2c865cde2d89bdb566da25be99006560024df057084c5b1ef70944a1e2dd22aa\"",
+    "  \"register_digest\": \"7cb45bef3cc4f989bbaaf374cb06d6cfad96154bdf80328881a8f14ef25a793c\"",
     "}",
     "{",
     "  \"status\": \"PASS_PHYSICAL_CURRENT_BEST_CENSUS_WAVE_1\",",
@@ -31,6 +31,6 @@
     "  \"hosted_complete_body_authorities\": 1,",
     "  \"full_census_crowned\": false",
     "}",
-    "ESTATE CLASSIFICATION ERROR: classification authority entries missing: agi-lab-runtime-console-v1"
+    "ESTATE CLASSIFICATION ERROR: AGI runtime console executable-carrier proof is missing"
   ]
 }

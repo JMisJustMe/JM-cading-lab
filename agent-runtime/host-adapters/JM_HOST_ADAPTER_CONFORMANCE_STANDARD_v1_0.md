@@ -54,8 +54,8 @@ Therefore:
 | ChatGPT / MCP host adapter | Host adapter | FUNCTION | genuine in-chat interactive contact |
 | AIRBORNE browser/web carrier | Precedent carrier | HOST_CONTACT | sovereign-agent browser wrapper + owner-device |
 | GitHub Actions | Execution carrier | FUNCTION | not an owner/device identity surface |
-| Android / phone | Declared host route | DECLARED | portable-core wrapper + exact device contact |
-| Codex / repository agent | Declared host route | DECLARED | direct portable-runtime host contact |
+| Android / phone | Host adapter | TRANSPORT | compiled APK carries canonical session/runtime contract; Android execution + owner-device remain OPEN |
+| Codex / repository agent | Host adapter | FUNCTION | repository wrapper executes against portable core; exact Codex host contact remains OPEN |
 | Cloud execution/deployment | Route family | DECLARED | exact provider/recipient adapter proof |
 | Other compatible host | Future route | DECLARED | thinnest adapter + complete conformance run |
 

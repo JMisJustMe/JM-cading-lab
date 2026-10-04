@@ -2,6 +2,15 @@
 
 Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
 
+## Sovereign agent portable runtime
+
+When a host can execute repository code, use the portable bootstrap as the shared runtime floor:
+
+- `python3 agent-runtime/jm_agent_runtime.py`
+- `node agent-runtime/jm-agent-runtime.mjs`
+
+The runtime loads the same sovereign-agent, build-governance, whole-Estate and Current-64 carriers and must preserve cross-runtime core parity. It is a host adapter, not source authority.
+
 ## Whole-Estate capability routing
 
 For cross-domain Estate work, load `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json` before choosing a subsystem.

@@ -1,0 +1,105 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Android + Codex Sovereign Host Adapters",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Sovereign Agent Android + Codex Host Adapters v0.1",
+    "body_type": "paired thin host adapters over the existing sovereign core",
+    "intended_destination": "Canonical JM host-adapter registry / runtime layer on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "head_branch": "adapters/jm-android-codex-v0-1",
+    "source_authority": [
+      "JM Host Adapter Conformance v1.0",
+      "JM Sovereign Agent Portable Runtime v0.1",
+      "JM Android Forge / Android build precedents",
+      "JM repository AGENTS.md / Copilot instruction surfaces"
+    ],
+    "owner_instruction": "Let's do it — implement Android and Codex/repository-agent plugs over the same sovereign runtime.",
+    "source_rule": "CHANGE_THE_PLUG_NOT_THE_BODY",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "recovered_gap": "Android and Codex/repository-agent existed only as DECLARED routes in the canonical host-adapter registry.",
+    "reuse_rule": "Wrap the portable runtime and existing instruction carriers; do not create a new agent, new Coding Estate or new source identity.",
+    "intended_advances": {
+      "android": "DECLARED → TRANSPORT if APK build/carriage proof passes; runtime/device contact stays OPEN",
+      "codex": "DECLARED → FUNCTION if repository wrapper executes deterministically; exact Codex host contact stays OPEN"
+    }
+  },
+  "exact_stack": {
+    "android": [
+      "agent-runtime/host-adapters/android/JM_ANDROID_SOVEREIGN_AGENT_ADAPTER_v0_1.json",
+      "agent-runtime/host-adapters/android/app/",
+      ".github/workflows/jm-sovereign-agent-android-codex-adapters.yml"
+    ],
+    "codex": [
+      "agent-runtime/host-adapters/codex-repository-agent/JM_CODEX_REPOSITORY_AGENT_ADAPTER_v0_1.json",
+      "agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py",
+      ".github/workflows/jm-sovereign-agent-android-codex-adapters.yml"
+    ],
+    "shared": [
+      "agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json",
+      "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json",
+      "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+      "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+    ]
+  },
+  "true_gaps": {
+    "new_sovereign_core_required": false,
+    "new_coding_identity_required": false,
+    "android_wrapper_required": true,
+    "codex_repository_wrapper_required": true,
+    "direct_android_device_contact_required_for_owner_device_crown": true,
+    "direct_codex_host_contact_required_for_host_contact_crown": true
+  },
+  "proof_lanes": {
+    "android_transport": {
+      "state": "PENDING_CI",
+      "criterion": "Generate canonical session/runtime assets, compile Android API 36 debug APK, verify package/signature/assets/no INTERNET, emit APK hash/receipt."
+    },
+    "android_host_contact": {
+      "state": "OPEN_BY_DESIGN",
+      "criterion": "Install/launch on Android emulator or phone and observe returned capsule consequence."
+    },
+    "android_owner_device": {
+      "state": "OPEN_BY_DESIGN",
+      "criterion": "Owner phone contact/acceptance at exact claimed scope."
+    },
+    "codex_wrapper_function": {
+      "state": "PENDING_CI",
+      "criterion": "Execute repository-agent wrapper against canonical AGENTS/runtime, return deterministic repository-agent session and preserve unknown-route honesty."
+    },
+    "codex_host_contact": {
+      "state": "OPEN_BY_DESIGN",
+      "criterion": "Exact Codex/repository-agent host consumes adapter and returns consequence."
+    },
+    "universal_conformance": {
+      "state": "PENDING_CI",
+      "criterion": "Canonical plug tester accepts Android=TRANSPORT and Codex=FUNCTION without proof-level inflation."
+    }
+  },
+  "host_and_surfaces": {
+    "android_claim": "TRANSPORT only if build proof passes",
+    "codex_claim": "FUNCTION only if wrapper proof passes",
+    "proof_transfer_forbidden": true,
+    "keeper": "CHANGE THE PLUG, NOT THE BODY."
+  },
+  "escalation": {
+    "failure_route": "FAIL LOCAL → TRACE WRAPPER/BUILD/GATE → CORRECT RESPONSIBLE ADAPTER → RETEST",
+    "rule": "Never lower the conformance gate merely to obtain green. Lower only the affected adapter's claim if evidence cannot support it.",
+    "manual_user_contact": "Required only for exact owner-device Android contact or other owner-only host action."
+  },
+  "state": {
+    "route": "AUTHORIZED_ADAPTER_IMPLEMENTATION",
+    "build_authorized_by_manifest": true,
+    "crown": "PENDING PR CI + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Open PR → run Android/Codex adapter workflow + universal tester + Estate gates → correct attributable failures → merge on green → canonical readback."
+  },
+  "manifest_proof": {
+    "result": "PASS — two existing DECLARED host routes are advanced by thin wrappers over the same sovereign core with direct proof boundaries preserved."
+  }
+}

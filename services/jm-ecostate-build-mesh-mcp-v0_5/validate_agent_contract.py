@@ -5,6 +5,8 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 PATH = HERE / "JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
+ROOT = HERE.parents[2]
+CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
 
 REQUIRED_LAWS = {
     "NO DING, NO CLAIM",
@@ -47,6 +49,22 @@ try:
 except Exception as exc:
     print(f"CONTRACT LOAD FAIL: {exc}")
     sys.exit(1)
+
+try:
+    current64 = json.loads(CURRENT64_PATH.read_text(encoding="utf-8"))
+except Exception as exc:
+    print(f"CURRENT64 LOAD FAIL: {exc}")
+    sys.exit(1)
+
+contract64 = data.get("coding_estate_current_64") or []
+canonical64 = [x.get("name") for x in (current64.get("identities") or [])]
+if len(canonical64) != 64:
+    errors.append(f"canonical current64 registry expected 64 identities, got {len(canonical64)}")
+if contract64 != canonical64:
+    errors.append("agent contract current64 list does not exactly match canonical Coding Estate current64 registry")
+std = data.get("coding_estate_standard") or {}
+if std.get("current_identity_count") != 64:
+    errors.append("agent contract coding_estate_standard current_identity_count must be 64")
 
 if data.get("schema") != "JM.SovereignAgentContract/0.1":
     errors.append("schema mismatch")

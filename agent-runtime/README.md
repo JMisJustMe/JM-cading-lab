@@ -29,6 +29,19 @@ node agent-runtime/jm-agent-runtime.mjs --core-only --query "coding runtime"
 
 The `--core-only` output must be byte-identical across the independent implementations.
 
+## Which coding bodies entered this run?
+
+Use:
+
+```bash
+python3 agent-runtime/jm_agent_runtime.py --activation-only --surface portable-runtime --query "coding runtime"
+node agent-runtime/jm-agent-runtime.mjs --activation-only --surface portable-runtime --query "coding runtime"
+```
+
+Both implementations must emit the same `JM.CodingBodyActivation/1.0` record.
+
+The record accounts for all 64 current coding identities and separates logical route selection from the directly executed carrier.
+
 ## Universal host plug test
 
 Every host wrapper is judged by the same standard:

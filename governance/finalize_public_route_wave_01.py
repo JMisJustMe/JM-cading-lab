@@ -81,7 +81,7 @@ def main() -> None:
         "source_commit": source,
         "theory": "v0.20.1 integrity over v0.19 shell — LIVE",
         "theory_chrome_runtime_probe": "PASS_11_OF_11",
-        "apps_rooms": 44,
+        "apps_rooms": 45,
         "money_menu_public_contact": "v1.2 LIVE",
         "raw_parity_files": len(parity["files"]),
         "directory_routes": parity.get("directory_routes"),
@@ -113,7 +113,7 @@ def main() -> None:
         },
         "apps": {
             "route": "/apps/",
-            "rooms": 44,
+            "rooms": 45,
             "money_menu": "v1.1 data authority / v1.2 live contact route",
             "routeos": "sovereign gaming-platform bridge; not counted as a non-game app",
             "android": "PASS",
@@ -134,7 +134,7 @@ def main() -> None:
     apps_status = f"""# JM Non-Game Apps House — Public Route Status v1.1
 
 **Wave:** Public Route Repair Wave 01  
-**Rooms:** 44  
+**Rooms:** 45  
 **Current-head repair:** Money Menu v1.1/v1.2 and Theory v0.20.1 seated  
 **RouteOS:** sovereign gaming-platform bridge; not counted as a non-game app  
 **Cloudflare:** LIVE SOURCE PARITY PASS  

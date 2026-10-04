@@ -2,6 +2,16 @@
 
 Read `AGENTS.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md`, `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`, `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` for coding/runtime/OS/engine work, and `coding-estate/LIVE_DIRECT_DOOR_LAW.md` for live web delivery before materially changing or delivering Estate product bodies.
 
+## Universal host-adapter conformance
+
+When targeting a new host, keep the sovereign core unchanged and test the adapter through `agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md`.
+
+Use the same proof ladder for every host:
+
+`DECLARED → CONTRACT → TRANSPORT → FUNCTION → HOST_CONTACT → OWNER_DEVICE`
+
+Do not claim host contact from transport/CI proof and do not transfer proof across host surfaces.
+
 ## Sovereign agent portable runtime
 
 When a host can execute repository code, use the portable bootstrap as the shared runtime floor:

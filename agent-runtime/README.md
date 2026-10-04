@@ -29,6 +29,16 @@ node agent-runtime/jm-agent-runtime.mjs --core-only --query "coding runtime"
 
 The `--core-only` output must be byte-identical across the independent implementations.
 
+## Universal host plug test
+
+Every host wrapper is judged by the same standard:
+
+`python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local`
+
+The tester checks identity, portable-contract load, capability negotiation, authority preservation, routing meaning, host contact, returned consequence, recovery/re-entry and owner/device contact where applicable.
+
+**CHANGE THE PLUG, NOT THE BODY.**
+
 ## Proof boundary
 
 A parity PASS proves that the same owned contracts can be loaded and routed through independent Node and Python host adapters. It does **not** prove an uncontacted model, device, cloud host, inline UI, owner interaction or release route.

@@ -1,0 +1,39 @@
+name: JM Host Adapter Conformance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agent-runtime/host-adapters/**'
+      - 'agent-runtime/**'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - 'navigator/airborne/**'
+      - 'registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json'
+      - '.github/workflows/jm-host-adapter-conformance.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/**'
+      - 'agent-runtime/**'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json'
+      - 'navigator/airborne/**'
+      - 'registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json'
+      - '.github/workflows/jm-host-adapter-conformance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  universal-plug-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Validate every host-adapter descriptor
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all
+      - name: Execute independent local reference plugs
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Validate sovereign agent contract
+        run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py

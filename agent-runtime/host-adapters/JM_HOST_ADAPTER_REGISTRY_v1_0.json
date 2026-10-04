@@ -1,0 +1,226 @@
+{
+  "schema": "JM.HostAdapterRegistry/1.0",
+  "date": "2026-10-04",
+  "state": "CURRENT_CONFORMANCE_MATRIX",
+  "authority_class": "EVIDENCE_TYPED_ADAPTER_REGISTRY",
+  "contract": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json",
+  "canonical_core": "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+  "adapters": [
+    {
+      "id": "python-reference-runtime",
+      "name": "JM Sovereign Agent — Python Reference Runtime",
+      "adapter_class": "REFERENCE_RUNTIME",
+      "target_surface": "portable CLI/runtime reference",
+      "proof_level": "FUNCTION",
+      "executable": "agent-runtime/jm_agent_runtime.py",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+        "agent-runtime/jm_agent_runtime.py",
+        ".github/workflows/jm-sovereign-agent-portable-runtime.yml",
+        "registry/build-routes/JM_SOVEREIGN_AGENT_PORTABLE_RUNTIME_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json"
+      ],
+      "next_gate": "Exact target-host contact when wrapped by a specific host adapter."
+    },
+    {
+      "id": "node-reference-runtime",
+      "name": "JM Sovereign Agent — Node Reference Runtime",
+      "adapter_class": "REFERENCE_RUNTIME",
+      "target_surface": "portable CLI/runtime reference",
+      "proof_level": "FUNCTION",
+      "executable": "agent-runtime/jm-agent-runtime.mjs",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+        "agent-runtime/jm-agent-runtime.mjs",
+        ".github/workflows/jm-sovereign-agent-portable-runtime.yml",
+        "registry/build-routes/JM_SOVEREIGN_AGENT_PORTABLE_RUNTIME_v0.1_BUILD_ROUTE_MANIFEST_v0.1.json"
+      ],
+      "next_gate": "Exact target-host contact when wrapped by a specific host adapter."
+    },
+    {
+      "id": "chatgpt-mcp-host-adapter",
+      "name": "JM ChatGPT Host Adapter v0.1.x",
+      "adapter_class": "HOST_ADAPTER",
+      "target_surface": "ChatGPT / OpenAI MCP Apps inline surface",
+      "proof_level": "FUNCTION",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json"
+      ],
+      "boundary": "Historical adapter manifest records source-integrity PASS, MCP runtime PASS and public probe PASS while actual ChatGPT inline contact remains OPEN.",
+      "next_gate": "Real interactive contact inside the ChatGPT conversation surface."
+    },
+    {
+      "id": "browser-airborne-carrier",
+      "name": "JM3232 AIRBORNE Browser / Web Carrier",
+      "adapter_class": "PRECEDENT_CARRIER",
+      "target_surface": "Cloudflare + GitHub Pages + local browser carrier family",
+      "proof_level": "HOST_CONTACT",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "PASS",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "navigator/airborne/identity.json",
+        "navigator/airborne/README.md"
+      ],
+      "boundary": "Proves AIRBORNE/Navigator carrier identity and dual-carrier contact, not a finished sovereign-agent browser adapter.",
+      "next_gate": "Seat the sovereign-agent runtime itself behind the browser adapter, then earn owner-device contact separately."
+    },
+    {
+      "id": "github-ci-execution-carrier",
+      "name": "GitHub Actions Execution Carrier",
+      "adapter_class": "EXECUTION_CARRIER",
+      "target_surface": "GitHub repository / CI",
+      "proof_level": "FUNCTION",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "PASS",
+        "capability_negotiation": "PASS",
+        "authority_preservation": "PASS",
+        "routing_meaning": "PASS",
+        "host_contact": "OPEN",
+        "returned_consequence": "PASS",
+        "recovery_reentry": "PASS",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        ".github/workflows/jm-sovereign-agent-portable-runtime.yml",
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+      ],
+      "boundary": "GitHub executes/tests the body but is a carrier/tooling surface, not source identity or owner.",
+      "next_gate": "No generic owner/device crown; host-specific deployment adapters must earn their own contact."
+    },
+    {
+      "id": "android-phone-adapter",
+      "name": "Android / Phone Sovereign Agent Adapter",
+      "adapter_class": "DECLARED_HOST_ROUTE",
+      "target_surface": "Android / phone runtime",
+      "proof_level": "DECLARED",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "OPEN",
+        "capability_negotiation": "OPEN",
+        "authority_preservation": "PASS",
+        "routing_meaning": "OPEN",
+        "host_contact": "OPEN",
+        "returned_consequence": "OPEN",
+        "recovery_reentry": "OPEN",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+        "registry/build-routes/JM_CHATGPT_HOST_ADAPTER_v0.1.1_BUILD_ROUTE_MANIFEST_v0.1.json"
+      ],
+      "boundary": "Cross-device/Android adapter precedent exists, but the current sovereign-agent runtime has not earned Android-specific conformance.",
+      "next_gate": "Implement smallest Android wrapper over portable core and run exact phone/device contact."
+    },
+    {
+      "id": "codex-repository-agent-adapter",
+      "name": "Codex / Repository-Agent Adapter",
+      "adapter_class": "DECLARED_HOST_ROUTE",
+      "target_surface": "repository coding agent",
+      "proof_level": "DECLARED",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "OPEN",
+        "capability_negotiation": "OPEN",
+        "authority_preservation": "PASS",
+        "routing_meaning": "OPEN",
+        "host_contact": "OPEN",
+        "returned_consequence": "OPEN",
+        "recovery_reentry": "OPEN",
+        "owner_device": "OPEN"
+      },
+      "evidence": [
+        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+        "AGENTS.md"
+      ],
+      "next_gate": "Direct repository-agent bootstrap/contact against the portable runtime contract."
+    },
+    {
+      "id": "cloud-execution-adapter-family",
+      "name": "Cloud Execution / Deployment Adapter Family",
+      "adapter_class": "ROUTE_FAMILY",
+      "target_surface": "cloud execution / deployment",
+      "proof_level": "DECLARED",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "OPEN",
+        "capability_negotiation": "OPEN",
+        "authority_preservation": "PASS",
+        "routing_meaning": "OPEN",
+        "host_contact": "OPEN",
+        "returned_consequence": "OPEN",
+        "recovery_reentry": "OPEN",
+        "owner_device": "NA"
+      },
+      "evidence": [
+        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
+      ],
+      "boundary": "Existing cloud proofs are route-specific; no blanket all-cloud adapter crown is transferred.",
+      "next_gate": "Instantiate and prove each exact cloud host adapter separately."
+    },
+    {
+      "id": "other-compatible-host",
+      "name": "Other Compatible Model / Agent Framework",
+      "adapter_class": "FUTURE_HOST_ROUTE",
+      "target_surface": "future compatible host",
+      "proof_level": "DECLARED",
+      "gates": {
+        "core_identity": "PASS",
+        "portable_contract_load": "OPEN",
+        "capability_negotiation": "OPEN",
+        "authority_preservation": "PASS",
+        "routing_meaning": "OPEN",
+        "host_contact": "OPEN",
+        "returned_consequence": "OPEN",
+        "recovery_reentry": "OPEN",
+        "owner_device": "NA"
+      },
+      "evidence": [
+        "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+        "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+      ],
+      "next_gate": "Create only the thinnest adapter required by the target host, then run this same conformance contract."
+    }
+  ]
+}

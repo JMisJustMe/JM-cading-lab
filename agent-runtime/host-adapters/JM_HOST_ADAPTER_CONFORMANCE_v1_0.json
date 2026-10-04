@@ -1,0 +1,134 @@
+{
+  "schema": "JM.HostAdapterConformance/1.0",
+  "version": "1.0.0",
+  "state": "ACTIVE_RUNNING_STANDARD",
+  "authority_class": "CONFORMANCE_TESTER_NOT_HOST_OR_SOURCE_AUTHORITY",
+  "purpose": "Test whether a host adapter carries the JM sovereign agent without changing body identity, authority, routing meaning or proof boundaries.",
+  "architecture": "SOVEREIGN CORE → PORTABLE CONTRACTS → CAPABILITY NEGOTIATION → HOST ADAPTER → HOST CONTACT → CONSEQUENCE → RETURNED TRACE",
+  "laws": [
+    "ADAPTER ≠ BODY",
+    "HOST ≠ OWNER",
+    "HOST-LIMITED PROOF ≠ HOST-LIMITED BODY",
+    "CAPABILITY NEGOTIATION ≠ AUTHORITY TRANSFER",
+    "FUNCTION PROOF ≠ IDENTITY PROOF",
+    "TRANSPORT PASS ≠ HOST CONTACT PASS",
+    "HOST CONTACT PASS ≠ OWNER/DEVICE PASS",
+    "NO DING, NO CLAIM",
+    "MESH ≠ MERGE",
+    "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT"
+  ],
+  "proof_levels": [
+    "DECLARED",
+    "CONTRACT",
+    "TRANSPORT",
+    "FUNCTION",
+    "HOST_CONTACT",
+    "OWNER_DEVICE"
+  ],
+  "gates": [
+    {
+      "id": "core_identity",
+      "required_for": [
+        "CONTRACT",
+        "TRANSPORT",
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Adapter points to the canonical sovereign core rather than copying/redefining identity."
+    },
+    {
+      "id": "portable_contract_load",
+      "required_for": [
+        "CONTRACT",
+        "TRANSPORT",
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Adapter can load/consume the canonical portable contracts or an exact declared carrier projection."
+    },
+    {
+      "id": "capability_negotiation",
+      "required_for": [
+        "TRANSPORT",
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Host capabilities are explicit; unsupported capabilities remain visible rather than silently emulated."
+    },
+    {
+      "id": "authority_preservation",
+      "required_for": [
+        "CONTRACT",
+        "TRANSPORT",
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Host cannot become source/current-head/owner authority merely by carrying the body."
+    },
+    {
+      "id": "routing_meaning",
+      "required_for": [
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Same input/current carriers preserve bounded routing meaning at the adapter boundary."
+    },
+    {
+      "id": "host_contact",
+      "required_for": [
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "The actual named host surface was physically contacted, not inferred from CI/transport."
+    },
+    {
+      "id": "returned_consequence",
+      "required_for": [
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "The tested lane returned an observable consequence or deterministic result."
+    },
+    {
+      "id": "recovery_reentry",
+      "required_for": [
+        "FUNCTION",
+        "HOST_CONTACT",
+        "OWNER_DEVICE"
+      ],
+      "meaning": "Adapter state/carriers preserve a documented re-entry or recovery route."
+    },
+    {
+      "id": "owner_device",
+      "required_for": [
+        "OWNER_DEVICE"
+      ],
+      "meaning": "The owner/device surface itself was directly contacted at the exact claimed scope."
+    }
+  ],
+  "gate_results": [
+    "PASS",
+    "OPEN",
+    "NA"
+  ],
+  "evidence_rule": "Every PASS gate must name at least one durable evidence reference. OPEN is an honest boundary, not a failure. NA is permitted only when the descriptor class explicitly excludes that gate.",
+  "no_inflation_rule": "An adapter may claim only the highest proof level whose required gates are all PASS.",
+  "target_scope_rule": "Proof belongs to the exact adapter + host surface + consequence class. A browser carrier PASS does not crown an Android adapter; an MCP runtime PASS does not crown ChatGPT inline contact.",
+  "tester": {
+    "registry": "agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json",
+    "executable": "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+    "local_reference_adapters": [
+      "python-reference-runtime",
+      "node-reference-runtime"
+    ],
+    "live_local_rule": "CI must execute both reference runtimes and compare byte-identical core capsules for the same queries.",
+    "static_route_rule": "Non-local adapters are audited against durable evidence and explicit OPEN gates; the tester must not simulate missing host contact."
+  },
+  "keeper": "CHANGE THE PLUG, NOT THE BODY."
+}

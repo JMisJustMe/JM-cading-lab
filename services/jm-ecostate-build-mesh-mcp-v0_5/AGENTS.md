@@ -67,6 +67,17 @@ Examples of adapters may include:
 
 ---
 
+### Universal host-adapter conformance
+When Build Mesh crosses into a new host surface, apply the universal plug tester before advancing that host's claim:
+
+`../../agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md`
+
+Proof ladder:
+
+`DECLARED → CONTRACT → TRANSPORT → FUNCTION → HOST_CONTACT → OWNER_DEVICE`
+
+**CHANGE THE PLUG, NOT THE BODY.** A passing adapter proves only that exact host/surface/consequence lane.
+
 ### Portable host runtime
 Build Mesh may be entered through different hosts. When executable repository access exists, use the portable agent runtime to load the same canonical carriers before host-specific wrapping.
 

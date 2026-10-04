@@ -10,6 +10,8 @@ on:
       - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json'
       - 'agent-runtime/host-adapters/jm_host_adapter_conformance.py'
       - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/validate_coding_body_activation.py'
       - 'AGENTS.md'
       - '.github/copilot-instructions.md'
       - '.github/workflows/jm-sovereign-agent-android-codex-adapters.yml'
@@ -21,6 +23,8 @@ on:
       - 'agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json'
       - 'agent-runtime/host-adapters/jm_host_adapter_conformance.py'
       - 'agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/validate_coding_body_activation.py'
       - 'AGENTS.md'
       - '.github/copilot-instructions.md'
       - '.github/workflows/jm-sovereign-agent-android-codex-adapters.yml'
@@ -48,6 +52,10 @@ jobs:
           assert p['adapter']['live_codex_contact'] is False, p
           assert p['core']['schema']=='JM.AgentRuntimeSession/0.1', p
           assert p['core']['route_candidates'], p
+          activation=p['core']['coding']['activation']
+          assert activation['surface_profile']=='codex-repository', activation
+          assert activation['active_code_ids']==[3,6,7,8,10,26,27,28,29,62,63,64], activation
+          assert activation['accounting']['active_route']==12, activation
           assert len(p['repository']['instruction_carriers']) == 3, p
           assert all(len(x['sha256'])==64 for x in p['repository']['instruction_carriers']), p
           print('JM CODEX/REPOSITORY AGENT ADAPTER: FUNCTION PASS')
@@ -81,7 +89,7 @@ jobs:
           set -euo pipefail
           A='agent-runtime/host-adapters/android/app/src/main/assets'
           mkdir -p "$A"
-          python3 agent-runtime/jm_agent_runtime.py --core-only --query "android phone runtime" > "$A/JM_AGENT_SESSION.json"
+          python3 agent-runtime/jm_agent_runtime.py --core-only --surface android --query "android phone runtime" > "$A/JM_AGENT_SESSION.json"
           cp agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json             "$A/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
           python3 - <<'PY'
           import json, pathlib
@@ -92,6 +100,12 @@ jobs:
           assert s['authority_class']=='SESSION_ROUTER_NOT_SOURCE_AUTHORITY', s
           assert c['schema']=='JM.SovereignAgentRuntime/0.1', c
           assert len(s['route_candidates']) > 0, s
+          activation=s['coding']['activation']
+          assert activation['surface_profile']=='android', activation
+          assert activation['active_code_ids']==[3,6,7,8,10,26,27,28,29,62,63,64], activation
+          assert activation['accounting']=={'active_route':12,'available_not_selected':52,'current_coding_identities':64}, activation
+          names=[x['name'] for x in activation['supporting_organs']]
+          assert 'Android Forge' in names and 'JM Target Bridge' in names, activation
           print('ANDROID_CAPSULE_FORMATION: PASS')
           PY
           sha256sum "$A/JM_AGENT_SESSION.json" "$A/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
@@ -151,6 +165,7 @@ jobs:
           APK bytes: $BYTES
           APK SHA-256: $SHA
           Session carrier: PASS
+          Coding-body activation: 12 ACTIVE_ROUTE / 52 AVAILABLE_NOT_SELECTED
           Runtime contract carrier: PASS
           INTERNET permission: ABSENT
           Debug signature: PASS

@@ -491,6 +491,79 @@ jobs:
           done
           test "$passed" = '1'
 
+      - name: Prove executable JM AGI Lab runtime carrier on canonical Estate
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://jmisjustme-estate.pages.dev'
+          route='/apps/jm-agi-lab-runtime-console-v1'
+          check_file(){
+            name="$1"; expected_sha="$2"; expected_bytes="$3"
+            out="$RUNNER_TEMP/runtime-$name"
+            curl -fsSL -H 'Cache-Control: no-cache' "$base$route/$name?runtime-proof=$GITHUB_RUN_ID-$4" -o "$out"
+            actual_sha="$(sha256sum "$out" | awk '{print $1}')"
+            actual_bytes="$(wc -c < "$out" | tr -d ' ')"
+            [ "$actual_sha" = "$expected_sha" ] && [ "$actual_bytes" = "$expected_bytes" ]
+          }
+          passed=0
+          for attempt in $(seq 1 60); do
+            if check_file index.html 634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147 4962 "$attempt" \
+              && check_file styles.css dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15 6144 "$attempt" \
+              && check_file runtime-core.mjs fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26 7130 "$attempt" \
+              && check_file app.mjs 7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb 7034 "$attempt" \
+              && grep -Fq 'Contact.<br>Change.<br>Return.' "$RUNNER_TEMP/runtime-index.html" \
+              && grep -Fq 'verifyReloadChallenge' "$RUNNER_TEMP/runtime-runtime-core.mjs" \
+              && grep -Fq '__JM_RUNTIME_DEBUG__' "$RUNNER_TEMP/runtime-app.mjs"; then
+              echo 'AGI RUNTIME CLOUDFLARE EXACT BYTES PASS'
+              passed=1
+              break
+            fi
+            sleep 3
+          done
+          test "$passed" = '1'
+
+      - name: Install Chromium for public runtime contact
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+
+      - name: Execute runtime from canonical Cloudflare Estate
+        env:
+          BASE_URL: https://jmisjustme-estate.pages.dev
+        run: node tests/jm-agi-lab-runtime-console-v1.spec.mjs
+
+      - name: Write canonical runtime public proof
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib
+          browser=json.load(open('qa/jm-agi-lab-runtime-console-v1/browser-proof.json'))
+          assert browser['state']=='PASS'
+          assert browser['process_reentry']['state']=='PASS'
+          receipt={
+            'schema':'JM.AGILab.RuntimePublicProof/1',
+            'state':'PASS_PUBLIC_EXECUTABLE_RUNTIME',
+            'host':'https://jmisjustme-estate.pages.dev',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'workflow_run':os.environ.get('GITHUB_RUN_ID'),
+            'exact_bytes':'PASS',
+            'browser_runtime_execution':'PASS',
+            'real_12_second_settle':'PASS',
+            'persistent_profile_process_reentry':'PASS',
+            'browser_receipt':browser,
+            'files':{
+              'index.html':{'bytes':4962,'sha256':'634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147'},
+              'styles.css':{'bytes':6144,'sha256':'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15'},
+              'runtime-core.mjs':{'bytes':7130,'sha256':'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26'},
+              'app.mjs':{'bytes':7034,'sha256':'7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb'}
+            },
+            'boundary':'Canonical public executable runtime proof only. No owner Windows/Edge proof transfer, OS reboot, cross-device persistence, external-model contact, unrestricted actuation or AGI/general-intelligence claim.'
+          }
+          pathlib.Path('JM_AGI_LAB_RUNTIME_CLOUDFLARE_PUBLIC_PROOF.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt,indent=2))
+          PY
+
       - name: Deploy the integrated five-tool Navigator public MCP after Estate proof
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -550,6 +623,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: estate-sovereign-integrated-live-proof-v1
-          path: ESTATE_SOVEREIGN_INTEGRATION_LIVE_PROOF_v1.json
+          path: |
+            ESTATE_SOVEREIGN_INTEGRATION_LIVE_PROOF_v1.json
+            JM_AGI_LAB_RUNTIME_CLOUDFLARE_PUBLIC_PROOF.json
+            qa/jm-agi-lab-runtime-console-v1/browser-proof.json
+            qa/jm-agi-lab-runtime-console-v1/01-armed-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/02-returned-mobile.png
+            qa/jm-agi-lab-runtime-console-v1/03-returned-desktop.png
           if-no-files-found: error
           retention-days: 30

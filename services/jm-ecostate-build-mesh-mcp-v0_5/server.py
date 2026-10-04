@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.3"
+VERSION = "0.7.4"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -181,6 +181,52 @@ def current_matches(query, limit=8):
     found.sort(key=lambda x: (x["score"], 1 if x["source"] == "current_project_registry" else 0), reverse=True)
     return found[:max(1, min(int(limit), 25))]
 
+def identity_strength(query, identity):
+    q, i = norm(query), norm(identity)
+    if not q or not i:
+        return 0.0
+    if q == i:
+        return 1.0
+    if len(q.split()) >= 2 and (q.startswith(i + " ") or i.startswith(q + " ")):
+        return 0.99
+    return 0.0
+
+def current_identity_matches(query, limit=8):
+    """Authority-safe current matches.
+
+    Fuzzy similarity remains available through current_matches() for discovery.
+    This function is intentionally identity-only so discovery resemblance can
+    never become current-head authority.
+    """
+    found = []
+    for item in CURRENT:
+        identities = [item.get("id", ""), item.get("title", "")]
+        identities += item.get("aliases") or []
+        score = max((identity_strength(query, value) for value in identities), default=0.0)
+        if score:
+            found.append({
+                "source": "current_project_registry",
+                "score": score,
+                "match_mode": "EXACT_IDENTITY" if score == 1.0 else "IDENTITY_PREFIX",
+                **item,
+            })
+    for item in OVERLAY:
+        identities = [item.get("name", "")]
+        identities += item.get("aliases") or []
+        score = max((identity_strength(query, value) for value in identities), default=0.0)
+        if score:
+            found.append({
+                "source": "current_overlay_2026-10-01",
+                "score": score,
+                "match_mode": "EXACT_IDENTITY" if score == 1.0 else "IDENTITY_PREFIX",
+                **item,
+            })
+    found.sort(
+        key=lambda x: (x["score"], 1 if x["source"] == "current_project_registry" else 0),
+        reverse=True,
+    )
+    return found[:max(1, min(int(limit), 25))]
+
 def authority_state(item):
     if not item:
         return "ABSENCE_NOT_PROVEN"
@@ -283,9 +329,10 @@ def recover_build(args):
     if not query:
         raise ValueError("name or query is required")
     limit = int(args.get("limit") or 8)
-    local = current_matches(query, limit)
+    discovery = current_matches(query, limit)
+    authority = current_identity_matches(query, limit)
     nav = navigator_search(query, limit)
-    best = local[0] if local else None
+    best = authority[0] if authority else None
     state = authority_state(best)
     public_matches = meaningful_navigator_results(nav)
     if not best and public_matches:
@@ -295,26 +342,28 @@ def recover_build(args):
     return {
         "query": query,
         "resolution_state": state,
+        "resolution_basis": "LOCAL_IDENTITY" if best else ("NAVIGATOR_SNAPSHOT" if public_matches else "NO_AUTHORITY_MATCH"),
         "best_current_match": best,
-        "current_candidates": local,
+        "authority_candidates": authority,
+        "current_candidates": discovery,
         "navigator_contact": nav,
-        "claim_boundary": "Private/current Library pointers and direct runtime/owner receipts can outrank this hosted service.",
+        "claim_boundary": "Fuzzy discovery is not current-head authority. Private/current Library pointers and direct runtime/owner receipts can outrank this hosted service.",
     }
 
 def resolve_current_head(args):
     query = (args.get("name") or "").strip()
     if not query:
         raise ValueError("name is required")
-    local = current_matches(query, 10)
-    if local:
-        best = local[0]
+    authority = current_identity_matches(query, 10)
+    if authority:
+        best = authority[0]
         close = [
-            x for x in local[1:]
-            if x["score"] >= best["score"] - 0.035
+            x for x in authority[1:]
+            if x["score"] == best["score"]
             and norm(x.get("title") or x.get("name")) != norm(best.get("title") or best.get("name"))
         ]
         state = authority_state(best)
-        if close and best["score"] < 0.88:
+        if close:
             state = "CONFLICT_OPEN"
         return {
             "query": query,
@@ -322,10 +371,12 @@ def resolve_current_head(args):
             "current_head": best.get("title") or best.get("name"),
             "primary_evidence": best,
             "competing_candidates": close[:4],
-            "boundary": "Hosted current declaration; stronger direct current pointer/receipt can supersede it.",
+            "resolution_basis": "LOCAL_IDENTITY",
+            "boundary": "Hosted current authority requires identity contact; fuzzy similarity remains discovery-only. Stronger direct current pointer/receipt can supersede it.",
         }
     nav = navigator_search(query, 5)
     public_matches = meaningful_navigator_results(nav)
+    discovery = current_matches(query, 5)
     has_public = bool(public_matches)
     return {
         "query": query,
@@ -333,16 +384,18 @@ def resolve_current_head(args):
         "current_head": None,
         "public_evidence": nav,
         "meaningful_public_matches": public_matches,
-        "boundary": "No hosted current declaration found. Absence is not proved across the private Estate.",
+        "local_discovery_candidates": discovery,
+        "resolution_basis": "NAVIGATOR_SNAPSHOT" if has_public else "NO_AUTHORITY_MATCH",
+        "boundary": "No hosted identity-level current declaration found. Fuzzy local resemblance is discovery only; absence is not proved across the private Estate.",
     }
 
 def proof_state(args):
     query = (args.get("name") or "").strip()
     if not query:
         raise ValueError("name is required")
-    local = current_matches(query, 8)
-    if local:
-        item = local[0]
+    authority = current_identity_matches(query, 8)
+    if authority:
+        item = authority[0]
         return {
             "query": query,
             "state": authority_state(item),
@@ -351,14 +404,19 @@ def proof_state(args):
             "proof": item.get("proof"),
             "boundary": item.get("boundary") or item.get("summary"),
             "source": item["source"],
+            "resolution_basis": "LOCAL_IDENTITY",
             "note": "Recorded proof text is not a new runtime Ding.",
         }
     nav = navigator_search(query, 5)
+    public_matches = meaningful_navigator_results(nav)
     return {
         "query": query,
-        "state": "SNAPSHOT_ONLY" if meaningful_navigator_results(nav) else "ABSENCE_NOT_PROVEN",
+        "state": "SNAPSHOT_ONLY" if public_matches else "ABSENCE_NOT_PROVEN",
         "navigator_contact": nav,
-        "note": "Public source discovery does not itself prove runtime/current authority.",
+        "meaningful_public_matches": public_matches,
+        "local_discovery_candidates": current_matches(query, 5),
+        "resolution_basis": "NAVIGATOR_SNAPSHOT" if public_matches else "NO_AUTHORITY_MATCH",
+        "note": "Public source discovery and fuzzy local similarity do not themselves prove runtime/current authority.",
     }
 
 def trace_lineage(args):
@@ -424,11 +482,7 @@ def resolve_profile(name):
     q = (name or "").strip()
     if not q:
         return None
-    qn = norm(q)
 
-    # Identity must win before capability similarity. This prevents an
-    # unrelated capability profile from being acted on merely because its
-    # vocabulary resembles the requested target.
     identity_hits = []
     for profile in CAPABILITY_PROFILES:
         identities = [profile.get("id",""), profile.get("name","")]
@@ -436,39 +490,28 @@ def resolve_profile(name):
         for item in CURRENT:
             if item.get("id") == profile.get("id"):
                 identities.append(item.get("title",""))
-        best = 0.0
-        for identity in identities:
-            inode = norm(identity)
-            if not inode:
-                continue
-            if qn == inode:
-                best = max(best, 1.0)
-            elif len(qn.split()) >= 2 and (qn.startswith(inode + " ") or inode.startswith(qn + " ")):
-                best = max(best, 0.99)
+        best = max((identity_strength(q, identity) for identity in identities), default=0.0)
         if best:
             identity_hits.append((best, profile))
 
-    if identity_hits:
-        identity_hits.sort(key=lambda x: x[0], reverse=True)
-        score, profile = identity_hits[0]
-        return {"score": round(score, 6), "resolution": "IDENTITY", **profile}
+    if not identity_hits:
+        return None
 
-    ranked = sorted(
-        ((profile_score(q, p), p) for p in CAPABILITY_PROFILES),
-        key=lambda x: x[0],
-        reverse=True,
-    )
-    if not ranked:
+    identity_hits.sort(key=lambda x: x[0], reverse=True)
+    top_score = identity_hits[0][0]
+    top_profiles = {}
+    for score, profile in identity_hits:
+        if score != top_score:
+            break
+        top_profiles[profile.get("id")] = profile
+
+    # Multiple equally strong named identities are a HOLD, never an arbitrary
+    # capability crown.
+    if len(top_profiles) != 1:
         return None
-    top_score, top_profile = ranked[0]
-    next_score = ranked[1][0] if len(ranked) > 1 else 0.0
-    # Fuzzy capability routing remains available for human shorthand, but it
-    # fails closed when weak or ambiguous instead of silently changing target.
-    if top_score < 0.44:
-        return None
-    if top_score < 0.72 and (top_score - next_score) < 0.04:
-        return None
-    return {"score": round(top_score, 6), "resolution": "FUZZY", **top_profile}
+
+    profile = next(iter(top_profiles.values()))
+    return {"score": round(top_score, 6), "resolution": "IDENTITY", **profile}
 
 def current_record_for_profile(profile):
     pid = (profile or {}).get("id")
@@ -502,9 +545,9 @@ def batch_recover_builds(args):
         name = str(raw).strip()
         if not name:
             continue
-        local = current_matches(name, 5)
-        if local:
-            best = local[0]
+        authority = current_identity_matches(name, 5)
+        if authority:
+            best = authority[0]
             results.append({
                 "query": name,
                 "state": authority_state(best),
@@ -512,14 +555,15 @@ def batch_recover_builds(args):
                 "proof": best.get("proof"),
                 "boundary": best.get("boundary") or best.get("summary"),
                 "source": best.get("source"),
-                "navigator_contact": "SKIPPED_LOCAL_AUTHORITY_FOUND",
+                "resolution_basis": "LOCAL_IDENTITY",
+                "navigator_contact": "SKIPPED_LOCAL_IDENTITY_AUTHORITY_FOUND",
             })
         else:
             results.append(recover_build({"name": name, "limit": 5}))
     return {
         "count": len(results),
         "results": results,
-        "optimization": "Local current authority is resolved before public donor contact; Navigator is only called for unresolved names.",
+        "optimization": "Identity-level local authority is resolved before public donor contact; fuzzy discovery never suppresses Navigator recovery.",
     }
 
 def find_capability_donors(args):

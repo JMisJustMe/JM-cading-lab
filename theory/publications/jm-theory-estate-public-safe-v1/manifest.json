@@ -21,11 +21,13 @@
   "outputs": {
     "markdown": {
       "path": "theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md",
-      "sha256": "PENDING_READBACK"
+      "sha256": "2f42acf027db5847e1cc4ebeebf2b23281381f3f07871da8358bffb88b3001ea",
+      "bytes": 10632
     },
     "html": {
       "path": "theory/publications/jm-theory-estate-public-safe-v1/index.html",
-      "sha256": "PENDING_READBACK"
+      "sha256": "6af903409d97e853ae77519d672fac32fe9fb5384774a7f1c113c9c501a4b8b8",
+      "bytes": 10940
     }
   },
   "source_chain": [
@@ -38,6 +40,16 @@
     "name": "JM_THEORY_ESTATE_EXTERNAL_VALIDATION_51_OF_51_CLOSURE_BUNDLE_2026-09-27.zip",
     "sha256": "5b73ec290ec18597652747c06aade776e77a1b37bb2b4569ebbd54b03345f846"
   },
-  "claim_boundary": "Carrier construction only until readback. No new strict theory and no empirical, peer-review or replication proof transfer.",
-  "verification_state": "PENDING_READBACK"
+  "claim_boundary": "Verified publication carrier manufacture/readback only. No new strict theory and no empirical, peer-review or replication proof transfer.",
+  "verification_state": "VERIFIED",
+  "verification": {
+    "workflow_run_id": "37214339877",
+    "proof_job_id": "111471696442",
+    "proof_artifact_id": "11307423549",
+    "proof_artifact_zip_sha256": "017996a12095112a8ca5e3521f457083a6bd6689922bf330435cfe586c09a302",
+    "source_commit": "7e2218af95fc3e7709c07efe2bc9cbb5c69b7cd8",
+    "first_order_names": "PASS_7_OF_7",
+    "second_order_names": "PASS_7_OF_7",
+    "boundary_markers": "PASS"
+  }
 }

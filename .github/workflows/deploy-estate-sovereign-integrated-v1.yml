@@ -277,6 +277,17 @@ jobs:
           test -s cloudflare-estate/navigator/estate-integration/bridge.js
           test -s cloudflare-estate/access/index.html
           test -s cloudflare-estate/apps/index.html
+          test -s cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html
+          test -s cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/styles.css
+          test -s cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs
+          test -s cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs
+          echo '634b43d2a6e4117e7a35f4a2706fd2bced3951b2b8446647a4f4d0aec08c4147  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html' | sha256sum -c -
+          echo 'dde8332ef7aa497495542af81356dd1023c181ca10da91f9bc59ff6535c2fa15  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/styles.css' | sha256sum -c -
+          echo 'fefb51860eb4520ea4fcd2b1ad09c6b149be6500da40ba9aba1e029d213e8d26  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs' | sha256sum -c -
+          echo '7b3fc9049186f5c02319da19295ffbdfd072e36f394e245ae2f2dc2fd20452fb  cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs' | sha256sum -c -
+          grep -Fq 'Contact.<br>Change.<br>Return.' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/index.html
+          grep -Fq 'verifyReloadChallenge' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/runtime-core.mjs
+          grep -Fq '__JM_RUNTIME_DEBUG__' cloudflare-estate/apps/jm-agi-lab-runtime-console-v1/app.mjs
           test -s cloudflare-estate/books/index.html
           test -s cloudflare-estate/career/index.html
           test -s cloudflare-estate/theory/index.html

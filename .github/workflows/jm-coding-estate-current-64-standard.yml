@@ -10,6 +10,9 @@ on:
       - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
       - 'JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py'
       - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md'
+      - 'coding-estate/validate_coding_body_activation.py'
       - 'coding-estate/validate_current_64_standard.py'
       - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
       - 'AGENTS.md'
@@ -26,6 +29,9 @@ on:
       - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json'
       - 'JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py'
       - 'coding-estate/JM_CODING_ESTATE_CURRENT_64.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json'
+      - 'coding-estate/JM_CODING_BODY_ACTIVATION_STANDARD_v0_1.md'
+      - 'coding-estate/validate_coding_body_activation.py'
       - 'coding-estate/validate_current_64_standard.py'
       - 'coding-estate/everybody/role-qualified-61/JM_61_ROLE_QUALIFIED_CODING_CENSUS.json'
       - 'AGENTS.md'
@@ -52,6 +58,9 @@ jobs:
 
       - name: Validate exact current 64 identity and standards coverage
         run: python3 coding-estate/validate_current_64_standard.py
+
+      - name: Validate exact per-run Coding Body Activation policy
+        run: python3 coding-estate/validate_coding_body_activation.py
 
       - name: Validate Build Mesh sovereign agent contract against current 64
         run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py

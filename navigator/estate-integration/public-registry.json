@@ -160,10 +160,10 @@
       ],
       "role": "ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT",
       "status": "CURRENT_DECLARED",
-      "version": "package v1.0.4 / hosted MCP v0.7.1",
-      "source": "JM ECOSTATE — Build Mesh v1.0.4 Proof-Synchronisation Refresh",
+      "version": "package v1.0.5 / hosted MCP v0.7.2",
+      "source": "JM ECOSTATE — Build Mesh v1.0.5 Artifact-General Production Spine",
       "source_file": "navigator/estate-integration/public-registry.json",
-      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1.",
+      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4 → v1.0.5; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1 → v0.7.2.",
       "lineage": [
         {
           "source_file": "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json",
@@ -173,21 +173,27 @@
         },
         {
           "source_file": "JM ECOSTATE — Build Mesh package",
-          "locator": "v1.0.4",
+          "locator": "v1.0.5",
           "authority": "packaged current body",
-          "role": "proof-synchronisation descendant"
+          "role": "artifact-general production spine"
         },
         {
           "source_file": "JM ECOSTATE Build Mesh Native MCP",
-          "locator": "v0.7.1",
+          "locator": "v0.7.2",
           "authority": "live hosted read-only service",
-          "role": "runtime contact"
+          "role": "live artifact-router runtime contact"
         },
         {
           "source_file": "CROSS_SURFACE_BOUNDED_LIVING_ACTION_DING_RECEIPT_v1_0_4.json",
           "locator": "JMOP-a5bc63570970c8d4d92de991",
           "authority": "route-specific receipt",
           "role": "bounded external-cloud consequence and returned readback"
+        },
+        {
+          "source_file": "ARTIFACT_GENERAL_SPINE_DING_RECEIPT_v1_0_5.md",
+          "locator": "pluginrel_6ac1c3e3f9e0819197c9376462ffb9b8",
+          "authority": "Plugin Creator current release + hosted proof readback",
+          "role": "exact-target and six-surface artifact-router Ding receipt"
         }
       ],
       "connections": [
@@ -199,8 +205,8 @@
       ],
       "authority": {
         "primary": "JM.CareerCurrentProjectRegistry/0.4",
-        "package_current": "v1.0.4",
-        "hosted_mcp_current": "v0.7.1",
+        "package_current": "v1.0.5",
+        "hosted_mcp_current": "v0.7.2",
         "confirmation_status": "LIVE_READBACK_PASS",
         "source_owner": "JM / JMISJUSTME"
       },

@@ -1,0 +1,321 @@
+{
+  "schema": "JM.SovereignAgentContract/0.1",
+  "version": "0.1.0",
+  "name": "JM ECOSTATE Build Mesh — Sovereign Agent Contract",
+  "authority_class": "ROUTE_CARRIER_NOT_CURRENT_HEAD",
+  "authority_note": "This contract governs agent entry/routing behavior but does not replace live Estate authority, current pointers, receipts, runtime readback, or owner/device proof.",
+  "inheritance": {
+    "required": [
+      "../../../AGENTS.md",
+      "../../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md"
+    ],
+    "conditional": [
+      "../../../coding-estate/LIVE_DIRECT_DOOR_LAW.md"
+    ],
+    "law": "Inherited Estate-wide law supplies the floor. This contract specializes Build Mesh agent routing without narrowing stronger current authority."
+  },
+  "laws": [
+    "NO DING, NO CLAIM",
+    "CONTACT BEFORE CROWN",
+    "RECOVER BEFORE REBUILD",
+    "MESH ≠ MERGE",
+    "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
+    "ACCESS ≠ AUTHORITY",
+    "RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE",
+    "SYNTAX PASS ≠ RUNTIME PASS",
+    "RECIPIENT A DING ≠ RECIPIENT B DING",
+    "MEMBER OF X HOUSE ≠ IS AN X",
+    "DO FOR SELF OFF OF OWN MERITS"
+  ],
+  "sovereignty": {
+    "host_neutral": true,
+    "host_ownership": false,
+    "connected_is_captive": false,
+    "adapter_is_body": false,
+    "host_is_owner": false,
+    "convenience_is_consent": false,
+    "required_rule": "THE ROUTE MUST NEVER QUIETLY BECOME THE OWNER OF WHAT IT ONLY EXISTS TO CARRY",
+    "portable_core_carriers": [
+      "Markdown",
+      "JSON",
+      "source code",
+      "schemas",
+      "manifests",
+      "receipts",
+      "hashes",
+      "documented protocols"
+    ],
+    "dependency_rule": "A host-specific capability may remain host-specific, but the dependency must be explicit and must not silently become source identity, ownership, or the only recovery path.",
+    "removal_test": "Removing one provider may remove a capability/contact route; it must not destroy the sovereign identity/source/recovery path."
+  },
+  "coding_estate_snapshot": {
+    "observed_date": "2026-10-04",
+    "status": "SNAPSHOT_NOT_PERMANENT_AUTHORITY",
+    "current_coding_identities": 64,
+    "inherited_set_identities": 61,
+    "post_census_identities": [
+      "JM JudgeMaker",
+      "JM JangleMonitor",
+      "JM JourMaze"
+    ],
+    "adjacent_engineering_organs": 44,
+    "rule": "Re-resolve current Coding Estate authority on each material run."
+  },
+  "coding_body_router": [
+    {
+      "body": "OneBody Coding OS / OneBody",
+      "roles": [
+        "integrated workbench",
+        "owned body-state discipline",
+        "explicit effects/failure",
+        "single-body delivery preference"
+      ]
+    },
+    {
+      "body": "JM32-1DA",
+      "roles": [
+        "governance runtime",
+        "source-contact-state-trace-recovery-output routing",
+        "claim boundary",
+        "Android-proven governance anchor"
+      ]
+    },
+    {
+      "body": "Cading / JM-Cading Runtime",
+      "roles": [
+        "own-code route",
+        "JMParser",
+        "Normalised Route",
+        "CadenVM",
+        "TraceBox"
+      ]
+    },
+    {
+      "body": "CodeHand RouteOS",
+      "roles": [
+        "route/state/action",
+        "save/restoration",
+        "navigation/export",
+        "operator-facing execution"
+      ]
+    },
+    {
+      "body": "JM GameCore",
+      "roles": [
+        "game state",
+        "input",
+        "loop",
+        "outcome",
+        "recovery",
+        "engine interoperability"
+      ]
+    },
+    {
+      "body": "GameForge",
+      "roles": [
+        "systems",
+        "graph",
+        "construction",
+        "compilation",
+        "target emission"
+      ]
+    },
+    {
+      "body": "GlyphForge",
+      "roles": [
+        "asset/form/glyph",
+        "visual adapters",
+        "capability laboratory"
+      ]
+    },
+    {
+      "body": "GlyphPlay",
+      "roles": [
+        "living interaction",
+        "playable meaning",
+        "response composition"
+      ]
+    },
+    {
+      "body": "PLAYFORM",
+      "roles": [
+        "actor/tool/gesture/space/loop participation composition"
+      ]
+    },
+    {
+      "body": "Android Forge",
+      "roles": [
+        "Android workshop",
+        "Project Shelf",
+        "OneBody route",
+        "APK route"
+      ]
+    },
+    {
+      "body": "JM Target Bridge",
+      "roles": [
+        "cross-build transport",
+        "cross-engine transport",
+        "recipient adapters",
+        "recipient-specific proof"
+      ]
+    },
+    {
+      "body": "JM JudgeMaker",
+      "roles": [
+        "qualification calculus",
+        "adjudication",
+        "pass/fail/crown gating"
+      ]
+    },
+    {
+      "body": "JM JangleMonitor",
+      "roles": [
+        "differential identity",
+        "boundary checking"
+      ]
+    },
+    {
+      "body": "JM JourMaze",
+      "roles": [
+        "transformational route grammar",
+        "changed-form continuity"
+      ]
+    },
+    {
+      "body": "TraceBox",
+      "roles": [
+        "route receipt",
+        "state-change visibility",
+        "proof boundary",
+        "recovery evidence"
+      ]
+    },
+    {
+      "body": "Zionfolder / recovery organs",
+      "roles": [
+        "source custody",
+        "recovery",
+        "packaging",
+        "lineage continuity"
+      ]
+    }
+  ],
+  "work_loops": {
+    "general": "SOURCE → SIGNAL → CONTACT FIELD → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT",
+    "coding": "RECOVER → RESOLVE AUTHORITY → SELECT BODY/DONOR → PLAN → CHANGE → TEST → READ BACK → COMPARE INTENT → RECEIPT → CONTINUE"
+  },
+  "build_preferences": [
+    "Full Body → Straight Run → Correct After",
+    "Android-first; laptop-conjoined",
+    "Single-file first; ZIP second",
+    "OneBody preference",
+    "CLEAR BODY, QUIET TRACE",
+    "Inline/live delivery where the contact surface supports it",
+    "Reuse Priority",
+    "Continue useful work autonomously while the route is clear",
+    "Prefer sustained reliable progress over bursty depletion",
+    "Search before recovery; recover before rebuild",
+    "Preserve current working descendants and frozen ancestors",
+    "Lab-partner mode: inspect evidence, expose uncertainty, correct openly",
+    "Welcome genuine novelty for inspection/development rather than rejecting it merely for being new"
+  ],
+  "proof_layers": [
+    "parse/syntax",
+    "unit/bounded logic",
+    "runtime",
+    "host",
+    "recipient",
+    "device",
+    "owner/lived-contact",
+    "release/deployment"
+  ],
+  "currentness_order": [
+    "direct current owner/device receipt for the exact claim",
+    "current private authority pointer/registry",
+    "live runtime readback",
+    "current hosted registry/service",
+    "public-safe lineage projection",
+    "frozen historical authority",
+    "discovery/search result",
+    "filename/summary/old chat/sidebar state"
+  ],
+  "change_discipline": [
+    "Prefer the smallest valid change that preserves the current working body",
+    "Prove target and authority before destructive/replacing action",
+    "Preserve unique deltas and recovery",
+    "Do not rebuild because retrieval is inconvenient",
+    "Do not fork merely to avoid understanding current state",
+    "Do not manufacture versions/generations/identities merely to show activity",
+    "Genuine newness must earn its own identity and proof"
+  ],
+  "delivery": {
+    "priorities": [
+      "working body",
+      "direct/open-first route",
+      "single-file where viable",
+      "Android-first where relevant",
+      "laptop-conjoined/cross-device",
+      "ZIP/archive second",
+      "clear trace, quiet packaging"
+    ],
+    "rule": "Packaging success does not prove runtime success."
+  },
+  "agent_behavior": {
+    "allowed": [
+      "inspect",
+      "reason",
+      "compare",
+      "propose",
+      "build",
+      "test",
+      "correct",
+      "challenge false premise",
+      "reuse existing organs",
+      "surface genuine novelty"
+    ],
+    "prohibited": [
+      "invent proof",
+      "silently merge bodies",
+      "transfer authority across unrelated routes",
+      "hide failed tests",
+      "call a plan an execution",
+      "call search a recovery",
+      "call contact a crown",
+      "call stale state current without checking"
+    ]
+  },
+  "stop_conditions": [
+    "owner-only authority is required",
+    "access prevents continuation",
+    "destructive action exceeds granted authority",
+    "a contradiction threatens canonical state",
+    "continuing would materially increase risk"
+  ],
+  "build_mesh_role": {
+    "identity": "sovereign host-neutral control plane/router",
+    "responsibilities": [
+      "recover current bodies",
+      "resolve authority",
+      "expose proof boundaries",
+      "connect capability donors",
+      "produce bounded plans",
+      "route permitted operations through correct host",
+      "verify returned consequence",
+      "preserve lineage",
+      "keep bodies interoperable without flattening them"
+    ],
+    "not_owner_of_reached_bodies": true
+  },
+  "adapters": [
+    "ChatGPT / Plugin / MCP",
+    "Codex / repository agent",
+    "local CLI / desktop runtime",
+    "browser / web app",
+    "Android / phone runtime",
+    "GitHub",
+    "cloud execution/deployment",
+    "other compatible models/agent frameworks"
+  ],
+  "reentry": "Recover the current body and its authority before rebuilding anything. Use the Coding Estate as a routed set of sovereign specialist bodies. Reuse proven organs, preserve identity and lineage, execute the smallest lawful change, test the actual recipient, and do not claim a Ding until returned state proves the intended consequence."
+}

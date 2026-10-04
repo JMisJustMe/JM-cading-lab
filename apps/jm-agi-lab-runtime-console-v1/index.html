@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b11">
+<meta name="description" content="JM AGI Lab Runtime Contact Console v1.0 — bounded executable durability carrier descended from the frozen v1.4.4 authority.">
+<title>JM AGI Lab — Runtime Contact Console v1.0</title>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="back" href="../">← APPS</a>
+  <div class="brand">
+    <span class="mark">JM</span>
+    <span><strong>AGI LAB</strong><small>RUNTIME CONTACT CONSOLE v1.0</small></span>
+  </div>
+  <span class="scope">EXECUTABLE CARRIER</span>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="eyebrow">BUILD MESH RUNTIME MANUFACTURE · JMOP-6d66ae8f0228162e549b7934</p>
+    <h1>Contact.<br>Change.<br>Return.</h1>
+    <p class="lead">A bounded runtime descendant of the frozen JM AGI Lab v1.4.4 body. This console proves executable state, consequence, persistence and re-entry. It does <b>not</b> claim AGI or supersede v1.4.4.</p>
+    <div class="law">STATIC PASS ≠ RUNTIME PASS · NO DING, NO CLAIM</div>
+  </section>
+
+  <section class="status-grid" aria-label="Runtime status">
+    <article><span>REVISION</span><strong id="revision">0</strong></article>
+    <article><span>PHASE</span><strong id="phase">READY</strong></article>
+    <article><span>FACTS</span><strong id="factCount">0</strong></article>
+    <article><span>CONSEQUENCE</span><strong id="consequenceCount">0</strong></article>
+  </section>
+
+  <section class="runtime-grid">
+    <article class="panel contact-panel">
+      <p class="panel-kicker">01 · CONTACT</p>
+      <h2>Put something into state.</h2>
+      <label>Observation key<input id="factKey" autocomplete="off" placeholder="e.g. carrier"></label>
+      <label>Observed value<textarea id="factValue" rows="3" placeholder="e.g. browser runtime contacted"></textarea></label>
+      <label>Confidence
+        <select id="confidence">
+          <option value="1">1.00 · direct contact</option>
+          <option value="0.75">0.75 · strong</option>
+          <option value="0.5">0.50 · provisional</option>
+        </select>
+      </label>
+      <button class="primary" id="contactBtn" type="button">CONTACT → STATE</button>
+      <button id="consequenceBtn" type="button">APPLY BOUNDED CONSEQUENCE +1</button>
+      <p class="micro">Input is local to this browser profile. Nothing here calls an external model or actuator.</p>
+    </article>
+
+    <article class="panel state-panel">
+      <p class="panel-kicker">02 · STATE</p>
+      <h2>What survived contact?</h2>
+      <div id="facts" class="facts empty">No facts yet.</div>
+      <div class="state-footer">
+        <span>Storage</span><b id="storageState">LOCAL · READY</b>
+      </div>
+    </article>
+
+    <article class="panel durability-panel">
+      <p class="panel-kicker">03 · DURABILITY</p>
+      <h2>Settle before return.</h2>
+      <div class="heartbeat">
+        <div class="ring" id="ring"><span id="heartbeat">0 / 12</span></div>
+        <div><strong id="settleState">IDLE</strong><p>One live heartbeat per second. At 12/12, reload/re-entry can be armed.</p></div>
+      </div>
+      <button class="primary" id="settleBtn" type="button">START 12-SECOND SETTLE</button>
+      <button id="armReloadBtn" type="button" disabled>ARM RELOAD CONTACT</button>
+      <button id="reloadBtn" type="button" disabled>RELOAD NOW</button>
+      <div id="reloadState" class="receipt-state">NO RELOAD RECEIPT YET</div>
+    </article>
+
+    <article class="panel trace-panel">
+      <p class="panel-kicker">04 · TRACE</p>
+      <h2>Consequence should leave receipts.</h2>
+      <div id="timeline" class="timeline"></div>
+      <div class="trace-actions">
+        <button id="exportBtn" type="button">EXPORT RECEIPT JSON</button>
+        <button id="resetBtn" class="danger" type="button">CLEAR LOCAL RUNTIME</button>
+      </div>
+    </article>
+  </section>
+
+  <section class="boundary">
+    <div>
+      <p class="eyebrow">AUTHORITY / BOUNDARY</p>
+      <h2>Carrier descendant ≠ new AGI Lab crown.</h2>
+    </div>
+    <ul>
+      <li>Authority remains <b>JM AGI Lab v1.4.4 — Durability Settle / Live Integration</b>.</li>
+      <li>Frozen source body SHA-256: <code>7f1fb0ad36eac37627862cb275aa3ec257d65767160915fbe5d65b0272264a67</code></li>
+      <li>Existing owner Windows Edge process-restart Ding is ancestry, not transferred proof.</li>
+      <li>This carrier may earn only the runtime contacts actually exercised here.</li>
+      <li>OS reboot, cross-device persistence, unrestricted actuation and human-level/general intelligence remain outside scope.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  <span>JM AGI Lab Runtime Contact Console v1.0</span>
+  <a href="./manifest.json">Manifest</a>
+</footer>
+<script type="module" src="./app.mjs"></script>
+</body>
+</html>

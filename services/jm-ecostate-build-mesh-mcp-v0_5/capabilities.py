@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_4 + hosted_runtime_v0_7_3",
+        "source":"external_current_registry_v0_4 + hosted_runtime_v0_7_4",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -320,7 +320,10 @@ CAPABILITY_PROFILES = [
             "download and addable-link route planning",
             "host-routed mutation separation",
             "receipt and recovery routing",
-            "ownership and carrier separation"
+            "ownership and carrier separation",
+            "delta-first Estate maintenance planning",
+            "host-private Library keeper contract",
+            "registry-card and body↔carrier reconciliation routing"
         ],
         "donor_roles":[
             "control-plane routing",
@@ -328,7 +331,8 @@ CAPABILITY_PROFILES = [
             "artifact dispatcher",
             "proof-gate planner",
             "host-operation planner",
-            "sovereignty boundary"
+            "sovereignty boundary",
+            "Estate maintenance conductor"
         ],
         "open_frontiers":[
             "host execution of artifact plans remains connector-specific",

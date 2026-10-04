@@ -22,10 +22,70 @@ def candidate_tokens(item):
 def stable(obj):
     return json.dumps(obj, ensure_ascii=False, sort_keys=True, separators=(",",":"))
 
+def activation_record(current64, policy, surface, current64_sha, policy_sha):
+    identities=current64.get("identities") or []
+    active_by_id={x["code_id"]:x["reason"] for x in (policy.get("baseline_active") or [])}
+    support_map=policy.get("surface_support") or {}
+    surface_key=surface if surface in support_map else "other"
+
+    body_states=[]
+    active_code_ids=[]
+    active_bodies=[]
+    available=[]
+    for body in identities:
+        code_id=body.get("code_id")
+        base={
+            "code_id":code_id,
+            "name":body.get("name"),
+            "slug":body.get("slug")
+        }
+        if code_id in active_by_id:
+            item={**base,
+                "state":"ACTIVE_ROUTE",
+                "reason":active_by_id[code_id],
+                "proof_class":"DETERMINISTIC_ROUTE_SELECTION"
+            }
+            active_code_ids.append(code_id)
+            active_bodies.append(item)
+            body_states.append(item)
+        else:
+            item={**base,"state":"AVAILABLE_NOT_SELECTED"}
+            available.append(item)
+            body_states.append(item)
+
+    return {
+        "schema":"JM.CodingBodyActivation/1.0",
+        "authority_class":"PER_RUN_ROUTE_SELECTION_NOT_PROCESS_AUTHORITY",
+        "selection_mode":policy.get("selection_mode"),
+        "requested_surface":surface,
+        "surface_profile":surface_key,
+        "policy_sha256":policy_sha,
+        "current64_sha256":current64_sha,
+        "accounting":{
+            "active_route":len(active_bodies),
+            "available_not_selected":len(available),
+            "current_coding_identities":len(identities)
+        },
+        "active_code_ids":active_code_ids,
+        "active_bodies":active_bodies,
+        "available_not_selected":[
+            {"code_id":x["code_id"],"name":x["name"],"slug":x["slug"]}
+            for x in available
+        ],
+        "body_states":body_states,
+        "supporting_organs":support_map.get(surface_key,[]),
+        "selection_is_process_execution":False,
+        "direct_execution_boundary":(policy.get("proof_semantics") or {}).get("direct_execution_boundary"),
+        "keeper":policy.get("keeper"),
+        "future_extension_boundary":policy.get("future_extension_boundary")
+    }
+
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument("--query",default="")
+    ap.add_argument("--surface",default="portable-runtime")
     ap.add_argument("--core-only",action="store_true")
+    ap.add_argument("--activation-only",action="store_true")
     args=ap.parse_args()
 
     runtime=load_json(CONTRACT_PATH)
@@ -40,18 +100,33 @@ def main():
     governance=docs["build_governance"]
     estate=docs["estate_capability_field"]
     current64=docs["coding_current64"]
+    policy=docs["coding_activation_policy"]
 
     errors=[]
     if agent.get("schema")!="JM.SovereignAgentContract/0.1": errors.append("sovereign agent schema")
     if governance.get("schema")!="JM.BuildLawsPreferencesGovernance/1.0": errors.append("build governance schema")
     if estate.get("schema")!="JM.EstateCapabilityField/1.0": errors.append("Estate capability schema")
     if current64.get("schema")!="JM.CodingEstate.Current64/1.0": errors.append("Current64 schema")
+    if policy.get("schema")!="JM.CodingBodyActivationPolicy/0.1": errors.append("coding activation policy schema")
     if len(estate.get("current_project_heads") or [])!=19: errors.append("Estate current head count")
     if len(estate.get("overlay_and_donor_profiles") or [])!=11: errors.append("Estate overlay count")
     if len(current64.get("identities") or [])!=64: errors.append("Current64 identity count")
     if errors:
         print("JM AGENT RUNTIME: FAIL " + ", ".join(errors), file=sys.stderr)
         return 1
+
+    activation=activation_record(
+        current64, policy, args.surface,
+        sources["coding_current64"]["sha256"],
+        sources["coding_activation_policy"]["sha256"]
+    )
+    if activation["accounting"]!={"active_route":12,"available_not_selected":52,"current_coding_identities":64}:
+        print("JM AGENT RUNTIME: FAIL coding activation accounting drift", file=sys.stderr)
+        return 1
+
+    if args.activation_only:
+        print(stable(activation))
+        return 0
 
     q=tokens(args.query)
     candidates=[]
@@ -88,7 +163,8 @@ def main():
         },
         "coding":{
             "current_identities":len(current64["identities"]),
-            "identity_law":current64.get("identity_law")
+            "identity_law":current64.get("identity_law"),
+            "activation":activation
         },
         "query":{"raw":args.query,"tokens":q},
         "route_candidates":candidates,
@@ -104,7 +180,11 @@ def main():
         print(stable(core))
     else:
         envelope={
-            "adapter":{"implementation":"python","role":"HOST_ADAPTER_NOT_SOURCE_AUTHORITY"},
+            "adapter":{
+                "implementation":"python",
+                "role":"HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+                "executed_carrier":"agent-runtime/jm_agent_runtime.py"
+            },
             "core":core,
             "core_sha256":hashlib.sha256(stable(core).encode("utf-8")).hexdigest()
         }

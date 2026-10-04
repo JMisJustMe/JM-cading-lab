@@ -34,8 +34,8 @@ def parse_apps(root: Path) -> tuple[str, list[list[str]], dict[str, int]]:
     }
     if shown != expected:
         fail(f"Apps visible counts do not match its registry: {shown} != {expected}")
-    if len(rows) != 44:
-        fail(f"expected 44 governed non-game rooms, found {len(rows)}")
+    if len(rows) != 45:
+        fail(f"expected 45 governed non-game rooms, found {len(rows)}")
     return text, rows, expected
 
 
@@ -70,6 +70,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
     check_apps_javascript(text)
 
     required = [
+        ("JM AGI Lab Runtime Contact Console", "v1.0 Executable Carrier", "AI & Runtime", "live_current"),
         ("JM Zionfolder OS", "v1.1.1 Scroll Spine Fix", "Estate & Recovery", "full_current"),
         ("BenefitMerge", "v0.1 Android proof", "Builders, Recovery & Delivery", "full_current"),
         ("BenefitMerge", "v0.2 PWA build", "Builders, Recovery & Delivery", "full_current"),
@@ -108,7 +109,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
             fail("pre-recovery Portal row lacks its explicit package-retrieval boundary")
         if registered != {"Portal Engine"}:
             fail(f"pre-recovery package set is wrong: {sorted(registered)}")
-        if stats != {"room_count": 44, "full_plus_preserved": 29, "routed": 11, "source_needed": 1, "preparation": 2}:
+        if stats != {"room_count": 45, "full_plus_preserved": 29, "routed": 11, "source_needed": 1, "preparation": 2}:
             fail(f"pre-recovery Apps state mismatch: {stats}")
     elif portal[3] == "routed":
         portal_phase = "PORTAL_ACCESS_LINE_RECOVERED"
@@ -118,7 +119,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
             fail("Portal Engine has lost its Operating Houses primary seat")
         if registered:
             fail(f"no exact-package retrieval cards should remain, found: {sorted(registered)}")
-        if stats != {"room_count": 44, "full_plus_preserved": 29, "routed": 12, "source_needed": 0, "preparation": 2}:
+        if stats != {"room_count": 45, "full_plus_preserved": 29, "routed": 12, "source_needed": 0, "preparation": 2}:
             fail(f"Portal-recovered Apps state mismatch: {stats}")
     else:
         fail(f"Portal Engine has an unsupported public status: {portal[3]}")
@@ -188,7 +189,7 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
         authority = json.loads(authority_path.read_text(encoding="utf-8"))
         authority_ids = {body.get("id") for body in authority.get("bodies", [])}
         required_authority = {
-            "routeos", "zionfolder-os", "estate-os-family", "jmstudios", "benefitmerge",
+            "agi-lab-runtime-console-v1", "routeos", "zionfolder-os", "estate-os-family", "jmstudios", "benefitmerge",
             "ftr-ama-pro-griproute", "cadenvm", "tracebox-routebox", "bodyvault", "ownmade",
             "theory-readable-v05", "quadze-multihub-v10", "registers-governance-chain",
         }
@@ -218,6 +219,8 @@ def verify(root: Path, public_only: bool) -> dict[str, object]:
                 fail("QUADZE v4 integrity receipt crown is wrong")
             if integrity.get("proof", {}).get("quadze_v41_solo_headless_qa") != "PASS_2_VIEWPORTS":
                 fail("QUADZE v4.1 SOLO headless proof is missing")
+            if integrity.get("proof", {}).get("agi_runtime_console_executable_carrier") != "PASS_NODE_AND_CHROMIUM_PROCESS_REENTRY":
+                fail("AGI runtime console executable-carrier proof is missing")
             if any("QUADZE MultiHub later v4.x" in item for item in integrity.get("watch_items", [])):
                 fail("QUADZE v4 recovery watch item was not closed")
 

@@ -1,0 +1,81 @@
+{
+  "schema": "JM.FTR.WebComicCarrier/1",
+  "title": "FTR — The Massive Push / One Reality, Many Cuts — Issue 01: Background Noise — Webcomic Reader v1.0",
+  "date": "2026-10-04",
+  "operation_id": "JMOP-76539883db9c6a5b14ab1263",
+  "source_authority": "FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0",
+  "source_issue": "FTR — THE MASSIVE PUSH — ISSUE 01 COMPLETE FUNCTIONAL MOCKUP v0.2",
+  "classification": "COMIC_CARRIER_DESCENDANT_NOT_NEW_CANON_BODY",
+  "counts": {
+    "series_issues": 32,
+    "series_functional_pages": 704,
+    "issue_pages": 22,
+    "public_reader_issues": 1
+  },
+  "source_hashes": {
+    "issue01_pdf_sha256": "6b8ed6ab22e979eaab634d68d59f28cd7741db938dd92c37461019a42f30253e",
+    "issue01_contact_sheet_sha256": "b98709faf5ec95fcafe70e62654d4041210ab2aaadab1a4f444616652e65141b",
+    "series_704_page_master_sha256": "dd34aebf669968927ca6949e9cce988e46677cc94731c8b4d54150cc5864a010"
+  },
+  "page_source_hashes": [
+    "1370aafd5aa76f78409454d61542aa46c60ff837b00ef594832add0f501a10ba",
+    "10340bf3c738c2c5c1319ef84d30e946fc4d2499d618613720e14f578a28b2ac",
+    "43a1c26faa238cccaa7c8e55d7af8b864db4e9591aa2c683e692d5fb108d6c0c",
+    "754cf16e784634988d383c0ad031709d7a512aed4526b0004b0b89a619fc19ec",
+    "6e02f0d8d3e194cf62a695ca427b0926201943151aa8b07c39745cfe52f35823",
+    "48f6a6e3911b9bea4d84748fce7107a0e6d081423b606ae49b25a1a965485164",
+    "030e427028479dc7b3b32c65cc52c00fb4be49bfa75493e1ab3fadeb124ed78d",
+    "15a1a685b2d67c1d9741fb1b82678a4bb6e0aec7e240b22d8cb53770ebb339d4",
+    "cbdb71405c9d337b3f1701ca6630e6eaab0bac03888ed1ad7c9453f80b6b0f3d",
+    "182729b07e1b61455403863eb295a11db3da6f3ab0f7055b47e243b600fa9bbe",
+    "f08579b99ae87df41c7dd2810e6a9c2d4ddc04e93a741367e655e2d463093559",
+    "a696afecdb34a51005c5c213497712173889cd79e3fc9b444627f1bc4d87bb15",
+    "ae07b17750dc6500ef55ebcf434b836e20172c1231500abc3b4e81982fb01d38",
+    "b1ed8248de0cac918e8a439d03c58da8f5a4106ea428c7ec17fe12cdd709c122",
+    "4adfc7d08eca68cb32a25c90892577be20331b5b00f1eddc0ec64bc25b5663c0",
+    "942661f19e44a6661ef537442208fc68528fe74fdefd20a8317eeb8fefc9def1",
+    "9ac9b93eaab0dc262baea60c2ece1f210af8792701df63c154f3664d24470064",
+    "d6f45fbd4c9998356533a0b05b64b3dfb3ac068b80531d98161586be87e7133d",
+    "15b8da70c4f0638ece722b5d77afde0f955ef40cb975150a16e9d10f1fb50b19",
+    "9c653be946dbce048d002d48f90fd0c3608ebde6cc628076267334bf3e5f603a",
+    "1565baadcc80752c3791e51b3801ca5c832245afe94b9baa1aa8ed67153142cb",
+    "f720222d557d923df16ac25f4a81b5d61ec107eb61046e71d176d23bdd2a61b7"
+  ],
+  "controls": [
+    "tap previous/next zones",
+    "swipe horizontal",
+    "keyboard arrows",
+    "22-page picker",
+    "fullscreen",
+    "boundary drawer",
+    "32-issue map"
+  ],
+  "route": "visual-story/ftr-the-massive-push/issue-01/",
+  "boundary": "New webcomic carrier preserving the frozen Issue 01 functional route. It does not replace the source page assets or Series Master, does not create a new canon body, and does not claim final bespoke illustration, lettering, print finishing or owner approval.",
+  "verification_state": "VERIFIED",
+  "outputs": {
+    "index.html": {
+      "bytes": 4761,
+      "sha256": "d62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c"
+    },
+    "reader.css": {
+      "bytes": 11501,
+      "sha256": "d650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c"
+    },
+    "reader.js": {
+      "bytes": 9977,
+      "sha256": "f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f"
+    }
+  },
+  "verification": {
+    "workflow_run_id": "37217713893",
+    "proof_job_id": "111481528666",
+    "proof_artifact_id": "11308483273",
+    "proof_artifact_zip_sha256": "6528633d3e108c80ac0819b469e7f0d02d9eae104bf56c5ef114027b55f73882",
+    "page_route": "PASS_22_OF_22",
+    "series_map": "PASS_32_OF_32",
+    "source_page_hashes": "PASS_22_UNIQUE",
+    "javascript_syntax": "PASS",
+    "responsive_reader_markers": "PASS"
+  }
+}

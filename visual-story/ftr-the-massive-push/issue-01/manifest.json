@@ -52,5 +52,30 @@
   ],
   "route": "visual-story/ftr-the-massive-push/issue-01/",
   "boundary": "New webcomic carrier preserving the frozen Issue 01 functional route. It does not replace the source page assets or Series Master, does not create a new canon body, and does not claim final bespoke illustration, lettering, print finishing or owner approval.",
-  "verification_state": "PENDING_READBACK"
+  "verification_state": "VERIFIED",
+  "outputs": {
+    "index.html": {
+      "bytes": 4761,
+      "sha256": "d62085ec9a6f3a81292bf8b8f3cd5d74dd764b131e81a6029483c9655ff1659c"
+    },
+    "reader.css": {
+      "bytes": 11501,
+      "sha256": "d650efda89c91dcae6f7b8a41cc9d15fbb04a40ca6ab028baaea9a48b8a7b45c"
+    },
+    "reader.js": {
+      "bytes": 9977,
+      "sha256": "f77b6c4467e6ce0b9ebaba7ac1a10a16ec1fee5c79b819c17b1ec42a148a835f"
+    }
+  },
+  "verification": {
+    "workflow_run_id": "37217713893",
+    "proof_job_id": "111481528666",
+    "proof_artifact_id": "11308483273",
+    "proof_artifact_zip_sha256": "6528633d3e108c80ac0819b469e7f0d02d9eae104bf56c5ef114027b55f73882",
+    "page_route": "PASS_22_OF_22",
+    "series_map": "PASS_32_OF_32",
+    "source_page_hashes": "PASS_22_UNIQUE",
+    "javascript_syntax": "PASS",
+    "responsive_reader_markers": "PASS"
+  }
 }

@@ -1,14 +1,14 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.7",
-  "date": "2026-10-04",
+  "schema": "JM.CareerCurrentProjectRegistry/0.8",
+  "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.7.9 CROSS-DEVICE-ADAPTER-SEAT DESCENDANT",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats for 32_Cb, JM32-1DA and the separate JM32-1DA Cross-Device Runtime Adapter. Stronger direct private authority can outrank hosted summaries.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.0 SYMBIOSIS-CYCLE002-RETURN DESCENDANT",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats for 32_Cb, JM32-1DA, the separate JM32-1DA Cross-Device Runtime Adapter, and the Cycle 002 capability return of JM LLM Core v1.2. Stronger direct private authority can outrank hosted summaries; hosted relation edges never transfer proof or merge bodies.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh v1.0.7 — 32_Cb Sovereign-Donor Seating",
-      "date": "4 Oct 2026",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.0 Symbiosis Cycle 002 Return",
+      "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
         "ECOSTATE",
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PACKAGE v1.0.10 · HOSTED MCP v0.7.9 CROSS-DEVICE-ADAPTER-SEAT DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh is the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. The current descendant seats the separate JM32-1DA Cross-Device Runtime Adapter v0.2 as its own capability node without merging it into JM32-1DA.",
-      "proof": "Private plugin v1.0.10 was updated in place and read back. Registry stack v0.4 + v0.5 + v0.6 + v0.7 yields 22 logical current records. Hosted source v0.7.9 carries the bounded adapter record and JM32→adapter declared relation; live runtime/edge behavior requires deployment/readback.",
-      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. The adapter is a separate authority/proof carrier. No body hash is invented for the unrecovered standalone carrier. Relation does not transfer proof."
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.10 · HOSTED MCP v0.8.0 SYMBIOSIS-CYCLE002-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane for exact current-head authority, proof boundaries, capability/donor meshing, deterministic operation planning, artifact-general routing, delta-first Estate maintenance and Identity/Authority/Custody governance. The hosted v0.8.0 descendant preserves the separate JM32-1DA Cross-Device Runtime Adapter seat and now receives JM LLM Core v1.2 Cycle 002 as a distinct returned capability body rather than merging it into ECOSTATE.",
+      "proof": "Private plugin v1.0.10 remains the last directly read-back private package in this lineage. Registry v0.8 keeps 22 logical current records and adds the bounded JM LLM Core v1.2 Cycle 002 capability-return declaration plus its explicit LLM→ECOSTATE relation. Hosted live/runtime proof must match the exact registry bytes and v0.8.0 runtime before live crown.",
+      "boundary": "Public Build Mesh remains read-only and does not own or ingest the private Estate/Library. The LLM remains its own learned/runtime body; returning a capability to ECOSTATE means the control plane can discover and route that earned capability, not that ECOSTATE becomes the LLM. Relation does not transfer proof. Private plugin v1.0.10 is not silently relabelled as a newer private package."
     },
     {
       "id": "opportunity-v08",
@@ -58,8 +58,8 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.1 — Symbiosis Cycle 001",
-      "date": "4 Oct 2026",
+      "title": "JM LLM Core v1.2 — Symbiosis Cycle 002",
+      "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
         "LLM",
@@ -67,12 +67,21 @@
         "reasoning",
         "symbiosis",
         "modular arithmetic",
-        "capability return"
+        "capability return",
+        "mathematical induction",
+        "ordinary induction",
+        "retention regression"
       ],
-      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 001 · FIRST CAPABILITY-RETURN DING",
-      "summary": "Forward descendant over the frozen v1.0 First Complete Edition. Cycle 001 used the ECOSTATE/JM Learn residual-gap route to acquire bounded modular-arithmetic capability through a separately measured learned-weight research child plus a learned modular router and auditable executor, while preserving the v1.0 parent and regression lanes.",
-      "proof": "Untouched modular-arithmetic system test 200/200 PASS; original v1.0 smoke 7/7 PASS; fixed modular baseline 0/8 → 8/8. Learned-weight child reduced held-out modular response NLL by 69.46%, ECOSTATE-law NLL by 73.10% and old-instruction NLL by 11.57%, but free modular generation remained 0/8 and is not crowned.",
-      "boundary": "Bounded modular arithmetic is earned at learned-route + auditable-executor system scope. v1.0 remains the protected frozen parent. Not general mathematics, mathematical induction, broad formal logic, transformer-weight modular reasoning, unrestricted free generation, AGI or human-level intelligence."
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 002 · BOUNDED ORDINARY-INDUCTION CAPABILITY-RETURN DING",
+      "summary": "Forward descendant over v1.1 Symbiosis Cycle 001 and the frozen v1.0 First Complete Edition. Cycle 002 preserves bounded modular arithmetic and adds bounded ordinary mathematical induction across five theorem families through a learned induction-intent route plus an auditable symbolic executor. A first combined runtime intercepted 3/200 untouched Cycle 001 modular prompts; the activation gate was corrected before crown and the full modular set returned to 200/200.",
+      "proof": "Direct regression floor: v1.0 smoke 7/7 PASS; v1.1 smoke 7/7 PASS; untouched Cycle 001 modular retention through v1.2 200/200 PASS; Cycle 002 learned-router held-out 1000/1000 PASS; symbolic theorem-family verification 5/5 PASS; numeric induction contact 402/402 PASS; integrated execution/HOLD probes 8/8 PASS.",
+      "boundary": "Earned scope is bounded ordinary mathematical induction at learned-route + auditable-symbolic-executor system scope while retaining the bounded modular route. Strong induction, structural induction, arbitrary theorem proving, broad formal logic, unrestricted free generation, transformer-weight induction reasoning, AGI and human-level intelligence remain open.",
+      "relations": [
+        {
+          "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",
+          "target": "JM ECOSTATE Build Mesh"
+        }
+      ]
     },
     {
       "id": "llm2-v2",

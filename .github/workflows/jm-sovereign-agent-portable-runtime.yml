@@ -50,6 +50,8 @@ jobs:
           python3 agent-runtime/jm_agent_runtime.py --core-only --query "theory research" > /tmp/py-theory.json
           node agent-runtime/jm-agent-runtime.mjs --core-only --query "theory research" > /tmp/js-theory.json
           diff -u /tmp/py-theory.json /tmp/js-theory.json
+      - name: Run universal host-adapter conformance
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
       - name: Assert routing and sovereignty boundaries
         run: |
           python3 - <<'PY'

@@ -11,6 +11,7 @@
 
 **Read / inherit before material change:**
 - repository root `AGENTS.md`
+- `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_ROUTING_STANDARD_v1.0.md` and `JM_ESTATE/GOVERNANCE/JM_ESTATE_CAPABILITY_FIELD_v1.0.json` — whole-Estate project/domain routing field
 - `JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_STANDARD_v1.0.md` — shared build laws, preferences, authority/proof and governance floor
 - `JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md`
 - `coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md` and `coding-estate/JM_CODING_ESTATE_CURRENT_64.json` for the complete current coding-identity field
@@ -63,6 +64,11 @@ Examples of adapters may include:
 **ADAPTER ≠ BODY. HOST ≠ OWNER.**
 
 ---
+
+### Whole-Estate field
+Build Mesh must first route the actual problem to the relevant Estate domain/current project head. Its familiar coding bodies are one domain-specific field, not the automatic destination for every task.
+
+**CURRENT PROJECT HEAD ≠ OVERLAY / DONOR PROFILE ≠ CAPABILITY CUE ≠ EXECUTION PROOF.**
 
 ### Shared governance floor
 Build Mesh may route bodies, but it must itself obey the canonical JM Build Laws / Preferences / Governance standard. Routing convenience never outranks source authority, owner authority, the six-authority gate, or returned consequence.

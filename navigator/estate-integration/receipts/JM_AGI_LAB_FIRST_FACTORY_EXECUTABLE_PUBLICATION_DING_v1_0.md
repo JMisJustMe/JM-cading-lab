@@ -301,3 +301,61 @@ Therefore:
 **THEORY + COMIC + EXECUTABLE RUNTIME = THREE-SURFACE FACTORY REPEATABILITY PROVED.**
 
 **FROZEN · LOCKED · ANCHORED · EXECUTED · PUBLICLY CONTACTED**
+
+## Post-FLAZ executable re-contact
+
+The saved public-executable Ding head was itself redeployed and re-executed.
+
+Saved receipt head:
+
+`3e47f48807365700ab415cfdc5422769eb84f262`
+
+### GitHub Pages
+
+Fresh run:
+
+`37220025935`
+
+Results:
+
+- build `111488305751` → **SUCCESS**
+- deploy `111488335822` → **SUCCESS**
+- Theory exact proof `111488385532` → **SUCCESS**
+- FTR exact proof `111488385624` → **SUCCESS**
+- executable runtime proof `111488385581` → **SUCCESS**
+- exact runtime bytes: **AGI RUNTIME PAGES EXACT BYTES PASS**
+- public receipt: **PASS_PUBLIC_EXECUTABLE_RUNTIME**
+- real settle: **PASS_12_OF_12_REAL_SECONDS**
+- runtime proof artifact: `11309074682`
+- runtime artifact ZIP SHA-256: `61d877810d8b91cdac0baed7d4e81e5f82804c2a8d19e2e0666b3ba71726ef18`
+- Theory artifact: `11309164046`
+- FTR artifact: `11309358783`
+- deployed Pages artifact: `11309766791`
+
+### Canonical Cloudflare Estate
+
+Fresh run:
+
+`37220025922`
+
+Job:
+
+`111488305666` → **SUCCESS**
+
+Fresh exact contacts:
+
+- **THEORY FACTORY CLOUDFLARE EXACT LIVE PASS**
+- **FTR FACTORY CLOUDFLARE EXACT LIVE PASS**
+- **AGI RUNTIME CLOUDFLARE EXACT BYTES PASS**
+- public runtime receipt: **PASS_PUBLIC_EXECUTABLE_RUNTIME**
+- real settle: **PASS_12_OF_12_REAL_SECONDS**
+- persistent-profile runtime process re-entry: **PASS**
+
+Fresh integrated proof artifact:
+
+- artifact: `11309362420`
+- ZIP SHA-256: `720c30004395e9cec56b24610e26bc91a4d4be207e21de6f2a504fbc350b33bf`
+
+This confirms the durable saved Estate state still serves and executes all three manufactured factory products without byte or runtime drift.
+
+**POST-FLAZ EXECUTABLE RE-CONTACT: PASS.**

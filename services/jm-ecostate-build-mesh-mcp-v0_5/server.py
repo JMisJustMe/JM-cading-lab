@@ -1001,7 +1001,7 @@ def estate_keeper_contract(args):
         ],
         "residency_states": ["KEEP", "RECOVERY", "LINEAGE", "THIN", "RETIRE", "HOLD"],
         "existing_identity_rule": "Reuse the existing Registry Card/body identity. A new carrier does not become a new creation.",
-        "authority_rule": "Identity/current-head authority must be exact or privately re-contacted. Fuzzy discovery is never promoted to authority.",
+        "authority_rule": "Identity/current-head authority must be exact or privately re-contacted. Fuzzy discovery is never authority.",
         "no_census_default": True,
         "destructive_default": "HOLD",
         "reclaim_rule": "Never double-credit prior mutations. Exact duplicate/containment/thinning requires live proof plus a retained survivor or recovery route.",

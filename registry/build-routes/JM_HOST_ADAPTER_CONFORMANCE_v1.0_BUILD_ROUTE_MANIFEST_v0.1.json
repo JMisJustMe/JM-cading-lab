@@ -1,0 +1,116 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM Build Route Manifest v0.1 — Host Adapter Conformance / Universal Plug Tester",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "JM Host Adapter Conformance — Universal Plug Tester v1.0",
+    "body_type": "Estate-wide host-adapter proof standard / executable conformance harness",
+    "intended_destination": "Canonical JM sovereign-agent runtime layer on main"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "head_branch": "standards/jm-host-adapter-conformance-v1",
+    "source_authority": [
+      "JM Sovereign Agent Runtime v0.1",
+      "JM Universal Hosted-Body Architecture",
+      "JM ChatGPT Host Adapter v0.1.x lineage",
+      "JM3232 AIRBORNE identity/carrier law",
+      "JM32-1DA Cross-Device Runtime Adapter precedent"
+    ],
+    "owner_instruction": "Go on then — build the universal host-adapter plug tester.",
+    "source_rule": "ADAPTER_NOT_BODY_HOST_NOT_OWNER_PROOF_STAYS_TYPED",
+    "merge_forbidden_at_body_level": true
+  },
+  "foundation": {
+    "recovered_gap": "The sovereign core and portable Node/Python runtime were proven, but host surfaces still lacked one universal executable conformance standard that prevented transport/function/contact/owner proof inflation.",
+    "reuse_rule": "Use existing hosted-body law and adapter precedents; do not create a new agent or new source identity for each host."
+  },
+  "exact_stack": {
+    "standard": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md",
+    "contract": "agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_v1_0.json",
+    "registry": "agent-runtime/host-adapters/JM_HOST_ADAPTER_REGISTRY_v1_0.json",
+    "tester": "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+    "CI": ".github/workflows/jm-host-adapter-conformance.yml",
+    "inherited_surfaces": [
+      "AGENTS.md",
+      ".github/copilot-instructions.md",
+      "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+      "agent-runtime/README.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/AGENTS.md",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json",
+      "services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py",
+      ".github/workflows/jm-sovereign-agent-portable-runtime.yml"
+    ]
+  },
+  "true_gaps": {
+    "new_agent_required": false,
+    "new_sovereign_core_required": false,
+    "new_coding_identity_required": false,
+    "universal_host_conformance_required": true,
+    "gap": "Host routes existed at different proof levels, but there was no one executable adapter-proof ladder/gate set spanning reference runtimes, ChatGPT/MCP, browser, Android, Codex/repository, CI/cloud and future hosts."
+  },
+  "proof_lanes": {
+    "registry_integrity": {
+      "state": "PENDING_CI",
+      "criterion": "Every adapter descriptor has unique identity, exact gate set, valid proof level and durable evidence for PASS claims."
+    },
+    "local_reference_plugs": {
+      "state": "PENDING_CI",
+      "criterion": "Python and Node execute and emit byte-identical core capsules for multiple queries; unknown query returns no fabricated route."
+    },
+    "proof_inflation_guard": {
+      "state": "PENDING_CI",
+      "criterion": "No adapter may claim a proof level unless all gates required by that level are PASS."
+    },
+    "downstream_agent_contract": {
+      "state": "PENDING_CI",
+      "criterion": "Sovereign agent validator must match the exact registered adapter IDs and proof ladder."
+    },
+    "external_host_contact": {
+      "state": "OPEN_BY_DESIGN",
+      "criterion": "ChatGPT inline, Android, Codex and each exact future host advance only by direct contact; OPEN is preserved until then."
+    }
+  },
+  "host_and_surfaces": {
+    "current_registry_entries": 9,
+    "proven_reference_runtimes": [
+      "python-reference-runtime",
+      "node-reference-runtime"
+    ],
+    "partial_or_precedent_routes": [
+      "chatgpt-mcp-host-adapter",
+      "browser-airborne-carrier",
+      "github-ci-execution-carrier"
+    ],
+    "declared_open_routes": [
+      "android-phone-adapter",
+      "codex-repository-agent-adapter",
+      "cloud-execution-adapter-family",
+      "other-compatible-host"
+    ],
+    "keeper": "CHANGE THE PLUG, NOT THE BODY."
+  },
+  "escalation": {
+    "current_escalations": [
+      "If a PASS gate lacks durable evidence, lower only that adapter's claim rather than weakening the gate.",
+      "If Node/Python parity fails, correct adapter behavior and rerun.",
+      "If a host has no adapter, add the thinnest wrapper and preserve the same conformance contract.",
+      "Never promote transport proof to live-host/owner proof without direct contact."
+    ],
+    "failure_route": "FAIL LOCAL → TRACE ADAPTER/GATE → CORRECT RESPONSIBLE SURFACE → RETEST → ADVANCE ONLY THAT ADAPTER",
+    "manual_user_contact": "Only for an exact owner/device/contact action that cannot be lawfully automated."
+  },
+  "state": {
+    "route": "AUTHORIZED_HOST_CONFORMANCE_INTEGRATION",
+    "build_authorized_by_manifest": true,
+    "proof_transfer_forbidden": true,
+    "host_ownership": false,
+    "crown": "PENDING PR CI + MERGE READBACK"
+  },
+  "next_route": {
+    "step": "Open PR → run universal plug tester and downstream gates → correct attributable failures → merge on green → read canonical main."
+  },
+  "manifest_proof": {
+    "result": "PASS — recovered existing host/body law and proof states, created one universal gate set without inventing cross-host proof, and preserved explicit OPEN boundaries."
+  }
+}

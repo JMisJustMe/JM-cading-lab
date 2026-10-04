@@ -56,8 +56,8 @@ jobs:
           })
           assert comic["artifact_type"] == "comic"
           assert comic["surface_profile"]["selected_outputs"] == ["pdf","cbz","web-reader"]
-          assert comic["hosted_authority_state"] != "CURRENT_DECLARED", comic
-          assert comic["target_profile_id"] is None, comic
+          assert comic["hosted_authority_state"] == "CURRENT_DECLARED", comic
+          assert comic["target_profile_id"] == "ftr-massive-push-v1", comic
 
           theory = server.plan_artifact_route({
               "target":"JM Theory Estate",
@@ -178,7 +178,7 @@ jobs:
           status = call(3, "build_mesh_status", {"probe_navigator":True})
           nav = status["navigator_contact"]
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
-          assert status["capability_profiles"] >= 30, status
+          assert status["capability_profiles"] >= 31, status
           assert status["artifact_surface_profiles"] == 6, status
           assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", status
           registry_raw = open("services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json","rb").read()
@@ -217,8 +217,8 @@ jobs:
           })
           assert comic["artifact_type"] == "comic", comic
           assert comic["surface_profile"]["selected_outputs"] == ["pdf","cbz","web-reader"], comic
-          assert comic["hosted_authority_state"] != "CURRENT_DECLARED", comic
-          assert comic["target_profile_id"] is None, comic
+          assert comic["hosted_authority_state"] == "CURRENT_DECLARED", comic
+          assert comic["target_profile_id"] == "ftr-massive-push-v1", comic
 
           theory = call(7, "plan_artifact_route", {
               "target":"JM Theory Estate",

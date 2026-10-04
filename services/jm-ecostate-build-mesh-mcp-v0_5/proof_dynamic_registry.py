@@ -17,17 +17,17 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.7.8"
+assert server.VERSION == "0.8.0"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.6"
-assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-04"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.8"
+assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-05"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
-assert len(server.CURRENT) == 21
+assert len(server.CURRENT) == 22
 assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
@@ -52,7 +52,7 @@ assert "external current-registry loading" in profile["capabilities"]
 assert "dynamic exact-byte registry hashing" in profile["capabilities"]
 assert "delta-first Estate maintenance planning" in profile["capabilities"]
 assert "JM32-1DA exact runtime-route seating" in profile["capabilities"]
-assert "PACKAGE v1.0.9" in head["primary_evidence"]["status"]
+assert "PRIVATE PACKAGE v1.0.10" in head["primary_evidence"]["status"]\nassert "HOSTED MCP v0.8.0" in head["primary_evidence"]["status"]
 
 jm32 = server.resolve_profile("JM32-1DA")
 assert jm32 and jm32["id"] == "jm32-1da-v221", jm32
@@ -66,6 +66,37 @@ assert len(declared) == 1, mesh
 edge = declared[0]
 assert edge["from"] == "32cb-v21" and edge["to"] == "jm32-1da-v221", edge
 assert edge["merge"] is False and edge["proof_transfer"] is False, edge
+
+adapter = server.resolve_profile("JM32-1DA Cross-Device Runtime Adapter")
+assert adapter and adapter["id"] == "jm32-1da-cross-device-adapter-v02", adapter
+adapter_mesh = server.build_capability_mesh({"builds":["JM32-1DA","JM32-1DA Cross-Device Runtime Adapter"],"max_nodes":4})
+adapter_declared = [
+    e for e in adapter_mesh["edges"]
+    if e.get("relation") == "DECLARED_RELATION"
+    and e.get("declared_relation") == "HAS_SEPARATE_CROSS_DEVICE_ADAPTER"
+]
+assert len(adapter_declared) == 1, adapter_mesh
+assert adapter_declared[0]["from"] == "jm32-1da-v221" and adapter_declared[0]["to"] == "jm32-1da-cross-device-adapter-v02", adapter_declared[0]
+assert adapter_declared[0]["merge"] is False and adapter_declared[0]["proof_transfer"] is False, adapter_declared[0]
+
+llm = server.resolve_profile("JM LLM Core")
+assert llm and llm["id"] == "llm-core-v1", llm
+assert llm["name"] == "JM LLM Core v1.2 — Symbiosis Cycle 002", llm
+assert "bounded modular arithmetic" in llm["capabilities"], llm
+assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
+assert "cross-cycle capability retention" in llm["capabilities"], llm
+assert "strong induction" in llm["open_frontiers"], llm
+assert "mathematical induction" not in llm["open_frontiers"], llm
+
+return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
+returned = [
+    e for e in return_mesh["edges"]
+    if e.get("relation") == "DECLARED_RELATION"
+    and e.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
+]
+assert len(returned) == 1, return_mesh
+assert returned[0]["from"] == "llm-core-v1" and returned[0]["to"] == "ecostate-build-mesh-v102", returned[0]
+assert returned[0]["merge"] is False and returned[0]["proof_transfer"] is False, returned[0]
 
 keeper = server.estate_keeper_contract({"scope":"private Library delta maintenance","last_checkpoint":"PASS_84","changed_count":0,"unresolved_count":0})
 assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6"

@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_4 + hosted_runtime_v0_7_5",
+        "source":"external_current_registry_v0_5 + hosted_runtime_v0_7_6",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -323,7 +323,8 @@ CAPABILITY_PROFILES = [
             "ownership and carrier separation",
             "delta-first Estate maintenance planning",
             "host-private Library keeper contract",
-            "registry-card and body↔carrier reconciliation routing"
+            "registry-card and body↔carrier reconciliation routing",
+            "32_Cb sovereign-donor seating"
         ],
         "donor_roles":[
             "control-plane routing",
@@ -338,6 +339,34 @@ CAPABILITY_PROFILES = [
             "host execution of artifact plans remains connector-specific",
             "each output surface still requires its own contact proof",
             "private Library authority remains local to the host"
+        ]
+    },
+    {
+        "id":"32cb-v21",
+        "name":"32_Cb — Sovereign Federation Runtime v2.1",
+        "aliases":["32_Cb","32Cb","32 Cb","32_Cb v2.1"],
+        "source":"external_current_registry_v0_5 + exact-private-authority-derived-seat",
+        "domain":"Coding / runtime / sovereign multi-target embodiment",
+        "capabilities":[
+            "owner-body-first multi-target embodiment",
+            "72 named owner profiles",
+            "JM-native operational engines",
+            "internal native external proof separation",
+            "host absence as HOLD not nonexistence",
+            "receipt-gated external proof",
+            "language runtime route wearing",
+            "multi-target sovereign execution identity"
+        ],
+        "donor_roles":[
+            "sovereign multi-target embodiment donor",
+            "runtime-route separation ancestor",
+            "source-host adaptation ancestor",
+            "proof-jurisdiction separation donor"
+        ],
+        "open_frontiers":[
+            "new external host contacts only with fresh receipts",
+            "new target profiles only through explicit embodiment",
+            "no proof transfer to descendants"
         ]
     },
 ]

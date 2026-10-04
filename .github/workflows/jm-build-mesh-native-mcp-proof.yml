@@ -222,7 +222,7 @@ jobs:
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -230,6 +230,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_3.json
           if-no-files-found: error

@@ -5,7 +5,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 PATH = HERE / "JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
-ROOT = HERE.parents[2]
+ROOT = HERE.parents[1]
 CURRENT64_PATH = ROOT / "coding-estate" / "JM_CODING_ESTATE_CURRENT_64.json"
 
 REQUIRED_LAWS = {
@@ -101,10 +101,15 @@ if missing_proof:
     errors.append("missing proof layers: " + ", ".join(sorted(missing_proof)))
 
 inherit_required = set((data.get("inheritance") or {}).get("required") or [])
-if "../../../AGENTS.md" not in inherit_required:
+if "../../AGENTS.md" not in inherit_required:
     errors.append("root AGENTS.md inheritance missing")
-if "../../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md" not in inherit_required:
+if "../../JM_ESTATE/GOVERNANCE/JM_ESTATE_PRODUCTION_INHERITANCE_STANDARD_v1.0.md" not in inherit_required:
     errors.append("Estate production inheritance standard missing")
+
+for rel in sorted(inherit_required):
+    candidate = (HERE / rel).resolve()
+    if not candidate.exists():
+        errors.append(f"referenced agent contract path missing: {rel}")
 
 order = data.get("currentness_order") or []
 if not order or order[0] != "direct current owner/device receipt for the exact claim":

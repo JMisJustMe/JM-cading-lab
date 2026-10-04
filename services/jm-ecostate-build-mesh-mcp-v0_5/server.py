@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.3"
+VERSION = "0.7.4"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -876,13 +876,114 @@ def plan_artifact_route(args):
     }
 
 
+
+def estate_keeper_contract(args):
+    scope = (args.get("scope") or "JM Estate / private Library maintenance").strip()
+    last_checkpoint = (args.get("last_checkpoint") or "").strip()
+    changed_count = args.get("changed_count")
+    unresolved_count = args.get("unresolved_count")
+    for label, value in (("changed_count", changed_count), ("unresolved_count", unresolved_count)):
+        if value is not None and (not isinstance(value, int) or value < 0):
+            raise ValueError(f"{label} must be a non-negative integer when supplied")
+
+    seed = {
+        "scope": scope,
+        "last_checkpoint": last_checkpoint or None,
+        "changed_count": changed_count,
+        "unresolved_count": unresolved_count,
+        "registry_sha256": CURRENT_REGISTRY_SHA256,
+        "server_version": VERSION,
+    }
+    contract_id = hashlib.sha256(
+        json.dumps(seed, ensure_ascii=False, sort_keys=True, separators=(",",":")).encode("utf-8")
+    ).hexdigest()[:24]
+
+    return {
+        "schema": "JM.BuildMesh.EstateKeeperContract/0.7.4",
+        "contract_id": f"JMKEEP-{contract_id}",
+        "phase": "HOST_CONTACT_REQUIRED",
+        "scope": scope,
+        "package_head": "JM ECOSTATE — Build Mesh v1.0.6 — Estate Keeper Convergence",
+        "hosted_runtime": VERSION,
+        "hosted_registry": {
+            "schema": CURRENT_REGISTRY_SCHEMA,
+            "date": CURRENT_REGISTRY_DATE,
+            "sha256": CURRENT_REGISTRY_SHA256,
+            "records": len(CURRENT),
+        },
+        "last_checkpoint": last_checkpoint or None,
+        "host_summary": {
+            "changed_count": changed_count,
+            "unresolved_count": unresolved_count,
+        },
+        "private_contact_queries": [
+            "JM ESTATE MAINTENANCE CONVERGENCE current reentry control",
+            "JM_MAGNIFYING_GLASS_CONTROL latest revision source_head",
+            "JM_LIBRARY_RECLAIM latest durable descendant current continuation",
+            "JM ECOSTATE Body Carrier Mesh v1.12 Physical Census Overlay current",
+            "current project registry latest version current pointer",
+        ],
+        "recovered_donor_routes": [
+            "JM Living Library — Estate-Wide Recursive Source Census ×32×10",
+            "JM Living Library Beneficial Access Core",
+            "JM Estate Live Registry",
+            "JM Estate Compass v1.5.0 — Lazy Library",
+            "JM Living Notebook / Estate Operating Tool v1.5B",
+            "JM Estate Circulation & Return v1.0",
+            "JM File Grabber / FLL BenefitMerge",
+            "JM ECOSTATE Body ↔ Carrier Mesh v1.12",
+            "JM Library Reclaim / JM Magnifying Glass",
+        ],
+        "authority_order": [
+            "DIRECT PRIVATE BODY / RECEIPT",
+            "EXACT PRIVATE CURRENT / OPEN / REENTRY POINTER",
+            "PRIVATE FLAZ / MANIFEST",
+            "HOSTED EXTERNAL CURRENT REGISTRY",
+            "HOSTED CAPABILITY PROFILE",
+            "NAVIGATOR PUBLIC DONOR",
+            "PACKAGED HISTORICAL SNAPSHOT",
+        ],
+        "delta_cycle": [
+            "RECOVER LATEST CONTROL / REENTRY",
+            "DETECT NEW OR CHANGED LIBRARY OBJECTS / REGISTRY DELTAS",
+            "RESOLVE EXISTING BODY / CARD / LINEAGE BEFORE CREATING ANY IDENTITY",
+            "ATTACH OR UPDATE CURRENT HEAD / CARRIER / PROOF / STORAGE ROLE",
+            "COMPARE WITH BODY↔CARRIER + RECLAIM CONTROL",
+            "CLASSIFY KEEP / RECOVERY / LINEAGE / THIN / RETIRE / HOLD",
+            "EXECUTE ONLY ALREADY-AUTHORIZED HOST-SIDE ACTIONS",
+            "READ BACK AND VERIFY ACTUAL DELTA",
+            "UPDATE DURABLE CONTROL + DRIFT RECEIPT",
+            "SEND ONLY BOUNDED NON-PRIVATE STATE SUMMARY TO PUBLIC BUILD MESH",
+        ],
+        "residency_states": ["KEEP", "RECOVERY", "LINEAGE", "THIN", "RETIRE", "HOLD"],
+        "existing_identity_rule": "Reuse the existing Registry Card/body identity. A new carrier does not become a new creation.",
+        "no_census_default": True,
+        "destructive_default": "HOLD",
+        "reclaim_rule": "Never double-credit prior mutations. Exact duplicate/containment/thinning requires live proof plus a retained survivor or recovery route.",
+        "privacy_rule": "Raw private Library files, snippets and identifiers stay local to the host; this public MCP accepts only bounded state summaries.",
+        "host_execution_rule": "This public MCP does not read or mutate the private Library. The host performs private contact and authorized consequence, then reads back and verifies.",
+        "mutation_performed": False,
+        "laws": [
+            "RECOVER BEFORE REBUILD",
+            "CONTACT BEFORE CROWN",
+            "NO DING, NO CLAIM",
+            "MESH ≠ MERGE",
+            "BODY ≠ CARRIER",
+            "CARRIERS DO NOT MULTIPLY CREATIONS",
+            "CENSUS IS NOT THE NEXT JOB",
+            "FROM HERE, CONNECT — DO NOT RECOUNT",
+            "PRESERVING PROOF ≠ PRESERVING EVERY TRACE",
+        ],
+    }
+
 def build_mesh_status(args):
     probe = bool(args.get("probe_navigator", True))
     nav = navigator_rpc("navigator_bridge_status", {}, use_cache=False) if probe else {"state": "NOT_PROBED"}
     return {
         "server": SERVER_NAME,
         "version": VERSION,
-        "mode": "read-only authority / external-current-registry / capability-mesh / artifact-router / sovereign-sync-contract / operation-planning service",
+        "mode": "read-only authority / external-current-registry / capability-mesh / artifact-router / sovereign-sync-contract / estate-keeper-contract / operation-planning service",
+        "estate_keeper_contract_schema": "JM.BuildMesh.EstateKeeperContract/0.7.4",
         "current_project_records": len(CURRENT),
         "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
         "current_registry_date": CURRENT_REGISTRY_DATE,
@@ -907,6 +1008,8 @@ def build_mesh_status(args):
             "MESH ≠ MERGE",
             "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
             "ACCESS ≠ AUTHORITY",
+            "CENSUS IS NOT THE NEXT JOB",
+            "FROM HERE, CONNECT — DO NOT RECOUNT",
         ],
         "boundary": "This public service does not own the Estate, does not access or ingest the private ChatGPT Library, and performs no writes. Private authority reconciliation stays local to the host.",
     }
@@ -926,6 +1029,7 @@ TOOLS = [
     {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"build_sync_contract","description":"Return the hosted snapshot identity plus private-host search/reconciliation rules without ingesting private Library content.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"estate_keeper_contract","description":"Return the delta-first host/private Estate Keeper contract for registry, body↔carrier, proof, storage and reclaim maintenance without ingesting private Library content or performing mutation.","inputSchema":{"type":"object","properties":{"scope":{"type":"string"},"last_checkpoint":{"type":"string"},"changed_count":{"type":"integer","minimum":0},"unresolved_count":{"type":"integer","minimum":0}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_artifact_route","description":"Plan one governed artifact-general route for a book, comic, theory, app, APK or downloadable/addable link while keeping proof surface-specific.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"artifact_type":{"type":"string","enum":["book","comic","theory","app","apk","download"]},"outputs":{"type":"array","maxItems":8,"items":{"type":"string"}},"objective":{"type":"string"}},"required":["target","artifact_type"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"prepare_operation_gate","description":"Create a deterministic PLAN_ONLY operation capsule for a future host-authorized action; performs no write or deploy.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"action_type":{"type":"string"},"intended_change":{"type":"string"},"donors":{"type":"array","maxItems":8,"items":{"type":"string"}}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
@@ -944,6 +1048,7 @@ HANDLERS = {
     "detect_propagation_gaps": detect_propagation_gaps,
     "plan_capability_inheritance": plan_capability_inheritance,
     "build_sync_contract": build_sync_contract,
+    "estate_keeper_contract": estate_keeper_contract,
     "prepare_operation_gate": prepare_operation_gate,
     "plan_artifact_route": plan_artifact_route,
 }
@@ -1038,7 +1143,7 @@ class Handler(BaseHTTPRequestHandler):
                 "protocolVersion": protocol,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": SERVER_NAME, "version": VERSION},
-                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Operation gates and artifact routes are PLAN_ONLY and non-mutating. Artifact profiles share one spine while keeping surface proof separate.",
+                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Estate Keeper maintenance is delta-first: connect, do not recount. Operation gates, Keeper contracts and artifact routes are PLAN_ONLY and non-mutating. Artifact profiles share one spine while keeping surface proof separate.",
             }))
         if method == "ping":
             return self.send_json(200, rpc_result(request_id, {}))

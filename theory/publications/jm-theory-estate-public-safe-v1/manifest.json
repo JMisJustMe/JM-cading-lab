@@ -1,0 +1,43 @@
+{
+  "schema": "JM.TheoryEstate.PublicSafePublication/1",
+  "title": "JM Theory Estate — Public-Safe Strengthening & External-Contact Edition v1.0",
+  "date": "2026-10-04",
+  "source_identity": "JM Theory Estate — First + Second-Order Strengthening",
+  "target_profile_id": "theory-second-order",
+  "operation_id": "JMOP-34a6830ec08dc884d9bcca49",
+  "classification": "PUBLIC_SAFE_PUBLICATION_DESCENDANT_NOT_NEW_STRICT_THEORY",
+  "counts": {
+    "strict_theories": 51,
+    "first_order_runs": 7,
+    "first_order_bridges": 7,
+    "second_order_runs": 7,
+    "second_order_bridges": 7,
+    "external_contacted_strict_bodies": 51,
+    "pairwise_safeguards_contacted": 14,
+    "constellations_contacted": 7,
+    "silent_first_order_merges": 0,
+    "silent_second_order_merges": 0
+  },
+  "outputs": {
+    "markdown": {
+      "path": "theory/publications/jm-theory-estate-public-safe-v1/JM_THEORY_ESTATE_PUBLIC_SAFE_EDITION_v1_0.md",
+      "sha256": "PENDING_READBACK"
+    },
+    "html": {
+      "path": "theory/publications/jm-theory-estate-public-safe-v1/index.html",
+      "sha256": "PENDING_READBACK"
+    }
+  },
+  "source_chain": [
+    "JM_THEORY_ESTATE_STRENGTHENING_PROGRAMME_FIRST_SEVEN_RUNS_FINAL_CLOSURE_v1.0.md",
+    "JM_THEORY_SECOND_ORDER_SEVEN_RUN_COMPLETION_CLOSURE_v1.0.md",
+    "JM_THEORY_ESTATE_EXTERNAL_VALIDATION_PROGRAMME_CURRENT_v1_1.md",
+    "JM_THEORY_ESTATE_EXTERNAL_VALIDATION_PHASE_FLAZ_RECEIPT_v1_0.md"
+  ],
+  "source_closure_bundle": {
+    "name": "JM_THEORY_ESTATE_EXTERNAL_VALIDATION_51_OF_51_CLOSURE_BUNDLE_2026-09-27.zip",
+    "sha256": "5b73ec290ec18597652747c06aade776e77a1b37bb2b4569ebbd54b03345f846"
+  },
+  "claim_boundary": "Carrier construction only until readback. No new strict theory and no empirical, peer-review or replication proof transfer.",
+  "verification_state": "PENDING_READBACK"
+}

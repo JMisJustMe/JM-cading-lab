@@ -1,0 +1,49 @@
+{
+  "schema": "JM.AGILab.RuntimeCarrier/1",
+  "title": "JM AGI Lab — Runtime Contact Console v1.0",
+  "date": "2026-10-04",
+  "operation_id": "JMOP-6d66ae8f0228162e549b7934",
+  "authority": "JM AGI Lab v1.4.4 — Durability Settle / Live Integration",
+  "authority_body": "JM_AGI_LAB_v1_4_4_DURABILITY_SETTLE_LIVE_INTEGRATION.html",
+  "authority_sha256": "7f1fb0ad36eac37627862cb275aa3ec257d65767160915fbe5d65b0272264a67",
+  "authority_owner_gate_package_sha256": "9a2a93471d10acec971ccb933420aab61c48979d533225ff073e71c9c6bcd4c8",
+  "classification": "EXECUTABLE_RUNTIME_CARRIER_DESCENDANT_NOT_NEW_AGI_LAB_HEAD",
+  "runtime": {
+    "shared_core": "runtime-core.mjs",
+    "browser_entry": "index.html",
+    "browser_adapter": "app.mjs",
+    "node_process_proof": "proof-node.mjs",
+    "settle_ticks": 12,
+    "persistence": [
+      "browser localStorage",
+      "Node file-backed witness during proof"
+    ],
+    "transitions": [
+      "OBSERVE",
+      "CONSEQUENCE",
+      "ARM_SETTLE",
+      "TICK_SETTLE",
+      "RELOAD_REENTRY",
+      "RECEIPT"
+    ]
+  },
+  "outputs": {
+    "index.html": {
+      "sha256": "PENDING_READBACK"
+    },
+    "styles.css": {
+      "sha256": "PENDING_READBACK"
+    },
+    "runtime-core.mjs": {
+      "sha256": "PENDING_READBACK"
+    },
+    "app.mjs": {
+      "sha256": "PENDING_READBACK"
+    },
+    "proof-node.mjs": {
+      "sha256": "PENDING_READBACK"
+    }
+  },
+  "boundary": "Executable runtime-carrier manufacture only. It does not supersede JM AGI Lab v1.4.4, transfer its owner Windows Edge Ding, prove OS reboot or cross-device persistence, contact an external model, perform unrestricted actuation, or claim AGI/human-level intelligence.",
+  "verification_state": "PENDING_READBACK"
+}

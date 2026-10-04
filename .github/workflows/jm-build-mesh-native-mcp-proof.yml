@@ -153,7 +153,7 @@ jobs:
           assert "cross-cycle capability retention" in llm["capabilities"], llm
           assert "strong induction" in llm["open_frontiers"], llm
           assert "mathematical induction" not in llm["open_frontiers"], llm
-          return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
+          return_mesh = server.build_capability_mesh({"builds":["JM LLM Core v1.2","JM ECOSTATE Build Mesh"],"max_nodes":4})
           returned = [
               edge for edge in return_mesh["edges"]
               if edge.get("relation") == "DECLARED_RELATION"
@@ -402,13 +402,13 @@ jobs:
           assert adapter_edge["from"] == "jm32-1da-v221" and adapter_edge["to"] == "jm32-1da-cross-device-adapter-v02", adapter_edge
           assert adapter_edge["merge"] is False and adapter_edge["proof_transfer"] is False, adapter_edge
 
-          llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
+          llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core v1.2"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
           assert "v1.2" in llm_head["current_head"] and "Cycle 002" in llm_head["current_head"], llm_head
-          llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
+          llm_proof = call(16, "proof_state", {"name":"JM LLM Core v1.2"})
           assert "1000/1000 PASS" in llm_proof["proof"], llm_proof
           llm_cycle002_return = call(17, "build_capability_mesh", {
-              "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
+              "builds":["JM LLM Core v1.2","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
           })
           returned = [

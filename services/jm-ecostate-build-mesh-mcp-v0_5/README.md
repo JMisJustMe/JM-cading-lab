@@ -1,4 +1,4 @@
-# JM ECOSTATE Build Mesh — Native MCP v0.7.2
+# JM ECOSTATE Build Mesh — Native MCP v0.7.3
 
 Read-only native control-plane descendant for JM ECOSTATE Build Mesh.
 
@@ -34,3 +34,12 @@ The service carries the curated current-project registry and 1 October current o
 **MOUNT ≠ MERGE · DONOR ≠ OWNER · SEARCH ≠ PROOF · NO DING, NO CLAIM**
 
 This service is read-only. `continue_build_plan` creates a continuation route; it does not mutate an Estate body.
+
+
+## Current-registry reconciliation v0.5
+
+The hosted service now loads `JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_5.json` as an additive descendant instead of carrying a stale embedded v0.4 snapshot. Frozen v0.4 remains unchanged.
+
+The registry file is read at runtime and its SHA-256 is computed from the exact deployed bytes, so the status surface cannot silently drift from the loaded registry body.
+
+The Build Mesh current record now names **v1.0.5 — Artifact-General Production Spine** and preserves the still-open proof boundary for a fresh ChatGPT connector-schema contact of the 16th tool.

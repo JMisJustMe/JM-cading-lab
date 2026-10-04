@@ -1,0 +1,24 @@
+{
+  "schema": "JM.CodexRepositoryAgentAdapter/0.1",
+  "version": "0.1.0",
+  "authority_class": "HOST_ADAPTER_NOT_SOURCE_AUTHORITY",
+  "target_surface": "Codex / repository-agent compatible host",
+  "purpose": "Produce a deterministic repository-agent bootstrap envelope from the same sovereign runtime and repository instruction carriers without treating the host as source/current-head authority.",
+  "canonical_inputs": [
+    "AGENTS.md",
+    ".github/copilot-instructions.md",
+    "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+    "services/jm-ecostate-build-mesh-mcp-v0_5/JM_SOVEREIGN_AGENT_CONTRACT_v0_1.json"
+  ],
+  "executable": "agent-runtime/host-adapters/codex-repository-agent/jm_codex_repository_adapter.py",
+  "capabilities": {
+    "repository_instruction_discovery": true,
+    "portable_runtime_bootstrap": true,
+    "query_routing": true,
+    "deterministic_handoff": true,
+    "repository_mutation": false,
+    "live_codex_contact": false
+  },
+  "proof_boundary": "Executable wrapper/function proof only. Direct Codex host contact remains OPEN until the exact host runs or returns consequence through this adapter.",
+  "keeper": "REPOSITORY AGENT ≠ REPOSITORY AUTHORITY. CHANGE THE PLUG, NOT THE BODY."
+}

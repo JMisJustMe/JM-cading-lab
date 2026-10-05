@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.20",
+  "schema": "JM.CareerCurrentProjectRegistry/0.21",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE013-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.13 Cycle 013 is seated as the current capability-return donor over the re-contacted v1.12 Cycle 012 parent. Parent and child proof jurisdictions remain separate. The canonical v1.13 ZIP is seated in its private Library version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_13.zip; the v1.12 root release is archived as predecessor. Stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE014-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.14 Cycle 014 is seated as the current capability-return donor over the re-contacted v1.13 Cycle 013 parent. Parent and child proof jurisdictions remain separate. The canonical v1.14 ZIP is seated in its private Library version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_14.zip; the v1.13 root release is archived as predecessor. Stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 013 Return",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 014 Return",
       "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,9 +19,9 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE013-RETURN DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, then returns JM LLM Core v1.13 Symbiosis Cycle 013 as the current LLM donor over v1.12 Cycle 012, without merging bodies or borrowing proof.",
-      "proof": "Registry v0.20 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.13 release passed 89198/89198 direct checks after v1.12 Cycle 012 release re-contact at 81462/81462 PASS. Canonical v1.13 release SHA-256 a71e098b92784701d1d45a73c70810e66e305ede199ebe5b8add9d0d6767391b. The canonical v1.13 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_13.zip; v1.12 is preserved as predecessor.",
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE014-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, then returns JM LLM Core v1.14 Symbiosis Cycle 014 as the current LLM donor over v1.13 Cycle 013, without merging bodies or borrowing proof.",
+      "proof": "Registry v0.21 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.14 release passed 96934/96934 direct checks after v1.13 Cycle 013 release re-contact at 89198/89198 PASS. Canonical v1.14 release SHA-256 241c282cbb7c75b7314d627906a2062e5d1b1b462358a7fdb308ba3df97b56f2. The canonical v1.14 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_14.zip; v1.13 is preserved as predecessor.",
       "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin, Library carrier, and hosted service are separate carriers and need not version-lock recursively."
     },
     {
@@ -58,7 +58,7 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.13 — Symbiosis Cycle 013",
+      "title": "JM LLM Core v1.14 — Symbiosis Cycle 014",
       "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
@@ -120,12 +120,15 @@
         "Gram-Schmidt",
         "orthogonalization",
         "orthogonal basis",
-        "two-vector Gram-Schmidt"
+        "two-vector Gram-Schmidt",
+        "three-vector Gram-Schmidt",
+        "R2 Gram-Schmidt",
+        "dependent-middle orthogonalization"
       ],
-      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 013 · THIRTEENTH CAPABILITY-RETURN DING",
-      "summary": "Current descendant over JM LLM Core v1.12 Cycle 012. Cycle 013 retains the bounded modular, induction, formal-logic, combinatorics, finite-discrete-probability, matrix-algebra, exact-rational 2x2 spectral/SVD/pseudoinverse/least-squares/projection and triangular-3x3 spectral floors, then adds classical ordered unnormalised exact-rational two-vector Gram-Schmidt in R2 with dependence handling and exact candidate verification.",
-      "proof": "v1.12 Cycle 012 release re-contact 81462/81462 PASS; Cycle013 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact two-vector Gram-Schmidt 1800/1800 PASS with 900 independent and 900 dependent cases; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle012 held-out surface preservation 2400/2400 PASS; same-condition before→after 24/24 PASS; total direct release checks 89198/89198 PASS. Canonical release SHA-256 a71e098b92784701d1d45a73c70810e66e305ede199ebe5b8add9d0d6767391b. merge=false; proof_transfer=false.",
-      "boundary": "Earned scope adds classical ordered unnormalised Gram-Schmidt for two explicit rational vectors in R2 with nonzero v1, exact u1/u2 and projection coefficient, dependent-input handling, orthogonality/span/reconstruction certification, and exact candidate verification. Normalization/orthonormal bases, zero-leading sequences, three-vector/R3+, modified/numerical/weighted Gram-Schmidt, QR factorization, arbitrary/rectangular numerical linear algebra, AGI, human-level intelligence and transformer-weight Gram-Schmidt reasoning remain open.",
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 014 · FOURTEENTH CAPABILITY-RETURN DING",
+      "summary": "Current descendant over JM LLM Core v1.13 Cycle 013. Cycle 014 retains all previously seated bounded exact-rational capabilities and adds classical ordered unnormalised exact-rational three-vector Gram-Schmidt in R2 with dependent-middle and fully-dependent handling plus exact verification.",
+      "proof": "v1.13 Cycle 013 release re-contact 89198/89198 PASS; Cycle014 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact three-vector Gram-Schmidt in R2 1800/1800 PASS with 600 rank2-first-two-independent, 600 middle-dependent-third-independent and 600 fully-dependent cases; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle013 held-out surface preservation 2400/2400 PASS with 2312 clean bypasses and 88 lawful HOLD interceptions; same-condition before→after 24/24 PASS; total direct release checks 96934/96934 PASS. Canonical release SHA-256 241c282cbb7c75b7314d627906a2062e5d1b1b462358a7fdb308ba3df97b56f2. merge=false; proof_transfer=false.",
+      "boundary": "Earned scope adds classical ordered unnormalised Gram-Schmidt for three explicit rational vectors in R2 with nonzero v1; exact u1/u2/u3, dependent-middle and fully-dependent handling, pairwise orthogonality, span/reconstruction certification and exact candidate verification. Normalization/orthonormal bases, zero-leading sequences, R3+, four-vector+, modified/numerical/weighted Gram-Schmidt, QR factorization, arbitrary/rectangular numerical linear algebra, AGI, human-level intelligence and transformer-weight Gram-Schmidt reasoning remain open.",
       "relations": [
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",

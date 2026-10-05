@@ -51,7 +51,7 @@ jobs:
               assert server.current_matches(query, 10), "Discovery should remain available: " + query
           llm_authority = server.resolve_current_head({"name":"JM LLM Core"})
           assert llm_authority["state"] == "CURRENT_DECLARED", llm_authority
-          assert llm_authority["current_head"] == "JM LLM Core v1.6 — Symbiosis Cycle 006", llm_authority
+          assert llm_authority["current_head"] == "JM LLM Core v1.7 — Symbiosis Cycle 007", llm_authority
           assert llm_authority.get("competing_candidates") == [], llm_authority
           print("STATIC_AUTHORITY_TIER_PRECEDENCE_PASS")
           print("STATIC_AUTHORITY_IDENTITY_REGRESSION_PASS")
@@ -152,7 +152,7 @@ jobs:
 
           llm = server.resolve_profile("JM LLM Core")
           assert llm and llm["id"] == "llm-core-v1", llm
-          assert llm["name"] == "JM LLM Core v1.6 — Symbiosis Cycle 006", llm
+          assert llm["name"] == "JM LLM Core v1.7 — Symbiosis Cycle 007", llm
           assert "bounded modular arithmetic" in llm["capabilities"], llm
           assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
           assert "bounded propositional truth tables" in llm["capabilities"], llm
@@ -200,7 +200,7 @@ jobs:
           assert len(returned) == 1, return_mesh
           assert returned[0]["from"] == "llm-core-v1" and returned[0]["to"] == "ecostate-build-mesh-v102", returned[0]
           assert returned[0]["merge"] is False and returned[0]["proof_transfer"] is False, returned[0]
-          print("STATIC_LLM_V1_6_CYCLE006_RETURN_PASS")
+          print("STATIC_LLM_V1_7_CYCLE007_RETURN_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
@@ -303,7 +303,7 @@ jobs:
           assert status["capability_profiles"] == 34, status
           assert status["current_project_records"] == 22, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.13", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.14", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -442,19 +442,19 @@ jobs:
 
           llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-          assert "v1.6" in llm_head["current_head"] and "Cycle 006" in llm_head["current_head"], llm_head
+          assert "v1.7" in llm_head["current_head"] and "Cycle 007" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
-          assert "28066/28066 PASS" in llm_proof["proof"], llm_proof
-          llm_cycle006_return = call(17, "build_capability_mesh", {
+          assert "41328/41328 PASS" in llm_proof["proof"], llm_proof
+          llm_cycle007_return = call(17, "build_capability_mesh", {
               "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
           })
           returned = [
-              edge for edge in llm_cycle006_return["edges"]
+              edge for edge in llm_cycle007_return["edges"]
               if edge.get("relation") == "DECLARED_RELATION"
               and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
           ]
-          assert len(returned) == 1, llm_cycle006_return
+          assert len(returned) == 1, llm_cycle007_return
           return_edge = returned[0]
           assert return_edge["from"] == "llm-core-v1" and return_edge["to"] == "ecostate-build-mesh-v102", return_edge
           assert return_edge["merge"] is False and return_edge["proof_transfer"] is False, return_edge
@@ -502,9 +502,9 @@ jobs:
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },
-              "llm_cycle006_return":{
+              "llm_cycle007_return":{
                   "state":"PASS",
-                  "body":"JM LLM Core v1.6 — Symbiosis Cycle 006",
+                  "body":"JM LLM Core v1.7 — Symbiosis Cycle 007",
                   "parent_cycle005_recontact":"17705/17705 PASS",
                   "router":"2500/2500 PASS",
                   "matrix_algebra_skill":"1400/1400 PASS",
@@ -514,7 +514,7 @@ jobs:
                   "cycle004_full_heldout_noninterception":"1800/1800 PASS",
                   "cycle005_full_heldout_noninterception":"2250/2250 PASS",
                   "smoke":"11/11 PASS",
-                  "aggregate":"28066/28066 PASS",
+                  "aggregate":"41328/41328 PASS",
                   "canonical_release_sha256":"0fcccca5fce8cde6fb23df964068c7dae64f1a2abd9b8834d25917278ebb1058",
                   "declared_relation":return_edge["declared_relation"],
                   "merge":return_edge["merge"],

@@ -451,7 +451,9 @@ jobs:
                   "same_condition_before_after":"24/24 PASS",
                   "canonical_release_sha256":"8455ab71fff8dd70d1417b5f7af35c91833f030eff17e1f9851ef65a2b491d48",
                   "library_release_seat":"PASS",
-                  "library_root_text_pointer":"HOLD_CURRENT_TOOL_WRITE_FAILURE",
+                  "library_root_current_release_carrier":"PASS_EXACT_CANONICAL_ZIP",
+                  "library_predecessor_pointer_archive":"PASS",
+                  "library_text_pointer_format":"UNAVAILABLE_ON_CURRENT_WRITE_ROUTE_BUT_NOT_AUTHORITY_BLOCKING",
                   "declared_relation":return_edge["declared_relation"],
                   "merge":return_edge["merge"],
                   "proof_transfer":return_edge["proof_transfer"],
@@ -475,7 +477,7 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.19 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.12 Cycle 012 as the current capability donor. Cycle012 release passed 81462/81462 direct checks after fresh v1.11 parent re-contact at 73726/73726 PASS. Exact-rational 2x2 column-space orthogonal projection is seated while rectangular/3x3+, numerical, weighted/oblique, arbitrary-subspace and QR projection remain open. The canonical v1.12 ZIP is seated in Library; the root Library text-pointer carrier remains an explicit HOLD because the current Library container-path write route fails. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.19 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.12 Cycle 012 as the current capability donor. Cycle012 release passed 81462/81462 direct checks after fresh v1.11 parent re-contact at 73726/73726 PASS. Exact-rational 2x2 column-space orthogonal projection is seated while rectangular/3x3+, numerical, weighted/oblique, arbitrary-subspace and QR projection remain open. The canonical v1.12 ZIP is seated in its version house and at the JM LLM Core root as the exact current-release carrier; the stale v1.11 text pointer is archived. The current Library route still cannot write a fresh standalone text pointer, but that format limitation no longer leaves a stale authority head. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

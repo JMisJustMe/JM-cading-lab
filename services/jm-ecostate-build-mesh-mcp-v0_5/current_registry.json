@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.18",
+  "schema": "JM.CareerCurrentProjectRegistry/0.19",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE011-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.11 Cycle 011 is seated as the current capability-return donor over the freshly re-contacted v1.10 Cycle 010 parent. Parent and child proof jurisdictions remain separate; the directly read-back private Build Mesh package is v1.0.11; stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE012-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.12 Cycle 012 is seated as the current capability-return donor over the freshly re-contacted v1.11 Cycle 011 parent. Parent and child proof jurisdictions remain separate; the canonical v1.12 ZIP is seated in the private Library while the root Library text-pointer carrier is temporarily unresolved due the current Library container-path write failure. Stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 011 Return",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 012 Return",
       "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,10 +19,10 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE011-RETURN DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, acknowledges the directly read-back private package v1.0.11, then returns JM LLM Core v1.11 Symbiosis Cycle 011 as the current LLM donor over the freshly re-contacted v1.10 Cycle 010 parent, without merging bodies or borrowing proof.",
-      "proof": "Registry v0.18 keeps 22 logical current records and 34 capability profiles. Private Build Mesh v1.0.11 remains the last directly read-back private package. JM LLM Core v1.11 release passed 73726/73726 direct checks after fresh v1.10 Cycle 010 parent re-contact at 66014/66014 PASS. Canonical v1.11 release SHA-256 d5cf6ec2f3aeec8554ba8d3c83fb98b7afb57c00017b45c3ee8839247930b0dd. Existing current seats retain their own proof boundaries.",
-      "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin and hosted service are separate carriers and need not version-lock recursively."
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE012-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, acknowledges the directly read-back private package v1.0.11, then returns JM LLM Core v1.12 Symbiosis Cycle 012 as the current LLM donor over the freshly re-contacted v1.11 Cycle 011 parent, without merging bodies or borrowing proof.",
+      "proof": "Registry v0.19 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.12 release passed 81462/81462 direct checks after fresh v1.11 Cycle 011 parent re-contact at 73726/73726 PASS. Canonical v1.12 release SHA-256 8455ab71fff8dd70d1417b5f7af35c91833f030eff17e1f9851ef65a2b491d48. The canonical v1.12 ZIP is seated in Library; the root Library text-pointer carrier remains a separate unresolved write edge.",
+      "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin, Library carrier, and hosted service are separate carriers and need not version-lock recursively."
     },
     {
       "id": "opportunity-v08",
@@ -58,7 +58,7 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.11 — Symbiosis Cycle 011",
+      "title": "JM LLM Core v1.12 — Symbiosis Cycle 012",
       "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
@@ -112,12 +112,16 @@
         "least squares",
         "minimum norm",
         "normal equations",
-        "2x2 least squares"
+        "2x2 least squares",
+        "orthogonal projection",
+        "column space",
+        "projector",
+        "residual decomposition"
       ],
-      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 011 · ELEVENTH CAPABILITY-RETURN DING",
-      "summary": "Current descendant over JM LLM Core v1.10 Cycle 010. Cycle 011 retains the bounded modular, induction, formal-logic, combinatorics, finite-discrete-probability, matrix-algebra, exact-rational 2x2 spectral, exact-rational 2x2 SVD, bounded triangular-3x3 spectral, and exact-rational 2x2 Moore-Penrose floors, then adds exact-rational minimum-norm least-squares solving x=A^+b for explicit 2x2 A and length-2 b plus exact candidate verification.",
-      "proof": "Fresh v1.10 Cycle 010 parent re-contact 66014/66014 PASS; Cycle011 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact minimum-norm least-squares skill 1600/1600 PASS with 400 each rank0, rank1-consistent, rank1-inconsistent and rank2; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle010 held-out surface preservation 2400/2400 PASS; same-condition before→after 200/200 PASS; total direct release checks 73726/73726 PASS. Canonical release SHA-256 d5cf6ec2f3aeec8554ba8d3c83fb98b7afb57c00017b45c3ee8839247930b0dd. merge=false; proof_transfer=false.",
-      "boundary": "Earned scope adds exact minimum-norm least-squares solving x=A^+b for explicit rational 2x2 A and length-2 b, including singular consistent and inconsistent cases, plus exact candidate verification through A^+b identity, normal equations and row-space/minimum-norm certification. Rectangular/3x3+ least squares, numerical-tolerance methods, QR/iterative solvers, weighted/constrained least squares, arbitrary/rectangular/3x3+ or numerical SVD, broader pseudoinverse, Jordan form, spectral theorem, unrestricted diagonalization, AGI, human-level intelligence and transformer-weight least-squares reasoning remain open.",
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 012 · TWELFTH CAPABILITY-RETURN DING",
+      "summary": "Current descendant over JM LLM Core v1.11 Cycle 011. Cycle 012 retains the bounded modular, induction, formal-logic, combinatorics, finite-discrete-probability, matrix-algebra, exact-rational 2x2 spectral, exact-rational 2x2 SVD, bounded triangular-3x3 spectral, exact-rational 2x2 Moore-Penrose and exact-rational 2x2 minimum-norm least-squares floors, then adds exact-rational 2x2 column-space orthogonal projection Q=A A^+, p=Qb, residual r=b-p, and exact projection/decomposition verification.",
+      "proof": "Fresh v1.11 Cycle 011 parent re-contact 73726/73726 PASS; Cycle012 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact column-space projection 1800/1800 PASS with 600 each rank0/rank1/rank2; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle011 held-out surface preservation 2400/2400 PASS; same-condition before→after 24/24 PASS; total direct release checks 81462/81462 PASS. Canonical release SHA-256 8455ab71fff8dd70d1417b5f7af35c91833f030eff17e1f9851ef65a2b491d48. merge=false; proof_transfer=false.",
+      "boundary": "Earned scope adds exact orthogonal projector Q=A A^+ for explicit rational 2x2 A; exact projection p=Qb and residual r=b-p for rational length-2 b; and exact candidate verification through column-space membership, residual orthogonality, projector symmetry/idempotence and decomposition reconstruction. Rectangular/3x3+ projection, numerical-tolerance projection, weighted/oblique projection, arbitrary-subspace projection, QR projection, arbitrary/rectangular/3x3+ or numerical SVD/pseudoinverse/least-squares, Jordan form, spectral theorem, unrestricted diagonalization, AGI, human-level intelligence and transformer-weight projection reasoning remain open.",
       "relations": [
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",

@@ -23,7 +23,7 @@ assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.18"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.19"
 assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-05"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
@@ -32,7 +32,7 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 011 Return", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 012 Return", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash
@@ -82,7 +82,7 @@ assert adapter_declared[0]["merge"] is False and adapter_declared[0]["proof_tran
 
 llm = server.resolve_profile("JM LLM Core")
 assert llm and llm["id"] == "llm-core-v1", llm
-assert llm["name"] == "JM LLM Core v1.11 — Symbiosis Cycle 011", llm
+assert llm["name"] == "JM LLM Core v1.12 — Symbiosis Cycle 012", llm
 assert "bounded modular arithmetic" in llm["capabilities"], llm
 assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
 assert "cross-cycle capability retention" in llm["capabilities"], llm
@@ -144,12 +144,22 @@ assert "exact minimum-norm row-space certification" in llm["capabilities"], llm
 assert "rectangular/3x3+ least squares" in llm["open_frontiers"], llm
 assert "numerical-tolerance least squares" in llm["open_frontiers"], llm
 assert "weighted least squares" in llm["open_frontiers"], llm
+assert "bounded exact-rational 2x2 column-space orthogonal projection" in llm["capabilities"], llm
+assert "exact 2x2 column-space projector Q=A A+" in llm["capabilities"], llm
+assert "exact projection p=Qb" in llm["capabilities"], llm
+assert "exact residual decomposition r=b-p" in llm["capabilities"], llm
+assert "exact residual orthogonality A^T r=0" in llm["capabilities"], llm
+assert "exact projection candidate verification" in llm["capabilities"], llm
+assert "rectangular/3x3+ orthogonal projection" in llm["open_frontiers"], llm
+assert "numerical-tolerance projection" in llm["open_frontiers"], llm
+assert "weighted projection" in llm["open_frontiers"], llm
+assert "oblique projection" in llm["open_frontiers"], llm
 assert "concentration bounds" in llm["open_frontiers"], llm
 assert "Markov chains" in llm["open_frontiers"], llm
 llm_head = server.resolve_current_head({"name":"JM LLM Core"})
 assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-assert llm_head["current_head"] == "JM LLM Core v1.11 — Symbiosis Cycle 011", llm_head
-assert "73726/73726 PASS" in llm_head["primary_evidence"]["proof"], llm_head
+assert llm_head["current_head"] == "JM LLM Core v1.12 — Symbiosis Cycle 012", llm_head
+assert "81462/81462 PASS" in llm_head["primary_evidence"]["proof"], llm_head
 assert llm_head.get("competing_candidates") == [], llm_head
 
 return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})

@@ -51,7 +51,7 @@ jobs:
               assert server.current_matches(query, 10), "Discovery should remain available: " + query
           llm_authority = server.resolve_current_head({"name":"JM LLM Core"})
           assert llm_authority["state"] == "CURRENT_DECLARED", llm_authority
-          assert llm_authority["current_head"] == "JM LLM Core v1.8 — Symbiosis Cycle 008", llm_authority
+          assert llm_authority["current_head"] == "JM LLM Core v1.9 — Symbiosis Cycle 009", llm_authority
           assert llm_authority.get("competing_candidates") == [], llm_authority
           print("STATIC_AUTHORITY_TIER_PRECEDENCE_PASS")
           print("STATIC_AUTHORITY_IDENTITY_REGRESSION_PASS")
@@ -102,17 +102,20 @@ jobs:
 
           llm = server.resolve_profile("JM LLM Core")
           assert llm and llm["id"] == "llm-core-v1", llm
-          assert llm["name"] == "JM LLM Core v1.8 — Symbiosis Cycle 008", llm
+          assert llm["name"] == "JM LLM Core v1.9 — Symbiosis Cycle 009", llm
           for capability in [
               "bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables",
               "bounded predicate-quantifier formalization","bounded elementary combinatorics","bounded finite discrete probability",
               "bounded matrix algebra","bounded exact-rational 2x2 spectral work","bounded exact-rational 2x2 singular value decomposition",
               "exact rational 2x2 singular values","exact rational 2x2 U Sigma V^T","exact 2x2 SVD reconstruction verification",
-              "2x2 spectral norm","2x2 condition number from SVD","2x2 rank from SVD","cross-cycle capability retention"
+              "2x2 spectral norm","2x2 condition number from SVD","2x2 rank from SVD","bounded exact-rational triangular 3x3 spectral work",
+              "3x3 characteristic polynomial","triangular 3x3 eigenvalues","explicit 3x3 eigenpair verification","concurrent capability convergence","cross-cycle capability retention"
           ]:
               assert capability in llm["capabilities"], (capability,llm)
           assert "singular value decomposition" not in llm["open_frontiers"], llm
           assert "arbitrary/rectangular/3x3+ SVD" in llm["open_frontiers"], llm
+          assert "general non-triangular 3x3 eigensolvers" in llm["open_frontiers"], llm
+          assert "4x4+ eigensolvers" in llm["open_frontiers"], llm
           assert "pseudoinverse" in llm["open_frontiers"], llm
           return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
           returned = [edge for edge in return_mesh["edges"] if edge.get("relation") == "DECLARED_RELATION" and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"]
@@ -222,7 +225,7 @@ jobs:
           assert status["capability_profiles"] == 34, status
           assert status["current_project_records"] == 22, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.15", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.16", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -361,19 +364,19 @@ jobs:
 
           llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-          assert "v1.8" in llm_head["current_head"] and "Cycle 008" in llm_head["current_head"], llm_head
+          assert "v1.9" in llm_head["current_head"] and "Cycle 009" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
-          assert "49140/49140 PASS" in llm_proof["proof"], llm_proof
-          llm_cycle008_return = call(17, "build_capability_mesh", {
+          assert "58002/58002 PASS" in llm_proof["proof"], llm_proof
+          llm_cycle009_return = call(17, "build_capability_mesh", {
               "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
           })
           returned = [
-              edge for edge in llm_cycle007_return["edges"]
+              edge for edge in llm_cycle009_return["edges"]
               if edge.get("relation") == "DECLARED_RELATION"
               and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
           ]
-          assert len(returned) == 1, llm_cycle008_return
+          assert len(returned) == 1, llm_cycle009_return
           return_edge = returned[0]
           assert return_edge["from"] == "llm-core-v1" and return_edge["to"] == "ecostate-build-mesh-v102", return_edge
           assert return_edge["merge"] is False and return_edge["proof_transfer"] is False, return_edge
@@ -391,7 +394,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r15-cycle008",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r16-cycle009",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -421,17 +424,19 @@ jobs:
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },
-              "llm_cycle008_return":{
+              "llm_cycle009_return":{
                   "state":"PASS",
-                  "body":"JM LLM Core v1.8 — Symbiosis Cycle 008",
-                  "parent_cycle007_recontact":"41328/41328 PASS",
-                  "router":"3200/3200 PASS",
-                  "svd_skill":"1800/1800 PASS",
-                  "cycle007_non_svd_heldout_noninterception":"2773/2773 PASS",
-                  "cycle007_prior_svd_frontier_safety":"27/27 PASS",
-                  "smoke":"12/12 PASS",
-                  "aggregate":"49140/49140 PASS",
-                  "canonical_release_sha256":"0dd1548516563ba86f95ffe44ca0469c4514710e25b7403450cc1bec71c47b0a",
+                  "body":"JM LLM Core v1.9 — Symbiosis Cycle 009",
+                  "canonical_parent":"JM LLM Core v1.8 — Symbiosis Cycle 008",
+                  "concurrent_donor":"triangular-3x3 spectral Cycle 008 branch",
+                  "convergence_rule":"inherit once; merge=false; proof_transfer=false",
+                  "parent_proof_jurisdiction":"49140/49140 PASS",
+                  "donor_proof_jurisdiction":"58390/58390 PASS (contact evidence only)",
+                  "child_scope":"bounded 2x2 SVD + bounded triangular 3x3 spectral convergence",
+                  "child_integration":"58002/58002 PASS",
+                  "fresh_parent_cycle008_svd":"49140/49140 PASS",
+                  "fresh_triangular_3x3_donor":"58390/58390 PASS (contact evidence only; not added to child aggregate)",
+                  "canonical_release_sha256":"d0419bb8257855e4155b36a83e98a55bfadd3b1a610f86f2402833b5f3a75401",
                   "declared_relation":return_edge["declared_relation"],
                   "merge":return_edge["merge"],
                   "proof_transfer":return_edge["proof_transfer"],
@@ -455,11 +460,11 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.15 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.8 Cycle 008 as a separate capability donor with 49140/49140 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.16 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.9 Cycle 009 as the current capability donor. Child integration is 58002/58002 PASS; the canonical v1.8 SVD parent 49140/49140 and triangular-3x3 donor 58390/58390 are fresh contact evidence only and remain separate proof jurisdictions. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R15_CYCLE008.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R16_CYCLE009.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -467,6 +472,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R15_CYCLE008
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007_R14_CYCLE007.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R16_CYCLE009
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R16_CYCLE009.json
           if-no-files-found: error

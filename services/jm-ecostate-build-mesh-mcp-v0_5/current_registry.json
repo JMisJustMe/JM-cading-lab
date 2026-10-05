@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.15",
+  "schema": "JM.CareerCurrentProjectRegistry/0.16",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE008-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.8 Cycle 008 is seated as a separate capability-return donor. The directly read-back private Build Mesh package is v1.0.11; stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE009-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.9 Cycle 009 is seated as the current capability-return donor after reconciling the canonical v1.8 SVD parent with a separately contacted concurrent triangular-3x3 spectral donor. Parent and donor proof jurisdictions remain separate; the directly read-back private Build Mesh package is v1.0.11; stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 008 Return",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 009 Return",
       "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,9 +19,9 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE008-RETURN DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, acknowledges the directly read-back private package v1.0.11, then returns JM LLM Core v1.8 Symbiosis Cycle 008 as the current LLM donor without merging bodies or borrowing proof.",
-      "proof": "Registry v0.15 keeps 22 logical current records and 34 capability profiles. Private Build Mesh v1.0.11 remains the last directly read-back private package. JM LLM Core v1.8 was freshly executed at 49140/49140 aggregate checks, with canonical release SHA-256 0dd1548516563ba86f95ffe44ca0469c4514710e25b7403450cc1bec71c47b0a. Existing current seats retain their own proof boundaries.",
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE009-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, acknowledges the directly read-back private package v1.0.11, then returns JM LLM Core v1.9 Symbiosis Cycle 009 as the current LLM donor after reconciling the canonical v1.8 SVD parent with the separately contacted triangular-3x3 spectral donor, without merging bodies or borrowing proof.",
+      "proof": "Registry v0.16 keeps 22 logical current records and 34 capability profiles. Private Build Mesh v1.0.11 remains the last directly read-back private package. JM LLM Core v1.9 child integration passed 58002/58002; its canonical v1.8 SVD parent was freshly re-contacted at 49140/49140 PASS and the separate triangular-3x3 donor at 58390/58390 PASS as contact evidence only, not added to the child aggregate. Canonical v1.9 release SHA-256 d0419bb8257855e4155b36a83e98a55bfadd3b1a610f86f2402833b5f3a75401. Existing current seats retain their own proof boundaries.",
       "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin and hosted service are separate carriers and need not version-lock recursively."
     },
     {
@@ -58,7 +58,7 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.8 — Symbiosis Cycle 008",
+      "title": "JM LLM Core v1.9 — Symbiosis Cycle 009",
       "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
@@ -100,12 +100,16 @@
         "U Sigma V^T",
         "spectral norm",
         "condition number",
-        "rank from SVD"
+        "rank from SVD",
+        "3x3 spectral",
+        "triangular spectral",
+        "capability convergence",
+        "concurrency reconciliation"
       ],
-      "status": "LOCAL CAPABILITY DING · SYMBIOSIS CYCLE 008 · EIGHTH CAPABILITY-RETURN CANDIDATE",
-      "summary": "Current descendant over v1.7 Cycle 007. Cycle 008 retains the bounded modular, induction, formal-logic, combinatorics, finite-discrete-probability, matrix-algebra and exact-rational 2x2 spectral floors, then adds bounded exact-rational 2x2 SVD through a learned multiclass route plus an auditable executor for singular values, exact U Sigma V^T, spectral norm, condition number, rank and reconstruction verification.",
-      "proof": "Fresh Cycle007 parent re-contact 41328/41328 PASS; Cycle008 held-out router 3200/3200 PASS; direct SVD skill contacts 1800/1800 PASS; Cycle007 non-SVD held-out non-interception 2773/2773 PASS; Cycle007 prior SVD frontier safety 27/27 PASS; v1.8 smoke 12/12 PASS; aggregate 49140/49140 PASS. Canonical release SHA-256 0dd1548516563ba86f95ffe44ca0469c4514710e25b7403450cc1bec71c47b0a.",
-      "boundary": "Earned scope is explicit 2x2 exact-rational SVD at learned-route + auditable executor system scope while retaining prior bounded routes. Arbitrary/rectangular/3x3+ or numerical SVD, irrational singular-vector bases, truncated/randomized SVD, pseudoinverse, low-rank approximation, image compression, unrestricted broader spectral methods, AGI, human-level intelligence and transformer-weight SVD reasoning remain open.",
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 009 · NINTH CAPABILITY-RETURN DING",
+      "summary": "Current descendant over the canonical v1.8 Cycle 008 SVD parent, with the separately contacted concurrent triangular-3x3 spectral donor inherited once. Cycle 009 retains the bounded modular, induction, formal-logic, combinatorics, finite-discrete-probability, matrix-algebra, exact-rational 2x2 spectral and exact-rational 2x2 SVD floors, and adds bounded exact-rational triangular 3x3 spectral capability without merging parent/donor proof jurisdictions.",
+      "proof": "Fresh canonical v1.8 SVD parent contact 49140/49140 PASS; fresh separate triangular-3x3 donor contact 58390/58390 PASS as contact evidence only; Cycle009 child integration 58002/58002 PASS. Parent and donor remain separately recoverable; merge=false and proof_transfer=false. Canonical v1.9 release SHA-256 d0419bb8257855e4155b36a83e98a55bfadd3b1a610f86f2402833b5f3a75401.",
+      "boundary": "Earned scope combines the retained bounded exact-rational 2x2 SVD route with bounded exact-rational triangular 3x3 spectral work and explicit 3x3 eigenpair verification. General non-triangular 3x3 eigensolvers, 4x4+ eigensolvers, arbitrary/rectangular/3x3+ or numerical SVD, irrational singular-vector bases, truncated/randomized SVD, pseudoinverse, low-rank approximation, Jordan form, spectral theorem, unrestricted diagonalization, AGI, human-level intelligence and transformer-weight spectral/SVD reasoning remain open.",
       "relations": [
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",

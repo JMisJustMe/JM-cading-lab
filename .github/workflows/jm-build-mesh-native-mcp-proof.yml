@@ -547,7 +547,7 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.8.5 live with registry v0.13 / 22 current records / 34 capability profiles, preserving authority-tier precedence and returning JM LLM Core v1.6 Cycle 006 as a separate capability donor with 28066/28066 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.14 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.7 Cycle 007 as a separate capability donor with 41328/41328 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

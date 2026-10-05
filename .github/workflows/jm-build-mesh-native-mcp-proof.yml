@@ -31,7 +31,7 @@ jobs:
           server = importlib.util.module_from_spec(spec)
           spec.loader.exec_module(server)
 
-          assert server.VERSION == "0.8.3"
+          assert server.VERSION == "0.8.4"
           exact = server.resolve_profile("JM ECOSTATE — Build Mesh")
           assert exact and exact["id"] == "ecostate-build-mesh-v102", exact
           versioned = server.resolve_profile("JM ECOSTATE Build Mesh v1.0.10")
@@ -51,7 +51,7 @@ jobs:
               assert server.current_matches(query, 10), "Discovery should remain available: " + query
           llm_authority = server.resolve_current_head({"name":"JM LLM Core"})
           assert llm_authority["state"] == "CURRENT_DECLARED", llm_authority
-          assert llm_authority["current_head"] == "JM LLM Core v1.4 — Symbiosis Cycle 004", llm_authority
+          assert llm_authority["current_head"] == "JM LLM Core v1.5 — Symbiosis Cycle 005", llm_authority
           assert llm_authority.get("competing_candidates") == [], llm_authority
           print("STATIC_AUTHORITY_TIER_PRECEDENCE_PASS")
           print("STATIC_AUTHORITY_IDENTITY_REGRESSION_PASS")
@@ -123,7 +123,7 @@ jobs:
           assert keeper["destructive_default"] == "HOLD", keeper
           assert keeper["mutation_performed"] is False, keeper
           assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
-          print("STATIC_ESTATE_KEEPER_V0_8_3_PASS")
+          print("STATIC_ESTATE_KEEPER_V0_8_4_PASS")
 
           mesh = server.build_capability_mesh({"builds":["32_Cb","JM32-1DA"],"max_nodes":4})
           declared = [
@@ -152,7 +152,7 @@ jobs:
 
           llm = server.resolve_profile("JM LLM Core")
           assert llm and llm["id"] == "llm-core-v1", llm
-          assert llm["name"] == "JM LLM Core v1.4 — Symbiosis Cycle 004", llm
+          assert llm["name"] == "JM LLM Core v1.5 — Symbiosis Cycle 005", llm
           assert "bounded modular arithmetic" in llm["capabilities"], llm
           assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
           assert "bounded propositional truth tables" in llm["capabilities"], llm
@@ -166,6 +166,12 @@ jobs:
           assert "product-rule counting" in llm["capabilities"], llm
           assert "sum-rule counting" in llm["capabilities"], llm
           assert "pigeonhole occupancy reasoning" in llm["capabilities"], llm
+          assert "bounded finite discrete probability" in llm["capabilities"], llm
+          assert "conditional probability" in llm["capabilities"], llm
+          assert "independence checks" in llm["capabilities"], llm
+          assert "binomial point probability" in llm["capabilities"], llm
+          assert "finite discrete expectation" in llm["capabilities"], llm
+          assert "finite discrete variance" in llm["capabilities"], llm
           assert "cross-cycle capability retention" in llm["capabilities"], llm
           assert "strong induction" in llm["open_frontiers"], llm
           assert "arbitrary first-order theorem proving" in llm["open_frontiers"], llm
@@ -173,6 +179,9 @@ jobs:
           assert "combinatorics" not in llm["open_frontiers"], llm
           assert "inclusion-exclusion" in llm["open_frontiers"], llm
           assert "generating functions" in llm["open_frontiers"], llm
+          assert "discrete probability" not in llm["open_frontiers"], llm
+          assert "continuous distributions" in llm["open_frontiers"], llm
+          assert "concentration bounds" in llm["open_frontiers"], llm
           return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
           returned = [
               edge for edge in return_mesh["edges"]
@@ -182,7 +191,7 @@ jobs:
           assert len(returned) == 1, return_mesh
           assert returned[0]["from"] == "llm-core-v1" and returned[0]["to"] == "ecostate-build-mesh-v102", returned[0]
           assert returned[0]["merge"] is False and returned[0]["proof_transfer"] is False, returned[0]
-          print("STATIC_LLM_V1_4_CYCLE004_RETURN_PASS")
+          print("STATIC_LLM_V1_5_CYCLE005_RETURN_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
@@ -257,9 +266,9 @@ jobs:
                       probe = rpc(900 + attempt, "initialize", {
                           "protocolVersion":"2025-06-18",
                           "capabilities":{},
-                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.8.3"},
+                          "clientInfo":{"name":"JM Build Mesh Hosted Proof Poll","version":"0.8.4"},
                       })
-                      if probe["serverInfo"].get("version") == "0.8.3":
+                      if probe["serverInfo"].get("version") == "0.8.4":
                           candidate_status = call(1900 + attempt, "build_mesh_status", {"probe_navigator":False})
                           last_registry_sha256 = candidate_status.get("current_registry_sha256")
                           if last_registry_sha256 == expected_registry_sha256:
@@ -270,7 +279,7 @@ jobs:
               time.sleep(10)
 
           assert init is not None, (
-              f"Hosted v0.8.3 with registry {expected_registry_sha256} did not become live in time; "
+              f"Hosted v0.8.4 with registry {expected_registry_sha256} did not become live in time; "
               f"last_ready={last_ready}; last_registry_sha256={last_registry_sha256}"
           )
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
@@ -285,7 +294,7 @@ jobs:
           assert status["capability_profiles"] == 34, status
           assert status["current_project_records"] == 22, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.11", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.12", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -424,19 +433,19 @@ jobs:
 
           llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-          assert "v1.4" in llm_head["current_head"] and "Cycle 004" in llm_head["current_head"], llm_head
+          assert "v1.5" in llm_head["current_head"] and "Cycle 005" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
-          assert "10045/10045 PASS" in llm_proof["proof"], llm_proof
-          llm_cycle004_return = call(17, "build_capability_mesh", {
+          assert "17705/17705 PASS" in llm_proof["proof"], llm_proof
+          llm_cycle005_return = call(17, "build_capability_mesh", {
               "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
           })
           returned = [
-              edge for edge in llm_cycle004_return["edges"]
+              edge for edge in llm_cycle005_return["edges"]
               if edge.get("relation") == "DECLARED_RELATION"
               and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
           ]
-          assert len(returned) == 1, llm_cycle004_return
+          assert len(returned) == 1, llm_cycle005_return
           return_edge = returned[0]
           assert return_edge["from"] == "llm-core-v1" and return_edge["to"] == "ecostate-build-mesh-v102", return_edge
           assert return_edge["merge"] is False and return_edge["proof_transfer"] is False, return_edge
@@ -454,7 +463,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.8.3",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.4",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -484,18 +493,19 @@ jobs:
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },
-              "llm_cycle004_return":{
+              "llm_cycle005_return":{
                   "state":"PASS",
-                  "body":"JM LLM Core v1.4 — Symbiosis Cycle 004",
-                  "parent_cycle003_recontact":"4836/4836 PASS",
-                  "router":"1800/1800 PASS",
-                  "combinatorics_skill":"1000/1000 PASS",
+                  "body":"JM LLM Core v1.5 — Symbiosis Cycle 005",
+                  "parent_cycle004_recontact":"10045/10045 PASS",
+                  "router":"2250/2250 PASS",
+                  "discrete_probability_skill":"1200/1200 PASS",
                   "retained_cycle001_modular":"200/200 PASS",
                   "retained_cycle002_induction":"700/700 PASS",
                   "cycle003_full_heldout_noninterception":"1500/1500 PASS",
-                  "smoke":"9/9 PASS",
-                  "aggregate":"10045/10045 PASS",
-                  "canonical_release_sha256":"5a603686f63fcaea4b99936083b6bed64c6b7c3f6d44c19e64bca40b0ce55346",
+                  "cycle004_full_heldout_noninterception":"1800/1800 PASS",
+                  "smoke":"10/10 PASS",
+                  "aggregate":"17705/17705 PASS",
+                  "canonical_release_sha256":"c144ddd03de0f4b913e6723624d3e15b4d32abfe96c11e2e277517c4c6eb8f24",
                   "declared_relation":return_edge["declared_relation"],
                   "merge":return_edge["merge"],
                   "proof_transfer":return_edge["proof_transfer"],
@@ -519,11 +529,11 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.8.3 live with registry v0.11 / 22 current records / 34 capability profiles, preserving authority-tier precedence and returning JM LLM Core v1.4 Cycle 004 as a separate capability donor with 10045/10045 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted v0.8.4 live with registry v0.12 / 22 current records / 34 capability profiles, preserving authority-tier precedence and returning JM LLM Core v1.5 Cycle 005 as a separate capability donor with 17705/17705 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_3.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_4.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -531,6 +541,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_3
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_3.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_4
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_4.json
           if-no-files-found: error

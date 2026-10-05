@@ -26,12 +26,12 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm-core-v1",
-        "name":"JM LLM Core v1.3 — Symbiosis Cycle 003",
-        "source":"external_current_registry_v0_10 + direct_cycle003_regression_receipt",
+        "name":"JM LLM Core v1.4 — Symbiosis Cycle 004",
+        "source":"external_current_registry_v0_11 + direct_cycle004_regression_receipt",
         "domain":"AI / language model",
-        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","induction-intent activation gate","formal-logic intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
-        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor"],
-        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary first-order theorem proving","modal logic","temporal logic","second-order logic","combinatorics","matrix algebra","discrete probability","broader free generation","broader reasoning"]
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","bounded elementary combinatorics","factorial counting","permutation counting","combination counting","multiset permutation counting","product-rule counting","sum-rule counting","pigeonhole occupancy reasoning","induction-intent activation gate","formal-logic intent activation gate","combinatorics intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
+        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor","bounded combinatorics skill donor","counting-rule donor"],
+        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary first-order theorem proving","modal logic","temporal logic","second-order logic","inclusion-exclusion","generating functions","Catalan and Stirling systems","Burnside and Polya enumeration","graph enumeration","matrix algebra","discrete probability","broader free generation","broader reasoning"]
     },
     {
         "id":"llm2-v2",
@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_10 + hosted_runtime_v0_8_2",
+        "source":"external_current_registry_v0_11 + hosted_runtime_v0_8_3",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -328,7 +328,7 @@ CAPABILITY_PROFILES = [
             "32_Cb sovereign-donor seating",
             "JM32-1DA exact runtime-route seating",
             "JM32-1DA Cross-Device Adapter separate-authority seating",
-            "JM LLM Core v1.3 Cycle 003 capability-return seating"
+            "JM LLM Core v1.4 Cycle 004 capability-return seating"
         ],
         "donor_roles":[
             "control-plane routing",

@@ -17,13 +17,13 @@ raw = registry_path.read_bytes()
 expected_hash = hashlib.sha256(raw).hexdigest()
 parsed = json.loads(raw.decode("utf-8"))
 
-assert server.VERSION == "0.8.4"
+assert server.VERSION == "0.8.5"
 assert server.CURRENT_REGISTRY_SOURCE == "current_registry.json"
 assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.12"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.13"
 assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-05"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
@@ -32,7 +32,7 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.4 Cycle 005 Return", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 006 Return", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash
@@ -53,7 +53,7 @@ assert "dynamic exact-byte registry hashing" in profile["capabilities"]
 assert "delta-first Estate maintenance planning" in profile["capabilities"]
 assert "JM32-1DA exact runtime-route seating" in profile["capabilities"]
 assert "PRIVATE PACKAGE v1.0.10" in head["primary_evidence"]["status"]
-assert "HOSTED MCP v0.8.4" in head["primary_evidence"]["status"]
+assert "HOSTED MCP v0.8.5" in head["primary_evidence"]["status"]
 
 jm32 = server.resolve_profile("JM32-1DA")
 assert jm32 and jm32["id"] == "jm32-1da-v221", jm32
@@ -82,7 +82,7 @@ assert adapter_declared[0]["merge"] is False and adapter_declared[0]["proof_tran
 
 llm = server.resolve_profile("JM LLM Core")
 assert llm and llm["id"] == "llm-core-v1", llm
-assert llm["name"] == "JM LLM Core v1.5 — Symbiosis Cycle 005", llm
+assert llm["name"] == "JM LLM Core v1.6 — Symbiosis Cycle 006", llm
 assert "bounded modular arithmetic" in llm["capabilities"], llm
 assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
 assert "cross-cycle capability retention" in llm["capabilities"], llm
@@ -103,6 +103,12 @@ assert "independence checks" in llm["capabilities"], llm
 assert "binomial point probability" in llm["capabilities"], llm
 assert "finite discrete expectation" in llm["capabilities"], llm
 assert "finite discrete variance" in llm["capabilities"], llm
+assert "bounded matrix algebra" in llm["capabilities"], llm
+assert "matrix multiplication up to 3x3" in llm["capabilities"], llm
+assert "determinant up to 3x3" in llm["capabilities"], llm
+assert "exact 2x2 inverse" in llm["capabilities"], llm
+assert "exact 2x2 linear-system solve" in llm["capabilities"], llm
+assert "matrix-vector multiplication" in llm["capabilities"], llm
 assert "strong induction" in llm["open_frontiers"], llm
 assert "arbitrary first-order theorem proving" in llm["open_frontiers"], llm
 assert "predicate logic" not in llm["open_frontiers"], llm
@@ -111,12 +117,15 @@ assert "inclusion-exclusion" in llm["open_frontiers"], llm
 assert "generating functions" in llm["open_frontiers"], llm
 assert "discrete probability" not in llm["open_frontiers"], llm
 assert "continuous distributions" in llm["open_frontiers"], llm
+assert "matrix algebra" not in llm["open_frontiers"], llm
+assert "eigenvalues and eigenvectors" in llm["open_frontiers"], llm
+assert "singular value decomposition" in llm["open_frontiers"], llm
 assert "concentration bounds" in llm["open_frontiers"], llm
 assert "Markov chains" in llm["open_frontiers"], llm
 llm_head = server.resolve_current_head({"name":"JM LLM Core"})
 assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-assert llm_head["current_head"] == "JM LLM Core v1.5 — Symbiosis Cycle 005", llm_head
-assert "17705/17705 PASS" in llm_head["primary_evidence"]["proof"], llm_head
+assert llm_head["current_head"] == "JM LLM Core v1.6 — Symbiosis Cycle 006", llm_head
+assert "28066/28066 PASS" in llm_head["primary_evidence"]["proof"], llm_head
 assert llm_head.get("competing_candidates") == [], llm_head
 
 return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})

@@ -26,12 +26,12 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm-core-v1",
-        "name":"JM LLM Core v1.5 — Symbiosis Cycle 005",
-        "source":"external_current_registry_v0_12 + direct_cycle005_regression_receipt",
+        "name":"JM LLM Core v1.6 — Symbiosis Cycle 006",
+        "source":"external_current_registry_v0_13 + direct_cycle006_regression_receipt",
         "domain":"AI / language model",
-        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","bounded elementary combinatorics","factorial counting","permutation counting","combination counting","multiset permutation counting","product-rule counting","sum-rule counting","pigeonhole occupancy reasoning","bounded finite discrete probability","equally-likely event probability","complement probability","conditional probability","independence checks","binomial point probability","finite discrete expectation","finite discrete variance","induction-intent activation gate","formal-logic intent activation gate","combinatorics intent activation gate","discrete-probability intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
-        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor","bounded combinatorics skill donor","counting-rule donor","bounded discrete-probability skill donor","exact-rational probability executor donor"],
-        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary first-order theorem proving","modal logic","temporal logic","second-order logic","inclusion-exclusion","generating functions","Catalan and Stirling systems","Burnside and Polya enumeration","graph enumeration","continuous distributions","concentration bounds","Markov chains","Bayesian networks","arbitrary covariance systems","matrix algebra","broader free generation","broader reasoning"]
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","bounded elementary combinatorics","factorial counting","permutation counting","combination counting","multiset permutation counting","product-rule counting","sum-rule counting","pigeonhole occupancy reasoning","bounded finite discrete probability","equally-likely event probability","complement probability","conditional probability","independence checks","binomial point probability","finite discrete expectation","finite discrete variance","bounded matrix algebra","matrix addition","scalar matrix multiplication","matrix multiplication up to 3x3","matrix transpose","determinant up to 3x3","exact 2x2 inverse","exact 2x2 linear-system solve","matrix-vector multiplication","induction-intent activation gate","formal-logic intent activation gate","combinatorics intent activation gate","discrete-probability intent activation gate","matrix-algebra intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
+        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor","bounded combinatorics skill donor","counting-rule donor","bounded discrete-probability skill donor","exact-rational probability executor donor","bounded matrix-algebra skill donor","exact-rational matrix executor donor"],
+        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary first-order theorem proving","modal logic","temporal logic","second-order logic","inclusion-exclusion","generating functions","Catalan and Stirling systems","Burnside and Polya enumeration","graph enumeration","continuous distributions","concentration bounds","Markov chains","Bayesian networks","arbitrary covariance systems","eigenvalues and eigenvectors","singular value decomposition","Gram-Schmidt orthogonalization","least squares","Jordan form","pseudoinverse","broader free generation","broader reasoning"]
     },
     {
         "id":"llm2-v2",
@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_12 + hosted_runtime_v0_8_4",
+        "source":"external_current_registry_v0_13 + hosted_runtime_v0_8_5",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",
@@ -328,7 +328,7 @@ CAPABILITY_PROFILES = [
             "32_Cb sovereign-donor seating",
             "JM32-1DA exact runtime-route seating",
             "JM32-1DA Cross-Device Adapter separate-authority seating",
-            "JM LLM Core v1.5 Cycle 005 capability-return seating"
+            "JM LLM Core v1.6 Cycle 006 capability-return seating"
         ],
         "donor_roles":[
             "control-plane routing",

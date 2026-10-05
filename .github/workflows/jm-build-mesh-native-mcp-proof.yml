@@ -173,6 +173,12 @@ jobs:
           assert "finite discrete expectation" in llm["capabilities"], llm
           assert "finite discrete variance" in llm["capabilities"], llm
           assert "bounded matrix algebra" in llm["capabilities"], llm
+          assert "bounded exact-rational 2x2 spectral work" in llm["capabilities"], llm
+          assert "2x2 characteristic polynomial" in llm["capabilities"], llm
+          assert "rationally split 2x2 eigenvalues" in llm["capabilities"], llm
+          assert "exact 2x2 eigenspace bases" in llm["capabilities"], llm
+          assert "bounded rational 2x2 diagonalizability" in llm["capabilities"], llm
+          assert "explicit 2x2 eigenpair verification" in llm["capabilities"], llm
           assert "matrix multiplication up to 3x3" in llm["capabilities"], llm
           assert "determinant up to 3x3" in llm["capabilities"], llm
           assert "exact 2x2 inverse" in llm["capabilities"], llm
@@ -188,7 +194,9 @@ jobs:
           assert "discrete probability" not in llm["open_frontiers"], llm
           assert "continuous distributions" in llm["open_frontiers"], llm
           assert "matrix algebra" not in llm["open_frontiers"], llm
-          assert "eigenvalues and eigenvectors" in llm["open_frontiers"], llm
+          assert "eigenvalues and eigenvectors" not in llm["open_frontiers"], llm
+          assert "complex and irrational spectra" in llm["open_frontiers"], llm
+          assert "3x3+ eigensolvers" in llm["open_frontiers"], llm
           assert "singular value decomposition" in llm["open_frontiers"], llm
           assert "concentration bounds" in llm["open_frontiers"], llm
           return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})

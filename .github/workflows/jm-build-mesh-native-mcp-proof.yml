@@ -480,7 +480,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r14-cycle007",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -553,7 +553,7 @@ jobs:
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007_R14_CYCLE007.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -561,6 +561,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007_R14_CYCLE007.json
           if-no-files-found: error

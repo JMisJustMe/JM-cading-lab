@@ -413,7 +413,7 @@ jobs:
 
           llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-          assert "v1.2" in llm_head["current_head"] and "Cycle 003" in llm_head["current_head"], llm_head
+          assert "v1.3" in llm_head["current_head"] and "Cycle 003" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
           assert "4836/4836 PASS" in llm_proof["proof"], llm_proof
           llm_cycle003_return = call(17, "build_capability_mesh", {
@@ -505,7 +505,7 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted v0.8.2 live with registry v0.8 / 22 current records / 34 capability profiles, including preserved authority-tier precedence and the JM LLM Core v1.3 Cycle003 return, the separate JM32-1DA Cross-Device Adapter relation, the directional 32_Cb → JM32-1DA relation, and PLAN_ONLY route contact across all six artifact surfaces; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install or owner-device proof is transferred from route generation.",
+              "claim_boundary":"Proves hosted v0.8.2 live with registry v0.9 / 22 current records / 34 capability profiles, including preserved authority-tier precedence and the JM LLM Core v1.3 Cycle 003 return, the separate JM32-1DA Cross-Device Adapter relation, the directional 32_Cb → JM32-1DA relation, and PLAN_ONLY route contact across all six artifact surfaces; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred from route generation.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()

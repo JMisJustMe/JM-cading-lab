@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_14 + hosted_runtime_v0_8_6",
+        "source":"external_current_registry_v0_14 + hosted_runtime_v0_8_5",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",

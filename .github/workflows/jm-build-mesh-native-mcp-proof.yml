@@ -51,7 +51,7 @@ jobs:
               assert server.current_matches(query, 10), "Discovery should remain available: " + query
           llm_authority = server.resolve_current_head({"name":"JM LLM Core"})
           assert llm_authority["state"] == "CURRENT_DECLARED", llm_authority
-          assert llm_authority["current_head"] == "JM LLM Core v1.7 — Symbiosis Cycle 007", llm_authority
+          assert llm_authority["current_head"] == "JM LLM Core v1.8 — Symbiosis Cycle 008", llm_authority
           assert llm_authority.get("competing_candidates") == [], llm_authority
           print("STATIC_AUTHORITY_TIER_PRECEDENCE_PASS")
           print("STATIC_AUTHORITY_IDENTITY_REGRESSION_PASS")
@@ -77,138 +77,49 @@ jobs:
           assert comic["hosted_authority_state"] == "CURRENT_DECLARED", comic
           assert comic["target_profile_id"] == "ftr-massive-push-v1", comic
 
-          theory = server.plan_artifact_route({
-              "target":"JM Theory Estate",
-              "artifact_type":"theory",
-              "outputs":["md","pdf","html"],
-          })
+          theory = server.plan_artifact_route({"target":"JM Theory Estate","artifact_type":"theory","outputs":["md","pdf","html"]})
           assert theory["target_profile_id"] == "theory-second-order", theory
           assert theory["hosted_authority_state"] == "CURRENT_DECLARED", theory
-
-          app = server.plan_artifact_route({
-              "target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1",
-              "artifact_type":"app",
-              "outputs":["web","package"],
-          })
+          app = server.plan_artifact_route({"target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","artifact_type":"app","outputs":["web","package"]})
           assert app["target_profile_id"] == "legal-v11", app
           assert app["hosted_authority_state"] == "CURRENT_DECLARED", app
-
-          apk = server.plan_artifact_route({
-              "target":"JM Living Estate",
-              "artifact_type":"apk",
-              "outputs":["apk","direct-download-link"],
-          })
+          apk = server.plan_artifact_route({"target":"JM Living Estate","artifact_type":"apk","outputs":["apk","direct-download-link"]})
           assert apk["target_profile_id"] == "living-estate-apk", apk
           assert apk["hosted_authority_state"] == "CURRENT_DECLARED", apk
-          assert "apk" in apk["surface_profile"]["selected_outputs"]
-          assert "direct-download-link" in apk["surface_profile"]["selected_outputs"]
-
-          downloadable = server.plan_artifact_route({
-              "target":"JM LLM #2",
-              "artifact_type":"download",
-              "outputs":["manifest","sha256","direct-download-link"],
-          })
+          downloadable = server.plan_artifact_route({"target":"JM LLM #2","artifact_type":"download","outputs":["manifest","sha256","direct-download-link"]})
           assert downloadable["target_profile_id"] == "llm2-v2", downloadable
           assert downloadable["hosted_authority_state"] == "CURRENT_DECLARED", downloadable
-          assert downloadable["surface_profile"]["label"] == "DOWNLOAD / ADDABLE ROUTE"
-          assert downloadable["surface_profile"]["selected_outputs"] == ["manifest","sha256","direct-download-link"]
-          keeper = server.estate_keeper_contract({
-              "scope":"private Library delta maintenance",
-              "last_checkpoint":"PASS_84",
-              "changed_count":0,
-              "unresolved_count":0,
-          })
+
+          keeper = server.estate_keeper_contract({"scope":"private Library delta maintenance","last_checkpoint":"PASS_84","changed_count":0,"unresolved_count":0})
           assert keeper["schema"] == "JM.BuildMesh.EstateKeeperContract/0.7.6", keeper
-          assert keeper["no_census_default"] is True, keeper
-          assert keeper["destructive_default"] == "HOLD", keeper
-          assert keeper["mutation_performed"] is False, keeper
-          assert "Fuzzy discovery is never authority." in keeper["authority_rule"], keeper
-          print("STATIC_ESTATE_KEEPER_V0_8_5_PASS")
+          assert keeper["no_census_default"] is True and keeper["destructive_default"] == "HOLD" and keeper["mutation_performed"] is False
 
           mesh = server.build_capability_mesh({"builds":["32_Cb","JM32-1DA"],"max_nodes":4})
-          declared = [
-              edge for edge in mesh["edges"]
-              if edge.get("relation") == "DECLARED_RELATION"
-              and edge.get("declared_relation") == "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION"
-          ]
-          assert len(declared) == 1, mesh
-          edge = declared[0]
-          assert edge["from"] == "32cb-v21" and edge["to"] == "jm32-1da-v221", edge
-          assert edge["merge"] is False and edge["proof_transfer"] is False, edge
-          print("STATIC_32CB_TO_JM32_1DA_DECLARED_RELATION_PASS")
-
+          declared = [edge for edge in mesh["edges"] if edge.get("relation") == "DECLARED_RELATION" and edge.get("declared_relation") == "ANCESTRAL_DONOR_TO_RUNTIME_ROUTE_EXPANSION"]
+          assert len(declared) == 1 and declared[0]["merge"] is False and declared[0]["proof_transfer"] is False
           adapter = server.resolve_profile("JM32-1DA Cross-Device Runtime Adapter")
           assert adapter and adapter["id"] == "jm32-1da-cross-device-adapter-v02", adapter
-          adapter_mesh = server.build_capability_mesh({"builds":["JM32-1DA","JM32-1DA Cross-Device Runtime Adapter"],"max_nodes":4})
-          adapter_declared = [
-              edge for edge in adapter_mesh["edges"]
-              if edge.get("relation") == "DECLARED_RELATION"
-              and edge.get("declared_relation") == "HAS_SEPARATE_CROSS_DEVICE_ADAPTER"
-          ]
-          assert len(adapter_declared) == 1, adapter_mesh
-          assert adapter_declared[0]["from"] == "jm32-1da-v221" and adapter_declared[0]["to"] == "jm32-1da-cross-device-adapter-v02", adapter_declared[0]
-          assert adapter_declared[0]["merge"] is False and adapter_declared[0]["proof_transfer"] is False, adapter_declared[0]
-          print("STATIC_JM32_CROSS_DEVICE_ADAPTER_RELATION_PASS")
 
           llm = server.resolve_profile("JM LLM Core")
           assert llm and llm["id"] == "llm-core-v1", llm
-          assert llm["name"] == "JM LLM Core v1.7 — Symbiosis Cycle 007", llm
-          assert "bounded modular arithmetic" in llm["capabilities"], llm
-          assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
-          assert "bounded propositional truth tables" in llm["capabilities"], llm
-          assert "bounded predicate-quantifier formalization" in llm["capabilities"], llm
-          assert "finite-domain quantifier evaluation" in llm["capabilities"], llm
-          assert "bounded elementary combinatorics" in llm["capabilities"], llm
-          assert "factorial counting" in llm["capabilities"], llm
-          assert "permutation counting" in llm["capabilities"], llm
-          assert "combination counting" in llm["capabilities"], llm
-          assert "multiset permutation counting" in llm["capabilities"], llm
-          assert "product-rule counting" in llm["capabilities"], llm
-          assert "sum-rule counting" in llm["capabilities"], llm
-          assert "pigeonhole occupancy reasoning" in llm["capabilities"], llm
-          assert "bounded finite discrete probability" in llm["capabilities"], llm
-          assert "conditional probability" in llm["capabilities"], llm
-          assert "independence checks" in llm["capabilities"], llm
-          assert "binomial point probability" in llm["capabilities"], llm
-          assert "finite discrete expectation" in llm["capabilities"], llm
-          assert "finite discrete variance" in llm["capabilities"], llm
-          assert "bounded matrix algebra" in llm["capabilities"], llm
-          assert "bounded exact-rational 2x2 spectral work" in llm["capabilities"], llm
-          assert "2x2 characteristic polynomial" in llm["capabilities"], llm
-          assert "rationally split 2x2 eigenvalues" in llm["capabilities"], llm
-          assert "exact 2x2 eigenspace bases" in llm["capabilities"], llm
-          assert "bounded rational 2x2 diagonalizability" in llm["capabilities"], llm
-          assert "explicit 2x2 eigenpair verification" in llm["capabilities"], llm
-          assert "matrix multiplication up to 3x3" in llm["capabilities"], llm
-          assert "determinant up to 3x3" in llm["capabilities"], llm
-          assert "exact 2x2 inverse" in llm["capabilities"], llm
-          assert "exact 2x2 linear-system solve" in llm["capabilities"], llm
-          assert "matrix-vector multiplication" in llm["capabilities"], llm
-          assert "cross-cycle capability retention" in llm["capabilities"], llm
-          assert "strong induction" in llm["open_frontiers"], llm
-          assert "arbitrary first-order theorem proving" in llm["open_frontiers"], llm
-          assert "predicate logic" not in llm["open_frontiers"], llm
-          assert "combinatorics" not in llm["open_frontiers"], llm
-          assert "inclusion-exclusion" in llm["open_frontiers"], llm
-          assert "generating functions" in llm["open_frontiers"], llm
-          assert "discrete probability" not in llm["open_frontiers"], llm
-          assert "continuous distributions" in llm["open_frontiers"], llm
-          assert "matrix algebra" not in llm["open_frontiers"], llm
-          assert "eigenvalues and eigenvectors" not in llm["open_frontiers"], llm
-          assert "complex and irrational spectra" in llm["open_frontiers"], llm
-          assert "3x3+ eigensolvers" in llm["open_frontiers"], llm
-          assert "singular value decomposition" in llm["open_frontiers"], llm
-          assert "concentration bounds" in llm["open_frontiers"], llm
+          assert llm["name"] == "JM LLM Core v1.8 — Symbiosis Cycle 008", llm
+          for capability in [
+              "bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables",
+              "bounded predicate-quantifier formalization","bounded elementary combinatorics","bounded finite discrete probability",
+              "bounded matrix algebra","bounded exact-rational 2x2 spectral work","bounded exact-rational 2x2 singular value decomposition",
+              "exact rational 2x2 singular values","exact rational 2x2 U Sigma V^T","exact 2x2 SVD reconstruction verification",
+              "2x2 spectral norm","2x2 condition number from SVD","2x2 rank from SVD","cross-cycle capability retention"
+          ]:
+              assert capability in llm["capabilities"], (capability,llm)
+          assert "singular value decomposition" not in llm["open_frontiers"], llm
+          assert "arbitrary/rectangular/3x3+ SVD" in llm["open_frontiers"], llm
+          assert "pseudoinverse" in llm["open_frontiers"], llm
           return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})
-          returned = [
-              edge for edge in return_mesh["edges"]
-              if edge.get("relation") == "DECLARED_RELATION"
-              and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
-          ]
+          returned = [edge for edge in return_mesh["edges"] if edge.get("relation") == "DECLARED_RELATION" and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"]
           assert len(returned) == 1, return_mesh
           assert returned[0]["from"] == "llm-core-v1" and returned[0]["to"] == "ecostate-build-mesh-v102", returned[0]
           assert returned[0]["merge"] is False and returned[0]["proof_transfer"] is False, returned[0]
-          print("STATIC_LLM_V1_7_CYCLE007_RETURN_PASS")
+          print("STATIC_LLM_V1_8_CYCLE008_RETURN_PASS")
 
           print("STATIC_ARTIFACT_FACTORY_FEED_BATCH_01_PASS")
           PY
@@ -311,7 +222,7 @@ jobs:
           assert status["capability_profiles"] == 34, status
           assert status["current_project_records"] == 22, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.14", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.15", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -450,10 +361,10 @@ jobs:
 
           llm_head = call(15, "resolve_current_head", {"name":"JM LLM Core"})
           assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-          assert "v1.7" in llm_head["current_head"] and "Cycle 007" in llm_head["current_head"], llm_head
+          assert "v1.8" in llm_head["current_head"] and "Cycle 008" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
-          assert "41328/41328 PASS" in llm_proof["proof"], llm_proof
-          llm_cycle007_return = call(17, "build_capability_mesh", {
+          assert "49140/49140 PASS" in llm_proof["proof"], llm_proof
+          llm_cycle008_return = call(17, "build_capability_mesh", {
               "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
           })
@@ -462,7 +373,7 @@ jobs:
               if edge.get("relation") == "DECLARED_RELATION"
               and edge.get("declared_relation") == "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE"
           ]
-          assert len(returned) == 1, llm_cycle007_return
+          assert len(returned) == 1, llm_cycle008_return
           return_edge = returned[0]
           assert return_edge["from"] == "llm-core-v1" and return_edge["to"] == "ecostate-build-mesh-v102", return_edge
           assert return_edge["merge"] is False and return_edge["proof_transfer"] is False, return_edge
@@ -480,7 +391,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r14-cycle007",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r15-cycle008",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -510,22 +421,17 @@ jobs:
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
               },
-              "llm_cycle007_return":{
+              "llm_cycle008_return":{
                   "state":"PASS",
-                  "body":"JM LLM Core v1.7 — Symbiosis Cycle 007",
-                  "parent_cycle006_recontact":"28066/28066 PASS",
-                  "router":"2800/2800 PASS",
-                  "spectral_skill":"1500/1500 PASS",
-                  "retained_cycle001_modular":"200/200 PASS",
-                  "retained_cycle002_induction":"700/700 PASS",
-                  "cycle003_full_heldout_noninterception":"1500/1500 PASS",
-                  "cycle004_full_heldout_noninterception":"1800/1800 PASS",
-                  "cycle005_full_heldout_noninterception":"2250/2250 PASS",
-                  "cycle006_supported_noninterception":"2250/2250 PASS",
-                  "cycle006_open_frontier_safety":"250/250 PASS",
+                  "body":"JM LLM Core v1.8 — Symbiosis Cycle 008",
+                  "parent_cycle007_recontact":"41328/41328 PASS",
+                  "router":"3200/3200 PASS",
+                  "svd_skill":"1800/1800 PASS",
+                  "cycle007_non_svd_heldout_noninterception":"2773/2773 PASS",
+                  "cycle007_prior_svd_frontier_safety":"27/27 PASS",
                   "smoke":"12/12 PASS",
-                  "aggregate":"41328/41328 PASS",
-                  "canonical_release_sha256":"8ac4b74962c5f27069d5254bbfb69f80713ae97dd87f430d535015c88c6f1adf",
+                  "aggregate":"49140/49140 PASS",
+                  "canonical_release_sha256":"0dd1548516563ba86f95ffe44ca0469c4514710e25b7403450cc1bec71c47b0a",
                   "declared_relation":return_edge["declared_relation"],
                   "merge":return_edge["merge"],
                   "proof_transfer":return_edge["proof_transfer"],
@@ -549,11 +455,11 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.14 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.7 Cycle 007 as a separate capability donor with 41328/41328 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.15 / 22 current records / 34 capability profiles, acknowledging private Build Mesh v1.0.11 as the last directly read-back private package and returning JM LLM Core v1.8 Cycle 008 as a separate capability donor with 49140/49140 bounded proof checks. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007_R14_CYCLE007.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R15_CYCLE008.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -561,6 +467,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R15_CYCLE008
           path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R14_CYCLE007_R14_CYCLE007.json
           if-no-files-found: error

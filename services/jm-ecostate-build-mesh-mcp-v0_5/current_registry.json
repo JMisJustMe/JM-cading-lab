@@ -1,13 +1,13 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.22",
+  "schema": "JM.CareerCurrentProjectRegistry/0.23",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE015-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.15 Cycle 015 is seated as the current capability-return donor over the re-contacted v1.14 Cycle 014 parent. Parent and child proof jurisdictions remain separate. The canonical v1.15 ZIP is seated in its private Library version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_15.zip; the v1.14 root release is archived as predecessor. Stronger private exact evidence can still outrank hosted summaries. Declared relations never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE016-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.16 Cycle 016 is seated as the current capability-return donor over the freshly re-contacted v1.15 Cycle 015 parent. Cycle 016 also corrects forward an uncovered v1.15 routing leak where explicit three-vector R3 prompts could be misrouted to the two-vector R3 skill and ignore v3; the v1.15 ancestor remains unchanged. Parent and child proof jurisdictions remain separate. The canonical v1.16 ZIP is seated in its private Library version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_16.zip; the v1.15 root release is archived as predecessor. Declared relations never transfer proof or merge bodies.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 015 Return",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 Return",
       "date": "5 Oct 2026",
       "category": "software infrastructure",
       "tags": [
@@ -19,9 +19,9 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE015-RETURN DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, then returns JM LLM Core v1.15 Symbiosis Cycle 015 as the current LLM donor over v1.14 Cycle 014, without merging bodies or borrowing proof.",
-      "proof": "Registry v0.22 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.15 release passed 104670/104670 direct checks after v1.14 Cycle 014 release re-contact at 96934/96934 PASS. Canonical v1.15 release SHA-256 91dbb81eee05333296918ac163e76ea00eb34c89c1e6307e74cbc540a47f032e. The canonical v1.15 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_15.zip; v1.14 is preserved as predecessor.",
+      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE016-RETURN DESCENDANT",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, then returns JM LLM Core v1.16 Symbiosis Cycle 016 as the current LLM donor over v1.15 Cycle 015, including the forward correction of the explicit-three-vector R3 misroute, without rewriting the ancestor or borrowing proof.",
+      "proof": "Registry v0.23 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.16 release passed 112406/112406 direct checks after fresh v1.15 Cycle 015 verifier re-contact at 104670/104670 PASS. Cycle016 additionally proved 24/24 same-condition boundary corrections: v1.15 misrouted explicit three-vector R3 prompts to the two-vector R3 skill and ignored v3; v1.16 routes them to the correct three-vector R3 executor with u3 present. Canonical v1.16 release SHA-256 950ff031a695cbf93677bfc27d4307bc64ed3af12fce40c15f922645013f8dee. The canonical v1.16 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_16.zip; v1.15 is preserved as predecessor.",
       "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin, Library carrier, and hosted service are separate carriers and need not version-lock recursively."
     },
     {
@@ -58,7 +58,7 @@
     },
     {
       "id": "llm-core-v1",
-      "title": "JM LLM Core v1.15 — Symbiosis Cycle 015",
+      "title": "JM LLM Core v1.16 — Symbiosis Cycle 016",
       "date": "5 Oct 2026",
       "category": "ai software",
       "tags": [
@@ -126,12 +126,15 @@
         "dependent-middle orthogonalization",
         "R3 Gram-Schmidt",
         "two-vector R3",
-        "dimension jump"
+        "dimension jump",
+        "three-vector R3",
+        "boundary correction",
+        "routing leak correction"
       ],
-      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 015 · FIFTEENTH CAPABILITY-RETURN DING",
-      "summary": "Current descendant over JM LLM Core v1.14 Cycle 014. Cycle 015 retains all previously seated bounded exact-rational capabilities and adds classical ordered unnormalised exact-rational two-vector Gram-Schmidt in R3 with exact dependence handling, orthogonality/span/reconstruction certification and candidate verification.",
-      "proof": "v1.14 Cycle 014 release re-contact 96934/96934 PASS; Cycle015 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact two-vector Gram-Schmidt in R3 1800/1800 PASS with 900 independent and 900 dependent cases; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle014 held-out surface preservation 2400/2400 PASS, all outside the new child intent boundary; same-condition before→after 24/24 PASS; total direct release checks 104670/104670 PASS. Canonical release SHA-256 91dbb81eee05333296918ac163e76ea00eb34c89c1e6307e74cbc540a47f032e. merge=false; proof_transfer=false.",
-      "boundary": "Earned scope adds classical ordered unnormalised Gram-Schmidt for two explicit rational vectors in R3 with nonzero v1; exact u1/u2, dependence handling, orthogonality, span/reconstruction certification and exact candidate verification. Three-vector R3, zero-leading sequences, normalization/orthonormal bases, modified/numerical/weighted Gram-Schmidt, QR factorization, arbitrary numerical linear algebra, AGI, human-level intelligence and transformer-weight Gram-Schmidt reasoning remain open.",
+      "status": "FLAZ COMPLETE · SYMBIOSIS CYCLE 016 · SIXTEENTH CAPABILITY-RETURN DING",
+      "summary": "Current descendant over JM LLM Core v1.15 Cycle 015. Cycle 016 retains all previously seated bounded exact-rational capabilities and adds classical ordered unnormalised exact-rational three-vector Gram-Schmidt in R3 with four structural dependence classes, exact pairwise orthogonality/span/reconstruction certification and candidate verification. It also corrects forward a v1.15 explicit-three-vector routing leak without rewriting the ancestor.",
+      "proof": "Fresh v1.15 Cycle 015 verifier re-contact 104670/104670 PASS; Cycle016 release smoke 12/12 PASS; held-out router 2400/2400 PASS; exact three-vector Gram-Schmidt in R3 1800/1800 PASS across 450 rank3, 450 middle-dependent/third-independent, 450 first-two-independent/third-dependent and 450 fully-dependent cases; exact candidate verification 800/800 PASS; frontier safety 300/300 PASS; Cycle015 held-out surface preservation 2400/2400 PASS with 2321 bypasses and 79 lawful frontier interceptions; same-condition boundary correction 24/24 PASS from v1.15 partial/misrouted two-vector DING to v1.16 correct three-vector DING; total direct release checks 112406/112406 PASS. Canonical release SHA-256 950ff031a695cbf93677bfc27d4307bc64ed3af12fce40c15f922645013f8dee. merge=false; proof_transfer=false.",
+      "boundary": "Earned scope adds classical ordered unnormalised Gram-Schmidt for three explicit rational vectors in R3 with nonzero v1; exact u1/u2/u3, structural dependence handling, pairwise orthogonality, span/reconstruction certification and exact candidate verification. Zero-leading sequences, normalization/orthonormal bases, four-vector+, modified/numerical/weighted Gram-Schmidt, QR factorization, arbitrary numerical linear algebra, AGI, human-level intelligence and transformer-weight Gram-Schmidt reasoning remain open.",
       "relations": [
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",

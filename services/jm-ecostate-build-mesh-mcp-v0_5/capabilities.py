@@ -13,7 +13,7 @@ CAPABILITY_PROFILES = [
         "domain":"Estate / opportunity / career / commerce",
         "capabilities":["opportunity front door","purpose projection","capability projection","employment route","freelance commission route","collaboration route","licensing publishing route","research consult route","contact brief builder","GripCube projection"],
         "donor_roles":["opportunity routing","purpose-capability projection","contact handoff","multi-route front door"],
-        "open_frontiers":["v0.8 public deployment","v0.8 owner-device runtime Ding","live inbound opportunity contact","market conversion"]
+        "open_frontiers":["v0.8 owner-device runtime Ding","live inbound opportunity contact","paid conversion","executed collaboration/licence/contract","market conversion"]
     },
     {
         "id":"gripcube-rpa",
@@ -27,7 +27,7 @@ CAPABILITY_PROFILES = [
     {
         "id":"llm-core-v1",
         "name":"JM LLM Core v1.3 — Symbiosis Cycle 003",
-        "source":"external_current_registry_v0_9 + direct_cycle003_regression_receipt",
+        "source":"external_current_registry_v0_10 + direct_cycle003_regression_receipt",
         "domain":"AI / language model",
         "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","induction-intent activation gate","formal-logic intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
         "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor"],
@@ -300,7 +300,7 @@ CAPABILITY_PROFILES = [
         "id":"ecostate-build-mesh-v102",
         "name":"JM ECOSTATE — Build Mesh",
         "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
-        "source":"external_current_registry_v0_9 + hosted_runtime_v0_8_2",
+        "source":"external_current_registry_v0_10 + hosted_runtime_v0_8_2",
         "domain":"Estate / control plane / artifact routing",
         "capabilities":[
             "exact target identity resolution",

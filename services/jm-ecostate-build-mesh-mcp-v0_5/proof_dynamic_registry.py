@@ -23,7 +23,7 @@ assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.21"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.22"
 assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-05"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
@@ -32,7 +32,7 @@ assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 014 Return", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 015 Return", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash
@@ -82,7 +82,7 @@ assert adapter_declared[0]["merge"] is False and adapter_declared[0]["proof_tran
 
 llm = server.resolve_profile("JM LLM Core")
 assert llm and llm["id"] == "llm-core-v1", llm
-assert llm["name"] == "JM LLM Core v1.14 — Symbiosis Cycle 014", llm
+assert llm["name"] == "JM LLM Core v1.15 — Symbiosis Cycle 015", llm
 assert "bounded modular arithmetic" in llm["capabilities"], llm
 assert "bounded ordinary mathematical induction" in llm["capabilities"], llm
 assert "cross-cycle capability retention" in llm["capabilities"], llm
@@ -164,15 +164,19 @@ assert "dependent-middle three-vector Gram-Schmidt handling" in llm["capabilitie
 assert "fully-dependent three-vector Gram-Schmidt handling" in llm["capabilities"], llm
 assert "exact three-vector Gram-Schmidt candidate verification" in llm["capabilities"], llm
 assert "normalized/orthonormal Gram-Schmidt" in llm["open_frontiers"], llm
-assert "R3+ Gram-Schmidt" in llm["open_frontiers"], llm
+assert "bounded exact-rational unnormalised two-vector Gram-Schmidt in R3" in llm["capabilities"], llm
+assert "exact classical ordered two-vector Gram-Schmidt u1/u2 in R3" in llm["capabilities"], llm
+assert "dependent two-vector R3 Gram-Schmidt handling" in llm["capabilities"], llm
+assert "exact two-vector R3 Gram-Schmidt candidate verification" in llm["capabilities"], llm
+assert "three-vector R3 Gram-Schmidt" in llm["open_frontiers"], llm
 assert "four-vector+ Gram-Schmidt" in llm["open_frontiers"], llm
 assert "QR factorization" in llm["open_frontiers"], llm
 assert "concentration bounds" in llm["open_frontiers"], llm
 assert "Markov chains" in llm["open_frontiers"], llm
 llm_head = server.resolve_current_head({"name":"JM LLM Core"})
 assert llm_head["state"] == "CURRENT_DECLARED", llm_head
-assert llm_head["current_head"] == "JM LLM Core v1.14 — Symbiosis Cycle 014", llm_head
-assert "96934/96934 PASS" in llm_head["primary_evidence"]["proof"], llm_head
+assert llm_head["current_head"] == "JM LLM Core v1.15 — Symbiosis Cycle 015", llm_head
+assert "104670/104670 PASS" in llm_head["primary_evidence"]["proof"], llm_head
 assert llm_head.get("competing_candidates") == [], llm_head
 
 return_mesh = server.build_capability_mesh({"builds":["JM LLM Core","JM ECOSTATE Build Mesh"],"max_nodes":4})

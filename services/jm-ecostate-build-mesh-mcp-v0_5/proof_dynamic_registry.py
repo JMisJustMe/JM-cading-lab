@@ -70,8 +70,8 @@ assert "external current-registry loading" in profile["capabilities"]
 assert "dynamic exact-byte registry hashing" in profile["capabilities"]
 assert "delta-first Estate maintenance planning" in profile["capabilities"]
 assert "JM32-1DA exact runtime-route seating" in profile["capabilities"]
-assert "PRIVATE PACKAGE v1.0.11" in head["primary_evidence"]["status"]
-assert "HOSTED MCP v0.8.5" in head["primary_evidence"]["status"]
+assert "CYCLE016 RETURN PRESERVED" in head["primary_evidence"]["status"]
+assert "RECURSIVE CAPABILITY PROTOCOL v1.0 INTEGRATED" in head["primary_evidence"]["status"]
 
 jm32 = server.resolve_profile("JM32-1DA")
 assert jm32 and jm32["id"] == "jm32-1da-v221", jm32

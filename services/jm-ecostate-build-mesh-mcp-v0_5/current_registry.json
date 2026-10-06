@@ -1,14 +1,14 @@
 {
-  "schema": "JM.CareerCurrentProjectRegistry/0.23",
+  "schema": "JM.CareerCurrentProjectRegistry/0.24",
   "date": "2026-10-05",
   "body": "JM Opportunity Front Door v0.8 — Maximal Current",
-  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 SYMBIOSIS-CYCLE016-RETURN · AUTHORITY-TIER-PRECEDENCE PRESERVED",
-  "boundary": "This hosted snapshot carries bounded public-safe current seats and preserves authority-tier precedence. JM LLM Core v1.16 Cycle 016 is seated as the current capability-return donor over the freshly re-contacted v1.15 Cycle 015 parent. Cycle 016 also corrects forward an uncovered v1.15 routing leak where explicit three-vector R3 prompts could be misrouted to the two-vector R3 skill and ignore v3; the v1.15 ancestor remains unchanged. Parent and child proof jurisdictions remain separate. The canonical v1.16 ZIP is seated in its private Library version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_16.zip; the v1.15 root release is archived as predecessor. Declared relations never transfer proof or merge bodies.",
+  "authority": "HOSTED_PUBLIC_CURRENT_SNAPSHOT · v0.8.5 RECURSIVE-CAPABILITY-GROWTH-PROTOCOL-v1.0 INTEGRATION · CYCLE016 HEAD PRESERVED · AUTHORITY-TIER-PRECEDENCE PRESERVED",
+  "boundary": "This hosted snapshot preserves authority-tier precedence while integrating JM Recursive Capability Growth & Return Protocol v1.0 by reference across current JM LLM, AI/agent and OS/runtime control-plane seats. The relation governs growth/proof workflow only: merge=false, proof_transfer=false and canonical_reference=true. JM LLM Core v1.16 Cycle 016 remains the current capability authority; stronger private exact evidence can still outrank hosted summaries.",
   "records": [
     {
       "id": "ecostate-build-mesh-v102",
-      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 Return",
-      "date": "5 Oct 2026",
+      "title": "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 + Recursive Capability Protocol v1.0",
+      "date": "6 Oct 2026",
       "category": "software infrastructure",
       "tags": [
         "ECOSTATE",
@@ -19,10 +19,19 @@
         "Navigator",
         "Estate"
       ],
-      "status": "CURRENT DECLARED · PRIVATE PACKAGE v1.0.11 · HOSTED MCP v0.8.5 SYMBIOSIS-CYCLE016-RETURN DESCENDANT",
-      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Hosted v0.8.5 preserves authority-tier precedence and existing seats, then returns JM LLM Core v1.16 Symbiosis Cycle 016 as the current LLM donor over v1.15 Cycle 015, including the forward correction of the explicit-three-vector R3 misroute, without rewriting the ancestor or borrowing proof.",
-      "proof": "Registry v0.23 keeps 22 logical current records and 34 capability profiles. JM LLM Core v1.16 release passed 112406/112406 direct checks after fresh v1.15 Cycle 015 verifier re-contact at 104670/104670 PASS. Cycle016 additionally proved 24/24 same-condition boundary corrections: v1.15 misrouted explicit three-vector R3 prompts to the two-vector R3 skill and ignored v3; v1.16 routes them to the correct three-vector R3 executor with u3 present. Canonical v1.16 release SHA-256 950ff031a695cbf93677bfc27d4307bc64ed3af12fce40c15f922645013f8dee. The canonical v1.16 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_16.zip; v1.15 is preserved as predecessor.",
-      "boundary": "Public Build Mesh remains read-only. Authority-tier precedence is preserved. JM LLM Core remains a separate authority/proof carrier; returned capability does not transfer proof. The private plugin, Library carrier, and hosted service are separate carriers and need not version-lock recursively."
+      "status": "CURRENT DECLARED · CYCLE016 RETURN PRESERVED · RECURSIVE CAPABILITY PROTOCOL v1.0 INTEGRATED",
+      "summary": "JM ECOSTATE Build Mesh remains the recoverable Estate control plane. Registry v0.24 preserves the Cycle 016 LLM return and adds JM Recursive Capability Growth & Return Protocol v1.0 as a shared governance reference across current LLM, AI/agent and OS/runtime control-plane seats without merging bodies or transferring proof.",
+      "proof": "Registry v0.24 keeps 22 logical current records and 34 capability profiles. Eight writable current registry seats now carry GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL → JM Recursive Capability Growth & Return Protocol v1.0 with merge=false, proof_transfer=false and canonical_reference=true. JM LLM Core v1.16 remains the current capability head at 112406/112406 PASS with canonical release SHA-256 950ff031a695cbf93677bfc27d4307bc64ed3af12fce40c15f922645013f8dee.",
+      "boundary": "The protocol governs growth/proof workflow; it does not grant capability, merge identities or transfer competence proof. Public Build Mesh remains read-only and authority-tier precedence remains preserved.",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     },
     {
       "id": "opportunity-v08",
@@ -139,6 +148,13 @@
         {
           "relation": "SYMBIOSIS_CAPABILITY_RETURN_TO_ECOSTATE",
           "target": "JM ECOSTATE Build Mesh"
+        },
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
         }
       ]
     },
@@ -155,7 +171,16 @@
       "status": "FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED",
       "summary": "Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.",
       "proof": "Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.",
-      "boundary": "Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction."
+      "boundary": "Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction.",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     },
     {
       "id": "agi-v144",
@@ -170,7 +195,16 @@
       "status": "FLAZ COMPLETE AT OWNER WINDOWS EDGE PROCESS-RESTART SCOPE",
       "summary": "A bounded general-agent laboratory with explicit consequence verification and persistence/process-contact harnesses.",
       "proof": "Assistant clean-sandbox battery 60/60 PASS; owner Windows Edge exact-body process-restart Ding earned with read-back/restore/process-zero evidence.",
-      "boundary": "No AGI or human-level intelligence claim; OS reboot, broader model contact and cross-device persistence remain separate."
+      "boundary": "No AGI or human-level intelligence claim; OS reboot, broader model contact and cross-device persistence remain separate.",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     },
     {
       "id": "legal-v11",
@@ -290,7 +324,16 @@
       "status": "DING COMPLETE AT BIOS/QEMU EMULATOR SCOPE",
       "summary": "The frozen BIOS disk was externally booted under QEMU/SeaBIOS and then pressure-tested with live PIT IRQ0 and PS/2 IRQ1 observability probes.",
       "proof": "Kernel-ready boot markers returned; PIT IRQ0 and PS/2 IRQ1 contact receipts were observed.",
-      "boundary": "Physical-machine boot, physical IRQ/device contact and UEFI execution were not claimed by this checkpoint."
+      "boundary": "Physical-machine boot, physical IRQ/device contact and UEFI execution were not claimed by this checkpoint.",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     },
     {
       "id": "coding-control-plane",
@@ -305,7 +348,16 @@
       "status": "CURRENT CONTROL PLANE · 64 CODING IDENTITIES RECONCILED",
       "summary": "The coding estate is routed through an integrated current head rather than a pile of rival front doors; OneBody Coding OS is the current integrated workbench, with specialist compiler/runtime/forge organs retained.",
       "proof": "64 coding identities; 61/61 inherited maturation accounted; 3 post-census identities; 15/15 new-body executable proof; 10/10 root routes and 11/11 authority lanes connected in the control-plane closure.",
-      "boundary": "Current authority is typed by lane; specialist organs retain their own scope and owner/device gates."
+      "boundary": "Current authority is typed by lane; specialist organs retain their own scope and owner/device gates.",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     },
     {
       "id": "theory-second-order",
@@ -424,7 +476,14 @@
       "boundary": "This hosted record is derived from stronger exact private authority. Public name is UNSET and NAME DING was not issued. The browser Studio is not the complete underlying architecture. JM32-1DA Cross-Device Runtime Adapter v0.2 remains a separate authority/proof carrier. Native universal OS is not claimed. 32_Cb relation does not transfer proof, and the adapter relation does not transfer JM32 proof.",
       "donor_role": "RUNTIME_ROUTE_EXPANSION_DESCENDANT",
       "relations": [
-        "HAS_SEPARATE_CROSS_DEVICE_ADAPTER → JM32-1DA Cross-Device Runtime Adapter v0.2"
+        "HAS_SEPARATE_CROSS_DEVICE_ADAPTER → JM32-1DA Cross-Device Runtime Adapter v0.2",
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
       ]
     },
     {
@@ -449,7 +508,16 @@
       "summary": "JM32-1DA Cross-Device Runtime Adapter v0.2 is the separate cross-device adapter authority for JM32-1DA. Later current-best proof records identify it as H04 P05 complete with a seven-route test trace and P3 runnable/tested standing. It remains distinct from the main JM32-1DA runtime and from native universal OS claims.",
       "proof": "Current-best proof register P05: COMPLETE / PROOF CARRIER; seven-route test trace; syntax-governed cross-device carrier. Master Tool Register: exact physical source/status authority linked, current-best for named scope, P3 runnable-tested. Live delta certification: CURRENT ADAPTER PROOF CARRIER · v0.2 · H04 P05 COMPLETE / SEVEN-ROUTE TEST TRACE · CERT-SOURCE-CONTACT.",
       "boundary": "The early syntax-body checkpoint did not claim runtime pass; this current crown comes from later current-best proof records. The original standalone code carrier was not re-hashed in this pass. Adapter proof is separate from the main JM32-1DA runtime and does not imply native universal OS or universal device/app proof.",
-      "donor_role": "CROSS_DEVICE_ADAPTER_PROOF_CARRIER"
+      "donor_role": "CROSS_DEVICE_ADAPTER_PROOF_CARRIER",
+      "relations": [
+        {
+          "relation": "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+          "target": "JM Recursive Capability Growth & Return Protocol v1.0",
+          "merge": false,
+          "proof_transfer": false,
+          "canonical_reference": true
+        }
+      ]
     }
   ]
 }

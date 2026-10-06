@@ -53,6 +53,25 @@ jobs:
           assert llm_authority["state"] == "CURRENT_DECLARED", llm_authority
           assert llm_authority["current_head"] == "JM LLM Core v1.16 — Symbiosis Cycle 016", llm_authority
           assert llm_authority.get("competing_candidates") == [], llm_authority
+
+          protocol_target_ids = [
+              "ecostate-build-mesh-v102","llm-core-v1","llm2-v2","agi-v144",
+              "routecore-contact","coding-control-plane","jm32-1da-v221","jm32-1da-cross-device-adapter-v02",
+          ]
+          for target_id in protocol_target_ids:
+              rec = next(x for x in server.CURRENT if x["id"] == target_id)
+              rels = rec.get("relations", [])
+              matches = [
+                  r for r in rels
+                  if isinstance(r, dict)
+                  and r.get("relation") == "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL"
+                  and r.get("target") == "JM Recursive Capability Growth & Return Protocol v1.0"
+              ]
+              assert len(matches) == 1, (target_id, rels)
+              assert matches[0].get("merge") is False
+              assert matches[0].get("proof_transfer") is False
+              assert matches[0].get("canonical_reference") is True
+          print("STATIC_RECURSIVE_CAPABILITY_PROTOCOL_V1_0_INTEGRATION_PASS")
           print("STATIC_AUTHORITY_TIER_PRECEDENCE_PASS")
           print("STATIC_AUTHORITY_IDENTITY_REGRESSION_PASS")
 
@@ -242,7 +261,7 @@ jobs:
           assert status["capability_profiles"] == 34, status
           assert status["current_project_records"] == 22, status
           assert status["artifact_surface_profiles"] == 6, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.23", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.24", status
           assert status["current_registry_sha256"] == expected_registry_sha256, status
           assert status["current_registry_source"] == "current_registry.json", status
           assert status["current_registry_hash_mode"] == "SHA256_EXACT_LOADED_BYTES", status
@@ -384,6 +403,28 @@ jobs:
           assert "v1.16" in llm_head["current_head"] and "Cycle 016" in llm_head["current_head"], llm_head
           llm_proof = call(16, "proof_state", {"name":"JM LLM Core"})
           assert "112406/112406 PASS" in llm_proof["proof"], llm_proof
+
+          protocol_targets = [
+              "JM ECOSTATE — Build Mesh","JM LLM Core","JM LLM #2","JM AGI Lab",
+              "JM RouteCore","JM Coding / Cading / Runtime / OS Control Plane","JM32-1DA",
+              "JM32-1DA Cross-Device Runtime Adapter",
+          ]
+          protocol_relation_results = {}
+          for idx, target_name in enumerate(protocol_targets):
+              target_head = call(100 + idx, "resolve_current_head", {"name":target_name})
+              assert target_head["state"] == "CURRENT_DECLARED", (target_name, target_head)
+              rels = target_head["primary_evidence"].get("relations", [])
+              matches = [
+                  r for r in rels
+                  if isinstance(r, dict)
+                  and r.get("relation") == "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL"
+                  and r.get("target") == "JM Recursive Capability Growth & Return Protocol v1.0"
+              ]
+              assert len(matches) == 1, (target_name, rels)
+              assert matches[0].get("merge") is False
+              assert matches[0].get("proof_transfer") is False
+              assert matches[0].get("canonical_reference") is True
+              protocol_relation_results[target_name] = "PASS"
           llm_cycle016_return = call(17, "build_capability_mesh", {
               "builds":["JM LLM Core","JM ECOSTATE Build Mesh"],
               "max_nodes":4,
@@ -411,7 +452,7 @@ jobs:
           assert op1["phase"] == "PLAN_ONLY" and op1["mutation_performed"] is False
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r23-cycle016",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5-r24-recursive-capability-protocol-v1.0",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -440,6 +481,16 @@ jobs:
                   "app":{"target":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","route_id":app["route_id"],"authority_state":app["hosted_authority_state"],"profile":app["target_profile_id"]},
                   "apk":{"target":"JM Living Estate","route_id":apk["route_id"],"authority_state":apk["hosted_authority_state"],"profile":apk["target_profile_id"]},
                   "download":{"target":"JM LLM #2","route_id":downloadable["route_id"],"authority_state":downloadable["hosted_authority_state"],"profile":downloadable["target_profile_id"]},
+              },
+              "recursive_capability_protocol_v1_0":{
+                  "state":"PASS",
+                  "relation":"GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL",
+                  "target":"JM Recursive Capability Growth & Return Protocol v1.0",
+                  "covered_current_registry_seats":protocol_relation_results,
+                  "count":len(protocol_relation_results),
+                  "merge":False,
+                  "proof_transfer":False,
+                  "canonical_reference":True,
               },
               "llm_cycle016_return":{
                   "state":"PASS",
@@ -481,11 +532,11 @@ jobs:
               },
               "operation_gate":"PASS_PLAN_ONLY",
               "operation_id":op1["operation_id"],
-              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.23 / 22 current records / 34 capability profiles, returning JM LLM Core v1.16 Cycle 016 as the current capability donor. Cycle016 release passed 112406/112406 direct checks after fresh v1.15 verifier re-contact at 104670/104670 PASS. Exact-rational unnormalised three-vector Gram-Schmidt in R3 is seated, and Cycle016 corrects 24/24 explicit-three-vector R3 prompts that v1.15 could misroute to the two-vector skill while ignoring v3. Zero-leading, normalization/orthonormal, four-vector+, modified/numerical/weighted Gram-Schmidt and QR remain open. The canonical v1.16 ZIP is seated in its version house and at the JM LLM Core root as 00_CURRENT_RELEASE_v1_16.zip; v1.15 is preserved as predecessor. The JM32-1DA Cross-Device Adapter relation, 32_Cb → JM32-1DA relation, and all six PLAN_ONLY artifact routes remain intact; every declared relation preserves merge=false and proof_transfer=false. No artifact build, publish, install, owner-device proof, or LLM competence proof is transferred by routing.",
+              "claim_boundary":"Proves hosted engine v0.8.5 live with registry v0.24 / 22 current records / 34 capability profiles, preserving JM LLM Core v1.16 Cycle 016 as the current capability donor at 112406/112406 PASS while integrating JM Recursive Capability Growth & Return Protocol v1.0 across eight writable current LLM, AI/agent and OS/runtime control-plane seats. Each governance relation is canonical-reference=true with merge=false and proof_transfer=false. The protocol governs growth/proof workflow only and grants no capability by association. Cycle016 boundaries remain unchanged, the canonical v1.16 ZIP remains seated as 00_CURRENT_RELEASE_v1_16.zip, and existing JM32-1DA / adapter / artifact-router relations remain intact.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R23_CYCLE016.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R24_RECURSIVE_CAPABILITY_PROTOCOL_v1_0.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -493,6 +544,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R23_CYCLE016
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R23_CYCLE016.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R24_RECURSIVE_CAPABILITY_PROTOCOL_v1_0
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5_R24_RECURSIVE_CAPABILITY_PROTOCOL_v1_0.json
           if-no-files-found: error

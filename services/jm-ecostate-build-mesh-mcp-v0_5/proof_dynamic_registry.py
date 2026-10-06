@@ -23,16 +23,34 @@ assert server.CURRENT_REGISTRY_HASH_MODE == "SHA256_EXACT_LOADED_BYTES"
 assert server.CURRENT_REGISTRY_RELOAD_POLICY == "PROCESS_START"
 assert server.CURRENT_REGISTRY_SHA256 == expected_hash
 assert server.CURRENT_REGISTRY_BYTES == len(raw)
-assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.23"
-assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-05"
+assert server.CURRENT_REGISTRY_SCHEMA == parsed["schema"] == "JM.CareerCurrentProjectRegistry/0.24"
+assert server.CURRENT_REGISTRY_DATE == parsed["date"] == "2026-10-06"
 assert server.CURRENT_REGISTRY_BODY == parsed["body"]
 assert server.CURRENT == parsed["records"]
 assert len(server.CURRENT) == 22
 assert len({x["id"] for x in server.CURRENT}) == len(server.CURRENT)
 
+protocol_target_ids = [
+    "ecostate-build-mesh-v102","llm-core-v1","llm2-v2","agi-v144",
+    "routecore-contact","coding-control-plane","jm32-1da-v221","jm32-1da-cross-device-adapter-v02"
+]
+for target_id in protocol_target_ids:
+    rec = next(x for x in server.CURRENT if x["id"] == target_id)
+    rels = rec.get("relations", [])
+    matches = [
+        r for r in rels
+        if isinstance(r, dict)
+        and r.get("relation") == "GOVERNED_BY_RECURSIVE_CAPABILITY_GROWTH_RETURN_PROTOCOL"
+        and r.get("target") == "JM Recursive Capability Growth & Return Protocol v1.0"
+    ]
+    assert len(matches) == 1, (target_id, rels)
+    assert matches[0].get("merge") is False
+    assert matches[0].get("proof_transfer") is False
+    assert matches[0].get("canonical_reference") is True
+
 head = server.resolve_current_head({"name":"JM ECOSTATE — Build Mesh"})
 assert head["state"] == "CURRENT_DECLARED", head
-assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 Return", head
+assert head["current_head"] == "JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 + Recursive Capability Protocol v1.0", head
 
 status = server.build_mesh_status({"probe_navigator":False})
 assert status["current_registry_sha256"] == expected_hash

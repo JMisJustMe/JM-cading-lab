@@ -1,0 +1,63 @@
+name: JM High Tide House Parcel Contact
+
+on:
+  push:
+    branches:
+      - jm/high-tide-house-parcel-contact-20261009
+    paths:
+      - .github/workflows/jm-high-tide-house-parcel-contact.yml
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-transport:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact committed House parcel
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate existing ZIP without rebuilding it
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, zipfile
+          from pathlib import Path
+          p = Path("games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.zip")
+          expected_sha = "5928af993a6ee0ffff886d4c3efd3063150d2b0939e1a6d64b2a2978e9587f1e"
+          expected_bytes = 50655
+          original = p.read_bytes()
+          actual_sha = hashlib.sha256(original).hexdigest()
+          assert len(original) == expected_bytes, f"size mismatch {len(original)}"
+          assert actual_sha == expected_sha, f"source changed {actual_sha}"
+          with zipfile.ZipFile(p) as zf:
+              assert zf.testzip() is None, "damaged ZIP members"
+              files = len(zf.infolist())
+          assert files == 26, f"unexpected member count {files}"
+          report = {
+              "schema": "JM.HighTideExactHouseParcelTransport/1.0",
+              "source_relative_path": str(p),
+              "source_bytes": len(original),
+              "source_sha256": actual_sha,
+              "member_count": files,
+              "inner_zip_rebuilt": False,
+              "source_modified": False,
+              "proof": "committed source exactly matches existing authoritative run manifest"
+          }
+          Path("HIGH_TIDE_SOURCE_CHECK.json").write_text(json.dumps(report, indent=2) + "\n")
+          print(json.dumps(report))
+          PY
+
+      - name: Transport unchanged original bytes as an Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_HIGH_TIDE_HOUSE_ADVANCED_GENERATOR_V0_2_EXACT_ORIGINAL
+          path: |
+            games-beyond/downloads/JM_ADVANCED_GAME_GENERATOR_PLAYABLE_PROOF_PACK_v0_2.zip
+            HIGH_TIDE_SOURCE_CHECK.json
+          if-no-files-found: error
+          retention-days: 30

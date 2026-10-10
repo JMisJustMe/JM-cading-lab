@@ -77,6 +77,30 @@ try{
  assert.equal(busPacket[0].payload.score,await f.locator('#score').innerText().then(Number));
  assert.equal(JSON.stringify(busPacket).includes(packet.geometry.data),false,'Source mesh binary must not leak into bus receipt');
  assert.equal(JSON.stringify(busPacket).includes('source code'),false);
+ // v0.2 additive motion physics: witness a real moving probe strike geometry in 3D.
+ await f.locator('#jmFire').waitFor();
+ const geometry=await f.locator('#stage').evaluate(()=>{
+  const k=window.JMForgeKinetics;
+  return {hit:k.collision([0,0,4],[0,0,-8]),miss:k.collision([90,90,4],[0,0,-8])};
+ });
+ assert.ok(geometry.hit&&Number.isInteger(geometry.hit.face),'3D ray must intersect a decoded face');
+ assert.equal(geometry.miss,null,'miss cannot fabricate a face hit');
+ await f.locator('#jmFire').click();
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT');
+ },{timeout:12000});
+ const kineticReceipts=await page.evaluate(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8'));
+  const b=window.JMAppsToolsSpine.read().filter(r=>r.kind==='jm.fieldform.kinetic-surface-impact');
+  return {native:os.receipts.filter(r=>r.type==='HOST_FORGE'),bus:b};
+ });
+ assert.ok(kineticReceipts.native.some(r=>r.text==='FORGE_PROBE_LAUNCH'));
+ assert.ok(kineticReceipts.native.some(r=>r.text==='FORGE_SURFACE_IMPACT'));
+ assert.ok(kineticReceipts.bus.length>=1,'real moving probe impact must enter EXISTING JM bus');
+ assert.equal(kineticReceipts.bus[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(JSON.stringify(kineticReceipts.bus).includes(packet.geometry.data),false);
+
  const bad=structuredClone(packet);bad.snapshot.state.fixture=false;
  await assert.rejects(f.locator('#stage').evaluate(async(el,invalid)=>window.JMForgeContact.take(invalid),bad),/snapshot integrity failed/);
  assert.equal(await page.evaluate(()=>window.JMFormForgeRouteOS.contactCount()),5);

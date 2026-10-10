@@ -161,8 +161,8 @@ jobs:
           const result=functionReplay(evidence,source);
           assert.equal(result.failed,0,'differential mismatch');
           assert.equal(result.matched,result.fixture_count);
-          assert.ok(result.fixture_count>=130);
-          assert.equal(result.anchors.length,2);
+          assert.ok(result.fixture_count>=250);
+          assert.equal(result.anchors.length,4);
           assert.ok(result.anchors.every(x=>x.rea_anchor_sha256));
           assert.equal(result.source_sha256,crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex'));
           assert.equal(result.jm32_verdict.promotable,false);

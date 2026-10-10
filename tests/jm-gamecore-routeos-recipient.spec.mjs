@@ -67,7 +67,7 @@ try{
  const pack=await a.evaluate(()=>window.JMAimingRouteOS.bundle());
  assert.equal(pack.packets.length,1);
  assert.equal(pack.packets[0].payload.progress.evidence.game_receipt_count,undefined);
- assert.equal(pack.packets[0].payload.progress.evidence.source_receipt_count,recorded.evidence.source_receipt_count+1); // save action adds native host receipt only, source remains paused, no source game mutation
+ assert.equal(pack.packets[0].payload.progress.evidence.source_receipt_count,recorded.evidence.source_receipt_count); // host receipt does not mutate original game source receipts
  const b=await mobile.newPage();await b.goto(base+'/games-beyond/routeos/runtime/',{waitUntil:'networkidle'});
  const imported=await b.evaluate(d=>window.JMAimingRouteOS.importBundle(d),pack);
  assert.equal(imported.imported,1);

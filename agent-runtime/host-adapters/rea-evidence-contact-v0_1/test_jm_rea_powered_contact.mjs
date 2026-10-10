@@ -50,7 +50,7 @@ test('four ORIGINAL JM executable organs run and remain strictly scoped', async 
     assert.deepEqual(result.investigation_signals.families, ['android']);
     assert.ok(result.investigation_signals.actual_query.includes('android'));
     assert.deepEqual(result.source.target_artifact_sha256_claims, ['f'.repeat(64)]);
-    assert.equal(result.executed_original_jm_bodies.length, 4);
+    assert.equal(result.executed_original_jm_bodies.length, 6);
     assert.equal(result.jm_portable_agent.coding_identities, 64);
     assert.equal(result.jm_portable_agent.active_route_selected_not_spawned.length, 12);
     const ids = new Set(result.jm_estate_router.selected_bodies.map(x => x.id));
@@ -59,7 +59,7 @@ test('four ORIGINAL JM executable organs run and remain strictly scoped', async 
     assert.equal(result.jm_compiler.body_id, 'source-ledger');
     assert.equal(result.jm_compiler.executed_state.records, 2);
     assert.equal(result.jm_compiler.executed_state.unknowns, 1);
-    assert.equal(result.jm_compiler.assertions_passed, 3);
+    assert.equal(result.jm_compiler.assertions_passed, 4);
     assert.equal(result.source_claims.jm_runtime_ran, true);
     for (const field of ['rea_integrity_verified', 'rea_executed', 'target_apk_executed',
       'owner_device_contact', 'build_mesh_integrated']) assert.equal(result.source_claims[field], false);
@@ -126,6 +126,52 @@ test('REA JavaScript operation labels route JM coding bodies toward JS rather th
     assert.equal(report.source_structure.metrics.module_count, 4);
     assert.equal(report.source_structure.metrics.semantic_graph_relations_count, 2);
     assert.equal(report.jm_compiler.executed_state.structural_metrics, Object.keys(report.source_structure.metrics).length);
+    assert.equal(report.jm_compiler.executed_state.checked_graphs, 0);
+    assert.equal(report.original_jm_graph_contact.graphs.length, 0);
+    assert.equal(report.original_jm_graph_contact.policy.runtimeProved, false);
     assert.ok(!JSON.stringify(report).includes('DO_NOT_PUBLISH_OR_COPY'));
   } finally { fs.rmSync(d, {recursive: true, force: true}); }
+});
+
+
+test('real original JM32 and TraceBox inspect joined semantic edges without overclaiming behavior', async () => {
+  const d=fs.mkdtempSync(path.join(os.tmpdir(),'jm-rea-graph-test-'));
+  try {
+    const b=bundle(),h=(x)=>x.repeat(64), a='jag_node_'+h('a'),z='jag_node_'+h('b');
+    const s='jsrg_node_'+h('c'),t='jsrg_node_'+h('d');
+    b.records[0].normalized_result={
+      graph:{graph_id:'jag_'+h('f'),nodes:[{node_id:a},{node_id:z}],
+        edges:[{edge_id:'jag_edge_'+h('e'),source_node_id:a,target_node_id:z,relation:'imports'}],
+        coverage:{status:'partial'}},
+      semantic_graph:{application_graph_id:'jag_'+h('f'),nodes:[{node_id:s},{node_id:t}],
+        relations:[{relation_id:'jsrg_relation_'+h('1'),source_node_id:s,target_node_id:t,
+          relation:'reads',resolution:'candidate'}],
+        unknowns:[{reason:'dynamic-call'}],coverage:{status:'partial'}}
+    };
+    const p=path.join(d,'graph.json');fs.writeFileSync(p,JSON.stringify(b));
+    const result=await runJMREA({source:p});
+    assert.equal(result.original_jm_graph_contact.graphs.length,1);
+    assert.equal(result.original_jm_graph_contact.graphs[0].semantic_relations,1);
+    assert.equal(result.original_jm_graph_contact.graphs[0].unresolved,1);
+    assert.equal(result.original_jm_graph_contact.trace_events,3);
+    assert.equal(result.original_jm_graph_contact.policy.runtimeProved,false);
+    assert.equal(result.jm_compiler.executed_state.checked_graphs,1);
+    assert.equal(result.executed_original_jm_bodies.length,6);
+    assert.ok(!JSON.stringify(result).includes('/dont-publish/'));
+  } finally {fs.rmSync(d,{recursive:true,force:true});}
+});
+test('dangling semantic relationships hold before any JM compiler claim', async () => {
+  const d=fs.mkdtempSync(path.join(os.tmpdir(),'jm-rea-graph-test-'));
+  try {
+    const b=bundle(), h=x=>x.repeat(64), a='jsrg_node_'+h('a');
+    b.records[0].normalized_result={
+      graph:{graph_id:'jag_'+h('f'),nodes:[],edges:[]},
+      semantic_graph:{application_graph_id:'jag_'+h('f'),nodes:[{node_id:a}],
+        relations:[{relation_id:'jsrg_relation_'+h('b'),source_node_id:a,
+          target_node_id:'jsrg_node_'+h('c'),relation:'calls',resolution:'resolved'}],
+        unknowns:[]}
+    };
+    const p=path.join(d,'bad-graph.json');fs.writeFileSync(p,JSON.stringify(b));
+    await assert.rejects(runJMREA({source:p}),/GRAPH_HOLD:DANGLING_SEM_RELATION/);
+  }finally{fs.rmSync(d,{recursive:true,force:true});}
 });

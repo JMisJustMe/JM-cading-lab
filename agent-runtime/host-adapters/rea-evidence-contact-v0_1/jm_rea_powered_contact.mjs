@@ -14,6 +14,7 @@ import { planEstateRoute, validateRegistry } from '../../../coding-estate/integr
 import { loadFederatedRegistry } from '../../../coding-estate/everybody/registry-loader.mjs';
 import { EverybodyMaximiser } from '../../../coding-estate/everybody/everybody-maximiser.mjs';
 import { compilePortable } from '../../../coding-estate/everybody/compiler-core.mjs';
+import {contactREAGraphs} from './jm_rea_graph_contact.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../../..');
@@ -117,6 +118,8 @@ export async function runJMREA({ source, query = null }) {
   requireTruth(fs.statSync(source).size <= 16 * 1024 * 1024, 'SOURCE_TOO_LARGE');
   const raw = fs.readFileSync(source);
   const sourceHash = digest(raw);
+  const upstream = JSON.parse(raw.toString('utf8'));
+  const graphContact = contactREAGraphs(upstream);
   const structure = structuralSignals(raw.toString('utf8'));
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'jm-rea-contact-'));
   let candidate;
@@ -177,7 +180,9 @@ export async function runJMREA({ source, query = null }) {
     'ASSERT records ' + candidate.record_count,
     'ASSERT unknowns ' + candidate.unknown_count,
     'SET structural_metrics ' + structuralMetricCount,
+    'SET checked_graphs ' + graphContact.graphs.length,
     'ASSERT structural_metrics ' + structuralMetricCount,
+    'ASSERT checked_graphs ' + graphContact.graphs.length,
     'ROUTE jm.rea.metadata-candidate',
     'TRACE ' + JSON.stringify({ sha256: sourceHash, state: candidate.state,
       scope: 'JM_PORTABLE_SOURCE_LEDGER_ONLY' }),
@@ -199,13 +204,16 @@ export async function runJMREA({ source, query = null }) {
       evidence_records: candidate.record_count, unresolved_questions: candidate.unknown_count, 
       target_artifact_sha256_claims: [...new Set(candidate.records.map(r => r.source_subject?.sha256).filter(v => SHA.test(v)))].sort() },
     source_structure: structure,
+    original_jm_graph_contact: graphContact,
     investigation_signals: { ...investigationSignals, actual_query: effectiveQuery,
       route_is_executed_by_JM_not_REA: true },
     executed_original_jm_bodies: [
       { path: 'agent-runtime/jm_agent_runtime.py', result: 'EXECUTED' },
       { path: 'agent-runtime/jm-agent-runtime.mjs', result: 'EXECUTED_PARITY_PASS' },
       { path: 'coding-estate/integration/router-core.mjs', result: 'EXECUTED_100_REGISTRY_VALID' },
-      { path: 'coding-estate/everybody/compiler-core.mjs', result: 'PORTABLE_IR_EXECUTED' }
+      { path: 'coding-estate/everybody/compiler-core.mjs', result: 'PORTABLE_IR_EXECUTED' },
+      { path: 'coding-estate/sovereign-ten/direct/language-native.mjs', result: 'JM32_POLICY_EXECUTED' },
+      { path: 'coding-estate/sovereign-ten/direct/route-proof-native.mjs', result: 'TRACEBOX_EXECUTED' }
     ],
     jm_portable_agent: { core_sha256: digest(Buffer.from(pyText, 'utf8')),
       coding_identities: core.coding.current_identities,

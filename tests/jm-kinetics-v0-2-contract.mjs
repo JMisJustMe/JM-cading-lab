@@ -12,10 +12,10 @@ assert.equal(k.schema,'JM.FormForge.SurfaceKinetics/0.2');
 assert.equal(k.triangleHit([0,0,1],[0,0,-2],...scene.points).t,.5);
 assert.equal(k.collision([100,100,4],[0,0,-8]),null);
 const launched=k.fire();assert.equal(launched.shot,1);
+assert.throws(()=>k.step(.2),/out of bounds/);
 let impact=null;for(let i=0;i<40;i++){const r=k.step(.05);if(r){impact=r;break}}
 assert.ok(impact);assert.equal(impact.face,0);
 assert.ok(k.state.velocity[2]>0,'rebounds away from actual triangle normal');
 assert.equal(k.state.impacts.length,1);
 assert.ok(k.state.position[2]>=0);
-assert.throws(()=>k.step(.2),/out of bounds/);
 console.log('PASS: first-party deterministic 3D triangle impact, negative-control miss, moving probe rebound, verified collision ID');

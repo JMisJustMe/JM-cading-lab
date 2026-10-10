@@ -17,7 +17,27 @@ import { compilePortable } from '../../../coding-estate/everybody/compiler-core.
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../../..');
-const QUERY = 'reverse engineer inspect code parse compile source route trace proof evidence';
+const CORE_QUERY = 'source trace proof recover';
+const FAMILIES = [
+  ['android', /android|apk|jadx|dex/i, ['android','parse','compile','trace']],
+  ['javascript', /javascript|electron|asar|source.map/i, ['javascript','parse','compile','route']],
+  ['native-binary', /binary|mach.o|\belf\b|\bpe\b|ghidra|hopper|ida/i, ['binary','parse','trace']],
+  ['website', /website|browser|web.page|webpage/i, ['visual','route','trace']],
+  ['managed-dotnet', /dotnet|\.net|cil|assembly/i, ['compile','parse','trace']]
+];
+function classifyEvidence(records) {
+  const kinds = new Set();
+  const tags = new Set();
+  for (const rec of records) {
+    const identity = [rec.source_subject?.format ?? '',rec.predicate_type ?? '',rec.operation ?? ''].join(' ').slice(0, 1024);
+    for (const [kind, pattern, words] of FAMILIES) if (pattern.test(identity)) {
+      kinds.add(kind);
+      for (const word of words) tags.add(word);
+    }
+  }
+  return { families: [...kinds].sort(), routing_terms: [...tags].sort(),
+    authority: 'DERIVED_FROM_UNVERIFIED_REA_LABELS' };
+}
 const SHA = /^[0-9a-f]{64}$/;
 
 function jsonFile(p) { return JSON.parse(fs.readFileSync(p, 'utf8')); }
@@ -37,18 +57,18 @@ function usage() {
 function argsParse(argv) {
   if (!argv.length || argv.includes('--help')) throw new Error(usage());
   const source = argv[0];
-  let output = null, query = QUERY;
+  let output = null, query = null;
   for (let i = 1; i < argv.length; i++) {
     if (argv[i] === '--output' && argv[i + 1]) output = argv[++i];
     else if (argv[i] === '--query' && argv[i + 1]) query = argv[++i];
     else throw new Error('Unknown argument: ' + argv[i]);
   }
   requireTruth(source !== output, 'INPUT_OUTPUT_SAME_PATH');
-  requireTruth(query.length > 0 && query.length <= 280, 'QUERY_LENGTH');
+  requireTruth(query === null || (query.length > 0 && query.length <= 280), 'QUERY_LENGTH');
   return { source, output, query };
 }
 
-export async function runJMREA({ source, query = QUERY }) {
+export async function runJMREA({ source, query = null }) {
   requireTruth(path.isAbsolute(source), 'INPUT_MUST_BE_ABSOLUTE');
   const raw = fs.readFileSync(source);
   const sourceHash = digest(raw);
@@ -67,11 +87,15 @@ export async function runJMREA({ source, query = QUERY }) {
   requireTruth(candidate.source.file_sha256 === sourceHash, 'SOURCE_HASH_MISMATCH');
   requireTruth(candidate.proof_boundary.jm_executable_contact === false, 'CLAIM_INFLATION');
 
+  // Known format/operation labels steer JM's own routing, never commands.
+  const investigationSignals = classifyEvidence(candidate.records);
+  const effectiveQuery = query ?? [CORE_QUERY, ...investigationSignals.routing_terms].join(' ');
+  requireTruth(effectiveQuery.length > 0 && effectiveQuery.length <= 280, 'EFFECTIVE_QUERY_LENGTH');
   // Run the actual existing JM Python & Node sovereign portable agents.
   const pyText = run('python3', ['agent-runtime/jm_agent_runtime.py', '--core-only',
-    '--surface', 'portable-runtime', '--query', query]);
+    '--surface', 'portable-runtime', '--query', effectiveQuery]);
   const nodeText = run('node', ['agent-runtime/jm-agent-runtime.mjs', '--core-only',
-    '--surface', 'portable-runtime', '--query', query]);
+    '--surface', 'portable-runtime', '--query', effectiveQuery]);
   requireTruth(pyText === nodeText, 'SOVEREIGN_RUNTIME_PY_NODE_PARITY');
   const core = JSON.parse(pyText);
   requireTruth(core.authority_class === 'SESSION_ROUTER_NOT_SOURCE_AUTHORITY', 'ROUTER_AUTHORITY');
@@ -88,7 +112,7 @@ export async function runJMREA({ source, query = QUERY }) {
     jsonFile(path.join(directory, p)).bodies) };
   const validation = validateRegistry(estateRegistry);
   requireTruth(validation.valid && validation.count === 100, 'JM_100_REGISTRY');
-  const plan = planEstateRoute(query, estateRegistry);
+  const plan = planEstateRoute(effectiveQuery, estateRegistry);
   const routedIds = new Set(plan.route.map(r => r.id));
   for (const id of ['tracebox', 'dings', 'source-ledger'])
     requireTruth(routedIds.has(id), 'PROOF_SPINE_MISSING_' + id);
@@ -123,7 +147,10 @@ export async function runJMREA({ source, query = QUERY }) {
     schema: 'JM.REA.PoweredEvidenceContact/0.2',
     status: 'JM_LOCAL_RUNTIME_EXECUTED__REA_UNVERIFIED',
     source: { sha256: sourceHash, byte_count: raw.length, kind: candidate.source.kind,
-      evidence_records: candidate.record_count, unresolved_questions: candidate.unknown_count },
+      evidence_records: candidate.record_count, unresolved_questions: candidate.unknown_count, 
+      target_artifact_sha256_claims: [...new Set(candidate.records.map(r => r.source_subject?.sha256).filter(v => SHA.test(v)))].sort() },
+    investigation_signals: { ...investigationSignals, actual_query: effectiveQuery,
+      route_is_executed_by_JM_not_REA: true },
     executed_original_jm_bodies: [
       { path: 'agent-runtime/jm_agent_runtime.py', result: 'EXECUTED' },
       { path: 'agent-runtime/jm-agent-runtime.mjs', result: 'EXECUTED_PARITY_PASS' },

@@ -160,6 +160,10 @@ test('real original JM32 and TraceBox inspect joined semantic edges without over
     assert.equal(result.original_jm_graph_contact.graphs[0].semantic_relations,1);
     assert.equal(result.original_jm_graph_contact.graphs[0].unresolved,1);
     assert.equal(result.original_jm_graph_contact.trace_events,3);
+    assert.equal(result.original_jm_graph_contact.trace_sample.length,2);
+    assert.equal(result.original_jm_graph_contact.trace_sample[0].kind,'static-app');
+    assert.equal(result.original_jm_graph_contact.trace_sample[1].resolution,'candidate');
+    assert.equal(result.original_jm_graph_contact.policy.promotable,false);
     assert.equal(result.original_jm_graph_contact.policy.runtimeProved,false);
     assert.equal(result.jm_compiler.executed_state.checked_graphs,1);
     assert.equal(result.executed_original_jm_bodies.length,6);

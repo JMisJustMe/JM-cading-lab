@@ -58,6 +58,13 @@ function refresh(){
  if(sc.loaded&&sc.meshSha!==mesh){mesh=sc.meshSha;snapshot=sc.snapshot;shot=null;trail=[];impacts=[];serial=0;steps=0;liveState='READY';note('Real mesh loaded · aim and FIRE PROBE to contact its actual triangles')}
  if(!sc.loaded){liveState='WAITING';note('Import a source-verified Forge mesh using the existing loader')}
 }
+function resetSourceSession(){
+ shot=null;trail=[];impacts=[];serial=0;steps=0;last=0;
+ mesh=sc.meshSha||'';snapshot=sc.snapshot||'';
+ liveState=sc.loaded?'READY':'WAITING';
+ note(sc.loaded?'Source geometry re-entered · new kinetic contact session':'Waiting for exact Forge geometry');
+ return {mesh,session_status:liveState,impact_count:impacts.length};
+}
 function setAim(x,y){aim=[Math.max(-1.45,Math.min(1.45,Number(x)||0)),Math.max(-1.45,Math.min(1.45,Number(y)||0))];return aim.slice()}
 function fire(){
  refresh();
@@ -139,7 +146,7 @@ function mount(){
  requestAnimationFrame(tick);
 }
 Object.defineProperty(window,'JMForgeKinetics',{value:Object.freeze({
- schema:'JM.FormForge.SurfaceKinetics/0.2',fire,step,collision,triangleHit,setAim,rotate,
+ schema:'JM.FormForge.SurfaceKinetics/0.2',fire,step,collision,triangleHit,setAim,rotate,resetSourceSession,
  get state(){return{phase:liveState,mesh,snapshot,shot:serial,impacts:impacts.map(x=>({...x})),position:shot?.pos.slice()||null,velocity:shot?.vel.slice()||null,aim:aim.slice()}}
 }),configurable:false});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();

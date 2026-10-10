@@ -5,7 +5,7 @@ import {normalise,compatibilityBetween} from '../../../coding-estate/integration
 import {TraceBoxRuntime} from '../../../coding-estate/sovereign-ten/direct/route-proof-native.mjs';
 import {JM32} from '../../../coding-estate/sovereign-ten/direct/language-native.mjs';
 
-const sha = value => crypto.createHash('sha256').update(typeof value==='string'?value:JSON.stringify(value)??'undefined').digest('hex');
+const sha = value => crypto.createHash('sha256').update(Buffer.isBuffer(value)?value:(typeof value==='string'?value:(JSON.stringify(value)??'undefined'))).digest('hex');
 const hold=(ok,reason)=>{if(!ok)throw Error('JM_FUNCTION_HOLD:'+reason)};
 const stops=new Set('a an the and with to for of in on my this that from into please'.split(' '));
 const ascii=c=>!!c&&(/[a-z0-9]/).test(c);

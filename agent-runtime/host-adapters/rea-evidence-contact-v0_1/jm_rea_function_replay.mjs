@@ -1,5 +1,6 @@
 /* JM × REA v0.4: source-guided differential replay of original JM functions. */
 import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 import {normalise,compatibilityBetween,scoreBody,planEstateRoute} from '../../../coding-estate/integration/router-core.mjs';
 import {TraceBoxRuntime} from '../../../coding-estate/sovereign-ten/direct/route-proof-native.mjs';
@@ -152,11 +153,38 @@ export function functionReplay(rea,sourceFile,{tokensReplica=reconstructedNormal
  const bytes=fs.readFileSync(sourceFile);
  const evidence=anchors(rea,bytes.toString('utf8'));
  const {tokens,pairs}=fixtures();
+ // Build the same original JM 100-body registry, without altering it.
+ const dir=path.dirname(sourceFile);
+ const manifest=JSON.parse(fs.readFileSync(path.join(dir,'REGISTRY.json'),'utf8'));
+ const registry={...manifest,bodies:manifest.parts.flatMap(part=>
+   JSON.parse(fs.readFileSync(path.join(dir,part),'utf8')).bodies)};
+ hold(registry.bodies.length===100,'REGISTRY_NOT_100');
+ const queries=[
+  'build touch drag game with trace proof and android delivery',
+  'parse compile cading to javascript with source ledger receipt',
+  'route os permission service recovery world',
+  'source evidence proof trace recover',
+  'visual animation character mechanic game',
+  'c++ wasm rust compiler target',
+  'chat talk utterance ambiguity response',
+  'hand mobile touch pattern tapping',
+  'govern register current crown ledger gate',
+  'formula dependency source relation',
+  'nonsense zzzzz unregistered word',
+  'package delivery zionfolder android',
+  ''
+ ];
+ const selected=registry.bodies.filter((x,i)=>i%7===0 ||
+   ['tracebox','dings','source-ledger','jm32-1da','compiler','gameforge'].includes(x.id));
+ const scored=selected.flatMap(body=>queries.map(q=>[body,q]));
+ const routes=queries.map((q,i)=>[q,registry,{limit:i%3+5,includeDelivery:i%4===0}]);
  const store=new TraceBoxRuntime();store.create('JM_REA_REPLAY');
  const mismatches=[];let count=0,matched=0;
  for(const [name,cases,original,replica] of [
   ['normalise',tokens.map(x=>[x]),normalise,tokensReplica],
-  ['compatibilityBetween',pairs,compatibilityBetween,compatReplica]
+  ['compatibilityBetween',pairs,compatibilityBetween,compatReplica],
+  ['scoreBody',scored,scoreBody,reconstructedScoreBody],
+  ['planEstateRoute',routes,planEstateRoute,reconstructedPlanEstateRoute]
  ]){
    cases.forEach((args,index)=>{
      const expected=original(...args),actual=replica(...args);count++;

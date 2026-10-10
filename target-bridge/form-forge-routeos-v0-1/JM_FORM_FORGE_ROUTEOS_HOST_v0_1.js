@@ -38,7 +38,18 @@ function handle(e){
  }
  if(p.event==='CONTACT_DING'&&contacts.size>=5&&p.contacts===contacts.size&&p.score===lastScore){
    const ok=window.JMRouteOSFormForgePort?.record('FORGE_CONTACT_DING',p);
-   info(ok?'DING · Forge triangle contact game completed in RouteOS.':'Native Ding HOLD',!ok);
+   if(ok){
+     const b=window.JMAppsToolsSpine;
+     if(b?.packet&&b?.send&&Array.isArray(b.read())&&b.read().length<250){
+       const result=b.packet('jm.fieldform.game-contact.receipt','JM.RouteOS.FormContact',{
+         source_sha256:p.source,mesh_sha256:p.geometryHash,forge_snapshot_hash:p.snapshotHash,
+         contacts:contacts.size,face_ids:[...contacts],score:lastScore,
+         receiver:'JM RouteOS v0.8.2',proof:'BROWSER_CONTACT_WITH_NATIVE_HOST_RECEIPT'
+       },{source:'JM.FieldFormForge/0.24',bridge:'JM.FormForge.RouteOSHostContact/0.1',private_source_embedded:false});
+       b.send(result);
+       info('DING · RouteOS native receipt + existing JM Apps & Tools packet bus recorded real mesh-contact consequence.');
+     }else info('RouteOS Ding earned; shared JM bus full/unavailable (no bus packet claimed).');
+   }else info('Native Ding HOLD',true);
  }
 }
 function open(){

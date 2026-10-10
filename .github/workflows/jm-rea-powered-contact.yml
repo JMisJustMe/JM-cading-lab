@@ -1,0 +1,37 @@
+name: JM REA Powered Contact (isolated)
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/rea-evidence-contact-v0_1/**'
+      - '.github/workflows/jm-rea-powered-contact.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-rea:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Existing JM Current-64 and activation validation
+        run: |
+          python3 coding-estate/validate_current_64_standard.py
+          python3 coding-estate/validate_coding_body_activation.py
+      - name: Existing JM sovereign runtime host-adapter conformance
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Existing JM 100-body Estate Router self-test
+        run: node coding-estate/integration/integration-selftest.mjs > /tmp/jm-estate-selftest.json && node -e "const p=require('/tmp/jm-estate-selftest.json'); if(p.failed)process.exit(1); console.log('JM ESTATE SELFTEST PASS:',p.passed,'checks')"
+      - name: Existing JM EveryBody executable self-test
+        run: node coding-estate/everybody/selftest.mjs > /tmp/jm-everybody-selftest.json && node -e "const p=require('/tmp/jm-everybody-selftest.json'); if(!p.passed)process.exit(1); console.log('JM EVERYBODY SELFTEST PASS')"
+      - name: REA metadata importer tests (source unchanged)
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_evidence_contact.py' -v
+      - name: JM powered chain tests (actual agents/router/compiler)
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_powered_contact.mjs

@@ -59,7 +59,7 @@ test('four ORIGINAL JM executable organs run and remain strictly scoped', async 
     assert.equal(result.jm_compiler.body_id, 'source-ledger');
     assert.equal(result.jm_compiler.executed_state.records, 2);
     assert.equal(result.jm_compiler.executed_state.unknowns, 1);
-    assert.equal(result.jm_compiler.assertions_passed, 2);
+    assert.equal(result.jm_compiler.assertions_passed, 3);
     assert.equal(result.source_claims.jm_runtime_ran, true);
     for (const field of ['rea_integrity_verified', 'rea_executed', 'target_apk_executed',
       'owner_device_contact', 'build_mesh_integrated']) assert.equal(result.source_claims[field], false);
@@ -110,6 +110,9 @@ test('REA JavaScript operation labels route JM coding bodies toward JS rather th
       record.subject.format = 'directory';
       record.operation = 'analyze_javascript_application';
       record.predicate_type = 'rea.javascript-application';
+      record.normalized_result = { statistics: { module_count: 4, relation_count: 13 },
+        graph: { nodes: [1, 2, 3] }, semantic_graph: { relations: [1, 2] },
+        secret: 'DO_NOT_PUBLISH_OR_COPY' };
     }
     const p = path.join(d, 'rea-js.json');
     fs.writeFileSync(p, JSON.stringify(b));
@@ -118,5 +121,11 @@ test('REA JavaScript operation labels route JM coding bodies toward JS rather th
     assert.ok(report.investigation_signals.actual_query.includes('javascript'));
     assert.ok(!report.investigation_signals.actual_query.includes('android'));
     assert.equal(report.jm_compiler.executed_state.records, 2);
+    assert.equal(report.source_structure.graph_records, 2);
+    assert.equal(report.source_structure.semantic_graph_records, 2);
+    assert.equal(report.source_structure.metrics.module_count, 4);
+    assert.equal(report.source_structure.metrics.semantic_graph_relations_count, 2);
+    assert.equal(report.jm_compiler.executed_state.structural_metrics, Object.keys(report.source_structure.metrics).length);
+    assert.ok(!JSON.stringify(report).includes('DO_NOT_PUBLISH_OR_COPY'));
   } finally { fs.rmSync(d, {recursive: true, force: true}); }
 });

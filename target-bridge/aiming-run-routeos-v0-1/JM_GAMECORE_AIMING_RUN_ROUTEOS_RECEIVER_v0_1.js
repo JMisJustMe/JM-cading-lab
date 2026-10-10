@@ -6,6 +6,7 @@
 'use strict';
 if(window.JMAimingRouteOS)return;
 const ID='jm.gamecore.aiming-run-v0-1a',BLOB='d737b7a05eeed657fbe3934a1e16d65c23cf9e61';
+const SOURCE_SHA256='d11de01868a2366bb8a6bc6077edc4a98a1350af717fe2e1a049a6e35c16019f';
 const ROUTE='../../bodies/aiming-run-v0-1a.html',SLOT='jm.routeos.gamecore.aiming-run.progress.v1';
 const SCHEMA='JM.GameCore.RouteOSProgress/0.1',BUNDLE='jm.routeos.gamecore.aiming-run-transfer/0.1';
 const KIND='jm.routeos.gamecore.aiming-run.progress';
@@ -25,6 +26,9 @@ async function verify(){
  const digest=new Uint8Array(await crypto.subtle.digest('SHA-1',payload));
  const sha=[...digest].map(x=>x.toString(16).padStart(2,'0')).join('');
  if(sha!==BLOB)throw Error('SOURCE HOLD: GameCore source no longer matches the exact Git blob');
+ const hash256=new Uint8Array(await crypto.subtle.digest('SHA-256',b));
+ const exact=[...hash256].map(x=>x.toString(16).padStart(2,'0')).join('');
+ if(exact!==SOURCE_SHA256)throw Error('SOURCE HOLD: exact source SHA-256 mismatch');
  proved=true;sourceSize=b.byteLength;return sha;
 }
 function valid(p){
@@ -143,7 +147,7 @@ async function open(){
 }
 function mount(){
  const css=document.createElement('style');
- css.textContent='#jmGcHost{position:fixed;z-index:2500;inset:0;overflow:auto;background:#050c15;color:white;padding:env(safe-area-inset-top) 7px env(safe-area-inset-bottom);font:14px system-ui}#jmGcHost[hidden]{display:none!important}.jm-gc-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px;background:#102539;border-radius:9px}.jm-gc-actions{display:flex;flex-wrap:wrap;gap:4px;padding:6px}.jm-gc-actions button,.jm-gc-bar button,#jmGcIncoming button{min-height:42px;padding:7px 10px;background:#0e3447;color:white;border:1px solid #6296b1;border-radius:9px;font-weight:750}.jm-gc-item{display:flex;justify-content:space-between;gap:8px;padding:5px;border-bottom:1px solid #345}#jmGcHost p{color:#abe9bb;padding:0 7px}#jmGcSource{display:block;width:100%;height:75dvh;min-height:440px;border:1px solid #516b93;border-radius:10px}#jmGcCart{margin-top:10px}';
+ css.textContent='#jmGcHost{position:fixed;z-index:2500;inset:0;box-sizing:border-box;display:flex;flex-direction:column;height:100dvh;overflow:hidden;background:#050c15;color:white;padding:env(safe-area-inset-top) 7px env(safe-area-inset-bottom);font:14px system-ui}#jmGcHost[hidden]{display:none!important}.jm-gc-bar{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px;background:#102539;border-radius:9px}.jm-gc-actions{display:flex;flex-wrap:wrap;gap:4px;padding:6px}.jm-gc-actions button,.jm-gc-bar button,#jmGcIncoming button{min-height:42px;padding:7px 10px;background:#0e3447;color:white;border:1px solid #6296b1;border-radius:9px;font-weight:750}.jm-gc-item{display:flex;justify-content:space-between;gap:8px;padding:5px;border-bottom:1px solid #345}#jmGcHost p{color:#abe9bb;padding:0 7px;margin:4px 0;flex:0 0 auto}.jm-gc-bar,.jm-gc-actions{flex:0 0 auto}#jmGcIncoming{flex:0 0 auto;max-height:70px;overflow:auto}#jmGcSource{display:block;flex:1 1 0;width:100%;height:100%;min-height:230px;border:1px solid #516b93;border-radius:10px}#jmGcCart{margin-top:10px}';
  document.head.append(css);
  const bay=document.getElementById('screen-bay');if(!bay)return;
  const c=document.createElement('article');c.className='card';c.id='jmGcCart';

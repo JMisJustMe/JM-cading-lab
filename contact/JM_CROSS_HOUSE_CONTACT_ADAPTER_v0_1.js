@@ -87,7 +87,7 @@ function mount(){
  const report=(s,error=false)=>{status.style.color=error?'#ff9cb0':'#95f5be';status.textContent=s};
  const render=()=>{incoming.replaceChildren();const entries=inbox();if(!entries.length){make('p','No incoming packets for this House yet.',incoming);return}
    for(const p of entries.slice(0,20)){const row=make('div','',incoming);row.className='jmch-in';make('b',safe(p.payload.subject,120),row);make('small','From '+safe(p.source,70)+' · '+safe(p.created_at,30),row);make('p',safe(p.payload.note,2000),row);
-     const ack=make('button',p.acknowledged?'Receipt recorded':'Acknowledge receipt',row);ack.disabled=p.acknowledged;ack.onclick=()=>{try{acknowledge(p.id);render();report('Receipt recorded in shared packet bus')}catch(e){report(e.message,true)}}}}
+     const ack=make('button',p.acknowledged?'Receipt recorded':'Acknowledge receipt',row);ack.disabled=p.acknowledged;ack.onclick=()=>{try{acknowledge(p.id);render();report('Receipt recorded in shared packet bus')}catch(e){report(e.message,true)}}}
  };
  send.onclick=()=>{try{const p=handoff(dest.value,subject.value,note.value);render();report('Local handoff '+p.id+' saved. Open the destination to receive it.')}catch(e){report(e.message,true)}};
  exp.onclick=()=>{try{download();report('Portable packet file generated (manual device transfer).')}catch(e){report(e.message,true)}};

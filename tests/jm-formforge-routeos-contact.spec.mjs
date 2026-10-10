@@ -104,6 +104,15 @@ try{
  const bad=structuredClone(packet);bad.snapshot.state.fixture=false;
  await assert.rejects(f.locator('#stage').evaluate(async(el,invalid)=>window.JMForgeContact.take(invalid),bad),/snapshot integrity failed/);
  assert.equal(await page.evaluate(()=>window.JMFormForgeRouteOS.contactCount()),5);
+ // Re-import the SAME real-geometry fixture: no stale shot ID or orphaned Ding may survive.
+ const beforeReentry=kineticReceipts.native.filter(r=>r.text==='FORGE_SURFACE_IMPACT').length;
+ await f.locator('#import').setInputFiles({name:'reenter-same-geometry.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(packet))});
+ await page.waitForFunction(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_MESH_ACCEPTED').length>=2);
+ const reset=await f.locator('#stage').evaluate(()=>window.JMForgeKinetics.state);
+ assert.equal(reset.impacts.length,0);assert.equal(reset.shot,0);
+ await f.locator('#jmFire').click();
+ await page.waitForFunction(n=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT').length>n,beforeReentry);
+
  await page.locator('#jmForgeRouteOSHost button').filter({hasText:'RETURN TO ROUTOS'}).count().catch(()=>0);
  await page.locator('#jmForgeRouteOSHost button').filter({hasText:'RETURN TO ROUTEOS'}).click();
  await page.locator('[data-screen="bay"]').click();

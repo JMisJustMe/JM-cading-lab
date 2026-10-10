@@ -17,7 +17,7 @@ const current=(document.body.dataset.ecostateSurface==='lyrics'||location.pathna
 const root=(()=>{const base=document.querySelector('script[src$="JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js"]')?.src;if(!base)return location.origin+'/';return new URL('../',base).href})();
 const safe=(v,n)=>String(v??'').trim().slice(0,n);
 const read=()=>{try{const o=JSON.parse(localStorage.getItem(busKey)||'[]');return Array.isArray(o)?o:[]}catch{return []}};
-const save=(list)=>{localStorage.setItem(busKey,JSON.stringify(list.slice(0,250)));window.dispatchEvent(new Event('jm:handoff-updated'))};
+const save=(list)=>{if(list.length>250)throw Error('Shared packet bus is full (250); existing entries were not replaced');localStorage.setItem(busKey,JSON.stringify(list));window.dispatchEvent(new Event('jm:handoff-updated'))};
 const uuid=()=>('JM-HO-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10));
 const packet=(kind,payload,source=current)=>({schema,id:uuid(),created_at:new Date().toISOString(),kind,source,payload,meta:{bridge,proof:'local-packet-persisted-only'}});
 const emit=(p)=>{save([p,...read().filter(x=>x?.id!==p.id)]);window.dispatchEvent(new CustomEvent('jm:packet',{detail:p}));return p};
@@ -48,7 +48,7 @@ function importPack(o){
     ['estate.handoff','estate.handoff.ack'].includes(x.kind)&&typeof x.source==='string'&&
     x.payload&&typeof x.payload==='object'&&Object.keys(x.payload).length<=8);
   if(valid.length!==o.packets.length)throw Error('Packet failed integrity/shape checks; nothing imported');
-  const old=read(),seen=new Set(old.map(x=>x.id));const fresh=valid.filter(x=>!seen.has(x.id));
+  const old=read(),seen=new Set(old.map(x=>x.id));const fresh=valid.filter(x=>{if(seen.has(x.id))return false;seen.add(x.id);return true});
   save([...fresh,...old]);return fresh.length;
 }
 const api={schema:bridge,read,inbox,handoff,acknowledge,exportPack,importPack,places,current};

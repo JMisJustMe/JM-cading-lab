@@ -18,3 +18,16 @@ Full JM32-1DA v2.2.1 remains a separate, not-yet-executed compiler; the accessib
 
 Tests: `.github/workflows/jm-rea-powered-contact.yml` and `.github/workflows/jm-rea-upstream-probe.yml`.
 Re-entry: `jm_rea_powered_contact.mjs` produces `original_jm_graph_contact` in the returned JSON.
+## Real graph-result receipt (public JS, 10 October 2026)
+
+The pinned REA 6.1.0 source run returned: 39 application nodes, 54 application edges, 2,026 semantic nodes, 1,796 directed semantic relations (1,302 statically resolved and 494 candidates), and 262 unresolved semantic frontiers. Original JM TraceBox recorded 49 events through its append/query/replay implementation.
+
+Receipt: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38015685199
+
+## Targeted inspection
+
+The same command now supports `--relation calls` (or another exact relation kind). The graph's entire edge set is still validated; the sample contains only matching directed hashed edges and reports complete match counts separately. Original JM TraceBox query verifies returned relation-event counts. Invalid selectors fail without executing further JM recipient logic.
+
+Targeted CI: `.github/workflows/jm-rea-upstream-probe.yml` chooses an actually present semantic relation from the authentic REA Evidence and verifies native TraceBox returns matching relationships, with JM32 retaining non-promotion.
+
+Static-analysis `resolved` is NOT a runtime-observed call. The full JM32-1DA v2.2.1 compiler and physical-device game remain separate, untested recipient gates.

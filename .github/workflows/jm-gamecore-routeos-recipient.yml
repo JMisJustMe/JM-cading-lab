@@ -1,0 +1,51 @@
+name: JM GameCore → RouteOS Exact Recipient
+on:
+  push:
+    branches:
+      - integration/jm-gamecore-routeos-recipient-20261010
+    paths:
+      - "target-bridge/aiming-run-routeos-v0-1/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "games-beyond/bodies/aiming-run-v0-1a.html"
+      - "tests/jm-gamecore-routeos-recipient.spec.mjs"
+      - ".github/workflows/jm-gamecore-routeos-recipient.yml"
+  pull_request:
+    paths:
+      - "target-bridge/aiming-run-routeos-v0-1/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "games-beyond/bodies/aiming-run-v0-1a.html"
+      - "tests/jm-gamecore-routeos-recipient.spec.mjs"
+      - ".github/workflows/jm-gamecore-routeos-recipient.yml"
+jobs:
+  original-body-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test source grammar and recipient JavaScript
+        run: |
+          node --check target-bridge/aiming-run-routeos-v0-1/JM_GAMECORE_AIMING_RUN_ROUTEOS_RECEIVER_v0_1.js
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          c=Path('games-beyond/routeos/runtime/index.html').read_text()
+          src=re.findall(r'<script>(.*?)</script>',c,re.S)
+          assert src
+          Path('/tmp/jm-routeos-runtime-branch.js').write_text(src[-1])
+          PY
+          node --check /tmp/jm-routeos-runtime-branch.js
+      - name: Install browser testing host
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve real RouteOS and existing GameCore source
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-gamecore-receiver.log 2>&1 &
+          for i in {1..24}; do curl -fsS http://127.0.0.1:4177/games-beyond/bodies/aiming-run-v0-1a.html >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-gamecore-receiver.log
+          exit 1
+      - name: Prove real GameCore mechanics in RouteOS and preserve native cartridge
+        run: node tests/jm-gamecore-routeos-recipient.spec.mjs

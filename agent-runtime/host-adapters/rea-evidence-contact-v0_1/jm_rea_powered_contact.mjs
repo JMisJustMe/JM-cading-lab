@@ -40,6 +40,50 @@ function classifyEvidence(records) {
 }
 const SHA = /^[0-9a-f]{64}$/;
 
+
+/** Project safe structural COUNTS, not source, filenames, identifiers, or graph edges. */
+function structuralSignals(rawJson) {
+  const payload = JSON.parse(rawJson);
+  const bundle = payload.evidence_bundle ?? payload;
+  const records = Array.isArray(bundle?.records) ? bundle.records : [];
+  const metrics = {};
+  let graphRecords = 0, semanticGraphRecords = 0;
+  const SAFE_METRIC = /^(?:[a-z][a-z0-9_]{0,48})$/i;
+  const METRIC_WORDS = /(?:count|total|node|edge|relation|module|function|route|import|export|file)/i;
+  const scan = (object, prefix = '', depth = 0) => {
+    if (!object || typeof object !== 'object' || Array.isArray(object) || depth > 2) return;
+    for (const [key, value] of Object.entries(object)) {
+      if (!SAFE_METRIC.test(key)) continue;
+      const name = prefix ? prefix + '_' + key : key;
+      if (!SAFE_METRIC.test(name) && name.length > 49) continue;
+      if (Number.isSafeInteger(value) && value >= 0 && METRIC_WORDS.test(key)) {
+        if (Object.keys(metrics).length < 24) metrics[name] = value;
+      } else if (depth < 2 && value && typeof value === 'object' && !Array.isArray(value)) {
+        scan(value, name, depth + 1);
+      }
+    }
+  };
+  for (const record of records) {
+    const result = record?.normalized_result;
+    if (!result || typeof result !== 'object') continue;
+    if (result.graph && typeof result.graph === 'object') graphRecords += 1;
+    if (result.semantic_graph && typeof result.semantic_graph === 'object') semanticGraphRecords += 1;
+    scan(result.statistics);
+    for (const section of ['graph', 'semantic_graph']) {
+      const graph = result[section];
+      if (!graph || typeof graph !== 'object') continue;
+      for (const field of ['nodes','edges','relations','modules','imports','routes']) {
+        const list = graph[field];
+        const name = section + '_' + field + '_count';
+        if (Array.isArray(list)) metrics[name] = list.length;
+      }
+    }
+  }
+  return { graph_records: graphRecords, semantic_graph_records: semanticGraphRecords,
+    metrics: Object.fromEntries(Object.entries(metrics).sort(([a],[b]) => a.localeCompare(b))),
+    authority: 'UNVERIFIED_EXTERNAL_STRUCTURE_METADATA' };
+}
+
 function jsonFile(p) { return JSON.parse(fs.readFileSync(p, 'utf8')); }
 function digest(b) { return crypto.createHash('sha256').update(b).digest('hex'); }
 function run(bin, args) {
@@ -70,8 +114,10 @@ function argsParse(argv) {
 
 export async function runJMREA({ source, query = null }) {
   requireTruth(path.isAbsolute(source), 'INPUT_MUST_BE_ABSOLUTE');
+  requireTruth(fs.statSync(source).size <= 16 * 1024 * 1024, 'SOURCE_TOO_LARGE');
   const raw = fs.readFileSync(source);
   const sourceHash = digest(raw);
+  const structure = structuralSignals(raw.toString('utf8'));
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'jm-rea-contact-'));
   let candidate;
   try {
@@ -89,6 +135,7 @@ export async function runJMREA({ source, query = null }) {
 
   // Known format/operation labels steer JM's own routing, never commands.
   const investigationSignals = classifyEvidence(candidate.records);
+  const structuralMetricCount = Object.keys(structure.metrics).length;
   const effectiveQuery = query ?? [CORE_QUERY, ...investigationSignals.routing_terms].join(' ');
   requireTruth(effectiveQuery.length > 0 && effectiveQuery.length <= 280, 'EFFECTIVE_QUERY_LENGTH');
   // Run the actual existing JM Python & Node sovereign portable agents.
@@ -129,6 +176,8 @@ export async function runJMREA({ source, query = null }) {
     'SET unknowns ' + candidate.unknown_count,
     'ASSERT records ' + candidate.record_count,
     'ASSERT unknowns ' + candidate.unknown_count,
+    'SET structural_metrics ' + structuralMetricCount,
+    'ASSERT structural_metrics ' + structuralMetricCount,
     'ROUTE jm.rea.metadata-candidate',
     'TRACE ' + JSON.stringify({ sha256: sourceHash, state: candidate.state,
       scope: 'JM_PORTABLE_SOURCE_LEDGER_ONLY' }),
@@ -149,6 +198,7 @@ export async function runJMREA({ source, query = null }) {
     source: { sha256: sourceHash, byte_count: raw.length, kind: candidate.source.kind,
       evidence_records: candidate.record_count, unresolved_questions: candidate.unknown_count, 
       target_artifact_sha256_claims: [...new Set(candidate.records.map(r => r.source_subject?.sha256).filter(v => SHA.test(v)))].sort() },
+    source_structure: structure,
     investigation_signals: { ...investigationSignals, actual_query: effectiveQuery,
       route_is_executed_by_JM_not_REA: true },
     executed_original_jm_bodies: [

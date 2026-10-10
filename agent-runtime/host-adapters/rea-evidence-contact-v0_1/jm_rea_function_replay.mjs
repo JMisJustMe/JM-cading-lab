@@ -1,7 +1,7 @@
 /* JM × REA v0.4: source-guided differential replay of original JM functions. */
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-import {normalise,compatibilityBetween} from '../../../coding-estate/integration/router-core.mjs';
+import {normalise,compatibilityBetween,scoreBody,planEstateRoute} from '../../../coding-estate/integration/router-core.mjs';
 import {TraceBoxRuntime} from '../../../coding-estate/sovereign-ten/direct/route-proof-native.mjs';
 import {JM32} from '../../../coding-estate/sovereign-ten/direct/language-native.mjs';
 
@@ -38,6 +38,76 @@ export function reconstructedCompatibility(a,b,m={}){
  return {mode:'adapter-required',relation:a.family+'→'+b.family,
    suggestedAdapters:['polyglot-bridge','combi-bind','jmqgraft']};
 }
+
+const intents={
+ game:'game play combat arena character mechanic',touch:'touch tap drag hold gesture hand mobile',
+ visual:'visual graphic render animation screen feedback',
+ compile:'compile compiler emit javascript typescript js wasm rust c++',
+ parse:'parse parser grammar syntax token',route:'route state transition door flow',
+ os:'os operating service permission event world',
+ conversation:'chat talk utterance intent ambiguity response',
+ proof:'proof trace receipt ding verify audit',recover:'recover restore rollback wake archive',
+ govern:'source govern register crown current ledger gate',
+ compose:'combine bind graft bridge join pair',formula:'formula pattern dependency ratio',
+ delivery:'package deliver delivery open_first zionfolder export android'
+};
+function inferReplica(tokens){
+ const candidates=new Set(tokens);
+ return Object.keys(intents).filter(key=>intents[key].split(' ').some(word=>candidates.has(word)));
+}
+export function reconstructedScoreBody(body,query){
+ const tokens=Array.isArray(query)?query:reconstructedNormalise(query);
+ const tags=inferReplica(tokens);
+ const searchable=[body.name,...(body.aliases??[]),body.category,body.family,body.role,...(body.capabilities??[])].join(' ').toLowerCase();
+ const reasons=[];let score=0;
+ for(const token of tokens){
+  let reason=null,points=0;
+  if(body.name.toLowerCase().includes(token)){points=10;reason='name:'+token;}
+  else if((body.aliases??[]).some(a=>a.toLowerCase().includes(token))){points=8;reason='alias:'+token;}
+  else if((body.capabilities??[]).includes(token)){points=6;reason='capability:'+token;}
+  else if(searchable.includes(token)){points=2;reason='role:'+token;}
+  score+=points;if(reason!==null)reasons.push(reason);
+ }
+ for(const tag of tags){
+  if((body.capabilities??[]).includes(tag)||body.family===tag){score+=7;reasons.push('intent:'+tag);}
+  if(tag==='game'&&['game-engine','game-language'].includes(body.category))score+=5;
+  if(tag==='os'&&body.family==='os')score+=5;
+  if(tag==='proof'&&body.family==='proof')score+=5;
+  if(tag==='govern'&&body.family==='governance')score+=5;
+ }
+ return {body,score,reasons:[...new Set(reasons)]};
+}
+const roles={
+ proof:['tracebox','dings'],governance:['source-ledger','build-gates'],
+ delivery:['onebody-delivery','zionfolder'],
+ game:['gameforge','game-coding','jm-gamecore'],
+ touch:['seedform-choice-interface','pattern-tapping'],
+ compile:['parser','compiler','cading-ir-onebody-ir'],
+ os:['routecore-native','os-coding'],conversation:['flowtalk','jmlogic']
+};
+export function reconstructedPlanEstateRoute(query,registry,options={}){
+ if(!registry?.bodies?.length)throw Error('REGISTRY_EMPTY');
+ const tokens=reconstructedNormalise(query),tags=inferReplica(tokens);
+ const byId=new Map(registry.bodies.map(body=>[body.id,body]));
+ const scored=registry.bodies.map(body=>reconstructedScoreBody(body,tokens))
+   .filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.body.name.localeCompare(b.body.name));
+ const selected=scored.slice(0,options.limit??7);
+ const add=(id,reason)=>{const body=byId.get(id);
+  if(body&&!selected.some(x=>x.body.id===id))selected.push({body,score:0,reasons:[reason]});};
+ for(const tag of tags)for(const id of roles[tag]??[])add(id,'support:'+tag);
+ for(const [id,reason] of [['tracebox','mandatory:trace'],['dings','mandatory:proof'],
+   ['source-ledger','mandatory:source-authority']])add(id,reason);
+ if(tags.includes('delivery')||options.includeDelivery){
+  add('onebody-delivery','mandatory:delivery');add('zionfolder','mandatory:preservation');
+ }
+ return {schema:'jm.sovereign-estate.route-plan/1.0',query:String(query),tokens,intents:tags,
+   route:selected.map((x,i)=>({order:i+1,id:x.body.id,name:x.body.name,
+     category:x.body.category,family:x.body.family,score:x.score,
+     reasons:x.reasons,role:x.body.role})),
+   lawsApplied:['identity-preserved','source-authority-required','trace-required',
+     'ding-required','no-supreme-body']};
+}
+
 function fixtures(){
  const tokens=['','hello world','C++ and c++','touch-drag.aim','HELLO WORLD',
  'the apple and the orange',"don’t forget it's JS",'café naïve','a.b---c',
@@ -64,7 +134,7 @@ function anchors(rea,sourceText){
  const root=rea?.normalized_result??rea?.records?.[0]?.normalized_result;
  const graph=root?.semantic_graph;
  hold(Array.isArray(graph?.nodes),'NO_REA_GRAPH');
- return ['normalise','compatibilityBetween'].map(name=>{
+ return ['normalise','scoreBody','planEstateRoute','compatibilityBetween'].map(name=>{
    const line=sourceText.split(/\r?\n/).findIndex(s=>s.startsWith('export function '+name+'('))+1;
    hold(line>0,'JM_SOURCE_MISSING_'+name);
    const nodes=graph.nodes.filter(n=>n.kind==='function'&&n.label===name&&

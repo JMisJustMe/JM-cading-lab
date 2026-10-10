@@ -38,3 +38,55 @@ jobs:
               if isinstance(obj,dict) and k in obj:
                   print('REA_KEY_'+k.upper()+'_SHAPE:',json.dumps(shape(obj[k]),sort_keys=True))
           PY
+
+      - name: Import genuine REA Evidence and execute JM portable agents, router and compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_RAW="$RUNNER_TEMP/rea-static.json"
+          export REA_BUNDLE="$RUNNER_TEMP/rea-evidence-bundle.json"
+          export JM_RECEIPT="$RUNNER_TEMP/jm-powered-receipt.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          raw=json.loads(pathlib.Path(os.environ['REA_RAW']).read_text(encoding='utf-8'))
+          assert isinstance(raw,dict) and raw['evidence_id'].startswith('ev_')
+          assert raw['provider']['id'] and raw['subject']['digest']['sha256']
+          assert isinstance(raw['evidence_links'],list)
+          # REA's CLI returned ONE authenticated Evidence record, not a bundle.
+          # Preserve the record untouched; only build its aggregate manifest.
+          bundle={
+            'artifacts': [{k:raw['subject'][k] for k in ['digest','format','architecture']}],
+            'providers': [raw['provider']],
+            'environments': [raw['environment']] if raw['environment'] else [],
+            'scenarios': [{'evidence_id':raw['evidence_id'],
+                           'operation':raw['operation'],'authority':raw['authority']}]
+                         if raw['authority']=='controlled-replay' else [],
+            'captures': [{'evidence_id':raw['evidence_id'],
+                          'predicate_type':raw['predicate_type']}]
+                        if raw['predicate_type']=='rea.process-capture' else [],
+            'unknowns': [], # nested semantic uncertainties stay in the Evidence payload
+            'records': [raw]
+          }
+          p=pathlib.Path(os.environ['REA_BUNDLE'])
+          with p.open('x',encoding='utf-8') as f: json.dump(bundle,f,ensure_ascii=False)
+          print('REA_NATIVE_EVIDENCE_BUNDLE_CREATED: records=1')
+          PY
+          npm exec --yes --package=rea-agents@6.1.0 -- rea evidence-import "$REA_BUNDLE" > "$RUNNER_TEMP/rea-validation.txt"
+          echo "REA_OWN_EVIDENCE_VALIDATOR: PASS"
+          node agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_powered_contact.mjs "$REA_BUNDLE" --output "$JM_RECEIPT"
+          python3 - <<'PY'
+          import json, os, pathlib
+          receipt=json.loads(pathlib.Path(os.environ['JM_RECEIPT']).read_text(encoding='utf-8'))
+          assert receipt['source']['evidence_records']==1
+          assert receipt['jm_estate_router']['registry_count']==100
+          assert receipt['jm_portable_agent']['coding_identities']==64
+          assert len(receipt['jm_portable_agent']['active_route_selected_not_spawned'])==12
+          assert receipt['jm_compiler']['body_id']=='source-ledger'
+          assert receipt['jm_compiler']['executed_state']['records']==1
+          assert receipt['source_claims']['rea_integrity_verified'] is False
+          assert receipt['source_claims']['target_apk_executed'] is False
+          assert receipt['source_claims']['owner_device_contact'] is False
+          print('REAL_REA_TO_EXISTING_JM_EXECUTABLES: PASS')
+          print('JM_EXECUTED_ORGANS:',len(receipt['executed_original_jm_bodies']))
+          print('EXACT_PROOF_SCOPE: actual REA static JS Evidence, authenticated by REA; JM local compiler and routing executed; no APK/owner contact')
+          PY

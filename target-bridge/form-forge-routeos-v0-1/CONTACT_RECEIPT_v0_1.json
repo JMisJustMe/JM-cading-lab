@@ -1,0 +1,105 @@
+{
+  "schema": "JM.Ecostate.FormForgeToRouteOSContact/0.1",
+  "date": "2026-10-10",
+  "status": "FORM_FORGE_GEOMETRY_LOCAL_PLAY_PASS__ROUTEOS_BROWSER_FIXTURE_PASS__OWNER_DEVICE_HOLD",
+  "owner": "JM / JMISJUSTME",
+  "source": {
+    "body": "JM Field/Form Forge",
+    "version": "v0.24 FINAL DEVELOPMENT CLOSURE TIDY-SEAT",
+    "sha256": "ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba",
+    "custody": "PRIVATE LIBRARY ONLY",
+    "source_embedded_in_public_repo": false,
+    "original_head_mutated": false
+  },
+  "native_portable_source": {
+    "runtime": "JMPortableReentry22",
+    "snapshot_schema": "jm.fieldform.snapshot/0.22",
+    "snapshot_verified_by_original_source": true,
+    "original_carrier": "glTF 2.0 binary GLB",
+    "source_generated_glb_bytes": 26700,
+    "source_generated_glb_sha256": "de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7",
+    "vertex_count": 310,
+    "triangle_count": 616
+  },
+  "private_source_local_contact": {
+    "execution": "Chromium executing exact protected v0.24 HTML via injected content, no page errors",
+    "real_geometry_decoded": true,
+    "real_software_projection": true,
+    "real_pointer_contact": true,
+    "different_triangle_ids": [
+      416,
+      455,
+      452,
+      456,
+      457
+    ],
+    "contact_count": 5,
+    "score": 750,
+    "game_completion_trace": true,
+    "owner_device_approval": false,
+    "private_glb_published": false
+  },
+  "private_live_exporter": {
+    "artifact": "JM_FIELD_FORM_FORGE_v0_24_GAME_CONTACT_EXPORT_DESCENDANT.html",
+    "source_head_preserved": true,
+    "manual_export_button_download_pass": true,
+    "native_snapshot_hash_checked": true,
+    "exported_glb_sha256_checked": true,
+    "independent_local_runtime": "PASS"
+  },
+  "public_recipient": {
+    "game": "JM FORM CONTACT / GameCore-style native geometry contact",
+    "path": "target-bridge/form-forge-routeos-v0-1/index.html",
+    "host_path": "target-bridge/form-forge-routeos-v0-1/JM_FORM_FORGE_ROUTEOS_HOST_v0_1.js",
+    "host": "JM RouteOS v0.8.2",
+    "runtime": "owned software Canvas2D glTF triangle projection/face contact",
+    "incoming_owner_packet": "jm.fieldform.game-mesh/0.1",
+    "accepted_integrity": [
+      "Forge source SHA-256 identity",
+      "snapshot native 32-bit FNV hash",
+      "GLB SHA-256",
+      "glTF binary structure",
+      "mesh graph signature"
+    ],
+    "native_receipts": [
+      "FORGE_MESH_ACCEPTED",
+      "FORGE_FACE_CONTACT",
+      "FORGE_CONTACT_DING"
+    ],
+    "jm_bus_packet_kind": "jm.fieldform.game-contact.receipt",
+    "bus_payload_contains_private_mesh": false
+  },
+  "public_browser_ci": {
+    "run_id": 38015463167,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38015463167",
+    "result": "PASS",
+    "fixture": "SYNTHETIC ICOSAHEDRON ONLY (NOT CLAIMED AS FORGE SOURCE)",
+    "proof": [
+      "20 synthetic triangles rendered",
+      "five distinct triangle contacts",
+      "RouteOS native host receipts",
+      "JM AppsTools existing bus receives earned Ding with face IDs/score",
+      "snapshot tamper refusal",
+      "original Seed Runner saved state intact"
+    ]
+  },
+  "stacked_prs": {
+    "stage1": 354,
+    "stage2": 355,
+    "current_draft": 357,
+    "base": "integration/jm-gamecore-routeos-recipient-20261010",
+    "current": "integration/jm-formforge-gamecore-routeos-20261010"
+  },
+  "boundaries": {
+    "no_new_mesh_render_algorithms_in_forge_head": true,
+    "proof_of_bundled_game_contact": "LOCAL_BROWSER_ONLY",
+    "physical_Android_owner_device": "OPEN",
+    "physical_laptop_owner_device": "OPEN",
+    "production_WebGL2_GPU": "OPEN",
+    "live_cloudflare_promotion": "NOT DONE",
+    "full_arbitrary_glTF_support": "NOT CLAIMED",
+    "Unity_GDevelop_Unreal": "NOT IN THIS SCOPE",
+    "gameplay_collision": "EXACT PROJECTED_TRIANGLE_PICKING__NOT_PHYSICAL_RIGID_BODY_COLLISION"
+  },
+  "keeper": "RECOVER BEFORE REBUILD | INTEGRATION ≠ REPLACEMENT | MESH ≠ MERGE | NO DING, NO CLAIM | RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE"
+}

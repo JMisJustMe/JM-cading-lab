@@ -69,6 +69,14 @@ try{
  assert.ok(native.some(x=>x.event==='FORGE_MESH_ACCEPTED'));
  assert.equal(native.filter(x=>x.event==='FORGE_FACE_CONTACT').length,5);
  assert.ok(native.some(x=>x.event==='FORGE_CONTACT_DING'));
+ const busPacket=await page.evaluate(()=>window.JMAppsToolsSpine.read().filter(x=>x.kind==='jm.fieldform.game-contact.receipt'));
+ assert.equal(busPacket.length,1,'A single earned Forge completion must join the EXISTING JM packet bus');
+ assert.equal(busPacket[0].payload.face_ids.length,5);
+ assert.equal(busPacket[0].payload.contacts,5);
+ assert.equal(busPacket[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(busPacket[0].payload.score,await f.locator('#score').innerText().then(Number));
+ assert.equal(JSON.stringify(busPacket).includes(packet.geometry.data),false,'Source mesh binary must not leak into bus receipt');
+ assert.equal(JSON.stringify(busPacket).includes('source code'),false);
  const bad=structuredClone(packet);bad.snapshot.state.fixture=false;
  await assert.rejects(f.locator('#stage').evaluate(async(el,invalid)=>window.JMForgeContact.take(invalid),bad),/snapshot integrity failed/);
  assert.equal(await page.evaluate(()=>window.JMFormForgeRouteOS.contactCount()),5);

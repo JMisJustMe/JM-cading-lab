@@ -1,0 +1,40 @@
+name: JM REA Upstream Static Contact (experiment)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/jm-rea-upstream-probe.yml'
+  workflow_dispatch:
+permissions: {}
+jobs:
+  rea-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run pinned REA 6.1.0 against PUBLIC JM source (static only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          npm exec --yes --package=rea-agents@6.1.0 -- rea analyze-javascript-application "$GITHUB_WORKSPACE/coding-estate/integration" --json > "$RUNNER_TEMP/rea-static.json"
+          REA_RESULT="$RUNNER_TEMP/rea-static.json" python3 - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ['REA_RESULT'])
+          raw=p.read_bytes()
+          obj=json.loads(raw)
+          def shape(x):
+              if isinstance(x,dict):
+                  return {k: type(v).__name__ for k,v in list(x.items())[:35]}
+              return type(x).__name__
+          print('REA_EXTERNAL_PROCESS: EXECUTED')
+          print('REA_RESULT_JSON_BYTES:',len(raw))
+          print('REA_RESULT_TOP_SHAPE:',json.dumps(shape(obj),sort_keys=True))
+          for k in ['evidence','evidence_bundle','normalized_result','result','data']:
+              if isinstance(obj,dict) and k in obj:
+                  print('REA_KEY_'+k.upper()+'_SHAPE:',json.dumps(shape(obj[k]),sort_keys=True))
+          PY

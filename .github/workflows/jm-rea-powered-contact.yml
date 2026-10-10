@@ -35,3 +35,6 @@ jobs:
         run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_evidence_contact.py' -v
       - name: JM powered chain tests (actual agents/router/compiler)
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_powered_contact.mjs
+
+      - name: Original JM function parity against independent reconstructions
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_function_replay.mjs

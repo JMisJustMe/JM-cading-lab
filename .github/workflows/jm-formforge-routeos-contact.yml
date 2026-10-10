@@ -1,0 +1,50 @@
+name: JM Form Forge to RouteOS Native Geometry Contact
+
+on:
+  push:
+    branches:
+      - integration/jm-formforge-gamecore-routeos-20261010
+    paths:
+      - "target-bridge/form-forge-routeos-v0-1/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+      - ".github/workflows/jm-formforge-routeos-contact.yml"
+  pull_request:
+    paths:
+      - "target-bridge/form-forge-routeos-v0-1/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+      - ".github/workflows/jm-formforge-routeos-contact.yml"
+jobs:
+  geometry-recipient:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: JS syntax and source-isolation gate
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          html=Path('target-bridge/form-forge-routeos-v0-1/index.html').read_text()
+          scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+          assert scripts
+          Path('/tmp/jm-formforge-contact.js').write_text(scripts[-1])
+          PY
+          node --check /tmp/jm-formforge-contact.js
+          node --check target-bridge/form-forge-routeos-v0-1/JM_FORM_FORGE_ROUTEOS_HOST_v0_1.js
+      - name: Install Chromium proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve existing RouteOS and Form Forge recipient
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-forge-routeos-http.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-forge-routeos-http.log
+          exit 1
+      - name: Prove triangle contact, RouteOS native host receipts and anti-regression
+        run: node tests/jm-formforge-routeos-contact.spec.mjs

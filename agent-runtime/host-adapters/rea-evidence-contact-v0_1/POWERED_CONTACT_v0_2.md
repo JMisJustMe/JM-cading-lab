@@ -30,13 +30,15 @@ The REA analyze-javascript-application --json operation outputs ONE Evidence obj
 - First authentic REA static inspection, REA-validated Evidence and JM return: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38014809973
 - Latest original JM runtime and format-driven routing tests: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38014957792
 - Latest genuine REA static-to-JM return: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38014957785
+- Current structural-signal + original JM execution suite: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38015157173
+- Current structural-signal + genuine REA Evidence into JM: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38015157068
 
 Current proven checks: JM Current-64 and coding activation validators PASS; JM host adapter conformance PASS; Python/Node portable runtime parity PASS; JM Estate Router 12/12 checks PASS; JM EveryBody native registry selftest PASS; metadata importer 11/11 PASS; combined runtime route and negative-boundary tests 5/5 PASS; real REA 6.1.0 JS static analysis PASS; REA evidence-import PASS; authentic REA Evidence into JM executed original components PASS.
 
 ## Precise holds (NO CROWN)
 
 - REA's own CI validator passed on the real specimen, but any generic user-supplied bundle is unverified until independently authenticated. The JM receipt deliberately does not borrow proof automatically.
-- REA's full structural and semantic JS graph is NOT yet imported into the JM route. Only source identity, evidence labels, source hash, record counts, safe operation/format-derived intent, and execution receipts pass to JM.
+- REA's full structural and semantic JS graph is NOT yet imported into the JM route. Only source identity, evidence labels, source hash, record counts, bounded numeric/array structural measurements, safe operation/format-derived intent, and execution receipts pass to JM. The portable source-ledger IR explicitly asserts the structural-metric count. REA graph content and relationship identities are not transferred.
 - This adapter compiles a JM portable source-ledger program, NOT a reconstructed application.
 - Android APK / native decompilation: untested in this integration. Owner-device phone or laptop app execution: untested.
 - Current host proof is GitHub Actions, NOT a physical owner-device Ding.

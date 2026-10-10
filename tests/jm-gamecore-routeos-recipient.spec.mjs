@@ -8,6 +8,7 @@ const donor='games-beyond/bodies/aiming-run-v0-1a.html';
 const raw=fs.readFileSync(donor);
 const blob=crypto.createHash('sha1').update(Buffer.from('blob '+raw.length+'\0')).update(raw).digest('hex');
 assert.equal(blob,'d737b7a05eeed657fbe3934a1e16d65c23cf9e61');
+assert.equal(crypto.createHash('sha256').update(raw).digest('hex'),'d11de01868a2366bb8a6bc6077edc4a98a1350af717fe2e1a049a6e35c16019f');
 const html=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(html.includes('JM_GAMECORE_AIMING_RUN_ROUTEOS_RECEIVER_v0_1.js'));
 assert.ok(html.includes('window.JMRouteOSHostPort'));

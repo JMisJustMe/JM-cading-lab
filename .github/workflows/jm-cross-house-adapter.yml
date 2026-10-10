@@ -1,0 +1,22 @@
+name: JM Cross-House Adapter
+on:
+  push:
+    branches:
+      - integration/jm-cross-house-packet-handoff-20261010
+  pull_request:
+    paths:
+      - "contact/**"
+      - "access/index.html"
+      - "games-beyond/index.html"
+      - "lyrics/index.html"
+      - "estate-publication/apps-tools-convergence/index.html"
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check contact/JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js
+      - run: node contact/test-cross-house-adapter.mjs

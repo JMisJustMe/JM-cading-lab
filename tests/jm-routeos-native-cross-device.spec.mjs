@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+const base=process.env.JM_CONTACT_BASE||'http://127.0.0.1:4177';
+const route='/games-beyond/routeos/runtime/';
+const key='JM_ROUTEOS_PUBLIC_RUNTIME_v0_8';
+const browser=await chromium.launch({headless:true});
+const desktop=await browser.newContext({viewport:{width:1180,height:840}});
+const phone=await browser.newContext({viewport:{width:390,height:844},isMobile:true,deviceScaleFactor:2,hasTouch:true});
+try{
+ const a=await desktop.newPage();await a.goto(base+route,{waitUntil:'networkidle'});
+ assert.ok(await a.evaluate(()=>Boolean(window.JMAppsToolsSpine&&window.JMRouteOSNativeBridge)));
+ await a.locator('[data-screen="bay"]').click();
+ await a.locator('[data-launch="seed-runner"]').click();
+ await a.waitForTimeout(100);
+ await a.keyboard.down('ArrowRight');await a.waitForTimeout(500);await a.keyboard.up('ArrowRight');
+ await a.locator('#saveBtn').click();
+ const before=await a.evaluate(key=>JSON.parse(localStorage.getItem(key)).saves['seed-runner'],key);
+ assert.ok(before.state.player.x>120,'Live original RouteOS gameplay moved before saving');
+ await a.locator('[data-screen="vault"]').click();
+ await a.locator('#screen-vault button').filter({hasText:'SEND NATIVE SAVE'}).first().click();
+ const sent=await a.evaluate(()=>window.JMRouteOSNativeBridge.exportBundle());
+ assert.equal(sent.packets.length,1);
+ assert.equal(sent.packets[0].payload.save.state.player.x,before.state.player.x);
+ const b=await phone.newPage();await b.goto(base+route,{waitUntil:'networkidle'});
+ assert.ok(await b.evaluate(()=>Boolean(window.JMAppsToolsSpine&&window.JMRouteOSNativeBridge)));
+ const receipt=await b.evaluate(bundle=>{
+  const c=window.JMRouteOSNativeBridge;
+  c.importBundle(bundle);return c.restore(bundle.packets[0].id);
+ },sent);
+ assert.equal(receipt.status,'NATIVE_SAVE_RESTORED_RELOAD_REQUIRED');
+ await b.reload({waitUntil:'networkidle'});
+ await b.locator('[data-screen="bay"]').click();
+ await b.locator('[data-load="seed-runner"]').click();
+ await b.waitForTimeout(120);
+ await b.locator('#saveBtn').click();
+ const after=await b.evaluate(key=>JSON.parse(localStorage.getItem(key)),key);
+ assert.equal(after.saves['seed-runner'].state.player.x,before.state.player.x,'Native resume must inherit original live position');
+ assert.ok(after.receipts.some(x=>x.type==='SAVE'),'Native recipient generated its own SAVE receipt');
+ assert.ok(after.receipts.some(x=>x.type==='PLAY'),'Native recipient generated its own PLAY receipt');
+ assert.ok(after.receipts.some(x=>x.type==='BRIDGE_IMPORT'),'Bridge import is distinguishable from native play receipt');
+ assert.equal(after.saves['seed-runner'].namespace,'routeos.seed-runner.jm');
+ console.log('JM BOUNDED REAL BROWSER CONTACT PASS: native RouteOS gameplay on desktop -> native save -> existing AppsTools bus -> portable JSON -> phone viewport -> RouteOS reload/LOAD/PLAY/SAVE; saved position '+before.state.player.x);
+}finally{await browser.close()}

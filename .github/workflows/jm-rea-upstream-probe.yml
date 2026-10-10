@@ -145,3 +145,29 @@ jobs:
           assert not r['original_jm_graph_contact']['policy']['runtimeProved']
           print('JM_NATIVE_TARGETED_RELATION_QUERY: PASS',json.dumps(q,sort_keys=True))
           PY
+
+      - name: Genuine REA function anchors to original JM behavior differential replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_RAW="$RUNNER_TEMP/rea-static.json"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          import {functionReplay} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_function_replay.mjs';
+          const evidence=JSON.parse(fs.readFileSync(process.env.REA_RAW,'utf8'));
+          const source='./coding-estate/integration/router-core.mjs';
+          const result=functionReplay(evidence,source);
+          assert.equal(result.failed,0,'differential mismatch');
+          assert.equal(result.matched,result.fixture_count);
+          assert.ok(result.fixture_count>=130);
+          assert.equal(result.anchors.length,2);
+          assert.ok(result.anchors.every(x=>x.rea_anchor_sha256));
+          assert.equal(result.source_sha256,crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex'));
+          assert.equal(result.jm32_verdict.promotable,false);
+          console.log('REA_ORIGINAL_JM_FUNCTION_REPLAY: PASS');
+          console.log('JM_DIFFERENTIAL_REPLAY_COUNTS:',JSON.stringify({cases:result.fixture_count,matched:result.matched,failed:result.failed,trace_events:result.trace_events}));
+          console.log('JM_REA_FUNCTION_ANCHORS:',JSON.stringify(result.anchors));
+          console.log('JM_REPLAY_BOUNDARY:',result.scope);
+          JS

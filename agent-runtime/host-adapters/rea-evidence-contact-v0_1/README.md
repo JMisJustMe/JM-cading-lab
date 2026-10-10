@@ -1,3 +1,18 @@
+> **Current experimental descendant: v0.4 (10 October 2026).** This README below documents the protected read-only v0.1 entry, not the full descendant chain.
+> The v0.4 code now executes real REA 6.1.0 static JavaScript evidence alongside existing JM Python/Node agents, the 100-body route planner, Sovereign Ten JM32 and TraceBox and JM EveryBody portable compiler.
+> It also binds four exact REA-identified original JM router functions to independent source-guided implementations: **416/416 differential input/output cases PASS**. The result is fixture parity, not a claim of complete software reconstruction.
+
+### v0.4 entry points
+
+- [Real function parity and repeatable CLI](SOURCE_FUNCTION_REPLAY_v0_4.md)
+- [Native graph/TraceBox relation bridge](NATIVE_GRAPH_CONTACT_v0_3.md)
+- [Complete previous v0.2 executable pipeline](POWERED_CONTACT_v0_2.md)
+- [Real REA + JM execution proof](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38018468675)
+- [Existing original JM code + negative-test proof](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38018468709)
+
+**No owner-device Ding, no original JM32-1DA v2.2.1 compiler contact, no APK reconstruction and no production merge.**
+
+---
 # JM × REA — Read-only Evidence Contact v0.1 (candidate)
 
 **Status:** isolated experimental host adapter; **NOT** integrated with JM Build Mesh / JM32-1DA / Target Bridge; **NO DING**.

@@ -15,14 +15,16 @@ function fixture(){
  const line=n=>rows.findIndex(s=>s.startsWith('export function '+n+'('))+1;
  return {normalized_result:{semantic_graph:{nodes:[
     node('normalise',line('normalise'),'a'),
-    node('compatibilityBetween',line('compatibilityBetween'),'b')
+    node('compatibilityBetween',line('compatibilityBetween'),'b'),
+    node('scoreBody',line('scoreBody'),'c'),
+    node('planEstateRoute',line('planEstateRoute'),'d')
    ],relations:[]}}};
 }
 test('genuine original JM exported functions match independent source-guided replicas',()=>{
  const result=functionReplay(fixture(),SOURCE);
- assert.equal(result.anchors.length,2);
+ assert.equal(result.anchors.length,4);
  assert.equal(result.failed,0);
- assert.ok(result.fixture_count>135);
+ assert.ok(result.fixture_count>250);
  assert.equal(result.matched,result.fixture_count);
  assert.equal(result.trace_events,result.fixture_count);
  assert.equal(result.source_sha256,hash(fs.readFileSync(SOURCE)));

@@ -164,6 +164,14 @@ test('real original JM32 and TraceBox inspect joined semantic edges without over
     assert.equal(result.original_jm_graph_contact.trace_sample[0].kind,'static-app');
     assert.equal(result.original_jm_graph_contact.trace_sample[1].resolution,'candidate');
     assert.equal(result.original_jm_graph_contact.policy.promotable,false);
+    const selected=await runJMREA({source:p,relation:'reads'});
+    assert.equal(selected.original_jm_graph_contact.query.relation,'reads');
+    assert.equal(selected.original_jm_graph_contact.query.matching_application_edges,0);
+    assert.equal(selected.original_jm_graph_contact.query.matching_semantic_relations,1);
+    assert.equal(selected.original_jm_graph_contact.trace_sample.length,1);
+    assert.equal(selected.original_jm_graph_contact.native_queries.semantic,1);
+    assert.equal(selected.original_jm_graph_contact.policy.runtimeProved,false);
+    await assert.rejects(runJMREA({source:p,relation:'../../secret'}),/GRAPH_HOLD:UNSAFE_RELATION_QUERY/);
     assert.equal(result.original_jm_graph_contact.policy.runtimeProved,false);
     assert.equal(result.jm_compiler.executed_state.checked_graphs,1);
     assert.equal(result.executed_original_jm_bodies.length,6);

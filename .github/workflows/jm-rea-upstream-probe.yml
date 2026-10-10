@@ -83,6 +83,21 @@ jobs:
           assert len(receipt['jm_portable_agent']['active_route_selected_not_spawned'])==12
           assert receipt['jm_compiler']['body_id']=='source-ledger'
           assert receipt['jm_compiler']['executed_state']['records']==1
+          graphs=receipt['original_jm_graph_contact']['graphs']
+          assert len(graphs)==1, 'no actual joined REA graph in JM receipt'
+          graph=graphs[0]
+          assert graph['application_nodes']>0 and graph['semantic_nodes']>0
+          assert graph['application_edges']>0 and graph['semantic_relations']>0
+          assert receipt['original_jm_graph_contact']['trace_events']>1
+          assert receipt['original_jm_graph_contact']['policy']['runtimeProved'] is False
+          assert receipt['original_jm_graph_contact']['policy']['promotable'] is False
+          sample=receipt['original_jm_graph_contact']['trace_sample']
+          assert any(x['kind']=='static-app' for x in sample)
+          assert any(x['kind']=='static-semantic' for x in sample)
+          print('JM_NATIVE_REA_GRAPH_CONTACT: PASS')
+          print('JM_REA_REAL_GRAPH_COUNTS:',json.dumps({k:graph[k] for k in ['application_nodes','application_edges','semantic_nodes','semantic_relations','semantic_candidates','semantic_resolved','unresolved']},sort_keys=True))
+          print('JM_REA_NATIVE_TRACE_EVENTS:',receipt['original_jm_graph_contact']['trace_events'])
+          print('JM_REA_HASHED_DIRECTED_SAMPLE:',json.dumps(sample[:3],sort_keys=True))
           assert receipt['source_claims']['rea_integrity_verified'] is False
           assert receipt['source_claims']['target_apk_executed'] is False
           assert receipt['source_claims']['owner_device_contact'] is False

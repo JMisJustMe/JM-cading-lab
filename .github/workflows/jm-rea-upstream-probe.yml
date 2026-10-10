@@ -105,3 +105,30 @@ jobs:
           print('JM_EXECUTED_ORGANS:',len(receipt['executed_original_jm_bodies']))
           print('EXACT_PROOF_SCOPE: actual REA static JS Evidence, authenticated by REA; JM local compiler and routing executed; no APK/owner contact')
           PY
+
+      - name: Targeted real REA semantic relation through JM TraceBox
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_BUNDLE="$RUNNER_TEMP/rea-evidence-bundle.json"
+          export JM_TARGET_RECEIPT="$RUNNER_TEMP/jm-targeted-relation.json"
+          RELATION=$(python3 - <<'PY'
+          import json,os,pathlib
+          b=json.loads(pathlib.Path(os.environ['REA_BUNDLE']).read_text())
+          r=b['records'][0]['normalized_result']['semantic_graph']['relations']
+          assert r, 'real REA semantic graph had no relations'
+          print(sorted({x['relation'] for x in r})[0])
+          PY
+          )
+          node agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_powered_contact.mjs "$REA_BUNDLE" --relation "$RELATION" --output "$JM_TARGET_RECEIPT"
+          python3 - <<'PY'
+          import json,os,pathlib
+          r=json.loads(pathlib.Path(os.environ['JM_TARGET_RECEIPT']).read_text())
+          q=r['original_jm_graph_contact']['query']
+          assert q['matching_semantic_relations'] > 0
+          assert r['original_jm_graph_contact']['native_queries']['semantic'] > 0
+          assert all(x['relation']==q['relation'] for x in r['original_jm_graph_contact']['trace_sample'])
+          assert not r['original_jm_graph_contact']['policy']['promotable']
+          assert not r['original_jm_graph_contact']['policy']['runtimeProved']
+          print('JM_NATIVE_TARGETED_RELATION_QUERY: PASS',json.dumps(q,sort_keys=True))
+          PY

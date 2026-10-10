@@ -97,29 +97,30 @@ function run(bin, args) {
 }
 function requireTruth(value, message) { if (!value) throw new Error('JM_GATE_HOLD: ' + message); }
 function usage() {
-  return 'Usage: node jm_rea_powered_contact.mjs /absolute/rea-bundle-or-snapshot.json [--output /new/receipt.json] [--query "inspect code trace ..."]';
+  return 'Usage: node jm_rea_powered_contact.mjs /absolute/rea-bundle-or-snapshot.json [--output /new/receipt.json] [--query "inspect code trace ..."] [--relation calls]';
 }
 function argsParse(argv) {
   if (!argv.length || argv.includes('--help')) throw new Error(usage());
   const source = argv[0];
-  let output = null, query = null;
+  let output = null, query = null, relation = null;
   for (let i = 1; i < argv.length; i++) {
     if (argv[i] === '--output' && argv[i + 1]) output = argv[++i];
     else if (argv[i] === '--query' && argv[i + 1]) query = argv[++i];
+    else if (argv[i] === '--relation' && argv[i + 1]) relation = argv[++i];
     else throw new Error('Unknown argument: ' + argv[i]);
   }
   requireTruth(source !== output, 'INPUT_OUTPUT_SAME_PATH');
   requireTruth(query === null || (query.length > 0 && query.length <= 280), 'QUERY_LENGTH');
-  return { source, output, query };
+  return { source, output, query, relation };
 }
 
-export async function runJMREA({ source, query = null }) {
+export async function runJMREA({ source, query = null, relation = null }) {
   requireTruth(path.isAbsolute(source), 'INPUT_MUST_BE_ABSOLUTE');
   requireTruth(fs.statSync(source).size <= 16 * 1024 * 1024, 'SOURCE_TOO_LARGE');
   const raw = fs.readFileSync(source);
   const sourceHash = digest(raw);
   const upstream = JSON.parse(raw.toString('utf8'));
-  const graphContact = contactREAGraphs(upstream);
+  const graphContact = contactREAGraphs(upstream,{relation});
   const structure = structuralSignals(raw.toString('utf8'));
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'jm-rea-contact-'));
   let candidate;
@@ -237,8 +238,8 @@ export async function runJMREA({ source, query = null }) {
 }
 async function main() {
   try {
-    const { source, output, query } = argsParse(process.argv.slice(2));
-    const report = await runJMREA({ source, query });
+    const { source, output, query, relation } = argsParse(process.argv.slice(2));
+    const report = await runJMREA({ source, query, relation });
     const serialized = JSON.stringify(report, null, 2) + '\n';
     if (output) fs.writeFileSync(output, serialized, { flag: 'wx', mode: 0o600 });
     else process.stdout.write(serialized);

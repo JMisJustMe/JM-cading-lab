@@ -39,6 +39,7 @@ function enter(storage){
 const srcStore=store();
 srcStore.setItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8',JSON.stringify(base({'seed-runner':native(249)})));
 const src=enter(srcStore);
+assert.ok(Array.isArray(src.spine.read()),'Cold JM shared bus must initialise as an array, not a string');
 assert.equal(src.api.schema,'JM.RouteOSNativePacketBridge/0.1');
 assert.equal(src.api.saveList().length,1);
 const before=srcStore.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8');

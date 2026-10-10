@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORM_FORGE_ROUTEOS_HOST_v0_1.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_SURFACE_KINETICS_HOST_v0_2.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];

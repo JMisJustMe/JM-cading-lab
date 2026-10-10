@@ -28,6 +28,7 @@ jobs:
       - name: Test source grammar and recipient JavaScript
         run: |
           node --check target-bridge/aiming-run-routeos-v0-1/JM_GAMECORE_AIMING_RUN_ROUTEOS_RECEIVER_v0_1.js
+          sha256sum games-beyond/bodies/aiming-run-v0-1a.html
           python3 - <<'PY'
           import re
           from pathlib import Path

@@ -57,6 +57,10 @@ try{
  assert.equal(action.realShot,true);
  assert.equal(action.proofOnly,false);
  await gameFrame.locator('#startRun').click(); // source-native pause before capture
+ await gameFrame.locator('[data-open="tune"]').click();
+ await gameFrame.locator('#shotForce').evaluate(el=>{el.value='1.4';el.dispatchEvent(new Event('input',{bubbles:true}))});
+ assert.equal(await a.evaluate(()=>window.JMAimingRouteOS.game().state.tuning.shotForce),1.4);
+ await gameFrame.locator('[data-open="play"]').click();
  await a.locator('#jmGcHost button').filter({hasText:'SAVE TRACK PROGRESS'}).click();
  const recorded=await a.evaluate(()=>window.JMAimingRouteOS.local());
  assert.equal(recorded.schema,'JM.GameCore.RouteOSProgress/0.1');
@@ -82,8 +86,36 @@ try{
     installed:os.installed.length,restored:os.receipts.some(x=>x.type==='HOST_GAMECORE'&&x.text==='GAMECORE_PROGRESS_RESTORED')};
  },store);
  assert.equal(receiver.unlocked,1);
+ assert.equal(await b.evaluate(()=>window.JMAimingRouteOS.game().state.tuning.shotForce),1.4,'Real GameCore tuned state must survive desktop → mobile');
  assert.ok(receiver.installed===0,'Source adapter cannot secretly install generic declarative cartridges');
  assert.ok(receiver.restored,'Recipient native RouteOS must issue its own GameCore host receipt');
+ // Change a real GameCore tuning control on the receiving mobile browser; return to a fresh desktop host.
+ const mobileGameFrame=b.frameLocator('#jmGcSource');
+ await mobileGameFrame.locator('[data-open="tune"]').click();
+ await mobileGameFrame.locator('#targetMotion').evaluate(el=>{el.value='1.8';el.dispatchEvent(new Event('input',{bubbles:true}))});
+ assert.equal(await b.evaluate(()=>window.JMAimingRouteOS.game().state.tuning.targetMotion),1.8);
+ const second=await b.evaluate(()=>{
+  const api=window.JMAimingRouteOS;
+  const p=api.publish();
+  return {payload:{...api.bundle(),packets:[p]},packetId:p.id};
+ });
+ assert.equal(second.payload.packets.length,1);
+ const reverse=await browser.newContext({viewport:{width:1200,height:820}});
+ const c=await reverse.newPage();await c.goto(base+'/games-beyond/routeos/runtime/',{waitUntil:'networkidle'});
+ assert.equal((await c.evaluate(d=>window.JMAimingRouteOS.importBundle(d),second.payload)).imported,1);
+ await c.locator('[data-screen="bay"]').click();await c.locator('#jmGcLaunch').click();
+ await c.waitForFunction(()=>window.JMAimingRouteOS?.running());
+ await c.evaluate(id=>window.JMAimingRouteOS.restorePacket(id),second.packetId);
+ const returned=await c.evaluate(()=>{
+  const p=window.JMAimingRouteOS;
+  return {force:p.game().state.tuning.shotForce,motion:p.game().state.tuning.targetMotion,
+    packetCount:p.inbox().length,hostReceipt:JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.some(x=>x.type==='HOST_GAMECORE'&&x.text==='GAMECORE_PROGRESS_RESTORED')};
+ });
+ assert.equal(returned.force,1.4);
+ assert.equal(returned.motion,1.8);
+ assert.equal(returned.packetCount,1);
+ assert.ok(returned.hostReceipt);
+ await reverse.close();
  await b.locator('#jmGcHost button').filter({hasText:'RETURN TO CONSOLE'}).click();
  await b.locator('[data-screen="bay"]').click();
  await b.locator('[data-launch="seed-runner"]').click();
@@ -94,5 +126,5 @@ try{
  const priorCount=await b.evaluate(()=>window.JMAppsToolsSpine.read().length);
  await assert.rejects(b.evaluate(d=>window.JMAimingRouteOS.importBundle(d),invalid),/Unverified GameCore transfer/);
  assert.equal(await b.evaluate(()=>window.JMAppsToolsSpine.read().length),priorCount);
- console.log('PASS: verified exact Aiming Run Git blob; GameCore real target pressure + pointer shot; native RouteOS host receipts; same JM packet bus; independent mobile receiver progress; original Seed Runner native save intact.');
+ console.log('PASS: verified exact GameCore Aiming Run source; live target movement + pointer shot; shared JM packet state with real tuning 1.0 → 1.4 on desktop → 1.8 motion on mobile → fresh desktop; separate native RouteOS host receipts and protected native Seed Runner save.');
 }finally{await browser.close()}

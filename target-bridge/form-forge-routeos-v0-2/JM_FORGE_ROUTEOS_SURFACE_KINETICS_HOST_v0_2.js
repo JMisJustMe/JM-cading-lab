@@ -61,6 +61,7 @@ function handle(e){
  if(!accepted(p))return;
  if(p.event==='MESH_ACCEPTED'){
    mesh=p.geometryHash;snapshot=p.snapshotHash;contacts.clear();lastScore=0;activeShot=0;lastImpact=0;lastImpactStep=0;
+   frame.contentWindow?.JMForgeKinetics?.resetSourceSession?.();
    const ok=window.JMRouteOSFormForgePort?.record('FORGE_MESH_ACCEPTED',p);
    info(ok?'Forge-sourced geometry arrived in RouteOS. Touch distinct mesh faces to play.':'Native recipient receipt HOLD.',!ok);
    return;

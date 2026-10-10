@@ -110,8 +110,14 @@ test('REA JavaScript operation labels route JM coding bodies toward JS rather th
       record.subject.format = 'directory';
       record.operation = 'analyze_javascript_application';
       record.predicate_type = 'rea.javascript-application';
+      const h=x=>x.repeat(64), ga='jag_node_'+h('a'),gb='jag_node_'+h('b'),
+        sa='jsrg_node_'+h('c'),sb='jsrg_node_'+h('d'),graph_id='jag_'+h('e');
       record.normalized_result = { statistics: { module_count: 4, relation_count: 13 },
-        graph: { nodes: [1, 2, 3] }, semantic_graph: { relations: [1, 2] },
+        graph: {graph_id,nodes:[{node_id:ga},{node_id:gb}],
+          edges:[{edge_id:'jag_edge_'+h('f'),source_node_id:ga,target_node_id:gb,relation:'imports'}]},
+        semantic_graph: {application_graph_id:graph_id,nodes:[{node_id:sa},{node_id:sb}],
+          relations:[{relation_id:'jsrg_relation_'+h('1'),source_node_id:sa,target_node_id:sb,
+            relation:'reads',resolution:'candidate'}], unknowns:[{reason:'unknown-value'}]},
         secret: 'DO_NOT_PUBLISH_OR_COPY' };
     }
     const p = path.join(d, 'rea-js.json');
@@ -124,10 +130,10 @@ test('REA JavaScript operation labels route JM coding bodies toward JS rather th
     assert.equal(report.source_structure.graph_records, 2);
     assert.equal(report.source_structure.semantic_graph_records, 2);
     assert.equal(report.source_structure.metrics.module_count, 4);
-    assert.equal(report.source_structure.metrics.semantic_graph_relations_count, 2);
+    assert.equal(report.source_structure.metrics.semantic_graph_relations_count, 1);
     assert.equal(report.jm_compiler.executed_state.structural_metrics, Object.keys(report.source_structure.metrics).length);
-    assert.equal(report.jm_compiler.executed_state.checked_graphs, 0);
-    assert.equal(report.original_jm_graph_contact.graphs.length, 0);
+    assert.equal(report.jm_compiler.executed_state.checked_graphs, 2);
+    assert.equal(report.original_jm_graph_contact.graphs.length, 2);
     assert.equal(report.original_jm_graph_contact.policy.runtimeProved, false);
     assert.ok(!JSON.stringify(report).includes('DO_NOT_PUBLISH_OR_COPY'));
   } finally { fs.rmSync(d, {recursive: true, force: true}); }

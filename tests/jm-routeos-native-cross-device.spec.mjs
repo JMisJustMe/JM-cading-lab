@@ -70,9 +70,11 @@ try{
  await b.locator('[data-screen="bay"]').click();
  await b.locator('[data-load="pulse-orbit"]').click();
  await b.locator('#saveBtn').click();
+ await b.locator('#homeBtn').click(); // mobile play-focus hides nav; use existing HOME control
  await b.locator('[data-screen="bay"]').click();
  await b.locator('[data-load="rebound-route"]').click();
  await b.locator('#saveBtn').click();
+ await b.locator('#homeBtn').click(); // preserve owner mobile control grammar
  const allThree=await b.evaluate(key=>JSON.parse(localStorage.getItem(key)).saves,key);
  assert.ok(allThree['seed-runner']&&allThree['pulse-orbit']&&allThree['rebound-route']);
  assert.equal(allThree['pulse-orbit'].state.shots,extra.pulse.state.shots);

@@ -1,0 +1,75 @@
+{
+  "schema": "JM.TargetBridge.GameCoreRouteOSHostContact/0.1",
+  "date": "2026-10-10",
+  "state": "BROWSER_HOST_RUNTIME_DING__OWNER_DEVICE_HOLD",
+  "owner": "JM / JMISJUSTME",
+  "source": {
+    "identity": "JM Aiming Run v0.1A — GameCore-derived movement-pressure playable",
+    "path": "games-beyond/bodies/aiming-run-v0-1a.html",
+    "sha256": "d11de01868a2366bb8a6bc6077edc4a98a1350af717fe2e1a049a6e35c16019f",
+    "git_blob_sha1": "d737b7a05eeed657fbe3934a1e16d65c23cf9e61",
+    "source_gamecore_ancestor_sha256": "1d1fe40eb421bd4b9d7c2565e69af48b77041818ed48d8997aae2d112bc37aa7",
+    "unchanged": true
+  },
+  "recipient": {
+    "name": "JM RouteOS Public Console Runtime v0.8.2",
+    "route": "games-beyond/routeos/runtime/",
+    "host_port": "JMRouteOSHostPort",
+    "adapter": "target-bridge/aiming-run-routeos-v0-1/JM_GAMECORE_AIMING_RUN_ROUTEOS_RECEIVER_v0_1.js",
+    "embedded_original_source": true,
+    "converted_to_native_cartridge_engine": false,
+    "original_routeos_first_party_cartridges_unchanged": true,
+    "source_own_game_receipts_preserved": true,
+    "separate_host_receipts": true
+  },
+  "transport": {
+    "existing_bus": "jm.apps.tools.shared.bus.v1",
+    "packet_schema": "jm.packet/1.0",
+    "kind": "jm.routeos.gamecore.aiming-run.progress",
+    "scope": "completed and unlocked tracks, current selected track, tuning",
+    "full_in_flight_game_state": false,
+    "portable_manual_device_transfer": true,
+    "automatic_cloud_sync": false,
+    "conflict_policy": "HOLD (do not overwrite distinct local completion histories)"
+  },
+  "observed": {
+    "git_blob_pass": true,
+    "sha256_pass": true,
+    "original_game_live_target_movement": true,
+    "original_game_real_pointer_shot": true,
+    "proof_only_simulated_hit_used": false,
+    "routeos_host_receipt_pass": true,
+    "original_routeos_seed_runner_save_unchanged": true,
+    "desktop_shot_force_after_original_ui_input": 1.4,
+    "mobile_target_motion_after_original_ui_input": 1.8,
+    "fresh_desktop_shot_force_restored": 1.4,
+    "fresh_desktop_target_motion_restored": 1.8,
+    "independent_mobile_context": true,
+    "fresh_return_desktop_context": true
+  },
+  "proof": {
+    "scope": "GitHub Actions actual Chromium browser execution on repository source; separate desktop/mobile browser contexts",
+    "workflow": "JM GameCore → RouteOS Exact Recipient",
+    "run_id": 38013919773,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38013919773",
+    "status": "PASS"
+  },
+  "boundaries": {
+    "owner_phone": "OPEN",
+    "owner_laptop": "OPEN",
+    "live_cloudflare_deployment": "NOT_PROMOTED",
+    "gamecore_compiled_into_routeos_native_engine": false,
+    "further_game_families": "SOURCE_CONTACT_REQUIRED",
+    "unity_gdevelop_unreal_cross_host_claim": "NOT_IN_THIS_SCOPE",
+    "private_form_forge_v024": "RETAIN_PRIVATE_LIBRARY_SOURCE__NO_PUBLICATION",
+    "source_exposure": "NO_PRIVATE_BODY_COPIED"
+  },
+  "lineage": {
+    "parent_integration_pr": 354,
+    "current_draft_pr": 355,
+    "branch": "integration/jm-gamecore-routeos-recipient-20261010",
+    "base_branch": "integration/jm-cross-house-packet-handoff-20261010",
+    "upstream_main_unchanged": true
+  },
+  "keeper": "RECOVER BEFORE REBUILD · INTEGRATION ≠ REPLACEMENT · MESH ≠ MERGE · NO DING, NO CLAIM"
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "JM.Ecostate.FormForgeSurfaceKinetics.FLAZ/0.2",
+  "dated": "2026-10-10",
+  "status": "BOUNDED_3D_BROWSER_DING_AND_REENTRY_PASS__OWNER_DEVICE_HOLD",
+  "source_custody": {
+    "owner": "JM / JMISJUSTME",
+    "forge": "JM Field/Form Forge v0.24 — final tidy seat",
+    "forge_head_sha256": "ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba",
+    "private_library_head_preserved": true,
+    "public_forge_source_embedded": false,
+    "actual_private_glb_sha256": "de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7",
+    "actual_private_glb_bytes": 26700,
+    "actual_private_mesh_vertices": 310,
+    "actual_private_mesh_triangles": 616
+  },
+  "protected_ancestor": {
+    "FLAZ_branch": "flaz/jm-formforge-gamecontact-v0-1-20261010",
+    "parent_branch": "integration/jm-formforge-gamecore-routeos-20261010",
+    "comparison": "IDENTICAL / 0 commits ahead-or-behind at checkpoint",
+    "ancestor_pr": 357,
+    "retained_original_recipient": "target-bridge/form-forge-routeos-v0-1/index.html",
+    "new_head_overwrites_ancestor": false
+  },
+  "current_descendant": {
+    "version": "v0.2",
+    "branch": "integration/jm-forge-surface-kinetics-v0-2-20261010",
+    "draft_pr": 358,
+    "module": "target-bridge/form-forge-routeos-v0-2/JM_FORGE_SURFACE_KINETICS_v0_2.js",
+    "native_routeos_host": "target-bridge/form-forge-routeos-v0-2/JM_FORGE_ROUTEOS_SURFACE_KINETICS_HOST_v0_2.js",
+    "game_carrier": "original v0.1 geometry decoder + additive v0.2 kinetic organ, not a replacement",
+    "one_active_routeos_form_host": true,
+    "inputs": "original touch/orbit preserved; new screen-space aim buttons/IJKL and F probe fire",
+    "simulation": "moving point probe; 3D segment-vs-triangle continuous intersection; closest real face ID and normal; bounded normal restitution 0.6",
+    "not_claimed": [
+      "full rigid body collision",
+      "general mesh collision engine",
+      "game save portability of in-flight probe state",
+      "owner-device feel",
+      "native APK",
+      "production WebGL2/GPU",
+      "automatic cloud sync"
+    ],
+    "same_mesh_reentry": "REPAIRED: verified source packet re-import resets shot counter, impact history and collision session even when GLB hash is unchanged"
+  },
+  "proof": {
+    "unit_math": "PASS — exact triangle t=0.5; deliberate miss null; moving probe collides; rebound separates along face normal; same-mesh re-entry resets shot/impact state",
+    "browser_fixture": "PASS — synthetic geometry 3D probe movement; native RouteOS launch/impact receipts; existing JM AppsTools bus kinetic impact packet; original 5-face contact and Seed Runner save retained; same geometry packet reimport earned fresh impact with new session ID",
+    "github_actions": {
+      "new_3d_run": 38018742403,
+      "old_geometry_regression": 38018742440,
+      "native_routeos_state_regression": 38018742413,
+      "gamecore_host_regression": 38018742445,
+      "status": "4/4 SUCCESS at named automated scope",
+      "latest_surface_kinetics_run": 38018973455,
+      "latest_inherited_geometry_run": 38018973501,
+      "latest_result": "2/2 SUCCESS after same-mesh re-entry repair"
+    },
+    "private_glb_independent_math_contact": {
+      "status": "PASS",
+      "method": "Independent locally run Python ray/triangle intersection with exact private GLB, same underlying geometric method; NOT a run of JS v0.2 on the physical device",
+      "triangle_id": 213,
+      "ray_t": 0.5147,
+      "mesh_privacy": "bytes/source stay private"
+    }
+  },
+  "transport": {
+    "native_routeos_receipts": [
+      "FORGE_PROBE_LAUNCH",
+      "FORGE_SURFACE_IMPACT"
+    ],
+    "shared_bus_packet_kind": "jm.fieldform.kinetic-surface-impact",
+    "payload": "geometry/snapshot hash, shot, face, 3D point+normal, impact count, source-scoped proof; no private geometry bytes"
+  },
+  "open_gates": [
+    "owner phone real-world interaction",
+    "owner laptop real-world interaction",
+    "live deployment/rollout approval",
+    "full GPU production rendering",
+    "broader geometry/animation world interactions"
+  ],
+  "keeper": "DO FOR SELF OFF OWN MERITS · RECOVER BEFORE REBUILD · INTEGRATION ≠ REPLACEMENT · MESH ≠ MERGE · NO DING, NO CLAIM"
+}

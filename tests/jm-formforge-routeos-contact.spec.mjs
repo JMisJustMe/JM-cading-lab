@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORM_FORGE_ROUTEOS_HOST_v0_1.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_SURFACE_KINETICS_HOST_v0_2.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];
@@ -77,9 +77,42 @@ try{
  assert.equal(busPacket[0].payload.score,await f.locator('#score').innerText().then(Number));
  assert.equal(JSON.stringify(busPacket).includes(packet.geometry.data),false,'Source mesh binary must not leak into bus receipt');
  assert.equal(JSON.stringify(busPacket).includes('source code'),false);
+ // v0.2 additive motion physics: witness a real moving probe strike geometry in 3D.
+ await f.locator('#jmFire').waitFor();
+ const geometry=await f.locator('#stage').evaluate(()=>{
+  const k=window.JMForgeKinetics;
+  return {hit:k.collision([0,0,4],[0,0,-8]),miss:k.collision([90,90,4],[0,0,-8])};
+ });
+ assert.ok(geometry.hit&&Number.isInteger(geometry.hit.face),'3D ray must intersect a decoded face');
+ assert.equal(geometry.miss,null,'miss cannot fabricate a face hit');
+ await f.locator('#jmFire').click();
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT');
+ },{timeout:12000});
+ const kineticReceipts=await page.evaluate(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8'));
+  const b=window.JMAppsToolsSpine.read().filter(r=>r.kind==='jm.fieldform.kinetic-surface-impact');
+  return {native:os.receipts.filter(r=>r.type==='HOST_FORGE'),bus:b};
+ });
+ assert.ok(kineticReceipts.native.some(r=>r.text==='FORGE_PROBE_LAUNCH'));
+ assert.ok(kineticReceipts.native.some(r=>r.text==='FORGE_SURFACE_IMPACT'));
+ assert.ok(kineticReceipts.bus.length>=1,'real moving probe impact must enter EXISTING JM bus');
+ assert.equal(kineticReceipts.bus[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(JSON.stringify(kineticReceipts.bus).includes(packet.geometry.data),false);
+
  const bad=structuredClone(packet);bad.snapshot.state.fixture=false;
  await assert.rejects(f.locator('#stage').evaluate(async(el,invalid)=>window.JMForgeContact.take(invalid),bad),/snapshot integrity failed/);
  assert.equal(await page.evaluate(()=>window.JMFormForgeRouteOS.contactCount()),5);
+ // Re-import the SAME real-geometry fixture: no stale shot ID or orphaned Ding may survive.
+ const beforeReentry=kineticReceipts.native.filter(r=>r.text==='FORGE_SURFACE_IMPACT').length;
+ await f.locator('#import').setInputFiles({name:'reenter-same-geometry.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(packet))});
+ await page.waitForFunction(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_MESH_ACCEPTED').length>=2);
+ const reset=await f.locator('#stage').evaluate(()=>window.JMForgeKinetics.state);
+ assert.equal(reset.impacts.length,0);assert.equal(reset.shot,0);
+ await f.locator('#jmFire').click();
+ await page.waitForFunction(n=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT').length>n,beforeReentry);
+
  await page.locator('#jmForgeRouteOSHost button').filter({hasText:'RETURN TO ROUTOS'}).count().catch(()=>0);
  await page.locator('#jmForgeRouteOSHost button').filter({hasText:'RETURN TO ROUTEOS'}).click();
  await page.locator('[data-screen="bay"]').click();
@@ -90,3 +123,5 @@ try{
  assert.equal(errors.length,0,'browser runtime errors');
  console.log('PASS · JM RouteOS Forge host: owner-import interface, software-rendered geometry contact, five distinct real triangle IDs, original RouteOS host receipt types, source-hash tamper refusal, protected native game save; fixture geometry ONLY, not protected private Forge mesh.');
 } finally {await browser.close()}
+
+export {fixture};

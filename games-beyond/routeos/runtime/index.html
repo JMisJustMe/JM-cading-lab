@@ -102,12 +102,12 @@ window.JMRouteOSHostPort=Object.freeze({signal:(kind,detail={})=>{
 }});
 /* Bounded native RouteOS host-recipient receipt seam for actual owner-supplied Forge geometry. */
 window.JMRouteOSFormForgePort=Object.freeze({record:(type,p)=>{
-const allowed=['FORGE_MESH_ACCEPTED','FORGE_FACE_CONTACT','FORGE_CONTACT_DING'];
+const allowed=['FORGE_MESH_ACCEPTED','FORGE_FACE_CONTACT','FORGE_CONTACT_DING','FORGE_PROBE_LAUNCH','FORGE_SURFACE_IMPACT'];
 if(!allowed.includes(type)||!p||p.source!=='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba'||
  !/^[a-f0-9]{64}$/.test(p.geometryHash||'')||!/^[a-f0-9]{8}$/.test(p.snapshotHash||'')||
  !Number.isInteger(p.contacts)||p.contacts<0||p.contacts>100000||
  !Number.isSafeInteger(p.score)||p.score<0||p.score>10000000)return false;
-receipt('HOST_FORGE',type,{recipient:'JM RouteOS v0.8.2',source:p.source,mesh_sha256:p.geometryHash,snapshot_hash:p.snapshotHash,triangle:p.face??-1,contacts:p.contacts,score:p.score});
+receipt('HOST_FORGE',type,{recipient:'JM RouteOS v0.8.2',source:p.source,mesh_sha256:p.geometryHash,snapshot_hash:p.snapshotHash,triangle:p.face??-1,contacts:p.contacts,score:p.score,shot:Number.isInteger(p.shot)?p.shot:null,kinetic_step:Number.isInteger(p.step)?p.step:null,impact_count:Number.isInteger(p.impactCount)?p.impactCount:null,contact_point:p.point??null,contact_normal:p.normal??null});
 return true}});
 window.addEventListener('resize',resize);receipt('BOOT','RouteOS public console runtime booted',{version:'0.8.2',preloaded:carts.map(c=>c.id)});renderStats();renderBay();renderVault();renderReceipts();resize();draw();setStatus('HOME');show('home');
 })();
@@ -115,5 +115,5 @@ window.addEventListener('resize',resize);receipt('BOOT','RouteOS public console 
 <script defer src="../../../estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"></script>
 <script defer src="../../../contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js"></script>
 <script defer src="../../../target-bridge/aiming-run-routeos-v0-1/JM_GAMECORE_AIMING_RUN_ROUTEOS_RECEIVER_v0_1.js"></script>
-<script defer src="../../../target-bridge/form-forge-routeos-v0-1/JM_FORM_FORGE_ROUTEOS_HOST_v0_1.js"></script>
+<script defer src="../../../target-bridge/form-forge-routeos-v0-2/JM_FORGE_ROUTEOS_SURFACE_KINETICS_HOST_v0_2.js"></script>
 </body></html>

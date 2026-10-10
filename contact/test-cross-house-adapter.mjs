@@ -1,0 +1,53 @@
+// JM cross-house packet adapter behavioural test: Node-only, no browser or external package.
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+const code=readFileSync(new URL('./JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js',import.meta.url),'utf8');
+const makeStore=()=>{const m=new Map();return {getItem:k=>m.has(k)?m.get(k):null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}};
+function enter(path,store){
+ const window={dispatchEvent:()=>{}};
+ const document={body:{dataset:{}},readyState:'loading',addEventListener:()=>{},querySelector:()=>null};
+ const context={window,document,location:{pathname:path,origin:'https://example.invalid'},localStorage:store,Event:class{constructor(type){this.type=type}},CustomEvent:class{constructor(type,opts){this.type=type;this.detail=opts?.detail}}};
+ vm.runInNewContext(code,context,{filename:'JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js'});
+ return window.JMEstateHandoff;
+}
+const a=makeStore(), games=enter('/games-beyond/',a),lyrics=enter('/lyrics/',a),apps=enter('/estate-publication/apps-tools-convergence/',a);
+assert.equal(games.schema,'JM.CrossHouseHandoff/0.1');
+assert.equal(lyrics.inbox().length,0);
+const prior={schema:'jm.packet/1.0',id:'EXISTING-DONOR',kind:'gem.extraction',source:'evidence',payload:{text:'keep this'},meta:{}};
+a.setItem('jm.apps.tools.shared.bus.v1',JSON.stringify([prior]));
+const out=games.handoff('lyrics','Krix world-to-story cue','Keep avatar and authored input identity intact.');
+assert.equal(out.schema,'jm.packet/1.0');
+assert.equal(out.kind,'estate.handoff');
+assert.equal(out.source,'games-house');
+assert.equal(lyrics.inbox().length,1);
+assert.equal(lyrics.inbox()[0].payload.note,'Keep avatar and authored input identity intact.');
+assert.equal(lyrics.inbox()[0].acknowledged,false);
+const ack=lyrics.acknowledge(out.id);
+assert.equal(ack.kind,'estate.handoff.ack');
+assert.equal(lyrics.acknowledge(out.id).id,ack.id);
+assert.equal(lyrics.inbox()[0].acknowledged,true);
+const other=lyrics.handoff('apps-tools','Lyric work for publication','Retain JM and earlier B. Lyrikz source identities.');
+assert.equal(apps.inbox()[0].id,other.id);
+assert.equal(games.read().find(x=>x.id==='EXISTING-DONOR').payload.text,'keep this');
+assert.throws(()=>games.handoff('games-house','self'),/different valid/);
+assert.throws(()=>games.handoff('invalid','bad'),/different valid/);
+assert.throws(()=>games.handoff('lyrics','  '),/subject is required/);
+const pack=games.exportPack();assert.equal(pack.schema,'jm.ecostate.cross-house-portable/1.0');
+assert.equal(pack.packets.length,3);
+assert.ok(pack.packets.every(x=>x.meta.bridge==='JM.CrossHouseHandoff/0.1'));
+const b=makeStore(), onPhone=enter('/lyrics/',b);
+b.setItem('jm.apps.tools.shared.bus.v1',JSON.stringify([prior]));
+assert.equal(onPhone.importPack(pack),3);
+assert.equal(onPhone.importPack(pack),0);
+assert.equal(onPhone.inbox().length,1);
+assert.equal(onPhone.inbox()[0].acknowledged,true);
+assert.equal(onPhone.read().find(x=>x.id==='EXISTING-DONOR').payload.text,'keep this');
+assert.throws(()=>onPhone.importPack({schema:'unknown',packets:[]}),/not a JM cross-house/);
+assert.throws(()=>onPhone.importPack({...pack,packets:[{id:'evil'}]}),/integrity/);
+assert.equal(games.read().length,4);
+for(const file of ['../access/index.html','../games-beyond/index.html','../lyrics/index.html','../estate-publication/apps-tools-convergence/index.html']){
+ const html=readFileSync(new URL(file,import.meta.url),'utf8');
+ assert.equal(html.split('JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js').length-1,1,file);
+}
+console.log('JM Cross-House packet test PASS: shared bus, two-way handoff, ack idempotence, provenance, portable merge, rejection, source mounts. Owner-device/contact HOLD.');

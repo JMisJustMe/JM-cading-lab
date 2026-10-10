@@ -38,6 +38,19 @@ jobs:
               if isinstance(obj,dict) and k in obj:
                   print('REA_KEY_'+k.upper()+'_SHAPE:',json.dumps(shape(obj[k]),sort_keys=True))
           PY
+          REA_RESULT="$RUNNER_TEMP/rea-static.json" python3 - <<'PY'
+          import json,os,pathlib
+          source=json.loads(pathlib.Path(os.environ['REA_RESULT']).read_text())
+          nodes=source['normalized_result']['semantic_graph']['nodes']
+          matches=[{'kind':n.get('kind'),'label':n.get('label'),
+            'module':n.get('identity',{}).get('module_path'),
+            'line':(n.get('identity',{}).get('source_range') or {}).get('start',{}).get('line'),
+            'node_id':n.get('node_id')} for n in nodes
+            if (n.get('identity',{}).get('module_path') or '').endswith('router-core.mjs')
+            and n.get('kind')=='function']
+          print('REA_JM_ORIGINAL_ROUTER_FUNCTION_COUNT:',len(matches))
+          print('REA_JM_ROUTER_FUNCTION_SAMPLE:',json.dumps(matches[:20],sort_keys=True))
+          PY
 
       - name: Import genuine REA Evidence and execute JM portable agents, router and compiler
         shell: bash

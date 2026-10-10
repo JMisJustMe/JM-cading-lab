@@ -18,4 +18,5 @@ assert.ok(impact);assert.equal(impact.face,0);
 assert.ok(k.state.velocity[2]>0,'rebounds away from actual triangle normal');
 assert.equal(k.state.impacts.length,1);
 assert.ok(k.state.position[2]>=0);
+const restored=k.resetSourceSession();assert.equal(restored.impact_count,0);assert.equal(k.state.impacts.length,0);assert.equal(k.fire().shot,1);
 console.log('PASS: first-party deterministic 3D triangle impact, negative-control miss, moving probe rebound, verified collision ID');

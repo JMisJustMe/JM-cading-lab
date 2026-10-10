@@ -46,6 +46,13 @@ assert.equal(onPhone.read().find(x=>x.id==='EXISTING-DONOR').payload.text,'keep 
 assert.throws(()=>onPhone.importPack({schema:'unknown',packets:[]}),/not a JM cross-house/);
 assert.throws(()=>onPhone.importPack({...pack,packets:[{id:'evil'}]}),/integrity/);
 assert.equal(games.read().length,4);
+const fullStore=makeStore();
+fullStore.setItem('jm.apps.tools.shared.bus.v1',JSON.stringify(Array.from({length:250},(_,i)=>({schema:'jm.packet/1.0',id:'LEGACY-'+i,kind:'legacy',source:'donor',payload:{},meta:{}}))));
+const fullGame=enter('/games-beyond/',fullStore);
+assert.throws(()=>fullGame.handoff('lyrics','must not delete donor'),/full/);
+assert.equal(fullGame.read().length,250);
+assert.throws(()=>fullGame.importPack(pack),/full/);
+assert.equal(fullGame.read().length,250);
 for(const file of ['../access/index.html','../games-beyond/index.html','../lyrics/index.html','../estate-publication/apps-tools-convergence/index.html']){
  const html=readFileSync(new URL(file,import.meta.url),'utf8');
  assert.equal(html.split('JM_CROSS_HOUSE_CONTACT_ADAPTER_v0_1.js').length-1,1,file);

@@ -6,6 +6,7 @@ on:
       - integration/jm-cross-house-packet-handoff-20261010
     paths:
       - "contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
       - "games-beyond/routeos/runtime/index.html"
       - "tests/jm-routeos-native-save-packet-contract.mjs"
       - "tests/jm-routeos-native-cross-device.spec.mjs"
@@ -13,6 +14,7 @@ on:
   pull_request:
     paths:
       - "contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
       - "games-beyond/routeos/runtime/index.html"
       - "tests/jm-routeos-native-save-packet-contract.mjs"
       - "tests/jm-routeos-native-cross-device.spec.mjs"

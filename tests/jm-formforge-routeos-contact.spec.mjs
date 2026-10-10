@@ -90,3 +90,5 @@ try{
  assert.equal(errors.length,0,'browser runtime errors');
  console.log('PASS · JM RouteOS Forge host: owner-import interface, software-rendered geometry contact, five distinct real triangle IDs, original RouteOS host receipt types, source-hash tamper refusal, protected native game save; fixture geometry ONLY, not protected private Forge mesh.');
 } finally {await browser.close()}
+
+export {fixture};

@@ -47,6 +47,9 @@ test('four ORIGINAL JM executable organs run and remain strictly scoped', async 
     assert.equal(result.source.sha256, crypto.createHash('sha256').update(raw).digest('hex'));
     assert.equal(result.source.evidence_records, 2);
     assert.equal(result.source.unresolved_questions, 1);
+    assert.deepEqual(result.investigation_signals.families, ['android']);
+    assert.ok(result.investigation_signals.actual_query.includes('android'));
+    assert.deepEqual(result.source.target_artifact_sha256_claims, ['f'.repeat(64)]);
     assert.equal(result.executed_original_jm_bodies.length, 4);
     assert.equal(result.jm_portable_agent.coding_identities, 64);
     assert.equal(result.jm_portable_agent.active_route_selected_not_spawned.length, 12);
@@ -97,4 +100,23 @@ test('unknown query remains unrouted by JM sovereign agent', async () => {
     assert.deepEqual(result.jm_portable_agent.route_candidates, []);
     assert.equal(result.jm_compiler.executed_state.records, 2);
   } finally { fs.rmSync(d, { recursive: true, force: true }); }
+});
+
+test('REA JavaScript operation labels route JM coding bodies toward JS rather than Android', async () => {
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), 'jm-rea-powered-test-'));
+  try {
+    const b = bundle();
+    for (const record of b.records) {
+      record.subject.format = 'directory';
+      record.operation = 'analyze_javascript_application';
+      record.predicate_type = 'rea.javascript-application';
+    }
+    const p = path.join(d, 'rea-js.json');
+    fs.writeFileSync(p, JSON.stringify(b));
+    const report = await runJMREA({source: p});
+    assert.deepEqual(report.investigation_signals.families, ['javascript']);
+    assert.ok(report.investigation_signals.actual_query.includes('javascript'));
+    assert.ok(!report.investigation_signals.actual_query.includes('android'));
+    assert.equal(report.jm_compiler.executed_state.records, 2);
+  } finally { fs.rmSync(d, {recursive: true, force: true}); }
 });

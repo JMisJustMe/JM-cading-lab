@@ -1,3 +1,8 @@
+> **Current experimental descendant: v0.5 (11 October 2026).** This branch's protected v0.1–v0.4 stages remain available; v0.5 adds real JM native route consequences without replacing the older bodies.
+> **120/120** RouteScript/RouteVM/RouteOS versus independent state-machine scenarios PASS; actual REA 6.1 inspected the original JM native source and validated its own Evidence.
+> Use [v0.5 source-to-route execution and write-once receipt](NATIVE_ROUTE_CONSEQUENCE_v0_5.md). No owner-device Ding, app reconstruction or full private JM32-1DA v2.2.1 compiler execution is claimed.
+
+---
 > **Current experimental descendant: v0.4 (10 October 2026).** This README below documents the protected read-only v0.1 entry, not the full descendant chain.
 > The v0.4 code now executes real REA 6.1.0 static JavaScript evidence alongside existing JM Python/Node agents, the 100-body route planner, Sovereign Ten JM32 and TraceBox and JM EveryBody portable compiler.
 > It also binds four exact REA-identified original JM router functions to independent source-guided implementations: **416/416 differential input/output cases PASS**. The result is fixture parity, not a claim of complete software reconstruction.

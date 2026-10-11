@@ -102,14 +102,6 @@ try{
  assert.ok(kineticReceipts.bus.length>=1,'real moving probe impact must enter EXISTING JM bus');
  assert.equal(kineticReceipts.bus[0].payload.mesh_sha256,packet.geometry.sha256);
  assert.equal(JSON.stringify(kineticReceipts.bus).includes(packet.geometry.data),false);
- await page.waitForTimeout(150);
- const responseDebug=await page.evaluate(()=>{
-  const f=document.querySelector('#jmForgeRouteOSHost iframe'),api=f?.contentWindow?.JMForgeEmbodiment;
-  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
-  return {hostText:document.querySelector('#jmForgeRouteOSHost p')?.textContent,
-   embeddedMounted:!!api,source:api?.status?.(),routeReceipts:os.receipts?.filter(x=>x.type==='HOST_FORGE')?.slice(0,3).map(x=>x.text)};
- });
- console.log('JM EMBODIMENT DIAGNOSTIC '+JSON.stringify(responseDebug));
  await page.waitForFunction(()=>{
   const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
   return os.receipts?.some(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_SURFACE_RESPONSE');

@@ -59,7 +59,7 @@ function handle(e){
        if(body?.schema!=='JM.FormForge.Embodiment/0.3')throw Error('v0.3 source-geometry response organ missing');
        const response=body.onImpact(p);
        if(response?.affected_vertices<1||response.max_offset<=0)throw Error('No measurable vertex movement');
-       const physical={...p,affectedVertices:response.affected_vertices,totalVertices:response.total_vertices,
+       const physical={...p,contacts:contacts.size,score:lastScore,affectedVertices:response.affected_vertices,totalVertices:response.total_vertices,
         maxOffset:response.max_offset,responseSequence:response.impact_sequence};
        const recorded=window.JMRouteOSFormForgePort?.record('FORGE_SURFACE_RESPONSE',physical);
        if(recorded){

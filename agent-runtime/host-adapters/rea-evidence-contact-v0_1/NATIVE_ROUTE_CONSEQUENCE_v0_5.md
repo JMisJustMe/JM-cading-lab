@@ -29,6 +29,17 @@ node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_ro
 
 The upstream full REA inspection is separately recorded by GitHub Actions; the 120-case test itself is offline and requires no REA installation.
 
+### Write-once recovery receipt
+
+```sh
+node agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_route_verify_cli_v0_5.mjs --output /absolute/path/to/NEW-route-receipt.json
+```
+
+The optional `--expect-route-sha256 HEX` pins the exact original JM route source. The runner writes only a NEW JSON receipt (exclusive-create) with SHA-256 digests of six original/replay source files, scoped test statistics and proof-gate statuses; it refuses to overwrite and checks that the source remained unchanged. It does not call REA and therefore records **runtime comparison proof only**, not REA evidence authentication.
+
+**Pinned real REA + exact JM native execution:** https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38170537119
+
+
 ## Precise HOLD
 
 - The independent interpreter starts from **JM's own parsed/lowered RouteScript graph**. This verifies execution consequence equivalence for covered routes, not independent source parsing or full-language equivalence.

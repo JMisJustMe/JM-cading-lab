@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_SURFACE_KINETICS_HOST_v0_2.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_EMBODIED_HOST_v0_3.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];
@@ -85,6 +85,8 @@ try{
  });
  assert.ok(geometry.hit&&Number.isInteger(geometry.hit.face),'3D ray must intersect a decoded face');
  assert.equal(geometry.miss,null,'miss cannot fabricate a face hit');
+ await f.locator('#jmRestoreForm').waitFor();
+ const originalPoints=await f.locator('#stage').evaluate(()=>window.JMForgeContact.scene.points.map(v=>v.slice()));
  await f.locator('#jmFire').click();
  await page.waitForFunction(()=>{
   const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
@@ -100,6 +102,36 @@ try{
  assert.ok(kineticReceipts.bus.length>=1,'real moving probe impact must enter EXISTING JM bus');
  assert.equal(kineticReceipts.bus[0].payload.mesh_sha256,packet.geometry.sha256);
  assert.equal(JSON.stringify(kineticReceipts.bus).includes(packet.geometry.data),false);
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_SURFACE_RESPONSE');
+ });
+ const response=await f.locator('#stage').evaluate(()=>{
+  const g=window.JMForgeContact,k=window.JMForgeEmbodiment;
+  return {status:k.status(),points:g.scene.points.map(v=>v.slice())};
+ });
+ assert.equal(response.status.schema,'JM.FormForge.Embodiment/0.3');
+ assert.equal(response.status.sourceVertices,originalPoints.length);
+ assert.ok(response.status.affectedVertices>0);
+ assert.ok(response.status.maxEver>0,'real source vertices must move after a 3D hit');
+ assert.ok(response.points.some((v,i)=>v.some((x,j)=>x!==originalPoints[i][j])),'game renderer must receive changed mesh coordinates');
+ const nativeResponse=await page.evaluate(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8'));
+  return os.receipts.filter(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_SURFACE_RESPONSE');
+ });
+ assert.equal(nativeResponse.length,1);
+ assert.ok(nativeResponse[0].extra.affected_vertices>0);
+ assert.ok(nativeResponse[0].extra.max_offset>0);
+ const sharedResponse=await page.evaluate(()=>window.JMAppsToolsSpine.read().filter(x=>x.kind==='jm.fieldform.embodied-surface-response'));
+ assert.equal(sharedResponse.length,1);
+ assert.equal(sharedResponse[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(sharedResponse[0].payload.affected_vertices,response.status.affectedVertices);
+ assert.equal(JSON.stringify(sharedResponse).includes(packet.geometry.data),false);
+ await f.locator('#jmRestoreForm').click();
+ const restoredBody=await f.locator('#stage').evaluate(()=>({points:window.JMForgeContact.scene.points.map(v=>v.slice()),state:window.JMForgeEmbodiment.status()}));
+ assert.deepEqual(restoredBody.points,originalPoints,'restore original geometry exactly, no source mutation');
+ assert.equal(restoredBody.state.maxOffset,0);
+
 
  const bad=structuredClone(packet);bad.snapshot.state.fixture=false;
  await assert.rejects(f.locator('#stage').evaluate(async(el,invalid)=>window.JMForgeContact.take(invalid),bad),/snapshot integrity failed/);
@@ -110,6 +142,11 @@ try{
  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_MESH_ACCEPTED').length>=2);
  const reset=await f.locator('#stage').evaluate(()=>window.JMForgeKinetics.state);
  assert.equal(reset.impacts.length,0);assert.equal(reset.shot,0);
+ const embodimentReset=await f.locator('#stage').evaluate(()=>window.JMForgeEmbodiment.status());
+ assert.equal(embodimentReset.impactCount,0);
+ assert.equal(embodimentReset.maxOffset,0);
+ assert.equal(embodimentReset.sourceVertices,12);
+
  await f.locator('#jmFire').click();
  await page.waitForFunction(n=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT').length>n,beforeReentry);
 

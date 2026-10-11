@@ -1,0 +1,39 @@
+name: JM Form Forge Embodied Surface v0.3
+
+on:
+  push:
+    branches:
+      - integration/jm-forge-embodied-response-v0-3-20261011
+  pull_request:
+    paths:
+      - "target-bridge/form-forge-routeos-v0-3/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-formforge-embodied-response-v0-3.contract.mjs"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+jobs:
+  actual-vertex-response:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Confirm source syntax, actual vertex movement and reversible physics
+        run: |
+          node --check target-bridge/form-forge-routeos-v0-3/JM_FORGE_EMBODIED_RESPONSE_v0_3.js
+          node --check target-bridge/form-forge-routeos-v0-3/JM_FORGE_ROUTEOS_EMBODIED_HOST_v0_3.js
+          node tests/jm-formforge-embodied-response-v0-3.contract.mjs
+          node tests/jm-kinetics-v0-2-contract.mjs
+      - name: Install browser runner
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Start actual repository-source web server
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-formforge-embodied.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-formforge-embodied.log
+          exit 1
+      - name: Prove visible mesh-body change, native response Ding and full-game regression
+        run: node tests/jm-formforge-routeos-contact.spec.mjs

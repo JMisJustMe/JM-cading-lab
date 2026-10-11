@@ -1,0 +1,52 @@
+{
+  "schema": "JM.Ecostate.FormForgeEmbodiment.Contact/0.3",
+  "date": "2026-10-11",
+  "state": "BOUNDED_BROWSER_RUNTIME_PASS__OWNER_DEVICE_HOLD__LIVE_MAIN_UNCHANGED",
+  "lineage": {
+    "parent": "integration/jm-forge-surface-kinetics-v0-2-20261010",
+    "head": "integration/jm-forge-embodied-response-v0-3-20261011",
+    "draft_pr": 359,
+    "v0_2_pr": 358,
+    "frozen_v0_1": "flaz/jm-formforge-gamecontact-v0-1-20261010"
+  },
+  "protected_source": {
+    "name": "JM Field/Form Forge v0.24 tidy-seat",
+    "sha256": "ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba",
+    "source_custody": "PRIVATE LIBRARY",
+    "source_published": false,
+    "actual_private_glb_sha256": "de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7",
+    "vertices": 310,
+    "faces": 616
+  },
+  "implementation": {
+    "version": "v0.3",
+    "module": "target-bridge/form-forge-routeos-v0-3/JM_FORGE_EMBODIED_RESPONSE_v0_3.js",
+    "host": "target-bridge/form-forge-routeos-v0-3/JM_FORGE_ROUTEOS_EMBODIED_HOST_v0_3.js",
+    "inherited": [
+      "actual v0.1 GLB renderer and touch game",
+      "v0.2 segment-triangle impact and rebound",
+      "RouteOS original native SAVE/LOAD and bus"
+    ],
+    "mechanism": "First-party localized spring-damper moves actual decoded mesh vertices, max local deflection 0.30; original coordinates separately kept for exact restore",
+    "response_scope": "kinematic compliant surface; not skeletal animation, general soft-body solver, cloth, GPU or APK"
+  },
+  "proof": {
+    "unit": "PASS: actual vertex displacement, decay, rejection of mismatched impact and source rebinding",
+    "browser": "PASS: collision, real source-mesh motion, original 5-face contact, exact recovery, same-mesh re-entry, native RouteOS and JM packet receipts, Seed Runner SAVE",
+    "test_fixture": "12-vertex synthetic public mesh; 9 actually moved with measured ~0.0633 max displacement",
+    "native_receipt": "FORGE_SURFACE_RESPONSE",
+    "bus_type": "jm.fieldform.embodied-surface-response",
+    "transport_fix": "Required native receipt contacts and score fields added after real mesh movement observed",
+    "run_id": 38170679450,
+    "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38170679450",
+    "actual_private_GLB_host_contact_v03": "NOT YET PROVEN"
+  },
+  "boundaries": {
+    "owner_phone": "OPEN",
+    "owner_laptop": "OPEN",
+    "main_promotion": "HOLD",
+    "private_forge_bytes_in_repo": false,
+    "webgl2_production": "OPEN"
+  },
+  "keeper": "RECOVER → INHERIT → IMPACT → VERTEX RESPONSE → RECOVERY → NATIVE RECEIPT → JM BUS · MESH ≠ MERGE"
+}

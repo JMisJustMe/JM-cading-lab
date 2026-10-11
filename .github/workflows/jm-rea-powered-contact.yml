@@ -38,3 +38,6 @@ jobs:
 
       - name: Original JM function parity against independent reconstructions
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_function_replay.mjs
+
+      - name: v0.5 Original JM RouteScript/RouteVM/RouteOS behavioural consequence differential
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_route_verify_v0_5.mjs

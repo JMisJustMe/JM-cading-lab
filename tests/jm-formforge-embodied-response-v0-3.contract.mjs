@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const path='target-bridge/form-forge-routeos-v0-3/JM_FORGE_EMBODIED_RESPONSE_v0_3.js';
+const source=fs.readFileSync(path,'utf8');
+const original=[[-1,-1,0],[1,-1,0],[0,1,0],[2,2,0],[-2,2,0],[0,0,-2]];
+const scene={loaded:true,points:original.map(a=>a.slice()),faces:[[0,1,2]],angles:{x:0,y:0},zoom:1,
+ meshSha:'a'.repeat(64),snapshot:'12345678'};
+const win={JMForgeContact:{scene},JMForgeKinetics:{collision:()=>{}}};win.parent=win;
+const doc={readyState:'loading',addEventListener:()=>{}};
+vm.runInNewContext(source,{window:win,document:doc,location:{origin:'null'},Math,JSON,Number,Date,Object,Set,Error},{filename:path});
+const e=win.JMForgeEmbodiment;
+assert.equal(e.schema,'JM.FormForge.Embodiment/0.3');
+const ready=e.bindSource();assert.equal(ready.vertices,6);
+const evt={event:'SURFACE_IMPACT',source:'ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba',
+ geometryHash:scene.meshSha,snapshotHash:scene.snapshot,point:[0,0,0],normal:[0,0,1],face:0};
+const proof=e.onImpact(evt);
+assert.ok(proof.affected_vertices>0);assert.equal(proof.face,0);assert.ok(proof.max_offset>0);
+assert.ok(scene.points.some((v,i)=>v.some((x,j)=>x!==original[i][j])),'real mesh points must move');
+assert.ok(e.status().maxOffset>0);assert.equal(e.status().impactCount,1);
+assert.throws(()=>e.onImpact({...evt,face:100}),/Untrusted/);
+assert.throws(()=>e.onImpact({...evt,geometryHash:'f'.repeat(64)}),/Untrusted/);
+assert.throws(()=>e.step(.12),/timestep/);
+const first=e.status().maxOffset;
+for(let i=0;i<650;i++)e.step(1/120);
+assert.ok(e.status().maxOffset<first*.025,'spring-damper must settle toward original');
+const restored=e.restore();assert.equal(restored.restored,true);
+assert.deepEqual(JSON.parse(JSON.stringify(scene.points)),original);
+assert.equal(e.status().maxOffset,0);
+const second=e.onImpact(evt);assert.ok(second.max_offset>0);
+const newBase=[[0,0,0],[0,1,0],[1,0,0],[2,1,0]].map(x=>x.slice());
+scene.points=newBase;scene.faces=[[0,1,2]];scene.meshSha='b'.repeat(64);scene.snapshot='87654321';
+const reborn=e.bindSource();
+assert.equal(reborn.vertices,4);assert.equal(e.status().impactCount,0);
+assert.equal(e.status().maxOffset,0);
+assert.throws(()=>e.onImpact(evt),/Untrusted|match/);
+assert.deepEqual(JSON.parse(JSON.stringify(scene.points)),newBase);
+console.log('PASS: real source-vertex displacement, bounded spring return, inverse recovery, source re-entry reset, forged impact rejected.');

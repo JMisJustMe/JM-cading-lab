@@ -127,7 +127,7 @@ function draw(){
  c.beginPath();c.arc(beacon.x,beacon.y-25,11,0,2*Math.PI);c.strokeStyle=gateOpen?'#81ffa8':'#a5afcf';c.lineWidth=4;c.stroke();
  c.shadowColor='#f4c477';c.shadowBlur=13;c.fillStyle='#f0ba64';c.beginPath();c.arc(core.x,core.y,10,0,Math.PI*2);c.fill();c.shadowBlur=0;
  c.font='700 11px system-ui';c.textAlign='center';c.fillStyle=gateOpen?'#c4ffd0':'#ffe6b8';
- c.fillText(gateOpen?'WORLD COMPLETE':'RELAY CORE',Math.max(70,Math.min(w-70,core.x)),core.y+29,130);
+ c.fillText(gateOpen?'GATE OPEN':'RELAY CORE',Math.max(70,Math.min(w-70,core.x)),core.y+12,100);
 }
 function mount(){
  const stage=document.querySelector('.stage'),panel=document.getElementById('jmDualActorPanel');

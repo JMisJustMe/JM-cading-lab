@@ -1,3 +1,8 @@
+> **Current descendant: v0.6 (12 October 2026), isolated draft.** The original v0.1–v0.5 bodies below remain preserved.
+> [Independent JM source parsing + original JM GameCore application parity](INDEPENDENT_APPLICATION_CONTACT_v0_6.md): 120/120 RouteScript source AST/IR matches; 96/96 original Game-CODING/JM GameCore micro-application sessions; 672/672 interaction checkpoints; native JM32/TraceBox proof gate. Genuine REA 6.1.0 inspected `game-native.mjs` and validated its Evidence in isolated Actions.
+> Offline re-entry: `jm_rea_application_cli_v0_6.mjs --output /absolute/NEW-v06-receipt.json`; no overwrite or production merge. Scope is the authored micro-application, NOT a complete phone game.
+
+---
 > **Current experimental descendant: v0.5 (11 October 2026).** This branch's protected v0.1–v0.4 stages remain available; v0.5 adds real JM native route consequences without replacing the older bodies.
 > **120/120** RouteScript/RouteVM/RouteOS versus independent state-machine scenarios PASS; actual REA 6.1 inspected the original JM native source and validated its own Evidence.
 > Use [v0.5 source-to-route execution and write-once receipt](NATIVE_ROUTE_CONSEQUENCE_v0_5.md). No owner-device Ding, app reconstruction or full private JM32-1DA v2.2.1 compiler execution is claimed.

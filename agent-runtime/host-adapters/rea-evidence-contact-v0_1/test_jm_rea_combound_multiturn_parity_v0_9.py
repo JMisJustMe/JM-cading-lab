@@ -25,7 +25,7 @@ def fixture():
   elif i<16: turn,phase,no='enemy','moving',1
   else: turn,phase,no='player','player_aim',2
   out.append({'frame':i*120,'phase':phase,'turn':turn,'turnNo':no,'ended':False,
-              'receipts':['MATCH_START','SHOT_COMMIT'],'units':[{'hp':100}]})
+              'receipts':['MATCH_START','SHOT_COMMIT'],'units':[['player-0-ZIPP',0,0,0,0,100]]})
  return out
 
 class CheckSequence(unittest.TestCase):
@@ -35,7 +35,7 @@ class CheckSequence(unittest.TestCase):
   self.assertTrue(r['enemy_shot_observed'])
   self.assertTrue(r['return_to_player_observed'])
  def test_changed_health_detected(self):
-  s=fixture();t=copy.deepcopy(s);t[10]['units'][0]['hp']=0
+  s=fixture();t=copy.deepcopy(s);t[10]['units'][0][5]=0
   with self.assertRaisesRegex(RuntimeError,'OBSERVABLE_CONSEQUENCE_DIVERGENCE'):runner.compare(s,t)
  def test_no_ai_preview_is_hold(self):
   s=fixture();s[7]['phase']='moving'

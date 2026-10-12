@@ -1,0 +1,62 @@
+{
+  "schema": "JM.Ecostate.WorldOwnerContactRelease.FLAZ/0.6",
+  "recorded_on": "2026-10-12",
+  "authority": {
+    "owner": "JM / JMISJUSTME",
+    "parent_FLAZ": "flaz/jm-formforge-world-consequence-v0-6-20261012",
+    "parent_draft_pr": 362,
+    "release_branch": "release/jm-world-v0-6-owner-contact-20261012",
+    "release_pr": 363,
+    "live_main_untouched": true,
+    "original_private_v024_source_unchanged": true
+  },
+  "delivery": {
+    "source_lineage": "Original v0.1 contact game plus additive v0.2 kinetics, v0.3 embodied response, v0.4 articulated region, v0.5 two-source instances, v0.6 Guardian/Courier world consequence",
+    "owner_carrier": "release/jm-world-v0-6/JM_GUARDIAN_COURIER_OWNER_CONTACT_ONEBODY_v0_6.html",
+    "public_carrier_sha256": "4371d94d5377f7655ebb2eba7c0ce027c82bd83f6d5503c7261a785c49b25839",
+    "public_carrier_bytes": 76402,
+    "external_script_dependencies": 0,
+    "manual_owner_checkpoint": "JM.Ecostate.OwnerWorldCheckpoint/0.6 source+snapshot-verified world state, no GLB bytes",
+    "device_UI": "phone-first play area, owner progression/action dock, safe labels, original controls preserved and expandable",
+    "private_source_embedded_in_public_release": false,
+    "private_owner_local_edition": {
+      "created_in_user_conversation": true,
+      "not_in_public_repository": true,
+      "contains_private_glb_packet": true,
+      "private_embedded_packet_bytes": 77092,
+      "private_edition_bytes": 179194,
+      "private_edition_sha256": "2ae21cbfa17772b90a0e5fb41958e5e53a0b25766cdeef1f944e3412981b7148",
+      "evidence_ceiling": "STATIC EXTRACTED PAYLOAD MATCHES ORIGINAL + GLB/SNAPSHOT HASHES; browser physical/contact NOT proven"
+    }
+  },
+  "proof": {
+    "ci_scope": "actual committed OneBody opened from file:// in Chromium mobile-sized touch and fresh desktop contexts; synthetic public fixture",
+    "ci_success_run": 38286497069,
+    "ci_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38286497069",
+    "tests": [
+      "Deterministic source reproduction",
+      "No external script dependencies",
+      "Mobile stage fit and actor-movement",
+      "Actual Guardian contact clearance",
+      "Actual Courier relay-core movement then gated world outcome",
+      "Manual owner download checkpoint",
+      "Fresh desktop restores completed world and 2 actor state",
+      "Wrong source checkpoint is refused without erasing earned gate",
+      "Mobile/desktop screenshot capture"
+    ],
+    "real_private_forge_packet": "GLB 26,700 bytes / 310 vertices / 616 triangles / source sha ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba, private packet SHA verified in isolated container",
+    "private_v06_browser_run": "UNPROVEN — local system Chromium browser access restricted; do not infer from public synthetic QA",
+    "independent_Android_owner_phone": "OPEN",
+    "owner_laptop_real_browser": "OPEN"
+  },
+  "release_gates": {
+    "owner_acceptance": "HOLD",
+    "release_grade": "TESTED_OFFLINE_BROWSER_RELEASE_CANDIDATE",
+    "Android_APK": "NOT_CLAIMED",
+    "cross_host_game_engines": "NOT_CLAIMED",
+    "production_GitHub_main": "NOT_PROMOTED",
+    "Cloudflare_live": "NOT_DEPLOYED",
+    "independent_offsite_custody": "NOT_VERIFIED_FOR_THIS_NEW_OWNER_CARRIER"
+  },
+  "keeper": "SOURCE → REAL PLAY → PERSISTENT WORLD → REPRODUCIBLE ONEBODY → OWNER TEST → DING → PROMOTE; MESH ≠ MERGE; INTEGRATION ≠ REPLACEMENT"
+}

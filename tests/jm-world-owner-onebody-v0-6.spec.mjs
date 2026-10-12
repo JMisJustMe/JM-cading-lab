@@ -54,7 +54,7 @@ try{
  await page.waitForFunction(()=>window.JMForgeWorld?.state()?.beacon?.open===true,{timeout:12000});
  const ended=await page.evaluate(()=>({world:window.JMForgeWorld.state(),actor:window.JMForgeDualActor.state()}));
  assert.equal(ended.world.core.x,2.12);assert.ok(ended.world.core.pushes>0);assert.equal(ended.world.consequence,'BEACON_LIT_AND_GATE_OPEN');
- assert.match(await page.locator('#jmOwnerStage').innerText(),/WORLD COMPLETE/);
+ await page.waitForFunction(()=>document.querySelector('#jmOwnerStage')?.textContent.includes('WORLD COMPLETE')); // HUD polls source-world state
  const dlPromise=page.waitForEvent('download');
  await page.locator('#ownerSave').click();
  const dl=await dlPromise;assert.match(dl.suggestedFilename(),/JM_WORLD_v0_6_OWNER_CHECKPOINT.json/);

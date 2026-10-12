@@ -1,3 +1,8 @@
+> **Current experimental real-game contact: v0.7 — COMBOUND v2.3 protected FLAZ source.** This adds *real game source* Chromium testing over v0.6's micro-application. It does not replace v0.6 or the protected COMBOUND file.
+> [COMBOUND exact-source real-game contact and remaining gates](COMBOUND_REAL_GAME_CONTACT_v0_7.md) · [compact execution receipt](COMBOUND_REAL_GAME_CONTACT_v0_7_RECEIPT.json) · [replay without copying original HTML](jm_rea_combound_browser_probe_v0_7.py).
+> CLASSIC/ARCADE source-guided visual scope correction restores v2.3 motion registration; both retain 24/24 fighters, launch state and genuine browser canvas pointer event semantics. Source original unchanged; candidate separate. Full match / physical owner-device parity remains HOLD.
+
+---
 > **Current descendant: v0.6 (12 October 2026), isolated draft.** The original v0.1–v0.5 bodies below remain preserved.
 > [Independent JM source parsing + original JM GameCore application parity](INDEPENDENT_APPLICATION_CONTACT_v0_6.md): 120/120 RouteScript source AST/IR matches; 96/96 original Game-CODING/JM GameCore micro-application sessions; 672/672 interaction checkpoints; native JM32/TraceBox proof gate. Genuine REA 6.1.0 inspected `game-native.mjs` and validated its Evidence in isolated Actions.
 > Offline re-entry: `jm_rea_application_cli_v0_6.mjs --output /absolute/NEW-v06-receipt.json`; no overwrite or production merge. Scope is the authored micro-application, NOT a complete phone game.

@@ -163,6 +163,7 @@ jobs:
           const methodNames = ['beginDrag','moveDrag','releaseDrag','commitShot','registerCrewUse'];
           const methodNodes = graph.nodes.filter(n => n.kind === 'function' && n.identity?.module_path === 'combound_inline_000.js' && methodNames.includes(n.label));
           console.log('SYNTHETIC_REA_METHOD_DISCOVERY:', JSON.stringify({found: methodNodes.map(n=>n.label), total: methodNodes.length}));
+          console.log('SYNTHETIC_REA_SOURCE_DIGEST_DIAGNOSTIC:',JSON.stringify({subject:record.subject?.digest?.sha256,root:graph.root_artifact_sha256,methodArtifact:methodNodes[0]?.identity?.artifact_sha256,module:methodNodes[0]?.identity?.module_path}));
           assert.equal(new Set(methodNodes.map(n=>n.label)).size, methodNames.length, 'REA_METHOD_LABEL_GRAMMAR_HOLD');
           const input = fs.readFileSync(process.env.RUNNER_TEMP+'/jm-rea-object-shape/combound_inline_000.js');
           const sourceSha = crypto.createHash('sha256').update(input).digest('hex');

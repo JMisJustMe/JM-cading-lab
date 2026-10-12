@@ -49,7 +49,16 @@ function validate(s){
   s.consequence!==(s.beacon.open?'BEACON_LIT_AND_GATE_OPEN':'PENDING')||
   (s.beacon.open&&(s.deliveries!==1||!s.clearance||s.phase!=='delivered'||s.core.x<2.12))||
   (s.deliveries===0&&s.beacon.open)||
-  (!s.clearance&&s.phase!=='await-guardian-contact'))throw Error('Invalid or mismatched world consequence checkpoint');
+  (!s.clearance&&s.phase!=='await-guardian-contact')||
+  (s.phase==='await-guardian-contact'&&(s.clearance||s.core.x!==1.34||s.core.pushes!==0))||
+  (s.phase==='clearance'&&(!s.clearance||s.core.x!==1.34||s.core.pushes!==0))||
+  (s.phase==='transport'&&!s.clearance)||
+  (s.phase==='delivered'&&!s.beacon.open)||
+  (s.deliveries===1&&!s.beacon.open)||
+  (s.core.x>1.34&&s.core.pushes===0)||
+  (s.core.x===2.12&&!s.beacon.open)||
+  s.sequence!==(s.clearance?1:0)+s.core.pushes+s.deliveries)
+  throw Error('Invalid or mismatched world consequence checkpoint');
  return true;
 }
 function restore(s){

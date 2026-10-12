@@ -115,5 +115,63 @@ jobs:
           console.log('REAL_REA_TO_JM_STATIC_UNKNOWNS:',projected.input_census.unknowns);
           console.log('REAL_REA_TO_JM_BOUNDARY:',projected.boundary);
           JS
+
+      - name: Validate genuine REA 6.1 against an inline-object game-runtime shape (NO private game source)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/jm-rea-object-shape"
+          cat > "$RUNNER_TEMP/jm-rea-object-shape/combound_inline_000.js" <<'SYNTH'
+          // Synthetic behavioral interface only; not COMBOUND source.
+          const Runtime = {
+            beginDrag(state, start) {
+              state.drag = {start, power: 0};
+              return state.drag;
+            },
+            moveDrag(state, point) {
+              if (!state.drag) return null;
+              state.drag.power = Math.min(1, Math.hypot(point.x, point.y) / 160);
+              return state.drag;
+            },
+            releaseDrag(state, point) {
+              if (!state.drag) return false;
+              this.moveDrag(state, point);
+              if (state.drag.power < 0.08) return false;
+              return this.commitShot(state);
+            },
+            commitShot(state) {
+              state.shots = (state.shots || 0) + 1;
+              this.registerCrewUse(state);
+              return state.shots;
+            },
+            registerCrewUse(state) {
+              state.crewUses = (state.crewUses || 0) + 1;
+            }
+          };
+          const sandboxState = {};
+          Runtime.beginDrag(sandboxState, {x: 0, y: 0});
+          Runtime.releaseDrag(sandboxState, {x: 95, y: 30});
+          SYNTH
+          npm exec --yes --package=rea-agents@6.1.0 -- rea analyze-javascript-application "$RUNNER_TEMP/jm-rea-object-shape" --json > "$RUNNER_TEMP/rea-synthetic-game-shape.json"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          import crypto from 'node:crypto';
+          import {projectGenuineREA} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_auto_relation_ir_v0_8.mjs';
+          const record = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/rea-synthetic-game-shape.json', 'utf8'));
+          const graph = record.normalized_result.semantic_graph;
+          const methodNames = ['beginDrag','moveDrag','releaseDrag','commitShot','registerCrewUse'];
+          const methodNodes = graph.nodes.filter(n => n.kind === 'function' && n.identity?.module_path === 'combound_inline_000.js' && methodNames.includes(n.label));
+          console.log('SYNTHETIC_REA_METHOD_DISCOVERY:', JSON.stringify({found: methodNodes.map(n=>n.label), total: methodNodes.length}));
+          assert.equal(new Set(methodNodes.map(n=>n.label)).size, methodNames.length, 'REA_METHOD_LABEL_GRAMMAR_HOLD');
+          const input = fs.readFileSync(process.env.RUNNER_TEMP+'/jm-rea-object-shape/combound_inline_000.js');
+          const sourceSha = crypto.createHash('sha256').update(input).digest('hex');
+          const projection = projectGenuineREA(record,{module:'combound_inline_000.js', roots:['releaseDrag','commitShot'],sourceSha256:sourceSha});
+          assert.equal(projection.gate.promotable, false);
+          assert.ok(projection.selected_census.nodes>=2);
+          console.log('SYNTHETIC_REAL_REA_OBJECT_SHAPE_PROJECTION_PASS:',JSON.stringify(projection.selected_census));
+          console.log('REA_SYNTHETIC_ORIGIN_ONLY_NOT_PRIVATE_COMBOUND');
+          JS
+
       - name: v0.8 bounded REA auto-projection negative tests
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs

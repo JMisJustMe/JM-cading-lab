@@ -32,6 +32,7 @@ assert.equal(a.world.state().core.x,1.34,'Guardian clearance alone must NOT tele
 assert.equal(a.world.state().beacon.open,false);
 a.world.startDelivery();
 let before=a.world.state(),moved=false,complete=null;
+const legitimateEarlierWorld=JSON.parse(JSON.stringify(before));
 for(let i=0;i<450;i++){
  const p=a.dual.step(1/120);
  const s=a.world.state();
@@ -60,7 +61,7 @@ assert.throws(()=>b.dual.restore({...checkpoint,echo:{...checkpoint.echo,contact
 assert.throws(()=>b.dual.restore({...checkpoint,world:{...checkpoint.world,sequence:checkpoint.world.sequence+2}}),/Invalid or mismatched/);
 assert.throws(()=>b.dual.restore({...checkpoint,world:{...checkpoint.world,phase:'transport'}}),/Invalid or mismatched/);
 assert.throws(()=>b.world.restore({...checkpoint.world,beacon:{...checkpoint.world.beacon,open:false}}),/Invalid/);
-assert.throws(()=>b.world.restore({...checkpoint.world,phase:'clearance',deliveries:0,beacon:{...checkpoint.world.beacon,open:false},consequence:'PENDING'}),/HOLD/);
+assert.throws(()=>b.world.restore(legitimateEarlierWorld),/HOLD/); // valid previously earned intermediate state cannot erase completed delivery
 b.dual.reset();
 assert.equal(b.world.state().beacon.open,false);
 assert.equal(b.dual.state().echo.contacts,0);

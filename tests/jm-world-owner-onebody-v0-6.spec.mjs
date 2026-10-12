@@ -45,7 +45,7 @@ try{
  await page.locator('#import').setInputFiles({name:'PUBLIC_SYNTHETIC_GAME_MESH.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(packet))});
  await page.waitForFunction(()=>window.JMForgeDualActor?.ready===true&&window.JMForgeWorld?.ready===true,{timeout:12000});
  assert.match(await page.locator('#jmOwnerStage').innerText(),/GUARDIAN CONTACT/);
- assert.equal(await page.locator('#meshCount').innerText(),'12 V / 20 T');
+ assert.equal(await page.locator('#meshCount').textContent(),'12 V / 20 T'); // original evidence panel is intentionally collapsed on phones
  await page.locator('#ownerApproach').click();
  await page.waitForFunction(()=>window.JMForgeWorld?.state()?.clearance===true,{timeout:12000});
  assert.equal(await page.locator('#ownerDeliver').isEnabled(),true);

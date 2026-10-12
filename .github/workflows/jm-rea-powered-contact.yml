@@ -60,3 +60,6 @@ jobs:
 
       - name: v0.9 exact private COMBOUND REA preflight negative and safety gates (synthetic fixtures)
         run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_combound_preflight_v0_9.py' -v
+
+      - name: v0.9 real-REA selected-function source SHA and graph identity negative gates
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_binding_v0_9.py' -v

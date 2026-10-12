@@ -1,0 +1,63 @@
+{
+  "schema": "JM.Ecostate.FormForgeArticulation.Contact/0.4",
+  "dated": "2026-10-12",
+  "checkpoint": "BROWSER_TWO_JOINT_NATIVE_CONTACT_PASS__OWNER_DEVICE_HOLD",
+  "authority": {
+    "owner": "JM / JMISJUSTME",
+    "protected_source": "JM Field/Form Forge v0.24 FINAL TIDY SEAT",
+    "original_FLAZ": "flaz/jm-formforge-gamecontact-v0-1-20261010",
+    "v02_parent_pr": 358,
+    "v03_parent_pr": 359,
+    "v04_draft_pr": 360,
+    "v04_branch": "integration/jm-forge-articulated-body-v0-4-20261012",
+    "live_main_untouched": true,
+    "source_GLB_changed": false,
+    "private_Forge_source_published": false
+  },
+  "implementation": {
+    "path": "target-bridge/form-forge-routeos-v0-4/JM_FORGE_ARTICULATED_BODY_v0_4.js",
+    "host": "target-bridge/form-forge-routeos-v0-4/JM_FORGE_ROUTEOS_ARTICULATED_HOST_v0_4.js",
+    "existing_game": "target-bridge/form-forge-routeos-v0-1/index.html",
+    "compositional_extension": "bounded registerComposer seam in inherited v0.3 module on v0.4 descendant branch only; parent v0.3 branch preserved",
+    "joints": [
+      "root anchored",
+      "weighted body hinge",
+      "weighted crown hinge"
+    ],
+    "source_geometry": "same validated native GLB vertex and triangle buffers, never a replacement mesh",
+    "kinematics": "coupled two-joint, source-bounds-derived weighted regions, spring-target settling, impact recoil, exact zero-pose bypass and native restore",
+    "controls": "original face picking and orbit + F/IJKL probe + Q/E body, R/T crown, P rest pose + explicit original-form restore",
+    "not_claimed": [
+      "authored skeleton",
+      "true skinning weights and weights painting",
+      "generative animation or coordinated locomotion",
+      "production rigid-body collision",
+      "private owner-device proof",
+      "mobile APK",
+      "live Cloudflare promotion"
+    ]
+  },
+  "test": {
+    "new_workflow": "JM Forge Articulated Body v0.4",
+    "successful_run_id": 38264163623,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38264163623",
+    "synthetic_fixture": "public synthetic mesh only; not the protected private 310-vertex/616-face GLB",
+    "math_unit": "PASS: two nontrivial linked joint motions, lower root remains fixed, upper source vertices move, v0.3 impact plus v0.4 recoil, rejects forged impacts, exact coordinate restore stable through later simulation frames, source rebinding",
+    "real_browser": "PASS: original v0.1 contact; v0.2 3D probe; v0.3 spring surface response; v0.4 two-joint manual pose and earned recoil; RouteOS host receipts, existing JM packet bus and original Seed Runner save",
+    "native_receipt": "FORGE_ARTICULATED_RECOIL",
+    "packet_kind": "jm.fieldform.articulated-recoil",
+    "bus_private_source_bytes": false,
+    "float_drift_fix": "zero-pose bypass ensures bit-exact source coordinates after restore"
+  },
+  "remaining_checks": {
+    "owner_physical_android": "OPEN",
+    "owner_laptop": "OPEN",
+    "private_Forge_GLB_v04_runtime": "NOT_YET_RUN",
+    "production_deployment": "HOLD",
+    "multiple_true_independent_articulated_meshes": "OPEN",
+    "rigging_skeleton_asset_pipeline": "OPEN",
+    "full_animation_state_persistence_cross_device": "OPEN",
+    "performance_batch_more_triangles": "OPEN"
+  },
+  "keeper": "RECOVER BEFORE REBUILD → INHERIT SOURCE → MESH CONTACT → PHYSICAL RESPONSE → COORDINATED POSE → RESTORE → RECEIPT → PROOF. MESH ≠ MERGE; INTEGRATION ≠ REPLACEMENT."
+}

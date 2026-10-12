@@ -1,0 +1,42 @@
+name: JM World v0.6 Offline Owner OneBody
+on:
+  push:
+    branches:
+      - release/jm-world-v0-6-owner-contact-20261012
+  pull_request:
+    paths:
+      - "release/jm-world-v0-6/**"
+      - "tools/release/jm-world-owner-onebody-build.mjs"
+      - "tests/jm-world-owner-onebody-v0-6.spec.mjs"
+jobs:
+  actual-standalone-game:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Reproduce exact full-body delivery from inherited source
+        run: node tools/release/jm-world-owner-onebody-build.mjs --check
+      - name: Install Chromium standalone test runner
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Run ACTUAL local-file phone + separate desktop world game
+        run: node tests/jm-world-owner-onebody-v0-6.spec.mjs
+      - name: Preserve test device screenshot evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM-World-v0-6-owner-contact-evidence
+          path: |
+            /tmp/jm_owner_phone_world_v06.png
+            /tmp/jm_owner_desktop_world_v06.png
+          if-no-files-found: ignore
+      - name: Preserve release candidate as downloadable OneBody
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM-GUARDIAN-COURIER-OWNER-CONTACT-v0-6
+          path: release/jm-world-v0-6/JM_GUARDIAN_COURIER_OWNER_CONTACT_ONEBODY_v0_6.html

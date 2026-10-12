@@ -1,0 +1,46 @@
+name: JM RouteOS Native State Cross-Device Contact
+
+on:
+  push:
+    branches:
+      - integration/jm-cross-house-packet-handoff-20261010
+    paths:
+      - "contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-routeos-native-save-packet-contract.mjs"
+      - "tests/jm-routeos-native-cross-device.spec.mjs"
+      - ".github/workflows/jm-routeos-native-cross-device.yml"
+  pull_request:
+    paths:
+      - "contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js"
+      - "estate-publication/apps-tools-convergence/JM_APPS_TOOLS_SHARED_PACKET_SPINE_v0_1.js"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-routeos-native-save-packet-contract.mjs"
+      - "tests/jm-routeos-native-cross-device.spec.mjs"
+      - ".github/workflows/jm-routeos-native-cross-device.yml"
+jobs:
+  native-state-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Prove JS, portable native-state contract and loss boundaries
+        run: |
+          node --check contact/JM_ROUTEOS_NATIVE_SAVE_PACKET_BRIDGE_v0_1.js
+          node tests/jm-routeos-native-save-packet-contract.mjs
+      - name: Install browser proof runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve actual repository-native RouteOS runtime
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-routeos-cross-device.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-routeos-cross-device.log
+          exit 1
+      - name: Prove desktop gameplay to mobile native LOAD / PLAY / SAVE
+        run: node tests/jm-routeos-native-cross-device.spec.mjs

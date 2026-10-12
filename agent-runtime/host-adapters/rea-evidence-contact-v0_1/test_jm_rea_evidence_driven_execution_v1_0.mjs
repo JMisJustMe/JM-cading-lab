@@ -90,3 +90,18 @@ test('session budget cannot become unbounded play-test mission',()=>{
  assert.throws(()=>executeBoundReconstruction(fixture(),{reaValidated:true,sessions:10000}),
    /JM_REA_V10_HOLD:SESSION_BUDGET/);
 });
+
+
+test('bounded mismatch receipts cannot inflate the actual successful execution count',()=>{
+ class AlwaysDrifts extends IndependentGameRuntime{
+  simulateFrame(){super.simulateFrame();this.state.door.state='drift-at-every-frame';}
+  trigger(name){const out=super.trigger(name);this.state.door.state='drift-at-trigger';return out;}
+ }
+ const proof=executeBoundReconstruction(fixture(),{reaValidated:true,
+   sessions:12,replicaClass:AlwaysDrifts});
+ assert.ok(proof.comparisons>16);
+ assert.equal(proof.mismatches.length,16);
+ assert.ok(proof.matching<=proof.comparisons-16);
+ assert.equal(proof.verdict.executionMatched,false);
+ assert.equal(proof.verdict.promotable,false);
+});

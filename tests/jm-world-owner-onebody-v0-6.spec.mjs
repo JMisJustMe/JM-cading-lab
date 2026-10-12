@@ -31,6 +31,7 @@ function fixture(){
  return {schema:'jm.fieldform.game-mesh/0.1',source:{sha256:sha},snapshot:snap,geometry:{mime:'model/gltf-binary',encoding:'base64',sha256:h,bytes:glb.length,data:glb.toString('base64')}};
 }
 
+const sha='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba';
 const packet=fixture();
 const browser=await chromium.launch({headless:true});
 try{

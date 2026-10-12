@@ -49,3 +49,11 @@ jobs:
         run: |
           python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_browser_probe_v0_7.py
           node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_combound_real_game_v0_7.mjs
+
+      - name: v0.8 real-game private-source bridge source syntax and bounded JM proof tests
+        run: |
+          node --check agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_source_ir_v0_8.mjs
+          node --check agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_auto_relation_cli_v0_8.mjs
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_mechanical_replay_v0_8.py
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_private_combound_runner_v0_8.py
+          node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs

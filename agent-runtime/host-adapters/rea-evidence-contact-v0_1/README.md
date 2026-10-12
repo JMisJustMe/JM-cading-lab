@@ -1,3 +1,8 @@
+> **Current JM × REA stage: v0.8 — real COMBOUND source/physics comparison + automatic REA Evidence projector.**
+> [Exact private COMBOUND source contact and honest REA boundary](COMBOUND_REAL_SOURCE_AUTO_IR_v0_8.md). TypeScript AST of the protected game recovered 29 unchanged runtime methods and 3 critical call relationships; independent Chromium comparison earned 14/14 shots. Real REA 6.1 analysed public original JM game source and its semantic graph now maps through original JM32/TraceBox, but **private COMBOUND direct REA remains HOLD** until installed on a compatible local host.
+> No protected game HTML uploaded; source lineage, draft isolation, and all prior v0.1–v0.7 bodies are retained.
+
+---
 > **Current experimental real-game contact: v0.7 — COMBOUND v2.3 protected FLAZ source.** This adds *real game source* Chromium testing over v0.6's micro-application. It does not replace v0.6 or the protected COMBOUND file.
 > [COMBOUND exact-source real-game contact and remaining gates](COMBOUND_REAL_GAME_CONTACT_v0_7.md) · [compact execution receipt](COMBOUND_REAL_GAME_CONTACT_v0_7_RECEIPT.json) · [replay without copying original HTML](jm_rea_combound_browser_probe_v0_7.py).
 > CLASSIC/ARCADE source-guided visual scope correction restores v2.3 motion registration; both retain 24/24 fighters, launch state and genuine browser canvas pointer event semantics. Source original unchanged; candidate separate. Full match / physical owner-device parity remains HOLD.

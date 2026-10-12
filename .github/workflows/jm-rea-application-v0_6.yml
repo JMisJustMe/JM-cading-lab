@@ -1,0 +1,84 @@
+name: JM REA v0.6 Independent Source & Game Application Contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/rea-evidence-contact-v0_1/**'
+      - '.github/workflows/jm-rea-application-v0_6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-jm-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Real REA inspection of original JM GameCoding and GameCore source
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=rea-agents@6.1.0 -- rea analyze-javascript-application "$GITHUB_WORKSPACE/coding-estate/sovereign-ten/direct" --json > "$RUNNER_TEMP/rea-jm-game.json"
+          export REA_RAW="$RUNNER_TEMP/rea-jm-game.json"
+          export REA_BUNDLE="$RUNNER_TEMP/rea-jm-game-bundle.json"
+          python3 - <<'PY'
+          import json,os,pathlib
+          record=json.loads(pathlib.Path(os.environ['REA_RAW']).read_text())
+          assert record['evidence_id'].startswith('ev_')
+          assert record['provider']['id']
+          graph=record['normalized_result']['semantic_graph']
+          assert graph['application_graph_id']==record['normalized_result']['graph']['graph_id']
+          game_nodes=[n for n in graph['nodes'] if n.get('identity',{}).get('module_path')=='game-native.mjs' and n.get('kind')=='function']
+          labels={n.get('label') for n in game_nodes}
+          assert len(game_nodes)>=8, 'REAL_REA_GAME_FUNCTIONS_ABSENT'
+          for name in ['trigger','simulateFrame','dispatch']:
+              assert name in labels, 'REAL_REA_GAME_FUNCTION_ANCHOR_MISSING:'+name
+          print('REAL_REA_JM_GAME_FUNCTION_CONTACT: PASS')
+          print('REAL_REA_JM_GAME_FUNCTION_COUNT:',len(game_nodes))
+          print('REAL_REA_JM_GAME_ANCHORS:',','.join(sorted(['trigger','simulateFrame','dispatch'])))
+          bundle={
+            'artifacts':[{'digest':record['subject']['digest'],'format':record['subject']['format'],'architecture':record['subject']['architecture']}],
+            'providers':[record['provider']],
+            'environments':[record['environment']] if record['environment'] else [],
+            'scenarios':[],'captures':[],'unknowns':[],'records':[record]
+          }
+          with pathlib.Path(os.environ['REA_BUNDLE']).open('x',encoding='utf8') as f:json.dump(bundle,f)
+          PY
+          npm exec --yes --package=rea-agents@6.1.0 -- rea evidence-import "$REA_BUNDLE" > "$RUNNER_TEMP/rea-validation.txt"
+          echo 'REAL_REA_JM_GAME_EVIDENCE_VALIDATOR: PASS'
+      - name: Original JM vs independent source parser and application consequences
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import {verifyFullSourceAndApplication} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_application_verify_v0_6.mjs';
+          const proof=verifyFullSourceAndApplication();
+          assert.equal(proof.route_source.cases,120);
+          assert.equal(proof.route_source.ast_and_ir_matches,120);
+          assert.equal(proof.route_source.consequence_matches,120);
+          assert.equal(proof.game_sessions.matched,96);
+          assert.equal(proof.game_sessions.matching_steps,672);
+          assert.equal(proof.mismatches.length,0);
+          assert.equal(proof.proof.promotable,false);
+          assert.ok(proof.application_source.every(p=>p.ast&&p.lower));
+          const sources=['coding-estate/sovereign-ten/direct/game-native.mjs',
+            'coding-estate/sovereign-ten/direct/route-proof-native.mjs',
+            'coding-estate/sovereign-ten/direct/native-corpus.mjs'];
+          const hashes=Object.fromEntries(sources.map(p=>[p,crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')]));
+          console.log('INDEPENDENT_JM_SOURCE_AND_GAME_APPLICATION: PASS');
+          console.log('JM_REA_V06_ROUTE_COUNTS:',JSON.stringify(proof.route_source));
+          console.log('JM_REA_V06_GAME_COUNTS:',JSON.stringify(proof.game_sessions));
+          console.log('JM_REA_V06_ORIGINAL_SOURCE_SHA256:',JSON.stringify(hashes));
+          console.log('JM_REA_V06_SCOPE:',proof.scope);
+          JS
+      - name: Negative boundary and source parser unit checks
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_application_v0_6.mjs

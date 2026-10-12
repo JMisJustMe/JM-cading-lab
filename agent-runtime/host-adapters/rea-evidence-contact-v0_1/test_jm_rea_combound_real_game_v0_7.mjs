@@ -48,3 +48,8 @@ test('historical bug must be observed rather than accidentally ignored',()=>{
  const bad=structuredClone(receipt);bad.modes[0].source_error=[];
  assert.throws(()=>validateRealGameReceipt(bad),/ABSENT_ORIGINAL_REGRESSION_CLASSIC/);
 });
+
+test('browser pointer contact must be proven, not inferred from controller method execution',()=>{
+ const bad=structuredClone(receipt);bad.modes[1].canvas_pointer_receipts=0;
+ assert.throws(()=>validateRealGameReceipt(bad),/CANVAS_POINTER_NOT_CONTACTED_ARCADE/);
+});

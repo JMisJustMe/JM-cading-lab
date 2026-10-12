@@ -41,3 +41,6 @@ jobs:
 
       - name: v0.5 Original JM RouteScript/RouteVM/RouteOS behavioural consequence differential
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_route_verify_v0_5.mjs
+
+      - name: v0.6 Independent JM source parser and actual GameCore application parity
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_application_v0_6.mjs

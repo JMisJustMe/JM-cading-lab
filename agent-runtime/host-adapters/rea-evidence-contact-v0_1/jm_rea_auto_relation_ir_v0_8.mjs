@@ -31,7 +31,7 @@ export function projectGenuineREA(record,{module,roots,sourceSha256,depth=2,maxN
  }
  const relations=[];
  for(const e of graph.relations){
-   gate(typeof e.relation_id==='string'&&e.relation_id.startsWith('jsrg_rel_'),'BAD_RELATION_ID');
+   gate(typeof e.relation_id==='string'&&/^jsrg_relation_[a-f0-9]{64}$/.test(e.relation_id),'BAD_RELATION_ID');
    gate(map.has(e.source_node_id)&&map.has(e.target_node_id),'DANGLING_REA_RELATION');
    gate(['resolved','candidate'].includes(e.resolution),'RELATION_RESOLUTION');
    relations.push(e);

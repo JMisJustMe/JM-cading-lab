@@ -209,3 +209,29 @@ jobs:
           JS
       - name: v1.0 source-binding and independent executable consequence regression tests
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_evidence_driven_execution_v1_0.mjs
+
+
+      - name: v1.0 standalone real REA bundle self-validation → original JM independent executable consequences
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=rea-agents@6.1.0 -- node \
+            agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_evidence_driven_cli_v1_0.mjs \
+            --rea "$RUNNER_TEMP/rea-jm-game.json" \
+            --bundle "$RUNNER_TEMP/rea-jm-game-bundle.json" \
+            --output "$RUNNER_TEMP/jm-rea-v10-executable-receipt.json" \
+            --sessions 32
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/jm-rea-v10-executable-receipt.json','utf8'));
+          assert.equal(r.schema,'JM.REA.EvidenceBoundExecutableReconstruction/1.0');
+          assert.equal(r.validation.source,'REA_CLI_EVIDENCE_IMPORT_EXECUTED_HERE');
+          assert.equal(r.validation.validator_exit_status,0);
+          assert.equal(r.comparisons,r.matching);
+          assert.equal(r.sessions,32);
+          assert.equal(r.verdict.promotable,false);
+          console.log('JM_V10_REAL_REA_IMPORT_EXECUTABLE_RESULT:PASS',r.comparisons,r.frames);
+          JS
+      - name: v1.0 standalone REA validation no-forgery negative tests
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_evidence_driven_cli_v1_0.mjs

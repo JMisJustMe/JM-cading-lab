@@ -1,0 +1,173 @@
+name: JM REA Upstream Static Contact (experiment)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/jm-rea-upstream-probe.yml'
+  workflow_dispatch:
+permissions: {}
+jobs:
+  rea-static:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Run pinned REA 6.1.0 against PUBLIC JM source (static only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --version
+          npm exec --yes --package=rea-agents@6.1.0 -- rea analyze-javascript-application "$GITHUB_WORKSPACE/coding-estate/integration" --json > "$RUNNER_TEMP/rea-static.json"
+          REA_RESULT="$RUNNER_TEMP/rea-static.json" python3 - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ['REA_RESULT'])
+          raw=p.read_bytes()
+          obj=json.loads(raw)
+          def shape(x):
+              if isinstance(x,dict):
+                  return {k: type(v).__name__ for k,v in list(x.items())[:35]}
+              return type(x).__name__
+          print('REA_EXTERNAL_PROCESS: EXECUTED')
+          print('REA_RESULT_JSON_BYTES:',len(raw))
+          print('REA_RESULT_TOP_SHAPE:',json.dumps(shape(obj),sort_keys=True))
+          for k in ['evidence','evidence_bundle','normalized_result','result','data']:
+              if isinstance(obj,dict) and k in obj:
+                  print('REA_KEY_'+k.upper()+'_SHAPE:',json.dumps(shape(obj[k]),sort_keys=True))
+          PY
+          REA_RESULT="$RUNNER_TEMP/rea-static.json" python3 - <<'PY'
+          import json,os,pathlib
+          source=json.loads(pathlib.Path(os.environ['REA_RESULT']).read_text())
+          nodes=source['normalized_result']['semantic_graph']['nodes']
+          matches=[{'kind':n.get('kind'),'label':n.get('label'),
+            'module':n.get('identity',{}).get('module_path'),
+            'line':(n.get('identity',{}).get('source_range') or {}).get('start',{}).get('line'),
+            'node_id':n.get('node_id')} for n in nodes
+            if (n.get('identity',{}).get('module_path') or '').endswith('router-core.mjs')
+            and n.get('kind')=='function']
+          print('REA_JM_ORIGINAL_ROUTER_FUNCTION_COUNT:',len(matches))
+          print('REA_JM_ROUTER_FUNCTION_SAMPLE:',json.dumps(matches[:20],sort_keys=True))
+          PY
+
+      - name: Import genuine REA Evidence and execute JM portable agents, router and compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_RAW="$RUNNER_TEMP/rea-static.json"
+          export REA_BUNDLE="$RUNNER_TEMP/rea-evidence-bundle.json"
+          export JM_RECEIPT="$RUNNER_TEMP/jm-powered-receipt.json"
+          python3 - <<'PY'
+          import json, os, pathlib
+          raw=json.loads(pathlib.Path(os.environ['REA_RAW']).read_text(encoding='utf-8'))
+          assert isinstance(raw,dict) and raw['evidence_id'].startswith('ev_')
+          assert raw['provider']['id'] and raw['subject']['digest']['sha256']
+          assert isinstance(raw['evidence_links'],list)
+          # REA's CLI returned ONE authenticated Evidence record, not a bundle.
+          # Preserve the record untouched; only build its aggregate manifest.
+          bundle={
+            'artifacts': [{k:raw['subject'][k] for k in ['digest','format','architecture']}],
+            'providers': [raw['provider']],
+            'environments': [raw['environment']] if raw['environment'] else [],
+            'scenarios': [{'evidence_id':raw['evidence_id'],
+                           'operation':raw['operation'],'authority':raw['authority']}]
+                         if raw['authority']=='controlled-replay' else [],
+            'captures': [{'evidence_id':raw['evidence_id'],
+                          'predicate_type':raw['predicate_type']}]
+                        if raw['predicate_type']=='rea.process-capture' else [],
+            'unknowns': [], # nested semantic uncertainties stay in the Evidence payload
+            'records': [raw]
+          }
+          p=pathlib.Path(os.environ['REA_BUNDLE'])
+          with p.open('x',encoding='utf-8') as f: json.dump(bundle,f,ensure_ascii=False)
+          print('REA_NATIVE_EVIDENCE_BUNDLE_CREATED: records=1')
+          PY
+          npm exec --yes --package=rea-agents@6.1.0 -- rea evidence-import "$REA_BUNDLE" > "$RUNNER_TEMP/rea-validation.txt"
+          echo "REA_OWN_EVIDENCE_VALIDATOR: PASS"
+          node agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_powered_contact.mjs "$REA_BUNDLE" --output "$JM_RECEIPT"
+          python3 - <<'PY'
+          import json, os, pathlib
+          receipt=json.loads(pathlib.Path(os.environ['JM_RECEIPT']).read_text(encoding='utf-8'))
+          assert receipt['source']['evidence_records']==1
+          assert receipt['jm_estate_router']['registry_count']==100
+          assert receipt['jm_portable_agent']['coding_identities']==64
+          assert len(receipt['jm_portable_agent']['active_route_selected_not_spawned'])==12
+          assert receipt['jm_compiler']['body_id']=='source-ledger'
+          assert receipt['jm_compiler']['executed_state']['records']==1
+          graphs=receipt['original_jm_graph_contact']['graphs']
+          assert len(graphs)==1, 'no actual joined REA graph in JM receipt'
+          graph=graphs[0]
+          assert graph['application_nodes']>0 and graph['semantic_nodes']>0
+          assert graph['application_edges']>0 and graph['semantic_relations']>0
+          assert receipt['original_jm_graph_contact']['trace_events']>1
+          assert receipt['original_jm_graph_contact']['policy']['runtimeProved'] is False
+          assert receipt['original_jm_graph_contact']['policy']['promotable'] is False
+          sample=receipt['original_jm_graph_contact']['trace_sample']
+          assert any(x['kind']=='static-app' for x in sample)
+          assert any(x['kind']=='static-semantic' for x in sample)
+          print('JM_NATIVE_REA_GRAPH_CONTACT: PASS')
+          print('JM_REA_REAL_GRAPH_COUNTS:',json.dumps({k:graph[k] for k in ['application_nodes','application_edges','semantic_nodes','semantic_relations','semantic_candidates','semantic_resolved','unresolved']},sort_keys=True))
+          print('JM_REA_NATIVE_TRACE_EVENTS:',receipt['original_jm_graph_contact']['trace_events'])
+          print('JM_REA_HASHED_DIRECTED_SAMPLE:',json.dumps(sample[:3],sort_keys=True))
+          assert receipt['source_claims']['rea_integrity_verified'] is False
+          assert receipt['source_claims']['target_apk_executed'] is False
+          assert receipt['source_claims']['owner_device_contact'] is False
+          print('REAL_REA_TO_EXISTING_JM_EXECUTABLES: PASS')
+          print('JM_EXECUTED_ORGANS:',len(receipt['executed_original_jm_bodies']))
+          print('EXACT_PROOF_SCOPE: actual REA static JS Evidence, authenticated by REA; JM local compiler and routing executed; no APK/owner contact')
+          PY
+
+      - name: Targeted real REA semantic relation through JM TraceBox
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_BUNDLE="$RUNNER_TEMP/rea-evidence-bundle.json"
+          export JM_TARGET_RECEIPT="$RUNNER_TEMP/jm-targeted-relation.json"
+          RELATION=$(python3 - <<'PY'
+          import json,os,pathlib
+          b=json.loads(pathlib.Path(os.environ['REA_BUNDLE']).read_text())
+          r=b['records'][0]['normalized_result']['semantic_graph']['relations']
+          assert r, 'real REA semantic graph had no relations'
+          print(sorted({x['relation'] for x in r})[0])
+          PY
+          )
+          node agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_powered_contact.mjs "$REA_BUNDLE" --relation "$RELATION" --output "$JM_TARGET_RECEIPT"
+          python3 - <<'PY'
+          import json,os,pathlib
+          r=json.loads(pathlib.Path(os.environ['JM_TARGET_RECEIPT']).read_text())
+          q=r['original_jm_graph_contact']['query']
+          assert q['matching_semantic_relations'] > 0
+          assert r['original_jm_graph_contact']['native_queries']['semantic'] > 0
+          assert all(x['relation']==q['relation'] for x in r['original_jm_graph_contact']['trace_sample'])
+          assert not r['original_jm_graph_contact']['policy']['promotable']
+          assert not r['original_jm_graph_contact']['policy']['runtimeProved']
+          print('JM_NATIVE_TARGETED_RELATION_QUERY: PASS',json.dumps(q,sort_keys=True))
+          PY
+
+      - name: Genuine REA function anchors to original JM behavior differential replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REA_RAW="$RUNNER_TEMP/rea-static.json"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          import {functionReplay} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_function_replay.mjs';
+          const evidence=JSON.parse(fs.readFileSync(process.env.REA_RAW,'utf8'));
+          const source='./coding-estate/integration/router-core.mjs';
+          const result=functionReplay(evidence,source);
+          assert.equal(result.failed,0,'differential mismatch');
+          assert.equal(result.matched,result.fixture_count);
+          assert.ok(result.fixture_count>=250);
+          assert.equal(result.anchors.length,4);
+          assert.ok(result.anchors.every(x=>x.rea_anchor_sha256));
+          assert.equal(result.source_sha256,crypto.createHash('sha256').update(fs.readFileSync(source)).digest('hex'));
+          assert.equal(result.jm32_verdict.promotable,false);
+          console.log('REA_ORIGINAL_JM_FUNCTION_REPLAY: PASS');
+          console.log('JM_DIFFERENTIAL_REPLAY_COUNTS:',JSON.stringify({cases:result.fixture_count,matched:result.matched,failed:result.failed,trace_events:result.trace_events}));
+          console.log('JM_REA_FUNCTION_ANCHORS:',JSON.stringify(result.anchors));
+          console.log('JM_REPLAY_BOUNDARY:',result.scope);
+          JS

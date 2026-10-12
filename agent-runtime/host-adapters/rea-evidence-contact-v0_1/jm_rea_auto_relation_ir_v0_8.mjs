@@ -43,23 +43,26 @@ export function projectGenuineREA(record,{module,roots,sourceSha256,depth=2,maxN
    gate(found.length===1,'MISSING_OR_AMBIGUOUS_ORIGINAL_ROOT_'+name);
    selected.set(found[0].node_id,0);
  }
- const outgoing=new Map();
+ const adjacency=new Map();
  for(const e of relations){
-   const list=outgoing.get(e.source_node_id)??[];list.push(e);outgoing.set(e.source_node_id,list);
+   for(const key of [e.source_node_id,e.target_node_id]){
+     const list=adjacency.get(key)??[];list.push(e);adjacency.set(key,list);
+   }
  }
  const queue=[...selected.keys()],collected=[],seen=new Set();
  let limitHit=false;
  for(let i=0;i<queue.length;i++){
    const node=queue[i],level=selected.get(node);
    if(level>=depth)continue;
-   for(const e of outgoing.get(node)??[]){
+   for(const e of adjacency.get(node)??[]){
      if(!['calls','reads','reads-property','writes','writes-property','aliases','defines','returns-to-call','argument-to-parameter'].includes(e.relation))continue;
      if(seen.has(e.relation_id))continue;
      if(collected.length>=maxEdges){limitHit=true;break;}
      seen.add(e.relation_id);collected.push(e);
-     if(!selected.has(e.target_node_id)){
+     const neighbor=e.source_node_id===node?e.target_node_id:e.source_node_id;
+     if(!selected.has(neighbor)){
        if(selected.size>=maxNodes){limitHit=true;continue;}
-       selected.set(e.target_node_id,level+1);queue.push(e.target_node_id);
+       selected.set(neighbor,level+1);queue.push(neighbor);
      }
    }
    if(collected.length>=maxEdges)break;

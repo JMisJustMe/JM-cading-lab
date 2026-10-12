@@ -84,7 +84,9 @@ def preflight(source: Path, node='node'):
             fail('MISSING_RUNTIME_ROOT_' + root)
     version = subprocess.run([node, '--version'], capture_output=True,
                              text=True, timeout=10).stdout.strip()
-    m = re.match(r'^v(\d+)\.(\d+)\.(\d+)
+    pieces = version.removeprefix('v').split('.')
+    major, minor = (int(pieces[0]), int(pieces[1])) if len(pieces) == 3 and all(p.isdigit() for p in pieces) else (-1, -1)
+    ready_node = (major == 22 and minor >= 19) or (major == 24 and minor >= 11) or major >= 26
     return {'schema': 'JM.REA.COMBOUND.PrivatePreflight/0.9',
             'status': 'SOURCE_SYNTAX_AND_ROOT_PREFLIGHT_PASS__REAL_REA_NOT_EXECUTED',
             'source_sha256': digest, 'embedded_scripts': len(parser.scripts),

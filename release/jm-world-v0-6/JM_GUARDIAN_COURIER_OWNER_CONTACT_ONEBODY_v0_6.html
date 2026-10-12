@@ -642,8 +642,8 @@ function draw(){
   c.beginPath();c.moveTo(f.p[0].x,f.p[0].y);c.lineTo(f.p[1].x,f.p[1].y);c.lineTo(f.p[2].x,f.p[2].y);c.closePath();
   c.fillStyle=f.area>0?'rgba(248,172,109,.82)':'rgba(194,123,111,.84)';c.strokeStyle='rgba(255,224,158,.5)';c.lineWidth=.7;c.fill();c.stroke();
  }
- const q=projected([actor.x,0,0],w,h);c.font='700 12px system-ui';c.textAlign='center';c.fillStyle='#ffe5aa';c.fillText('ECHO · B',q.x,q.y+54);
- const a=projected([0,0,0],w,h);c.fillStyle='#b9f5fa';c.fillText('SOURCE · A',a.x,a.y+54);
+ const q=projected([actor.x,0,0],w,h);c.font='700 12px system-ui';c.textAlign='center';c.fillStyle='#ffe5aa';c.fillText('ECHO · B',Math.max(53,Math.min(w-53,q.x)),q.y+54,100);
+ const a=projected([0,0,0],w,h);c.fillStyle='#b9f5fa';c.fillText('SOURCE · A',Math.max(53,Math.min(w-53,a.x)),a.y+54,100);
 }
 function mount(){
  const stage=document.querySelector('.stage'),panel=document.getElementById('jmArticulation')||document.getElementById('jmKinetics');
@@ -707,7 +707,7 @@ function bindSource(){
  mesh=scene.meshSha;snapshot=scene.snapshot;ready=true;fresh();
  // Mobile-fit composition only, not a change to geometry or original input grammar.
  if(zoomAtBind===null)zoomAtBind=scene.zoom;
- scene.zoom=Math.min(scene.zoom,.76);
+ scene.zoom=Math.min(scene.zoom,.61);
  return {schema:SCHEMA,source:SOURCE,mesh,worldObjects:2,roles:['guardian','courier']};
 }
 function check(){if(!ready||scene.meshSha!==mesh||scene.snapshot!==snapshot)throw Error('World source mismatch: re-enter verified Forge geometry')}
@@ -807,7 +807,7 @@ function draw(){
  c.beginPath();c.arc(beacon.x,beacon.y-25,11,0,2*Math.PI);c.strokeStyle=gateOpen?'#81ffa8':'#a5afcf';c.lineWidth=4;c.stroke();
  c.shadowColor='#f4c477';c.shadowBlur=13;c.fillStyle='#f0ba64';c.beginPath();c.arc(core.x,core.y,10,0,Math.PI*2);c.fill();c.shadowBlur=0;
  c.font='700 11px system-ui';c.textAlign='center';c.fillStyle=gateOpen?'#c4ffd0':'#ffe6b8';
- c.fillText(gateOpen?'WORLD COMPLETE':'RELAY CORE',core.x,core.y+29);
+ c.fillText(gateOpen?'WORLD COMPLETE':'RELAY CORE',Math.max(70,Math.min(w-70,core.x)),core.y+29,130);
 }
 function mount(){
  const stage=document.querySelector('.stage'),panel=document.getElementById('jmDualActorPanel');
@@ -906,6 +906,8 @@ function init(){
  const h=document.querySelector('header h1');if(h)h.textContent='GUARDIAN // COURIER';
  const byline=document.querySelector('header .mini');if(byline)byline.textContent='v0.6 · OWNER CONTACT / OFFLINE';
  const lead=document.querySelector('.sub');if(lead)lead.textContent='An actual Forge-powered world game. Contact Guardian, escort Courier, move the relay core, and light the beacon. Your source model stays yours.';
+ const scoreHud=document.querySelector('.hud b:first-child');if(scoreHud?.firstChild)scoreHud.firstChild.textContent='MESH POINTS · ';
+ const faceHud=document.querySelector('.hud b:nth-child(2)');if(faceHud?.firstChild)faceHud.firstChild.textContent='FACES · ';
  const dock=document.createElement('div');dock.id='jmOwnerDock';
  stepper=document.createElement('div');stepper.id='jmOwnerStage';stepper.textContent='1 · LOAD YOUR FORGE PACKET';dock.append(stepper);
  const actions=document.createElement('div');actions.id='jmOwnerActions';dock.append(actions);

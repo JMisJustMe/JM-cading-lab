@@ -39,6 +39,14 @@ The v0.9 entry validates the exact source, all 32 scripts, the gameplay anchor m
 - Original v0.1–v0.8 public-source REA/JM integration CI stays inherited; no main merge or private game source upload.
 - `jm_rea_combound_source_ir_v0_8.mjs` and the original Chromium replay still provide separate **TypeScript-AST**, **14/14** game-shot evidence; they are **not** direct REA evidence.
 
+## Pre-laptop evidence contract confirmed (12 October 2026)
+
+Real **REA 6.1.0** ran in GitHub Actions on an **entirely synthetic, public-safe** JavaScript module shaped like the protected COMBOUND `const Runtime = { ... }` game object. REA identified all five desired method labels as distinct semantic function nodes in module `combound_inline_000.js`. This rules out a basic REA method-discovery/identity mismatch **without exposing private game source**. The tested REA subject digest equals the semantic graph root artifact digest, and the semantic method's `identity.artifact_sha256` equals the actual SHA-256 of the staged JS file.
+
+The inherited **private-only** REA runner now enforces all those identity links before accepting results: protected HTML SHA → extracted temporary module SHA → genuine REA function-node artifact SHA, with subject-to-graph digest equality and exact unique method roots. Wrong, ambiguous, omitted or substituted method evidence becomes HOLD. Eight synthetic **negative/positive** provenance tests run in CI; no fake fixture is represented as actual private-code REA contact.
+
+The real REA graph did **not** produce method-to-method call edges from this synthetic shape; the independent protected COMBOUND source/physics analysis remains a separate, honestly labelled TypeScript-AST/Chromium proof. Automatic REA-derived behaviour is not earned yet.
+
 ## Outstanding gate
 
 **HOLD:** Run the actual REA 6.1.0 binary on this exact staged private COMBOUND source and validate its Evidence. Next, inspect the candidate/resolved edges and compare its generated JM representation against the already measured gameplay relationships. Full automatic executable game reconstruction, full JM32-1DA v2.2.1 compiler and JM Target Bridge recipient, physical owner-device continuity and release promotion remain separate gates.

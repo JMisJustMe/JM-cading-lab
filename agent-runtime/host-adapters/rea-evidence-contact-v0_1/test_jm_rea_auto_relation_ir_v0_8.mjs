@@ -61,3 +61,10 @@ test('never mistake a falsified graph identity for REA',()=>{
  const f=fixture();f.normalized_result.semantic_graph.application_graph_id='jag_'+h('1');
  assert.throws(()=>projectGenuineREA(f,opts),/CROSS_GRAPH_MISMATCH/);
 });
+
+test('edge projections remain reference-complete even under hard node budget',()=>{
+ const r=projectGenuineREA(fixture(),{...opts,maxNodes:2});
+ const nodes=new Set(r.nodes.map(n=>n.identity_sha256));
+ assert.ok(r.limits.hit);
+ assert.ok(r.edges.every(e=>nodes.has(e.from_sha256)&&nodes.has(e.to_sha256)));
+});

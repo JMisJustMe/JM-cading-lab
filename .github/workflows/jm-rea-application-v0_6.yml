@@ -100,6 +100,15 @@ jobs:
           assert.equal(projected.analysis_engine,'REA_RECORD_SOURCE_GRAPH');
           assert.ok(projected.selected_census.nodes>=3);
           assert.ok(projected.input_census.relations>100);
+          const nodes=record.normalized_result.semantic_graph.nodes;
+          const relations=record.normalized_result.semantic_graph.relations;
+          const rootNodes=nodes.filter(n=>n.kind==='function'&&n.identity?.module_path==='game-native.mjs'&&
+            ['trigger','simulateFrame','dispatch'].includes(n.label));
+          const rootIds=new Set(rootNodes.map(n=>n.node_id));
+          const attached=relations.filter(x=>rootIds.has(x.source_node_id)||rootIds.has(x.target_node_id));
+          const counts={};for(const edge of attached)counts[edge.relation]=(counts[edge.relation]??0)+1;
+          console.log('REA_V08_SELECTED_ROOT_RELATION_DIAGNOSTIC:',JSON.stringify({root_count:rootNodes.length,
+            attached_count:attached.length,types:counts}));
           assert.equal(projected.gate.promotable,false);
           console.log('REAL_REA_TO_JM_AUTO_RELATION_PROJECTION: PASS');
           console.log('REAL_REA_TO_JM_PROJECTION_COUNTS:',JSON.stringify(projected.selected_census));

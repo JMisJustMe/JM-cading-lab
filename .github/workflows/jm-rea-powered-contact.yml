@@ -57,3 +57,6 @@ jobs:
           python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_mechanical_replay_v0_8.py
           python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_private_combound_runner_v0_8.py
           node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs
+
+      - name: v0.9 exact private COMBOUND REA preflight negative and safety gates (synthetic fixtures)
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_combound_preflight_v0_9.py' -v

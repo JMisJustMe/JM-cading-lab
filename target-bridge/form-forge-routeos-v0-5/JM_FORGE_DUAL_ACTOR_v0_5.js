@@ -134,8 +134,8 @@ function draw(){
   c.beginPath();c.moveTo(f.p[0].x,f.p[0].y);c.lineTo(f.p[1].x,f.p[1].y);c.lineTo(f.p[2].x,f.p[2].y);c.closePath();
   c.fillStyle=f.area>0?'rgba(248,172,109,.82)':'rgba(194,123,111,.84)';c.strokeStyle='rgba(255,224,158,.5)';c.lineWidth=.7;c.fill();c.stroke();
  }
- const q=projected([actor.x,0,0],w,h);c.font='700 12px system-ui';c.textAlign='center';c.fillStyle='#ffe5aa';c.fillText('ECHO · B',q.x,q.y+54);
- const a=projected([0,0,0],w,h);c.fillStyle='#b9f5fa';c.fillText('SOURCE · A',a.x,a.y+54);
+ const q=projected([actor.x,0,0],w,h);c.font='700 12px system-ui';c.textAlign='center';c.fillStyle='#ffe5aa';c.fillText('ECHO · B',Math.max(53,Math.min(w-53,q.x)),q.y+54,100);
+ const a=projected([0,0,0],w,h);c.fillStyle='#b9f5fa';c.fillText('SOURCE · A',Math.max(53,Math.min(w-53,a.x)),a.y+54,100);
 }
 function mount(){
  const stage=document.querySelector('.stage'),panel=document.getElementById('jmArticulation')||document.getElementById('jmKinetics');

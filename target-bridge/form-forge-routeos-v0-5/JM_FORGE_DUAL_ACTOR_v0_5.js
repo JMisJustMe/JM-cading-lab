@@ -79,7 +79,8 @@ function validate(s){
    !Number.isInteger(s.echo.sequence)||s.echo.sequence!==s.echo.contacts||
    !Array.isArray(s.originalPose)||s.originalPose.length!==2||s.originalPose[0].name!=='body'||s.originalPose[1].name!=='crown'||
    !s.originalPose.every(p=>typeof p.target==='number'&&Number.isFinite(p.target)&&Math.abs(p.target)<.6)||
-   (s.world!==null&&s.world!==undefined&&(!world||!world.validate(s.world))))
+   (s.world!==null&&s.world!==undefined&&(!world||!world.validate(s.world)))||
+   (s.world?.clearance===true&&s.echo.contacts<1))
    throw Error('Unverified or mismatched JM two-actor state');
  return true;
 }

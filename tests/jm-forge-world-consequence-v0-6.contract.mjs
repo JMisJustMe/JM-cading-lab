@@ -55,7 +55,7 @@ assert.equal(b.world.state().core.x,2.12);
 assert.equal(b.dual.state().echo.contacts,1);
 assert.equal(b.dual.state().echo.mode,'settled');
 assert.throws(()=>b.dual.restore({...checkpoint,mesh:'f'.repeat(64)}),/Unverified/);
-assert.throws(()=>b.dual.restore({...checkpoint,world:{...checkpoint.world,core:{...checkpoint.world.core,x:99}}}),/Unverified/);
+assert.throws(()=>b.dual.restore({...checkpoint,world:{...checkpoint.world,core:{...checkpoint.world.core,x:99}}}),/Invalid or mismatched/);
 assert.throws(()=>b.world.restore({...checkpoint.world,beacon:{...checkpoint.world.beacon,open:false}}),/Invalid/);
 assert.throws(()=>b.world.restore({...checkpoint.world,phase:'clearance',deliveries:0,beacon:{...checkpoint.world.beacon,open:false},consequence:'PENDING'}),/HOLD/);
 b.dual.reset();

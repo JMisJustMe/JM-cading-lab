@@ -178,3 +178,34 @@ jobs:
 
       - name: v0.8 bounded REA auto-projection negative tests
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs
+
+
+      - name: v1.0 genuine REA 6.1 named original JM functions to executable source-derived JM command plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          import {executeBoundReconstruction} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_evidence_driven_execution_v1_0.mjs';
+          // rea evidence-import ran and exited success earlier in THIS JOB.
+          const record=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/rea-jm-game.json','utf8'));
+          const verified=executeBoundReconstruction(record,{reaValidated:true,sessions:32});
+          assert.equal(verified.mismatches.length,0);
+          assert.equal(verified.matching,verified.comparisons);
+          assert.equal(verified.verdict.sourceLinked,true);
+          assert.equal(verified.verdict.executionMatched,true);
+          assert.equal(verified.verdict.promotable,false);
+          assert.ok(verified.evidence.edges>0);
+          assert.ok(verified.mode_counts.trigger>0);
+          assert.ok(verified.mode_counts.dispatch>0);
+          assert.ok(verified.frames>=32*60);
+          console.log('JM_REA_V10_GENUINE_REA_GATED_EXECUTABLE_JM_APPLICATION: PASS');
+          console.log('JM_REA_V10_EXECUTION_COUNTS:',JSON.stringify({
+            sessions:verified.sessions,comparisons:verified.comparisons,frames:verified.frames,
+            instruction_classes:verified.mode_counts,
+            REA_static_edges:verified.evidence.edges,unknowns:verified.evidence.unknown_frontiers}));
+          console.log('JM_REA_V10_SCOPE:',verified.boundary);
+          JS
+      - name: v1.0 source-binding and independent executable consequence regression tests
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_evidence_driven_execution_v1_0.mjs

@@ -69,6 +69,8 @@ function init(){
  const h=document.querySelector('header h1');if(h)h.textContent='GUARDIAN // COURIER';
  const byline=document.querySelector('header .mini');if(byline)byline.textContent='v0.6 · OWNER CONTACT / OFFLINE';
  const lead=document.querySelector('.sub');if(lead)lead.textContent='An actual Forge-powered world game. Contact Guardian, escort Courier, move the relay core, and light the beacon. Your source model stays yours.';
+ const scoreHud=document.querySelector('.hud b:first-child');if(scoreHud?.firstChild)scoreHud.firstChild.textContent='MESH POINTS · ';
+ const faceHud=document.querySelector('.hud b:nth-child(2)');if(faceHud?.firstChild)faceHud.firstChild.textContent='FACES · ';
  const dock=document.createElement('div');dock.id='jmOwnerDock';
  stepper=document.createElement('div');stepper.id='jmOwnerStage';stepper.textContent='1 · LOAD YOUR FORGE PACKET';dock.append(stepper);
  const actions=document.createElement('div');actions.id='jmOwnerActions';dock.append(actions);

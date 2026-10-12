@@ -12,7 +12,7 @@ if(!ancestor?.scene||!kin?.collision)throw Error('JM v0.1 mesh and v0.2 kinetic 
 const scene=ancestor.scene,SOURCE='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba';
 const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],size=p=>Math.hypot(...p),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 let base=[],displacement=[],velocity=[],mesh='',snapshot='',active=false,last=0,impacts=0,lastFace=-1,area=0,
-    maxEver=0, settled=true, label=null,bar=null,freeze=false,lastTime=0;
+    maxEver=0, settled=true, label=null,bar=null,freeze=false,lastTime=0,composer=null;
 const copy=p=>p.slice(),dist=(a,b)=>size(sub(a,b));
 const norm=p=>{const l=size(p)||1;return p.map(x=>x/l)};
 function unrotate(q){
@@ -27,7 +27,7 @@ function bindSource(){
  // never from a previously deformed state on repeated contact.
  mesh=scene.meshSha;snapshot=scene.snapshot;
  base=scene.points.map(copy);displacement=base.map(()=>[0,0,0]);velocity=base.map(()=>[0,0,0]);
- impacts=0;lastFace=-1;maxEver=0;settled=true;area=0;active=true;lastTime=0;update();
+ impacts=0;lastFace=-1;maxEver=0;settled=true;area=0;active=true;lastTime=0;if(composer)composer.bindSource();update();
  return {mesh,snapshot,vertices:base.length,triangles:scene.faces.length};
 }
 function maxOffset(){let m=0;for(const d of displacement)m=Math.max(m,size(d));return m}
@@ -56,7 +56,7 @@ function step(dt){
  if(energy<.0000001){for(let i=0;i<base.length;i++){displacement[i].fill(0);velocity[i].fill(0);for(let k=0;k<3;k++)scene.points[i][k]=base[i][k]}
   settled=true;m=0;
  }
- maxEver=Math.max(maxEver,m);update();return m;
+ maxEver=Math.max(maxEver,m);if(composer)composer.compose(scene.points,base,dt);update();return m;
 }
 function onImpact(contact){
  if(!active||!validMesh()||mesh!==scene.meshSha||snapshot!==scene.snapshot)throw Error('Forged source contact does not match active body');
@@ -88,7 +88,7 @@ function onImpact(contact){
 function restore(){
  if(!active)return {restored:false};
  for(let i=0;i<base.length;i++){for(let j=0;j<3;j++)scene.points[i][j]=base[i][j];displacement[i].fill(0);velocity[i].fill(0)}
- settled=true;freeze=false;update();
+ settled=true;freeze=false;if(composer)composer.reset();update();
  return {restored:true,source_vertices:base.length,mesh,impact_history:impacts};
 }
 function status(){return {schema:'JM.FormForge.Embodiment/0.3',source:SOURCE,mesh,snapshot,active,settled,impactCount:impacts,
@@ -116,7 +116,8 @@ function mount(){
  update();requestAnimationFrame(animate);
  if(validMesh())bindSource();
 }
-const api=Object.freeze({schema:'JM.FormForge.Embodiment/0.3',bindSource,onImpact,step,restore,unrotate,status});
+function registerComposer(driver){if(!driver||driver.schema!=='JM.FormForge.Articulation/0.4'||typeof driver.compose!=='function'||typeof driver.bindSource!=='function'||typeof driver.reset!=='function')throw Error('Only JM v0.4 articulation composer may join');if(composer&&composer!==driver)throw Error('Articulation composer already owned by existing organ');composer=driver;if(active)composer.bindSource();return true}
+const api=Object.freeze({schema:'JM.FormForge.Embodiment/0.3',bindSource,onImpact,step,restore,unrotate,status,registerComposer});
 Object.defineProperty(window,'JMForgeEmbodiment',{value:api,configurable:false});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
 })();

@@ -53,7 +53,7 @@ export function projectGenuineREA(record,{module,roots,sourceSha256,depth=2,maxN
    const node=queue[i],level=selected.get(node);
    if(level>=depth)continue;
    for(const e of outgoing.get(node)??[]){
-     if(!['calls','reads','aliases','imports','exports','references'].includes(e.relation))continue;
+     if(!['calls','reads','reads-property','writes','writes-property','aliases','defines','returns-to-call','argument-to-parameter'].includes(e.relation))continue;
      if(seen.has(e.relation_id))continue;
      if(collected.length>=maxEdges){limitHit=true;break;}
      seen.add(e.relation_id);collected.push(e);

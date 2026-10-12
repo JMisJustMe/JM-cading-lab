@@ -30,6 +30,36 @@ def run(cmd,timeout=240):
  hold(result.returncode==0,"REA_EXIT_"+str(result.returncode)+":"+
       result.stderr[-160:].replace("\n"," "))
  return result.stdout
+def verify_staged_rea_identity(record, manifest, module, roots):
+ """Bind real REA-selected methods to the exact temporary JS module bytes.
+
+ Root file and REA subject differ for directory analysis; both edges are
+ checked separately. This does not claim binary or behavioural equivalence.
+ """
+ graph=record.get("normalized_result",{}).get("semantic_graph",{})
+ subject=record.get("subject",{}).get("digest",{}).get("sha256")
+ hold(isinstance(subject,str) and len(subject)==64 and
+      subject==graph.get("root_artifact_sha256"),"REA_SUBJECT_GRAPH_DIGEST_MISMATCH")
+ modules={entry["module"]:entry for entry in manifest}
+ hold(module in modules,"SELECTED_SOURCE_MODULE_NOT_STAGED")
+ chosen=modules[module]
+ wanted=[name.strip() for name in roots.split(",") if name.strip()]
+ hold(1<=len(wanted)<=12 and len(set(wanted))==len(wanted),"BAD_OR_DUPLICATE_ROOTS")
+ nodes=graph.get("nodes",[])
+ resolved=[]
+ for name in wanted:
+  matches=[n for n in nodes if n.get("kind")=="function" and
+   n.get("label")==name and n.get("identity",{}).get("module_path")==module]
+  hold(len(matches)==1,"REA_FUNCTION_ROOT_MISSING_OR_AMBIGUOUS_"+name)
+  ident=matches[0].get("identity",{})
+  hold(ident.get("artifact_sha256")==chosen["sha256"],
+       "REA_FUNCTION_SOURCE_DIGEST_MISMATCH_"+name)
+  resolved.append({"name":name,"node_id_sha256":sha(matches[0]["node_id"].encode("utf8")),
+                   "module_sha256":chosen["sha256"]})
+ return {"rea_subject_graph_sha256":subject,"selected_module":module,
+         "selected_module_sha256":chosen["sha256"],"verified_function_roots":resolved,
+         "extracted_source_chain_confirmed":True}
+
 def main():
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument("--protected",required=True,type=pathlib.Path)
@@ -62,6 +92,7 @@ def main():
   record=json.loads(run([args.rea,"analyze-javascript-application",str(scripts),"--json"]))
   hold(record.get("evidence_id","").startswith("ev_"),"NOT_GENUINE_REA_EVIDENCE")
   hold(record.get("provider",{}).get("id"),"NO_REA_PROVIDER")
+  source_binding=verify_staged_rea_identity(record,manifest,args.module,args.roots)
   subject=record["subject"]
   bundle={"artifacts":[{"digest":subject["digest"],"format":subject["format"],
             "architecture":subject["architecture"]}],
@@ -80,6 +111,7 @@ def main():
           "original_sha256":EXPECTED,"original_body_changed":False,
           "staged_inline_modules":len(manifest),
           "staged_module_digests":manifest,
+          "rea_evidence_source_binding":source_binding,
           "rea_evidence_import_pass":True,
           "projected_jm_graph":projection,
           "boundary":"REAL_REA_INSPECTED_TEMPORARY_EXTRACTED_JS__NOT_BINARY_DECOMPILATION_OR_OWNER_DEVICE"}

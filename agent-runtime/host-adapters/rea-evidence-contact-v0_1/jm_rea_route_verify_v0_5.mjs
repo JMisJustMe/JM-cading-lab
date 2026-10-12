@@ -34,6 +34,7 @@ for(let k=0;k<10;k++)cases.push({name:'action-family-'+k,source:operations,state
 const serviceRoute=d('Service',['start:','  call markStarted()','  goto set','set:',
  '  flag = true','  end']);
 for(let k=0;k<10;k++)cases.push({name:'service-side-effect-'+k,source:serviceRoute,state:{sequence:k}});
+export const routeCases=cases;
 function serviceBag(){
  const calls=[];
  const services={markStarted:()=>{calls.push('markStarted');return true;}};

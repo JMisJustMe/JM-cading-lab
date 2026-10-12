@@ -46,7 +46,23 @@ def contact(browser, html, mode):
     for(const key of JM_IR.fighterOrder){try{drawUnit(Runtime.createUnit(key,'player',0,
       JM_IR.arena.formations.player[0]));rendered++}catch(e){failures.push(key+':'+e.message)}}
     return {rendered,failures}}""")
-  return {"meta":meta,"state":state,"shot":shot,"render":render,"errors":errors}
+  # Additional real canvas PointerEvent route, separate from the controller-call test.
+  page.evaluate("Runtime.startMatch()")
+  point=page.evaluate("""()=>{const c=document.querySelector('#game'),u=Runtime.active(),
+    r=c.getBoundingClientRect();return {x:r.x+u.x*r.width/c.width,
+    y:r.y+u.y*r.height/c.height,dx:90*r.width/c.width,dy:55*r.height/c.height}}""")
+  page.evaluate("Runtime.state.paused=false")
+  for name,x,y in [("pointerdown",point["x"],point["y"]),
+                    ("pointermove",point["x"]-point["dx"],point["y"]+point["dy"]),
+                    ("pointerup",point["x"]-point["dx"],point["y"]+point["dy"])]:
+   page.dispatch_event("#game",name,{"pointerId":55,"pointerType":"touch",
+     "isPrimary":True,"clientX":x,"clientY":y,"buttons":0 if name=="pointerup" else 1,
+     "bubbles":True})
+  pointer=page.evaluate("""()=>({phase:Runtime.state.phase,shotSeq:Runtime.state.shotSeq,
+    shotPower:Runtime.state.shot?.power,shotVector:Runtime.state.shot?.vector,
+    shotOwner:Runtime.state.shot?.owner,turns:Runtime.state.stats.turns,
+    shotReceipts:Runtime.receipts.filter(x=>x.type==='SHOT_COMMIT').length})""")
+  return {"meta":meta,"state":state,"shot":shot,"pointer":pointer,"render":render,"errors":errors}
  finally:
   page.close();ctx.close()
 
@@ -83,6 +99,8 @@ def main():
      if original["meta"][field]!=newer["meta"][field]:errs.append("CHANGED_"+field)
     if original["state"]!=newer["state"]:errs.append("INITIAL_MATCH_DRIFT")
     if original["shot"]!=newer["shot"]:errs.append("PULL_AIM_RELEASE_DRIFT")
+    if original["pointer"]!=newer["pointer"]:errs.append("ACTUAL_POINTER_EVENTS_DRIFT")
+    if newer["pointer"]["phase"]!="moving" or newer["pointer"]["shotSeq"]!=1 or newer["pointer"]["shotReceipts"]!=1:errs.append("CANVAS_POINTER_SHOT_NOT_COMMITTED")
     if newer["shot"]["phase"]!="moving" or newer["shot"]["shotReceipts"]!=1:
      errs.append("SHOT_NOT_COMMITTED")
     result.append({"style":mode,"pass":not errs,"holds":errs,
@@ -91,7 +109,10 @@ def main():
       "game_state_sha256":sha(json.dumps(newer["state"],sort_keys=True)),
       "shot_state_sha256":sha(json.dumps(newer["shot"],sort_keys=True)),
       "observed_power":newer["shot"]["shotPower"],
-      "observed_velocity":newer["shot"]["velocity"]})
+      "observed_velocity":newer["shot"]["velocity"],
+      "canvas_pointer_power":newer["pointer"]["shotPower"],
+      "canvas_pointer_vector":newer["pointer"]["shotVector"],
+      "canvas_pointer_receipts":newer["pointer"]["shotReceipts"]})
   finally:browser.close()
  if sha(p.body.read_bytes())!=EXPECTED:raise SystemExit("HOLD: protected file changed")
  report={"schema":"JM.REA.COMBOUND_REAL_GAME_CONTACT/0.7",

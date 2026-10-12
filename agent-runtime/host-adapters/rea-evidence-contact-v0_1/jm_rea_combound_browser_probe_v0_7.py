@@ -38,9 +38,9 @@ def contact(browser, html, mode):
     Runtime.moveDrag({x:u.x-85,y:u.y+50});
     const power=Runtime.state.drag?.power;
     Runtime.releaseDrag({x:b.x-85,y:b.y+50});
-    return {power,phase:Runtime.state.phase,owner:Runtime.state.shot?.owner,
+    return {power,phase:Runtime.state.phase,shotOwner:Runtime.state.shot?.owner,
      shotPower:Runtime.state.shot?.power,shotVector:Runtime.state.shot?.vector,
-     actor:u.key,velocity:[u.vx,u.vy],turns:Runtime.state.stats.turns,
+     actorKey:u.key,velocity:[u.vx,u.vy],turns:Runtime.state.stats.turns,
      shotReceipts:Runtime.receipts.filter(x=>x.type==='SHOT_COMMIT').length}}""")
   render=page.evaluate("""()=>{let rendered=0,failures=[];
     for(const key of JM_IR.fighterOrder){try{drawUnit(Runtime.createUnit(key,'player',0,

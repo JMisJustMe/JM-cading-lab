@@ -48,7 +48,7 @@ try{
  assert.equal(await page.locator('#meshCount').textContent(),'12 V / 20 T'); // original evidence panel is intentionally collapsed on phones
  await page.locator('#ownerApproach').click();
  await page.waitForFunction(()=>window.JMForgeWorld?.state()?.clearance===true,{timeout:12000});
- assert.equal(await page.locator('#ownerDeliver').isEnabled(),true);
+ await page.waitForFunction(()=>document.querySelector('#ownerDeliver')?.disabled===false); // UI refresh follows actual world clearance asynchronously
  const coreAtClearance=await page.evaluate(()=>window.JMForgeWorld.state().core.x);assert.equal(coreAtClearance,1.34);
  await page.locator('#ownerDeliver').click();
  await page.waitForFunction(()=>window.JMForgeWorld?.state()?.beacon?.open===true,{timeout:12000});

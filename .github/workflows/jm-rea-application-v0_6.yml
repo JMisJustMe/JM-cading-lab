@@ -82,3 +82,29 @@ jobs:
           JS
       - name: Negative boundary and source parser unit checks
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_application_v0_6.mjs
+
+      - name: v0.8 automatic JM relation projection from REAL REA 6.1 Evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          import {projectGenuineREA} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_auto_relation_ir_v0_8.mjs';
+          const original=fs.readFileSync('./coding-estate/sovereign-ten/direct/game-native.mjs');
+          const sha=crypto.createHash('sha256').update(original).digest('hex');
+          const record=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/rea-jm-game.json','utf8'));
+          const projected=projectGenuineREA(record,{module:'game-native.mjs',
+            roots:['trigger','simulateFrame','dispatch'],sourceSha256:sha,depth:2});
+          assert.equal(projected.analysis_engine,'REA_RECORD_SOURCE_GRAPH');
+          assert.ok(projected.selected_census.nodes>=3);
+          assert.ok(projected.input_census.relations>100);
+          assert.equal(projected.gate.promotable,false);
+          console.log('REAL_REA_TO_JM_AUTO_RELATION_PROJECTION: PASS');
+          console.log('REAL_REA_TO_JM_PROJECTION_COUNTS:',JSON.stringify(projected.selected_census));
+          console.log('REAL_REA_TO_JM_STATIC_UNKNOWNS:',projected.input_census.unknowns);
+          console.log('REAL_REA_TO_JM_BOUNDARY:',projected.boundary);
+          JS
+      - name: v0.8 bounded REA auto-projection negative tests
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs

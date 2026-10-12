@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_DUAL_ACTOR_HOST_v0_5.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_WORLD_HOST_v0_6.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];
@@ -165,10 +165,38 @@ try{
  assert.equal(contactPackets[0].payload.mesh_sha256,packet.geometry.sha256);
  assert.equal(contactPackets[0].payload.collider,'SOURCE_BOUNDS_PROXY');
  assert.equal(JSON.stringify(contactPackets).includes(packet.geometry.data),false);
+ // World v0.6: the Guardian must be physically contacted before the Courier moves the relay core.
+ await f.locator('#jmWorldDeliver').waitFor();
+ const clearance=await f.locator('#stage').evaluate(()=>window.JMForgeWorld.state());
+ assert.equal(clearance.clearance,true);
+ assert.equal(clearance.beacon.open,false,'Guardian contact alone must not magically open the gate');
+ assert.equal(clearance.core.x,1.34);
+ await f.locator('#jmWorldDeliver').click();
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_WORLD_DELIVERED');
+ });
+ const world=await f.locator('#stage').evaluate(()=>window.JMForgeWorld.state());
+ assert.equal(world.roles.join(','),'guardian,courier');
+ assert.equal(world.core.x,2.12);
+ assert.ok(world.core.pushes>0,'Relay-core must actually travel through courier pushing');
+ assert.equal(world.beacon.open,true);
+ assert.equal(world.consequence,'BEACON_LIT_AND_GATE_OPEN');
+ const worldNative=await page.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_WORLD_DELIVERED'));
+ assert.equal(worldNative.length,1);
+ assert.equal(worldNative[0].extra.gate_open,true);
+ const worldPackets=await page.evaluate(()=>window.JMAppsToolsSpine.read().filter(x=>x.kind==='jm.fieldform.world-consequence'));
+ assert.equal(worldPackets.length,1);
+ assert.equal(worldPackets[0].payload.core_x,2.12);
+ assert.equal(worldPackets[0].payload.beacon_open,true);
+ assert.equal(JSON.stringify(worldPackets).includes(packet.geometry.data),false);
  await f.locator('#jmActorSave').click();
  await page.waitForFunction(()=>window.JMAppsToolsSpine.read().some(x=>x.kind==='jm.fieldform.dual-actor-checkpoint'));
  const cp=await page.evaluate(()=>window.JMAppsToolsSpine.read().find(x=>x.kind==='jm.fieldform.dual-actor-checkpoint'));
  assert.equal(cp.payload.checkpoint.echo.contacts,1);
+ assert.equal(cp.payload.checkpoint.world.beacon.open,true);
+ assert.equal(cp.payload.checkpoint.world.core.x,2.12);
+ assert.equal(cp.payload.checkpoint.world.deliveries,1);
  assert.equal(JSON.stringify(cp).includes(packet.geometry.data),false,'private mesh must not enter encounter-state carrier');
  // The recipient's real native RouteOS browser on a different device-sized viewport.
  const other=await browser.newContext({viewport:{width:1260,height:880}});
@@ -187,6 +215,12 @@ try{
  });
  const returned=await recipient.locator('#stage').evaluate(()=>window.JMForgeDualActor.state());
  assert.equal(returned.echo.contacts,1);
+ assert.equal(returned.world.beacon.open,true,'fresh receiving game must recover earned world consequence');
+ assert.equal(returned.world.core.x,2.12);
+ assert.equal(returned.world.deliveries,1);
+ const worldRestore=await desk.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_WORLD_RESTORED'));
+ assert.equal(worldRestore.length,1);
+ assert.equal(worldRestore[0].extra.gate_open,true);
  const returnReceipts=await desk.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_ACTOR_STATE_RESTORED'));
  assert.equal(returnReceipts.length,1);
  assert.equal(returnReceipts[0].extra.actor_x,cp.payload.checkpoint.echo.x,'native receipt must prove precise imported position at the instant of restore');

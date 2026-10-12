@@ -1,0 +1,40 @@
+name: JM Forge World Consequence v0.6
+on:
+  push:
+    branches:
+      - integration/jm-forge-world-consequence-v0-6-20261012
+  pull_request:
+    paths:
+      - "target-bridge/form-forge-routeos-v0-6/**"
+      - "target-bridge/form-forge-routeos-v0-5/JM_FORGE_DUAL_ACTOR_v0_5.js"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-forge-world-consequence-v0-6.contract.mjs"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+jobs:
+  witnessed-world-consequence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify first-party source-bound world behaviour and recovery
+        run: |
+          node --check target-bridge/form-forge-routeos-v0-6/JM_FORGE_WORLD_CONSEQUENCE_v0_6.js
+          node --check target-bridge/form-forge-routeos-v0-6/JM_FORGE_ROUTEOS_WORLD_HOST_v0_6.js
+          node --check target-bridge/form-forge-routeos-v0-5/JM_FORGE_DUAL_ACTOR_v0_5.js
+          node tests/jm-forge-world-consequence-v0-6.contract.mjs
+          node tests/jm-forge-dual-actor-v0-5.contract.mjs
+      - name: Install Chromium test runtime
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve existing original Forge GameCore and RouteOS
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-forge-world-consequence.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-forge-world-consequence.log
+          exit 1
+      - name: Prove physical relay push, world Gate Ding, shared packet, fresh desktop world restoration, ancestor regressions
+        run: node tests/jm-formforge-routeos-contact.spec.mjs

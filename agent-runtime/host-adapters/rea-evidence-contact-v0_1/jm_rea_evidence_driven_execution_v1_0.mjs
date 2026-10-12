@@ -137,7 +137,7 @@ export function executeBoundReconstruction(record,{
  const bounded=bindingTransform?bindingTransform(structuredClone(binding)):binding;
  const plan=synthesizeNativeExecutionPlan(bounded);
  const trace=new TraceBoxRuntime();trace.create('JM_REA_V10_EXECUTE');
- const mismatches=[];let comparisons=0,frames=0;
+ const mismatches=[];let comparisons=0,matching=0,frames=0;
  const modeCounts={};
  for(let i=0;i<sessions;i++){
   const seed=structuredClone(INITIAL_FACTS);
@@ -155,7 +155,7 @@ export function executeBoundReconstruction(record,{
      native.frame===replica.frame&&
      same(normaliseNativeGameTrace(native.trace.events),replica.trace)&&
      same(normaliseNativeCoreTrace(nativeCore.trace.events),replicaCore.trace);
-   comparisons++;if(command.type==='frames')frames+=command.count;
+   comparisons++;if(ok)matching++;if(command.type==='frames')frames+=command.count;
    modeCounts[command.type]=(modeCounts[command.type]??0)+1;
    if(!ok&&mismatches.length<16)mismatches.push({session:i,step:index,
       instruction:command.type,original_sha256:sha({state:native.state,output:slim(original)}),
@@ -165,9 +165,8 @@ export function executeBoundReconstruction(record,{
    session:i,checks:plan.commands.length,
    state_sha256:sha(native.state),native_trace:native.trace.events.length});
  }
- const matched=comparisons-mismatches.length;
  const verdict=JM32.execute(POLICY,{evidence:{sourceLinked:true,
-   executionMatched:mismatches.length===0,ownerDevice:false},
+   executionMatched:matching===comparisons,ownerDevice:false},
    verdict:{sourceLinked:false,executionMatched:false,promotable:false}}).runtime.state.verdict;
  gate(verdict.sourceLinked&&!verdict.promotable,'JM32_POLICY_DRIFT');
  gate(trace.query('JM_REA_V10_EXECUTE',{kind:'session.compared'}).length===sessions,'TRACE_READBACK');
@@ -184,7 +183,7 @@ export function executeBoundReconstruction(record,{
      unknown_frontiers:binding.rea_static_unknowns,
      raw_graph_retained:false},
    executable_plan:plan.commands,
-   sessions,comparisons,matching:matched,frames,mode_counts:modeCounts,
+   sessions,comparisons,matching,frames,mode_counts:modeCounts,
    mismatches,trace_sessions:trace.replay('JM_REA_V10_EXECUTE').length,
    verdict,
    boundary:'REAL_REA_PUBLIC_JM_SOURCE__INDEPENDENT_JM_CORPUS_RUNTIME__NOT_REA_SYNTHESIZED_ARBITRARY_CODE_OR_PRIVATE_COMBOUND'};

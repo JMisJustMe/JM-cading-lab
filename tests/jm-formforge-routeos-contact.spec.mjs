@@ -186,10 +186,14 @@ try{
   return a?.state().echo.contacts===1;
  });
  const returned=await recipient.locator('#stage').evaluate(()=>window.JMForgeDualActor.state());
- assert.equal(returned.echo.x,cp.payload.checkpoint.echo.x);
  assert.equal(returned.echo.contacts,1);
  const returnReceipts=await desk.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_ACTOR_STATE_RESTORED'));
  assert.equal(returnReceipts.length,1);
+ assert.equal(returnReceipts[0].extra.actor_x,cp.payload.checkpoint.echo.x,'native receipt must prove precise imported position at the instant of restore');
+ if(cp.payload.checkpoint.echo.mode==='recoil'){
+  assert.ok(returned.echo.x>=cp.payload.checkpoint.echo.x,'a restored moving actor resumes recoil forward, never rewinds');
+  assert.ok(returned.echo.x-cp.payload.checkpoint.echo.x<.6,'recipient continuation remains bounded after restore');
+ }else assert.equal(returned.echo.x,cp.payload.checkpoint.echo.x);
  await other.close();
 
  await page.waitForFunction(()=>{

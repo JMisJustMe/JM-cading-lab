@@ -84,7 +84,59 @@ def preflight(source: Path, node='node'):
             fail('MISSING_RUNTIME_ROOT_' + root)
     version = subprocess.run([node, '--version'], capture_output=True,
                              text=True, timeout=10).stdout.strip()
-    ready_node = bool(re.match(r'^v(?:22\.(?:19|2\d)|2[4-9]\.)', version))
+    m = re.match(r'^v(\d+)\.(\d+)\.(\d+)
+    return {'schema': 'JM.REA.COMBOUND.PrivatePreflight/0.9',
+            'status': 'SOURCE_SYNTAX_AND_ROOT_PREFLIGHT_PASS__REAL_REA_NOT_EXECUTED',
+            'source_sha256': digest, 'embedded_scripts': len(parser.scripts),
+            'embedded_scripts_syntax_pass': syntax, 'external_scripts': parser.external,
+            'runtime_source_module': module, 'runtime_roots': list(ROOTS),
+            'node_version': version, 'node_meets_rea_6_1_minimum': ready_node,
+            'rea_executable_present': shutil.which('rea') is not None,
+            'real_rea_evidence_validated': False, 'protected_source_mutated': False,
+            'raw_script_source_retained': False}
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--protected', type=Path, required=True)
+    p.add_argument('--output', type=Path, help='A NEW absolute JSON receipt')
+    p.add_argument('--node', default='node')
+    p.add_argument('--rea', default='rea')
+    p.add_argument('--run-rea', action='store_true',
+                   help='After strict preflight, execute actual REA and JM projection')
+    args = p.parse_args()
+    result = preflight(args.protected, args.node)
+    if args.run_rea:
+        if not args.output or not args.output.is_absolute() or args.output.exists():
+            fail('FRESH_ABSOLUTE_REA_RECEIPT_REQUIRED')
+        if not result['node_meets_rea_6_1_minimum']:
+            fail('NODE_TOO_OLD_FOR_REA')
+        if shutil.which(args.rea) is None:
+            fail('REAL_REA_CLI_NOT_INSTALLED')
+        old_runner = Path(__file__).with_name('jm_rea_private_combound_runner_v0_8.py')
+        if not old_runner.is_file():
+            fail('INHERITED_REAL_REA_RUNNER_ABSENT')
+        cmd = [sys.executable, str(old_runner), '--protected', str(args.protected),
+               '--output', str(args.output), '--rea', args.rea, '--node', args.node,
+               '--roots', 'releaseDrag,commitShot',
+               '--module', result['runtime_source_module']]
+        done = subprocess.run(cmd, check=False, timeout=600)
+        if done.returncode != 0:
+            fail('REAL_REA_OR_JM_HANDOFF_FAILED')
+        print('JM_REA_V09_GENUINE_REA_HANDOFF: SUCCESS (see real evidence receipt)')
+        return
+    if args.output:
+        if not args.output.is_absolute():
+            fail('OUTPUT_ABSOLUTE_PATH_REQUIRED')
+        with args.output.open('x', encoding='utf-8') as out:
+            json.dump(result, out, indent=2)
+            out.write('\n')
+    print(json.dumps(result, sort_keys=True))
+
+if __name__ == '__main__':
+    main()
+, version)
+    major, minor = (int(m.group(1)), int(m.group(2))) if m else (-1, -1)
+    ready_node = (major == 22 and minor >= 19) or (major == 24 and minor >= 11) or major >= 26
     return {'schema': 'JM.REA.COMBOUND.PrivatePreflight/0.9',
             'status': 'SOURCE_SYNTAX_AND_ROOT_PREFLIGHT_PASS__REAL_REA_NOT_EXECUTED',
             'source_sha256': digest, 'embedded_scripts': len(parser.scripts),

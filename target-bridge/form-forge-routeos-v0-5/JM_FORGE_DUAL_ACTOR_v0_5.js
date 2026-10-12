@@ -14,7 +14,7 @@ const SCHEMA='JM.FormForge.DualActor/0.5';
 const SOURCE='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba';
 const VERSION='JM.FormForge.EncounterState/0.5';
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
-let original=[],mesh='',snapshot='',actor=null,ready=false,canvas=null,info=null,last=0,ticks=0;
+let original=[],mesh='',snapshot='',actor=null,ready=false,canvas=null,info=null,last=0,ticks=0,world=null;
 const round=x=>Math.round(x*10000)/10000;
 function fresh(){
  const xs=original.map(p=>p[0]),low=Math.min(...xs),high=Math.max(...xs),extent=Math.max(.15,(high-low)/2);
@@ -25,7 +25,7 @@ function bindSource(){
  if(!scene.loaded||!/^[a-f0-9]{64}$/.test(scene.meshSha||'')||!/^[a-f0-9]{8}$/.test(scene.snapshot||''))
   throw Error('Source-verified Forge geometry required');
  original=scene.points.map(p=>p.slice());mesh=scene.meshSha;snapshot=scene.snapshot;
- actor=fresh();ready=true;ticks=0;last=0;show();
+ actor=fresh();ready=true;ticks=0;last=0;world?.bindSource?.();show();
  return {schema:SCHEMA,mesh,source:SOURCE,vertices:original.length,triangles:scene.faces.length,instances:2};
 }
 function verify(){
@@ -51,6 +51,7 @@ function step(dt){
   if(actor.x>radius&&next<=radius){
    actor.x=radius;actor.sequence++;actor.contacts++;actor.vx=.72;actor.mode='recoil';
    art.setTargets(-.26,.14); // visible purposeful reaction in existing shared source body
+   world?.onActorContact?.(actor.contacts);
    send('ACTOR_CONTACT',{contactMode:'SOURCE_BOUNDS_PROXY',threshold:round(radius),actors:['original','echo']});
    show();return {contact:true,sequence:actor.sequence,threshold:round(radius),actors:2,source:mesh};
   }
@@ -58,13 +59,17 @@ function step(dt){
  }else if(actor.mode==='recoil'){
   actor.x+=actor.vx*dt;actor.vx=Math.max(0,actor.vx-1.15*dt);
   if(actor.vx===0)actor.mode='settled';
+ }else if(actor.mode==='escort'){
+  actor.x+=actor.vx*dt;
+  if(actor.x>4.5){actor.vx=0;actor.mode='settled'}
  }
+ if(world?.step?.(dt,actor.x)?.delivered){actor.vx=0;actor.mode='settled'}
  show();return null;
 }
 function state(){
  return {schema:VERSION,source:SOURCE,mesh,snapshot,actors:2,echo:{x:round(actor?.x??0),vx:round(actor?.vx??0),
   mode:actor?.mode||'unbound',contacts:actor?.contacts||0,sequence:actor?.sequence||0},
-  originalPose:art.state().joints.map(j=>({name:j.name,target:j.target})),contactMode:'SOURCE_BOUNDS_PROXY'};
+  originalPose:art.state().joints.map(j=>({name:j.name,target:j.target})),contactMode:'SOURCE_BOUNDS_PROXY',world:world?.state?.()||null};
 }
 function validate(s){
  if(!s||s.schema!==VERSION||s.source!==SOURCE||s.mesh!==mesh||s.snapshot!==snapshot||s.actors!==2||
@@ -73,7 +78,8 @@ function validate(s){
    !Number.isInteger(s.echo.contacts)||s.echo.contacts<0||s.echo.contacts>100000||
    !Number.isInteger(s.echo.sequence)||s.echo.sequence!==s.echo.contacts||
    !Array.isArray(s.originalPose)||s.originalPose.length!==2||s.originalPose[0].name!=='body'||s.originalPose[1].name!=='crown'||
-   !s.originalPose.every(p=>typeof p.target==='number'&&Number.isFinite(p.target)&&Math.abs(p.target)<.6))
+   !s.originalPose.every(p=>typeof p.target==='number'&&Number.isFinite(p.target)&&Math.abs(p.target)<.6)||
+   (s.world!==null&&s.world!==undefined&&(!world||!world.validate(s.world))))
    throw Error('Unverified or mismatched JM two-actor state');
  return true;
 }
@@ -82,11 +88,24 @@ function restore(s){
  if(actor.contacts>0&&JSON.stringify(state().echo)!==JSON.stringify(s.echo))
   throw Error('HOLD: destination has different contact history; do not overwrite');
  actor.x=s.echo.x;actor.vx=s.echo.vx;actor.contacts=s.echo.contacts;actor.sequence=s.echo.sequence;actor.mode=s.echo.mode;
- art.setTargets(s.originalPose[0].target,s.originalPose[1].target);show();
+ art.setTargets(s.originalPose[0].target,s.originalPose[1].target);
+ if(world){if(s.world)world.restore(s.world);else world.reset()}
+ show();
  return {restored:true,contacts:actor.contacts,mesh,source:SOURCE};
 }
 function reset(){
- if(!ready)return false;actor=fresh();ticks=0;last=0;show();return true;
+ if(!ready)return false;actor=fresh();ticks=0;last=0;world?.reset?.();show();return true;
+}
+function registerWorld(partner){
+ if(!partner||partner.schema!=='JM.FormForge.WorldConsequence/0.6'||!['bindSource','onActorContact','step','state','validate','restore','reset','canEscort'].every(k=>typeof partner[k]==='function'))throw Error('Only source-bound JM v0.6 world organ may join');
+ if(world&&world!==partner)throw Error('World consequence organ already registered');
+ world=partner;if(ready)partner.bindSource();return true
+}
+function escort(){
+ verify();
+ if(!world?.canEscort?.())throw Error('Guardian must grant courier clearance through actual encounter contact');
+ if(actor.mode==='escort')return state();
+ actor.mode='escort';actor.vx=1.18;show();return state();
 }
 function snapshotToHost(){verify();const s=state();send('STATE_SAVE',{checkpoint:s});return s}
 function show(){
@@ -142,7 +161,7 @@ function mount(){
  show();requestAnimationFrame(tick);
 }
 Object.defineProperty(window,'JMForgeDualActor',{value:Object.freeze({
- schema:SCHEMA,bindSource,approach,step,reset,state,restore,validate,snapshotToHost,
+ schema:SCHEMA,bindSource,approach,escort,registerWorld,step,reset,state,restore,validate,snapshotToHost,
  get ready(){return ready},get geometry(){return{mesh,vertexCount:original.length,faceCount:scene.faces.length}}
 }),configurable:false});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();

@@ -47,3 +47,8 @@ jobs:
 
       - name: v0.7 COMBOUND real-game receipt into original JM32 and TraceBox guards
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_combound_real_game_v0_7.mjs
+
+      - name: v0.7 Original JM32 and TraceBox verify protected COMBOUND Chrome receipt (no HTML custody)
+        run: |
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_browser_probe_v0_7.py
+          node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_combound_real_game_v0_7.mjs

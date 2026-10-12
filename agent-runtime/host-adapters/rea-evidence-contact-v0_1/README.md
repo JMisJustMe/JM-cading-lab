@@ -1,3 +1,9 @@
+> **Current experimental head: JM × REA v1.0 — actual real REA 6.1 Evidence → executable original JM GameCoding/GameCore → independent JM reconstructed consequence parity.**
+> [v1.0 complete scoped proof and re-entry](REAL_REA_TO_EXECUTABLE_JM_v1_0.md) · [source-verified execution engine](jm_rea_evidence_driven_execution_v1_0.mjs) · [independently self-validating REA CLI](jm_rea_evidence_driven_cli_v1_0.mjs).
+> Actual pinned REA + `rea evidence-import` → original public JM source method binding → source-derived executable 32 sessions and 192 comparisons; **REA on private COMBOUND, autonomous arbitrary-code reconstruction, JM32-1DA v2.2.1 full compiler, Target Bridge host/owner contact remain separate HOLDs.**
+> All protected game FLAZ/source and earlier v0.1–v0.9 proof preserved. Main unchanged.
+
+---
 > **Pre-REA useful follow-through (12 Oct):** [Actual COMBOUND multi-turn parity](MULTITURN_CONSEQUENCE_PRE_REA_v0_9.md) matched **4/4** original-versus-candidate Chromium scenarios and **84/84** state/effect checkpoints (Classic/Arcade × Bloom Ring/Toxic Garden). AI previews, AI shots and return to player turn 2 were observed. This is deterministic browser-simulation contact, **not REA private-source execution or complete-match proof**.
 > Isolated runner `jm_rea_combound_multiturn_parity_v0_9.py` and bounded negative tests; no protected/private game copied or overwritten.
 

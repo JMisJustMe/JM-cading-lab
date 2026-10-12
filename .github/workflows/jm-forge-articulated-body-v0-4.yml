@@ -1,0 +1,39 @@
+name: JM Forge Articulated Body v0.4
+on:
+  push:
+    branches:
+      - integration/jm-forge-articulated-body-v0-4-20261012
+  pull_request:
+    paths:
+      - "target-bridge/form-forge-routeos-v0-4/**"
+      - "target-bridge/form-forge-routeos-v0-3/JM_FORGE_EMBODIED_RESPONSE_v0_3.js"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-forge-articulated-body-v0-4.contract.mjs"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+jobs:
+  two-joint-actual-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 13
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify inherited spring plus connected articulation
+        run: |
+          node --check target-bridge/form-forge-routeos-v0-4/JM_FORGE_ARTICULATED_BODY_v0_4.js
+          node --check target-bridge/form-forge-routeos-v0-4/JM_FORGE_ROUTEOS_ARTICULATED_HOST_v0_4.js
+          node tests/jm-forge-articulated-body-v0-4.contract.mjs
+          node tests/jm-formforge-embodied-response-v0-3.contract.mjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve original unchanged JM RouteOS and Form Contact v0.1
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-forge-articulated.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-forge-articulated.log
+          exit 1
+      - name: Prove manual pose, impact recoil, native Ding and untouched first-party game save
+        run: node tests/jm-formforge-routeos-contact.spec.mjs

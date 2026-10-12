@@ -1,3 +1,8 @@
+> **Current handoff: v0.9 — direct real REA on private protected COMBOUND.**
+> [Real private COMBOUND REA preflight / run instructions](PRIVATE_COMBOUND_REA_CONTACT_v0_9.md). Exact source SHA verified, 32/32 embedded JS parse, five gameplay method roots located, no original modified. **REA itself did NOT run on this private code** in the present environment (no compatible Node / REA binary); the new `--run-rea` path deliberately refuses to manufacture a receipt.
+> The original v0.1–v0.8 proof chain remains inherited and separate. Draft stays unmerged; no private code committed.
+
+---
 > **Current JM × REA stage: v0.8 — real COMBOUND source/physics comparison + automatic REA Evidence projector.**
 > [Exact private COMBOUND source contact and honest REA boundary](COMBOUND_REAL_SOURCE_AUTO_IR_v0_8.md). TypeScript AST of the protected game recovered 29 unchanged runtime methods and 3 critical call relationships; independent Chromium comparison earned 14/14 shots. Real REA 6.1 analysed public original JM game source and its semantic graph now maps through original JM32/TraceBox, but **private COMBOUND direct REA remains HOLD** until installed on a compatible local host.
 > No protected game HTML uploaded; source lineage, draft isolation, and all prior v0.1–v0.7 bodies are retained.

@@ -167,6 +167,8 @@ jobs:
           assert.equal(new Set(methodNodes.map(n=>n.label)).size, methodNames.length, 'REA_METHOD_LABEL_GRAMMAR_HOLD');
           const input = fs.readFileSync(process.env.RUNNER_TEMP+'/jm-rea-object-shape/combound_inline_000.js');
           const sourceSha = crypto.createHash('sha256').update(input).digest('hex');
+          console.log('SYNTHETIC_REA_MODULE_SHA_MATCH:',methodNodes.every(n=>n.identity.artifact_sha256===sourceSha));
+          assert.equal(graph.root_artifact_sha256,record.subject.digest.sha256,'REAL_REA_SUBJECT_GRAPH_DIGEST_HOLD');
           const projection = projectGenuineREA(record,{module:'combound_inline_000.js', roots:['releaseDrag','commitShot'],sourceSha256:sourceSha});
           assert.equal(projection.gate.promotable, false);
           assert.ok(projection.selected_census.nodes>=2);

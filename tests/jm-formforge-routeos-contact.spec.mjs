@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_EMBODIED_HOST_v0_3.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_ARTICULATED_HOST_v0_4.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];
@@ -86,7 +86,24 @@ try{
  assert.ok(geometry.hit&&Number.isInteger(geometry.hit.face),'3D ray must intersect a decoded face');
  assert.equal(geometry.miss,null,'miss cannot fabricate a face hit');
  await f.locator('#jmRestoreForm').waitFor();
+ await f.locator('#jmPoseRest').waitFor();
  const originalPoints=await f.locator('#stage').evaluate(()=>window.JMForgeContact.scene.points.map(v=>v.slice()));
+ await f.locator('#jmBodyRight').click();
+ await f.locator('#jmCrownForward').click();
+ await page.waitForFunction(()=>{
+  const f=document.querySelector('#jmForgeRouteOSHost iframe')?.contentWindow;
+  return f?.JMForgeArticulation?.state().joints?.[0]?.angle>.07&&f?.JMForgeArticulation?.state().joints?.[1]?.angle>.07;
+ });
+ const articulated=await f.locator('#stage').evaluate(()=>({
+  pose:window.JMForgeArticulation.state(),
+  mesh:window.JMForgeContact.scene.points.map(v=>v.slice())
+ }));
+ assert.equal(articulated.pose.joints.length,2);
+ assert.ok(articulated.mesh.some((v,i)=>v.some((x,j)=>x!==originalPoints[i][j])),'manual v0.4 articulation must change actual source mesh');
+ await f.locator('#jmRestoreForm').click();
+ const recoveredManual=await f.locator('#stage').evaluate(()=>window.JMForgeContact.scene.points.map(v=>v.slice()));
+ assert.deepEqual(recoveredManual,originalPoints,'manual articulation must restore exact source');
+
  await f.locator('#jmFire').click();
  await page.waitForFunction(()=>{
   const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
@@ -127,6 +144,24 @@ try{
  assert.equal(sharedResponse[0].payload.mesh_sha256,packet.geometry.sha256);
  assert.equal(sharedResponse[0].payload.affected_vertices,response.status.affectedVertices);
  assert.equal(JSON.stringify(sharedResponse).includes(packet.geometry.data),false);
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_ARTICULATED_RECOIL');
+ });
+ const jointReceipt=await page.evaluate(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8'));
+  return os.receipts.find(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_ARTICULATED_RECOIL');
+ });
+ assert.equal(jointReceipt.extra.joints.length,2);
+ assert.ok(jointReceipt.extra.articulated_vertices>0);
+ assert.ok(jointReceipt.extra.pose_offset>0);
+ const jointPackets=await page.evaluate(()=>window.JMAppsToolsSpine.read().filter(x=>x.kind==='jm.fieldform.articulated-recoil'));
+ assert.equal(jointPackets.length,1);
+ assert.equal(jointPackets[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(jointPackets[0].payload.joints.length,2);
+ assert.equal(JSON.stringify(jointPackets).includes(packet.geometry.data),false);
+ assert.ok(await f.locator('#stage').evaluate(()=>window.JMForgeArticulation.state().impactCount)>=1);
+
  await f.locator('#jmRestoreForm').click();
  const restoredBody=await f.locator('#stage').evaluate(()=>({points:window.JMForgeContact.scene.points.map(v=>v.slice()),state:window.JMForgeEmbodiment.status()}));
  assert.deepEqual(restoredBody.points,originalPoints,'restore original geometry exactly, no source mutation');
@@ -146,6 +181,10 @@ try{
  assert.equal(embodimentReset.impactCount,0);
  assert.equal(embodimentReset.maxOffset,0);
  assert.equal(embodimentReset.sourceVertices,12);
+ const jointReset=await f.locator('#stage').evaluate(()=>window.JMForgeArticulation.state());
+ assert.equal(jointReset.impactCount,0);
+ assert.ok(jointReset.joints.every(j=>j.angle===0&&j.target===0));
+
 
  await f.locator('#jmFire').click();
  await page.waitForFunction(n=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}').receipts?.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_SURFACE_IMPACT').length>n,beforeReentry);

@@ -44,3 +44,6 @@ jobs:
 
       - name: v0.6 Independent JM source parser and actual GameCore application parity
         run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_application_v0_6.mjs
+
+      - name: v0.7 COMBOUND real-game receipt into original JM32 and TraceBox guards
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_combound_real_game_v0_7.mjs

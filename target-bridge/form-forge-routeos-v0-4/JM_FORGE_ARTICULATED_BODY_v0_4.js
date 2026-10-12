@@ -61,6 +61,8 @@ function compose(points,sourceBase,dt){
   if(Math.abs(j.velocity)<.00002&&Math.abs(j.angle-j.target)<.00002){j.velocity=0;j.angle=j.target}
  }
  const [body,crown]=joints.map(j=>j.angle);
+ // Exact zero-pose bypass: avoid floating-point pivot-subtract/re-add drift after native restore.
+ if(Math.abs(body)<1e-12&&Math.abs(crown)<1e-12){lastAffected=0;show();return 0}
  const p1=bounds.pivotBody,p2=bounds.pivotCrown,
        p2World=add(p1,rotateZ(sub(p2,p1),body));
  let affected=0,max=0;

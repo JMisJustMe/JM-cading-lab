@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import {chromium} from 'playwright';
 const file=path.resolve('release/jm-world-v0-6/JM_GUARDIAN_COURIER_OWNER_CONTACT_ONEBODY_v0_6.html');

@@ -18,6 +18,7 @@ const ctx={window,document,location:{origin:'null'},JSON,Math,Number,Date,Object
 vm.runInNewContext(source3,ctx,{filename:'JM_FORGE_EMBODIED_RESPONSE_v0_3.js'});
 vm.runInNewContext(source4,ctx,{filename:'JM_FORGE_ARTICULATED_BODY_v0_4.js'});
 const body=window.JMForgeEmbodiment,art=window.JMForgeArticulation;
+body.bindSource(); // VM has no DOM mount: explicitly run inherited source contact
 assert.equal(art.schema,'JM.FormForge.Articulation/0.4');
 assert.equal(art.state().vertices,initial.length);
 assert.equal(art.state().hierarchy.length,3);

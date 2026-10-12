@@ -1,3 +1,7 @@
+> **Pre-REA useful follow-through (12 Oct):** [Actual COMBOUND multi-turn parity](MULTITURN_CONSEQUENCE_PRE_REA_v0_9.md) matched **4/4** original-versus-candidate Chromium scenarios and **84/84** state/effect checkpoints (Classic/Arcade × Bloom Ring/Toxic Garden). AI previews, AI shots and return to player turn 2 were observed. This is deterministic browser-simulation contact, **not REA private-source execution or complete-match proof**.
+> Isolated runner `jm_rea_combound_multiturn_parity_v0_9.py` and bounded negative tests; no protected/private game copied or overwritten.
+
+---
 > **Current handoff: v0.9 — direct real REA on private protected COMBOUND.**
 > [Real private COMBOUND REA preflight / run instructions](PRIVATE_COMBOUND_REA_CONTACT_v0_9.md). Exact source SHA verified, 32/32 embedded JS parse, five gameplay method roots located, no original modified. **REA itself did NOT run on this private code** in the present environment (no compatible Node / REA binary); the new `--run-rea` path deliberately refuses to manufacture a receipt.
 > The original v0.1–v0.8 proof chain remains inherited and separate. Draft stays unmerged; no private code committed.

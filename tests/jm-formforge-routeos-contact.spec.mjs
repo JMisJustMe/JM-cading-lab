@@ -11,7 +11,7 @@ const os=fs.readFileSync('games-beyond/routeos/runtime/index.html','utf8');
 assert.ok(!receiver.includes('de2a5095bae7cc1e130d09a8a54ed5312c8139eefe31c2d5a6768be36fd745e7'),'Private source geometry must not leak into public recipient');
 assert.ok(receiver.includes('sourceSnapshotHash'),'Forge source snapshot hash check');
 assert.ok(host.includes('window.addEventListener'));
-assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_ARTICULATED_HOST_v0_4.js'));
+assert.ok(os.includes('window.JMRouteOSFormForgePort')&&os.includes('JM_FORGE_ROUTEOS_DUAL_ACTOR_HOST_v0_5.js'));
 
 const f=Math.sqrt(5);
 const pos=[-1,f,0,1,f,0,-1,-f,0,1,-f,0,0,-1,f,0,1,f,0,-1,-f,0,1,-f,f,0,-1,f,0,1,-f,0,-1,-f,0,1];
@@ -144,6 +144,58 @@ try{
  assert.equal(sharedResponse[0].payload.mesh_sha256,packet.geometry.sha256);
  assert.equal(sharedResponse[0].payload.affected_vertices,response.status.affectedVertices);
  assert.equal(JSON.stringify(sharedResponse).includes(packet.geometry.data),false);
+ // v0.5 second independently moving copy of the same verified GLB mesh; real body contact.
+ await f.locator('#jmActorApproach').waitFor();
+ const actorsBefore=await f.locator('#stage').evaluate(()=>window.JMForgeDualActor.state());
+ assert.equal(actorsBefore.actors,2);
+ assert.equal(actorsBefore.echo.contacts,0);
+ await f.locator('#jmActorApproach').click();
+ await page.waitForFunction(()=>{
+  const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
+  return os.receipts?.some(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_ACTOR_CONTACT');
+ });
+ const contact=await f.locator('#stage').evaluate(()=>window.JMForgeDualActor.state());
+ assert.equal(contact.echo.contacts,1);
+ assert.ok(contact.echo.x<actorsBefore.echo.x);
+ const nativeDual=await page.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_ACTOR_CONTACT'));
+ assert.equal(nativeDual.length,1);
+ assert.equal(nativeDual[0].extra.actor_contacts,1);
+ const contactPackets=await page.evaluate(()=>window.JMAppsToolsSpine.read().filter(x=>x.kind==='jm.fieldform.dual-actor-contact'));
+ assert.equal(contactPackets.length,1);
+ assert.equal(contactPackets[0].payload.mesh_sha256,packet.geometry.sha256);
+ assert.equal(contactPackets[0].payload.collider,'SOURCE_BOUNDS_PROXY');
+ assert.equal(JSON.stringify(contactPackets).includes(packet.geometry.data),false);
+ await f.locator('#jmActorSave').click();
+ await page.waitForFunction(()=>window.JMAppsToolsSpine.read().some(x=>x.kind==='jm.fieldform.dual-actor-checkpoint'));
+ const cp=await page.evaluate(()=>window.JMAppsToolsSpine.read().find(x=>x.kind==='jm.fieldform.dual-actor-checkpoint'));
+ assert.equal(cp.payload.checkpoint.echo.contacts,1);
+ assert.equal(JSON.stringify(cp).includes(packet.geometry.data),false,'private mesh must not enter encounter-state carrier');
+ // The recipient's real native RouteOS browser on a different device-sized viewport.
+ const other=await browser.newContext({viewport:{width:1260,height:880}});
+ const desk=await other.newPage();
+ await desk.goto(base+'/games-beyond/routeos/runtime/',{waitUntil:'networkidle'});
+ await desk.locator('[data-screen="bay"]').click();
+ await desk.locator('#jmForgeGameLaunch').click();
+ const recipient=desk.frameLocator('#jmForgeRouteOSHost iframe');
+ await recipient.locator('#import').setInputFiles({name:'SOURCE_SAFE_PUBLIC_FIXTURE.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(packet))});
+ await recipient.locator('#jmActorApproach').waitFor();
+ await desk.evaluate(statePacket=>window.JMAppsToolsSpine.send(statePacket),cp);
+ await desk.locator('#jmRestoreDualState').click();
+ await desk.waitForFunction(()=>{
+  const a=document.querySelector('#jmForgeRouteOSHost iframe')?.contentWindow?.JMForgeDualActor;
+  return a?.state().echo.contacts===1;
+ });
+ const returned=await recipient.locator('#stage').evaluate(()=>window.JMForgeDualActor.state());
+ assert.equal(returned.echo.contacts,1);
+ const returnReceipts=await desk.evaluate(()=>JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')).receipts.filter(r=>r.type==='HOST_FORGE'&&r.text==='FORGE_ACTOR_STATE_RESTORED'));
+ assert.equal(returnReceipts.length,1);
+ assert.equal(returnReceipts[0].extra.actor_x,cp.payload.checkpoint.echo.x,'native receipt must prove precise imported position at the instant of restore');
+ if(cp.payload.checkpoint.echo.mode==='recoil'){
+  assert.ok(returned.echo.x>=cp.payload.checkpoint.echo.x,'a restored moving actor resumes recoil forward, never rewinds');
+  assert.ok(returned.echo.x-cp.payload.checkpoint.echo.x<.6,'recipient continuation remains bounded after restore');
+ }else assert.equal(returned.echo.x,cp.payload.checkpoint.echo.x);
+ await other.close();
+
  await page.waitForFunction(()=>{
   const os=JSON.parse(localStorage.getItem('JM_ROUTEOS_PUBLIC_RUNTIME_v0_8')||'{}');
   return os.receipts?.some(x=>x.type==='HOST_FORGE'&&x.text==='FORGE_ARTICULATED_RECOIL');

@@ -1,0 +1,75 @@
+{
+  "schema": "JM.Ecostate.FormForge.DualActorContact/0.5",
+  "dated": "2026-10-12",
+  "state": "BOUNDED_DUAL_ACTOR_BROWSER_CONTACT_PASS__OWNER_DEVICE_HOLD",
+  "authority": {
+    "owner": "JM / JMISJUSTME",
+    "protected_ancestor": "flaz/jm-formforge-articulated-v0-4-20261012",
+    "parent_draft_pr": 360,
+    "current_draft_pr": 361,
+    "original_private_source": "JM Field/Form Forge v0.24",
+    "original_source_sha256": "ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba",
+    "original_GLB_private": true,
+    "source_replaced": false,
+    "live_main_mutated": false
+  },
+  "implementation": {
+    "new_body": "target-bridge/form-forge-routeos-v0-5/JM_FORGE_DUAL_ACTOR_v0_5.js",
+    "new_host": "target-bridge/form-forge-routeos-v0-5/JM_FORGE_ROUTEOS_DUAL_ACTOR_HOST_v0_5.js",
+    "source": "exact source-verified original GLB data, second instantiated set of same triangles",
+    "actor_A": "Original v0.1-v0.4 Forge Source gameplay and articulated body remains original",
+    "actor_B": "Independent second mesh-instance position and velocity, original source-based mesh topology, separate canvas layer",
+    "contact": "mesh horizontal extents derive two bounded circular proxy contact radii; swept 1D source bound approach, NOT exact triangle-to-triangle mesh contact",
+    "consequence": "Actor B makes source-bounded encounter contact, original Actor A receives controlled v0.4 articulated reaction",
+    "UI": "owner phone touch approach/save/reset, extra G key, original source controls inherited",
+    "native_receipts": [
+      "FORGE_ACTOR_CONTACT",
+      "FORGE_ACTOR_STATE_SAVED",
+      "FORGE_ACTOR_STATE_RESTORED"
+    ],
+    "existing_bus": [
+      "jm.fieldform.dual-actor-contact",
+      "jm.fieldform.dual-actor-checkpoint"
+    ],
+    "state_payload": "Source hash and snapshot, echo position/velocity/mode/contact history, original v0.4 pose targets. No private geometry/GLB bytes",
+    "recovery": "Manual controlled import to fresh browser with same GLB, source/mismatch protection and history conflict HOLD"
+  },
+  "proof": {
+    "unit": "PASS: second source mesh instance, independent movement, bounded collision, original actor target response, source coordinates unchanged; checkpoint restore and conflict/source rejection",
+    "browser": "PASS: actual original RouteOS/GLB recipient, two actor rendered source instances, moving approach/contact, native RouteOS receipts and AppsTools packets; checkpoint restored into separate desktop browser after imported matching geometry; native receipt captures exact restored position, resumed motion continues",
+    "fixtures": "PUBLIC SYNTHETIC GLB; distinct from private real Forge v0.24 source mesh",
+    "github_run": 38280104846,
+    "github_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38280104846",
+    "regression_runs": [
+      38280104875,
+      38280104968,
+      38280104844,
+      38280104837,
+      38280104943,
+      38280104899
+    ],
+    "regression": "7/7 scoped Actions PASS",
+    "strict_claims": [
+      "two independently held actor states using identical verified mesh source",
+      "bounded proxy contact consequences and inherited articulated recoil",
+      "portable explicit encounter state proof"
+    ],
+    "not_claimed": [
+      "two genuinely different authored JM characters",
+      "complete mesh-to-mesh narrow phase collision",
+      "full multiplayer network sync",
+      "cross-device automatic live handoff",
+      "private real Forge GLB v0.5 owner-device proof",
+      "APK/production GPU/full world engine"
+    ]
+  },
+  "promotion": {
+    "live_main": "HOLD",
+    "physical_phone": "OPEN",
+    "physical_laptop": "OPEN",
+    "private_glb_actual_v05": "OPEN",
+    "world_multi_actor_semantics": "OPEN",
+    "source_custody": "PRIVATE"
+  },
+  "keeper": "INTEGRATION ≠ REPLACEMENT · SOURCE → TWO INSTANCES → INDEPENDENT MOTION → CONTACT → NATIVE RECEIPT → STATE RECOVERY → DING · NO DING, NO CLAIM"
+}

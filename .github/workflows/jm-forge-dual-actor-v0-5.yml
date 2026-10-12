@@ -1,0 +1,38 @@
+name: JM Forge Dual Actor v0.5
+on:
+  push:
+    branches:
+      - integration/jm-forge-dual-actor-v0-5-20261012
+  pull_request:
+    paths:
+      - "target-bridge/form-forge-routeos-v0-5/**"
+      - "games-beyond/routeos/runtime/index.html"
+      - "tests/jm-forge-dual-actor-v0-5.contract.mjs"
+      - "tests/jm-formforge-routeos-contact.spec.mjs"
+jobs:
+  source-preserving-encounter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test source passport and deterministic two-actor encounter
+        run: |
+          node --check target-bridge/form-forge-routeos-v0-5/JM_FORGE_DUAL_ACTOR_v0_5.js
+          node --check target-bridge/form-forge-routeos-v0-5/JM_FORGE_ROUTEOS_DUAL_ACTOR_HOST_v0_5.js
+          node tests/jm-forge-dual-actor-v0-5.contract.mjs
+          node tests/jm-forge-articulated-body-v0-4.contract.mjs
+      - name: Install Chromium
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install --with-deps chromium
+      - name: Serve original unchanged GLB Forge recipient and RouteOS
+        run: |
+          python3 -m http.server 4177 >/tmp/jm-forge-dual-actor.log 2>&1 &
+          for i in {1..25}; do curl -fsS http://127.0.0.1:4177/games-beyond/routeos/runtime/ >/dev/null && exit 0; sleep 1; done
+          cat /tmp/jm-forge-dual-actor.log
+          exit 1
+      - name: Contact plus cross-context checkpoint plus full v0.1–v0.4 regression
+        run: node tests/jm-formforge-routeos-contact.spec.mjs

@@ -45,7 +45,7 @@ class JMRealPrivatePreflightTests(unittest.TestCase):
             self.check_source(FULL, '0'*64)
 
     def test_missing_methods_hold(self):
-        text = FULL.replace('releaseDrag(){return true;}', '')
+        text = FULL.replace('releaseDrag(){return true;}', 'otherAction(){return true;}')
         with self.assertRaisesRegex(RuntimeError, 'MISSING_RUNTIME_ROOT_releaseDrag'):
             self.check_source(text)
 

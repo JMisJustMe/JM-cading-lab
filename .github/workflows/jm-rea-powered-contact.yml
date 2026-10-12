@@ -63,3 +63,8 @@ jobs:
 
       - name: v0.9 real-REA selected-function source SHA and graph identity negative gates
         run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_binding_v0_9.py' -v
+
+      - name: Actual COMBOUND multi-turn replay syntax and synthetic fail-closed behaviour guards
+        run: |
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_multiturn_parity_v0_9.py
+          python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_combound_multiturn_parity_v0_9.py' -v

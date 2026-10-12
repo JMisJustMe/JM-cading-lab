@@ -61,6 +61,9 @@ export function validateRealGameReceipt(receipt){
      /^[a-f0-9]{64}$/.test(result.shot_state_sha256),'STATE_DIGEST_'+mode);
    gate(result.observed_power>0 && Number.isFinite(result.observed_velocity[0]) &&
      Number.isFinite(result.observed_velocity[1]),'SHOT_NOT_CONTACTED_'+mode);
+   gate(result.canvas_pointer_power>0 && result.canvas_pointer_receipts===1 &&
+     Number.isFinite(result.canvas_pointer_vector?.x) && Number.isFinite(result.canvas_pointer_vector?.y),
+     'CANVAS_POINTER_NOT_CONTACTED_'+mode);
    trace.append('JM_COMBOUND_REAL_GAME',{mode,kind:'CONTROLLED_CHROMIUM_PARITY',
      protected_digest:receipt.protected_sha256,descendant_digest:receipt.candidate_in_memory_sha256,
      initial_state_digest:result.game_state_sha256,shot_digest:result.shot_state_sha256,

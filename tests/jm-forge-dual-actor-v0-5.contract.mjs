@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const code=fs.readFileSync('target-bridge/form-forge-routeos-v0-5/JM_FORGE_DUAL_ACTOR_v0_5.js','utf8');
+const source='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba';
+const vertices=[[-1,0,-1],[1,0,-1],[1,2,-1],[-1,2,-1],[-1,0,1],[1,0,1],[1,2,1],[-1,2,1]];
+const make=()=>{
+ const scene={loaded:true,points:vertices.map(p=>p.slice()),faces:[[0,1,2],[0,2,3],[4,5,6],[4,6,7]],
+ meshSha:'a'.repeat(64),snapshot:'12345678',angles:{x:-.3,y:.36},zoom:1.08};
+ const targets=[];
+ const art={schema:'JM.FormForge.Articulation/0.4',setTargets:(b,c)=>targets.push([b,c]),state:()=>({joints:[{name:'body',target:targets.at(-1)?.[0]||0},{name:'crown',target:targets.at(-1)?.[1]||0}]})};
+ const win={JMForgeContact:{scene},JMForgeArticulation:art};win.parent=win;
+ const doc={readyState:'loading',addEventListener:()=>{}};
+ vm.runInNewContext(code,{window:win,document:doc,location:{origin:'null'},JSON,Math,Object,Number,Date,Error}, {filename:'JM_FORGE_DUAL_ACTOR_v0_5.js'});
+ return{api:win.JMForgeDualActor,scene,targets};
+};
+const first=make(),a=first.api;
+assert.equal(a.schema,'JM.FormForge.DualActor/0.5');
+const bound=a.bindSource();assert.equal(bound.instances,2);assert.equal(bound.vertices,8);
+const original=JSON.stringify(first.scene.points),initial=a.state();
+assert.equal(initial.echo.contacts,0);assert.equal(initial.mesh,'a'.repeat(64));
+a.approach();let impact=null;
+for(let i=0;i<250;i++){const ret=a.step(1/120);if(ret){impact=ret;break}}
+assert.ok(impact,'two actor positions must converge from independent movement');
+assert.equal(impact.contact,true);assert.equal(impact.actors,2);
+assert.equal(a.state().echo.contacts,1);
+assert.ok(first.targets.length&&first.targets.at(-1)[0]===-.26,'actual v0.4 body reacts to second actor');
+assert.equal(JSON.stringify(first.scene.points),original,'second mesh instance must not overwrite Forge source');
+const p=a.state();
+const second=make();second.api.bindSource();
+const restored=second.api.restore(JSON.parse(JSON.stringify(p)));
+assert.equal(restored.contacts,1);
+assert.equal(second.api.state().echo.contacts,1);
+assert.equal(second.api.state().echo.x,p.echo.x);
+assert.throws(()=>second.api.restore({...p,mesh:'b'.repeat(64)}),/Unverified/);
+assert.throws(()=>second.api.step(.2),/timestep/);
+assert.throws(()=>second.api.restore({...p,echo:{...p.echo,contacts:2}}),/Unverified/);
+assert.throws(()=>second.api.restore({...p,echo:{...p.echo,x:p.echo.x+.2}}),/HOLD/);
+second.api.reset();assert.equal(second.api.state().echo.contacts,0);
+second.scene.meshSha='b'.repeat(64);second.scene.snapshot='87654321';
+second.api.bindSource();assert.equal(second.api.state().mesh,'b'.repeat(64));assert.equal(second.api.state().echo.contacts,0);
+assert.equal(JSON.stringify(first.scene.points),original);
+console.log('PASS: two actual source-mesh instances; independent echo movement; bounded source-derived proxy contact causes v0.4 recoil; state checkpoint restores to fresh instance; conflicting source/encounter refused; base body unchanged.');

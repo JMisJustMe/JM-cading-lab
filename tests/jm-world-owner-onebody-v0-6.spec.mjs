@@ -73,12 +73,12 @@ try{
  assert.equal(await dest.evaluate(()=>window.JMForgeDualActor.state().echo.contacts),1);
  assert.equal(await dest.evaluate(()=>window.JMForgeWorld.state().core.x),2.12);
  assert.equal(await dest.evaluate(()=>window.JMForgeWorld.state().deliveries),1);
+ await page.screenshot({path:'/tmp/jm_owner_phone_world_v06.png',fullPage:true});
+ await dest.screenshot({path:'/tmp/jm_owner_desktop_world_v06.png',fullPage:true}); // owner-facing evidence captures proven completion, not the deliberate tamper case
  const bad={...cp,mesh_sha256:'f'.repeat(64)};
  await dest.locator('#jmOwnerImportState').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bad))});
  await dest.waitForFunction(()=>document.querySelector('#jmOwnerStatus')?.textContent.includes('HOLD'));
  assert.equal(await dest.evaluate(()=>window.JMForgeWorld.state().beacon.open),true,'bad packet cannot erase earned consequence');
- await page.screenshot({path:'/tmp/jm_owner_phone_world_v06.png',fullPage:true});
- await dest.screenshot({path:'/tmp/jm_owner_desktop_world_v06.png',fullPage:true});
  assert.deepEqual(errors,[]);
  console.log('PASS: actual standalone file:// OneBody, no dependencies, mobile arena, real Guardian→Courier world loop, 2.12 relay delivery, source-safe downloaded checkpoint, fresh desktop file:// restore, invalid checkpoint HOLD.');
 }finally{await browser.close()}

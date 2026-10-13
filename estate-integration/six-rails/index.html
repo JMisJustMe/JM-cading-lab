@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.3</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.4</title>
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(circle at 70% -140px,#1b4852 0,#101d2c 36%,#080d15 68%);min-height:100vh}a{color:var(--cyan)}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1200px;margin:0 auto;padding:16px clamp(12px,2.5vw,32px) 70px}
@@ -25,7 +25,7 @@ pre.receipt{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflo
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.3 · CROSS-BODY LOOP</div></header>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.4 · PORTABLE LOOP</div></header>
 <div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
 <nav aria-label="Capability rails">
 <button type="button" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
@@ -71,7 +71,15 @@ for(const b of document.querySelectorAll('nav [data-rail]'))b.addEventListener('
 // v0.3 · OneBody recipient joins remain provisional, never private Forge source replacement.
 let handoffSelection=null,lastBeatGrid=null,lastPulseReceipt=null,loopReceipt=null;
 const iso=()=>new Date().toISOString();
-const sha256=async input=>{if(!globalThis.crypto?.subtle)throw Error('Secure SHA-256 unavailable: use localhost/HTTPS.');const buf=typeof input==='string'?new TextEncoder().encode(input):input;return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',buf))).map(x=>x.toString(16).padStart(2,'0')).join('');};
+// Recovered public JM Forge Contact donor's portable SHA-256 implementation, now independently available in the sender.
+// A content digest is integrity evidence, NEVER proof that a packet originated from private Forge v0.24.
+function jmPortableSha256(data){const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];const N=data.length,sz=Math.ceil((N+9)/64)*64,b=new Uint8Array(sz);b.set(data);b[N]=128;const view=new DataView(b.buffer);view.setUint32(sz-8,Math.floor(N*8/4294967296),false);view.setUint32(sz-4,N*8>>>0,false);const R=(x,n)=>(x>>>n)|(x<<(32-n));for(let offset=0;offset<sz;offset+=64){let w=new Uint32Array(64);for(let i=0;i<16;i++)w[i]=view.getUint32(offset+i*4,false);for(let i=16;i<64;i++){let a=w[i-15],c=w[i-2],s0=R(a,7)^R(a,18)^(a>>>3),s1=R(c,17)^R(c,19)^(c>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)>>>0}let [a,bb,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){let s1=R(e,6)^R(e,11)^R(e,25),ch=(e&f)^(~e&g),t1=(h+s1+ch+K[i]+w[i])>>>0,s0=R(a,2)^R(a,13)^R(a,22),maj=(a&bb)^(a&c)^(bb&c),t2=(s0+maj)>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=bb;bb=a;a=(t1+t2)>>>0}H=H.map((v,i)=>(v+[a,bb,c,d,e,f,g,h][i])>>>0)}return H.map(x=>x.toString(16).padStart(8,'0')).join('')}
+const sha256=async input=>{
+ const buf=typeof input==='string'?new TextEncoder().encode(input):new Uint8Array(input);
+ if(globalThis.crypto?.subtle)return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',buf))).map(x=>x.toString(16).padStart(2,'0')).join('');
+ return jmPortableSha256(buf);
+};
+
 function goToRail(name){const button=document.querySelector(`nav [data-rail="${name}"]`);if(button)button.click()}
 // 01 · Image → actual polygonal OBJ relief.
 let assetImg=null,assetObj=null,assetInfo=null,meshPayload=null;
@@ -92,9 +100,9 @@ function checkedMesh(v){
 }
 $('exportPacket').addEventListener('click',async()=>{
  if(!meshPayload||!assetInfo)return status('forgeStatus','HOLD · Build local geometry first.');
- try{const geometry=checkedMesh(meshPayload);if(!globalThis.crypto?.subtle)throw Error('Secure SHA-256 unavailable in this browser. Use localhost/HTTPS to export verified packet.');
- const canonical=JSON.stringify(geometry);const dig=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical));const sha=Array.from(new Uint8Array(dig)).map(n=>n.toString(16).padStart(2,'0')).join('');
- const packet={schema:'jm.sixrails.formmesh/0.2',geometry,geometry_sha256:sha,source:{kind:'local_image_luminance_relief',grid:assetInfo.grid,relief:assetInfo.relief,image_dimensions:assetInfo.source_dimensions,forge_source_authenticity:'NOT_CLAIMED'},sender_proof:'GENERATOR_CONTACT_ONLY__NO_FORGE_OR_OWNER_DEVICE_DING'};
+ try{const geometry=checkedMesh(meshPayload);
+ const canonical=JSON.stringify(geometry);const sha=await sha256(canonical);
+ const packet={schema:'jm.sixrails.formmesh/0.2',geometry,geometry_sha256:sha,hash_engine:globalThis.crypto?.subtle?'WebCrypto':'reused_JM_Forge_Portable_SHA256',source:{kind:'local_image_luminance_relief',grid:assetInfo.grid,relief:assetInfo.relief,image_dimensions:assetInfo.source_dimensions,forge_source_authenticity:'NOT_CLAIMED'},sender_proof:'GENERATOR_CONTACT_ONLY__NO_FORGE_OR_OWNER_DEVICE_DING'};
  saveBlob('JM_SIX_RAILS_FORM_PACKET_v0_2.json',JSON.stringify(packet,null,2));status('forgeStatus',`Local geometry packet exported · SHA-256 ${sha.slice(0,16)}… · recipient proof separate.`);
  }catch(e){status('forgeStatus','HOLD · '+e.message)}
 });
@@ -153,7 +161,7 @@ $('exportDiff').addEventListener('click',()=>{if(diffReceipt)saveBlob('JM_VISUAL
 // 03 · Readable exact digest and user-declared proof fields.
 let artifactMeta=null;
 $('releaseFile').addEventListener('change',()=>{artifactMeta=null;loopReceipt=null;$('exportRelease').disabled=true;status('releaseStatus','HOLD · New source selected; calculate its hash.');});
-$('hashRelease').addEventListener('click',async()=>{const f=$('releaseFile').files[0];if(!f){status('releaseStatus','HOLD · Choose an artifact.');return}if(!crypto?.subtle){status('releaseStatus','HOLD · Secure SHA-256 API unavailable in this host.');return}try{const digest=await crypto.subtle.digest('SHA-256',await f.arrayBuffer());const sha=Array.from(new Uint8Array(digest)).map(x=>x.toString(16).padStart(2,'0')).join('');artifactMeta={file:f.name,bytes:f.size,type:f.type||'unknown',sha256:sha};$('hashReadout').textContent=`${f.name} · ${f.size.toLocaleString()} bytes · SHA-256 ${sha}`;$('exportRelease').disabled=false;status('releaseStatus','HOLD · Identity hashed; proof checks remain self-declared and must be verified externally.');}catch(e){status('releaseStatus','HOLD · '+e.message)}});
+$('hashRelease').addEventListener('click',async()=>{const f=$('releaseFile').files[0];if(!f){status('releaseStatus','HOLD · Choose an artifact.');return}try{if(f.size>64*1024*1024&&!globalThis.crypto?.subtle)throw Error('64 MB limit for portable hashing; hash this large artifact in secure WebCrypto host or desktop tooling.');const sha=await sha256(await f.arrayBuffer());const engine=globalThis.crypto?.subtle?'WebCrypto':'reused_JM_Forge_Portable_SHA256';artifactMeta={file:f.name,bytes:f.size,type:f.type||'unknown',sha256:sha,hash_engine:engine};$('hashReadout').textContent=`${f.name} · ${f.size.toLocaleString()} bytes · SHA-256 ${sha} · ${engine}`;$('exportRelease').disabled=false;status('releaseStatus','HOLD · Content digest calculated; proof checks remain self-declared and require independent evidence.');}catch(e){status('releaseStatus','HOLD · '+e.message)}});
 $('exportRelease').addEventListener('click',()=>{if(!artifactMeta)return;const witnessed=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);const complete=witnessed.length===5;const receipt={schema:'JM.SixRails.ReleasePreflight/0.1',created_at:new Date().toISOString(),body:$('releaseGame').value.trim(),version:$('releaseVersion').value.trim(),artifact:artifactMeta,user_declared_witnessed_checks:witnessed,state:complete?'ALL_DECLARED_CHECKS_SELECTED__NOT_INDEPENDENTLY_VERIFIED':'HOLD__INCOMPLETE_DECLARED_CHECKS',deployment:'NOT_PERFORMED',merge:'NOT_PERFORMED',owner_device_contact:'NOT_PROVEN_BY_THIS_TOOL'};saveBlob('JM_RELEASE_PREFLIGHT_v0_1.json',JSON.stringify(receipt,null,2));status('releaseStatus','Preflight receipt exported. No release/promotion/deployment performed.');});
 // 04 · Real waveform, tap tempo, beat grid export.
 let audioUrl=null,audioDuration=null,taps=[];
@@ -179,7 +187,7 @@ $('testerForm').addEventListener('submit',e=>{e.preventDefault();const body={sch
 $('exportTests').addEventListener('click',()=>{saveBlob('JM_PLAYTEST_CONTACT_RECEIPTS_v0_1.json',JSON.stringify({schema:'JM.SixRails.PlaytestCollection/0.1',exported_at:new Date().toISOString(),records:testRows},null,2));status('testStatus',`${testRows.length} local session(s) exported; nothing submitted to a server.`)});
 $('clearTests').addEventListener('click',()=>{if(!confirm(`Clear ${testRows.length} local session(s)? Export a copy first if needed.`))return;testRows=[];persist();showTests();status('testStatus','Local draft history cleared. External copies, if any, are unaffected.')});showTests();
 
-// v0.3 · 04 actual tempo pressure applied to the recovered JM public contact renderer.
+// v0.4 · 04 actual tempo pressure applied to the recovered JM public contact renderer.
 const pulse={running:false,baseZoom:1.08,started:0,bpm:120,ticks:0,lastBeat:-1,raf:0};
 function stopPulse(){
  if(pulse.raf)cancelAnimationFrame(pulse.raf);
@@ -224,7 +232,7 @@ async function assembleDossier(){
  const checks=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);
  const tests=testStats();
  const receipt={
-  schema:'JM.SixRails.CrossBodyDossier/0.3',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
+  schema:'JM.SixRails.CrossBodyDossier/0.4',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
   target:{name:$('releaseGame').value.trim()||null,version:$('releaseVersion').value.trim()||null,public_registry_selection:handoffSelection},
   geometry:{present:!!meshPayload,vertices:meshPayload?.vertices.length||0,triangles:meshPayload?.triangles.length||0,recipient_active:!!scene?.loaded,recipient_face_contacts:scene?.contacts?.size||0,recipient_score:scene?.score||0,private_forge_v024_glb_verified:false},
   visual:diffReceipt?{...diffReceipt}:{state:'NO_PIXEL_COMPARISON'},
@@ -256,7 +264,7 @@ async function inspectDossier(){loopReceipt=await assembleDossier();
  return loopReceipt;
 }
 $('inspectLoop').addEventListener('click',inspectDossier);
-$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_3.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
+$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_4.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
 window.JMSixRails=Object.freeze({checkedMesh,assembleDossier,inspectDossier,testStats,stopPulse,goToRail,getState:()=>({mesh:meshPayload,beatGrid:lastBeatGrid,pulse:lastPulseReceipt,selection:handoffSelection,artifact:artifactMeta,diff:diffReceipt})});
 </script>
 </body></html>

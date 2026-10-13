@@ -66,11 +66,14 @@ def main():
  p.add_argument("--output",required=True,type=pathlib.Path)
  p.add_argument("--rea",default="rea")
  p.add_argument("--node",default="node")
+ p.add_argument("--max-rea-bytes",type=int,default=32*1024*1024)
+ p.add_argument("--selected-module-only",action="store_true")
  p.add_argument("--roots",default="releaseDrag,commitShot")
  p.add_argument("--module",default="combound_inline_000.js")
  args=p.parse_args()
  hold(args.protected.is_file() and args.output.is_absolute() and not args.output.exists(),
       "EXACT_SOURCE_AND_NEW_ABSOLUTE_RECEIPT_REQUIRED")
+ hold(1024<=args.max_rea_bytes<=128*1024*1024,"REA_RECORD_LIMIT_OUT_OF_BOUNDS")
  body=args.protected.read_bytes()
  hold(sha(body)==EXPECTED,"NOT_PROTECTED_SOURCE_SHA")
  hold(shutil.which(args.rea) is not None,"REAL_REA_CLI_NOT_INSTALLED")
@@ -87,7 +90,7 @@ def main():
   for i,code in enumerate(parser.scripts):
    name=f"combound_inline_{i:03d}.js"
    data=code.encode("utf8")
-   (scripts/name).write_bytes(data)
+   if not args.selected_module_only or name==args.module:(scripts/name).write_bytes(data)
    manifest.append({"module":name,"sha256":sha(data),"bytes":len(data)})
   record=json.loads(run([args.rea,"analyze-javascript-application",str(scripts),"--json"]))
   hold(record.get("evidence_id","").startswith("ev_"),"NOT_GENUINE_REA_EVIDENCE")
@@ -105,19 +108,23 @@ def main():
   generated=stage/"JM_Projected_Contact.json"
   run([args.node,str(projector),"--rea",str(evidence),"--module",args.module,
        "--roots",args.roots,"--source",str(args.protected.resolve()),
-       "--output",str(generated)])
+       "--output",str(generated),"--max-record-bytes",str(args.max_rea_bytes)])
   projection=json.loads(generated.read_text())
   report={"schema":"JM.REA.COMBOUND.PrivateRealREAContact/0.8",
           "original_sha256":EXPECTED,"original_body_changed":False,
-          "staged_inline_modules":len(manifest),
+          "extracted_inline_modules":len(manifest),
+          "staged_inline_modules":1 if args.selected_module_only else len(manifest),
+          "analysis_scope":"EXACT_RUNTIME_MODULE_ONLY" if args.selected_module_only else "ALL_EXTRACTED_INLINE_MODULES",
           "staged_module_digests":manifest,
           "rea_evidence_source_binding":source_binding,
           "rea_evidence_import_pass":True,
           "projected_jm_graph":projection,
           "boundary":"REAL_REA_INSPECTED_TEMPORARY_EXTRACTED_JS__NOT_BINARY_DECOMPILATION_OR_OWNER_DEVICE"}
   hold(sha(args.protected.read_bytes())==EXPECTED,"PROTECTED_BODY_MUTATED")
-  with args.output.open("x",encoding="utf8") as f:json.dump(report,f,indent=2)
-  print("JM_V08_REAL_PRIVATE_REA_PASS:",len(manifest),"staged script modules;",
+  fd=__import__("os").open(args.output,__import__("os").O_WRONLY|__import__("os").O_CREAT|__import__("os").O_EXCL,0o600)
+  with __import__("os").fdopen(fd,"w",encoding="utf8") as f:json.dump(report,f,indent=2)
+  print("JM_V08_REAL_PRIVATE_REA_PASS:",report["staged_inline_modules"],"staged script modules;",
        projection["selected_census"]["nodes"],"JM nodes,",
        projection["selected_census"]["edges"],"static edges")
 if __name__=="__main__":main()
+

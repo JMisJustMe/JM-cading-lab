@@ -3,7 +3,7 @@
   "title": "JM Website + ChatGPT — Existing Host-Recipient Two-Way Draft Gate",
   "date": "2026-10-13",
   "operation_id": "JMOP-8dbd20292dcec5c633a8d68e",
-  "phase": "DRAFT_BRANCH_ONLY",
+  "phase": "DRAFT_PR_OPEN_UNMERGED",
   "target": {
     "name": "JMISJUSTME — JM ECOSTATE",
     "website": "https://jmisjustme-estate.pages.dev/",
@@ -62,9 +62,10 @@
   ],
   "privacy": "Only public nonsecret operational metadata in this public repository; private data stays behind owner-controlled authenticated surfaces.",
   "verification": {
-    "branch_write": "PENDING_READBACK",
-    "branch_exact_return": "PENDING_READBACK",
-    "draft_pr": "PENDING",
+    "branch_write": "PASS_GITHUB_AUTHENTICATED",
+    "branch_exact_return": "PASS_EXACT_UTF8_AND_JSON",
+    "runbook_exact_return": "PASS_EXACT_UTF8",
+    "draft_pr": "OPEN_DRAFT_PR_364",
     "site_deployment": "NOT_ATTEMPTED",
     "owner_contact": "OPEN",
     "public_mcp_write": "DISABLED"
@@ -76,5 +77,14 @@
     "ACCESS ≠ AUTHORITY",
     "NO DING, NO CLAIM",
     "RECIPIENT A DING ≠ RECIPIENT B DING"
-  ]
+  ],
+  "proof": {
+    "pull_request": "https://github.com/JMisJustMe/JM-cading-lab/pull/364",
+    "github_branch": "jm-website-chatgpt-control-v0-1",
+    "readback": "Two new files fetched from selected branch and compared exactly to intended source; JSON validated",
+    "site_mutated": false,
+    "main_mutated": false,
+    "public_mcp_modified": false,
+    "claim": "HOST_GITHUB_DRAFT_CONTACT_PASS__LIVE_WEBSITE_OPEN"
+  }
 }

@@ -46,5 +46,32 @@
   "record_limit_bytes": 67108864,
   "entry": "jm_rea_private_combound_preflight_v0_9.py --run-rea --selected-module-only --max-rea-bytes 67108864",
   "syntax_checks": 32,
-  "rea_evidence_import_executed": true
+  "rea_evidence_import_executed": true,
+  "separate_executable_gameplay_contact": {
+    "inherited_runner": "jm_rea_combound_multiturn_parity_v0_9.py",
+    "host_adapter": "Node Playwright 1.62.1; exact inherited SEED/GAME_JS; fresh Chromium 153 per body/case",
+    "cases": 4,
+    "checkpoint_comparisons": 84,
+    "steps_per_body_per_case": 2400,
+    "modes": [
+      "CLASSIC",
+      "ARCADE"
+    ],
+    "arenas": [
+      "BLOOM_RING",
+      "TOXIC_GARDEN"
+    ],
+    "observed": [
+      "player shot",
+      "enemy AI preview",
+      "enemy shot",
+      "return to player turn"
+    ],
+    "corrected_candidate_sha256": "66a05d8cf1fbb6e42ba71a9b44b087ed152969940888228800f281ce68a336b1",
+    "protected_visual_scope_bug_observed": "creature21 is not defined",
+    "correction_candidate_page_errors": 0,
+    "originals_unchanged": true,
+    "full_match_proven": false,
+    "generated_by_rea": false
+  }
 }

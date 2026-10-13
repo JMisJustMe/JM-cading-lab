@@ -103,6 +103,8 @@ def main():
     p.add_argument('--output', type=Path, help='A NEW absolute JSON receipt')
     p.add_argument('--node', default='node')
     p.add_argument('--rea', default='rea')
+    p.add_argument('--max-rea-bytes', type=int, default=32*1024*1024)
+    p.add_argument('--selected-module-only', action='store_true')
     p.add_argument('--run-rea', action='store_true',
                    help='After strict preflight, execute actual REA and JM projection')
     args = p.parse_args()
@@ -120,7 +122,9 @@ def main():
         cmd = [sys.executable, str(old_runner), '--protected', str(args.protected),
                '--output', str(args.output), '--rea', args.rea, '--node', args.node,
                '--roots', 'releaseDrag,commitShot',
-               '--module', result['runtime_source_module']]
+               '--module', result['runtime_source_module'], '--max-rea-bytes', str(args.max_rea_bytes)]
+        if args.selected_module_only:
+            cmd.extend(['--selected-module-only', '--roots', ','.join(ROOTS)])
         done = subprocess.run(cmd, check=False, timeout=600)
         if done.returncode != 0:
             fail('REAL_REA_OR_JM_HANDOFF_FAILED')
@@ -136,3 +140,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+

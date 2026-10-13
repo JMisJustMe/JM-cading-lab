@@ -16,7 +16,7 @@ export function cli(argv=process.argv.slice(2)){
  const args={};
  for(let i=0;i<argv.length;i+=2){
   if(!argv[i]?.startsWith('--')||!argv[i+1])throw Error('JM_REA_V08_HOLD:UNKNOWN_CLI_ARGUMENT');
-  const k=argv[i].slice(2);if(!['rea','module','roots','source','output'].includes(k)||k in args)
+  const k=argv[i].slice(2);if(!['rea','module','roots','source','output','max-record-bytes'].includes(k)||k in args)
    throw Error('JM_REA_V08_HOLD:UNKNOWN_CLI_ARGUMENT');
   args[k]=argv[i+1];
  }
@@ -27,12 +27,14 @@ export function cli(argv=process.argv.slice(2)){
     fs.existsSync(args.output))
   throw Error('JM_REA_V08_HOLD:WRITE_ONCE_RECEIPT_REQUIRED');
  const raw=fs.readFileSync(args.rea),original=fs.readFileSync(args.source);
- if(raw.length>32*1024*1024)throw Error('JM_REA_V08_HOLD:REA_JSON_TOO_LARGE');
+ const maxBytes=args['max-record-bytes']===undefined?32*1024*1024:Number(args['max-record-bytes']);
+ if(!Number.isSafeInteger(maxBytes)||maxBytes<1024||maxBytes>128*1024*1024)throw Error('JM_REA_V08_HOLD:REA_JSON_LIMIT_INVALID');
+ if(raw.length>maxBytes)throw Error('JM_REA_V08_HOLD:REA_JSON_TOO_LARGE');
  const sourceSHA=sha(original);
  const roots=args.roots?.split(',').filter(Boolean);
  const output=projectGenuineREA(JSON.parse(raw.toString('utf8')),{
    module:args.module,roots,sourceSha256:sourceSHA});
- const report={...output,rea_input_sha256:sha(raw),source_sha256:sourceSHA,
+ const report={...output,rea_input_bytes:raw.length,rea_input_limit_bytes:maxBytes,rea_input_sha256:sha(raw),source_sha256:sourceSHA,
    source_hash_confirmed_against_rea_subject:false,
    rea_evidence_import_performed_here:false};
  if(sha(fs.readFileSync(args.source))!==sourceSHA)throw Error('JM_REA_V08_HOLD:PROTECTED_SOURCE_CHANGED');
@@ -45,3 +47,4 @@ if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.ur
  try{process.exitCode=cli();}
  catch(e){console.error(e.message);process.exitCode=2;}
 }
+

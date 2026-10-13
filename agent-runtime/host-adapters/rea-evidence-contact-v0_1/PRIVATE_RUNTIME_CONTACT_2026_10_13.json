@@ -1,0 +1,77 @@
+{
+  "schema": "JM.REA.PrivateRuntimeContactReceipt/1.1",
+  "parent_pr": 356,
+  "parent_sha": "3656c828c730c39741dfe973b4463212a5dbda4d",
+  "rea_version": "6.1.0",
+  "node_version": "24.19.0",
+  "protected_source_sha256": "53b6c3d87ebecd647cc59f679d20ca4a0f52cfb7053e8e5bb114b711d1c5e428",
+  "protected_source_mutated": false,
+  "extracted_modules": 32,
+  "actually_analyzed_modules": 1,
+  "module": "combound_inline_000.js",
+  "module_sha256": "d8774c800f1405c7cc1a872a2921cff4716e1240aadd7962e76f4ae043b3f49e",
+  "roots": [
+    "beginDrag",
+    "moveDrag",
+    "releaseDrag",
+    "commitShot",
+    "registerCrewUse"
+  ],
+  "real_rea_analyze_executed": true,
+  "real_rea_evidence_import_executed": true,
+  "source_binding_verified": true,
+  "record_bytes": 34681339,
+  "record_sha256": "7568f638b9a8f3b492e6dc8b3ce6a33cad2f3678aa7720544091588524098224",
+  "input_census": {
+    "nodes": 12514,
+    "relations": 10654,
+    "unknowns": 1951
+  },
+  "projection": {
+    "nodes": 48,
+    "edges": 103,
+    "candidates": 0
+  },
+  "projection_limit_hit": true,
+  "jm32_tracebox_executed": true,
+  "gate": {
+    "graphAttached": true,
+    "promotable": false
+  },
+  "full_32_module_projection": "HOLD_REA_JSON_TOO_LARGE_EVEN_AT_128_MiB",
+  "automatic_executable_reconstruction": "NOT_PROVEN",
+  "physical_owner_contact": "OPEN",
+  "private_source_or_raw_evidence_uploaded": false,
+  "claim": "COMPLETE_BOUNDED_REAL_REA_RUNTIME_STATIC_CONTACT_ONLY",
+  "record_limit_bytes": 67108864,
+  "entry": "jm_rea_private_combound_preflight_v0_9.py --run-rea --selected-module-only --max-rea-bytes 67108864",
+  "syntax_checks": 32,
+  "rea_evidence_import_executed": true,
+  "separate_executable_gameplay_contact": {
+    "inherited_runner": "jm_rea_combound_multiturn_parity_v0_9.py",
+    "host_adapter": "Node Playwright 1.62.1; exact inherited SEED/GAME_JS; fresh Chromium 153 per body/case",
+    "cases": 4,
+    "checkpoint_comparisons": 84,
+    "steps_per_body_per_case": 2400,
+    "modes": [
+      "CLASSIC",
+      "ARCADE"
+    ],
+    "arenas": [
+      "BLOOM_RING",
+      "TOXIC_GARDEN"
+    ],
+    "observed": [
+      "player shot",
+      "enemy AI preview",
+      "enemy shot",
+      "return to player turn"
+    ],
+    "corrected_candidate_sha256": "66a05d8cf1fbb6e42ba71a9b44b087ed152969940888228800f281ce68a336b1",
+    "protected_visual_scope_bug_observed": "creature21 is not defined",
+    "correction_candidate_page_errors": 0,
+    "originals_unchanged": true,
+    "full_match_proven": false,
+    "generated_by_rea": false
+  }
+}

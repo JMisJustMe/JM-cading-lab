@@ -21,7 +21,7 @@
   "real_rea_evidence_import_executed": true,
   "source_binding_verified": true,
   "record_bytes": 34681339,
-  "record_sha256": "aac7be71f8fc3150fe33faf958b05ac4ebb60c7b018d4bb49409300c02b1cbd6",
+  "record_sha256": "7568f638b9a8f3b492e6dc8b3ce6a33cad2f3678aa7720544091588524098224",
   "input_census": {
     "nodes": 12514,
     "relations": 10654,
@@ -42,5 +42,9 @@
   "automatic_executable_reconstruction": "NOT_PROVEN",
   "physical_owner_contact": "OPEN",
   "private_source_or_raw_evidence_uploaded": false,
-  "claim": "COMPLETE_BOUNDED_REAL_REA_RUNTIME_STATIC_CONTACT_ONLY"
+  "claim": "COMPLETE_BOUNDED_REAL_REA_RUNTIME_STATIC_CONTACT_ONLY",
+  "record_limit_bytes": 67108864,
+  "entry": "jm_rea_private_combound_preflight_v0_9.py --run-rea --selected-module-only --max-rea-bytes 67108864",
+  "syntax_checks": 32,
+  "rea_evidence_import_executed": true
 }

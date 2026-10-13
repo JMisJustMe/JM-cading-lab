@@ -1,0 +1,155 @@
+name: Deploy Wix Authority Room Preview
+
+on:
+  push:
+    branches:
+      - jm-proposal/wix-v2-authority-rebuild
+    paths:
+      - ".github/workflows/deploy-wix-authority-room-preview.yml"
+      - "governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2_R2.html"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  deployments: write
+
+concurrency:
+  group: wix-authority-room-preview-v02-r2
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: Prove and deploy isolated current-Estate phone preview v0.2 R2
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      BODY: governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_v0_2_R2.html
+      EXPECTED_SIZE: "29309"
+      EXPECTED_SHA256: 8792d69cf56ee27e19d6e6abc1fab8a697000026f289c7fefd17d01f9bcebfb8
+      PREVIEW_URL: https://wix-room-v02.jmisjustme-estate.pages.dev
+
+    steps:
+      - name: Check out Wix proposal branch
+        uses: actions/checkout@v6
+        with:
+          ref: jm-proposal/wix-v2-authority-rebuild
+          fetch-depth: 0
+
+      - name: Verify exact validated R2 room body
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$BODY"
+          actual_size="$(wc -c < "$BODY" | tr -d ' ')"
+          actual_sha="$(sha256sum "$BODY" | awk '{print $1}')"
+          test "$actual_size" = "$EXPECTED_SIZE"
+          test "$actual_sha" = "$EXPECTED_SHA256"
+          grep -Fq 'OPEN FIRST · R2' "$BODY"
+          grep -Fq 'OWNER / RETURN' "$BODY"
+          grep -Fq '1,074/1,074' "$BODY"
+          grep -Fq '973' "$BODY"
+          grep -Fq 'OPEN BY LAW' "$BODY"
+          grep -Fq 'Crocodile Fallacy v1.0' "$BODY"
+          grep -Fq 'OWNER-PHONE VISUAL CONTACT' "$BODY"
+          grep -Fq 'DynamicBodyRegistryRoute v2.1A' "$BODY"
+          grep -Fq '30719246085' "$BODY"
+          grep -Fq 'FAILED' "$BODY"
+          grep -Fq 'No Ding, no claim' "$BODY"
+          echo "PASS exact R2 size $actual_size"
+          echo "PASS exact R2 SHA-256 $actual_sha"
+
+      - name: Prepare isolated R2 preview package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .wix-authority-preview-v02-r2
+          mkdir -p .wix-authority-preview-v02-r2
+          cp "$BODY" .wix-authority-preview-v02-r2/index.html
+          cat > .wix-authority-preview-v02-r2/_headers <<'EOF'
+          /*
+            X-Robots-Tag: noindex, nofollow, noarchive
+            Cache-Control: no-store
+            Referrer-Policy: no-referrer
+          EOF
+
+      - name: Deploy Cloudflare Pages R2 preview branch
+        id: cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .wix-authority-preview-v02-r2 --project-name=jmisjustme-estate --branch=wix-room-v02
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify stable R2 preview contact
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in $(seq 1 15); do
+            if curl -fsSL --max-time 20 "$PREVIEW_URL" -o /tmp/preview-v02-r2.html; then
+              if grep -Fq 'JMISJUSTME Living Estate' /tmp/preview-v02-r2.html \
+                && grep -Fq 'OPEN FIRST · R2' /tmp/preview-v02-r2.html \
+                && grep -Fq '1,074/1,074' /tmp/preview-v02-r2.html \
+                && grep -Fq 'OPEN BY LAW' /tmp/preview-v02-r2.html \
+                && grep -Fq 'OWNER-PHONE VISUAL CONTACT' /tmp/preview-v02-r2.html \
+                && grep -Fq '30719246085' /tmp/preview-v02-r2.html \
+                && grep -Fq 'No Ding, no claim' /tmp/preview-v02-r2.html; then
+                ok=1
+                break
+              fi
+            fi
+            sleep 4
+          done
+          test "$ok" = 1
+          live_sha="$(sha256sum /tmp/preview-v02-r2.html | awk '{print $1}')"
+          test "$live_sha" = "$EXPECTED_SHA256"
+          headers="$(curl -fsSI --max-time 20 "$PREVIEW_URL")"
+          printf '%s\n' "$headers" | grep -qi 'x-robots-tag: noindex, nofollow, noarchive'
+          echo "PASS live R2 preview SHA-256 $live_sha"
+          echo "PASS preview noindex boundary"
+
+      - name: Seal R2 preview receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from datetime import datetime, timezone
+          from pathlib import Path
+          import hashlib, json, os
+          root=Path('governance/wix-rebuilds/jm-estate-v2-authority-rebuild')
+          body=root/'JM_WIX_AUTHORITY_ROOM_v0_2_R2.html'; raw=body.read_bytes()
+          receipt={
+            'schema':'JM.WixAuthorityRoomCloudflarePreviewReceipt/0.2-R2',
+            'recorded_utc':datetime.now(timezone.utc).isoformat(),
+            'authority':'Theodore Benjamin Scott / JM / JMISJUSTME',
+            'source_commit':os.environ.get('GITHUB_SHA'),
+            'wix_site_id':'7724b482-0a61-41bb-8d78-cb6587d6e3e7',
+            'wix_rebuild_branch_id':'ec3edba7-2e32-4a4b-8359-637e5fa2c789',
+            'cloudflare_project':'jmisjustme-estate',
+            'cloudflare_branch':'wix-room-v02',
+            'preview_url':os.environ['PREVIEW_URL'],
+            'current_room_size_bytes':len(raw),
+            'current_room_sha256':hashlib.sha256(raw).hexdigest(),
+            'preserved_prior_preview_receipt':'JM_WIX_AUTHORITY_ROOM_CLOUDFLARE_PREVIEW_RECEIPT_v0_2.json',
+            'checks':{
+              'exact_r2_source_body':'PASS','cloudflare_preview_deployment':'PASS','native_authority_marker_contact':'PASS','live_sha256_match':'PASS','noindex_nofollow_header':'PASS','production_branch_untouched':'PASS','prior_preview_lineage_preserved':'PASS','wix_live_branch_untouched':'PASS'
+            },
+            'state':'CURRENT_ESTATE_AUTHORITY_ROOM_V0_2_R2_ISOLATED_PHONE_PREVIEW_READY',
+            'production':False,'wix_published':False,'wix_static_layout_translated':False,'physical_device_accepted':False,'ding':False,
+            'boundary':'Non-production exact-byte Cloudflare preview of validated v0.2 R2. Prior previews, Cloudflare production and published Wix remain untouched; not owner physical acceptance or Ding.'
+          }
+          (root/'JM_WIX_AUTHORITY_ROOM_CLOUDFLARE_PREVIEW_RECEIPT_v0_2_R2.json').write_text(json.dumps(receipt,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+          PY
+
+      - name: Commit R2 preview receipt to proposal branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'JM Wix Preview Proof Rail'
+          git config user.email 'actions@users.noreply.github.com'
+          git add governance/wix-rebuilds/jm-estate-v2-authority-rebuild/JM_WIX_AUTHORITY_ROOM_CLOUDFLARE_PREVIEW_RECEIPT_v0_2_R2.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Seal Wix current-Estate v0.2 R2 Cloudflare preview receipt [skip ci]'
+          git pull --rebase origin jm-proposal/wix-v2-authority-rebuild
+          git push origin HEAD:jm-proposal/wix-v2-authority-rebuild

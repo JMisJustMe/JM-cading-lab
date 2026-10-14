@@ -1,0 +1,28 @@
+name: JM atomic host-receipt native descendant — cloud exact-parity
+on:
+  push:
+    branches:
+      - jm-host-machine-receipt-atomic-v0.2-20261014
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  prove-durable-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Existing JM host conformance and Node/Python agreement
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Previously proven machine-readable receipt regression
+        run: python3 agent-runtime/host-adapters/test_machine_receipt.py
+      - name: Exact cloud repair patch, interrupted temp write and interrupted replace
+        run: python3 agent-runtime/host-adapters/test_atomic_machine_receipt.py
+      - name: Prove no runtime source mutated by tests
+        run: test -z "$(git status --porcelain)"

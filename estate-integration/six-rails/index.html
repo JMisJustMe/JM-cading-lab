@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.8</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.9</title>
 <link rel="stylesheet" href="../../ecostate-griprail-v6.css" data-jm-inherit="JMGripRail-v6-hosted-only">
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -62,10 +62,18 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 .grip-metrics select{width:85px;min-height:37px}
 .grippanel .actions{display:flex;flex-wrap:wrap}
 @media(max-width:540px){.grip-metrics{grid-template-columns:1fr}.grip-time-row{align-items:start}.grippanel .actions>*{flex:1 1 135px}}
+
+/* v0.9 · GripCube lenses are evidence projections, not duplicate/decorative cards. */
+.gripcube-evidence{margin:5px 0 3px;min-width:0}.evidence-lenses{display:flex;gap:5px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-inline:contain}
+.evidence-lenses button{border:1px solid #385567;background:#122638;color:#bcd2e2;min-height:30px;flex:1 0 50px;min-width:50px;max-width:150px;border-radius:9px;font-size:.62rem;font-weight:800;letter-spacing:.05em}
+.evidence-lenses button[aria-pressed="true"]{border-color:#9aece1;background:#214754;color:#fff}
+.evidence-lens-readout{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.67rem;color:#b7dacc;line-height:1.25;max-height:52px;overflow-y:auto;padding:4px 3px}
+.recovery-panel{border-color:#648b7f}.recovery-panel .receipt{max-height:180px}
+@media(max-width:700px){.evidence-lens-readout{font-size:.62rem;max-height:32px}.evidence-lenses button{min-height:28px}}
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.8 · TWIN BODY GRIPROUTE PROOF</div></header>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.9 · RECOVERABLE CONTACT</div></header>
 <div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
 <section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
 <div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
@@ -79,6 +87,11 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <button type="button" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
 </nav>
 </div>
+<section class="gripcube-evidence" aria-label="GripCube evidence lenses — live six-body projections" id="gripcubeEvidence">
+<div class="evidence-lenses" role="group" aria-label="Trace Route Form Field Proof Use lenses">
+<button type="button" data-evidence-lens="TRACE">TRACE</button><button type="button" data-evidence-lens="ROUTE">ROUTE</button><button type="button" data-evidence-lens="FORM">FORM</button><button type="button" data-evidence-lens="FIELD">FIELD</button><button type="button" data-evidence-lens="PROOF">PROOF</button><button type="button" data-evidence-lens="USE">USE</button>
+</div><output id="evidenceLensReadout" class="evidence-lens-readout" aria-live="polite">Select a lens to inspect actual current state. Semantic projection, not mounted GripCube v5.</output>
+</section>
 <div class="native-seat-state" id="nativeSeatStatus" role="status" aria-live="polite">GripRoute semantic adapter active · shared JMGripRail v6 host contact checking</div>
 <div class="griproute-band" id="routePad" role="group" tabindex="0" aria-label="GripRoute thumb contact pad. Tap to contact the current room, swipe to move room, hold to anchor, and use arrow keys to route.">
 <div class="griproute-thumb" id="routeThumb"><span id="routeCurrent">01 · FORM</span><output id="routeState" aria-live="polite">FLOW · TAP / DRAG / SWIPE / RELEASE</output></div>
@@ -95,6 +108,15 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <section id="rail-release" class="rail grid" hidden>
 <div class="card"><div class="kicker">03 · Native source / guarded release evidence</div><h2>Release preflight, not fake deployment</h2><p class="muted">Identify a specific local artifact, calculate a real SHA-256 digest and record separately what you have actually tested. This page never publishes, merges or declares device proof on your behalf.</p><div class="field"><label for="releaseFile">Choose a build artifact to inspect</label><input type="file" id="releaseFile"></div><div class="fields"><div class="field"><label for="releaseGame">Body name</label><input type="text" id="releaseGame" placeholder="Existing game or tool"></div><div class="field"><label for="releaseVersion">Version / descendant</label><input type="text" id="releaseVersion" placeholder="e.g. v0.8 candidate"></div></div><div class="actions"><button class="action" id="hashRelease">Inspect artifact</button></div><div class="readout" id="hashReadout">No artifact inspected.</div><hr class="sep"><h3>Proof gate — mark only witnessed checks</h3><label class="check"><input type="checkbox" class="releaseCheck" value="source_identity">Source identity and ancestor confirmed</label><label class="check"><input type="checkbox" class="releaseCheck" value="syntax">Static/syntax validation actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="runtime">Runtime contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="device">Owner-device contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="recovery">Recovery/custody actually verified</label><div class="actions"><button class="action alt" id="exportRelease" disabled>Export preflight JSON</button><button class="action alt" id="inspectLoop">Inspect six-rail evidence</button><button class="action" id="exportDossier">Export bounded six-rail dossier</button></div><div class="status" id="releaseStatus" role="status">HOLD · No artifact inspected.</div><div class="loop-card"><h3>Joined evidence · not automatic promotion</h3><label class="check"><input type="checkbox" id="allowTestNotes">Include private playtest notes in dossier (off by default)</label><pre class="receipt" id="loopPreview">Inspect to show the current evidence boundary.</pre></div></div>
 <aside class="card"><h3>Governed promotion</h3><div class="pills"><span>Exact source hash</span><span>Evidence-separated</span><span>Owner authority</span><span>Release HOLD by default</span></div><div class="note">PREPARED ≠ DEPLOYED. A self-marked check is only a statement, not independently proven backend/device evidence. No auto-publish or branch mutation.</div><a href="../../../games-beyond/" target="_blank" rel="noopener">Existing Games &amp; Beyond route ↗</a></aside>
+<div class="card recovery-panel" id="continuityPanel">
+<div class="kicker">JM RouteVault / cross-device recovery · bounded source packet</div>
+<h2>One verified handoff, separate receiver proof</h2>
+<p class="muted">Export local geometry, timing and scoped evidence as ONE content-hashed portable JSON. On the other device, import into read-only review first. Only a separate click adopts geometry/timing for new tests. Neither imported receipts nor SHA-256 grant owner-device proof.</p>
+<div class="actions"><button class="action" type="button" id="exportContinuity">Export governed handoff</button><label class="field" style="min-width:150px;flex:1"><span>Import portable handoff JSON</span><input id="importContinuity" type="file" accept=".json,application/json"></label></div>
+<div class="actions"><button class="action alt" type="button" id="adoptContinuityMesh" disabled>Adopt verified mesh as local candidate</button><button class="action alt" type="button" id="adoptContinuityBeat" disabled>Adopt verified timing cues</button></div>
+<div id="continuityState" class="status" role="status">No imported handoff. Recipients must re-earn their own Dings.</div>
+<pre id="continuityPreview" class="receipt" aria-label="Verified handoff audit">No handoff inspected.</pre>
+</div>
 </section>
 <section id="rail-audio" class="rail grid" hidden>
 <div class="card"><div class="kicker">04 · BeatBody / SHIMS / music motion bridge</div><h2>Audio timing into movement cues</h2><p class="muted">Open a local sound file to see its waveform, then tap the beat or enter a BPM. Export a portable beat-grid JSON usable by your own movement and animation bodies.</p><div class="field"><label for="audioSource">Local audio file</label><input type="file" id="audioSource" accept="audio/*"></div><audio id="audioPlayer" controls style="width:100%;margin-top:13px"></audio><canvas id="waveCanvas" width="700" height="180" style="margin-top:12px" aria-label="Audio waveform"></canvas><div class="fields"><div class="field"><label for="tempo">Tempo (BPM)</label><input type="number" id="tempo" value="120" min="30" max="300"></div><div class="field"><label for="barCount">Bars (4 beats each)</label><input type="number" id="barCount" value="8" min="1" max="128"></div></div><div class="actions"><button class="action" id="tapTempo">Tap beat</button><button class="action alt" id="exportBeat">Export beat-grid JSON</button><button class="action" id="driveForge">Drive JM Forge pulse</button><button class="action alt" id="stopForgePulse" disabled>Stop / restore</button></div><div class="readout" id="tapReadout">120 BPM · 500ms between beats</div><div class="status" id="audioStatus" role="status">BPM is user-entered until measured by taps. No automatic beat detection claim.</div><div class="readout" id="motionReadout">No game motion driven. Load geometry into Rail 01 first.</div></div>
@@ -344,7 +366,7 @@ async function assembleDossier(){
  const checks=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);
  const tests=testStats();
  const receipt={
-  schema:'JM.SixRails.CrossBodyDossier/0.8',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
+  schema:'JM.SixRails.CrossBodyDossier/0.9',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
   target:{name:$('releaseGame').value.trim()||null,version:$('releaseVersion').value.trim()||null,public_registry_selection:handoffSelection},
   geometry:{present:!!meshPayload,vertices:meshPayload?.vertices.length||0,triangles:meshPayload?.triangles.length||0,recipient_active:!!scene?.loaded,recipient_face_contacts:scene?.contacts?.size||0,recipient_score:scene?.score||0,glb_interchange:lastGLBReceipt||{state:"NO_GLB_DECODER_CONTACT"},private_forge_v024_glb_verified:false},
   visual:diffReceipt?{...diffReceipt}:{state:'NO_PIXEL_COMPARISON'},
@@ -355,6 +377,8 @@ async function assembleDossier(){
   shared_griprail:window.JMSixRailInheritance?.proof()||{status:'HOST_SOURCE_NOT_INITIALISED'},
   griproute_physical:window.JMGripRouteTwinBody?.proof()||{claim:'HOLD__NO_GRIPROUTE_PHYSICAL_CONTACT'},
   playtests:tests,
+  continuity:typeof continuityProof!=='undefined'?{...continuityProof}:{state:'UNINITIALIZED'},
+  gripcube_evidence:window.JMGripCubeEvidence?.proof()||{state:'NO_LENS_CONTACT'},
   artifact:artifactMeta||{state:'NO_HASHED_ARTIFACT'},
   user_declared_checks:checks,
   hold_reasons:[],publish_state:'NOT_DEPLOYED',owner_device_proof:'NOT_ESTABLISHED_BY_THIS_PAGE',
@@ -381,7 +405,7 @@ async function inspectDossier(){loopReceipt=await assembleDossier();
  return loopReceipt;
 }
 $('inspectLoop').addEventListener('click',inspectDossier);
-$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_8.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
+$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_9.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
 window.JMSixRails=Object.freeze({checkedMesh,assembleDossier,inspectDossier,testStats,stopPulse,goToRail,getState:()=>({mesh:meshPayload,glb:lastGLBReceipt,beatGrid:lastBeatGrid,pulse:lastPulseReceipt,selection:handoffSelection,artifact:artifactMeta,diff:diffReceipt})});
 
 // v0.6 · GripRoute-aware software adapter, not a false transplant of FTR Palm Route Field source.
@@ -612,6 +636,101 @@ $('gripExport').addEventListener('click',()=>saveBlob('JM_GRIPROUTE_TWIN_BODY_PR
 $('gripClear').addEventListener('click',()=>{if(!confirm('Clear local GripRoute trial drafts? Export first if needed.'))return;gripTrials=[];gripDecision=null;gripSaveLocal();try{localStorage.removeItem(gripFieldKey+'.choice')}catch(e){}gripRender();status('gripStatus','Local GripRoute drafts cleared. Other playtest receipts are unchanged.')});
 window.JMGripRouteTwinBody=Object.freeze({proof:gripSummary,records:()=>gripTrials.slice()});gripRender();
 window.addEventListener('pagehide',gripStopClock);
+
+// v0.9 · RouteVault-style bounded cross-device handoff. A digest authenticates content equality ONLY.
+// Source authority, physical contact and owner-device permission never follow from importing a JSON file.
+const continuitySchema='JM.SixRails.RouteVaultHandoff/0.9';
+let continuityCandidate=null;
+let continuityProof={state:'NO_HANDOFF_CONTACT',digest:null,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+function continuityMeshSafe(raw){return raw==null?null:checkedMesh(raw)}
+function continuityBeatSafe(raw){
+ if(raw==null)return null;
+ if(raw.schema!=='JM.SixRails.BeatGrid/0.1'||!Number.isFinite(raw.bpm)||raw.bpm<30||raw.bpm>300||!Number.isInteger(raw.bars)||raw.bars<1||raw.bars>128||raw.beats_per_bar!==4||!Array.isArray(raw.beats)||raw.beats.length!==raw.bars*4||raw.beats.length>512)throw Error('Unsupported bounded timing grid');
+ for(let i=0;i<raw.beats.length;i++){const b=raw.beats[i];if(b.index!==i+1||b.bar!==Math.floor(i/4)+1||b.beat!==i%4+1||!Number.isFinite(b.time_seconds)||b.time_seconds<0)throw Error('Invalid cue index/time');}
+ return raw;
+}
+async function continuityPack(){
+ const geometry=continuityMeshSafe(meshPayload);
+ const sourceGeometryDigest=geometry?await sha256(JSON.stringify(geometry)):null;
+ const beats=continuityBeatSafe(lastBeatGrid);
+ const dossier=await assembleDossier();
+ const payload={schema:'JM.SixRails.RouteVaultPayload/0.9',created_at:iso(),body:'JM SIX RAILS',source_version:'v0.9',
+  geometry,geometry_sha256:sourceGeometryDigest,beat_grid:beats,
+  contact_summary:{geometry:dossier.geometry,visual:dossier.visual,music:dossier.music,motion:dossier.motion,estate:dossier.estate,input_route:dossier.input_route,shared_griprail:dossier.shared_griprail,playtests:dossier.playtests,griproute_physical:dossier.griproute_physical},
+  source_refs:{protected_v01:'flaz/six-rails-v0-1-20261014',protected_v08:'flaz/six-rails-v0-8-20261014',source_status:'EXACT_PRIVATE_FTR_GRIPROUTE_NOT_RECOVERED'},
+  hold_reasons:dossier.hold_reasons,
+  transport_proof:'ORIGINALLY_EXPORTED_LOCAL_BYTES__NOT_OWNER_IDENTITY',
+  recipient_proof:'MUST_BE_RE_EARNED_ON_IMPORT_DEVICE',privacy:'SUMMARY_ONLY__NO_RAW_TESTER_NOTES_OR_AUDIO_OR_SCREENSHOTS'};
+ const digest=await sha256(JSON.stringify(payload));return {schema:continuitySchema,digest_algorithm:'SHA-256',payload_sha256:digest,payload,claim:'CONTENT_INTEGRITY_ONLY__NOT_AUTHORITY_OR_DEVICE_PROOF'};
+}
+async function verifyContinuityPack(p){
+ if(!p||p.schema!==continuitySchema||p.digest_algorithm!=='SHA-256'||!p.payload||p.payload.schema!=='JM.SixRails.RouteVaultPayload/0.9'||!/^[a-f0-9]{64}$/.test(p.payload_sha256))throw Error('Unexpected handoff schema/digest');
+ const actual=await sha256(JSON.stringify(p.payload));if(actual!==p.payload_sha256)throw Error('SHA-256 mismatch — handoff rejected');
+ if(p.payload.geometry){const mesh=continuityMeshSafe(p.payload.geometry);const expected=await sha256(JSON.stringify(mesh));if(expected!==p.payload.geometry_sha256)throw Error('Geometry content SHA mismatch');}
+ continuityBeatSafe(p.payload.beat_grid);
+ if(p.payload.transport_proof!=='ORIGINALLY_EXPORTED_LOCAL_BYTES__NOT_OWNER_IDENTITY'||p.payload.recipient_proof!=='MUST_BE_RE_EARNED_ON_IMPORT_DEVICE')throw Error('Unsupported trust boundary');
+ return {ok:true,digest:actual,vertices:p.payload.geometry?.vertices.length||0,triangles:p.payload.geometry?.triangles.length||0,beat_count:p.payload.beat_grid?.beats.length||0,origin_hold_count:p.payload.hold_reasons?.length||0};
+}
+$('exportContinuity').addEventListener('click',async()=>{
+ try{const p=await continuityPack();saveBlob('JM_SIX_RAILS_ROUTEVAULT_HANDOFF_v0_9.json',JSON.stringify(p,null,2));continuityProof={state:'LOCAL_HANDOFF_EXPORTED',digest:p.payload_sha256,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ status('continuityState','Local handoff exported with SHA-256 '+p.payload_sha256.slice(0,18)+'… · No cross-device proof yet.');
+ }catch(e){status('continuityState','HOLD · '+e.message)}
+});
+$('importContinuity').addEventListener('change',async e=>{
+ continuityCandidate=null;continuityProof={state:'IMPORT_HOLD',digest:null,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ $('adoptContinuityMesh').disabled=true;$('adoptContinuityBeat').disabled=true;
+ try{const f=e.target.files?.[0];if(!f)throw Error('No handoff chosen');if(f.size>1800000)throw Error('Handoff exceeds 1.8 MB');
+ const packet=JSON.parse(await f.text());const checked=await verifyContinuityPack(packet);continuityCandidate=packet;
+ continuityProof={state:'CONTENT_SHA_VERIFIED__READ_ONLY',digest:checked.digest,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ $('adoptContinuityMesh').disabled=!packet.payload.geometry;$('adoptContinuityBeat').disabled=!packet.payload.beat_grid;
+ $('continuityPreview').textContent=JSON.stringify({...checked,scope:continuityProof.state,claim:'DIGEST_MATCH_NOT_SOURCE_AUTHORITY',original_hold_reasons:packet.payload.hold_reasons,original_source_refs:packet.payload.source_refs},null,2);
+ status('continuityState','SHA-256 content contact PASS · read-only; source, owner-device and physical proof remain HOLD.');
+ }catch(err){$('continuityPreview').textContent='IMPORT REJECTED · '+err.message;status('continuityState','HOLD · '+err.message)}finally{e.target.value=''}
+});
+$('adoptContinuityMesh').addEventListener('click',()=>{
+ if(!continuityCandidate?.payload.geometry||continuityProof.state==='IMPORT_HOLD')return;
+ try{const geometry=continuityMeshSafe(continuityCandidate.payload.geometry);meshPayload=JSON.parse(JSON.stringify(geometry));assetImg=null;assetInfo={grid:null,relief:null,source_dimensions:[],source:'VERIFIED_EXTERNAL_ROUTEVAULT_HANDOFF'};
+ assetObj=['# Recovered candidate geometry; recipient proof NOT inherited','o JM_RouteVault_Received',...geometry.vertices.map(v=>'v '+v.join(' ')),...geometry.triangles.map(f=>'f '+f.map(i=>i+1).join(' '))].join('\n')+'\n';
+ lastGLBReceipt=null;diffReceipt=null;lastPulseReceipt=null;
+ $('saveMesh').disabled=false;$('exportPacket').disabled=false;$('exportGLB').disabled=false;$('sendForge').disabled=!forgeReady;
+ continuityProof.mesh_adopted=true;status('meshStatus','Imported geometry adopted as local candidate; now test the JM recipient separately.');
+ status('continuityState',`Local ${geometry.vertices.length}-vertex candidate adopted · receiver proof still OPEN.`);
+ goToRail('mesh');
+ }catch(err){status('continuityState','HOLD · '+err.message)}
+});
+$('adoptContinuityBeat').addEventListener('click',()=>{
+ if(!continuityCandidate?.payload.beat_grid||continuityProof.state==='IMPORT_HOLD')return;
+ try{const beat=continuityBeatSafe(continuityCandidate.payload.beat_grid);lastBeatGrid=structuredClone(beat);$('tempo').value=String(beat.bpm);$('barCount').value=String(beat.bars);
+ lastPulseReceipt=null;continuityProof.beat_adopted=true;status('audioStatus','Imported timing grid adopted as local cue. Apply to Forge recipient to re-earn motion contact.');
+ status('continuityState',`Local ${beat.beats.length}-cue timing adopted · no inherited motion proof.`);goToRail('audio');
+ }catch(err){status('continuityState','HOLD · '+err.message)}
+});
+window.JMRouteVaultHandoff=Object.freeze({pack:continuityPack,verify:verifyContinuityPack,proof:()=>({...continuityProof}),review:()=>continuityCandidate?{sha256:continuityCandidate.payload_sha256,origin_holds:continuityCandidate.payload.hold_reasons}:null});
+
+// GripCube v5 donor's six semantic lenses, but NOT a counterfeit exact module mount.
+const cubeLenses=['TRACE','ROUTE','FORM','FIELD','PROOF','USE'];
+const cubeDest={TRACE:'release',ROUTE:'estate',FORM:'mesh',FIELD:'estate',PROOF:'release',USE:'testers'};
+const cubeLensTrace=[];let cubeCurrent=null;
+async function projectGripCubeLens(lens){
+ if(!cubeLenses.includes(lens))throw Error('Invalid GripCube lens');
+ const state=window.JMSixRails?.getState(),input=window.JMGripRouteAdapter?.proof()||{},shared=window.JMSixRailInheritance?.proof()||{};
+ const d=await assembleDossier();let projection='';
+ switch(lens){
+ case 'TRACE': projection='Trace: '+(input.contact_count||0)+' input events · protected ancestors v0.1/v0.8 · source authority separate';break;
+ case 'ROUTE': projection='Route: '+(input.current_room||'—')+' · '+(input.stance||'—')+' · '+(d.target.name||'no selected body');break;
+ case 'FORM': projection='Form: '+(state.mesh?.vertices.length||0)+' vertices · '+(state.mesh?.triangles.length||0)+' triangles · recipient '+(d.geometry.recipient_active?'contacted':'HOLD');break;
+ case 'FIELD': projection='Field: public registry '+(d.estate.registries_loaded?'read':'HOLD')+' · GripRail '+(shared.status||'HOLD')+' · exact FTR source HOLD';break;
+ case 'PROOF': projection='Proof: '+d.hold_reasons.length+' unclosed local gates · owner-device OPEN · SHA does not authenticate identity';break;
+ case 'USE': projection='Use: '+d.playtests.records+' matching playtests · physical three-way '+(d.griproute_physical.complete_three_way?'self-reported':'HOLD');break;
+ }
+ cubeCurrent=lens;cubeLensTrace.push({lens,at:iso(),room:input.current_room||null});if(cubeLensTrace.length>50)cubeLensTrace.shift();
+ document.querySelectorAll('[data-evidence-lens]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.evidenceLens===lens)));
+ $('evidenceLensReadout').textContent=projection;return {lens,projection,destination:cubeDest[lens],source:'SEMANTIC_PROJECTION__NOT_NATIVE_GRIPCUBE_V5',trace_count:cubeLensTrace.length};
+}
+for(const b of document.querySelectorAll('[data-evidence-lens]'))b.addEventListener('click',async()=>{
+ const p=await projectGripCubeLens(b.dataset.evidenceLens);goToRail(p.destination);
+});
+window.JMGripCubeEvidence=Object.freeze({lens:projectGripCubeLens,proof:()=>({schema:'JM.SixRails.GripCubeEvidence/0.9',current:cubeCurrent,contacts:cubeLensTrace.length,actual_gripcube_v5_source_loaded:false,semantic_routes:6,history:cubeLensTrace.slice(-10)})});
 
 </script>
 </body></html>

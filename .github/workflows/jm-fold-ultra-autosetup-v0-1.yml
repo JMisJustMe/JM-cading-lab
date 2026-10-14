@@ -1,0 +1,57 @@
+name: JM Fold Ultra v0.1 Android Build
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/android/fold-ultra-autosetup/**'
+      - '.github/workflows/jm-fold-ultra-autosetup-v0-1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-carrier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android API 36
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+      - name: Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Compile isolated Fold companion
+        shell: bash
+        working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Byte and permission verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          R=agent-runtime/host-adapters/android/fold-ultra-autosetup
+          APK="$R/app/build/outputs/apk/debug/app-debug.apk"
+          mkdir -p /tmp/jm-fold
+          cp "$APK" /tmp/jm-fold/JM_FOLD_ULTRA_PAIRED_ROOT_v0_1_DEBUG.apk
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-fold/AAPT_BADGING.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-fold/APKSIGNER_VERIFY.txt
+          grep -Fq "package: name='com.jmisjustme.foldultra'" /tmp/jm-fold/AAPT_BADGING.txt
+          unzip -t "$APK" > /tmp/jm-fold/ZIP_INTEGRITY.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-fold/PERMISSIONS.txt
+          if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-fold/PERMISSIONS.txt; then
+            echo 'UNEXPECTED PERMISSION: HOLD'
+            exit 1
+          fi
+          sha256sum /tmp/jm-fold/*.apk > /tmp/jm-fold/SHA256.txt
+          printf 'Source compile and binary signing verified. Fold owner-device contact: OPEN.\n' > /tmp/jm-fold/RECEIPT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_FOLD_ULTRA_PAIRED_ROOT_v0_1_CARRIER
+          path: /tmp/jm-fold/
+          if-no-files-found: error
+          retention-days: 14

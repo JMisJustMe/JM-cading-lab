@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.5</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.6</title>
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(circle at 70% -140px,#1b4852 0,#101d2c 36%,#080d15 68%);min-height:100vh}a{color:var(--cyan)}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1200px;margin:0 auto;padding:16px clamp(12px,2.5vw,32px) 70px}
@@ -22,12 +22,33 @@ nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:18
 .loop-card h3{margin:0 0 7px;color:var(--cyan);font-size:.91rem}
 pre.receipt{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto;font-size:.75rem;background:#091521;border:1px solid #324b5d;padding:11px;border-radius:10px}
 @media(max-width:440px){.loop-links button{flex:1;min-width:135px}nav button{min-height:60px}}
+
+/* v0.6 · interaction inheritance: horizontal rooms, contained vertical depth, explicit grip/press/release field.
+   NOT the exact FTR GripRoute One hardware or Palm Route Field v1.2 byte-for-byte source. */
+html,body{height:100%;overscroll-behavior:contain}
+.shell{height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding-top:8px;padding-bottom:8px}
+header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.intro h1{font-size:clamp(1.32rem,3.5vw,2rem);margin:2px 0 3px}.intro .kicker{margin:0 0 4px}.intro .sub{font-size:.8rem;line-height:1.25}
+.griproute-dock{flex:0 0 auto;min-width:0;border:1px solid #42677b;border-radius:15px;background:linear-gradient(120deg,#0c2830,#101b2e);padding:8px;margin:2px 0 8px;box-shadow:0 5px 22px #0005}
+.griproute-toolbar{display:flex;align-items:center;gap:7px;min-width:0}.griproute-toolbar strong{flex:1;min-width:0;font-size:.72rem;color:var(--cyan);letter-spacing:.08em;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.griproute-toolbar small{font-size:.62rem;color:var(--muted);letter-spacing:0;font-weight:500}.griproute-toolbar button{border:1px solid #58768b;color:var(--ink);background:#163a46;border-radius:9px;min-height:35px;min-width:39px;font-weight:800;padding:4px 8px}
+#routeTrack{display:flex;align-items:stretch;min-width:0;gap:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#416b74 transparent;margin:6px 0;padding:1px 1px 7px}
+#routeTrack button{flex:0 0 clamp(137px,19%,210px);min-width:0;min-height:55px;scroll-snap-align:center;padding:6px 10px}#routeTrack button[aria-selected="true"]{outline:1px solid #60e3dd;box-shadow:inset 0 -3px 0 var(--cyan)}
+.griproute-band{display:flex;gap:8px;align-items:stretch;min-height:49px;touch-action:pan-y;user-select:none;border-radius:12px;background:#061a27;border:1px solid #436780;overflow:hidden;cursor:grab;outline-offset:3px}
+.griproute-band:active{cursor:grabbing}.griproute-band:focus-visible{outline:2px solid var(--gold)}.griproute-band.gripping{border-color:var(--gold);box-shadow:inset 0 0 16px #b6964930}
+.griproute-thumb{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:5px 10px;transform:translateX(var(--drag-x,0px));transition:transform .09s linear;pointer-events:none}
+.griproute-thumb span{font-size:.7rem;color:var(--gold);font-weight:800;white-space:nowrap}.griproute-thumb output{font-size:.68rem;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.griproute-mode{display:flex;align-items:center;gap:5px;padding:4px 7px;border-left:1px solid #395365;cursor:auto;user-select:auto}.griproute-mode label{font-size:.6rem;color:var(--muted)}.griproute-mode select{padding:5px;max-width:155px;font-size:.68rem;min-height:35px;background:#102a3c}
+.rail{flex:1;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:#35536b transparent;padding:0 3px 12px 0}.grid{align-content:start;align-items:start}.foot{flex:0 0 auto;margin-top:3px;padding-top:5px;font-size:.64rem;gap:6px}
+@media(max-width:700px){.shell{padding:5px 9px}.intro{margin:7px 0}.intro .sub{max-width:550px}.intro .provenance{display:none}#routeTrack button{flex-basis:clamp(135px,44vw,210px)}.griproute-toolbar strong small{display:none}.griproute-band{min-height:51px}.griproute-mode label{display:none}.griproute-mode select{max-width:108px;width:108px;font-size:.6rem}.subforge iframe{height:min(620px,68dvh)}.foot span:last-child{display:none}}
+@media(max-width:395px){.intro h1{font-size:1.23rem}.intro .sub{font-size:.72rem}.griproute-toolbar button{min-width:32px;padding:4px 5px}.griproute-thumb output{font-size:.6rem}.griproute-mode select{width:96px;max-width:96px}}
+@media(prefers-reduced-motion:reduce){#routeTrack{scroll-behavior:auto}.griproute-thumb{transition:none}}
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.5 · GLB INTERCHANGE</div></header>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.6 · ADAPTIVE ROUTE CONTACT</div></header>
 <div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
-<nav aria-label="Capability rails">
+<section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
+<div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
+<nav aria-label="Capability rails" id="routeTrack">
 <button type="button" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
 <button type="button" data-rail="compare" aria-selected="false"><span class="num">02 / PROOF</span><span class="rail-name">Visual compare</span></button>
 <button type="button" data-rail="release" aria-selected="false"><span class="num">03 / BUILD</span><span class="rail-name">Release gate</span></button>
@@ -35,6 +56,10 @@ pre.receipt{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflo
 <button type="button" data-rail="estate" aria-selected="false"><span class="num">05 / MESH</span><span class="rail-name">Estate routes</span></button>
 <button type="button" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
 </nav>
+<div class="griproute-band" id="routePad" role="group" tabindex="0" aria-label="GripRoute thumb contact pad. Tap to contact the current room, swipe to move room, hold to anchor, and use arrow keys to route.">
+<div class="griproute-thumb" id="routeThumb"><span id="routeCurrent">01 · FORM</span><output id="routeState" aria-live="polite">FLOW · TAP / DRAG / SWIPE / RELEASE</output></div>
+<div class="griproute-mode"><label for="routeMode">Route stance</label><select id="routeMode"><option value="flow">FLOW · drag / swipe</option><option value="flick">FLICK · velocity</option><option value="manual">MANUAL · keys / taps</option><option value="anchor">ANCHOR · hold here</option><option value="table">TABLE · pointer / keys</option></select></div>
+</div></section>
 <section id="rail-mesh" class="rail grid">
 <div class="card"><div class="kicker">01 · Form Forge / GameCore — live geometry recipient adapter</div><h2>Image to geometric source</h2><p class="muted">Import any image and turn its luminance into a real polygonal relief OBJ. It is height-field geometry, not a textured 3D character. Push the exact generated vertices into the proven JM Form Contact software renderer below; no protected private Forge source is substituted.</p><div class="field"><label for="assetImage">Source image</label><input type="file" id="assetImage" accept="image/*"></div><div class="fields"><div class="field"><label for="assetRelief">Relief height <output id="reliefLabel">1.0</output></label><input id="assetRelief" type="range" min="0" max="3" step="0.1" value="1"></div><div class="field"><label for="assetGrid">Grid detail</label><select id="assetGrid"><option value="16">16 × 16</option><option value="28" selected>28 × 28</option><option value="48">48 × 48</option></select></div></div><div class="actions"><button class="action" id="makeMesh" disabled>Build real OBJ</button><button class="action alt" id="saveMesh" disabled>Export OBJ</button><button class="action alt" id="exportPacket" disabled>Export JM packet</button><button class="action alt" id="exportGLB" disabled>Export real glTF GLB</button><label class="field" style="flex:1;min-width:160px">Reimport verified packet<input type="file" id="importPacket" accept=".json,application/json" aria-label="Reimport exported geometry packet"></label><button class="action" id="sendForge" disabled>Play in JM Form Contact</button><button class="action" id="captureForgeBefore">Capture Forge before</button><button class="action alt" id="captureForgeAfter">Capture Forge after</button></div><div class="status" id="meshStatus" role="status">Waiting for image contact.</div><div class="readout" id="glbReadout">GLB interchange not yet tested.</div><canvas id="meshCanvas" width="700" height="420" aria-label="Relief geometry preview"></canvas><div class="subforge"><div class="kicker">Native recipient · existing JM Field/Form Forge × GameCore contact renderer</div><p class="muted">An unchanged copy of the previously recovered public Forge Contact v0.1 renderer runs below. The contact adapter passes local relief vertices into its existing surface renderer and touch-scoring logic; private v0.24 provenance is NOT claimed. Drag/orbit, tap distinct triangles or use keys.</p><iframe id="forgeRecipient" title="JM Field Form Forge native software contact recipient" loading="eager" referrerpolicy="no-referrer"></iframe><p class="status" id="forgeStatus" role="status">Recipient not yet contacted.</p></div></div>
 <aside class="card"><h3>What this actually adds</h3><div class="pills"><span>PNG / JPG intake</span><span>Editable source geometry</span><span>OBJ export</span><span>glTF 2 GLB export</span><span>Native 3D recipient</span><span>Geometry packet interchange</span><span>No cloud dependency</span></div><div class="note">Relief geometry becomes actual clickable 3D faces in the existing JM Form Contact renderer. This is **adapter/runtime contact**, not proof of BuildCAD native source ingestion, private Forge GLB validity, or Android-owner approval.</div><div class="readout" id="meshReadout">No geometry generated.</div><a href="../../../visual-systems-lab/" target="_blank" rel="noopener">Open existing Visual Systems Lab ↗</a></aside>
@@ -271,13 +296,14 @@ async function assembleDossier(){
  const checks=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);
  const tests=testStats();
  const receipt={
-  schema:'JM.SixRails.CrossBodyDossier/0.5',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
+  schema:'JM.SixRails.CrossBodyDossier/0.6',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
   target:{name:$('releaseGame').value.trim()||null,version:$('releaseVersion').value.trim()||null,public_registry_selection:handoffSelection},
   geometry:{present:!!meshPayload,vertices:meshPayload?.vertices.length||0,triangles:meshPayload?.triangles.length||0,recipient_active:!!scene?.loaded,recipient_face_contacts:scene?.contacts?.size||0,recipient_score:scene?.score||0,glb_interchange:lastGLBReceipt||{state:"NO_GLB_DECODER_CONTACT"},private_forge_v024_glb_verified:false},
   visual:diffReceipt?{...diffReceipt}:{state:'NO_PIXEL_COMPARISON'},
   music:lastBeatGrid?{bpm:lastBeatGrid.bpm,bars:lastBeatGrid.bars,beats:lastBeatGrid.beats.length,mode:lastBeatGrid.mode}:{state:'NO_BEAT_GRID_EXPORT'},
   motion:lastPulseReceipt||{state:pulse.running?'ACTIVE__STOP_TO_CAPTURE':'NO_MOTION_CONTACT'},
   estate:{registries_loaded:estateRecords.filter(x=>x.group!=='HOLD').length>0,entry_count:estateRecords.length,public_discovery_only:true},
+  input_route:window.JMGripRouteAdapter?.proof()||{state:'ADAPTER_NOT_INITIALISED'},
   playtests:tests,
   artifact:artifactMeta||{state:'NO_HASHED_ARTIFACT'},
   user_declared_checks:checks,
@@ -299,12 +325,124 @@ async function assembleDossier(){
  return receipt;
 }
 async function inspectDossier(){loopReceipt=await assembleDossier();
- $('loopPreview').textContent=JSON.stringify({target:loopReceipt.target,geometry:loopReceipt.geometry,visual:loopReceipt.visual.change_percent??loopReceipt.visual.state,music:loopReceipt.music,motion:loopReceipt.motion,estate:loopReceipt.estate,playtests:loopReceipt.playtests,hold_reasons:loopReceipt.hold_reasons,claim:loopReceipt.claim},null,2);
+ $('loopPreview').textContent=JSON.stringify({target:loopReceipt.target,geometry:loopReceipt.geometry,visual:loopReceipt.visual.change_percent??loopReceipt.visual.state,music:loopReceipt.music,motion:loopReceipt.motion,estate:loopReceipt.estate,input_route:loopReceipt.input_route,playtests:loopReceipt.playtests,hold_reasons:loopReceipt.hold_reasons,claim:loopReceipt.claim},null,2);
  status('releaseStatus',`INSPECTED · ${loopReceipt.hold_reasons.length} open local evidence gate(s) · no deployment or promotion.`);
  return loopReceipt;
 }
 $('inspectLoop').addEventListener('click',inspectDossier);
-$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_5.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
+$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_6.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
 window.JMSixRails=Object.freeze({checkedMesh,assembleDossier,inspectDossier,testStats,stopPulse,goToRail,getState:()=>({mesh:meshPayload,glb:lastGLBReceipt,beatGrid:lastBeatGrid,pulse:lastPulseReceipt,selection:handoffSelection,artifact:artifactMeta,diff:diffReceipt})});
+
+// v0.6 · GripRoute-aware software adapter, not a false transplant of FTR Palm Route Field source.
+// Existing FTR v1.2 physical/device authority stays separate; route semantics are adapted here.
+const routeIDs=['mesh','compare','release','audio','estate','testers'];
+const routeTitles=['FORM','PROOF','BUILD','RHYTHM','MESH','PEOPLE'];
+const routeLog=[];
+const routeControl={index:0,mode:'flow',down:null,holdTimer:null,holdFired:false,suppressClickUntil:0,pendingContact:null};
+const routeStore='jm.sixrails.route-adapter.v0.6';
+const routeTrack=$('routeTrack'),routePad=$('routePad'),routeThumb=$('routeThumb');
+function routeRemember(){try{localStorage.setItem(routeStore,JSON.stringify({id:routeIDs[routeControl.index],mode:routeControl.mode}))}catch(e){/* no persistence claim */}}
+function routeRecord(verb,meta={}){
+ const packet={schema:'JM.GripRouteAdapter.Contact/0.6',at:iso(),verb,route:routeIDs[routeControl.index],mode:routeControl.mode,...meta};
+ routeLog.push(packet);if(routeLog.length>120)routeLog.shift();
+ $('routeState').textContent=`${routeControl.mode.toUpperCase()} · ${verb.replaceAll('_',' ')} · ${routeLog.length} contacts`;
+}
+function routeSync(name,verb='CONTACT_SELECT',meta={}){
+ const n=routeIDs.indexOf(name);if(n<0)return false;
+ routeControl.index=n;$('routeCurrent').textContent=String(n+1).padStart(2,'0')+' · '+routeTitles[n];
+ routeRecord(verb,meta);routeRemember();
+ const el=routeTrack.querySelector(`[data-rail="${name}"]`);
+ if(el)routeTrack.scrollTo({left:el.offsetLeft-routeTrack.offsetLeft-(routeTrack.clientWidth-el.clientWidth)/2,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+ return true;
+}
+function routeCommit(index,kind,meta={}){
+ const n=Math.max(0,Math.min(routeIDs.length-1,index));
+ if(n===routeControl.index){routeRecord(kind+'_EDGE',meta);return false}
+ routeControl.pendingContact={verb:kind,meta};goToRail(routeIDs[n]);
+ const active=document.querySelector('.rail:not([hidden])');if(active)active.scrollTop=0;
+ return true;
+}
+for(const tab of routeTrack.querySelectorAll('[data-rail]'))tab.addEventListener('click',()=>{
+ if(performance.now()<routeControl.suppressClickUntil&&!routeControl.pendingContact)return;
+ const pending=routeControl.pendingContact;routeControl.pendingContact=null;
+ routeSync(tab.dataset.rail,pending?.verb||'TAP_SELECT',pending?.meta||{});
+ const active=document.querySelector('.rail:not([hidden])');if(active)active.scrollTop=0;
+});
+$('routePrev').addEventListener('click',()=>routeCommit(routeControl.index-1,'ARROW_PREVIOUS'));
+$('routeNext').addEventListener('click',()=>routeCommit(routeControl.index+1,'ARROW_NEXT'));
+$('routeLens').addEventListener('click',()=>{
+ const scene=forgeIframe.contentWindow?.JMForgeContact?.scene;
+ if(!scene?.loaded){routeRecord('LENS_HOLD_NO_RECIPIENT');status('meshStatus','HOLD · Load geometry into JM Form Contact before rotating its lens.');return}
+ scene.angles.y+=Math.PI/6;routeRecord('LENS_ROTATED',{radians:+scene.angles.y.toFixed(4),recipient:'JM_PUBLIC_FORM_CONTACT'});
+ status('meshStatus','JM Form Contact lens rotated 30°; its mesh identity and source remain unchanged.');
+});
+function routeMode(next){
+ if(!['flow','flick','manual','anchor','table'].includes(next))return;
+ routeControl.mode=next;$('routeMode').value=next;routeRecord('ROUTE_STANCE_CHANGED');routeRemember();
+}
+$('routeMode').addEventListener('change',e=>routeMode(e.target.value));
+function routeContact(){
+ const room=routeIDs[routeControl.index];
+ let target=null,verb='CONTACT_REQUESTED';
+ if(room==='mesh'){
+  target=!$('assetImage').files?.length?$('assetImage'):!$('makeMesh').disabled?$('makeMesh'):!$('sendForge').disabled?$('sendForge'):$('assetImage');
+ }else if(room==='compare'){
+  target=!$('imageBefore').files?.length?$('imageBefore'):!$('imageAfter').files?.length?$('imageAfter'):$('runDiff');
+ }else if(room==='release')target=$('inspectLoop');
+ else if(room==='audio')target=forgeIframe.contentWindow?.JMForgeContact?.scene?.loaded?$('driveForge'):$('tapTempo');
+ else if(room==='estate')target=$('loadEstate');
+ else if(room==='testers')target=$('testGame');
+ if(!target){routeRecord('CONTACT_HOLD_UNROUTED');return}
+ routeRecord(verb,{receiver:target.id,proof:'REQUEST_ONLY'});
+ if(target.id==='testGame')target.focus();else if(!target.disabled)target.click();
+}
+const resetThumb=()=>{routeThumb.style.setProperty('--drag-x','0px');routePad.classList.remove('gripping')};
+routePad.addEventListener('pointerdown',e=>{
+ if(e.target.closest('select,label,option'))return;
+ if(routeControl.down)return;
+ const now=performance.now();routeControl.down={id:e.pointerId,x:e.clientX,y:e.clientY,start:now,moved:false};routeControl.holdFired=false;
+ routePad.setPointerCapture?.(e.pointerId);routePad.classList.add('gripping');routeRecord('GRIP_START',{pointerType:e.pointerType});
+ routeControl.holdTimer=setTimeout(()=>{
+  if(routeControl.down&&!routeControl.down.moved){routeControl.holdFired=true;routeMode('anchor');routeRecord('HOLD_ANCHORED')}
+ },450);
+});
+routePad.addEventListener('pointermove',e=>{
+ const d=routeControl.down;if(!d||e.pointerId!==d.id)return;
+ const dx=e.clientX-d.x,dy=e.clientY-d.y;
+ if(Math.hypot(dx,dy)>12){d.moved=true;clearTimeout(routeControl.holdTimer)}
+ if(d.moved){routeThumb.style.setProperty('--drag-x',`${clamp(dx*.15,-20,20).toFixed(1)}px`);$('routeState').textContent=`GRIP · ${Math.abs(Math.round(dx))}px · RELEASE TO ROUTE`}
+});
+function routeRelease(e,cancelled=false){
+ const d=routeControl.down;if(!d||e.pointerId!==d.id)return;
+ clearTimeout(routeControl.holdTimer);routeControl.holdTimer=null;routeControl.down=null;resetThumb();
+ if(cancelled){routeRecord('GRIP_CANCEL');return}
+ const dx=e.clientX-d.x,dy=e.clientY-d.y,ms=Math.max(16,performance.now()-d.start),speed=Math.abs(dx)/ms;
+ const direction=dx<0?1:-1;
+ const goodAxis=Math.abs(dx)>Math.abs(dy)*1.25;
+ const byMode={flow:goodAxis&&Math.abs(dx)>=46,flick:goodAxis&&Math.abs(dx)>=22&&speed>=.45,manual:false,anchor:false,table:e.pointerType!=='touch'&&goodAxis&&Math.abs(dx)>=45};
+ const isRoute=byMode[routeControl.mode];
+ if(routeControl.holdFired){routeRecord('HOLD_RELEASED_ANCHOR');return}
+ if(isRoute){const steps=routeControl.mode==='flick'&&speed>1.5?2:1;
+   routeCommit(routeControl.index+direction*steps,speed>.8?'FLICK_RELEASE':'SWIPE_RELEASE',{distance:Math.round(dx),velocity:+speed.toFixed(2),pointer:e.pointerType});
+   routeControl.suppressClickUntil=performance.now()+270;
+ }else {if(Math.abs(dx)<13&&Math.abs(dy)<13&&ms<440){routeContact()}else routeRecord('RELEASE_NO_ROUTE',{distance:Math.round(dx),velocity:+speed.toFixed(2),pointer:e.pointerType});}
+}
+routePad.addEventListener('pointerup',e=>routeRelease(e));
+routePad.addEventListener('pointercancel',e=>routeRelease(e,true));
+routePad.addEventListener('lostpointercapture',e=>routeRelease(e,true));
+routePad.addEventListener('keydown',e=>{
+ if(e.target!==routePad)return;
+ const dest=e.key==='ArrowRight'?routeControl.index+1:e.key==='ArrowLeft'?routeControl.index-1:e.key==='Home'?0:e.key==='End'?routeIDs.length-1:null;
+ if(dest!==null){e.preventDefault();routeCommit(dest,'KEYBOARD_ROUTE',{key:e.key})}
+ if((e.key==='Enter'||e.key===' ')&&e.target===routePad){e.preventDefault();routeContact()}
+ if(e.key==='Escape'&&routeControl.mode==='anchor'){e.preventDefault();routeMode('flow')}
+});
+let savedRoute=null;try{savedRoute=JSON.parse(localStorage.getItem(routeStore)||'null')}catch(e){}
+if(savedRoute){routeMode(savedRoute.mode);if(routeIDs.includes(savedRoute.id)){goToRail(savedRoute.id);routeControl.index=routeIDs.indexOf(savedRoute.id)}}
+routeSync(routeIDs[routeControl.index],'CONTACT_FIELD_READY');
+window.JMGripRouteAdapter=Object.freeze({version:'0.6',scope:'SEMANTIC_ADAPTER_NOT_EXACT_FTR_V1_2_SOURCE',
+ proof:()=>({schema:'JM.GripRouteAdapter.Proof/0.6',version:'0.6',source_relation:'FTR_GRIPROUTE_SEMANTIC_INHERITANCE_ONLY',exact_FTR_palm_route_source_used:false,
+ current_room:routeIDs[routeControl.index],stance:routeControl.mode,contact_count:routeLog.length,contacts:routeLog.slice(-35),owner_device_proof:false}),
+ route:(index)=>routeCommit(index,'PROGRAMMATIC_ROUTE'),getState:()=>({index:routeControl.index,mode:routeControl.mode,trace:routeLog.slice()})});
 </script>
 </body></html>

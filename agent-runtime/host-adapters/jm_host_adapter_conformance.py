@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import hashlib
+import os
+import tempfile
 import json
 import pathlib
 import subprocess
@@ -152,7 +154,19 @@ def main():
         }
         destination=pathlib.Path(args.receipt_json)
         destination.parent.mkdir(parents=True,exist_ok=True)
-        destination.write_text(json.dumps(receipt,sort_keys=True,indent=2)+"\n",encoding="utf-8")
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(mode="w",encoding="utf-8",dir=destination.parent,
+                                             prefix=".jm-host-receipt-",suffix=".tmp",
+                                             delete=False) as handle:
+                temp_path = pathlib.Path(handle.name)
+                handle.write(json.dumps(receipt,sort_keys=True,indent=2)+"\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp_path,destination)
+        finally:
+            if temp_path is not None:
+                temp_path.unlink(missing_ok=True)
     return 0
 
 if __name__=="__main__":

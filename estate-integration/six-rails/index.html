@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.6</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.7</title>
+<link rel="stylesheet" href="../../ecostate-griprail-v6.css" data-jm-inherit="JMGripRail-v6-hosted-only">
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 *{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(circle at 70% -140px,#1b4852 0,#101d2c 36%,#080d15 68%);min-height:100vh}a{color:var(--cyan)}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1200px;margin:0 auto;padding:16px clamp(12px,2.5vw,32px) 70px}
@@ -41,14 +42,26 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 @media(max-width:700px){.shell{padding:5px 9px}.intro{margin:7px 0}.intro .sub{max-width:550px}.intro .provenance{display:none}#routeTrack button{flex-basis:clamp(135px,44vw,210px)}.griproute-toolbar strong small{display:none}.griproute-band{min-height:51px}.griproute-mode label{display:none}.griproute-mode select{max-width:108px;width:108px;font-size:.6rem}.subforge iframe{height:min(620px,68dvh)}.foot span:last-child{display:none}}
 @media(max-width:395px){.intro h1{font-size:1.23rem}.intro .sub{font-size:.72rem}.griproute-toolbar button{min-width:32px;padding:4px 5px}.griproute-thumb output{font-size:.6rem}.griproute-mode select{width:96px;max-width:96px}}
 @media(prefers-reduced-motion:reduce){#routeTrack{scroll-behavior:auto}.griproute-thumb{transition:none}}
+
+/* v0.7: existing canonical GripRail v6 JS is consumed from the website root when actually hosted.
+   Offline single-file routes remain operable via the preserved v0.6 GripRoute semantic adapter.
+   Real native GripRail seating requires actual JMGripRail.install + DOM proof; do not crown on file fallback. */
+#jmGripRailNativeSeat{width:100%;min-width:0}
+#jmGripRailNativeSeat .griprail-toolbar{display:none!important} /* existing controlled arrows already sit above */
+#routeTrack.gc-grid.griprail-track{display:flex!important;max-height:80px!important;grid-auto-flow:unset!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory}
+.native-seat-state{font-size:.63rem;color:var(--muted);padding:0 2px 3px;min-height:1.1em;line-height:1.35}
+.native-seat-state.active{color:#acedd5}
+.native-seat-state.hold{color:#ffd28b}
+@media(max-width:700px){#routeTrack.gc-grid.griprail-track{max-height:68px!important}}
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.6 · ADAPTIVE ROUTE CONTACT</div></header>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.7 · NATIVE GRIPRAIL HOST BRIDGE</div></header>
 <div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
 <section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
 <div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
-<nav aria-label="Capability rails" id="routeTrack">
+<div class="eco-gripcube" id="jmGripRailNativeSeat">
+<nav aria-label="Capability rails" id="routeTrack" class="gc-grid">
 <button type="button" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
 <button type="button" data-rail="compare" aria-selected="false"><span class="num">02 / PROOF</span><span class="rail-name">Visual compare</span></button>
 <button type="button" data-rail="release" aria-selected="false"><span class="num">03 / BUILD</span><span class="rail-name">Release gate</span></button>
@@ -56,6 +69,8 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <button type="button" data-rail="estate" aria-selected="false"><span class="num">05 / MESH</span><span class="rail-name">Estate routes</span></button>
 <button type="button" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
 </nav>
+</div>
+<div class="native-seat-state" id="nativeSeatStatus" role="status" aria-live="polite">GripRoute semantic adapter active · shared JMGripRail v6 host contact checking</div>
 <div class="griproute-band" id="routePad" role="group" tabindex="0" aria-label="GripRoute thumb contact pad. Tap to contact the current room, swipe to move room, hold to anchor, and use arrow keys to route.">
 <div class="griproute-thumb" id="routeThumb"><span id="routeCurrent">01 · FORM</span><output id="routeState" aria-live="polite">FLOW · TAP / DRAG / SWIPE / RELEASE</output></div>
 <div class="griproute-mode"><label for="routeMode">Route stance</label><select id="routeMode"><option value="flow">FLOW · drag / swipe</option><option value="flick">FLICK · velocity</option><option value="manual">MANUAL · keys / taps</option><option value="anchor">ANCHOR · hold here</option><option value="table">TABLE · pointer / keys</option></select></div>
@@ -86,6 +101,7 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 </section>
 <footer class="foot"><span>© JM · Existing bodies retain their identities · Proposed contact descendant</span><span>No Ding, no claim · Contact before crown · Mesh ≠ Merge</span><span>Offline tools work locally; registry discovery needs hosted HTTP(S).</span></footer>
 </main>
+<script src="../../ecostate-griprail-v6.js" data-jm-inherit="JMGripRail-v6-hosted-only" defer></script>
 <script>
 'use strict';
 const $=id=>document.getElementById(id); const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
@@ -304,6 +320,7 @@ async function assembleDossier(){
   motion:lastPulseReceipt||{state:pulse.running?'ACTIVE__STOP_TO_CAPTURE':'NO_MOTION_CONTACT'},
   estate:{registries_loaded:estateRecords.filter(x=>x.group!=='HOLD').length>0,entry_count:estateRecords.length,public_discovery_only:true},
   input_route:window.JMGripRouteAdapter?.proof()||{state:'ADAPTER_NOT_INITIALISED'},
+  shared_griprail:window.JMSixRailInheritance?.proof()||{status:'HOST_SOURCE_NOT_INITIALISED'},
   playtests:tests,
   artifact:artifactMeta||{state:'NO_HASHED_ARTIFACT'},
   user_declared_checks:checks,
@@ -444,5 +461,38 @@ window.JMGripRouteAdapter=Object.freeze({version:'0.6',scope:'SEMANTIC_ADAPTER_N
  proof:()=>({schema:'JM.GripRouteAdapter.Proof/0.6',version:'0.6',source_relation:'FTR_GRIPROUTE_SEMANTIC_INHERITANCE_ONLY',exact_FTR_palm_route_source_used:false,
  current_room:routeIDs[routeControl.index],stance:routeControl.mode,contact_count:routeLog.length,contacts:routeLog.slice(-35),owner_device_proof:false}),
  route:(index)=>routeCommit(index,'PROGRAMMATIC_ROUTE'),getState:()=>({index:routeControl.index,mode:routeControl.mode,trace:routeLog.slice()})});
+
+// JM shared GripRail v6: exact existing hosted library route; absence is observable, not magically "inherited".
+function jmNativeRailProof(){
+ const native=window.JMGripRail;
+ const report=typeof native?.proof==='function'?native.proof():null;
+ const seated=!!(report?.rootGripCube && $('routeTrack').classList.contains('griprail-track'));
+ return {schema:'JM.SixRails.GripRailHostContact/0.7',native_module:'ecostate-griprail-v6.js',
+  native_module_loaded:!!native,public_root_seated:seated,
+  native_version:native?.version||null,standalone_route_fallback:'JMGripRouteAdapter/0.6',
+  exact_FTR_palm_route_source_used:false,owner_device_proof:false,
+  status:seated?'HOSTED_NATIVE_GRIPRAIL_DOM_CONTACT':'HOLD__NATIVE_HOST_CONTACT_NOT_SEEN'};
+}
+window.JMSixRailInheritance=Object.freeze({proof:jmNativeRailProof});
+function jmSyncNativeRail(){
+ const el=$('nativeSeatStatus');
+ if(typeof window.JMGripRail?.install==='function'){
+   window.JMGripRail.install();
+ }
+ const p=jmNativeRailProof();
+ el.classList.toggle('active',p.public_root_seated);
+ el.classList.toggle('hold',!p.public_root_seated);
+ el.textContent=p.public_root_seated
+  ? 'JMGripRail v6 · exact hosted shared module CONTACT · FTR Palm Route exact-source HOLD'
+  : 'GripRoute adaptive field active · native GripRail v6 host source HOLD / offline fallback';
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',jmSyncNativeRail);
+else jmSyncNativeRail();
+$('routeTrack').addEventListener('keydown',e=>{
+ if(['ArrowRight','ArrowLeft'].includes(e.key)&&!(e.target instanceof HTMLInputElement)){
+  e.preventDefault();e.stopImmediatePropagation();
+  routeCommit(routeControl.index+(e.key==='ArrowRight'?1:-1),'GRIPRAIL_KEY_ROUTE');
+ }
+});
 </script>
 </body></html>

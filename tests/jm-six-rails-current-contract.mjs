@@ -19,7 +19,7 @@ for(const id of ['exportGLB','importPacket','sendForge','captureForgeBefore','ca
 }
 for(const mode of ['flow','flick','manual','anchor','table'])assert.ok(source.includes('<option value="'+mode+'">'));
 for(const fn of ['function routeCommit(','function routeContact(','function routeRelease(','function routeMode(','function routeRemember('])assert.ok(source.includes(fn),'missing live routing '+fn);
-assert.match(source,/CrossBodyDossier\/0\.6/);
+assert.match(source,/CrossBodyDossier\/0\.8/);
 assert.match(source,/GLBRoundTrip\/0\.5/);
 assert.match(source,/JM\.GripRouteAdapter\.Proof\/0\.6/);
 assert.match(source,/input_route:window\.JMGripRouteAdapter\?\.proof\(\)/);

@@ -1,20 +1,30 @@
-# JM FOLD ULTRA · PAIRED ROOT v0.1
+# JM FOLD ULTRA — COMPLETE INITIAL PRELAUNCH OPENING v0.2
 
-**Estate lineage:** JM32-1DA Android adapter + JM PHONE ↔ LAPTOP CONTACT RUNNER + Developer Playground. This is a separate descendant: it does **not** replace or overwrite any protected body.
+**Scope:** owner-device initial prelaunch, not full phone provisioning. **Protected ancestor:** v0.1 Git history remains intact. **Lineage:** JM32-1DA, JM Phone↔Laptop Contact Runner, Android Developer Playground.
 
-## What it actually does
-- One native Android companion app with **SOURCE** (narrow screen) and **WORKFIELD** (wide screen) surfaces determined by current Android `screenWidthDp`. This is display-class detection, **not** verified hinge-angle or exact fold-state sensing.
-- Shares one locally saved root note across display configurations.
-- Working native app and published JM route launch actions.
-- Android-approved home-screen shortcut request.
-- User-approved SAF JSON export/import with schema, size and overwrite confirmation.
-- **Zero dangerous permissions:** no internet, accessibility, storage, device-admin, or root access. External URLs open in the chosen browser.
+## Experience
 
-## What is not done yet
-This app is **not** a Samsung One UI layout manipulator, Oppo migration tool, silent app installer, default launcher or autonomous agent. It cannot copy/move home-screen icons without Android/One UI cooperation. No owner-device PASS is claimed before actual Fold8 Ultra install and contact.
+- Five-stage, progress-persistent first run: **ARRIVAL → PRIORITY → PAIRED SCREENS → ROUTE CONTACT → OWNER ENTRY**.
+- Native custom JM link-field illustration; obsidian/signal-blue/route-violet identity; usable without any external assets.
+- Current Android width determines compact **SOURCE** vs expanded **WORKFIELD** visual profile. This is **not verified hinge sensing**. Width threshold is 500dp and may need owner-device adjustment.
+- Compact/expanded screens share preference data. A changed window size re-renders the current stage.
+- Three real selectable priorities (CREATE / PLAY / EVERYDAY), not dummy choices.
+- Upon entry: working ROOT, ROUTES, CONTROL, with app launches, public estate URLs, and shared locally saved root note.
+- SYSTEM OPERATIONS: one Android-approved shortcut pin request, Android settings intent, on-demand JSON export/import and re-entry to onboarding.
+- Import accepts previous v0.1 note-only JSON or v0.2 schema; validates type, selected focus, note length, progress limits and asks for approval before changing app-only values.
+- Previous v0.1 note locally migrated on first startup, preserving in-place upgraded note. Future installation over an existing debug APK requires matching signing key.
 
-## CI
-Run on the draft PR / Github Actions. Build with Android Gradle Plugin 8.9.2, Gradle 8.13, JDK 17, SDK 36. Compile release candidate as **debug** APK only; do not distribute as final signed release. Inspect app label, package and permissions before installing.
+## Safeguards
 
-## Owner DING
-Install manually once; approve the pin shortcut; open folded and unfolded; modify the shared note in each direction; export, import and compare. Record observed device proof separately.
+Zero Android permissions requested. No root, accessibility, device admin, browser WebView, launcher replacement, Oppo migration, silent app installs, folder moves or file scanning. App data only. Samsung home-page arrangement remains unchanged.
+
+## Proof gates
+
+1. GitHub Android compile **PENDING until CI says PASS**.
+2. APK package, version 0.2.0, signature, ZIP integrity, unexpected-permission check **PENDING**.
+3. Actual Fold device installation, UI, transition between widths, import/export, shortcut, third-party app launch **OWNER DING OPEN**.
+4. Runtime layout and accessibility not assumed verified by successful compilation.
+
+## Suggested owner contact
+
+Only when owner approves install: first screen, five stages, choose each priority, unfold/refold and verify same stage, enter control room, edit note, export, reopen, import, request a shortcut, check existing apps and record exact PASS/HOLD. Do not replace Samsung launcher or delete anything.

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.7</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.8</title>
 <link rel="stylesheet" href="../../ecostate-griprail-v6.css" data-jm-inherit="JMGripRail-v6-hosted-only">
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -53,10 +53,19 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 .native-seat-state.active{color:#acedd5}
 .native-seat-state.hold{color:#ffd28b}
 @media(max-width:700px){#routeTrack.gc-grid.griprail-track{max-height:68px!important}}
+
+/* v0.8 · FTR GripRoute Twin Body physical proof-of-feel, three real states, not cosmetic scrolling. */
+.grip-time-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#081f2b;border:1px solid #355566;border-radius:12px;padding:10px;margin:10px 0}
+.grip-time-row strong{font:800 1.4rem ui-monospace,monospace;color:var(--gold)}.grip-time-row span{font-size:.73rem;color:var(--muted);text-align:right}
+.grip-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+.grip-metrics label{display:flex;align-items:center;justify-content:space-between;gap:7px;border:1px solid var(--line);padding:9px;background:#0c1b2b;border-radius:9px;font-size:.74rem}
+.grip-metrics select{width:85px;min-height:37px}
+.grippanel .actions{display:flex;flex-wrap:wrap}
+@media(max-width:540px){.grip-metrics{grid-template-columns:1fr}.grip-time-row{align-items:start}.grippanel .actions>*{flex:1 1 135px}}
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.7 · NATIVE GRIPRAIL HOST BRIDGE</div></header>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.8 · TWIN BODY GRIPROUTE PROOF</div></header>
 <div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
 <section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
 <div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
@@ -96,6 +105,29 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <aside class="card"><h3>Authority stays outside this viewer</h3><div class="pills"><span>Read only</span><span>No private source</span><span>No mutation</span><span>Current registry timestamps matter</span></div><div class="note">The private JM Build Mesh plugin remains the authority-reconciliation tool inside ChatGPT. Public sources may lag current owner authority.</div><div class="record"><a href="https://jmisjustme-estate.pages.dev/" target="_blank" rel="noopener">Canonical Estate public door ↗</a></div><div class="record"><a href="https://github.com/JMisJustMe/JM-cading-lab" target="_blank" rel="noopener">Existing GitHub source corridor ↗</a></div><div class="record"><a href="../../navigator/" target="_blank" rel="noopener">Navigator public route ↗</a></div></aside>
 </section>
 <section id="rail-testers" class="rail grid" hidden>
+
+<div class="card grippanel" id="gripTwinPanel">
+ <div class="kicker">JM FTR · GripRoute Twin Body · original May proof-of-feel method</div>
+ <h2>Bare phone ↔ Shell ↔ U</h2>
+ <p class="muted">This is the physical GripRoute family: Shell suits the phone; U bridges the phone. Test each with a real mockup, in the same portrait game. The browser cannot manufacture comfort, safety, fatigue or physical source proof.</p>
+ <div class="fields">
+  <div class="field"><label for="gripVariant">Actual body held</label><select id="gripVariant"><option value="bare">BARE PHONE · baseline</option><option value="shell">GRIPROUTE SHELL · fuller support</option><option value="u">GRIPROUTE U · lighter bottom bridge</option></select></div>
+  <div class="field"><label for="gripGame">Exact game / build tested</label><input id="gripGame" placeholder="e.g. COMBOUND v1.4" autocomplete="off"></div>
+  <div class="field"><label for="gripDevice">Device + posture</label><input id="gripDevice" placeholder="e.g. Fold portrait · two-thumb" autocomplete="off"></div>
+ </div>
+ <div class="grip-time-row"><strong id="gripClock" aria-live="polite">00:00</strong><span id="gripTimeHint">Five minutes each for the full comparison.</span></div>
+ <div class="actions"><button class="action" id="gripBegin" type="button">Start physical trial</button><button class="action alt" id="gripFinish" type="button" disabled>Stop and time run</button></div>
+ <label class="check"><input id="gripPhysical" type="checkbox">I physically held the selected bare phone / mockup during this run (self-reported)</label>
+ <div id="gripMetrics" class="grip-metrics" aria-label="Physical phone-control experience ratings"></div>
+ <div class="field"><label for="gripNotes">What improved, strained, slipped or interfered with play?</label><textarea id="gripNotes" rows="3" placeholder="Describe what actually happened. Identify screen obstruction or control discomfort explicitly."></textarea></div>
+ <div class="actions"><button id="gripSave" class="action" type="button">Record scoped trial</button><button id="gripExport" class="action alt" type="button">Export comparison JSON</button><button id="gripClear" class="action alt" type="button">Clear GripRoute local drafts</button></div>
+ <div class="status" id="gripStatus" role="status">HOLD · No witnessed physical comparisons recorded.</div>
+ <div class="readout" id="gripComparison" aria-live="polite">Bare / Shell / U comparison waiting for actual sessions.</div>
+ <div class="fields"><div class="field"><label for="gripPreference">After the three physical runs, which would you choose?</label><select id="gripPreference"><option value="">No decision recorded</option><option value="bare">Bare phone</option><option value="shell">GripRoute Shell</option><option value="u">GripRoute U</option><option value="undecided">No clear preference</option></select></div></div>
+ <button class="action alt" id="gripDecide" type="button">Record owner preference after comparison</button>
+ <div class="note">Real 5-minute sessions and honest physical mockup contact are required for the original product proof route. Faster/software-only attempts are retained as provisional observations. No automatic preference or product Ding.</div>
+</div>
+
 <div class="card"><div class="kicker">06 · Games / owner-led testing / release learning</div><h2>Collect a meaningful playtest receipt</h2><p class="muted">Capture a session without pretending to run analytics or a live feedback server. Everything stays in this browser until you choose to export it.</p><form id="testerForm"><div class="fields"><div class="field"><label for="testGame">Game / build</label><input id="testGame" required placeholder="COMBOUND v..." autocomplete="off"></div><div class="field"><label for="testDevice">Device / browser</label><input id="testDevice" required placeholder="Android / Chrome" autocomplete="off"></div><div class="field"><label for="testRating">Enjoyment</label><select id="testRating"><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4" selected>4 / 5</option><option value="5">5 / 5</option></select></div><div class="field"><label for="testFit">Fit and control</label><select id="testFit"><option value="pass">Usable</option><option value="partial">Partial</option><option value="fail">Failed</option><option value="unknown" selected>Unverified</option></select></div></div><div class="field"><label for="testNotes">Observed behaviour / issues / highlights</label><textarea id="testNotes" required placeholder="What actually happened? What should improve?"></textarea></div><div class="actions"><button type="submit" class="action">Record session locally</button><button type="button" id="exportTests" class="action alt">Export all receipts JSON</button><button type="button" id="clearTests" class="action alt">Clear local draft history</button></div></form><div class="status" id="testStatus" role="status">No remote collection or publication.</div></div>
 <aside class="card"><h3>Observed sessions</h3><div class="meter"><div><strong id="testCount">0</strong><span>Sessions</span></div><div><strong id="testAverage">—</strong><span>Mean enjoyment</span></div><div><strong id="testUsable">0</strong><span>Fit usable</span></div></div><div id="testLatest" class="mini" style="margin-top:13px">No local records yet.</div><hr class="sep"><h3>Selection-matched feedback</h3><p class="mini">Matching requires the exact game/build label. Testimony does not independently certify a build.</p><div class="readout" id="testSummary">No selected release target.</div><button class="action alt" id="sendTestsRelease">Inspect playtests in release gate</button><div class="note">No identifiers or telemetry are sent to external services. This local test log is not a population study, monetisation analytics or proof of publication.</div><a href="../../../games-beyond/" target="_blank" rel="noopener">Existing game house ↗</a></aside>
 </section>
@@ -312,7 +344,7 @@ async function assembleDossier(){
  const checks=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);
  const tests=testStats();
  const receipt={
-  schema:'JM.SixRails.CrossBodyDossier/0.6',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
+  schema:'JM.SixRails.CrossBodyDossier/0.8',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
   target:{name:$('releaseGame').value.trim()||null,version:$('releaseVersion').value.trim()||null,public_registry_selection:handoffSelection},
   geometry:{present:!!meshPayload,vertices:meshPayload?.vertices.length||0,triangles:meshPayload?.triangles.length||0,recipient_active:!!scene?.loaded,recipient_face_contacts:scene?.contacts?.size||0,recipient_score:scene?.score||0,glb_interchange:lastGLBReceipt||{state:"NO_GLB_DECODER_CONTACT"},private_forge_v024_glb_verified:false},
   visual:diffReceipt?{...diffReceipt}:{state:'NO_PIXEL_COMPARISON'},
@@ -321,6 +353,7 @@ async function assembleDossier(){
   estate:{registries_loaded:estateRecords.filter(x=>x.group!=='HOLD').length>0,entry_count:estateRecords.length,public_discovery_only:true},
   input_route:window.JMGripRouteAdapter?.proof()||{state:'ADAPTER_NOT_INITIALISED'},
   shared_griprail:window.JMSixRailInheritance?.proof()||{status:'HOST_SOURCE_NOT_INITIALISED'},
+  griproute_physical:window.JMGripRouteTwinBody?.proof()||{claim:'HOLD__NO_GRIPROUTE_PHYSICAL_CONTACT'},
   playtests:tests,
   artifact:artifactMeta||{state:'NO_HASHED_ARTIFACT'},
   user_declared_checks:checks,
@@ -334,6 +367,7 @@ async function assembleDossier(){
  if(!lastPulseReceipt||lastPulseReceipt.beats_applied<2)hold.push('RHYTHM_RECIPIENT_MOTION_MISSING');
  if(!receipt.estate.registries_loaded)hold.push('PUBLIC_ESTATE_DISCOVERY_MISSING');
  if(!tests.records)hold.push('EXACT_TARGET_TEST_FEEDBACK_MISSING');
+ if(!receipt.griproute_physical?.complete_three_way)hold.push('GRIPROUTE_PHYSICAL_THREE_WAY_PROOF_OPEN');
  if(tests.failed)hold.push('RECORDED_PLAYTEST_FAILURES');
  if(!artifactMeta)hold.push('EXACT_ARTIFACT_HASH_MISSING');
  if(checks.length<5)hold.push('USER_DECLARED_RELEASE_CHECKS_INCOMPLETE');
@@ -347,7 +381,7 @@ async function inspectDossier(){loopReceipt=await assembleDossier();
  return loopReceipt;
 }
 $('inspectLoop').addEventListener('click',inspectDossier);
-$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_6.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
+$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_8.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
 window.JMSixRails=Object.freeze({checkedMesh,assembleDossier,inspectDossier,testStats,stopPulse,goToRail,getState:()=>({mesh:meshPayload,glb:lastGLBReceipt,beatGrid:lastBeatGrid,pulse:lastPulseReceipt,selection:handoffSelection,artifact:artifactMeta,diff:diffReceipt})});
 
 // v0.6 · GripRoute-aware software adapter, not a false transplant of FTR Palm Route Field source.
@@ -494,5 +528,90 @@ $('routeTrack').addEventListener('keydown',e=>{
   routeCommit(routeControl.index+(e.key==='ArrowRight'?1:-1),'GRIPRAIL_KEY_ROUTE');
  }
 });
+
+// v0.8 · Restored FTR GripRoute Twin Body product evidence; local-only route.
+// Explicit distinction: hardware Shell / U, not JMGripRail horizontal navigation.
+const gripFieldSpec={
+ comfort:'Hold comfort',thumb_reach:'Thumb reach',one_hand_safety:'One-hand safety',
+ two_thumb:'Two-thumb control',flick:'Flick confidence',drag:'Drag control',
+ strap:'Strap/support usefulness',bulk:'Bulk / carry comfort',table:'Table Route usefulness',
+ use_again:'Would use again'};
+const gripFieldKey='jm.sixrails.ftr-griproute-twinbody.v0.8';
+let gripTrials=[];try{const v=JSON.parse(localStorage.getItem(gripFieldKey)||'[]');if(Array.isArray(v))gripTrials=v.slice(-60)}catch(e){}
+let gripDecision=null;try{gripDecision=JSON.parse(localStorage.getItem(gripFieldKey+'.choice')||'null')}catch(e){}
+let gripActive=null,gripFinished=null,gripTicker=null;
+const gripLabel={bare:'BARE PHONE',shell:'GRIPROUTE SHELL',u:'GRIPROUTE U'};
+const gripTime=ms=>{const sec=Math.max(0,Math.floor(ms/1000));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')};
+$('gripMetrics').innerHTML=Object.entries(gripFieldSpec).map(([key,label])=>
+ `<label for="gripMetric_${key}">${escapeText(label)}<select id="gripMetric_${key}" data-grip-metric="${key}"><option value="">Not rated</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5</option>`).join('')}</select></label>`).join('');
+function gripSaveLocal(){try{localStorage.setItem(gripFieldKey,JSON.stringify(gripTrials.slice(-60)));return true}catch(e){return false}}
+function gripSummary(){
+ const names=['bare','shell','u'],targetGame=$('gripGame').value.trim(),targetDevice=$('gripDevice').value.trim();
+ const rows=gripTrials.filter(r=>r.game===targetGame&&r.device===targetDevice);
+ const latest={};for(const n of names){latest[n]=[...rows].reverse().find(r=>r.variant===n)||null}
+ const complete=!!targetGame&&!!targetDevice&&names.every(n=>latest[n]?.state==='PHYSICAL_5MIN__COMPLETE_RATINGS');
+ const decision=gripDecision?.game===targetGame&&gripDecision?.device===targetDevice?gripDecision:null;
+ const scores=Object.fromEntries(names.map(n=>[n,latest[n]?.mean_score??null]));
+ const durations=Object.fromEntries(names.map(n=>[n,latest[n]?.duration_s??null]));
+ return {schema:'JM.FTR.GripRouteTwinBodyComparison/0.8',source:'JM GripRoute Twin Body Build Sheet v0.1 · 2026-05-31',
+  conditions:names,comparison_game:targetGame||null,comparison_device:targetDevice||null,
+  records_for_exact_comparison:rows.length,records_total:gripTrials.length,complete_three_way:complete,
+  owner_declared_preference:complete?(decision?.choice||null):null,
+  owner_reported_positive_preference:complete&&['shell','u'].includes(decision?.choice),
+  newest_per_condition:Object.fromEntries(names.map(n=>[n,latest[n]?{state:latest[n].state,physical_self_reported:latest[n].physical_self_reported,duration_s:latest[n].duration_s,mean_score:latest[n].mean_score,game:latest[n].game}:null])),
+  scores,durations,claim:complete?'THREE_SELF_REPORTED_PHYSICAL_RUNS_RECORDED__OWNER_PREFERENCE_STILL_REQUIRED':'HOLD__PHYSICAL_THREE_WAY_COMPARISON_INCOMPLETE',
+  owner_product_preference_proven:false,
+  private_FTR_GripRoute_v12_source_loaded:false};
+}
+function gripRender(){const r=gripSummary(),rows=['bare','shell','u'].map(n=>{
+ const v=r.newest_per_condition[n];return `${gripLabel[n]} · ${v?gripTime(v.duration_s*1000):'—'} · ${v?.mean_score??'—'}/5 · ${v?.state||'NOT TESTED'}`});
+ $('gripComparison').textContent=rows.join('\n')+'\n\n'+r.claim+(r.owner_declared_preference?' · Owner choice: '+(gripLabel[r.owner_declared_preference]||'NO CLEAR PREFERENCE'):'');
+}
+function gripStopClock(){if(gripTicker){clearInterval(gripTicker);gripTicker=null}}
+$('gripBegin').addEventListener('click',()=>{
+ if(gripActive){status('gripStatus','HOLD · Stop the current physical trial first.');return}
+ const game=$('gripGame').value.trim(),device=$('gripDevice').value.trim();
+ if(!game||!device){status('gripStatus','HOLD · Name the exact game and phone/posture before starting.');return}
+ $('gripPhysical').checked=false;
+ gripFinished=null;gripActive={variant:$('gripVariant').value,game,device,begin:performance.now(),traceStart:routeLog.length,started:iso()};
+ $('gripVariant').disabled=true;$('gripGame').disabled=true;$('gripDevice').disabled=true;$('gripBegin').disabled=true;$('gripFinish').disabled=false;
+ gripStopClock();gripTicker=setInterval(()=>{$('gripClock').textContent=gripTime(performance.now()-gripActive.begin)},250);
+ status('gripStatus',`ACTIVE · ${gripLabel[gripActive.variant]} · play on the physical phone/mockup now.`);
+});
+$('gripFinish').addEventListener('click',()=>{
+ if(!gripActive)return;
+ const time=Math.max(0,performance.now()-gripActive.begin);gripFinished={...gripActive,duration_ms:time,ended:iso(),route_contact_count:Math.max(0,routeLog.length-gripActive.traceStart)};
+ gripActive=null;gripStopClock();$('gripClock').textContent=gripTime(time);
+ $('gripVariant').disabled=false;$('gripGame').disabled=false;$('gripDevice').disabled=false;$('gripBegin').disabled=false;$('gripFinish').disabled=true;
+ status('gripStatus',time>=300000?'RUN TIMED · record ratings and actual physical contact.':'PROVISIONAL · under 5 minutes; record honest observations, no product proof.');
+});
+$('gripSave').addEventListener('click',()=>{
+ if(!gripFinished){status('gripStatus','HOLD · Start and stop a timed run first.');return}
+ const notes=$('gripNotes').value.trim();if(!notes){status('gripStatus','HOLD · Add the actual contact observation before saving.');return}
+ const values=Object.fromEntries([...document.querySelectorAll('[data-grip-metric]')].map(el=>[el.dataset.gripMetric,el.value?Number(el.value):null]));
+ const scored=Object.values(values).filter(Number.isFinite),physical=$('gripPhysical').checked,goodTime=gripFinished.duration_ms>=300000;
+ const state=physical&&goodTime&&scored.length===Object.keys(gripFieldSpec).length?'PHYSICAL_5MIN__COMPLETE_RATINGS':'PROVISIONAL__INCOMPLETE_PHYSICAL_PROOF';
+ const row={schema:'JM.FTR.GripRouteTwinBodyTrial/0.8',variant:gripFinished.variant,game:gripFinished.game,device:gripFinished.device,
+  started_at:gripFinished.started,ended_at:gripFinished.ended,duration_s:+(gripFinished.duration_ms/1000).toFixed(1),
+  physical_self_reported:physical,metrics:values,mean_score:scored.length?+(scored.reduce((a,b)=>a+b,0)/scored.length).toFixed(2):null,
+  rated_count:scored.length,expected_rating_count:Object.keys(gripFieldSpec).length,route_contact_count:gripFinished.route_contact_count,
+  notes,state,independent_physical_verification:false};
+ gripTrials.push(row);gripTrials=gripTrials.slice(-60);if(gripDecision?.game===row.game&&gripDecision?.device===row.device){gripDecision=null;try{localStorage.removeItem(gripFieldKey+'.choice')}catch(e){}}const persisted=gripSaveLocal();gripFinished=null;
+ gripRender();status('gripStatus',`${state} · ${gripLabel[row.variant]} recorded ${persisted?'locally':'in current session only'}; no automatic owner product Ding.`);
+});
+$('gripDecide').addEventListener('click',()=>{
+ const sum=gripSummary(),choice=$('gripPreference').value;
+ if(!sum.complete_three_way){status('gripStatus','HOLD · Same game, same device/posture, and three complete physical five-minute runs are required first.');return}
+ if(!choice){status('gripStatus','HOLD · Select an actual preference or No clear preference.');return}
+ gripDecision={game:sum.comparison_game,device:sum.comparison_device,choice,recorded_at:iso()};
+ try{localStorage.setItem(gripFieldKey+'.choice',JSON.stringify(gripDecision))}catch(e){}
+ gripRender();status('gripStatus','Owner-declared preference recorded. This is self-reported product feel, not independent device/manufacturing proof.');
+});
+$('gripGame').addEventListener('input',gripRender);$('gripDevice').addEventListener('input',gripRender);
+$('gripExport').addEventListener('click',()=>saveBlob('JM_GRIPROUTE_TWIN_BODY_PROOF_OF_FEEL_v0_8.json',JSON.stringify({summary:gripSummary(),trials:gripTrials,privacy:'USER_EXPORTED_LOCAL_NOTES',exported_at:iso()},null,2)));
+$('gripClear').addEventListener('click',()=>{if(!confirm('Clear local GripRoute trial drafts? Export first if needed.'))return;gripTrials=[];gripDecision=null;gripSaveLocal();try{localStorage.removeItem(gripFieldKey+'.choice')}catch(e){}gripRender();status('gripStatus','Local GripRoute drafts cleared. Other playtest receipts are unchanged.')});
+window.JMGripRouteTwinBody=Object.freeze({proof:gripSummary,records:()=>gripTrials.slice()});gripRender();
+window.addEventListener('pagehide',gripStopClock);
+
 </script>
 </body></html>

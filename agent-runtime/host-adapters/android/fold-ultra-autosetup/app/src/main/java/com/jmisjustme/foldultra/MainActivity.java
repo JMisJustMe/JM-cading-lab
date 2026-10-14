@@ -315,7 +315,7 @@ public final class MainActivity extends Activity {
     }
     ShortcutInfo s=new ShortcutInfo.Builder(this,"jm-fold-root")
       .setShortLabel("JM Root").setLongLabel("JM Fold Ultra / Paired Root")
-      .setIcon(Icon.createWithResource(this,android.R.drawable.ic_menu_manage))
+      .setIcon(Icon.createWithResource(this,R.drawable.jm_root_mark))
       .setIntent(new Intent(this,MainActivity.class).setAction(Intent.ACTION_MAIN)).build();
     if(!m.requestPinShortcut(s,null))Toast.makeText(this,"HOLD · Shortcut not accepted",1).show();
   }

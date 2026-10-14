@@ -3,12 +3,12 @@ on:
   pull_request:
     paths:
       - 'estate-integration/six-rails/**'
-      - 'tests/jm-six-rails-v0-5-contract.mjs'
+      - 'tests/jm-six-rails-current-contract.mjs'
       - '.github/workflows/six-rails-contact-check.yml'
   push:
     paths:
       - 'estate-integration/six-rails/**'
-      - 'tests/jm-six-rails-v0-5-contract.mjs'
+      - 'tests/jm-six-rails-current-contract.mjs'
       - '.github/workflows/six-rails-contact-check.yml'
   workflow_dispatch:
 permissions:
@@ -22,4 +22,4 @@ jobs:
         with:
           node-version: '22'
       - name: Assert bounded six-rail source and valid JS
-        run: node tests/jm-six-rails-v0-5-contract.mjs
+        run: node tests/jm-six-rails-current-contract.mjs

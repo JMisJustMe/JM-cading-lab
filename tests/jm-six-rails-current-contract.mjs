@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'estate-integration/six-rails/index.html'),'utf8');
-assert.match(source,/SIX RAILS CONTACT v0\.9/);
+assert.match(source,/SIX RAILS CONTACT v1\.0/);
 for(const rail of ['mesh','compare','release','audio','estate','testers']){
  assert.ok(source.includes('id="rail-'+rail+'"'));
  assert.ok(source.includes('data-rail="'+rail+'"'));
@@ -103,4 +103,21 @@ await assert.rejects(verify(internal),/Geometry content SHA mismatch/);
 const falseProof=JSON.parse(JSON.stringify(packet));falseProof.payload.recipient_proof='CLAIMED';falseProof.payload_sha256=await ctx.sha256(JSON.stringify(falseProof.payload));
 await assert.rejects(verify(falseProof),/Unsupported trust boundary/);
 
-console.log('JM SIX RAILS v0.9 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');
+
+// v1.0 user screenshot-led device fit: no fixed-height clipped tool panel; accessible compact route chooser.
+for(const id of ['quickRoomBar','quickPrev','quickRoom','quickNext','quickControls','griprouteDock'])assert.ok(source.includes('id="'+id+'"'),'missing UI contact '+id);
+for(const id of ['mesh','compare','release','audio','estate','testers']) {
+ assert.ok(source.includes('id="tab-'+id+'" role="tab" aria-controls="rail-'+id+'"'));
+ assert.ok(source.includes('id="rail-'+id+'" role="tabpanel" aria-labelledby="tab-'+id+'"'));
+ assert.ok(source.includes('<option value="'+id+'">'),'missing direct accessible room '+id);
+}
+assert.match(source,/JM\.SixRails\.DeviceFit\/1\.0/);
+assert.match(source,/window\.JMSixRailsDeviceFit/);
+assert.match(source,/\.shell\{height:auto!important;min-height:100dvh;overflow:visible!important;display:block/);
+assert.match(source,/\.rail\{height:auto;max-height:none;min-height:0;overflow:visible!important/);
+assert.match(source,/quickRoom\.addEventListener\('change'/);
+assert.match(source,/quickControls\.addEventListener\('click'/);
+assert.match(source,/deviceFitObserver\.observe/);
+assert.match(source,/physical_fold_pass:false,owner_accessibility_approval:false/);
+
+console.log('JM SIX RAILS v1.0 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');

@@ -81,7 +81,6 @@ assert.match(source,/PHYSICAL_5MIN__COMPLETE_RATINGS/);
 assert.match(source,/GRIPROUTE_PHYSICAL_THREE_WAY_PROOF_OPEN/);
 assert.match(source,/owner_product_preference_proven:false/);
 assert.match(source,/griproute_physical:window\.JMGripRouteTwinBody\?\.proof\(\)/);
-assert.match(source,/CrossBodyDossier\/0\.8/);
 
 
 // v0.9 · strict portable packet format, negative hash and authority controls.

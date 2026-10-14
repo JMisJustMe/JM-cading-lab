@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'estate-integration/six-rails/index.html'),'utf8');
-assert.match(source,/SIX RAILS CONTACT v0\.8/);
+assert.match(source,/SIX RAILS CONTACT v0\.9/);
 for(const rail of ['mesh','compare','release','audio','estate','testers']){
  assert.ok(source.includes('id="rail-'+rail+'"'));
  assert.ok(source.includes('data-rail="'+rail+'"'));
@@ -19,7 +19,7 @@ for(const id of ['exportGLB','importPacket','sendForge','captureForgeBefore','ca
 }
 for(const mode of ['flow','flick','manual','anchor','table'])assert.ok(source.includes('<option value="'+mode+'">'));
 for(const fn of ['function routeCommit(','function routeContact(','function routeRelease(','function routeMode(','function routeRemember('])assert.ok(source.includes(fn),'missing live routing '+fn);
-assert.match(source,/CrossBodyDossier\/0\.8/);
+assert.match(source,/CrossBodyDossier\/0\.9/);
 assert.match(source,/GLBRoundTrip\/0\.5/);
 assert.match(source,/JM\.GripRouteAdapter\.Proof\/0\.6/);
 assert.match(source,/input_route:window\.JMGripRouteAdapter\?\.proof\(\)/);
@@ -83,4 +83,25 @@ assert.match(source,/owner_product_preference_proven:false/);
 assert.match(source,/griproute_physical:window\.JMGripRouteTwinBody\?\.proof\(\)/);
 assert.match(source,/CrossBodyDossier\/0\.8/);
 
-console.log('JM SIX RAILS v0.8 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');
+
+// v0.9 · strict portable packet format, negative hash and authority controls.
+for(const id of ['continuityPanel','exportContinuity','importContinuity','adoptContinuityMesh','adoptContinuityBeat','continuityPreview','continuityState','gripcubeEvidence','evidenceLensReadout'])assert.ok(source.includes('id="'+id+'"'),'missing '+id);
+for(const lens of ['TRACE','ROUTE','FORM','FIELD','PROOF','USE'])assert.ok(source.includes('data-evidence-lens="'+lens+'"'),'missing '+lens);
+for(const pattern of [/JM\.SixRails\.RouteVaultHandoff\/0\.9/,/JM\.SixRails\.RouteVaultPayload\/0\.9/,/JM\.SixRails\.GripCubeEvidence\/0\.9/,/window\.JMRouteVaultHandoff/,/window\.JMGripCubeEvidence/,/MUST_BE_RE_EARNED_ON_IMPORT_DEVICE/,/device_transfer_proven:false/,/actual_gripcube_v5_source_loaded:false/])assert.match(source,pattern);
+const begin=js.indexOf('function continuityMeshSafe('),end=js.indexOf("$('exportContinuity').addEventListener",begin);
+assert.ok(begin>0&&end>begin,'pure verification section available');
+const ctx={continuitySchema:'JM.SixRails.RouteVaultHandoff/0.9',checkedMesh:x=>x,sha256:async x=>crypto.createHash('sha256').update(x).digest('hex')};
+const verify=vm.runInNewContext(js.slice(begin,end)+'\nverifyContinuityPack;',ctx);
+const geometry={vertices:[[0,0,0],[1,0,0],[1,1,0],[0,1,0]],triangles:[[0,1,2],[0,2,3]]};
+const beat={schema:'JM.SixRails.BeatGrid/0.1',bpm:120,bars:1,beats_per_bar:4,beats:Array.from({length:4},(_,i)=>({index:i+1,bar:1,beat:i+1,time_seconds:i/2}))};
+const payload={schema:'JM.SixRails.RouteVaultPayload/0.9',geometry,geometry_sha256:await ctx.sha256(JSON.stringify(geometry)),beat_grid:beat,transport_proof:'ORIGINALLY_EXPORTED_LOCAL_BYTES__NOT_OWNER_IDENTITY',recipient_proof:'MUST_BE_RE_EARNED_ON_IMPORT_DEVICE'};
+const packet={schema:'JM.SixRails.RouteVaultHandoff/0.9',digest_algorithm:'SHA-256',payload,payload_sha256:await ctx.sha256(JSON.stringify(payload))};
+assert.equal((await verify(packet)).beat_count,4);
+const bad=JSON.parse(JSON.stringify(packet));bad.payload.geometry.vertices[0][0]=999;
+await assert.rejects(verify(bad),/SHA-256 mismatch/);
+const internal=JSON.parse(JSON.stringify(packet));internal.payload.geometry_sha256='f'.repeat(64);internal.payload_sha256=await ctx.sha256(JSON.stringify(internal.payload));
+await assert.rejects(verify(internal),/Geometry content SHA mismatch/);
+const falseProof=JSON.parse(JSON.stringify(packet));falseProof.payload.recipient_proof='CLAIMED';falseProof.payload_sha256=await ctx.sha256(JSON.stringify(falseProof.payload));
+await assert.rejects(verify(falseProof),/Unsupported trust boundary/);
+
+console.log('JM SIX RAILS v0.9 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');

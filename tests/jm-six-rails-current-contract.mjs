@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'estate-integration/six-rails/index.html'),'utf8');
-assert.match(source,/SIX RAILS CONTACT v0\.7/);
+assert.match(source,/SIX RAILS CONTACT v0\.8/);
 for(const rail of ['mesh','compare','release','audio','estate','testers']){
  assert.ok(source.includes('id="rail-'+rail+'"'));
  assert.ok(source.includes('data-rail="'+rail+'"'));
@@ -67,4 +67,20 @@ assert.match(source,/public_root_seated/);
 assert.match(source,/shared_griprail:window\.JMSixRailInheritance\?\.proof\(\)/);
 assert.match(source,/exact_FTR_palm_route_source_used:false/);
 
-console.log('JM SIX RAILS v0.7 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');
+
+// FTR GripRoute is a REAL Shell/U physical product; the trial must bind the same game/device and remain HOLD until tested.
+for(const id of ['gripTwinPanel','gripVariant','gripGame','gripDevice','gripBegin','gripFinish','gripPhysical','gripMetrics','gripNotes','gripSave','gripExport','gripClear','gripComparison','gripPreference','gripDecide']){
+ assert.ok(source.includes('id="'+id+'"'),'missing physical proof contact: '+id);
+}
+for(const mode of ['bare','shell','u'])assert.ok(source.includes('option value="'+mode+'"'),'missing GripRoute condition '+mode);
+assert.match(source,/JM\.FTR\.GripRouteTwinBodyTrial\/0\.8/);
+assert.match(source,/JM\.FTR\.GripRouteTwinBodyComparison\/0\.8/);
+assert.match(source,/gripTrials\.filter\(r=>r\.game===targetGame&&r\.device===targetDevice\)/);
+assert.match(source,/gripFinished\.duration_ms>=300000/);
+assert.match(source,/PHYSICAL_5MIN__COMPLETE_RATINGS/);
+assert.match(source,/GRIPROUTE_PHYSICAL_THREE_WAY_PROOF_OPEN/);
+assert.match(source,/owner_product_preference_proven:false/);
+assert.match(source,/griproute_physical:window\.JMGripRouteTwinBody\?\.proof\(\)/);
+assert.match(source,/CrossBodyDossier\/0\.8/);
+
+console.log('JM SIX RAILS v0.8 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');

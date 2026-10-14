@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const source=fs.readFileSync(path.join(root,'estate-integration/six-rails/index.html'),'utf8');
-assert.match(source,/SIX RAILS CONTACT v0\.6/);
+assert.match(source,/SIX RAILS CONTACT v0\.7/);
 for(const rail of ['mesh','compare','release','audio','estate','testers']){
  assert.ok(source.includes('id="rail-'+rail+'"'));
  assert.ok(source.includes('data-rail="'+rail+'"'));
@@ -49,4 +49,22 @@ assert.equal(d.getUint32(16,true),0x4e4f534a);
 const n=d.getUint32(12,true),j=JSON.parse(new TextDecoder().decode(glb.subarray(20,20+n)).trim());
 assert.equal(j.asset.version,'2.0');assert.equal(j.accessors[0].count,4);assert.equal(j.accessors[2].count,6);
 assert.equal(j.extras.jm.private_forge_v024_source,false);
-console.log('JM SIX RAILS v0.6 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');
+
+// Real inherited asset contract. Hosted route reuses EXISTING JMGripRail v6; standalone keeps FTR semantic fallback.
+const gripJs=fs.readFileSync(path.join(root,'ecostate-griprail-v6.js'),'utf8');
+const gripCss=fs.readFileSync(path.join(root,'ecostate-griprail-v6.css'),'utf8');
+assert.match(gripJs,/window\.JMGripRail/);
+assert.match(gripJs,/rootGrid:"\.eco-gripcube \.gc-grid"/);
+assert.match(gripCss,/\.griprail-track/);
+assert.ok(source.includes('href="../../ecostate-griprail-v6.css"'),'hosted canonical CSS link absent');
+assert.ok(source.includes('src="../../ecostate-griprail-v6.js"'),'hosted canonical source link absent');
+assert.ok(source.includes('id="jmGripRailNativeSeat"'));
+assert.ok(source.includes('id="routeTrack" class="gc-grid"'));
+assert.match(source,/JM\.SixRails\.GripRailHostContact\/0\.7/);
+assert.match(source,/window\.JMSixRailInheritance/);
+assert.match(source,/native_module_loaded/);
+assert.match(source,/public_root_seated/);
+assert.match(source,/shared_griprail:window\.JMSixRailInheritance\?\.proof\(\)/);
+assert.match(source,/exact_FTR_palm_route_source_used:false/);
+
+console.log('JM SIX RAILS v0.7 CONTRACT PASS | 6 rails | GLB | SHA | 5 route stances | explicit source HOLD');

@@ -40,3 +40,32 @@ Recovered independently authoritative **source identity**, but not the full sour
 - Private BuildCAD/Form Forge v0.24, BeatBody production, real game publication and external testing remain separate recipient gates.
 
 **NO DING, NO CLAIM. NATIVE SHARED GRIPRAIL SOURCE LINK ≠ LIVE HOST CONTACT. GRIPRAIL ≠ GRIPROUTE.**
+---
+
+## v0.8 — FTR GripRoute physical Twin Body test inheritance
+
+Date: 2026-10-14 · owner direction: continue after discovering missing GripRoute.
+**Status:** SOFTWARE TEST INSTRUMENT PASS · ACTUAL PHYSICAL PRODUCT CONTACT OPEN · NO PRODUCT DING.
+
+Recovered exact **method authority** from Library:
+- `/JM Estate/FTR/GripRoute/Recovered Twin Body Pack 2026-05-31/GRIPROUTE_TWIN_BODY_BUILD_SHEET_v0_1.md`.
+- `.../PROOF_OF_FEEL_TEST_PLAN.md`.
+- `.../PRODUCT_RECEIPT_v0_1.md`.
+- Twin Body retains separate physical identities: bare-phone comparison; GripRoute Shell; GripRoute U. They are not interchangeable with the hosted digital navigation organ GripRail v6.
+- An older independent source receipt for the 3,322,554 B FTR Palm Route Field v1.2 candidate still does **not** provide exact native source bytes for an in-page transplant.
+
+New v0.8 capability seated **inside the existing Rail 06**:
+- Physical timing and three honest condition choices; **ten** original scorecard dimensions (comfort, reach, one-hand safety, two-thumb control, flick, drag, strap/support, bulk, table route, willingness to use again).
+- Each real five-minute run requires a positive physical self-report and complete ratings to earn `PHYSICAL_5MIN__COMPLETE_RATINGS`; quicker/automated runs are `PROVISIONAL__INCOMPLETE_PHYSICAL_PROOF`.
+- Three-way comparison is **exact game + exact device/posture scoped**; unrelated titles/devices cannot accidentally complete a comparison.
+- A separate owner preference (Bare/Shell/U/undecided) is accepted only after three same-context complete physical runs; a new run invalidates the previous choice. No automatic ergonomics, manufacturing or user endorsement claim.
+- Local-only storage and JSON export, explicit clear; ordinary release dossier includes only the scoped comparison **summary**, not private notes. New HOLD `GRIPROUTE_PHYSICAL_THREE_WAY_PROOF_OPEN` remains until physical evidence.
+
+Test/evidence:
+- Current v0.8 source `estate-integration/six-rails/index.html`, GitHub source blob `15a5c0aa28a9414a128b56535140e87b2f8d26b8`.
+- Standalone exact SHA-256 `7b3b9874ca2a62e46931426f79236a09a145d630d078c7a47a3f200ca48a7b81`, 112,382 UTF-8 B.
+- `node --check` PASS. Chromium in-page headless 360x780, 390x844, 1280x800: all 0 document overflow, 0 script errors, successful software-only timed trial and local record; false physical status correctly rejected; generated dossier retained explicit three-way HOLD.
+- Node static native source/portable hash/GLB/GripRoute physical contract source gate PASS in GitHub Actions (commit `39b96b9770ae913a7455dbca3126f926adc52b4e`); build and browser tests carry separate claim scope.
+- No owner-device physical trials, Shell/U attachment fabrication, source-body transplantation, public deployment, main merge or monetisation carried out.
+
+**Keeper:** A software test instrument now serves the original physical GripRoute product test. The instrument is not proof that a GripRoute physical prototype improved anyone's gameplay. Earlier v0.1 FLAZ and v0.2–v0.7 git lineages stay preserved. NO DING, NO CLAIM.

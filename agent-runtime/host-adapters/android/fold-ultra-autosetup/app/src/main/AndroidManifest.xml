@@ -7,9 +7,10 @@
     </queries>
     <application android:allowBackup="false"
         android:label="JM Fold Ultra"
+        android:icon="@drawable/jm_root_mark"
         android:supportsRtl="true"
         android:usesCleartextTraffic="false"
-        android:theme="@android:style/Theme.Material.NoActionBar">
+        android:theme="@style/JMOpeningTheme">
         <activity android:name=".MainActivity" android:exported="true"
             android:configChanges="screenSize|smallestScreenSize|orientation">
             <intent-filter>

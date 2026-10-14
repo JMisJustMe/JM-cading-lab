@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v0.9</title>
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v1.0</title>
 <link rel="stylesheet" href="../../ecostate-griprail-v6.css" data-jm-inherit="JMGripRail-v6-hosted-only">
 <style>
 :root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -70,21 +70,143 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 .evidence-lens-readout{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.67rem;color:#b7dacc;line-height:1.25;max-height:52px;overflow-y:auto;padding:4px 3px}
 .recovery-panel{border-color:#648b7f}.recovery-panel .receipt{max-height:180px}
 @media(max-width:700px){.evidence-lens-readout{font-size:.62rem;max-height:32px}.evidence-lenses button{min-height:28px}}
+
+/* v1.0 · screenshot-corrected readable UI, phone and unfolded Fold.
+   Keep all six active rails and native source bridges; correct screen fit, not gameplay laws. */
+:root{--focus:#ffdf8b}
+html,body{height:auto!important;min-height:100%;overscroll-behavior-y:auto;scroll-padding-top:74px}
+body{overflow-x:hidden;overflow-y:auto}
+.shell{height:auto!important;min-height:100dvh;overflow:visible!important;display:block;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+.rail{height:auto;max-height:none;min-height:0;overflow:visible!important;display:grid;scroll-margin-top:76px}
+.rail[hidden]{display:none!important}
+.foot{position:static;display:flex;margin-top:20px;padding:14px 0 10px;font-size:.72rem;line-height:1.45}
+.mobile-title,.mobile-sub,.quick-room-bar{display:none}
+.tool-help{margin:7px 0 15px}
+.tool-help summary{cursor:pointer;color:var(--cyan);font-size:.82rem;font-weight:750;list-style-position:inside;padding:4px 0}
+.tool-help>p{margin:7px 0 8px!important}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid var(--focus)!important;outline-offset:3px!important}
+button,select,input,summary,a{-webkit-tap-highlight-color:rgba(102,227,223,.2)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1250px), (pointer:coarse){
+ .rail{overflow:visible!important}
+ .shell{max-width:1200px}
+ .griproute-dock{margin:8px 0 12px}
+ .subforge iframe{height:min(650px,74svh)}
+}
+@media(max-width:760px){
+ :root{font-size:16px;line-height:1.44}
+ .shell{padding:8px 12px max(18px,env(safe-area-inset-bottom))}
+ header{padding:2px 0 8px;gap:8px;min-height:32px;align-items:center}
+ .mark{font-size:.7rem;letter-spacing:.065em;overflow-wrap:anywhere}
+ .edition{font-size:.63rem;letter-spacing:.03em;white-space:nowrap}
+ .intro{margin:10px 0 7px}
+ .intro h1{margin:0;font-size:1.28rem;line-height:1.2;letter-spacing:-.02em}
+ .intro .kicker,.intro .sub,.intro .provenance,.wide-title{display:none}
+ .mobile-title,.mobile-sub{display:block}
+ .mobile-sub{font-size:.77rem;color:var(--muted);margin:2px 0 3px;line-height:1.3}
+ .quick-room-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:7px;margin:8px -3px 9px;padding:7px 4px;background:rgba(8,20,32,.98);border:1px solid #466474;border-radius:13px;box-shadow:0 7px 22px #02050b99;backdrop-filter:blur(8px);min-width:0}
+ .quick-room-bar button{flex:0 0 auto;min-width:44px;height:46px;border-radius:9px;border:1px solid #526c7a;color:#f2f8fc;background:#163749;font-size:1rem;font-weight:800;padding:5px 8px}
+ #quickControls{font-size:.76rem;min-width:72px}
+ #quickControls[aria-expanded="true"]{border-color:var(--cyan);background:#20535a}
+ .quick-room-label{flex:1;min-width:0}
+ #quickRoom{background:#112a39;border:1px solid #637f91;color:#fff;min-width:0;width:100%;height:46px;font-size:.87rem;font-weight:760;padding:8px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .griproute-dock{display:none;margin:0 0 12px;padding:8px;border-radius:12px}
+ .griproute-dock.ui-open{display:block}
+ .griproute-toolbar strong{font-size:.74rem}
+ .griproute-toolbar button{min-width:44px;min-height:44px}
+ #routeTrack button{min-height:48px;flex-basis:clamp(130px,42vw,190px)}
+ .evidence-lenses{padding:5px 0 3px}
+ .evidence-lenses button{min-height:44px;font-size:.73rem}
+ .evidence-lens-readout{max-height:none;font-size:.78rem;overflow:visible;line-height:1.42}
+ .native-seat-state{font-size:.74rem}
+ .griproute-band{min-height:48px}
+ .griproute-mode select{height:44px;min-width:110px;width:110px;max-width:150px;font-size:.77rem}
+ .grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .card{padding:13px 12px;border-radius:14px}
+ .card h2{font-size:1.26rem;line-height:1.24}
+ .card h3{font-size:1rem}
+ .card p{line-height:1.47}
+ .kicker{font-size:.7rem;letter-spacing:.08em}
+ .field label,.field>span{font-size:.85rem}
+ input[type=file],input[type=text],input[type=number],select,textarea{min-height:46px;font-size:16px}
+ input[type=file]{font-size:.9rem}
+ .fields{grid-template-columns:minmax(0,1fr);gap:9px}
+ button.action{min-height:46px;padding:9px 13px;font-size:.88rem}
+ .actions{gap:8px}
+ .actions>*{flex:1 1 138px}
+ .check{min-height:44px;font-size:.88rem}
+ .check input{width:22px;height:22px;flex:0 0 22px}
+ .tool-help{margin:8px 0 12px}
+ .tool-help summary{padding:10px 7px;min-height:44px;background:#122e3c;border:1px solid #396171;border-radius:8px;font-size:.82rem}
+ .tool-help p{font-size:.88rem}
+ .foot{padding:12px 0;display:block;border-top:1px solid #345365;font-size:.7rem}
+ .foot span{display:block!important;margin:4px 0}
+ .subforge iframe{height:min(620px,72svh)}
+ .grip-metrics select{min-height:44px}
+ .grip-metrics label{font-size:.87rem;min-height:48px}
+ .meter{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .meter>div{min-width:0;overflow-wrap:anywhere}
+}
+@media(max-width:365px){
+ .shell{padding-left:9px;padding-right:9px}
+ .edition{font-size:.55rem}
+ #quickControls{min-width:65px;font-size:.69rem}
+ .quick-room-bar{gap:5px}
+ #quickRoom{font-size:.8rem;padding:8px 5px}
+}
+@media(min-width:761px) and (max-width:1080px){
+ .grid{grid-template-columns:1fr}
+ .shell{padding-left:18px;padding-right:18px}
+ .intro h1{font-size:1.65rem}
+}
+/* Unfolded touch devices keep a single compact room selector, but retain wide two-column tools. */
+@media (pointer:coarse) and (min-width:761px){
+ .intro{margin:9px 0}
+ .intro .sub,.intro .kicker,.intro .provenance{display:none}
+ .intro h1{font-size:1.5rem;line-height:1.17}
+ .card{font-size:1rem}
+ .card .kicker{font-size:.76rem}
+ .card h2{font-size:1.38rem}
+ .card .field label,.card .field>span{font-size:.88rem}
+ .card button.action{min-height:48px;font-size:.91rem}
+ .card .mini,.card .muted,.card .note{font-size:.87rem}
+ .quick-room-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;margin:8px 0 11px;padding:6px 8px;background:rgba(8,20,32,.97);border:1px solid #466474;border-radius:13px;box-shadow:0 7px 22px #02050b99;max-width:100%}
+ .quick-room-bar button{flex:0 0 auto;min-width:48px;min-height:48px;border:1px solid #526c7a;border-radius:10px;color:#f2f8fc;background:#163749;font-size:1rem;padding:8px 13px}
+ .quick-room-label{flex:1;min-width:0}
+ #quickRoom{background:#112a39;border:1px solid #637f91;color:#fff;width:100%;height:48px;font-size:1rem;font-weight:760}
+ .griproute-dock{display:none}
+ .griproute-dock.ui-open{display:block}
+ .grid{grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr)}
+ .tool-help summary{padding:10px 6px;min-height:44px}
+}
+@media(max-width:760px){
+ .actions > label.field{flex:0 0 100%!important;width:100%;max-width:100%;min-width:0!important}
+ .actions > label.field input[type=file]{width:100%;min-width:0}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 </style>
 </head>
 <body><main class="shell">
-<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v0.9 · RECOVERABLE CONTACT</div></header>
-<div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1>Six ways forward.<br>One governed field.</h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v1.0 · DEVICE FIT</div></header>
+<div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1><span class="wide-title">Six ways forward.<br>One governed field.</span><span class="mobile-title">Six Rails · Working Field</span></h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p><p class="mobile-sub">Six capabilities · Local-first · Evidence retained</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
+<div id="quickRoomBar" class="quick-room-bar" role="group" aria-label="Capability room controls">
+ <button type="button" id="quickPrev" aria-label="Previous room">←</button>
+ <label for="quickRoom" class="quick-room-label"><span class="sr-only">Current capability room</span><select id="quickRoom" aria-label="Choose capability room">
+  <option value="mesh">01 · Form / Image → mesh</option><option value="compare">02 · Proof / Visual</option><option value="release">03 · Build / Release</option><option value="audio">04 · Rhythm / Audio</option><option value="estate">05 · Mesh / Estate</option><option value="testers">06 · People / Playtests</option>
+ </select></label>
+ <button type="button" id="quickNext" aria-label="Next room">→</button>
+ <button type="button" id="quickControls" aria-controls="griprouteDock" aria-expanded="false">Controls</button>
+</div>
 <section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
 <div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
 <div class="eco-gripcube" id="jmGripRailNativeSeat">
-<nav aria-label="Capability rails" id="routeTrack" class="gc-grid">
-<button type="button" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
-<button type="button" data-rail="compare" aria-selected="false"><span class="num">02 / PROOF</span><span class="rail-name">Visual compare</span></button>
-<button type="button" data-rail="release" aria-selected="false"><span class="num">03 / BUILD</span><span class="rail-name">Release gate</span></button>
-<button type="button" data-rail="audio" aria-selected="false"><span class="num">04 / RHYTHM</span><span class="rail-name">Audio timing</span></button>
-<button type="button" data-rail="estate" aria-selected="false"><span class="num">05 / MESH</span><span class="rail-name">Estate routes</span></button>
-<button type="button" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
+<nav aria-label="Capability rails" role="tablist" id="routeTrack" class="gc-grid">
+<button type="button" id="tab-mesh" role="tab" aria-controls="rail-mesh" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
+<button type="button" id="tab-compare" role="tab" aria-controls="rail-compare" data-rail="compare" aria-selected="false"><span class="num">02 / PROOF</span><span class="rail-name">Visual compare</span></button>
+<button type="button" id="tab-release" role="tab" aria-controls="rail-release" data-rail="release" aria-selected="false"><span class="num">03 / BUILD</span><span class="rail-name">Release gate</span></button>
+<button type="button" id="tab-audio" role="tab" aria-controls="rail-audio" data-rail="audio" aria-selected="false"><span class="num">04 / RHYTHM</span><span class="rail-name">Audio timing</span></button>
+<button type="button" id="tab-estate" role="tab" aria-controls="rail-estate" data-rail="estate" aria-selected="false"><span class="num">05 / MESH</span><span class="rail-name">Estate routes</span></button>
+<button type="button" id="tab-testers" role="tab" aria-controls="rail-testers" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
 </nav>
 </div>
 <section class="gripcube-evidence" aria-label="GripCube evidence lenses — live six-body projections" id="gripcubeEvidence">
@@ -97,16 +219,16 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <div class="griproute-thumb" id="routeThumb"><span id="routeCurrent">01 · FORM</span><output id="routeState" aria-live="polite">FLOW · TAP / DRAG / SWIPE / RELEASE</output></div>
 <div class="griproute-mode"><label for="routeMode">Route stance</label><select id="routeMode"><option value="flow">FLOW · drag / swipe</option><option value="flick">FLICK · velocity</option><option value="manual">MANUAL · keys / taps</option><option value="anchor">ANCHOR · hold here</option><option value="table">TABLE · pointer / keys</option></select></div>
 </div></section>
-<section id="rail-mesh" class="rail grid">
-<div class="card"><div class="kicker">01 · Form Forge / GameCore — live geometry recipient adapter</div><h2>Image to geometric source</h2><p class="muted">Import any image and turn its luminance into a real polygonal relief OBJ. It is height-field geometry, not a textured 3D character. Push the exact generated vertices into the proven JM Form Contact software renderer below; no protected private Forge source is substituted.</p><div class="field"><label for="assetImage">Source image</label><input type="file" id="assetImage" accept="image/*"></div><div class="fields"><div class="field"><label for="assetRelief">Relief height <output id="reliefLabel">1.0</output></label><input id="assetRelief" type="range" min="0" max="3" step="0.1" value="1"></div><div class="field"><label for="assetGrid">Grid detail</label><select id="assetGrid"><option value="16">16 × 16</option><option value="28" selected>28 × 28</option><option value="48">48 × 48</option></select></div></div><div class="actions"><button class="action" id="makeMesh" disabled>Build real OBJ</button><button class="action alt" id="saveMesh" disabled>Export OBJ</button><button class="action alt" id="exportPacket" disabled>Export JM packet</button><button class="action alt" id="exportGLB" disabled>Export real glTF GLB</button><label class="field" style="flex:1;min-width:160px">Reimport verified packet<input type="file" id="importPacket" accept=".json,application/json" aria-label="Reimport exported geometry packet"></label><button class="action" id="sendForge" disabled>Play in JM Form Contact</button><button class="action" id="captureForgeBefore">Capture Forge before</button><button class="action alt" id="captureForgeAfter">Capture Forge after</button></div><div class="status" id="meshStatus" role="status">Waiting for image contact.</div><div class="readout" id="glbReadout">GLB interchange not yet tested.</div><canvas id="meshCanvas" width="700" height="420" aria-label="Relief geometry preview"></canvas><div class="subforge"><div class="kicker">Native recipient · existing JM Field/Form Forge × GameCore contact renderer</div><p class="muted">An unchanged copy of the previously recovered public Forge Contact v0.1 renderer runs below. The contact adapter passes local relief vertices into its existing surface renderer and touch-scoring logic; private v0.24 provenance is NOT claimed. Drag/orbit, tap distinct triangles or use keys.</p><iframe id="forgeRecipient" title="JM Field Form Forge native software contact recipient" loading="eager" referrerpolicy="no-referrer"></iframe><p class="status" id="forgeStatus" role="status">Recipient not yet contacted.</p></div></div>
+<section id="rail-mesh" role="tabpanel" aria-labelledby="tab-mesh" class="rail grid">
+<div class="card"><div class="kicker">01 · Form Forge / GameCore — live geometry recipient adapter</div><h2>Image to geometric source</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Import any image and turn its luminance into a real polygonal relief OBJ. It is height-field geometry, not a textured 3D character. Push the exact generated vertices into the proven JM Form Contact software renderer below; no protected private Forge source is substituted.</p></details><div class="field"><label for="assetImage">Source image</label><input type="file" id="assetImage" accept="image/*"></div><div class="fields"><div class="field"><label for="assetRelief">Relief height <output id="reliefLabel">1.0</output></label><input id="assetRelief" type="range" min="0" max="3" step="0.1" value="1"></div><div class="field"><label for="assetGrid">Grid detail</label><select id="assetGrid"><option value="16">16 × 16</option><option value="28" selected>28 × 28</option><option value="48">48 × 48</option></select></div></div><div class="actions"><button class="action" id="makeMesh" disabled>Build real OBJ</button><button class="action alt" id="saveMesh" disabled>Export OBJ</button><button class="action alt" id="exportPacket" disabled>Export JM packet</button><button class="action alt" id="exportGLB" disabled>Export real glTF GLB</button><label class="field" style="flex:1;min-width:160px">Reimport verified packet<input type="file" id="importPacket" accept=".json,application/json" aria-label="Reimport exported geometry packet"></label><button class="action" id="sendForge" disabled>Play in JM Form Contact</button><button class="action" id="captureForgeBefore">Capture Forge before</button><button class="action alt" id="captureForgeAfter">Capture Forge after</button></div><div class="status" id="meshStatus" role="status">Waiting for image contact.</div><div class="readout" id="glbReadout">GLB interchange not yet tested.</div><canvas id="meshCanvas" role="img" aria-label="Relief geometry preview" width="700" height="420" aria-label="Relief geometry preview"></canvas><div class="subforge"><div class="kicker">Native recipient · existing JM Field/Form Forge × GameCore contact renderer</div><p class="muted">An unchanged copy of the previously recovered public Forge Contact v0.1 renderer runs below. The contact adapter passes local relief vertices into its existing surface renderer and touch-scoring logic; private v0.24 provenance is NOT claimed. Drag/orbit, tap distinct triangles or use keys.</p><iframe id="forgeRecipient" title="JM Field Form Forge native software contact recipient" loading="eager" referrerpolicy="no-referrer"></iframe><p class="status" id="forgeStatus" role="status">Recipient not yet contacted.</p></div></div>
 <aside class="card"><h3>What this actually adds</h3><div class="pills"><span>PNG / JPG intake</span><span>Editable source geometry</span><span>OBJ export</span><span>glTF 2 GLB export</span><span>Native 3D recipient</span><span>Geometry packet interchange</span><span>No cloud dependency</span></div><div class="note">Relief geometry becomes actual clickable 3D faces in the existing JM Form Contact renderer. This is **adapter/runtime contact**, not proof of BuildCAD native source ingestion, private Forge GLB validity, or Android-owner approval.</div><div class="readout" id="meshReadout">No geometry generated.</div><a href="../../../visual-systems-lab/" target="_blank" rel="noopener">Open existing Visual Systems Lab ↗</a></aside>
 </section>
-<section id="rail-compare" class="rail grid" hidden>
-<div class="card"><div class="kicker">02 · Owner-device graphics contact / visual regression</div><h2>Before and after, pixel by pixel</h2><p class="muted">Load two screenshots. Preserve their dimensions, measure the actual pixel differences, and export a bounded comparison receipt. Different-sized images are HOLD, never silently rescaled. Use the two **Capture Forge** buttons in the FORM rail while its 3D renderer is visible, then return here to compare those frames—or load your own screenshots.</p><div class="fields"><div class="field"><label for="imageBefore">Before image</label><input type="file" id="imageBefore" accept="image/*"></div><div class="field"><label for="imageAfter">After image</label><input type="file" id="imageAfter" accept="image/*"></div></div><div class="fields"><div class="field"><label for="pixelSensitivity">Threshold <output id="thresholdLabel">32</output>/255</label><input type="range" id="pixelSensitivity" min="1" max="120" value="32"></div><div class="field"><span>Pixel gate</span><div class="mini">Channel difference greater than threshold marks a changed pixel.</div></div></div><div class="actions"><button class="action" id="runDiff">Compare screenshots</button><button class="action alt" id="exportDiff" disabled>Export receipt</button></div><div class="status" id="diffStatus" role="status">Waiting for two screenshots.</div><canvas id="diffCanvas" width="700" height="420" aria-label="Visual difference result"></canvas></div>
+<section id="rail-compare" role="tabpanel" aria-labelledby="tab-compare" class="rail grid" hidden>
+<div class="card"><div class="kicker">02 · Owner-device graphics contact / visual regression</div><h2>Before and after, pixel by pixel</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Load two screenshots. Preserve their dimensions, measure the actual pixel differences, and export a bounded comparison receipt. Different-sized images are HOLD, never silently rescaled. Use the two **Capture Forge** buttons in the FORM rail while its 3D renderer is visible, then return here to compare those frames—or load your own screenshots.</p></details><div class="fields"><div class="field"><label for="imageBefore">Before image</label><input type="file" id="imageBefore" accept="image/*"></div><div class="field"><label for="imageAfter">After image</label><input type="file" id="imageAfter" accept="image/*"></div></div><div class="fields"><div class="field"><label for="pixelSensitivity">Threshold <output id="thresholdLabel">32</output>/255</label><input type="range" id="pixelSensitivity" min="1" max="120" value="32"></div><div class="field"><span>Pixel gate</span><div class="mini">Channel difference greater than threshold marks a changed pixel.</div></div></div><div class="actions"><button class="action" id="runDiff">Compare screenshots</button><button class="action alt" id="exportDiff" disabled>Export receipt</button></div><div class="status" id="diffStatus" role="status">Waiting for two screenshots.</div><canvas id="diffCanvas" role="img" aria-label="Image difference preview" width="700" height="420" aria-label="Visual difference result"></canvas></div>
 <aside class="card"><h3>Difference report</h3><div id="diffReadout" class="readout">No pixel comparison performed.</div><p class="mini">A visual change is not automatically a regression; controls, function and user approval still require their own checks.</p><a href="../../../visual-systems-lab/" target="_blank" rel="noopener">Current visual comparison donor ↗</a></aside>
 </section>
-<section id="rail-release" class="rail grid" hidden>
-<div class="card"><div class="kicker">03 · Native source / guarded release evidence</div><h2>Release preflight, not fake deployment</h2><p class="muted">Identify a specific local artifact, calculate a real SHA-256 digest and record separately what you have actually tested. This page never publishes, merges or declares device proof on your behalf.</p><div class="field"><label for="releaseFile">Choose a build artifact to inspect</label><input type="file" id="releaseFile"></div><div class="fields"><div class="field"><label for="releaseGame">Body name</label><input type="text" id="releaseGame" placeholder="Existing game or tool"></div><div class="field"><label for="releaseVersion">Version / descendant</label><input type="text" id="releaseVersion" placeholder="e.g. v0.8 candidate"></div></div><div class="actions"><button class="action" id="hashRelease">Inspect artifact</button></div><div class="readout" id="hashReadout">No artifact inspected.</div><hr class="sep"><h3>Proof gate — mark only witnessed checks</h3><label class="check"><input type="checkbox" class="releaseCheck" value="source_identity">Source identity and ancestor confirmed</label><label class="check"><input type="checkbox" class="releaseCheck" value="syntax">Static/syntax validation actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="runtime">Runtime contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="device">Owner-device contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="recovery">Recovery/custody actually verified</label><div class="actions"><button class="action alt" id="exportRelease" disabled>Export preflight JSON</button><button class="action alt" id="inspectLoop">Inspect six-rail evidence</button><button class="action" id="exportDossier">Export bounded six-rail dossier</button></div><div class="status" id="releaseStatus" role="status">HOLD · No artifact inspected.</div><div class="loop-card"><h3>Joined evidence · not automatic promotion</h3><label class="check"><input type="checkbox" id="allowTestNotes">Include private playtest notes in dossier (off by default)</label><pre class="receipt" id="loopPreview">Inspect to show the current evidence boundary.</pre></div></div>
+<section id="rail-release" role="tabpanel" aria-labelledby="tab-release" class="rail grid" hidden>
+<div class="card"><div class="kicker">03 · Native source / guarded release evidence</div><h2>Release preflight, not fake deployment</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Identify a specific local artifact, calculate a real SHA-256 digest and record separately what you have actually tested. This page never publishes, merges or declares device proof on your behalf.</p></details><div class="field"><label for="releaseFile">Choose a build artifact to inspect</label><input type="file" id="releaseFile"></div><div class="fields"><div class="field"><label for="releaseGame">Body name</label><input type="text" id="releaseGame" placeholder="Existing game or tool"></div><div class="field"><label for="releaseVersion">Version / descendant</label><input type="text" id="releaseVersion" placeholder="e.g. v0.8 candidate"></div></div><div class="actions"><button class="action" id="hashRelease">Inspect artifact</button></div><div class="readout" id="hashReadout">No artifact inspected.</div><hr class="sep"><h3>Proof gate — mark only witnessed checks</h3><label class="check"><input type="checkbox" class="releaseCheck" value="source_identity">Source identity and ancestor confirmed</label><label class="check"><input type="checkbox" class="releaseCheck" value="syntax">Static/syntax validation actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="runtime">Runtime contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="device">Owner-device contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="recovery">Recovery/custody actually verified</label><div class="actions"><button class="action alt" id="exportRelease" disabled>Export preflight JSON</button><button class="action alt" id="inspectLoop">Inspect six-rail evidence</button><button class="action" id="exportDossier">Export bounded six-rail dossier</button></div><div class="status" id="releaseStatus" role="status">HOLD · No artifact inspected.</div><div class="loop-card"><h3>Joined evidence · not automatic promotion</h3><label class="check"><input type="checkbox" id="allowTestNotes">Include private playtest notes in dossier (off by default)</label><pre class="receipt" id="loopPreview">Inspect to show the current evidence boundary.</pre></div></div>
 <aside class="card"><h3>Governed promotion</h3><div class="pills"><span>Exact source hash</span><span>Evidence-separated</span><span>Owner authority</span><span>Release HOLD by default</span></div><div class="note">PREPARED ≠ DEPLOYED. A self-marked check is only a statement, not independently proven backend/device evidence. No auto-publish or branch mutation.</div><a href="../../../games-beyond/" target="_blank" rel="noopener">Existing Games &amp; Beyond route ↗</a></aside>
 <div class="card recovery-panel" id="continuityPanel">
 <div class="kicker">JM RouteVault / cross-device recovery · bounded source packet</div>
@@ -118,20 +240,20 @@ header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.in
 <pre id="continuityPreview" class="receipt" aria-label="Verified handoff audit">No handoff inspected.</pre>
 </div>
 </section>
-<section id="rail-audio" class="rail grid" hidden>
-<div class="card"><div class="kicker">04 · BeatBody / SHIMS / music motion bridge</div><h2>Audio timing into movement cues</h2><p class="muted">Open a local sound file to see its waveform, then tap the beat or enter a BPM. Export a portable beat-grid JSON usable by your own movement and animation bodies.</p><div class="field"><label for="audioSource">Local audio file</label><input type="file" id="audioSource" accept="audio/*"></div><audio id="audioPlayer" controls style="width:100%;margin-top:13px"></audio><canvas id="waveCanvas" width="700" height="180" style="margin-top:12px" aria-label="Audio waveform"></canvas><div class="fields"><div class="field"><label for="tempo">Tempo (BPM)</label><input type="number" id="tempo" value="120" min="30" max="300"></div><div class="field"><label for="barCount">Bars (4 beats each)</label><input type="number" id="barCount" value="8" min="1" max="128"></div></div><div class="actions"><button class="action" id="tapTempo">Tap beat</button><button class="action alt" id="exportBeat">Export beat-grid JSON</button><button class="action" id="driveForge">Drive JM Forge pulse</button><button class="action alt" id="stopForgePulse" disabled>Stop / restore</button></div><div class="readout" id="tapReadout">120 BPM · 500ms between beats</div><div class="status" id="audioStatus" role="status">BPM is user-entered until measured by taps. No automatic beat detection claim.</div><div class="readout" id="motionReadout">No game motion driven. Load geometry into Rail 01 first.</div></div>
+<section id="rail-audio" role="tabpanel" aria-labelledby="tab-audio" class="rail grid" hidden>
+<div class="card"><div class="kicker">04 · BeatBody / SHIMS / music motion bridge</div><h2>Audio timing into movement cues</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Open a local sound file to see its waveform, then tap the beat or enter a BPM. Export a portable beat-grid JSON usable by your own movement and animation bodies.</p></details><div class="field"><label for="audioSource">Local audio file</label><input type="file" id="audioSource" accept="audio/*"></div><audio id="audioPlayer" controls style="width:100%;margin-top:13px"></audio><canvas id="waveCanvas" width="700" height="180" style="margin-top:12px" aria-label="Audio waveform"></canvas><div class="fields"><div class="field"><label for="tempo">Tempo (BPM)</label><input type="number" id="tempo" value="120" min="30" max="300"></div><div class="field"><label for="barCount">Bars (4 beats each)</label><input type="number" id="barCount" value="8" min="1" max="128"></div></div><div class="actions"><button class="action" id="tapTempo">Tap beat</button><button class="action alt" id="exportBeat">Export beat-grid JSON</button><button class="action" id="driveForge">Drive JM Forge pulse</button><button class="action alt" id="stopForgePulse" disabled>Stop / restore</button></div><div class="readout" id="tapReadout">120 BPM · 500ms between beats</div><div class="status" id="audioStatus" role="status">BPM is user-entered until measured by taps. No automatic beat detection claim.</div><div class="readout" id="motionReadout">No game motion driven. Load geometry into Rail 01 first.</div></div>
 <aside class="card"><h3>Actual interchange</h3><div class="pills"><span>Local waveform</span><span>Tap tempo</span><span>4/4 beat grid</span><span>Portable JSON</span></div><div class="note">No music is uploaded from this page. It does not claim to understand lyrics or infer exact musical beats from the waveform. BeatBody, LyricStudio and JM Release Run remain separate authorities.</div><a href="../../../beatbody/" target="_blank" rel="noopener">BeatBody existing route ↗</a></aside>
 </section>
-<section id="rail-estate" class="rail grid" hidden>
-<div class="card"><div class="kicker">05 · Estate registry / no new control plane</div><h2>Look up the routes that already exist</h2><p class="muted">Read the public-safe Estate integration status and existing game/visual registries. Filter results by name and route an existing public identity into the release/test fields. A route is evidence of discoverability, not runtime proof or permission to write.</p><div class="actions"><button class="action" id="loadEstate">Read public registries</button></div><div class="field" style="margin-top:12px"><label for="estateQuery">Filter by body or capability</label><input id="estateQuery" type="text" placeholder="e.g. GlyphPlay, forge, contact"></div><div class="status" id="estateStatus" role="status">Ready to contact existing public sources.</div><div id="estateResults" aria-live="polite"></div></div>
+<section id="rail-estate" role="tabpanel" aria-labelledby="tab-estate" class="rail grid" hidden>
+<div class="card"><div class="kicker">05 · Estate registry / no new control plane</div><h2>Look up the routes that already exist</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Read the public-safe Estate integration status and existing game/visual registries. Filter results by name and route an existing public identity into the release/test fields. A route is evidence of discoverability, not runtime proof or permission to write.</p></details><div class="actions"><button class="action" id="loadEstate">Read public registries</button></div><div class="field" style="margin-top:12px"><label for="estateQuery">Filter by body or capability</label><input id="estateQuery" type="text" placeholder="e.g. GlyphPlay, forge, contact"></div><div class="status" id="estateStatus" role="status">Ready to contact existing public sources.</div><div id="estateResults" aria-live="polite"></div></div>
 <aside class="card"><h3>Authority stays outside this viewer</h3><div class="pills"><span>Read only</span><span>No private source</span><span>No mutation</span><span>Current registry timestamps matter</span></div><div class="note">The private JM Build Mesh plugin remains the authority-reconciliation tool inside ChatGPT. Public sources may lag current owner authority.</div><div class="record"><a href="https://jmisjustme-estate.pages.dev/" target="_blank" rel="noopener">Canonical Estate public door ↗</a></div><div class="record"><a href="https://github.com/JMisJustMe/JM-cading-lab" target="_blank" rel="noopener">Existing GitHub source corridor ↗</a></div><div class="record"><a href="../../navigator/" target="_blank" rel="noopener">Navigator public route ↗</a></div></aside>
 </section>
-<section id="rail-testers" class="rail grid" hidden>
+<section id="rail-testers" role="tabpanel" aria-labelledby="tab-testers" class="rail grid" hidden>
 
 <div class="card grippanel" id="gripTwinPanel">
  <div class="kicker">JM FTR · GripRoute Twin Body · original May proof-of-feel method</div>
  <h2>Bare phone ↔ Shell ↔ U</h2>
- <p class="muted">This is the physical GripRoute family: Shell suits the phone; U bridges the phone. Test each with a real mockup, in the same portrait game. The browser cannot manufacture comfort, safety, fatigue or physical source proof.</p>
+ <details class="tool-help" open><summary>About this tool</summary><p class="muted">This is the physical GripRoute family: Shell suits the phone; U bridges the phone. Test each with a real mockup, in the same portrait game. The browser cannot manufacture comfort, safety, fatigue or physical source proof.</p></details>
  <div class="fields">
   <div class="field"><label for="gripVariant">Actual body held</label><select id="gripVariant"><option value="bare">BARE PHONE · baseline</option><option value="shell">GRIPROUTE SHELL · fuller support</option><option value="u">GRIPROUTE U · lighter bottom bridge</option></select></div>
   <div class="field"><label for="gripGame">Exact game / build tested</label><input id="gripGame" placeholder="e.g. COMBOUND v1.4" autocomplete="off"></div>
@@ -732,5 +854,38 @@ for(const b of document.querySelectorAll('[data-evidence-lens]'))b.addEventListe
 });
 window.JMGripCubeEvidence=Object.freeze({lens:projectGripCubeLens,proof:()=>({schema:'JM.SixRails.GripCubeEvidence/0.9',current:cubeCurrent,contacts:cubeLensTrace.length,actual_gripcube_v5_source_loaded:false,semantic_routes:6,history:cubeLensTrace.slice(-10)})});
 
+
+// v1.0 · single source of truth: mobile controls dispatch into the existing GripRoute route machine.
+const quickRoomBar=$('quickRoomBar'),quickRoom=$('quickRoom'),quickControls=$('quickControls');
+const mobileLayout=matchMedia('(max-width: 760px), (pointer: coarse)');
+let quickWasOpened=false;
+function applyDeviceFit(){
+ const mobile=mobileLayout.matches;
+ if(!mobile){$('griprouteDock').classList.remove('ui-open');quickControls.setAttribute('aria-expanded','false');}
+ else if(!quickWasOpened){$('griprouteDock').classList.remove('ui-open');quickControls.setAttribute('aria-expanded','false');}
+ quickRoom.value=routeIDs[routeControl.index];
+ for(const p of document.querySelectorAll('.tool-help'))p.open=!mobile;
+}
+$('quickPrev').addEventListener('click',()=>$('routePrev').click());
+$('quickNext').addEventListener('click',()=>$('routeNext').click());
+quickRoom.addEventListener('change',e=>{const id=e.target.value,at=routeIDs.indexOf(id);if(at<0)return;routeCommit(at,'DEVICE_FIT_DIRECT_SELECT');const panel=document.querySelector('.rail:not([hidden])');if(panel&&mobileLayout.matches)panel.scrollIntoView({block:'start',behavior:'instant'});});
+quickControls.addEventListener('click',()=>{
+ const dock=$('griprouteDock'),open=!dock.classList.contains('ui-open');
+ dock.classList.toggle('ui-open',open);quickControls.setAttribute('aria-expanded',String(open));quickWasOpened=open;
+ if(open){$('routeTrack').querySelector('[aria-selected="true"]')?.scrollIntoView({block:'nearest',inline:'center',behavior:'instant'});}
+});
+// Reflect changes from ALL existing routes: tab tap, thumb swipe, keyboard and programmatic.
+const deviceFitObserver=new MutationObserver(()=>{const sel=$('routeTrack').querySelector('[aria-selected="true"]');if(sel&&quickRoom.value!==sel.dataset.rail)quickRoom.value=sel.dataset.rail;});
+deviceFitObserver.observe($('routeTrack'),{subtree:true,attributes:true,attributeFilter:['aria-selected']});
+$('routeTrack').addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
+ e.preventDefault();
+ const idx=e.key==='Home'?0:e.key==='End'?routeIDs.length-1:Math.max(0,Math.min(routeIDs.length-1,routeControl.index+(e.key==='ArrowRight'?1:-1)));
+ routeCommit(idx,'ACCESSIBLE_TAB_KEYBOARD');$('routeTrack').querySelector(`[data-rail="${routeIDs[idx]}"]`)?.focus({preventScroll:true});
+});
+if(mobileLayout.addEventListener)mobileLayout.addEventListener('change',()=>{quickWasOpened=false;applyDeviceFit()});
+else mobileLayout.addListener(()=>{quickWasOpened=false;applyDeviceFit()});
+applyDeviceFit();
+window.JMSixRailsDeviceFit=Object.freeze({proof:()=>({schema:'JM.SixRails.DeviceFit/1.0',mobile:mobileLayout.matches,quickRoom:quickRoom.value,toolDocumentScroll:true,controlsExpanded:quickControls.getAttribute('aria-expanded')==='true',physical_fold_pass:false,owner_accessibility_approval:false})});
 </script>
 </body></html>

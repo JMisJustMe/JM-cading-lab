@@ -1,4 +1,4 @@
-name: JM Fold Ultra v0.2 Complete Prelaunch Build
+name: JM Fold Ultra v0.3 Complete Prelaunch Build
 on:
   pull_request:
     paths:
@@ -37,13 +37,13 @@ jobs:
           R=agent-runtime/host-adapters/android/fold-ultra-autosetup
           APK="$R/app/build/outputs/apk/debug/app-debug.apk"
           mkdir -p /tmp/jm-fold-prelaunch
-          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_2_DEBUG.apk
+          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_GALAXY_INHERITANCE_v0_3_DEBUG.apk
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-fold-prelaunch/BADGING.txt
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-fold-prelaunch/SIGNATURE.txt
           unzip -t "$APK" > /tmp/jm-fold-prelaunch/ZIP_INTEGRITY.txt
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-fold-prelaunch/PERMISSIONS.txt
           grep -Fq "package: name='com.jmisjustme.foldultra'" /tmp/jm-fold-prelaunch/BADGING.txt
-          grep -Fq "versionName='0.2.0'" /tmp/jm-fold-prelaunch/BADGING.txt
+          grep -Fq "versionName='0.3.0'" /tmp/jm-fold-prelaunch/BADGING.txt
           if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-fold-prelaunch/PERMISSIONS.txt; then
             echo 'UNEXPECTED PERMISSION: HOLD'
             exit 1
@@ -52,7 +52,7 @@ jobs:
           printf 'APK compilation + signing + permissions PASS. Physical Fold UI/device DING OPEN.\n' > /tmp/jm-fold-prelaunch/RECEIPT.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_2_CARRIER
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_3_CARRIER
           path: /tmp/jm-fold-prelaunch/
           if-no-files-found: error
           retention-days: 14

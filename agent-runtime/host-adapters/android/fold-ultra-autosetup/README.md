@@ -1,30 +1,37 @@
-# JM FOLD ULTRA — COMPLETE INITIAL PRELAUNCH OPENING v0.2
+# JM FOLD ULTRA · COMPLETE PRELAUNCH v0.3 — GALAXY INHERITANCE
 
-**Scope:** owner-device initial prelaunch, not full phone provisioning. **Protected ancestor:** v0.1 Git history remains intact. **Lineage:** JM32-1DA, JM Phone↔Laptop Contact Runner, Android Developer Playground.
+**Descendant of:** v0.2 first-run prelaunch; v0.1 paired-root carrier remains in Git history. Reuse: JM32-1DA Android, JM Phone↔Laptop Contact Runner, and Samsung-native tooling. No ancestor overwritten; this source is on the existing draft PR.
 
-## Experience
+## Two jobs, one coherent opening
 
-- Five-stage, progress-persistent first run: **ARRIVAL → PRIORITY → PAIRED SCREENS → ROUTE CONTACT → OWNER ENTRY**.
-- Native custom JM link-field illustration; obsidian/signal-blue/route-violet identity; usable without any external assets.
-- Current Android width determines compact **SOURCE** vs expanded **WORKFIELD** visual profile. This is **not verified hinge sensing**. Width threshold is 500dp and may need owner-device adjustment.
-- Compact/expanded screens share preference data. A changed window size re-renders the current stage.
-- Three real selectable priorities (CREATE / PLAY / EVERYDAY), not dummy choices.
-- Upon entry: working ROOT, ROUTES, CONTROL, with app launches, public estate URLs, and shared locally saved root note.
-- SYSTEM OPERATIONS: one Android-approved shortcut pin request, Android settings intent, on-demand JSON export/import and re-entry to onboarding.
-- Import accepts previous v0.1 note-only JSON or v0.2 schema; validates type, selected focus, note length, progress limits and asks for approval before changing app-only values.
-- Previous v0.1 note locally migrated on first startup, preserving in-place upgraded note. Future installation over an existing debug APK requires matching signing key.
+1. **Explore native capabilities**: Samsung's Now Nudge, Now Brief, assistants, Photo Assist, document scanner, Multi Window and app pairs, DeX, Modes & Routines.
+2. **Integrate them by safe handoff**: a GALAXY tab in the JM companion, organised into ASSIST / CREATE / WORK, with owner-visible instructions and working app / Android Settings launch routes.
 
-## Safeguards
+The original five-stage sequence survives: ARRIVAL → FOCUS → PAIRED SCREENS → NATIVE/APP CONTACT → OWNER ENTRY. Its SOURCE and WORKFIELD layouts still use Android available-width classes, not a claimed hardware hinge reading.
 
-Zero Android permissions requested. No root, accessibility, device admin, browser WebView, launcher replacement, Oppo migration, silent app installs, folder moves or file scanning. App data only. Samsung home-page arrangement remains unchanged.
+The user can mark any native feature as **explored by me**. These are local owner assertions, not automatic feature detection, telemetry, proof of correct function, or evidence that a third-party Galaxy AI API is integrated. Each mark can be undone.
 
-## Proof gates
+## Native route mechanics
 
-1. GitHub Android compile **PENDING until CI says PASS**.
-2. APK package, version 0.2.0, signature, ZIP integrity, unexpected-permission check **PENDING**.
-3. Actual Fold device installation, UI, transition between widths, import/export, shortcut, third-party app launch **OWNER DING OPEN**.
-4. Runtime layout and accessibility not assumed verified by successful compilation.
+- Now Nudge, Now Brief, assistants, DeX, Multi Window and Modes & Routines: show exact/approximate UI route and open Android Settings; **not** privileged Samsung settings deep links or automated configuration.
+- Photo Assist: launch Samsung Gallery if visible and installed; user selects/edit images in Samsung's app.
+- Scanner: launch camera via standard Android still-image camera intent; user uses document scan affordance if Samsung displays it. JM does not create PDFs.
+- Two published JM site routes, repository, Samsung Notes, ChatGPT, files and phone routes remain available from ROOT and ROUTES.
+- All other app data and Samsung launcher pages untouched.
 
-## Suggested owner contact
+## Continuity and recovery
 
-Only when owner approves install: first screen, five stages, choose each priority, unfold/refold and verify same stage, enter control room, edit note, export, reopen, import, request a shortcut, check existing apps and record exact PASS/HOLD. Do not replace Samsung launcher or delete anything.
+The `jm.fold.ultra.prelaunch.v0.2` private preference namespace is maintained so upgrading v0.2 can preserve the owner's root note, selected priority and stage. On-demand schema `JM.FoldUltraSetup/0.3` JSON export includes owner marks and selected native group. Imports accept v0.3, v0.2 and v0.1 (note-only), with confirmation, size checks and restricted enum values. No blanket file access or network permission.
+
+## Known boundaries / open proof
+
+- Samsung One UI supported features vary by version, account, region and app; read Samsung's exact local menus before claiming a setting exists on owner device.
+- No secret Now Nudge feed or Galaxy AI data access. No automated split-screen, saved app-pair creation, DeX control, launcher manipulation, silent permissions or Oppo migration.
+- No INTERNET / Accessibility / Device Admin / storage permission. External sites launch through another browser app.
+- **CI compile + signature + permission proof pending** until the GitHub action runs for this exact commit.
+- **Owner-device DING open:** install, visible layout, all routes, interactions, privacy behavior, fold changes and export/import must be tested on the actual device.
+- Do not treat owner-marked exploration as measured test pass.
+
+**Samsung primary reference:** https://www.samsung.com/uk/smartphones/galaxy-z-fold8-ultra/
+**Multi Window/DeX reference:** https://news.samsung.com/uk/how-to-get-more-done-with-galaxy-z-fold8-ultra
+**Now Nudge help:** https://www.samsung.com/uk/support/mobile-devices/how-to-use-the-now-nudge-feature-on-the-samsung-galaxy-s26-series/

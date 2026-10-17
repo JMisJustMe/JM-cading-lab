@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.2";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.3";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204;
@@ -165,8 +165,13 @@ public final class MainActivity extends Activity {
         label(d,"Physically fold/unfold while this screen is open to check the adaptation.",13,WHITE,false);
         break;
       case 3:
-        title("REAL ROUTES","Check what is available.",
-          "Android confirms installed apps where visible; browser destinations are links, not duplicated files.");
+        title("GALAXY + JM","Discover, then connect.",
+          "Your Fold brings Now Nudge, Photo Assist, Multi Window and more. JM will route to them, not impersonate them.");
+        LinearLayout nativeInfo=card("NATIVE CAPABILITIES","Eight Samsung tools to explore",
+          "After entering JM, open the GALAXY tab to inspect features, launch supported apps and mark what you personally test.",PURPLE);
+        label(nativeInfo,"NOW NUDGE · NOW BRIEF · AI ASSISTANTS · PHOTO ASSIST",13,WHITE,true);
+        space(nativeInfo,7);
+        label(nativeInfo,"SCAN · MULTI WINDOW · DeX · MODES & ROUTINES",13,WHITE,true);
         LinearLayout c=card("LOCAL APPS","Owner-device route candidates","Unavailable routes remain HOLD.",BLUE);
         check(c,"My Files","com.sec.android.app.myfiles");
         check(c,"Samsung Notes","com.samsung.android.app.notes");
@@ -228,7 +233,7 @@ public final class MainActivity extends Activity {
       "One JM entrance; separate surface layouts; the same saved configuration.");
     hero(wide?142:110);space(page,16);
     LinearLayout tabs=new LinearLayout(this);tabs.setOrientation(0);page.addView(tabs);
-    String[] labels={"ROOT","ROUTES","CONTROL"};
+    String[] labels={"ROOT","GALAXY","ROUTES","CONTROL"};
     for(int i=0;i<labels.length;i++){
       final int value=i;Button b=new Button(this);b.setAllCaps(false);b.setText(labels[i]);
       b.setTextSize(12);b.setTextColor(i==tab?BG:WHITE);
@@ -238,7 +243,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)routes();else control();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else control();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -270,6 +275,104 @@ public final class MainActivity extends Activity {
     });
     btn(note,"Export JM configuration",false,()->file(true));
   }
+
+  static final String[] NATIVE_KEYS={
+    "now_nudge","now_brief","assistants","photo_assist",
+    "scanner","multi_window","dex","routines"
+  };
+  int nativeTriedCount(){
+    int n=0;for(String key:NATIVE_KEYS)if(sp.getBoolean("tried."+key,false))n++;
+    return n;
+  }
+  void nativeGroup(String group){
+    sp.edit().putString("native.group",group).apply();render();
+  }
+  void nativeHub(){
+    title("SAMSUNG NATIVE / JM INHERITANCE","Your Fold already has tools.",
+      "Try Samsung's features directly. JM saves only which ones you choose to mark as explored.");
+    LinearLayout summary=card("NATIVE CONTACT",""+nativeTriedCount()+" / 8 owner-marked",
+      "Marks reflect your own exploration, not automatic verification, data access or integration.",TEAL);
+    label(summary,"No Galaxy AI permissions requested. No Samsung settings changed here.",13,MUTED,false);
+    space(page,6);
+    LinearLayout tabs=new LinearLayout(this);tabs.setOrientation(0);page.addView(tabs);
+    String[] groups={"ASSIST","CREATE","WORK"};
+    String selected=sp.getString("native.group","ASSIST");
+    for(String group:groups){
+      Button b=new Button(this);b.setAllCaps(false);b.setText(group);b.setTextSize(12);
+      b.setTextColor(group.equals(selected)?BG:WHITE);
+      b.setBackground(bg(group.equals(selected)?BLUE:PANEL,group.equals(selected)?0:0xff334a67,12));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(49),1);
+      p.setMargins(dp(3),0,dp(3),0);tabs.addView(b,p);
+      b.setOnClickListener(v->nativeGroup(group));
+    }
+    space(page,8);
+    if(selected.equals("ASSIST")){
+      capability("now_nudge","Now Nudge","SAMSUNG / CONTEXT",
+        "Suggestions from supported on-screen messages can lead to Calendar, Maps and split view.",
+        "Settings → Galaxy AI → Now Nudge. Requires Samsung account; supported apps and languages only.",
+        "settings");
+      capability("now_brief","Now Brief","SAMSUNG / DAILY",
+        "Briefings and cards for schedules, weather, reminders and selected interests.",
+        "Settings → Galaxy AI → Now brief (menu names vary). Review Content to include. Your home-screen widget is a separate entry.",
+        "settings");
+      capability("assistants","AI assistants","SAMSUNG / CHOICE",
+        "Bixby and other installed assistants serve different jobs. No single provider needs to own every task.",
+        "Choose your preferred assistant in Android's default-app settings, if supported. Third-party assistant capabilities and availability differ.",
+        "settings");
+    } else if(selected.equals("CREATE")){
+      capability("photo_assist","Photo Assist","GALAXY / VISUAL",
+        "Edit, remove or generate visual changes in Samsung Gallery, then compare results.",
+        "Open Gallery → select an image → Edit → Galaxy AI or Photo Assist (where available). Save or export results consciously.",
+        "gallery");
+      capability("scanner","Document scanner","GALAXY / CAPTURE",
+        "Digitise paper notes, sketches and receipts using Samsung Camera's document detection.",
+        "Open Camera and point at a document; use the scan prompt if shown. This shortcut launches Camera only; no scan is taken by JM.",
+        "camera");
+    } else {
+      capability("multi_window","Multi Window + App Pairs","GALAXY / MULTITASK",
+        "Two-way/three-way supported app layouts with resizable windows and saved app pairs.",
+        "Open Recents → tap supported app icon → Open in split screen view. Save an app pair using Samsung multi-window controls where offered.",
+        "settings");
+      capability("dex","Samsung DeX","GALAXY / DESKTOP",
+        "Desktop-like working environment when connected to supported external display and peripherals.",
+        "Open Quick settings → DeX, or search Settings for DeX. A display, keyboard or mouse may be needed.",
+        "settings");
+      capability("routines","Modes & Routines","GALAXY / AUTOMATION",
+        "Automate supported system actions using conditions and modes, without replacing One UI.",
+        "Settings → Modes and Routines. Create a safe, reversible rule and test it before treating it as working.",
+        "settings");
+    }
+    LinearLayout receipt=card("BOUNDARY","What's real right now",
+      "The launcher and settings remain Samsung-owned. Our handoffs and owner marks are real; private Galaxy AI APIs, Now Nudge events and DeX control are not claimed.",PURPLE);
+    btn(receipt,"Open Samsung Settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
+  }
+  void capability(String key,String name,String kind,String description,String pathway,String handoff){
+    boolean marked=sp.getBoolean("tried."+key,false);
+    LinearLayout card=card(kind,name,description,marked?TEAL:0xff40577a);
+    space(card,9);
+    label(card,"TRY ON YOUR FOLD",11,BLUE,true);
+    space(card,5);
+    label(card,pathway,14,WHITE,false);
+    space(card,8);
+    btn(card,handoff.equals("gallery")?"Open Samsung Gallery":handoff.equals("camera")?"Open Camera":"Open Android Settings",false,
+      ()->nativeHandoff(handoff));
+    btn(card,marked?"✓ Explored by me · Undo mark":"Mark explored (owner assertion)",false,()->{
+      sp.edit().putBoolean("tried."+key,!marked).apply();
+      render();
+    });
+  }
+  void nativeHandoff(String kind){
+    if(kind.equals("gallery")){
+      Intent intent=getPackageManager().getLaunchIntentForPackage("com.sec.android.gallery3d");
+      if(intent==null)Toast.makeText(this,"HOLD · Gallery app route not found",Toast.LENGTH_LONG).show();
+      else start(intent);
+    }else if(kind.equals("camera")){
+      start(new Intent("android.media.action.STILL_IMAGE_CAMERA"));
+    }else {
+      start(new Intent(Settings.ACTION_SETTINGS));
+    }
+  }
+
   void routes(){
     title("CONTACT ROUTES","Open existing bodies.","No hidden migration and no pretend connections.");
     LinearLayout local=card("ANDROID","Device apps","Installed apps open normally. Missing ones return HOLD.",BLUE);
@@ -292,6 +395,7 @@ public final class MainActivity extends Activity {
     btn(controls,"Request JM home shortcut",true,this::pin);
     btn(controls,"Export configuration JSON",false,()->file(true));
     btn(controls,"Import configuration JSON",false,()->file(false));
+    btn(controls,"Explore Galaxy built-ins",false,()->{tab=1;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -322,7 +426,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_2.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_3.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -336,6 +440,8 @@ public final class MainActivity extends Activity {
         j.put("schema",SCHEMA);j.put("root",sp.getString("root",""));
         j.put("focus",sp.getString("focus","CREATE"));
         j.put("ready",sp.getBoolean("ready",false));j.put("stage",sp.getInt("stage",0));
+        JSONObject marks=new JSONObject();for(String key:NATIVE_KEYS)marks.put(key,sp.getBoolean("tried."+key,false));
+        j.put("native_owner_marks",marks);j.put("native_group",sp.getString("native.group","ASSIST"));
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -352,7 +458,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -369,6 +475,12 @@ public final class MainActivity extends Activity {
           .setPositiveButton("Import",(d,w)->{
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
+            if(SCHEMA.equals(schema)) {
+              JSONObject marks=j.optJSONObject("native_owner_marks");
+              if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
+              String group=j.optString("native_group","ASSIST");
+              if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
+            }
             tab=0;render();
           }).show();
       }

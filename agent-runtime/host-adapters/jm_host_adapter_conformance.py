@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import hashlib
 import json
 import pathlib
 import subprocess
@@ -31,6 +32,7 @@ def main():
     ap.add_argument("--all",action="store_true")
     ap.add_argument("--adapter",action="append",default=[])
     ap.add_argument("--run-local",action="store_true")
+    ap.add_argument("--receipt-json",metavar="PATH",help="Write a machine-readable scoped PASS receipt only after successful validation.")
     args=ap.parse_args()
 
     contract=load(CONTRACT)
@@ -122,6 +124,35 @@ def main():
     if warnings:
         print("OPEN BOUNDARIES PRESERVED:")
         for w in warnings: print("- "+w)
+
+    if args.receipt_json:
+        # The checked registry contains DECLARED host proof levels. Do not infer
+        # live contact or owner-device execution from a local reference pass.
+        receipt={
+            "schema":"JM.HostAdapterMachineReceipt/0.1",
+            "status":"PASS",
+            "authority_class":"CONFORMANCE_TESTER_NOT_HOST_OR_SOURCE_AUTHORITY",
+            "provenance":{
+                "contract_sha256":hashlib.sha256(CONTRACT.read_bytes()).hexdigest(),
+                "registry_sha256":hashlib.sha256(REGISTRY.read_bytes()).hexdigest()
+            },
+            "actual_checks":{
+                "registry_conformance":True,
+                "local_node_python_core_parity":args.run_local,
+                "parity_query_count":4 if args.run_local else 0
+            },
+            "adapters_checked":len(selected),
+            "adapters":[{
+                "id":a["id"],
+                "declared_proof_level":a["proof_level"],
+                "recorded_gates":a["gates"],
+                "open_gates":[k for k,v in a["gates"].items() if v=="OPEN"]
+            } for a in selected],
+            "claim_boundary":"REGISTRY_AND_LOCAL_REFERENCE_VALIDATION_ONLY; DECLARED_HOST_LEVEL_NOT_FRESH_HOST_CONTACT; NO_OWNER_DEVICE_CLAIM"
+        }
+        destination=pathlib.Path(args.receipt_json)
+        destination.parent.mkdir(parents=True,exist_ok=True)
+        destination.write_text(json.dumps(receipt,sort_keys=True,indent=2)+"\n",encoding="utf-8")
     return 0
 
 if __name__=="__main__":

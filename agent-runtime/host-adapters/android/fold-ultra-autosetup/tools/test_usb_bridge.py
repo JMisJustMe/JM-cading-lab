@@ -121,7 +121,7 @@ class BridgeContractTests(unittest.TestCase):
 
     def test_v06_config_requires_valid_project_shelf(self):
         good = {
-            "schema": bridge.CONFIG_SCHEMA, "root": "JM project holder",
+            "schema": "JM.FoldUltraSetup/0.6", "root": "JM project holder",
             "focus": "CREATE", "session": "MAKE", "stage": 4,
             "project_shelf": [{"id": "jm-ecostate", "title": "JM Ecostate",
                                "family": "ESTATE", "url": "https://jmisjustme.github.io/JM-cading-lab/"}],
@@ -190,7 +190,7 @@ class BridgeContractTests(unittest.TestCase):
     def test_v07_config_rejects_invalid_layout_and_keeps_v06_readable(self):
         project = {"id": "jm-ecostate", "title": "JM Ecostate",
                    "family": "ESTATE", "url": ""}
-        config = {"schema": bridge.CONFIG_SCHEMA, "root": "A stable note",
+        config = {"schema": "JM.FoldUltraSetup/0.7", "root": "A stable note",
                   "project_shelf": [project], "active_project": "jm-ecostate",
                   "layout_compact": "QUICK", "layout_expanded": "COMFORT",
                   "setup_last": ""}

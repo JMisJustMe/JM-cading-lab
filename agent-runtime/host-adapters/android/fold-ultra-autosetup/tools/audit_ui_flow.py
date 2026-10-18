@@ -11,6 +11,7 @@ import re
 import subprocess
 import time
 import xml.etree.ElementTree as ET
+from emulator_dialog import clear_overlay_and_read
 
 PACKAGE="com.jmisjustme.foldultra"
 MAIN=f"{PACKAGE}/.MainActivity"
@@ -33,12 +34,9 @@ def capture(name: str):
 
 
 def dump(name:str)->list[dict]:
-    adb("shell","uiautomator","dump","/sdcard/jm_fullbody.xml",timeout=35)
-    data=adb("exec-out","cat","/sdcard/jm_fullbody.xml",timeout=15)
-    if not data.startswith(b"<?xml"):
-        raise AssertionError("Android UI hierarchy unavailable")
-    (OUT/f"UI_{name}.xml").write_bytes(data)
-    return [n.attrib for n in ET.fromstring(data).iter("node")]
+    # Inspects the real UI and records any transient Pixel Launcher overlay.
+    # Never treats an obscured screen as a passing JM control.
+    return clear_overlay_and_read("UI_"+name)
 
 
 def match(nodes,fragment:str):

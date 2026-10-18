@@ -1,0 +1,115 @@
+{
+  "schema": "JM.CommercialOfferRegister/0.2",
+  "issued": "2026-10-19",
+  "role": "public-safe commercial discovery registry; standalone source and payment systems retained",
+  "authority": {
+    "offers": "prior JM Money Menu and September executable monetisation closure",
+    "menu_head": "JM Money Menu v1.1 data / v1.2 contact",
+    "first_sale": "JM Providings First Sale Deployment 001",
+    "company": "RUKQUSS REALITY LTD is a pre-entry working name, NOT incorporated"
+  },
+  "meaning": {
+    "PROVEN_SANDBOX": "Proof of a test-machine route, no live customer",
+    "RELEASE_RETEST_OPEN": "Release candidate, final owner-device/runtime check pending",
+    "ENQUIRY_ONLY": "Interest and qualified scopes only; no order",
+    "NOT_PRICED": "No paid edition or final price"
+  },
+  "latest_known": {
+    "stripe_mode": "sandbox_only",
+    "live_product": false,
+    "first_live_customer_payment": false,
+    "paid_orders_confirmed": 0,
+    "public_runtime_verified": false
+  },
+  "offers": [
+    {
+      "id": "jm-fight-clash-founders",
+      "lane": "PLAY",
+      "name": "Fight Clash — Founders Collection",
+      "audience": "premium indie mobile players",
+      "readiness": "RELEASE_RETEST_OPEN",
+      "prior_price_gbp": 20,
+      "price_status": "proposal_from_prior_estate",
+      "primary_action": "enquiry",
+      "next_gate": "device retest, source/release, delivery and final terms"
+    },
+    {
+      "id": "jm-fourfold-supporter",
+      "lane": "PLAY",
+      "name": "FOURFOLD — Supporter Edition",
+      "audience": "indie players supporting original game development",
+      "readiness": "RELEASE_RETEST_OPEN",
+      "prior_price_gbp": 8,
+      "price_status": "proposal_from_prior_estate",
+      "primary_action": "enquiry",
+      "next_gate": "owner-device retest, supporter terms and final release"
+    },
+    {
+      "id": "jm-lyric-home",
+      "lane": "CREATE",
+      "name": "JM Lyric Home",
+      "audience": "mobile-first lyric writers",
+      "readiness": "ENQUIRY_ONLY",
+      "prior_price_gbp": null,
+      "price_status": "NOT_PRICED",
+      "primary_action": "feedback",
+      "next_gate": "commercial package differentiator and owner release"
+    },
+    {
+      "id": "jm-beatmaker",
+      "lane": "CREATE",
+      "name": "JM Beatmaker",
+      "audience": "mobile-first beatmakers and rappers",
+      "readiness": "ENQUIRY_ONLY",
+      "prior_price_gbp": null,
+      "price_status": "NOT_PRICED",
+      "primary_action": "feedback",
+      "next_gate": "quality, stability and future premium scope"
+    },
+    {
+      "id": "jm-secrets-of-silence",
+      "lane": "READ",
+      "name": "Secrets of Silence — Digital Edition",
+      "audience": "digital publication readers",
+      "readiness": "PROVEN_SANDBOX",
+      "prior_price_gbp": 14.99,
+      "price_status": "sandbox_price_confirmed_not_live",
+      "primary_action": "enquiry",
+      "next_gate": "human Stripe verification, live setup, legal disclosures, fulfilment"
+    },
+    {
+      "id": "jm-mobile-field-test",
+      "lane": "SERVICES",
+      "name": "Mobile Field Test",
+      "audience": "creators with device-specific issues",
+      "readiness": "ENQUIRY_ONLY",
+      "prior_price_gbp": 40,
+      "price_status": "indicative_from_price",
+      "primary_action": "scoping",
+      "next_gate": "capacity, scope, contract/terms, invoice and payment"
+    },
+    {
+      "id": "jm-control-grammar-audit",
+      "lane": "SERVICES",
+      "name": "Control Grammar Audit",
+      "audience": "indie game and UI developers",
+      "readiness": "ENQUIRY_ONLY",
+      "prior_price_gbp": 75,
+      "price_status": "indicative_from_price",
+      "primary_action": "scoping",
+      "next_gate": "qualifying audit brief and proof-of-deliverable"
+    },
+    {
+      "id": "jm-existing-html-repair",
+      "lane": "SERVICES",
+      "name": "Existing HTML Repair / Modernisation",
+      "audience": "site/app owners with existing HTML they want preserved",
+      "readiness": "ENQUIRY_ONLY",
+      "prior_price_gbp": 150,
+      "price_status": "indicative_from_price",
+      "primary_action": "scoping",
+      "next_gate": "technical brief, quote and agreed boundaries"
+    }
+  ],
+  "invariant": "Source, claim, enquiry, offer, live payment, delivery, customer receipt and actual earnings are different evidence gates."
+}

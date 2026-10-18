@@ -1,0 +1,25 @@
+name: JM Commercial Discovery QA
+on:
+  push:
+    paths:
+      - "money-menu/index.html"
+      - "money-menu/launch/**"
+      - ".github/workflows/jm-commercial-discovery-qa.yml"
+  pull_request:
+    paths:
+      - "money-menu/index.html"
+      - "money-menu/launch/**"
+      - ".github/workflows/jm-commercial-discovery-qa.yml"
+permissions:
+  contents: read
+jobs:
+  commercial-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate JM commercial experience, unchanged authority and enquiry route
+        run: node money-menu/launch/qa.mjs

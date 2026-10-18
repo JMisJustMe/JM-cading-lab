@@ -1,1 +1,2 @@
-date,channel,offer,campaign,visitors_source,verified_unique_visitors,enquiries_sent,qualified_leads,checkout_starts,live_paid_orders,gross_gbp,stripe_fees_gbp,refunds_gbp,delivery_confirmed,source_evidence,next_action,notes
+# PUBLIC AGGREGATE ONLY — no customer names, emails, Stripe secrets, payment IDs or individual transaction records. Keep actual sensitive customer evidence in approved private systems.
+date,source_campaign,channel,offer_id,verified_visitors,confirmed_sent_enquiries,qualified_leads,confirmed_live_paid_orders,gross_gbp,processing_fees_gbp,refunds_gbp,other_direct_costs_gbp,fulfilled_orders,notes_public_safe

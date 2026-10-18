@@ -3,10 +3,12 @@
 from pathlib import Path
 import json
 import tempfile
+import sys
 import unittest
 import importlib.util
 
 SKILL=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(SKILL))
 spec=importlib.util.spec_from_file_location("jm_knowledge_query",SKILL/"jm_knowledge_query.py")
 querymod=importlib.util.module_from_spec(spec);spec.loader.exec_module(querymod)
 intake=querymod.intake

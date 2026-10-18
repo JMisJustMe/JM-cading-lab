@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""JM Fold Ultra 0.7 — authorised USB ADB bridge, debug APK only.
+"""JM Fold Ultra 0.8 — authorised USB ADB bridge, debug APK only.
 
 No network, root, Samsung launcher writes, secrets on command line, or
 unattended phone-side changes. ADB run-as is possible for *debuggable* APKs
@@ -21,10 +21,10 @@ from urllib.parse import urlsplit
 import ipaddress
 
 PACKAGE = "com.jmisjustme.foldultra"
-REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.7"
-CONFIG_SCHEMA = "JM.FoldUltraSetup/0.7"
+REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.8"
+CONFIG_SCHEMA = "JM.FoldUltraSetup/0.8"
 VALID_CONFIG_SCHEMAS = {
-    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
+    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
     "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2",
 }
 VALID_SESSIONS = {"MAKE": "CREATE", "PLAYTEST": "PLAY",
@@ -111,6 +111,79 @@ def project_bind_request(item_id: str, title: str, family: str, url: str) -> dic
             "kind": "project_bind", "project": p}
 
 
+
+VALID_PHASES = {"IDEA", "BUILD", "TEST", "POLISH"}
+
+
+def validate_session_entry(entry: object) -> dict:
+    if not isinstance(entry, dict):
+        raise BridgeError("Session entry must be an object")
+    project_id=entry.get("project_id")
+    if not isinstance(project_id,str) or not PROJECT_ID.fullmatch(project_id):
+        raise BridgeError("Invalid session project ID")
+    if entry.get("phase") not in VALID_PHASES:
+        raise BridgeError("Unknown session phase")
+    note,next_action=entry.get("note"),entry.get("next_action")
+    if not isinstance(note,str) or not isinstance(next_action,str):
+        raise BridgeError("Session note/next action must be text")
+    if len(note)>4000 or len(next_action)>220:
+        raise BridgeError("Session note or next action exceeds bounds")
+    revision=entry.get("revision")
+    if not isinstance(revision,int) or isinstance(revision,bool) or not 0<=revision<=100000000:
+        raise BridgeError("Invalid session revision")
+    timestamp=entry.get("updated_epoch_ms",0)
+    if not isinstance(timestamp,int) or timestamp<0:
+        raise BridgeError("Invalid session time")
+    return entry
+
+
+def validate_sessions(config: dict) -> None:
+    sessions=config.get("session_deck")
+    if not isinstance(sessions,list) or len(sessions)>24:
+        raise BridgeError("A JM v0.8 configuration requires 0–24 sessions")
+    ids={p["id"] for p in config["project_shelf"]}
+    seen=set()
+    for session in sessions:
+        validate_session_entry(session)
+        project_id=session["project_id"]
+        if project_id in seen or project_id not in ids:
+            raise BridgeError("Duplicate or orphan JM session")
+        seen.add(project_id)
+
+
+def session_update_request(project_id: str, revision: int, phase: str,
+                           note: str, next_action: str) -> dict:
+    if not isinstance(revision,int) or isinstance(revision,bool) or not 0<=revision<=100000000:
+        raise BridgeError("Invalid base session revision")
+    payload={"schema":REQUEST_SCHEMA,"request_id":secrets.token_hex(16),
+        "kind":"session_update","project_id":project_id,
+        "expected_revision":revision,"phase":phase,
+        "note":note,"next_action":next_action}
+    validate_session_entry({"project_id":project_id,"revision":revision,"phase":phase,
+                            "note":note,"next_action":next_action,"updated_epoch_ms":0})
+    document_bytes(payload)
+    return payload
+
+
+def read_note_file(path: Path) -> str:
+    if path.stat().st_size>16000:
+        raise BridgeError("JM working note is too large")
+    return path.read_text(encoding="utf-8")
+
+
+def local_session(config: dict, project_id: str) -> dict:
+    validate_config(config)
+    if config.get("schema")!="JM.FoldUltraSetup/0.8":
+        raise BridgeError("Session viewing requires a v0.8 snapshot")
+    for session in config.get("session_deck",[]):
+        if session["project_id"]==project_id:
+            return session
+    if project_id not in {p["id"] for p in config["project_shelf"]}:
+        raise BridgeError("JM project not present in snapshot")
+    return {"project_id":project_id,"revision":0,"phase":"IDEA",
+            "note":"","next_action":"","updated_epoch_ms":0}
+
+
 def validate_config(data: object) -> dict:
     if not isinstance(data, dict):
         raise BridgeError("JM configuration must be a JSON object")
@@ -130,13 +203,15 @@ def validate_config(data: object) -> dict:
     for name in ("native_owner_marks", "owner_test_marks"):
         if name in data and not isinstance(data[name], dict):
             raise BridgeError(f"{name} must be an object")
-    if data.get("schema") == CONFIG_SCHEMA:
+    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7"}:
         if data.get("layout_compact") not in VALID_LAYOUTS or data.get("layout_expanded") not in VALID_LAYOUTS:
             raise BridgeError("Invalid per-window JM layout profile")
         if data.get("setup_last", "") not in VALID_PLANS | {""}:
             raise BridgeError("Invalid last setup plan")
-    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.6"}:
+    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6"}:
         validate_project_shelf(data.get("project_shelf"), data.get("active_project"))
+    if data.get("schema") == CONFIG_SCHEMA:
+        validate_sessions(data)
     return data
 
 
@@ -278,7 +353,7 @@ def read_config_file(path: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="JM Fold Ultra v0.7 — owner-approved USB contact")
+    p = argparse.ArgumentParser(description="JM Fold Ultra v0.8 — owner-approved USB contact")
     p.add_argument("--adb", default="adb", help="Android platform-tools adb executable")
     p.add_argument("--serial", help="ADB serial; mandatory if multiple devices are present")
     sub = p.add_subparsers(dest="action", required=True)
@@ -299,6 +374,15 @@ def main(argv: list[str] | None = None) -> int:
     bind.add_argument("--title", required=True, help="JM project display title")
     bind.add_argument("--family", required=True, choices=sorted(PROJECT_FAMILIES))
     bind.add_argument("--url", required=True, help="Public HTTPS URL, or '' for unbound")
+    session = sub.add_parser("session-update", help="Stage a conflict-checked project session; phone approval required")
+    session.add_argument("id", help="Existing JM project ID")
+    session.add_argument("--expected-revision", required=True, type=int)
+    session.add_argument("--phase", required=True, choices=sorted(VALID_PHASES))
+    session.add_argument("--note-file", required=True, type=Path, help="Local UTF-8 note; never sent in shell arguments")
+    session.add_argument("--next", default="", help="Short next action")
+    show = sub.add_parser("session-show", help="Read one project from an owner-exported v0.8 backup offline")
+    show.add_argument("file", type=Path)
+    show.add_argument("id")
     sub.add_parser("receipt", help="Read the last phone-side USB decision")
     args = p.parse_args(argv)
     try:
@@ -311,8 +395,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"USB CONTACT READY / {serial} / model {model} / Android API {sdk}")
             print(f"JM debug app installed: {bool(package_path)}")
             print("No phone settings changed. ADB trust remains your responsibility.")
-        elif args.action in {"plan", "profile", "restore", "project-select", "project-bind"}:
-            if args.action == "plan":
+        elif args.action == "session-show":
+            data=read_config_file(args.file)
+            print(json.dumps(local_session(data,args.id),indent=2,ensure_ascii=False))
+        elif args.action in {"plan", "profile", "restore", "project-select", "project-bind", "session-update"}:
+            if args.action == "session-update":
+                body=session_update_request(args.id,args.expected_revision,args.phase,
+                                            read_note_file(args.note_file),args.next)
+            elif args.action == "plan":
                 body = plan_request(args.name)
             elif args.action == "profile":
                 body = new_profile_request(args.session, args.focus)
@@ -334,7 +424,7 @@ def main(argv: list[str] | None = None) -> int:
             print("SHA-256:", hashlib.sha256(payload).hexdigest())
         elif args.action == "receipt":
             data = json.loads(read_private(args.adb, serial, RECEIPT))
-            if data.get("schema") != "JM.FoldBridgeReceipt/0.7":
+            if data.get("schema") != "JM.FoldBridgeReceipt/0.8":
                 raise BridgeError("Unknown receipt schema")
             print(json.dumps(data, indent=2, ensure_ascii=False))
             if data.get("status") != "ACCEPTED":

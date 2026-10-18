@@ -135,6 +135,42 @@ class BridgeContractTests(unittest.TestCase):
             with self.subTest(field=key), self.assertRaises(bridge.BridgeError):
                 bridge.validate_config(altered)
 
+
+    def test_truncated_project_select_gets_bounded_retry(self):
+        request = bridge.project_select_request("five-flip")
+        trace = []
+        payload = bridge.document_bytes(request)
+        def fake(adb, serial, *args, stdin=None, timeout=25):
+            trace.append(args)
+            if args[0] == "exec-out":
+                count = sum(1 for x in trace if x[0] == "exec-out")
+                return payload[:58] if count == 1 else payload
+            return b""
+        with mock.patch.object(bridge, "ensure_debug"), \
+             mock.patch.object(bridge, "adb_run", side_effect=fake):
+            self.assertEqual(bridge.stage_payload("adb", "mock", request),
+                             request["request_id"])
+        self.assertTrue(any("base64 -d" in str(x) for x in trace))
+        self.assertEqual(trace[-1][:3], ("shell", "am", "start"))
+
+    def test_truncated_restore_does_not_reveal_root_in_shell(self):
+        sensitive = "PRIVATE JM NOTE DO NOT REVEAL"
+        request = bridge.new_restore_request({
+            "schema": "JM.FoldUltraSetup/0.5", "root": sensitive
+        })
+        trace = []
+        def fake(adb, serial, *args, stdin=None, timeout=25):
+            trace.append(args)
+            return b"partial" if args[0] == "exec-out" else b""
+        with mock.patch.object(bridge, "ensure_debug"), \
+             mock.patch.object(bridge, "adb_run", side_effect=fake):
+            with self.assertRaises(bridge.BridgeError):
+                bridge.stage_payload("adb", "mock", request)
+        self.assertFalse(any("base64 -d" in str(x) for x in trace))
+        self.assertFalse(any(sensitive in str(x) for x in trace))
+        self.assertFalse(any(len(x) >= 3 and x[:3] == ("shell", "am", "start")
+                             for x in trace))
+
     def test_no_device_is_not_treated_as_contact(self):
         with mock.patch.object(bridge.subprocess, "run") as run:
             run.return_value = mock.Mock(returncode=0, stdout="List of devices attached\n\n")

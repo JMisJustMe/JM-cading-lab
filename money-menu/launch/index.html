@@ -3,54 +3,164 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0a1020">
-<meta name="description" content="JM ECOSTATE: explore playable games, creative tools, digital publications and creator services. Find a JM offer and enquire through the existing Money Menu.">
-<title>JM ECOSTATE · Explore Games, Tools & Services</title>
+<meta name="theme-color" content="#07111b">
+<meta name="description" content="JM ECOSTATE — original games, phone-first music tools, digital publishing and practical developer services. Browse genuine JM projects and send a customer-controlled enquiry.">
+<title>JM ECOSTATE | Discover, Play, Create & Enquire</title>
 <style>
-:root{color-scheme:dark;--bg:#080d18;--card:#121d2e;--text:#f7f8fb;--muted:#bac4d3;--edge:#35435b;--mint:#9affd5;--gold:#ffe29a}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 5% 0%,#1c3750,transparent 52%),var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}a{color:inherit}
-main,header,footer{width:min(1100px,calc(100% - 32px));margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 0}.mark{font-weight:900;letter-spacing:.08em}.small{font-size:.82rem;color:var(--muted)}
-.link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:750;border:1px solid var(--edge);border-radius:12px;min-height:47px;padding:10px 15px;max-width:100%}.link:focus-visible{outline:3px solid var(--mint);outline-offset:3px}.link.primary{background:var(--mint);color:#071b17;border-color:var(--mint)}.link.secondary{background:#15243a}
-.hero{padding:clamp(32px,6vw,76px) 0 26px}.eyebrow{color:var(--mint);font-weight:800;font-size:.77rem;letter-spacing:.13em;text-transform:uppercase}h1{font-size:clamp(2.75rem,8vw,5.8rem);line-height:1.03;letter-spacing:-.06em;margin:14px 0}h1 em{font-style:normal;color:var(--mint)}.intro{font-size:clamp(1.06rem,2.4vw,1.36rem);color:#d3dce7;max-width:690px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:25px 0}
-.notice{border-left:4px solid var(--gold);background:#28251e;padding:14px 17px;border-radius:0 14px 14px 0;margin:10px 0 25px;font-size:.92rem}
-h2{font-size:clamp(1.48rem,4vw,2rem);letter-spacing:-.025em;margin:30px 0 15px}h3{font-size:1.25rem;margin:7px 0 8px}p{margin:10px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.card{display:flex;flex-direction:column;align-items:flex-start;background:var(--card);border:1px solid var(--edge);border-radius:19px;padding:23px;min-height:265px}.card p{color:var(--muted);flex:1}.chip{font-size:.78rem;font-weight:850;letter-spacing:.07em;color:var(--gold)}.card .link{margin-top:13px}
-.path{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.step{padding:17px;border:1px solid var(--edge);border-radius:12px;background:#0d1727}.step b{display:block;color:var(--mint);margin-bottom:5px}
-footer{margin:36px auto 0;padding:20px 0 40px;border-top:1px solid var(--edge);font-size:.83rem;color:var(--muted)}
-@media(max-width:700px){.grid{grid-template-columns:1fr}.path{grid-template-columns:1fr}.card{min-height:auto}header{align-items:flex-start}.hero{padding-top:34px}}@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+:root{color-scheme:dark;--bg:#07111b;--surface:#102133;--surface2:#14283c;--text:#f6fbff;--muted:#bbcbd9;--edge:#344d61;--accent:#93f6ca;--gold:#f6d88c;--focus:#fff1aa;--shadow:0 16px 45px #03101978}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 10% -15%,#1b4051 0,transparent 50%),var(--bg);color:var(--text);font:16px/1.53 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{color:inherit}a:hover{text-decoration-thickness:2px}button,input,select,textarea{font:inherit}button{cursor:pointer}main,header,footer{width:min(1180px,calc(100% - 32px));margin-inline:auto}.sr{position:absolute;clip:rect(0,0,0,0);height:1px;width:1px;overflow:hidden;white-space:nowrap}header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0}.brand{font-weight:930;letter-spacing:.09em}.brand strong{color:var(--accent)}.brand small{display:block;color:var(--muted);font-size:.72rem;font-weight:500;letter-spacing:0}h1{font-size:clamp(2.65rem,8.1vw,6.0rem);letter-spacing:-.064em;line-height:1.01;margin:12px 0 17px;max-width:15ch}h1 span{color:var(--accent)}h2{font-size:clamp(1.6rem,4vw,2.3rem);letter-spacing:-.035em;margin:25px 0 10px}h3{font-size:1.19rem;margin:8px 0 8px}.muted{color:var(--muted)}.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.13em;font-weight:850;color:var(--accent)}.hero{padding:clamp(33px,6vw,80px) 0 22px}.hero>p{max-width:680px;font-size:clamp(1.08rem,2.5vw,1.32rem)}.actions{display:flex;flex-wrap:wrap;gap:10px;margin:19px 0}.btn{display:inline-flex;justify-content:center;align-items:center;gap:7px;text-decoration:none;font-weight:850;min-height:48px;padding:11px 16px;color:var(--text);background:var(--surface2);border:1px solid var(--edge);border-radius:13px;max-width:100%}.btn.primary{background:var(--accent);color:#052016;border-color:var(--accent)}.btn:hover{filter:brightness(1.08)}:is(a,button,input,textarea,select):focus-visible{outline:3px solid var(--focus);outline-offset:3px}.proof{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;padding:16px 0}.proof>div{border:1px solid var(--edge);border-radius:12px;padding:13px 14px;background:#0a1927}.proof b{display:block;color:var(--gold);font-size:.9rem}.proof span{color:var(--muted);font-size:.82rem}.notice{border-left:4px solid var(--gold);border-radius:0 12px 12px 0;padding:13px 15px;background:#30291d;color:#ffefc8;font-size:.88rem;margin:12px 0}.filters{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}.filter{border:1px solid var(--edge);padding:10px 14px;min-height:46px;background:var(--surface);color:var(--text);border-radius:999px;font-weight:850}.filter[aria-pressed=true]{background:var(--accent);color:#071c14;border-color:var(--accent)}.offers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.offer{display:flex;flex-direction:column;align-items:start;gap:7px;border:1px solid var(--edge);border-radius:17px;background:linear-gradient(145deg,var(--surface),#0b1826);box-shadow:var(--shadow);padding:20px;min-height:245px}.offer[hidden]{display:none}.offer p{margin:0;color:var(--muted);flex:1}.offer .actions{margin:10px 0 0}.offer .tag{font-size:.75rem;color:var(--gold);font-weight:850;letter-spacing:.065em}.price{color:var(--accent);font-weight:850}.callout{margin:28px 0;border:1px solid var(--edge);border-radius:20px;background:#11253a;padding:22px}.callout p{color:var(--muted)}.enquiry-wrap{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px;align-items:start}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:flex;flex-direction:column;gap:5px;font-weight:750;font-size:.91rem}.wide{grid-column:1/-1}.field input,.field textarea,.field select{min-width:0;width:100%;background:#071521;color:var(--text);border:1px solid #5d7287;border-radius:11px;min-height:46px;padding:10px 11px;font-weight:400}.field textarea{resize:vertical;min-height:110px}.field small{color:var(--muted);font-weight:400}.fine{font-size:.83rem;color:var(--muted)}.status{font-size:.84rem;color:var(--accent);min-height:1.5em}.footerlinks{display:flex;gap:15px;flex-wrap:wrap}.fallback{margin-top:12px}footer{margin-top:34px;padding:22px 0 40px;border-top:1px solid var(--edge);font-size:.8rem;color:var(--muted)}
+@media(max-width:850px){.enquiry-wrap{grid-template-columns:1fr}}@media(max-width:650px){.offers,.proof,.form-grid{grid-template-columns:1fr}.wide{grid-column:auto}.offer{min-height:auto}.hero{padding-top:35px}.callout{padding:16px}header .btn{font-size:.83rem;padding:9px}.offer .actions{flex-direction:column;align-items:stretch;width:100%}.offer .actions .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <header>
-  <div class="mark">JM <span style="color:var(--mint)">ECOSTATE</span><div class="small">Independent creation · Games · Tools · Publications</div></div>
-  <a class="link secondary" href="../">Full Money Menu ↗</a>
+ <div class="brand">JM <strong>ECOSTATE</strong><small>Games · Creative Tools · Digital Publications · Practical Services</small></div>
+ <a href="../" class="btn">Full Money Menu ↗</a>
 </header>
 <main>
-  <section class="hero" aria-labelledby="headline">
-    <div class="eyebrow">JM commercial contact · First audience campaign</div>
-    <h1 id="headline">Explore something <em>worth playing, making or using.</em></h1>
-    <p class="intro">Original games, mobile-first creative tools, digital writing and practical technical help. Explore the work and tell us what you'd like to experience next.</p>
-    <div class="actions"><a class="link primary" href="#explore">Explore JM offers ↓</a><a class="link secondary" href="../">Enquire via Money Menu ↗</a></div>
-  </section>
-  <div class="notice" role="note"><b>Availability is offer-specific.</b> This is a discovery and enquiry page, not a payment checkout. Games and supporter editions may be in testing; the digital book's live checkout is not yet active. Enquiries are not orders or commitments.</div>
-  <section id="explore" aria-labelledby="explore-heading">
-    <h2 id="explore-heading">Find your corner of JM</h2>
-    <div class="grid">
-      <article class="card"><span class="chip">PLAY · ORIGINAL GAMES</span><h3>Game worlds with their own rules</h3><p>Discover the expanding JM games catalogue: experiments in combat, tactics, movement and storytelling. Find out which experiences can be played or tested right now.</p><a class="link secondary" href="../../games-beyond/">Explore the games ↗</a></article>
-      <article class="card"><span class="chip">CREATE · MOBILE TOOLS</span><h3>Make music and capture ideas</h3><p>Explore lyric-writing and music-making ideas built around immediate creative contact. Commercial editions and features will be announced only when ready.</p><a class="link secondary" href="../../lyrics/">Explore lyric tools ↗</a></article>
-      <article class="card"><span class="chip">TEST / FIX / BUILD</span><h3>Get practical help with a digital project</h3><p>Interested in mobile field testing, touchscreen interaction, HTML restoration or an original playable prototype? Browse scoped JM offerings and request a discussion or quotation.</p><a class="link secondary" href="../">View services & enquire ↗</a></article>
-      <article class="card"><span class="chip">READ · DIGITAL PUBLICATION</span><h3>Secrets of Silence</h3><p>An existing digital publication with a previously tested PDF/EPUB delivery route. Planned digital edition price: £14.99. The live payment route is not yet enabled.</p><a class="link secondary" href="../">Register interest by enquiry ↗</a></article>
-    </div>
-  </section>
-  <section aria-labelledby="next-heading">
-    <h2 id="next-heading">What happens next?</h2>
-    <div class="path">
-      <div class="step"><b>01 · Explore</b>Find a game, tool, publication or service that fits your interests.</div>
-      <div class="step"><b>02 · Enquire</b>Use the existing JM Money Menu to build a brief. You control whether to share it.</div>
-      <div class="step"><b>03 · Get a clear response</b>Availability, scope, price and delivery will be confirmed before any sale.</div>
-    </div>
-    <div class="actions"><a class="link primary" href="../">Open the JM Money Menu ↗</a><a class="link secondary" href="../../">Return to JM ECOSTATE ↗</a></div>
-  </section>
+ <section class="hero" aria-labelledby="headline">
+  <div class="eyebrow">Independent creations · JM commercial front window</div>
+  <h1 id="headline">Play. Create. <span>Make it yours.</span></h1>
+  <p>Original mobile-first games, tools for creating, digital writing and hands-on technical services. Tell us what you want to experience or have built—and we'll take it from there.</p>
+  <div class="actions"><a class="btn primary" href="#offers">Explore offers ↓</a><a class="btn" href="#enquiry">Make an enquiry ↓</a></div>
+ </section>
+ <div class="proof">
+  <div><b>Real JM projects</b><span>Existing work, not speculative product listings.</span></div>
+  <div><b>Clear readiness</b><span>Testing and customer sales are distinguished.</span></div>
+  <div><b>One existing door</b><span>The original JM Money Menu remains available.</span></div>
+ </div>
+ <div class="notice" role="note"><strong>Current buying status:</strong> This page is for discovery and enquiries, not a checkout. No live Stripe purchase link is offered here. Release availability and final prices must be confirmed individually. Enquiries never create a purchase obligation.</div>
+ <section id="offers" aria-labelledby="offers-title">
+  <div class="eyebrow">Find the JM route for you</div>
+  <h2 id="offers-title">What brought you here?</h2>
+  <div role="group" aria-label="Filter offers" class="filters">
+   <button type="button" class="filter" data-filter="all" aria-pressed="true">Everything</button>
+   <button type="button" class="filter" data-filter="play" aria-pressed="false">Play games</button>
+   <button type="button" class="filter" data-filter="create" aria-pressed="false">Make music</button>
+   <button type="button" class="filter" data-filter="read" aria-pressed="false">Read</button>
+   <button type="button" class="filter" data-filter="services" aria-pressed="false">Get help</button>
+  </div>
+  <div class="offers">
+   <article class="offer" data-category="play" data-offer="Fight Clash — Founders Collection">
+    <span class="tag">GAME · RELEASE CANDIDATE</span><h3>Fight Clash — Founders Collection</h3>
+    <p>Explore an original JM game collection. Previously packaged as a paid release candidate; owner-device final release testing is still required.</p>
+    <span class="price">Previously proposed: £20 · Not on sale here</span>
+    <div class="actions"><a href="../../games-beyond/" class="btn">Explore games ↗</a><button type="button" class="btn primary" data-enquire="Fight Clash — Founders Collection">Ask about this game ↓</button></div>
+   </article>
+   <article class="offer" data-category="play" data-offer="FOURFOLD — Supporter Edition">
+    <span class="tag">GAME · SUPPORTER CANDIDATE</span><h3>FOURFOLD — Supporter Edition</h3>
+    <p>An existing JM game/supporter concept. The intended release needs a fresh device check and offer confirmation before purchase.</p>
+    <span class="price">Previously proposed: £8 · Not on sale here</span>
+    <div class="actions"><a href="../../games-beyond/" class="btn">Explore games ↗</a><button type="button" class="btn primary" data-enquire="FOURFOLD — Supporter Edition">Ask about this game ↓</button></div>
+   </article>
+   <article class="offer" data-category="create" data-offer="JM Lyric Home">
+    <span class="tag">CREATOR TOOL · FEEDBACK OPEN</span><h3>JM Lyric Home</h3>
+    <p>Explore phone-first lyric writing and creative flow. Tell us what would make a creator edition worth paying for.</p>
+    <span class="price">No paid edition announced</span>
+    <div class="actions"><a href="../../lyrics/" class="btn">Explore lyric tools ↗</a><button type="button" class="btn primary" data-enquire="JM Lyric Home">Discuss the tool ↓</button></div>
+   </article>
+   <article class="offer" data-category="create" data-offer="JM Beatmaker">
+    <span class="tag">CREATOR TOOL · DEVELOPMENT</span><h3>JM Beatmaker</h3>
+    <p>A music-making work in progress focused on immediate hands-on play. Creator feedback helps shape the commercial edition.</p>
+    <span class="price">No paid edition announced</span>
+    <div class="actions"><a href="../../lyrics/" class="btn">Explore music and lyrics ↗</a><button type="button" class="btn primary" data-enquire="JM Beatmaker">Discuss the tool ↓</button></div>
+   </article>
+   <article class="offer" data-category="read" data-offer="Secrets of Silence — Digital Edition">
+    <span class="tag">DIGITAL PUBLICATION · LIVE PAYMENT PENDING</span><h3>Secrets of Silence</h3>
+    <p>An existing JM digital book. The PDF/EPUB release delivery and £14.99 checkout were previously tested in Stripe's sandbox. No real-money checkout is yet enabled.</p>
+    <span class="price">Planned digital edition: £14.99 · Not yet purchasable</span>
+    <div class="actions"><button type="button" class="btn primary" data-enquire="Secrets of Silence — Digital Edition">Ask about release ↓</button></div>
+   </article>
+   <article class="offer" data-category="services" data-offer="Mobile Field Test">
+    <span class="tag">SERVICE · SCOPE REVIEW</span><h3>Mobile Field Test</h3>
+    <p>Have a mobile website, interactive prototype or interface that needs checking on real device sizes? Tell us what currently fails.</p>
+    <span class="price">Prior indicative entry price: from £40</span>
+    <div class="actions"><a class="btn" href="../../career/">JM capabilities ↗</a><button type="button" class="btn primary" data-enquire="Mobile Field Test">Request a scope ↓</button></div>
+   </article>
+   <article class="offer" data-category="services" data-offer="Control Grammar Audit">
+    <span class="tag">SERVICE · SCOPE REVIEW</span><h3>Control Grammar Audit</h3>
+    <p>Review how tap, hold, drag, flick, timing and touch interactions work together in an existing project.</p>
+    <span class="price">Prior indicative entry price: from £75</span>
+    <div class="actions"><a class="btn" href="../../career/">JM capabilities ↗</a><button type="button" class="btn primary" data-enquire="Control Grammar Audit">Request a scope ↓</button></div>
+   </article>
+   <article class="offer" data-category="services" data-offer="Existing HTML Repair / Modernisation">
+    <span class="tag">SERVICE · SCOPE REVIEW</span><h3>Existing HTML Repair</h3>
+    <p>Recover and improve a working page or prototype without throwing away its established behaviour. Request an assessment first.</p>
+    <span class="price">Prior indicative entry price: from £150</span>
+    <div class="actions"><a class="btn" href="../../career/">JM capabilities ↗</a><button type="button" class="btn primary" data-enquire="Existing HTML Repair / Modernisation">Request a scope ↓</button></div>
+   </article>
+  </div>
+ </section>
+ <section class="callout" id="enquiry" aria-labelledby="enquiry-title">
+  <div class="enquiry-wrap">
+   <div>
+    <div class="eyebrow">Your message stays under your control</div>
+    <h2 id="enquiry-title">Tell JM what you're after.</h2>
+    <p>Pick an offer, tell us what matters, and open a prefilled email in your own mail app. Nothing is sent automatically by this page; you review and send the message yourself.</p>
+    <p class="fine">This is an expression of interest, not a booking, accepted quotation, contract, newsletter subscription or payment.</p>
+    <a class="btn" href="../">Prefer the full JM Money Menu? ↗</a>
+   </div>
+   <div>
+    <form id="interestForm">
+     <div class="form-grid">
+      <label class="field wide">Interested in
+       <select id="chosenOffer" required>
+        <option value="">Choose a product or service</option>
+        <option>Fight Clash — Founders Collection</option>
+        <option>FOURFOLD — Supporter Edition</option>
+        <option>JM Lyric Home</option>
+        <option>JM Beatmaker</option>
+        <option>Secrets of Silence — Digital Edition</option>
+        <option>Mobile Field Test</option>
+        <option>Control Grammar Audit</option>
+        <option>Existing HTML Repair / Modernisation</option>
+        <option>Something else from JM</option>
+       </select>
+      </label>
+      <label class="field">Your name (optional)<input id="customerName" autocomplete="name" maxlength="120" placeholder="What should JM call you?"></label>
+      <label class="field">Preferred reply contact (optional)<input id="replyContact" autocomplete="email" maxlength="180" placeholder="Your email / contact route"></label>
+      <label class="field wide">What's your question or goal?
+       <textarea id="customerNeed" maxlength="1200" required placeholder="Tell us what you want to play, make, read or get fixed. For a service, add the device/platform and expected outcome."></textarea>
+      </label>
+      <label class="field wide">Budget, timing or boundaries (optional)
+       <input id="customerTerms" maxlength="250" placeholder="For example: Android first, initial budget under £100">
+      </label>
+     </div>
+     <div class="actions">
+      <button type="button" class="btn primary" id="compose">Open email draft ↗</button>
+      <button type="button" class="btn" id="copy">Copy enquiry text</button>
+     </div>
+     <div role="status" class="status" id="status"></div>
+     <p class="fine">Contact details and message are used only when you choose to copy or open an email draft. The page does not transmit form data to JM or save it in browser storage.</p>
+     <p class="fine fallback">If your mail app does not open, email <a href="mailto:jayemmlyrikz@gmail.com?subject=JM%20commercial%20enquiry">JM directly</a> or use the Money Menu's existing customer-controlled scope receipt.</p>
+    </form>
+   </div>
+  </div>
+ </section>
 </main>
-<footer>JM ECOSTATE · Campaign L001 · 18 October 2026. One existing commercial public door, multiple distinct JM products. No sale, booking, guarantee or automatic enquiry is created by visiting this page.</footer>
-</body>
-</html>
+<footer>
+ <div class="footerlinks"><a href="../../">JM ECOSTATE</a><a href="../">Full Money Menu</a><a href="../../career/">JM Opportunity Front Door</a></div>
+ <p>JM Commercial Discovery v0.2 · 19 October 2026. JM source IP and separately governed product identities remain protected. No company incorporation, live sale or delivery is asserted by this page.</p>
+</footer>
+<script>
+(function(){
+'use strict';
+const known=['all','play','create','read','services'];
+const filters=[...document.querySelectorAll('[data-filter]')];
+const cards=[...document.querySelectorAll('[data-category]')];
+const offer=document.getElementById('chosenOffer');
+const status=document.getElementById('status');
+function filterTo(value){const next=known.includes(value)?value:'all';filters.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===next)));cards.forEach(c=>{c.hidden=next!=='all'&&c.dataset.category!==next;});}
+filters.forEach(b=>b.addEventListener('click',()=>filterTo(b.dataset.filter)));
+try{const q=new URLSearchParams(location.search);filterTo(q.get('interest'));}catch(e){filterTo('all');}
+document.querySelectorAll('[data-enquire]').forEach(b=>b.addEventListener('click',()=>{offer.value=b.dataset.enquire;status.textContent='Offer selected. Add your question and choose how to share it.';document.getElementById('enquiry').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});document.getElementById('customerNeed').focus({preventScroll:true});}));
+function buildText(){const v=offer.value.trim();const need=document.getElementById('customerNeed').value.trim();if(!v){offer.focus();status.textContent='Choose an offer first.';return null;}if(!need){document.getElementById('customerNeed').focus();status.textContent='Add your question or goal first.';return null;}
+const name=document.getElementById('customerName').value.trim();const reply=document.getElementById('replyContact').value.trim();const terms=document.getElementById('customerTerms').value.trim();
+return {title:'JM ECOSTATE — expression of interest',subject:'JM enquiry — '+v,body:['JM ECOSTATE — CUSTOMER ENQUIRY','Offer: '+v,'Name: '+(name||'Not supplied'),'Reply contact: '+(reply||'Not supplied'),'Request / goal:',need,'Budget / timeline / boundaries:',terms||'Not supplied','','This is an enquiry only. It is not a contract, quotation or purchase.','Source: JM Commercial Discovery L002 (19 October 2026)'].join('\n')};}
+document.getElementById('compose').addEventListener('click',()=>{const q=buildText();if(!q)return;const url='mailto:jayemmlyrikz@gmail.com?subject='+encodeURIComponent(q.subject)+'&body='+encodeURIComponent(q.body);status.textContent='Email draft prepared; your mail app should open. Review and send it yourself.';location.href=url;});
+document.getElementById('copy').addEventListener('click',async()=>{const q=buildText();if(!q)return;const s=q.body;if(navigator.clipboard&&navigator.clipboard.writeText){try{await navigator.clipboard.writeText(s);status.textContent='Enquiry text copied. Paste it wherever you prefer.';return;}catch(e){}}
+const area=document.getElementById('customerNeed');area.focus();area.select();status.textContent='Clipboard unavailable. Please use Open email draft or the direct email link.';});
+})();
+</script>
+</body></html>

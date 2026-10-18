@@ -1,0 +1,1211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>JM AGI Lab v1.4.3 — Process Restart Proof Corrected</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#081017;--panel:#0e1923;--panel2:#111f2b;--line:#223746;--text:#eaf4fa;--muted:#91a9b7;
+  --accent:#71e6ff;--good:#6ee7a2;--warn:#ffc86b;--bad:#ff7c86;--shadow:0 12px 35px rgba(0,0,0,.28);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:linear-gradient(180deg,#071018,#0a141c 42%,#081017);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{min-height:44px;border:1px solid var(--line);border-radius:12px;background:#142431;color:var(--text);padding:.72rem .95rem;font-weight:750;cursor:pointer}
+button:hover{border-color:#3b6076}button.primary{background:#163846;border-color:#2e6b7b;color:#eaffff}button.good{background:#123425;border-color:#2d684a}button.warn{background:#3a2b13;border-color:#745722}button.danger{background:#391b20;border-color:#6f303a}
+input,textarea,select{width:100%;background:#0a151e;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:.8rem;outline:none}
+input:focus,textarea:focus,select:focus{border-color:#4c9db7;box-shadow:0 0 0 3px rgba(113,230,255,.08)}
+textarea{min-height:112px;resize:vertical}
+code,pre{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace}
+.shell{max-width:1240px;margin:auto;padding:16px}
+.hero{display:flex;gap:14px;align-items:flex-start;justify-content:space-between;margin:5px 0 16px}
+.hero h1{font-size:clamp(1.35rem,5vw,2.15rem);margin:0 0 5px}.hero p{margin:0;color:var(--muted);max-width:760px;line-height:1.45}
+.badge{white-space:nowrap;border:1px solid #2b5365;background:#0b202b;color:#b7f5ff;border-radius:999px;padding:.48rem .7rem;font-size:.78rem;font-weight:800}
+.grid{display:grid;grid-template-columns:1.12fr .88fr;gap:14px}.stack{display:grid;gap:14px}.panel{background:rgba(14,25,35,.96);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.panel h2{font-size:1rem;margin:0 0 10px}.panel h3{font-size:.9rem;margin:12px 0 8px}.muted{color:var(--muted)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.row .fit{flex:0 0 auto}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1 1 145px}
+.metrics{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:14px}.metric{background:#0d1a24;border:1px solid var(--line);border-radius:14px;padding:11px}.metric b{display:block;font-size:1.18rem}.metric span{font-size:.74rem;color:var(--muted)}
+.status{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:.35rem .58rem;font-size:.73rem;font-weight:850;border:1px solid var(--line)}.PASS{color:#aef8cb;border-color:#276347;background:#0e291d}.HOLD{color:#ffe0a0;border-color:#705221;background:#30230f}.FAIL{color:#ffb3b9;border-color:#75303a;background:#32151a}.OPEN{color:#b9eefa;border-color:#2a5f70;background:#0b2630}
+.output{min-height:118px;background:#08131b;border:1px solid var(--line);border-radius:13px;padding:12px;white-space:pre-wrap;line-height:1.5;overflow:auto}
+.plan{display:grid;gap:7px}.step{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;background:#0b1720;border:1px solid #1d3341;border-radius:12px;padding:9px}.step .n{width:26px;height:26px;display:grid;place-items:center;border-radius:50%;background:#162936;color:#bceefa;font-size:.75rem;font-weight:900}.step small{color:var(--muted)}
+.scroll{max-height:320px;overflow:auto;padding-right:2px}.item{border-bottom:1px solid #1b2e3a;padding:9px 2px}.item:last-child{border-bottom:0}.item b{font-size:.87rem}.item small{display:block;color:var(--muted);margin-top:3px;line-height:1.4}.mono{font-family:"SFMono-Regular",Consolas,monospace;font-size:.8rem}
+.skill{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.meter{height:7px;border-radius:999px;background:#0a1218;overflow:hidden;border:1px solid #20333e;margin-top:5px}.meter>i{display:block;height:100%;background:linear-gradient(90deg,#37a8c7,#74e6bd)}
+details{border:1px solid var(--line);border-radius:13px;padding:9px 11px;background:#0b1720}details summary{cursor:pointer;font-weight:800}.boundary{line-height:1.52;color:#c7d8e2}.boundary strong{color:white}
+.kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:#79dcef;font-weight:900}.tiny{font-size:.73rem}.sep{height:1px;background:var(--line);margin:12px 0}
+.toast{position:fixed;right:16px;bottom:16px;max-width:min(440px,calc(100vw - 32px));background:#112531;border:1px solid #31576a;border-radius:14px;padding:10px 12px;box-shadow:var(--shadow);display:none;z-index:20}
+/* v1.2 retains the proven v0.9 mobile-fit floor. */
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body,.shell,.grid,.stack,.panel,.metrics,.metric,.row,.actions,.scroll,.output,.plan,.step,.item,.skill,.boundary,details{min-width:0;max-width:100%}
+.shell{width:100%}
+.grid>*{min-width:0}
+.panel{overflow:hidden}
+.row>*{min-width:0}
+input,textarea,select,button{min-width:0;max-width:100%}
+.scroll{overflow-y:auto;overflow-x:hidden}
+.output{overflow-x:hidden;overflow-wrap:anywhere;word-break:break-word}
+.step{grid-template-columns:28px minmax(0,1fr) auto}
+.skill{grid-template-columns:minmax(0,1fr) auto}
+.step b,.step small,.item b,.item small,.mono,.boundary,.hero p,details p,code,pre{overflow-wrap:anywhere;word-break:break-word}
+.step small{display:block;margin-top:2px}
+@media(max-width:860px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero{flex-direction:column}
+  .badge{white-space:normal;max-width:100%}
+  .panel{border-radius:15px}
+  .shell{padding:10px}
+}
+@media(max-width:560px){
+  .shell{padding:8px}
+  .hero{gap:9px;margin:3px 0 12px}
+  .hero h1{font-size:1.45rem}
+  .hero p{font-size:.92rem;line-height:1.42}
+  .badge{width:100%;text-align:center;padding:.55rem .7rem}
+  .metrics{gap:7px;margin-bottom:10px}
+  .metric{padding:10px;border-radius:12px}
+  .metric b{font-size:1.12rem}
+  .metric span{font-size:.72rem}
+  .panel{padding:11px;border-radius:14px}
+  .panel h2{font-size:1rem}
+  textarea,input,select{font-size:16px}
+  textarea{min-height:180px}
+  .actions{display:grid;grid-template-columns:minmax(0,1fr);gap:7px}
+  .actions button{width:100%;min-height:46px}
+  .row{align-items:flex-start}
+  .row .fit{flex:0 0 auto}
+  .step{grid-template-columns:26px minmax(0,1fr);gap:7px;align-items:start;padding:9px}
+  .step .n{width:24px;height:24px}
+  .step>.status{grid-column:2;justify-self:start;margin-top:3px}
+  .item>.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:start}
+  .item>.row .fit{justify-self:end}
+  .skill{grid-template-columns:minmax(0,1fr)}
+  .skill>.tiny{justify-self:start;margin-top:3px}
+  .scroll{max-height:300px}
+  .output{font-size:.9rem;line-height:1.45}
+  details>.row{display:grid;grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:360px){
+  .shell{padding:6px}
+  .metrics{grid-template-columns:minmax(0,1fr)}
+  .panel{padding:10px}
+}
+
+.owner-test-card code{display:block;margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#07131b;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:.9rem}
+.owner-test-card .item{margin-top:10px}
+.owner-harness{border-color:#31576a;background:linear-gradient(180deg,rgba(13,34,45,.98),rgba(14,25,35,.98))}
+.owner-harness .owner-stage-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.owner-harness .owner-stage{border:1px solid var(--line);border-radius:12px;background:#091720;padding:9px;min-width:0}
+.owner-harness .owner-stage b{display:block;font-size:.82rem;margin-bottom:4px}
+.owner-harness .owner-stage small{display:block;color:var(--muted);line-height:1.35;overflow-wrap:anywhere}
+.owner-harness .owner-stage .status{margin-top:7px}
+.owner-harness .owner-note{line-height:1.48}
+.owner-harness .output{min-height:92px}
+@media(max-width:700px){.owner-harness .owner-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.owner-harness .owner-stage-grid{grid-template-columns:minmax(0,1fr)}}
+.contact-config{display:grid;grid-template-columns:1.4fr .8fr;gap:8px;margin-top:10px}.contact-config .wide{grid-column:1/-1}@media(max-width:620px){.contact-config{grid-template-columns:minmax(0,1fr)}.contact-config .wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div>
+      <div class="kicker">Sovereign general-agent laboratory</div>
+      <h1>JM AGI Lab v1.4.3</h1>
+      <div class="tiny muted">Process-Restart + Owner + Model Contact Harnesses · Verified Consequence Contact · Closed-Loop Delegation</div>
+      <p>An owned cognitive kernel with <strong>compositional missions</strong>, <strong>evidence-weighted learning</strong>, a <strong>symbolic world model</strong>, <strong>hierarchical planning</strong>, <strong>procedural abstraction</strong>, an explicit <strong>self-model/policy</strong>, bounded <strong>autonomous re-planning</strong>, a <strong>verified delegation gate</strong>, a provenance-aware <strong>environment contact + active inquiry rail</strong>, a <strong>verified consequence tool rail</strong>, and layered contact harnesses for <strong>reload persistence</strong>, <strong>browser-process restart durability</strong>, and <strong>real-model → local-consequence verification</strong>. The process-restart gate requires an OS witness that a dedicated browser process reached zero before the exact body returned and independently read its probe back. It is a <strong>generality testbed</strong>, not an AGI claim.</p>
+    </div>
+    <div class="badge">NO DING, NO CLAIM • RECOVER BEFORE REBUILD</div>
+  </header>
+
+  <section class="metrics" id="metrics"></section>
+
+  <div class="grid">
+    <main class="stack">
+      <section class="panel owner-harness" id="processHarnessPanel">
+        <div class="row"><h2 style="margin:0">🧱 Browser Process Restart Durability Harness</h2><span id="processHarnessStatus" class="status OPEN fit">NOT RUN</span></div>
+        <div id="processHarnessReasonTop" class="tiny muted" style="margin-top:6px">No process-restart result yet.</div>
+        <p class="muted owner-note"><strong>Stronger than reload.</strong> The Windows runner launches this exact body in an isolated Edge test profile, arms a unique durable probe, witnesses the dedicated Edge process tree reach zero, then relaunches the same body/profile. PASS requires the OS witness of process-tree ZERO, a distinct returned page load, exact localStorage read-back, and prior-state restoration. The sessionStorage marker is diagnostic only because Edge may restore session state after a forced process termination. <strong>Your normal Edge profile is not targeted.</strong></p>
+        <div class="owner-stage-grid">
+          <div class="owner-stage"><b>1 · Runner / Context</b><small id="processStageRunnerText">Launch through the packaged Windows runner.</small><span id="processStageRunner" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>2 · Arm</b><small>Unique probe + session marker written before termination (diagnostic only).</small><span id="processStageArm" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>3 · Process Zero</b><small>OS witness must observe the dedicated Edge process tree fully stopped.</small><span id="processStageZero" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>4 · Returned Page / New Load</b><small>A distinct returned page load is required. sessionStorage clear/restore is recorded diagnostically, not used as proof of process death.</small><span id="processStageSession" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>5 · Durable Read-back / Restore</b><small>Exact localStorage payload survives process death; prior state is restored.</small><span id="processStageRead" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>6 · Scope / Ding</b><small>Windows + Microsoft Edge dedicated-profile witness required for owner Ding.</small><span id="processStageScope" class="status OPEN">OPEN</span></div>
+        </div>
+        <div id="processHarnessDetail" class="output">Process-restart contact has not been run. For the physical gate, extract the package and double-click RUN_JM_AGI_PROCESS_RESTART_TEST.bat once; the runner handles terminate → zero witness → relaunch automatically.</div>
+        <div class="actions"><button class="primary" id="armProcessHarness">🧱 Arm process restart test</button><button id="clearProcessHarness">Clear process test receipt</button></div>
+        <div class="tiny muted" style="margin-top:8px">Recommended physical route: <span class="mono">RUN_JM_AGI_PROCESS_RESTART_TEST.bat</span>. It uses a dedicated Edge profile under the extracted package, so it does not intentionally terminate the owner’s normal Edge session. Proof ceiling: one full Microsoft Edge process-tree termination/relaunch with the same dedicated profile; OS reboot durability remains separate.</div>
+      </section>
+
+      <section class="panel owner-harness" id="ownerHarnessPanel">
+        <div class="row"><h2 style="margin:0">🔔 Owner Browser Contact Harness</h2><span id="ownerHarnessStatus" class="status OPEN fit">NOT RUN</span></div>
+        <p class="muted owner-note">One-button physical/browser gate. It creates a unique probe, verifies the first write, reloads this exact page, reads the probe back on the new page load, restores the reserved key to its prior value, and only then decides scope. <strong>Embedded previews can test the mechanism but cannot earn the owner-browser Ding.</strong></p>
+        <div class="owner-stage-grid">
+          <div class="owner-stage"><b>1 · Context</b><small id="ownerStageContextText">Checking browser context…</small><span id="ownerStageContext" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>2 · Write</b><small>Unique probe written and immediately checked.</small><span id="ownerStageWrite" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>3 · Reload / Return</b><small>Must be a different page-load instance.</small><span id="ownerStageReload" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>4 · Read-back</b><small>Exact payload must survive the reload.</small><span id="ownerStageRead" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>5 · Restore</b><small>Prior reserved-key state must be restored exactly.</small><span id="ownerStageRestore" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>6 · Scope / Ding</b><small>Top-level owner browser required; embedded contact is bounded HOLD.</small><span id="ownerStageScope" class="status OPEN">OPEN</span></div>
+        </div>
+        <div id="ownerHarnessDetail" class="output">Owner contact has not been run. Assistant-side tests do not count as this Ding.</div>
+        <div class="actions"><button class="primary" id="runOwnerHarness">🔔 Run owner contact test</button><button id="clearOwnerHarness">Clear local test receipt</button></div>
+        <div class="tiny muted" style="margin-top:8px">Proof ceiling: reload persistence only. A browser/process restart is a separate, stronger durability test and is not silently claimed.</div>
+      </section>
+
+      <section class="panel owner-harness" id="modelContactPanel">
+        <div class="row"><h2 style="margin:0">🧩 Real Model Contact Harness</h2><span id="modelHarnessStatus" class="status OPEN fit">NOT RUN</span></div>
+        <p class="muted owner-note">One-button model/contact gate. A compatible model may propose <strong>only</strong> whitelisted local commands; the model cannot award itself PASS. The kernel must execute the proposed tool step and independently verify the local consequence. Mocked/non-native fetch can test mechanics but cannot earn the real-model Ding.</p>
+        <div class="contact-config">
+          <input id="modelHarnessEndpoint" class="wide" placeholder="OpenAI-compatible /chat/completions endpoint" />
+          <input id="modelHarnessName" placeholder="model name" />
+          <input id="modelHarnessToken" type="password" placeholder="session token (optional; not persisted)" />
+        </div>
+        <div class="owner-stage-grid">
+          <div class="owner-stage"><b>1 · Adapter</b><small id="modelStageAdapterText">Endpoint not configured.</small><span id="modelStageAdapter" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>2 · Model response</b><small>Compatible response must arrive through the model adapter.</small><span id="modelStageResponse" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>3 · Proposal gate</b><small>Proposed command must survive the local whitelist/parser.</small><span id="modelStageGate" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>4 · Tool act</b><small>The permitted local tool step must actually execute.</small><span id="modelStageTool" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>5 · Local verify</b><small>Target fact must be earned from local read-back, not model prose.</small><span id="modelStageVerify" class="status OPEN">OPEN</span></div>
+          <div class="owner-stage"><b>6 · Scope / Ding</b><small>Native fetch + verified model-guided consequence required.</small><span id="modelStageScope" class="status OPEN">OPEN</span></div>
+        </div>
+        <div id="modelHarnessDetail" class="output">Real model contact has not been run. Assistant-side mocked fetch tests do not count as this Ding.</div>
+        <div class="actions"><button class="primary" id="runModelHarness">🧩 Run real model contact test</button><button id="clearModelHarness">Clear model test receipt</button></div>
+      </section>
+
+      <section class="panel">
+        <h2>Goal Console</h2>
+        <textarea id="goal" spellcheck="false" placeholder="Try: calculate (28*17)+5\nremember that project codename is Horizon\nrecall project codename\nreverse Sovereign\nnext in sequence 3, 7, 11, 15\nlearn: cat => CAT\nteach: orbit=>ORBIT | cedar=>CEDAR
+apply learned uppercase: horizon
+mission: calculate 18*7 >> remember that product is $last >> recall product
+fact: door=locked, has_key=yes
+define action unlock: has_key=yes, door=locked => door=unlocked
+define action open: door=unlocked => door=open
+simulate: door=open
+assess: door=open
+achieve robust: door=open
+observe: route=clear @ 80%
+compile macro delivery: parcel=destination
+policy: min confidence=70%, max steps=12, max cycles=20
+autonomous: parcel=destination
+self assess
+audit kernel
+curriculum
+sense: network
+sense: viewport
+show environment
+inquire: connected=yes
+act: vibrate 120
+tool: storage roundtrip CONTACT-001
+delegate: choose a safe verified route for this goal
+delegate achieve: connected=yes"></textarea>
+        <div class="actions">
+          <button class="primary" id="runGoal">▶ Run goal</button>
+          <button class="good" id="runBattery">◎ Run transfer battery</button>
+          <button id="snapshot">↺ Snapshot</button>
+        </div>
+        <h3>Output</h3>
+        <div id="output" class="output">Ready. No task has been crowned yet.</div>
+      </section>
+
+
+      <section class="panel">
+        <div class="row"><h2 style="margin:0">Current Route</h2><span id="routeStatus" class="status OPEN fit">OPEN</span></div>
+        <div id="plan" class="plan muted">No active route.</div>
+      </section>
+
+      <section class="panel">
+        <div class="row"><h2 style="margin:0">Transfer Bench</h2><span id="batteryState" class="tiny muted fit">Not run</span></div>
+        <div id="battery" class="scroll"><div class="muted">The bench runs from a clean sandbox state, then tests arithmetic, language, memory, learned-rule transfer, anti-overclaim gates, composition, world planning, metacognition, procedural abstraction, self-model policy, bounded autonomy, environment grounding, closed-loop delegation, and verified consequence tool contact.</div></div>
+      </section>
+    </main>
+
+    <aside class="stack">
+      <section class="panel">
+        <h2>Skill Registry</h2>
+        <div id="skills" class="scroll"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Learned Rules / Evidence</h2>
+        <div id="hypotheses" class="scroll"><div class="muted">No learned hypotheses yet.</div></div>
+      </section>
+
+      <section class="panel">
+        <div class="row"><h2 style="margin:0">World Model / Action Graph</h2><span id="worldState" class="tiny muted fit">0 facts • 0 actions</span></div>
+        <div id="world" class="scroll"><div class="muted">No explicit world facts or taught actions yet.</div></div>
+      </section>
+
+      <section class="panel">
+        <div class="row"><h2 style="margin:0">Environment Contact / Inquiry</h2><span id="environmentState" class="tiny muted fit">0 live observations</span></div>
+        <div id="environment" class="scroll"><div class="muted">No browser/device observations yet. Try <span class="mono">sense: network</span>, <span class="mono">sense: viewport</span>, or <span class="mono">sense: all</span>.</div></div>
+      </section>
+
+      <section class="panel">
+        <h2>Memory / World Contact</h2>
+        <div class="row"><input id="memorySearch" placeholder="Search memory…"/><button class="fit" id="memorySearchBtn">Search</button></div>
+        <div id="memory" class="scroll" style="margin-top:7px"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Ding / Trace Receipts</h2>
+        <div id="receipts" class="scroll"></div>
+      </section>
+
+      <section class="panel">
+        <details>
+          <summary>Optional model adapter</summary>
+          <p class="tiny muted">For broader language tasks, point this at an OpenAI-compatible <span class="mono">/chat/completions</span> endpoint. The bearer token is session-only and is never written to local storage. Local/offline kernel functions do not need this.</p>
+          <label class="tiny muted">Endpoint</label><input id="modelEndpoint" placeholder="http://127.0.0.1:1234/v1/chat/completions" />
+          <div class="row" style="margin-top:8px"><input id="modelName" placeholder="model name"/><input id="modelToken" type="password" placeholder="session token (optional)"/></div>
+          <div class="actions"><button id="saveAdapter">Use adapter</button><button id="clearAdapter">Clear adapter</button></div>
+        </details>
+      </section>
+
+      <section class="panel boundary">
+        <h2>Boundary</h2>
+        <strong>Earned now:</strong> persistent memory, deterministic tools, transactional missions, verification gates, rollback/recovery, evidence-weighted learned rules, a user-teachable symbolic world/action model, shortest/robust/hierarchical planning, procedural macro compilation, adaptive strategy policy, bounded autonomous re-planning, structural self-audit, weakness-driven curriculum, verified model delegation, <strong>direct browser/device sensing with provenance + expiry</strong>, an <strong>active inquiry loop</strong>, <strong>closed-loop model delegation</strong>, and a <strong>reversible verified-consequence tool rail</strong> whose PASS requires action, exact read-back, and restoration rather than mere API acceptance.<br><br>
+        <strong>Current frontier:</strong> v1.4.2 instruments the stronger browser-process restart gate. Reload contact remains an earned predecessor fact; restart durability now requires an OS-side zero-process witness plus a distinct returned page load, durable localStorage read-back, restoration, and bounded scope. sessionStorage persistence is diagnostic only because browser session recovery may restore it after a forced stop. A real broader-model contact is still earned only when an actually attached model proposes a locally permitted step and the kernel independently verifies its consequence. OS reboot durability, unrestricted computer control, broad semantic perception, physical-world actuation, and general intelligence remain outside the current proof ceiling. No AGI crown is claimed.
+        <div class="sep"></div>
+        <div class="actions"><button id="exportState">Export state</button><button id="importBtn">Import state</button><input id="importFile" type="file" accept="application/json" hidden><button class="danger" id="reset">Reset lab</button></div>
+      </section>
+    </aside>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+(()=>{'use strict';
+const VERSION='1.4.3';
+const STORAGE_KEY='jm_agi_lab_v1_4_3_state';
+const PREV142_KEY='jm_agi_lab_v1_4_2_state';
+const PREV141_KEY='jm_agi_lab_v1_4_1_state';
+const V14_KEY='jm_agi_lab_v1_4_state';
+const PREVIOUS_KEY='jm_agi_lab_v1_3_state';
+const OWNER_CONTACT_PENDING_KEY='jm_agi_lab_v1_4_1_owner_contact_pending';
+const OWNER_CONTACT_LAST_KEY='jm_agi_lab_v1_4_1_owner_contact_last';
+const OWNER_CONTACT_PROBE_KEY='__jm_owner_contact_reload_probe__';
+const MODEL_CONTACT_LAST_KEY='jm_agi_lab_v1_4_1_model_contact_last';
+const PROCESS_PENDING_KEY='jm_agi_lab_v1_4_3_process_pending';
+const PROCESS_LAST_KEY='jm_agi_lab_v1_4_3_process_last';
+const PROCESS_PROBE_KEY='__jm_agi_process_restart_probe__';
+const PROCESS_SESSION_KEY='jm_agi_lab_v1_4_3_process_session';
+const PROCESS_WITNESS_SCHEMA='JM_AGI_EDGE_PROCESS_WITNESS_v1';
+const PAGE_LOAD_ID=`load_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,10)}`;
+const V12_KEY='jm_agi_lab_v1_2_state';
+const V09_KEY='jm_agi_lab_v0_9_state';
+const V08_KEY='jm_agi_lab_v0_8_state';
+const V04_KEY='jm_agi_lab_v0_4_state';
+const V03_KEY='jm_agi_lab_v0_3_state';
+const V02_KEY='jm_agi_lab_v0_2_state';
+const LEGACY_KEY='jm_agi_lab_v0_1_state';
+const $=s=>document.querySelector(s);
+const now=()=>new Date().toISOString();
+const uid=(p='id')=>`${p}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,8)}`;
+const deep=x=>JSON.parse(JSON.stringify(x));
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const ms=n=>n<1000?`${Math.round(n)} ms`:`${(n/1000).toFixed(2)} s`;
+const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9\s.-]/g,' ').replace(/\s+/g,' ').trim();
+const tokens=s=>[...new Set(norm(s).split(' ').filter(x=>x.length>1))];
+
+const DEFAULT_STATE=()=>({
+  version:VERSION,createdAt:now(),updatedAt:now(),goals:[],missions:[],memories:[],receipts:[],snapshots:[],batteryRuns:[],recoveries:0,
+  world:{facts:{},evidence:{},actions:[],plans:[]},
+  environment:{observations:[],latest:{},actuations:[],toolContacts:[],inquiries:[],sensorStats:{}},
+  self:{policy:{minConfidence:.65,maxSteps:12,maxCycles:20,prefer:'adaptive'},episodes:[],audits:[],curriculum:[],frontier:[]},
+  skills:seedSkills(),learnedSkills:[],stats:{goals:0,passed:0,held:0,failed:0,verified:0,totalDurationMs:0,missions:0,missionPassed:0,worldPlans:0,worldPlanPassed:0,assessments:0,replans:0,robustPlans:0,macros:0,autonomousRuns:0,autonomousPassed:0,selfAudits:0,senses:0,sensePassed:0,inquiries:0,inquiryPassed:0,actuations:0,toolContacts:0,toolContactPassed:0,interactiveDelegations:0,interactiveDelegationPassed:0},
+  lastPlan:[],lastOutput:'Ready. No task has been crowned yet.',lastStatus:'OPEN',adapter:{endpoint:'',model:''}
+});
+function seedSkills(){return[
+  skill('calculate','Arithmetic expression','reasoning','Deterministic parser; + − × ÷ % ^ and parentheses.'),
+  skill('reverse','Reverse text','language','Deterministic character reversal.'),
+  skill('uppercase','Uppercase text','language','Case transformation.'),
+  skill('lowercase','Lowercase text','language','Case transformation.'),
+  skill('wordCount','Word count','language','Counts whitespace-delimited words.'),
+  skill('sequence','Sequence continuation','pattern','Arithmetic/geometric first-order sequence inference.'),
+  skill('sortNumbers','Sort numbers','data','Ascending numeric sort.'),
+  skill('remember','Store memory','memory','Persists explicit user facts locally.'),
+  skill('recall','Retrieve memory','memory','Token-overlap retrieval with confidence trace.'),
+  skill('learnExample','Propose micro-rule','learning','One example can propose a hypothesis but does not by itself crown a general rule.'),
+  skill('teachExamples','Evidence-weighted rule learning','learning','Promotes a transformation only when the surviving hypothesis is uniquely supported by multiple examples.'),
+  skill('applyLearned','Apply learned rule','transfer','Applies a promoted learned rule to unseen input.'),
+  skill('challengeLearned','Challenge learned rule','epistemic','Tests a learned rule against a counterexample and demotes it on contradiction.'),
+  skill('mission','Compositional mission','planning','Executes multiple verified steps transactionally with $last/$1 references and rollback on HOLD/FAIL.'),
+  skill('dependencyPlan','Dependency route','planning','Topological plan for A -> B -> C style routes.'),
+  skill('assertFacts','Assert world facts','world-model','Adds explicit key=value facts to the symbolic world model.'),
+  skill('observeFact','Confidence-tagged observation','metacognition','Adds or updates one explicit world fact with a bounded confidence tag.'),
+  skill('defineAction','Teach symbolic action','world-model','Stores a named action with explicit preconditions, effects and bounded reliability.'),
+  skill('actionFeedback','Action reliability feedback','metacognition','Updates an action reliability estimate from explicit PASS/FAIL feedback.'),
+  skill('simulateGoal','Counterfactual planner','planning','Searches the taught action graph without mutating the real world state.'),
+  skill('assessGoal','Metacognitive goal assessment','metacognition','Builds a backward goal tree, compares shortest and robust routes, and exposes weak links.'),
+  skill('replanGoal','Evidence-sensitive replanning','metacognition','Recomputes the robust route and reports whether new evidence changed the preferred plan.'),
+  skill('achieveGoal','Goal-directed planner','planning','Searches then transactionally executes a symbolic plan and verifies the target state.'),
+  skill('showWorld','Inspect world model','world-model','Shows current explicit facts and taught action definitions.'),
+  skill('compileMacro','Compile procedural macro','abstraction','Compresses a verified multi-action route into a reusable macro whose execution still expands through its primitive actions.'),
+  skill('setPolicy','Set adaptive policy','self-model','Sets minimum route confidence and bounded planning/autonomy budgets.'),
+  skill('selfAssess','Capability self-assessment','self-model','Reports measured capability coverage, weak/unused routes and current architectural boundary.'),
+  skill('toggleAction','Enable/disable action','world-model','Changes whether a taught action may participate in planning.'),
+  skill('autonomousGoal','Bounded autonomous goal loop','autonomy','Selects a policy-aware route, executes one verified action, re-observes and replans until success, HOLD or budget exhaustion.'),
+  skill('auditKernel','Structural self-audit','metacognition','Checks macros, action graph, promoted rules and benchmark state for internal inconsistencies.'),
+  skill('curriculum','Weakness-driven curriculum','metacognition','Generates concrete next probes from unused or weakly-performing capabilities.'),
+  skill('delegateGoal','Verified external delegation','delegation','Lets an optional external model propose only whitelisted local tool steps; the kernel validates and transactionally verifies the consequences.'),
+  skill('delegateLoop','Verified closed-loop delegation','delegation','Lets an attached model propose one whitelisted step at a time, revealing only verified consequences before the next proposal; target state is locally verified.'),
+  skill('senseEnvironment','Sense browser/device environment','environment','Reads a bounded browser-native sensor and grounds verified observations with provenance and expiry.'),
+  skill('inspectEnvironment','Inspect environment evidence','environment','Shows live/stale environment observations and their provenance.'),
+  skill('inquireEnvironment','Active environment inquiry','environment','Diagnoses goal blockers, senses only mapped environment prerequisites, then re-plans without executing the world plan.'),
+  skill('actuateDevice','Bounded device actuation','actuation','Requests an explicit local device action but does not equate API acceptance with verified physical consequence.'),
+  skill('verifyToolContact','Verified consequence tool contact','tool-contact','Performs a reversible reserved-key browser storage action and PASSes only after exact read-back plus restoration of the prior state.'),
+  skill('modelAdapter','Model adapter','open-language','Optional external reasoning lane; never silently assumed.')
+]}
+function skill(id,name,domain,desc){return{id,name,domain,desc,uses:0,passes:0,fails:0,lastMs:0}}
+let state=load();
+let sessionToken='';
+
+function mergeSkillStats(target,oldSkills=[]){for(const t of target){const o=oldSkills.find(x=>x.id===t.id);if(o)Object.assign(t,{uses:o.uses||0,passes:o.passes||0,fails:o.fails||0,lastMs:o.lastMs||0})}return target}
+function normalizeWorld(w){
+  const x=w&&typeof w==='object'?w:{};
+  const facts=x.facts&&typeof x.facts==='object'?x.facts:{};
+  const evidence=x.evidence&&typeof x.evidence==='object'?x.evidence:{};
+  for(const k of Object.keys(facts))if(!evidence[k])evidence[k]={confidence:1,source:'migrated/asserted',at:now()};
+  const actions=(Array.isArray(x.actions)?x.actions:[]).map(a=>({...a,reliability:clamp(Number(a.reliability??.9),.01,.999),feedbackPasses:Number(a.feedbackPasses||0),feedbackFails:Number(a.feedbackFails||0),enabled:a.enabled!==false,kind:a.kind||'primitive',steps:Array.isArray(a.steps)?a.steps:[]}));
+  return{facts,evidence,actions,plans:Array.isArray(x.plans)?x.plans:[]}
+}
+function normalizeSelf(x){const d={policy:{minConfidence:.65,maxSteps:12,maxCycles:20,prefer:'adaptive'},episodes:[],audits:[],curriculum:[],frontier:[]},y=x&&typeof x==='object'?x:{};d.policy=Object.assign(d.policy,y.policy||{});d.policy.minConfidence=clamp(Number(d.policy.minConfidence??.65),.01,.999);d.policy.maxSteps=Math.max(1,Math.min(50,Number(d.policy.maxSteps||12)));d.policy.maxCycles=Math.max(1,Math.min(100,Number(d.policy.maxCycles||20)));d.episodes=Array.isArray(y.episodes)?y.episodes:[];d.audits=Array.isArray(y.audits)?y.audits:[];d.curriculum=Array.isArray(y.curriculum)?y.curriculum:[];d.frontier=Array.isArray(y.frontier)?y.frontier:[];return d}
+
+function normalizeEnvironment(e){
+  const x=e&&typeof e==='object'?e:{};
+  return{observations:Array.isArray(x.observations)?x.observations:[],latest:x.latest&&typeof x.latest==='object'?x.latest:{},actuations:Array.isArray(x.actuations)?x.actuations:[],toolContacts:Array.isArray(x.toolContacts)?x.toolContacts:[],inquiries:Array.isArray(x.inquiries)?x.inquiries:[],sensorStats:x.sensorStats&&typeof x.sensorStats==='object'?x.sensorStats:{}}
+}
+function migrateV142(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v1.4.2 → v1.4.3 process-proof correction migration',status:'PASS',detail:{preservedEnvironmentObservations:(d.environment.observations||[]).length,preservedToolContacts:(d.environment.toolContacts||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,sessionMarkerMadeDiagnostic:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV141(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v1.4.1 → v1.4.2 process-restart-harness migration',status:'PASS',detail:{preservedEnvironmentObservations:(d.environment.observations||[]).length,preservedToolContacts:(d.environment.toolContacts||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,processRestartHarnessInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV14(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v1.4 → v1.4.1 owner-contact-harness migration',status:'PASS',detail:{preservedEnvironmentObservations:(d.environment.observations||[]).length,preservedToolContacts:(d.environment.toolContacts||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,ownerContactHarnessInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV131(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v1.3.1 → v1.4 verified-consequence-contact migration',status:'PASS',detail:{preservedEnvironmentObservations:(d.environment.observations||[]).length,preservedToolContacts:(d.environment.toolContacts||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,verifiedConsequenceRailInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV12(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v1.2 → v1.3 closed-loop delegation migration',status:'PASS',detail:{preservedEnvironmentObservations:(d.environment.observations||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,closedLoopGateInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV09(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v0.9 → v1.2 environment-contact migration',status:'PASS',detail:{preservedMemories:(d.memories||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,environmentRailInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d
+}
+function migrateV01(x){
+  const d=DEFAULT_STATE();
+  Object.assign(d,{createdAt:x.createdAt||d.createdAt,updatedAt:now(),goals:x.goals||[],memories:x.memories||[],receipts:x.receipts||[],snapshots:x.snapshots||[],batteryRuns:x.batteryRuns||[],recoveries:x.recoveries||0,lastPlan:x.lastPlan||[],lastOutput:x.lastOutput||d.lastOutput,lastStatus:x.lastStatus||'OPEN',adapter:Object.assign(d.adapter,x.adapter||{})});
+  d.stats=Object.assign(d.stats,x.stats||{});d.skills=mergeSkillStats(seedSkills(),x.skills||[]);
+  d.learnedSkills=(x.learnedSkills||[]).map(s=>({...s,status:'PROVISIONAL',evidenceCount:s.evidenceCount||1,evidencePasses:s.evidencePasses||1,evidenceFails:s.evidenceFails||0,confidence:Math.min(Number(s.confidence||.5),.74),migratedFrom:'0.1'}));
+  d.receipts.unshift({id:uid('receipt'),at:now(),action:'v0.1 → v0.3 state migration',status:'PASS',detail:{preservedMemories:d.memories.length,preservedGoals:d.goals.length,provisionalLearnedRules:d.learnedSkills.length},durationMs:0});
+  return d;
+}
+function migrateV02(x){
+  const d=DEFAULT_STATE();
+  Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v0.2 → v0.3 state migration',status:'PASS',detail:{preservedMemories:(d.memories||[]).length,preservedMissions:(d.missions||[]).length,preservedLearnedRules:(d.learnedSkills||[]).length,worldModelInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);
+  return d;
+}
+function migrateV03(x){
+  const d=DEFAULT_STATE();
+  Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});
+  d.receipts=[{id:uid('receipt'),at:now(),action:'v0.3 → v0.4 state migration',status:'PASS',detail:{preservedMemories:(d.memories||[]).length,preservedMissions:(d.missions||[]).length,preservedLearnedRules:(d.learnedSkills||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,confidenceLayerInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);
+  return d;
+}
+function migrateV04(x){
+  const d=DEFAULT_STATE();Object.assign(d,x,{version:VERSION,updatedAt:now(),world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])});return d
+}
+function migrateV08(x){const d=migrateV04(x);d.receipts=[{id:uid('receipt'),at:now(),action:'v0.8 → v0.9 verified-delegation migration',status:'PASS',detail:{preservedMemories:(d.memories||[]).length,preservedWorldFacts:Object.keys(d.world.facts||{}).length,preservedActions:(d.world.actions||[]).length,delegationGateInitialized:true},durationMs:0},...(d.receipts||[])].slice(0,300);return d}
+function load(){try{
+  const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(x&&x.version===VERSION){const d=DEFAULT_STATE();return Object.assign(d,x,{world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),stats:Object.assign(d.stats,x.stats||{}),adapter:Object.assign(d.adapter,x.adapter||{}),skills:mergeSkillStats(seedSkills(),x.skills||[])})}
+  const v142=JSON.parse(localStorage.getItem(PREV142_KEY)||'null');if(v142&&v142.version==='1.4.2'){const m=migrateV142(v142);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v141=JSON.parse(localStorage.getItem(PREV141_KEY)||'null');if(v141&&v141.version==='1.4.1'){const m=migrateV141(v141);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v14=JSON.parse(localStorage.getItem(V14_KEY)||'null');if(v14&&v14.version==='1.4.0'){const m=migrateV14(v14);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const prev=JSON.parse(localStorage.getItem(PREVIOUS_KEY)||'null');if(prev&&prev.version==='1.3.1'){const m=migrateV131(prev);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v12=JSON.parse(localStorage.getItem(V12_KEY)||'null');if(v12&&v12.version==='1.2'){const m=migrateV12(v12);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v09=JSON.parse(localStorage.getItem(V09_KEY)||'null');if(v09&&v09.version==='0.9'){let m=migrateV09(v09);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v08=JSON.parse(localStorage.getItem(V08_KEY)||'null');if(v08&&v08.version==='0.8'){let m=migrateV08(v08);m=migrateV09(m);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v04=JSON.parse(localStorage.getItem(V04_KEY)||'null');if(v04&&v04.version==='0.4'){let m=migrateV04(v04);m=migrateV09(m);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v03=JSON.parse(localStorage.getItem(V03_KEY)||'null');if(v03&&v03.version==='0.3'){let m=migrateV03(v03);m=migrateV04(m);m=migrateV09(m);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const v02=JSON.parse(localStorage.getItem(V02_KEY)||'null');if(v02&&v02.version==='0.2'){let m=migrateV02(v02);m=migrateV04(m);m=migrateV09(m);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+  const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||'null');if(old&&old.version==='0.1'){let m=migrateV01(old);m=migrateV04(m);m=migrateV09(m);m=migrateV12(m);localStorage.setItem(STORAGE_KEY,JSON.stringify(m));return m}
+}catch(e){}return DEFAULT_STATE()}
+function save(){state.updatedAt=now();localStorage.setItem(STORAGE_KEY,JSON.stringify({...state,adapter:{...state.adapter}}));render()}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2400)}
+function receipt(action,status,detail={},durationMs=0){const r={id:uid('receipt'),at:now(),action,status,detail,durationMs};state.receipts.unshift(r);state.receipts=state.receipts.slice(0,300);return r}
+function getSkill(id){return state.skills.find(s=>s.id===id)||state.learnedSkills.find(s=>s.id===id)}
+function scoreSkill(id,pass,durationMs){const s=getSkill(id);if(!s)return;s.uses++;s.lastMs=durationMs;pass?s.passes++:s.fails++}
+function statusClass(x){return ['PASS','HOLD','FAIL','OPEN'].includes(x)?x:'OPEN'}
+
+function addMemory(text,tags=['user'],confidence=1,source='explicit'){
+  const clean=String(text).trim(); if(!clean)return null;
+  const duplicate=state.memories.find(m=>norm(m.text)===norm(clean));
+  if(duplicate){duplicate.touchedAt=now();duplicate.hits=(duplicate.hits||0)+1;return duplicate}
+  const m={id:uid('mem'),text:clean,tags,confidence,source,createdAt:now(),touchedAt:now(),hits:0};state.memories.unshift(m);state.memories=state.memories.slice(0,500);return m
+}
+function retrieveMemory(query,limit=5){
+  const q=tokens(query);return state.memories.map(m=>{const mt=tokens(m.text+' '+(m.tags||[]).join(' '));const overlap=q.filter(x=>mt.includes(x)).length;const score=q.length?overlap/q.length:0;return{...m,score}}).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||String(b.touchedAt).localeCompare(a.touchedAt)).slice(0,limit)
+}
+
+// Safe arithmetic parser: shunting-yard -> RPN; no eval/new Function.
+function calc(expr){
+  const src=String(expr).replace(/[×x]/gi,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\s+/g,'');
+  const ts=src.match(/(?:\d*\.\d+|\d+\.?\d*)|[()+\-*/%^]/g)||[];
+  if(!ts.length||ts.join('')!==src)throw Error('Unsupported arithmetic token.');
+  let i=0;
+  const peek=()=>ts[i], take=()=>ts[i++];
+  function primary(){
+    const t=take();
+    if(t===undefined)throw Error('Incomplete expression.');
+    if(t==='('){const v=expression();if(take()!==')')throw Error('Mismatched parentheses.');return v}
+    if(/^(?:\d*\.\d+|\d+\.?\d*)$/.test(t))return Number(t);
+    throw Error(`Unexpected token “${t}”.`)
+  }
+  function power(){const a=primary();if(peek()==='^'){take();const b=unary();const v=a**b;if(!Number.isFinite(v))throw Error('Non-finite arithmetic result.');return v}return a}
+  function unary(){if(peek()==='+'){take();return unary()}if(peek()==='-'){take();const v=-unary();if(!Number.isFinite(v))throw Error('Non-finite arithmetic result.');return v}return power()}
+  function term(){let v=unary();while(['*','/','%'].includes(peek())){const op=take(),b=unary();v=op==='*'?v*b:op==='/'?v/b:v%b;if(!Number.isFinite(v))throw Error('Non-finite arithmetic result.')}return v}
+  function expression(){let v=term();while(['+','-'].includes(peek())){const op=take(),b=term();v=op==='+'?v+b:v-b;if(!Number.isFinite(v))throw Error('Non-finite arithmetic result.')}return v}
+  const v=expression();if(i!==ts.length)throw Error(`Unexpected token “${peek()}”.`);if(!Number.isFinite(v))throw Error('Non-finite arithmetic result.');return v
+}
+
+function inferSequence(nums){
+  if(nums.length<3)throw Error('Need at least 3 values.');
+  const ds=nums.slice(1).map((n,i)=>n-nums[i]);
+  if(ds.every(x=>Math.abs(x-ds[0])<1e-10))return{kind:'arithmetic',rule:`+ ${ds[0]}`,next:nums.at(-1)+ds[0],confidence:1};
+  if(nums.slice(0,-1).every(x=>x!==0)){const rs=nums.slice(1).map((n,i)=>n/nums[i]);if(rs.every(x=>Math.abs(x-rs[0])<1e-10))return{kind:'geometric',rule:`× ${rs[0]}`,next:nums.at(-1)*rs[0],confidence:.95}}
+  const d2=ds.slice(1).map((n,i)=>n-ds[i]);if(d2.length>=2&&d2.every(x=>Math.abs(x-d2[0])<1e-10))return{kind:'second-difference',rule:`Δ² ${d2[0]}`,next:nums.at(-1)+ds.at(-1)+d2[0],confidence:.82};
+  throw Error('No supported simple sequence rule earned.')
+}
+
+function ruleSpec(type,param){
+  const labels={uppercase:'uppercase',lowercase:'lowercase',reverse:'reverse characters',suffix:`append “${param??''}”`,prefix:`prepend “${param??''}”`,multiply:`multiply by ${param}`,add:`add ${param}`};
+  return{type,param,label:labels[type]||type}
+}
+function applyRuleSpec(spec,x){
+  if(spec.type==='uppercase')return String(x).toUpperCase();if(spec.type==='lowercase')return String(x).toLowerCase();if(spec.type==='reverse')return [...String(x)].reverse().join('');
+  if(spec.type==='suffix')return String(x)+(spec.param??'');if(spec.type==='prefix')return (spec.param??'')+String(x);if(spec.type==='multiply')return Number(x)*Number(spec.param);if(spec.type==='add')return Number(x)+Number(spec.param);return undefined
+}
+function candidateRules(a,b){
+  a=String(a);b=String(b);const out=[];const push=(type,param)=>{const k=type+'|'+String(param??'');if(!out.some(x=>x.key===k))out.push({...ruleSpec(type,param),key:k})};
+  if(b===a.toUpperCase()&&a!==b)push('uppercase');if(b===a.toLowerCase()&&a!==b)push('lowercase');if(b===[...a].reverse().join('')&&a!==b)push('reverse');
+  if(b.startsWith(a)&&b!==a)push('suffix',b.slice(a.length));if(b.endsWith(a)&&b!==a)push('prefix',b.slice(0,b.length-a.length));
+  const na=Number(a),nb=Number(b);if(Number.isFinite(na)&&Number.isFinite(nb)){push('add',nb-na);if(na!==0&&Number.isFinite(nb/na))push('multiply',nb/na)}
+  return out
+}
+function ruleMatches(spec,a,b){const v=applyRuleSpec(spec,a);if(typeof v==='number'&&Number.isFinite(Number(b)))return Math.abs(v-Number(b))<1e-10;return String(v)===String(b)}
+function deriveHypothesis(examples){
+  if(!examples.length)return{status:'HOLD',reason:'No examples supplied.',survivors:[]};
+  let survivors=candidateRules(examples[0].input,examples[0].output);
+  survivors=survivors.filter(spec=>examples.every(e=>ruleMatches(spec,e.input,e.output)));
+  if(!survivors.length)return{status:'HOLD',reason:'No supported rule survives every example; evidence is contradictory or outside the current rule family.',survivors};
+  if(survivors.length>1)return{status:'HOLD',reason:`Evidence is underdetermined: ${survivors.length} hypotheses still survive. Add another discriminating example.`,survivors};
+  const spec=survivors[0],n=examples.length;
+  if(n<2)return{status:'HOLD',reason:`One example supports “${spec.label}” as a hypothesis, but one contact is not enough to promote it.`,survivors,proposal:spec};
+  const confidence=Math.min(.99,.88+Math.min(5,n-2)*.025);return{status:'PASS',reason:'Unique hypothesis survived all supplied examples.',survivors,spec,confidence}
+}
+function storeHypothesis(examples,result){
+  const spec=result.spec||result.proposal||result.survivors?.[0];if(!spec)return null;
+  const existing=state.learnedSkills.find(s=>s.type===spec.type&&String(s.param??'')===String(spec.param??''));
+  const status=result.status==='PASS'?'PROMOTED':'PROVISIONAL';const confidence=result.status==='PASS'?result.confidence:Math.min(.74,.45+.08*examples.length);
+  if(existing){existing.examples=[...(existing.examples||[]),...examples].slice(-20);existing.evidenceCount=existing.examples.length;existing.status=status==='PROMOTED'?'PROMOTED':existing.status;existing.confidence=Math.max(existing.confidence||0,confidence);existing.touchedAt=now();return existing}
+  const s={id:uid('learned'),name:`Learned: ${spec.label}`,domain:'learned',desc:`Evidence-weighted ${spec.label}`,type:spec.type,param:spec.param,status,confidence,examples:[...examples],evidenceCount:examples.length,evidencePasses:examples.length,evidenceFails:0,uses:0,passes:0,fails:0,lastMs:0,createdAt:now(),touchedAt:now()};state.learnedSkills.unshift(s);return s
+}
+function hydrateLearned(s){return x=>applyRuleSpec(s,x)}
+function parseExampleList(src){return String(src).split('|').map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.match(/^(.+?)\s*=>\s*(.+)$/);if(!m)throw Error(`Bad example: ${x}`);return{input:m[1].trim(),output:m[2].trim()}})}
+function findLearned(selector){const active=state.learnedSkills.filter(s=>s.status==='PROMOTED');if(!selector)return active.length===1?active[0]:null;const n=norm(selector);return active.find(s=>norm(s.type)===n||norm(s.name).includes(n)||norm(s.desc).includes(n))||null}
+
+function parseScalar(v){const s=String(v).trim();if(/^(true|yes)$/i.test(s))return true;if(/^(false|no)$/i.test(s))return false;if(/^null$/i.test(s))return null;if(/^-?(?:\d+\.?\d*|\.\d+)$/.test(s))return Number(s);return s}
+function scalarText(v){return v===true?'yes':v===false?'no':v===null?'null':String(v)}
+function parseConfidence(v,def=.9){if(v===undefined||v===null||String(v).trim()==='')return def;let s=String(v).trim(),n;if(s.endsWith('%'))n=Number(s.slice(0,-1))/100;else n=Number(s);if(!Number.isFinite(n))throw Error(`Invalid confidence “${v}”.`);if(n>1&&n<=100)n/=100;if(n<0||n>1)throw Error('Confidence must be between 0 and 1 (or 0% and 100%).');return clamp(n,.001,.999)}
+function parseConditions(src){
+  const text=String(src??'').trim();if(!text)return{};const out={};
+  for(const part of text.split(',').map(x=>x.trim()).filter(Boolean)){const m=part.match(/^([A-Za-z0-9_.-]+)\s*=\s*(.+)$/);if(!m)throw Error(`Expected key=value condition, got “${part}”.`);out[m[1]]=parseScalar(m[2])}
+  return out
+}
+function evidenceFresh(ev,at=Date.now()){return !ev?.expiresAt||new Date(ev.expiresAt).getTime()>at}
+function factsMatch(facts,conds){return Object.entries(conds||{}).every(([k,v])=>Object.prototype.hasOwnProperty.call(facts,k)&&facts[k]===v&&(facts!==state.world.facts||evidenceFresh(state.world.evidence?.[k])))}
+function unmetFacts(facts,conds){return Object.entries(conds||{}).filter(([k,v])=>!Object.prototype.hasOwnProperty.call(facts,k)||facts[k]!==v).map(([k,v])=>`${k}=${scalarText(v)}`)}
+function applyEffects(facts,effects){return Object.assign({},facts,effects||{})}
+function worldKey(facts){return JSON.stringify(Object.keys(facts).sort().map(k=>[k,facts[k]]))}
+function setFact(k,v,confidence=1,source='asserted'){state.world.facts[k]=v;state.world.evidence[k]={confidence:clamp(Number(confidence),.001,.999),source,at:now()};return state.world.evidence[k]}
+function factConfidence(k,v,facts=state.world.facts,evidence=state.world.evidence){const ev=evidence?.[k];return facts[k]===v&&evidenceFresh(ev)?clamp(Number(ev?.confidence??1),.001,.999):0}
+function actionLabel(a){const pre=Object.entries(a.preconditions||{}).map(([k,v])=>`${k}=${scalarText(v)}`).join(', ')||'∅';const eff=Object.entries(a.effects||{}).map(([k,v])=>`${k}=${scalarText(v)}`).join(', ')||'∅';const kind=a.kind==='macro'?' [macro]':'';const enabled=a.enabled===false?' [disabled]':'';return`${a.name}${kind}${enabled} @ ${Math.round((a.reliability??.9)*100)}%: ${pre} => ${eff}`}
+function upsertAction(name,preconditions,effects,reliability=.9){
+  const clean=String(name).trim();if(!clean)throw Error('Action name is required.');if(!Object.keys(effects).length)throw Error('Action needs at least one effect.');
+  const a={id:uid('action'),name:clean,preconditions:deep(preconditions),effects:deep(effects),reliability:clamp(Number(reliability),.01,.999),enabled:true,kind:'primitive',steps:[],createdAt:now(),uses:0,passes:0,feedbackPasses:0,feedbackFails:0};
+  const i=state.world.actions.findIndex(x=>norm(x.name)===norm(clean));if(i>=0){const old=state.world.actions[i];a.id=old.id;a.createdAt=old.createdAt;a.uses=old.uses||0;a.passes=old.passes||0;a.feedbackPasses=old.feedbackPasses||0;a.feedbackFails=old.feedbackFails||0;a.enabled=old.enabled!==false;a.kind=old.kind||'primitive';a.steps=Array.isArray(old.steps)?old.steps:[];state.world.actions[i]=a}else state.world.actions.push(a);return a
+}
+function enumerateWorldPlans(goal,{maxDepth=8,maxExpansions=5000,maxPlans=120}={}){
+  const startFacts=deep(state.world.facts),target=deep(goal),plans=[];if(factsMatch(startFacts,target))return{plans:[{plan:[],finalFacts:startFacts}],expansions:0,already:true};
+  const q=[{facts:startFacts,plan:[],seen:new Set([worldKey(startFacts)])}];let expansions=0;
+  while(q.length&&expansions<maxExpansions&&plans.length<maxPlans){const cur=q.shift();if(cur.plan.length>=maxDepth)continue;for(const action of state.world.actions){if(action.enabled===false)continue;if(!factsMatch(cur.facts,action.preconditions))continue;expansions++;const nf=applyEffects(cur.facts,action.effects),np=[...cur.plan,action],key=worldKey(nf);if(factsMatch(nf,target)){plans.push({plan:np,finalFacts:nf});continue}if(!cur.seen.has(key)){const seen=new Set(cur.seen);seen.add(key);q.push({facts:nf,plan:np,seen})}if(expansions>=maxExpansions||plans.length>=maxPlans)break}}
+  return{plans,expansions,already:false}
+}
+function routeConfidence(plan,startFacts=state.world.facts,evidence=state.world.evidence){
+  let c=1;const links=[],produced=new Set();for(const a of plan){for(const [k,v] of Object.entries(a.preconditions||{})){if(produced.has(k))continue;const fc=factConfidence(k,v,startFacts,evidence);links.push({type:'fact',name:`${k}=${scalarText(v)}`,confidence:fc});c*=fc}const ar=clamp(Number(a.reliability??.9),.01,.999);links.push({type:'action',name:a.name,confidence:ar});c*=ar;for(const k of Object.keys(a.effects||{}))produced.add(k)}const weakest=links.length?links.reduce((x,y)=>y.confidence<x.confidence?y:x):{type:'none',name:'target already satisfied',confidence:1};return{confidence:clamp(c,0,1),weakest,links}
+}
+function planWorld(goal,{maxDepth=8,maxExpansions=2000}={}){
+  const startFacts=deep(state.world.facts),target=deep(goal);if(!Object.keys(target).length)return{status:'HOLD',reason:'No target conditions supplied.',plan:[],finalFacts:startFacts,expansions:0};
+  if(factsMatch(startFacts,target))return{status:'PASS',reason:'Target is already satisfied.',plan:[],finalFacts:startFacts,expansions:0,already:true,confidence:1};
+  const q=[{facts:startFacts,plan:[]}],seen=new Set([worldKey(startFacts)]);let expansions=0;
+  while(q.length&&expansions<maxExpansions){const cur=q.shift();if(cur.plan.length>=maxDepth)continue;for(const action of state.world.actions){if(action.enabled===false)continue;if(!factsMatch(cur.facts,action.preconditions))continue;expansions++;const nf=applyEffects(cur.facts,action.effects),np=[...cur.plan,action];if(factsMatch(nf,target)){const rc=routeConfidence(np,startFacts,state.world.evidence);return{status:'PASS',reason:'Shortest route found within bounded breadth-first search.',plan:np,finalFacts:nf,expansions,...rc}}const key=worldKey(nf);if(!seen.has(key)){seen.add(key);q.push({facts:nf,plan:np})}if(expansions>=maxExpansions)break}}
+  return{status:'HOLD',reason:`No route found within depth ${maxDepth} / ${maxExpansions} expansions.`,plan:[],finalFacts:startFacts,expansions,blockers:diagnoseBlockers(target)}
+}
+function planWorldRobust(goal,opts={}){
+  const startFacts=deep(state.world.facts),target=deep(goal);if(!Object.keys(target).length)return{status:'HOLD',reason:'No target conditions supplied.',plan:[],finalFacts:startFacts,expansions:0};if(factsMatch(startFacts,target))return{status:'PASS',reason:'Target is already satisfied.',plan:[],finalFacts:startFacts,expansions:0,already:true,confidence:1,weakest:{type:'none',name:'already satisfied',confidence:1}};
+  const e=enumerateWorldPlans(target,opts);if(!e.plans.length)return{status:'HOLD',reason:'No executable route found in the current action graph.',plan:[],finalFacts:startFacts,expansions:e.expansions,blockers:diagnoseBlockers(target)};
+  const ranked=e.plans.map(x=>({...x,...routeConfidence(x.plan,startFacts,state.world.evidence)})).sort((a,b)=>b.confidence-a.confidence||a.plan.length-b.plan.length||a.plan.map(x=>x.name).join('|').localeCompare(b.plan.map(x=>x.name).join('|')));const best=ranked[0];return{status:'PASS',reason:'Highest-confidence route selected from bounded candidate search.',plan:best.plan,finalFacts:best.finalFacts,expansions:e.expansions,confidence:best.confidence,weakest:best.weakest,candidates:ranked.length}
+}
+function diagnoseBlockers(target,maxDepth=5){
+  const leaves=new Set(),seen=new Set();
+  function seek(k,v,depth){const sig=`${k}=${JSON.stringify(v)}`;if(seen.has(sig))return;seen.add(sig);if(state.world.facts[k]===v)return;if(depth>=maxDepth){leaves.add(`${k}=${scalarText(v)}`);return}
+    const producers=state.world.actions.filter(a=>a.enabled!==false&&Object.prototype.hasOwnProperty.call(a.effects||{},k)&&a.effects[k]===v);if(!producers.length){leaves.add(`${k}=${scalarText(v)}`);return}
+    let expanded=false;for(const a of producers){for(const [pk,pv] of Object.entries(a.preconditions||{})){expanded=true;seek(pk,pv,depth+1)}}if(!expanded)leaves.add(`${k}=${scalarText(v)}`)
+  }
+  for(const [k,v] of Object.entries(target||{}))if(state.world.facts[k]!==v)seek(k,v,0);return[...leaves]
+}
+function decomposeGoal(target,maxDepth=7){
+  const walk=(k,v,depth,path)=>{const label=`${k}=${scalarText(v)}`;if(state.world.facts[k]===v)return{type:'fact',label,status:'SATISFIED',confidence:factConfidence(k,v)};if(depth>=maxDepth||path.has(label))return{type:'fact',label,status:'OPEN',confidence:0,reason:'depth/cycle boundary'};const producers=state.world.actions.filter(a=>a.enabled!==false&&Object.prototype.hasOwnProperty.call(a.effects||{},k)&&a.effects[k]===v);if(!producers.length)return{type:'fact',label,status:'OPEN',confidence:0,reason:'no producer'};const nextPath=new Set(path);nextPath.add(label);const methods=producers.map(a=>{const children=Object.entries(a.preconditions||{}).map(([pk,pv])=>walk(pk,pv,depth+1,nextPath));const childC=children.reduce((p,c)=>p*(c.confidence||0),1);const confidence=clamp(Number(a.reliability??.9)*childC,0,1);return{type:'method',label:a.name,status:children.every(c=>c.status==='SATISFIED'||c.status==='ACHIEVABLE')?'ACHIEVABLE':'OPEN',confidence,children}}).sort((a,b)=>b.confidence-a.confidence);return{type:'fact',label,status:methods.some(m=>m.status==='ACHIEVABLE')?'ACHIEVABLE':'OPEN',confidence:methods[0]?.confidence||0,children:methods}}
+  const roots=Object.entries(target||{}).map(([k,v])=>walk(k,v,0,new Set()));return{type:'goal',label:formatWorldFacts(target),status:roots.every(r=>r.status!=='OPEN')?'ACHIEVABLE':'OPEN',confidence:roots.reduce((p,r)=>p*(r.confidence||0),1),children:roots}
+}
+function formatGoalTree(tree){const lines=[];const rec=(n,d)=>{lines.push(`${'  '.repeat(d)}${d?'↳ ':'• '}${n.label} [${n.status}] ${Math.round((n.confidence||0)*100)}%`);for(const c of n.children||[])rec(c,d+1)};rec(tree,0);return lines.join('\n')}
+function formatWorldFacts(facts=state.world.facts){const es=Object.entries(facts);return es.length?es.sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${scalarText(v)}`).join(', '):'∅'}
+function recordWorldPlan(kind,target,route,status,detail={}){const p={id:uid('worldplan'),at:now(),kind,target:deep(target),route:route.map(a=>a.name),status,...detail};state.world.plans.unshift(p);state.world.plans=state.world.plans.slice(0,80);return p}
+
+
+function macroPrerequisites(plan,startFacts=state.world.facts){const required={},produced=new Set();for(const a of plan){for(const [k,v] of Object.entries(a.preconditions||{})){if(!produced.has(k)&&startFacts[k]===v)required[k]=v}for(const k of Object.keys(a.effects||{}))produced.add(k)}return required}
+function primitiveReliability(plan){return clamp(plan.reduce((p,a)=>p*clamp(Number(a.reliability??.9),.01,.999),1),.01,.999)}
+function compileMacro(name,target){const p=planWorldRobust(target);if(p.status!=='PASS')return{status:'HOLD',reason:p.reason,blockers:p.blockers||[]};if(p.plan.length<2)return{status:'HOLD',reason:'Macro compilation requires a verified route of at least two actions; a one-step alias adds no procedural abstraction.'};const pre=macroPrerequisites(p.plan,state.world.facts),rel=primitiveReliability(p.plan),a=upsertAction(name,pre,target,rel);a.kind='macro';a.steps=p.plan.map(x=>x.name);a.compiledAt=now();a.compiledTarget=deep(target);a.compiledSignature=a.steps.join(' > ');state.stats.macros=(state.stats.macros||0)+1;return{status:'PASS',action:a,plan:p.plan,confidence:p.confidence}}
+function findAction(name){const n=norm(name);return state.world.actions.find(a=>norm(a.name)===n)||null}
+function executeWorldAction(action,trace=[],ctx={remaining:50,seen:new Set()}){if(!action)throw Error('Missing action.');if(action.enabled===false)throw Error(`Action ${action.name} is disabled.`);if(ctx.remaining<=0)throw Error('Action expansion budget exhausted.');ctx.remaining--;if(!factsMatch(state.world.facts,action.preconditions))throw Error(`Preconditions no longer hold for ${action.name}.`);if(action.kind==='macro'){if(ctx.seen.has(action.id))throw Error(`Macro cycle detected at ${action.name}.`);const next={remaining:ctx.remaining,seen:new Set(ctx.seen)};next.seen.add(action.id);for(const stepName of action.steps||[]){const child=findAction(stepName);if(!child)throw Error(`Macro ${action.name} references missing step ${stepName}.`);executeWorldAction(child,trace,next)}ctx.remaining=next.remaining;if(!factsMatch(state.world.facts,action.effects))throw Error(`Macro ${action.name} expansion did not earn its declared effects.`);action.uses=(action.uses||0)+1;action.passes=(action.passes||0)+1;trace.push({action:action.name,kind:'macro',facts:deep(state.world.facts)});return}state.world.facts=applyEffects(state.world.facts,action.effects);for(const [k] of Object.entries(action.effects||{}))state.world.evidence[k]={confidence:clamp(Number(action.reliability??.9),.001,.999),source:`effect:${action.name}`,at:now()};if(!factsMatch(state.world.facts,action.effects))throw Error(`Effects failed verification for ${action.name}.`);action.uses=(action.uses||0)+1;action.passes=(action.passes||0)+1;trace.push({action:action.name,kind:'primitive',facts:deep(state.world.facts)})}
+function selectAdaptivePlan(target){const pol=state.self.policy,short=planWorld(target,{maxDepth:Math.min(8,pol.maxSteps),maxExpansions:3000}),rob=planWorldRobust(target,{maxDepth:Math.min(12,pol.maxSteps),maxExpansions:5000});const ok=p=>p.status==='PASS'&&p.plan.length<=pol.maxSteps&&(p.confidence??1)>=pol.minConfidence;if(pol.prefer==='shortest'&&ok(short))return{...short,mode:'shortest'};if(pol.prefer==='robust'&&ok(rob))return{...rob,mode:'robust'};if(ok(short))return{...short,mode:'shortest'};if(ok(rob))return{...rob,mode:'robust'};const best=rob.status==='PASS'?rob:short;return{status:'HOLD',reason:`No route meets policy floor ${Math.round(pol.minConfidence*100)}% within ${pol.maxSteps} step(s).`,best,blockers:best.blockers||[]}}
+function setPolicyFromSource(source){const p=state.self.policy;for(const part of String(source).split(',').map(x=>x.trim()).filter(Boolean)){let m;if((m=part.match(/^min(?:imum)?\s+confidence\s*=\s*([0-9.]+%?)$/i)))p.minConfidence=parseConfidence(m[1],p.minConfidence);else if((m=part.match(/^max\s+steps\s*=\s*(\d+)$/i)))p.maxSteps=Math.max(1,Math.min(50,Number(m[1])));else if((m=part.match(/^max\s+cycles\s*=\s*(\d+)$/i)))p.maxCycles=Math.max(1,Math.min(100,Number(m[1])));else if((m=part.match(/^prefer\s*=\s*(adaptive|shortest|robust)$/i)))p.prefer=m[1].toLowerCase();else throw Error(`Unknown policy field “${part}”.`)}return p}
+function capabilityProfile(){const skills=[...state.skills,...state.learnedSkills],used=skills.filter(x=>(x.uses||0)>0),passedUses=used.reduce((n,x)=>n+(x.passes||0),0),allUses=used.reduce((n,x)=>n+(x.uses||0),0),last=state.batteryRuns[0];return{registered:skills.length,used:used.length,coveragePct:skills.length?used.length/skills.length*100:0,observedPassPct:allUses?passedUses/allUses*100:0,batteryPct:last?.successPct??null,worldFacts:Object.keys(state.world.facts||{}).length,actions:state.world.actions.length,macros:state.world.actions.filter(a=>a.kind==='macro').length,promotedRules:state.learnedSkills.filter(x=>x.status==='PROMOTED').length,recoveries:state.recoveries||0,environmentLive:Object.keys(state.environment?.latest||{}).length,environmentObservations:state.environment?.observations?.length||0,inquiries:state.environment?.inquiries?.length||0,policy:deep(state.self.policy)}}
+function kernelAudit(){const issues=[],warnings=[];for(const a of state.world.actions){if(!Object.keys(a.effects||{}).length)issues.push(`Action ${a.name} has no effects.`);if(a.kind==='macro'){if(!(a.steps||[]).length)issues.push(`Macro ${a.name} has no steps.`);for(const n of a.steps||[]){const child=findAction(n);if(!child)issues.push(`Macro ${a.name} references missing step ${n}.`);else if(child.enabled===false)warnings.push(`Macro ${a.name} depends on disabled step ${n}.`)}}if((a.reliability??1)<state.self.policy.minConfidence)warnings.push(`Action ${a.name} reliability ${Math.round(a.reliability*100)}% is below policy floor.`)}for(const r of state.learnedSkills.filter(x=>x.status==='PROMOTED'&&(x.evidenceFails||0)>0))issues.push(`Promoted rule ${r.name} carries contradiction evidence.`);pruneEnvironment();for(const [k,o] of Object.entries(state.environment?.latest||{}))if(!evidenceFresh(o))issues.push(`Environment observation ${k} remained live after expiry.`);if(!state.batteryRuns.length)warnings.push('No sandbox battery has been run in this state.');else if(state.batteryRuns[0].successPct<100)warnings.push(`Latest battery is ${state.batteryRuns[0].successPct.toFixed(0)}%, not 100%.`);const out={at:now(),status:issues.length?'HOLD':'PASS',issues,warnings};state.self.audits.unshift(out);state.self.audits=state.self.audits.slice(0,30);state.stats.selfAudits=(state.stats.selfAudits||0)+1;return out}
+function generateCurriculum(){const examples={calculate:'calculate (19*7)+3',reverse:'reverse sovereignty',uppercase:'uppercase horizon',lowercase:'lowercase HORIZON',wordCount:'word count in one two three four',sequence:'next in sequence 2, 5, 8, 11',sortNumbers:'sort 8, -2, 5, 1',remember:'remember that curriculum token is amber',recall:'recall curriculum token',teachExamples:'teach: ember=>EMBER | cedar=>CEDAR',applyLearned:'apply learned uppercase: horizon',dependencyPlan:'plan source -> contact -> verify',assertFacts:'fact: curriculum=yes',observeFact:'observe: signal=clear @ 80%',defineAction:'define action curriculum-step @ 90%: curriculum=yes => checked=yes',simulateGoal:'simulate: checked=yes',assessGoal:'assess: checked=yes',selfAssess:'self assess',auditKernel:'audit kernel',senseEnvironment:'sense: network',inspectEnvironment:'show environment',inquireEnvironment:'inquire: connected=yes'};const ranked=state.skills.map(x=>({id:x.id,name:x.name,uses:x.uses||0,rate:x.uses?(x.passes||0)/x.uses:0,probe:examples[x.id]||null})).filter(x=>x.probe).sort((a,b)=>(a.uses>0)-(b.uses>0)||a.rate-b.rate||a.uses-b.uses).slice(0,8);const c={id:uid('curriculum'),at:now(),items:ranked};state.self.curriculum.unshift(c);state.self.curriculum=state.self.curriculum.slice(0,20);return c}
+async function autonomousGoal(target,t0=performance.now()){const beforeWorld=deep(state.world),trace=[],failed=new Set(),max=state.self.policy.maxCycles;state.stats.autonomousRuns=(state.stats.autonomousRuns||0)+1;for(let cycle=1;cycle<=max;cycle++){if(factsMatch(state.world.facts,target)){state.stats.autonomousPassed=(state.stats.autonomousPassed||0)+1;const ep={id:uid('episode'),at:now(),target:deep(target),status:'PASS',cycles:cycle-1,trace:deep(trace)};state.self.episodes.unshift(ep);state.self.episodes=state.self.episodes.slice(0,60);return{status:'PASS',verified:true,skill:'autonomousGoal',durationMs:performance.now()-t0,detail:{cycles:cycle-1,trace,transaction:'committed'},output:`Autonomous PASS — target verified in ${cycle-1} cycle(s).\n${trace.map((x,i)=>`${i+1}. ${x}`).join('\n')||'0. Target already satisfied.'}\nWorld: ${formatWorldFacts()}`}}const p=selectAdaptivePlan(target);if(p.status!=='PASS'){state.world=beforeWorld;state.recoveries=(state.recoveries||0)+1;return hold('autonomousGoal',`Autonomous HOLD; world rollback completed. ${p.reason}\nMissing contact candidates: ${(p.blockers||[]).join(', ')||'none'}`,{rolledBack:true,cycle,blockers:p.blockers||[]},t0)}let action=p.plan.find(a=>!failed.has(a.id));if(!action){state.world=beforeWorld;state.recoveries=(state.recoveries||0)+1;return hold('autonomousGoal','Autonomous HOLD; every currently selected action has already failed this run. World rollback completed.',{rolledBack:true,cycle},t0)}const stepBefore=deep(state.world);try{executeWorldAction(action,[]);trace.push(`${action.name} [${p.mode}]`)}catch(e){state.world=stepBefore;failed.add(action.id);const live=findAction(action.name);if(live)live.reliability=clamp((live.reliability??.9)*.5,.01,.999);trace.push(`${action.name} FAILED → replan`);continue}}state.world=beforeWorld;state.recoveries=(state.recoveries||0)+1;return hold('autonomousGoal',`Autonomous HOLD after ${max} cycles; world rollback completed.`,{rolledBack:true,cycles:max,trace},t0)}
+
+const DELEGATE_SAFE_SKILLS=new Set(['calculate','reverse','uppercase','lowercase','wordCount','sequence','sortNumbers','recall','applyLearned','dependencyPlan','simulateGoal','assessGoal','replanGoal','achieveGoal','showWorld','selfAssess','autonomousGoal','auditKernel','curriculum','senseEnvironment','inspectEnvironment','inquireEnvironment','verifyToolContact']);
+function parseModelPlanText(text){let t=String(text||'').trim().replace(/^```(?:json)?\s*/i,'').replace(/```$/,'').trim();const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)throw Error('Model did not return a JSON object.');return JSON.parse(t.slice(a,b+1))}
+function validateDelegatedPlan(obj){if(!obj||typeof obj!=='object'||!Array.isArray(obj.steps))return{status:'HOLD',reason:'Expected JSON object with steps array.'};if(obj.steps.length<1||obj.steps.length>8)return{status:'HOLD',reason:'Delegated plan must contain 1–8 steps.'};const steps=[];for(const raw of obj.steps){if(typeof raw!=='string'||!raw.trim()||raw.length>300)return{status:'HOLD',reason:'Every delegated step must be a short command string.'};const command=raw.trim(),intent=parseGoal(command);if(!DELEGATE_SAFE_SKILLS.has(intent.skill))return{status:'HOLD',reason:`Delegated skill ${intent.skill} is not whitelisted.`,command,skill:intent.skill};steps.push({command,intent})}return{status:'PASS',steps,rationale:typeof obj.rationale==='string'?obj.rationale.slice(0,500):''}}
+async function executeDelegatedSteps(valid,t0=performance.now()){const before=deep(state),rows=[];for(let i=0;i<valid.steps.length;i++){const {command,intent}=valid.steps[i];let r;try{r=await executeIntent(intent)}catch(e){r={status:'FAIL',verified:false,output:e.message,detail:{error:e.message},skill:intent.skill}}rows.push({index:i+1,command,skill:intent.skill,status:r.status,verified:r.verified,output:primaryOutput(r)});if(r.status!=='PASS'||!r.verified){const recoveries=(before.recoveries||0)+1;state=before;state.recoveries=recoveries;scoreSkill('delegateGoal',false,performance.now()-t0);return{status:'HOLD',verified:false,skill:'delegateGoal',durationMs:performance.now()-t0,detail:{rolledBack:true,rows},output:`Delegation HOLD at step ${i+1}; all delegated mutations rolled back.\n${rows.map(x=>`${x.index}. ${x.command} → ${x.status}${x.verified?' / verified':' / unverified'}`).join('\n')}`}}}scoreSkill('delegateGoal',true,performance.now()-t0);return{status:'PASS',verified:true,skill:'delegateGoal',durationMs:performance.now()-t0,detail:{steps:rows,transaction:'committed'},output:`Delegation PASS — ${rows.length}/${rows.length} whitelisted steps independently verified.\n${rows.map(x=>`${x.index}. ${x.command} → ${x.output}`).join('\n')}`}}
+async function delegateGoal(prompt,t0=performance.now()){const ep=state.adapter.endpoint;if(!ep)return hold('delegateGoal','Delegation HOLD: no external model adapter is configured. The verification gate exists, but no broader model is attached.',{frontier:'external-model-contact-required'},t0);const headers={'Content-Type':'application/json'};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;const grammar=['calculate EXPR','reverse TEXT','uppercase TEXT','lowercase TEXT','word count in TEXT','next in sequence 1,2,3','sort 3,1,2','recall QUERY','apply learned RULE: INPUT','plan A -> B -> C','simulate: key=value','assess: key=value','replan: key=value','achieve: key=value','achieve robust: key=value','autonomous: key=value','show world','self assess','audit kernel','curriculum','sense: clock','sense: network','sense: viewport','sense: storage','sense: device','sense: battery','show environment','inquire: key=value','tool: storage roundtrip TOKEN'];try{const body={model:state.adapter.model||'local-model',messages:[{role:'system',content:`You are a planner, not an answerer. Return ONLY JSON {\"steps\":[...],\"rationale\":\"...\"}. Use only these command forms: ${grammar.join(' | ')}. Never invent facts, memories, actions, policies, training examples, adapter settings, or nested model calls. 1–8 steps.`},{role:'user',content:String(prompt)}],temperature:0};const res=await fetch(ep,{method:'POST',headers,body:JSON.stringify(body)});if(!res.ok)throw Error(`HTTP ${res.status}`);const j=await res.json(),txt=j?.choices?.[0]?.message?.content??j?.choices?.[0]?.text;const obj=parseModelPlanText(txt),valid=validateDelegatedPlan(obj);if(valid.status!=='PASS')return hold('delegateGoal',`Delegation HOLD: ${valid.reason}`,{proposal:obj,validation:valid},t0);const r=await executeDelegatedSteps(valid,t0);r.detail={...(r.detail||{}),externalModel:true,http:res.status,rationale:valid.rationale,proposalValidated:true};return r}catch(e){return hold('delegateGoal',`Delegation HOLD: ${e.message}`,{error:e.message},t0)}}
+
+const ENV_SENSOR_KEYS={
+  clock:['env_clock_iso','env_hour','env_weekday'],network:['env_online','env_effective_type'],viewport:['env_viewport_width','env_viewport_height','env_dpr','env_orientation'],storage:['env_storage_ok','env_state_bytes'],device:['env_language','env_touch_points','env_hardware_concurrency','env_device_memory'],battery:['env_battery_level','env_battery_charging']
+};
+function sensorForKey(k){return Object.entries(ENV_SENSOR_KEYS).find(([,ks])=>ks.includes(k))?.[0]||null}
+function pruneEnvironment(at=Date.now()){
+  const env=state.environment=normalizeEnvironment(state.environment);let removed=0;
+  for(const [k,obs] of Object.entries(env.latest||{})){if(obs?.expiresAt&&new Date(obs.expiresAt).getTime()<=at){delete env.latest[k];const ev=state.world.evidence?.[k];if(ev?.source===`sensor:${obs.sensor}`&&ev.expiresAt===obs.expiresAt){delete state.world.evidence[k];delete state.world.facts[k]}removed++}}
+  return removed
+}
+function publishEnvironment(sensor,facts,{ttlMs=60000,confidence=1,source=`sensor:${sensor}`}={}){
+  const env=state.environment=normalizeEnvironment(state.environment),at=now(),expiresAt=new Date(Date.now()+Math.max(1000,ttlMs)).toISOString(),rows=[];
+  for(const [key,value] of Object.entries(facts||{})){const obs={id:uid('obs'),key,value,sensor,source,confidence:clamp(Number(confidence),.001,1),verified:true,direct:true,at,expiresAt};env.observations.unshift(obs);env.latest[key]=obs;state.world.facts[key]=value;state.world.evidence[key]={confidence:obs.confidence,source:`sensor:${sensor}`,at,expiresAt,grounded:true};rows.push(obs)}
+  env.observations=env.observations.slice(0,300);env.sensorStats[sensor]=env.sensorStats[sensor]||{uses:0,passes:0,holds:0,lastAt:null};env.sensorStats[sensor].uses++;env.sensorStats[sensor].passes++;env.sensorStats[sensor].lastAt=at;return rows
+}
+async function browserSensorProvider(kind){
+  const nav=typeof navigator!=='undefined'?navigator:{};
+  if(kind==='clock'){const d=new Date();return{facts:{env_clock_iso:d.toISOString(),env_hour:d.getHours(),env_weekday:d.toLocaleDateString(undefined,{weekday:'long'})},ttlMs:60000}}
+  if(kind==='network'){if(typeof nav.onLine!=='boolean')throw Error('Network status API unavailable.');return{facts:{env_online:!!nav.onLine,env_effective_type:nav.connection?.effectiveType||'unknown'},ttlMs:30000}}
+  if(kind==='viewport'){if(typeof window==='undefined')throw Error('Viewport unavailable.');return{facts:{env_viewport_width:Number(window.innerWidth||0),env_viewport_height:Number(window.innerHeight||0),env_dpr:Number(window.devicePixelRatio||1),env_orientation:(screen?.orientation?.type||((window.innerWidth||0)>=(window.innerHeight||0)?'landscape':'portrait'))},ttlMs:10000}}
+  if(kind==='storage'){let ok=false;try{const k='__jm_env_probe__';localStorage.setItem(k,'1');ok=localStorage.getItem(k)==='1';localStorage.removeItem(k)}catch(e){}const bytes=new Blob([localStorage.getItem(STORAGE_KEY)||'']).size;return{facts:{env_storage_ok:!!ok,env_state_bytes:bytes},ttlMs:60000}}
+  if(kind==='device'){return{facts:{env_language:nav.language||'unknown',env_touch_points:Number(nav.maxTouchPoints||0),env_hardware_concurrency:Number(nav.hardwareConcurrency||0),env_device_memory:Number(nav.deviceMemory||0)},ttlMs:3600000}}
+  if(kind==='battery'){if(typeof nav.getBattery!=='function')throw Error('Battery Status API unavailable on this browser/runtime.');const b=await nav.getBattery();return{facts:{env_battery_level:Math.round(Number(b.level||0)*100),env_battery_charging:!!b.charging},ttlMs:60000}}
+  throw Error(`Unknown environment sensor “${kind}”.`)
+}
+async function senseEnvironment(kind,t0=performance.now(),provider=browserSensorProvider){
+  pruneEnvironment();kind=String(kind||'').trim().toLowerCase();state.stats.senses=(state.stats.senses||0)+1;
+  const kinds=kind==='all'?['clock','network','viewport','storage','device','battery']:[kind];const rows=[],holds=[];
+  for(const k of kinds){try{const r=await provider(k);if(!r||!r.facts||!Object.keys(r.facts).length)throw Error('Sensor returned no facts.');rows.push(...publishEnvironment(k,r.facts,{ttlMs:r.ttlMs||60000,confidence:r.confidence??1}))}catch(e){holds.push({sensor:k,error:e.message});const ss=state.environment.sensorStats[k]=state.environment.sensorStats[k]||{uses:0,passes:0,holds:0,lastAt:null};ss.uses++;ss.holds++;ss.lastAt=now()}}
+  const coreRows=rows.length,ok=kind==='all'?kinds.filter(k=>k!=='battery').every(k=>rows.some(x=>x.sensor===k)):coreRows>0;const durationMs=performance.now()-t0;
+  if(ok){state.stats.sensePassed=(state.stats.sensePassed||0)+1;scoreSkill('senseEnvironment',true,durationMs);return{status:'PASS',verified:true,skill:'senseEnvironment',durationMs,detail:{sensor:kind,observations:rows.length,holds},output:`Environment contact PASS — ${rows.length} grounded observation(s).${holds.length?` Optional HOLD: ${holds.map(x=>x.sensor+': '+x.error).join('; ')}`:''}\n${rows.map(x=>`${x.key}=${scalarText(x.value)} [${x.sensor}; expires ${new Date(x.expiresAt).toLocaleTimeString()}]`).join('\n')}`}}
+  return hold('senseEnvironment',`Environment contact HOLD — ${holds.map(x=>x.sensor+': '+x.error).join('; ')||'no grounded observations'}`,{sensor:kind,holds},t0)
+}
+function formatEnvironment(){pruneEnvironment();const xs=Object.values(state.environment.latest||{}).sort((a,b)=>a.key.localeCompare(b.key));return xs.length?xs.map(x=>`${x.key}=${scalarText(x.value)} • ${x.sensor} • grounded • expires ${new Date(x.expiresAt).toLocaleTimeString()}`).join('\n'):'No live environment observations.'}
+async function inquireEnvironment(targetSource,t0=performance.now(),provider=browserSensorProvider){
+  state.stats.inquiries=(state.stats.inquiries||0)+1;pruneEnvironment();let target;try{target=parseConditions(targetSource)}catch(e){return hold('inquireEnvironment',`Inquiry HOLD: ${e.message}`,{error:e.message},t0)}
+  let p=planWorldRobust(target),blockers=p.status==='PASS'?[]:(p.blockers||diagnoseBlockers(target));const sensors=[...new Set(blockers.map(x=>sensorForKey(String(x).split('=')[0])).filter(Boolean))],contacts=[];
+  for(const sensor of sensors){const r=await senseEnvironment(sensor,performance.now(),provider);contacts.push({sensor,status:r.status,verified:r.verified})}
+  pruneEnvironment();p=planWorldRobust(target);const durationMs=performance.now()-t0;
+  const iq={id:uid('inquiry'),at:now(),target:deep(target),initialBlockers:blockers,sensors,contacts,finalStatus:p.status,route:p.plan?.map(a=>a.name)||[]};state.environment.inquiries.unshift(iq);state.environment.inquiries=state.environment.inquiries.slice(0,80);
+  if(p.status==='PASS'){state.stats.inquiryPassed=(state.stats.inquiryPassed||0)+1;scoreSkill('inquireEnvironment',true,durationMs);return{status:'PASS',verified:true,skill:'inquireEnvironment',durationMs,detail:iq,output:`Inquiry PASS — environment contact resolved enough missing state to earn a route.\nSensors contacted: ${sensors.join(', ')||'none required'}\nRoute: ${p.plan.length?p.plan.map(a=>a.name).join(' → '):'target already satisfied'}\nWorld: ${formatWorldFacts()}`}}
+  return hold('inquireEnvironment',`Inquiry HOLD — sensing did not earn a valid route.\nSensors contacted: ${sensors.join(', ')||'none mapped'}\nRemaining blockers: ${(p.blockers||diagnoseBlockers(target)).join(', ')||'unknown'}`,iq,t0)
+}
+async function actuateDevice(source,t0=performance.now(),provider=null){
+  state.stats.actuations=(state.stats.actuations||0)+1;const m=String(source).trim().match(/^vibrate\s+(\d{1,4})$/i);if(!m)return hold('actuateDevice','Actuation HOLD: supported explicit form is “act: vibrate 120”.',{},t0);const duration=Math.max(1,Math.min(1000,Number(m[1])));let accepted=false,error='';try{accepted=provider?!!(await provider('vibrate',{duration})):!!navigator?.vibrate?.(duration)}catch(e){error=e.message}const rec={id:uid('actuation'),at:now(),kind:'vibrate',request:{duration},accepted,error,verifiedConsequence:false};state.environment.actuations.unshift(rec);state.environment.actuations=state.environment.actuations.slice(0,80);const elapsed=performance.now()-t0;scoreSkill('actuateDevice',false,elapsed);return{status:'HOLD',actStatus:accepted?'PASS':'HOLD',verified:false,skill:'actuateDevice',durationMs:elapsed,detail:rec,output:accepted?`Actuation request accepted: vibrate ${duration} ms. VERIFY = HOLD because API acceptance does not independently prove the physical consequence.`:`Actuation HOLD: ${error||'vibration API unavailable or request rejected.'}`}
+}
+
+function safeLocalJSON(key){try{return JSON.parse(localStorage.getItem(key)||'null')}catch(e){return null}}
+function ownerStoragePreflight(){
+  const k=`__jm_owner_preflight_${PAGE_LOAD_ID}`;let ok=false,error='';
+  try{localStorage.setItem(k,PAGE_LOAD_ID);ok=localStorage.getItem(k)===PAGE_LOAD_ID;localStorage.removeItem(k)}catch(e){error=e.message;try{localStorage.removeItem(k)}catch(_){}}
+  return{ok,error}
+}
+function ownerContextInfo(){
+  let embedded=true;try{embedded=window.self!==window.top}catch(e){embedded=true}
+  const storage=ownerStoragePreflight(),protocol=String(location.protocol||'unknown:'),href=String(location.href||''),path=String(location.pathname||'');
+  const kind=embedded?'embedded':protocol==='file:'?'top-level-file':/^https?:$/.test(protocol)?'top-level-web':'top-level-other';
+  let storageNativeLike=false;try{storageNativeLike=typeof Storage!=='undefined'&&localStorage instanceof Storage&&/\[native code\]/.test(Function.prototype.toString.call(Storage.prototype.setItem))}catch(e){}
+  return{embedded,topLevel:!embedded,protocol,href,path,kind,secureContext:!!window.isSecureContext,storageOk:storage.ok,storageError:storage.error,storageNativeLike}
+}
+function hashParams(){try{return new URLSearchParams(String(location.hash||'').replace(/^#/,''))}catch(e){return new URLSearchParams()}}
+function processRunnerParams(){const h=hashParams();return{runId:String(h.get('jm-process-run')||''),autoarm:h.get('jm-autoarm')==='1',witnessRaw:String(h.get('jm-restart-witness')||'')}}
+function decodeBase64UrlJSON(raw){if(!raw)return null;try{let s=String(raw).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return JSON.parse(decodeURIComponent(escape(atob(s))))}catch(e){return null}}
+function processWitnessFromHash(){return decodeBase64UrlJSON(processRunnerParams().witnessRaw)}
+function currentFileName(){try{return decodeURIComponent(String(location.pathname||'').split('/').pop()||'')}catch(e){return String(location.pathname||'').split('/').pop()||''}}
+function classifyProcessRestartOutcome({witnessSchema='',platform='',browser='',dedicatedProfile=false,zeroObserved=false,prePidCount=0,runMatch=false,tokenMatch=false,bodyNameMatch=false,newLoad=false,sessionMarkerCleared=false,exactReadBack=false,restored=false,samePath=false,timelineValid=false,embedded=true,storageOk=false,storageNativeLike=false,contextKind='top-level-other'}={}){
+  const mechanics=!!(witnessSchema===PROCESS_WITNESS_SCHEMA&&dedicatedProfile&&zeroObserved&&prePidCount>0&&runMatch&&tokenMatch&&bodyNameMatch&&newLoad&&exactReadBack&&restored&&samePath&&timelineValid&&storageOk);
+  if(witnessSchema!==PROCESS_WITNESS_SCHEMA)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'missing or incompatible OS process witness'};
+  if(!dedicatedProfile)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'witness did not use the isolated test profile'};
+  if(!zeroObserved||prePidCount<1)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'OS witness did not prove the dedicated browser process tree reached zero'};
+  if(!runMatch||!tokenMatch)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'runner/witness challenge did not match the armed browser challenge'};
+  if(!bodyNameMatch||!samePath)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'return did not target the same exact document path'};
+  if(!newLoad)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'no distinct page-load instance was observed'};
+  if(!exactReadBack)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'durable localStorage read-back mismatch after process restart'};
+  if(!restored)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'prior reserved-key state was not restored'};
+  if(!timelineValid)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'witness timeline is invalid'};
+  if(embedded)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:mechanics,reason:'embedded mechanics passed; owner process-restart Ding withheld'};
+  if(!['top-level-file','top-level-web'].includes(contextKind))return{status:'HOLD',ownerProcessDing:false,mechanicsPass:mechanics,reason:'unsupported/opaque top-level context'};
+  if(!storageNativeLike)return{status:'HOLD',ownerProcessDing:false,mechanicsPass:mechanics,reason:'storage implementation is not browser-native-like; owner Ding withheld'};
+  if(String(platform).toLowerCase()!=='windows'||String(browser).toLowerCase()!=='microsoft edge')return{status:'HOLD',ownerProcessDing:false,mechanicsPass:mechanics,reason:`process restart mechanics passed on ${platform||'unknown'}/${browser||'unknown'}; owner Windows Edge Ding withheld`};
+  return{status:'PASS',ownerProcessDing:true,mechanicsPass:true,reason:'Windows Edge dedicated process tree reached zero; a distinct returned load completed; durable exact read-back and restoration verified. sessionStorage state was diagnostic only'}
+}
+function processRandomToken(){try{const a=new Uint32Array(3);crypto.getRandomValues(a);return `PROC-${a[0].toString(36)}-${a[1].toString(36)}-${a[2].toString(36)}`.toUpperCase()}catch(e){return `PROC-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`.toUpperCase()}}
+function restoreProcessProbe(p){let restored=false,error='';try{if(p?.hadPrior)localStorage.setItem(PROCESS_PROBE_KEY,String(p.prior));else localStorage.removeItem(PROCESS_PROBE_KEY);restored=localStorage.getItem(PROCESS_PROBE_KEY)===(p?.hadPrior?String(p.prior):null)}catch(e){error=e.message}return{restored,error}}
+function processResultText(r){
+  if(!r)return'Process-restart contact has not been run. Extract the package and double-click RUN_JM_AGI_PROCESS_RESTART_TEST.bat once.';
+  const lines=[`${r.status} — ${r.ownerProcessDing?'OWNER EDGE PROCESS-RESTART DURABILITY DING EARNED':r.mechanicsPass?'PROCESS-RESTART MECHANICS PASS / OWNER DING WITHHELD':'NO DING'}`,`Witness: ${r.witnessSchema||'none'} • ${r.platform||'unknown'} / ${r.browser||'unknown'} • dedicated profile ${r.dedicatedProfile?'yes':'no'} • zero ${r.zeroObserved?'PASS':'HOLD'}`,`Challenge: run ${r.runMatch?'PASS':'HOLD'} • token ${r.tokenMatch?'PASS':'HOLD'} • new load ${r.newLoad?'PASS':'HOLD'} • session marker ${r.sessionMarkerCleared?'cleared':'restored/survived (diagnostic)'}`,`Durability: exact read-back ${r.exactReadBack?'PASS':'HOLD'} • restore ${r.restored?'PASS':'HOLD'} • same body/path ${r.bodyNameMatch&&r.samePath?'PASS':'HOLD'}`,`Reason: ${r.reason||'none'}`];
+  if(r.ownerProcessDing)lines.push('Scope: one full Microsoft Edge process-tree termination/relaunch in the isolated test profile. OS reboot durability remains OPEN.');
+  return lines.join('\n')
+}
+function renderProcessHarness(){
+  const panel=$('#processHarnessPanel');if(!panel)return;const params=processRunnerParams(),pending=safeLocalJSON(PROCESS_PENDING_KEY),last=safeLocalJSON(PROCESS_LAST_KEY),ctx=ownerContextInfo();
+  const set=(id,status,label=status)=>{const el=$(id);if(!el)return;el.textContent=label;el.className=`status ${statusClass(status)}`};
+  const runnerConnected=!!params.runId||!!params.witnessRaw;$('#processStageRunnerText').textContent=runnerConnected?(params.witnessRaw?'OS witness returned to the exact body.':'Windows runner connected; auto-arm may proceed.'):'Launch through RUN_JM_AGI_PROCESS_RESTART_TEST.bat for the physical Ding.';const topReason=$('#processHarnessReasonTop');if(topReason)topReason.textContent=last?`Latest decision: ${last.reason||last.status}`:pending?'Challenge armed; waiting for independent OS process-zero witness and return.':runnerConnected?'Runner connected; awaiting challenge/return decision.':'No process-restart result yet.';
+  set('#processStageRunner',runnerConnected?'PASS':'HOLD',runnerConnected?'CONNECTED':'RUNNER REQUIRED');
+  if(last){
+    set('#processStageArm',last.writeAccepted?'PASS':'HOLD');set('#processStageZero',last.zeroObserved?'PASS':'HOLD');set('#processStageSession',last.newLoad?'PASS':'HOLD',last.newLoad?(last.sessionMarkerCleared?'PASS':'PASS • SESSION RESTORED'): 'HOLD');set('#processStageRead',last.exactReadBack&&last.restored?'PASS':'HOLD');set('#processStageScope',last.ownerProcessDing?'PASS':'HOLD',last.ownerProcessDing?'DING':'HOLD');$('#processHarnessDetail').textContent=processResultText(last);set('#processHarnessStatus',last.ownerProcessDing?'PASS':'HOLD',last.ownerProcessDing?'PROCESS DING':last.mechanicsPass?'DING WITHHELD':'HOLD');
+  }else if(pending){
+    set('#processStageArm',pending.writeAccepted?'PASS':'HOLD',pending.writeAccepted?'ARMED':'HOLD');for(const id of ['#processStageZero','#processStageSession','#processStageRead','#processStageScope'])set(id,'OPEN');$('#processHarnessDetail').textContent='ARMED — the Windows runner should now terminate only the dedicated Edge test process tree, witness zero, and relaunch this exact body/profile.';set('#processHarnessStatus','HOLD','PROCESS EXIT PENDING');
+  }else{
+    for(const id of ['#processStageArm','#processStageZero','#processStageSession','#processStageRead','#processStageScope'])set(id,'OPEN');$('#processHarnessDetail').textContent=runnerConnected?'Runner connected. Arming is automatic when launched by the package; manual arm is available for diagnostics.':'Process-restart contact has not been run. Extract the package and double-click RUN_JM_AGI_PROCESS_RESTART_TEST.bat once; the runner handles terminate → zero witness → relaunch automatically.';set('#processHarnessStatus',runnerConnected?'OPEN':'HOLD',runnerConnected?'READY':'RUNNER REQUIRED');
+  }
+  const b=$('#armProcessHarness');if(b){b.disabled=!params.runId||!!params.witnessRaw;b.textContent=params.runId?'🧱 Arm process restart test':'Launch via packaged runner'}
+}
+function startProcessRestartHarness({runId=null}={}){
+  const params=processRunnerParams(),rid=String(runId||params.runId||'').trim(),ctx=ownerContextInfo();
+  const old=safeLocalJSON(PROCESS_PENDING_KEY);if(old){restoreProcessProbe(old);try{localStorage.removeItem(PROCESS_PENDING_KEY)}catch(e){}}
+  if(!rid){const r={at:now(),status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'no Windows runner run-id is attached; launch through the packaged BAT',writeAccepted:false,context:ctx};try{localStorage.setItem(PROCESS_LAST_KEY,JSON.stringify(r))}catch(e){}renderProcessHarness();return r}
+  if(!ctx.storageOk){const r={at:now(),status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'browser storage unavailable',writeAccepted:false,context:ctx};try{localStorage.setItem(PROCESS_LAST_KEY,JSON.stringify(r))}catch(e){}renderProcessHarness();return r}
+  const token=processRandomToken(),payload=`JMPROC:${rid}:${token}:${Date.now()}:${Math.random().toString(36).slice(2,10)}`;let prior=null,hadPrior=false,writeAccepted=false,immediateExact=false,error='';
+  try{prior=localStorage.getItem(PROCESS_PROBE_KEY);hadPrior=prior!==null;localStorage.setItem(PROCESS_PROBE_KEY,payload);writeAccepted=true;immediateExact=localStorage.getItem(PROCESS_PROBE_KEY)===payload;sessionStorage.setItem(PROCESS_SESSION_KEY,`${rid}:${token}:${PAGE_LOAD_ID}`)}catch(e){error=e.message}
+  if(!writeAccepted||!immediateExact){const rr=restoreProcessProbe({hadPrior,prior});const r={at:now(),status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:error||'initial durable write/read-back failed',writeAccepted,newLoad:false,exactReadBack:false,restored:rr.restored,context:ctx};try{localStorage.setItem(PROCESS_LAST_KEY,JSON.stringify(r))}catch(e){}renderProcessHarness();return r}
+  const pending={version:VERSION,startedAt:now(),startedMs:Date.now(),startedLoadId:PAGE_LOAD_ID,runId:rid,token,payload,hadPrior,prior,writeAccepted:true,immediateExact:true,path:ctx.path,fileName:currentFileName(),context:ctx};
+  localStorage.setItem(PROCESS_PENDING_KEY,JSON.stringify(pending));localStorage.removeItem(PROCESS_LAST_KEY);document.title=`JMAGI_ARMED__${rid}__${token}`;renderProcessHarness();return{status:'OPEN',pending:true,runId:rid,token}
+}
+function resumeProcessRestartHarness(){
+  const witness=processWitnessFromHash();if(!witness)return null;const p=safeLocalJSON(PROCESS_PENDING_KEY),ctx=ownerContextInfo();if(!p){const r={at:now(),status:'HOLD',ownerProcessDing:false,mechanicsPass:false,reason:'OS witness returned but no armed local challenge exists',witnessSchema:witness?.schema||'',platform:witness?.platform||'',browser:witness?.browser||'',dedicatedProfile:!!witness?.dedicatedProfile,zeroObserved:!!witness?.zeroObserved,context:ctx};try{localStorage.setItem(PROCESS_LAST_KEY,JSON.stringify(r))}catch(e){}return r}
+  let readBack=null,error='';try{readBack=localStorage.getItem(PROCESS_PROBE_KEY)}catch(e){error=e.message}
+  let sessionMarker=null;try{sessionMarker=sessionStorage.getItem(PROCESS_SESSION_KEY)}catch(e){}
+  const newLoad=String(p.startedLoadId||'')!==PAGE_LOAD_ID,sessionMarkerCleared=!sessionMarker,exactReadBack=readBack===p.payload,restore=restoreProcessProbe(p),runMatch=String(witness.runId||'')===String(p.runId||''),tokenMatch=String(witness.token||'')===String(p.token||''),bodyNameMatch=String(witness.bodyFileName||'')===String(p.fileName||'')&&String(witness.bodyFileName||'')===currentFileName(),samePath=String(p.path||'')===String(ctx.path||''),zeroObserved=witness.zeroObserved===true,prePidCount=Array.isArray(witness.prePids)?witness.prePids.length:0;
+  const armedMs=Date.parse(p.startedAt||'')||Number(p.startedMs||0),zeroMs=Date.parse(witness.zeroAt||'')||0,completedMs=Date.now(),timelineValid=armedMs>0&&zeroMs>=armedMs&&zeroMs<=completedMs+120000;
+  const c=classifyProcessRestartOutcome({witnessSchema:String(witness.schema||''),platform:String(witness.platform||''),browser:String(witness.browser||''),dedicatedProfile:witness.dedicatedProfile===true,zeroObserved,prePidCount,runMatch,tokenMatch,bodyNameMatch,newLoad,sessionMarkerCleared,exactReadBack,restored:restore.restored,samePath,timelineValid,embedded:ctx.embedded,storageOk:ctx.storageOk,storageNativeLike:ctx.storageNativeLike,contextKind:ctx.kind});
+  let reason=c.reason;if(error)reason=`read-back error: ${error}`;if(restore.error)reason=`restore error: ${restore.error}`;
+  const r={at:now(),version:VERSION,status:c.status,ownerProcessDing:c.ownerProcessDing,mechanicsPass:c.mechanicsPass,reason,witnessSchema:String(witness.schema||''),runnerVersion:String(witness.runnerVersion||''),platform:String(witness.platform||''),browser:String(witness.browser||''),dedicatedProfile:witness.dedicatedProfile===true,zeroObserved,prePidCount,prePids:Array.isArray(witness.prePids)?witness.prePids.slice(0,64):[],zeroAt:witness.zeroAt||null,runMatch,tokenMatch,bodyNameMatch,newLoad,sessionMarkerCleared,exactReadBack,restored:restore.restored,samePath,timelineValid,writeAccepted:!!p.writeAccepted,startedAt:p.startedAt,completedAt:now(),context:ctx};
+  try{localStorage.removeItem(PROCESS_PENDING_KEY);localStorage.setItem(PROCESS_LAST_KEY,JSON.stringify(r));sessionStorage.removeItem(PROCESS_SESSION_KEY)}catch(e){}
+  if(r.ownerProcessDing){setFact('owner_browser_process_restart_contact','yes',1,'process-harness:os-zero-readback');setFact('owner_browser_process_restart_scope','edge-dedicated-profile',1,'process-harness:scope');receipt('Owner browser process restart durability','PASS',{platform:r.platform,browser:r.browser,prePidCount:r.prePidCount,zeroObserved:r.zeroObserved,newLoad:r.newLoad,sessionMarkerCleared:r.sessionMarkerCleared,exactReadBack:r.exactReadBack,restored:r.restored,osRebootDurability:false},Math.max(0,completedMs-armedMs))}
+  else receipt('Process restart harness','HOLD',{reason:r.reason,platform:r.platform,browser:r.browser,zeroObserved:r.zeroObserved,newLoad:r.newLoad,sessionMarkerCleared:r.sessionMarkerCleared,exactReadBack:r.exactReadBack,restored:r.restored},Math.max(0,completedMs-armedMs));
+  try{state.updatedAt=now();localStorage.setItem(STORAGE_KEY,JSON.stringify({...state,adapter:{...state.adapter}}))}catch(e){}document.title='JM AGI Lab v1.4.3 — Process Restart Proof Corrected';try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}return r
+}
+function clearProcessRestartHarness(){const p=safeLocalJSON(PROCESS_PENDING_KEY);if(p)restoreProcessProbe(p);try{localStorage.removeItem(PROCESS_PENDING_KEY);localStorage.removeItem(PROCESS_LAST_KEY);localStorage.removeItem(PROCESS_PROBE_KEY);sessionStorage.removeItem(PROCESS_SESSION_KEY)}catch(e){}document.title='JM AGI Lab v1.4.3 — Process Restart Proof Corrected';renderProcessHarness();toast('Process restart local receipt cleared.')}
+
+function classifyOwnerContactOutcome({newLoad=false,exactReadBack=false,restored=false,embedded=true,storageOk=false,storageNativeLike=false,contextKind='top-level-other',sameDocument=true}={}){
+  const mechanics=!!(storageOk&&newLoad&&exactReadBack&&restored&&!sameDocument);
+  if(!storageOk)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:'browser storage unavailable'};
+  if(!newLoad||sameDocument)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:'no distinct page reload/return was proven'};
+  if(!exactReadBack)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:'post-reload read-back mismatch'};
+  if(!restored)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:'prior reserved-key state was not restored'};
+  if(embedded)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:mechanics,reason:'embedded mechanics passed; owner-browser Ding withheld'};
+  if(!['top-level-web','top-level-file'].includes(contextKind))return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:mechanics,reason:'unsupported/opaque top-level context; use a normal web or file browser context'};
+  if(!storageNativeLike)return{status:'HOLD',ownerBrowserDing:false,mechanicsPass:mechanics,reason:'storage implementation is not browser-native-like; owner-browser Ding withheld'};
+  return{status:'PASS',ownerBrowserDing:true,mechanicsPass:mechanics,reason:'top-level browser reload persistence, exact read-back and restoration verified'}
+}
+function ownerRandomToken(){
+  try{const a=new Uint32Array(2);crypto.getRandomValues(a);return `OWNER-${a[0].toString(36)}-${a[1].toString(36)}`.toUpperCase()}catch(e){return `OWNER-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,9)}`.toUpperCase()}
+}
+function restoreOwnerProbeFromPending(p){
+  let restored=false,error='';
+  try{if(p?.hadPrior)localStorage.setItem(OWNER_CONTACT_PROBE_KEY,String(p.prior));else localStorage.removeItem(OWNER_CONTACT_PROBE_KEY);restored=localStorage.getItem(OWNER_CONTACT_PROBE_KEY)===(p?.hadPrior?String(p.prior):null)}catch(e){error=e.message}
+  return{restored,error}
+}
+function ownerResultText(r){
+  if(!r)return'Owner contact has not been run. Assistant-side tests do not count as this Ding.';
+  const ctx=r.context||{};
+  const lines=[`${r.status} — ${r.ownerBrowserDing?'OWNER-BROWSER RELOAD CONTACT DING EARNED':r.mechanicsPass?'MECHANICS PASS / DING WITHHELD':'NO DING'}`,`Context: ${ctx.kind||'unknown'} • ${ctx.protocol||'unknown'} • storage ${ctx.storageOk?'available':'unavailable'} • ${ctx.storageNativeLike?'native-like':'non-native/unknown'}`,`Write: ${r.writeAccepted?'PASS':'HOLD'} • New load: ${r.newLoad?'PASS':'HOLD'} • Exact read-back: ${r.exactReadBack?'PASS':'HOLD'} • Restore: ${r.restored?'PASS':'HOLD'}`,`Reason: ${r.reason||'none'}`];
+  if(r.ownerBrowserDing)lines.push('Scope: owner-browser reload persistence only; browser/process restart durability remains OPEN.');
+  else if(ctx.embedded)lines.push('Embedded preview detected: this context cannot crown owner-browser contact.');
+  return lines.join('\n')
+}
+function renderOwnerHarness(){
+  const panel=$('#ownerHarnessPanel');if(!panel)return;
+  const ctx=ownerContextInfo(),pending=safeLocalJSON(OWNER_CONTACT_PENDING_KEY),last=safeLocalJSON(OWNER_CONTACT_LAST_KEY);const r=pending?{...pending,context:ctx,pending:true}:last;
+  const set=(id,status,label=status)=>{const el=$(id);if(!el)return;el.textContent=label;el.className=`status ${statusClass(status)}`};
+  const contextEligible=ctx.storageOk&&ctx.storageNativeLike&&!ctx.embedded&&['top-level-web','top-level-file'].includes(ctx.kind);
+  $('#ownerStageContextText').textContent=`${ctx.kind} • ${ctx.protocol} • storage ${ctx.storageOk?'available':'unavailable'} • ${ctx.storageNativeLike?'native-like':'non-native/unknown'}`;
+  set('#ownerStageContext',contextEligible?'PASS':'HOLD',contextEligible?'READY':'HOLD');
+  if(pending){set('#ownerStageWrite',pending.writeAccepted?'PASS':'HOLD');set('#ownerStageReload','OPEN');set('#ownerStageRead','OPEN');set('#ownerStageRestore','OPEN');set('#ownerStageScope','OPEN');$('#ownerHarnessDetail').textContent='Probe written and verified on the first load. Reload/return is pending.'}
+  else if(last){set('#ownerStageWrite',last.writeAccepted?'PASS':'HOLD');set('#ownerStageReload',last.newLoad?'PASS':'HOLD');set('#ownerStageRead',last.exactReadBack?'PASS':'HOLD');set('#ownerStageRestore',last.restored?'PASS':'HOLD');set('#ownerStageScope',last.ownerBrowserDing?'PASS':'HOLD',last.ownerBrowserDing?'DING':'HOLD');$('#ownerHarnessDetail').textContent=ownerResultText(last)}
+  else{for(const id of ['#ownerStageWrite','#ownerStageReload','#ownerStageRead','#ownerStageRestore','#ownerStageScope'])set(id,'OPEN')}
+  const overall=last?.ownerBrowserDing?'PASS':last||pending?'HOLD':contextEligible?'OPEN':'HOLD';set('#ownerHarnessStatus',overall,last?.ownerBrowserDing?'OWNER DING':pending?'RELOAD PENDING':last?.mechanicsPass?'DING WITHHELD':last?'HOLD':contextEligible?'READY':'CONTEXT HOLD');
+  const b=$('#runOwnerHarness');if(b)b.textContent=ctx.embedded?'Run embedded mechanics test':'🔔 Run owner contact test';
+}
+async function startOwnerContactHarness({autoReload=true}={}){
+  const t0=performance.now(),ctx=ownerContextInfo();
+  const old=safeLocalJSON(OWNER_CONTACT_PENDING_KEY);if(old){restoreOwnerProbeFromPending(old);try{localStorage.removeItem(OWNER_CONTACT_PENDING_KEY)}catch(e){}}
+  if(!ctx.storageOk){const r={at:now(),status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:`storage unavailable${ctx.storageError?': '+ctx.storageError:''}`,context:ctx,writeAccepted:false,newLoad:false,exactReadBack:false,restored:false};try{localStorage.setItem(OWNER_CONTACT_LAST_KEY,JSON.stringify(r))}catch(e){}renderOwnerHarness();return r}
+  const token=ownerRandomToken(),payload=`JMOWNER:${token}:${Date.now()}:${Math.random().toString(36).slice(2,10)}`;let prior=null,hadPrior=false,writeAccepted=false,immediateExact=false,error='';
+  try{prior=localStorage.getItem(OWNER_CONTACT_PROBE_KEY);hadPrior=prior!==null;localStorage.setItem(OWNER_CONTACT_PROBE_KEY,payload);writeAccepted=true;immediateExact=localStorage.getItem(OWNER_CONTACT_PROBE_KEY)===payload}catch(e){error=e.message}
+  if(!writeAccepted||!immediateExact){const rr=restoreOwnerProbeFromPending({hadPrior,prior});const r={at:now(),status:'HOLD',ownerBrowserDing:false,mechanicsPass:false,reason:error||'initial write/read-back failed',context:ctx,writeAccepted,newLoad:false,exactReadBack:false,restored:rr.restored};try{localStorage.setItem(OWNER_CONTACT_LAST_KEY,JSON.stringify(r))}catch(e){}renderOwnerHarness();return r}
+  const pending={version:VERSION,startedAt:now(),startedMs:Date.now(),startedLoadId:PAGE_LOAD_ID,href:ctx.href,path:ctx.path,protocol:ctx.protocol,context:ctx,token,payload,hadPrior,prior,writeAccepted:true,immediateExact:true};
+  localStorage.setItem(OWNER_CONTACT_PENDING_KEY,JSON.stringify(pending));localStorage.removeItem(OWNER_CONTACT_LAST_KEY);renderOwnerHarness();
+  if(autoReload){setTimeout(()=>location.reload(),180)}
+  return{status:'OPEN',pending:true,token,durationMs:performance.now()-t0}
+}
+function resumeOwnerContactHarness(){
+  const p=safeLocalJSON(OWNER_CONTACT_PENDING_KEY);if(!p)return null;const ctx=ownerContextInfo();let readBack=null,error='';
+  try{readBack=localStorage.getItem(OWNER_CONTACT_PROBE_KEY)}catch(e){error=e.message}
+  const newLoad=String(p.startedLoadId||'')!==PAGE_LOAD_ID,sameDocument=!newLoad,exactReadBack=readBack===p.payload,restore=restoreOwnerProbeFromPending(p),samePath=String(p.path||'')===String(ctx.path||'');
+  const classification=classifyOwnerContactOutcome({newLoad,exactReadBack,restored:restore.restored,embedded:ctx.embedded,storageOk:ctx.storageOk,storageNativeLike:ctx.storageNativeLike,contextKind:ctx.kind,sameDocument});
+  let reason=classification.reason;if(!samePath){classification.status='HOLD';classification.ownerBrowserDing=false;classification.mechanicsPass=false;reason='returned to a different document path'}if(error)reason=`read-back error: ${error}`;if(restore.error)reason=`restore error: ${restore.error}`;
+  const r={at:now(),version:VERSION,status:classification.status,ownerBrowserDing:classification.ownerBrowserDing,mechanicsPass:classification.mechanicsPass,reason,context:ctx,token:p.token,writeAccepted:!!p.writeAccepted,immediateExact:!!p.immediateExact,newLoad,sameDocument,exactReadBack,restored:restore.restored,samePath,startedAt:p.startedAt,completedAt:now(),elapsedMs:Math.max(0,Date.now()-Number(p.startedMs||Date.now()))};
+  try{localStorage.removeItem(OWNER_CONTACT_PENDING_KEY);localStorage.setItem(OWNER_CONTACT_LAST_KEY,JSON.stringify(r))}catch(e){}
+  if(r.ownerBrowserDing){setFact('owner_browser_reload_contact','yes',1,'owner-harness:reload-readback');setFact('owner_browser_context',ctx.kind,1,'owner-harness:context');setFact('owner_browser_protocol',ctx.protocol,1,'owner-harness:context');receipt('Owner browser reload contact','PASS',{context:ctx.kind,protocol:ctx.protocol,newLoad,exactReadBack,restored:restore.restored,restartDurability:false},r.elapsedMs)}
+  else receipt('Owner contact harness',r.mechanicsPass?'HOLD':'HOLD',{context:ctx.kind,reason:r.reason,newLoad,exactReadBack,restored:restore.restored,embedded:ctx.embedded},r.elapsedMs);
+  try{state.updatedAt=now();localStorage.setItem(STORAGE_KEY,JSON.stringify({...state,adapter:{...state.adapter}}))}catch(e){}
+  return r
+}
+function clearOwnerContactHarness(){
+  const p=safeLocalJSON(OWNER_CONTACT_PENDING_KEY);if(p)restoreOwnerProbeFromPending(p);try{localStorage.removeItem(OWNER_CONTACT_PENDING_KEY);localStorage.removeItem(OWNER_CONTACT_LAST_KEY)}catch(e){}renderOwnerHarness();toast('Owner contact local receipt cleared.')
+}
+
+function nativeFetchLike(){try{return typeof fetch==='function'&&/\[native code\]/.test(Function.prototype.toString.call(fetch))}catch(e){return false}}
+function endpointSchemeOK(endpoint){try{const u=new URL(String(endpoint||''),location.href);return /^https?:$/.test(u.protocol)}catch(e){return false}}
+function classifyModelContactOutcome({resultStatus='HOLD',verified=false,externalModel=false,toolVerified=false,targetVerified=false,fetchNativeLike=false,endpointOK=false}={}){
+  const mechanics=resultStatus==='PASS'&&verified&&externalModel&&toolVerified&&targetVerified;
+  if(resultStatus!=='PASS'||!verified)return{status:'HOLD',realModelDing:false,mechanicsPass:false,reason:'model-guided route did not independently PASS'};
+  if(!externalModel)return{status:'HOLD',realModelDing:false,mechanicsPass:false,reason:'no real adapter/model route was used'};
+  if(!toolVerified||!targetVerified)return{status:'HOLD',realModelDing:false,mechanicsPass:false,reason:'model response did not produce a locally verified consequence'};
+  if(!endpointOK)return{status:'HOLD',realModelDing:false,mechanicsPass:mechanics,reason:'endpoint is not a normal http/https model endpoint'};
+  if(!fetchNativeLike)return{status:'HOLD',realModelDing:false,mechanicsPass:mechanics,reason:'fetch is non-native/mocked; real-model Ding withheld'};
+  return{status:'PASS',realModelDing:true,mechanicsPass:true,reason:'native model-adapter response guided a whitelisted tool whose consequence was locally verified'}
+}
+function modelResultText(r){
+  if(!r)return'Real model contact has not been run. Assistant-side mocked fetch tests do not count as this Ding.';
+  const lines=[`${r.status} — ${r.realModelDing?'REAL MODEL→LOCAL CONSEQUENCE DING EARNED':r.mechanicsPass?'MECHANICS PASS / DING WITHHELD':'NO DING'}`,`Endpoint: ${r.endpointHost||'not set'} • fetch ${r.fetchNativeLike?'native-like':'non-native/mocked'}`,`Response: ${r.responseSeen?'PASS':'HOLD'} • Proposal gate: ${r.proposalValidated?'PASS':'HOLD'} • Tool: ${r.toolVerified?'PASS':'HOLD'} • Local target: ${r.targetVerified?'PASS':'HOLD'}`,`Reason: ${r.reason||'none'}`];return lines.join('\n')
+}
+function renderModelHarness(){
+  const panel=$('#modelContactPanel');if(!panel)return;const last=safeLocalJSON(MODEL_CONTACT_LAST_KEY),ep=String(state.adapter?.endpoint||''),native=nativeFetchLike(),epOK=endpointSchemeOK(ep);
+  const set=(id,status,label=status)=>{const el=$(id);if(!el)return;el.textContent=label;el.className=`status ${statusClass(status)}`};
+  $('#modelHarnessEndpoint').value=ep;$('#modelHarnessName').value=state.adapter?.model||'';$('#modelStageAdapterText').textContent=`${ep?ep:'Endpoint not configured.'} • fetch ${native?'native-like':'non-native/mocked'}`;
+  set('#modelStageAdapter',ep&&epOK&&native?'PASS':ep?'HOLD':'OPEN',ep&&epOK&&native?'READY':ep?'HOLD':'OPEN');
+  if(last){set('#modelStageResponse',last.responseSeen?'PASS':'HOLD');set('#modelStageGate',last.proposalValidated?'PASS':'HOLD');set('#modelStageTool',last.toolVerified?'PASS':'HOLD');set('#modelStageVerify',last.targetVerified?'PASS':'HOLD');set('#modelStageScope',last.realModelDing?'PASS':'HOLD',last.realModelDing?'DING':'HOLD');$('#modelHarnessDetail').textContent=modelResultText(last);set('#modelHarnessStatus',last.realModelDing?'PASS':'HOLD',last.realModelDing?'MODEL DING':last.mechanicsPass?'DING WITHHELD':'HOLD')}
+  else{for(const id of ['#modelStageResponse','#modelStageGate','#modelStageTool','#modelStageVerify','#modelStageScope'])set(id,'OPEN');set('#modelHarnessStatus',ep&&epOK&&native?'OPEN':ep?'HOLD':'OPEN',ep&&epOK&&native?'READY':ep?'CONTEXT HOLD':'NOT RUN')}
+}
+async function runRealModelContactHarness(){
+  const t0=performance.now(),endpoint=$('#modelHarnessEndpoint').value.trim(),model=$('#modelHarnessName').value.trim(),tokenInput=$('#modelHarnessToken').value;state.adapter={endpoint,model};sessionToken=tokenInput;const fetchNativeLike=nativeFetchLike(),endpointOK=endpointSchemeOK(endpoint);
+  if(!endpoint){const r={at:now(),status:'HOLD',realModelDing:false,mechanicsPass:false,reason:'no model endpoint configured',fetchNativeLike,endpointOK,responseSeen:false,proposalValidated:false,toolVerified:false,targetVerified:false};try{localStorage.setItem(MODEL_CONTACT_LAST_KEY,JSON.stringify(r))}catch(e){}renderModelHarness();return r}
+  const token=`MODEL-${ownerRandomToken().replace(/^OWNER-/,'')}`,target=`tool_storage_last_token=${token}`;let result;
+  try{result=await delegateLoopGoal(target,t0,null)}catch(e){result={status:'HOLD',verified:false,detail:{error:e.message},output:e.message}}
+  const trace=result?.detail?.trace||[],responseSeen=!!(result?.detail?.externalModel||trace.length),proposalValidated=trace.length>0,toolVerified=trace.some(x=>x.skill==='verifyToolContact'&&x.status==='PASS'&&x.verified),targetVerified=state.world.facts?.tool_storage_last_token===token;
+  const c=classifyModelContactOutcome({resultStatus:result?.status,verified:!!result?.verified,externalModel:!!result?.detail?.externalModel,toolVerified,targetVerified,fetchNativeLike,endpointOK});let endpointHost='';try{endpointHost=new URL(endpoint,location.href).host}catch(e){}
+  const r={at:now(),status:c.status,realModelDing:c.realModelDing,mechanicsPass:c.mechanicsPass,reason:c.reason,endpointHost,model:model||'default',fetchNativeLike,endpointOK,responseSeen,proposalValidated,toolVerified,targetVerified,token,traceSteps:trace.length,durationMs:performance.now()-t0};
+  try{localStorage.setItem(MODEL_CONTACT_LAST_KEY,JSON.stringify(r))}catch(e){}
+  if(r.realModelDing){setFact('real_model_local_consequence_contact','yes',1,'model-harness:verified-loop');setFact('real_model_contact_host',endpointHost||'configured',1,'model-harness:endpoint');receipt('Real model → local consequence contact','PASS',{endpointHost,model:model||'default',traceSteps:trace.length,toolVerified,targetVerified},r.durationMs)}
+  else receipt('Model contact harness','HOLD',{reason:r.reason,endpointHost,fetchNativeLike,responseSeen,proposalValidated,toolVerified,targetVerified},r.durationMs);
+  try{save()}catch(e){render()}renderModelHarness();return r
+}
+function clearModelContactHarness(){try{localStorage.removeItem(MODEL_CONTACT_LAST_KEY)}catch(e){}renderModelHarness();toast('Model contact local receipt cleared.')}
+
+async function verifiedStorageRoundTrip(token,t0=performance.now(),provider=null){
+  state.stats.toolContacts=(state.stats.toolContacts||0)+1;
+  const clean=String(token||'').trim();
+  if(!/^[A-Za-z0-9._-]{1,64}$/.test(clean))return hold('verifyToolContact','Tool contact HOLD: token must be 1–64 letters, numbers, dot, underscore or hyphen.',{token:clean},t0);
+  const key='__jm_verified_contact_probe__',payload=`JMVC:${clean}:${Date.now()}:${Math.random().toString(36).slice(2,10)}`;
+  let writeAccepted=false,readBack='',restored=false,error='';
+  try{
+    if(provider){
+      const r=await provider('storage-roundtrip',{key,payload,token:clean});
+      writeAccepted=!!r?.writeAccepted;readBack=String(r?.readBack??'');restored=r?.restored===true;
+    }else{
+      const prior=localStorage.getItem(key),hadPrior=prior!==null;
+      localStorage.setItem(key,payload);writeAccepted=true;readBack=String(localStorage.getItem(key)??'');
+      if(hadPrior)localStorage.setItem(key,prior);else localStorage.removeItem(key);
+      restored=localStorage.getItem(key)===(hadPrior?prior:null);
+    }
+  }catch(e){error=e.message}
+  const verified=writeAccepted&&readBack===payload&&restored,elapsed=performance.now()-t0;
+  const rec={id:uid('toolcontact'),at:now(),kind:'storage-roundtrip',token:clean,key,writeAccepted,exactReadBack:readBack===payload,restored,verifiedConsequence:verified,error};
+  state.environment.toolContacts.unshift(rec);state.environment.toolContacts=state.environment.toolContacts.slice(0,100);
+  if(!verified){scoreSkill('verifyToolContact',false,elapsed);return{status:'HOLD',actStatus:writeAccepted?'PASS':'HOLD',verified:false,skill:'verifyToolContact',durationMs:elapsed,detail:rec,output:`Verified tool contact HOLD — ${error||(!writeAccepted?'write was not accepted':readBack!==payload?'read-back mismatch':'prior reserved-key state was not restored')}. API/action acceptance is not enough.`}}
+  setFact('tool_storage_verified','yes',1,'tool:storage-roundtrip');setFact('tool_storage_last_token',clean,1,'tool:storage-roundtrip');
+  state.stats.toolContactPassed=(state.stats.toolContactPassed||0)+1;scoreSkill('verifyToolContact',true,elapsed);receipt('Verified storage tool contact','PASS',{token:clean,writeAccepted:true,exactReadBack:true,restored:true},elapsed);
+  return{status:'PASS',actStatus:'PASS',verified:true,skill:'verifyToolContact',durationMs:elapsed,detail:rec,output:`Verified tool contact PASS — wrote reserved probe, read back exact payload, restored prior state.\ntool_storage_last_token=${clean}\nConsequence verification: LOCAL READ-BACK PASS.`}
+}
+
+async function modelLoopTurn(ctx,provider=null){
+  if(provider)return await provider(deep(ctx));
+  const ep=state.adapter.endpoint;if(!ep)throw Error('No external model adapter is configured.');const headers={'Content-Type':'application/json'};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
+  const grammar=['calculate EXPR','reverse TEXT','uppercase TEXT','lowercase TEXT','word count in TEXT','next in sequence 1,2,3','sort 3,1,2','recall QUERY','apply learned RULE: INPUT','plan A -> B -> C','simulate: key=value','assess: key=value','replan: key=value','achieve: key=value','achieve robust: key=value','autonomous: key=value','show world','self assess','audit kernel','curriculum','sense: clock','sense: network','sense: viewport','sense: storage','sense: device','sense: battery','show environment','inquire: key=value','tool: storage roundtrip TOKEN'];
+  const body={model:state.adapter.model||'local-model',messages:[{role:'system',content:`You are the bounded next-step planner in JM AGI Lab. Return ONLY JSON {"next":"one command","rationale":"short"}. One command only. Allowed forms: ${grammar.join(' | ')}. You receive only kernel-verified prior results. Never invent facts/memories/actions/policies, never request device actuation, and never claim the target is achieved; the kernel decides that.`},{role:'user',content:JSON.stringify(ctx)}],temperature:0};const res=await fetch(ep,{method:'POST',headers,body:JSON.stringify(body)});if(!res.ok)throw Error(`HTTP ${res.status}`);const j=await res.json(),txt=j?.choices?.[0]?.message?.content??j?.choices?.[0]?.text;if(!txt)throw Error('No compatible model output.');let obj;try{obj=parseModelPlanText(txt)}catch(e){throw Error(`Bad model JSON: ${e.message}`)}return obj
+}
+async function delegateLoopGoal(targetSource,t0=performance.now(),provider=null){
+  state.stats.interactiveDelegations=(state.stats.interactiveDelegations||0)+1;pruneEnvironment();let target;try{target=parseConditions(targetSource)}catch(e){return hold('delegateLoop',`Closed-loop delegation HOLD: ${e.message}`,{error:e.message},t0)}
+  if(factsMatch(state.world.facts,target)){const d=performance.now()-t0;scoreSkill('delegateLoop',true,d);state.stats.interactiveDelegationPassed=(state.stats.interactiveDelegationPassed||0)+1;return{status:'PASS',verified:true,skill:'delegateLoop',durationMs:d,detail:{target,steps:0,already:true},output:'Closed-loop delegation PASS — target was already locally verified.'}}
+  if(!provider&&!state.adapter.endpoint)return hold('delegateLoop','Closed-loop delegation HOLD: no external model adapter is configured.',{frontier:'external-model-contact-required'},t0);
+  const before=deep(state),trace=[],max=Math.min(8,state.self.policy.maxCycles||8);const rollback=(reason,extra={})=>{const elapsed=performance.now()-t0,recoveries=(before.recoveries||0)+1;state=before;state.recoveries=recoveries;scoreSkill('delegateLoop',false,elapsed);receipt('Closed-loop delegation rollback','HOLD',{reason,steps:trace.length,...extra},elapsed);return{status:'HOLD',verified:false,skill:'delegateLoop',durationMs:elapsed,detail:{rolledBack:true,target,trace,...extra},output:`Closed-loop delegation HOLD — ${reason}. All delegated state mutations rolled back.\n${trace.map((x,i)=>`${i+1}. ${x.command} → ${x.status}${x.verified?' / verified':' / unverified'}`).join('\n')}`}};
+  for(let cycle=1;cycle<=max;cycle++){
+    const ctx={target,cycle,maxCycles:max,world:deep(state.world.facts),environment:Object.fromEntries(Object.entries(state.environment.latest||{}).map(([k,o])=>[k,{value:o.value,sensor:o.sensor,expiresAt:o.expiresAt}])),verifiedTrace:trace.map(x=>({command:x.command,status:x.status,output:x.output}))};let proposal;
+    try{proposal=await modelLoopTurn(ctx,provider)}catch(e){return rollback(`model turn failed: ${e.message}`,{cycle})}
+    const command=String(proposal?.next||'').trim();if(!command)return rollback('model returned no next command',{cycle,proposal});const valid=validateDelegatedPlan({steps:[command],rationale:proposal?.rationale||''});if(valid.status!=='PASS')return rollback(`proposal rejected: ${valid.reason}`,{cycle,command});
+    const {intent}=valid.steps[0];let r;try{r=await executeIntent(intent)}catch(e){r={status:'FAIL',verified:false,output:e.message,skill:intent.skill}}trace.push({cycle,command,skill:intent.skill,status:r.status,verified:r.verified,output:primaryOutput(r),rationale:String(proposal?.rationale||'').slice(0,300)});if(r.status!=='PASS'||!r.verified)return rollback(`step ${cycle} did not independently verify`,{cycle,command});pruneEnvironment();if(factsMatch(state.world.facts,target)){const elapsed=performance.now()-t0;state.stats.interactiveDelegationPassed=(state.stats.interactiveDelegationPassed||0)+1;scoreSkill('delegateLoop',true,elapsed);receipt('Closed-loop delegation','PASS',{target,steps:trace.length,externalModel:!provider},elapsed);return{status:'PASS',verified:true,skill:'delegateLoop',durationMs:elapsed,detail:{target,trace,externalModel:!provider},output:`Closed-loop delegation PASS — target locally verified after ${trace.length} model-guided step(s).\n${trace.map((x,i)=>`${i+1}. ${x.command} → ${x.output}`).join('\n')}`}}
+  }
+  return rollback(`cycle budget ${max} exhausted without local target verification`,{budget:max})
+}
+function parseGoal(raw){
+  const text=String(raw).trim(),n=norm(text);
+  let m;
+  if((m=text.match(/^remember(?: that)?\s+(.+)$/i)))return{skill:'remember',args:{text:m[1]}};
+  if((m=text.match(/^(?:recall|remember what|search memory(?: for)?)\s+(.+)$/i)))return{skill:'recall',args:{query:m[1]}};
+  if((m=text.match(/^(?:calculate|calc|work out|what is)\s+(.+?)[?]?$/i)))return{skill:'calculate',args:{expr:m[1]}};
+  if((m=text.match(/^reverse\s+(.+)$/i)))return{skill:'reverse',args:{text:m[1]}};
+  if((m=text.match(/^(?:uppercase|upper case|caps)\s+(.+)$/i)))return{skill:'uppercase',args:{text:m[1]}};
+  if((m=text.match(/^(?:lowercase|lower case)\s+(.+)$/i)))return{skill:'lowercase',args:{text:m[1]}};
+  if((m=text.match(/^(?:count words|word count)(?: in)?\s+(.+)$/i)))return{skill:'wordCount',args:{text:m[1]}};
+  if((m=text.match(/^(?:next in sequence|continue sequence|sequence)\s*:?[\s]*(.+)$/i)))return{skill:'sequence',args:{nums:(m[1].match(/-?\d+(?:\.\d+)?/g)||[]).map(Number)}};
+  if((m=text.match(/^(?:sort|sort numbers)\s+(.+)$/i)))return{skill:'sortNumbers',args:{nums:(m[1].match(/-?\d+(?:\.\d+)?/g)||[]).map(Number)}};
+  if((m=text.match(/^learn\s*:\s*(.+?)\s*=>\s*(.+)$/i)))return{skill:'learnExample',args:{input:m[1],output:m[2]}};
+  if((m=text.match(/^teach\s*:\s*(.+)$/i)))return{skill:'teachExamples',args:{source:m[1]}};
+  if((m=text.match(/^challenge learned(?:\s+([^:]+))?\s*:\s*(.+?)\s*=>\s*(.+)$/i)))return{skill:'challengeLearned',args:{selector:(m[1]||'').trim(),input:m[2].trim(),expected:m[3].trim()}};
+  if((m=text.match(/^apply learned(?:\s+([^:]+))?\s*:\s*(.+)$/i)))return{skill:'applyLearned',args:{selector:(m[1]||'').trim(),input:m[2]}};
+  if((m=text.match(/^mission\s*:\s*(.+)$/i)))return{skill:'mission',args:{source:m[1]}};
+  if((m=text.match(/^plan\s+(.+->.+)$/i)))return{skill:'dependencyPlan',args:{route:m[1]}};
+  if((m=text.match(/^(?:fact|facts|assert)\s*:\s*(.+)$/i)))return{skill:'assertFacts',args:{source:m[1]}};
+  if((m=text.match(/^observe\s*:\s*([A-Za-z0-9_.-]+)\s*=\s*(.+?)\s*@\s*([0-9.]+%?)$/i)))return{skill:'observeFact',args:{key:m[1],value:m[2],confidence:m[3]}};
+  if((m=text.match(/^(?:define action|action)\s+([^:@]+?)(?:\s*@\s*([0-9.]+%?))?\s*:\s*(?:requires\s+)?(.*?)\s*=>\s*(.+)$/i)))return{skill:'defineAction',args:{name:m[1].trim(),confidence:(m[2]||'').trim(),pre:m[3].trim(),effects:m[4].trim()}};
+  if((m=text.match(/^feedback action\s+([^:]+)\s*:\s*(pass|fail|success|failure)$/i)))return{skill:'actionFeedback',args:{name:m[1].trim(),outcome:m[2].toLowerCase()}};
+  if((m=text.match(/^assess\s*:\s*(.+)$/i)))return{skill:'assessGoal',args:{target:m[1]}};
+  if((m=text.match(/^replan\s*:\s*(.+)$/i)))return{skill:'replanGoal',args:{target:m[1]}};
+  if((m=text.match(/^simulate\s*:\s*(.+)$/i)))return{skill:'simulateGoal',args:{target:m[1]}};
+  if((m=text.match(/^(?:achieve|reach)\s+(robust)\s*:\s*(.+)$/i)))return{skill:'achieveGoal',args:{target:m[2],mode:'robust'}};
+  if((m=text.match(/^(?:achieve|reach)\s*:\s*(.+)$/i)))return{skill:'achieveGoal',args:{target:m[1],mode:'shortest'}};
+  if((m=text.match(/^compile macro\s+([^:]+)\s*:\s*(.+)$/i)))return{skill:'compileMacro',args:{name:m[1].trim(),target:m[2].trim()}};
+  if((m=text.match(/^policy\s*:\s*(.+)$/i)))return{skill:'setPolicy',args:{source:m[1]}};
+  if(/^(?:self assess|self-assess|introspect|capabilities)$/i.test(text))return{skill:'selfAssess',args:{}};
+  if((m=text.match(/^(enable|disable) action\s+(.+)$/i)))return{skill:'toggleAction',args:{enabled:m[1].toLowerCase()==='enable',name:m[2].trim()}};
+  if((m=text.match(/^autonomous\s*:\s*(.+)$/i)))return{skill:'autonomousGoal',args:{target:m[1]}};
+  if(/^(?:audit kernel|self audit|audit)$/i.test(text))return{skill:'auditKernel',args:{}};
+  if(/^(?:curriculum|generate curriculum)$/i.test(text))return{skill:'curriculum',args:{}};
+  if(/^(?:world|show world|inspect world)$/i.test(text))return{skill:'showWorld',args:{}};
+  if((m=text.match(/^sense\s*:\s*(clock|network|viewport|storage|device|battery|all)$/i)))return{skill:'senseEnvironment',args:{sensor:m[1].toLowerCase()}};
+  if(/^(?:environment|show environment|inspect environment)$/i.test(text))return{skill:'inspectEnvironment',args:{}};
+  if((m=text.match(/^inquire\s*:\s*(.+)$/i)))return{skill:'inquireEnvironment',args:{target:m[1]}};
+  if((m=text.match(/^(?:act|actuate)\s*:\s*(.+)$/i)))return{skill:'actuateDevice',args:{source:m[1]}};
+  if((m=text.match(/^(?:tool|probe)\s*:\s*storage\s+roundtrip\s+([A-Za-z0-9._-]{1,64})$/i)))return{skill:'verifyToolContact',args:{token:m[1]}};
+  if((m=text.match(/^delegate\s+achieve\s*:\s*(.+)$/i)))return{skill:'delegateLoop',args:{target:m[1]}};
+  if((m=text.match(/^delegate\s*:\s*(.+)$/i)))return{skill:'delegateGoal',args:{prompt:m[1]}};
+  if(n.startsWith('ask model ')||n.startsWith('model '))return{skill:'modelAdapter',args:{prompt:text.replace(/^(ask model|model)\s+/i,'')}};
+  return{skill:'open',args:{text}};
+}
+
+function buildPlan(intent,raw){
+  const base=[
+    {id:uid('step'),name:'CONTACT',detail:'Parse goal and identify an available route.',status:'PASS'},
+    {id:uid('step'),name:'RETRIEVE',detail:'Contact relevant skills and local memory.',status:'OPEN'},
+    {id:uid('step'),name:'ACT',detail:intent.skill==='open'?'No earned deterministic skill; seek bounded external/model route or HOLD.':`Execute ${intent.skill}.`,status:'OPEN'},
+    {id:uid('step'),name:'VERIFY',detail:'Check result against the tool/rule boundary.',status:'OPEN'},
+    {id:uid('step'),name:'LEARN',detail:'Update statistics/memory only after verified consequence.',status:'OPEN'},
+    {id:uid('step'),name:'DING',detail:'Emit PASS/HOLD/FAIL receipt.',status:'OPEN'}
+  ];
+  const mem=retrieveMemory(raw,3);base[1].detail=mem.length?`Recovered ${mem.length} potentially relevant memory item(s).`:'No relevant local memory recovered; continuing without invented context.';base[1].status='PASS';return base
+}
+
+async function executeIntent(intent){
+  const t0=performance.now();let out,verify=()=>true,detail={};
+  switch(intent.skill){
+    case'remember':out=`Stored: ${intent.args.text}`;addMemory(intent.args.text,['explicit','user'],1,'goal');detail={stored:true};break;
+    case'recall':{const rs=retrieveMemory(intent.args.query,5);if(!rs.length)return hold('recall','No matching memory earned.',{query:intent.args.query},t0);out=rs.map((r,i)=>`${i+1}. ${r.text}  [match ${Math.round(r.score*100)}%]`).join('\n');detail={matches:rs.length,best:rs[0].score};verify=()=>rs[0].score>0;break}
+    case'calculate':{let v;try{v=calc(intent.args.expr)}catch(e){return hold('calculate',`Arithmetic HOLD: ${e.message}`,{expression:intent.args.expr,error:e.message},t0)}out=String(v);detail={expression:intent.args.expr,result:v};verify=()=>Number.isFinite(v);break}
+    case'reverse':out=[...intent.args.text].reverse().join('');detail={input:intent.args.text};verify=()=>[...out].reverse().join('')===intent.args.text;break;
+    case'uppercase':out=intent.args.text.toUpperCase();detail={input:intent.args.text};verify=()=>out===intent.args.text.toUpperCase();break;
+    case'lowercase':out=intent.args.text.toLowerCase();detail={input:intent.args.text};verify=()=>out===intent.args.text.toLowerCase();break;
+    case'wordCount':{const c=intent.args.text.trim()?intent.args.text.trim().split(/\s+/).length:0;out=String(c);detail={count:c};verify=()=>Number(out)===c;break}
+    case'sequence':{let r;try{r=inferSequence(intent.args.nums)}catch(e){return hold('sequence',`Sequence HOLD: ${e.message}`,{count:intent.args.nums.length,error:e.message},t0)}out=`${r.next}\nRule: ${r.rule}\nConfidence: ${Math.round(r.confidence*100)}%`;detail=r;verify=()=>Number.isFinite(r.next)&&r.confidence>=.8;break}
+    case'sortNumbers':{if(!intent.args.nums.length)return hold('sortNumbers','Sort HOLD: no numeric values were supplied.',{count:0},t0);const sorted=[...intent.args.nums].sort((a,b)=>a-b);out=sorted.join(', ');detail={count:sorted.length};verify=()=>sorted.length>0&&sorted.every((x,i)=>!i||sorted[i-1]<=x);break}
+    case'learnExample':{
+      const examples=[{input:intent.args.input,output:intent.args.output}],h=deriveHypothesis(examples),s=storeHypothesis(examples,h);
+      out=`Provisional hypothesis${h.proposal?`: ${h.proposal.label}`:''}\n${h.reason}\nStatus: HOLD — add evidence with “teach: a=>b | c=>d”.`;detail={learnedId:s?.id||null,survivors:h.survivors.map(x=>x.label),evidence:1};return hold('learnExample',out,detail,t0)}
+    case'teachExamples':{
+      let examples;try{examples=parseExampleList(intent.args.source)}catch(e){return hold('teachExamples',`Teaching HOLD: ${e.message}`,{error:e.message},t0)}const h=deriveHypothesis(examples);const s=storeHypothesis(examples,h);
+      if(h.status!=='PASS')return hold('teachExamples',`${h.reason}\nSurviving hypotheses: ${h.survivors.map(x=>x.label).join(', ')||'none'}\nStatus: HOLD`,{survivors:h.survivors.map(x=>x.label),evidence:examples.length,learnedId:s?.id||null},t0);
+      out=`Promoted learned rule: ${h.spec.label}\nEvidence contacts: ${examples.length}\nConfidence: ${Math.round(h.confidence*100)}%\nPromotion earned because exactly one supported hypothesis survived all examples.`;detail={learnedId:s.id,type:h.spec.type,evidence:examples.length,confidence:h.confidence};verify=()=>examples.every(e=>ruleMatches(h.spec,e.input,e.output));break}
+    case'applyLearned':{
+      const active=state.learnedSkills.filter(s=>s.status==='PROMOTED');if(!active.length)return hold('applyLearned','No promoted learned rule exists yet. Provisional hypotheses cannot be used as crowned rules.',{},t0);
+      const s=findLearned(intent.args.selector);if(!s){const why=intent.args.selector?`No promoted rule matches “${intent.args.selector}”.`:`${active.length} promoted rules exist; specify one, e.g. “apply learned uppercase: horizon”.`;return hold('applyLearned',why,{active:active.map(x=>x.type)},t0)}
+      const v=hydrateLearned(s)(intent.args.input);out=`${v}\nVia: ${s.name}\nEvidence: ${s.evidenceCount||0} contact(s) • confidence ${Math.round((s.confidence||0)*100)}%`;detail={learnedSkill:s.id,input:intent.args.input,result:v};verify=()=>v!==undefined&&!Number.isNaN(v);s.uses++;if(verify())s.passes++;else s.fails++;break}
+    case'challengeLearned':{
+      const s=findLearned(intent.args.selector);if(!s)return hold('challengeLearned','No matching promoted learned rule to challenge.',{selector:intent.args.selector},t0);const got=hydrateLearned(s)(intent.args.input),ok=String(got)===String(intent.args.expected)||((typeof got==='number'||!Number.isNaN(Number(got)))&&Math.abs(Number(got)-Number(intent.args.expected))<1e-10);
+      s.examples=[...(s.examples||[]),{input:intent.args.input,output:intent.args.expected}].slice(-20);s.evidenceCount=s.examples.length;
+      if(ok){s.evidencePasses=(s.evidencePasses||0)+1;s.confidence=Math.min(.995,(s.confidence||.88)+.015);out=`Challenge PASS: ${s.name}\n${intent.args.input} → ${got}\nEvidence now ${s.evidenceCount} contact(s).`;detail={learnedSkill:s.id,got,expected:intent.args.expected,demoted:false};verify=()=>true;break}
+      s.evidenceFails=(s.evidenceFails||0)+1;s.status='CHALLENGED';s.confidence=Math.min(.49,(s.confidence||.5)*.45);return hold('challengeLearned',`Counterexample found. Rule demoted to CHALLENGED.\nExpected: ${intent.args.expected}\nObserved: ${got}\nIt can no longer be auto-applied as a promoted rule.`,{learnedSkill:s.id,got,expected:intent.args.expected,demoted:true},t0)}
+    case'mission':return await executeMission(intent.args.source,t0);
+    case'dependencyPlan':{const nodes=intent.args.route.split('->').map(x=>x.trim()).filter(Boolean);if(nodes.length<2)return hold('dependencyPlan','Need at least two route nodes.',{},t0);out=nodes.map((x,i)=>`${i+1}. ${x}`).join('\n');detail={nodes};verify=()=>nodes.length>=2;break}
+    case'assertFacts':{let facts;try{facts=parseConditions(intent.args.source)}catch(e){return hold('assertFacts',`World fact HOLD: ${e.message}`,{error:e.message},t0)}if(!Object.keys(facts).length)return hold('assertFacts','World fact HOLD: no facts supplied.',{},t0);for(const [k,v] of Object.entries(facts))setFact(k,v,1,'asserted');out=`World facts asserted: ${formatWorldFacts(facts)}`;detail={facts,confidence:1};verify=()=>factsMatch(state.world.facts,facts);break}
+    case'observeFact':{let confidence;try{confidence=parseConfidence(intent.args.confidence,1)}catch(e){return hold('observeFact',`Observation HOLD: ${e.message}`,{error:e.message},t0)}const value=parseScalar(intent.args.value);setFact(intent.args.key,value,confidence,'observation');out=`Observed ${intent.args.key}=${scalarText(value)} @ ${Math.round(confidence*100)}% confidence.`;detail={key:intent.args.key,value,confidence};verify=()=>state.world.facts[intent.args.key]===value&&Math.abs((state.world.evidence[intent.args.key]?.confidence||0)-confidence)<1e-9;break}
+    case'defineAction':{let pre,effects,reliability;try{pre=parseConditions(intent.args.pre);effects=parseConditions(intent.args.effects);reliability=parseConfidence(intent.args.confidence,.9)}catch(e){return hold('defineAction',`Action definition HOLD: ${e.message}`,{error:e.message},t0)}let a;try{a=upsertAction(intent.args.name,pre,effects,reliability)}catch(e){return hold('defineAction',`Action definition HOLD: ${e.message}`,{error:e.message},t0)}out=`Action taught: ${actionLabel(a)}`;detail={action:a.name,preconditions:pre,effects,reliability};verify=()=>state.world.actions.some(x=>x.id===a.id);break}
+    case'actionFeedback':{const a=state.world.actions.find(x=>norm(x.name)===norm(intent.args.name));if(!a)return hold('actionFeedback',`Feedback HOLD: no action named “${intent.args.name}”.`,{},t0);const pass=/^(pass|success)$/.test(intent.args.outcome),before=a.reliability??.9;a.feedbackPasses=(a.feedbackPasses||0)+(pass?1:0);a.feedbackFails=(a.feedbackFails||0)+(pass?0:1);a.reliability=clamp(before*.75+(pass?1:0)*.25,.01,.999);out=`Action feedback recorded: ${a.name} → ${pass?'PASS':'FAIL'}\nReliability ${Math.round(before*100)}% → ${Math.round(a.reliability*100)}%\nEvidence P/F ${a.feedbackPasses}/${a.feedbackFails}`;detail={action:a.name,outcome:pass?'PASS':'FAIL',before,after:a.reliability};verify=()=>a.reliability!==before;break}
+    case'assessGoal':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('assessGoal',`Assessment HOLD: ${e.message}`,{error:e.message},t0)}const beforeFacts=deep(state.world.facts),short=planWorld(target),robust=planWorldRobust(target),tree=decomposeGoal(target);state.stats.assessments=(state.stats.assessments||0)+1;if(robust.status!=='PASS'){recordWorldPlan('assess',target,[],'HOLD',{blockers:robust.blockers||[],tree});return hold('assessGoal',`${robust.reason}\nMissing contact candidates: ${(robust.blockers||[]).join(', ')||'no producer route in current action graph'}\nGoal tree:\n${formatGoalTree(tree)}`,{target,blockers:robust.blockers||[],tree},t0)}const unchanged=worldKey(beforeFacts)===worldKey(state.world.facts),shortNames=(short.plan||[]).map(a=>a.name),robustNames=robust.plan.map(a=>a.name);out=`Assessment PASS — world not mutated.\nShortest route: ${short.status==='PASS'?(shortNames.join(' → ')||'already satisfied'):'none'}\nRobust route: ${robustNames.join(' → ')||'already satisfied'}\nRoute confidence heuristic: ${Math.round((robust.confidence||1)*100)}%\nWeakest link: ${robust.weakest?.name||'none'} @ ${Math.round((robust.weakest?.confidence??1)*100)}%\nCandidate routes inspected: ${robust.candidates??1}\nGoal tree:\n${formatGoalTree(tree)}`;detail={target,shortest:shortNames,robust:robustNames,confidence:robust.confidence,weakest:robust.weakest,tree,worldUnchanged:unchanged};verify=()=>unchanged&&tree.status!=='OPEN';break}
+    case'replanGoal':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('replanGoal',`Replan HOLD: ${e.message}`,{error:e.message},t0)}const previous=(state.world.plans||[]).find(p=>JSON.stringify(p.target)===JSON.stringify(target)&&p.status==='PASS'),p=planWorldRobust(target);state.stats.replans=(state.stats.replans||0)+1;if(p.status!=='PASS')return hold('replanGoal',`${p.reason}\nMissing contact candidates: ${(p.blockers||[]).join(', ')||'none'}`,{target,blockers:p.blockers||[]},t0);const route=p.plan.map(a=>a.name),changed=!!previous&&JSON.stringify(previous.route)!==JSON.stringify(route);recordWorldPlan('replan',target,p.plan,'PASS',{confidence:p.confidence,changed,previousRoute:previous?.route||null});out=`Replan PASS — ${changed?'preferred route changed':'preferred route stable or no prior comparable route'}.\n${route.length?route.map((x,i)=>`${i+1}. ${x}`).join('\n'):'0. Target already satisfied.'}\nRoute confidence heuristic: ${Math.round((p.confidence||1)*100)}%\nWeakest link: ${p.weakest?.name||'none'} @ ${Math.round((p.weakest?.confidence??1)*100)}%`;detail={target,route,changed,previous:previous?.route||null,confidence:p.confidence,weakest:p.weakest};verify=()=>factsMatch(p.finalFacts,target);break}
+    case'simulateGoal':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('simulateGoal',`Simulation HOLD: ${e.message}`,{error:e.message},t0)}const beforeFacts=deep(state.world.facts),p=planWorld(target);if(p.status!=='PASS'){recordWorldPlan('simulate',target,[],'HOLD',{blockers:p.blockers||[],expansions:p.expansions});return hold('simulateGoal',`${p.reason}\nMissing contact candidates: ${(p.blockers||[]).join(', ')||'no producer route in current action graph'}`,{target,blockers:p.blockers||[],expansions:p.expansions},t0)}const unchanged=worldKey(beforeFacts)===worldKey(state.world.facts);recordWorldPlan('simulate',target,p.plan,'PASS',{expansions:p.expansions,already:!!p.already,confidence:p.confidence});out=`Simulation PASS — ${p.plan.length} action(s), world not mutated.\n${p.plan.length?p.plan.map((a,i)=>`${i+1}. ${a.name}`).join('\n'):'0. Target already satisfied.'}\nPredicted world: ${formatWorldFacts(p.finalFacts)}\nRoute confidence heuristic: ${Math.round((p.confidence??1)*100)}%`;detail={target,steps:p.plan.length,expansions:p.expansions,worldUnchanged:unchanged,confidence:p.confidence};verify=()=>unchanged&&factsMatch(p.finalFacts,target);break}
+    case'achieveGoal':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('achieveGoal',`Goal planning HOLD: ${e.message}`,{error:e.message},t0)}const beforeWorld=deep(state.world),mode=intent.args.mode==='robust'?'robust':'shortest',p=mode==='robust'?planWorldRobust(target):planWorld(target);state.stats.worldPlans=(state.stats.worldPlans||0)+1;if(mode==='robust')state.stats.robustPlans=(state.stats.robustPlans||0)+1;if(p.status!=='PASS'){recordWorldPlan(`achieve-${mode}`,target,[],'HOLD',{blockers:p.blockers||[],expansions:p.expansions});return hold('achieveGoal',`${p.reason}
+Missing contact candidates: ${(p.blockers||[]).join(', ')||'no producer route in current action graph'}`,{target,blockers:p.blockers||[],expansions:p.expansions,mode},t0)}const trace=[];try{for(const a of p.plan)executeWorldAction(a,trace,{remaining:80,seen:new Set()});if(!factsMatch(state.world.facts,target))throw Error('Target state failed final verification.')}catch(e){state.world=beforeWorld;state.recoveries=(state.recoveries||0)+1;recordWorldPlan(`achieve-${mode}`,target,p.plan,'HOLD',{rolledBack:true,error:e.message});return hold('achieveGoal',`Goal execution HOLD; world rollback completed. ${e.message}`,{target,rolledBack:true,error:e.message,mode},t0)}state.stats.worldPlanPassed=(state.stats.worldPlanPassed||0)+1;recordWorldPlan(`achieve-${mode}`,target,p.plan,'PASS',{expansions:p.expansions,already:!!p.already,confidence:p.confidence,weakest:p.weakest});out=`Goal achieved and verified — ${p.plan.length} planned action(s) committed via ${mode} planning.
+${p.plan.length?p.plan.map((a,i)=>`${i+1}. ${a.name}${a.kind==='macro'?' [macro→primitive expansion]':''}`).join('\n'):'0. Target was already satisfied.'}
+World: ${formatWorldFacts()}
+Route confidence heuristic: ${Math.round((p.confidence??1)*100)}%`;detail={target,steps:p.plan.length,trace,expansions:p.expansions,transaction:'committed',mode,confidence:p.confidence,weakest:p.weakest};verify=()=>factsMatch(state.world.facts,target);break}
+    case'compileMacro':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('compileMacro',`Macro HOLD: ${e.message}`,{error:e.message},t0)}const r=compileMacro(intent.args.name,target);if(r.status!=='PASS')return hold('compileMacro',`Macro HOLD: ${r.reason}
+${(r.blockers||[]).length?'Missing: '+r.blockers.join(', '):''}`,r,t0);out=`Macro compiled: ${r.action.name}
+Primitive route: ${r.action.steps.join(' → ')}
+Preconditions: ${formatWorldFacts(r.action.preconditions)}
+Effects: ${formatWorldFacts(r.action.effects)}
+Reliability heuristic: ${Math.round(r.action.reliability*100)}%`;detail={macro:r.action.name,steps:r.action.steps,preconditions:r.action.preconditions,effects:r.action.effects};verify=()=>r.action.kind==='macro'&&r.action.steps.length>=2;break}
+    case'setPolicy':{let p;try{p=setPolicyFromSource(intent.args.source)}catch(e){return hold('setPolicy',`Policy HOLD: ${e.message}`,{error:e.message},t0)}out=`Policy updated — min confidence ${Math.round(p.minConfidence*100)}%, max steps ${p.maxSteps}, max cycles ${p.maxCycles}, prefer ${p.prefer}.`;detail=deep(p);verify=()=>p.minConfidence>0&&p.maxSteps>0&&p.maxCycles>0;break}
+    case'selfAssess':{const c=capabilityProfile();out=`Self-assessment PASS
+Registered skills: ${c.registered}
+Observed-use coverage: ${c.coveragePct.toFixed(0)}%
+Observed route pass rate: ${c.observedPassPct.toFixed(0)}%
+Latest sandbox battery: ${c.batteryPct==null?'not run':c.batteryPct.toFixed(0)+'%'}
+World: ${c.worldFacts} facts • ${c.actions} actions • ${c.macros} macros
+Promoted learned rules: ${c.promotedRules}
+Environment: ${c.environmentLive} live grounded observation(s) • ${c.inquiries} inquiry run(s) • ${(state.environment.toolContacts||[]).filter(x=>x.verifiedConsequence).length} verified tool contact(s)
+Policy: ≥${Math.round(c.policy.minConfidence*100)}% confidence, ≤${c.policy.maxSteps} steps, ≤${c.policy.maxCycles} autonomy cycles
+Boundary: browser-native sensing is literal and narrow; broad open-world semantic perception/reasoning remains outside this deterministic kernel.`;detail=c;verify=()=>Number.isFinite(c.coveragePct);break}
+    case'toggleAction':{const a=findAction(intent.args.name);if(!a)return hold('toggleAction',`No action named “${intent.args.name}”.`,{},t0);a.enabled=!!intent.args.enabled;out=`${a.name} ${a.enabled?'enabled':'disabled'}.`;detail={action:a.name,enabled:a.enabled};verify=()=>a.enabled===!!intent.args.enabled;break}
+    case'autonomousGoal':{let target;try{target=parseConditions(intent.args.target)}catch(e){return hold('autonomousGoal',`Autonomy HOLD: ${e.message}`,{error:e.message},t0)}return await autonomousGoal(target,t0)}
+    case'auditKernel':{const a=kernelAudit();out=`Kernel audit ${a.status}
+Structural issues: ${a.issues.length}
+Warnings: ${a.warnings.length}
+${a.issues.map(x=>'ISSUE: '+x).concat(a.warnings.map(x=>'WARN: '+x)).join('\n')||'No structural contradictions detected in the checked invariants.'}`;detail=a;if(a.status!=='PASS')return hold('auditKernel',out,detail,t0);verify=()=>true;break}
+    case'curriculum':{const c=generateCurriculum();out=`Curriculum generated — ${c.items.length} next probes.
+${c.items.map((x,i)=>`${i+1}. ${x.name}: ${x.probe}`).join('\n')}`;detail={items:c.items.length};verify=()=>c.items.length>0;break}
+    case'showWorld':{out=`Facts: ${formatWorldFacts()}\nActions (${state.world.actions.length}):\n${state.world.actions.length?state.world.actions.map((a,i)=>`${i+1}. ${actionLabel(a)}`).join('\n'):'none'}`;detail={facts:Object.keys(state.world.facts).length,actions:state.world.actions.length};verify=()=>true;break}
+    case'senseEnvironment':return await senseEnvironment(intent.args.sensor,t0);
+    case'inspectEnvironment':{pruneEnvironment();out=formatEnvironment();detail={live:Object.keys(state.environment.latest||{}).length,observations:state.environment.observations.length};verify=()=>true;break}
+    case'inquireEnvironment':return await inquireEnvironment(intent.args.target,t0);
+    case'actuateDevice':return await actuateDevice(intent.args.source,t0);
+    case'verifyToolContact':return await verifiedStorageRoundTrip(intent.args.token,t0);
+    case'delegateLoop':return await delegateLoopGoal(intent.args.target,t0);
+    case'delegateGoal':return await delegateGoal(intent.args.prompt,t0);
+    case'modelAdapter':return await runModel(intent.args.prompt,t0);
+    case'open':{
+      if(state.adapter.endpoint)return await runModel(intent.args.text,t0);
+      return hold('open','No deterministic skill matches this goal, and no model adapter is configured. The lab will not fabricate an answer.',{goal:intent.args.text},t0)
+    }
+    default:return hold(intent.skill,'Unknown route.',{},t0)
+  }
+  const durationMs=performance.now()-t0;const pass=!!verify();scoreSkill(intent.skill,pass,durationMs);return{status:pass?'PASS':'HOLD',output:out,verified:pass,detail,durationMs,skill:intent.skill}
+}
+function primaryOutput(result){return String(result?.output??'').split(/\r?\n/)[0]}
+function substituteRefs(step,results){return String(step).replace(/\$last\b/gi,()=>results.length?primaryOutput(results.at(-1)):'').replace(/\$(\d+)\b/g,(_,n)=>results[Number(n)-1]?primaryOutput(results[Number(n)-1]):'')}
+async function executeMission(source,t0=performance.now()){
+  const rawSteps=String(source).split('>>').map(x=>x.trim()).filter(Boolean);if(rawSteps.length<2)return hold('mission','Mission needs at least two steps separated by >>.',{},t0);if(rawSteps.length>12)return hold('mission','Mission is bounded to 12 steps in v0.8.',{steps:rawSteps.length},t0);
+  const before=deep(state),results=[];const mission={id:uid('mission'),at:now(),source:String(source),steps:[],status:'OPEN'};
+  const rollback=(i,intent,r)=>{const elapsed=performance.now()-t0,recoveries=(before.recoveries||0)+1;state=before;state.recoveries=recoveries;state.missions.unshift({...mission,status:'HOLD',rolledBack:true,durationMs:elapsed});state.missions=state.missions.slice(0,60);state.stats.missions=(state.stats.missions||0)+1;receipt('Mission rollback','HOLD',{failedStep:i+1,skill:intent.skill,status:r.status,verified:r.verified,error:r.detail?.error||null},elapsed);scoreSkill('mission',false,elapsed);return{status:'HOLD',verified:false,skill:'mission',durationMs:elapsed,detail:{rolledBack:true,failedStep:i+1,stepStatus:r.status},output:`Mission HOLD at step ${i+1}; transactional rollback completed.\n${mission.steps.map(x=>`${x.index}. ${x.resolved} → ${x.status}${x.verified?' / verified':' / unverified'}`).join('\n')}`}};
+  for(let i=0;i<rawSteps.length;i++){
+    const resolved=substituteRefs(rawSteps[i],results),intent=parseGoal(resolved);let r;
+    if(intent.skill==='mission')r={status:'HOLD',verified:false,skill:'mission',output:'Nested missions are not enabled in v0.8.',detail:{nested:true}};
+    else{try{r=await executeIntent(intent)}catch(e){r={status:'FAIL',verified:false,skill:intent.skill,output:`Step fault: ${e.message}`,detail:{error:e.message}}}}
+    mission.steps.push({index:i+1,raw:rawSteps[i],resolved,skill:intent.skill,status:r.status,verified:r.verified,output:primaryOutput(r)});results.push(r);
+    if(r.status!=='PASS'||!r.verified)return rollback(i,intent,r);
+  }
+  const elapsed=performance.now()-t0;mission.status='PASS';mission.rolledBack=false;mission.durationMs=elapsed;state.missions.unshift(mission);state.missions=state.missions.slice(0,60);state.stats.missions=(state.stats.missions||0)+1;state.stats.missionPassed=(state.stats.missionPassed||0)+1;scoreSkill('mission',true,elapsed);
+  return{status:'PASS',verified:true,skill:'mission',durationMs:elapsed,detail:{steps:rawSteps.length,transaction:'committed'},output:`Mission PASS — ${rawSteps.length}/${rawSteps.length} verified steps committed.\n${mission.steps.map(x=>`${x.index}. ${x.resolved} → ${x.output}`).join('\n')}`}
+}
+
+function hold(skill,output,detail,t0){const durationMs=performance.now()-t0;scoreSkill(skill,false,durationMs);return{status:'HOLD',output,verified:false,detail,durationMs,skill}}
+
+async function runModel(prompt,t0=performance.now()){
+  const ep=state.adapter.endpoint;if(!ep)return hold('modelAdapter','Model adapter is not configured.',{},t0);
+  const headers={'Content-Type':'application/json'};if(sessionToken)headers.Authorization=`Bearer ${sessionToken}`;
+  try{
+    const body={model:state.adapter.model||'local-model',messages:[{role:'system',content:'You are a bounded reasoning module inside JM AGI Lab. State uncertainty. Do not claim verification you did not perform.'},{role:'user',content:prompt}],temperature:0.2};
+    const res=await fetch(ep,{method:'POST',headers,body:JSON.stringify(body)});if(!res.ok)throw Error(`HTTP ${res.status}`);const j=await res.json();const out=j?.choices?.[0]?.message?.content??j?.choices?.[0]?.text;if(!out)throw Error('No compatible model output.');
+    const durationMs=performance.now()-t0;scoreSkill('modelAdapter',false,durationMs);return{status:'HOLD',actStatus:'PASS',output:String(out),verified:false,detail:{externalModel:true,http:res.status,reason:'External output received but not independently verified.'},durationMs,skill:'modelAdapter',external:true}
+  }catch(e){return hold('modelAdapter',`Adapter HOLD: ${e.message}`,{error:e.message},t0)}
+}
+
+async function runGoal(raw,{silent=false}={}){
+  pruneEnvironment();
+  raw=String(raw).trim();if(!raw){if(!silent)toast('Enter a goal first.');return null}
+  const before=deep(state);const t0=performance.now();const goal={id:uid('goal'),text:raw,at:now(),status:'OPEN'};state.goals.unshift(goal);state.goals=state.goals.slice(0,150);state.stats.goals++;
+  const intent=parseGoal(raw);const plan=buildPlan(intent,raw);state.lastPlan=plan;state.lastStatus='OPEN';if(!silent)render();
+  try{
+    plan[2].status='OPEN';const result=await executeIntent(intent);plan[2].status=result.actStatus|| (result.status==='FAIL'?'FAIL':(result.status==='HOLD'?'HOLD':'PASS'));plan[3].status=result.verified?'PASS':(result.external?'HOLD':result.status);plan[4].status=(result.status==='PASS'&&result.verified)?'PASS':'HOLD';plan[5].status=result.status;
+    goal.status=result.status;goal.skill=result.skill;goal.durationMs=performance.now()-t0;goal.output=result.output;state.lastOutput=result.output;state.lastStatus=result.status;
+    state.stats.totalDurationMs+=goal.durationMs;if(result.status==='PASS')state.stats.passed++;else if(result.status==='HOLD')state.stats.held++;else state.stats.failed++;if(result.verified)state.stats.verified++;
+    receipt(`Goal: ${raw.slice(0,90)}`,result.status,{skill:result.skill,verified:result.verified,external:!!result.external},goal.durationMs);
+    if(result.status==='PASS'&&result.verified)addMemory(`Successful route ${result.skill}: ${raw}`,['route','verified'],.75,'agent');
+    save();return result;
+  }catch(e){
+    const recoveryCount=state.recoveries+1;state=before;state.recoveries=recoveryCount;state.lastStatus='FAIL';state.lastOutput=`Recovered after execution fault: ${e.message}`;receipt('Route recovery','FAIL',{error:e.message,recovered:true},performance.now()-t0);save();return{status:'FAIL',output:state.lastOutput,verified:false,durationMs:performance.now()-t0}
+  }
+}
+
+async function runBattery(){
+  $('#runBattery').disabled=true;$('#batteryState').textContent='Running clean sandbox…';const before=deep(state),tests=[],start=performance.now();state=DEFAULT_STATE();state.adapter=deep(before.adapter||{endpoint:'',model:''});
+  const add=(name,domain,train,probe,expect,expectedStatus='PASS',transfer=true)=>tests.push({name,domain,train,probe,expect,expectedStatus,transfer});
+  add('Arithmetic transfer','reasoning',null,'calculate (37*12)-19','425');
+  add('Unary arithmetic transfer','reasoning',null,'calculate 3*-2','-6');
+  add('Text operation transfer','language',null,'reverse transfer','refsnart');
+  add('Sequence transfer','pattern',null,'next in sequence 4, 9, 14, 19','24');
+  add('Data transfer','data',null,'sort 9, -1, 4, 4, 12','-1, 4, 4, 9, 12');
+  add('Explicit memory contact','memory','remember that battery token is cedar-731','recall battery token','cedar-731');
+  add('Evidence-weighted text rule','transfer','teach: orbit=>ORBIT | cedar=>CEDAR','apply learned uppercase: horizon','HORIZON');
+  add('Evidence-weighted numeric rule','transfer','teach: 2=>6 | 4=>12','apply learned multiply: 7','21');
+  add('Anti-overclaim ambiguity gate','epistemic',null,'teach: 2=>4','underdetermined','HOLD');
+  add('Dependency route','planning',null,'plan source -> signal -> contact -> verify','1. source');
+  add('Compositional mission','composition',null,'mission: calculate 18*7 >> remember that product is $last >> recall product','product is 126');
+  add('Mission rollback gate','recovery',null,'mission: remember that rollback probe is live >> unknown route','transactional rollback completed','HOLD',false);
+  add('World-plan transfer','world-planning','mission: fact: parcel=warehouse, route=clear >> define action load: parcel=warehouse => parcel=van >> define action drive: parcel=van, route=clear => parcel=destination','simulate: parcel=destination','1. load');
+  add('World-goal execution','world-planning',null,'achieve: parcel=destination','Goal achieved and verified');
+  add('World blocker diagnosis','world-planning','define action ignite: fuel=yes => engine=on','achieve: engine=on','fuel=yes','HOLD');
+  add('Shortest-route search','world-planning','mission: fact: start=a >> define action long-1: start=a => middle=yes >> define action long-2: middle=yes => finish=yes >> define action direct: start=a => finish=yes','simulate: finish=yes','1. direct');
+  add('Confidence-tagged observation','metacognition',null,'observe: sky=cloudy @ 80%','80% confidence');
+  add('Hierarchical goal decomposition','metacognition','mission: fact: seed=yes >> define action grow @ 95%: seed=yes => plant=yes >> define action fruit @ 90%: plant=yes => food=yes','assess: food=yes','plant=yes');
+  add('Robust route over shortest','metacognition','mission: fact: origin=yes >> define action direct-risky @ 40%: origin=yes => safe=yes >> define action prep @ 95%: origin=yes => prepared=yes >> define action careful @ 95%: prepared=yes => safe=yes','assess: safe=yes','prep → careful');
+  add('Robust goal execution','metacognition',null,'achieve robust: safe=yes','via robust planning');
+  add('Evidence-sensitive replan','metacognition','mission: fact: hub=yes >> define action route-a @ 90%: hub=yes => arrived=yes >> define action route-b @ 70%: hub=yes => arrived=yes >> replan: arrived=yes >> feedback action route-a: fail >> feedback action route-a: fail','replan: arrived=yes','route-b');
+  add('Procedural macro compilation','abstraction','mission: fact: base=yes >> define action macro-a @ 95%: base=yes => mid=yes >> define action macro-b @ 95%: mid=yes => done=yes','compile macro finish-procedure: done=yes','macro compiled: finish-procedure');
+  add('Macro execution expands primitives','abstraction',null,'mission: fact: done=no >> fact: base=yes >> achieve robust: done=yes','Goal achieved and verified');
+  add('Adaptive policy update','self-model',null,'policy: min confidence=60%, max steps=10, max cycles=8','max cycles 8');
+  add('Self-model report','self-model',null,'self assess','Self-assessment PASS');
+  add('Action disable control','self-model','define action temp-route @ 90%: base=yes => flag=yes','disable action temp-route','disabled');
+  add('Bounded autonomous goal','autonomy','mission: fact: auto=start >> define action auto-1 @ 95%: auto=start => auto=mid >> define action auto-2 @ 95%: auto=mid => auto=done','autonomous: auto=done','Autonomous PASS');
+  add('Structural self-audit','metacognition',null,'audit kernel','Kernel audit PASS');
+  add('Weakness-driven curriculum','metacognition',null,'curriculum','Curriculum generated');
+  const safeDelegate=validateDelegatedPlan({steps:['calculate 7*8','self assess'],rationale:'bounded'});tests.push({name:'Delegation whitelist accepts safe plan',domain:'delegation',train:null,probe:'__synthetic_safe_delegate__',expect:'PASS',expectedStatus:'PASS',transfer:true,synthetic:()=>({status:safeDelegate.status,output:safeDelegate.status})});
+  const badDelegate=validateDelegatedPlan({steps:['remember that invented fact is true']});tests.push({name:'Delegation gate rejects epistemic mutation',domain:'delegation',train:null,probe:'__synthetic_bad_delegate__',expect:'HOLD',expectedStatus:'HOLD',transfer:true,synthetic:()=>({status:badDelegate.status,output:badDelegate.status})});
+  const toolDelegate=validateDelegatedPlan({steps:['tool: storage roundtrip MODEL-TOOL-001'],rationale:'bounded verified contact'});tests.push({name:'Delegation whitelist accepts verified tool contact',domain:'delegation',train:null,probe:'__synthetic_tool_delegate__',expect:'PASS',expectedStatus:'PASS',transfer:true,synthetic:()=>({status:toolDelegate.status,output:toolDelegate.status})});
+  const toolProviderPass=async(kind,ctx)=>{if(kind!=='storage-roundtrip')throw Error('unsupported synthetic tool');return{writeAccepted:true,readBack:ctx.payload,restored:true}};
+  const toolProviderMismatch=async(kind,ctx)=>{if(kind!=='storage-roundtrip')throw Error('unsupported synthetic tool');return{writeAccepted:true,readBack:'MISMATCH',restored:true}};
+  tests.push({name:'Verified reversible storage tool consequence',domain:'tool-contact',train:null,probe:'__synthetic_tool_contact__',expect:'LOCAL READ-BACK PASS',expectedStatus:'PASS',transfer:true,synthetic:async()=>verifiedStorageRoundTrip('BATTERY-TOOL-731',performance.now(),toolProviderPass)});
+  tests.push({name:'Tool consequence mismatch cannot crown',domain:'tool-contact',train:null,probe:'__synthetic_tool_mismatch__',expect:'read-back mismatch',expectedStatus:'HOLD',transfer:true,synthetic:async()=>verifiedStorageRoundTrip('BATTERY-TOOL-BAD',performance.now(),toolProviderMismatch)});
+  tests.push({name:'Owner reload classifier crowns eligible top-level contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_top_level__',expect:'OWNER DING',expectedStatus:'PASS',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:true,exactReadBack:true,restored:true,embedded:false,storageOk:true,storageNativeLike:true,contextKind:'top-level-web',sameDocument:false});return{status:x.status,output:x.ownerBrowserDing?'OWNER DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Embedded reload cannot crown owner-browser contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_embedded__',expect:'DING WITHHELD',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:true,exactReadBack:true,restored:true,embedded:true,storageOk:true,storageNativeLike:true,contextKind:'embedded',sameDocument:false});return{status:x.status,output:x.mechanicsPass?'DING WITHHELD':'NO MECHANICS',durationMs:0}}});
+  tests.push({name:'Same-load shortcut cannot crown owner-browser contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_same_load__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:false,exactReadBack:true,restored:true,embedded:false,storageOk:true,storageNativeLike:true,contextKind:'top-level-web',sameDocument:true});return{status:x.status,output:x.ownerBrowserDing?'OWNER DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Post-reload mismatch cannot crown owner-browser contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_mismatch__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:true,exactReadBack:false,restored:true,embedded:false,storageOk:true,storageNativeLike:true,contextKind:'top-level-web',sameDocument:false});return{status:x.status,output:x.ownerBrowserDing?'OWNER DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Opaque top-level context cannot crown owner-browser contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_opaque__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:true,exactReadBack:true,restored:true,embedded:false,storageOk:true,storageNativeLike:true,contextKind:'top-level-other',sameDocument:false});return{status:x.status,output:x.ownerBrowserDing?'OWNER DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Non-native storage shim cannot crown owner-browser contact',domain:'owner-contact',train:null,probe:'__synthetic_owner_storage_shim__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyOwnerContactOutcome({newLoad:true,exactReadBack:true,restored:true,embedded:false,storageOk:true,storageNativeLike:false,contextKind:'top-level-web',sameDocument:false});return{status:x.status,output:x.ownerBrowserDing?'OWNER DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Model contact classifier crowns only native verified route',domain:'model-contact',train:null,probe:'__synthetic_model_real__',expect:'MODEL DING',expectedStatus:'PASS',transfer:true,synthetic:()=>{const x=classifyModelContactOutcome({resultStatus:'PASS',verified:true,externalModel:true,toolVerified:true,targetVerified:true,fetchNativeLike:true,endpointOK:true});return{status:x.status,output:x.realModelDing?'MODEL DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Mocked fetch cannot crown real model contact',domain:'model-contact',train:null,probe:'__synthetic_model_mock__',expect:'DING WITHHELD',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyModelContactOutcome({resultStatus:'PASS',verified:true,externalModel:true,toolVerified:true,targetVerified:true,fetchNativeLike:false,endpointOK:true});return{status:x.status,output:x.mechanicsPass?'DING WITHHELD':'NO MECHANICS',durationMs:0}}});
+  tests.push({name:'Model prose without local consequence cannot crown',domain:'model-contact',train:null,probe:'__synthetic_model_no_tool__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyModelContactOutcome({resultStatus:'PASS',verified:true,externalModel:true,toolVerified:false,targetVerified:false,fetchNativeLike:true,endpointOK:true});return{status:x.status,output:x.realModelDing?'MODEL DING':'NO DING',durationMs:0}}});
+  const processBase={witnessSchema:PROCESS_WITNESS_SCHEMA,platform:'Windows',browser:'Microsoft Edge',dedicatedProfile:true,zeroObserved:true,prePidCount:7,runMatch:true,tokenMatch:true,bodyNameMatch:true,newLoad:true,sessionMarkerCleared:true,exactReadBack:true,restored:true,samePath:true,timelineValid:true,embedded:false,storageOk:true,storageNativeLike:true,contextKind:'top-level-file'};
+  tests.push({name:'Process restart classifier crowns witnessed Windows Edge return',domain:'process-restart',train:null,probe:'__synthetic_process_restart_real__',expect:'PROCESS DING',expectedStatus:'PASS',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome(processBase);return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'No OS zero witness cannot crown process restart',domain:'process-restart',train:null,probe:'__synthetic_process_no_zero__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,zeroObserved:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Session marker restoration is diagnostic after OS zero',domain:'process-restart',train:null,probe:'__synthetic_process_restored_session__',expect:'PROCESS DING',expectedStatus:'PASS',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,sessionMarkerCleared:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'OS process zero remains mandatory',domain:'process-restart',train:null,probe:'__synthetic_process_no_zero__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,zeroObserved:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Witness token mismatch cannot crown process restart',domain:'process-restart',train:null,probe:'__synthetic_process_token_mismatch__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,tokenMatch:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Read-back mismatch cannot crown process restart',domain:'process-restart',train:null,probe:'__synthetic_process_readback_mismatch__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,exactReadBack:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Non-native storage cannot crown process restart',domain:'process-restart',train:null,probe:'__synthetic_process_storage_shim__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,storageNativeLike:false});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Wrong witness schema cannot crown process restart',domain:'process-restart',train:null,probe:'__synthetic_process_bad_schema__',expect:'NO DING',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,witnessSchema:'BAD'});return{status:x.status,output:x.ownerProcessDing?'PROCESS DING':'NO DING',durationMs:0}}});
+  tests.push({name:'Non-Windows Chromium restart mechanics cannot self-upgrade to owner Edge Ding',domain:'process-restart',train:null,probe:'__synthetic_process_other_platform__',expect:'DING WITHHELD',expectedStatus:'HOLD',transfer:true,synthetic:()=>{const x=classifyProcessRestartOutcome({...processBase,platform:'Linux',browser:'Chromium'});return{status:x.status,output:x.mechanicsPass?'DING WITHHELD':'NO MECHANICS',durationMs:0}}});
+  const mockSensor=async kind=>{const m={network:{facts:{env_online:true,env_effective_type:'4g'},ttlMs:30000},viewport:{facts:{env_viewport_width:390,env_viewport_height:844,env_dpr:3,env_orientation:'portrait'},ttlMs:10000},clock:{facts:{env_clock_iso:'2026-09-27T17:00:00.000Z',env_hour:17,env_weekday:'Sunday'},ttlMs:60000},storage:{facts:{env_storage_ok:true,env_state_bytes:1234},ttlMs:60000},device:{facts:{env_language:'en-GB',env_touch_points:5,env_hardware_concurrency:8,env_device_memory:8},ttlMs:3600000},battery:{facts:{env_battery_level:96,env_battery_charging:false},ttlMs:60000}};if(!m[kind])throw Error('unsupported synthetic sensor');return m[kind]};
+  tests.push({name:'Environment grounding with provenance',domain:'environment',train:null,probe:'__synthetic_env_ground__',expect:'env_online=yes',expectedStatus:'PASS',transfer:true,synthetic:async()=>senseEnvironment('network',performance.now(),mockSensor)});
+  tests.push({name:'Active inquiry resolves sensed prerequisite',domain:'environment',train:'define action connect-route @ 95%: env_online=yes => connected=yes',probe:'__synthetic_inquiry__',expect:'connect-route',expectedStatus:'PASS',transfer:true,synthetic:async()=>inquireEnvironment('connected=yes',performance.now(),mockSensor)});
+  tests.push({name:'Actuation acceptance is not verification',domain:'environment',train:null,probe:'__synthetic_actuation__',expect:'VERIFY = HOLD',expectedStatus:'HOLD',transfer:true,synthetic:async()=>actuateDevice('vibrate 120',performance.now(),async()=>true)});
+  tests.push({name:'Expired sensor evidence is withdrawn',domain:'environment',train:null,probe:'__synthetic_expiry__',expect:'expired',expectedStatus:'PASS',transfer:true,synthetic:async()=>{publishEnvironment('network',{env_online:true},{ttlMs:1000});const o=state.environment.latest.env_online;pruneEnvironment(new Date(o.expiresAt).getTime()+1);const gone=!Object.prototype.hasOwnProperty.call(state.world.facts,'env_online');return{status:gone?'PASS':'HOLD',output:gone?'expired evidence withdrawn':'expired evidence survived',durationMs:0}}});
+  tests.push({name:'Verified closed-loop delegation',domain:'delegation-loop',train:'mission: fact: loop_seed=yes >> define action loop-mid @ 95%: loop_seed=yes => loop_mid=yes >> define action loop-finish @ 95%: loop_mid=yes => loop_done=yes',probe:'__synthetic_delegate_loop__',expect:'target locally verified',expectedStatus:'PASS',transfer:true,synthetic:async()=>{let turn=0;return await delegateLoopGoal('loop_done=yes',performance.now(),async()=>({next:++turn===1?'achieve robust: loop_mid=yes':'achieve robust: loop_done=yes',rationale:'synthetic bounded verified step'}))}});
+  tests.push({name:'Closed-loop rejects actuation proposal',domain:'delegation-loop',train:null,probe:'__synthetic_delegate_loop_reject__',expect:'rolled back',expectedStatus:'HOLD',transfer:true,synthetic:async()=>delegateLoopGoal('never=yes',performance.now(),async()=>({next:'act: vibrate 100',rationale:'unsafe'}))});
+  const results=[];
+  try{
+    for(let i=0;i<tests.length;i++){
+      const t=tests[i];
+      $('#batteryState').textContent=`Running ${i+1}/${tests.length} • ${t.name}`;
+      await new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+      let r;
+      try{
+        if(t.train)await runGoal(t.train,{silent:true});
+        r=t.synthetic?await t.synthetic():await runGoal(t.probe,{silent:true});
+      }catch(e){
+        r={status:'FAIL',verified:false,output:`Battery test fault: ${e.message}`,durationMs:0};
+      }
+      const pass=r?.status===t.expectedStatus&&String(r.output).toLowerCase().includes(String(t.expect).toLowerCase());
+      results.push({...t,synthetic:undefined,pass,status:r?.status||'FAIL',durationMs:r?.durationMs||0,output:r?.output||''});
+    }
+  }finally{
+    const runDuration=performance.now()-start,passed=results.filter(x=>x.pass).length,transferSet=results.filter(x=>x.transfer),transferPassed=transferSet.filter(x=>x.pass).length,compositionSet=results.filter(x=>x.domain==='composition'),compositionPassed=compositionSet.filter(x=>x.pass).length,planningSet=results.filter(x=>x.domain==='world-planning'),planningPassed=planningSet.filter(x=>x.pass).length,metaSet=results.filter(x=>x.domain==='metacognition'),metaPassed=metaSet.filter(x=>x.pass).length,abstractionSet=results.filter(x=>x.domain==='abstraction'),abstractionPassed=abstractionSet.filter(x=>x.pass).length,autonomySet=results.filter(x=>x.domain==='autonomy'),autonomyPassed=autonomySet.filter(x=>x.pass).length,selfSet=results.filter(x=>x.domain==='self-model'),selfPassed=selfSet.filter(x=>x.pass).length,delegationSet=results.filter(x=>x.domain==='delegation'),delegationPassed=delegationSet.filter(x=>x.pass).length,environmentSet=results.filter(x=>x.domain==='environment'),environmentPassed=environmentSet.filter(x=>x.pass).length,loopSet=results.filter(x=>x.domain==='delegation-loop'),loopPassed=loopSet.filter(x=>x.pass).length,toolSet=results.filter(x=>x.domain==='tool-contact'),toolPassed=toolSet.filter(x=>x.pass).length,ownerSet=results.filter(x=>x.domain==='owner-contact'),ownerPassed=ownerSet.filter(x=>x.pass).length,modelContactSet=results.filter(x=>x.domain==='model-contact'),modelContactPassed=modelContactSet.filter(x=>x.pass).length,processSet=results.filter(x=>x.domain==='process-restart'),processPassed=processSet.filter(x=>x.pass).length;
+    const run={id:uid('battery'),at:now(),durationMs:runDuration,passed,total:results.length,successPct:results.length?passed/results.length*100:0,transferPct:transferSet.length?transferPassed/transferSet.length*100:0,compositionPct:compositionSet.length?compositionPassed/compositionSet.length*100:0,planningPct:planningSet.length?planningPassed/planningSet.length*100:0,metacogPct:metaSet.length?metaPassed/metaSet.length*100:0,abstractionPct:abstractionSet.length?abstractionPassed/abstractionSet.length*100:0,autonomyPct:autonomySet.length?autonomyPassed/autonomySet.length*100:0,selfModelPct:selfSet.length?selfPassed/selfSet.length*100:0,delegationPct:delegationSet.length?delegationPassed/delegationSet.length*100:0,environmentPct:environmentSet.length?environmentPassed/environmentSet.length*100:0,delegationLoopPct:loopSet.length?loopPassed/loopSet.length*100:0,toolContactPct:toolSet.length?toolPassed/toolSet.length*100:0,ownerContactPct:ownerSet.length?ownerPassed/ownerSet.length*100:0,modelContactPct:modelContactSet.length?modelContactPassed/modelContactSet.length*100:0,processRestartPct:processSet.length?processPassed/processSet.length*100:0,results,sandboxed:true};
+    state=before;
+    state.batteryRuns=Array.isArray(state.batteryRuns)?state.batteryRuns:[];
+    state.batteryRuns.unshift(run);state.batteryRuns=state.batteryRuns.slice(0,10);
+    receipt('Sandbox transfer battery',passed===results.length?'PASS':'HOLD',{passed,total:results.length,successPct:run.successPct,transferPct:run.transferPct,compositionPct:run.compositionPct,planningPct:run.planningPct,metacogPct:run.metacogPct,abstractionPct:run.abstractionPct,autonomyPct:run.autonomyPct,selfModelPct:run.selfModelPct,delegationPct:run.delegationPct,environmentPct:run.environmentPct,delegationLoopPct:run.delegationLoopPct,toolContactPct:run.toolContactPct,ownerContactPct:run.ownerContactPct,modelContactPct:run.modelContactPct,processRestartPct:run.processRestartPct,stateRestored:true},runDuration);
+    let saveError='';
+    try{save()}catch(e){saveError=e.message;try{render()}catch(_){} }
+    $('#runBattery').disabled=false;
+    $('#batteryState').textContent=`${run.successPct.toFixed(0)}% • ${passed}/${results.length} • ${ms(run.durationMs)}${saveError?' • save HOLD':''}`;
+    toast(saveError?`Battery finished ${passed}/${results.length}; save HOLD: ${saveError}`:`Battery ${passed}/${results.length} PASS • state restored`)
+  }
+}
+function snapshot(){state.snapshots.unshift({id:uid('snap'),at:now(),state:deep({...state,snapshots:[]})});state.snapshots=state.snapshots.slice(0,5);receipt('Manual snapshot','PASS',{snapshots:state.snapshots.length});save();toast('Snapshot captured.')}
+function exportState(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`JM_AGI_LAB_v1_4_3_STATE_${new Date().toISOString().replace(/[:.]/g,'-')}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);receipt('State export','PASS',{});save()}
+function importState(file){const fr=new FileReader();fr.onload=()=>{try{let x=JSON.parse(fr.result);if(x.version==='0.1')x=migrateV01(x);if(x.version==='0.2')x=migrateV02(x);if(x.version==='0.3')x=migrateV03(x);if(x.version==='0.4')x=migrateV04(x);if(x.version==='0.8')x=migrateV08(x);if(x.version==='0.9')x=migrateV09(x);if(x.version==='1.2')x=migrateV12(x);if(x.version==='1.4.1')x=migrateV141(x);if(x.version==='1.4.0')x=migrateV14(x);if(x.version==='1.3.1')x=migrateV131(x);if(x.version!==VERSION){x=migrateV141(migrateV14(migrateV131(migrateV12(migrateV09(migrateV04(x))))));x.version=VERSION}state=Object.assign(DEFAULT_STATE(),x,{world:normalizeWorld(x.world),environment:normalizeEnvironment(x.environment),self:normalizeSelf(x.self),skills:mergeSkillStats(seedSkills(),x.skills||[]),stats:Object.assign(DEFAULT_STATE().stats,x.stats||{})});receipt('State import','PASS',{name:file.name,version:state.version});save();toast('State imported.')}catch(e){toast(`Import failed: ${e.message}`)}};fr.readAsText(file)}
+
+function render(){renderMetrics();renderProcessHarness();renderOwnerHarness();renderModelHarness();renderPlan();renderSkills();renderHypotheses();renderWorld();renderEnvironment();renderMemory();renderReceipts();renderBattery();$('#output').textContent=state.lastOutput;const rs=$('#routeStatus');rs.textContent=state.lastStatus;rs.className=`status ${statusClass(state.lastStatus)} fit`;$('#modelEndpoint').value=state.adapter.endpoint||'';$('#modelName').value=state.adapter.model||''}
+function renderMetrics(){
+  const g=state.stats.goals||0,success=g?state.stats.passed/g*100:0,verified=g?state.stats.verified/g*100:0,last=state.batteryRuns[0],mg=state.stats.missions||0,mrate=mg?(state.stats.missionPassed||0)/mg*100:0,wp=state.stats.worldPlans||0,prate=wp?(state.stats.worldPlanPassed||0)/wp*100:0,ar=state.stats.autonomousRuns||0,ap=ar?(state.stats.autonomousPassed||0)/ar*100:0;
+  $('#metrics').innerHTML=[['Goal success',`${success.toFixed(0)}%`],['Transfer',last?`${last.transferPct.toFixed(0)}%`:'—'],['Composition',last?`${(last.compositionPct??mrate).toFixed(0)}%`:mg?`${mrate.toFixed(0)}%`:'—'],['Planning',last?`${(last.planningPct??prate).toFixed(0)}%`:wp?`${prate.toFixed(0)}%`:'—'],['Abstraction',last?`${(last.abstractionPct??0).toFixed(0)}%`:'—'],['Autonomy',last?`${(last.autonomyPct??ap).toFixed(0)}%`:ar?`${ap.toFixed(0)}%`:'—'],['Environment',last?`${(last.environmentPct??0).toFixed(0)}%`:state.environment.observations.length?'CONTACT':'—'],['Verified',`${verified.toFixed(0)}%`]].map(([a,b])=>`<div class="metric"><b>${esc(b)}</b><span>${esc(a)}</span></div>`).join('')
+}
+
+function renderPlan(){const p=state.lastPlan||[];$('#plan').innerHTML=p.length?p.map((s,i)=>`<div class="step"><div class="n">${i+1}</div><div><b>${esc(s.name)}</b><small>${esc(s.detail)}</small></div><span class="status ${statusClass(s.status)}">${esc(s.status)}</span></div>`).join(''):'<div class="muted">No active route.</div>'}
+function renderSkills(){const all=[...state.skills,...state.learnedSkills];$('#skills').innerHTML=all.map(s=>{const rate=s.uses?s.passes/s.uses*100:0;return`<div class="item skill"><div><b>${esc(s.name)}</b><small>${esc(s.domain)} • ${esc(s.desc||'')}</small><div class="meter"><i style="width:${clamp(rate,0,100)}%"></i></div></div><div class="tiny mono">${s.uses?`${rate.toFixed(0)}% / ${s.uses}`:'unused'}</div></div>`}).join('')}
+function renderHypotheses(){const xs=state.learnedSkills;$('#hypotheses').innerHTML=xs.length?xs.map(s=>`<div class="item"><div class="row"><b>${esc(s.name)}</b><span class="status ${s.status==='PROMOTED'?'PASS':s.status==='CHALLENGED'?'FAIL':'HOLD'} fit">${esc(s.status||'PROVISIONAL')}</span></div><small>${esc(s.type)} • evidence ${s.evidenceCount||s.examples?.length||0} • confidence ${Math.round((s.confidence||0)*100)}% • pass/fail ${(s.evidencePasses||0)}/${(s.evidenceFails||0)}</small></div>`).join(''):'<div class="muted item">No learned hypotheses yet.</div>'}
+function renderWorld(){const facts=Object.entries(state.world.facts||{}),actions=state.world.actions||[];$('#worldState').textContent=`${facts.length} fact${facts.length===1?'':'s'} • ${actions.length} action${actions.length===1?'':'s'}`;const f=facts.length?facts.map(([k,v])=>{const e=state.world.evidence?.[k]||{confidence:1,source:'asserted'};return`<div class="item"><b>${esc(k)}=${esc(scalarText(v))}</b><small>${Math.round((e.confidence??1)*100)}% confidence • ${esc(e.source||'unknown source')}</small></div>`}).join(''):'<div class="item muted">No explicit facts.</div>';const a=actions.length?actions.map(x=>`<div class="item"><b>${esc(x.name)}</b><small>${esc(actionLabel(x))} • feedback P/F ${x.feedbackPasses||0}/${x.feedbackFails||0} • used ${x.uses||0}</small></div>`).join(''):'<div class="item muted">No taught actions.</div>';$('#world').innerHTML=f+a}
+function renderEnvironment(){pruneEnvironment();const xs=Object.values(state.environment.latest||{}).sort((a,b)=>a.key.localeCompare(b.key));$('#environmentState').textContent=`${xs.length} live observation${xs.length===1?'':'s'}`;const obs=xs.length?xs.map(x=>`<div class="item"><b>${esc(x.key)}=${esc(scalarText(x.value))}</b><small>${esc(x.sensor)} • grounded ${Math.round((x.confidence||1)*100)}% • expires ${esc(new Date(x.expiresAt).toLocaleTimeString())}</small></div>`).join(''):'<div class="item muted">No live environment observations.</div>';const last=state.environment.inquiries?.[0];const iq=last?`<div class="item"><b>Latest inquiry: ${esc(formatWorldFacts(last.target))}</b><small>${esc(last.finalStatus)} • sensors ${esc((last.sensors||[]).join(', ')||'none')} • route ${esc((last.route||[]).join(' → ')||'none')}</small></div>`:'';const tc=state.environment.toolContacts?.[0];const tool=tc?`<div class="item"><b>Latest tool contact: ${esc(tc.kind)} • ${tc.verifiedConsequence?'VERIFIED':'HOLD'}</b><small>token ${esc(tc.token||'')} • write ${tc.writeAccepted?'yes':'no'} • exact read-back ${tc.exactReadBack?'yes':'no'} • restored ${tc.restored?'yes':'no'}</small></div>`:'';$('#environment').innerHTML=obs+iq+tool}
+function renderMemory(list=null){const xs=list||state.memories.slice(0,35);$('#memory').innerHTML=xs.length?xs.map(m=>`<div class="item"><b>${esc(m.text)}</b><small>${esc((m.tags||[]).join(' • '))} • confidence ${Math.round((m.confidence||0)*100)}%${m.score!==undefined?` • match ${Math.round(m.score*100)}%`:''}</small></div>`).join(''):'<div class="muted item">No memories yet.</div>'}
+function renderReceipts(){const xs=state.receipts.slice(0,45);$('#receipts').innerHTML=xs.length?xs.map(r=>`<div class="item"><div class="row"><b>${esc(r.action)}</b><span class="status ${statusClass(r.status)} fit">${esc(r.status)}</span></div><small>${new Date(r.at).toLocaleString()} • ${ms(r.durationMs||0)}<br>${esc(JSON.stringify(r.detail||{}))}</small></div>`).join(''):'<div class="muted item">No receipts yet.</div>'}
+function renderBattery(){const r=state.batteryRuns[0];if(!r){$('#battery').innerHTML='<div class="muted">The bench runs from a clean sandbox state, then tests arithmetic, language, memory, learned-rule transfer, anti-overclaim gates, composition, world planning, metacognition, procedural abstraction, self-model policy, bounded autonomy, environment grounding, closed-loop delegation, and verified consequence tool contact.</div>';return}$('#batteryState').textContent=`${r.successPct.toFixed(0)}% • ${ms(r.durationMs)}`;$('#battery').innerHTML=r.results.map(x=>`<div class="item"><div class="row"><b>${esc(x.name)}</b><span class="status ${x.pass?'PASS':'HOLD'} fit">${x.pass?'PASS':'HOLD'}</span></div><small>${esc(x.domain)} • expected ${esc(x.expectedStatus||'PASS')} • ${ms(x.durationMs)} • probe: ${esc(x.probe)}</small></div>`).join('')}
+
+$('#runGoal').addEventListener('click',async()=>{const b=$('#runGoal');b.disabled=true;b.textContent='Running…';await runGoal($('#goal').value);b.disabled=false;b.textContent='▶ Run goal'});
+$('#goal').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')$('#runGoal').click()});
+$('#runBattery').addEventListener('click',runBattery);$('#snapshot').addEventListener('click',snapshot);
+$('#armProcessHarness').addEventListener('click',()=>startProcessRestartHarness({}));$('#clearProcessHarness').addEventListener('click',clearProcessRestartHarness);
+$('#runOwnerHarness').addEventListener('click',()=>startOwnerContactHarness({autoReload:true}));$('#clearOwnerHarness').addEventListener('click',clearOwnerContactHarness);
+$('#runModelHarness').addEventListener('click',runRealModelContactHarness);$('#clearModelHarness').addEventListener('click',clearModelContactHarness);
+$('#memorySearchBtn').addEventListener('click',()=>renderMemory(retrieveMemory($('#memorySearch').value,30)));$('#memorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('#memorySearchBtn').click()});
+$('#saveAdapter').addEventListener('click',()=>{state.adapter.endpoint=$('#modelEndpoint').value.trim();state.adapter.model=$('#modelName').value.trim();sessionToken=$('#modelToken').value;receipt('Model adapter configured','PASS',{endpoint:state.adapter.endpoint?'set':'blank',model:state.adapter.model||'default',tokenStored:false});save();toast('Adapter set. Token remains session-only.')});
+$('#clearAdapter').addEventListener('click',()=>{state.adapter={endpoint:'',model:''};sessionToken='';$('#modelToken').value='';save();toast('Adapter cleared.')});
+$('#exportState').addEventListener('click',exportState);$('#importBtn').addEventListener('click',()=>$('#importFile').click());$('#importFile').addEventListener('change',e=>e.target.files[0]&&importState(e.target.files[0]));
+$('#reset').addEventListener('click',()=>{if(confirm('Reset JM AGI Lab v1.4.3 local state?')){state=DEFAULT_STATE();localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(PROCESS_PENDING_KEY);localStorage.removeItem(PROCESS_LAST_KEY);localStorage.removeItem(PROCESS_PROBE_KEY);localStorage.removeItem(OWNER_CONTACT_PENDING_KEY);localStorage.removeItem(OWNER_CONTACT_LAST_KEY);localStorage.removeItem(OWNER_CONTACT_PROBE_KEY);localStorage.removeItem(MODEL_CONTACT_LAST_KEY);try{sessionStorage.removeItem(PROCESS_SESSION_KEY)}catch(e){}sessionToken='';save();toast('Lab reset.')}});
+
+window.JMAGI_TEST={runGoal,runBattery,parseGoal,deriveHypothesis,applyRuleSpec,executeMission,parseConditions,planWorld,planWorldRobust,decomposeGoal,routeConfidence,diagnoseBlockers,compileMacro,selectAdaptivePlan,capabilityProfile,kernelAudit,generateCurriculum,autonomousGoal,executeWorldAction,parseModelPlanText,validateDelegatedPlan,executeDelegatedSteps,delegateGoal,delegateLoopGoal,modelLoopTurn,senseEnvironment,inquireEnvironment,actuateDevice,verifiedStorageRoundTrip,ownerContextInfo,classifyProcessRestartOutcome,startProcessRestartHarness,resumeProcessRestartHarness,clearProcessRestartHarness,processRunnerParams,processWitnessFromHash,classifyOwnerContactOutcome,startOwnerContactHarness,resumeOwnerContactHarness,clearOwnerContactHarness,classifyModelContactOutcome,runRealModelContactHarness,clearModelContactHarness,nativeFetchLike,endpointSchemeOK,publishEnvironment,pruneEnvironment,formatEnvironment,sensorForKey,getState:()=>deep(state)};
+const __processResume=resumeProcessRestartHarness();
+resumeOwnerContactHarness();
+render();
+const __processParams=processRunnerParams();
+if(!__processResume&&__processParams.runId&&__processParams.autoarm){setTimeout(()=>startProcessRestartHarness({runId:__processParams.runId}),450)}
+})();
+</script>
+</body>
+</html>

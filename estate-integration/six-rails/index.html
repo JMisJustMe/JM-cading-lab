@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#090e18"><title>JM ECOSTATE | SIX RAILS CONTACT v1.0</title>
+<link rel="stylesheet" href="../../ecostate-griprail-v6.css" data-jm-inherit="JMGripRail-v6-hosted-only">
+<style>
+:root{color-scheme:dark;--ink:#f0f7fc;--muted:#9aaec1;--bg:#080d15;--panel:#111c29;--line:#29394a;--cyan:#66e3df;--gold:#e8c68e;--rose:#ff9c97;--green:#b0edc9;--round:16px;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:radial-gradient(circle at 70% -140px,#1b4852 0,#101d2c 36%,#080d15 68%);min-height:100vh}a{color:var(--cyan)}button,input,select,textarea{font:inherit}button{cursor:pointer}.shell{max-width:1200px;margin:0 auto;padding:16px clamp(12px,2.5vw,32px) 70px}
+header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 0 16px;border-bottom:1px solid var(--line)}.mark{font-weight:900;letter-spacing:.13em;font-size:.75rem;color:var(--cyan)}.mark:before{content:'◆';padding-right:8px}.edition{font-size:.7rem;color:var(--gold);letter-spacing:.10em}.intro{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:22px 0 18px}.intro h1{font-size:clamp(1.6rem,5vw,2.9rem);line-height:1.06;letter-spacing:-.04em;margin:4px 0 7px}.sub,.muted{color:var(--muted)}.sub{margin:0;max-width:650px}.provenance{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);white-space:nowrap}
+nav{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:18px 0 18px}nav button{text-align:left;background:#11212f;color:#cbdce8;border:1px solid #273b4b;border-radius:12px;padding:11px 9px;min-height:73px;transition:.18s}nav button:hover{border-color:#6caab8}nav button[aria-selected=true]{background:#1b3e46;border-color:var(--cyan);color:#fff;box-shadow:inset 0 3px 0 var(--cyan)}.num{display:block;font-size:.7rem;color:var(--gold);margin-bottom:2px}.rail-name{display:block;font-weight:720;font-size:.84rem}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(250px,.8fr);gap:16px}.card{background:linear-gradient(145deg,#162635,#0f1823);border:1px solid var(--line);border-radius:var(--round);padding:clamp(13px,2.5vw,23px);min-width:0}.card h2{font-size:1.23rem;letter-spacing:-.025em;margin:0 0 6px}.card h3{font-size:.95rem;margin:0 0 10px;color:var(--gold)}.card p{margin:0 0 15px}.kicker{text-transform:uppercase;font-size:.7rem;letter-spacing:.16em;color:var(--cyan);font-weight:850;margin-bottom:10px}.tag{display:inline-block;border:1px solid #53677b;border-radius:100px;font-size:.68rem;color:#cad8e7;padding:3px 8px;margin-top:3px}.tag.hold{border-color:#a48555;color:var(--gold)}.tag.ok{border-color:#579c8f;color:var(--green)}.status{color:var(--gold);font-size:.82rem;min-height:22px;padding-top:7px;white-space:pre-wrap;overflow-wrap:anywhere}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field label,.field>span{font-size:.77rem;font-weight:700;color:#c3d5e2}input[type=file],input[type=text],input[type=number],select,textarea{width:100%;border-radius:10px;background:#0b1521;border:1px solid #405366;color:var(--ink);padding:10px;min-width:0}input[type=file]{font-size:.83rem}input[type=range]{width:100%;accent-color:var(--cyan)}textarea{resize:vertical;min-height:98px}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}.fields.one{grid-template-columns:1fr}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}button.action{border-radius:10px;background:var(--cyan);border:1px solid var(--cyan);color:#061117;padding:9px 13px;font-weight:750}button.action.alt{color:var(--ink);background:#213a4b;border-color:#3f6174}button.action:disabled{opacity:.35;cursor:not-allowed}.note{border-left:2px solid var(--gold);padding:6px 0 6px 12px;color:var(--muted);font-size:.82rem;margin:14px 0}.readout{font-size:.86rem;color:var(--green);font-weight:650;margin:12px 0;overflow-wrap:anywhere}.mini{font-size:.76rem;color:var(--muted)}canvas{width:100%;height:auto;border:1px solid #354757;border-radius:12px;background:#0b1320;display:block}#meshCanvas{aspect-ratio:1.65}#diffCanvas{aspect-ratio:1.65;object-fit:contain}.visual{margin-top:12px}.rail[hidden]{display:none!important}.record{padding:10px;border:1px solid #344555;border-radius:10px;margin:8px 0}.record a{overflow-wrap:anywhere}.record strong{display:block}.pills{display:flex;flex-wrap:wrap;gap:7px}.pills span{font-size:.72rem;padding:5px 9px;background:#1d3646;border-radius:30px;border:1px solid #39566a}.check{display:flex;align-items:center;gap:9px;font-size:.82rem;padding:8px 0}.check input{width:17px;height:17px;accent-color:var(--cyan)}.measure{font-variant-numeric:tabular-nums;font-size:1.85rem;font-weight:850;letter-spacing:-.04em;color:var(--cyan)}.meter{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.meter>div{padding:10px;border:1px solid #344657;border-radius:12px}.meter strong{display:block;font-size:1.2rem;color:var(--gold)}.meter span{font-size:.7rem;color:var(--muted)}.foot{margin-top:25px;color:#829bab;font-size:.74rem;border-top:1px solid #243747;padding-top:15px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between}.sep{border:0;border-top:1px solid #294052;margin:17px 0}
+@media(max-width:900px){nav{grid-template-columns:repeat(3,1fr)}.grid{grid-template-columns:1fr}.intro{display:block}.provenance{margin-top:10px}}
+@media(max-width:440px){nav{grid-template-columns:repeat(3,1fr);gap:5px}nav button{padding:9px 7px;min-height:65px}.rail-name{font-size:.74rem}.fields{grid-template-columns:1fr}.shell{padding-left:10px;padding-right:10px}.card{padding:13px}.meter{grid-template-columns:1fr 1fr 1fr}.meter>div{padding:8px}.meter strong{font-size:1rem}}
+
+.subforge{margin-top:14px;padding-top:12px;border-top:1px solid #3b5669}.subforge iframe{width:100%;height:650px;max-width:100%;background:#05101a;border:1px solid #38536f;border-radius:13px;display:block}.subforge p{margin-top:8px}.subforge .status{margin:10px 0 0}
+@media(max-width:700px){.subforge iframe{height:860px}}
+
+/* v0.3: keep dense controls readable across Fold, tablet, and laptop. */
+.loop-links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.loop-card{background:#0a1b29;border:1px solid #365668;border-radius:12px;padding:12px;margin:12px 0}
+.loop-card h3{margin:0 0 7px;color:var(--cyan);font-size:.91rem}
+pre.receipt{white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto;font-size:.75rem;background:#091521;border:1px solid #324b5d;padding:11px;border-radius:10px}
+@media(max-width:440px){.loop-links button{flex:1;min-width:135px}nav button{min-height:60px}}
+
+/* v0.6 · interaction inheritance: horizontal rooms, contained vertical depth, explicit grip/press/release field.
+   NOT the exact FTR GripRoute One hardware or Palm Route Field v1.2 byte-for-byte source. */
+html,body{height:100%;overscroll-behavior:contain}
+.shell{height:100dvh;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding-top:8px;padding-bottom:8px}
+header{flex:0 0 auto;padding:5px 0 8px}.intro{flex:0 0 auto;margin:9px 0 7px}.intro h1{font-size:clamp(1.32rem,3.5vw,2rem);margin:2px 0 3px}.intro .kicker{margin:0 0 4px}.intro .sub{font-size:.8rem;line-height:1.25}
+.griproute-dock{flex:0 0 auto;min-width:0;border:1px solid #42677b;border-radius:15px;background:linear-gradient(120deg,#0c2830,#101b2e);padding:8px;margin:2px 0 8px;box-shadow:0 5px 22px #0005}
+.griproute-toolbar{display:flex;align-items:center;gap:7px;min-width:0}.griproute-toolbar strong{flex:1;min-width:0;font-size:.72rem;color:var(--cyan);letter-spacing:.08em;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.griproute-toolbar small{font-size:.62rem;color:var(--muted);letter-spacing:0;font-weight:500}.griproute-toolbar button{border:1px solid #58768b;color:var(--ink);background:#163a46;border-radius:9px;min-height:35px;min-width:39px;font-weight:800;padding:4px 8px}
+#routeTrack{display:flex;align-items:stretch;min-width:0;gap:7px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#416b74 transparent;margin:6px 0;padding:1px 1px 7px}
+#routeTrack button{flex:0 0 clamp(137px,19%,210px);min-width:0;min-height:55px;scroll-snap-align:center;padding:6px 10px}#routeTrack button[aria-selected="true"]{outline:1px solid #60e3dd;box-shadow:inset 0 -3px 0 var(--cyan)}
+.griproute-band{display:flex;gap:8px;align-items:stretch;min-height:49px;touch-action:pan-y;user-select:none;border-radius:12px;background:#061a27;border:1px solid #436780;overflow:hidden;cursor:grab;outline-offset:3px}
+.griproute-band:active{cursor:grabbing}.griproute-band:focus-visible{outline:2px solid var(--gold)}.griproute-band.gripping{border-color:var(--gold);box-shadow:inset 0 0 16px #b6964930}
+.griproute-thumb{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:5px 10px;transform:translateX(var(--drag-x,0px));transition:transform .09s linear;pointer-events:none}
+.griproute-thumb span{font-size:.7rem;color:var(--gold);font-weight:800;white-space:nowrap}.griproute-thumb output{font-size:.68rem;color:var(--muted);white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.griproute-mode{display:flex;align-items:center;gap:5px;padding:4px 7px;border-left:1px solid #395365;cursor:auto;user-select:auto}.griproute-mode label{font-size:.6rem;color:var(--muted)}.griproute-mode select{padding:5px;max-width:155px;font-size:.68rem;min-height:35px;background:#102a3c}
+.rail{flex:1;min-height:0;overflow-y:auto;overscroll-behavior-y:contain;scrollbar-width:thin;scrollbar-color:#35536b transparent;padding:0 3px 12px 0}.grid{align-content:start;align-items:start}.foot{flex:0 0 auto;margin-top:3px;padding-top:5px;font-size:.64rem;gap:6px}
+@media(max-width:700px){.shell{padding:5px 9px}.intro{margin:7px 0}.intro .sub{max-width:550px}.intro .provenance{display:none}#routeTrack button{flex-basis:clamp(135px,44vw,210px)}.griproute-toolbar strong small{display:none}.griproute-band{min-height:51px}.griproute-mode label{display:none}.griproute-mode select{max-width:108px;width:108px;font-size:.6rem}.subforge iframe{height:min(620px,68dvh)}.foot span:last-child{display:none}}
+@media(max-width:395px){.intro h1{font-size:1.23rem}.intro .sub{font-size:.72rem}.griproute-toolbar button{min-width:32px;padding:4px 5px}.griproute-thumb output{font-size:.6rem}.griproute-mode select{width:96px;max-width:96px}}
+@media(prefers-reduced-motion:reduce){#routeTrack{scroll-behavior:auto}.griproute-thumb{transition:none}}
+
+/* v0.7: existing canonical GripRail v6 JS is consumed from the website root when actually hosted.
+   Offline single-file routes remain operable via the preserved v0.6 GripRoute semantic adapter.
+   Real native GripRail seating requires actual JMGripRail.install + DOM proof; do not crown on file fallback. */
+#jmGripRailNativeSeat{width:100%;min-width:0}
+#jmGripRailNativeSeat .griprail-toolbar{display:none!important} /* existing controlled arrows already sit above */
+#routeTrack.gc-grid.griprail-track{display:flex!important;max-height:80px!important;grid-auto-flow:unset!important;grid-template-columns:none!important;grid-template-rows:none!important;overflow-x:auto!important;overflow-y:hidden!important;scroll-snap-type:x mandatory}
+.native-seat-state{font-size:.63rem;color:var(--muted);padding:0 2px 3px;min-height:1.1em;line-height:1.35}
+.native-seat-state.active{color:#acedd5}
+.native-seat-state.hold{color:#ffd28b}
+@media(max-width:700px){#routeTrack.gc-grid.griprail-track{max-height:68px!important}}
+
+/* v0.8 · FTR GripRoute Twin Body physical proof-of-feel, three real states, not cosmetic scrolling. */
+.grip-time-row{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#081f2b;border:1px solid #355566;border-radius:12px;padding:10px;margin:10px 0}
+.grip-time-row strong{font:800 1.4rem ui-monospace,monospace;color:var(--gold)}.grip-time-row span{font-size:.73rem;color:var(--muted);text-align:right}
+.grip-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:12px 0}
+.grip-metrics label{display:flex;align-items:center;justify-content:space-between;gap:7px;border:1px solid var(--line);padding:9px;background:#0c1b2b;border-radius:9px;font-size:.74rem}
+.grip-metrics select{width:85px;min-height:37px}
+.grippanel .actions{display:flex;flex-wrap:wrap}
+@media(max-width:540px){.grip-metrics{grid-template-columns:1fr}.grip-time-row{align-items:start}.grippanel .actions>*{flex:1 1 135px}}
+
+/* v0.9 · GripCube lenses are evidence projections, not duplicate/decorative cards. */
+.gripcube-evidence{margin:5px 0 3px;min-width:0}.evidence-lenses{display:flex;gap:5px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-inline:contain}
+.evidence-lenses button{border:1px solid #385567;background:#122638;color:#bcd2e2;min-height:30px;flex:1 0 50px;min-width:50px;max-width:150px;border-radius:9px;font-size:.62rem;font-weight:800;letter-spacing:.05em}
+.evidence-lenses button[aria-pressed="true"]{border-color:#9aece1;background:#214754;color:#fff}
+.evidence-lens-readout{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.67rem;color:#b7dacc;line-height:1.25;max-height:52px;overflow-y:auto;padding:4px 3px}
+.recovery-panel{border-color:#648b7f}.recovery-panel .receipt{max-height:180px}
+@media(max-width:700px){.evidence-lens-readout{font-size:.62rem;max-height:32px}.evidence-lenses button{min-height:28px}}
+
+/* v1.0 · screenshot-corrected readable UI, phone and unfolded Fold.
+   Keep all six active rails and native source bridges; correct screen fit, not gameplay laws. */
+:root{--focus:#ffdf8b}
+html,body{height:auto!important;min-height:100%;overscroll-behavior-y:auto;scroll-padding-top:74px}
+body{overflow-x:hidden;overflow-y:auto}
+.shell{height:auto!important;min-height:100dvh;overflow:visible!important;display:block;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+.rail{height:auto;max-height:none;min-height:0;overflow:visible!important;display:grid;scroll-margin-top:76px}
+.rail[hidden]{display:none!important}
+.foot{position:static;display:flex;margin-top:20px;padding:14px 0 10px;font-size:.72rem;line-height:1.45}
+.mobile-title,.mobile-sub,.quick-room-bar{display:none}
+.tool-help{margin:7px 0 15px}
+.tool-help summary{cursor:pointer;color:var(--cyan);font-size:.82rem;font-weight:750;list-style-position:inside;padding:4px 0}
+.tool-help>p{margin:7px 0 8px!important}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible,a:focus-visible{outline:3px solid var(--focus)!important;outline-offset:3px!important}
+button,select,input,summary,a{-webkit-tap-highlight-color:rgba(102,227,223,.2)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1250px), (pointer:coarse){
+ .rail{overflow:visible!important}
+ .shell{max-width:1200px}
+ .griproute-dock{margin:8px 0 12px}
+ .subforge iframe{height:min(650px,74svh)}
+}
+@media(max-width:760px){
+ :root{font-size:16px;line-height:1.44}
+ .shell{padding:8px 12px max(18px,env(safe-area-inset-bottom))}
+ header{padding:2px 0 8px;gap:8px;min-height:32px;align-items:center}
+ .mark{font-size:.7rem;letter-spacing:.065em;overflow-wrap:anywhere}
+ .edition{font-size:.63rem;letter-spacing:.03em;white-space:nowrap}
+ .intro{margin:10px 0 7px}
+ .intro h1{margin:0;font-size:1.28rem;line-height:1.2;letter-spacing:-.02em}
+ .intro .kicker,.intro .sub,.intro .provenance,.wide-title{display:none}
+ .mobile-title,.mobile-sub{display:block}
+ .mobile-sub{font-size:.77rem;color:var(--muted);margin:2px 0 3px;line-height:1.3}
+ .quick-room-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:7px;margin:8px -3px 9px;padding:7px 4px;background:rgba(8,20,32,.98);border:1px solid #466474;border-radius:13px;box-shadow:0 7px 22px #02050b99;backdrop-filter:blur(8px);min-width:0}
+ .quick-room-bar button{flex:0 0 auto;min-width:44px;height:46px;border-radius:9px;border:1px solid #526c7a;color:#f2f8fc;background:#163749;font-size:1rem;font-weight:800;padding:5px 8px}
+ #quickControls{font-size:.76rem;min-width:72px}
+ #quickControls[aria-expanded="true"]{border-color:var(--cyan);background:#20535a}
+ .quick-room-label{flex:1;min-width:0}
+ #quickRoom{background:#112a39;border:1px solid #637f91;color:#fff;min-width:0;width:100%;height:46px;font-size:.87rem;font-weight:760;padding:8px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .griproute-dock{display:none;margin:0 0 12px;padding:8px;border-radius:12px}
+ .griproute-dock.ui-open{display:block}
+ .griproute-toolbar strong{font-size:.74rem}
+ .griproute-toolbar button{min-width:44px;min-height:44px}
+ #routeTrack button{min-height:48px;flex-basis:clamp(130px,42vw,190px)}
+ .evidence-lenses{padding:5px 0 3px}
+ .evidence-lenses button{min-height:44px;font-size:.73rem}
+ .evidence-lens-readout{max-height:none;font-size:.78rem;overflow:visible;line-height:1.42}
+ .native-seat-state{font-size:.74rem}
+ .griproute-band{min-height:48px}
+ .griproute-mode select{height:44px;min-width:110px;width:110px;max-width:150px;font-size:.77rem}
+ .grid{grid-template-columns:minmax(0,1fr);gap:12px}
+ .card{padding:13px 12px;border-radius:14px}
+ .card h2{font-size:1.26rem;line-height:1.24}
+ .card h3{font-size:1rem}
+ .card p{line-height:1.47}
+ .kicker{font-size:.7rem;letter-spacing:.08em}
+ .field label,.field>span{font-size:.85rem}
+ input[type=file],input[type=text],input[type=number],select,textarea{min-height:46px;font-size:16px}
+ input[type=file]{font-size:.9rem}
+ .fields{grid-template-columns:minmax(0,1fr);gap:9px}
+ button.action{min-height:46px;padding:9px 13px;font-size:.88rem}
+ .actions{gap:8px}
+ .actions>*{flex:1 1 138px}
+ .check{min-height:44px;font-size:.88rem}
+ .check input{width:22px;height:22px;flex:0 0 22px}
+ .tool-help{margin:8px 0 12px}
+ .tool-help summary{padding:10px 7px;min-height:44px;background:#122e3c;border:1px solid #396171;border-radius:8px;font-size:.82rem}
+ .tool-help p{font-size:.88rem}
+ .foot{padding:12px 0;display:block;border-top:1px solid #345365;font-size:.7rem}
+ .foot span{display:block!important;margin:4px 0}
+ .subforge iframe{height:min(620px,72svh)}
+ .grip-metrics select{min-height:44px}
+ .grip-metrics label{font-size:.87rem;min-height:48px}
+ .meter{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .meter>div{min-width:0;overflow-wrap:anywhere}
+}
+@media(max-width:365px){
+ .shell{padding-left:9px;padding-right:9px}
+ .edition{font-size:.55rem}
+ #quickControls{min-width:65px;font-size:.69rem}
+ .quick-room-bar{gap:5px}
+ #quickRoom{font-size:.8rem;padding:8px 5px}
+}
+@media(min-width:761px) and (max-width:1080px){
+ .grid{grid-template-columns:1fr}
+ .shell{padding-left:18px;padding-right:18px}
+ .intro h1{font-size:1.65rem}
+}
+/* Unfolded touch devices keep a single compact room selector, but retain wide two-column tools. */
+@media (pointer:coarse) and (min-width:761px){
+ .intro{margin:9px 0}
+ .intro .sub,.intro .kicker,.intro .provenance{display:none}
+ .intro h1{font-size:1.5rem;line-height:1.17}
+ .card{font-size:1rem}
+ .card .kicker{font-size:.76rem}
+ .card h2{font-size:1.38rem}
+ .card .field label,.card .field>span{font-size:.88rem}
+ .card button.action{min-height:48px;font-size:.91rem}
+ .card .mini,.card .muted,.card .note{font-size:.87rem}
+ .quick-room-bar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;margin:8px 0 11px;padding:6px 8px;background:rgba(8,20,32,.97);border:1px solid #466474;border-radius:13px;box-shadow:0 7px 22px #02050b99;max-width:100%}
+ .quick-room-bar button{flex:0 0 auto;min-width:48px;min-height:48px;border:1px solid #526c7a;border-radius:10px;color:#f2f8fc;background:#163749;font-size:1rem;padding:8px 13px}
+ .quick-room-label{flex:1;min-width:0}
+ #quickRoom{background:#112a39;border:1px solid #637f91;color:#fff;width:100%;height:48px;font-size:1rem;font-weight:760}
+ .griproute-dock{display:none}
+ .griproute-dock.ui-open{display:block}
+ .grid{grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr)}
+ .tool-help summary{padding:10px 6px;min-height:44px}
+}
+@media(max-width:760px){
+ .actions > label.field{flex:0 0 100%!important;width:100%;max-width:100%;min-width:0!important}
+ .actions > label.field input[type=file]{width:100%;min-width:0}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body><main class="shell">
+<header><div class="mark">JM ECOSTATE / CONTACT FIELD</div><div class="edition">SIX RAILS · v1.0 · DEVICE FIT</div></header>
+<div class="intro"><div><div class="kicker">Existing bodies, new contact routes</div><h1><span class="wide-title">Six ways forward.<br>One governed field.</span><span class="mobile-title">Six Rails · Working Field</span></h1><p class="sub">Build on what exists. Make an observable change. Retain the proof. Promote only when earned.</p><p class="mobile-sub">Six capabilities · Local-first · Evidence retained</p></div><div class="provenance">LOCAL FIRST · NO AUTOMATIC EXTERNAL WRITES</div></div>
+<div id="quickRoomBar" class="quick-room-bar" role="group" aria-label="Capability room controls">
+ <button type="button" id="quickPrev" aria-label="Previous room">←</button>
+ <label for="quickRoom" class="quick-room-label"><span class="sr-only">Current capability room</span><select id="quickRoom" aria-label="Choose capability room">
+  <option value="mesh">01 · Form / Image → mesh</option><option value="compare">02 · Proof / Visual</option><option value="release">03 · Build / Release</option><option value="audio">04 · Rhythm / Audio</option><option value="estate">05 · Mesh / Estate</option><option value="testers">06 · People / Playtests</option>
+ </select></label>
+ <button type="button" id="quickNext" aria-label="Next room">→</button>
+ <button type="button" id="quickControls" aria-controls="griprouteDock" aria-expanded="false">Controls</button>
+</div>
+<section class="griproute-dock" id="griprouteDock" aria-label="Adaptive interaction and room routing">
+<div class="griproute-toolbar"><button type="button" id="routePrev" aria-label="Previous capability room">←</button><strong>GRIPROUTE / JM FIELD <small>· GripRoute-aware adapter · not exact v1.2 source</small></strong><button type="button" id="routeLens" aria-label="Rotate loaded Forge lens">⟳ Lens</button><button type="button" id="routeNext" aria-label="Next capability room">→</button></div>
+<div class="eco-gripcube" id="jmGripRailNativeSeat">
+<nav aria-label="Capability rails" role="tablist" id="routeTrack" class="gc-grid">
+<button type="button" id="tab-mesh" role="tab" aria-controls="rail-mesh" data-rail="mesh" aria-selected="true"><span class="num">01 / FORM</span><span class="rail-name">Image → mesh</span></button>
+<button type="button" id="tab-compare" role="tab" aria-controls="rail-compare" data-rail="compare" aria-selected="false"><span class="num">02 / PROOF</span><span class="rail-name">Visual compare</span></button>
+<button type="button" id="tab-release" role="tab" aria-controls="rail-release" data-rail="release" aria-selected="false"><span class="num">03 / BUILD</span><span class="rail-name">Release gate</span></button>
+<button type="button" id="tab-audio" role="tab" aria-controls="rail-audio" data-rail="audio" aria-selected="false"><span class="num">04 / RHYTHM</span><span class="rail-name">Audio timing</span></button>
+<button type="button" id="tab-estate" role="tab" aria-controls="rail-estate" data-rail="estate" aria-selected="false"><span class="num">05 / MESH</span><span class="rail-name">Estate routes</span></button>
+<button type="button" id="tab-testers" role="tab" aria-controls="rail-testers" data-rail="testers" aria-selected="false"><span class="num">06 / PEOPLE</span><span class="rail-name">Playtest contact</span></button>
+</nav>
+</div>
+<section class="gripcube-evidence" aria-label="GripCube evidence lenses — live six-body projections" id="gripcubeEvidence">
+<div class="evidence-lenses" role="group" aria-label="Trace Route Form Field Proof Use lenses">
+<button type="button" data-evidence-lens="TRACE">TRACE</button><button type="button" data-evidence-lens="ROUTE">ROUTE</button><button type="button" data-evidence-lens="FORM">FORM</button><button type="button" data-evidence-lens="FIELD">FIELD</button><button type="button" data-evidence-lens="PROOF">PROOF</button><button type="button" data-evidence-lens="USE">USE</button>
+</div><output id="evidenceLensReadout" class="evidence-lens-readout" aria-live="polite">Select a lens to inspect actual current state. Semantic projection, not mounted GripCube v5.</output>
+</section>
+<div class="native-seat-state" id="nativeSeatStatus" role="status" aria-live="polite">GripRoute semantic adapter active · shared JMGripRail v6 host contact checking</div>
+<div class="griproute-band" id="routePad" role="group" tabindex="0" aria-label="GripRoute thumb contact pad. Tap to contact the current room, swipe to move room, hold to anchor, and use arrow keys to route.">
+<div class="griproute-thumb" id="routeThumb"><span id="routeCurrent">01 · FORM</span><output id="routeState" aria-live="polite">FLOW · TAP / DRAG / SWIPE / RELEASE</output></div>
+<div class="griproute-mode"><label for="routeMode">Route stance</label><select id="routeMode"><option value="flow">FLOW · drag / swipe</option><option value="flick">FLICK · velocity</option><option value="manual">MANUAL · keys / taps</option><option value="anchor">ANCHOR · hold here</option><option value="table">TABLE · pointer / keys</option></select></div>
+</div></section>
+<section id="rail-mesh" role="tabpanel" aria-labelledby="tab-mesh" class="rail grid">
+<div class="card"><div class="kicker">01 · Form Forge / GameCore — live geometry recipient adapter</div><h2>Image to geometric source</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Import any image and turn its luminance into a real polygonal relief OBJ. It is height-field geometry, not a textured 3D character. Push the exact generated vertices into the proven JM Form Contact software renderer below; no protected private Forge source is substituted.</p></details><div class="field"><label for="assetImage">Source image</label><input type="file" id="assetImage" accept="image/*"></div><div class="fields"><div class="field"><label for="assetRelief">Relief height <output id="reliefLabel">1.0</output></label><input id="assetRelief" type="range" min="0" max="3" step="0.1" value="1"></div><div class="field"><label for="assetGrid">Grid detail</label><select id="assetGrid"><option value="16">16 × 16</option><option value="28" selected>28 × 28</option><option value="48">48 × 48</option></select></div></div><div class="actions"><button class="action" id="makeMesh" disabled>Build real OBJ</button><button class="action alt" id="saveMesh" disabled>Export OBJ</button><button class="action alt" id="exportPacket" disabled>Export JM packet</button><button class="action alt" id="exportGLB" disabled>Export real glTF GLB</button><label class="field" style="flex:1;min-width:160px">Reimport verified packet<input type="file" id="importPacket" accept=".json,application/json" aria-label="Reimport exported geometry packet"></label><button class="action" id="sendForge" disabled>Play in JM Form Contact</button><button class="action" id="captureForgeBefore">Capture Forge before</button><button class="action alt" id="captureForgeAfter">Capture Forge after</button></div><div class="status" id="meshStatus" role="status">Waiting for image contact.</div><div class="readout" id="glbReadout">GLB interchange not yet tested.</div><canvas id="meshCanvas" role="img" aria-label="Relief geometry preview" width="700" height="420" aria-label="Relief geometry preview"></canvas><div class="subforge"><div class="kicker">Native recipient · existing JM Field/Form Forge × GameCore contact renderer</div><p class="muted">An unchanged copy of the previously recovered public Forge Contact v0.1 renderer runs below. The contact adapter passes local relief vertices into its existing surface renderer and touch-scoring logic; private v0.24 provenance is NOT claimed. Drag/orbit, tap distinct triangles or use keys.</p><iframe id="forgeRecipient" title="JM Field Form Forge native software contact recipient" loading="eager" referrerpolicy="no-referrer"></iframe><p class="status" id="forgeStatus" role="status">Recipient not yet contacted.</p></div></div>
+<aside class="card"><h3>What this actually adds</h3><div class="pills"><span>PNG / JPG intake</span><span>Editable source geometry</span><span>OBJ export</span><span>glTF 2 GLB export</span><span>Native 3D recipient</span><span>Geometry packet interchange</span><span>No cloud dependency</span></div><div class="note">Relief geometry becomes actual clickable 3D faces in the existing JM Form Contact renderer. This is **adapter/runtime contact**, not proof of BuildCAD native source ingestion, private Forge GLB validity, or Android-owner approval.</div><div class="readout" id="meshReadout">No geometry generated.</div><a href="../../../visual-systems-lab/" target="_blank" rel="noopener">Open existing Visual Systems Lab ↗</a></aside>
+</section>
+<section id="rail-compare" role="tabpanel" aria-labelledby="tab-compare" class="rail grid" hidden>
+<div class="card"><div class="kicker">02 · Owner-device graphics contact / visual regression</div><h2>Before and after, pixel by pixel</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Load two screenshots. Preserve their dimensions, measure the actual pixel differences, and export a bounded comparison receipt. Different-sized images are HOLD, never silently rescaled. Use the two **Capture Forge** buttons in the FORM rail while its 3D renderer is visible, then return here to compare those frames—or load your own screenshots.</p></details><div class="fields"><div class="field"><label for="imageBefore">Before image</label><input type="file" id="imageBefore" accept="image/*"></div><div class="field"><label for="imageAfter">After image</label><input type="file" id="imageAfter" accept="image/*"></div></div><div class="fields"><div class="field"><label for="pixelSensitivity">Threshold <output id="thresholdLabel">32</output>/255</label><input type="range" id="pixelSensitivity" min="1" max="120" value="32"></div><div class="field"><span>Pixel gate</span><div class="mini">Channel difference greater than threshold marks a changed pixel.</div></div></div><div class="actions"><button class="action" id="runDiff">Compare screenshots</button><button class="action alt" id="exportDiff" disabled>Export receipt</button></div><div class="status" id="diffStatus" role="status">Waiting for two screenshots.</div><canvas id="diffCanvas" role="img" aria-label="Image difference preview" width="700" height="420" aria-label="Visual difference result"></canvas></div>
+<aside class="card"><h3>Difference report</h3><div id="diffReadout" class="readout">No pixel comparison performed.</div><p class="mini">A visual change is not automatically a regression; controls, function and user approval still require their own checks.</p><a href="../../../visual-systems-lab/" target="_blank" rel="noopener">Current visual comparison donor ↗</a></aside>
+</section>
+<section id="rail-release" role="tabpanel" aria-labelledby="tab-release" class="rail grid" hidden>
+<div class="card"><div class="kicker">03 · Native source / guarded release evidence</div><h2>Release preflight, not fake deployment</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Identify a specific local artifact, calculate a real SHA-256 digest and record separately what you have actually tested. This page never publishes, merges or declares device proof on your behalf.</p></details><div class="field"><label for="releaseFile">Choose a build artifact to inspect</label><input type="file" id="releaseFile"></div><div class="fields"><div class="field"><label for="releaseGame">Body name</label><input type="text" id="releaseGame" placeholder="Existing game or tool"></div><div class="field"><label for="releaseVersion">Version / descendant</label><input type="text" id="releaseVersion" placeholder="e.g. v0.8 candidate"></div></div><div class="actions"><button class="action" id="hashRelease">Inspect artifact</button></div><div class="readout" id="hashReadout">No artifact inspected.</div><hr class="sep"><h3>Proof gate — mark only witnessed checks</h3><label class="check"><input type="checkbox" class="releaseCheck" value="source_identity">Source identity and ancestor confirmed</label><label class="check"><input type="checkbox" class="releaseCheck" value="syntax">Static/syntax validation actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="runtime">Runtime contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="device">Owner-device contact actually passed</label><label class="check"><input type="checkbox" class="releaseCheck" value="recovery">Recovery/custody actually verified</label><div class="actions"><button class="action alt" id="exportRelease" disabled>Export preflight JSON</button><button class="action alt" id="inspectLoop">Inspect six-rail evidence</button><button class="action" id="exportDossier">Export bounded six-rail dossier</button></div><div class="status" id="releaseStatus" role="status">HOLD · No artifact inspected.</div><div class="loop-card"><h3>Joined evidence · not automatic promotion</h3><label class="check"><input type="checkbox" id="allowTestNotes">Include private playtest notes in dossier (off by default)</label><pre class="receipt" id="loopPreview">Inspect to show the current evidence boundary.</pre></div></div>
+<aside class="card"><h3>Governed promotion</h3><div class="pills"><span>Exact source hash</span><span>Evidence-separated</span><span>Owner authority</span><span>Release HOLD by default</span></div><div class="note">PREPARED ≠ DEPLOYED. A self-marked check is only a statement, not independently proven backend/device evidence. No auto-publish or branch mutation.</div><a href="../../../games-beyond/" target="_blank" rel="noopener">Existing Games &amp; Beyond route ↗</a></aside>
+<div class="card recovery-panel" id="continuityPanel">
+<div class="kicker">JM RouteVault / cross-device recovery · bounded source packet</div>
+<h2>One verified handoff, separate receiver proof</h2>
+<p class="muted">Export local geometry, timing and scoped evidence as ONE content-hashed portable JSON. On the other device, import into read-only review first. Only a separate click adopts geometry/timing for new tests. Neither imported receipts nor SHA-256 grant owner-device proof.</p>
+<div class="actions"><button class="action" type="button" id="exportContinuity">Export governed handoff</button><label class="field" style="min-width:150px;flex:1"><span>Import portable handoff JSON</span><input id="importContinuity" type="file" accept=".json,application/json"></label></div>
+<div class="actions"><button class="action alt" type="button" id="adoptContinuityMesh" disabled>Adopt verified mesh as local candidate</button><button class="action alt" type="button" id="adoptContinuityBeat" disabled>Adopt verified timing cues</button></div>
+<div id="continuityState" class="status" role="status">No imported handoff. Recipients must re-earn their own Dings.</div>
+<pre id="continuityPreview" class="receipt" aria-label="Verified handoff audit">No handoff inspected.</pre>
+</div>
+</section>
+<section id="rail-audio" role="tabpanel" aria-labelledby="tab-audio" class="rail grid" hidden>
+<div class="card"><div class="kicker">04 · BeatBody / SHIMS / music motion bridge</div><h2>Audio timing into movement cues</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Open a local sound file to see its waveform, then tap the beat or enter a BPM. Export a portable beat-grid JSON usable by your own movement and animation bodies.</p></details><div class="field"><label for="audioSource">Local audio file</label><input type="file" id="audioSource" accept="audio/*"></div><audio id="audioPlayer" controls style="width:100%;margin-top:13px"></audio><canvas id="waveCanvas" width="700" height="180" style="margin-top:12px" aria-label="Audio waveform"></canvas><div class="fields"><div class="field"><label for="tempo">Tempo (BPM)</label><input type="number" id="tempo" value="120" min="30" max="300"></div><div class="field"><label for="barCount">Bars (4 beats each)</label><input type="number" id="barCount" value="8" min="1" max="128"></div></div><div class="actions"><button class="action" id="tapTempo">Tap beat</button><button class="action alt" id="exportBeat">Export beat-grid JSON</button><button class="action" id="driveForge">Drive JM Forge pulse</button><button class="action alt" id="stopForgePulse" disabled>Stop / restore</button></div><div class="readout" id="tapReadout">120 BPM · 500ms between beats</div><div class="status" id="audioStatus" role="status">BPM is user-entered until measured by taps. No automatic beat detection claim.</div><div class="readout" id="motionReadout">No game motion driven. Load geometry into Rail 01 first.</div></div>
+<aside class="card"><h3>Actual interchange</h3><div class="pills"><span>Local waveform</span><span>Tap tempo</span><span>4/4 beat grid</span><span>Portable JSON</span></div><div class="note">No music is uploaded from this page. It does not claim to understand lyrics or infer exact musical beats from the waveform. BeatBody, LyricStudio and JM Release Run remain separate authorities.</div><a href="../../../beatbody/" target="_blank" rel="noopener">BeatBody existing route ↗</a></aside>
+</section>
+<section id="rail-estate" role="tabpanel" aria-labelledby="tab-estate" class="rail grid" hidden>
+<div class="card"><div class="kicker">05 · Estate registry / no new control plane</div><h2>Look up the routes that already exist</h2><details class="tool-help" open><summary>About this tool</summary><p class="muted">Read the public-safe Estate integration status and existing game/visual registries. Filter results by name and route an existing public identity into the release/test fields. A route is evidence of discoverability, not runtime proof or permission to write.</p></details><div class="actions"><button class="action" id="loadEstate">Read public registries</button></div><div class="field" style="margin-top:12px"><label for="estateQuery">Filter by body or capability</label><input id="estateQuery" type="text" placeholder="e.g. GlyphPlay, forge, contact"></div><div class="status" id="estateStatus" role="status">Ready to contact existing public sources.</div><div id="estateResults" aria-live="polite"></div></div>
+<aside class="card"><h3>Authority stays outside this viewer</h3><div class="pills"><span>Read only</span><span>No private source</span><span>No mutation</span><span>Current registry timestamps matter</span></div><div class="note">The private JM Build Mesh plugin remains the authority-reconciliation tool inside ChatGPT. Public sources may lag current owner authority.</div><div class="record"><a href="https://jmisjustme-estate.pages.dev/" target="_blank" rel="noopener">Canonical Estate public door ↗</a></div><div class="record"><a href="https://github.com/JMisJustMe/JM-cading-lab" target="_blank" rel="noopener">Existing GitHub source corridor ↗</a></div><div class="record"><a href="../../navigator/" target="_blank" rel="noopener">Navigator public route ↗</a></div></aside>
+</section>
+<section id="rail-testers" role="tabpanel" aria-labelledby="tab-testers" class="rail grid" hidden>
+
+<div class="card grippanel" id="gripTwinPanel">
+ <div class="kicker">JM FTR · GripRoute Twin Body · original May proof-of-feel method</div>
+ <h2>Bare phone ↔ Shell ↔ U</h2>
+ <details class="tool-help" open><summary>About this tool</summary><p class="muted">This is the physical GripRoute family: Shell suits the phone; U bridges the phone. Test each with a real mockup, in the same portrait game. The browser cannot manufacture comfort, safety, fatigue or physical source proof.</p></details>
+ <div class="fields">
+  <div class="field"><label for="gripVariant">Actual body held</label><select id="gripVariant"><option value="bare">BARE PHONE · baseline</option><option value="shell">GRIPROUTE SHELL · fuller support</option><option value="u">GRIPROUTE U · lighter bottom bridge</option></select></div>
+  <div class="field"><label for="gripGame">Exact game / build tested</label><input id="gripGame" placeholder="e.g. COMBOUND v1.4" autocomplete="off"></div>
+  <div class="field"><label for="gripDevice">Device + posture</label><input id="gripDevice" placeholder="e.g. Fold portrait · two-thumb" autocomplete="off"></div>
+ </div>
+ <div class="grip-time-row"><strong id="gripClock" aria-live="polite">00:00</strong><span id="gripTimeHint">Five minutes each for the full comparison.</span></div>
+ <div class="actions"><button class="action" id="gripBegin" type="button">Start physical trial</button><button class="action alt" id="gripFinish" type="button" disabled>Stop and time run</button></div>
+ <label class="check"><input id="gripPhysical" type="checkbox">I physically held the selected bare phone / mockup during this run (self-reported)</label>
+ <div id="gripMetrics" class="grip-metrics" aria-label="Physical phone-control experience ratings"></div>
+ <div class="field"><label for="gripNotes">What improved, strained, slipped or interfered with play?</label><textarea id="gripNotes" rows="3" placeholder="Describe what actually happened. Identify screen obstruction or control discomfort explicitly."></textarea></div>
+ <div class="actions"><button id="gripSave" class="action" type="button">Record scoped trial</button><button id="gripExport" class="action alt" type="button">Export comparison JSON</button><button id="gripClear" class="action alt" type="button">Clear GripRoute local drafts</button></div>
+ <div class="status" id="gripStatus" role="status">HOLD · No witnessed physical comparisons recorded.</div>
+ <div class="readout" id="gripComparison" aria-live="polite">Bare / Shell / U comparison waiting for actual sessions.</div>
+ <div class="fields"><div class="field"><label for="gripPreference">After the three physical runs, which would you choose?</label><select id="gripPreference"><option value="">No decision recorded</option><option value="bare">Bare phone</option><option value="shell">GripRoute Shell</option><option value="u">GripRoute U</option><option value="undecided">No clear preference</option></select></div></div>
+ <button class="action alt" id="gripDecide" type="button">Record owner preference after comparison</button>
+ <div class="note">Real 5-minute sessions and honest physical mockup contact are required for the original product proof route. Faster/software-only attempts are retained as provisional observations. No automatic preference or product Ding.</div>
+</div>
+
+<div class="card"><div class="kicker">06 · Games / owner-led testing / release learning</div><h2>Collect a meaningful playtest receipt</h2><p class="muted">Capture a session without pretending to run analytics or a live feedback server. Everything stays in this browser until you choose to export it.</p><form id="testerForm"><div class="fields"><div class="field"><label for="testGame">Game / build</label><input id="testGame" required placeholder="COMBOUND v..." autocomplete="off"></div><div class="field"><label for="testDevice">Device / browser</label><input id="testDevice" required placeholder="Android / Chrome" autocomplete="off"></div><div class="field"><label for="testRating">Enjoyment</label><select id="testRating"><option value="1">1 / 5</option><option value="2">2 / 5</option><option value="3">3 / 5</option><option value="4" selected>4 / 5</option><option value="5">5 / 5</option></select></div><div class="field"><label for="testFit">Fit and control</label><select id="testFit"><option value="pass">Usable</option><option value="partial">Partial</option><option value="fail">Failed</option><option value="unknown" selected>Unverified</option></select></div></div><div class="field"><label for="testNotes">Observed behaviour / issues / highlights</label><textarea id="testNotes" required placeholder="What actually happened? What should improve?"></textarea></div><div class="actions"><button type="submit" class="action">Record session locally</button><button type="button" id="exportTests" class="action alt">Export all receipts JSON</button><button type="button" id="clearTests" class="action alt">Clear local draft history</button></div></form><div class="status" id="testStatus" role="status">No remote collection or publication.</div></div>
+<aside class="card"><h3>Observed sessions</h3><div class="meter"><div><strong id="testCount">0</strong><span>Sessions</span></div><div><strong id="testAverage">—</strong><span>Mean enjoyment</span></div><div><strong id="testUsable">0</strong><span>Fit usable</span></div></div><div id="testLatest" class="mini" style="margin-top:13px">No local records yet.</div><hr class="sep"><h3>Selection-matched feedback</h3><p class="mini">Matching requires the exact game/build label. Testimony does not independently certify a build.</p><div class="readout" id="testSummary">No selected release target.</div><button class="action alt" id="sendTestsRelease">Inspect playtests in release gate</button><div class="note">No identifiers or telemetry are sent to external services. This local test log is not a population study, monetisation analytics or proof of publication.</div><a href="../../../games-beyond/" target="_blank" rel="noopener">Existing game house ↗</a></aside>
+</section>
+<footer class="foot"><span>© JM · Existing bodies retain their identities · Proposed contact descendant</span><span>No Ding, no claim · Contact before crown · Mesh ≠ Merge</span><span>Offline tools work locally; registry discovery needs hosted HTTP(S).</span></footer>
+</main>
+<script src="../../ecostate-griprail-v6.js" data-jm-inherit="JMGripRail-v6-hosted-only" defer></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id); const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const escapeText=v=>String(v??'').replace(/[&<>"']/g,s=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+function saveBlob(file,contents,type='application/json'){const blob=contents instanceof Blob?contents:new Blob([contents],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=file;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),20000);}
+function status(id,text){$(id).textContent=text;}
+for(const b of document.querySelectorAll('nav [data-rail]'))b.addEventListener('click',()=>{const name=b.dataset.rail;for(const tab of document.querySelectorAll('nav [data-rail]'))tab.setAttribute('aria-selected',String(tab===b));for(const rail of document.querySelectorAll('.rail'))rail.hidden=rail.id!==`rail-${name}`;});
+// v0.3 · OneBody recipient joins remain provisional, never private Forge source replacement.
+let handoffSelection=null,lastBeatGrid=null,lastPulseReceipt=null,loopReceipt=null,lastGLBReceipt=null;
+const iso=()=>new Date().toISOString();
+// Recovered public JM Forge Contact donor's portable SHA-256 implementation, now independently available in the sender.
+// A content digest is integrity evidence, NEVER proof that a packet originated from private Forge v0.24.
+function jmPortableSha256(data){const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];const N=data.length,sz=Math.ceil((N+9)/64)*64,b=new Uint8Array(sz);b.set(data);b[N]=128;const view=new DataView(b.buffer);view.setUint32(sz-8,Math.floor(N*8/4294967296),false);view.setUint32(sz-4,N*8>>>0,false);const R=(x,n)=>(x>>>n)|(x<<(32-n));for(let offset=0;offset<sz;offset+=64){let w=new Uint32Array(64);for(let i=0;i<16;i++)w[i]=view.getUint32(offset+i*4,false);for(let i=16;i<64;i++){let a=w[i-15],c=w[i-2],s0=R(a,7)^R(a,18)^(a>>>3),s1=R(c,17)^R(c,19)^(c>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)>>>0}let [a,bb,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){let s1=R(e,6)^R(e,11)^R(e,25),ch=(e&f)^(~e&g),t1=(h+s1+ch+K[i]+w[i])>>>0,s0=R(a,2)^R(a,13)^R(a,22),maj=(a&bb)^(a&c)^(bb&c),t2=(s0+maj)>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=bb;bb=a;a=(t1+t2)>>>0}H=H.map((v,i)=>(v+[a,bb,c,d,e,f,g,h][i])>>>0)}return H.map(x=>x.toString(16).padStart(8,'0')).join('')}
+const sha256=async input=>{
+ const buf=typeof input==='string'?new TextEncoder().encode(input):new Uint8Array(input);
+ if(globalThis.crypto?.subtle)return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',buf))).map(x=>x.toString(16).padStart(2,'0')).join('');
+ return jmPortableSha256(buf);
+};
+
+function goToRail(name){const button=document.querySelector(`nav [data-rail="${name}"]`);if(button)button.click()}
+// 01 · Image → actual polygonal OBJ relief.
+let assetImg=null,assetObj=null,assetInfo=null,meshPayload=null;
+function imageFile(file){return new Promise((resolve,reject)=>{if(!file){reject(new Error('Choose an image'));return;}const url=URL.createObjectURL(file);const im=new Image();im.onload=()=>{URL.revokeObjectURL(url);resolve(im)};im.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Image cannot be decoded'))};im.src=url;});}
+$('assetImage').addEventListener('change',async e=>{assetObj=null;meshPayload=null;lastGLBReceipt=null;$('saveMesh').disabled=true;$('exportPacket').disabled=true;$('exportGLB').disabled=true;$('sendForge').disabled=true;try{assetImg=await imageFile(e.target.files[0]);$('makeMesh').disabled=false;status('meshStatus',`${assetImg.naturalWidth} × ${assetImg.naturalHeight} image decoded. Ready for geometry.`);}catch(err){assetImg=null;$('makeMesh').disabled=true;status('meshStatus',err.message)}});
+$('assetRelief').addEventListener('input',e=>{$('reliefLabel').textContent=(+e.target.value).toFixed(1)});
+$('makeMesh').addEventListener('click',()=>{if(!assetImg)return;try{const g=+$('assetGrid').value;const relief=+$('assetRelief').value;const hidden=document.createElement('canvas');hidden.width=g;hidden.height=g;const hctx=hidden.getContext('2d',{willReadFrequently:true});hctx.drawImage(assetImg,0,0,g,g);const p=hctx.getImageData(0,0,g,g).data;const vert=[];for(let row=0;row<g;row++)for(let col=0;col<g;col++){const k=(row*g+col)*4;const a=p[k+3]/255;const z=((p[k]*.2126+p[k+1]*.7152+p[k+2]*.0722)/255)*a*relief;vert.push([(col/(g-1)-.5)*2,(row/(g-1)-.5)*-2,z]);}const lines=['# JM contact geometry relief OBJ; external image-to-3D not implied','o JM_Relief_v0_1'];for(const v of vert)lines.push(`v ${v.map(x=>x.toFixed(6)).join(' ')}`);let faces=0;const triangles=[];for(let y=0;y<g-1;y++)for(let x=0;x<g-1;x++){const a=y*g+x+1,b=a+1,c=a+g,d=c+1;lines.push(`f ${a} ${c} ${b}`,`f ${b} ${c} ${d}`);triangles.push([a-1,c-1,b-1],[b-1,c-1,d-1]);faces+=2;}assetObj=lines.join('\n')+'\n';assetInfo={vertices:vert.length,faces,grid:g,relief,source_dimensions:[assetImg.naturalWidth,assetImg.naturalHeight]};meshPayload={vertices:vert.map(v=>v.map(x=>+x.toFixed(6))),triangles};$('saveMesh').disabled=false;$('exportPacket').disabled=false;$('exportGLB').disabled=false;$('sendForge').disabled=!forgeReady;const ctx=$('meshCanvas').getContext('2d'),w=700,h=420;ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b1320';ctx.fillRect(0,0,w,h);const X=(x,y,z)=>[w*.49+(x-y)*w*.29,h*.62+(x+y)*h*.14-z*h*.27];const stride=Math.max(1,Math.floor(g/32));ctx.lineWidth=.65;ctx.strokeStyle='#68dbd1';for(let j=0;j<g-stride;j+=stride){ctx.beginPath();for(let i=0;i<g;i+=stride){const v=vert[j*g+i],k=X(v[0],v[1],v[2]);i===0?ctx.moveTo(...k):ctx.lineTo(...k);}ctx.stroke()}ctx.strokeStyle='#c8a775';for(let i=0;i<g;i+=stride){ctx.beginPath();for(let j=0;j<g;j+=stride){const v=vert[j*g+i],k=X(v[0],v[1],v[2]);j===0?ctx.moveTo(...k):ctx.lineTo(...k);}ctx.stroke()}status('meshStatus','Geometry built locally · OBJ available · no external upload.');$('meshReadout').textContent=`${vert.length} actual vertices · ${faces} triangular faces · ${g}² sampling · source ${assetInfo.source_dimensions.join('×')}`;}catch(e){status('meshStatus','HOLD: '+e.message)}});
+$('saveMesh').addEventListener('click',()=>{if(assetObj)saveBlob('JM_CONTACT_RELIEF_v0_2.obj',assetObj,'text/plain')});
+// JM FORM CONTACT INHERITANCE v0.2 · live software renderer is recovered v0.1 (unchanged), donor proof is not inherited.
+let forgeReady=false;
+const forgeIframe=$('forgeRecipient');
+forgeIframe.addEventListener('load',()=>{forgeReady=!!forgeIframe.contentWindow?.JMForgeContact;$('sendForge').disabled=!(forgeReady&&meshPayload);status('forgeStatus',forgeReady?'Recipient renderer loaded · import generated geometry to demonstrate distinct face contacts.':'HOLD · JM recipient renderer did not load.');});
+function checkedMesh(v){
+ if(!v||!Array.isArray(v.vertices)||!Array.isArray(v.triangles)||v.vertices.length<4||v.vertices.length>4000||v.triangles.length<1||v.triangles.length>8000)throw Error('Geometry dimensions out of bounds');
+ for(const p of v.vertices){if(!Array.isArray(p)||p.length!==3||p.some(a=>!Number.isFinite(a)||Math.abs(a)>10000))throw Error('Non-finite/out-of-range vertex');}
+ for(const f of v.triangles){if(!Array.isArray(f)||f.length!==3||f.some(i=>!Number.isInteger(i)||i<0||i>=v.vertices.length)||new Set(f).size!==3)throw Error('Invalid triangle index');}
+ return v;
+}
+$('exportPacket').addEventListener('click',async()=>{
+ if(!meshPayload||!assetInfo)return status('forgeStatus','HOLD · Build local geometry first.');
+ try{const geometry=checkedMesh(meshPayload);
+ const canonical=JSON.stringify(geometry);const sha=await sha256(canonical);
+ const packet={schema:'jm.sixrails.formmesh/0.2',geometry,geometry_sha256:sha,hash_engine:globalThis.crypto?.subtle?'WebCrypto':'reused_JM_Forge_Portable_SHA256',source:{kind:'local_image_luminance_relief',grid:assetInfo.grid,relief:assetInfo.relief,image_dimensions:assetInfo.source_dimensions,forge_source_authenticity:'NOT_CLAIMED'},sender_proof:'GENERATOR_CONTACT_ONLY__NO_FORGE_OR_OWNER_DEVICE_DING'};
+ saveBlob('JM_SIX_RAILS_FORM_PACKET_v0_2.json',JSON.stringify(packet,null,2));status('forgeStatus',`Local geometry packet exported · SHA-256 ${sha.slice(0,16)}… · recipient proof separate.`);
+ }catch(e){status('forgeStatus','HOLD · '+e.message)}
+});
+// v0.5 · Portable glTF 2.0 GLB from the exact local relief mesh, no third-party renderer/source.
+function createGLB(geometry){
+ const g=checkedMesh(geometry),nv=g.vertices.length,nf=g.triangles.length;
+ if(nv>65535)throw Error('GLB v0.5 exporter is bounded to 65535 vertices');
+ const pos=new Float32Array(nv*3),norm=new Float32Array(nv*3),index=new Uint16Array(nf*3);
+ let min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
+ for(let i=0;i<nv;i++)for(let j=0;j<3;j++){const v=g.vertices[i][j];pos[i*3+j]=v;min[j]=Math.min(min[j],v);max[j]=Math.max(max[j],v)}
+ for(let k=0;k<nf;k++){
+  const [a,b,c]=g.triangles[k];index.set([a,b,c],k*3);
+  const A=g.vertices[a],B=g.vertices[b],C=g.vertices[c];const u=[B[0]-A[0],B[1]-A[1],B[2]-A[2]],v=[C[0]-A[0],C[1]-A[1],C[2]-A[2]],n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]];
+  for(const i of [a,b,c])for(let j=0;j<3;j++)norm[i*3+j]+=n[j];
+ }
+ for(let i=0;i<nv;i++){const mag=Math.hypot(norm[i*3],norm[i*3+1],norm[i*3+2]);if(mag>1e-8)for(let j=0;j<3;j++)norm[i*3+j]/=mag;else {norm[i*3]=0;norm[i*3+1]=0;norm[i*3+2]=1}}
+ const align4=n=>(n+3)&~3;
+ const sections=[new Uint8Array(pos.buffer),new Uint8Array(norm.buffer),new Uint8Array(index.buffer)];
+ let off=0;const views=[];for(let i=0;i<sections.length;i++){off=align4(off);views.push({buffer:0,byteOffset:off,byteLength:sections[i].byteLength,target:i===2?34963:34962});off+=sections[i].byteLength}
+ const bin=new Uint8Array(align4(off));for(let i=0;i<sections.length;i++)bin.set(sections[i],views[i].byteOffset);
+ const json={asset:{version:'2.0',generator:'JM Six Rails v0.5 portable source-owned GLB'},scene:0,scenes:[{nodes:[0]}],nodes:[{mesh:0,name:'JM_SixRails_ImageRelief'}],meshes:[{primitives:[{attributes:{POSITION:0,NORMAL:1},indices:2,mode:4}]}],buffers:[{byteLength:bin.byteLength}],bufferViews:views,accessors:[{bufferView:0,componentType:5126,count:nv,type:'VEC3',min,max},{bufferView:1,componentType:5126,count:nv,type:'VEC3'},{bufferView:2,componentType:5123,count:nf*3,type:'SCALAR'}],extras:{jm:{source_kind:'SIX_RAILS_IMAGE_RELIEF',private_forge_v024_source:false,claim:'GLTF2_GEOMETRY_ONLY__NO_RIG_MATERIAL_OR_OWNER_DEVICE_DING'}}};
+ const data=new TextEncoder().encode(JSON.stringify(json));const padded=align4(data.byteLength);
+ const out=new Uint8Array(12+8+padded+8+bin.byteLength);const dv=new DataView(out.buffer);
+ dv.setUint32(0,0x46546c67,true);dv.setUint32(4,2,true);dv.setUint32(8,out.byteLength,true);
+ dv.setUint32(12,padded,true);dv.setUint32(16,0x4e4f534a,true);out.fill(0x20,20,20+padded);out.set(data,20);
+ const start=20+padded;dv.setUint32(start,bin.byteLength,true);dv.setUint32(start+4,0x004e4942,true);out.set(bin,start+8);
+ return out;
+}
+$('exportGLB').addEventListener('click',async()=>{
+ if(!meshPayload)return status('meshStatus','HOLD · No generated geometry to export');
+ try{
+  const bin=createGLB(meshPayload),recipient=forgeIframe.contentWindow?.JMForgeContact;
+  if(!recipient?.decodeGLB)throw Error('JM public GLB recipient decoder unavailable. Export held until format contact.');
+  const parsed=recipient.decodeGLB(bin);
+  if(parsed.sourceVertices!==meshPayload.vertices.length||parsed.faces.length!==meshPayload.triangles.length)throw Error('JM recipient GLB readback vertex/face mismatch');
+  const hash=await sha256(bin.buffer);lastGLBReceipt={schema:'JM.SixRails.GLBRoundTrip/0.5',sha256:hash,bytes:bin.byteLength,vertices:parsed.sourceVertices,triangles:parsed.faces.length,standard:'glTF 2.0 GLB',decoder:'JM_FORGE_CONTACT_PUBLIC_V0_1',verified_at:iso(),provenance:'LOCAL_IMAGE_RELIEF_NOT_PRIVATE_FORGE_V024',claim:'GLB_DECODER_CONTACT_ONLY__PRIVATE_NATIVE_IMPORT_UNPROVEN'};
+  saveBlob('JM_SIX_RAILS_RELIEF_CONTACT_v0_5.glb',new Blob([bin],{type:'model/gltf-binary'}),'model/gltf-binary');
+  $('glbReadout').textContent=`glTF 2.0 GLB decoded by JM recipient · ${parsed.sourceVertices} vertices / ${parsed.faces.length} triangles · ${bin.byteLength} bytes · SHA ${hash.slice(0,16)}…`;
+  status('meshStatus','GLB format readback PASS in public JM decoder; private Forge v0.24 importer and owner device remain unproven.');
+ }catch(err){lastGLBReceipt=null;status('meshStatus','HOLD · GLB export: '+err.message)}
+});
+
+// Round-trip portable mesh only, not a v0.24 private Forge GLB.
+$('importPacket').addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ try{
+  if(f.size>1200000)throw Error('Packet over 1.2 MB import gate');
+  const obj=JSON.parse(await f.text());if(obj.schema!=='jm.sixrails.formmesh/0.2'||typeof obj.geometry_sha256!=='string')throw Error('Unsupported JM packet schema');
+  const geometry=checkedMesh(obj.geometry);const hash=await sha256(JSON.stringify(geometry));if(hash!==obj.geometry_sha256)throw Error('SHA-256 mismatch: no recipient contact');
+  meshPayload=JSON.parse(JSON.stringify(geometry));lastGLBReceipt=null;assetInfo={...obj.source,vertices:geometry.vertices.length,faces:geometry.triangles.length,source_dimensions:obj.source?.image_dimensions||[]};
+  assetObj=['# JM verified round-trip mesh OBJ','o JM_SixRails_RoundTrip',...geometry.vertices.map(v=>'v '+v.join(' ')),...geometry.triangles.map(f=>'f '+f.map(i=>i+1).join(' '))].join('\n')+'\n';
+  $('saveMesh').disabled=false;$('exportPacket').disabled=false;$('exportGLB').disabled=false;$('sendForge').disabled=!forgeReady;
+  $('meshReadout').textContent=`IMPORTED VERIFIED · ${geometry.vertices.length} vertices / ${geometry.triangles.length} triangles · SHA ${hash.slice(0,16)}…`;
+  status('meshStatus','Verified independent JSON packet → existing JM contact renderer is ready. The private Forge authenticity gate remains unmodified.');
+ }catch(err){meshPayload=null;lastGLBReceipt=null;$('sendForge').disabled=true;$('exportPacket').disabled=true;$('exportGLB').disabled=true;status('meshStatus','HOLD · '+err.message)}
+ finally{e.target.value=''}
+});
+$('sendForge').addEventListener('click',()=>{
+ if(!forgeReady||!meshPayload)return status('forgeStatus','HOLD · Receiver or geometry unavailable.');
+ try{const g=checkedMesh(meshPayload),recipient=forgeIframe.contentWindow?.JMForgeContact,scene=recipient?.scene;
+ if(!scene||typeof recipient.reset!=='function')throw Error('JM original renderer API not available');
+ let lo=[Infinity,Infinity,Infinity],hi=[-Infinity,-Infinity,-Infinity];for(const p of g.vertices)for(let k=0;k<3;k++){lo[k]=Math.min(lo[k],p[k]);hi[k]=Math.max(hi[k],p[k]);}
+ const center=lo.map((v,k)=>(v+hi[k])/2),scale=2.8/Math.max(.1,...lo.map((v,k)=>hi[k]-v));
+ const norm=g.vertices.map(p=>p.map((x,k)=>(x-center[k])*scale));
+ // The donor's exact original v0.24 JMForgeContact.take() gate remains unmodified and is never called for provisional relief.
+ // This is an explicit, separate recipient adapter into the original public software-renderer scene API.
+ scene.points=norm;scene.faces=g.triangles.map(f=>f.slice());scene.meshSha='SIX_RAILS_LOCAL_RELIEF__UNVERIFIED_FORGE_SOURCE';scene.snapshot='IMAGE_RELIEF_PROVISIONAL';scene.loaded=true;recipient.reset();
+ scene.trace.unshift({event:'SIX_RAILS_ADAPTER_INTAKE',at:new Date().toISOString(),vertices:norm.length,faces:g.triangles.length,source_kind:'LOCAL_IMAGE',proof:'RECIPIENT_RUNTIME_ONLY'});
+ const doc=forgeIframe.contentDocument;doc.getElementById('meshCount').textContent=norm.length+' V / '+g.triangles.length+' T';doc.getElementById('snapshot').textContent='LOCAL IMAGE RELIEF';doc.getElementById('meshHash').textContent='No native Forge GLB claim';
+ const first=Array.from(doc.querySelectorAll('.rowstat')).find(x=>x.textContent.includes('Forge source'));if(first){const strong=first.querySelector('strong');if(strong)strong.textContent='Six Rails image relief · provisional';}const recipientHdr=doc.querySelector('header small');if(recipientHdr)recipientHdr.textContent='PUBLIC v0.1 RENDERER · LOCAL RELIEF INPUT';
+ status('forgeStatus',`RECIPIENT CONTACT · ${norm.length} vertices, ${g.triangles.length} faces now active in JM Forge Contact. Tap five distinct triangles to test its original surface game.`);
+ }catch(e){status('forgeStatus','HOLD · '+e.message)}
+});
+
+// 02 · Exact-dimension screenshot differencing.
+let diffReceipt=null;let imgBefore=null,imgAfter=null,frameSources={before:null,after:null};
+$('imageBefore').addEventListener('change',async e=>{try{imgBefore=await imageFile(e.target.files[0]);frameSources.before=null;status('diffStatus','Before screenshot decoded.');}catch(err){imgBefore=null;status('diffStatus',err.message);}});
+$('imageAfter').addEventListener('change',async e=>{try{imgAfter=await imageFile(e.target.files[0]);frameSources.after=null;status('diffStatus','After screenshot decoded.');}catch(err){imgAfter=null;status('diffStatus',err.message);}});
+async function forgeFrameCapture(which){
+ try{
+  if(!forgeReady||!forgeIframe.contentWindow?.JMForgeContact?.scene.loaded)throw Error('Forge recipient has no loaded geometry. Visit Form rail and play the mesh first.');
+  const cv=forgeIframe.contentDocument.getElementById('stage');if(!cv||cv.width<64||cv.height<64||cv.getBoundingClientRect().width<100)throw Error('Recipient canvas not visible at usable size; capture from the FORM rail first.');
+  const data=cv.toDataURL('image/png');const im=new Image();await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=reject;im.src=data;});
+  if(which==='before')imgBefore=im;else imgAfter=im;
+  frameSources[which]={recipient:'JM_FORGE_CONTACT_PUBLIC_V0_1_RENDERER',source_kind:'SIX_RAILS_IMAGE_RELIEF',at:new Date().toISOString(),width:im.naturalWidth,height:im.naturalHeight};
+  diffReceipt=null;$('exportDiff').disabled=true;
+  status('diffStatus',`Captured ${which} from actual JM recipient canvas (${im.naturalWidth}×${im.naturalHeight}). ${imgBefore&&imgAfter?'Ready to compare.':'Capture the other frame.'}`);
+ }catch(e){status('diffStatus','HOLD · '+e.message)}
+}
+$('captureForgeBefore').addEventListener('click',()=>forgeFrameCapture('before'));
+$('captureForgeAfter').addEventListener('click',()=>forgeFrameCapture('after'));
+$('pixelSensitivity').addEventListener('input',e=>$('thresholdLabel').textContent=e.target.value);
+$('runDiff').addEventListener('click',()=>{diffReceipt=null;$('exportDiff').disabled=true;if(!imgBefore||!imgAfter){status('diffStatus','HOLD · Select both images first.');return}const aw=imgBefore.naturalWidth,ah=imgBefore.naturalHeight,bw=imgAfter.naturalWidth,bh=imgAfter.naturalHeight;if(aw!==bw||ah!==bh){status('diffStatus',`HOLD · Dimension mismatch: before ${aw}×${ah}, after ${bw}×${bh}. No silent resizing.`);return}if(aw*ah>12000000){status('diffStatus','HOLD · Images exceed 12 megapixels per comparison; use reduced-source screenshots intentionally.');return}const c=document.createElement('canvas');c.width=aw;c.height=ah;const cx=c.getContext('2d',{willReadFrequently:true});cx.drawImage(imgBefore,0,0);const a=cx.getImageData(0,0,aw,ah);cx.clearRect(0,0,aw,ah);cx.drawImage(imgAfter,0,0);const b=cx.getImageData(0,0,aw,ah);let count=0,peak=0,total=0;const threshold=+$('pixelSensitivity').value;for(let i=0;i<a.data.length;i+=4){const d=Math.max(Math.abs(a.data[i]-b.data[i]),Math.abs(a.data[i+1]-b.data[i+1]),Math.abs(a.data[i+2]-b.data[i+2]),Math.abs(a.data[i+3]-b.data[i+3]));total+=d;peak=Math.max(peak,d);const changed=d>threshold;if(changed)count++;a.data[i]=changed?255:10;a.data[i+1]=changed?112:24;a.data[i+2]=changed?95:39;a.data[i+3]=255;}cx.putImageData(a,0,0);const out=$('diffCanvas');out.width=aw;out.height=ah;out.getContext('2d').drawImage(c,0,0);const pct=100*count/(aw*ah);diffReceipt={schema:'JM.SixRails.VisualDiff/0.1',timestamp:new Date().toISOString(),dimensions:[aw,ah],threshold,changed_pixels:count,total_pixels:aw*ah,change_percent:+pct.toFixed(4),mean_channel_difference:+(total/(aw*ah)).toFixed(4),peak_difference:peak,capture_sources:frameSources,claim:'pixel_difference_only__not_runtime_or_owner_device_proof'};$('diffReadout').textContent=`${pct.toFixed(2)}% changed · ${count.toLocaleString()} pixels · peak Δ ${peak}`;status('diffStatus','Pixel comparison complete · quality and runtime still need separate checks.');$('exportDiff').disabled=false;});
+$('exportDiff').addEventListener('click',()=>{if(diffReceipt)saveBlob('JM_VISUAL_DIFF_RECEIPT_v0_2.json',JSON.stringify(diffReceipt,null,2))});
+// 03 · Readable exact digest and user-declared proof fields.
+let artifactMeta=null;
+$('releaseFile').addEventListener('change',()=>{artifactMeta=null;loopReceipt=null;$('exportRelease').disabled=true;status('releaseStatus','HOLD · New source selected; calculate its hash.');});
+$('hashRelease').addEventListener('click',async()=>{const f=$('releaseFile').files[0];if(!f){status('releaseStatus','HOLD · Choose an artifact.');return}try{if(f.size>64*1024*1024&&!globalThis.crypto?.subtle)throw Error('64 MB limit for portable hashing; hash this large artifact in secure WebCrypto host or desktop tooling.');const sha=await sha256(await f.arrayBuffer());const engine=globalThis.crypto?.subtle?'WebCrypto':'reused_JM_Forge_Portable_SHA256';artifactMeta={file:f.name,bytes:f.size,type:f.type||'unknown',sha256:sha,hash_engine:engine};$('hashReadout').textContent=`${f.name} · ${f.size.toLocaleString()} bytes · SHA-256 ${sha} · ${engine}`;$('exportRelease').disabled=false;status('releaseStatus','HOLD · Content digest calculated; proof checks remain self-declared and require independent evidence.');}catch(e){status('releaseStatus','HOLD · '+e.message)}});
+$('exportRelease').addEventListener('click',()=>{if(!artifactMeta)return;const witnessed=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);const complete=witnessed.length===5;const receipt={schema:'JM.SixRails.ReleasePreflight/0.1',created_at:new Date().toISOString(),body:$('releaseGame').value.trim(),version:$('releaseVersion').value.trim(),artifact:artifactMeta,user_declared_witnessed_checks:witnessed,state:complete?'ALL_DECLARED_CHECKS_SELECTED__NOT_INDEPENDENTLY_VERIFIED':'HOLD__INCOMPLETE_DECLARED_CHECKS',deployment:'NOT_PERFORMED',merge:'NOT_PERFORMED',owner_device_contact:'NOT_PROVEN_BY_THIS_TOOL'};saveBlob('JM_RELEASE_PREFLIGHT_v0_1.json',JSON.stringify(receipt,null,2));status('releaseStatus','Preflight receipt exported. No release/promotion/deployment performed.');});
+// 04 · Real waveform, tap tempo, beat grid export.
+let audioUrl=null,audioDuration=null,taps=[];
+$('audioSource').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;if(audioUrl)URL.revokeObjectURL(audioUrl);audioUrl=URL.createObjectURL(f);$('audioPlayer').src=audioUrl;status('audioStatus','Audio locally loaded. Decoding waveform…');try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)throw Error('Web Audio unsupported');const ac=new AudioCtx();const buffer=await ac.decodeAudioData(await f.arrayBuffer());audioDuration=buffer.duration;const samples=buffer.getChannelData(0);const ctx=$('waveCanvas').getContext('2d');const w=700,h=180;ctx.fillStyle='#0b1320';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#73e0dc';ctx.beginPath();for(let x=0;x<w;x++){const l=Math.floor(x*samples.length/w),r=Math.min(samples.length,Math.floor((x+1)*samples.length/w));let max=0;for(let k=l;k<r;k++)max=Math.max(max,Math.abs(samples[k]));ctx.moveTo(x,h/2-max*h*.46);ctx.lineTo(x,h/2+max*h*.46)}ctx.stroke();await ac.close();status('audioStatus',`Waveform decoded locally · ${audioDuration.toFixed(2)}s · ${buffer.numberOfChannels} channel(s).`);}catch(err){status('audioStatus','HOLD · Audio playable if supported, but waveform decode failed: '+err.message)}});
+$('tapTempo').addEventListener('click',()=>{const now=performance.now();taps=taps.filter(x=>now-x<8000);taps.push(now);if(taps.length>1){let intervals=[];for(let i=1;i<taps.length;i++){const d=taps[i]-taps[i-1];if(d>180&&d<1800)intervals.push(d)}if(intervals.length){const ms=intervals.reduce((a,b)=>a+b,0)/intervals.length;const bpm=clamp(Math.round(60000/ms),30,300);$('tempo').value=String(bpm);$('tapReadout').textContent=`${bpm} BPM · ${ms.toFixed(0)}ms average tap interval · ${intervals.length+1} taps`;status('audioStatus','Tap-estimated tempo; not waveform auto-detection.')}}else{status('audioStatus','One tap received. Keep tapping.') }});
+$('tempo').addEventListener('input',()=>{const bpm=+$('tempo').value;if(bpm>0)$('tapReadout').textContent=`${bpm} BPM · ${(60000/bpm).toFixed(1)}ms per beat`});
+$('exportBeat').addEventListener('click',()=>{const bpm=+$('tempo').value,bars=+$('barCount').value;if(!Number.isFinite(bpm)||bpm<30||bpm>300||!Number.isInteger(bars)||bars<1||bars>128){status('audioStatus','HOLD · BPM 30–300 and bars 1–128 required.');return}const sec=60/bpm,beats=[];for(let i=0;i<bars*4;i++)beats.push({index:i+1,bar:Math.floor(i/4)+1,beat:i%4+1,time_seconds:+(sec*i).toFixed(4)});lastBeatGrid={schema:'JM.SixRails.BeatGrid/0.1',bpm,bars,beats_per_bar:4,mode:taps.length>1?'tap_estimate_or_user_edit':'user_entered',sample_duration_seconds:audioDuration,beats,claim:'timing_reference_not_audio_aligned_proof'};saveBlob('JM_BEATBODY_BEATGRID_v0_1.json',JSON.stringify(lastBeatGrid,null,2));status('audioStatus',`Exported ${beats.length} time cues · ${(bars*4*sec).toFixed(2)}s · no audio automatically uploaded.`)});
+
+// Exact recovered public v0.1 JM Forge Contact HTML, embedded as a self-contained donor. Private v0.24 mesh bytes are NOT embedded.
+const JM_FORGE_PUBLIC_ANCESTOR_HTML="\u003c!doctype html>\u003chtml lang=\"en\">\u003chead>\u003cmeta charset=\"utf-8\">\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\u003cmeta name=\"theme-color\" content=\"#06101b\">\u003ctitle>JM Form Contact \u2014 Forge \u00d7 GameCore / RouteOS Proof Body\u003c/title>\u003cstyle>\n:root{color-scheme:dark;--bg:#060d17;--cyan:#95eafb;--gold:#ffd58a;--ink:#f0f6fc;--muted:#afc2d4;--panel:#0d1a2a;--line:#38536f}\n*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.4 system-ui,sans-serif}body{background:radial-gradient(ellipse at 50% 15%,#153548 0%,#071322 44%,#040a12 100%);overflow-x:hidden}\n#app{width:min(1200px,100%);min-height:100dvh;margin:auto;display:flex;flex-direction:column;gap:8px;padding:12px 12px max(16px,env(safe-area-inset-bottom))}\nheader{display:flex;align-items:center;justify-content:space-between;gap:12px}header strong{letter-spacing:.12em;color:var(--cyan);font-size:12px}header small{display:block;color:var(--muted);letter-spacing:.08em}\nh1{font-size:clamp(22px,4vw,38px);line-height:1.05;margin:0;color:#fff}.sub{font-size:12px;color:#b6ccdd;margin:0}\nmain{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(250px,.9fr);gap:9px;min-height:400px;flex:1}\n.stage{position:relative;min-height:390px;overflow:hidden;border:1px solid #43617f;border-radius:17px;background:radial-gradient(ellipse at 50% 55%,#0b2536 0%,#071220 62%,#050a15 100%);box-shadow:0 15px 40px #0007}\ncanvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.hud{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:7px;justify-content:space-between;pointer-events:none}.hud b{border:1px solid #44627e;border-radius:11px;background:#071522d9;padding:6px 8px;font-size:11px}\n.foot{position:absolute;bottom:10px;left:10px;right:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;pointer-events:none}.foot span{font-size:10px;color:#c4deef;background:#071a29d8;padding:6px 9px;border-radius:9px}\naside{display:flex;flex-direction:column;gap:8px}section{border:1px solid #38536f;border-radius:14px;padding:13px;background:#0b1827e8}section h2{font-size:13px;color:var(--cyan);margin:0 0 7px;letter-spacing:.05em}section p{color:var(--muted);font-size:12px;margin:4px 0 10px}\n.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}button,.fileLabel{border:1px solid #5481a0;border-radius:11px;padding:10px 8px;min-height:42px;background:#123148;color:#fff;font-weight:750;font-size:12px;cursor:pointer;text-align:center}button:active{transform:scale(.98)}button.highlight{background:#2f3520;border-color:#d8af6a;color:#ffdf99}button:disabled{opacity:.5}.fileLabel{display:block}\n.rowstat{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #2d465f;font-size:12px}.rowstat strong{color:var(--gold)}\n#trace{max-height:120px;overflow:auto;color:#94b8c6;white-space:pre-wrap;font:11px/1.5 ui-monospace,monospace;margin:5px 0}#status{min-height:24px;color:#9de8be;font-size:12px}.mini{font:11px/1.4 ui-monospace,monospace;color:#8fb0c0}\n@media(max-width:800px){#app{padding:10px}main{grid-template-columns:1fr;display:flex;flex-direction:column}.stage{height:min(49dvh,460px);min-height:280px;flex:none}aside{display:grid;grid-template-columns:1fr 1fr}.actions button{font-size:11px}header strong{font-size:10px}}\n@media(max-width:530px){aside{display:flex}main{gap:7px}.stage{height:47dvh;min-height:290px}section{padding:10px}.hud b{font-size:10px}.sub{font-size:11px}.mini{font-size:10px}}\n\u003c/style>\u003c/head>\u003cbody>\u003cdiv id=\"app\">\u003cheader>\u003cdiv>\u003cstrong>JM ECOSTATE \u00b7 FIELD / FORM FORGE \u00d7 GAMECORE\u003c/strong>\u003ch1>FORM CONTACT\u003c/h1>\u003csmall>THE BODY IS THE PLAYFIELD \u00b7 SOURCE GEOMETRY IS THE RULE\u003c/small>\u003c/div>\u003cdiv class=\"mini\">v0.1 \u00b7 SOURCE CONTACT\u003cbr>PRIVATE BODY CUSTODY\u003c/div>\u003c/header>\u003cp class=\"sub\">OneBody playable descendant. Rotate your actual Forge mesh; touch 5 different triangles to earn a verified geometry-contact score. No third-party renderer.\u003c/p>\u003cmain>\u003cdiv class=\"stage\">\u003ccanvas id=\"stage\" aria-label=\"Interactive JM Forge 3D mesh\">\u003c/canvas>\u003cdiv class=\"hud\">\u003cb>POINTS \u00b7 \u003cspan id=\"score\">0\u003c/span>\u003c/b>\u003cb>CONTACT \u00b7 \u003cspan id=\"hits\">0/5\u003c/span>\u003c/b>\u003c/div>\u003cdiv class=\"foot\">\u003cspan>DRAG TO ORBIT \u00b7 TAP TO CONTACT\u003c/span>\u003cspan>KEYS \u2190 \u2192 \u2191 \u2193 + SPACE\u003c/span>\u003c/div>\u003c/div>\u003caside>\u003csection>\u003ch2>GEOMETRY PROVENANCE\u003c/h2>\u003cdiv class=\"rowstat\">Forge source \u003cstrong>v0.24 \u00b7 PRIVATE\u003c/strong>\u003c/div>\u003cdiv class=\"rowstat\">Real mesh \u003cstrong id=\"meshCount\">\u2014\u003c/strong>\u003c/div>\u003cdiv class=\"rowstat\">Snapshot \u003cstrong id=\"snapshot\">\u2014\u003c/strong>\u003c/div>\u003cdiv class=\"rowstat\">GLB SHA \u003cstrong id=\"meshHash\">\u2014\u003c/strong>\u003c/div>\u003cp class=\"mini\">This preview uses native Forge mesh bytes. Canvas software projection is a separate game proof, not a production WebGL2 crown.\u003c/p>\u003c/section>\u003csection>\u003ch2>PLAY / TRANSFER\u003c/h2>\u003cdiv class=\"actions\">\u003cbutton id=\"turnL\" aria-label=\"Rotate left\">\u21b6 LEFT\u003c/button>\u003cbutton id=\"turnR\" aria-label=\"Rotate right\">RIGHT \u21b7\u003c/button>\u003cbutton id=\"tilt\">TILT / AIM\u003c/button>\u003cbutton id=\"reset\">NEW CONTACT\u003c/button>\u003clabel class=\"fileLabel\">LOAD FORGE PACKET\u003cinput id=\"import\" type=\"file\" accept=\".json,application/json\" hidden>\u003c/label>\u003cbutton class=\"highlight\" id=\"export\">EXPORT RECEIPT\u003c/button>\u003c/div>\u003cp id=\"status\" role=\"status\">Source contact loading\u2026\u003c/p>\u003c/section>\u003csection>\u003ch2>ROUTE TRACE\u003c/h2>\u003cpre id=\"trace\">\u003c/pre>\u003c/section>\u003c/aside>\u003c/main>\u003cp class=\"mini\">PROOF BOUNDARY: interactive software-renderer and bounded Forge geometry recipient; does not claim owner-device visual approval, native APK, or production GPU pass.\u003c/p>\u003c/div>\n\u003cscript id=\"embeddedPacket\" type=\"application/json\">\u003c/script>\u003cscript>\n(()=>{'use strict';\nconst $=id=>document.getElementById(id),cv=$('stage'),ctx=cv.getContext('2d',{alpha:false}),msg=$('status');\nconst source='ddffeed1897e46215811623939068b794c6c0a5badf7afb6abf9042d3e6be3ba';\nconst scene={points:[],faces:[],angles:{y:.36,x:-.3},zoom:1.08,loaded:false,score:0,combo:0,contacts:new Set(),trace:[],meshSha:'',snapshot:'',active:false,drag:null,aim:null,runKey:'jm.forge.contact.v1'};\nconst say=(s,bad=false)=>{msg.textContent=s;msg.style.color=bad?'#ff8ca6':'#99e8b7'};\nconst trace=(event,extra={})=>{scene.trace.unshift({event,at:new Date().toISOString(),...extra});scene.trace=scene.trace.slice(0,80);$('trace').textContent=scene.trace.slice(0,8).map(x=>`${x.at.slice(11,19)} ${x.event} ${x.face??''}`).join('\\n')};\nconst hex=a=>Array.from(a,b=>b.toString(16).padStart(2,'0')).join('');\nfunction sha256js(data){const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];const N=data.length,sz=Math.ceil((N+9)/64)*64,b=new Uint8Array(sz);b.set(data);b[N]=128;const view=new DataView(b.buffer);view.setUint32(sz-8,Math.floor(N*8/4294967296),false);view.setUint32(sz-4,N*8>>>0,false);const R=(x,n)=>(x>>>n)|(x\u003c\u003c(32-n));for(let offset=0;offset\u003csz;offset+=64){let w=new Uint32Array(64);for(let i=0;i\u003c16;i++)w[i]=view.getUint32(offset+i*4,false);for(let i=16;i\u003c64;i++){let a=w[i-15],c=w[i-2],s0=R(a,7)^R(a,18)^(a>>>3),s1=R(c,17)^R(c,19)^(c>>>10);w[i]=(w[i-16]+s0+w[i-7]+s1)>>>0}let [a,bb,c,d,e,f,g,h]=H;for(let i=0;i\u003c64;i++){let s1=R(e,6)^R(e,11)^R(e,25),ch=(e&f)^(~e&g),t1=(h+s1+ch+K[i]+w[i])>>>0,s0=R(a,2)^R(a,13)^R(a,22),maj=(a&bb)^(a&c)^(bb&c),t2=(s0+maj)>>>0;h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=bb;bb=a;a=(t1+t2)>>>0}H=H.map((v,i)=>(v+[a,bb,c,d,e,f,g,h][i])>>>0)}return H.map(x=>x.toString(16).padStart(8,'0')).join('')}\nasync function digest(buffer){if(globalThis.crypto?.subtle)return hex(new Uint8Array(await crypto.subtle.digest('SHA-256',buffer)));return sha256js(buffer)}\nconst bytes64=s=>{if(typeof s!=='string'||s.length>3000000)throw Error('Mesh data missing/exceeds limit');const st=atob(s),out=new Uint8Array(st.length);for(let i=0;i\u003cst.length;i++)out[i]=st.charCodeAt(i);return out};\nfunction decodeGLB(bin){\n if(bin.byteLength\u003c32||bin.byteLength>1800000)throw Error('Invalid GLB payload size');\n const d=new DataView(bin.buffer,bin.byteOffset,bin.byteLength);if(d.getUint32(0,true)!==0x46546c67||d.getUint32(4,true)!==2||d.getUint32(8,true)!==bin.byteLength)throw Error('Invalid glTF 2 GLB header');\n const jl=d.getUint32(12,true),jt=d.getUint32(16,true);if(jt!==0x4e4f534a||jl\u003c=0||jl>300000||20+jl+8>bin.byteLength)throw Error('Invalid GLB JSON chunk');\n const j=JSON.parse(new TextDecoder().decode(bin.subarray(20,20+jl)).trim());const bo=20+jl,bl=d.getUint32(bo,true),bt=d.getUint32(bo+4,true);if(bt!==0x004e4942||bo+8+bl>bin.length)throw Error('Invalid GLB BIN chunk');\n const primitive=j.meshes?.[0]?.primitives?.[0];const access=j.accessors||[],views=j.bufferViews||[];\n const attrs=primitive?.attributes,pi=access[attrs?.POSITION],ix=access[primitive?.indices];\n if(!pi||!ix||pi.componentType!==5126||pi.type!=='VEC3'||pi.count\u003c4||pi.count>30000||ix.type!=='SCALAR'||!([5123,5125].includes(ix.componentType))||ix.count>100000||ix.count%3)throw Error('Unsupported exact Forge mesh accessors');\n function accessor(a,each,Type){const bv=views[a.bufferView];if(!bv||bv.byteStride||a.sparse||a.byteOffset\u003c0)throw Error('Unsupported interleaved Forge mesh');const size=Type.BYTES_PER_ELEMENT,offset=bo+8+(bv.byteOffset||0)+(a.byteOffset||0),len=a.count*each*size;if(offset%size||offset+len>bo+8+bl||len>bv.byteLength-(a.byteOffset||0))throw Error('GLB geometry outside buffer bounds');return new Type(bin.buffer,bin.byteOffset+offset,a.count*each)}\n const p=accessor(pi,3,Float32Array),ind=accessor(ix,1,ix.componentType===5125?Uint32Array:Uint16Array);const pts=[];let min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];\n for(let k=0;k\u003cp.length;k+=3){let a=[p[k],p[k+1],p[k+2]];if(a.some(x=>!Number.isFinite(x)||Math.abs(x)>10000))throw Error('Invalid mesh vertex value');pts.push(a);for(let v=0;v\u003c3;v++){min[v]=Math.min(min[v],a[v]);max[v]=Math.max(max[v],a[v])}}\n const faces=[];for(let k=0;k\u003cind.length;k+=3){const f=[ind[k],ind[k+1],ind[k+2]];if(f.some(i=>i>=pts.length))throw Error('Face outside mesh vertices');if(f[0]!==f[1]&&f[1]!==f[2]&&f[2]!==f[0])faces.push(f)}\n if(faces.length\u003c1)throw Error('No actual mesh triangles');const center=min.map((v,i)=>(v+max[i])/2),scale=2.8/Math.max(0.1,...min.map((v,i)=>max[i]-v));\n return {points:pts.map(p=>p.map((v,i)=>(v-center[i])*scale)),faces,meta:j.extras?.jm||{},sourceVertices:pts.length};\n}\nfunction resized(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);if(cv.width!==Math.round(r.width*d)||cv.height!==Math.round(r.height*d)){cv.width=Math.max(1,Math.round(r.width*d));cv.height=Math.max(1,Math.round(r.height*d))}ctx.setTransform(d,0,0,d,0,0);return{w:r.width,h:r.height}}\nfunction project(p,w,h){const cy=Math.cos(scene.angles.y),sy=Math.sin(scene.angles.y),cx=Math.cos(scene.angles.x),sx=Math.sin(scene.angles.x),x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy,y=p[1]*cx-z*sx,depth=p[1]*sx+z*cx;const pers=3.2/(3.7+depth*.18),q=Math.min(w,h)*.34*scene.zoom*pers;return{x:w/2+x*q,y:h*.51-y*q,z:depth}}\nlet renderFaces=[];\nfunction paint(now){const {w,h}=resized();ctx.fillStyle='#06111d';ctx.fillRect(0,0,w,h);let grad=ctx.createRadialGradient(w*.52,h*.46,10,w*.52,h*.5,Math.max(w,h)*.72);grad.addColorStop(0,'#173347');grad.addColorStop(.6,'#081826');grad.addColorStop(1,'#030913');ctx.fillStyle=grad;ctx.fillRect(0,0,w,h);ctx.lineWidth=1;for(let i=0;i\u003c12;i++){let y=h*.74+i*i*.019*h;ctx.strokeStyle='rgba(108,170,199,'+Math.max(0,.12-i*.009)+')';ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}\n if(scene.loaded){const pp=scene.points.map(p=>project(p,w,h));renderFaces=scene.faces.map((f,id)=>{const a=pp[f[0]],b=pp[f[1]],c=pp[f[2]],area=(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);return{id,p:[a,b,c],z:(a.z+b.z+c.z)/3,area}}).filter(f=>Math.abs(f.area)>.4).sort((a,b)=>b.z-a.z);\n for(const f of renderFaces){const active=scene.contacts.has(f.id),tri=scene.faces[f.id],a=scene.points[tri[0]],b=scene.points[tri[1]],c=scene.points[tri[2]],u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],v=[c[0]-a[0],c[1]-a[1],c[2]-a[2]],n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]],mag=Math.hypot(...n)||1,light=Math.abs((n[0]*.38+n[1]*.73+n[2]*.48)/mag),l=Math.max(.11,Math.min(.95,.19+light*.64+(f.z+2)*.027));ctx.beginPath();ctx.moveTo(f.p[0].x,f.p[0].y);ctx.lineTo(f.p[1].x,f.p[1].y);ctx.lineTo(f.p[2].x,f.p[2].y);ctx.closePath();ctx.fillStyle=active?'rgba(255,203,98,.94)':`rgba(${Math.round(35+l*30)},${Math.round(125+l*90)},${Math.round(150+l*90)},.94)`;ctx.fill();ctx.strokeStyle=active?'#ffe7ad':'rgba(155,230,247,.18)';ctx.lineWidth=active?1.5:.35;ctx.stroke()}\n ctx.shadowColor='#9ff3ff';ctx.shadowBlur=14;ctx.strokeStyle='#5db5c044';ctx.lineWidth=1;ctx.strokeRect(w*.11,h*.16,w*.78,h*.7);ctx.shadowBlur=0;\n }else{ctx.fillStyle='#87abbb';ctx.textAlign='center';ctx.font='700 16px system-ui';ctx.fillText('WAITING FOR YOUR FORGE MESH',w/2,h/2)}\n requestAnimationFrame(paint)\n}\nfunction hit(x,y){for(let k=renderFaces.length-1;k>=0;k--){let f=renderFaces[k],v=f.p;const cross=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x),D=cross(v[0],v[1],v[2]);if(Math.abs(D)\u003c.01)continue;const P={x,y},a=cross(P,v[1],v[2])/D,b=cross(v[0],P,v[2])/D,c=cross(v[0],v[1],P)/D;if(a>=-.005&&b>=-.005&&c>=-.005)return f.id}return-1}\nfunction tap(x,y){if(!scene.loaded){say('Import a real Forge mesh first',true);return}let id=hit(x,y);if(id\u003c0){scene.combo=0;say('Contact missed the forged surface. Aim at the body.');return}if(scene.contacts.has(id)){scene.combo=0;say('That surface was already contacted. Find another face.');return}\n scene.contacts.add(id);scene.combo++;scene.score+=100+25*(scene.combo-1);$('score').textContent=scene.score;$('hits').textContent=scene.contacts.size+'/5';trace('FACE_CONTACT',{face:id,mesh:scene.meshSha});\n say(scene.contacts.size>=5?'DING \u00b7 5 real geometry faces contacted!':'CONTACT \u00b7 Forge triangle '+id+' \u00b7 +'+(100+25*(scene.combo-1)));\n if(scene.contacts.size===5)trace('DING',{faces:[...scene.contacts].slice(0,5),score:scene.score});}\nfunction coords(e){const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}\ncv.addEventListener('pointerdown',e=>{cv.setPointerCapture?.(e.pointerId);let p=coords(e);scene.drag={id:e.pointerId,x:p.x,y:p.y,startX:p.x,startY:p.y,moved:false}});\ncv.addEventListener('pointermove',e=>{if(!scene.drag||scene.drag.id!==e.pointerId)return;const p=coords(e),d=scene.drag;let dx=p.x-d.x,dy=p.y-d.y;d.x=p.x;d.y=p.y;if(Math.hypot(p.x-d.startX,p.y-d.startY)>9)d.moved=true;if(d.moved){scene.angles.y+=dx*.008;scene.angles.x=Math.max(-1.25,Math.min(1.25,scene.angles.x+dy*.007))}});\ncv.addEventListener('pointerup',e=>{if(!scene.drag||scene.drag.id!==e.pointerId)return;const p=coords(e),d=scene.drag;scene.drag=null;if(!d.moved)tap(p.x,p.y)});\ncv.addEventListener('pointercancel',()=>scene.drag=null);\nwindow.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','Enter'].includes(e.code)){if(e.target?.tagName==='INPUT')return;e.preventDefault();if(e.code==='ArrowLeft')scene.angles.y-=.18;else if(e.code==='ArrowRight')scene.angles.y+=.18;else if(e.code==='ArrowUp')scene.angles.x=Math.max(-1.25,scene.angles.x-.12);else if(e.code==='ArrowDown')scene.angles.x=Math.min(1.25,scene.angles.x+.12);else{const r=cv.getBoundingClientRect();tap(r.width/2,r.height/2)}}});\nfunction reset(){scene.score=0;scene.combo=0;scene.contacts.clear();scene.trace=[];$('score').textContent='0';$('hits').textContent='0/5';$('trace').textContent='';trace('RUN_RESET',{mesh:scene.meshSha});say('New contact route ready. Touch 5 different real mesh faces.')}\nasync function take(packet){if(!packet||packet.schema!=='jm.fieldform.game-mesh/0.1'||packet.source?.sha256!==source||packet.geometry?.mime!=='model/gltf-binary'||!packet.snapshot||packet.snapshot.schema!=='jm.fieldform.snapshot/0.22')throw Error('Not a verified JM Forge source packet');\n const bin=bytes64(packet.geometry.data);if(bin.length!==packet.geometry.bytes)throw Error('Forge mesh byte count differs');const hash=await digest(bin);if(hash!==packet.geometry.sha256)throw Error('Forge GLB SHA-256 mismatch \u2014 do not run');\n const parsed=decodeGLB(bin);scene.points=parsed.points;scene.faces=parsed.faces;scene.meshSha=hash;scene.snapshot=packet.snapshot.hash;\n scene.loaded=true;$('meshCount').textContent=parsed.sourceVertices+' V / '+parsed.faces.length+' T';$('snapshot').textContent=scene.snapshot;$('meshHash').textContent=hash.slice(0,18)+'\u2026';reset();trace('FORGE_MESH_ACCEPTED',{sha:hash,geometry:parsed.sourceVertices,triangles:parsed.faces.length,snapshot:scene.snapshot});\n say('Exact v0.24 Forge GLB verified \u00b7 '+parsed.faces.length+' triangles are now interactive game surfaces');return parsed}\nfunction fileRead(f){if(!f)return Promise.reject(Error('No packet chosen'));if(f.size>2800000)return Promise.reject(Error('Packet too large'));return f.text().then(JSON.parse).then(take)}\n$('import').addEventListener('change',e=>{fileRead(e.target.files?.[0]).catch(x=>say('HOLD \u00b7 '+x.message,true)).finally(()=>e.target.value='')});\n$('turnL').onclick=()=>scene.angles.y-=.22;$('turnR').onclick=()=>scene.angles.y+=.22;$('tilt').onclick=()=>scene.angles.x=Math.max(-1.25,Math.min(1.25,scene.angles.x+.3));$('reset').onclick=reset;\n$('export').onclick=()=>{if(!scene.loaded)return say('No sourced geometry in play',true);const pkg={schema:'jm.fieldform.game-contact-receipt/0.1',forge_mesh_sha256:scene.meshSha,forge_snapshot_hash:scene.snapshot,score:scene.score,faces_contacted:[...scene.contacts],trace:scene.trace,created_at:new Date().toISOString(),proof:'OWNER_GAME_INTERACTION_UNVERIFIED_UNTIL_RECEIVER_REPLAYS'};const b=new Blob([JSON.stringify(pkg,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='JM_FORGE_GAME_CONTACT_RECEIPT.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);say('Receipt exported; execution evidence stays scoped to this device')};\nwindow.JMForgeContact=Object.freeze({take,decodeGLB,scene,contact:tap,hit,reset});\nrequestAnimationFrame(paint);\nconst embedded=$('embeddedPacket')?.textContent?.trim();if(embedded){take(JSON.parse(atob(embedded))).catch(e=>say('HOLD \u00b7 '+e.message,true))}\n})();\n\u003c/script>\u003c/body>\u003c/html>";
+forgeIframe.srcdoc=JM_FORGE_PUBLIC_ANCESTOR_HTML;
+
+// 05 · Read canonical public refs, not the private JM service.
+let estateRecords=[];
+$('loadEstate').addEventListener('click',async()=>{estateRecords=[];const sources=[['Status','../public-status.json'],['Games','../../games-beyond/registry.json'],['Visual','../../visual-systems-lab/registry.json']];let good=0;for(const [name,path] of sources){try{const r=await fetch(path,{cache:'no-store'});if(!r.ok)throw Error(String(r.status));const data=await r.json();if(name==='Status'){estateRecords.push({name:'Estate canonical route',group:name,url:data.canonical_root||'',role:data.status||''});for(const [key,url]of Object.entries(data.routes||{}))estateRecords.push({name:key,group:name,url,role:'public route only'})}if(name==='Games'){for(const body of data.registered_bodies||[])estateRecords.push({name:body.name||body.id,group:name,url:'../../games-beyond/',body_id:body.id,source_registry:'games-beyond/registry.json',version:body.version||null,role:`${body.role||''} · ${body.stage||''}`})}if(name==='Visual'){for(const room of data.rooms||[])estateRecords.push({name:room.id,group:name,url:'../../visual-systems-lab/',body_id:room.id,source_registry:'visual-systems-lab/registry.json',version:data.version||null,role:(room.caps||[]).join(', ')})}good++}catch(err){estateRecords.push({name:name+' unavailable',group:'HOLD',url:'',role:err.message})}}status('estateStatus',`${good}/3 public registries loaded · ${estateRecords.length} route entries. Discovery ≠ operational authority.`);renderEstate()});
+function renderEstate(){const q=$('estateQuery').value.trim().toLowerCase();$('estateResults').replaceChildren();const hits=estateRecords.filter(x=>(x.name+' '+x.role+' '+x.group).toLowerCase().includes(q)).slice(0,35);if(!hits.length){$('estateResults').textContent='No matching public entries. Search is bounded to loaded sources, not all JM Estate bodies.';return}for(const x of hits){const card=document.createElement('div');card.className='record';const s=document.createElement('strong');s.textContent=`${x.group} · ${x.name}`;card.append(s);const p=document.createElement('div');p.className='mini';p.textContent=x.role;card.append(p);if(x.url){const a=document.createElement('a');a.href=x.url;a.target='_blank';a.rel='noopener';a.textContent='Open existing route ↗';card.append(a)}if(x.group==='Games'||x.group==='Visual'){const btn=document.createElement('button');btn.type='button';btn.className='action alt';btn.textContent='Select for release / playtest';btn.style.marginTop='8px';btn.addEventListener('click',()=>{handoffSelection={name:x.name,body_id:x.body_id,source_registry:x.source_registry,registry_version:x.version,selected_at:iso(),authority:'PUBLIC_REGISTRY_DISCOVERY_ONLY'};$('releaseGame').value=x.name;$('testGame').value=x.name;renderSelectedTests();status('estateStatus',`Selected ${x.name} from ${x.source_registry} · no runtime authority transferred.`);});card.append(btn)}$('estateResults').append(card)}}
+$('estateQuery').addEventListener('input',renderEstate);
+// 06 · Browser-local user feedback; no web collection.
+const storageKey='jm_six_rails_playtests_v0_2';let testRows=[];try{testRows=JSON.parse(localStorage.getItem(storageKey)||'[]');if(!Array.isArray(testRows))testRows=[]}catch(e){testRows=[]}
+function persist(){try{localStorage.setItem(storageKey,JSON.stringify(testRows));return true}catch(e){return false}}
+function showTests(){$('testCount').textContent=testRows.length;const avg=testRows.length?testRows.reduce((s,x)=>s+x.enjoyment,0)/testRows.length:NaN;$('testAverage').textContent=Number.isFinite(avg)?avg.toFixed(1):'—';$('testUsable').textContent=testRows.filter(x=>x.fit==='pass').length;const last=testRows.at(-1);$('testLatest').textContent=last?`Latest: ${last.game} · ${last.device} · ${last.enjoyment}/5 · ${last.notes.slice(0,190)}`:'No local records yet.'}
+$('testerForm').addEventListener('submit',e=>{e.preventDefault();const body={schema:'JM.SixRails.Playtest/0.1',timestamp:new Date().toISOString(),game:$('testGame').value.trim(),device:$('testDevice').value.trim(),enjoyment:+$('testRating').value,fit:$('testFit').value,notes:$('testNotes').value.trim(),proof:'tester_observation__not_owner_runtime_DING'};if(!body.game||!body.device||!body.notes){status('testStatus','HOLD · Provide game, device and an actual observation.');return}testRows.push(body);const persisted=persist();showTests();status('testStatus',persisted?'Session recorded in this browser only. Export for independent custody.':'Recorded in current tab only; browser storage unavailable. Export now.');$('testerForm').reset()});
+$('exportTests').addEventListener('click',()=>{saveBlob('JM_PLAYTEST_CONTACT_RECEIPTS_v0_1.json',JSON.stringify({schema:'JM.SixRails.PlaytestCollection/0.1',exported_at:new Date().toISOString(),records:testRows},null,2));status('testStatus',`${testRows.length} local session(s) exported; nothing submitted to a server.`)});
+$('clearTests').addEventListener('click',()=>{if(!confirm(`Clear ${testRows.length} local session(s)? Export a copy first if needed.`))return;testRows=[];persist();showTests();status('testStatus','Local draft history cleared. External copies, if any, are unaffected.')});showTests();
+
+// v0.4 · 04 actual tempo pressure applied to the recovered JM public contact renderer.
+const pulse={running:false,baseZoom:1.08,started:0,bpm:120,ticks:0,lastBeat:-1,raf:0};
+function stopPulse(){
+ if(pulse.raf)cancelAnimationFrame(pulse.raf);
+ const scene=forgeIframe.contentWindow?.JMForgeContact?.scene;
+ if(scene)scene.zoom=pulse.baseZoom;
+ if(pulse.running){lastPulseReceipt={schema:'JM.SixRails.ForgeRhythmContact/0.3',created_at:iso(),bpm:pulse.bpm,beats_applied:pulse.ticks,elapsed_seconds:+((performance.now()-pulse.started)/1000).toFixed(3),recipient:'JM_FORGE_PUBLIC_V0_1',source_mode:'USER_TEMPO_OR_TAPS',claim:'SOFTWARE_RECIPIENT_MOTION_ONLY__NO_AUDIO_AUTODETECTION_OR_OWNER_DING'};}
+ pulse.running=false;pulse.raf=0;$('driveForge').disabled=false;$('stopForgePulse').disabled=true;
+ status('motionReadout',lastPulseReceipt?`Motion stopped, restored original zoom · ${lastPulseReceipt.beats_applied} beat pulses. Evidence available in dossier.`:'No game motion driven.');
+}
+$('driveForge').addEventListener('click',()=>{
+ const bpm=+$('tempo').value,recipient=forgeIframe.contentWindow?.JMForgeContact,scene=recipient?.scene;
+ if(!scene?.loaded){status('audioStatus','HOLD · Import geometry and run it in Form Contact first.');return}
+ if(!Number.isFinite(bpm)||bpm<30||bpm>300){status('audioStatus','HOLD · Enter BPM from 30 to 300.');return}
+ if(pulse.running)stopPulse();
+ pulse.running=true;pulse.bpm=bpm;pulse.baseZoom=scene.zoom;pulse.started=performance.now();pulse.ticks=0;pulse.lastBeat=-1;
+ $('driveForge').disabled=true;$('stopForgePulse').disabled=false;
+ function tick(now){if(!pulse.running)return;if(!scene.loaded){stopPulse();return}
+  const t=(now-pulse.started)/1000,phase=t*bpm/60,beat=Math.floor(phase);
+  if(beat!==pulse.lastBeat){pulse.ticks++;pulse.lastBeat=beat;}
+  scene.zoom=pulse.baseZoom*(1+0.15*Math.pow(Math.max(0,Math.cos(2*Math.PI*(phase%1))),8));
+  $('motionReadout').textContent=`JM recipient in motion · ${bpm} BPM · ${pulse.ticks} beat contacts · restore with Stop`;
+  pulse.raf=requestAnimationFrame(tick);
+ }
+ pulse.raf=requestAnimationFrame(tick);status('audioStatus',`Motion adapter ACTIVE · ${bpm} BPM is user-directed. Recipent's source/identity unchanged.`);
+});
+$('stopForgePulse').addEventListener('click',stopPulse);
+window.addEventListener('pagehide',()=>{if(pulse.running)stopPulse()});
+// 06 local session aggregation, exact target identity only; no invented telemetry.
+function selectedTests(){const name=$('releaseGame').value.trim();return name?testRows.filter(x=>x.game===name):[];}
+function testStats(){const rows=selectedTests();const usable=rows.filter(x=>x.fit==='pass').length,fail=rows.filter(x=>x.fit==='fail').length,partial=rows.filter(x=>x.fit==='partial').length,unknown=rows.length-usable-fail-partial;
+ return {exact_body:$('releaseGame').value.trim()||null,records:rows.length,usable,partial,failed:fail,unknown,mean_enjoyment:rows.length?+(rows.reduce((s,x)=>s+x.enjoyment,0)/rows.length).toFixed(2):null,readiness:!rows.length?'NO_MATCHING_TESTS':fail?'FAILURES_RECORDED':unknown||partial?'INCOMPLETE_OBSERVATIONS':'ALL_RECORDED_FITS_PASS__NOT_OWNER_DEVICE_PROOF'};
+}
+function renderSelectedTests(){const v=testStats();$('testSummary').textContent=v.exact_body?`${v.exact_body} · ${v.records} exact-name sessions · ${v.usable} usable · ${v.failed} failed · ${v.partial} partial · ${v.unknown} unknown · mean ${v.mean_enjoyment??'—'}/5 · ${v.readiness}`:'No selected release target.';}
+$('releaseGame').addEventListener('input',renderSelectedTests);
+$('sendTestsRelease').addEventListener('click',()=>{goToRail('release');renderSelectedTests();status('releaseStatus','Evidence reviewed from locally recorded playtests. User-reported sessions are not independent device proof.');});
+// Keep existing local records user-controlled, and maintain selected summary on changes.
+const prevShowTests=showTests;
+showTests=function(){prevShowTests();renderSelectedTests()};showTests();
+// 03: single versioned, bounded evidence dossier; no remote writes or premature crowns.
+async function assembleDossier(){
+ const recipient=forgeIframe.contentWindow?.JMForgeContact,scene=recipient?.scene;
+ const checks=Array.from(document.querySelectorAll('.releaseCheck:checked')).map(x=>x.value);
+ const tests=testStats();
+ const receipt={
+  schema:'JM.SixRails.CrossBodyDossier/0.9',created_at:iso(),authority_class:'PROPOSED_LOCAL_EVIDENCE',
+  target:{name:$('releaseGame').value.trim()||null,version:$('releaseVersion').value.trim()||null,public_registry_selection:handoffSelection},
+  geometry:{present:!!meshPayload,vertices:meshPayload?.vertices.length||0,triangles:meshPayload?.triangles.length||0,recipient_active:!!scene?.loaded,recipient_face_contacts:scene?.contacts?.size||0,recipient_score:scene?.score||0,glb_interchange:lastGLBReceipt||{state:"NO_GLB_DECODER_CONTACT"},private_forge_v024_glb_verified:false},
+  visual:diffReceipt?{...diffReceipt}:{state:'NO_PIXEL_COMPARISON'},
+  music:lastBeatGrid?{bpm:lastBeatGrid.bpm,bars:lastBeatGrid.bars,beats:lastBeatGrid.beats.length,mode:lastBeatGrid.mode}:{state:'NO_BEAT_GRID_EXPORT'},
+  motion:lastPulseReceipt||{state:pulse.running?'ACTIVE__STOP_TO_CAPTURE':'NO_MOTION_CONTACT'},
+  estate:{registries_loaded:estateRecords.filter(x=>x.group!=='HOLD').length>0,entry_count:estateRecords.length,public_discovery_only:true},
+  input_route:window.JMGripRouteAdapter?.proof()||{state:'ADAPTER_NOT_INITIALISED'},
+  shared_griprail:window.JMSixRailInheritance?.proof()||{status:'HOST_SOURCE_NOT_INITIALISED'},
+  griproute_physical:window.JMGripRouteTwinBody?.proof()||{claim:'HOLD__NO_GRIPROUTE_PHYSICAL_CONTACT'},
+  playtests:tests,
+  continuity:typeof continuityProof!=='undefined'?{...continuityProof}:{state:'UNINITIALIZED'},
+  gripcube_evidence:window.JMGripCubeEvidence?.proof()||{state:'NO_LENS_CONTACT'},
+  artifact:artifactMeta||{state:'NO_HASHED_ARTIFACT'},
+  user_declared_checks:checks,
+  hold_reasons:[],publish_state:'NOT_DEPLOYED',owner_device_proof:'NOT_ESTABLISHED_BY_THIS_PAGE',
+  claim:'CROSS_BODY_SOFTWARE_CONTACT_ONLY__NOT_AUTOMATIC_PRODUCTION_ACCEPTANCE'};
+ const hold=receipt.hold_reasons;
+ if(!receipt.geometry.recipient_active)hold.push('JM_GAME_GEOMETRY_CONTACT_MISSING');
+ if(!lastGLBReceipt)hold.push('GLB_DECODER_INTERCHANGE_MISSING');
+ if(!diffReceipt)hold.push('VISUAL_COMPARE_MISSING');
+ if(!lastBeatGrid)hold.push('BEAT_GRID_MISSING');
+ if(!lastPulseReceipt||lastPulseReceipt.beats_applied<2)hold.push('RHYTHM_RECIPIENT_MOTION_MISSING');
+ if(!receipt.estate.registries_loaded)hold.push('PUBLIC_ESTATE_DISCOVERY_MISSING');
+ if(!tests.records)hold.push('EXACT_TARGET_TEST_FEEDBACK_MISSING');
+ if(!receipt.griproute_physical?.complete_three_way)hold.push('GRIPROUTE_PHYSICAL_THREE_WAY_PROOF_OPEN');
+ if(tests.failed)hold.push('RECORDED_PLAYTEST_FAILURES');
+ if(!artifactMeta)hold.push('EXACT_ARTIFACT_HASH_MISSING');
+ if(checks.length<5)hold.push('USER_DECLARED_RELEASE_CHECKS_INCOMPLETE');
+ if($('allowTestNotes').checked){receipt.playtests.local_observations=selectedTests().map(x=>({...x}));receipt.privacy='LOCAL_NOTES_EXPLICITLY_INCLUDED'}else receipt.privacy='LOCAL_NOTES_EXCLUDED_BY_DEFAULT';
+ receipt.integration_contact=hold.length?'PARTIAL__HOLD':'ALL_LOCAL_RAIL_CONTACTS_RECORDED__EXTERNAL_GATES_OPEN';
+ return receipt;
+}
+async function inspectDossier(){loopReceipt=await assembleDossier();
+ $('loopPreview').textContent=JSON.stringify({target:loopReceipt.target,geometry:loopReceipt.geometry,visual:loopReceipt.visual.change_percent??loopReceipt.visual.state,music:loopReceipt.music,motion:loopReceipt.motion,estate:loopReceipt.estate,input_route:loopReceipt.input_route,playtests:loopReceipt.playtests,hold_reasons:loopReceipt.hold_reasons,claim:loopReceipt.claim},null,2);
+ status('releaseStatus',`INSPECTED · ${loopReceipt.hold_reasons.length} open local evidence gate(s) · no deployment or promotion.`);
+ return loopReceipt;
+}
+$('inspectLoop').addEventListener('click',inspectDossier);
+$('exportDossier').addEventListener('click',async()=>{const dossier=await inspectDossier();saveBlob('JM_SIX_RAILS_CROSS_BODY_DOSSIER_v0_9.json',JSON.stringify(dossier,null,2));status('releaseStatus',`Exported scoped evidence with ${dossier.hold_reasons.length} open local gates. No remote action.`)});
+window.JMSixRails=Object.freeze({checkedMesh,assembleDossier,inspectDossier,testStats,stopPulse,goToRail,getState:()=>({mesh:meshPayload,glb:lastGLBReceipt,beatGrid:lastBeatGrid,pulse:lastPulseReceipt,selection:handoffSelection,artifact:artifactMeta,diff:diffReceipt})});
+
+// v0.6 · GripRoute-aware software adapter, not a false transplant of FTR Palm Route Field source.
+// Existing FTR v1.2 physical/device authority stays separate; route semantics are adapted here.
+const routeIDs=['mesh','compare','release','audio','estate','testers'];
+const routeTitles=['FORM','PROOF','BUILD','RHYTHM','MESH','PEOPLE'];
+const routeLog=[];
+const routeControl={index:0,mode:'flow',down:null,holdTimer:null,holdFired:false,suppressClickUntil:0,pendingContact:null};
+const routeStore='jm.sixrails.route-adapter.v0.6';
+const routeTrack=$('routeTrack'),routePad=$('routePad'),routeThumb=$('routeThumb');
+function routeRemember(){try{localStorage.setItem(routeStore,JSON.stringify({id:routeIDs[routeControl.index],mode:routeControl.mode}))}catch(e){/* no persistence claim */}}
+function routeRecord(verb,meta={}){
+ const packet={schema:'JM.GripRouteAdapter.Contact/0.6',at:iso(),verb,route:routeIDs[routeControl.index],mode:routeControl.mode,...meta};
+ routeLog.push(packet);if(routeLog.length>120)routeLog.shift();
+ $('routeState').textContent=`${routeControl.mode.toUpperCase()} · ${verb.replaceAll('_',' ')} · ${routeLog.length} contacts`;
+}
+function routeSync(name,verb='CONTACT_SELECT',meta={}){
+ const n=routeIDs.indexOf(name);if(n<0)return false;
+ routeControl.index=n;$('routeCurrent').textContent=String(n+1).padStart(2,'0')+' · '+routeTitles[n];
+ routeRecord(verb,meta);routeRemember();
+ const el=routeTrack.querySelector(`[data-rail="${name}"]`);
+ if(el)routeTrack.scrollTo({left:el.offsetLeft-routeTrack.offsetLeft-(routeTrack.clientWidth-el.clientWidth)/2,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+ return true;
+}
+function routeCommit(index,kind,meta={}){
+ const n=Math.max(0,Math.min(routeIDs.length-1,index));
+ if(n===routeControl.index){routeRecord(kind+'_EDGE',meta);return false}
+ routeControl.pendingContact={verb:kind,meta};goToRail(routeIDs[n]);
+ const active=document.querySelector('.rail:not([hidden])');if(active)active.scrollTop=0;
+ return true;
+}
+for(const tab of routeTrack.querySelectorAll('[data-rail]'))tab.addEventListener('click',()=>{
+ if(performance.now()<routeControl.suppressClickUntil&&!routeControl.pendingContact)return;
+ const pending=routeControl.pendingContact;routeControl.pendingContact=null;
+ routeSync(tab.dataset.rail,pending?.verb||'TAP_SELECT',pending?.meta||{});
+ const active=document.querySelector('.rail:not([hidden])');if(active)active.scrollTop=0;
+});
+$('routePrev').addEventListener('click',()=>routeCommit(routeControl.index-1,'ARROW_PREVIOUS'));
+$('routeNext').addEventListener('click',()=>routeCommit(routeControl.index+1,'ARROW_NEXT'));
+$('routeLens').addEventListener('click',()=>{
+ const scene=forgeIframe.contentWindow?.JMForgeContact?.scene;
+ if(!scene?.loaded){routeRecord('LENS_HOLD_NO_RECIPIENT');status('meshStatus','HOLD · Load geometry into JM Form Contact before rotating its lens.');return}
+ scene.angles.y+=Math.PI/6;routeRecord('LENS_ROTATED',{radians:+scene.angles.y.toFixed(4),recipient:'JM_PUBLIC_FORM_CONTACT'});
+ status('meshStatus','JM Form Contact lens rotated 30°; its mesh identity and source remain unchanged.');
+});
+function routeMode(next){
+ if(!['flow','flick','manual','anchor','table'].includes(next))return;
+ routeControl.mode=next;$('routeMode').value=next;routeRecord('ROUTE_STANCE_CHANGED');routeRemember();
+}
+$('routeMode').addEventListener('change',e=>routeMode(e.target.value));
+function routeContact(){
+ const room=routeIDs[routeControl.index];
+ let target=null,verb='CONTACT_REQUESTED';
+ if(room==='mesh'){
+  target=!$('assetImage').files?.length?$('assetImage'):!$('makeMesh').disabled?$('makeMesh'):!$('sendForge').disabled?$('sendForge'):$('assetImage');
+ }else if(room==='compare'){
+  target=!$('imageBefore').files?.length?$('imageBefore'):!$('imageAfter').files?.length?$('imageAfter'):$('runDiff');
+ }else if(room==='release')target=$('inspectLoop');
+ else if(room==='audio')target=forgeIframe.contentWindow?.JMForgeContact?.scene?.loaded?$('driveForge'):$('tapTempo');
+ else if(room==='estate')target=$('loadEstate');
+ else if(room==='testers')target=$('testGame');
+ if(!target){routeRecord('CONTACT_HOLD_UNROUTED');return}
+ routeRecord(verb,{receiver:target.id,proof:'REQUEST_ONLY'});
+ if(target.id==='testGame')target.focus();else if(!target.disabled)target.click();
+}
+const resetThumb=()=>{routeThumb.style.setProperty('--drag-x','0px');routePad.classList.remove('gripping')};
+routePad.addEventListener('pointerdown',e=>{
+ if(e.target.closest('select,label,option'))return;
+ if(routeControl.down)return;
+ const now=performance.now();routeControl.down={id:e.pointerId,x:e.clientX,y:e.clientY,start:now,moved:false};routeControl.holdFired=false;
+ routePad.setPointerCapture?.(e.pointerId);routePad.classList.add('gripping');routeRecord('GRIP_START',{pointerType:e.pointerType});
+ routeControl.holdTimer=setTimeout(()=>{
+  if(routeControl.down&&!routeControl.down.moved){routeControl.holdFired=true;routeMode('anchor');routeRecord('HOLD_ANCHORED')}
+ },450);
+});
+routePad.addEventListener('pointermove',e=>{
+ const d=routeControl.down;if(!d||e.pointerId!==d.id)return;
+ const dx=e.clientX-d.x,dy=e.clientY-d.y;
+ if(Math.hypot(dx,dy)>12){d.moved=true;clearTimeout(routeControl.holdTimer)}
+ if(d.moved){routeThumb.style.setProperty('--drag-x',`${clamp(dx*.15,-20,20).toFixed(1)}px`);$('routeState').textContent=`GRIP · ${Math.abs(Math.round(dx))}px · RELEASE TO ROUTE`}
+});
+function routeRelease(e,cancelled=false){
+ const d=routeControl.down;if(!d||e.pointerId!==d.id)return;
+ clearTimeout(routeControl.holdTimer);routeControl.holdTimer=null;routeControl.down=null;resetThumb();
+ if(cancelled){routeRecord('GRIP_CANCEL');return}
+ const dx=e.clientX-d.x,dy=e.clientY-d.y,ms=Math.max(16,performance.now()-d.start),speed=Math.abs(dx)/ms;
+ const direction=dx<0?1:-1;
+ const goodAxis=Math.abs(dx)>Math.abs(dy)*1.25;
+ const byMode={flow:goodAxis&&Math.abs(dx)>=46,flick:goodAxis&&Math.abs(dx)>=22&&speed>=.45,manual:false,anchor:false,table:e.pointerType!=='touch'&&goodAxis&&Math.abs(dx)>=45};
+ const isRoute=byMode[routeControl.mode];
+ if(routeControl.holdFired){routeRecord('HOLD_RELEASED_ANCHOR');return}
+ if(isRoute){const steps=routeControl.mode==='flick'&&speed>1.5?2:1;
+   routeCommit(routeControl.index+direction*steps,speed>.8?'FLICK_RELEASE':'SWIPE_RELEASE',{distance:Math.round(dx),velocity:+speed.toFixed(2),pointer:e.pointerType});
+   routeControl.suppressClickUntil=performance.now()+270;
+ }else {if(Math.abs(dx)<13&&Math.abs(dy)<13&&ms<440){routeContact()}else routeRecord('RELEASE_NO_ROUTE',{distance:Math.round(dx),velocity:+speed.toFixed(2),pointer:e.pointerType});}
+}
+routePad.addEventListener('pointerup',e=>routeRelease(e));
+routePad.addEventListener('pointercancel',e=>routeRelease(e,true));
+routePad.addEventListener('lostpointercapture',e=>routeRelease(e,true));
+routePad.addEventListener('keydown',e=>{
+ if(e.target!==routePad)return;
+ const dest=e.key==='ArrowRight'?routeControl.index+1:e.key==='ArrowLeft'?routeControl.index-1:e.key==='Home'?0:e.key==='End'?routeIDs.length-1:null;
+ if(dest!==null){e.preventDefault();routeCommit(dest,'KEYBOARD_ROUTE',{key:e.key})}
+ if((e.key==='Enter'||e.key===' ')&&e.target===routePad){e.preventDefault();routeContact()}
+ if(e.key==='Escape'&&routeControl.mode==='anchor'){e.preventDefault();routeMode('flow')}
+});
+let savedRoute=null;try{savedRoute=JSON.parse(localStorage.getItem(routeStore)||'null')}catch(e){}
+if(savedRoute){routeMode(savedRoute.mode);if(routeIDs.includes(savedRoute.id)){goToRail(savedRoute.id);routeControl.index=routeIDs.indexOf(savedRoute.id)}}
+routeSync(routeIDs[routeControl.index],'CONTACT_FIELD_READY');
+window.JMGripRouteAdapter=Object.freeze({version:'0.6',scope:'SEMANTIC_ADAPTER_NOT_EXACT_FTR_V1_2_SOURCE',
+ proof:()=>({schema:'JM.GripRouteAdapter.Proof/0.6',version:'0.6',source_relation:'FTR_GRIPROUTE_SEMANTIC_INHERITANCE_ONLY',exact_FTR_palm_route_source_used:false,
+ current_room:routeIDs[routeControl.index],stance:routeControl.mode,contact_count:routeLog.length,contacts:routeLog.slice(-35),owner_device_proof:false}),
+ route:(index)=>routeCommit(index,'PROGRAMMATIC_ROUTE'),getState:()=>({index:routeControl.index,mode:routeControl.mode,trace:routeLog.slice()})});
+
+// JM shared GripRail v6: exact existing hosted library route; absence is observable, not magically "inherited".
+function jmNativeRailProof(){
+ const native=window.JMGripRail;
+ const report=typeof native?.proof==='function'?native.proof():null;
+ const seated=!!(report?.rootGripCube && $('routeTrack').classList.contains('griprail-track'));
+ return {schema:'JM.SixRails.GripRailHostContact/0.7',native_module:'ecostate-griprail-v6.js',
+  native_module_loaded:!!native,public_root_seated:seated,
+  native_version:native?.version||null,standalone_route_fallback:'JMGripRouteAdapter/0.6',
+  exact_FTR_palm_route_source_used:false,owner_device_proof:false,
+  status:seated?'HOSTED_NATIVE_GRIPRAIL_DOM_CONTACT':'HOLD__NATIVE_HOST_CONTACT_NOT_SEEN'};
+}
+window.JMSixRailInheritance=Object.freeze({proof:jmNativeRailProof});
+function jmSyncNativeRail(){
+ const el=$('nativeSeatStatus');
+ if(typeof window.JMGripRail?.install==='function'){
+   window.JMGripRail.install();
+ }
+ const p=jmNativeRailProof();
+ el.classList.toggle('active',p.public_root_seated);
+ el.classList.toggle('hold',!p.public_root_seated);
+ el.textContent=p.public_root_seated
+  ? 'JMGripRail v6 · exact hosted shared module CONTACT · FTR Palm Route exact-source HOLD'
+  : 'GripRoute adaptive field active · native GripRail v6 host source HOLD / offline fallback';
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',jmSyncNativeRail);
+else jmSyncNativeRail();
+$('routeTrack').addEventListener('keydown',e=>{
+ if(['ArrowRight','ArrowLeft'].includes(e.key)&&!(e.target instanceof HTMLInputElement)){
+  e.preventDefault();e.stopImmediatePropagation();
+  routeCommit(routeControl.index+(e.key==='ArrowRight'?1:-1),'GRIPRAIL_KEY_ROUTE');
+ }
+});
+
+// v0.8 · Restored FTR GripRoute Twin Body product evidence; local-only route.
+// Explicit distinction: hardware Shell / U, not JMGripRail horizontal navigation.
+const gripFieldSpec={
+ comfort:'Hold comfort',thumb_reach:'Thumb reach',one_hand_safety:'One-hand safety',
+ two_thumb:'Two-thumb control',flick:'Flick confidence',drag:'Drag control',
+ strap:'Strap/support usefulness',bulk:'Bulk / carry comfort',table:'Table Route usefulness',
+ use_again:'Would use again'};
+const gripFieldKey='jm.sixrails.ftr-griproute-twinbody.v0.8';
+let gripTrials=[];try{const v=JSON.parse(localStorage.getItem(gripFieldKey)||'[]');if(Array.isArray(v))gripTrials=v.slice(-60)}catch(e){}
+let gripDecision=null;try{gripDecision=JSON.parse(localStorage.getItem(gripFieldKey+'.choice')||'null')}catch(e){}
+let gripActive=null,gripFinished=null,gripTicker=null;
+const gripLabel={bare:'BARE PHONE',shell:'GRIPROUTE SHELL',u:'GRIPROUTE U'};
+const gripTime=ms=>{const sec=Math.max(0,Math.floor(ms/1000));return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0')};
+$('gripMetrics').innerHTML=Object.entries(gripFieldSpec).map(([key,label])=>
+ `<label for="gripMetric_${key}">${escapeText(label)}<select id="gripMetric_${key}" data-grip-metric="${key}"><option value="">Not rated</option>${[1,2,3,4,5].map(n=>`<option value="${n}">${n}/5</option>`).join('')}</select></label>`).join('');
+function gripSaveLocal(){try{localStorage.setItem(gripFieldKey,JSON.stringify(gripTrials.slice(-60)));return true}catch(e){return false}}
+function gripSummary(){
+ const names=['bare','shell','u'],targetGame=$('gripGame').value.trim(),targetDevice=$('gripDevice').value.trim();
+ const rows=gripTrials.filter(r=>r.game===targetGame&&r.device===targetDevice);
+ const latest={};for(const n of names){latest[n]=[...rows].reverse().find(r=>r.variant===n)||null}
+ const complete=!!targetGame&&!!targetDevice&&names.every(n=>latest[n]?.state==='PHYSICAL_5MIN__COMPLETE_RATINGS');
+ const decision=gripDecision?.game===targetGame&&gripDecision?.device===targetDevice?gripDecision:null;
+ const scores=Object.fromEntries(names.map(n=>[n,latest[n]?.mean_score??null]));
+ const durations=Object.fromEntries(names.map(n=>[n,latest[n]?.duration_s??null]));
+ return {schema:'JM.FTR.GripRouteTwinBodyComparison/0.8',source:'JM GripRoute Twin Body Build Sheet v0.1 · 2026-05-31',
+  conditions:names,comparison_game:targetGame||null,comparison_device:targetDevice||null,
+  records_for_exact_comparison:rows.length,records_total:gripTrials.length,complete_three_way:complete,
+  owner_declared_preference:complete?(decision?.choice||null):null,
+  owner_reported_positive_preference:complete&&['shell','u'].includes(decision?.choice),
+  newest_per_condition:Object.fromEntries(names.map(n=>[n,latest[n]?{state:latest[n].state,physical_self_reported:latest[n].physical_self_reported,duration_s:latest[n].duration_s,mean_score:latest[n].mean_score,game:latest[n].game}:null])),
+  scores,durations,claim:complete?'THREE_SELF_REPORTED_PHYSICAL_RUNS_RECORDED__OWNER_PREFERENCE_STILL_REQUIRED':'HOLD__PHYSICAL_THREE_WAY_COMPARISON_INCOMPLETE',
+  owner_product_preference_proven:false,
+  private_FTR_GripRoute_v12_source_loaded:false};
+}
+function gripRender(){const r=gripSummary(),rows=['bare','shell','u'].map(n=>{
+ const v=r.newest_per_condition[n];return `${gripLabel[n]} · ${v?gripTime(v.duration_s*1000):'—'} · ${v?.mean_score??'—'}/5 · ${v?.state||'NOT TESTED'}`});
+ $('gripComparison').textContent=rows.join('\n')+'\n\n'+r.claim+(r.owner_declared_preference?' · Owner choice: '+(gripLabel[r.owner_declared_preference]||'NO CLEAR PREFERENCE'):'');
+}
+function gripStopClock(){if(gripTicker){clearInterval(gripTicker);gripTicker=null}}
+$('gripBegin').addEventListener('click',()=>{
+ if(gripActive){status('gripStatus','HOLD · Stop the current physical trial first.');return}
+ const game=$('gripGame').value.trim(),device=$('gripDevice').value.trim();
+ if(!game||!device){status('gripStatus','HOLD · Name the exact game and phone/posture before starting.');return}
+ $('gripPhysical').checked=false;
+ gripFinished=null;gripActive={variant:$('gripVariant').value,game,device,begin:performance.now(),traceStart:routeLog.length,started:iso()};
+ $('gripVariant').disabled=true;$('gripGame').disabled=true;$('gripDevice').disabled=true;$('gripBegin').disabled=true;$('gripFinish').disabled=false;
+ gripStopClock();gripTicker=setInterval(()=>{$('gripClock').textContent=gripTime(performance.now()-gripActive.begin)},250);
+ status('gripStatus',`ACTIVE · ${gripLabel[gripActive.variant]} · play on the physical phone/mockup now.`);
+});
+$('gripFinish').addEventListener('click',()=>{
+ if(!gripActive)return;
+ const time=Math.max(0,performance.now()-gripActive.begin);gripFinished={...gripActive,duration_ms:time,ended:iso(),route_contact_count:Math.max(0,routeLog.length-gripActive.traceStart)};
+ gripActive=null;gripStopClock();$('gripClock').textContent=gripTime(time);
+ $('gripVariant').disabled=false;$('gripGame').disabled=false;$('gripDevice').disabled=false;$('gripBegin').disabled=false;$('gripFinish').disabled=true;
+ status('gripStatus',time>=300000?'RUN TIMED · record ratings and actual physical contact.':'PROVISIONAL · under 5 minutes; record honest observations, no product proof.');
+});
+$('gripSave').addEventListener('click',()=>{
+ if(!gripFinished){status('gripStatus','HOLD · Start and stop a timed run first.');return}
+ const notes=$('gripNotes').value.trim();if(!notes){status('gripStatus','HOLD · Add the actual contact observation before saving.');return}
+ const values=Object.fromEntries([...document.querySelectorAll('[data-grip-metric]')].map(el=>[el.dataset.gripMetric,el.value?Number(el.value):null]));
+ const scored=Object.values(values).filter(Number.isFinite),physical=$('gripPhysical').checked,goodTime=gripFinished.duration_ms>=300000;
+ const state=physical&&goodTime&&scored.length===Object.keys(gripFieldSpec).length?'PHYSICAL_5MIN__COMPLETE_RATINGS':'PROVISIONAL__INCOMPLETE_PHYSICAL_PROOF';
+ const row={schema:'JM.FTR.GripRouteTwinBodyTrial/0.8',variant:gripFinished.variant,game:gripFinished.game,device:gripFinished.device,
+  started_at:gripFinished.started,ended_at:gripFinished.ended,duration_s:+(gripFinished.duration_ms/1000).toFixed(1),
+  physical_self_reported:physical,metrics:values,mean_score:scored.length?+(scored.reduce((a,b)=>a+b,0)/scored.length).toFixed(2):null,
+  rated_count:scored.length,expected_rating_count:Object.keys(gripFieldSpec).length,route_contact_count:gripFinished.route_contact_count,
+  notes,state,independent_physical_verification:false};
+ gripTrials.push(row);gripTrials=gripTrials.slice(-60);if(gripDecision?.game===row.game&&gripDecision?.device===row.device){gripDecision=null;try{localStorage.removeItem(gripFieldKey+'.choice')}catch(e){}}const persisted=gripSaveLocal();gripFinished=null;
+ gripRender();status('gripStatus',`${state} · ${gripLabel[row.variant]} recorded ${persisted?'locally':'in current session only'}; no automatic owner product Ding.`);
+});
+$('gripDecide').addEventListener('click',()=>{
+ const sum=gripSummary(),choice=$('gripPreference').value;
+ if(!sum.complete_three_way){status('gripStatus','HOLD · Same game, same device/posture, and three complete physical five-minute runs are required first.');return}
+ if(!choice){status('gripStatus','HOLD · Select an actual preference or No clear preference.');return}
+ gripDecision={game:sum.comparison_game,device:sum.comparison_device,choice,recorded_at:iso()};
+ try{localStorage.setItem(gripFieldKey+'.choice',JSON.stringify(gripDecision))}catch(e){}
+ gripRender();status('gripStatus','Owner-declared preference recorded. This is self-reported product feel, not independent device/manufacturing proof.');
+});
+$('gripGame').addEventListener('input',gripRender);$('gripDevice').addEventListener('input',gripRender);
+$('gripExport').addEventListener('click',()=>saveBlob('JM_GRIPROUTE_TWIN_BODY_PROOF_OF_FEEL_v0_8.json',JSON.stringify({summary:gripSummary(),trials:gripTrials,privacy:'USER_EXPORTED_LOCAL_NOTES',exported_at:iso()},null,2)));
+$('gripClear').addEventListener('click',()=>{if(!confirm('Clear local GripRoute trial drafts? Export first if needed.'))return;gripTrials=[];gripDecision=null;gripSaveLocal();try{localStorage.removeItem(gripFieldKey+'.choice')}catch(e){}gripRender();status('gripStatus','Local GripRoute drafts cleared. Other playtest receipts are unchanged.')});
+window.JMGripRouteTwinBody=Object.freeze({proof:gripSummary,records:()=>gripTrials.slice()});gripRender();
+window.addEventListener('pagehide',gripStopClock);
+
+// v0.9 · RouteVault-style bounded cross-device handoff. A digest authenticates content equality ONLY.
+// Source authority, physical contact and owner-device permission never follow from importing a JSON file.
+const continuitySchema='JM.SixRails.RouteVaultHandoff/0.9';
+let continuityCandidate=null;
+let continuityProof={state:'NO_HANDOFF_CONTACT',digest:null,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+function continuityMeshSafe(raw){return raw==null?null:checkedMesh(raw)}
+function continuityBeatSafe(raw){
+ if(raw==null)return null;
+ if(raw.schema!=='JM.SixRails.BeatGrid/0.1'||!Number.isFinite(raw.bpm)||raw.bpm<30||raw.bpm>300||!Number.isInteger(raw.bars)||raw.bars<1||raw.bars>128||raw.beats_per_bar!==4||!Array.isArray(raw.beats)||raw.beats.length!==raw.bars*4||raw.beats.length>512)throw Error('Unsupported bounded timing grid');
+ for(let i=0;i<raw.beats.length;i++){const b=raw.beats[i];if(b.index!==i+1||b.bar!==Math.floor(i/4)+1||b.beat!==i%4+1||!Number.isFinite(b.time_seconds)||b.time_seconds<0)throw Error('Invalid cue index/time');}
+ return raw;
+}
+async function continuityPack(){
+ const geometry=continuityMeshSafe(meshPayload);
+ const sourceGeometryDigest=geometry?await sha256(JSON.stringify(geometry)):null;
+ const beats=continuityBeatSafe(lastBeatGrid);
+ const dossier=await assembleDossier();
+ const payload={schema:'JM.SixRails.RouteVaultPayload/0.9',created_at:iso(),body:'JM SIX RAILS',source_version:'v0.9',
+  geometry,geometry_sha256:sourceGeometryDigest,beat_grid:beats,
+  contact_summary:{geometry:dossier.geometry,visual:dossier.visual,music:dossier.music,motion:dossier.motion,estate:dossier.estate,input_route:dossier.input_route,shared_griprail:dossier.shared_griprail,playtests:dossier.playtests,griproute_physical:dossier.griproute_physical},
+  source_refs:{protected_v01:'flaz/six-rails-v0-1-20261014',protected_v08:'flaz/six-rails-v0-8-20261014',source_status:'EXACT_PRIVATE_FTR_GRIPROUTE_NOT_RECOVERED'},
+  hold_reasons:dossier.hold_reasons,
+  transport_proof:'ORIGINALLY_EXPORTED_LOCAL_BYTES__NOT_OWNER_IDENTITY',
+  recipient_proof:'MUST_BE_RE_EARNED_ON_IMPORT_DEVICE',privacy:'SUMMARY_ONLY__NO_RAW_TESTER_NOTES_OR_AUDIO_OR_SCREENSHOTS'};
+ const digest=await sha256(JSON.stringify(payload));return {schema:continuitySchema,digest_algorithm:'SHA-256',payload_sha256:digest,payload,claim:'CONTENT_INTEGRITY_ONLY__NOT_AUTHORITY_OR_DEVICE_PROOF'};
+}
+async function verifyContinuityPack(p){
+ if(!p||p.schema!==continuitySchema||p.digest_algorithm!=='SHA-256'||!p.payload||p.payload.schema!=='JM.SixRails.RouteVaultPayload/0.9'||!/^[a-f0-9]{64}$/.test(p.payload_sha256))throw Error('Unexpected handoff schema/digest');
+ const actual=await sha256(JSON.stringify(p.payload));if(actual!==p.payload_sha256)throw Error('SHA-256 mismatch — handoff rejected');
+ if(p.payload.geometry){const mesh=continuityMeshSafe(p.payload.geometry);const expected=await sha256(JSON.stringify(mesh));if(expected!==p.payload.geometry_sha256)throw Error('Geometry content SHA mismatch');}
+ continuityBeatSafe(p.payload.beat_grid);
+ if(p.payload.transport_proof!=='ORIGINALLY_EXPORTED_LOCAL_BYTES__NOT_OWNER_IDENTITY'||p.payload.recipient_proof!=='MUST_BE_RE_EARNED_ON_IMPORT_DEVICE')throw Error('Unsupported trust boundary');
+ return {ok:true,digest:actual,vertices:p.payload.geometry?.vertices.length||0,triangles:p.payload.geometry?.triangles.length||0,beat_count:p.payload.beat_grid?.beats.length||0,origin_hold_count:p.payload.hold_reasons?.length||0};
+}
+$('exportContinuity').addEventListener('click',async()=>{
+ try{const p=await continuityPack();saveBlob('JM_SIX_RAILS_ROUTEVAULT_HANDOFF_v0_9.json',JSON.stringify(p,null,2));continuityProof={state:'LOCAL_HANDOFF_EXPORTED',digest:p.payload_sha256,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ status('continuityState','Local handoff exported with SHA-256 '+p.payload_sha256.slice(0,18)+'… · No cross-device proof yet.');
+ }catch(e){status('continuityState','HOLD · '+e.message)}
+});
+$('importContinuity').addEventListener('change',async e=>{
+ continuityCandidate=null;continuityProof={state:'IMPORT_HOLD',digest:null,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ $('adoptContinuityMesh').disabled=true;$('adoptContinuityBeat').disabled=true;
+ try{const f=e.target.files?.[0];if(!f)throw Error('No handoff chosen');if(f.size>1800000)throw Error('Handoff exceeds 1.8 MB');
+ const packet=JSON.parse(await f.text());const checked=await verifyContinuityPack(packet);continuityCandidate=packet;
+ continuityProof={state:'CONTENT_SHA_VERIFIED__READ_ONLY',digest:checked.digest,mesh_adopted:false,beat_adopted:false,device_transfer_proven:false};
+ $('adoptContinuityMesh').disabled=!packet.payload.geometry;$('adoptContinuityBeat').disabled=!packet.payload.beat_grid;
+ $('continuityPreview').textContent=JSON.stringify({...checked,scope:continuityProof.state,claim:'DIGEST_MATCH_NOT_SOURCE_AUTHORITY',original_hold_reasons:packet.payload.hold_reasons,original_source_refs:packet.payload.source_refs},null,2);
+ status('continuityState','SHA-256 content contact PASS · read-only; source, owner-device and physical proof remain HOLD.');
+ }catch(err){$('continuityPreview').textContent='IMPORT REJECTED · '+err.message;status('continuityState','HOLD · '+err.message)}finally{e.target.value=''}
+});
+$('adoptContinuityMesh').addEventListener('click',()=>{
+ if(!continuityCandidate?.payload.geometry||continuityProof.state==='IMPORT_HOLD')return;
+ try{const geometry=continuityMeshSafe(continuityCandidate.payload.geometry);meshPayload=JSON.parse(JSON.stringify(geometry));assetImg=null;assetInfo={grid:null,relief:null,source_dimensions:[],source:'VERIFIED_EXTERNAL_ROUTEVAULT_HANDOFF'};
+ assetObj=['# Recovered candidate geometry; recipient proof NOT inherited','o JM_RouteVault_Received',...geometry.vertices.map(v=>'v '+v.join(' ')),...geometry.triangles.map(f=>'f '+f.map(i=>i+1).join(' '))].join('\n')+'\n';
+ lastGLBReceipt=null;diffReceipt=null;lastPulseReceipt=null;
+ $('saveMesh').disabled=false;$('exportPacket').disabled=false;$('exportGLB').disabled=false;$('sendForge').disabled=!forgeReady;
+ continuityProof.mesh_adopted=true;status('meshStatus','Imported geometry adopted as local candidate; now test the JM recipient separately.');
+ status('continuityState',`Local ${geometry.vertices.length}-vertex candidate adopted · receiver proof still OPEN.`);
+ goToRail('mesh');
+ }catch(err){status('continuityState','HOLD · '+err.message)}
+});
+$('adoptContinuityBeat').addEventListener('click',()=>{
+ if(!continuityCandidate?.payload.beat_grid||continuityProof.state==='IMPORT_HOLD')return;
+ try{const beat=continuityBeatSafe(continuityCandidate.payload.beat_grid);lastBeatGrid=structuredClone(beat);$('tempo').value=String(beat.bpm);$('barCount').value=String(beat.bars);
+ lastPulseReceipt=null;continuityProof.beat_adopted=true;status('audioStatus','Imported timing grid adopted as local cue. Apply to Forge recipient to re-earn motion contact.');
+ status('continuityState',`Local ${beat.beats.length}-cue timing adopted · no inherited motion proof.`);goToRail('audio');
+ }catch(err){status('continuityState','HOLD · '+err.message)}
+});
+window.JMRouteVaultHandoff=Object.freeze({pack:continuityPack,verify:verifyContinuityPack,proof:()=>({...continuityProof}),review:()=>continuityCandidate?{sha256:continuityCandidate.payload_sha256,origin_holds:continuityCandidate.payload.hold_reasons}:null});
+
+// GripCube v5 donor's six semantic lenses, but NOT a counterfeit exact module mount.
+const cubeLenses=['TRACE','ROUTE','FORM','FIELD','PROOF','USE'];
+const cubeDest={TRACE:'release',ROUTE:'estate',FORM:'mesh',FIELD:'estate',PROOF:'release',USE:'testers'};
+const cubeLensTrace=[];let cubeCurrent=null;
+async function projectGripCubeLens(lens){
+ if(!cubeLenses.includes(lens))throw Error('Invalid GripCube lens');
+ const state=window.JMSixRails?.getState(),input=window.JMGripRouteAdapter?.proof()||{},shared=window.JMSixRailInheritance?.proof()||{};
+ const d=await assembleDossier();let projection='';
+ switch(lens){
+ case 'TRACE': projection='Trace: '+(input.contact_count||0)+' input events · protected ancestors v0.1/v0.8 · source authority separate';break;
+ case 'ROUTE': projection='Route: '+(input.current_room||'—')+' · '+(input.stance||'—')+' · '+(d.target.name||'no selected body');break;
+ case 'FORM': projection='Form: '+(state.mesh?.vertices.length||0)+' vertices · '+(state.mesh?.triangles.length||0)+' triangles · recipient '+(d.geometry.recipient_active?'contacted':'HOLD');break;
+ case 'FIELD': projection='Field: public registry '+(d.estate.registries_loaded?'read':'HOLD')+' · GripRail '+(shared.status||'HOLD')+' · exact FTR source HOLD';break;
+ case 'PROOF': projection='Proof: '+d.hold_reasons.length+' unclosed local gates · owner-device OPEN · SHA does not authenticate identity';break;
+ case 'USE': projection='Use: '+d.playtests.records+' matching playtests · physical three-way '+(d.griproute_physical.complete_three_way?'self-reported':'HOLD');break;
+ }
+ cubeCurrent=lens;cubeLensTrace.push({lens,at:iso(),room:input.current_room||null});if(cubeLensTrace.length>50)cubeLensTrace.shift();
+ document.querySelectorAll('[data-evidence-lens]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.evidenceLens===lens)));
+ $('evidenceLensReadout').textContent=projection;return {lens,projection,destination:cubeDest[lens],source:'SEMANTIC_PROJECTION__NOT_NATIVE_GRIPCUBE_V5',trace_count:cubeLensTrace.length};
+}
+for(const b of document.querySelectorAll('[data-evidence-lens]'))b.addEventListener('click',async()=>{
+ const p=await projectGripCubeLens(b.dataset.evidenceLens);goToRail(p.destination);
+});
+window.JMGripCubeEvidence=Object.freeze({lens:projectGripCubeLens,proof:()=>({schema:'JM.SixRails.GripCubeEvidence/0.9',current:cubeCurrent,contacts:cubeLensTrace.length,actual_gripcube_v5_source_loaded:false,semantic_routes:6,history:cubeLensTrace.slice(-10)})});
+
+
+// v1.0 · single source of truth: mobile controls dispatch into the existing GripRoute route machine.
+const quickRoomBar=$('quickRoomBar'),quickRoom=$('quickRoom'),quickControls=$('quickControls');
+const mobileLayout=matchMedia('(max-width: 760px), (pointer: coarse)');
+let quickWasOpened=false;
+function applyDeviceFit(){
+ const mobile=mobileLayout.matches;
+ if(!mobile){$('griprouteDock').classList.remove('ui-open');quickControls.setAttribute('aria-expanded','false');}
+ else if(!quickWasOpened){$('griprouteDock').classList.remove('ui-open');quickControls.setAttribute('aria-expanded','false');}
+ quickRoom.value=routeIDs[routeControl.index];
+ for(const p of document.querySelectorAll('.tool-help'))p.open=!mobile;
+}
+$('quickPrev').addEventListener('click',()=>$('routePrev').click());
+$('quickNext').addEventListener('click',()=>$('routeNext').click());
+quickRoom.addEventListener('change',e=>{const id=e.target.value,at=routeIDs.indexOf(id);if(at<0)return;routeCommit(at,'DEVICE_FIT_DIRECT_SELECT');const panel=document.querySelector('.rail:not([hidden])');if(panel&&mobileLayout.matches)panel.scrollIntoView({block:'start',behavior:'instant'});});
+quickControls.addEventListener('click',()=>{
+ const dock=$('griprouteDock'),open=!dock.classList.contains('ui-open');
+ dock.classList.toggle('ui-open',open);quickControls.setAttribute('aria-expanded',String(open));quickWasOpened=open;
+ if(open){$('routeTrack').querySelector('[aria-selected="true"]')?.scrollIntoView({block:'nearest',inline:'center',behavior:'instant'});}
+});
+// Reflect changes from ALL existing routes: tab tap, thumb swipe, keyboard and programmatic.
+const deviceFitObserver=new MutationObserver(()=>{const sel=$('routeTrack').querySelector('[aria-selected="true"]');if(sel&&quickRoom.value!==sel.dataset.rail)quickRoom.value=sel.dataset.rail;});
+deviceFitObserver.observe($('routeTrack'),{subtree:true,attributes:true,attributeFilter:['aria-selected']});
+$('routeTrack').addEventListener('keydown',e=>{
+ if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
+ e.preventDefault();
+ const idx=e.key==='Home'?0:e.key==='End'?routeIDs.length-1:Math.max(0,Math.min(routeIDs.length-1,routeControl.index+(e.key==='ArrowRight'?1:-1)));
+ routeCommit(idx,'ACCESSIBLE_TAB_KEYBOARD');$('routeTrack').querySelector(`[data-rail="${routeIDs[idx]}"]`)?.focus({preventScroll:true});
+});
+if(mobileLayout.addEventListener)mobileLayout.addEventListener('change',()=>{quickWasOpened=false;applyDeviceFit()});
+else mobileLayout.addListener(()=>{quickWasOpened=false;applyDeviceFit()});
+applyDeviceFit();
+window.JMSixRailsDeviceFit=Object.freeze({proof:()=>({schema:'JM.SixRails.DeviceFit/1.0',mobile:mobileLayout.matches,quickRoom:quickRoom.value,toolDocumentScroll:true,controlsExpanded:quickControls.getAttribute('aria-expanded')==='true',physical_fold_pass:false,owner_accessibility_approval:false})});
+</script>
+</body></html>

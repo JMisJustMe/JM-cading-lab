@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.6";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.7";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
@@ -26,6 +26,7 @@ public final class MainActivity extends Activity {
   LinearLayout page;
   boolean wide;
   int widthDp,tab=0,lastWidth=-1;
+  boolean quickLayout;
 
   @Override public void onCreate(Bundle state){
     super.onCreate(state);sp=getSharedPreferences(PREF,MODE_PRIVATE);
@@ -73,11 +74,11 @@ public final class MainActivity extends Activity {
     label(page,detail,15,MUTED,false);space(page,12);
   }
   LinearLayout card(String kicker,String head,String copy,int color){
-    LinearLayout x=new LinearLayout(this);x.setOrientation(1);x.setPadding(dp(18),dp(18),dp(18),dp(18));
+    LinearLayout x=new LinearLayout(this);x.setOrientation(1);x.setPadding(dp(quickLayout?12:18),dp(quickLayout?12:18),dp(quickLayout?12:18),dp(quickLayout?12:18));
     x.setBackground(bg(PANEL,color,20));
     LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);
-    p.setMargins(0,dp(8),0,dp(8));page.addView(x,p);
-    label(x,kicker,11,color,true);space(x,8);
+    p.setMargins(0,dp(quickLayout?5:8),0,dp(quickLayout?5:8));page.addView(x,p);
+    label(x,kicker,11,color,true);space(x,quickLayout?5:8);
     label(x,head,20,WHITE,true);
     if(!copy.isEmpty()){space(x,7);label(x,copy,14,MUTED,false);}
     return x;
@@ -86,17 +87,18 @@ public final class MainActivity extends Activity {
     Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextSize(15);
     b.setTextColor(primary?BG:WHITE);b.setElevation(0);
     b.setBackground(primary?grad(BLUE,PURPLE,14):bg(0xff202e47,0xff304463,14));
-    LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,dp(56));p.setMargins(0,dp(6),0,dp(3));
+    LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,dp(quickLayout?47:56));p.setMargins(0,dp(6),0,dp(3));
     target.addView(b,p);b.setOnClickListener(v->action.run());
   }
   void stage(int n){sp.edit().putInt("stage",Math.max(0,Math.min(4,n))).apply();render();}
   void render(){
     widthDp=getResources().getConfiguration().screenWidthDp;lastWidth=widthDp;wide=widthDp>=500;
+    quickLayout="QUICK".equals(SetupPlan.layout(sp,wide));
     ScrollView scroll=new ScrollView(this);scroll.setBackgroundColor(BG);scroll.setFillViewport(true);
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.6",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.7",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -161,6 +163,9 @@ public final class MainActivity extends Activity {
         pick("CREATE","Creator first","JM Ecostate, GitHub, notes");
         pick("PLAY","Playtest first","Games, test tools and quick files");
         pick("EVERYDAY","Everyday first","Files, notes and communication");
+        LinearLayout setups=card("OPTIONAL / WHOLE JM PRESET","Prepare the complete starting field",
+          "Make, Playtest, Research or Recovery presets also set your project and both screen densities. Every change asks permission.",TEAL);
+        btn(setups,"Explore setup plans",false,()->openSetupPlanChooser());
         break;
       case 2:
         title("SAME ROOT / TWO FIELDS","A shared starting point.",
@@ -256,7 +261,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else projectRoom();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else automationRoom();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -308,7 +313,8 @@ public final class MainActivity extends Activity {
     btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
     btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
     btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
-    btn(page,"PROJECT CONTACT  /  Open my JM shelf →",true,()->{tab=6;render();});
+    btn(page,"SETUP PLANS  /  One-touch JM configuration →",true,()->{tab=7;render();});
+    btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
@@ -530,6 +536,89 @@ public final class MainActivity extends Activity {
   }
 
 
+
+  void openSetupPlanChooser(){
+    tab=7;
+    if(sp.getBoolean("ready",false))render();
+    else{
+      String[] ids={"MAKE","PLAYTEST","RESEARCH","RECOVERY"};
+      new AlertDialog.Builder(this).setTitle("JM setup presets")
+        .setItems(ids,(d,which)->approvePlan(ids[which])).show();
+    }
+  }
+  void approvePlan(String id){
+    try{
+      String preview=SetupPlan.preview(sp,id);
+      new AlertDialog.Builder(this).setTitle("Apply JM "+id+" setup?")
+        .setMessage(preview)
+        .setNegativeButton("Keep current setup",null)
+        .setPositiveButton("APPLY JM ONLY",(d,w)->{
+          try{
+            SetupPlan.run(this,sp,id);
+            render();
+            Toast.makeText(this,"JM "+id+" preset applied; recovery available",Toast.LENGTH_LONG).show();
+          }catch(Exception e){
+            new AlertDialog.Builder(this).setTitle("HOLD · Setup not confirmed")
+              .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+          }
+        }).show();
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Cannot prepare plan")
+        .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+    }
+  }
+  void automationRoom(){
+    title("JM / SETUP PLANS · 0.7","One touch. Your working field.",
+      "Apply a complete, reversible JM setup. Nothing is transferred, uninstalled, or silently changed in Samsung.");
+    LinearLayout current=card("CURRENT / OWNER-GOVERNED",
+      "Compact "+SetupPlan.layout(sp,false)+" · Expanded "+SetupPlan.layout(sp,true),
+      "Available Android width selects a view. Density choices only change spacing inside JM, not the phone's display settings.",TEAL);
+    label(current,"Last JM plan: "+sp.getString("setup.last","NOT APPLIED"),13,WHITE,true);
+    for(String id:new String[]{"MAKE","PLAYTEST","RESEARCH","RECOVERY"}){
+      String detail=id.equals("MAKE")?"Creation first · JM Ecostate":
+        id.equals("PLAYTEST")?"Game first · JM Games House":
+        id.equals("RESEARCH")?"Information first · source and AI":"Recovery first · JM source";
+      LinearLayout card=card("ONE-BODY PRESET",id,detail,PURPLE);
+      btn(card,"Preview and apply "+id,true,()->approvePlan(id));
+    }
+    LinearLayout tuning=card("INDEPENDENT / WINDOW FIT","Compact and expanded layouts",
+      "Set each screen's JM spacing separately. QUICK keeps more actions in view; COMFORT increases touch spacing.",BLUE);
+    btn(tuning,"Compact: "+SetupPlan.layout(sp,false)+"  · Toggle",false,()->toggleLayout(false));
+    btn(tuning,"Expanded: "+SetupPlan.layout(sp,true)+"  · Toggle",false,()->toggleLayout(true));
+    LinearLayout systems=card("SAMSUNG / INTENTIONAL HANDOFF","Native settings",
+      "JM can open supported Android Settings screens. Samsung owns Modes & Routines, Multi Window, DeX, and their confirmation controls.",TEAL);
+    btn(systems,"Open Android display settings",false,
+      ()->start(new Intent(Settings.ACTION_DISPLAY_SETTINGS)));
+    btn(systems,"Open Samsung/Android Settings",false,
+      ()->start(new Intent(Settings.ACTION_SETTINGS)));
+    LinearLayout undo=card("TRACE / RECOVERY","Recover earlier JM configuration",
+      SetupPlan.receiptText(this),PURPLE);
+    btn(undo,SetupPlan.canRecover(this)?"Recover previous JM setup":"No previous setup to recover",false,()->{
+      if(!SetupPlan.canRecover(this)){
+        Toast.makeText(this,"HOLD · No setup snapshot yet",Toast.LENGTH_LONG).show();return;
+      }
+      new AlertDialog.Builder(this).setTitle("Recover previous JM setup?")
+        .setMessage("Restores your prior JM configuration including selected project and layout. Samsung settings and external project files stay untouched.")
+        .setNegativeButton("Cancel",null)
+        .setPositiveButton("RECOVER",(d,w)->{
+          try{SetupPlan.recover(this,sp);render();}
+          catch(Exception e){new AlertDialog.Builder(this).setTitle("HOLD · Recovery unconfirmed")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();}
+        }).show();
+    });
+    btn(undo,"Export full JM configuration",false,()->file(true));
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+  void toggleLayout(boolean expanded){
+    try{
+      String next=SetupPlan.layout(sp,expanded).equals("QUICK")?"COMFORT":"QUICK";
+      SetupPlan.setLayout(sp,expanded,next);
+      render();
+    }catch(Exception e){
+      Toast.makeText(this,"HOLD · JM layout could not be changed",Toast.LENGTH_LONG).show();
+    }
+  }
+
   void usbRoom(){
     title("JM / USB CONTACT · 0.5","Your phone. Your approval.",
       "Prepare configurations on a trusted laptop, review them here, and keep a recoverable local copy.");
@@ -689,6 +778,7 @@ public final class MainActivity extends Activity {
     btn(controls,"Run device preflight & export receipt",true,()->{tab=4;render();});
     btn(controls,"USB CONTACT / Owner-approved workstation",false,()->{tab=5;render();});
     btn(controls,"My JM project shelf",false,()->{tab=6;render();});
+    btn(controls,"Apply or recover a JM setup plan",true,()->{tab=7;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -719,7 +809,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_6.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_7.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -743,6 +833,9 @@ public final class MainActivity extends Activity {
         j.put("owner_test_marks",ownerTests);
         j.put("project_shelf",ProjectShelf.all(sp));
         j.put("active_project",ProjectShelf.selected(sp));
+        j.put("layout_compact",SetupPlan.layout(sp,false));
+        j.put("layout_expanded",SetupPlan.layout(sp,true));
+        j.put("setup_last",sp.getString("setup.last",""));
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -767,7 +860,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.6".equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -779,6 +872,7 @@ public final class MainActivity extends Activity {
         int step=legacy?j.optInt("stage",0):0;
         if(step<0||step>4)throw new IllegalArgumentException("Stage invalid");
         if(SCHEMA.equals(schema)){
+          UsbBridge.checkConfig(j);
           ProjectShelf.validateList(j.getJSONArray("project_shelf"));
           String active=j.getString("active_project");
           boolean present=false;
@@ -792,15 +886,27 @@ public final class MainActivity extends Activity {
           .setMessage("Replace only this app's note, focus and opening progress? Samsung data and launcher stay untouched.")
           .setNegativeButton("Cancel",null)
           .setPositiveButton("Import",(d,w)->{
+            if(SCHEMA.equals(schema)){
+              try{
+                UsbBridge.write(this,"local_import_rollback.json",UsbBridge.configuration(sp).toString(2));
+                UsbBridge.applyConfig(sp,j);
+                tab=0;render();
+                Toast.makeText(this,"JM v0.7 configuration imported; previous state saved",Toast.LENGTH_LONG).show();
+              }catch(Exception problem){
+                new AlertDialog.Builder(this).setTitle("HOLD · Import not confirmed")
+                  .setMessage(problem.getMessage()).setPositiveButton("OK",null).show();
+              }
+              return;
+            }
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
               JSONObject marks=j.optJSONObject("native_owner_marks");
               if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
               String group=j.optString("native_group","ASSIST");
               if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
             }
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
               String selectedSession=j.optString("session","MAKE");
               if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
                  selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){

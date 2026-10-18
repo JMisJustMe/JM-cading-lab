@@ -16,8 +16,8 @@ import java.util.Locale;
  * Never polls a socket, requests a permission, or applies silently.
  */
 public final class UsbBridge {
-    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.8";
-    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.8";
+    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.9";
+    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.9";
     private static final String REQUEST="bridge_request.json";
     private static final String RECEIPT="bridge_receipt.json";
     private static final String SNAPSHOT="bridge_snapshot.json";
@@ -95,12 +95,14 @@ public final class UsbBridge {
         o.put("layout_expanded",SetupPlan.layout(sp,true));
         o.put("setup_last",sp.getString("setup.last",""));
         o.put("session_deck",SessionDeck.all(sp));
+        o.put("return_points",ReentryEngine.all(sp));
         o.put("usb_snapshot_requires_owner_approval",true);
         return o;
     }
     private static JSONObject validateConfig(JSONObject o)throws Exception{
         String schema=o.optString("schema","");
         if(!(CONFIG_SCHEMA.equals(schema)
+            ||"JM.FoldUltraSetup/0.8".equals(schema)
             ||"JM.FoldUltraSetup/0.7".equals(schema)
             ||"JM.FoldUltraSetup/0.6".equals(schema)
             ||"JM.FoldUltraSetup/0.5".equals(schema)
@@ -125,7 +127,7 @@ public final class UsbBridge {
             if(value!=null && value!=JSONObject.NULL && !(value instanceof JSONObject))
                 throw new IllegalArgumentException("Invalid "+key);
         }
-        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)){
+        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)){
             org.json.JSONArray projects=ProjectShelf.validateList(o.getJSONArray("project_shelf"));
             String active=o.getString("active_project");
             boolean present=false;
@@ -133,7 +135,7 @@ public final class UsbBridge {
                 if(projects.getJSONObject(i).getString("id").equals(active))present=true;
             if(!present)throw new IllegalArgumentException("Active project does not exist");
         }
-        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)){
+        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)){
             if(!SetupPlan.validDensity(o.getString("layout_compact"))||
                 !SetupPlan.validDensity(o.getString("layout_expanded")))
                 throw new IllegalArgumentException("Invalid JM window layout preferences");
@@ -141,7 +143,7 @@ public final class UsbBridge {
             if(!last.isEmpty()&&!SetupPlan.valid(last))
                 throw new IllegalArgumentException("Invalid last setup plan");
         }
-        if(CONFIG_SCHEMA.equals(schema)){
+        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)){
             org.json.JSONArray sessions=SessionDeck.validateDeck(o.getJSONArray("session_deck"));
             org.json.JSONArray projects=o.getJSONArray("project_shelf");
             for(int i=0;i<sessions.length();i++){
@@ -151,6 +153,9 @@ public final class UsbBridge {
                     if(id.equals(projects.getJSONObject(j).getString("id")))found=true;
                 if(!found)throw new IllegalArgumentException("Orphan session project "+id);
             }
+        }
+        if(CONFIG_SCHEMA.equals(schema)){
+            ReentryEngine.checkLinks(o.getJSONArray("return_points"),o.getJSONArray("project_shelf"));
         }
         return o;
     }
@@ -173,26 +178,35 @@ public final class UsbBridge {
             if(owners.has(key))e.putBoolean("owner."+key+"_tested",owners.optBoolean(key,false));
         }
         if(CONFIG_SCHEMA.equals(o.optString("schema"))||
+           "JM.FoldUltraSetup/0.8".equals(o.optString("schema"))||
            "JM.FoldUltraSetup/0.7".equals(o.optString("schema"))||
            "JM.FoldUltraSetup/0.6".equals(o.optString("schema"))){
             ProjectShelf.stageToEditor(e,o.getJSONArray("project_shelf"),o.getString("active_project"));
         }
         if(CONFIG_SCHEMA.equals(o.optString("schema"))||
+           "JM.FoldUltraSetup/0.8".equals(o.optString("schema"))||
            "JM.FoldUltraSetup/0.7".equals(o.optString("schema"))){
             e.putString("layout.compact",o.getString("layout_compact"))
              .putString("layout.expanded",o.getString("layout_expanded"))
              .putString("setup.last",o.optString("setup_last",""));
         }
-        if(CONFIG_SCHEMA.equals(o.optString("schema"))){
+        if(CONFIG_SCHEMA.equals(o.optString("schema"))||
+           "JM.FoldUltraSetup/0.8".equals(o.optString("schema"))){
             SessionDeck.stage(e,o.getJSONArray("session_deck"));
             SessionDeck.clearAllDrafts(sp,e);
+        }
+        if(CONFIG_SCHEMA.equals(o.optString("schema"))){
+            ReentryEngine.stage(e,o.getJSONArray("return_points"));
+        }else{
+            // Earlier backups contain no explicit return-point authority.
+            ReentryEngine.stage(e,new org.json.JSONArray());
         }
         if(!e.commit())throw new IOException("Local settings commit failed");
     }
     private static void receipt(Activity a,String id,String status,String kind,String detail){
         try{
             JSONObject out=new JSONObject();
-            out.put("schema","JM.FoldBridgeReceipt/0.8");
+            out.put("schema","JM.FoldBridgeReceipt/0.9");
             out.put("request_id",id);
             out.put("status",status);
             out.put("kind",kind);
@@ -269,6 +283,33 @@ public final class UsbBridge {
                     +"\nNote ("+note.length()+" characters):\n"+note+"\n\n"
                     +"Review the actual note before approving this trusted laptop request."
                     +"\nNo external JM project files are overwritten.";
+            }else if("reentry_capture".equals(kind)||"reentry_return".equals(kind)){
+                config=null;
+                String idToReturn=request.getString("project_id");
+                project=ProjectShelf.find(sp,idToReturn);
+                if(project==null)throw new IllegalArgumentException("JM project not registered");
+                int expected=request.getInt("expected_revision");
+                JSONObject current=SessionDeck.find(sp,idToReturn);
+                if(current.getInt("revision")!=expected)
+                    throw new IllegalArgumentException("STALE current revision");
+                if("reentry_capture".equals(kind)){
+                    if(expected<1)throw new IllegalArgumentException("Save a checkpoint before capturing");
+                    preview="Capture the SAVED checkpoint for "+project.getString("title")+"?\n\n"
+                        +"Revision: "+expected+"\nPhase: "+current.getString("phase")
+                        +"\nNext: "+current.getString("next_action")
+                        +"\n\nUnsaved local drafts are not included. Existing project files unchanged.";
+                }else{
+                    JSONObject point=ReentryEngine.point(sp,idToReturn);
+                    if(point==null)throw new IllegalArgumentException("No Return Point");
+                    int from=request.getInt("point_revision");
+                    if(point.getInt("source_revision")!=from)
+                        throw new IllegalArgumentException("STALE captured Return Point");
+                    preview="Return "+project.getString("title")+" to saved state?\n\n"
+                        +"Saved phase: "+point.getString("phase")+"\nFrom revision: "+from
+                        +"\nCurrent revision: "+expected
+                        +"\nNew revision: "+(expected+1)
+                        +"\n\nPrevious current checkpoint becomes your next Return Point. No project file rewritten.";
+                }
             }else if("project_select".equals(kind)){
                 config=null;
                 String selected=request.getString("project_id");
@@ -281,7 +322,7 @@ public final class UsbBridge {
                 project=ProjectShelf.validate(request.getJSONObject("project"));
                 preview="Add or update JM project reference?\n\n"+ProjectShelf.describe(project)+
                     "\n\nOwner must verify the proposed public link. No files are downloaded or copied.";
-            }else throw new IllegalArgumentException("Only named JM plans, profile, restore, project and session requests supported");
+            }else throw new IllegalArgumentException("Only named JM plans, profile, restore, project, session and reentry requests supported");
             final JSONObject requestBody=request;
             checkpoint="APPROVAL";
             receipt(a,id,"PENDING",kind,"Awaiting owner touch on Android");
@@ -311,6 +352,13 @@ public final class UsbBridge {
                                 requestBody.getString("phase"),
                                 requestBody.getString("note"),
                                 requestBody.getString("next_action"));
+                        }else if("reentry_capture".equals(action)){
+                            ReentryEngine.capture(sp,requestBody.getString("project_id"),
+                                requestBody.getInt("expected_revision"));
+                        }else if("reentry_return".equals(action)){
+                            ReentryEngine.restore(sp,requestBody.getString("project_id"),
+                                requestBody.getInt("expected_revision"),
+                                requestBody.getInt("point_revision"));
                         }else if("project_select".equals(action)){
                             ProjectShelf.choose(sp,project.getString("id"));
                         }else if("project_bind".equals(action)){

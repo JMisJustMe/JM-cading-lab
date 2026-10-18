@@ -50,6 +50,37 @@ jobs:
           assert b['result']=='NO_MATCHING_CANDIDATE'
           print('JM Skill Gate: actual Python/Node runtime contacts PASS, no authority inflation')
           PY
+      - name: Compile synthetic document/transcript candidate and contact existing JM runtimes
+        run: |
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_intake.py \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'coding runtime' --out jm_knowledge_candidate --verify --route-existing
+      - name: Verify no source data has gained authority
+        run: |
+          python3 - <<'PY'
+          import json,pathlib,hashlib
+          base=pathlib.Path('jm_knowledge_candidate')
+          receipt=json.loads((base/'evidence/RECEIPT.json').read_text())
+          assert receipt['schema']=='JM.KnowledgeCandidate/0.4'
+          assert receipt['state']=='HELD' and receipt['source_count']==2
+          assert receipt['suspicious_lines_quarantined']==1
+          assert receipt['query_hits']>0
+          assert receipt['query_selection']=='DETERMINISTIC_LEXICAL_NOT_TRANSFORMER_ATTENTION'
+          assert receipt['agent_skill_discovery']=='NOT_TESTED'
+          assert receipt['human_approval']=='REQUIRED_BEFORE_PROMOTION'
+          assert all(not x['possible_instruction_attack'] for x in receipt['selected_matches'])
+          gate=json.loads((base/'evidence/EXISTING_JM_ROUTE.json').read_text())
+          assert gate['scope_state']=='HELD' and gate['host_contact']=='OPEN'
+          assert gate['owner_device_contact']=='OPEN'
+          assert gate['target_consequence']=='NOT_ATTEMPTED'
+          assert gate['discrepancies']==[]
+          manifest=json.loads((base/'SHA256_MANIFEST.json').read_text())
+          for rel,h in manifest['files'].items():
+              assert hashlib.sha256((base/rel).read_bytes()).hexdigest()==h,rel
+          print('JM v0.4: CAPTURE -> EVIDENCE -> HELD SKILL CANDIDATE -> EXISTING JM ROUTE PASS')
+          print('Sources:',receipt['source_count'],'retrieval hits:',receipt['query_hits'],'quarantined:',receipt['suspicious_lines_quarantined'])
+          PY
       - name: Run JM pre-existing universal host-adapter conformance
         run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
       - name: Return read-only evidence artifacts
@@ -57,6 +88,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jm-agent-skill-v03-contact-receipts
-          path: jm_skill_receipts/*.json
+          path: |
+            jm_skill_receipts/*.json
+            jm_knowledge_candidate/evidence/*.json
+            jm_knowledge_candidate/SHA256_MANIFEST.json
           if-no-files-found: warn
           retention-days: 14

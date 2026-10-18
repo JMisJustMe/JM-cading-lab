@@ -86,7 +86,7 @@ jobs:
           profile: pixel_6
           emulator-boot-timeout: 700
           script: |
-            set -euo pipefail
+            set -eu
             mkdir -p emulator-proof
             APK="emulator-input/JM_FOLD_ULTRA_PREFLIGHT_WHOLEBODY_v0_4_DEBUG.apk"
             test -s "$APK"

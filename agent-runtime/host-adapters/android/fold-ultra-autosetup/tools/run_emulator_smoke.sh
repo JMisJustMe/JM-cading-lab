@@ -2,7 +2,7 @@
 # Generic Android SDK 35 emulator smoke only; never a Samsung Fold physical Ding.
 set -eu
 mkdir -p emulator-proof
-APK="emulator-input/JM_FOLD_ULTRA_SESSION_CONTINUITY_v0_8_DEBUG.apk"
+APK="emulator-input/JM_FOLD_ULTRA_REENTRY_v0_9_DEBUG.apk"
 if [ ! -s "$APK" ]; then
   echo "HOLD: missing exact build artifact: $APK" >&2
   ls -al emulator-input >&2 || true
@@ -108,7 +108,62 @@ assert entry["revision"]==1 and entry["phase"]=="TEST"
 assert "Arena test pass" in entry["note"]
 assert entry["next_action"]=="Resume symmetry test"
 PY
+# Return-point proof on disposable emulator, not owner Fold.
+approve_dialog() {
+  label="$1"
+  adb shell uiautomator dump "/sdcard/jm_$label.xml" > "emulator-proof/$label.dump.txt"
+  adb exec-out cat "/sdcard/jm_$label.xml" > "emulator-proof/$label.ui.xml"
+  python3 - "$label" <<'PY' > "emulator-proof/$label.xy"
+import sys,re,xml.etree.ElementTree as ET
+label=sys.argv[1]
+doc=ET.parse("emulator-proof/"+label+".ui.xml")
+buttons=[e for e in doc.iter() if e.attrib.get("text")=="APPLY"]
+assert len(buttons)==1, "Expected one APPLY control"
+m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",buttons[0].attrib["bounds"])
+assert m
+x1,y1,x2,y2=map(int,m.groups())
+print((x1+x2)//2,(y1+y2)//2)
+PY
+  read X Y < "emulator-proof/$label.xy"
+  adb shell input tap "$X" "$Y"
+  sleep 3
+}
+BRIDGE=agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/jm_fold_usb_bridge.py
+python3 "$BRIDGE" --serial emulator-5554 reentry-capture jm-games-house --expected-revision 1 > emulator-proof/CAPTURE_STAGE.txt
+sleep 3
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/CAPTURE_PENDING.json
+python3 -c 'import json;d=json.load(open("emulator-proof/CAPTURE_PENDING.json"));assert d["kind"]=="reentry_capture" and d["status"]=="PENDING"'
+approve_dialog CAPTURE
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/CAPTURE_ACCEPTED.json
+python3 -c 'import json;d=json.load(open("emulator-proof/CAPTURE_ACCEPTED.json"));assert d["kind"]=="reentry_capture" and d["status"]=="ACCEPTED"'
+printf 'Newer camera polish work, preserve on return.\n' > emulator-proof/NEW_NOTE.txt
+python3 "$BRIDGE" --serial emulator-5554 session-update jm-games-house --expected-revision 1 --phase POLISH --note-file emulator-proof/NEW_NOTE.txt --next "Test polish again" > emulator-proof/NEW_STAGE.txt
+sleep 3
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/NEW_PENDING.json
+python3 -c 'import json;d=json.load(open("emulator-proof/NEW_PENDING.json"));assert d["kind"]=="session_update" and d["status"]=="PENDING"'
+approve_dialog NEW
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/NEW_ACCEPTED.json
+python3 -c 'import json;d=json.load(open("emulator-proof/NEW_ACCEPTED.json"));assert d["status"]=="ACCEPTED"'
+python3 "$BRIDGE" --serial emulator-5554 reentry-return jm-games-house --expected-revision 2 --point-revision 1 > emulator-proof/RETURN_STAGE.txt
+sleep 3
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/RETURN_PENDING.json
+python3 -c 'import json;d=json.load(open("emulator-proof/RETURN_PENDING.json"));assert d["kind"]=="reentry_return" and d["status"]=="PENDING"'
+approve_dialog RETURN
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/RETURN_ACCEPTED.json
+python3 -c 'import json;d=json.load(open("emulator-proof/RETURN_ACCEPTED.json"));assert d["kind"]=="reentry_return" and d["status"]=="ACCEPTED"'
+adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/REENTRY_PREFS.xml
+python3 - <<'PY' > emulator-proof/RETURN_PROOF.txt
+import json,xml.etree.ElementTree as ET
+p={x.get("name"):x.text for x in ET.parse("emulator-proof/REENTRY_PREFS.xml").getroot()}
+current=next(x for x in json.loads(p["session.deck"]) if x["project_id"]=="jm-games-house")
+previous=next(x for x in json.loads(p["reentry.points"]) if x["project_id"]=="jm-games-house")
+assert current["revision"]==3 and current["phase"]=="TEST"
+assert "Arena test pass" in current["note"]
+assert previous["source_revision"]==2 and previous["phase"]=="POLISH"
+assert "Newer camera polish" in previous["note"]
+print("JM v0.9 PASS: return created revision 3 and preserved former revision 2")
+PY
 printf '%s\n' \
-  'GENERIC ANDROID EMULATOR v0.8: narrow boot PASS, wide boot PASS, cold reopen PASS, staged USB request PENDING then simulated owner APPLY ACCEPTED with verified JM-only state.' \
+  'GENERIC ANDROID EMULATOR v0.9: narrow boot PASS, wide boot PASS, cold reopen PASS, owner-approved reversible return point and stored history' \
   'Startup not proof of correct Fold UI layout, native Samsung Galaxy AI, or physical owner Ding.' \
   > emulator-proof/GENERIC_RECEIPT.txt

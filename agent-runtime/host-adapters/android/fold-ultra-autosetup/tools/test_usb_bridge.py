@@ -229,7 +229,7 @@ class BridgeContractTests(unittest.TestCase):
         proj={"id":"five-flip","title":"FIVE//FLIP","family":"GAMES","url":""}
         session={"project_id":"five-flip","revision":3,"phase":"POLISH","note":"test",
                  "next_action":"re-test camera","updated_epoch_ms":5}
-        base={"schema":bridge.CONFIG_SCHEMA,"root":"JM local","project_shelf":[proj],
+        base={"schema":"JM.FoldUltraSetup/0.8","root":"JM local","project_shelf":[proj],
               "active_project":"five-flip","layout_compact":"QUICK",
               "layout_expanded":"COMFORT","setup_last":"PLAYTEST",
               "session_deck":[session]}

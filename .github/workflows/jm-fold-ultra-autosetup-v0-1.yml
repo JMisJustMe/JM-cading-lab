@@ -1,4 +1,4 @@
-name: JM Fold Ultra v0.4 Complete Prelaunch Build
+name: JM Fold Ultra v0.5 Complete Prelaunch Build
 on:
   pull_request:
     paths:
@@ -28,6 +28,8 @@ jobs:
           gradle-version: '8.13'
       - name: Verify bounded prelaunch contracts
         run: python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/verify_prelaunch.py
+      - name: Offline USB bridge unit tests
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/android/fold-ultra-autosetup/tools -p 'test_*.py' -v
       - name: Compile Fold prelaunch
         shell: bash
         working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
@@ -39,13 +41,13 @@ jobs:
           R=agent-runtime/host-adapters/android/fold-ultra-autosetup
           APK="$R/app/build/outputs/apk/debug/app-debug.apk"
           mkdir -p /tmp/jm-fold-prelaunch
-          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_PREFLIGHT_WHOLEBODY_v0_4_DEBUG.apk
+          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_USB_CONTACT_v0_5_DEBUG.apk
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-fold-prelaunch/BADGING.txt
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-fold-prelaunch/SIGNATURE.txt
           unzip -t "$APK" > /tmp/jm-fold-prelaunch/ZIP_INTEGRITY.txt
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-fold-prelaunch/PERMISSIONS.txt
           grep -Fq "package: name='com.jmisjustme.foldultra'" /tmp/jm-fold-prelaunch/BADGING.txt
-          grep -Fq "versionName='0.4.0'" /tmp/jm-fold-prelaunch/BADGING.txt
+          grep -Fq "versionName='0.5.0'" /tmp/jm-fold-prelaunch/BADGING.txt
           grep -Fq "android.intent.action.SEND" "$R/app/src/main/AndroidManifest.xml"
           if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-fold-prelaunch/PERMISSIONS.txt; then
             echo 'UNEXPECTED PERMISSION: HOLD'
@@ -55,7 +57,7 @@ jobs:
           printf 'APK compilation + signing + permissions PASS. Physical Fold UI/device DING OPEN.\n' > /tmp/jm-fold-prelaunch/RECEIPT.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_4_CARRIER
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_5_CARRIER
           path: /tmp/jm-fold-prelaunch/
           if-no-files-found: error
           retention-days: 14
@@ -70,7 +72,7 @@ jobs:
       - name: Download the exact compiled APK
         uses: actions/download-artifact@v4
         with:
-          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_4_CARRIER
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_5_CARRIER
           path: emulator-input
       - name: Enable KVM on hosted runner
         run: |
@@ -89,7 +91,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: JM_FOLD_ULTRA_v0_4_GENERIC_ANDROID_SCREEN_PROOF
+          name: JM_FOLD_ULTRA_v0_5_GENERIC_ANDROID_SCREEN_PROOF
           path: emulator-proof/
           if-no-files-found: warn
           retention-days: 14

@@ -47,7 +47,7 @@ require("COMPACT_OWNER" in diagnostics and "EXPANDED_OWNER" in diagnostics and "
 require("No background reading" in src, "share privacy notice")
 bridge = (root / "app/src/main/java/com/jmisjustme/foldultra/UsbBridge.java").read_text(encoding="utf-8")
 cli = (root / "tools/jm_fold_usb_bridge.py").read_text(encoding="utf-8")
-require("JM.FoldBridgeRequest/0.6" in bridge and "JM.FoldBridgeRequest/0.5" in cli, "matched USB request contract")
+require("JM.FoldBridgeRequest/0.6" in bridge and "JM.FoldBridgeRequest/0.6" in cli, "matched USB request contract")
 require("UsbBridge.offer(this,sp" in src and "void usbRoom()" in src, "USB contact reachable in native UI")
 require('setPositiveButton("APPLY"' in bridge and 'setNegativeButton("REJECT"' in bridge, "phone owner approval and rejection")
 require("prepareSnapshot" in bridge and "bridge_snapshot.json" in bridge, "owner-prepared USB snapshot")

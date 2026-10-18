@@ -18,11 +18,11 @@ def require(condition, label):
         raise AssertionError(label)
     print("PASS", label)
 
-require("JM.FoldUltraSetup/0.8" in src, "current export schema")
-for old in ["JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
+require("JM.FoldUltraSetup/0.9" in src, "current export schema")
+for old in ["JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
     require(old in src, "schema migration guard "+old)
 require("JM.FoldUltraPreflight/0.4" in diagnostics, "preflight JSON contract")
-require("versionCode 8" in gradle and "versionName '0.8.0'" in gradle, "version code/name")
+require("versionCode 9" in gradle and "versionName '0.9.0'" in gradle, "version code/name")
 require("targetSdk 35" in gradle and "compileSdk 36" in gradle, "Android SDK context")
 require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "explicit Android Share intake")
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")
@@ -40,14 +40,14 @@ require('nativeHub()' in src and 'void session(String kind)' in src, "inherited 
 require('getPackageInfo(a.getPackageName(),PackageManager.GET_PERMISSIONS)' in diagnostics,
         "on-device permission inspection")
 require('PREFLIGHT_EXPORT' in src and 'ACTION_CREATE_DOCUMENT' in src, "explicit receipt export")
-require("JM_FOLD_ULTRA_SETUP_v0_8.json" in src, "correctly named configuration export")
+require("JM_FOLD_ULTRA_SETUP_v0_9.json" in src, "correctly named configuration export")
 require(len(re.findall(r'capability\("',src))==8, "eight native capability records")
 require("COMPACT_OWNER" in diagnostics and "EXPANDED_OWNER" in diagnostics and "REOPEN_OWNER" in diagnostics,
         "owner-gated physical contact marks")
 require("No background reading" in src, "share privacy notice")
 bridge = (root / "app/src/main/java/com/jmisjustme/foldultra/UsbBridge.java").read_text(encoding="utf-8")
 cli = (root / "tools/jm_fold_usb_bridge.py").read_text(encoding="utf-8")
-require("JM.FoldBridgeRequest/0.8" in bridge and "JM.FoldBridgeRequest/0.8" in cli, "matched USB request contract")
+require("JM.FoldBridgeRequest/0.9" in bridge and "JM.FoldBridgeRequest/0.9" in cli, "matched USB request contract")
 require("UsbBridge.offer(this,sp" in src and "void usbRoom()" in src, "USB contact reachable in native UI")
 require('setPositiveButton("APPLY"' in bridge and 'setNegativeButton("REJECT"' in bridge, "phone owner approval and rejection")
 require("prepareSnapshot" in bridge and "bridge_snapshot.json" in bridge, "owner-prepared USB snapshot")
@@ -88,4 +88,13 @@ require("session_update" in bridge and "session-update" in cli and "expected_rev
         "owner-approved laptop session proposal with compare-and-swap")
 require("SessionDeck.clearAllDrafts" in bridge,
         "restored session deck clears conflicting local draft")
-print("JM FOLD ULTRA v0.8: SESSION CONTINUITY + PRELAUNCH CONTRACT PASS")
+reentry=(root / "app/src/main/java/com/jmisjustme/foldultra/ReentryEngine.java").read_text(encoding="utf-8")
+require("JM.FoldReentry/0.9" in reentry and "SessionDeck.stage" in reentry, "return-point uses existing session authority")
+require("SessionDeck.MAX_REVISION" in reentry and "STALE" in reentry, "stale and backward revision blocked")
+require("ReentryEngine.capture" in src and "ReentryEngine.restore" in src, "native capture and recovery")
+require("return_points" in src and "return_points" in bridge and "return_points" in cli, "portable return-point body")
+require("reentry_capture" in bridge and "reentry_return" in bridge, "USB reentry owner gate")
+require("reentry-return" in cli and "local_return_point" in cli, "laptop reentry tools")
+require('sp.edit().putInt("nav.last",tab)' in src, "last room continuity")
+require("MAX_BYTES=524288" in bridge and "MAX_SIZE = 524288" in cli, "bounded estate export")
+print("JM FOLD ULTRA v0.9: WORKSPACE RETURN + PRELAUNCH CONTRACT PASS")

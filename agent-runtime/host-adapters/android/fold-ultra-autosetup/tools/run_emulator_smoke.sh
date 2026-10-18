@@ -129,3 +129,6 @@ printf '%s\n' \
 # Separate full-body gate: touch the actual native controls rather than relying
 # solely on ADB-injected state changes. This can legitimately HOLD.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_ui_flow.py
+
+# Negative proof follows positive native UI checks, leaving revision 3 in place.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_negative_flows.py

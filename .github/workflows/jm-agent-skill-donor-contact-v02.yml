@@ -1,4 +1,4 @@
-name: JM agent skill carrier contact v0.2
+name: JM Agent Skills bounded runtime contact v0.3
 on:
   pull_request:
     paths:
@@ -8,15 +8,55 @@ on:
 permissions:
   contents: read
 jobs:
-  carrier-validation:
+  governed-contact:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Verify project-local skill against actual governing files
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate project-local skill against actual JM repository authorities
         run: python3 .agents/skills/jm-ecostate-route/tests/verify_skill.py
-      - name: Run existing JM host adapter conformance tester
+      - name: Run isolated adversarial negative controls
+        run: python3 -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_*.py' -v
+      - name: Contact the existing JM sovereign Python and Node runtimes
+        run: |
+          mkdir -p jm_skill_receipts
+          python3 .agents/skills/jm-ecostate-route/jm_skill_gate.py --query 'coding runtime' --surface 'codex-repository-agent' --receipt jm_skill_receipts/coding.json
+          python3 .agents/skills/jm-ecostate-route/jm_skill_gate.py --query 'zzzz-no-known-domain' --surface 'codex-repository-agent' --receipt jm_skill_receipts/unknown.json
+      - name: Fail closed if any receipt inflates authority or fabricates unknown route
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          root=pathlib.Path('jm_skill_receipts')
+          a=json.loads((root/'coding.json').read_text())
+          b=json.loads((root/'unknown.json').read_text())
+          for x in (a,b):
+              assert x['schema']=='JM.AgentSkillReadOnlyContact/0.3'
+              assert x['scope_state']=='HELD' and x['action']=='READ_ONLY_ROUTE'
+              assert x['host_contact']=='OPEN'
+              assert x['external_agent_skill_discovery']=='NOT_TESTED'
+              assert x['owner_device_contact']=='OPEN'
+              assert x['live_current_head_resolution']=='OPEN'
+              assert x['target_consequence']=='NOT_ATTEMPTED'
+              assert x['discrepancies']==[]
+              print('HELD as intended:',x['result'],x['candidate_count'])
+          assert a['candidate_count']>0
+          assert b['candidate_count']==0 and b['selected_candidates']==[]
+          assert b['result']=='NO_MATCHING_CANDIDATE'
+          print('JM Skill Gate: actual Python/Node runtime contacts PASS, no authority inflation')
+          PY
+      - name: Run JM pre-existing universal host-adapter conformance
         run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Return read-only evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-agent-skill-v03-contact-receipts
+          path: jm_skill_receipts/*.json
+          if-no-files-found: warn
+          retention-days: 14

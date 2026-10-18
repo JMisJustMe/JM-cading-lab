@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.5";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.6";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
@@ -96,7 +96,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.5",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.6",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -256,7 +256,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else usbRoom();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else projectRoom();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -296,7 +296,8 @@ public final class MainActivity extends Activity {
     btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
     btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
     btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
-    btn(page,"USB CONTACT  /  Setup & recovery →",true,()->{tab=5;render();});
+    btn(page,"PROJECT CONTACT  /  Open my JM shelf →",true,()->{tab=6;render();});
+    btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
 
@@ -537,7 +538,116 @@ public final class MainActivity extends Activity {
     space(explain,10);
     label(explain,"Not permitted by JM: silent restores · Galaxy AI extraction · Samsung home rearrangement · root or device administrator controls.",13,MUTED,false);
     space(page,12);
+    btn(page,"My project shelf →",false,()->{tab=6;render();});
     btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+
+
+  void projectRoom(){
+    title("JM / PROJECT CONTACT · 0.6","Actual JM bodies.\nOne connected shelf.",
+      "These are references to your projects—not project copies. Unbound projects stay visible without fabricated launch URLs.");
+    String filter=sp.getString("project.family","GAMES");
+    LinearLayout tags=new LinearLayout(this);tags.setOrientation(0);page.addView(tags);
+    for(String family:new String[]{"GAMES","MUSIC","BUILD","ESTATE"}){
+      final String f=family;
+      Button b=new Button(this);b.setAllCaps(false);b.setText(f);b.setTextSize(wide?13:10);
+      b.setTextColor(family.equals(filter)?BG:WHITE);
+      b.setBackground(bg(family.equals(filter)?BLUE:PANEL,family.equals(filter)?0:0xff334a67,12));
+      LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(48),1);
+      p.setMargins(dp(2),0,dp(2),0);tags.addView(b,p);
+      b.setOnClickListener(v->{sp.edit().putString("project.family",f).apply();render();});
+    }
+    space(page,12);
+    try{
+      org.json.JSONArray data=ProjectShelf.all(sp);
+      int shown=0;
+      for(int i=0;i<data.length();i++){
+        JSONObject row=data.getJSONObject(i);
+        if(!filter.equals(row.getString("family")))continue;
+        shown++;
+        projectCard(row);
+      }
+      if(shown==0)card("EMPTY FIELD","No "+filter.toLowerCase()+" projects bound",
+        "Add a new project reference or switch family. Existing files are not deleted.",PURPLE);
+      LinearLayout status=card("ONE BODY / REFERENCES",""+data.length()+" JM project routes registered",
+        "A project can exist without an active URL. Only the current owner-confirmed route is launched.",TEAL);
+      label(status,"Current: "+ProjectShelf.selected(sp),13,WHITE,true);
+    }catch(Exception e){
+      card("HOLD / PROJECT SHELF","Cannot read shelf",e.getMessage(),PURPLE);
+    }
+    btn(page,"Add a JM project reference",true,this::addProject);
+    btn(page,"← JM Root",false,()->{tab=0;render();});
+  }
+  void projectCard(JSONObject entry){
+    String id=entry.optString("id","");
+    boolean chosen=id.equals(ProjectShelf.selected(sp));
+    String link=entry.optString("url","");
+    LinearLayout box=card(chosen?"● ACTIVE / "+entry.optString("family"):"○ JM BODY / "+entry.optString("family"),
+      entry.optString("title","Untitled"),
+      link.isEmpty()?"NO VERIFIED ROUTE · project retained as a reference":
+        "READY / "+android.net.Uri.parse(link).getHost(),chosen?TEAL:PURPLE);
+    if(!chosen)btn(box,"Set current JM project",false,()->{
+      try{ProjectShelf.choose(sp,id);render();}
+      catch(Exception e){Toast.makeText(this,"HOLD · Cannot select this project",Toast.LENGTH_LONG).show();}
+    });
+    if(link.isEmpty())btn(box,"Bind an HTTPS route",false,()->bindProject(entry));
+    else{
+      btn(box,"OPEN "+entry.optString("title","PROJECT")+" ↗",true,()->ProjectShelf.open(this,entry));
+      btn(box,"Edit route",false,()->bindProject(entry));
+    }
+  }
+  void bindProject(JSONObject source){
+    EditText url=new EditText(this);url.setTextSize(15);url.setSingleLine(false);
+    url.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+    url.setHint("https://your-published-project");
+    url.setText(source.optString("url",""));
+    url.setSelectAllOnFocus(true);
+    LinearLayout layout=new LinearLayout(this);layout.setOrientation(1);
+    layout.setPadding(dp(16),dp(7),dp(16),0);layout.addView(url);
+    new AlertDialog.Builder(this).setTitle("Bind "+source.optString("title"))
+      .setMessage("This updates JM's reference only. Use a trusted public HTTPS location, or leave it empty to mark the route unbound.")
+      .setView(layout).setNegativeButton("Cancel",null)
+      .setPositiveButton("Save route",(d,w)->{
+        try{
+          JSONObject data=new JSONObject(source.toString());
+          data.put("url",url.getText().toString().trim());
+          ProjectShelf.upsert(sp,data);
+          render();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · Route unchanged")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      }).show();
+  }
+  void addProject(){
+    LinearLayout layout=new LinearLayout(this);
+    layout.setOrientation(1);layout.setPadding(dp(16),dp(4),dp(16),dp(4));
+    EditText id=new EditText(this);id.setSingleLine(true);id.setHint("unique-id e.g. new-game");
+    EditText title=new EditText(this);title.setSingleLine(true);title.setHint("Project title");
+    Spinner family=new Spinner(this);
+    String[] families={"GAMES","MUSIC","BUILD","ESTATE"};
+    android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
+      this,android.R.layout.simple_spinner_dropdown_item,families);
+    family.setAdapter(adapter);
+    layout.addView(id);layout.addView(title);layout.addView(family);
+    new AlertDialog.Builder(this).setTitle("Register an existing JM body")
+      .setMessage("Reference only. Choose the project family; bind its real route separately.")
+      .setView(layout).setNegativeButton("Cancel",null)
+      .setPositiveButton("Register",(d,w)->{
+        try{
+          JSONObject row=new JSONObject();
+          row.put("id",id.getText().toString().trim());
+          row.put("title",title.getText().toString().trim());
+          row.put("family",families[family.getSelectedItemPosition()]);
+          row.put("url","");
+          ProjectShelf.upsert(sp,row);
+          sp.edit().putString("project.family",row.getString("family")).apply();
+          render();
+        }catch(Exception e){
+          new AlertDialog.Builder(this).setTitle("HOLD · Project not added")
+            .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+        }
+      }).show();
   }
 
   void routes(){
@@ -551,6 +661,7 @@ public final class MainActivity extends Activity {
     btn(remote,"JM Estate",false,()->url("https://jmisjustme.github.io/JM-cading-lab/"));
     btn(remote,"JM Games",false,()->url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/"));
     btn(remote,"GitHub",false,()->url("https://github.com/JMisJustMe/JM-cading-lab"));
+    btn(page,"Browse all JM projects →",true,()->{tab=6;render();});
   }
   void control(){
     title("SETTINGS / OWNER-GOVERNED","Control room.","These operations require your explicit touch or Android's approval.");
@@ -565,6 +676,7 @@ public final class MainActivity extends Activity {
     btn(controls,"Explore Galaxy built-ins",false,()->{tab=1;render();});
     btn(controls,"Run device preflight & export receipt",true,()->{tab=4;render();});
     btn(controls,"USB CONTACT / Owner-approved workstation",false,()->{tab=5;render();});
+    btn(controls,"My JM project shelf",false,()->{tab=6;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -595,7 +707,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_5.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_6.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -617,6 +729,8 @@ public final class MainActivity extends Activity {
         ownerTests.put("expanded",sp.getBoolean("owner.expanded_tested",false));
         ownerTests.put("reopen",sp.getBoolean("owner.reopen_tested",false));
         j.put("owner_test_marks",ownerTests);
+        j.put("project_shelf",ProjectShelf.all(sp));
+        j.put("active_project",ProjectShelf.selected(sp));
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -641,7 +755,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -652,19 +766,29 @@ public final class MainActivity extends Activity {
         boolean ready=legacy&&j.optBoolean("ready",false);
         int step=legacy?j.optInt("stage",0):0;
         if(step<0||step>4)throw new IllegalArgumentException("Stage invalid");
+        if(SCHEMA.equals(schema)){
+          ProjectShelf.validateList(j.getJSONArray("project_shelf"));
+          String active=j.getString("active_project");
+          boolean present=false;
+          org.json.JSONArray available=j.getJSONArray("project_shelf");
+          for(int n=0;n<available.length();n++){
+            if(available.getJSONObject(n).getString("id").equals(active))present=true;
+          }
+          if(!present)throw new IllegalArgumentException("Active project missing from imported shelf");
+        }
         new AlertDialog.Builder(this).setTitle("Import JM configuration?")
           .setMessage("Replace only this app's note, focus and opening progress? Samsung data and launcher stay untouched.")
           .setNegativeButton("Cancel",null)
           .setPositiveButton("Import",(d,w)->{
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
               JSONObject marks=j.optJSONObject("native_owner_marks");
               if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
               String group=j.optString("native_group","ASSIST");
               if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
             }
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
               String selectedSession=j.optString("session","MAKE");
               if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
                  selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){
@@ -675,6 +799,15 @@ public final class MainActivity extends Activity {
                 sp.edit().putBoolean("owner.compact_tested",owner.optBoolean("compact",false))
                   .putBoolean("owner.expanded_tested",owner.optBoolean("expanded",false))
                   .putBoolean("owner.reopen_tested",owner.optBoolean("reopen",false)).apply();
+              }
+            }
+            if(SCHEMA.equals(schema)){
+              try{
+                org.json.JSONArray projects=ProjectShelf.validateList(j.getJSONArray("project_shelf"));
+                String active=j.getString("active_project");
+                ProjectShelf.install(sp,projects,active);
+              }catch(Exception failure){
+                Toast.makeText(this,"HOLD · Imported JM settings, but project shelf was not restored",Toast.LENGTH_LONG).show();
               }
             }
             tab=0;render();

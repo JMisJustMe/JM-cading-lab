@@ -30,7 +30,7 @@ VALID_CONFIG_SCHEMAS = {
 VALID_SESSIONS = {"MAKE": "CREATE", "PLAYTEST": "PLAY",
                   "RESEARCH": "EVERYDAY", "RECOVERY": "CREATE"}
 ALLOWED_FOCUS = {"CREATE", "PLAY", "EVERYDAY"}
-MAX_SIZE = 65536
+MAX_SIZE = 524288
 STAGING = "files/bridge_request.json"
 SNAPSHOT = "files/bridge_snapshot.json"
 RECEIPT = "files/bridge_receipt.json"

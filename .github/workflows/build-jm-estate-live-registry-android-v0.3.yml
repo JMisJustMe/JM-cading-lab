@@ -1,0 +1,136 @@
+name: JM Estate Live Registry Android v0.3
+on:
+  push:
+    paths: ['apps/jm-estate-live-registry/**','.github/workflows/build-jm-estate-live-registry-android-v0.3.yml']
+  pull_request:
+    paths: ['apps/jm-estate-live-registry/**','.github/workflows/build-jm-estate-live-registry-android-v0.3.yml']
+  workflow_dispatch:
+permissions: {contents: read}
+concurrency:
+  group: jm-estate-live-registry-android-v0-3-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/jm-estate-live-registry/android-v0.3
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with: {distribution: temurin, java-version: '17'}
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;36.0.0' 'emulator' 'system-images;android-36;google_apis;x86_64'
+      - uses: gradle/actions/setup-gradle@v4
+        with: {gradle-version: '8.13'}
+
+      - name: Guard frozen parent chunks package and keeper
+        working-directory: .
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,io,json,pathlib,zipfile
+          r=pathlib.Path('apps/jm-estate-live-registry'); d=r/'android-v0.3'; room=d/'frozen-parent'
+          keeper='0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38'; package='15282c9707401df3cff7da48caad1818d5cd2ff9c07ecc716c45da14c0834093'
+          specs=[('part01',15500,'60c7e374062c3cf82eb6af2693937260a5cd063653cc9ee14855f98e0f56fe39'),('part02',15500,'146eb80792a04cbd4adb3c90bc0c1bfa43e29e68e7182599e43c147c98b3f4d1'),('part03',15500,'6f0d3713e373b833e7403f465201b57d81846155b760b2b5b143e4f54c81eb8a'),('part04',15328,'6403e17e87d61f5693f16d463e4e49d99f2f1f5e8f72ca34e2791758e8894033')]
+          enc=b''
+          for suffix,n,h in specs:
+            x=(room/f'JM_ESTATE_LIVE_REGISTRY_APP_v0.2_PACKAGE.zip.b64.{suffix}').read_bytes(); assert len(x)==n and hashlib.sha256(x).hexdigest()==h; enc+=x
+          assert len(enc)==61828; raw=base64.b64decode(enc,validate=True); assert len(raw)==46370 and hashlib.sha256(raw).hexdigest()==package
+          exp={'index.html':keeper,'JM_ESTATE_LIVE_REGISTRY_APP_v0.2.html':keeper,'style.css':'670633e05aae4837e8e796104801d7468a768b515e089558e02a9d48af21acf0','seed.js':'459e325167eafe9d4d446270966bbc2730f9a10b932ebbc76bedf8d3c33df2c9','app.js':'a295501c8df105771ffba36342f42a0a31d67a56018ba315e8961542e22757a1','manifest.webmanifest':'f91ea9420bb486f3f200f3d2c689ed4e825bcbe6f279d1b71f056e2c9d75cf54','sw.js':'29a507f13ec047bd3ebbc7d52ff524ab498861da4f82c6d167bf915f4d01ffc1'}
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+            for k,h in exp.items(): assert hashlib.sha256(z.read('JM_ESTATE_LIVE_REGISTRY_APP_v0.2/'+k)).hexdigest()==h,k
+          assert json.loads((r/'FREEZE_LOCK_ANCHOR_MOUNT_v0.2.json').read_text())['keeper_sha256']==keeper
+          assert keeper in (d/'README.md').read_text() and package in (d/'README.md').read_text()
+          print('EXACT_PARENT_PASS')
+          PY
+
+      - name: Create proof signing identity
+        run: keytool -genkeypair -noprompt -keystore proof-upload.jks -storepass jm-proof-only -keypass jm-proof-only -alias jm-proof -keyalg RSA -keysize 4096 -validity 3650 -dname 'CN=JM Estate Live Registry Android v0.3 Proof, O=JM, C=GB'
+      - name: Compile APK AAB and tests
+        run: gradle --no-daemon clean :app:assembleDebug :app:bundleRelease :app:assembleDebugAndroidTest
+      - name: Verify APK boundary
+        run: |
+          set -euo pipefail; APK=app/build/outputs/apk/debug/app-debug.apk; K=0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38
+          test "$(unzip -p "$APK" assets/registry/index.html|sha256sum|cut -d' ' -f1)" = "$K"
+          test "$(unzip -p "$APK" assets/registry/JM_ESTATE_LIVE_REGISTRY_APP_v0.2.html|sha256sum|cut -d' ' -f1)" = "$K"
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK"|tee /tmp/b; grep -q "package: name='com.jmisjustme.estateregistry'" /tmp/b; grep -q "versionCode='300'" /tmp/b; grep -q "targetSdkVersion:'36'" /tmp/b
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK"|tee /tmp/p; ! grep -q android.permission.INTERNET /tmp/p
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" >/tmp/debug-signature.txt
+      - name: Build universal proof APK
+        run: |
+          set -euo pipefail; mkdir -p release
+          cp app/build/outputs/apk/debug/app-debug.apk release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_DEBUG.apk
+          cp app/build/outputs/bundle/release/app-release.aab release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab
+          curl -fsSL -o bundletool.jar https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar
+          java -jar bundletool.jar validate --bundle=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab
+          java -jar bundletool.jar build-apks --bundle=release/JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab --output=release/v0.3.apks --mode=universal --ks=proof-upload.jks --ks-pass=pass:jm-proof-only --ks-key-alias=jm-proof --key-pass=pass:jm-proof-only
+          unzip -p release/v0.3.apks universal.apk > release/00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk; rm release/v0.3.apks
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs release/00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk > release/UNIVERSAL_SIGNATURE.txt
+          cp /tmp/debug-signature.txt release/DEBUG_SIGNATURE.txt
+
+      - name: Android API 36 emulator contact
+        continue-on-error: true
+        timeout-minutes: 12
+        run: |
+          set -uo pipefail; mkdir -p release; echo PENDING > release/EMULATOR_CONTACT_STATUS.txt
+          export ANDROID_AVD_HOME="$HOME/.android/avd"
+          mkdir -p "$ANDROID_AVD_HOME"
+          rm -rf "$ANDROID_AVD_HOME/jm_registry_api36.avd" "$ANDROID_AVD_HOME/jm_registry_api36.ini"
+          EMU=''
+          cleanup() {
+            adb emu kill >/dev/null 2>&1 || true
+            [ -n "$EMU" ] && kill "$EMU" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          avdmanager list device -c > release/AVD_DEVICE_LIST.txt 2>&1 || true
+          if ! printf 'no\n' | avdmanager create avd --force --name jm_registry_api36 --package 'system-images;android-36;google_apis;x86_64' --device pixel_7 >release/AVD_CREATE.log 2>&1; then
+            echo FAIL_AVD_CREATE >release/EMULATOR_CONTACT_STATUS.txt
+            avdmanager list avd >release/AVD_LIST.txt 2>&1 || true
+            exit 1
+          fi
+          avdmanager list avd >release/AVD_LIST.txt 2>&1 || true
+          if [ ! -s "$ANDROID_AVD_HOME/jm_registry_api36.ini" ]; then
+            echo FAIL_AVD_CREATE >release/EMULATOR_CONTACT_STATUS.txt
+            exit 1
+          fi
+          sudo chmod 666 /dev/kvm 2>/dev/null||true
+          ANDROID_AVD_HOME="$ANDROID_AVD_HOME" nohup "$ANDROID_HOME/emulator/emulator" -avd jm_registry_api36 -no-window -no-audio -no-boot-anim -no-snapshot -gpu swiftshader_indirect -accel auto >release/EMULATOR_BOOT.log 2>&1 & EMU=$!
+          if ! timeout 120s adb wait-for-device; then echo FAIL_ADB >release/EMULATOR_CONTACT_STATUS.txt; exit 1; fi
+          BOOT=0; for _ in $(seq 1 120); do [ "$(adb shell getprop sys.boot_completed 2>/dev/null|tr -d '\r')" = 1 ] && BOOT=1 && break; sleep 2; done
+          if [ "$BOOT" != 1 ]; then echo FAIL_BOOT >release/EMULATOR_CONTACT_STATUS.txt; adb logcat -d -v time >release/EMULATOR_LOGCAT.txt 2>&1||true; exit 1; fi
+          adb shell settings put global window_animation_scale 0||true; adb shell settings put global transition_animation_scale 0||true; adb shell settings put global animator_duration_scale 0||true; adb shell wm size 1080x2400||true
+          set +e
+          timeout --signal=TERM --kill-after=30s 8m gradle --no-daemon :app:connectedDebugAndroidTest
+          RC=$?
+          set -e
+          cp -R app/build/outputs/androidTest-results/connected release/EMULATOR_TEST_RESULTS 2>/dev/null||true; cp -R app/build/reports/androidTests/connected release/EMULATOR_TEST_REPORT 2>/dev/null||true
+          adb install -r app/build/outputs/apk/debug/app-debug.apk >/dev/null 2>&1||true; adb shell am force-stop com.jmisjustme.estateregistry||true; adb shell monkey -p com.jmisjustme.estateregistry -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1||true; sleep 3
+          adb exec-out screencap -p >release/EMULATOR_SCREEN.png 2>/dev/null||true; adb shell uiautomator dump /sdcard/JM.xml >/dev/null 2>&1||true; adb pull /sdcard/JM.xml release/EMULATOR_WINDOW.xml >/dev/null 2>&1||true; adb logcat -d -v time >release/EMULATOR_LOGCAT.txt 2>&1||true
+          if [ "$RC" -eq 0 ]; then echo PASS >release/EMULATOR_CONTACT_STATUS.txt; exit 0; fi
+          if [ "$RC" -eq 124 ]; then echo FAIL_INSTRUMENTATION_TIMEOUT >release/EMULATOR_CONTACT_STATUS.txt; exit 124; fi
+          echo FAIL_INSTRUMENTATION >release/EMULATOR_CONTACT_STATUS.txt; exit "$RC"
+
+      - name: Receipt source snapshot and hashes
+        if: always()
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path; import hashlib,json,os,zipfile
+          h=Path('.'); r=h/'release'; r.mkdir(exist_ok=True); status=(r/'EMULATOR_CONTACT_STATUS.txt').read_text().strip() if (r/'EMULATOR_CONTACT_STATUS.txt').exists() else 'NOT_RUN'; sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          meta=lambda n:({'name':n,'bytes':(r/n).stat().st_size,'sha256':sha(r/n)} if (r/n).is_file() else None)
+          rec={'schema':'jm.estate-live-registry.android-build-receipt/0.3.4','status':'BUILD_AND_EMULATOR_PASS__PHYSICAL_DEVICE_CONTACT_OPEN' if status=='PASS' else 'ASSISTANT_SIDE_PROOF_INCOMPLETE','body':'JM Estate Live Registry Android v0.3','frozenParentSha256':'0ec929d0c4f0c281878af091263c45b8db4b5b71edb40e911364c43d15336f38','frozenParentPackageSha256':'15282c9707401df3cff7da48caad1818d5cd2ff9c07ecc716c45da14c0834093','parentMode':'four SHA-verified transport chunks -> exact frozen v0.2 package','sourceCommit':os.getenv('GITHUB_SHA'),'workflowRun':os.getenv('GITHUB_RUN_ID'),'package':'com.jmisjustme.estateregistry','api':36,'internetPermission':False,'emulatorContact':status,'physicalDeviceDing':'OPEN','freezeState':'NOT_FROZEN__PHYSICAL_CONTACT_REQUIRED','universalApk':meta('00_INSTALL_JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_UNIVERSAL.apk'),'proofAab':meta('JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_PROOF.aab'),'emulatorScreen':meta('EMULATOR_SCREEN.png')}
+          (r/'ANDROID_v0.3_BUILD_RECEIPT.json').write_text(json.dumps(rec,indent=2)+'\n')
+          keep=['README.md','settings.gradle.kts','build.gradle.kts','gradle.properties','app/build.gradle.kts','app/src/main/AndroidManifest.xml','app/src/main/res/values/styles.xml','app/src/main/java/com/jmisjustme/estateregistry/MainActivity.java','app/src/androidTest/AndroidManifest.xml','app/src/androidTest/java/com/jmisjustme/estateregistry/TestJsonProvider.java','app/src/androidTest/java/com/jmisjustme/estateregistry/RegistryInstrumentedTest.java']+[f'frozen-parent/JM_ESTATE_LIVE_REGISTRY_APP_v0.2_PACKAGE.zip.b64.part0{i}' for i in range(1,5)]
+          with zipfile.ZipFile(r/'JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3_SOURCE.zip','w',zipfile.ZIP_DEFLATED) as z:
+            for x in map(Path,keep):
+              if x.is_file(): z.write(x,x.as_posix())
+          PY
+          find release -maxdepth 1 -type f ! -name SHA256SUMS.txt -print0|sort -z|xargs -0 sha256sum >release/SHA256SUMS.txt
+      - name: Upload proof body
+        if: always()
+        uses: actions/upload-artifact@v4
+        with: {name: JM_ESTATE_LIVE_REGISTRY_ANDROID_v0.3, retention-days: 30, path: apps/jm-estate-live-registry/android-v0.3/release/}
+      - name: Enforce assistant-side proof completion
+        if: always()
+        run: test -f release/EMULATOR_CONTACT_STATUS.txt && test "$(cat release/EMULATOR_CONTACT_STATUS.txt)" = PASS

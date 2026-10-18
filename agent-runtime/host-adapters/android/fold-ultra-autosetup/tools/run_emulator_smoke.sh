@@ -41,21 +41,7 @@ adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emu
 python3 -c 'import json; x=json.load(open("emulator-proof/USB_PENDING_RECEIPT.json")); assert x["status"]=="PENDING" and x["kind"]=="plan"'
 # Simulate a human explicitly pressing APPLY *on the disposable emulator only*.
 # This is automated QA, not physical Fold owner approval.
-adb shell uiautomator dump /sdcard/jm_owner_ui.xml > emulator-proof/OWNER_UI_DUMP_COMMAND.txt
-adb exec-out cat /sdcard/jm_owner_ui.xml > emulator-proof/OWNER_UI_BEFORE.xml
-python3 - <<'PY' > emulator-proof/APPLY_COORDS.txt
-import re,xml.etree.ElementTree as ET
-tree=ET.parse("emulator-proof/OWNER_UI_BEFORE.xml")
-candidates=[node for node in tree.iter() if node.attrib.get("text")=="APPLY"]
-assert len(candidates)==1, "Expected one explicit on-screen APPLY control"
-bounds=candidates[0].attrib["bounds"]
-m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",bounds)
-assert m, "Missing clickable Android control bounds"
-x1,y1,x2,y2=map(int,m.groups())
-print((x1+x2)//2,(y1+y2)//2)
-PY
-read X Y < emulator-proof/APPLY_COORDS.txt
-adb shell input tap "$X" "$Y"
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/emulator_dialog.py OWNER
 sleep 3
 adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/USB_OWNER_SIMULATED_RECEIPT.json
 python3 - <<'PY'
@@ -79,20 +65,7 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/jm_fold_u
 sleep 3
 adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/SESSION_PENDING.json
 python3 -c 'import json;x=json.load(open("emulator-proof/SESSION_PENDING.json"));assert x["status"]=="PENDING" and x["kind"]=="session_update"'
-adb shell uiautomator dump /sdcard/jm_session_approval_ui.xml > emulator-proof/SESSION_UI_COMMAND.txt
-adb exec-out cat /sdcard/jm_session_approval_ui.xml > emulator-proof/SESSION_UI.xml
-python3 - <<'PY' > emulator-proof/SESSION_APPLY_COORDS.txt
-import re,xml.etree.ElementTree as ET
-t=ET.parse("emulator-proof/SESSION_UI.xml")
-buttons=[e for e in t.iter() if e.attrib.get("text")=="APPLY"]
-assert len(buttons)==1, "Expected exactly one session approval button"
-m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",buttons[0].attrib["bounds"])
-assert m
-x1,y1,x2,y2=map(int,m.groups())
-print((x1+x2)//2,(y1+y2)//2)
-PY
-read X Y < emulator-proof/SESSION_APPLY_COORDS.txt
-adb shell input tap "$X" "$Y"
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/emulator_dialog.py SESSION
 sleep 3
 adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/SESSION_ACCEPTED.json
 python3 -c 'import json;d=json.load(open("emulator-proof/SESSION_ACCEPTED.json"));assert d["status"]=="ACCEPTED" and d["kind"]=="session_update",d'
@@ -110,22 +83,7 @@ assert entry["next_action"]=="Resume symmetry test"
 PY
 # Return-point proof on disposable emulator, not owner Fold.
 approve_dialog() {
-  label="$1"
-  adb shell uiautomator dump "/sdcard/jm_$label.xml" > "emulator-proof/$label.dump.txt"
-  adb exec-out cat "/sdcard/jm_$label.xml" > "emulator-proof/$label.ui.xml"
-  python3 - "$label" <<'PY' > "emulator-proof/$label.xy"
-import sys,re,xml.etree.ElementTree as ET
-label=sys.argv[1]
-doc=ET.parse("emulator-proof/"+label+".ui.xml")
-buttons=[e for e in doc.iter() if e.attrib.get("text")=="APPLY"]
-assert len(buttons)==1, "Expected one APPLY control"
-m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",buttons[0].attrib["bounds"])
-assert m
-x1,y1,x2,y2=map(int,m.groups())
-print((x1+x2)//2,(y1+y2)//2)
-PY
-  read X Y < "emulator-proof/$label.xy"
-  adb shell input tap "$X" "$Y"
+  python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/emulator_dialog.py "$1"
   sleep 3
 }
 BRIDGE=agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/jm_fold_usb_bridge.py

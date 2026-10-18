@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""JM Fold Ultra 0.6 — authorised USB ADB bridge, debug APK only.
+"""JM Fold Ultra 0.7 — authorised USB ADB bridge, debug APK only.
 
 No network, root, Samsung launcher writes, secrets on command line, or
 unattended phone-side changes. ADB run-as is possible for *debuggable* APKs
@@ -21,10 +21,10 @@ from urllib.parse import urlsplit
 import ipaddress
 
 PACKAGE = "com.jmisjustme.foldultra"
-REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.6"
-CONFIG_SCHEMA = "JM.FoldUltraSetup/0.6"
+REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.7"
+CONFIG_SCHEMA = "JM.FoldUltraSetup/0.7"
 VALID_CONFIG_SCHEMAS = {
-    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
+    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
     "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2",
 }
 VALID_SESSIONS = {"MAKE": "CREATE", "PLAYTEST": "PLAY",
@@ -43,6 +43,8 @@ class BridgeError(Exception):
 PROJECT_FAMILIES = {"GAMES", "MUSIC", "BUILD", "ESTATE"}
 PROJECT_ID = re.compile(r"^[a-z0-9][a-z0-9-]{1,31}$")
 PROJECT_LIMIT = 24
+VALID_PLANS = {"MAKE", "PLAYTEST", "RESEARCH", "RECOVERY"}
+VALID_LAYOUTS = {"QUICK", "COMFORT"}
 
 
 def safe_project_url(url: str) -> str:
@@ -129,6 +131,11 @@ def validate_config(data: object) -> dict:
         if name in data and not isinstance(data[name], dict):
             raise BridgeError(f"{name} must be an object")
     if data.get("schema") == CONFIG_SCHEMA:
+        if data.get("layout_compact") not in VALID_LAYOUTS or data.get("layout_expanded") not in VALID_LAYOUTS:
+            raise BridgeError("Invalid per-window JM layout profile")
+        if data.get("setup_last", "") not in VALID_PLANS | {""}:
+            raise BridgeError("Invalid last setup plan")
+    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.6"}:
         validate_project_shelf(data.get("project_shelf"), data.get("active_project"))
     return data
 
@@ -139,6 +146,14 @@ def document_bytes(value: dict) -> bytes:
     if len(data) > MAX_SIZE:
         raise BridgeError("Payload exceeds 64 KiB safety limit")
     return data
+
+
+def plan_request(name: str) -> dict:
+    name = name.upper()
+    if name not in VALID_PLANS:
+        raise BridgeError("Only named JM setup plans can be requested")
+    return {"schema": REQUEST_SCHEMA, "request_id": secrets.token_hex(16),
+            "kind": "plan", "plan_id": name}
 
 
 def new_profile_request(session: str, focus: str | None = None) -> dict:
@@ -208,7 +223,7 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
     # Verify byte-for-byte contact while the request is still staged.
     # If transport alters the payload, do not launch any phone-side approval.
     echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
-    if echoed != payload and body.get("kind") in {"profile", "project_select"} and len(payload) <= 512:
+    if echoed != payload and body.get("kind") in {"profile", "project_select", "plan"} and len(payload) <= 512:
         # Narrow fallback for non-sensitive route choices only.
         # ADB exec-in can truncate tiny streams on some emulators. For this
         # whitelisted metadata, retry with a one-command base64 transfer.
@@ -263,11 +278,13 @@ def read_config_file(path: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="JM Fold Ultra v0.6 — owner-approved USB contact")
+    p = argparse.ArgumentParser(description="JM Fold Ultra v0.7 — owner-approved USB contact")
     p.add_argument("--adb", default="adb", help="Android platform-tools adb executable")
     p.add_argument("--serial", help="ADB serial; mandatory if multiple devices are present")
     sub = p.add_subparsers(dest="action", required=True)
     sub.add_parser("status", help="Read device identity and debug-app contact")
+    plans = sub.add_parser("plan", help="Stage a whole-JM setup plan; phone must approve")
+    plans.add_argument("name", choices=sorted(VALID_PLANS))
     profile = sub.add_parser("profile", help="Stage a bounded JM route; phone must approve")
     profile.add_argument("session", choices=sorted(VALID_SESSIONS))
     profile.add_argument("--focus", choices=sorted(ALLOWED_FOCUS))
@@ -294,8 +311,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"USB CONTACT READY / {serial} / model {model} / Android API {sdk}")
             print(f"JM debug app installed: {bool(package_path)}")
             print("No phone settings changed. ADB trust remains your responsibility.")
-        elif args.action in {"profile", "restore", "project-select", "project-bind"}:
-            if args.action == "profile":
+        elif args.action in {"plan", "profile", "restore", "project-select", "project-bind"}:
+            if args.action == "plan":
+                body = plan_request(args.name)
+            elif args.action == "profile":
                 body = new_profile_request(args.session, args.focus)
             elif args.action == "restore":
                 body = new_restore_request(read_config_file(args.file))
@@ -315,7 +334,7 @@ def main(argv: list[str] | None = None) -> int:
             print("SHA-256:", hashlib.sha256(payload).hexdigest())
         elif args.action == "receipt":
             data = json.loads(read_private(args.adb, serial, RECEIPT))
-            if data.get("schema") != "JM.FoldBridgeReceipt/0.6":
+            if data.get("schema") != "JM.FoldBridgeReceipt/0.7":
                 raise BridgeError("Unknown receipt schema")
             print(json.dumps(data, indent=2, ensure_ascii=False))
             if data.get("status") != "ACCEPTED":

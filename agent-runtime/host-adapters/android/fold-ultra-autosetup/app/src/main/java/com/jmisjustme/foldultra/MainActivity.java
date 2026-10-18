@@ -18,10 +18,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.3";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.4";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
-  static final int EXPORT=203,IMPORT=204;
+  static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
   SharedPreferences sp;
   LinearLayout page;
   boolean wide;
@@ -35,6 +35,10 @@ public final class MainActivity extends Activity {
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     render();
+    if(state==null)inspectIncoming(getIntent());
+  }
+  @Override protected void onNewIntent(Intent intent){
+    super.onNewIntent(intent);setIntent(intent);inspectIncoming(intent);
   }
   @Override public void onSaveInstanceState(Bundle out){out.putInt("tab",tab);super.onSaveInstanceState(out);}
   @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();}
@@ -90,7 +94,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(26),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.2",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.4",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -190,6 +194,13 @@ public final class MainActivity extends Activity {
         label(receipt,"✓ Manual JSON recovery   ✓ No dangerous permissions",14,WHITE,true);
         space(receipt,12);
         label(receipt,"Owner-device runtime and Fold contact: NOT YET VERIFIED.",13,MUTED,false);
+        space(receipt,12);
+        btn(receipt,"Run local preflight before entry",false,()->{
+          runPreflight();
+          new AlertDialog.Builder(this).setTitle("Local preflight captured")
+            .setMessage("App-level checks were saved. After entry, open CONTROL → PREFLIGHT to review or export. Physical Fold testing remains separate.")
+            .setPositiveButton("OK",null).show();
+        });
     }
     space(page,16);
     if(n>0)btn(page,"←  Previous stage",false,()->stage(n-1));
@@ -243,7 +254,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else control();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else preflight();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -274,6 +285,16 @@ public final class MainActivity extends Activity {
       public void afterTextChanged(Editable x){}
     });
     btn(note,"Export JM configuration",false,()->file(true));
+    LinearLayout intake=card("REAL DEVICE WORKFLOW","Share into JM",
+      "From a browser, Notes or another app use Android Share → JM Fold Ultra. Review text or a link before adding it to this root note.",BLUE);
+    label(intake,"No background reading. No clipboard spying. Shared content is never stored until you approve.",13,MUTED,false);
+    LinearLayout action=card("ONE-TOUCH SESSION","Use a session recipe",
+      "A recipe changes JM's own quick routes and offers a launch. It cannot silently create a Samsung App Pair.",PURPLE);
+    btn(action,"Make  /  JM creator routes",false,()->session("MAKE"));
+    btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
+    btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
+    btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
+    btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
 
   static final String[] NATIVE_KEYS={
@@ -373,6 +394,125 @@ public final class MainActivity extends Activity {
     }
   }
 
+
+  void session(String kind){
+    String focus=kind.equals("PLAYTEST")?"PLAY":kind.equals("RESEARCH")?"EVERYDAY":"CREATE";
+    String nativeGroup=kind.equals("PLAYTEST")?"WORK":kind.equals("RESEARCH")?"ASSIST":"CREATE";
+    sp.edit().putString("session",kind).putString("focus",focus)
+      .putString("native.group",nativeGroup).apply();
+    new AlertDialog.Builder(this).setTitle("JM "+kind+" / Ready")
+      .setMessage("JM quick routes are prepared. This does not change Samsung system settings or launch two applications.")
+      .setNegativeButton("Stay in JM",(d,w)->render())
+      .setPositiveButton("Open first route",(d,w)->{
+        render();
+        if(kind.equals("PLAYTEST"))url("https://jmisjustme.github.io/JM-cading-lab/games-beyond/");
+        else if(kind.equals("RECOVERY"))app("com.sec.android.app.myfiles");
+        else if(kind.equals("RESEARCH"))app("com.openai.chatgpt");
+        else url("https://jmisjustme.github.io/JM-cading-lab/");
+      }).show();
+  }
+  void inspectIncoming(Intent intent){
+    if(intent==null||!Intent.ACTION_SEND.equals(intent.getAction()))return;
+    if(!"text/plain".equals(intent.getType()))return;
+    CharSequence supplied=intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+    if(supplied==null)return;
+    String incoming=supplied.toString().trim();
+    if(incoming.isEmpty())return;
+    // Clear delivery to prevent a replay on subsequent Activity lifecycle events.
+    intent.removeExtra(Intent.EXTRA_TEXT);
+    if(incoming.length()>2500){
+      Toast.makeText(this,"HOLD · Shared text exceeds 2,500 characters",Toast.LENGTH_LONG).show();
+      return;
+    }
+    String excerpt=incoming.length()>220?incoming.substring(0,220)+"…":incoming;
+    new AlertDialog.Builder(this).setTitle("SOURCE CONTACT / Android Share")
+      .setMessage("Another app shared text with JM:\n\n"+excerpt+"\n\nAppend to your local root note?")
+      .setNegativeButton("Discard",null)
+      .setPositiveButton("Add to JM",(d,w)->{
+        String previous=sp.getString("root","");
+        String proposed=previous+"\n\n[SHARED SOURCE]\n"+incoming;
+        if(proposed.length()>10000){
+          new AlertDialog.Builder(this).setTitle("HOLD · JM note is full")
+            .setMessage("No content was saved. Export or shorten the current JM root first.")
+            .setPositiveButton("OK",null).show();return;
+        }
+        sp.edit().putString("root",proposed)
+          .putInt("source.count",sp.getInt("source.count",0)+1).apply();
+        tab=0;render();
+        Toast.makeText(this,"Shared source saved locally",Toast.LENGTH_SHORT).show();
+      }).show();
+  }
+  void runPreflight(){
+    try{
+      JSONObject data=DevicePreflight.inspect(this,sp,widthDp,wide);
+      boolean saved=sp.edit().putString("preflight.last",data.toString(2)).commit();
+      if(!saved)throw new IOException("Local receipt save failed");
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Preflight not saved")
+        .setMessage(e.toString()).setPositiveButton("OK",null).show();
+    }
+  }
+  void preflight(){
+    title("LOCAL QA / REPEATABLE","Your preflight workbench.",
+      "One tap runs bounded checks; owner contacts remain separate. Nothing modifies Samsung settings.");
+    LinearLayout main=card("DEVICE PROBE","Check this Android installation",
+      "Inspects the package, permission list, local save/read, available width, visible app targets and shortcut-request support.",TEAL);
+    btn(main,"RUN PREFLIGHT NOW",true,()->{runPreflight();render();});
+    String receipt=sp.getString("preflight.last","");
+    if(!receipt.isEmpty()){
+      try{
+        JSONObject o=new JSONObject(receipt);
+        LinearLayout summary=card("LOCAL RECEIPT","Automatic PASS "+o.optInt("automatic_pass")+" / HOLD "+o.optInt("automatic_hold"),
+          "Owner marks "+o.optInt("owner_assertions")+"; untouched manual checks "+o.optInt("manual_open")+". Not a physical Fold certification.",BLUE);
+        label(summary,"Device: "+o.optString("device_manufacturer")+" "+o.optString("device_model")
+          +"  ·  API "+o.optInt("android_api"),13,MUTED,false);
+        space(summary,8);
+        org.json.JSONArray checks=o.getJSONArray("checks");
+        for(int i=0;i<checks.length();i++){
+          JSONObject entry=checks.getJSONObject(i);
+          String status=entry.optString("status","OPEN");
+          label(summary,status+"  /  "+entry.optString("label"),13,
+            status.equals("PASS")?TEAL:status.equals("HOLD")?PURPLE:MUTED,true);
+          space(summary,3);
+          label(summary,entry.optString("evidence"),12,MUTED,false);
+          space(summary,9);
+        }
+      }catch(Exception e){
+        card("RECEIPT","HOLD · Saved diagnostic cannot be parsed","Run the check again.",PURPLE);
+      }
+    }else card("RECEIPT","Not run yet","This screen does not pretend the checks already happened.",PURPLE);
+    LinearLayout checks=card("OWNER CONTACT / HONEST STATUS","Three tests only you can confirm",
+      "These marks are editable declarations, not readings from a hinge sensor.",PURPLE);
+    ownerMark(checks,"owner.compact_tested","I saw the compact SOURCE UI");
+    ownerMark(checks,"owner.expanded_tested","I saw the expanded WORKFIELD UI");
+    ownerMark(checks,"owner.reopen_tested","I closed and reopened; my JM note survived");
+    LinearLayout preserve=card("RECOVERY","Receipts and configuration",
+      "Reports include the device model and a SHA-256 of the root note, but not its content. Configuration export includes the full note by your choice.",BLUE);
+    btn(preserve,"Export diagnostic receipt (.json)",false,()->{
+      if(sp.getString("preflight.last","").isEmpty()){
+        Toast.makeText(this,"Run preflight first",Toast.LENGTH_LONG).show();return;
+      }
+      Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+      intent.addCategory(Intent.CATEGORY_OPENABLE);
+      intent.setType("application/json");
+      intent.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_PREFLIGHT_v0_4.json");
+      try{startActivityForResult(intent,PREFLIGHT_EXPORT);}
+      catch(Exception e){Toast.makeText(this,"HOLD · No document picker",Toast.LENGTH_LONG).show();}
+    });
+    btn(preserve,"Export complete JM configuration",false,()->file(true));
+    btn(preserve,"Import JM configuration",false,()->file(false));
+    label(page,"FINAL CLAIM BOUNDARY / SOURCE COMPILE ≠ DEVICE DING; OWNER MARK ≠ SENSOR MEASUREMENT",12,MUTED,true);
+    btn(page,"← Back to JM Root",false,()->{tab=0;render();});
+  }
+  void ownerMark(LinearLayout where,String key,String title){
+    boolean marked=sp.getBoolean(key,false);
+    btn(where,(marked?"✓ ":"○ ")+title,false,()->{
+      sp.edit().putBoolean(key,!marked).apply();
+      // Existing report is intentionally not re-stamped without a fresh diagnostic.
+      render();
+    });
+  }
+
   void routes(){
     title("CONTACT ROUTES","Open existing bodies.","No hidden migration and no pretend connections.");
     LinearLayout local=card("ANDROID","Device apps","Installed apps open normally. Missing ones return HOLD.",BLUE);
@@ -396,6 +536,7 @@ public final class MainActivity extends Activity {
     btn(controls,"Export configuration JSON",false,()->file(true));
     btn(controls,"Import configuration JSON",false,()->file(false));
     btn(controls,"Explore Galaxy built-ins",false,()->{tab=1;render();});
+    btn(controls,"Run device preflight & export receipt",true,()->{tab=4;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -426,7 +567,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_3.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_4.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -442,11 +583,25 @@ public final class MainActivity extends Activity {
         j.put("ready",sp.getBoolean("ready",false));j.put("stage",sp.getInt("stage",0));
         JSONObject marks=new JSONObject();for(String key:NATIVE_KEYS)marks.put(key,sp.getBoolean("tried."+key,false));
         j.put("native_owner_marks",marks);j.put("native_group",sp.getString("native.group","ASSIST"));
+        j.put("session",sp.getString("session","MAKE"));
+        JSONObject ownerTests=new JSONObject();
+        ownerTests.put("compact",sp.getBoolean("owner.compact_tested",false));
+        ownerTests.put("expanded",sp.getBoolean("owner.expanded_tested",false));
+        ownerTests.put("reopen",sp.getBoolean("owner.reopen_tested",false));
+        j.put("owner_test_marks",ownerTests);
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
         }
         Toast.makeText(this,"JM configuration exported",1).show();
+      }else if(req==PREFLIGHT_EXPORT){
+        String receipt=sp.getString("preflight.last","");
+        if(receipt.isEmpty())throw new IOException("Run diagnostics before exporting a receipt");
+        try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
+          if(o==null)throw new IOException("Receipt output unavailable");
+          o.write(receipt.getBytes(StandardCharsets.UTF_8));
+        }
+        Toast.makeText(this,"Local preflight receipt exported",Toast.LENGTH_LONG).show();
       }else if(req==IMPORT){
         ByteArrayOutputStream o=new ByteArrayOutputStream();
         try(InputStream in=getContentResolver().openInputStream(uri)){
@@ -458,7 +613,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -475,11 +630,24 @@ public final class MainActivity extends Activity {
           .setPositiveButton("Import",(d,w)->{
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
-            if(SCHEMA.equals(schema)) {
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
               JSONObject marks=j.optJSONObject("native_owner_marks");
               if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
               String group=j.optString("native_group","ASSIST");
               if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
+            }
+            if(SCHEMA.equals(schema)){
+              String selectedSession=j.optString("session","MAKE");
+              if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
+                 selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){
+                sp.edit().putString("session",selectedSession).apply();
+              }
+              JSONObject owner=j.optJSONObject("owner_test_marks");
+              if(owner!=null){
+                sp.edit().putBoolean("owner.compact_tested",owner.optBoolean("compact",false))
+                  .putBoolean("owner.expanded_tested",owner.optBoolean("expanded",false))
+                  .putBoolean("owner.reopen_tested",owner.optBoolean("reopen",false)).apply();
+              }
             }
             tab=0;render();
           }).show();

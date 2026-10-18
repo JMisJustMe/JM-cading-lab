@@ -1,30 +1,60 @@
-# JM FOLD ULTRA · v0.4 PREFLIGHT WHOLEBODY
+# JM FOLD ULTRA v0.5 — USB CONTACT BRIDGE
 
-**Working status:** Native Android source descendant of v0.3; v0.1–v0.3 remain in Git history. Run build for exact committed SHA before claiming carrier pass. No phone data reset or launcher takeover.
+**Status:** Development descendant of v0.4, with v0.1–v0.4 preserved in Git history; not a new parallel JM system. Samsung settings and personal files remain untouched.
 
-## Wholebody carry-forward
-- Five-stage first opening (arrival, priorities, paired screen views, Samsung/native route discovery, owner entry).
-- Four native sections: ROOT, GALAXY, ROUTES, CONTROL.
-- Eight Samsung capability guides/handoffs with owner-asserted and reversible exploration marks.
-- Four JM session recipes (MAKE, PLAYTEST, RESEARCH, RECOVERY): each changes **JM-only** routing preferences then asks before opening its first external route. No fake multiwindow app pair.
-- Real Android `ACTION_SEND` / `text/plain` share-target receiving from other apps; **review and explicit approval** before appending 2500-character-max text/link to JM root note. Does not read clipboard, messages or arbitrary user files.
-- One-tap preflight uses Android APIs to produce an **actual** bounded JSON receipt, including API/package, manifest permission inventory, immediate local save/read, current available width, visible app launch targets, supported shortcut request, and separately recorded human test assertions.
-- Preflight JSON uses SHA-256 of root note rather than plaintext, includes device model and scoped evidence/status counts, and **always reports physical Fold contact OPEN** until owner tests.
-- Owner tests (compact, expanded, reopen) are explicit marks, never sensor-proven physical validation.
-- Config export JSON v0.4 includes note, JM priority, owner marks, session and native category. Explicit import confirmation and schema range v0.1–v0.4, imported marks only for relevant versions.
+## Wholebody carried forward
 
-## Native safeguards
-No `INTERNET` or other Android permissions. External web routes use system browser. `ACTION_SEND` uses normal Android sharesheet; shared text is discarded if declined and is not logged/networked. Android Settings/Gallery/Camera open only when user taps. App-only preferences saved to its private storage.
+- Five-stage native prelaunch opening, compact SOURCE and expanded WORKFIELD layouts, and owner-selected MAKE/PLAY/RESEARCH/RECOVERY routes.
+- Galaxy AI discovery/handoff without impersonating Samsung's privileged APIs.
+- Android text-only Share into JM (explicit approval), JM root note, JSON import/export (schemas v0.1–v0.5), owner test marks, and device-preflight diagnostics.
+- Independent control for the app's own settings. No launcher takeover, remote server, dangerous Android permission, or silent system modification.
 
-**Known boundaries:** No silent One UI edits, Samsung Now Nudge feed, proprietary AI control, hidden hinge sensor, external backup access, autonomous Oppo transfer, DeX automation, launcher replacements or automatic app-pair creation.
+## Newly functional: USB contact (developer mode only)
 
-## Proof gates
-1. Static contracts and Android build must pass CI; APK file hash, version, package, permissions and signature verified.
-2. Optional generic Android emulator smoke if available: inspect first-run UI at compact/expanded configurations, capture screenshot, cold-start; this is not evidence for real Samsung fold behavior.
-3. Physical owner Fold proof remains separately OPEN; debug signing key rotation across CI runs may prevent direct in-place upgrades, even if package name matches. Keep previous APKs and data; back up JM JSON before intentionally uninstalling/upgrading.
-4. Do not claim installation or owner contact from a GitHub build receipt.
+**Two complementary bodies:** a native `UsbBridge.java` (phone side) and standalone Python 3 `tools/jm_fold_usb_bridge.py` (trusted laptop side). Phone must be connected over USB with owner-approved ADB debugging, and JM installed as a **debuggable APK** so `adb run-as` works.
 
-## Owner-device journey (later, with approval)
-Open prelaunch → choose quick route → discover Galaxy tools → run PREFLIGHT → read local receipt → compare cover and inner view → externally share a test link into JM and approve → export configuration and diagnostic receipts → close/reopen and manually record what actually survived → check one real Samsung app handoff.
+- `status`: check trusted ADB contact, model/API and package, without changing settings.
+- `profile MAKE|PLAYTEST|RESEARCH|RECOVERY`: stream a bounded request to JM private app storage, open JM, and ask the owner to **APPLY or REJECT**. Only JM focus/session preferences can change.
+- `restore FILE`: validate JM configuration schema, stage app-private data, and ask owner approval on the phone; save a rollback snapshot before approved import.
+- `receipt`: retrieve exact phone-side PENDING, ACCEPTED, REJECTED, HOLD or INVALID decision. A staged command is not a Ding.
+- Inside JM **USB CONTACT**, tap `Prepare USB recovery snapshot` to explicitly create the JSON file; from laptop `backup FILE` retrieves it (no overwrite, owner-only mode where supported), with SHA-256.
+- Inside JM **USB CONTACT**, `Recover previous approved restore` swaps app-local configuration back after an explicit owner prompt.
+- Every request is claimed once; there is no auto-apply, network listener, background file watcher or unrestricted ADB script runner.
 
-**Primary source:** GitHub PR #371. JM32-1DA, Phone↔Laptop Contact Runner, Developer Playground ancestor lineage retained.
+## Typical safe workstation use
+
+Download official Android platform-tools on your laptop, connect your Fold by USB, and approve the phone's USB-debugging trust dialog **only for your own laptop**. Locate `tools/jm_fold_usb_bridge.py`.
+
+```bash
+python3 jm_fold_usb_bridge.py status
+python3 jm_fold_usb_bridge.py profile PLAYTEST
+# Approve or reject on the phone
+python3 jm_fold_usb_bridge.py receipt
+```
+
+To preserve existing JM settings, in the phone's USB CONTACT view choose **Prepare USB recovery snapshot**, then:
+
+```bash
+python3 jm_fold_usb_bridge.py backup ./JM_FOLD_BACKUP.json
+# Restore only when intended — still requires phone-side approval:
+python3 jm_fold_usb_bridge.py restore ./JM_FOLD_BACKUP.json
+```
+
+If more than one authorised device is connected, pass `--serial DEVICE_ID`. Refuse untrusted/lost devices. Backups include private JM note text; protect the local file. The diagnostic receipt by contrast hashes the note without exposing its text.
+
+## Boundaries and recovery law
+
+- ADB USB debugging is a powerful **owner-granted developer capability independent of JM**. Debuggable apps allow trusted ADB clients to inspect their private files; use your own laptop, protect the backup and revoke ADB trust when finished.
+- Debug APKs from independent CI runs may use different signing identities: direct updates are not guaranteed. Export app configuration before uninstalling a previous test build. Do not delete originals before recovery proof.
+- No background root access, device administrator, Samsung Home screen automation, private Galaxy AI access, Oppo migration or automatic multiwindow creation.
+- Current USB bridge applies JM app settings only. Samsung system settings must remain the user's chosen values.
+- Physical Fold USB use and folded/unfolded transition remain OPEN until tested by the owner.
+
+## Verification gates
+
+1. Python source-contract scan and mock bridge tests pass.
+2. Android SDK 36 compilation, package/version, signature, ZIP integrity and permission audit pass.
+3. Generic Android emulator narrow/wide/reopen plus staging an **unapproved** request and verifying app records PENDING. This is not Samsung One UI or owner DING.
+4. Owner device contact and visual review separately required.
+
+Source: the existing JM Fold Ultra draft PR #371 on GitHub, recovering JM32-1DA and JM Phone↔Laptop Contact Runner lineage.

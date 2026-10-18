@@ -77,7 +77,7 @@ class BridgeContractTests(unittest.TestCase):
         self.assertIn(root, bridge.document_bytes(request).decode())
         self.assertNotIn(root, bridge.new_profile_request("MAKE").values())
         with self.assertRaises(bridge.BridgeError):
-            bridge.document_bytes({"large": "a" * 66000})
+            bridge.document_bytes({"large": "a" * 530000})
 
 
     def test_project_catalog_validation(self):

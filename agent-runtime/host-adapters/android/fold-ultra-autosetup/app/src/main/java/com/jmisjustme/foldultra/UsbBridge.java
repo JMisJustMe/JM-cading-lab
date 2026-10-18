@@ -16,8 +16,8 @@ import java.util.Locale;
  * Never polls a socket, requests a permission, or applies silently.
  */
 public final class UsbBridge {
-    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.7";
-    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.7";
+    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.8";
+    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.8";
     private static final String REQUEST="bridge_request.json";
     private static final String RECEIPT="bridge_receipt.json";
     private static final String SNAPSHOT="bridge_snapshot.json";
@@ -94,12 +94,14 @@ public final class UsbBridge {
         o.put("layout_compact",SetupPlan.layout(sp,false));
         o.put("layout_expanded",SetupPlan.layout(sp,true));
         o.put("setup_last",sp.getString("setup.last",""));
+        o.put("session_deck",SessionDeck.all(sp));
         o.put("usb_snapshot_requires_owner_approval",true);
         return o;
     }
     private static JSONObject validateConfig(JSONObject o)throws Exception{
         String schema=o.optString("schema","");
         if(!(CONFIG_SCHEMA.equals(schema)
+            ||"JM.FoldUltraSetup/0.7".equals(schema)
             ||"JM.FoldUltraSetup/0.6".equals(schema)
             ||"JM.FoldUltraSetup/0.5".equals(schema)
             ||"JM.FoldUltraSetup/0.4".equals(schema)
@@ -123,7 +125,7 @@ public final class UsbBridge {
             if(value!=null && value!=JSONObject.NULL && !(value instanceof JSONObject))
                 throw new IllegalArgumentException("Invalid "+key);
         }
-        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)){
+        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)){
             org.json.JSONArray projects=ProjectShelf.validateList(o.getJSONArray("project_shelf"));
             String active=o.getString("active_project");
             boolean present=false;
@@ -131,13 +133,24 @@ public final class UsbBridge {
                 if(projects.getJSONObject(i).getString("id").equals(active))present=true;
             if(!present)throw new IllegalArgumentException("Active project does not exist");
         }
-        if(CONFIG_SCHEMA.equals(schema)){
+        if(CONFIG_SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)){
             if(!SetupPlan.validDensity(o.getString("layout_compact"))||
                 !SetupPlan.validDensity(o.getString("layout_expanded")))
                 throw new IllegalArgumentException("Invalid JM window layout preferences");
             String last=o.optString("setup_last","");
             if(!last.isEmpty()&&!SetupPlan.valid(last))
                 throw new IllegalArgumentException("Invalid last setup plan");
+        }
+        if(CONFIG_SCHEMA.equals(schema)){
+            org.json.JSONArray sessions=SessionDeck.validateDeck(o.getJSONArray("session_deck"));
+            org.json.JSONArray projects=o.getJSONArray("project_shelf");
+            for(int i=0;i<sessions.length();i++){
+                String id=sessions.getJSONObject(i).getString("project_id");
+                boolean found=false;
+                for(int j=0;j<projects.length();j++)
+                    if(id.equals(projects.getJSONObject(j).getString("id")))found=true;
+                if(!found)throw new IllegalArgumentException("Orphan session project "+id);
+            }
         }
         return o;
     }
@@ -160,20 +173,25 @@ public final class UsbBridge {
             if(owners.has(key))e.putBoolean("owner."+key+"_tested",owners.optBoolean(key,false));
         }
         if(CONFIG_SCHEMA.equals(o.optString("schema"))||
+           "JM.FoldUltraSetup/0.7".equals(o.optString("schema"))||
            "JM.FoldUltraSetup/0.6".equals(o.optString("schema"))){
             ProjectShelf.stageToEditor(e,o.getJSONArray("project_shelf"),o.getString("active_project"));
         }
-        if(CONFIG_SCHEMA.equals(o.optString("schema"))){
+        if(CONFIG_SCHEMA.equals(o.optString("schema"))||
+           "JM.FoldUltraSetup/0.7".equals(o.optString("schema"))){
             e.putString("layout.compact",o.getString("layout_compact"))
              .putString("layout.expanded",o.getString("layout_expanded"))
              .putString("setup.last",o.optString("setup_last",""));
+        }
+        if(CONFIG_SCHEMA.equals(o.optString("schema"))){
+            SessionDeck.stage(e,o.getJSONArray("session_deck"));
         }
         if(!e.commit())throw new IOException("Local settings commit failed");
     }
     private static void receipt(Activity a,String id,String status,String kind,String detail){
         try{
             JSONObject out=new JSONObject();
-            out.put("schema","JM.FoldBridgeReceipt/0.7");
+            out.put("schema","JM.FoldBridgeReceipt/0.8");
             out.put("request_id",id);
             out.put("status",status);
             out.put("kind",kind);
@@ -231,6 +249,25 @@ public final class UsbBridge {
                 String plan=request.getString("plan_id");
                 preview=SetupPlan.preview(sp,plan)+
                     "\n\nThis is a JM-only preset. It does not open apps or apply Samsung routines.";
+            }else if("session_update".equals(kind)){
+                config=null;
+                String projectId=request.getString("project_id");
+                project=ProjectShelf.find(sp,projectId);
+                if(project==null)throw new IllegalArgumentException("Unknown JM project");
+                String phase=request.getString("phase");
+                if(!SessionDeck.phase(phase))throw new IllegalArgumentException("Unknown session phase");
+                String note=request.getString("note"),next=request.getString("next_action");
+                if(note.length()>SessionDeck.MAX_NOTES||next.length()>SessionDeck.MAX_NEXT)
+                    throw new IllegalArgumentException("Session update exceeds text boundaries");
+                int revision=request.getInt("expected_revision");
+                if(SessionDeck.conflicted(sp,projectId,revision))
+                    throw new IllegalArgumentException("STALE revision: cannot overwrite newer JM session");
+                preview="Update "+project.getString("title")+" session?\n\n"
+                    +"Expected revision: "+revision+"\nPhase: "+phase
+                    +"\nNext: "+(next.isEmpty()?"(none)":next)
+                    +"\nNote: "+note.length()+" characters\n\n"
+                    +"Full note is not displayed in this summary; approve only your own trusted laptop request."
+                    +"\nNo external JM project files are overwritten.";
             }else if("project_select".equals(kind)){
                 config=null;
                 String selected=request.getString("project_id");
@@ -243,7 +280,7 @@ public final class UsbBridge {
                 project=ProjectShelf.validate(request.getJSONObject("project"));
                 preview="Add or update JM project reference?\n\n"+ProjectShelf.describe(project)+
                     "\n\nOwner must verify the proposed public link. No files are downloaded or copied.";
-            }else throw new IllegalArgumentException("Only named JM plans, profile, restore and project requests supported");
+            }else throw new IllegalArgumentException("Only named JM plans, profile, restore, project and session requests supported");
             final JSONObject requestBody=request;
             checkpoint="APPROVAL";
             receipt(a,id,"PENDING",kind,"Awaiting owner touch on Android");
@@ -267,6 +304,12 @@ public final class UsbBridge {
                             if(!editor.commit())throw new IOException("Settings commit failed");
                         }else if("plan".equals(action)){
                             SetupPlan.run(a,sp,requestBody.getString("plan_id"));
+                        }else if("session_update".equals(action)){
+                            SessionDeck.commit(sp,requestBody.getString("project_id"),
+                                requestBody.getInt("expected_revision"),
+                                requestBody.getString("phase"),
+                                requestBody.getString("note"),
+                                requestBody.getString("next_action"));
                         }else if("project_select".equals(action)){
                             ProjectShelf.choose(sp,project.getString("id"));
                         }else if("project_bind".equals(action)){

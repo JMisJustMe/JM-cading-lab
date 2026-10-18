@@ -1,41 +1,45 @@
-# JM FOLD ULTRA · PROJECT CONTACT v0.6 — prelaunch development
+# JM FOLD ULTRA v0.7 — Native Configuration & Automation
 
-**Source route:** JM32-1DA → native Fold prelaunch v0.1–v0.5 → Project Contact v0.6. Existing source ancestors and draft PR #371 stay preserved.
+**Lineage:** v0.1–v0.6 remain recoverable in GitHub. This is the same Android companion, not a rebuilt launcher, new project clone, or new operating system. Existing home-screen layouts and owner data remain untouched.
 
-## What is newly functional
+## One action, real internal state change
+Four explicit owner-approved JM setup plans:
 
-The companion APK now includes an immediately accessible **JM Project Shelf** with categories GAMES, MUSIC, BUILD and ESTATE. Its source names existing JM bodies; a link is not fabricated when a verified publish location has not been recovered. Seed references include JM Ecostate, JM Games House, source repository, FIVE//FLIP, TIDELESS REBELS, SLOTBORN ACTION, JM Beatmaker, JM Lyric Home and JM BuildCAD.
+| Plan | Priority | Active JM reference | Galaxy guide | Compact | Expanded |
+| --- | --- | --- | --- | --- | --- |
+| MAKE | CREATE | JM Ecostate | CREATE | QUICK | COMFORT |
+| PLAYTEST | PLAY | JM Games House | WORK | QUICK | QUICK |
+| RESEARCH | EVERYDAY | JM Source Spine | ASSIST | COMFORT | COMFORT |
+| RECOVERY | CREATE | JM Source Spine | WORK | COMFORT | COMFORT |
 
-On phone: select the active project, launch its bound public HTTPS URL, edit a route, or register an additional project reference; unbound entries show a truthful HOLD. The ROOT opening has a one-tap control for the current project. The shelf is app-local metadata only: it does not copy, install, unzip, discover, delete or relocate JM files.
+Previews identify every changed property and do not suppress the current note or the other project references. Plans use one app-local SharedPreferences commit after writing a recoverable configuration snapshot. They *do not* edit Android launcher pages, Samsung Modes & Routines, DeX, system settings or other apps.
 
-On trusted laptop (ADB + debuggable APK only): the existing `tools/jm_fold_usb_bridge.py` can stage `project-select` and `project-bind` requests. **Android presents APPLY/REJECT before changing any JM setting.** Project routing and the catalogue are included in owner-approved configuration snapshots and rollback.
+The phone has its own SETUP PLANS surface available from ROOT and CONTROL and an optional plan choice during the existing five-stage prelaunch. The physical available width selects the compact or expanded JM layout; its QUICK and COMFORT settings now actually change card spacing and touch-control height. The available-width rule is not hinge-sensor proof. Either density can also be changed individually from the setup room.
+
+**External Samsung/Android settings**: the same room can launch Android Display Settings or general Settings via standard native intents, under the owner's touch. This is a *handoff*, not unauthorised automation of those settings.
+
+## Laptop work
+`tools/jm_fold_usb_bridge.py` continues owner-authorised ADB contact, backups, project select/bind and restore, and adds:
 
 ```sh
-python3 jm_fold_usb_bridge.py status
-python3 jm_fold_usb_bridge.py project-select five-flip
+python3 jm_fold_usb_bridge.py plan MAKE
+python3 jm_fold_usb_bridge.py plan PLAYTEST
 python3 jm_fold_usb_bridge.py receipt
-python3 jm_fold_usb_bridge.py project-bind jm-beatmaker --title "JM Beatmaker" --family MUSIC --url "https://YOUR-TRUSTED-PUBLISHED-LOCATION"
 ```
 
-The last command is only an example; no particular Beatmaker URL is being asserted or installed. Project URL binding requires public HTTPS, no credentials, no nonstandard port, no fragment or private/localhost endpoint. Do not approve unexpected links. A published project can still be unavailable on the network: the shelf checks URL format, not remote reachability.
+The computer only stages the named plan; Android shows its full preview with APPLY/REJECT and writes the resulting receipt. A staged request is **PENDING**, never a silent success. The bridge verifies staging byte-for-byte. Only short, nonsensitive plan/selection metadata may use its encoded fallback; root note contents and restore data cannot use that route.
 
-## Wholebody inherited
+## Recovery, compatibility, limits
+- Local plan undo uses a complete pre-plan `JM.FoldUltraSetup/0.7` snapshot, not scattered preference reversals.
+- USB owner-approved restores and Android Document imports/export include project shelf, active project, compact/expanded preferences and last setup plan. Imports accept previous configuration schemas and validate new inputs before applying.
+- Debug signed carrier + authorised trusted computer required for ADB run-as. No INTERNET, file access, Device Admin, Accessibility or dangerous Android permission requested by JM.
+- No Galaxy AI private APIs, Samsung auto-app-pairs, device migration, system-wide launcher rearrangement or unattended scheduled actions.
+- V0.1–v0.6 Git ancestors preserved. Different GitHub CI build signing identities can prevent seamless APK updates; export a previous JM configuration before uninstall/reinstall of any debug APK.
 
-- Arrival → priority → paired-screen preview → Galaxy capability contact → owner entry
-- Compact SOURCE and expanded WORKFIELD based on available Android width (not measured hinge position)
-- Native Samsung capability directory, gallery/camera/system handoffs, and existing JM web routes
-- Share-to-JM explicit approval, root note, app-level preflight and diagnostic export
-- Four app-local JM session recipes and USB workstation requests with phone-side approval
-- Configuration JSON 0.6 with earlier v0.1–0.5 migrations, local project references and owner marks
-- No root, Accessibility service, device administrator, internet permission, silent One UI modification or launcher replacement
+## Measured test gates
+1. Source contracts and Python offline bridge tests.
+2. Android Gradle SDK 36 build, version/package identity, signing, SHA-256, ZIP integrity and zero-permission audit.
+3. Generic Android emulator narrow/wide/cold reopen and owner-unapproved `plan PLAYTEST` staging recorded as **PENDING**. This is not a physical Fold DING.
+4. Actual Samsung folded/unfolded visual acceptance, user permissions, external tool behavior and successful owner approval: **OPEN until tested**.
 
-## Proof gates
-
-- Python source contract and desktop mock unit tests
-- Android Gradle SDK 36, package identity, version 0.6.0, debug signing, no requested Android permissions, ZIP integrity, SHA-256
-- Generic Android emulator narrow/wide/reopen + `project-select five-flip` staged over ADB and recorded as PENDING (not accepted)
-- Actual Samsung Fold device, layout, share, project link handoff, backups and owner touch: **OPEN**
-
-**Debug APK caution:** CI signing identities may vary across jobs. In-place upgrades can fail even with identical package names. Export recovery data first; do not uninstall or wipe previous test builds without a verified rescue copy. ADB trusted-computer access is broad and must be granted only to a laptop you control.
-
-Do not confuse source/CI PASS with owner-device DING. Recover before rebuild; keep one authoritative JM project body per project.
+Owner device remains unchanged by GitHub build, testing and artifact packaging. Source of this body remains draft PR #371.

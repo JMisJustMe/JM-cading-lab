@@ -4,10 +4,12 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest.mock import patch
 
 SKILL=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(SKILL))
 spec=importlib.util.spec_from_file_location("jm_knowledge_assurance",SKILL/"jm_knowledge_assurance.py")
 assurance=importlib.util.module_from_spec(spec);spec.loader.exec_module(assurance)
 intake=assurance.intake

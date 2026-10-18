@@ -1,49 +1,40 @@
-# JM FOLD ULTRA v0.8 — Project Session Continuity
+# JM FOLD ULTRA v0.9 — Workspace Recovery & Cross-Device Re-entry
 
-**Lineage:** This is the same native app, preserving Git ancestors v0.1–v0.7, and the established JM Project Shelf. No duplicated games, lyric bodies or music programs; those remain separate authoritative artifacts.
+**Lineage:** Native Fold prelaunch v0.1–v0.8 → explicit Return Point v0.9. One continuing app and source branch; earlier bodies remain recoverable from Git history. The real Fold and your existing phone layout are untouched.
 
-## Native paired-screen session
-Every registered JM project can retain one current checkpoint: a working note (max 4,000 characters), a stage (IDEA / BUILD / TEST / POLISH), a next-contact instruction (max 220 characters), updated time and monotonic revision.
+## New native feature: named Return Point
+- Every JM shelf project can have one **explicitly owner-captured Return Point** derived from a SAVED checkpoint (IDEA / BUILD / TEST / POLISH, working note, next action, source revision).
+- From ROOT choose **CONTINUE / Current JM Return Point**. The app also retains its last JM room on normal lifecycle pause/resume, without starting other programs.
+- A Return Point never silently captures unsaved drafts. Checkpoint the project before capture; unsaved drafts remain in the local working session.
+- **RETURN** creates a new monotonically higher session revision with the older point's contents; the former *current* saved checkpoint atomically becomes the next Return Point. No rewinding of revisions, no deletion or modification of game/lyrics/Beatmaker project files.
+- The owner sees the source revision and resulting revision before approving. Conflicting revisions refuse changes.
+- This is a one-slot per-project reversible swap, NOT an unlimited historical version archive or a substitute for external backups.
 
-- **RESUME PROJECT** on JM's main surface opens that project's one native session, regardless of compact/expanded width.
-- Draft note, next action and stage persist locally as the user types/selects; deliberate **CHECKPOINT** advances revision and clears the draft for that project only.
-- Project-specific notes do not replace the general JM root note and do not edit the project files themselves.
-- The project identity comes from the recovered JM shelf; unbound published URLs do not stop the local session from existing.
-- Local configuration exports, USB owner-prepared backups and owner-approved restores carry the full session collection and active project ID. Imported v0.8 session data is validated and stale drafts cleared before display.
-- The owner can launch the project's existing public route separately, without claiming the external program's internal progress was captured.
-
-## Laptop ↔ Fold contact
-A trusted, ADB-authorised laptop with official platform-tools and **debuggable JM APK** can inspect an owner-prepared configuration export:
-
+## Trusted laptop re-entry (USB ADB debug build only)
 ```sh
-python3 jm_fold_usb_bridge.py session-show JM_FOLD_BACKUP.json jm-games-house
-```
-
-It can propose a checkpoint without embedding private notes in command arguments:
-
-```sh
-python3 jm_fold_usb_bridge.py session-update jm-games-house \
-  --expected-revision 0 --phase TEST --note-file ./my_jm_notes.txt \
-  --next "Resume match"
+python3 jm_fold_usb_bridge.py reentry-capture jm-games-house --expected-revision 1
+python3 jm_fold_usb_bridge.py receipt
+python3 jm_fold_usb_bridge.py reentry-return jm-games-house --expected-revision 2 --point-revision 1
 python3 jm_fold_usb_bridge.py receipt
 ```
+Both calls **stage PENDING** and require an explicit APPLY/REJECT dialog on the phone. A stale expected current revision or captured-point revision is refused on the phone, including a re-check immediately before committing. For offline inspection of an owner-prepared full snapshot:
 
-That request is staged as PENDING. The Android app displays the complete proposed text, selected project, stage and expected revision and requires **APPLY/REJECT**. An older revision is rejected; the phone re-checks revision at commit, preventing an overwrite when state changed while the dialog was open. Only a committed change can produce an ACCEPTED receipt. Staged private notes are never placed in the ADB shell-command fallback used for short, nonsensitive requests.
+```sh
+python3 jm_fold_usb_bridge.py reentry-show ./JM_FOLD_BACKUP.json jm-games-house
+```
 
-## Wholebody inherited
-- Owner-first, five-stage opening; same JM root across compact SOURCE and expanded WORKFIELD
-- Galaxy capability discovery and native Android Settings, Gallery/Camera handoffs
-- One-body project reference shelf, registered games/music/build/estate bodies
-- USB owner-approval contact, preflight, JSON recovery, four JM setup plans, independent layout densities
-- Zero requested Android permissions, no network server, no device rooting, no silent launcher/One UI manipulation
+This offline command displays private note text locally on the trusted laptop. The backup includes your other JM notes and projects: store and share it carefully.
 
-## Proof gates
-1. Static prelaunch contracts, offline Python unit tests for note bounds, orphan sessions, stale revisions and private-note transport.
-2. Android APK signed/package/zero-permission evidence.
-3. Generic Android emulator narrow and wide launch, reopen, staged PLAYTEST plan, simulated owner APPLY state checks, followed by staged session update, simulated owner APPLY and persisted session revision/content checks.
-4. **Physical Samsung Fold owner contact remains OPEN.** Generic emulator simulation neither proves hinge transitions nor any Samsung Galaxy AI integration.
+## Recovery and carrier continuity
+- New `JM.FoldUltraSetup/0.9` JSON includes `project_shelf`, `session_deck`, `return_points`, current project, focus, root note, both screen densities and native owner marks.
+- Owner-approved USB snapshots, Android Documents export/import and local rollback carry Return Points. The upper bound is 512 KiB; oversized inputs are rejected without intentionally deleting any existing body.
+- Earlier v0.8 snapshots restore their sessions while resetting unrepresented Return Points, rather than pretending earlier snapshots carried recovery history they never contained.
+- No files imported from Dropbox, Google Drive or Oppo automatically. No background sync or Samsung system changes. No requested Android permissions.
 
-## Privacy and safety
-Snapshots contain working notes in plaintext. Export only through explicit owner commands, protect laptop copies and remove stale development backups deliberately after recovery testing. ADB gives a trusted laptop powers beyond JM; keep debugging disabled outside development. No Oppo migration or unapproved destructive operations.
+## Proof contract and open gates
+1. Source/manifest and offline laptop unit tests: revision bounds, orphan/duplicate marks, schema v0.8→0.9, snapshot format and no silent application.
+2. Android version 0.9.0 debug APK, signature, package, SHA-256, ZIP integrity and zero requested permissions.
+3. Generic Android emulator: narrow/wide startup, cold reopen, owner-simulated PLAYTEST plan and session checkpoint; capture rev1, save different rev2, RETURN as rev3, verify former rev2 saved as the new Return Point.
+4. **Actual Samsung Fold owner-device contact remains OPEN**. Generic emulator cannot prove hinge integration, Samsung Galaxy AI permission reachability, true physical touch continuity or real owner acceptance.
 
-Source: JM-cading-lab draft PR #371. Recovery before rebuild. ONE BODY → ONE HOT authority → verified off-site recovery.
+Retain one source authority. Recover before rebuild. No Ding, no claim. Draft PR #371.

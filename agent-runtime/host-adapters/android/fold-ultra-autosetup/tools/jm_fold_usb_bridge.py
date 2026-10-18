@@ -298,6 +298,15 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
     # Verify byte-for-byte contact while the request is still staged.
     # If transport alters the payload, do not launch any phone-side approval.
     echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
+    if echoed != payload:
+        # Non-PTY shell transport: private payload remains stdin, not a
+        # visible shell argument. Some emulator exec-in streams truncate.
+        # The comparison below still blocks every partial transfer.
+        try:
+            adb_run(adb, serial, "shell", "-T", remote, stdin=payload)
+            echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
+        except BridgeError:
+            pass
     if echoed != payload and body.get("kind") in {"profile", "project_select", "plan"} and len(payload) <= 512:
         # Narrow fallback for non-sensitive route choices only.
         # ADB exec-in can truncate tiny streams on some emulators. For this

@@ -16,8 +16,8 @@ import java.util.Locale;
  * Never polls a socket, requests a permission, or applies silently.
  */
 public final class UsbBridge {
-    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.5";
-    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.5";
+    public static final String REQUEST_SCHEMA="JM.FoldBridgeRequest/0.6";
+    public static final String CONFIG_SCHEMA="JM.FoldUltraSetup/0.6";
     private static final String REQUEST="bridge_request.json";
     private static final String RECEIPT="bridge_receipt.json";
     private static final String SNAPSHOT="bridge_snapshot.json";
@@ -89,12 +89,15 @@ public final class UsbBridge {
         owners.put("expanded",sp.getBoolean("owner.expanded_tested",false));
         owners.put("reopen",sp.getBoolean("owner.reopen_tested",false));
         o.put("owner_test_marks",owners);
+        o.put("project_shelf",ProjectShelf.all(sp));
+        o.put("active_project",ProjectShelf.selected(sp));
         o.put("usb_snapshot_requires_owner_approval",true);
         return o;
     }
     private static JSONObject validateConfig(JSONObject o)throws Exception{
         String schema=o.optString("schema","");
         if(!(CONFIG_SCHEMA.equals(schema)
+            ||"JM.FoldUltraSetup/0.5".equals(schema)
             ||"JM.FoldUltraSetup/0.4".equals(schema)
             ||"JM.FoldUltraSetup/0.3".equals(schema)
             ||"JM.FoldUltraSetup/0.2".equals(schema)))
@@ -116,6 +119,14 @@ public final class UsbBridge {
             if(value!=null && value!=JSONObject.NULL && !(value instanceof JSONObject))
                 throw new IllegalArgumentException("Invalid "+key);
         }
+        if(CONFIG_SCHEMA.equals(schema)){
+            org.json.JSONArray projects=ProjectShelf.validateList(o.getJSONArray("project_shelf"));
+            String active=o.getString("active_project");
+            boolean present=false;
+            for(int i=0;i<projects.length();i++)
+                if(projects.getJSONObject(i).getString("id").equals(active))present=true;
+            if(!present)throw new IllegalArgumentException("Active project does not exist");
+        }
         return o;
     }
     static void applyConfig(SharedPreferences sp,JSONObject o)throws Exception{
@@ -135,12 +146,15 @@ public final class UsbBridge {
         if(owners!=null)for(String key:new String[]{"compact","expanded","reopen"}){
             if(owners.has(key))e.putBoolean("owner."+key+"_tested",owners.optBoolean(key,false));
         }
+        if(CONFIG_SCHEMA.equals(o.optString("schema"))){
+            ProjectShelf.stageToEditor(e,o.getJSONArray("project_shelf"),o.getString("active_project"));
+        }
         if(!e.commit())throw new IOException("Local settings commit failed");
     }
     private static void receipt(Activity a,String id,String status,String kind,String detail){
         try{
             JSONObject out=new JSONObject();
-            out.put("schema","JM.FoldBridgeReceipt/0.5");
+            out.put("schema","JM.FoldBridgeReceipt/0.6");
             out.put("request_id",id);
             out.put("status",status);
             out.put("kind",kind);
@@ -169,17 +183,18 @@ public final class UsbBridge {
             kind=request.optString("kind","");
             final String action=kind,requestId=id;
             final JSONObject config;
+            final JSONObject project;
             final String preview;
             if("profile".equals(kind)){
                 String candidate=request.optString("session","");
                 if(!session(candidate))throw new IllegalArgumentException("Invalid session");
                 String f=request.optString("focus","");
                 if(!focus(f))throw new IllegalArgumentException("Invalid focus");
-                config=null;
+                config=null;project=null;
                 preview="JM-only route change\n\nSession: "+candidate+"\nFocus: "+f+
                     "\n\nNo Samsung settings, permissions, apps or home pages will be changed.";
             }else if("restore".equals(kind)){
-                config=validateConfig(request.getJSONObject("config"));
+                config=validateConfig(request.getJSONObject("config"));project=null;
                 String root=config.getString("root");
                 preview="Restore local JM configuration?\n\n"+
                     "Focus: "+config.optString("focus","CREATE")+
@@ -187,7 +202,19 @@ public final class UsbBridge {
                     "\nRoot length: "+root.length()+" chars"+
                     "\nRoot SHA-256: "+sha(root).substring(0,16)+"…"+
                     "\n\nOnly JM app-local data will change. The previous JM configuration will be kept as a rollback snapshot.";
-            }else throw new IllegalArgumentException("Only profile and restore are supported");
+            }else if("project_select".equals(kind)){
+                config=null;
+                String selected=request.getString("project_id");
+                project=ProjectShelf.find(sp,selected);
+                if(project==null)throw new IllegalArgumentException("JM project ID not registered on phone");
+                preview="Select existing JM project only:\n\n"+ProjectShelf.describe(project)+
+                    "\n\nNo route opened automatically. Existing files stay untouched.";
+            }else if("project_bind".equals(kind)){
+                config=null;
+                project=ProjectShelf.validate(request.getJSONObject("project"));
+                preview="Add or update JM project reference?\n\n"+ProjectShelf.describe(project)+
+                    "\n\nOwner must verify the proposed public link. No files are downloaded or copied.";
+            }else throw new IllegalArgumentException("Only profile, restore and project requests supported");
             final JSONObject requestBody=request;
             receipt(a,id,"PENDING",kind,"Awaiting owner touch on Android");
             new AlertDialog.Builder(a)
@@ -208,6 +235,11 @@ public final class UsbBridge {
                                 .putString("session",requestBody.getString("session"))
                                 .putString("focus",requestBody.getString("focus"));
                             if(!editor.commit())throw new IOException("Settings commit failed");
+                        }else if("project_select".equals(action)){
+                            ProjectShelf.choose(sp,project.getString("id"));
+                        }else if("project_bind".equals(action)){
+                            write(a,ROLLBACK,previous.toString(2));
+                            ProjectShelf.upsert(sp,project);
                         }else{
                             // Prepare reversible rollback before any import.
                             write(a,ROLLBACK,previous.toString(2));

@@ -1,0 +1,22 @@
+name: JM agent skill carrier contact v0.2
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/**'
+      - '.github/workflows/jm-agent-skill-donor-contact-v02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  carrier-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify project-local skill against actual governing files
+        run: python3 .agents/skills/jm-ecostate-route/tests/verify_skill.py
+      - name: Run existing JM host adapter conformance tester
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local

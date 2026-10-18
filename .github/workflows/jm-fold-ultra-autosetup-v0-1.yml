@@ -1,4 +1,4 @@
-name: JM Fold Ultra v0.5 Complete Prelaunch Build
+name: JM Fold Ultra v0.6 Complete Prelaunch Build
 on:
   pull_request:
     paths:
@@ -41,26 +41,26 @@ jobs:
           R=agent-runtime/host-adapters/android/fold-ultra-autosetup
           APK="$R/app/build/outputs/apk/debug/app-debug.apk"
           mkdir -p /tmp/jm-fold-prelaunch
-          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_USB_CONTACT_v0_5_DEBUG.apk
+          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_PROJECT_CONTACT_v0_6_DEBUG.apk
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-fold-prelaunch/BADGING.txt
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-fold-prelaunch/SIGNATURE.txt
           unzip -t "$APK" > /tmp/jm-fold-prelaunch/ZIP_INTEGRITY.txt
           "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-fold-prelaunch/PERMISSIONS.txt
           grep -Fq "package: name='com.jmisjustme.foldultra'" /tmp/jm-fold-prelaunch/BADGING.txt
-          grep -Fq "versionName='0.5.0'" /tmp/jm-fold-prelaunch/BADGING.txt
+          grep -Fq "versionName='0.6.0'" /tmp/jm-fold-prelaunch/BADGING.txt
           grep -Fq "android.intent.action.SEND" "$R/app/src/main/AndroidManifest.xml"
           if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-fold-prelaunch/PERMISSIONS.txt; then
             echo 'UNEXPECTED PERMISSION: HOLD'
             exit 1
           fi
           sha256sum /tmp/jm-fold-prelaunch/*.apk > /tmp/jm-fold-prelaunch/SHA256.txt
-          cp "$R/tools/jm_fold_usb_bridge.py" /tmp/jm-fold-prelaunch/JM_FOLD_USB_LAPTOP_BRIDGE_v0_5.py
-          cp "$R/README.md" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_v0_5_README.md
+          cp "$R/tools/jm_fold_usb_bridge.py" /tmp/jm-fold-prelaunch/JM_FOLD_USB_LAPTOP_BRIDGE_v0_6.py
+          cp "$R/README.md" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_v0_6_README.md
           sha256sum /tmp/jm-fold-prelaunch/*.py /tmp/jm-fold-prelaunch/*.md > /tmp/jm-fold-prelaunch/LAPTOP_TOOLS_SHA256.txt
           printf 'APK compilation + signing + permissions PASS. Physical Fold UI/device DING OPEN.\n' > /tmp/jm-fold-prelaunch/RECEIPT.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_5_CARRIER
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_6_CARRIER
           path: /tmp/jm-fold-prelaunch/
           if-no-files-found: error
           retention-days: 14
@@ -75,7 +75,7 @@ jobs:
       - name: Download the exact compiled APK
         uses: actions/download-artifact@v4
         with:
-          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_5_CARRIER
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_6_CARRIER
           path: emulator-input
       - name: Enable KVM on hosted runner
         run: |
@@ -94,7 +94,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: JM_FOLD_ULTRA_v0_5_GENERIC_ANDROID_SCREEN_PROOF
+          name: JM_FOLD_ULTRA_v0_6_GENERIC_ANDROID_SCREEN_PROOF
           path: emulator-proof/
           if-no-files-found: warn
           retention-days: 14

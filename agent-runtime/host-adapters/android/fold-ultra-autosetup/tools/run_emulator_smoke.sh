@@ -2,7 +2,7 @@
 # Generic Android SDK 35 emulator smoke only; never a Samsung Fold physical Ding.
 set -eu
 mkdir -p emulator-proof
-APK="emulator-input/JM_FOLD_ULTRA_SETUP_AUTOMATION_v0_7_DEBUG.apk"
+APK="emulator-input/JM_FOLD_ULTRA_SESSION_CONTINUITY_v0_8_DEBUG.apk"
 if [ ! -s "$APK" ]; then
   echo "HOLD: missing exact build artifact: $APK" >&2
   ls -al emulator-input >&2 || true
@@ -73,7 +73,42 @@ required={"setup.last":"PLAYTEST","project.active":"jm-games-house","layout.comp
 for k,v in required.items():
     assert values.get(k)==v,(k,values.get(k),v)
 PY
+# One independent project checkpoint, first PENDING then simulated owner approval.
+printf 'Arena test pass. Keep active team logic.\n' > emulator-proof/PROJECT_NOTE.txt
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/jm_fold_usb_bridge.py --serial emulator-5554 session-update jm-games-house --expected-revision 0 --phase TEST --note-file emulator-proof/PROJECT_NOTE.txt --next "Resume symmetry test" > emulator-proof/SESSION_STAGE.txt
+sleep 3
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/SESSION_PENDING.json
+python3 -c 'import json;x=json.load(open("emulator-proof/SESSION_PENDING.json"));assert x["status"]=="PENDING" and x["kind"]=="session_update"'
+adb shell uiautomator dump /sdcard/jm_session_approval_ui.xml > emulator-proof/SESSION_UI_COMMAND.txt
+adb exec-out cat /sdcard/jm_session_approval_ui.xml > emulator-proof/SESSION_UI.xml
+python3 - <<'PY' > emulator-proof/SESSION_APPLY_COORDS.txt
+import re,xml.etree.ElementTree as ET
+t=ET.parse("emulator-proof/SESSION_UI.xml")
+buttons=[e for e in t.iter() if e.attrib.get("text")=="APPLY"]
+assert len(buttons)==1, "Expected exactly one session approval button"
+m=re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",buttons[0].attrib["bounds"])
+assert m
+x1,y1,x2,y2=map(int,m.groups())
+print((x1+x2)//2,(y1+y2)//2)
+PY
+read X Y < emulator-proof/SESSION_APPLY_COORDS.txt
+adb shell input tap "$X" "$Y"
+sleep 3
+adb exec-out run-as com.jmisjustme.foldultra cat files/bridge_receipt.json > emulator-proof/SESSION_ACCEPTED.json
+python3 -c 'import json;d=json.load(open("emulator-proof/SESSION_ACCEPTED.json"));assert d["status"]=="ACCEPTED" and d["kind"]=="session_update",d'
+adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/SESSION_STATE.xml
+python3 - <<'PY'
+import xml.etree.ElementTree as ET,json
+data={x.get("name"):x.text for x in ET.parse("emulator-proof/SESSION_STATE.xml").getroot()}
+deck=json.loads(data["session.deck"])
+match=[x for x in deck if x["project_id"]=="jm-games-house"]
+assert len(match)==1
+entry=match[0]
+assert entry["revision"]==1 and entry["phase"]=="TEST"
+assert "Arena test pass" in entry["note"]
+assert entry["next_action"]=="Resume symmetry test"
+PY
 printf '%s\n' \
-  'GENERIC ANDROID EMULATOR v0.7: narrow boot PASS, wide boot PASS, cold reopen PASS, staged USB request PENDING then simulated owner APPLY ACCEPTED with verified JM-only state.' \
+  'GENERIC ANDROID EMULATOR v0.8: narrow boot PASS, wide boot PASS, cold reopen PASS, staged USB request PENDING then simulated owner APPLY ACCEPTED with verified JM-only state.' \
   'Startup not proof of correct Fold UI layout, native Samsung Galaxy AI, or physical owner Ding.' \
   > emulator-proof/GENERIC_RECEIPT.txt

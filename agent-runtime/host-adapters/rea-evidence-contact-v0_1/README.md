@@ -1,0 +1,103 @@
+> **Current experimental head: JM × REA v1.0 — actual real REA 6.1 Evidence → executable original JM GameCoding/GameCore → independent JM reconstructed consequence parity.**
+> [v1.0 complete scoped proof and re-entry](REAL_REA_TO_EXECUTABLE_JM_v1_0.md) · [source-verified execution engine](jm_rea_evidence_driven_execution_v1_0.mjs) · [independently self-validating REA CLI](jm_rea_evidence_driven_cli_v1_0.mjs).
+> Actual pinned REA + `rea evidence-import` → original public JM source method binding → source-derived executable 32 sessions and 192 comparisons; **REA on private COMBOUND, autonomous arbitrary-code reconstruction, JM32-1DA v2.2.1 full compiler, Target Bridge host/owner contact remain separate HOLDs.**
+> All protected game FLAZ/source and earlier v0.1–v0.9 proof preserved. Main unchanged.
+
+---
+> **Pre-REA useful follow-through (12 Oct):** [Actual COMBOUND multi-turn parity](MULTITURN_CONSEQUENCE_PRE_REA_v0_9.md) matched **4/4** original-versus-candidate Chromium scenarios and **84/84** state/effect checkpoints (Classic/Arcade × Bloom Ring/Toxic Garden). AI previews, AI shots and return to player turn 2 were observed. This is deterministic browser-simulation contact, **not REA private-source execution or complete-match proof**.
+> Isolated runner `jm_rea_combound_multiturn_parity_v0_9.py` and bounded negative tests; no protected/private game copied or overwritten.
+
+---
+> **Current handoff: v0.9 — direct real REA on private protected COMBOUND.**
+> [Real private COMBOUND REA preflight / run instructions](PRIVATE_COMBOUND_REA_CONTACT_v0_9.md). Exact source SHA verified, 32/32 embedded JS parse, five gameplay method roots located, no original modified. **REA itself did NOT run on this private code** in the present environment (no compatible Node / REA binary); the new `--run-rea` path deliberately refuses to manufacture a receipt.
+> The original v0.1–v0.8 proof chain remains inherited and separate. Draft stays unmerged; no private code committed.
+
+---
+> **Current JM × REA stage: v0.8 — real COMBOUND source/physics comparison + automatic REA Evidence projector.**
+> [Exact private COMBOUND source contact and honest REA boundary](COMBOUND_REAL_SOURCE_AUTO_IR_v0_8.md). TypeScript AST of the protected game recovered 29 unchanged runtime methods and 3 critical call relationships; independent Chromium comparison earned 14/14 shots. Real REA 6.1 analysed public original JM game source and its semantic graph now maps through original JM32/TraceBox, but **private COMBOUND direct REA remains HOLD** until installed on a compatible local host.
+> No protected game HTML uploaded; source lineage, draft isolation, and all prior v0.1–v0.7 bodies are retained.
+
+---
+> **Current experimental real-game contact: v0.7 — COMBOUND v2.3 protected FLAZ source.** This adds *real game source* Chromium testing over v0.6's micro-application. It does not replace v0.6 or the protected COMBOUND file.
+> [COMBOUND exact-source real-game contact and remaining gates](COMBOUND_REAL_GAME_CONTACT_v0_7.md) · [compact execution receipt](COMBOUND_REAL_GAME_CONTACT_v0_7_RECEIPT.json) · [replay without copying original HTML](jm_rea_combound_browser_probe_v0_7.py).
+> CLASSIC/ARCADE source-guided visual scope correction restores v2.3 motion registration; both retain 24/24 fighters, launch state and genuine browser canvas pointer event semantics. Source original unchanged; candidate separate. Full match / physical owner-device parity remains HOLD.
+
+---
+> **Current descendant: v0.6 (12 October 2026), isolated draft.** The original v0.1–v0.5 bodies below remain preserved.
+> [Independent JM source parsing + original JM GameCore application parity](INDEPENDENT_APPLICATION_CONTACT_v0_6.md): 120/120 RouteScript source AST/IR matches; 96/96 original Game-CODING/JM GameCore micro-application sessions; 672/672 interaction checkpoints; native JM32/TraceBox proof gate. Genuine REA 6.1.0 inspected `game-native.mjs` and validated its Evidence in isolated Actions.
+> Offline re-entry: `jm_rea_application_cli_v0_6.mjs --output /absolute/NEW-v06-receipt.json`; no overwrite or production merge. Scope is the authored micro-application, NOT a complete phone game.
+
+---
+> **Current experimental descendant: v0.5 (11 October 2026).** This branch's protected v0.1–v0.4 stages remain available; v0.5 adds real JM native route consequences without replacing the older bodies.
+> **120/120** RouteScript/RouteVM/RouteOS versus independent state-machine scenarios PASS; actual REA 6.1 inspected the original JM native source and validated its own Evidence.
+> Use [v0.5 source-to-route execution and write-once receipt](NATIVE_ROUTE_CONSEQUENCE_v0_5.md). No owner-device Ding, app reconstruction or full private JM32-1DA v2.2.1 compiler execution is claimed.
+
+---
+> **Current experimental descendant: v0.4 (10 October 2026).** This README below documents the protected read-only v0.1 entry, not the full descendant chain.
+> The v0.4 code now executes real REA 6.1.0 static JavaScript evidence alongside existing JM Python/Node agents, the 100-body route planner, Sovereign Ten JM32 and TraceBox and JM EveryBody portable compiler.
+> It also binds four exact REA-identified original JM router functions to independent source-guided implementations: **416/416 differential input/output cases PASS**. The result is fixture parity, not a claim of complete software reconstruction.
+
+### v0.4 entry points
+
+- [Real function parity and repeatable CLI](SOURCE_FUNCTION_REPLAY_v0_4.md)
+- [Native graph/TraceBox relation bridge](NATIVE_GRAPH_CONTACT_v0_3.md)
+- [Complete previous v0.2 executable pipeline](POWERED_CONTACT_v0_2.md)
+- [Real REA + JM execution proof](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38018468675)
+- [Existing original JM code + negative-test proof](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/38018468709)
+
+**No owner-device Ding, no original JM32-1DA v2.2.1 compiler contact, no APK reconstruction and no production merge.**
+
+---
+# JM × REA — Read-only Evidence Contact v0.1 (candidate)
+
+**Status:** isolated experimental host adapter; **NOT** integrated with JM Build Mesh / JM32-1DA / Target Bridge; **NO DING**.
+
+## Recovered authority
+
+- JM root `AGENTS.md` and Estate build-law, inheritance, and capability-routing standards govern this probe.
+- JM `agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md` supplies the *plug, not body* separation.
+- JM TraceBox / RouteBox and existing JM `REVERSE_ENGINEERING_MAP.md` remain distinct original authorities. This script is a *candidate evidence carrier*, not a new sovereign debugger, decompiler, or TraceBox replacement.
+- Upstream REA sources inspected: `docs/cli.md`, `docs/android-analysis.md`, `src/domain/evidence.ts`, `src/domain/evidenceBundle.ts`, `src/domain/analysisSnapshot.ts`, `src/domain/residualUnknown.ts`. REA's published guide documents `rea evidence-export IN OUT` and analysis snapshots with an `evidence_bundle` field.
+
+## How to run (offline, Python standard library)
+
+```sh
+python3 jm_rea_evidence_contact.py /path/to/rea-evidence.json /path/to/NEW-jm-trace-candidate.json
+python3 -m unittest -v test_jm_rea_evidence_contact.py
+```
+
+Generate the source using an existing REA installation, if available (not required to test this adapter):
+
+```sh
+rea evidence-export /path/to/rea-evidence.json /path/to/rea-canonical-evidence.json
+```
+
+`--expect-input-sha256 <digest>` verifies input file bytes match an expected digest. `--include-locations` is opt-in because locations can reveal private paths; do not publish reports without inspecting them.
+
+## What it does
+
+1. Reads a *copy* of REA's canonical evidence bundle or analysis snapshot; no source execution or network calls.
+2. Records SHA-256 of the exact supplied JSON bytes, original REA Evidence IDs, provider, target artifact hashes, operation, source-stated confidence/authority, limitations and unknown history.
+3. Rejects duplicate IDs, malformed record IDs, missing evidence links and incomplete unknown histories.
+4. Emits a *new* JSON file only, with exclusive-create protection (existing output untouched). Never sends source or result anywhere.
+5. Redacts REA `normalized_result` and `raw_result` by design. Source paths/offsets are omitted unless `--include-locations`.
+6. Explicitly marks REA integrity authentication, actual JM execution, provider runtime contact, owner-device contact and promotion **not performed**.
+
+## What it does NOT do
+
+- Does not run REA, JADX, Ghidra, a target APK, an emulator, or JM services.
+- Does not cryptographically reauthenticate REA's canonical semantic Evidence IDs or ResidualUnknown revision digests; use REA's own `evidence-import` validation separately.
+- Does not interpret derived source as original source, grant author rights, or provide a licence to republish proprietary code.
+- Does not update Estate registry, deploy or change protected builds, claim host-adapter contract proof, or upload sensitive outputs.
+- Does not accept arbitrary REA CLI responses; only exported *bundle* JSON or snapshot JSON with `evidence_bundle`.
+
+## Proof and next gate
+
+The unit tests are synthetic, standard-library-only boundary tests. They prove only the projection and its non-destructive safeguards in the local test environment. Until real REA-generated Evidence is imported, and the resulting candidate is checked against the original, the host plugin remains **EXPERIMENTAL / HOLD**. Later recipients need their own contact and receipts.
+
+**Lineage / source reading:**
+- https://github.com/morluto/rea/blob/main/docs/cli.md
+- https://github.com/morluto/rea/blob/main/src/domain/evidence.ts
+- https://github.com/morluto/rea/blob/main/src/domain/evidenceBundle.ts
+- https://github.com/JMisJustMe/JM-cading-lab/blob/main/agent-runtime/host-adapters/JM_HOST_ADAPTER_CONFORMANCE_STANDARD_v1_0.md
+- https://github.com/JMisJustMe/JM-cading-lab/blob/main/estate-publication/apps-tools-games/apps-tools/built-enough-body-return-v0.2/REVERSE_ENGINEERING_MAP.md

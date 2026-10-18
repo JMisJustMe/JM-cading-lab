@@ -1,0 +1,70 @@
+name: JM REA Powered Contact (isolated)
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/rea-evidence-contact-v0_1/**'
+      - '.github/workflows/jm-rea-powered-contact.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  jm-rea:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Existing JM Current-64 and activation validation
+        run: |
+          python3 coding-estate/validate_current_64_standard.py
+          python3 coding-estate/validate_coding_body_activation.py
+      - name: Existing JM sovereign runtime host-adapter conformance
+        run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+      - name: Existing JM 100-body Estate Router self-test
+        run: node coding-estate/integration/integration-selftest.mjs > /tmp/jm-estate-selftest.json && node -e "const p=require('/tmp/jm-estate-selftest.json'); if(p.failed)process.exit(1); console.log('JM ESTATE SELFTEST PASS:',p.passed,'checks')"
+      - name: Existing JM EveryBody executable self-test
+        run: node coding-estate/everybody/selftest.mjs > /tmp/jm-everybody-selftest.json && node -e "const p=require('/tmp/jm-everybody-selftest.json'); if(!p.passed)process.exit(1); console.log('JM EVERYBODY SELFTEST PASS')"
+      - name: REA metadata importer tests (source unchanged)
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_evidence_contact.py' -v
+      - name: JM powered chain tests (actual agents/router/compiler)
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_powered_contact.mjs
+
+      - name: Original JM function parity against independent reconstructions
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_function_replay.mjs
+
+      - name: v0.5 Original JM RouteScript/RouteVM/RouteOS behavioural consequence differential
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_route_verify_v0_5.mjs
+
+      - name: v0.6 Independent JM source parser and actual GameCore application parity
+        run: node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_application_v0_6.mjs
+
+      - name: v0.7 Original JM32 and TraceBox verify protected COMBOUND Chrome receipt (no HTML custody)
+        run: |
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_browser_probe_v0_7.py
+          node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_combound_real_game_v0_7.mjs
+
+      - name: v0.8 real-game private-source bridge source syntax and bounded JM proof tests
+        run: |
+          node --check agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_source_ir_v0_8.mjs
+          node --check agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_auto_relation_cli_v0_8.mjs
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_mechanical_replay_v0_8.py
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_private_combound_runner_v0_8.py
+          node --test agent-runtime/host-adapters/rea-evidence-contact-v0_1/test_jm_rea_auto_relation_ir_v0_8.mjs
+
+      - name: v0.9 exact private COMBOUND REA preflight negative and safety gates (synthetic fixtures)
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_combound_preflight_v0_9.py' -v
+
+      - name: v0.9 real-REA selected-function source SHA and graph identity negative gates
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_private_binding_v0_9.py' -v
+
+      - name: Actual COMBOUND multi-turn replay syntax and synthetic fail-closed behaviour guards
+        run: |
+          python3 -m py_compile agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_combound_multiturn_parity_v0_9.py
+          python3 -m unittest discover -s agent-runtime/host-adapters/rea-evidence-contact-v0_1 -p 'test_jm_rea_combound_multiturn_parity_v0_9.py' -v

@@ -1,0 +1,80 @@
+name: JM REA v0.5 Native Route Consequence Contact
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/rea-evidence-contact-v0_1/**'
+      - '.github/workflows/jm-rea-route-consequence-v0_5.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  genuine-rea-native-route:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: REA 6.1.0 inspect actual JM sovereign native implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=rea-agents@6.1.0 -- rea analyze-javascript-application "$GITHUB_WORKSPACE/coding-estate/sovereign-ten/direct" --json > "$RUNNER_TEMP/rea-jm-native.json"
+          export REAL_REA_FILE="$RUNNER_TEMP/rea-jm-native.json"
+          export REAL_REA_BUNDLE="$RUNNER_TEMP/rea-jm-native-bundle.json"
+          python3 - <<'PY'
+          import os,json,pathlib
+          raw=json.loads(pathlib.Path(os.environ['REAL_REA_FILE']).read_text())
+          assert raw.get('evidence_id','').startswith('ev_')
+          assert raw['provider']['id'] and raw['subject']['digest']['sha256']
+          data=raw['normalized_result']
+          graph=data['semantic_graph']
+          assert graph['application_graph_id']==data['graph']['graph_id']
+          native=[n for n in graph['nodes'] if n.get('identity',{}).get('module_path')=='route-proof-native.mjs']
+          functions=[n for n in native if n.get('kind')=='function']
+          assert len(functions)>=5, 'REA did not inspect original JM route code'
+          print('REA_JM_NATIVE_MODULE_CONTACT: PASS')
+          print('REA_JM_NATIVE_FUNCTION_COUNT:',len(functions))
+          print('REA_JM_NATIVE_FUNCTION_LABELS:',json.dumps(sorted({n.get('label') for n in functions if n.get('label')})[:24]))
+          print('REA_JM_NATIVE_GRAPH_COUNTS:',json.dumps({'nodes':len(data['graph']['nodes']),'semantic_nodes':len(graph['nodes']),'semantic_relations':len(graph['relations']),'unresolved':len(graph['unknowns'])},sort_keys=True))
+          bundle={'artifacts':[{'digest':raw['subject']['digest'],'format':raw['subject']['format'],'architecture':raw['subject']['architecture']}],
+           'providers':[raw['provider']],'environments':[raw['environment']] if raw['environment'] else [],
+           'scenarios':[],'captures':[],'unknowns':[],'records':[raw]}
+          with pathlib.Path(os.environ['REAL_REA_BUNDLE']).open('x',encoding='utf8') as f:json.dump(bundle,f)
+          PY
+          npm exec --yes --package=rea-agents@6.1.0 -- rea evidence-import "$REAL_REA_BUNDLE" > "$RUNNER_TEMP/rea-native-validation.txt"
+          echo 'REA_NATIVE_EVIDENCE_VALIDATOR: PASS'
+      - name: Original JM RouteScript RouteVM RouteOS versus independent consequences
+        shell: bash
+        run: |
+          set -euo pipefail
+          export REAL_REA_FILE="$RUNNER_TEMP/rea-jm-native.json"
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import crypto from 'node:crypto';
+          import assert from 'node:assert/strict';
+          import {verifyRouteConsequences,invalidBytecodeProof,loopProtection} from './agent-runtime/host-adapters/rea-evidence-contact-v0_1/jm_rea_route_verify_v0_5.mjs';
+          const raw=JSON.parse(fs.readFileSync(process.env.REAL_REA_FILE,'utf8'));
+          const graph=raw.normalized_result.semantic_graph;
+          assert.ok(graph.nodes.some(n=>n.kind==='function' && n.identity?.module_path==='route-proof-native.mjs'));
+          const original=fs.readFileSync('./coding-estate/sovereign-ten/direct/route-proof-native.mjs');
+          const sha=crypto.createHash('sha256').update(original).digest('hex');
+          const report=verifyRouteConsequences();
+          assert.equal(report.cases,120);
+          assert.equal(report.passed,120);
+          assert.equal(report.failed,0);
+          assert.equal(report.trace_events,120);
+          assert.equal(report.gate.promotable,false);
+          assert.equal(invalidBytecodeProof().rejected,true);
+          assert.equal(loopProtection().both_protected,true);
+          console.log('REA_TO_JM_NATIVE_ROUTE_CONSEQUENCE_CONTACT: PASS');
+          console.log('JM_ROUTE_SCOPED_CASES:',report.cases);
+          console.log('JM_ROUTE_ORIGINAL_SOURCE_SHA256:',sha);
+          console.log('JM_ROUTE_SCOPED_GATE:',JSON.stringify(report.gate));
+          console.log('JM_ROUTE_RECEIPT_SCOPE:',JSON.stringify(report.claims));
+          JS

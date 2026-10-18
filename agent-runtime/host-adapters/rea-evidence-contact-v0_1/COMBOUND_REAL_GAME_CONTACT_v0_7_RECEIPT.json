@@ -1,0 +1,62 @@
+{
+  "schema": "JM.REA.COMBOUND_REAL_GAME_CONTACT/0.7",
+  "protected_body": "COMBOUND v2.3 Big Form Motion Language Full Pass · FLAZ 2026-10-11",
+  "protected_sha256": "53b6c3d87ebecd647cc59f679d20ca4a0f52cfb7053e8e5bb114b711d1c5e428",
+  "candidate_in_memory_sha256": "66a05d8cf1fbb6e42ba71a9b44b087ed152969940888228800f281ce68a336b1",
+  "transformation": "single scope fix creature21 → outer drawUnit wrapper, no gameplay logic edited",
+  "scope_diff_occurrences": 1,
+  "verified_preserved": true,
+  "modes": [
+    {
+      "style": "CLASSIC",
+      "pass": true,
+      "holds": [],
+      "source_error": [
+        "creature21 is not defined"
+      ],
+      "candidate_errors": [],
+      "fighters": 24,
+      "draw_calls": 24,
+      "game_state_sha256": "91a5d5ef911f616acd2fcee0964862da4b11def9e2c46c0db21745f61a45bd1b",
+      "shot_state_sha256": "8b87e6a25aff1e05cc8632d458c33e68a8a3f09ff5b830a99626bb59eb518a79",
+      "observed_power": 0.429,
+      "observed_velocity": [
+        606.6175715047993,
+        -356.8338655910584
+      ],
+      "canvas_pointer_power": 0.459,
+      "canvas_pointer_vector": {
+        "x": 0.853,
+        "y": -0.521
+      },
+      "canvas_pointer_receipts": 1
+    },
+    {
+      "style": "ARCADE",
+      "pass": true,
+      "holds": [],
+      "source_error": [
+        "creature21 is not defined"
+      ],
+      "candidate_errors": [],
+      "fighters": 24,
+      "draw_calls": 24,
+      "game_state_sha256": "ae3cc04e5ad69e0faccb56836035e760feee41e3afb5c71eae72bceccd0bd109",
+      "shot_state_sha256": "8b87e6a25aff1e05cc8632d458c33e68a8a3f09ff5b830a99626bb59eb518a79",
+      "observed_power": 0.429,
+      "observed_velocity": [
+        606.6175715047993,
+        -356.8338655910584
+      ],
+      "canvas_pointer_power": 0.459,
+      "canvas_pointer_vector": {
+        "x": 0.853,
+        "y": -0.521
+      },
+      "canvas_pointer_receipts": 1
+    }
+  ],
+  "passed": 2,
+  "total": 2,
+  "claim_boundary": "HEADLESS_CHROMIUM_CONTROLLER_AND_RENDER_SMOKE__NOT_OWNER_DEVICE_OR_FULL_MATCH"
+}

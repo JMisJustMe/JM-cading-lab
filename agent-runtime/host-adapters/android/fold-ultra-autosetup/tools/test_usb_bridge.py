@@ -126,6 +126,8 @@ class BridgeContractTests(unittest.TestCase):
             "project_shelf": [{"id": "jm-ecostate", "title": "JM Ecostate",
                                "family": "ESTATE", "url": "https://jmisjustme.github.io/JM-cading-lab/"}],
             "active_project": "jm-ecostate",
+            "layout_compact": "QUICK", "layout_expanded": "COMFORT",
+            "setup_last": "MAKE",
         }
         self.assertEqual(bridge.validate_config(good), good)
         for key, bad in [("active_project", "missing"), ("project_shelf", []),
@@ -170,6 +172,40 @@ class BridgeContractTests(unittest.TestCase):
         self.assertFalse(any(sensitive in str(x) for x in trace))
         self.assertFalse(any(len(x) >= 3 and x[:3] == ("shell", "am", "start")
                              for x in trace))
+
+
+    def test_named_jm_setup_plan_is_bounded(self):
+        for plan in sorted(bridge.VALID_PLANS):
+            payload = bridge.plan_request(plan)
+            self.assertEqual(payload["kind"], "plan")
+            self.assertEqual(payload["plan_id"], plan)
+            self.assertEqual(payload["schema"], bridge.REQUEST_SCHEMA)
+            self.assertNotIn("root", payload)
+            self.assertNotIn("status", payload)
+            self.assertLess(len(bridge.document_bytes(payload)), 512)
+        for bad in ("FACTORY_RESET", "SILENT", "APP_PAIR", "ROOT"):
+            with self.assertRaises(bridge.BridgeError):
+                bridge.plan_request(bad)
+
+    def test_v07_config_rejects_invalid_layout_and_keeps_v06_readable(self):
+        project = {"id": "jm-ecostate", "title": "JM Ecostate",
+                   "family": "ESTATE", "url": ""}
+        config = {"schema": bridge.CONFIG_SCHEMA, "root": "A stable note",
+                  "project_shelf": [project], "active_project": "jm-ecostate",
+                  "layout_compact": "QUICK", "layout_expanded": "COMFORT",
+                  "setup_last": ""}
+        self.assertEqual(bridge.validate_config(config), config)
+        for value in ("DENSE", "", "DELETE"):
+            bad = dict(config, layout_compact=value)
+            with self.assertRaises(bridge.BridgeError):
+                bridge.validate_config(bad)
+        bad = dict(config, setup_last="ROOT")
+        with self.assertRaises(bridge.BridgeError):
+            bridge.validate_config(bad)
+        prior = dict(config, schema="JM.FoldUltraSetup/0.6")
+        prior.pop("layout_compact")
+        prior.pop("layout_expanded")
+        self.assertEqual(bridge.validate_config(prior), prior)
 
     def test_no_device_is_not_treated_as_contact(self):
         with mock.patch.object(bridge.subprocess, "run") as run:

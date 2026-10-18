@@ -169,17 +169,22 @@ public final class UsbBridge {
         File file=path(a,REQUEST);
         if(!file.isFile())return;
         dialogOpen=true;
-        String id="UNVALIDATED",kind="UNVALIDATED";
+        String id="UNVALIDATED",kind="UNVALIDATED",checkpoint="READ";
         try{
             // Claim a request exactly once; no unattended retry or replay.
             String raw=read(a,REQUEST);
+            checkpoint="CONSUME";
             if(!file.delete())throw new IOException("Cannot safely consume staging request");
+            checkpoint="PARSE";
             JSONObject request=new JSONObject(raw);
+            checkpoint="SCHEMA";
             if(!REQUEST_SCHEMA.equals(request.optString("schema")))
                 throw new IllegalArgumentException("Unrecognised bridge request schema");
+            checkpoint="IDENTITY";
             id=request.optString("request_id","");
             if(!id.matches("[0-9a-f]{16,64}"))
                 throw new IllegalArgumentException("Request ID must be 16–64 lowercase hex characters");
+            checkpoint="KIND";
             kind=request.optString("kind","");
             final String action=kind,requestId=id;
             final JSONObject config;
@@ -216,6 +221,7 @@ public final class UsbBridge {
                     "\n\nOwner must verify the proposed public link. No files are downloaded or copied.";
             }else throw new IllegalArgumentException("Only profile, restore and project requests supported");
             final JSONObject requestBody=request;
+            checkpoint="APPROVAL";
             receipt(a,id,"PENDING",kind,"Awaiting owner touch on Android");
             new AlertDialog.Builder(a)
                 .setTitle("JM USB CONTACT · OWNER APPROVAL")
@@ -257,8 +263,8 @@ public final class UsbBridge {
                 }).show();
         }catch(Exception e){
             file.delete();
-            receipt(a,id,"INVALID",kind,"Staged request failed validation; no settings applied");
-            Toast.makeText(a,"HOLD · Invalid USB request: "+e.getMessage(),Toast.LENGTH_LONG).show();
+            receipt(a,id,"INVALID",kind,"Checkpoint "+checkpoint+" failed ("+e.getClass().getSimpleName()+"); no settings applied");
+            Toast.makeText(a,"HOLD · USB request rejected at "+checkpoint,Toast.LENGTH_LONG).show();
             dialogOpen=false;
         }
     }

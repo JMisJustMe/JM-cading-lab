@@ -5,6 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
+import contextlib
+import io
 
 import jm_fold_usb_bridge as bridge
 
@@ -301,6 +303,44 @@ class BridgeContractTests(unittest.TestCase):
         previous=dict(config,schema="JM.FoldUltraSetup/0.8")
         previous.pop("return_points")
         self.assertEqual(bridge.validate_config(previous),previous)
+
+
+    def test_offline_session_and_return_inspection_never_calls_adb(self):
+        # Regression: these documented local-file operations once invoked
+        # connected() first, defeating offline recovery during disconnection.
+        p={"id":"jm-games-house","title":"JM Games House","family":"GAMES","url":""}
+        session={"project_id":p["id"],"revision":3,"phase":"TEST",
+                 "note":"A local-only audit checkpoint","next_action":"Resume offline",
+                 "updated_epoch_ms":2}
+        point={"project_id":p["id"],"source_revision":2,"phase":"BUILD",
+               "note":"Earlier work","next_action":"Before interruption",
+               "recorded_epoch_ms":1}
+        body={"schema":bridge.CONFIG_SCHEMA,"root":"Personal data remains local",
+              "focus":"PLAY","session":"PLAYTEST","stage":4,
+              "project_shelf":[p],"active_project":p["id"],
+              "layout_compact":"QUICK","layout_expanded":"COMFORT",
+              "setup_last":"PLAYTEST","session_deck":[session],"return_points":[point]}
+        with tempfile.TemporaryDirectory() as dirname:
+            backup=Path(dirname)/"local-owner-backup.json"
+            backup.write_text(json.dumps(body),encoding="utf-8")
+            for command,word in (("session-show","A local-only audit checkpoint"),
+                                 ("reentry-show","Earlier work")):
+                captured=io.StringIO()
+                with mock.patch.object(bridge,"connected",side_effect=AssertionError("OFFLINE COMMAND CALLED ADB")), \
+                     mock.patch.object(bridge,"adb_run",side_effect=AssertionError("OFFLINE COMMAND CALLED ADB")), \
+                     contextlib.redirect_stdout(captured):
+                    code=bridge.main(["--adb","missing-adb-executable",command,
+                                      str(backup),p["id"]])
+                self.assertEqual(code,0)
+                self.assertIn(word,captured.getvalue())
+
+    def test_corrupt_offline_snapshot_fails_without_device_access(self):
+        with tempfile.TemporaryDirectory() as dirname:
+            backup=Path(dirname)/"bad-backup.json"
+            backup.write_text('{"schema":"JM.FoldUltraSetup/0.9","root":"x"}')
+            with mock.patch.object(bridge,"connected",side_effect=AssertionError("Should not dial ADB")), \
+                 contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(bridge.main(["session-show",str(backup),"jm-games-house"]),2)
 
     def test_no_device_is_not_treated_as_contact(self):
         with mock.patch.object(bridge.subprocess, "run") as run:

@@ -16,6 +16,15 @@ Commercial Discovery PR #374 merged: `8120d33522eadf8e63630e3fec64e356ea03a947`.
 ## Direct QA
 GitHub Actions `JM Commercial Discovery QA`, run **39177252444**, job **117822357704**, **PASS 10/10**. Scope: static source, links, script syntax, simulated selection/filter/enquiry, no invented LIVE buying link or covert collection. Original Money Menu still protected.
 
+## Commercial Discovery 003 — real browser contact proof
+
+PR #375 merged `9a5e626e2673e3d9f8d653f28e7cf961f0e02970` (independent Chromium QA enhancement; no customer-facing offer replacement).
+- GitHub Actions workflow run **39177689506**, job **117823645237**: original 10/10 source/simulation QA **PASS**, plus real headless Chromium browser **PASS 3/3**.
+- Real 390px touch viewport: initial Play filter and exactly two game offers; no horizontal overflow; Fight Clash offer selection and input focus PASS.
+- Real 1280px desktop: eight offers, Services filter with exactly three service offers, Control Grammar Audit selection; no horizontal overflow PASS.
+- Zero browser JS page errors and zero unexpected network requests in the tested fixture.
+- Two screenshots held in short-retention Actions artifact **12154064317** (7-day retention); this is a GitHub QA artifact, not owner-device or public edge proof.
+
 ## Open genuine barriers
 - Public Cloudflare deployment, Android and laptop UI/interaction proof were **not directly verified** by this task.
 - Connected Stripe is **sandbox only**; £14.99 book checkout is a historic sandbox E2E PASS, **NOT** a live paid customer. Live merchant verification, legal disclosure/consent, buyer payment and manual PDF/EPUB delivery are all still separately open.

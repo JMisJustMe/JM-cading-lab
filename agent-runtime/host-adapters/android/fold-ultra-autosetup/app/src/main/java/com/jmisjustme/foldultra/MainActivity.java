@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.4";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.5";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
@@ -39,9 +39,11 @@ public final class MainActivity extends Activity {
   }
   @Override protected void onNewIntent(Intent intent){
     super.onNewIntent(intent);setIntent(intent);inspectIncoming(intent);
+    UsbBridge.offer(this,sp,()->render());
   }
   @Override public void onSaveInstanceState(Bundle out){out.putInt("tab",tab);super.onSaveInstanceState(out);}
-  @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();}
+  @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();
+    UsbBridge.offer(this,sp,()->render());}
   @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);render();}
   @Override public void onBackPressed(){
     if(!sp.getBoolean("ready",false) && sp.getInt("stage",0)>0){stage(sp.getInt("stage",0)-1);return;}
@@ -94,7 +96,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(26),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.4",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.5",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -254,7 +256,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else preflight();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else usbRoom();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -294,6 +296,7 @@ public final class MainActivity extends Activity {
     btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
     btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
     btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
+    btn(page,"USB CONTACT  /  Setup & recovery →",true,()->{tab=5;render();});
     btn(page,"PREFLIGHT  /  Diagnostics & receipts →",true,()->{tab=4;render();});
   }
 
@@ -513,6 +516,30 @@ public final class MainActivity extends Activity {
     });
   }
 
+
+  void usbRoom(){
+    title("JM / USB CONTACT · 0.5","Your phone. Your approval.",
+      "Prepare configurations on a trusted laptop, review them here, and keep a recoverable local copy.");
+    LinearLayout status=card("CURRENT CONTACT","USB bridge is owner-gated",
+      UsbBridge.status(this),TEAL);
+    label(status,"Debug APK + authorised ADB required. A staged request is NOT an applied change.",13,MUTED,false);
+    LinearLayout launch=card("INBOUND / CONTROLLED","Receive a laptop request",
+      "The laptop stages a small JSON request in this app's private files. This screen presents its requested JM-only changes for your approval.",BLUE);
+    btn(launch,"Check pending USB request",true,()->UsbBridge.offer(this,sp,()->render()));
+    LinearLayout recovery=card("RECOVERY / ONE AUTHORITY","Prepare a protected snapshot",
+      "Only after you tap PREPARE can the laptop copy the current JM configuration. The snapshot contains your root note, so protect the laptop and backup.",PURPLE);
+    btn(recovery,"Prepare USB recovery snapshot",true,()->UsbBridge.prepareSnapshot(this,sp));
+    btn(recovery,"Recover previous approved restore",false,()->UsbBridge.rollback(this,sp,()->render()));
+    btn(recovery,"Export through Android Documents instead",false,()->file(true));
+    LinearLayout explain=card("FIRST CONTACT / NO SURRENDER","What your laptop can and cannot do",
+      "The developer bridge needs a trusted USB debugging connection and a debuggable JM APK. Its profile and restore commands ALWAYS request your approval on this screen.",TEAL);
+    label(explain,"Laptop: inspect device · stage JM route · fetch owner-prepared snapshot · read decision receipt.",13,WHITE,false);
+    space(explain,10);
+    label(explain,"Not permitted by JM: silent restores · Galaxy AI extraction · Samsung home rearrangement · root or device administrator controls.",13,MUTED,false);
+    space(page,12);
+    btn(page,"← JM root",false,()->{tab=0;render();});
+  }
+
   void routes(){
     title("CONTACT ROUTES","Open existing bodies.","No hidden migration and no pretend connections.");
     LinearLayout local=card("ANDROID","Device apps","Installed apps open normally. Missing ones return HOLD.",BLUE);
@@ -537,6 +564,7 @@ public final class MainActivity extends Activity {
     btn(controls,"Import configuration JSON",false,()->file(false));
     btn(controls,"Explore Galaxy built-ins",false,()->{tab=1;render();});
     btn(controls,"Run device preflight & export receipt",true,()->{tab=4;render();});
+    btn(controls,"USB CONTACT / Owner-approved workstation",false,()->{tab=5;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -567,7 +595,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_4.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_5.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -613,7 +641,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -630,13 +658,13 @@ public final class MainActivity extends Activity {
           .setPositiveButton("Import",(d,w)->{
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
               JSONObject marks=j.optJSONObject("native_owner_marks");
               if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
               String group=j.optString("native_group","ASSIST");
               if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
             }
-            if(SCHEMA.equals(schema)){
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
               String selectedSession=j.optString("session","MAKE");
               if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
                  selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){

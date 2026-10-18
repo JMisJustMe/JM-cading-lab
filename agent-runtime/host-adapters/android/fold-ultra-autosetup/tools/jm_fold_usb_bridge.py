@@ -7,6 +7,7 @@ on devices whose owner has authorised USB debugging from a trusted computer.
 """
 from __future__ import annotations
 import argparse
+import base64
 import hashlib
 import json
 import os
@@ -206,6 +207,15 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
     # Verify byte-for-byte contact while the request is still staged.
     # If transport alters the payload, do not launch any phone-side approval.
     echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
+    if echoed != payload and body.get("kind") in {"profile", "project_select"} and len(payload) <= 512:
+        # Narrow fallback for non-sensitive route choices only.
+        # ADB exec-in can truncate tiny streams on some emulators. For this
+        # whitelisted metadata, retry with a one-command base64 transfer.
+        # Never pass root note text or project URLs as shell arguments.
+        encoded = base64.b64encode(payload).decode("ascii")
+        adb_run(adb, serial, "shell", "run-as", PACKAGE, "sh", "-c",
+                f"printf '%s' '{encoded}' | base64 -d > {STAGING}")
+        echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
     if echoed != payload:
         try:
             adb_run(adb, serial, "shell", "run-as", PACKAGE, "rm", STAGING)

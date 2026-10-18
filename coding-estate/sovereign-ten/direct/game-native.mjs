@@ -154,6 +154,11 @@ export class JMGameCoreRuntime {
     const system = this.program.systems.find(candidate => candidate.name === systemName);
     need(system, 'JMG_UNKNOWN_SYSTEM', `Unknown JM GameCore system ${systemName}.`);
     need(system.events.includes(eventName), 'JMG_UNHANDLED_EVENT', `System ${systemName} does not handle ${eventName}.`);
+    // State/frame recovery is local to this native runtime. External service
+    // effects cannot be undone here; trace retains the attempted consequences.
+    const checkpoint = structuredClone(this.game.state);
+    const frame = this.game.frame;
+    try {
     const executions = [];
     for (const organName of system.organs) {
       const organ = this.program.organs.find(candidate => candidate.name === organName);
@@ -164,6 +169,16 @@ export class JMGameCoreRuntime {
     const result = { type: 'JMGDispatchResult', system: system.name, identity: system.identity, event: eventName, executions, state: structuredClone(this.game.state) };
     this.trace.emit('system.completed', { system: system.name, identity: system.identity, stateDigest: digest(result.state) });
     return { ...result, trace: this.trace.events, receipt: this.trace.receipt('dispatch event without identity collapse', result) };
+    } catch (error) {
+      this.game.state = checkpoint;
+      this.game.frame = frame;
+      const recovery = { system: system.name, identity: system.identity, event: eventName,
+        error: error.code ?? error.name, stateDigest: digest(checkpoint),
+        scope: 'native_state_and_frame_only_external_service_effects_not_reversed' };
+      this.game.trace.emit('dispatch.rolled_back', recovery);
+      this.trace.emit('dispatch.rolled_back', recovery);
+      throw error;
+    }
   }
 }
 
@@ -177,3 +192,4 @@ export function gameChain(gameSource, coreSource, initialState = {}, services = 
   const dispatch = coreRuntime.dispatch(coreAst.systems[0].name, coreAst.systems[0].events[0]);
   return { gameAst, gameIr, coreAst, coreIr, dispatch, game: gameRuntime.result(), digest: digest(stable({ dispatch, state: gameRuntime.state })) };
 }
+

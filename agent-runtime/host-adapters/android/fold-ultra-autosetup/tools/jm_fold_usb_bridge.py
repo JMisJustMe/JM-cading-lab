@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""JM Fold Ultra 0.8 — authorised USB ADB bridge, debug APK only.
+"""JM Fold Ultra 0.9 — authorised USB ADB bridge, debug APK only.
 
 No network, root, Samsung launcher writes, secrets on command line, or
 unattended phone-side changes. ADB run-as is possible for *debuggable* APKs
@@ -21,10 +21,10 @@ from urllib.parse import urlsplit
 import ipaddress
 
 PACKAGE = "com.jmisjustme.foldultra"
-REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.8"
-CONFIG_SCHEMA = "JM.FoldUltraSetup/0.8"
+REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.9"
+CONFIG_SCHEMA = "JM.FoldUltraSetup/0.9"
 VALID_CONFIG_SCHEMAS = {
-    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
+    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
     "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2",
 }
 VALID_SESSIONS = {"MAKE": "CREATE", "PLAYTEST": "PLAY",
@@ -173,8 +173,8 @@ def read_note_file(path: Path) -> str:
 
 def local_session(config: dict, project_id: str) -> dict:
     validate_config(config)
-    if config.get("schema")!="JM.FoldUltraSetup/0.8":
-        raise BridgeError("Session viewing requires a v0.8 snapshot")
+    if config.get("schema") not in {CONFIG_SCHEMA,"JM.FoldUltraSetup/0.8"}:
+        raise BridgeError("Session viewing requires v0.8+ snapshot")
     for session in config.get("session_deck",[]):
         if session["project_id"]==project_id:
             return session
@@ -183,6 +183,63 @@ def local_session(config: dict, project_id: str) -> dict:
     return {"project_id":project_id,"revision":0,"phase":"IDEA",
             "note":"","next_action":"","updated_epoch_ms":0}
 
+
+
+def reentry_request(kind: str, project_id: str, expected_revision: int,
+                    point_revision: int | None = None) -> dict:
+    if kind not in {"reentry_capture", "reentry_return"}:
+        raise BridgeError("Unknown JM reentry operation")
+    if not isinstance(project_id,str) or not PROJECT_ID.fullmatch(project_id):
+        raise BridgeError("Invalid return project ID")
+    if not isinstance(expected_revision,int) or isinstance(expected_revision,bool) \
+            or not 0 <= expected_revision <= 100000000:
+        raise BridgeError("Invalid expected JM checkpoint revision")
+    request={"schema":REQUEST_SCHEMA,"request_id":secrets.token_hex(16),
+        "kind":kind,"project_id":project_id,"expected_revision":expected_revision}
+    if kind=="reentry_return":
+        if not isinstance(point_revision,int) or isinstance(point_revision,bool) \
+                or not 0 <= point_revision <= 100000000:
+            raise BridgeError("Return requires a valid captured point revision")
+        request["point_revision"]=point_revision
+    document_bytes(request)
+    return request
+
+
+def validate_return_points(config: dict) -> None:
+    entries=config.get("return_points")
+    if not isinstance(entries,list) or len(entries)>24:
+        raise BridgeError("JM v0.9 recovery requires 0–24 return points")
+    projects={p["id"] for p in config["project_shelf"]}
+    seen=set()
+    for point in entries:
+        if not isinstance(point,dict):
+            raise BridgeError("Return point must be an object")
+        session={"project_id":point.get("project_id"),
+                 "revision":point.get("source_revision"),
+                 "phase":point.get("phase"),
+                 "note":point.get("note"),
+                 "next_action":point.get("next_action"),
+                 "updated_epoch_ms":0}
+        validate_session_entry(session)
+        stamp=point.get("recorded_epoch_ms")
+        if not isinstance(stamp,int) or isinstance(stamp,bool) or stamp<0:
+            raise BridgeError("Invalid return-point timestamp")
+        identity=point["project_id"]
+        if identity not in projects or identity in seen:
+            raise BridgeError("Return point is duplicated or orphaned")
+        seen.add(identity)
+
+
+def local_return_point(config: dict, project_id: str) -> dict:
+    validate_config(config)
+    if config["schema"]!=CONFIG_SCHEMA:
+        raise BridgeError("Return points require a v0.9 snapshot")
+    if project_id not in {p["id"] for p in config["project_shelf"]}:
+        raise BridgeError("JM project not present in backup")
+    for point in config["return_points"]:
+        if point["project_id"]==project_id:
+            return point
+    raise BridgeError("No saved Return Point for this project")
 
 def validate_config(data: object) -> dict:
     if not isinstance(data, dict):
@@ -203,15 +260,17 @@ def validate_config(data: object) -> dict:
     for name in ("native_owner_marks", "owner_test_marks"):
         if name in data and not isinstance(data[name], dict):
             raise BridgeError(f"{name} must be an object")
-    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7"}:
+    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7"}:
         if data.get("layout_compact") not in VALID_LAYOUTS or data.get("layout_expanded") not in VALID_LAYOUTS:
             raise BridgeError("Invalid per-window JM layout profile")
         if data.get("setup_last", "") not in VALID_PLANS | {""}:
             raise BridgeError("Invalid last setup plan")
-    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6"}:
+    if data.get("schema") in {CONFIG_SCHEMA, "JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6"}:
         validate_project_shelf(data.get("project_shelf"), data.get("active_project"))
-    if data.get("schema") == CONFIG_SCHEMA:
+    if data.get("schema") in {CONFIG_SCHEMA,"JM.FoldUltraSetup/0.8"}:
         validate_sessions(data)
+    if data.get("schema")==CONFIG_SCHEMA:
+        validate_return_points(data)
     return data
 
 
@@ -307,7 +366,7 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
             echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
         except BridgeError:
             pass
-    if echoed != payload and body.get("kind") in {"profile", "project_select", "plan"} and len(payload) <= 512:
+    if echoed != payload and body.get("kind") in {"profile", "project_select", "plan", "reentry_capture", "reentry_return"} and len(payload) <= 512:
         # Narrow fallback for non-sensitive route choices only.
         # ADB exec-in can truncate tiny streams on some emulators. For this
         # whitelisted metadata, retry with a one-command base64 transfer.
@@ -362,7 +421,7 @@ def read_config_file(path: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="JM Fold Ultra v0.8 — owner-approved USB contact")
+    p = argparse.ArgumentParser(description="JM Fold Ultra v0.9 — owner-approved USB contact")
     p.add_argument("--adb", default="adb", help="Android platform-tools adb executable")
     p.add_argument("--serial", help="ADB serial; mandatory if multiple devices are present")
     sub = p.add_subparsers(dest="action", required=True)
@@ -392,6 +451,16 @@ def main(argv: list[str] | None = None) -> int:
     show = sub.add_parser("session-show", help="Read one project from an owner-exported v0.8 backup offline")
     show.add_argument("file", type=Path)
     show.add_argument("id")
+    capture=sub.add_parser("reentry-capture",help="Stage Return Point capture (phone approves)")
+    capture.add_argument("id")
+    capture.add_argument("--expected-revision",type=int,required=True)
+    recover=sub.add_parser("reentry-return",help="Stage return as NEW revision (phone approves)")
+    recover.add_argument("id")
+    recover.add_argument("--expected-revision",type=int,required=True)
+    recover.add_argument("--point-revision",type=int,required=True)
+    inspect=sub.add_parser("reentry-show",help="Inspect point in an owner-exported v0.9 JSON snapshot")
+    inspect.add_argument("file",type=Path)
+    inspect.add_argument("id")
     sub.add_parser("receipt", help="Read the last phone-side USB decision")
     args = p.parse_args(argv)
     try:
@@ -404,11 +473,18 @@ def main(argv: list[str] | None = None) -> int:
             print(f"USB CONTACT READY / {serial} / model {model} / Android API {sdk}")
             print(f"JM debug app installed: {bool(package_path)}")
             print("No phone settings changed. ADB trust remains your responsibility.")
+        elif args.action == "reentry-show":
+            print(json.dumps(local_return_point(read_config_file(args.file),args.id),
+                             indent=2,ensure_ascii=False))
         elif args.action == "session-show":
             data=read_config_file(args.file)
             print(json.dumps(local_session(data,args.id),indent=2,ensure_ascii=False))
-        elif args.action in {"plan", "profile", "restore", "project-select", "project-bind", "session-update"}:
-            if args.action == "session-update":
+        elif args.action in {"plan", "profile", "restore", "project-select", "project-bind", "session-update", "reentry-capture", "reentry-return"}:
+            if args.action in {"reentry-capture","reentry-return"}:
+                body=reentry_request(args.action.replace("-","_"),
+                       args.id,args.expected_revision,
+                       args.point_revision if args.action=="reentry-return" else None)
+            elif args.action == "session-update":
                 body=session_update_request(args.id,args.expected_revision,args.phase,
                                             read_note_file(args.note_file),args.next)
             elif args.action == "plan":
@@ -433,7 +509,7 @@ def main(argv: list[str] | None = None) -> int:
             print("SHA-256:", hashlib.sha256(payload).hexdigest())
         elif args.action == "receipt":
             data = json.loads(read_private(args.adb, serial, RECEIPT))
-            if data.get("schema") != "JM.FoldBridgeReceipt/0.8":
+            if data.get("schema") != "JM.FoldBridgeReceipt/0.9":
                 raise BridgeError("Unknown receipt schema")
             print(json.dumps(data, indent=2, ensure_ascii=False))
             if data.get("status") != "ACCEPTED":

@@ -152,7 +152,7 @@ class BridgeContractTests(unittest.TestCase):
              mock.patch.object(bridge, "adb_run", side_effect=fake):
             self.assertEqual(bridge.stage_payload("adb", "mock", request),
                              request["request_id"])
-        self.assertTrue(any("base64 -d" in str(x) for x in trace))
+        self.assertTrue(any(len(x)>1 and x[:2]==("shell","-T") for x in trace))
         self.assertEqual(trace[-1][:3], ("shell", "am", "start"))
 
     def test_truncated_restore_does_not_reveal_root_in_shell(self):

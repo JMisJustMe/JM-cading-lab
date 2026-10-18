@@ -18,7 +18,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
-  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.8";
+  static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.9";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
@@ -33,6 +33,11 @@ public final class MainActivity extends Activity {
     if(!sp.contains("root"))sp.edit().putString("root",
       getPreferences(0).getString("root","JM FOLD ULTRA · Paired Root")).apply();
     if(state!=null)tab=state.getInt("tab",0);
+    else if(sp.getBoolean("ready",false)){
+      // Remember the last visited JM room; never auto-launch external apps.
+      int last=sp.getInt("nav.last",0);
+      if(last>=0&&last<=9)tab=last;
+    }
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     render();
@@ -41,6 +46,11 @@ public final class MainActivity extends Activity {
   @Override protected void onNewIntent(Intent intent){
     super.onNewIntent(intent);setIntent(intent);inspectIncoming(intent);
     UsbBridge.offer(this,sp,()->render());
+  }
+  @Override protected void onPause(){
+    if(sp!=null&&sp.getBoolean("ready",false))
+      sp.edit().putInt("nav.last",tab).apply();
+    super.onPause();
   }
   @Override public void onSaveInstanceState(Bundle out){out.putInt("tab",tab);super.onSaveInstanceState(out);}
   @Override protected void onResume(){super.onResume();if(getResources().getConfiguration().screenWidthDp!=lastWidth)render();
@@ -98,7 +108,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.8",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.9",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -261,7 +271,7 @@ public final class MainActivity extends Activity {
       b.setOnClickListener(v->{tab=value;render();});
     }
     space(page,12);
-    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else sessionRoom();
+    if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else if(tab==8)sessionRoom();else reentryRoom();
   }
   void root(){
     String focus=sp.getString("focus","CREATE");
@@ -313,7 +323,8 @@ public final class MainActivity extends Activity {
     btn(action,"Playtest  /  JM games",false,()->session("PLAYTEST"));
     btn(action,"Research  /  apps and AI",false,()->session("RESEARCH"));
     btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
-    btn(page,"RESUME PROJECT  /  My working session →",true,()->{tab=8;render();});
+    btn(page,"CONTINUE / Current JM Return Point →",true,()->{tab=9;render();});
+    btn(page,"RESUME PROJECT / My working session →",false,()->{tab=8;render();});
     btn(page,"SETUP PLANS  /  One-touch JM configuration →",false,()->{tab=7;render();});
     btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
@@ -621,6 +632,75 @@ public final class MainActivity extends Activity {
   }
 
 
+
+  void reentryRoom(){
+    String projectId=ProjectShelf.selected(sp);
+    try{
+      JSONObject project=ProjectShelf.find(sp,projectId);
+      if(project==null)throw new IllegalStateException("Active project missing");
+      JSONObject current=SessionDeck.find(sp,projectId);
+      JSONObject point=ReentryEngine.point(sp,projectId);
+      int rev=current.getInt("revision");
+      title("JM / RETURN POINT · 0.9",project.getString("title"),
+        "Resume after interruption, capture a deliberate return state, or recover without rewinding your revision history.");
+      LinearLayout now=card("CURRENT / LATEST CHECKPOINT",
+        "Revision "+rev+" · "+current.getString("phase"),
+        SessionDeck.shortStatus(sp,projectId),TEAL);
+      btn(now,"Open working session →",true,()->{tab=8;render();});
+      LinearLayout mark=card("RETURN POINT / SAVED STATE",
+        point==null?"No Return Point captured":
+          "Captured from revision "+point.getInt("source_revision"),
+        ReentryEngine.status(sp,projectId),PURPLE);
+      if(rev>0)btn(mark,"Capture current SAVED checkpoint",true,()->{
+        new AlertDialog.Builder(this).setTitle("Capture JM Return Point?")
+          .setMessage("Save checkpoint revision "+rev+" as your Return Point. This does not include unsaved draft edits. Any previous Return Point for this project is replaced. No project files change.")
+          .setNegativeButton("Cancel",null)
+          .setPositiveButton("CAPTURE",(d,w)->{
+            try{
+              ReentryEngine.capture(sp,projectId,rev);render();
+              Toast.makeText(this,"JM Return Point captured",Toast.LENGTH_LONG).show();
+            }catch(Exception e){
+              new AlertDialog.Builder(this).setTitle("HOLD · Not captured")
+                .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+            }
+          }).show();
+      });
+      if(point!=null){
+        final int from=point.getInt("source_revision");
+        label(mark,"Captured note: "+point.getString("note"),13,WHITE,false);
+        btn(mark,"RETURN → new revision (keep prior current)",true,()->{
+          new AlertDialog.Builder(this).setTitle("Return without rewriting history?")
+            .setMessage("Re-enter checkpoint saved from revision "+from+". "+
+              "Current revision "+rev+" becomes your next Return Point. "+
+              "The restored content will be saved as revision "+(rev+1)+
+              ". Any unsaved local drafts will be cleared. External project files remain untouched.")
+            .setNegativeButton("Keep current",null)
+            .setPositiveButton("RETURN",(d,w)->{
+              try{
+                ReentryEngine.restore(sp,projectId,rev,from);
+                render();
+                Toast.makeText(this,"JM Return committed as next revision",Toast.LENGTH_LONG).show();
+              }catch(Exception e){
+                new AlertDialog.Builder(this).setTitle("HOLD · Return not applied")
+                  .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+              }
+            }).show();
+        });
+      }
+      LinearLayout elsewhere=card("CROSS-DEVICE / CONSENTED RE-ENTRY",
+        "Carry your working context, not copies of your creations",
+        "Full configuration exports include checkpoints and Return Points. A trusted ADB laptop can review an owner-prepared backup or propose an approved return, with revision checks.",BLUE);
+      btn(elsewhere,"Export full JM recovery body",false,()->file(true));
+      btn(elsewhere,"Prepare protected USB recovery snapshot",false,
+        ()->UsbBridge.prepareSnapshot(this,sp));
+      label(elsewhere,"No background synchronisation, private-file scanning, project binary transfer or Samsung launcher control.",12,MUTED,false);
+      btn(page,"← Current session",false,()->{tab=8;render();});
+    }catch(Exception e){
+      card("HOLD / RETURN POINT","Cannot read recovery state",e.getMessage(),PURPLE);
+      btn(page,"← JM Root",false,()->{tab=0;render();});
+    }
+  }
+
   void sessionRoom(){
     String projectId=ProjectShelf.selected(sp);
     try{
@@ -699,6 +779,7 @@ public final class MainActivity extends Activity {
         "Folding changes JM's available-width layout; the active project and its local draft remain in shared application storage.",PURPLE);
       label(continuity,"Actual Fold transition and battery/process recovery still require owner-device tests.",13,MUTED,false);
       btn(continuity,"Export full JM checkpoint collection",false,()->file(true));
+      btn(continuity,"Capture or recover a JM Return Point",true,()->{tab=9;render();});
       btn(continuity,"Prepare laptop snapshot (with sessions)",false,
         ()->UsbBridge.prepareSnapshot(this,sp));
       btn(page,"← JM Root",false,()->{tab=0;render();});
@@ -871,6 +952,7 @@ public final class MainActivity extends Activity {
     btn(controls,"My JM project shelf",false,()->{tab=6;render();});
     btn(controls,"Apply or recover a JM setup plan",true,()->{tab=7;render();});
     btn(controls,"Current project session",false,()->{tab=8;render();});
+    btn(controls,"JM return points / recovery",false,()->{tab=9;render();});
     btn(controls,"Android settings",false,()->start(new Intent(Settings.ACTION_SETTINGS)));
     btn(controls,"Replay prelaunch (retain notes)",false,()->new AlertDialog.Builder(this)
       .setTitle("Replay the opening?")
@@ -901,7 +983,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_8.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_9.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -929,6 +1011,7 @@ public final class MainActivity extends Activity {
         j.put("layout_expanded",SetupPlan.layout(sp,true));
         j.put("setup_last",sp.getString("setup.last",""));
         j.put("session_deck",SessionDeck.all(sp));
+        j.put("return_points",ReentryEngine.all(sp));
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
@@ -953,7 +1036,7 @@ public final class MainActivity extends Activity {
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));
         String schema=j.optString("schema");
-        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.7".equals(schema)&&!"JM.FoldUltraSetup/0.6".equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
+        if(!SCHEMA.equals(schema)&&!"JM.FoldUltraSetup/0.8".equals(schema)&&!"JM.FoldUltraSetup/0.7".equals(schema)&&!"JM.FoldUltraSetup/0.6".equals(schema)&&!"JM.FoldUltraSetup/0.5".equals(schema)&&!"JM.FoldUltraSetup/0.4".equals(schema)&&!"JM.FoldUltraSetup/0.3".equals(schema)&&!"JM.FoldUltraSetup/0.2".equals(schema)&&!"JM.FoldUltraRoot/0.1".equals(schema))
           throw new IllegalArgumentException("Schema not recognised");
         String root=j.getString("root");
         if(root.length()>10000)throw new IllegalArgumentException("Root note too long");
@@ -993,13 +1076,13 @@ public final class MainActivity extends Activity {
             }
             sp.edit().putString("root",root).putString("focus",focus)
               .putBoolean("ready",ready).putInt("stage",step).apply();
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)||"JM.FoldUltraSetup/0.3".equals(schema)) {
               JSONObject marks=j.optJSONObject("native_owner_marks");
               if(marks!=null)for(String key:NATIVE_KEYS)sp.edit().putBoolean("tried."+key,marks.optBoolean(key,false)).apply();
               String group=j.optString("native_group","ASSIST");
               if(group.equals("ASSIST")||group.equals("CREATE")||group.equals("WORK"))sp.edit().putString("native.group",group).apply();
             }
-            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
+            if(SCHEMA.equals(schema)||"JM.FoldUltraSetup/0.8".equals(schema)||"JM.FoldUltraSetup/0.7".equals(schema)||"JM.FoldUltraSetup/0.6".equals(schema)||"JM.FoldUltraSetup/0.5".equals(schema)||"JM.FoldUltraSetup/0.4".equals(schema)){
               String selectedSession=j.optString("session","MAKE");
               if(selectedSession.equals("MAKE")||selectedSession.equals("PLAYTEST")||
                  selectedSession.equals("RESEARCH")||selectedSession.equals("RECOVERY")){

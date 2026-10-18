@@ -207,6 +207,55 @@ class BridgeContractTests(unittest.TestCase):
         prior.pop("layout_expanded")
         self.assertEqual(bridge.validate_config(prior), prior)
 
+
+    def test_session_revision_and_privacy_constraints(self):
+        valid=bridge.session_update_request("five-flip",0,"TEST",
+                                            "Owner-saved test context","Resume arena match")
+        self.assertEqual(valid["kind"],"session_update")
+        self.assertEqual(valid["expected_revision"],0)
+        self.assertEqual(valid["note"],"Owner-saved test context")
+        self.assertNotIn("status",valid)
+        for rev in (-1, True, 100000001):
+            with self.assertRaises(bridge.BridgeError):
+                bridge.session_update_request("five-flip",rev,"TEST","ok","next")
+        with self.assertRaises(bridge.BridgeError):
+            bridge.session_update_request("five-flip",0,"ERASE","ok","next")
+        with self.assertRaises(bridge.BridgeError):
+            bridge.session_update_request("five-flip",0,"BUILD","a"*4001,"next")
+        with self.assertRaises(bridge.BridgeError):
+            bridge.session_update_request("five-flip",0,"TEST","ok","n"*221)
+
+    def test_session_snapshot_requires_valid_joined_project(self):
+        proj={"id":"five-flip","title":"FIVE//FLIP","family":"GAMES","url":""}
+        session={"project_id":"five-flip","revision":3,"phase":"POLISH","note":"test",
+                 "next_action":"re-test camera","updated_epoch_ms":5}
+        base={"schema":bridge.CONFIG_SCHEMA,"root":"JM local","project_shelf":[proj],
+              "active_project":"five-flip","layout_compact":"QUICK",
+              "layout_expanded":"COMFORT","setup_last":"PLAYTEST",
+              "session_deck":[session]}
+        self.assertEqual(bridge.validate_config(base),base)
+        self.assertEqual(bridge.local_session(base,"five-flip")["revision"],3)
+        with self.assertRaises(bridge.BridgeError):
+            bridge.validate_config(dict(base,session_deck=[dict(session,project_id="orphan")]))
+        with self.assertRaises(bridge.BridgeError):
+            bridge.validate_config(dict(base,session_deck=[session,session]))
+        with self.assertRaises(bridge.BridgeError):
+            bridge.validate_config(dict(base,session_deck=[dict(session,revision=-1)]))
+
+    def test_proposed_private_session_note_never_uses_shell_fallback(self):
+        note="PRIVATE-JM-SESSION-CONTENT-NOT-COMMAND-LINE"
+        request=bridge.session_update_request("five-flip",0,"TEST",note,"next")
+        trace=[]
+        def fake(adb,serial,*args,stdin=None,timeout=25):
+            trace.append((args,stdin))
+            return b"partial" if args[0]=="exec-out" else b""
+        with mock.patch.object(bridge,"ensure_debug"),mock.patch.object(bridge,"adb_run",side_effect=fake):
+            with self.assertRaises(bridge.BridgeError):
+                bridge.stage_payload("adb","test-device",request)
+        self.assertFalse(any("base64 -d" in str(cmd) for cmd,_ in trace))
+        self.assertFalse(any(note in str(cmd) for cmd,_ in trace))
+        self.assertFalse(any(cmd[:3]==("shell","am","start") for cmd,_ in trace))
+
     def test_no_device_is_not_treated_as_contact(self):
         with mock.patch.object(bridge.subprocess, "run") as run:
             run.return_value = mock.Mock(returncode=0, stdout="List of devices attached\n\n")

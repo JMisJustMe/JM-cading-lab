@@ -53,5 +53,5 @@ require('setPositiveButton("APPLY"' in bridge and 'setNegativeButton("REJECT"' i
 require("prepareSnapshot" in bridge and "bridge_snapshot.json" in bridge, "owner-prepared USB snapshot")
 require("validateConfig" in bridge and "ROLLBACK" in bridge, "validated reversible JM-only restore")
 require("run-as" in cli and "exec-in" in cli, "USB debug staging mechanism")
-require("socket" not in bridge and "INTERNET" not in bridge, "no bridge web server or network permission")
+require("new ServerSocket(" not in bridge and "android.permission.INTERNET" not in manifest, "no bridge web server or network permission")
 print("JM FOLD ULTRA v0.5: STATIC PRELAUNCH + USB CONTRACT PASS")

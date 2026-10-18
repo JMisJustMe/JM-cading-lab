@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""JM Fold Ultra 0.5 — authorised USB ADB bridge, debug APK only.
+"""JM Fold Ultra 0.6 — authorised USB ADB bridge, debug APK only.
 
 No network, root, Samsung launcher writes, secrets on command line, or
 unattended phone-side changes. ADB run-as is possible for *debuggable* APKs
@@ -14,12 +14,15 @@ from pathlib import Path
 import secrets
 import subprocess
 import sys
+import re
+from urllib.parse import urlsplit
+import ipaddress
 
 PACKAGE = "com.jmisjustme.foldultra"
-REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.5"
-CONFIG_SCHEMA = "JM.FoldUltraSetup/0.5"
+REQUEST_SCHEMA = "JM.FoldBridgeRequest/0.6"
+CONFIG_SCHEMA = "JM.FoldUltraSetup/0.6"
 VALID_CONFIG_SCHEMAS = {
-    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.4",
+    CONFIG_SCHEMA, "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4",
     "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2",
 }
 VALID_SESSIONS = {"MAKE": "CREATE", "PLAYTEST": "PLAY",
@@ -33,6 +36,75 @@ RECEIPT = "files/bridge_receipt.json"
 
 class BridgeError(Exception):
     pass
+
+
+PROJECT_FAMILIES = {"GAMES", "MUSIC", "BUILD", "ESTATE"}
+PROJECT_ID = re.compile(r"^[a-z0-9][a-z0-9-]{1,31}$")
+PROJECT_LIMIT = 24
+
+
+def safe_project_url(url: str) -> str:
+    if not isinstance(url, str) or len(url) > 1024:
+        raise BridgeError("Project URL must be text of at most 1024 characters")
+    if not url:
+        return ""
+    if not url.startswith("https://") or any(x in url for x in ("\\", "\n", "\r", " ")):
+        raise BridgeError("Project URL must use public HTTPS without spaces")
+    parts = urlsplit(url)
+    host = parts.hostname or ""
+    if not host or parts.username is not None or parts.password is not None or \
+            parts.port is not None or parts.fragment:
+        raise BridgeError("Project URL cannot contain credentials, port or fragment")
+    if host.lower() == "localhost" or host.lower().endswith(".local"):
+        raise BridgeError("Local-only URLs are not supported")
+    try:
+        address = ipaddress.ip_address(host)
+        if not address.is_global:
+            raise BridgeError("Private or reserved IP address forbidden")
+    except ValueError:
+        pass
+    if host.startswith("10.") or host.startswith("192.168.") or host.startswith("127."):
+        raise BridgeError("Private address forbidden")
+    return url
+
+
+def validate_project(project: object) -> dict:
+    if not isinstance(project, dict):
+        raise BridgeError("Project must be a JSON object")
+    item_id = project.get("id")
+    title = project.get("title")
+    family = project.get("family")
+    if not isinstance(item_id, str) or not PROJECT_ID.fullmatch(item_id):
+        raise BridgeError("Bad project ID (lowercase letters, numbers and hyphens)")
+    if not isinstance(title, str) or not 2 <= len(title.strip()) <= 64:
+        raise BridgeError("Bad project title")
+    if family not in PROJECT_FAMILIES:
+        raise BridgeError("Bad project family")
+    url = safe_project_url(project.get("url", ""))
+    return {"id": item_id, "title": title.strip(), "family": family, "url": url}
+
+
+def validate_project_shelf(projects: object, active: str) -> list[dict]:
+    if not isinstance(projects, list) or not (1 <= len(projects) <= PROJECT_LIMIT):
+        raise BridgeError("Project shelf must contain 1–24 references")
+    clean = [validate_project(p) for p in projects]
+    ids = [p["id"] for p in clean]
+    if len(ids) != len(set(ids)) or active not in ids:
+        raise BridgeError("Duplicate IDs or missing active project")
+    return clean
+
+
+def project_select_request(project_id: str) -> dict:
+    if not isinstance(project_id, str) or not PROJECT_ID.fullmatch(project_id):
+        raise BridgeError("Invalid selected project ID")
+    return {"schema": REQUEST_SCHEMA, "request_id": secrets.token_hex(16),
+            "kind": "project_select", "project_id": project_id}
+
+
+def project_bind_request(item_id: str, title: str, family: str, url: str) -> dict:
+    p = validate_project({"id": item_id, "title": title, "family": family, "url": url})
+    return {"schema": REQUEST_SCHEMA, "request_id": secrets.token_hex(16),
+            "kind": "project_bind", "project": p}
 
 
 def validate_config(data: object) -> dict:
@@ -54,6 +126,8 @@ def validate_config(data: object) -> dict:
     for name in ("native_owner_marks", "owner_test_marks"):
         if name in data and not isinstance(data[name], dict):
             raise BridgeError(f"{name} must be an object")
+    if data.get("schema") == CONFIG_SCHEMA:
+        validate_project_shelf(data.get("project_shelf"), data.get("active_project"))
     return data
 
 
@@ -165,7 +239,7 @@ def read_config_file(path: Path) -> dict:
 
 
 def main(argv: list[str] | None = None) -> int:
-    p = argparse.ArgumentParser(description="JM Fold Ultra v0.5 — owner-approved USB contact")
+    p = argparse.ArgumentParser(description="JM Fold Ultra v0.6 — owner-approved USB contact")
     p.add_argument("--adb", default="adb", help="Android platform-tools adb executable")
     p.add_argument("--serial", help="ADB serial; mandatory if multiple devices are present")
     sub = p.add_subparsers(dest="action", required=True)
@@ -177,6 +251,13 @@ def main(argv: list[str] | None = None) -> int:
     restore.add_argument("file", type=Path)
     backup = sub.add_parser("backup", help="Retrieve owner-prepared JM snapshot from phone")
     backup.add_argument("file", type=Path)
+    select = sub.add_parser("project-select", help="Stage existing JM project selection for approval")
+    select.add_argument("id", help="JM shelf project ID")
+    bind = sub.add_parser("project-bind", help="Stage a JM project reference or route for approval")
+    bind.add_argument("id", help="JM project ID")
+    bind.add_argument("--title", required=True, help="JM project display title")
+    bind.add_argument("--family", required=True, choices=sorted(PROJECT_FAMILIES))
+    bind.add_argument("--url", required=True, help="Public HTTPS URL, or '' for unbound")
     sub.add_parser("receipt", help="Read the last phone-side USB decision")
     args = p.parse_args(argv)
     try:
@@ -189,9 +270,15 @@ def main(argv: list[str] | None = None) -> int:
             print(f"USB CONTACT READY / {serial} / model {model} / Android API {sdk}")
             print(f"JM debug app installed: {bool(package_path)}")
             print("No phone settings changed. ADB trust remains your responsibility.")
-        elif args.action in {"profile", "restore"}:
-            body = (new_profile_request(args.session, args.focus)
-                    if args.action == "profile" else new_restore_request(read_config_file(args.file)))
+        elif args.action in {"profile", "restore", "project-select", "project-bind"}:
+            if args.action == "profile":
+                body = new_profile_request(args.session, args.focus)
+            elif args.action == "restore":
+                body = new_restore_request(read_config_file(args.file))
+            elif args.action == "project-select":
+                body = project_select_request(args.id)
+            else:
+                body = project_bind_request(args.id, args.title, args.family, args.url)
             request_id = stage_payload(args.adb, serial, body)
             print(f"REQUEST STAGED: {request_id}")
             print("OPEN / confirm or reject on the phone. No settings have been applied by this command.")
@@ -204,7 +291,7 @@ def main(argv: list[str] | None = None) -> int:
             print("SHA-256:", hashlib.sha256(payload).hexdigest())
         elif args.action == "receipt":
             data = json.loads(read_private(args.adb, serial, RECEIPT))
-            if data.get("schema") != "JM.FoldBridgeReceipt/0.5":
+            if data.get("schema") != "JM.FoldBridgeReceipt/0.6":
                 raise BridgeError("Unknown receipt schema")
             print(json.dumps(data, indent=2, ensure_ascii=False))
             if data.get("status") != "ACCEPTED":

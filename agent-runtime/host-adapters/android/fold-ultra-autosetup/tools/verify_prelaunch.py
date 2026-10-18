@@ -18,11 +18,11 @@ def require(condition, label):
         raise AssertionError(label)
     print("PASS", label)
 
-require("JM.FoldUltraSetup/0.5" in src, "current export schema")
-for old in ["JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
+require("JM.FoldUltraSetup/0.6" in src, "current export schema")
+for old in ["JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
     require(old in src, "schema migration guard "+old)
 require("JM.FoldUltraPreflight/0.4" in diagnostics, "preflight JSON contract")
-require("versionCode 5" in gradle and "versionName '0.5.0'" in gradle, "version code/name")
+require("versionCode 6" in gradle and "versionName '0.6.0'" in gradle, "version code/name")
 require("targetSdk 35" in gradle and "compileSdk 36" in gradle, "Android SDK context")
 require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "explicit Android Share intake")
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")
@@ -40,18 +40,28 @@ require('nativeHub()' in src and 'void session(String kind)' in src, "inherited 
 require('getPackageInfo(a.getPackageName(),PackageManager.GET_PERMISSIONS)' in diagnostics,
         "on-device permission inspection")
 require('PREFLIGHT_EXPORT' in src and 'ACTION_CREATE_DOCUMENT' in src, "explicit receipt export")
-require("JM_FOLD_ULTRA_SETUP_v0_5.json" in src, "correctly named configuration export")
+require("JM_FOLD_ULTRA_SETUP_v0_6.json" in src, "correctly named configuration export")
 require(len(re.findall(r'capability\("',src))==8, "eight native capability records")
 require("COMPACT_OWNER" in diagnostics and "EXPANDED_OWNER" in diagnostics and "REOPEN_OWNER" in diagnostics,
         "owner-gated physical contact marks")
 require("No background reading" in src, "share privacy notice")
 bridge = (root / "app/src/main/java/com/jmisjustme/foldultra/UsbBridge.java").read_text(encoding="utf-8")
 cli = (root / "tools/jm_fold_usb_bridge.py").read_text(encoding="utf-8")
-require("JM.FoldBridgeRequest/0.5" in bridge and "JM.FoldBridgeRequest/0.5" in cli, "matched USB request contract")
+require("JM.FoldBridgeRequest/0.6" in bridge and "JM.FoldBridgeRequest/0.5" in cli, "matched USB request contract")
 require("UsbBridge.offer(this,sp" in src and "void usbRoom()" in src, "USB contact reachable in native UI")
 require('setPositiveButton("APPLY"' in bridge and 'setNegativeButton("REJECT"' in bridge, "phone owner approval and rejection")
 require("prepareSnapshot" in bridge and "bridge_snapshot.json" in bridge, "owner-prepared USB snapshot")
 require("validateConfig" in bridge and "ROLLBACK" in bridge, "validated reversible JM-only restore")
 require("run-as" in cli and "exec-in" in cli, "USB debug staging mechanism")
 require("new ServerSocket(" not in bridge and "android.permission.INTERNET" not in manifest, "no bridge web server or network permission")
-print("JM FOLD ULTRA v0.5: STATIC PRELAUNCH + USB CONTRACT PASS")
+project = (root / "app/src/main/java/com/jmisjustme/foldultra/ProjectShelf.java").read_text(encoding="utf-8")
+require('JM.ProjectShelf/0.6' in project, "independent project reference schema")
+require('projectRoom()' in src and 'ProjectShelf.open(this,activeProject)' in src,
+        "one-touch selected project and native shelf")
+require('ProjectShelf.validateList' in bridge and 'ProjectShelf.stageToEditor' in bridge,
+        "projects join validated USB config restore")
+require('project_select' in bridge and 'project_bind' in bridge and 'project-select' in cli and 'project-bind' in cli,
+        "approved project select and route bind on phone/laptop")
+require('project_shelf' in src and 'active_project' in src, "project references included in JSON recovery")
+require('safeUrl' in project and 'https://' in project, "safe public project routes")
+print("JM FOLD ULTRA v0.6: PROJECT CONTACT + PRELAUNCH CONTRACT PASS")

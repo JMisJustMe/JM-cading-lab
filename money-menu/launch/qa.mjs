@@ -9,8 +9,22 @@ const base=dirname(fileURLToPath(import.meta.url));
 const root=resolve(base,'../..');
 const page=readFileSync(join(base,'index.html'),'utf8');
 const menu=readFileSync(join(root,'money-menu/index.html'),'utf8');
+const register=JSON.parse(readFileSync(join(base,'JM_COMMERCIAL_OFFER_REGISTER_v0_2.json'),'utf8'));
+const ledger=readFileSync(join(base,'REVENUE_LAUNCH_001_LEDGER.csv'),'utf8');
 const failures=[];
 function check(name,fn){try{fn();console.log('PASS '+name);}catch(e){failures.push(name+': '+e.message);console.error('FAIL '+name+': '+e.message);}}
+check('machine register contains eight evidence-gated offers',()=>{
+ assert.equal(register.offers.length,8);
+ assert.equal(new Set(register.offers.map(o=>o.id)).size,8);
+ assert.equal(register.latest_known.stripe_mode,'sandbox_only');
+ assert.equal(register.latest_known.paid_orders_confirmed,0);
+ assert.ok(register.offers.every(o=>o.next_gate&&o.price_status));
+});
+check('public sales ledger is safe and empty',()=>{
+ assert.match(ledger,/PUBLIC AGGREGATE ONLY/);
+ assert.match(ledger,/confirmed_live_paid_orders/);
+ assert.doesNotMatch(ledger,/@|cs_live_|pi_live_|sk_live_|\d{4}-\d{2}-\d{2},/);
+});
 check('existing governed Money Menu preserved',()=>{
  assert.match(menu,/242 governed routes|242 routes/);
  assert.match(menu,/const PAYLOAD=/);
@@ -74,5 +88,5 @@ check('offer selection / filter / email draft runtime',()=>{
  assert.equal(cardEls[4].hidden,false);
  assert.equal(cardEls[0].hidden,true);
 });
-console.log('\nJM Commercial Discovery 002: '+(failures.length?'FAIL '+failures.length:'PASS 8/8')+' checks');
+console.log('\nJM Commercial Discovery 002: '+(failures.length?'FAIL '+failures.length:'PASS 10/10')+' checks');
 if(failures.length)process.exitCode=1;

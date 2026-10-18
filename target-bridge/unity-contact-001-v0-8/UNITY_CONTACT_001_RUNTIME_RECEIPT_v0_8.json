@@ -1,0 +1,29 @@
+{
+  "schema": "JM.TargetBridge.HostReturnReceipt/0.2",
+  "date": "2026-09-28",
+  "host": "Unity",
+  "editor": "6000.4.31f1",
+  "real_host": true,
+  "evidence_mode": "creator_supplied_visual_runtime_observation",
+  "scope": "bounded_first_target_bridge_unity_contact",
+  "source_authority": "JM",
+  "carrier_branch": "unity-contact-001-v0-8-direct",
+  "carrier_head": "2c880d752b8b49b86543defabf834eb0ee2782d0",
+  "observations": {
+    "actual_jm_lowering": "PASS",
+    "movement": "PASS",
+    "contact": "PASS",
+    "score_after": 1,
+    "coin_consumption": "PASS",
+    "bounded_host_contact": "PASS"
+  },
+  "scoped_ding": "EARNED",
+  "non_blocking_host_notes": [
+    "AudioListener component deleted: Component belongs to a disabled built-in package."
+  ],
+  "preserved_holds": [
+    "hazard.consequence",
+    "goal.after_collecting",
+    "starting_player_hp"
+  ]
+}

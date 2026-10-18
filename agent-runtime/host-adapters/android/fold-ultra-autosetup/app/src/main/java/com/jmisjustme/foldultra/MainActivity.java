@@ -642,9 +642,15 @@ public final class MainActivity extends Activity {
       android.widget.ArrayAdapter<String> adapter=new android.widget.ArrayAdapter<>(
         this,android.R.layout.simple_spinner_dropdown_item,phases);
       stages.setAdapter(adapter);
-      int selected=java.util.Arrays.asList(phases).indexOf(checkpoint.getString("phase"));
+      int selected=java.util.Arrays.asList(phases).indexOf(SessionDeck.draftText(sp,checkpoint,"phase"));
       stages.setSelection(Math.max(0,selected));
       working.addView(stages);
+      stages.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener(){
+        public void onItemSelected(android.widget.AdapterView<?> parent,View view,int position,long itemId){
+          SessionDeck.draft(sp,projectId,"phase",phases[position]);
+        }
+        public void onNothingSelected(android.widget.AdapterView<?> parent){}
+      });
       label(working,"WORKING NOTE",12,MUTED,true);
       EditText note=new EditText(this);
       note.setTextColor(WHITE);note.setHintTextColor(MUTED);note.setTextSize(15);

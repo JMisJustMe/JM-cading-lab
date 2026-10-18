@@ -22,7 +22,7 @@ public final class UsbBridge {
     private static final String RECEIPT="bridge_receipt.json";
     private static final String SNAPSHOT="bridge_snapshot.json";
     private static final String ROLLBACK="bridge_rollback.json";
-    private static final int MAX_BYTES=65536;
+    private static final int MAX_BYTES=524288;
     private static boolean dialogOpen=false;
     private UsbBridge(){}
 
@@ -31,11 +31,11 @@ public final class UsbBridge {
     static String read(Activity a,String filename) throws Exception {
         File file=path(a,filename);
         if(!file.isFile())throw new FileNotFoundException(filename);
-        if(file.length()>MAX_BYTES)throw new IOException("File above 64 KiB boundary");
+        if(file.length()>MAX_BYTES)throw new IOException("File above 512 KiB boundary");
         try(InputStream in=new FileInputStream(file);ByteArrayOutputStream out=new ByteArrayOutputStream()){
             byte[] b=new byte[2048];int n;
             while((n=in.read(b))!=-1){
-                if(out.size()+n>MAX_BYTES)throw new IOException("File above 64 KiB boundary");
+                if(out.size()+n>MAX_BYTES)throw new IOException("File above 512 KiB boundary");
                 out.write(b,0,n);
             }
             return out.toString("UTF-8");
@@ -43,7 +43,7 @@ public final class UsbBridge {
     }
     static void write(Activity a,String filename,String value) throws Exception{
         byte[] bytes=value.getBytes(StandardCharsets.UTF_8);
-        if(bytes.length>MAX_BYTES)throw new IOException("Payload exceeds 64 KiB");
+        if(bytes.length>MAX_BYTES)throw new IOException("Payload exceeds 512 KiB");
         File temporary=path(a,filename+".tmp");
         try(FileOutputStream out=new FileOutputStream(temporary)){
             out.write(bytes);out.getFD().sync();

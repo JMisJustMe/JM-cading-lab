@@ -185,6 +185,7 @@ public final class UsbBridge {
         }
         if(CONFIG_SCHEMA.equals(o.optString("schema"))){
             SessionDeck.stage(e,o.getJSONArray("session_deck"));
+            SessionDeck.clearAllDrafts(sp,e);
         }
         if(!e.commit())throw new IOException("Local settings commit failed");
     }
@@ -265,8 +266,8 @@ public final class UsbBridge {
                 preview="Update "+project.getString("title")+" session?\n\n"
                     +"Expected revision: "+revision+"\nPhase: "+phase
                     +"\nNext: "+(next.isEmpty()?"(none)":next)
-                    +"\nNote: "+note.length()+" characters\n\n"
-                    +"Full note is not displayed in this summary; approve only your own trusted laptop request."
+                    +"\nNote ("+note.length()+" characters):\n"+note+"\n\n"
+                    +"Review the actual note before approving this trusted laptop request."
                     +"\nNo external JM project files are overwritten.";
             }else if("project_select".equals(kind)){
                 config=null;

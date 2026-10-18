@@ -102,6 +102,14 @@ public final class ProjectShelf {
     }
     public static String selected(SharedPreferences sp){return sp.getString(SELECTED,"jm-ecostate");}
     public static int count(SharedPreferences sp)throws Exception{return all(sp).length();}
+    public static void stageToEditor(SharedPreferences.Editor editor,JSONArray entries,String selected)throws Exception{
+        JSONArray valid=validateList(entries);
+        boolean found=false;
+        for(int i=0;i<valid.length();i++)
+            if(valid.getJSONObject(i).getString("id").equals(selected))found=true;
+        if(!found)throw new IllegalArgumentException("Active project missing from list");
+        editor.putString(STORAGE,valid.toString()).putString(SELECTED,selected);
+    }
     public static void install(SharedPreferences sp,JSONArray entries,String selected)throws Exception{
         JSONArray validated=validateList(entries);
         boolean found=false;

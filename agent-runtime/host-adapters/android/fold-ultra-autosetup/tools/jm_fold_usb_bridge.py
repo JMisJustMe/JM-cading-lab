@@ -464,6 +464,16 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("receipt", help="Read the last phone-side USB decision")
     args = p.parse_args(argv)
     try:
+        # Local recovery inspection must work with the phone disconnected.
+        # Only ADB operations are gated on authorised device contact.
+        if args.action == "reentry-show":
+            print(json.dumps(local_return_point(read_config_file(args.file), args.id),
+                             indent=2, ensure_ascii=False))
+            return 0
+        if args.action == "session-show":
+            print(json.dumps(local_session(read_config_file(args.file), args.id),
+                             indent=2, ensure_ascii=False))
+            return 0
         serial = connected(args.adb, args.serial)
         if args.action == "status":
             ensure_debug(args.adb, serial)
@@ -473,12 +483,6 @@ def main(argv: list[str] | None = None) -> int:
             print(f"USB CONTACT READY / {serial} / model {model} / Android API {sdk}")
             print(f"JM debug app installed: {bool(package_path)}")
             print("No phone settings changed. ADB trust remains your responsibility.")
-        elif args.action == "reentry-show":
-            print(json.dumps(local_return_point(read_config_file(args.file),args.id),
-                             indent=2,ensure_ascii=False))
-        elif args.action == "session-show":
-            data=read_config_file(args.file)
-            print(json.dumps(local_session(data,args.id),indent=2,ensure_ascii=False))
         elif args.action in {"plan", "profile", "restore", "project-select", "project-bind", "session-update", "reentry-capture", "reentry-return"}:
             if args.action in {"reentry-capture","reentry-return"}:
                 body=reentry_request(args.action.replace("-","_"),

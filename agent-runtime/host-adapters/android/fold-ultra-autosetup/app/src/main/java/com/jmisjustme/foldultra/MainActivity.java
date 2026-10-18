@@ -274,6 +274,18 @@ public final class MainActivity extends Activity {
       btn(c,"Samsung Notes",false,()->app("com.samsung.android.app.notes"));
       btn(c,"ChatGPT",false,()->app("com.openai.chatgpt"));
     }
+    try{
+      JSONObject activeProject=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+      if(activeProject!=null){
+        String bound=activeProject.optString("url","");
+        btn(c,(bound.isEmpty()?"JM PROJECT / UNBOUND: ":"OPEN JM PROJECT / ")+activeProject.optString("title",""),false,()->{
+          if(bound.isEmpty()){tab=6;render();}
+          else ProjectShelf.open(this,activeProject);
+        });
+      }
+    }catch(Exception e){
+      Toast.makeText(this,"HOLD · Project shelf cannot be loaded",Toast.LENGTH_SHORT).show();
+    }
     LinearLayout note=card("ONE SHARED AUTHORITY","JM root note","Saved immediately on either display.",TEAL);
     EditText e=new EditText(this);e.setTextColor(WHITE);e.setHintTextColor(MUTED);
     e.setTextSize(15);e.setMinLines(2);e.setHint("Your shared working note");

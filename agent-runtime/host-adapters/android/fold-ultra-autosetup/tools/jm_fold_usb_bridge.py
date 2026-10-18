@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import secrets
+import shlex
 import subprocess
 import sys
 import re
@@ -202,8 +203,8 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
     payload = document_bytes(body)
     # The Android app never polls a network socket. ADB streams into an
     # app-private file which is consumed exactly once after launch.
-    adb_run(adb, serial, "exec-in", "run-as", PACKAGE, "sh", "-c",
-            f"cat > {STAGING}", stdin=payload)
+    remote = f"run-as {PACKAGE} sh -c {shlex.quote('mkdir -p files && cat > ' + STAGING)}"
+    adb_run(adb, serial, "exec-in", remote, stdin=payload)
     # Verify byte-for-byte contact while the request is still staged.
     # If transport alters the payload, do not launch any phone-side approval.
     echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
@@ -213,8 +214,9 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
         # whitelisted metadata, retry with a one-command base64 transfer.
         # Never pass root note text or project URLs as shell arguments.
         encoded = base64.b64encode(payload).decode("ascii")
-        adb_run(adb, serial, "shell", "run-as", PACKAGE, "sh", "-c",
-                f"printf '%s' '{encoded}' | base64 -d > {STAGING}")
+        fallback = f"mkdir -p files && printf %s {encoded} | base64 -d > {STAGING}"
+        adb_run(adb, serial, "shell",
+                f"run-as {PACKAGE} sh -c {shlex.quote(fallback)}")
         echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
     if echoed != payload:
         try:

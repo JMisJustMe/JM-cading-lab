@@ -256,6 +256,52 @@ class BridgeContractTests(unittest.TestCase):
         self.assertFalse(any(note in str(cmd) for cmd,_ in trace))
         self.assertFalse(any(cmd[:3]==("shell","am","start") for cmd,_ in trace))
 
+
+    def test_reentry_request_revision_checks(self):
+        capture=bridge.reentry_request("reentry_capture","jm-games-house",1)
+        self.assertEqual(capture["kind"],"reentry_capture")
+        self.assertEqual(capture["expected_revision"],1)
+        self.assertNotIn("point_revision",capture)
+        restored=bridge.reentry_request("reentry_return","jm-games-house",3,1)
+        self.assertEqual(restored["point_revision"],1)
+        self.assertEqual(restored["expected_revision"],3)
+        for kind,id_,rev,from_rev in [
+            ("delete","jm-games-house",1,None),
+            ("reentry_return","../private",1,1),
+            ("reentry_return","jm-games-house",-1,1),
+            ("reentry_return","jm-games-house",2,None),
+            ("reentry_return","jm-games-house",True,1),
+        ]:
+            with self.subTest(kind=kind,id=id_), self.assertRaises(bridge.BridgeError):
+                bridge.reentry_request(kind,id_,rev,from_rev)
+
+    def test_return_point_export_join_and_snapshot_integrity(self):
+        p={"id":"five-flip","title":"FIVE//FLIP","family":"GAMES","url":""}
+        return_point={"project_id":"five-flip","source_revision":1,"phase":"TEST",
+                      "note":"Earlier saved game state","next_action":"Check camera",
+                      "recorded_epoch_ms":1234}
+        config={"schema":bridge.CONFIG_SCHEMA,"root":"Owner root",
+                "focus":"PLAY","session":"PLAYTEST",
+                "project_shelf":[p],"active_project":"five-flip",
+                "layout_compact":"QUICK","layout_expanded":"COMFORT","setup_last":"PLAYTEST",
+                "session_deck":[{"project_id":"five-flip","revision":2,"phase":"POLISH",
+                                 "note":"Current work","next_action":"Refine controls",
+                                 "updated_epoch_ms":2345}],
+                "return_points":[return_point]}
+        self.assertEqual(bridge.validate_config(config),config)
+        self.assertEqual(bridge.local_return_point(config,"five-flip")["source_revision"],1)
+        for altered in [
+            dict(config,return_points=[return_point,return_point]),
+            dict(config,return_points=[dict(return_point,project_id="missing")]),
+            dict(config,return_points=[dict(return_point,source_revision=-3)]),
+            dict(config,return_points=[dict(return_point,note="x"*4001)]),
+        ]:
+            with self.assertRaises(bridge.BridgeError):
+                bridge.validate_config(altered)
+        previous=dict(config,schema="JM.FoldUltraSetup/0.8")
+        previous.pop("return_points")
+        self.assertEqual(bridge.validate_config(previous),previous)
+
     def test_no_device_is_not_treated_as_contact(self):
         with mock.patch.object(bridge.subprocess, "run") as run:
             run.return_value = mock.Mock(returncode=0, stdout="List of devices attached\n\n")

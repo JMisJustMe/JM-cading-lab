@@ -167,3 +167,7 @@ printf '%s\n' \
   'GENERIC ANDROID EMULATOR v0.9: narrow boot PASS, wide boot PASS, cold reopen PASS, owner-approved reversible return point and stored history' \
   'Startup not proof of correct Fold UI layout, native Samsung Galaxy AI, or physical owner Ding.' \
   > emulator-proof/GENERIC_RECEIPT.txt
+
+# Separate full-body gate: touch the actual native controls rather than relying
+# solely on ADB-injected state changes. This can legitimately HOLD.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_ui_flow.py

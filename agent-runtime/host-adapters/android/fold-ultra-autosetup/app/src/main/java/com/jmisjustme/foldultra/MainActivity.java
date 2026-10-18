@@ -1031,7 +1031,7 @@ public final class MainActivity extends Activity {
           if(in==null)throw new IOException("Input unavailable");
           byte[] b=new byte[2048];int n;
           while((n=in.read(b))!=-1){
-            if(o.size()+n>65536)throw new IOException("Import exceeds 64 KiB");o.write(b,0,n);
+            if(o.size()+n>524288)throw new IOException("Import exceeds 512 KiB");o.write(b,0,n);
           }
         }
         JSONObject j=new JSONObject(o.toString("UTF-8"));

@@ -133,14 +133,14 @@ jobs:
           PY
       - name: Run JM pre-existing universal host-adapter conformance
         run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
-      - name: Return read-only evidence artifacts
+      - name: Return metadata-only read-only evidence artifacts (never upload source indices or quotes)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jm-knowledge-v05-source-replay-receipts
           path: |
-            jm_skill_receipts/*.json
-            jm_knowledge_candidate/evidence/*.json
-            jm_knowledge_candidate/SHA256_MANIFEST.json
+            jm_skill_receipts/coding.json
+            jm_skill_receipts/unknown.json
+            jm_skill_receipts/source-replay.json
           if-no-files-found: warn
           retention-days: 14

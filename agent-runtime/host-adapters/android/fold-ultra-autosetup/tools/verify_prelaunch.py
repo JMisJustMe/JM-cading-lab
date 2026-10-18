@@ -18,11 +18,11 @@ def require(condition, label):
         raise AssertionError(label)
     print("PASS", label)
 
-require("JM.FoldUltraSetup/0.6" in src, "current export schema")
-for old in ["JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
+require("JM.FoldUltraSetup/0.7" in src, "current export schema")
+for old in ["JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
     require(old in src, "schema migration guard "+old)
 require("JM.FoldUltraPreflight/0.4" in diagnostics, "preflight JSON contract")
-require("versionCode 6" in gradle and "versionName '0.6.0'" in gradle, "version code/name")
+require("versionCode 7" in gradle and "versionName '0.7.0'" in gradle, "version code/name")
 require("targetSdk 35" in gradle and "compileSdk 36" in gradle, "Android SDK context")
 require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "explicit Android Share intake")
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")
@@ -40,14 +40,14 @@ require('nativeHub()' in src and 'void session(String kind)' in src, "inherited 
 require('getPackageInfo(a.getPackageName(),PackageManager.GET_PERMISSIONS)' in diagnostics,
         "on-device permission inspection")
 require('PREFLIGHT_EXPORT' in src and 'ACTION_CREATE_DOCUMENT' in src, "explicit receipt export")
-require("JM_FOLD_ULTRA_SETUP_v0_6.json" in src, "correctly named configuration export")
+require("JM_FOLD_ULTRA_SETUP_v0_7.json" in src, "correctly named configuration export")
 require(len(re.findall(r'capability\("',src))==8, "eight native capability records")
 require("COMPACT_OWNER" in diagnostics and "EXPANDED_OWNER" in diagnostics and "REOPEN_OWNER" in diagnostics,
         "owner-gated physical contact marks")
 require("No background reading" in src, "share privacy notice")
 bridge = (root / "app/src/main/java/com/jmisjustme/foldultra/UsbBridge.java").read_text(encoding="utf-8")
 cli = (root / "tools/jm_fold_usb_bridge.py").read_text(encoding="utf-8")
-require("JM.FoldBridgeRequest/0.6" in bridge and "JM.FoldBridgeRequest/0.6" in cli, "matched USB request contract")
+require("JM.FoldBridgeRequest/0.7" in bridge and "JM.FoldBridgeRequest/0.7" in cli, "matched USB request contract")
 require("UsbBridge.offer(this,sp" in src and "void usbRoom()" in src, "USB contact reachable in native UI")
 require('setPositiveButton("APPLY"' in bridge and 'setNegativeButton("REJECT"' in bridge, "phone owner approval and rejection")
 require("prepareSnapshot" in bridge and "bridge_snapshot.json" in bridge, "owner-prepared USB snapshot")
@@ -64,4 +64,15 @@ require('project_select' in bridge and 'project_bind' in bridge and 'project-sel
         "approved project select and route bind on phone/laptop")
 require('project_shelf' in src and 'active_project' in src, "project references included in JSON recovery")
 require('safeUrl' in project and 'https://' in project, "safe public project routes")
-print("JM FOLD ULTRA v0.6: PROJECT CONTACT + PRELAUNCH CONTRACT PASS")
+plan = (root / "app/src/main/java/com/jmisjustme/foldultra/SetupPlan.java").read_text(encoding="utf-8")
+require("JM.FoldSetupPlan/0.7" in plan, "JM setup plan version")
+require("PREVIEW" in plan.upper() and "RECOVER" in plan and "BEFORE" in plan, "owner preview and recovery")
+require("ProjectShelf.stageToEditor(edit" in plan, "one-commit setup plan with project reference")
+require("SetupPlan.layout(sp,wide)" in src and "quickLayout?47:56" in src, "real per-screen visual density")
+require("approvePlan" in src and "APPLY JM ONLY" in src, "explicit local plan approval")
+require('Settings.ACTION_DISPLAY_SETTINGS' in src, "real Android display settings handoff")
+require('UsbBridge.checkConfig(j)' in src and 'local_import_rollback.json' in src,
+        "v0.7 import prevalidation and backup")
+require('"plan".equals(kind)' in bridge and 'SetupPlan.run(a,sp' in bridge, "USB plan owner approval")
+require('"plan", help=' in cli and 'plan_request(' in cli, "desktop named plans")
+print("JM FOLD ULTRA v0.7: CONFIGURATION AUTOMATION + PRELAUNCH CONTRACT PASS")

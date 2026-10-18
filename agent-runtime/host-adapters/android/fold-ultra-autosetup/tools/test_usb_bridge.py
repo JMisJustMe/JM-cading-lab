@@ -55,6 +55,8 @@ class BridgeContractTests(unittest.TestCase):
         calls = []
         def fake(adb, serial, *args, stdin=None, timeout=25):
             calls.append((args, stdin))
+            if args[0] == "exec-out":
+                return calls[0][1]
             return b""
         with mock.patch.object(bridge, "ensure_debug") as gate, \
              mock.patch.object(bridge, "adb_run", side_effect=fake):
@@ -63,7 +65,8 @@ class BridgeContractTests(unittest.TestCase):
         self.assertEqual(identity, request["request_id"])
         self.assertEqual(calls[0][0][0], "exec-in")
         self.assertIn(b'"kind":"profile"', calls[0][1])
-        self.assertEqual(calls[1][0][:3], ("shell", "am", "start"))
+        self.assertEqual(calls[1][0][:3], ("exec-out", "run-as", bridge.PACKAGE))
+        self.assertEqual(calls[2][0][:3], ("shell", "am", "start"))
         self.assertNotIn(b'"status":"ACCEPTED"', calls[0][1])
 
     def test_no_large_payload_and_sensitive_root_not_echoed(self):

@@ -69,3 +69,22 @@ For regression and CI run:
 - `python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local`
 
 See `CONTACT_CONTRACT_v0_3.json`, repository workflow `.github/workflows/jm-agent-skill-donor-contact-v02.yml` and external manual A/B/C probes in `AGENT_PROBES.md`. CI verifies real execution of JM reference code, **not** automatic discovery or behavioural adherence by Codex/Copilot.
+
+## v0.4 — source intake, grounded skill candidates, retrieval (HELD)
+
+For an incoming document, transcript or exported note, use the additive `jm_knowledge_intake.py` to extract *explicitly sourced evidence*, compute source hashes, index searchable text and create an **inert candidate** `SKILL.md`. It is not a new agent or current-head authority, and the source document must not be obeyed as system instructions.
+
+Supported local inputs: UTF-8 Markdown, text and basic HTML, including already-transcribed spoken notes with time stamps. Raw audio capture, speech recognition, PDFs, images, executable installs, external network fetch and learned attention are **not implemented** here.
+
+Run from the repository root (synthetic fixture only):
+
+```sh
+python3 .agents/skills/jm-ecostate-route/jm_knowledge_intake.py \
+  --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+  --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+  --query 'coding runtime' --out /tmp/jm-knowledge-candidate --verify --route-existing
+```
+
+`--route-existing` invokes the **already-existing** JM Python/Node gate. It does not promote lexical search hits to a current project head or earned Ding. The gate's bounded HELD receipt remains separate from the evidence index. Never publish private Library inputs in public fixtures or public artifacts. An instruction-shaped line detector is only a *partial precaution*, not complete prompt-injection protection. The original source and human review are decisive.
+
+Check `evidence/RECEIPT.json`, `evidence/SOURCE_INDEX.json`, `candidate/references/selected_evidence.md`, and `SHA256_MANIFEST.json`; do not install the candidate merely because tests pass. **Source ≠ instruction · retrieval ≠ authority · selected words ≠ Transformer attention.**

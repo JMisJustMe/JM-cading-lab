@@ -1,4 +1,4 @@
-name: JM Agent Skills bounded runtime contact v0.3
+name: JM knowledge contact and source replay v0.5
 on:
   pull_request:
     paths:
@@ -81,13 +81,63 @@ jobs:
           print('JM v0.4: CAPTURE -> EVIDENCE -> HELD SKILL CANDIDATE -> EXISTING JM ROUTE PASS')
           print('Sources:',receipt['source_count'],'retrieval hits:',receipt['query_hits'],'quarantined:',receipt['suspicious_lines_quarantined'])
           PY
+      - name: Replay source-to-skill against original document bytes and verify external anchor
+        run: |
+          mkdir -p jm_skill_receipts
+          sha256sum jm_knowledge_candidate/SHA256_MANIFEST.json | cut -d' ' -f1 > jm_skill_receipts/source-anchor.sha256
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_assurance.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/source-replay.json
+      - name: Re-query existing candidate with independently replayed provenance
+        run: |
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_query.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'coding runtime' \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/retrieval-matched.json
+          python3 .agents/skills/jm-ecostate-route/jm_knowledge_query.py \
+            --candidate jm_knowledge_candidate \
+            --source .agents/skills/jm-ecostate-route/fixtures/CAPTURE_DEMO.md \
+            --source .agents/skills/jm-ecostate-route/fixtures/CONFLICTING_UNTRUSTED.txt \
+            --query 'zzzz-no-known-domain' \
+            --expect-manifest-sha256 "$(cat jm_skill_receipts/source-anchor.sha256)" \
+            --receipt jm_skill_receipts/retrieval-unknown.json
+      - name: Require review-only scope and reject invented knowledge
+        run: |
+          python3 - <<'PY'
+          import json,pathlib
+          folder=pathlib.Path('jm_skill_receipts')
+          assurance=json.loads((folder/'source-replay.json').read_text())
+          assert assurance['schema']=='JM.KnowledgeAssurance/0.5'
+          assert assurance['result']=='PASS_SOURCE_REPLAY_ONLY'
+          assert assurance['anchor_compared'] is True
+          assert assurance['state']=='HELD' and assurance['human_approval']=='NOT_PERFORMED'
+          assert assurance['agent_skill_installed'] is False
+          assert assurance['external_agent_contact']=='NOT_TESTED'
+          known=json.loads((folder/'retrieval-matched.json').read_text())
+          unknown=json.loads((folder/'retrieval-unknown.json').read_text())
+          for r in (known,unknown):
+              assert r['schema']=='JM.KnowledgeQuery/0.5'
+              assert r['state']=='HELD' and r['promotion']=='NOT_ALLOWED'
+              assert r['source_integrity']=='PASS_REPLAY'
+              assert r['agent_executed'] is False
+              assert r['anchor_compared'] is True
+          assert known['question_matches']>0
+          assert unknown['question_matches']==0 and unknown['matches']==[]
+          print('JM v0.5: exact SOURCE REPLAY -> RE-QUERY -> BOUNDED HELD RECEIPT PASS')
+          PY
       - name: Run JM pre-existing universal host-adapter conformance
         run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
       - name: Return read-only evidence artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: jm-agent-skill-v03-contact-receipts
+          name: jm-knowledge-v05-source-replay-receipts
           path: |
             jm_skill_receipts/*.json
             jm_knowledge_candidate/evidence/*.json

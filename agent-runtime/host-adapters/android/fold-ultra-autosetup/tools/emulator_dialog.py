@@ -69,23 +69,26 @@ def clear_overlay_and_read(tag):
     raise AssertionError("HOLD: Pixel Launcher obstructed the JM approval after retries")
 
 
-def press_approval(label):
+def press_approval(label,decision="APPLY"):
     nodes=clear_overlay_and_read(label)
-    matches=[n for n in nodes if n.get("text")=="APPLY"
+    matches=[n for n in nodes if n.get("text")==decision
              and n.get("class")=="android.widget.Button"]
     if len(matches)!=1:
-        raise AssertionError("HOLD: real JM APPLY button absent or ambiguous")
+        raise AssertionError(f"HOLD: real JM {decision} button absent or ambiguous")
     # Application dialog title must prove this is JM's own bounded request.
     if not any("JM USB CONTACT" in n.get("text","") for n in nodes):
-        raise AssertionError("HOLD: visible APPLY does not belong to JM USB CONTACT")
+        raise AssertionError("HOLD: visible decision does not belong to JM USB CONTACT")
     tap_node(matches[0])
     (OUT/f"{label}_ACTUAL_BUTTON.json").write_text(json.dumps(
-        {"control":"APPLY","visible_dialog":"JM USB CONTACT",
+        {"control":decision,"visible_dialog":"JM USB CONTACT",
          "environment":"disposable emulator","physical_owner_contact":False},indent=2))
-    print(f"{label}: real JM APPLY control tapped on disposable emulator")
+    print(f"{label}: real JM {decision} control tapped on disposable emulator")
 
 
 if __name__=="__main__":
-    if len(sys.argv)!=2 or not re.fullmatch(r"[A-Z_]{2,40}",sys.argv[1]):
-        raise SystemExit("Usage: emulator_dialog.py TEST_LABEL")
-    press_approval(sys.argv[1])
+    if len(sys.argv) not in (2,3) or not re.fullmatch(r"[A-Z_]{2,40}",sys.argv[1]):
+        raise SystemExit("Usage: emulator_dialog.py TEST_LABEL [APPLY|REJECT]")
+    decision=sys.argv[2] if len(sys.argv)==3 else "APPLY"
+    if decision not in {"APPLY","REJECT"}:
+        raise SystemExit("Only APPLY or REJECT supported")
+    press_approval(sys.argv[1],decision)

@@ -92,10 +92,15 @@ public final class SessionDeck {
     }
     public static String draftKey(String id,String name){return "session.draft."+id+"."+name;}
     public static void draft(SharedPreferences sp,String projectId,String name,String value){
-        int limit="note".equals(name)?MAX_NOTES:"next_action".equals(name)?MAX_NEXT:0;
-        if(limit==0||value.length()>limit)
+        int limit="note".equals(name)?MAX_NOTES:"next_action".equals(name)?MAX_NEXT:"phase".equals(name)?6:0;
+        if(limit==0||value.length()>limit||("phase".equals(name)&&!phase(value)))
             throw new IllegalArgumentException("Invalid draft field/length");
         sp.edit().putString(draftKey(projectId,name),value).apply();
+    }
+    public static void clearAllDrafts(SharedPreferences sp,SharedPreferences.Editor editor){
+        for(String key:sp.getAll().keySet()){
+            if(key.startsWith("session.draft."))editor.remove(key);
+        }
     }
     public static String draftText(SharedPreferences sp,JSONObject checkpoint,String name){
         String id=checkpoint.optString("project_id","");
@@ -119,7 +124,7 @@ public final class SessionDeck {
         JSONArray updated=put(sp,nextBody);
         SharedPreferences.Editor edit=sp.edit();
         stage(edit,updated);
-        edit.remove(draftKey(id,"note")).remove(draftKey(id,"next_action"));
+        edit.remove(draftKey(id,"note")).remove(draftKey(id,"next_action")).remove(draftKey(id,"phase"));
         if(!edit.commit())throw new IllegalStateException("Checkpoint not saved");
         return revision+1;
     }

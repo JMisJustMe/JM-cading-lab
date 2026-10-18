@@ -203,6 +203,15 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
     # app-private file which is consumed exactly once after launch.
     adb_run(adb, serial, "exec-in", "run-as", PACKAGE, "sh", "-c",
             f"cat > {STAGING}", stdin=payload)
+    # Verify byte-for-byte contact while the request is still staged.
+    # If transport alters the payload, do not launch any phone-side approval.
+    echoed = adb_run(adb, serial, "exec-out", "run-as", PACKAGE, "cat", STAGING)
+    if echoed != payload:
+        try:
+            adb_run(adb, serial, "shell", "run-as", PACKAGE, "rm", STAGING)
+        except BridgeError:
+            pass
+        raise BridgeError("USB staging readback mismatch; no request launched")
     # Never say applied: Android will display a human approval dialog.
     adb_run(adb, serial, "shell", "am", "start", "-n",
             f"{PACKAGE}/.MainActivity")

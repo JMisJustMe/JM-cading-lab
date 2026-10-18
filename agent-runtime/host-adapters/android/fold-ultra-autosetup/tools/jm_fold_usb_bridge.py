@@ -211,7 +211,10 @@ def stage_payload(adb: str, serial: str, body: dict) -> str:
             adb_run(adb, serial, "shell", "run-as", PACKAGE, "rm", STAGING)
         except BridgeError:
             pass
-        raise BridgeError("USB staging readback mismatch; no request launched")
+        raise BridgeError(
+            "USB staging readback mismatch; no request launched. "
+            f"Sent {len(payload)} bytes sha256={hashlib.sha256(payload).hexdigest()[:12]}; "
+            f"read {len(echoed)} bytes sha256={hashlib.sha256(echoed).hexdigest()[:12]}.")
     # Never say applied: Android will display a human approval dialog.
     adb_run(adb, serial, "shell", "am", "start", "-n",
             f"{PACKAGE}/.MainActivity")

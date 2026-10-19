@@ -77,3 +77,20 @@ These are **real source edits and mocked rendering driver executions**, not brow
 
 ### Updated technical boundary
 This **is native renderer technology inherited across two independent JM recipients**: WRESTLEFORM and JM Actual Engine, with all parents frozen. It is a real code-integration descendant, not the original CP2-byte-perfect transplant. The CP2 ZIP archive has been materialized, but binary unzip in the local runtime remains unavailable. The current protected branch **must not be merged into main** or certified for Android hardware without actual browser/driver and device QA.
+
+---
+
+## CP2 original source recovered — source-authentic integration stage (19 October 2026)
+
+**Supersedes earlier source-unavailable HOLD statements above; those remain as historical checkpoints.**
+
+- Independently opened existing `JM_RENDER_EVOLUTION_CP2_SOURCE_AND_EVIDENCE.zip` without replacing or duplicating any Estate Library housing. Archive: 51 members; frozen donor `outputs/JM_ONE_ON_ONE_v0_6_0_EVOLUTION.html`: **73,235 bytes**, SHA-256 **`d393e381db46bae9b3c758b72c8c82e380857cd7ab1ccab70b25a17f86c0c385`**.
+- Validated **49/49** file integrity entries in donor's own `hashes.json`; original material and the existing CP2 report remain unchanged.
+- Re-ran archived Node/mock evidence suite on its original unpacked workspace: 492 original, 208 CP1, **73 CP2 instanced / 177 CP2 direct fallback** submissions; nine deterministic gameplay checks and 1,000 TRS comparisons (max error 2.6645352591003757e−15) PASS at their **mock-GL** scope.
+- **Live source inheritance:** `receivers/JM_WRESTLEFORM_DUAL_EXPRESSIONS_v0_3_5_CP2_SHADER_INHERITANCE.html` inherits the **byte-exact original CP2 GLSL vertex and fragment shader bodies**, retaining the protected v0.3.4 geometry, transparency, soft shadows, game controls, both experience modes, and all earlier descendants.
+  - Original CP2 vertex GLSL SHA-256: `1c11cddccb982c3ef147183d5d9a27a06c673d6b60dcdaa11a7de1367bff4da0` (673 bytes).
+  - Original CP2 fragment GLSL SHA-256: `6b0756f52d61e3e400597dfbd7530eadce50929ecfef1bb5f140e0236657dcf4` (1,129 bytes).
+  - Hashes were computed from the archived original and independently matched against the resulting GitHub descendant source. These hashes cover exact shader text, **not** an assertion that the entire CP2 engine has been transplanted.
+- Receiver source execution with mocked WebGL: three frames all **92 actual / 92 reported draws**, compiled static geometry reused once, first match started, LIVEFORM → SEQUENCEFORM → LIVEFORM preserved. Tested by `JM_WRESTLEFORM_v0_3_5_CP2_SHADER.test.mjs`; hardware shader compilation **not** established by mock driver.
+- **Browser blocker:** local Chromium rendered HTML and CSS, but refused to initialise even a minimal WebGL canvas despite available software-backend flags. The 3D blank canvas is *not* a renderer PASS; use a functioning real GPU/browser for owner visuals. Historic Astra Edge/RTX receipts remain separate from independent tests in this environment.
+- CI includes the v0.3.5 shader-hash and gameplay regression test; GitHub Actions conclusion is independent of local checks. Production branch `main` remains untouched. **No production/Android Ding.**

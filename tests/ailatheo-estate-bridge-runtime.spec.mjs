@@ -25,6 +25,7 @@ try {
     must(linked.routeCount>=9,'PUBLIC_ROUTES_NOT_LOADED '+JSON.stringify(linked));
     must(linked.source.includes('/navigator/estate-integration/public-registry.json'),'WRONG_REGISTRY_SOURCE '+JSON.stringify(linked));
     must(linked.policy.operations.includes('MERGE')&&linked.policy.operations.includes('BREAKAWAY'),'RELATIONSHIP_POLICY_MISSING');
+    await page.locator('#contact').fill('game touch visual compile proof recover delivery');
     await page.locator('#proofBtn').click();
     must(await page.locator('#drawer [data-route]').count()>=9,'REAL_ROUTE_BUTTONS_MISSING');
     must(await page.locator('#probeMeshBtn').count()===1,'BUILD_MESH_PROBE_CONTROL_MISSING');
@@ -32,7 +33,6 @@ try {
     await page.waitForFunction(()=>document.querySelector('#meshProbeResult')?.textContent.includes('LIVE_READ_ONLY_RETURNED'));
     const mesh=await page.locator('#meshProbeResult').textContent();
     must(mesh.includes('0.8.5')&&mesh.includes('not yet declared'),'MCP_READBACK_BOUNDARY_INVALID '+mesh);
-    await page.locator('#contact').fill('game touch visual compile proof recover delivery');
     await page.locator('#runNativeRouter').click();
     await page.waitForFunction(()=>document.querySelector('#nativeRouterResult')?.textContent.includes('JM_NATIVE_ROUTER_EXECUTED'));
     const native=JSON.parse(await page.locator('#nativeRouterResult').textContent());

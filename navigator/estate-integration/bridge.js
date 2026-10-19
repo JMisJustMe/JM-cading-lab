@@ -19,10 +19,12 @@
     return row;
   }
   async function loadRegistry(){
+    // The script-relative path works on both Cloudflare root and GitHub Pages /JM-cading-lab/.
+    const scriptRelative=script?.src?new URL('./public-registry.json',script.src).href:null;
     const sameOrigin=new URL(REG_PATH,location.origin).href;
     const canonical=new URL(REG_PATH,CANON).href;
     let last;
-    for(const url of [...new Set([sameOrigin,canonical])]){
+    for(const url of [...new Set([scriptRelative,sameOrigin,canonical].filter(Boolean))]){
       try{
         const res=await fetch(url,{cache:'no-store',headers:{'Accept':'application/json'}});
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -40,6 +42,9 @@
     return new Map(rows.map(r=>[String(r.id).toLowerCase(),r]));
   }
   function installDoor(registry){
+    // AILatheo already presents real Estate destinations in its Proof Mode. A floating
+    // fallback link would cover its narrow, touch-first bottom controls.
+    if(surface==='ailatheo-federation') return;
     if(document.getElementById('jm-estate-integration-door')) return;
     const nav=document.getElementById('quickDoors');
     const href=registry.integration_route||new URL('/navigator/estate-integration/',CANON).href;
@@ -67,6 +72,14 @@
       registry,
       registryUrl:sourceUrl,
       surface,
+      relationshipPolicy: Object.freeze({
+        state:registry.relationship_policy?.schema==='JM.Estate.RelationshipOperations/1'?'PUBLIC_DECLARED_NOT_EXECUTED':'LEGACY_POLICY_HOLD',
+        operations:registry.relationship_policy?.schema==='JM.Estate.RelationshipOperations/1'
+          ? ['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'].filter(op=>registry.relationship_policy.operations?.includes(op))
+          : [],
+        scope:'Public relationship policy and navigation only; no merger or private write',
+        proof:'Contact before crown; explicit authority, execution and receiver proof for real merge'
+      }),
       resolve(id){return index.get(String(id||'').toLowerCase())||null},
       list(){return [...index.values()]},
       open(id){

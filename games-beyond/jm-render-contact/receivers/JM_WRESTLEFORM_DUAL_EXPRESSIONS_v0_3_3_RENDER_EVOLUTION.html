@@ -261,6 +261,7 @@ function createJMSoftContactShadow(gl){
  let drawCount=0;
  function draw(scene,subjects){
   if(!Array.isArray(subjects)||!subjects.length)return 0;
+  const before=drawCount;
   if(!scene?.vp||scene.vp.length!==16)throw new TypeError('Projection required');
   gl.useProgram(program);
   gl.uniformMatrix4fv(vp,false,new Float32Array(scene.vp));
@@ -282,7 +283,7 @@ function createJMSoftContactShadow(gl){
    gl.depthMask(true);gl.disable(gl.BLEND);gl.enable(gl.CULL_FACE);
    if(scene.restoreProgram)gl.useProgram(scene.restoreProgram);
   }
-  return drawCount;
+  return drawCount-before;
  }
  function dispose(){gl.deleteBuffer?.(vertices);gl.deleteBuffer?.(indices);gl.deleteProgram?.(program)}
  return Object.freeze({draw,dispose,version:JM_SOFT_CONTACT_SHADOW_VERSION});

@@ -92,7 +92,38 @@ jobs:
               "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.7.2"},
           })
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
-          assert init["serverInfo"]["version"] == "0.7.2", init
+          # Historic 0.7.2 proof is version-pinned. A newer deployed service must
+          # receive its own truthful live smoke test, never a fake 0.7.2 Ding.
+          deployed_version = init["serverInfo"]["version"]
+          if deployed_version != "0.7.2":
+              listed_live = rpc(2, "tools/list", {})
+              live_names = {t["name"] for t in listed_live["tools"]}
+              required = {
+                  "search_builds", "resolve_current_head", "proof_state",
+                  "build_mesh_status", "plan_capability_inheritance",
+                  "prepare_operation_gate",
+              }
+              assert required <= live_names, (required-live_names, deployed_version)
+              live_status = call(3, "build_mesh_status", {"probe_navigator": False})
+              assert live_status["version"] == deployed_version, live_status
+              assert len(live_status["current_registry_sha256"]) == 64, live_status
+              op = call(4, "prepare_operation_gate", {
+                  "target":"JM ECOSTATE Build Mesh",
+                  "objective":"Verify hosted read-only planning without mutating Estate state",
+                  "action_type":"inspect",
+              })
+              assert op["mutation_performed"] is False, op
+              print(json.dumps({
+                  "schema":"JM.BuildMesh.LiveVersionAwareSmoke/1",
+                  "live_version":deployed_version,
+                  "state":"LIVE_READ_ONLY_CONTACT_PASS",
+                  "legacy_0_7_2_proof":"NOT_APPLICABLE_TO_CURRENT_DEPLOYMENT",
+                  "relationship_operations_deployed":bool(live_status.get("relationship_operations")),
+                  "relationship_source_promotion":"HOLD_UNTIL_NEWER_LIVE_SOURCE_RECOVERED",
+                  "mutation_performed":False,
+              }, ensure_ascii=False, indent=2))
+              raise SystemExit(0)
+          assert deployed_version == "0.7.2", init
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]

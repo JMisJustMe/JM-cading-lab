@@ -2,10 +2,36 @@
   "schema": "JM.EstateClassificationGateOutcome/1.2",
   "status": "completed",
   "conclusion": "success",
-  "run_id": "39285499883",
-  "head_sha": "190db5029725895eef763d06b8907b56610f5609",
-  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39285499883",
-  "updated_at": "2026-10-19T16:32:56Z",
-  "recorded_at_utc": "2026-10-19T16:33:08Z",
-  "steps": []
+  "run_id": "39283293131",
+  "head_sha": "aae3bf35b11a38d1cd5b050be94b1c0d97e436c1",
+  "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39283293131",
+  "updated_at": "2026-10-19T16:34:21Z",
+  "recorded_at_utc": "2026-10-19T16:34:30Z",
+  "steps": [
+    {
+      "job": "Prove current seats, versions, plurality and recovery truth",
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "job": "Prove current seats, versions, plurality and recovery truth",
+      "name": "Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "Prove current seats, versions, plurality and recovery truth",
+      "name": "Run the single classification authority verifier",
+      "conclusion": "success"
+    },
+    {
+      "job": "Prove current seats, versions, plurality and recovery truth",
+      "name": "Post Run actions/checkout@v6",
+      "conclusion": "success"
+    },
+    {
+      "job": "Prove current seats, versions, plurality and recovery truth",
+      "name": "Complete job",
+      "conclusion": "success"
+    }
+  ]
 }

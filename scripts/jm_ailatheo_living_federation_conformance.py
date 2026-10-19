@@ -15,9 +15,12 @@ checks={
 'reentry':'RE-ENTRY' in s,
 'sha256':"SHA-256" in s and 'payload_sha256' in s,
 'return_packet':'AILATHEO_RETURN_PACKET_READY' in s,
-'ding':'AILATHEO_LIVING_FEDERATION_DING' in s,
+'truthful_contact':'CONTACT_ROUTED_LOCAL' in s and 'ding:null' in s and "textContent='ROUTED'" in s,
+'public_link':'../navigator/estate-integration/bridge.js' in s and 'jm-estate-integration-ready' in s,
+'public_hold':'jm-estate-integration-hold' in s,
+'route_actions':'data-route' in s and 'JMEstateIntegration?.open' in s,
 'diagnostic_subordinate':'Proof / diagnostic mode' in s,
-'mesh_law':'RELATION ≠ MERGER' in s and 'COMMON ROUTE ≠ COMMON BODY' in s,
+'relationship_law':'CONTACT DOES NOT IMPLY MERGER' in s and 'EARNED MERGE IS PERMITTED' in s,
 'ehilatheo_hold':'hold:true' in s,
 'reduced_motion':'prefers-reduced-motion' in s,
 'visible_faults':'CONTACT HOLD' in s and 'RECOVERY HOLD' in s,
@@ -25,4 +28,4 @@ checks={
 assert all(checks.values()),checks
 js='\n'.join(re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
 Path('/tmp/ailatheo-living.js').write_text(js)
-print(json.dumps({'schema':'jm.ailatheo.living-federation-conformance/1.0','status':'PASS','checks':checks,'ding':'JM_AILATHEO_LIVING_FEDERATION_CONFORMANCE_DING'},indent=2))
+print(json.dumps({'schema':'jm.ailatheo.living-federation-conformance/1.0','status':'PASS','checks':checks,'status_scope':'STATIC_CONTRACT_ONLY_NO_DEVICE_DING'},indent=2))

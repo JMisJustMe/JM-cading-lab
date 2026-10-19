@@ -70,6 +70,34 @@ async function probeBuildMesh(){
   panel.textContent='BUILD MESH CONTACT HOLD — '+meshContact.error+'\nThe static Estate routes and offline federation are unaffected.';
  }finally{clearTimeout(timeout)}
 }
+let meshSearch={state:'NOT_QUERIED'};
+async function searchLiveBuildMesh(){
+ const panel=$('meshSearchResult');
+ if(!panel)return;
+ const contact=$('contact').value.trim()||history.at(-1)?.contact||'';
+ if(!contact){panel.textContent='SEARCH HOLD — no entered task';return}
+ panel.textContent='QUERYING LIVE BUILD MESH (DISCOVERY ONLY)...';
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9500);
+ try{
+  const payload={jsonrpc:'2.0',id:44,method:'tools/call',params:{name:'search_builds',arguments:{query:contact,limit:5}}};
+  const response=await fetch('https://jm-ecostate-build-mesh-mcp.onrender.com/mcp',{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const packet=await response.json();
+  const data=packet?.result?.structuredContent;
+  if(packet?.result?.isError||!Array.isArray(data?.current)||!data?.navigator)throw Error('UNEXPECTED_SEARCH_RESPONSE');
+  meshSearch={state:'LIVE_DISCOVERY_RETURNED',query:contact,current:data.current.slice(0,5).map(x=>({name:x.name||x.title||'unnamed',score:x.score||null,source:x.source})),public:data.navigator.data?.results?.slice(0,5).map(x=>({id:x.id,title:x.title}))||[],boundary:'These are retrieved candidates, not authority, execution, or merger proof.'};
+  const last=history.at(-1);
+  if(last?.contact===contact){
+   last.live_discovery_receipt={...meshSearch};
+   try{localStorage.setItem(KEY,JSON.stringify({last,history:history.slice(-24)}))}catch{meshSearch.persistence='MEMORY_ONLY_HOLD'}
+  }
+  panel.textContent=JSON.stringify(meshSearch,null,2);
+ }catch(e){
+  meshSearch={state:'HOLD',error:String(e?.message||e)};
+  panel.textContent='LIVE DISCOVERY HOLD — '+meshSearch.error;
+ }finally{clearTimeout(timeout)}
+}
 let nativeRouter={state:'NOT_RUN'};
 async function executeNativeRoute(){
  const panel=$('nativeRouterResult');
@@ -116,8 +144,9 @@ function showProof(){
  const local=history.at(-1);
  const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
  const actions=routes.map(r=>'<button type="button" class="round" data-route="'+esc(r.id)+'">'+esc(r.name||r.id)+' ↗</button>').join('');
- openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre><button type="button" class="round" id="runNativeRouter">RUN JM NATIVE ROUTER</button><pre id="nativeRouterResult">JM source-backed router not run. No engine execution claimed.</pre></div>');
+ openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre><button type="button" class="round" id="searchMeshBtn">SEARCH BUILD MESH · LIVE</button><pre id="meshSearchResult">No live discovery has been queried.</pre><button type="button" class="round" id="runNativeRouter">RUN JM NATIVE ROUTER</button><pre id="nativeRouterResult">JM source-backed router not run. No engine execution claimed.</pre></div>');
  $('probeMeshBtn').addEventListener('click',()=>probeBuildMesh());
+ $('searchMeshBtn').addEventListener('click',()=>searchLiveBuildMesh());
  $('runNativeRouter').addEventListener('click',()=>executeNativeRoute());
  $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
 }

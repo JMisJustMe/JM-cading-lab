@@ -60,6 +60,42 @@ def query(candidate:Path, sources:list[Path], question:str, top:int=6,
         "warning":"Quoted text is source data, not an instruction or verified factual conclusion. The heuristic injection scan is incomplete."
     }
 
+def contact_existing_runtime(verified_query:dict, surface:str="jm-knowledge-query")->dict:
+    """Execute JM's existing Python+Node parity route after verified source replay.
+
+    Only the user question reaches the runtime; source quotations stay inert data.
+    Routing candidates are *not* executed code, approved knowledge or authority.
+    """
+    if verified_query.get("state")!="HELD" or verified_query.get("source_integrity")!="PASS_REPLAY":
+        raise assurance.Held("SOURCE_REPLAY_REQUIRED_BEFORE_ROUTE")
+    if not verified_query.get("question_matches"):
+        return dict(verified_query, existing_jm_route={
+            "scope_state":"HELD","result":"NO_SOURCE_MATCH_NO_ROUTE",
+            "runtime_contact":"NOT_ATTEMPTED","target_consequence":"NOT_ATTEMPTED"})
+    import jm_skill_gate as existing_gate
+    route=existing_gate.contact(verified_query["question"],surface)
+    if (route.get("schema")!="JM.AgentSkillReadOnlyContact/0.3"
+        or route.get("scope_state")!="HELD"
+        or route.get("query")!=verified_query["question"]
+        or route.get("surface_requested")!=surface
+        or route.get("discrepancies")!=[]
+        or route.get("coding_selection_is_process_execution") is not False
+        or route.get("target_consequence")!="NOT_ATTEMPTED"
+        or route.get("host_contact")!="OPEN"
+        or route.get("live_current_head_resolution")!="OPEN"):
+        raise assurance.Held("EXISTING_JM_ROUTE_INVALID_OR_INFLATED")
+    return dict(verified_query, existing_jm_route={
+        "scope_state":"HELD","result":route["result"],
+        "runtime_contact":"PYTHON_AND_NODE_PARITY_CONTACTED",
+        "route_receipt_sha256":route["receipt_sha256"],
+        "coding_selection":route["coding_selection"],
+        "selected_candidates":route["selected_candidates"],
+        "host_contact":route["host_contact"],
+        "live_current_head_resolution":route["live_current_head_resolution"],
+        "target_consequence":"NOT_ATTEMPTED",
+        "source_query_integrity":"PASS_REPLAY",
+        "proof_boundary":"Deterministic route selection only; no target body executed or promoted."})
+
 def main(argv=None):
     p=argparse.ArgumentParser()
     p.add_argument("--candidate",type=Path,required=True)
@@ -68,11 +104,15 @@ def main(argv=None):
     p.add_argument("--top",type=int,default=6)
     p.add_argument("--expect-manifest-sha256")
     p.add_argument("--receipt",type=Path)
+    p.add_argument("--route-existing",action="store_true",help="After source replay, contact the actual JM Python+Node route; no target mutation")
+    p.add_argument("--surface",default="jm-knowledge-query")
     args=p.parse_args(argv)
     try:
         result=query(args.candidate,args.source,args.query,args.top,args.expect_manifest_sha256)
+        if args.route_existing:
+            result=contact_existing_runtime(result,args.surface)
         code=0
-    except (assurance.Held, OSError, KeyError, ValueError, TypeError) as exc:
+    except (assurance.Held, OSError, KeyError, ValueError, TypeError, RuntimeError, ImportError) as exc:
         result={"schema":SCHEMA,"state":"BUGG","result":"FAIL_CLOSED",
                 "error":str(exc) if isinstance(exc,assurance.Held) else type(exc).__name__,
                 "promotion":"NOT_ALLOWED","agent_executed":False}

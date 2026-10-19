@@ -1,0 +1,68 @@
+name: JM InfinityFree — Read-Only Connection Check
+
+# No automatic trigger, no uploads, no deletes, no website mutation.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jm-infinityfree-readonly-contact
+  cancel-in-progress: false
+
+jobs:
+  verify-existing-account:
+    name: Prove existing InfinityFree FTPS contact (read-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      JM_INFINITYFREE_FTP_USER: ${{ secrets.JM_INFINITYFREE_FTP_USER }}
+      JM_INFINITYFREE_FTP_PASSWORD: ${{ secrets.JM_INFINITYFREE_FTP_PASSWORD }}
+    steps:
+      - name: Require owner-held GitHub secrets
+        shell: bash
+        run: |
+          if [ -z "$JM_INFINITYFREE_FTP_USER" ] || [ -z "$JM_INFINITYFREE_FTP_PASSWORD" ]; then
+            echo '::error::Missing JM_INFINITYFREE_FTP_USER or JM_INFINITYFREE_FTP_PASSWORD in GitHub Actions secrets.'
+            exit 1
+          fi
+
+      - name: Connect with explicit TLS and inspect potential webroots without changing files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import ftplib
+          import os
+          import sys
+
+          ftp = None
+          try:
+              ftp = ftplib.FTP_TLS(timeout=25)
+              ftp.connect('ftpupload.net', 21)
+              ftp.login(os.environ['JM_INFINITYFREE_FTP_USER'], os.environ['JM_INFINITYFREE_FTP_PASSWORD'])
+              ftp.prot_p()
+              ftp.set_pasv(True)
+              base = ftp.pwd()
+              print('FTPS login: PASS (TLS protected)')
+              print('No uploads, deletes, renames, or writes attempted.')
+              for candidate in ('htdocs', 'jmisjustme.xo.je/htdocs', 'jmisjustme.rf.gd/htdocs'):
+                  try:
+                      ftp.cwd(base)
+                      ftp.cwd(candidate)
+                      print(f'Candidate {candidate}: reachable')
+                  except ftplib.all_errors:
+                      print(f'Candidate {candidate}: not present at this relative location')
+              ftp.cwd(base)
+              ftp.quit()
+              print('JM InfinityFree READ-ONLY CONTACT PASS. Publication: HOLD until exact remote webroot and source package are verified.')
+          except (ftplib.all_errors, OSError) as exc:
+              print(f'::error::FTPS contact HOLD ({type(exc).__name__}). Check account-specific FTP credentials and network/TLS support privately.')
+              sys.exit(1)
+          finally:
+              if ftp is not None:
+                  try:
+                      ftp.close()
+                  except Exception:
+                      pass
+          PY

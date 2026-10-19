@@ -68,11 +68,11 @@ async function prepare(){
  const target=new URL(workbenchUrl.href);target.searchParams.set('jm_return_id',ticket.id);
  window.location.assign(target.href);
 }
-async function verifyCurrent(t){
+async function verifyCurrent(t,startedEventId){
  const ui=window.JMAILatheoGripUI;
  const event=ui?.latestMaterialContact?.();
  const live=window.JMAILatheoCreatorPreview?.state?.();
- if(!event||!event.kind?.includes('DING')||!event.recoveryRevision)
+ if(!event||!event.kind?.includes('DING')||!event.recoveryRevision||!(Number(event.id)>startedEventId))
   return hold('Receiver has no independently earned, recoverable material consequence');
  if(!live)return hold('Creation Workbench state is not readable');
  const {bodies,links}=loadPersistedProject();
@@ -111,6 +111,7 @@ function mountFederation(){
   const msg=$('meaningText');if(msg)msg.textContent=$('jmRelayStatus').textContent;
   const head=$('headStatus');if(head)head.textContent='RECEIVER RETURN VERIFIED';
   window.JMAILatheoReturn=Object.freeze({state:()=>({...returned,claimBoundary:'LOCAL_SAME_ORIGIN_ONLY'})});
+  window.dispatchEvent(new CustomEvent('jm-ailatheo-consequence-return',{detail:{...returned}}));
  }).catch(e=>hold(String(e?.message||e)));
 }
 function mountWorkbench(){
@@ -121,6 +122,7 @@ function mountWorkbench(){
  const app=document.querySelector('.app')||document.body;
  app.parentNode.insertBefore(panel,app);
  if(!validTicket(t)||t.id!==id||!['HANDOFF_PREPARED','RECEIVER_RETURN_READY'].includes(t.phase))return hold('Handoff missing or expired');
+ const startedEventId=Number(window.JMAILatheoGripUI?.latestMaterialContact?.()?.id)||0;
  $('jmRelayStatus').textContent='Intent received from federation: '+t.intent+'\nNo project touched. Execute a real workbench action, then verify its persisted consequence.';
  button('LOAD SIGNAL GARDEN (EMPTY PROJECT ONLY)','jmRelaySample',()=>{
   const ui=window.JMAILatheoCreatorPreview;
@@ -131,7 +133,7 @@ function mountWorkbench(){
   ui.loadSignalGarden();
   $('jmRelayStatus').textContent='Signal Garden loaded by existing workbench. Verify the recorded and persisted consequence next.';
  },panel);
- button('VERIFY CURRENT MATERIAL RESULT','jmRelayVerify',()=>verifyCurrent(t),panel);
+ button('VERIFY CURRENT MATERIAL RESULT','jmRelayVerify',()=>verifyCurrent(t,startedEventId),panel);
  button('↩ RETURN VERIFIED RESULT','jmRelayReturn',()=>{
   const current=read();
   if(!validTicket(current)||current.id!==id||current.phase!=='RECEIVER_RETURN_READY')return hold('Verify an earned material result before returning');

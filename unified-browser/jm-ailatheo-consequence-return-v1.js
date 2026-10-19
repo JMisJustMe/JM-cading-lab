@@ -111,7 +111,8 @@ async function executeNativeSix(t,startedOperationId){
  const record=JSON.parse(raw);
  if(record.schema!=='jm.ailatheo.project-proof/1.0'||record.nativePassed!==true||record.local?.pass!==true||
     record.receipts?.length!==9||record.buildGates?.status!=='PASS'||record.buildGates.passed?.length!==8||
-    record.delivery?.recoverable!==true)
+    record.delivery?.recoverable!==true||record.route?.actualExecuted?.length!==6||
+    !['tracebox','dings','source-ledger','onebody-delivery','zionfolder'].every(id=>record.route?.selected?.includes(id)))
   return hold('Native coding evidence failed the actual six-body / eight-gate / nine-receipt checks');
  const project=loadPersistedProject();
  if(await digest(project.bodies)!==current.receiverProof.bodySha256||await digest(project.links)!==current.receiverProof.linkSha256)
@@ -120,7 +121,9 @@ async function executeNativeSix(t,startedOperationId){
    operationId:operation.id,operationKind:operation.kind,status:operation.status,
    nativePassed:true,receipts:record.receipts.length,gates:record.buildGates.passed.length,
    recoverable:record.delivery.recoverable,source:'unified-browser/ailatheo-creation-runtime.mjs',
-   testedBodies:['GameForge','PLAYFORM','Seedform Choice Interface','Pattern-Tapping','JMVisualGraft','JM Visual Interaction Runtime'],
+   nativeRouteSource:record.route.source,selectedRouteBodies:record.route.selected,
+   routeIsNotExecution:true,
+   testedBodies:record.route.actualExecuted,
    proofSha256:await digest(raw),
    boundary:'Actual local specialist interpreter execution and Workbench proof receipt, not APK installed, physical device, private owner/cloud write or universal Estate merger'};
  const updated=save({...current,nativeProof:native,nativeProofSha256:await digest(native)});
@@ -147,7 +150,9 @@ function mountFederation(){
    if(!raw||await digest(raw)!==t.nativeProof.proofSha256)
     return hold('Native recipient proof changed since execution; cannot return earned claim');
    const pr=JSON.parse(raw);
-   if(pr.nativePassed!==true||pr.buildGates?.passed?.length!==8||pr.receipts?.length!==9)
+   if(pr.nativePassed!==true||pr.buildGates?.passed?.length!==8||pr.receipts?.length!==9||
+      !Array.isArray(pr.route?.selected)||pr.route?.actualExecuted?.length!==6||
+      JSON.stringify(pr.route?.selected)!==JSON.stringify(t.nativeProof.selectedRouteBodies))
     return hold('Native recipient execution evidence no longer valid');
   }
   const {bodies,links}=loadPersistedProject();

@@ -7,7 +7,8 @@
   "integration_route": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/",
   "laws": [
     "ONE_CANONICAL_DOOR_MANY_SOVEREIGN_BODIES",
-    "MESH_NOT_MERGE",
+    "CONTACT_NOT_AUTOMATIC_MERGER",
+    "EARNED_MERGER_PERMITTED",
     "PUBLIC_ROUTE_NOT_ROOT_BODY",
     "CARRIER_NOT_BODY",
     "NO_DING_NO_CLAIM",
@@ -71,6 +72,13 @@
       "role": "PUBLIC_RECOVERY_ROUTE",
       "url": "https://jmisjustme-estate.pages.dev/recovery/",
       "state": "PUBLIC_LIVE_PROVEN"
+    },
+    {
+      "id": "ailatheo",
+      "name": "AILatheo — Creation Workbench + Living Federation",
+      "role": "PUBLIC_CREATION_AND_INTEGRATION_FRONT_DOOR",
+      "url": "https://jmisjustme-estate.pages.dev/ailatheo/",
+      "state": "SOURCE_CONNECTED_LIVE_DEPLOYMENT_PROOF_OPEN"
     },
     {
       "id": "career",
@@ -218,5 +226,20 @@
       },
       "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection. Hosted registry authority is process-start scoped to the exact deployed bytes and does not transfer recipient/device proof."
     }
-  ]
+  ],
+  "relationship_policy": {
+    "schema": "JM.Estate.RelationshipOperations/1",
+    "date": "2026-10-19",
+    "status": "PUBLIC_DECLARATION_ONLY_NO_MERGER_PROOF",
+    "operations": [
+      "SEPARATE",
+      "MESH",
+      "INTEGRATE",
+      "MERGE",
+      "TRANSFORM",
+      "BREAKAWAY"
+    ],
+    "non_equivalence": "A connection or mesh is not automatically a merger. Deliberate merger is permitted with appropriate authority, proof and recovery.",
+    "proof_boundary": "Public registry lists relationship permissions, not owner-write capability, live functional mergers or proven receiver execution."
+  }
 }

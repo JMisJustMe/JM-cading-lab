@@ -1,0 +1,63 @@
+name: JM Estate Earned Integration — source and browser gates
+on:
+  push:
+    branches:
+      - jm-estate-integration-safe-live-2026-10-19
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE*'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
+      - 'navigator/estate-integration/bridge.js'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'ailatheo/index.html'
+      - 'scripts/jm_ailatheo_living_federation_conformance.py'
+      - 'tests/ailatheo-estate-bridge-runtime.spec.mjs'
+      - '.github/workflows/jm-estate-earned-integration.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE*'
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
+      - 'navigator/estate-integration/bridge.js'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'ailatheo/index.html'
+      - 'scripts/jm_ailatheo_living_federation_conformance.py'
+      - 'tests/ailatheo-estate-bridge-runtime.spec.mjs'
+      - '.github/workflows/jm-estate-earned-integration.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Governance regression
+        run: python JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py
+      - name: Build Mesh agent contract
+        run: python services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
+      - name: Build Mesh Python syntax
+        run: python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/server.py
+      - name: AILatheo carrier contract
+        run: python scripts/jm_ailatheo_living_federation_conformance.py
+      - name: Federation JavaScript syntax
+        run: node --check /tmp/ailatheo-living.js
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runner
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Browser, offline and direct-file contact
+        run: |
+          python3 -m http.server 4177 --bind 127.0.0.1 > /tmp/jm-http.log 2>&1 &
+          sleep 2
+          node tests/ailatheo-estate-bridge-runtime.spec.mjs

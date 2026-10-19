@@ -14,6 +14,7 @@ header{display:flex;align-items:center;gap:10px}.sigil{width:42px;height:42px;bo
 <div class="meaning"><small id="routeLabel">CONTACT FIELD</small><p id="meaningText">Give AILatheo something to work with. The federation stays underneath until the contact earns an office.</p></div></div></main>
 <div><div class="contact"><textarea id="contact" aria-label="Contact">The stored evidence says the route caused a consequence, left a trace, persisted, and re-entry changed the next action.</textarea><button id="conduct">CONTACT</button></div><div class="tools"><button class="round" id="recover">↺ RECOVER</button><button class="round" id="traceBtn">⌁ TRACE</button><button class="round" id="proofBtn">◇ PROOF MODE</button></div></div></div>
 <aside class="drawer" id="drawer"><button class="round close" id="close">×</button><h3 id="drawerTitle">TraceBox</h3><div id="drawerBody"></div></aside>
+<script defer src="../navigator/estate-integration/bridge.js" data-jm-surface="ailatheo-federation" data-jm-estate-integration="v1"></script>
 <script>
 const KEY='jm-ailatheo-living-federation-v1';const $=id=>document.getElementById(id);
 const offices=[
@@ -23,16 +24,142 @@ const offices=[
 {id:'teo',name:'Teo OS',role:'continuity / trace',test:s=>/(trace|persist|continuity|re-entry|receipt|remember|return|recover)/i.test(s)},
 {id:'adaptive',name:'Adaptive ECOSTATE',role:'execute / verify / recover',test:s=>/(action|execute|build|recover|route|next|make|do|test)/i.test(s)},
 {id:'ehilatheo',name:'Ehilatheo',role:'mobile build cockpit',hold:true,test:s=>/(phone|cockpit|mobile build|android)/i.test(s)}];
-let history=[];function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let history=[];let estateLink={state:'CONNECTING',source:null,version:null,routeCount:0};function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 async function hash(text){if(globalThis.crypto?.subtle){const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return [...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')}let h=2166136261;for(const c of text)h=Math.imul(h^c.charCodeAt(0),16777619);return 'fallback-'+(h>>>0).toString(16)}
 function render(state={}){document.querySelectorAll('.node').forEach(el=>{el.classList.remove('on','hold');const v=state[el.dataset.id];if(v)el.classList.add(v)});$('orb').classList.toggle('live',Object.values(state).includes('on'))}
-function explain(active,contact){const names=active.filter(x=>x.state==='on').map(x=>x.name);const held=active.filter(x=>x.state==='hold').map(x=>x.name);let t=names.length?names.join(' → ')+' entered because this contact matched their distinct offices.':'No office earned contact.';if(held.length)t+=' '+held.join(', ')+' is visible but held: role recovered, exact current body remains claim-gated.';t+=' Trace is retained without merging identities.';return t}
-async function conduct(){const text=$('contact').value.trim();if(!text){$('meaningText').textContent='No contact entered. Nothing is claimed.';return}const state={},active=[];for(const o of offices){if(!o.test(text))continue;state[o.id]=o.hold?'hold':'on';active.push({...o,state:state[o.id]})}const payload=JSON.stringify({contact:text,state,path:active.map(x=>x.id+':'+x.state.toUpperCase())});const rec={schema:'jm.ailatheo.living-federation/1.0',time:new Date().toISOString(),contact:text,state,path:active.map(x=>x.id+':'+x.state.toUpperCase()),payload_sha256:await hash(payload),ding:'AILATHEO_LIVING_FEDERATION_DING'};history.push(rec);localStorage.setItem(KEY,JSON.stringify({last:rec,history:history.slice(-24)}));render(state);$('routeLabel').textContent=rec.ding;$('meaningText').textContent=explain(active,text);$('headStatus').textContent='DING';$('pulse').classList.remove('go');void $('pulse').offsetWidth;$('pulse').classList.add('go')}
+function explain(active,contact){const names=active.filter(x=>x.state==='on').map(x=>x.name);const held=active.filter(x=>x.state==='hold').map(x=>x.name);let t=names.length?names.join(' → ')+' entered because this contact matched their distinct offices.':'No office earned contact.';if(held.length)t+=' '+held.join(', ')+' is visible but held: role recovered, exact current body remains claim-gated.';t+=' Office matching is local; public links do not imply execution. Integration or merger may be earned with authority and receiver proof.';return t}
+async function conduct(){
+ const text=$('contact').value.trim();
+ if(!text){$('meaningText').textContent='No contact entered. Nothing is claimed.';return}
+ const state={},active=[];
+ for(const o of offices){if(!o.test(text))continue;state[o.id]=o.hold?'hold':'on';active.push({...o,state:state[o.id]})}
+ const payload=JSON.stringify({contact:text,state,path:active.map(x=>x.id+':'+x.state.toUpperCase())});
+ const digest=await hash(payload);
+ const rec={schema:'jm.ailatheo.living-federation/1.1',time:new Date().toISOString(),contact:text,state,path:active.map(x=>x.id+':'+x.state.toUpperCase()),payload_sha256:digest.startsWith('fallback-')?null:digest,payload_digest:digest,digest_kind:digest.startsWith('fallback-')?'NONCRYPTO_FALLBACK':'SHA-256',estate_link:{...estateLink},outcome:'CONTACT_ROUTED_LOCAL',ding:null};
+ history.push(rec);
+ try{localStorage.setItem(KEY,JSON.stringify({last:rec,history:history.slice(-24)}));rec.persistence='LOCAL_STORAGE'}catch(e){rec.persistence='MEMORY_ONLY_HOLD';rec.persistence_error=String(e?.message||e)}
+ render(state);
+ $('routeLabel').textContent='CONTACT_ROUTED_LOCAL';
+ $('meaningText').textContent=explain(active,text);
+ $('headStatus').textContent=rec.persistence==='MEMORY_ONLY_HOLD'?'ROUTED · SAVE HOLD':'ROUTED';
+ $('pulse').classList.remove('go');void $('pulse').offsetWidth;$('pulse').classList.add('go');
+}
 function openDrawer(title,html){$('drawerTitle').textContent=title;$('drawerBody').innerHTML=html;$('drawer').classList.add('open')}
 $('conduct').addEventListener('click',()=>conduct().catch(e=>{$('meaningText').textContent='CONTACT HOLD — '+String(e?.message||e);$('headStatus').textContent='HOLD'}));
 $('contact').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')conduct()});
-$('traceBtn').onclick=()=>{const last=history.at(-1);openDrawer('TraceBox',last?'<pre>'+esc(JSON.stringify(last,null,2))+'</pre><button class="round" id="copyReceipt">COPY RETURN RECEIPT</button>':'<p>No Ding yet.</p>');setTimeout(()=>{const b=$('copyReceipt');if(b)b.onclick=async()=>{const rec=history.at(-1),packet=JSON.stringify({...rec,return_ding:'AILATHEO_RETURN_PACKET_READY'},null,2);try{await navigator.clipboard.writeText(packet);b.textContent='COPIED'}catch{openDrawer('Return receipt','<pre>'+esc(packet)+'</pre>')}}},0)};
-$('proofBtn').onclick=()=>openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">RELATION ≠ MERGER · COMMON ROUTE ≠ COMMON BODY · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(history.at(-1)?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(history.at(-1)?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify({carrier:'Living Federation v1',persistence:'localStorage',return_receipt:'SHA-256 packet',boundary:'Second authorised physical surface remains separately evidenced.'},null,2))+'</pre></div>');
+$('traceBtn').onclick=()=>{const last=history.at(-1);openDrawer('TraceBox',last?'<pre>'+esc(JSON.stringify(last,null,2))+'</pre><button class="round" id="copyReceipt">COPY CONTACT RECEIPT</button>':'<p>No Ding yet.</p>');setTimeout(()=>{const b=$('copyReceipt');if(b)b.onclick=async()=>{const rec=history.at(-1),packet=JSON.stringify({...rec,return_packet:'AILATHEO_RETURN_PACKET_READY',boundary:'This receipt proves local contact routing only'},null,2);try{await navigator.clipboard.writeText(packet);b.textContent='COPIED'}catch{openDrawer('Return receipt','<pre>'+esc(packet)+'</pre>')}}},0)};
+let meshContact={state:'NOT_PROBED'};
+async function probeBuildMesh(){
+ const panel=$('meshProbeResult');
+ if(!panel)return;
+ panel.textContent='CONTACTING BUILD MESH (READ ONLY)...';
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9500);
+ try{
+  const endpoint='https://jm-ecostate-build-mesh-mcp.onrender.com/mcp';
+  const request={jsonrpc:'2.0',id:43,method:'tools/call',params:{name:'build_mesh_status',arguments:{probe_navigator:false}}};
+  const response=await fetch(endpoint,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(request),signal:controller.signal});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const packet=await response.json();
+  const data=packet?.result?.structuredContent;
+  if(packet?.result?.isError||data?.server!=='JM ECOSTATE Build Mesh Native MCP')throw Error('Unexpected or error MCP response');
+  meshContact={state:'LIVE_READ_ONLY_RETURNED',version:data.version,registryDate:data.current_registry_date,capabilityProfiles:data.capability_profiles,relationshipOperations:data.relationship_operations||null};
+  panel.textContent=JSON.stringify(meshContact,null,2)+(meshContact.relationshipOperations?'\nNew relationship operations declared.':'\nLive service has not yet declared the new relationship operations; do not treat source-branch code as deployed.');
+ }catch(e){
+  meshContact={state:'HOLD',error:String(e?.message||e)};
+  panel.textContent='BUILD MESH CONTACT HOLD — '+meshContact.error+'\nThe static Estate routes and offline federation are unaffected.';
+ }finally{clearTimeout(timeout)}
+}
+let meshSearch={state:'NOT_QUERIED'};
+async function searchLiveBuildMesh(){
+ const panel=$('meshSearchResult');
+ if(!panel)return;
+ const contact=$('contact').value.trim()||history.at(-1)?.contact||'';
+ if(!contact){panel.textContent='SEARCH HOLD — no entered task';return}
+ panel.textContent='QUERYING LIVE BUILD MESH (DISCOVERY ONLY)...';
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9500);
+ try{
+  const payload={jsonrpc:'2.0',id:44,method:'tools/call',params:{name:'search_builds',arguments:{query:contact,limit:5}}};
+  const response=await fetch('https://jm-ecostate-build-mesh-mcp.onrender.com/mcp',{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const packet=await response.json();
+  const data=packet?.result?.structuredContent;
+  if(packet?.result?.isError||!Array.isArray(data?.current)||!data?.navigator)throw Error('UNEXPECTED_SEARCH_RESPONSE');
+  meshSearch={state:'LIVE_DISCOVERY_RETURNED',query:contact,current:data.current.slice(0,5).map(x=>({name:x.name||x.title||'unnamed',score:x.score||null,source:x.source})),public:data.navigator.data?.results?.slice(0,5).map(x=>({id:x.id,title:x.title}))||[],boundary:'These are retrieved candidates, not authority, execution, or merger proof.'};
+  const last=history.at(-1);
+  if(last?.contact===contact){
+   last.live_discovery_receipt={...meshSearch};
+   try{localStorage.setItem(KEY,JSON.stringify({last,history:history.slice(-24)}))}catch{meshSearch.persistence='MEMORY_ONLY_HOLD'}
+  }
+  panel.textContent=JSON.stringify(meshSearch,null,2);
+ }catch(e){
+  meshSearch={state:'HOLD',error:String(e?.message||e)};
+  panel.textContent='LIVE DISCOVERY HOLD — '+meshSearch.error;
+ }finally{clearTimeout(timeout)}
+}
+let nativeRouter={state:'NOT_RUN'};
+async function executeNativeRoute(){
+ const panel=$('nativeRouterResult');
+ if(!panel)return;
+ const contact=$('contact').value.trim()||history.at(-1)?.contact||'';
+ if(!contact){panel.textContent='ROUTE HOLD — no task/contact entered';return}
+ panel.textContent='RECOVERING JM NATIVE 100-BODY REGISTRY...';
+ try{
+  const base=new URL('../coding-estate/integration/',location.href);
+  const response=await fetch(new URL('REGISTRY.json',base),{cache:'no-store'});
+  if(!response.ok)throw Error('REGISTRY_HTTP_'+response.status);
+  const manifest=await response.json();
+  if(manifest.schema!=='jm.sovereign-estate.registry/1.1')throw Error('REGISTRY_SCHEMA_MISMATCH');
+  if(!Array.isArray(manifest.parts)||manifest.parts.length===0)throw Error('REGISTRY_PARTS_MISSING');
+  const parts=await Promise.all(manifest.parts.map(async relative=>{
+   const res=await fetch(new URL(relative,base),{cache:'no-store'});
+   if(!res.ok)throw Error('REGISTRY_PART_HTTP_'+res.status);
+   const doc=await res.json();
+   if(doc.count!==doc.bodies?.length)throw Error('REGISTRY_PART_LENGTH_'+relative);
+   return doc;
+  }));
+  const registry={...manifest,bodies:parts.flatMap(doc=>doc.bodies)};
+  if(registry.bodies.length!==manifest.count)throw Error('REGISTRY_COUNT_MISMATCH');
+  const code=await import(new URL('router-core.mjs',base).href);
+  const validation=code.validateRegistry(registry);
+  if(!validation.valid)throw Error('REGISTRY_VALIDATION_FAILED_'+validation.failures.join(','));
+  const plan=code.planEstateRoute(contact,registry,{limit:7,includeDelivery:true});
+  const checksum=await hash(JSON.stringify(plan));
+  nativeRouter={state:'JM_NATIVE_ROUTER_EXECUTED',source:'coding-estate/integration/router-core.mjs',registryCount:validation.count,contact,selected:plan.route.map(({id,name,reason,order})=>({id,name,reason,order})),intents:plan.intents,digest:checksum,claim_boundary:'Executed router selection only; selected bodies have NOT independently executed or earned recipient Ding.'};
+  const last=history.at(-1);
+  if(last&&last.contact===contact){
+    last.native_router_receipt={...nativeRouter};
+    try{localStorage.setItem(KEY,JSON.stringify({last,history:history.slice(-24)}))}catch(e){nativeRouter.persistence='MEMORY_ONLY_HOLD'}
+  }
+  panel.textContent=JSON.stringify(nativeRouter,null,2);
+ }catch(e){
+  nativeRouter={state:'HOLD',error:String(e?.message||e),boundary:'Public/read-only registry + native router unavailable; local contact remains operational.'};
+  panel.textContent='NATIVE ROUTER HOLD — '+nativeRouter.error;
+ }
+}
+function showProof(){
+ const bridge=window.JMEstateIntegration;
+ const routes=bridge?.list()||[];
+ const local=history.at(-1);
+ const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
+ const actions=routes.map(r=>'<button type="button" class="round" data-route="'+esc(r.id)+'">'+esc(r.name||r.id)+' ↗</button>').join('');
+ openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre><button type="button" class="round" id="searchMeshBtn">SEARCH BUILD MESH · LIVE</button><pre id="meshSearchResult">No live discovery has been queried.</pre><button type="button" class="round" id="runNativeRouter">RUN JM NATIVE ROUTER</button><pre id="nativeRouterResult">JM source-backed router not run. No engine execution claimed.</pre></div>');
+ $('probeMeshBtn').addEventListener('click',()=>probeBuildMesh());
+ $('searchMeshBtn').addEventListener('click',()=>searchLiveBuildMesh());
+ $('runNativeRouter').addEventListener('click',()=>executeNativeRoute());
+ $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
+}
+$('proofBtn').onclick=showProof;
+window.addEventListener('jm-estate-integration-ready',event=>{
+ const bridge=window.JMEstateIntegration,registry=event.detail.registry;
+ estateLink={state:'CONNECTED_PUBLIC_READ_ONLY',source:event.detail.registryUrl,version:registry.version,routeCount:bridge?.list().length||0};
+ if(!history.length){$('headStatus').textContent='LINKED';$('routeLabel').textContent='PUBLIC ESTATE CONNECTED';$('meaningText').textContent='Real registry contact: '+estateLink.routeCount+' public routes, version '+estateLink.version+'. Open PROOF MODE for destinations. Private execution is not claimed.'}
+});
+window.addEventListener('jm-estate-integration-hold',event=>{
+ estateLink={state:'HOLD',source:null,version:null,routeCount:0,error:event.detail.error};
+ if(!history.length){$('headStatus').textContent='OFFLINE';$('routeLabel').textContent='PUBLIC LINK HOLD';$('meaningText').textContent='Local federation stays usable. Public registry unavailable: '+event.detail.error}
+});
 $('recover').onclick=()=>{try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(!saved?.last){$('meaningText').textContent='No retained state to recover.';return}history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='PERSISTED STATE RECOVERED';$('meaningText').textContent='Teo OS continuity office returned the last retained contact. Executed history is preserved; the next contact may differ.';$('headStatus').textContent='RECOVERED'}catch(e){$('meaningText').textContent='RECOVERY HOLD — '+String(e?.message||e)}};
 $('close').onclick=()=>$('drawer').classList.remove('open');try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.last){history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='RE-ENTRY';$('meaningText').textContent='A retained route was found on entry. Press RECOVER to make continuity explicit.';$('headStatus').textContent='RETURN'}else render({})}catch{render({})}
 </script></body></html>

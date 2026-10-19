@@ -8,6 +8,10 @@ on:
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
       - 'tests/ailatheo-native-six-receiver-return.spec.mjs'
+      - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'unified-browser/ailatheo-native-touch-carrier.mjs'
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
       - '.github/workflows/jm-ailatheo-consequence-return.yml'
   pull_request:
     branches: [main]
@@ -17,6 +21,10 @@ on:
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
       - 'tests/ailatheo-native-six-receiver-return.spec.mjs'
+      - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'unified-browser/ailatheo-native-touch-carrier.mjs'
+      - 'unified-browser/ailatheo-creation-runtime.mjs'
+      - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
       - '.github/workflows/jm-ailatheo-consequence-return.yml'
   workflow_dispatch:
 permissions: {contents: read}
@@ -40,3 +48,4 @@ jobs:
           sleep 2
           node tests/ailatheo-federation-consequence-return.spec.mjs
           node tests/ailatheo-native-six-receiver-return.spec.mjs
+          node tests/ailatheo-android-touch-carrier.spec.mjs

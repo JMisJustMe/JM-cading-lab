@@ -1,0 +1,20 @@
+name: JM Renderer Contact Boundary QA
+on:
+  push:
+    branches: [jm-render-contact-cp2-20261019]
+    paths:
+      - 'games-beyond/jm-render-contact/**'
+      - '.github/workflows/jm-render-contact-qa.yml'
+  workflow_dispatch:
+jobs:
+  boundary-qa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JM renderer provider contact, safety and fallback
+        run: node games-beyond/jm-render-contact/JM_RENDER_CONTACT_v0_1.test.mjs

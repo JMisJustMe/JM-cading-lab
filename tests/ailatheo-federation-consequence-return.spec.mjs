@@ -23,6 +23,7 @@ try{
   await page.locator('#conduct').click();
   await page.locator('#jmRelayStart').click();
   await page.waitForURL('**/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html?jm_return_id=*');
+  if(await page.locator('#creatorPreviewGate').isVisible()) await page.locator('#creatorStartBlank').click();
   need(page.url().includes('jm_return_id='),'HANDOFF_ID_MISSING');
   await page.locator('#jmRelayVerify').click();
   await page.waitForFunction(()=>document.querySelector('#jmRelayStatus')?.textContent.includes('RELAY HOLD'));
@@ -56,6 +57,7 @@ try{
   await page.locator('#contact').fill('test receipt tamper revalidation');
   await page.locator('#jmRelayStart').click();
   await page.waitForURL('**/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html?jm_return_id=*');
+  if(await page.locator('#creatorPreviewGate').isVisible()) await page.locator('#creatorStartBlank').click();
   await page.locator('#jmRelaySample').click();
   await page.locator('#jmRelayVerify').click();
   await page.waitForFunction(()=>document.querySelector('#jmRelayStatus')?.textContent.includes('RECEIVER PROVED'));
@@ -74,6 +76,7 @@ try{
   await page.locator('#contact').fill('protect existing project');
   await page.locator('#jmRelayStart').click();
   await page.waitForURL('**/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html?jm_return_id=*');
+  if(await page.locator('#creatorPreviewGate').isVisible()) await page.locator('#creatorStartBlank').click();
   await page.locator('#jmRelaySample').click();
   await page.waitForFunction(()=>document.querySelector('#jmRelayStatus')?.textContent.includes('Existing creator project protected'));
   const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('jm.ailatheo.v3.bodies')));

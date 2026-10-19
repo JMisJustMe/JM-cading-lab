@@ -48,13 +48,36 @@ function openDrawer(title,html){$('drawerTitle').textContent=title;$('drawerBody
 $('conduct').addEventListener('click',()=>conduct().catch(e=>{$('meaningText').textContent='CONTACT HOLD — '+String(e?.message||e);$('headStatus').textContent='HOLD'}));
 $('contact').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')conduct()});
 $('traceBtn').onclick=()=>{const last=history.at(-1);openDrawer('TraceBox',last?'<pre>'+esc(JSON.stringify(last,null,2))+'</pre><button class="round" id="copyReceipt">COPY CONTACT RECEIPT</button>':'<p>No Ding yet.</p>');setTimeout(()=>{const b=$('copyReceipt');if(b)b.onclick=async()=>{const rec=history.at(-1),packet=JSON.stringify({...rec,return_packet:'AILATHEO_RETURN_PACKET_READY',boundary:'This receipt proves local contact routing only'},null,2);try{await navigator.clipboard.writeText(packet);b.textContent='COPIED'}catch{openDrawer('Return receipt','<pre>'+esc(packet)+'</pre>')}}},0)};
+let meshContact={state:'NOT_PROBED'};
+async function probeBuildMesh(){
+ const panel=$('meshProbeResult');
+ if(!panel)return;
+ panel.textContent='CONTACTING BUILD MESH (READ ONLY)...';
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),9500);
+ try{
+  const endpoint='https://jm-ecostate-build-mesh-mcp.onrender.com/mcp';
+  const request={jsonrpc:'2.0',id:43,method:'tools/call',params:{name:'build_mesh_status',arguments:{probe_navigator:false}}};
+  const response=await fetch(endpoint,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},body:JSON.stringify(request),signal:controller.signal});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const packet=await response.json();
+  const data=packet?.result?.structuredContent;
+  if(packet?.result?.isError||data?.server!=='JM ECOSTATE Build Mesh Native MCP')throw Error('Unexpected or error MCP response');
+  meshContact={state:'LIVE_READ_ONLY_RETURNED',version:data.version,registryDate:data.current_registry_date,capabilityProfiles:data.capability_profiles,relationshipOperations:data.relationship_operations||null};
+  panel.textContent=JSON.stringify(meshContact,null,2)+(meshContact.relationshipOperations?'\nNew relationship operations declared.':'\nLive service has not yet declared the new relationship operations; do not treat source-branch code as deployed.');
+ }catch(e){
+  meshContact={state:'HOLD',error:String(e?.message||e)};
+  panel.textContent='BUILD MESH CONTACT HOLD — '+meshContact.error+'\nThe static Estate routes and offline federation are unaffected.';
+ }finally{clearTimeout(timeout)}
+}
 function showProof(){
  const bridge=window.JMEstateIntegration;
  const routes=bridge?.list()||[];
  const local=history.at(-1);
  const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
  const actions=routes.map(r=>'<button type="button" class="round" data-route="'+esc(r.id)+'">'+esc(r.name||r.id)+' ↗</button>').join('');
- openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div></div>');
+ openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre></div>');
+ $('probeMeshBtn').addEventListener('click',()=>probeBuildMesh());
  $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
 }
 $('proofBtn').onclick=showProof;

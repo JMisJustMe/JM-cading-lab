@@ -32,6 +32,14 @@ try {
     await page.waitForFunction(()=>document.querySelector('#meshProbeResult')?.textContent.includes('LIVE_READ_ONLY_RETURNED'));
     const mesh=await page.locator('#meshProbeResult').textContent();
     must(mesh.includes('0.8.5')&&mesh.includes('not yet declared'),'MCP_READBACK_BOUNDARY_INVALID '+mesh);
+    await page.locator('#contact').fill('game touch visual compile proof recover delivery');
+    await page.locator('#runNativeRouter').click();
+    await page.waitForFunction(()=>document.querySelector('#nativeRouterResult')?.textContent.includes('JM_NATIVE_ROUTER_EXECUTED'));
+    const native=JSON.parse(await page.locator('#nativeRouterResult').textContent());
+    must(native.registryCount===100,'NATIVE_REGISTRY_COUNT_BAD '+JSON.stringify(native));
+    must(native.selected.some(x=>x.id==='tracebox'),'NATIVE_TRACE_REQUIRED');
+    must(native.selected.some(x=>x.id==='onebody-delivery'),'NATIVE_DELIVERY_REQUIRED');
+    must(native.claim_boundary.includes('NOT independently executed'),'NATIVE_CROWN_INFLATION');
     await page.locator('#close').click();
     await page.locator('#contact').fill('Connect the evidence, code and route without merging identities');
     await page.locator('#conduct').click();

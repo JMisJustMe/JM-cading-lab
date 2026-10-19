@@ -14,8 +14,10 @@ try {
       const headers={'access-control-allow-origin':'*','access-control-allow-methods':'POST,OPTIONS','access-control-allow-headers':'accept,content-type'};
       if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers});
       const payload=JSON.parse(route.request().postData()||'{}');
-      must(payload.method==='tools/call'&&payload.params?.name==='build_mesh_status','BAD_MCP_PROBE_CALL');
-      return route.fulfill({status:200,headers:{...headers,'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:43,result:{structuredContent:{server:'JM ECOSTATE Build Mesh Native MCP',version:'0.8.5',current_registry_date:'2026-10-06',capability_profiles:34}}})});
+      must(payload.method==='tools/call'&&['build_mesh_status','search_builds'].includes(payload.params?.name),'BAD_MCP_CALL');
+      const search=payload.params.name==='search_builds';
+      const data=search ? {current:[{name:'JM GameCore',score:0.82,source:'current_overlay'}],navigator:{state:'PASS',data:{results:[{id:'RL-JM-GAMECORE',title:'JM GameCore'}]}}} : {server:'JM ECOSTATE Build Mesh Native MCP',version:'0.8.5',current_registry_date:'2026-10-06',capability_profiles:34};
+      return route.fulfill({status:200,headers:{...headers,'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:payload.id,result:{structuredContent:data}})});
     });
     const page=await context.newPage();
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -33,6 +35,11 @@ try {
     await page.waitForFunction(()=>document.querySelector('#meshProbeResult')?.textContent.includes('LIVE_READ_ONLY_RETURNED'));
     const mesh=await page.locator('#meshProbeResult').textContent();
     must(mesh.includes('0.8.5')&&mesh.includes('not yet declared'),'MCP_READBACK_BOUNDARY_INVALID '+mesh);
+    await page.locator('#searchMeshBtn').click();
+    await page.waitForFunction(()=>document.querySelector('#meshSearchResult')?.textContent.includes('LIVE_DISCOVERY_RETURNED'));
+    const discovery=JSON.parse(await page.locator('#meshSearchResult').textContent());
+    must(discovery.current[0].name==='JM GameCore'&&discovery.public[0].id==='RL-JM-GAMECORE','BUILD_MESH_DISCOVERY_INCORRECT');
+    must(discovery.boundary.includes('not authority'),'SEARCH_ELEVATED_TO_PROOF');
     await page.locator('#runNativeRouter').click();
     await page.waitForFunction(()=>document.querySelector('#nativeRouterResult')?.textContent.includes('JM_NATIVE_ROUTER_EXECUTED'));
     const native=JSON.parse(await page.locator('#nativeRouterResult').textContent());

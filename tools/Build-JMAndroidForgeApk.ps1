@@ -23,6 +23,9 @@ param(
 
     [string]$ExpectedSignerSha256,
 
+    [ValidateRange(0, 2147483646)]
+    [int]$PreviousVersionCode = 0,
+
     [ValidateRange(1024, 536870912)]
     [long]$MaxBytes = 33554432
 )
@@ -240,6 +243,9 @@ public class MainActivity extends Activity {
     Invoke-Checked -FilePath $zipalign -Step 'APK alignment' -Arguments @('-f','4',$unsigned,$aligned)
 
     if ($SigningMode -eq 'release') {
+        if ($VersionCode -le $PreviousVersionCode) {
+            throw 'VERSION_CODE_HOLD: new release must advance the previous release version code.'
+        }
         if (-not $SigningKeystorePath) { throw 'RELEASE_SIGNER_HOLD: owner keystore path required.' }
         $keystore = Assert-Tool -Path $SigningKeystorePath -Name 'owner release keystore'
         if (-not $env:JM_ANDROID_RELEASE_KEY_ALIAS) { throw 'RELEASE_SIGNER_HOLD: owner alias missing.' }
@@ -290,6 +296,7 @@ public class MainActivity extends Activity {
         package_name = $PackageName
         version_name = $VersionName
         version_code = $VersionCode
+        previous_version_code = $PreviousVersionCode
         source_file_count = $sourceFiles.Count
         source_bytes = $sourceBytes
         apk_path = $apk

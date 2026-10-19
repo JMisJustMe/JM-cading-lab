@@ -160,7 +160,7 @@ window.addEventListener('jm-ailatheo-consequence-return',event=>{
   event_kind:returned.receiverProof?.eventKind,event_id:returned.receiverProof?.eventId,
   bodies:returned.receiverProof?.bodyCount,links:returned.receiverProof?.linkCount,
   proof_sha256:returned.proofSha256,
-  native_six_return:returned.nativeProof?{source:returned.nativeProof.source,executed_bodies:returned.nativeProof.testedBodies,gate_count:returned.nativeProof.gates,receipt_count:returned.nativeProof.receipts,sha256:returned.nativeProofSha256,claim:'SIX_LOCAL_NATIVE_INTERPRETERS_EXECUTED'}:null,
+  native_six_return:returned.nativeProof?{source:returned.nativeProof.source,selected_route_bodies:returned.nativeProof.selectedRouteBodies,executed_bodies:returned.nativeProof.testedBodies,route_not_execution:true,gate_count:returned.nativeProof.gates,receipt_count:returned.nativeProof.receipts,sha256:returned.nativeProofSha256,claim:'SIX_LOCAL_NATIVE_INTERPRETERS_EXECUTED_SELECTED_ROUTE_WIDER'}:null,
   claim:'VERIFIED_LOCAL_RECEIVER_CONSEQUENCE_NOT_EXTERNAL_PRIVATE_WRITE'};
  try{localStorage.setItem(KEY,JSON.stringify({last:history.at(-1),history:history.slice(-24)}))}
  catch(e){$('headStatus').textContent='RETURN VERIFIED · TRACE SAVE HOLD'}

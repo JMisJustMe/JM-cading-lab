@@ -73,6 +73,8 @@ jobs:
             if (-not $held -or (Get-FileHash $key -Algorithm SHA256).Hash -ne $initialHash) {
               throw 'WRONG_PASSWORD_DID_NOT_HOLD_EXISTING_KEY'
             }
+            # The expected negative keytool result leaves LASTEXITCODE=1: consume it only after asserting HOLD + byte identity.
+            $global:LASTEXITCODE = 0
             Write-Host 'JM_AILATHEO_OWNER_SIGNER_PREPARATION_PASS: new key, stable rerun, exact backup, public certificate, wrong-password HOLD'
           }
           finally {

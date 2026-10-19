@@ -43,3 +43,5 @@ jobs:
         run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_1_RENDER_CONTACT.test.mjs
       - name: Verify JM Actual Engine complete first-open source, dual-render sync and 2D return
         run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_1_FIRST_OPEN.test.mjs
+      - name: Verify JM Actual Engine v12.2.2 CP2 shading inheritance and 2D/3D survival
+        run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_2_CP2_LIGHTING.test.mjs

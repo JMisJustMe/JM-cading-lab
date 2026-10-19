@@ -37,3 +37,5 @@ jobs:
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_4_ALPHA_SAFE.test.mjs
       - name: Verify JM Actual Engine live WebGL buffer reuse and corrected shading normals
         run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_1_RENDER_CONTACT.test.mjs
+      - name: Verify JM Actual Engine complete first-open source, dual-render sync and 2D return
+        run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_1_FIRST_OPEN.test.mjs

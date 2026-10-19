@@ -144,7 +144,21 @@ def select(records: list[dict], query: str, top: int=6) -> list[dict]:
         score=3*len(q & content)+len(q & header)+int(r['explicit_rule_candidate'])
         ranks.append((score, r))
     ranks.sort(key=lambda p:(-p[0],p[1]['filename'],p[1]['source_line'] or 0,p[1]['data']))
-    return [dict(r,score=score,matched_terms=sorted(q & (tokens(r['data'])|tokens(r['section'])))) for score,r in ranks[:top]]
+    # JM Capability Return v1.0: inherit source-note diversity from JM AI Lab SD1.
+    # Keep original lexical ranks; represent distinct original sources first,
+    # backfill with remaining passages in the original ranked order.
+    chosen = []
+    repeated = []
+    seen_source_ids = set()
+    for score, record in ranks:
+        source_id = record['source_id']
+        if source_id in seen_source_ids:
+            repeated.append((score, record))
+        else:
+            chosen.append((score, record))
+            seen_source_ids.add(source_id)
+    selected = (chosen + repeated)[:top]
+    return [dict(r,score=score,matched_terms=sorted(q & (tokens(r['data'])|tokens(r['section'])))) for score,r in selected]
 
 
 def safe_md(s: str) -> str:

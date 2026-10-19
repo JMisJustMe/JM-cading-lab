@@ -1,0 +1,81 @@
+name: JM AILatheo Owner Signing Custody
+on:
+  pull_request:
+    paths:
+      - 'tools/Initialize-JMAILatheoReleaseSigning.ps1'
+      - 'apps/jm-android-forge/OPEN_AILATHEO_SIGNING_SETUP.cmd'
+      - 'apps/jm-android-forge/OPEN_FIRST.md'
+      - '.github/workflows/jm-ailatheo-release-custody.yml'
+  push:
+    branches: [jm-ailatheo-dedicated-signing-setup-20261019]
+    paths:
+      - 'tools/Initialize-JMAILatheoReleaseSigning.ps1'
+      - 'apps/jm-android-forge/OPEN_AILATHEO_SIGNING_SETUP.cmd'
+      - 'apps/jm-android-forge/OPEN_FIRST.md'
+      - '.github/workflows/jm-ailatheo-release-custody.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  owner-signer-preparation:
+    runs-on: windows-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate new PowerShell entry
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'tools/Initialize-JMAILatheoReleaseSigning.ps1'),
+            [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count) { throw ($errors | Out-String) }
+      - name: Exercise isolated, non-release signer custody
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $keyRoot = Join-Path $env:RUNNER_TEMP 'JM-TEST-AILATHEO-SIGNER'
+          $backupRoot = Join-Path $env:RUNNER_TEMP 'JM-TEST-AILATHEO-BACKUP'
+          $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'JM-CI-TEMP-' + [guid]::NewGuid().ToString('N')
+          try {
+            $arguments = @{
+              CiTest = $true
+              SigningDirectory = $keyRoot
+              BackupDirectory = $backupRoot
+            }
+            & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @arguments
+            $key = Join-Path $keyRoot 'AILatheo-release.p12'
+            $backup = Join-Path $backupRoot 'AILatheo-release.p12'
+            $receipt = Join-Path $keyRoot 'AILatheo-signing-public-receipt.json'
+            if (-not (Test-Path $key) -or -not (Test-Path $backup)) {
+              throw 'SIGNING_IDENTITY_NOT_CREATED'
+            }
+            $initialHash = (Get-FileHash $key -Algorithm SHA256).Hash
+            $initialPublic = (Get-Content $receipt -Raw | ConvertFrom-Json).certificate_sha256
+            & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @arguments
+            $nextHash = (Get-FileHash $key -Algorithm SHA256).Hash
+            $nextPublic = (Get-Content $receipt -Raw | ConvertFrom-Json).certificate_sha256
+            if ($initialHash -ne $nextHash -or $initialPublic -ne $nextPublic) {
+              throw 'SIGNER_CHANGED_ON_REENTRY'
+            }
+            if ((Get-FileHash $backup -Algorithm SHA256).Hash -ne $initialHash) {
+              throw 'BACKUP_SHA256_MISMATCH'
+            }
+            $receiptBody = Get-Content $receipt -Raw | ConvertFrom-Json
+            if (-not $receiptBody.existing_keystore_preserved -or
+                $receiptBody.scope -ne 'DISPOSABLE_CI_TEST_ONLY') {
+              throw 'SIGNING_IDENTITY_RECOVERY_CLAIM_INVALID'
+            }
+            $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'JM-WRONG-' + [guid]::NewGuid().ToString('N')
+            $held = $false
+            try { & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @arguments }
+            catch { $held = $true }
+            if (-not $held -or (Get-FileHash $key -Algorithm SHA256).Hash -ne $initialHash) {
+              throw 'WRONG_PASSWORD_DID_NOT_HOLD_EXISTING_KEY'
+            }
+            Write-Host 'JM_AILATHEO_OWNER_SIGNER_PREPARATION_PASS: new key, stable rerun, exact backup, public certificate, wrong-password HOLD'
+          }
+          finally {
+            Remove-Item Env:\JM_ANDROID_SIGNING_TEST_PASSPHRASE -ErrorAction SilentlyContinue
+            Remove-Item $keyRoot,$backupRoot -Recurse -Force -ErrorAction SilentlyContinue
+          }

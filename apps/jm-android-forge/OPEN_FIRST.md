@@ -104,6 +104,26 @@ DEPLOYED PAGE ≠ DING
 
 The laptop becomes the workshop. Mobile twins remain companion carriers. Source identity and receipts remain separate from delivery claims.
 
+## One-time dedicated AILatheo signing identity — owner's choice (19 October 2026)
+
+The owner chose **a new AILatheo-only release signing key**, rather than recovering or adopting an older JM app's maintenance signer. This changes no historical JM Android Forge or Safe Twin identities.
+
+**One-click on Windows laptop:** from a local `JM-cading-lab` checkout, double-click
+
+```text
+apps/jm-android-forge/OPEN_AILATHEO_SIGNING_SETUP.cmd
+```
+
+The launcher calls **existing Forge extension** `tools/Initialize-JMAILatheoReleaseSigning.ps1`. Before first run, have a JDK (`keytool`) and [GitHub CLI](https://cli.github.com/) installed and authorised to your own repository using `gh auth login`. The script deliberately installs no software itself.
+
+It prompts only for an independent backup folder and **one new private password (16+ characters)**, which you must save securely. It generates exactly one RSA-3072 PKCS#12 key locally under `%LOCALAPPDATA%\JM_ECOSTATE_PRIVATE\AndroidSigning\AILatheo` (or verifies and reuses that same key on a rerun). It copies the encrypted keystore into the chosen backup folder, compares exact bytes, records the *public* certificate fingerprint and uploads three protected secrets and two public variables to the existing repository using GitHub CLI. The key and password are never pasted into ChatGPT or committed to Git; GitHub CLI encrypts secret values on upload. A second separate-device/offsite encrypted backup is strongly recommended.
+
+**Re-running the launcher reuses and verifies the existing signer.** A mismatched password, keystore, backup or fingerprint produces HOLD, never an automatic new identity. The next release `versionCode 301` can be built on the existing protected GitHub Actions rail once that custody is established. Subsequent releases must increment the code while keeping the same certificate.
+
+**Migration once:** the APK already installed on the Fold was signed with a different temporary certificate. A new key does not update it in place. The owner has authorised uninstalling the older app, but should first preserve any desired local progress. Future AILatheo versions can update the new dedicated-signer installation without uninstalling, once independently device-tested. **A green CI test or a securely configured key is not itself owner-device runtime proof.**
+
+---
+
 ## JM maintenance signer — recovered continuity rule (July and August 2026)
 
 The older JM Android Forge v1.2.2 had already demonstrated maintaining the same certificate across descendants. Android Contact v0.3.1 likewise corrected an update through **certificate continuity plus versionCode 301 > 300**. The October AILatheo GitHub workflow regressed that safeguard by building each APK with a new temporary CI key.

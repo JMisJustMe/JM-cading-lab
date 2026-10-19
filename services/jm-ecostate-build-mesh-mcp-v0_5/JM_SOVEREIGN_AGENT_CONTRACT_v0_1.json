@@ -21,7 +21,8 @@
     "NO DING, NO CLAIM",
     "CONTACT BEFORE CROWN",
     "RECOVER BEFORE REBUILD",
-    "MESH ≠ MERGE",
+    "CONTACT DOES NOT IMPLY MERGER",
+    "EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE",
     "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
     "ACCESS ≠ AUTHORITY",
     "RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE",
@@ -508,5 +509,14 @@
     "accounting_rule": "ACTIVE_ROUTE + AVAILABLE_NOT_SELECTED = ALL 64 CURRENT CODING IDENTITIES",
     "proof_boundary": "ACTIVE_ROUTE is deterministic coding-body route selection, not proof of a separately spawned process/binary for each body.",
     "direct_query": "python3 agent-runtime/jm_agent_runtime.py --activation-only --surface <surface> --query <task>"
-  }
+  },
+  "relationship_operations": [
+    "SEPARATE",
+    "MESH",
+    "INTEGRATE",
+    "MERGE",
+    "TRANSFORM",
+    "BREAKAWAY"
+  ],
+  "relationship_rule": "Historic Mesh ≠ Merge is non-equivalence only, not a ban. Intentional merge requires authority, receiver proof and recovery."
 }

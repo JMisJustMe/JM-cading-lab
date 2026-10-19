@@ -36,9 +36,9 @@ const context={window,document,domGlobals,performance:{now:()=>milliseconds},
  navigator:{vibrate(){}},matchMedia:()=>({matches:false}),innerWidth:900,innerHeight:570,devicePixelRatio:1,
  setTimeout:()=>0,clearTimeout(){},alert(){},Blob:class{},
  URL:{createObjectURL:()=>'',revokeObjectURL(){}}};
-runInNewContext(scripts[0],context,{timeout:5000,filename:'JMRenderContact-inline'});
-runInNewContext(scripts[1],context,{timeout:5000,filename:'JMStaticBatch-inline'});
+runInNewContext(scripts[0],context,{timeout:5000,filename:'JMStaticBatch-inline'});
 assert.equal(window.JMStaticMeshBatch.JM_STATIC_BATCH_VERSION,'0.2.0');
+runInNewContext(scripts[1],context,{timeout:5000,filename:'JMRenderContact-inline'});
 assert.equal(window.JMRenderContact.JM_RENDER_CONTACT_VERSION,'0.1.0');
 runInNewContext('with(domGlobals){'+scripts[2]+'}',context,{timeout:5000,filename:'JM-WRESTLEFORM-live'});
 assert(window.JM_WRESTLE_RENDER_QA,'receiver instrument installed');

@@ -70,14 +70,55 @@ async function probeBuildMesh(){
   panel.textContent='BUILD MESH CONTACT HOLD — '+meshContact.error+'\nThe static Estate routes and offline federation are unaffected.';
  }finally{clearTimeout(timeout)}
 }
+let nativeRouter={state:'NOT_RUN'};
+async function executeNativeRoute(){
+ const panel=$('nativeRouterResult');
+ if(!panel)return;
+ const contact=$('contact').value.trim()||history.at(-1)?.contact||'';
+ if(!contact){panel.textContent='ROUTE HOLD — no task/contact entered';return}
+ panel.textContent='RECOVERING JM NATIVE 100-BODY REGISTRY...';
+ try{
+  const base=new URL('../coding-estate/integration/',location.href);
+  const response=await fetch(new URL('REGISTRY.json',base),{cache:'no-store'});
+  if(!response.ok)throw Error('REGISTRY_HTTP_'+response.status);
+  const manifest=await response.json();
+  if(manifest.schema!=='jm.sovereign-estate.registry/1.1')throw Error('REGISTRY_SCHEMA_MISMATCH');
+  if(!Array.isArray(manifest.parts)||manifest.parts.length===0)throw Error('REGISTRY_PARTS_MISSING');
+  const parts=await Promise.all(manifest.parts.map(async relative=>{
+   const res=await fetch(new URL(relative,base),{cache:'no-store'});
+   if(!res.ok)throw Error('REGISTRY_PART_HTTP_'+res.status);
+   const doc=await res.json();
+   if(doc.count!==doc.bodies?.length)throw Error('REGISTRY_PART_LENGTH_'+relative);
+   return doc;
+  }));
+  const registry={...manifest,bodies:parts.flatMap(doc=>doc.bodies)};
+  if(registry.bodies.length!==manifest.count)throw Error('REGISTRY_COUNT_MISMATCH');
+  const code=await import(new URL('router-core.mjs',base).href);
+  const validation=code.validateRegistry(registry);
+  if(!validation.valid)throw Error('REGISTRY_VALIDATION_FAILED_'+validation.failures.join(','));
+  const plan=code.planEstateRoute(contact,registry,{limit:7,includeDelivery:true});
+  const checksum=await hash(JSON.stringify(plan));
+  nativeRouter={state:'JM_NATIVE_ROUTER_EXECUTED',source:'coding-estate/integration/router-core.mjs',registryCount:validation.count,contact,selected:plan.route.map(({id,name,reason,order})=>({id,name,reason,order})),intents:plan.intents,digest:checksum,claim_boundary:'Executed router selection only; selected bodies have NOT independently executed or earned recipient Ding.'};
+  const last=history.at(-1);
+  if(last&&last.contact===contact){
+    last.native_router_receipt={...nativeRouter};
+    try{localStorage.setItem(KEY,JSON.stringify({last,history:history.slice(-24)}))}catch(e){nativeRouter.persistence='MEMORY_ONLY_HOLD'}
+  }
+  panel.textContent=JSON.stringify(nativeRouter,null,2);
+ }catch(e){
+  nativeRouter={state:'HOLD',error:String(e?.message||e),boundary:'Public/read-only registry + native router unavailable; local contact remains operational.'};
+  panel.textContent='NATIVE ROUTER HOLD — '+nativeRouter.error;
+ }
+}
 function showProof(){
  const bridge=window.JMEstateIntegration;
  const routes=bridge?.list()||[];
  const local=history.at(-1);
  const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
  const actions=routes.map(r=>'<button type="button" class="round" data-route="'+esc(r.id)+'">'+esc(r.name||r.id)+' ↗</button>').join('');
- openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre></div>');
+ openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre><button type="button" class="round" id="runNativeRouter">RUN JM NATIVE ROUTER</button><pre id="nativeRouterResult">JM source-backed router not run. No engine execution claimed.</pre></div>');
  $('probeMeshBtn').addEventListener('click',()=>probeBuildMesh());
+ $('runNativeRouter').addEventListener('click',()=>executeNativeRoute());
  $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
 }
 $('proofBtn').onclick=showProof;

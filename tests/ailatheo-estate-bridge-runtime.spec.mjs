@@ -7,6 +7,16 @@ const body='/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html';
 const browser=await chromium.launch({headless:true});
 function must(ok, message){if(!ok)throw new Error(message)}
 try {
+  // Actual AILatheo owner-facing entry: preserve v3 creation and link the federation alongside it.
+  {
+    const page=await browser.newPage({viewport:{width:390,height:844}});
+    await page.goto(base+'/ailatheo/',{waitUntil:'domcontentloaded'});
+    must(await page.locator('a[href="../unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html"]').count()>=1,'ORIGINAL_CREATOR_DOOR_LOST');
+    await page.locator('a:has-text("OPEN LIVING FEDERATION")').click();
+    must(page.url().includes('OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'),'NEW_FEDERATION_NOT_REACHABLE_FROM_OWNER_DOOR');
+    must(await page.locator('#conduct').isVisible(),'FEDERATION_FIRST_OPEN_CONTROLS_MISSING');
+    await page.close();
+  }
   // Browser-served, independent public registry: direct link and real readback.
   for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
     const context=await browser.newContext({viewport});

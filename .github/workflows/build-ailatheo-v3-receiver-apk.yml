@@ -58,6 +58,12 @@ jobs:
 
       - name: Build and signature-verify AILatheo APK
         shell: pwsh
+        env:
+          JM_ANDROID_RELEASE_KEYSTORE_BASE64: ${{ secrets.JM_ANDROID_RELEASE_KEYSTORE_BASE64 }}
+          JM_ANDROID_RELEASE_STOREPASS: ${{ secrets.JM_ANDROID_RELEASE_STOREPASS }}
+          JM_ANDROID_RELEASE_KEYPASS: ${{ secrets.JM_ANDROID_RELEASE_KEYPASS }}
+          JM_ANDROID_RELEASE_KEY_ALIAS: ${{ vars.JM_ANDROID_RELEASE_KEY_ALIAS }}
+          JM_ANDROID_RELEASE_CERT_SHA256: ${{ vars.JM_ANDROID_RELEASE_CERT_SHA256 }}
         run: |
           $ErrorActionPreference = 'Stop'
           $carrier = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-carrier'
@@ -65,18 +71,91 @@ jobs:
           $artifact = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-artifact'
           New-Item -ItemType Directory -Path $buildOut,$artifact -Force | Out-Null
 
+          $execution = Get-Content -LiteralPath (Join-Path $carrier 'AILATHEO_NATIVE_EXECUTION.json') -Raw | ConvertFrom-Json
+          $versionName = [string]$execution.carrier.versionName
+          $versionCode = [int]$execution.carrier.versionCode
+          $previousVersionCode = 0
+          $existingProof = 'downloads/AILATHEO_RECEIVER_BUILD_PROOF.json'
+          if (Test-Path -LiteralPath $existingProof) {
+            $previous = Get-Content -LiteralPath $existingProof -Raw | ConvertFrom-Json
+            $previousVersionCode = [int]$previous.version_code
+            if ($versionCode -le [int]$previous.version_code) {
+              throw "VERSION_CODE_HOLD: $versionCode is not higher than previous $($previous.version_code)."
+            }
+          }
+          $signer = Join-Path $env:RUNNER_TEMP 'jm-signing-identity.jks'
+          if ($env:GITHUB_EVENT_NAME -eq 'pull_request') {
+            # Throwaway TEST certificate, reused across TWO builds in this job only.
+            # No key is published, and no PR APK is entitled to release/update claims.
+            $env:JM_ANDROID_RELEASE_KEY_ALIAS = 'jm-ci-disposable'
+            $env:JM_ANDROID_RELEASE_STOREPASS = 'JMCITest-' + [guid]::NewGuid().ToString('N')
+            $env:JM_ANDROID_RELEASE_KEYPASS = $env:JM_ANDROID_RELEASE_STOREPASS
+            & keytool -genkeypair -noprompt -keystore $signer -storepass $env:JM_ANDROID_RELEASE_STOREPASS `
+              -keypass $env:JM_ANDROID_RELEASE_KEYPASS -alias $env:JM_ANDROID_RELEASE_KEY_ALIAS `
+              -keyalg RSA -keysize 2048 -validity 2 -dname 'CN=Disposable JM CI Test, O=Nonrelease' 2>&1 | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw 'TEST_SIGNER_CREATE_FAILED' }
+            $fingerprintText = (& keytool -list -v -keystore $signer -alias $env:JM_ANDROID_RELEASE_KEY_ALIAS `
+              -storepass $env:JM_ANDROID_RELEASE_STOREPASS 2>&1 | Out-String)
+            $fingerprintHit = [regex]::Match($fingerprintText, 'SHA256:\s*([0-9A-Fa-f:]{95})')
+            if (-not $fingerprintHit.Success) { throw 'TEST_SIGNER_FINGERPRINT_MISSING' }
+            $expectedSigner = ($fingerprintHit.Groups[1].Value -replace ':','').ToLowerInvariant()
+            $releaseClaim = $false
+          }
+          else {
+            $required = @('JM_ANDROID_RELEASE_KEYSTORE_BASE64','JM_ANDROID_RELEASE_STOREPASS',
+              'JM_ANDROID_RELEASE_KEYPASS','JM_ANDROID_RELEASE_KEY_ALIAS','JM_ANDROID_RELEASE_CERT_SHA256')
+            foreach ($name in $required) {
+              if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
+                throw "RELEASE_SIGNER_HOLD: missing protected owner signing custody: $name. NO PUBLIC APK PUBLISHED."
+              }
+            }
+            try { [IO.File]::WriteAllBytes($signer,[Convert]::FromBase64String($env:JM_ANDROID_RELEASE_KEYSTORE_BASE64)) }
+            catch { throw 'RELEASE_SIGNER_HOLD: protected keystore encoding was invalid.' }
+            $expectedSigner = $env:JM_ANDROID_RELEASE_CERT_SHA256
+            $releaseClaim = $true
+          }
+
           $lines = @(& 'tools/Build-JMAndroidForgeApk.ps1' `
             -SourceDirectory $carrier `
             -ProjectName 'AILatheo Creation' `
             -PackageName 'com.jmisjustme.ailatheocreation' `
-            -VersionName '3.0-alpha' `
-            -VersionCode 300 `
-            -OutputRoot $buildOut 2>&1)
+            -VersionName $versionName `
+            -VersionCode $versionCode `
+            -OutputRoot $buildOut `
+            -SigningMode release `
+            -PreviousVersionCode $previousVersionCode `
+            -SigningKeystorePath $signer `
+            -ExpectedSignerSha256 $expectedSigner 2>&1)
           $lines | ForEach-Object { Write-Host $_ }
           $jsonLine = $lines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
           if (-not $jsonLine) { throw 'Forge builder returned no JSON result.' }
           $result = $jsonLine | ConvertFrom-Json
           if (-not $result.success) { throw 'Forge builder did not report success.' }
+          if (-not $result.update_ready -or $result.signing_mode -ne 'release') {
+            throw 'RELEASE_SIGNING_BROKEN: signer was not owner-pinned.'
+          }
+          if ($result.signer_cert_sha256 -ne ($expectedSigner -replace ':','').ToLowerInvariant()) {
+            throw 'RELEASE_SIGNER_CONTINUITY_MISMATCH'
+          }
+          if (-not $releaseClaim) {
+            # Prove distinct successive versions inherit one signer, without touching release custody.
+            $round2 = Join-Path $env:RUNNER_TEMP 'ailatheo-signing-continuity-second'
+            New-Item -ItemType Directory -Path $round2 -Force | Out-Null
+            $secondLines = @(& 'tools/Build-JMAndroidForgeApk.ps1' `
+              -SourceDirectory $carrier -ProjectName 'AILatheo Creation' `
+              -PackageName 'com.jmisjustme.ailatheocreation' `
+              -VersionName '3.0.2-ci' -VersionCode ($versionCode+1) `
+              -OutputRoot $round2 -SigningMode release `
+              -PreviousVersionCode $versionCode `
+              -SigningKeystorePath $signer -ExpectedSignerSha256 $expectedSigner 2>&1)
+            $secondJson = $secondLines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
+            if (-not $secondJson) { throw 'SECOND_SIGNED_BUILD_HOLD' }
+            $second = $secondJson | ConvertFrom-Json
+            if (-not $second.success -or $second.signer_cert_sha256 -ne $result.signer_cert_sha256) {
+              throw 'TWO_VERSION_CERTIFICATE_CONTINUITY_FAILED'
+            }
+            Write-Host 'JM_SIGNER_TWO_VERSION_CONTINUITY_PASS: distinct versionCodes, identical owner-supplied test signer'
+          }
           if (-not (Test-Path -LiteralPath $result.apk)) { throw 'Built APK is missing.' }
           if (-not (Test-Path -LiteralPath $result.receipt)) { throw 'Build receipt is missing.' }
           $actual = (Get-FileHash -LiteralPath $result.apk -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -112,11 +191,17 @@ jobs:
 
           [ordered]@{
             schema='jm.ailatheo.receiver-build-proof/1.0'
-            status='APK_BUILD_DING'
+            status=$(if ($releaseClaim) { 'APK_BUILD_PINNED_RELEASE_SIGNER' } else { 'CI_TEST_CERTIFICATE_CONTINUITY_PASS_NOT_RELEASE' })
             source_sha='${{ github.sha }}'
             package='com.jmisjustme.ailatheocreation'
-            version_name='3.0-alpha'
-            version_code=300
+            version_name=$versionName
+            version_code=$versionCode
+            signer_cert_sha256=$result.signer_cert_sha256
+            signer_release_custody_verified=$releaseClaim
+            previous_version_code=$previousVersionCode
+            future_update_signing_eligible=$releaseClaim
+            existing_legacy_install_update_compatible=$false
+            update_ready=$releaseClaim
             apk='AILatheo_Creation_v3_0_alpha.apk'
             bytes=(Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length
             sha256=$actual
@@ -130,14 +215,14 @@ jobs:
             boundary='APK BUILT ≠ APK INSTALLED; APK INSTALLED ≠ OWNER RUNTIME DING'
           } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $artifact 'AILATHEO_RECEIVER_BUILD_PROOF.json') -Encoding UTF8
 
-          Write-Host "AILATHEO_APK_BUILD_DING"
+          if ($releaseClaim) { Write-Host 'AILATHEO_RELEASE_SIGNING_PASS' } else { Write-Host 'AILATHEO_CI_TEST_SIGNING_ONLY' }
           Write-Host "APK_BYTES=$((Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length)"
           Write-Host "APK_SHA256=$actual"
 
       - name: Upload receiver build
         uses: actions/upload-artifact@v4
         with:
-          name: ailatheo-v3-receiver-apk
+          name: ${{ github.event_name == 'pull_request' && 'ailatheo-ci-test-only-not-release' || 'ailatheo-v3-receiver-apk' }}
           path: '${{ runner.temp }}/ailatheo-receiver-artifact/*'
           if-no-files-found: error
           retention-days: 30

@@ -16,6 +16,16 @@ param(
 
     [string]$OutputRoot,
 
+    [ValidateSet('development','release')]
+    [string]$SigningMode = 'development',
+
+    [string]$SigningKeystorePath,
+
+    [string]$ExpectedSignerSha256,
+
+    [ValidateRange(0, 2147483646)]
+    [int]$PreviousVersionCode = 0,
+
     [ValidateRange(1024, 536870912)]
     [long]$MaxBytes = 33554432
 )
@@ -232,34 +242,76 @@ public class MainActivity extends Activity {
     $aligned = Join-Path $runRoot "$slug-aligned.apk"
     Invoke-Checked -FilePath $zipalign -Step 'APK alignment' -Arguments @('-f','4',$unsigned,$aligned)
 
-    $keyDir = Join-Path $OutputRoot '.keys'
-    New-Item -ItemType Directory -Path $keyDir -Force | Out-Null
-    $keystore = Join-Path $keyDir 'jm-forge-debug.keystore'
-    if (-not (Test-Path -LiteralPath $keystore)) {
-        Invoke-Checked -FilePath $keytool -Step 'Debug keystore creation' -Arguments @(
-            '-genkeypair','-v','-keystore',$keystore,'-storepass','android','-alias','jmforge','-keypass','android','-keyalg','RSA','-keysize','2048','-validity','10000','-dname','CN=JM Android Forge, OU=JM, O=JMisJustMe, L=London, C=GB'
-        )
+    if ($SigningMode -eq 'release') {
+        if ($VersionCode -le $PreviousVersionCode) {
+            throw 'VERSION_CODE_HOLD: new release must advance the previous release version code.'
+        }
+        if (-not $SigningKeystorePath) { throw 'RELEASE_SIGNER_HOLD: owner keystore path required.' }
+        $keystore = Assert-Tool -Path $SigningKeystorePath -Name 'owner release keystore'
+        if (-not $env:JM_ANDROID_RELEASE_KEY_ALIAS) { throw 'RELEASE_SIGNER_HOLD: owner alias missing.' }
+        if (-not $env:JM_ANDROID_RELEASE_STOREPASS -or -not $env:JM_ANDROID_RELEASE_KEYPASS) {
+            throw 'RELEASE_SIGNER_HOLD: owner signing passwords missing.'
+        }
+        if (($ExpectedSignerSha256 -replace ':','') -notmatch '^[0-9a-fA-F]{64}$') {
+            throw 'RELEASE_SIGNER_HOLD: pinned public owner certificate SHA-256 required.'
+        }
+        $signArgs = @('sign','--ks',$keystore,'--ks-key-alias',$env:JM_ANDROID_RELEASE_KEY_ALIAS,
+                      '--ks-pass','env:JM_ANDROID_RELEASE_STOREPASS',
+                      '--key-pass','env:JM_ANDROID_RELEASE_KEYPASS')
     }
-
+    else {
+        # Debug signer is ephemeral and NEVER update/release authority.
+        $keyDir = Join-Path $OutputRoot '.keys'
+        New-Item -ItemType Directory -Path $keyDir -Force | Out-Null
+        $keystore = Join-Path $keyDir 'jm-forge-debug.keystore'
+        if (-not (Test-Path -LiteralPath $keystore)) {
+            Invoke-Checked -FilePath $keytool -Step 'Development-only key creation' -Arguments @(
+                '-genkeypair','-v','-keystore',$keystore,'-storepass','android','-alias','jmforge',
+                '-keypass','android','-keyalg','RSA','-keysize','2048','-validity','10000',
+                '-dname','CN=JM Android Forge Development, OU=JM, O=JMisJustMe, C=GB'
+            )
+        }
+        $signArgs = @('sign','--ks',$keystore,'--ks-key-alias','jmforge',
+                      '--ks-pass','pass:android','--key-pass','pass:android')
+    }
     $apk = Join-Path $OutputRoot ("{0}-{1}-{2}.apk" -f $slug,$VersionName,$stamp)
     Copy-Item -LiteralPath $aligned -Destination $apk -Force
-    Invoke-Checked -FilePath $apksigner -Step 'APK signing' -Arguments @('sign','--ks',$keystore,'--ks-key-alias','jmforge','--ks-pass','pass:android','--key-pass','pass:android',$apk)
-    Invoke-Checked -FilePath $apksigner -Step 'APK signature verification' -Arguments @('verify','--verbose',$apk)
+    Invoke-Checked -FilePath $apksigner -Step 'APK signing' -Arguments ($signArgs + @($apk))
+    $certLines = @(& $apksigner 'verify' '--verbose' '--print-certs' $apk 2>&1)
+    if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed.' }
+    $certText = ($certLines | ForEach-Object { [string]$_ }) -join [Environment]::NewLine
+    $certResult = [regex]::Match($certText,'(?im)certificate[^\r\n]*SHA[- ]?256[^\r\n]*?:\s*([0-9a-fA-F:]{64,95})')
+    if (-not $certResult.Success) {
+        # Output is only public signing certificate diagnostics, never passwords/keys.
+        Write-Warning ('APKSIGNER_PUBLIC_CERT_OUTPUT: ' + $certText.Substring(0,[Math]::Min($certText.Length,900)))
+        throw 'SIGNING_IDENTITY_HOLD: no APK certificate fingerprint.'
+    }
+    $signerSha256 = ($certResult.Groups[1].Value -replace ':','').ToLowerInvariant()
+    if ($signerSha256 -notmatch '^[0-9a-f]{64}$') { throw 'SIGNING_IDENTITY_HOLD: malformed APK certificate SHA-256.' }
+    if ($SigningMode -eq 'release' -and $signerSha256 -ne ($ExpectedSignerSha256 -replace ':','').ToLowerInvariant()) {
+        throw 'SIGNING_IDENTITY_HOLD: APK signer mismatch against pinned owner public identity.'
+    }
 
     $hash = (Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash
     $apkBytes = (Get-Item -LiteralPath $apk).Length
     $receipt = [ordered]@{
-        schema = 'JM.AndroidForgeApkBuildReceipt/1.4'
+        schema = 'JM.AndroidForgeApkBuildReceipt/1.5'
         outcome = 'PASS'
         project = $ProjectName
         package_name = $PackageName
         version_name = $VersionName
         version_code = $VersionCode
+        previous_version_code = $PreviousVersionCode
         source_file_count = $sourceFiles.Count
         source_bytes = $sourceBytes
         apk_path = $apk
         apk_bytes = $apkBytes
         apk_sha256 = $hash
+        signing_mode = $SigningMode
+        signer_cert_sha256 = $signerSha256
+        signing_identity_pinned = ($SigningMode -eq 'release')
+        update_ready = ($SigningMode -eq 'release')
+        signer_boundary = $(if ($SigningMode -eq 'release') { 'PINNED_OWNER_RELEASE_SIGNER_VERIFIED; install and device runtime are separate' } else { 'DEVELOPMENT_SIGNER_UNSTABLE; NOT RELEASE/UPDATE-READY' })
         android_sdk = $sdk
         platform = $platformDir.Name
         build_tools = $buildToolsDir.Name
@@ -278,6 +330,9 @@ public class MainActivity extends Activity {
         receipt = $receiptPath
         sha256 = $hash
         bytes = $apkBytes
+        signing_mode = $SigningMode
+        signer_cert_sha256 = $signerSha256
+        update_ready = ($SigningMode -eq 'release')
     } | ConvertTo-Json -Compress
 }
 finally {

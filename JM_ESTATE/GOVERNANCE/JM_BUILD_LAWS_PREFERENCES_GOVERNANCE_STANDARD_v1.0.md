@@ -32,7 +32,11 @@ Also binding:
 - **IF RECOVERABLE, RECOVER FIRST**
 - **RECOVER BEFORE BURDEN**
 - **HOUSE BEFORE ARCHIVE**
-- **MESH ≠ MERGE**
+- **CONTACT DOES NOT IMPLY MERGER**
+- **EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE**
+
+> **Owner correction, 19 October 2026:** The historical *Mesh ≠ Merge* statement established non-equivalence, **not** perpetual separation. Separate, Mesh, Integrate, Merge, Transform and Breakaway are available relationship choices. A real merger requires purposeful authority, lineage/migration, separate recipient testing, actual consequences, persisted readback and recovery. No automatic merger is inferred from a link or a shared interface. Frozen ancestry remains intact. Source contract: `relationship_policy` in the adjacent machine JSON.
+
 - **BODY ≠ CARRIER ≠ ROUTE ≠ SEAT**
 - **ACCESS ≠ AUTHORITY**
 - **RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE**

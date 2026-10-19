@@ -30,6 +30,9 @@ try{
   await page.waitForFunction(()=>document.querySelector('#jmRelayStatus')?.textContent.includes('NATIVE RECEIVERS PROVED'),{timeout:16000});
   const ticket=await page.evaluate(k=>JSON.parse(localStorage.getItem(k)),key);
   assert(ticket.nativeProof?.testedBodies?.length===6,'SIX_ACTUAL_RECEIVERS_NOT_VERIFIED');
+  assert(ticket.nativeProof?.selectedRouteBodies?.length>=5,'NATIVE_ROUTE_MISSING');
+  for(const id of ['tracebox','dings','source-ledger','onebody-delivery','zionfolder']) assert(ticket.nativeProof.selectedRouteBodies.includes(id),'REQUIRED_ROUTE_HOLD_'+id);
+  assert(ticket.nativeProof.routeIsNotExecution===true,'SELECTED_ROUTE_FALSELY_EXECUTED');
   assert(ticket.nativeProof?.receipts===9&&ticket.nativeProof?.gates===8,'NINE_RECEIPTS_EIGHT_GATES_MISSING');
   assert(ticket.nativeProof?.recoverable===true&&ticket.nativeProof?.nativePassed===true,'NATIVE_RECOVERABILITY_MISSING');
   assert(ticket.nativeProofSha256?.length===64&&ticket.nativeProof?.proofSha256?.length===64,'PROOF_SHA_INVALID');

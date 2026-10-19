@@ -6,6 +6,8 @@ on:
       - 'apps/jm-android-forge/**'
       - 'tools/Start-JMAndroidForge.ps1'
       - 'tools/Build-JMAndroidForgeApk.ps1'
+      - 'tools/Initialize-JMAILatheoReleaseSigning.ps1'
+      - 'apps/jm-android-forge/OPEN_AILATHEO_SIGNING_SETUP.cmd'
       - '.github/workflows/test-jm-android-forge-v1-4.yml'
   workflow_dispatch:
 
@@ -26,7 +28,8 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $files = @(
             'tools/Start-JMAndroidForge.ps1',
-            'tools/Build-JMAndroidForgeApk.ps1'
+            'tools/Build-JMAndroidForgeApk.ps1',
+            'tools/Initialize-JMAILatheoReleaseSigning.ps1'
           )
           foreach ($file in $files) {
             $tokens = $null
@@ -120,6 +123,80 @@ jobs:
             throw 'DEVELOPMENT_SIGNING_ELEVATED_TO_RELEASE_AUTHORITY'
           }
           if ($receipt.signer_cert_sha256 -notmatch '^[0-9a-f]{64}
+
+      - name: Prove permanent identity preparation without owner secrets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'jm-signing-ci-local'
+          $backup = Join-Path $env:RUNNER_TEMP 'jm-signing-ci-independent-backup'
+          $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'JM-CI-ONLY-' + [guid]::NewGuid().ToString('N')
+          try {
+            $args = @{
+              CiTest = $true
+              SigningDirectory = $root
+              BackupDirectory = $backup
+            }
+            & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @args
+            if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw 'OWNER_KEY_TEST_FIRST_RUN_FAILED' }
+            $path = Join-Path $root 'AILatheo-release.p12'
+            $copy = Join-Path $backup 'AILatheo-release.p12'
+            $receipt = Join-Path $root 'AILatheo-signing-public-receipt.json'
+            if (-not (Test-Path -LiteralPath $path) -or -not (Test-Path -LiteralPath $copy)) {
+              throw 'LOCAL_SIGNING_KEY_OR_BACKUP_MISSING'
+            }
+            $firstHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+            $publicBefore = (Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json).certificate_sha256
+            & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @args
+            $secondHash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash
+            $publicAfter = (Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json).certificate_sha256
+            if ($firstHash -ne $secondHash -or $publicBefore -ne $publicAfter) {
+              throw 'SAME_OWNER_IDENTITY_NOT_REUSED'
+            }
+            if ($publicAfter -notmatch '^[0-9a-f]{64}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $forbidden = @('node_modules','build','.gradle')
+          foreach ($name in $forbidden) {
+            $hit = Get-ChildItem -LiteralPath . -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $name -and $_.FullName -notmatch '[\\/]\.git[\\/]' } | Select-Object -First 1
+            if ($hit) { throw "Build debris found in repository: $($hit.FullName)" }
+          }
+) { throw 'DEVELOPMENT_CERTIFICATE_RECEIPT_MISSING' }
+
+      - name: Confirm no repository build debris
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $forbidden = @('node_modules','build','.gradle')
+          foreach ($name in $forbidden) {
+            $hit = Get-ChildItem -LiteralPath . -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $name -and $_.FullName -notmatch '[\\/]\.git[\\/]' } | Select-Object -First 1
+            if ($hit) { throw "Build debris found in repository: $($hit.FullName)" }
+          }
+) { throw 'CERTIFICATE_READBACK_BAD' }
+            if ((Get-FileHash -LiteralPath $copy -Algorithm SHA256).Hash -ne $secondHash) {
+              throw 'INDEPENDENT_BACKUP_READBACK_BAD'
+            }
+            $ownerState = Get-Content -LiteralPath $receipt -Raw | ConvertFrom-Json
+            if ($ownerState.scope -ne 'DISPOSABLE_CI_TEST_ONLY' -or
+                -not $ownerState.existing_keystore_preserved) {
+              throw 'CI_DID_NOT_PRESERVE_OWNED_IDENTITY'
+            }
+            # A bad password must HOLD and must never overwrite the existing identity.
+            $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'JM-WRONG-TEST-' + [guid]::NewGuid().ToString('N')
+            $failure = $null
+            try { & 'tools/Initialize-JMAILatheoReleaseSigning.ps1' @args }
+            catch { $failure = $_ }
+            if (-not $failure -or
+                (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $firstHash) {
+              throw 'WRONG_PASSWORD_DID_NOT_FAIL_CLOSED'
+            }
+            Write-Host 'JM_DEDICATED_SIGNER_CUSTODY_PASS: fresh generation, repeat unchanged, exact backup, public fingerprint, mismatch rejection, zero GitHub secrets'
+          }
+          finally {
+            Remove-Item Env:\JM_ANDROID_SIGNING_TEST_PASSPHRASE -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $root,$backup -Force -Recurse -ErrorAction SilentlyContinue
+          }
 
       - name: Confirm no repository build debris
         shell: pwsh

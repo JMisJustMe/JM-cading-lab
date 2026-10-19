@@ -91,6 +91,44 @@ async function verifyCurrent(t,startedEventId){
  $('jmRelayStatus').textContent='RECEIVER PROVED — '+event.kind+' · '+bodies.length+' bodies · '+links.length+' links · stored readback PASS. Return to federation.';
  return true;
 }
+
+async function executeNativeSix(t,startedOperationId){
+ const panel=$('jmRelayStatus');
+ const current=read();
+ if(!validTicket(current)||current.id!==t.id||current.phase!=='RECEIVER_RETURN_READY'||!current.receiverProof)
+  return hold('Material recipient must pass before native execution');
+ const btn=$('proofProject');
+ const ui=window.JMAILatheoGripUI;
+ if(typeof btn?.onclick!=='function'||!ui?.latestOperationContact)
+  return hold('Existing Workbench native proof engine unavailable');
+ panel.textContent='EXECUTING EXISTING JM CODING RECEIVERS...';
+ await btn.onclick();
+ const operation=ui.latestOperationContact();
+ const raw=localStorage.getItem('jm.ailatheo.v3.projectProof');
+ if(!operation||operation.kind!=='PROOF'||operation.status!=='PASS'||Number(operation.id)<=startedOperationId)
+  return hold('Native specialist receivers did not earn a new PROOF PASS');
+ if(!raw)return hold('Native receiver did not persist a proof record');
+ const record=JSON.parse(raw);
+ if(record.schema!=='jm.ailatheo.project-proof/1.0'||record.nativePassed!==true||record.local?.pass!==true||
+    record.receipts?.length!==9||record.buildGates?.status!=='PASS'||record.buildGates.passed?.length!==8||
+    record.delivery?.recoverable!==true)
+  return hold('Native coding evidence failed the actual six-body / eight-gate / nine-receipt checks');
+ const project=loadPersistedProject();
+ if(await digest(project.bodies)!==current.receiverProof.bodySha256||await digest(project.links)!==current.receiverProof.linkSha256)
+  return hold('Workbench project changed after material proof; recover and reverify');
+ const native={schema:'JM.AILatheo.NativeSixReceiverReadback/1',
+   operationId:operation.id,operationKind:operation.kind,status:operation.status,
+   nativePassed:true,receipts:record.receipts.length,gates:record.buildGates.passed.length,
+   recoverable:record.delivery.recoverable,source:'unified-browser/ailatheo-creation-runtime.mjs',
+   testedBodies:['GameForge','PLAYFORM','Seedform Choice Interface','Pattern-Tapping','JMVisualGraft','JM Visual Interaction Runtime'],
+   proofSha256:await digest(raw),
+   boundary:'Actual local specialist interpreter execution and Workbench proof receipt, not APK installed, physical device, private owner/cloud write or universal Estate merger'};
+ const updated=save({...current,nativeProof:native,nativeProofSha256:await digest(native)});
+ if(updated.nativeProofSha256!==await digest(native))return hold('Native proof failed persisted ticket readback');
+ panel.textContent='NATIVE RECEIVERS PROVED · 6 executed · 8 build gates · 9 receipts · persisted readback PASS. Return to federation.';
+ return true;
+}
+
 function mountFederation(){
  const panel=makePanel('FEDERATION ↔ WORKBENCH · EARNED CONSEQUENCE RETURN');
  panel.querySelector('#jmRelayStatus').textContent='User-authorised handoff into the EXISTING Creation Workbench. No automatic project changes.';
@@ -103,11 +141,20 @@ function mountFederation(){
  if(!validTicket(t)||t.id!==id||!['RECEIVER_RETURN_READY','FEDERATION_RETURN_VERIFIED'].includes(t.phase)||!t.receiverProof)return hold('No matching fresh verified receiver return');
  Promise.resolve().then(async()=>{
   if(await digest(t.intent)!==t.intentSha256||await digest(t.receiverProof)!==t.proofSha256)return hold('Return evidence hash mismatch');
+  if(t.nativeProof){
+   if(await digest(t.nativeProof)!==t.nativeProofSha256)return hold('Native recipient evidence hash mismatch');
+   const raw=localStorage.getItem('jm.ailatheo.v3.projectProof');
+   if(!raw||await digest(raw)!==t.nativeProof.proofSha256)
+    return hold('Native recipient proof changed since execution; cannot return earned claim');
+   const pr=JSON.parse(raw);
+   if(pr.nativePassed!==true||pr.buildGates?.passed?.length!==8||pr.receipts?.length!==9)
+    return hold('Native recipient execution evidence no longer valid');
+  }
   const {bodies,links}=loadPersistedProject();
   if(await digest(bodies)!==t.receiverProof.bodySha256||await digest(links)!==t.receiverProof.linkSha256)
    return hold('Recipient persisted state changed after receipt: independent recovery required');
   const returned=save({...t,phase:'FEDERATION_RETURN_VERIFIED',federationReadbackAt:Date.now()});
-  $('jmRelayStatus').textContent='FEDERATION RETURN VERIFIED · '+returned.receiverProof.eventKind+' · '+returned.receiverProof.bodyCount+' bodies · '+returned.receiverProof.linkCount+' links · local persisted consequence readback PASS.';
+  $('jmRelayStatus').textContent='FEDERATION RETURN VERIFIED · '+returned.receiverProof.eventKind+' · '+returned.receiverProof.bodyCount+' bodies · '+returned.receiverProof.linkCount+' links · local persisted consequence readback PASS.'+(returned.nativeProof?' NATIVE SIX RECEIVERS VERIFIED · '+returned.nativeProof.gates+' gates · '+returned.nativeProof.receipts+' receipts.':'');
   const msg=$('meaningText');if(msg)msg.textContent=$('jmRelayStatus').textContent;
   const head=$('headStatus');if(head)head.textContent='RECEIVER RETURN VERIFIED';
   window.JMAILatheoReturn=Object.freeze({state:()=>({...returned,claimBoundary:'LOCAL_SAME_ORIGIN_ONLY'})});
@@ -123,6 +170,7 @@ function mountWorkbench(){
  app.parentNode.insertBefore(panel,app);
  if(!validTicket(t)||t.id!==id||!['HANDOFF_PREPARED','RECEIVER_RETURN_READY'].includes(t.phase))return hold('Handoff missing or expired');
  const startedEventId=Number(window.JMAILatheoGripUI?.latestMaterialContact?.()?.id)||0;
+ const startedOperationId=Number(window.JMAILatheoGripUI?.latestOperationContact?.()?.id)||0;
  $('jmRelayStatus').textContent='Intent received from federation: '+t.intent+'\nNo project touched. Execute a real workbench action, then verify its persisted consequence.';
  const gate=document.querySelector('#creatorPreviewGate .creatorPreviewCard');
  if(gate&&!gate.querySelector('#jmRelayFirstRunNote')){
@@ -141,6 +189,7 @@ function mountWorkbench(){
   $('jmRelayStatus').textContent='Signal Garden loaded by existing workbench. Verify the recorded and persisted consequence next.';
  },panel);
  button('VERIFY CURRENT MATERIAL RESULT','jmRelayVerify',()=>verifyCurrent(t,startedEventId),panel);
+ button('EXECUTE SIX JM NATIVE CODING RECEIVERS','jmRelayNative',()=>executeNativeSix(t,startedOperationId),panel);
  button('↩ RETURN VERIFIED RESULT','jmRelayReturn',()=>{
   const current=read();
   if(!validTicket(current)||current.id!==id||current.phase!=='RECEIVER_RETURN_READY')return hold('Verify an earned material result before returning');

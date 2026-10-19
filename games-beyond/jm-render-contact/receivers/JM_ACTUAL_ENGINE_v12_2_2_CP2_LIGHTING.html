@@ -1,0 +1,1116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<title>JM Actual Engine v12.2.2 — CP2 Lighting Evolution</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#07111f">
+<style>
+:root{--bg:#07111f;--ink:#f8fafc;--muted:#cbd5e1;--line:rgba(255,255,255,.16);--gold:#fbbf24;--cyan:#67e8f9;--green:#34d399;--panel:rgba(7,17,31,.76)}
+*{box-sizing:border-box;min-width:0;max-width:100%}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07111f;color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+body{background:radial-gradient(circle at 10% -8%,rgba(103,232,249,.20),transparent 30%),radial-gradient(circle at 100% 2%,rgba(240,171,252,.13),transparent 31%),radial-gradient(circle at 50% 110%,rgba(251,191,36,.12),transparent 36%),#07111f}
+.app{width:100vw;height:100dvh;overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:5px;padding:5px;padding-bottom:max(5px,env(safe-area-inset-bottom))}
+.top{border:1px solid rgba(251,191,36,.36);border-radius:15px;background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(52,211,153,.055));padding:6px 8px;box-shadow:0 8px 22px rgba(0,0,0,.22);overflow:hidden}
+.topline{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
+h1{font-size:11.8px;line-height:1.08;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.02em}
+.status{font-size:9.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;max-width:58px}
+.pages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:5px}
+button{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.075);color:var(--ink);padding:6px 4px;font:inherit;font-size:11px;font-weight:950;min-height:36px;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pageBtn{min-height:25px;font-size:9px;padding:4px;border-radius:10px;box-shadow:inset 0 0 14px rgba(103,232,249,.025)}
+button.active{background:rgba(251,191,36,.18);border-color:rgba(251,191,36,.72);transform:scale(1.012)}
+button.primary{border-color:rgba(52,211,153,.55)}button.goldB{border-color:rgba(251,191,36,.62)}button.cyanB{border-color:rgba(103,232,249,.55)}
+.stage{position:relative;min-height:0;width:100%;height:100%;overflow:hidden;border:1px solid var(--line);border-radius:18px;background:rgba(0,0,0,.24)}
+canvas{position:absolute;inset:0;width:100%;height:100%;display:block;background:#050b14;touch-action:none}
+.hud,.strip,.help{position:absolute;z-index:4;border:1px solid var(--line);border-radius:14px;background:var(--panel);backdrop-filter:blur(10px);box-shadow:0 8px 20px rgba(0,0,0,.24);overflow:hidden}
+.hud{left:7px;top:7px;right:7px;padding:6px 8px;font-size:9.5px;line-height:1.28;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.96fr) minmax(0,.82fr);gap:5px;align-items:center}
+.hud b{color:var(--cyan)}.hud .name{font-size:11.5px;font-weight:1000;color:var(--green);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud .chip{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip{left:7px;right:7px;bottom:7px;padding:6px 8px;font-size:8.5px;line-height:1.15;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.strip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.strip b{color:var(--gold)}
+.help{left:7px;right:7px;bottom:42px;padding:6px 8px;font-size:9px;line-height:1.25;display:none}.help.open{display:block}
+.bottom{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;min-height:78px}
+.toast{position:absolute;left:50%;bottom:72px;transform:translateX(-50%);background:rgba(7,17,31,.96);border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-size:12px;z-index:7;display:none;max-width:92vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.toast.show{display:block}
+@media(orientation:landscape){.app{grid-template-columns:minmax(245px,30vw) minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto}.top{grid-row:1;grid-column:1}.stage{grid-row:1 / 3;grid-column:2}.bottom{grid-row:2;grid-column:1;min-height:auto}h1{white-space:normal}.hud{grid-template-columns:1fr}}
+@media(max-width:380px){h1{font-size:11.5px}.status{font-size:9px}.hud{font-size:8.7px}.hud .name{font-size:10.8px}button{font-size:10px;padding:5px 3px}.strip{font-size:8px}.pageBtn{font-size:8.8px}}
+</style>
+
+<style id="jm-v12-1-dual-render-css">
+.rendererRail{
+  position:absolute;z-index:14;left:10px;right:10px;top:8px;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;
+  pointer-events:auto
+}
+.rendererRail button{
+  border:1px solid rgba(255,255,255,.16);border-radius:12px;
+  padding:8px 6px;font:800 10px/1.05 system-ui;background:rgba(4,8,18,.78);
+  color:#dfe9ff;backdrop-filter:blur(8px)
+}
+.rendererRail button.active{box-shadow:0 0 0 1px #67e8f9 inset,0 0 18px rgba(103,232,249,.28);color:#fff}
+#gl3d,#glLabels{
+  position:absolute;inset:0;width:100%;height:100%;display:none
+}
+#gl3d{z-index:2;background:#030712;touch-action:none}
+#glLabels{z-index:3;pointer-events:none}
+.stage.render3d #c{display:none}
+.stage.render3d #gl3d,.stage.render3d #glLabels{display:block}
+.stage.render3d .hud,.stage.render3d .strip,.stage.render3d .help,.stage.render3d .toast{z-index:6}
+.glBadge{
+  position:absolute;z-index:7;right:10px;top:50px;max-width:min(56vw,240px);
+  padding:7px 9px;border-radius:10px;background:rgba(3,7,18,.75);
+  border:1px solid rgba(103,232,249,.22);color:#dcecff;
+  font:700 10px/1.3 ui-monospace,monospace;display:none;pointer-events:none
+}
+.stage.render3d .glBadge{display:block}
+@media(max-width:420px){
+  .rendererRail{gap:4px;left:6px;right:6px}
+  .rendererRail button{padding:7px 3px;font-size:9px}
+  .glBadge{top:48px;right:6px;max-width:62vw;font-size:9px}
+}
+</style>
+
+<meta name="jm-v12-parent-sha256" content="6b6f2cb04b1eb7bc214ac339cba63e2fb9657812ae98eac297a0de2c07ac5118">
+<meta name="jm-v10-webgl-donor-sha256" content="98fa468f6e69598ceea3fcb08a70db32468bef326e355465e03f295b2abec1e0">
+<meta name="jm-v10-1-visibility-donor-sha256" content="56e493ff7936ae12522ed234a294b7a9a75f53bdfb21da88b7b1b83207e50afa">
+<meta name="jm-actual-engine-classification" content="sovereign-cross-domain-visual-render-engine">
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <div class="topline"><h1>JM v12.2 — Engine Closure / FLAZ</h1><div class="status" id="miniStatus">Arena</div></div>
+  <div class="pages">
+    <button class="pageBtn active" id="p0" onclick="App.page(0)">Arena</button>
+    <button class="pageBtn" id="p1" onclick="App.page(1)">Charts</button>
+    <button class="pageBtn" id="p2" onclick="App.page(2)">Compass</button>
+    <button class="pageBtn" id="p3" onclick="App.page(3)">Sync</button>
+  </div>
+</header>
+<main class="stage" id="jmStage">
+<div class="rendererRail" id="rendererRail">
+  <button id="render2d" class="active">LIVE 2D</button>
+  <button id="render3d">REAL 3D</button>
+  <button id="renderSync">SYNC CHECK</button>
+  <button id="cameraReset">RESET CAM</button>
+</div>
+<canvas id="c"></canvas>
+<canvas id="gl3d"></canvas>
+<canvas id="glLabels"></canvas>
+<div class="glBadge" id="glBadge">3D not started.</div>
+<div class="hud" id="hud"></div>
+<div class="help" id="help"></div>
+<div class="strip" id="strip"></div>
+<div class="toast" id="toast"></div>
+</main>
+<nav class="bottom">
+<button class="primary" onclick="App.toggle()">Play</button><button onclick="App.prev()">Prev</button><button onclick="App.next()">Next</button><button class="cyanB" onclick="App.toggleTray()">Tray</button>
+<button onclick="App.toggleHelp()">Help</button><button class="goldB" onclick="App.pulse()">Pulse</button><button onclick="App.resetGold()">Reset</button><button class="goldB" onclick="App.exportReceipt()">Receipt</button>
+</nav>
+</div>
+<script>
+const MANIFEST={"engine_name": "JM Actual Engine / Visual Engine Limb", "version": "v12.1 Dual Render Rejoin Gold", "created": "2026-06-03T11:29:25", "status": "v12.1 DUAL-RENDER REJOIN GOLD ✅", "source_authority": "Theodore Benjamin Scott / JM TheOlogist B.Lyrikz", "mode": "Portrait Living Visual Engine + rejoined WebGL 3D render face", "base": "v12.0 Portrait Living Visual Engine Final Gold + recovered v10.0 WebGL renderer donor", "user_feedback_addressed": ["VIS / OBJ / TRACE dock row slightly blocked by bottom status strip", "raise TAG / TUG / CARD / VIS / OBJ / TRACE slightly higher", "only remaining work is graphics", "make a massive jump to complete final stage while sticking to the current lane"], "final_lane_scope": ["portrait-first living visual engine", "Arena / Charts / Compass / Sync screens", "safe-edge text containment", "raised dock lane with protected bottom safe zone", "living graphics polish", "Master Studio / Code Hand sync boundary", "receipt + source lineage"], "build_additions": ["dock lane raised above bottom status strip", "bottom safe zone protected", "final graphics polish layer", "arena living background particles", "stronger anti-sink shimmer", "cleaner dock glow and gate glow", "charts final polish: safer labels, animated bars, translucent pie halo, moving data beads", "compass final polish: brighter rings, better orbit tokens, readable safe labels", "Sync screen final polish", "final lane receipt and completion boundary"], "gold_laws": ["Complete the current lane; do not pretend to complete every future lane.", "Docks must not be blocked by bottom status.", "Graphics polish supports the engine; it does not hijack the engine.", "Arena, Charts, Compass, and Sync remain available.", "Safe-edge text containment remains active.", "Source meaning ≠ code meaning.", "Master Studio hosts; Visual Engine moves; Code Hand implements; JM remains source authority.", "Portrait-first stays law.", "Real WebGL 3D render face is rejoined, but this remains a local prototype: not commercial-grade 3D, not deployed, not a full physics simulator, not a separated developer-source folder."], "completion_claim": "Portrait-first living lane preserved while the recovered WebGL 3D renderer is rejoined against the same live object state.", "claim_boundary": "This is a local dual-render browser engine body with a real WebGL prototype face and honest fallback. It is not commercial-grade 3D, native GPU/API proof, public deployment, or a full physics simulator."};
+const START={"state": {"score": 0, "energy": 70, "trace": 0, "mode": "SAFE_EDGE_SYNC", "orientation": "N"}, "view": {"screen": 0, "rotation": 0, "trayOpen": true, "helpOpen": false}, "objects": [{"id": "source", "name": "SOURCE", "short": "SO", "motion": "pendulum", "x": 94, "y": 150, "homeX": 94, "homeY": 150, "vx": 22, "vy": -14, "size": 30, "baseSize": 30, "mass": 1.6, "energy": 74, "minEnergy": 24, "recharge": 12, "spring": 0.024, "friction": 0.994, "bounce": 0.93, "color": "#67e8f9", "shape": "circle", "pulse": 0, "docked": null, "trail": []}, {"id": "visual", "name": "VISUAL", "short": "VI", "motion": "light", "x": 252, "y": 218, "homeX": 252, "homeY": 218, "vx": 33, "vy": -23, "size": 37, "baseSize": 37, "mass": 1.25, "energy": 84, "minEnergy": 28, "recharge": 15, "spring": 0.019, "friction": 0.996, "bounce": 0.96, "color": "#34d399", "shape": "hex", "pulse": 0, "docked": null, "trail": []}, {"id": "hub", "name": "HUB", "short": "HU", "motion": "heavy", "x": 106, "y": 318, "homeX": 106, "homeY": 318, "vx": 13, "vy": -12, "size": 39, "baseSize": 39, "mass": 2.4, "energy": 62, "minEnergy": 24, "recharge": 9, "spring": 0.027, "friction": 0.992, "bounce": 0.87, "color": "#fbbf24", "shape": "square", "pulse": 0, "docked": null, "trail": []}, {"id": "vault", "name": "VAULT", "short": "VA", "motion": "anchor", "x": 258, "y": 382, "homeX": 258, "homeY": 382, "vx": 4, "vy": -4, "size": 35, "baseSize": 35, "mass": 3.1, "energy": 46, "minEnergy": 20, "recharge": 7, "spring": 0.034, "friction": 0.99, "bounce": 0.82, "color": "#60a5fa", "shape": "diamond", "pulse": 0, "docked": null, "trail": []}, {"id": "game", "name": "GAME", "short": "GA", "motion": "fast", "x": 100, "y": 440, "homeX": 100, "homeY": 440, "vx": 35, "vy": -26, "size": 32, "baseSize": 32, "mass": 1.15, "energy": 86, "minEnergy": 30, "recharge": 17, "spring": 0.017, "friction": 0.997, "bounce": 0.96, "color": "#fb7185", "shape": "circle", "pulse": 0, "docked": null, "trail": []}, {"id": "public", "name": "PUBLIC", "short": "PU", "motion": "return", "x": 258, "y": 485, "homeX": 258, "homeY": 485, "vx": -15, "vy": -10, "size": 31, "baseSize": 31, "mass": 2.0, "energy": 58, "minEnergy": 22, "recharge": 9, "spring": 0.025, "friction": 0.993, "bounce": 0.89, "color": "#f0abfc", "shape": "hex", "pulse": 0, "docked": null, "trail": []}], "docks": [{"name": "TAG", "fn": "MARK", "color": "#67e8f9"}, {"name": "TUG", "fn": "PULL", "color": "#34d399"}, {"name": "CARD", "fn": "CHOICE", "color": "#fbbf24"}, {"name": "VIS", "fn": "LIGHT", "color": "#f0abfc"}, {"name": "OBJ", "fn": "BUILD", "color": "#60a5fa"}, {"name": "TRACE", "fn": "TRACE", "color": "#fb7185"}], "links": [["source", "visual"], ["visual", "hub"], ["hub", "public"], ["visual", "vault"], ["hub", "game"], ["vault", "source"]]};
+const STORE="JM_v12_0_PORTRAIT_LIVING_VISUAL_ENGINE_FINAL_GOLD";
+function clamp(n,a,b){return Math.max(a,Math.min(b,n))}
+function rgba(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`}
+function shortText(s,n=12){s=String(s);return s.length>n?s.slice(0,n-1)+"…":s}
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath()}
+function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"text/plain"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),800)}
+const App={
+data:structuredClone(START),selected:1,playing:true,ctx:null,canvas:null,last:0,frame:0,drag:null,swipe:null,traces:[],
+init(){try{const s=JSON.parse(localStorage.getItem(STORE)||"null");if(s){Object.assign(this,s);this.ctx=null;this.canvas=null;this.drag=null;this.swipe=null}}catch(e){}this.canvas=document.getElementById("c");this.ctx=this.canvas.getContext("2d");this.resize();window.addEventListener("resize",()=>this.resize());this.canvas.addEventListener("pointerdown",e=>this.down(e),{passive:false});this.canvas.addEventListener("pointermove",e=>this.move(e),{passive:false});this.canvas.addEventListener("pointerup",e=>this.up(e),{passive:false});this.canvas.addEventListener("pointercancel",e=>this.up(e),{passive:false});this.log("BOOT","v12.0 portrait living visual engine final gold opened");requestAnimationFrame(t=>this.loop(t))},
+save(){localStorage.setItem(STORE,JSON.stringify({data:this.data,selected:this.selected,playing:this.playing,frame:this.frame,traces:this.traces}))},
+resize(){const r=this.canvas.getBoundingClientRect(),d=Math.max(1,Math.min(2,devicePixelRatio||1));this.canvas.width=Math.floor(r.width*d);this.canvas.height=Math.floor(r.height*d);this.ctx.setTransform(d,0,0,d,0,0);this.layout();this.keepIn()},
+objs(){return this.data.objects}, obj(){return this.objs()[this.selected]},
+bounds(){const h=this.canvas.clientHeight;return {left:42,right:this.canvas.clientWidth-42,top:78,bottom:h-(this.data.view.trayOpen?178:88),mid:h*.48,w:this.canvas.clientWidth,h}},
+layout(){const b=this.bounds(),w=b.w,h=b.h,gap=6,pad=9,dw=(w-pad*2-gap*2)/3,dh=this.data.view.trayOpen?44:22;this.data.docks.forEach((d,i)=>{const row=i<3?0:1,col=i%3;d.x=pad+col*(dw+gap);d.y=h-(this.data.view.trayOpen?146:72)+row*(dh+5);d.w=dw;d.h=dh});this.gates=[{n:"N",x:w/2-42,y:b.top+8,w:84,h:24,c:"#67e8f9",pull:"up"},{n:"E",x:w-34,y:(b.top+b.bottom)/2-42,w:24,h:84,c:"#34d399",pull:"right"},{n:"S",x:w/2-42,y:b.bottom-32,w:84,h:24,c:"#fbbf24",pull:"down"},{n:"W",x:10,y:(b.top+b.bottom)/2-42,w:24,h:84,c:"#f0abfc",pull:"left"}]},
+keepIn(){const b=this.bounds();this.objs().forEach(o=>{if(o.docked)return;o.x=clamp(o.x,b.left,b.right);o.y=clamp(o.y,b.top,b.bottom)})},
+page(n){this.data.view.screen=clamp(n,0,3);["p0","p1","p2","p3"].forEach((id,i)=>document.getElementById(id).classList.toggle("active",i===this.data.view.screen));document.getElementById("miniStatus").textContent=["Arena","Charts","Compass","Sync"][this.data.view.screen];this.log("PAGE",document.getElementById("miniStatus").textContent);this.save()},
+loop(t){const dt=Math.min(.05,(t-this.last)/1000||.016);this.last=t;if(this.playing){this.frame++;this.update(dt)}this.draw();requestAnimationFrame(x=>this.loop(x))},
+speed(o){return Math.hypot(o.vx,o.vy)},
+balance(){const os=this.objs(),avg=os.reduce((a,o)=>a+o.energy,0)/os.length,move=os.filter(o=>this.speed(o)>1).length/os.length,yb=100-Math.abs((os.reduce((a,o)=>a+o.y,0)/os.length)-this.bounds().mid)/3;return Math.round(clamp(avg*.54+move*26+yb*.20,0,100))},
+update(dt){const b=this.bounds();this.data.view.rotation+=dt*.10;this.objs().forEach((o,i)=>{o.trail=o.trail||[];o.trail.unshift([o.x,o.y]);if(o.trail.length>18)o.trail.pop();o.pulse=Math.max(0,(o.pulse||0)-dt*1.25);o.size+=(o.baseSize*(1+o.pulse*.26)-o.size)*.10;if(this.drag&&this.drag.id===o.id)return;if(o.docked){const d=this.data.docks.find(x=>x.name===o.docked);if(d){o.x+=(d.x+d.w/2-o.x)*.18;o.y+=(d.y+d.h/2-o.y)*.18;o.energy=clamp(o.energy+o.recharge*dt,0,100)}return}
+let dx=o.homeX-o.x,dy=o.homeY-o.y;o.vx+=(dx*o.spring/o.mass)*60*dt;o.vy+=(dy*o.spring/o.mass)*60*dt;const liftStart=b.top+(b.bottom-b.top)*.60;if(o.y>liftStart){const lift=(o.y-liftStart)/(b.bottom-liftStart);o.vy-=lift*(23/o.mass)*dt*60;o.energy=clamp(o.energy+lift*.27,0,100)}o.vx*=o.friction;o.vy*=o.friction;const sp=this.speed(o);o.energy=clamp(o.energy-(sp*.012*dt*60)+(o.recharge*.05*dt*60),0,100);if(o.energy<o.minEnergy||sp<2){const r=this.frame*.09+i;o.vx+=Math.cos(r)*(o.recharge/o.mass)*.48;o.vy+=Math.sin(r)*(o.recharge/o.mass)*.48-.15;o.energy=clamp(o.energy+o.recharge*.22,0,100)}if(o.motion.includes("anchor")){o.vx+=Math.sin(this.frame*.045)*.12;o.vy+=Math.cos(this.frame*.041)*.08}o.x+=o.vx*dt*.95;o.y+=o.vy*dt*.95;if(o.x<b.left||o.x>b.right){o.vx*=-o.bounce;o.x=clamp(o.x,b.left,b.right);o.energy=clamp(o.energy+3,0,100)}if(o.y<b.top||o.y>b.bottom){o.vy*=-o.bounce;o.y=clamp(o.y,b.top,b.bottom);o.energy=clamp(o.energy+3,0,100)}});this.collide();this.data.state.energy=this.balance()},
+collide(){const os=this.objs().filter(o=>!o.docked);for(let i=0;i<os.length;i++){for(let j=i+1;j<os.length;j++){const a=os[i],b=os[j],d=Math.hypot(b.x-a.x,b.y-a.y)||1,min=(a.size+b.size)*.70;if(d<min){const nx=(b.x-a.x)/d,ny=(b.y-a.y)/d,over=(min-d)*.5,total=a.mass+b.mass;a.x-=nx*over*(b.mass/total);a.y-=ny*over*(b.mass/total);b.x+=nx*over*(a.mass/total);b.y+=ny*over*(a.mass/total);a.vx-=nx*.8;b.vx+=nx*.8;a.vy-=ny*.8;b.vy+=ny*.8;a.energy=clamp(a.energy+1,0,100);b.energy=clamp(b.energy+1,0,100)}}}},
+draw(){const c=this.ctx,w=this.canvas.clientWidth,h=this.canvas.clientHeight;c.clearRect(0,0,w,h);if(this.data.view.screen===0)this.arena(c,w,h);else if(this.data.view.screen===1)this.charts(c,w,h);else if(this.data.view.screen===2)this.compass(c,w,h);else this.sync(c,w,h);this.hud();this.strip();this.help()},
+safeFill(c,txt,x,y,maxW,align="left"){c.save();c.textAlign=align;let s=String(txt);while(c.measureText(s).width>maxW&&s.length>1)s=s.slice(0,-2)+"…";c.fillText(s,x,y);c.restore()},
+grid(c,w,h){c.save();c.globalAlpha=.35;c.strokeStyle="rgba(255,255,255,.052)";for(let x=0;x<w;x+=34){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke()}for(let y=0;y<h;y+=34){c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke()}c.restore()},
+livingParticles(c,w,h){c.save();for(let i=0;i<26;i++){let x=(i*47+this.frame*.23*(i%5+1))%w,y=(i*83+Math.sin(this.frame*.018+i)*28)%h;if(y<64)y+=64;c.fillStyle=i%3===0?"rgba(103,232,249,.18)":i%3===1?"rgba(251,191,36,.14)":"rgba(240,171,252,.13)";c.beginPath();c.arc(x,y,1.2+(i%4)*.45,0,Math.PI*2);c.fill()}c.restore()},
+arena(c,w,h){this.grid(c,w,h);this.livingParticles(c,w,h);this.gateDraw(c);this.linkDraw(c);this.objs().forEach(o=>this.trail(c,o));[...this.objs()].sort((a,b)=>a.mass-b.mass).forEach(o=>this.shape(c,o));this.antiSink(c);this.dockDraw(c);this.finalStamp(c,w,h)}, 
+finalStamp(c,w,h){c.save();c.fillStyle="rgba(251,191,36,.30)";c.font="800 8px system-ui";this.safeFill(c,"FINAL GOLD · CURRENT LANE",12,h-52,w-24);c.restore()},
+antiSink(c){const b=this.bounds();c.save();const y=b.top+(b.bottom-b.top)*.60;const g=c.createLinearGradient(0,y,0,b.bottom);g.addColorStop(0,"rgba(103,232,249,0)");g.addColorStop(1,"rgba(103,232,249,.08)");c.fillStyle=g;c.fillRect(0,y,b.w,b.bottom-y);c.fillStyle="rgba(103,232,249,.35)";c.font="800 8px system-ui";c.fillText("anti-sink",12,y+12);c.restore()},
+gateDraw(c){const p=(Math.sin(this.frame*.08)+1)/2;this.gates.forEach(g=>{c.save();c.fillStyle=rgba(g.c,.10+p*.05);c.strokeStyle=rgba(g.c,.55+p*.25);c.lineWidth=2;roundRect(c,g.x,g.y,g.w,g.h,9);c.fill();c.stroke();c.fillStyle="#f8fafc";c.font="900 10px system-ui";c.textAlign="center";c.fillText(g.n,g.x+g.w/2,g.y+g.h/2+4);c.restore()})},
+linkDraw(c){c.save();let pulse=(Math.sin(this.frame*.05)+1)/2;c.strokeStyle=`rgba(251,191,36,${.12+pulse*.22})`;c.lineWidth=1.4+pulse; c.setLineDash([7,10]);c.lineDashOffset=-this.frame*.55;this.data.links.forEach(([a,b])=>{let A=this.objs().find(o=>o.id===a),B=this.objs().find(o=>o.id===b);if(A&&B){c.beginPath();c.moveTo(A.x,A.y);c.lineTo(B.x,B.y);c.stroke()}});c.restore()},
+trail(c,o){c.save();for(let i=0;i<o.trail.length-1;i++){let a=1-i/o.trail.length;c.strokeStyle=rgba(o.color,.22*a);c.lineWidth=4*a;c.beginPath();c.moveTo(o.trail[i][0],o.trail[i][1]);c.lineTo(o.trail[i+1][0],o.trail[i+1][1]);c.stroke()}c.restore()},
+shapePath(c,o,x=o.x,y=o.y,r=o.size){c.beginPath();if(o.shape==="square")roundRect(c,x-r,y-r,r*2,r*2,13);else if(o.shape==="diamond"){c.moveTo(x,y-r);c.lineTo(x+r,y);c.lineTo(x,y+r);c.lineTo(x-r,y);c.closePath()}else if(o.shape==="hex"){for(let i=0;i<6;i++){let a=Math.PI/3*i+Math.PI/6,xx=x+Math.cos(a)*r,yy=y+Math.sin(a)*r;if(i)c.lineTo(xx,yy);else c.moveTo(xx,yy)}c.closePath()}else c.arc(x,y,r,0,Math.PI*2)},
+shape(c,o){const sel=this.obj().id===o.id;c.save();c.shadowColor=o.energy<o.minEnergy?rgba("#fbbf24",.85):rgba(o.color,.62);c.shadowBlur=sel?24:13;c.fillStyle=rgba(o.color,.18);this.shapePath(c,o,o.x+5,o.y+5,o.size);c.fill();c.strokeStyle=rgba(o.color,.45);c.stroke();this.shapePath(c,o);c.fillStyle=o.color;c.strokeStyle=sel?"#fff":"rgba(255,255,255,.72)";c.lineWidth=sel?4:2;c.fill();c.stroke();c.shadowBlur=0;c.font=`900 ${Math.max(10,o.size*.28)}px system-ui`;c.textAlign="center";c.lineWidth=3;c.strokeStyle="rgba(7,17,31,.88)";c.strokeText(o.name,o.x,o.y+4);c.fillStyle="#06111f";c.fillText(o.name,o.x,o.y+4);c.font="900 8.2px system-ui";let label=shortText(o.motion,8)+" · E"+Math.round(o.energy);c.strokeText(label,o.x,o.y-o.size-8);c.fillStyle=o.energy<o.minEnergy?"#fbbf24":"#f8fafc";c.fillText(label,o.x,o.y-o.size-8);if(sel){c.strokeStyle="rgba(251,191,36,.8)";c.lineWidth=3;c.beginPath();c.arc(o.x,o.y,o.size+7+Math.sin(this.frame*.08)*3,0,Math.PI*2);c.stroke()}c.restore()},
+dockDraw(c){this.data.docks.forEach(d=>{let occ=this.objs().find(o=>o.docked===d.name);c.save();c.globalAlpha=this.data.view.trayOpen?.88:.58;c.strokeStyle=occ?"#fff":rgba(d.color,.56);c.fillStyle=rgba(d.color,occ?.18:.075);c.lineWidth=occ?3:1.3;roundRect(c,d.x,d.y,d.w,d.h,12);c.fill();c.stroke();c.fillStyle="#f8fafc";c.font=this.data.view.trayOpen?"1000 11px system-ui":"900 8px system-ui";c.textAlign="center";c.fillText(this.data.view.trayOpen?d.name:d.name[0],d.x+d.w/2,d.y+d.h/2+(this.data.view.trayOpen?0:3));if(this.data.view.trayOpen){c.font="800 7.2px system-ui";c.fillStyle="rgba(248,250,252,.7)";c.fillText(occ?occ.short+"→"+d.fn:d.fn,d.x+d.w/2,d.y+d.h-7)}c.restore()})},
+charts(c,w,h){c.save();c.fillStyle="rgba(255,255,255,.045)";roundRect(c,10,48,w-20,h-104,18);c.fill();this.pie(c,w*.64,h*.54,Math.min(w,h)*.32,true);c.fillStyle="#f8fafc";c.font="900 16px system-ui";this.safeFill(c,"Living Graphics Charts",18,75,w-36);let os=this.objs(),maxS=Math.max(...os.map(o=>this.speed(o)),1),maxM=Math.max(...os.map(o=>o.mass),1),y=100,t=this.frame*.045;os.forEach((o,i)=>{let wob=1+Math.sin(t+i)*.05,rowH=39,right=w-12,barX=82,barW=Math.max(120,w-152);c.fillStyle="#cbd5e1";c.font="800 10px system-ui";this.safeFill(c,o.name,18,y+10,60);c.fillStyle=rgba(o.color,.95);c.fillRect(barX,y,clamp(this.speed(o)/maxS,0,1)*barW*wob,7);c.fillStyle=rgba(o.color,.48);c.fillRect(barX,y+10,clamp(o.mass/maxM,0,1)*barW,7);c.fillStyle=rgba("#fbbf24",.84);c.fillRect(barX,y+20,clamp(o.energy/100,0,1)*barW*(1+Math.sin(t*1.4+i)*.035),7);let bx=barX+((this.frame*1.6+i*37)%barW);c.fillStyle=o.color;c.beginPath();c.arc(bx,y+30,3.5,0,Math.PI*2);c.fill();c.fillStyle="#f8fafc";c.font="800 8px system-ui";c.textAlign="right";this.safeFill(c,"S"+this.speed(o).toFixed(1)+" M"+o.mass.toFixed(1)+" E"+Math.round(o.energy),right,y+18,94,"right");y+=rowH});c.fillStyle="#cbd5e1";c.font="800 9.5px system-ui";this.safeFill(c,"Translucent pie = live energy field",18,h-82,w-36);c.restore()},
+pie(c,x,y,r,ghost=false){let os=this.objs(),sum=os.reduce((a,o)=>a+o.energy,0)||1,a=-Math.PI/2+this.frame*.007;c.save();c.globalAlpha=ghost?.22:.95;os.forEach(o=>{let s=o.energy/sum*Math.PI*2;c.beginPath();c.moveTo(x,y);c.arc(x,y,r,a,a+s);c.closePath();c.fillStyle=o.color;c.fill();a+=s});c.strokeStyle="rgba(255,255,255,.30)";c.lineWidth=2;c.beginPath();c.arc(x,y,r,0,Math.PI*2);c.stroke();c.restore()},
+compass(c,w,h){c.save();let cx=w/2,cy=h/2+18,maxR=Math.min(w,h)/2-44;c.translate(cx,cy);c.rotate(this.data.view.rotation);for(let r=54;r<maxR;r+=42){c.strokeStyle=r%84<10?"rgba(251,191,36,.55)":"rgba(251,191,36,.32)";c.lineWidth=2;c.beginPath();c.arc(0,0,r+Math.sin(this.frame*.025+r)*3,0,Math.PI*2);c.stroke()}c.strokeStyle="rgba(103,232,249,.55)";for(let i=0;i<8;i++){let a=Math.PI/4*i;c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(a)*maxR,Math.sin(a)*maxR);c.stroke()}c.fillStyle="#f8fafc";c.font="1000 16px system-ui";c.textAlign="center";c.fillText("N",0,-maxR-7);c.fillText("S",0,maxR+18);c.fillText("E",maxR+14,5);c.fillText("W",-maxR-14,5);this.objs().forEach((o,i)=>{let ang=this.frame*.014*(1.2/o.mass)+i*Math.PI*2/this.objs().length,rr=55+(o.energy/100)*(maxR-68);let ox=Math.cos(ang)*rr,oy=Math.sin(ang)*rr;c.fillStyle=o.color;c.shadowColor=rgba(o.color,.7);c.shadowBlur=12;c.beginPath();c.arc(ox,oy,8+o.mass*2+Math.sin(this.frame*.06+i)*1.6,0,Math.PI*2);c.fill();c.shadowBlur=0;c.fillStyle="#06111f";c.font="900 8px system-ui";c.fillText(o.short,ox,oy+3)});c.restore();c.fillStyle="#f8fafc";c.font="900 15px system-ui";this.safeFill(c,"Compass / Living Orientation",16,72,w-32);c.fillStyle="#cbd5e1";c.font="800 10px system-ui";this.safeFill(c,"Tap or Pulse to rotate/recharge.",16,91,w-32)},
+sync(c,w,h){c.save();c.fillStyle="rgba(255,255,255,.045)";roundRect(c,10,48,w-20,h-104,18);c.fill();c.fillStyle="#f8fafc";c.font="900 16px system-ui";this.safeFill(c,"Code Hand Sync",18,75,w-36);const cards=[["Source", "JM keeps full meaning"],["Code", "bounded implementation"],["Law", "source meaning ≠ code meaning"],["Host", "Master Studio holds wider body"],["Move", "Visual Engine stays alive"],["Boundary", "not deployed / not full 3D"]];let y=100;cards.forEach((row,i)=>{let x=18+(i%2)*((w-48)/2+8),yy=y+Math.floor(i/2)*62,cw=(w-56)/2;c.fillStyle=i===2?"rgba(251,191,36,.14)":"rgba(255,255,255,.055)";c.strokeStyle=i===2?"rgba(251,191,36,.42)":"rgba(255,255,255,.12)";roundRect(c,x,yy,cw,50,14);c.fill();c.stroke();c.fillStyle="#fbbf24";c.font="900 10px system-ui";this.safeFill(c,row[0],x+10,yy+17,cw-20);c.fillStyle="#cbd5e1";c.font="800 9px system-ui";this.safeFill(c,row[1],x+10,yy+34,cw-20)});c.fillStyle="rgba(103,232,249,.18)";c.strokeStyle="rgba(103,232,249,.36)";roundRect(c,18,h-160,w-36,74,16);c.fill();c.stroke();c.fillStyle="#f8fafc";c.font="900 11px system-ui";this.safeFill(c,"Connector Law",30,h-136,w-60);c.fillStyle="#cbd5e1";c.font="800 9px system-ui";this.safeFill(c,"JM32-1DA governs · Master Studio hosts · Code Hand implements",30,h-116,w-60);this.safeFill(c,"TraceBox proves · BodyVault preserves · Public Door translates",30,h-100,w-60);c.restore()},
+hud(){let o=this.obj();document.getElementById("hud").innerHTML=`<div class="name">${shortText(o.name+" · "+o.motion,18)}</div><div class="chip"><b>M</b>${o.mass.toFixed(1)} · <b>S</b>${this.speed(o).toFixed(1)} · <b>E</b>${Math.round(o.energy)}</div><div class="chip"><b>Bal</b>${this.balance()} · Safe</div>`},
+metrics(){let os=this.objs();return {moving:os.filter(o=>this.speed(o)>1).length,low:os.filter(o=>o.energy<o.minEnergy+5).length,docked:os.filter(o=>o.docked).length,balance:this.balance(),screen:["Arena","Charts","Compass","Sync"][this.data.view.screen]}},
+strip(){let m=this.metrics();document.getElementById("strip").innerHTML=`<span><b>${m.screen}</b></span><span><b>Move</b> ${m.moving}/6</span><span><b>Low</b> ${m.low}</span><span><b>Bal</b> ${m.balance}</span>`},
+help(){let el=document.getElementById("help");if(!this.data.view.helpOpen){el.classList.remove("open");return}el.classList.add("open");el.innerHTML="Safe-edge pass: labels clamp, chart text stays inside, Code Hand sync carries boundary. Tap object/chart/compass/gate still works."},
+point(e){let r=this.canvas.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}},
+hit(x,y){let best=-1,dist=9999;this.objs().forEach((o,i)=>{let d=Math.hypot(x-o.x,y-o.y);if(d<o.size+28&&d<dist){best=i;dist=d}});return best},
+gateHit(x,y){return (this.gates||[]).find(g=>x>=g.x&&x<=g.x+g.w&&y>=g.y&&y<=g.y+g.h)},
+dockHit(x,y){return this.data.docks.find(d=>x>=d.x&&x<=d.x+d.w&&y>=d.y&&y<=d.y+d.h)},
+down(e){e.preventDefault();let p=this.point(e);this.swipe={x:p.x,y:p.y};if(this.data.view.screen===0){let i=this.hit(p.x,p.y);if(i>=0){this.selected=i;let o=this.obj();o.docked=null;this.drag={id:o.id,dx:p.x-o.x,dy:p.y-o.y,moved:false}}}},
+move(e){if(!this.drag)return;e.preventDefault();let p=this.point(e),o=this.objs().find(x=>x.id===this.drag.id);if(Math.hypot(p.x-this.swipe.x,p.y-this.swipe.y)>8)this.drag.moved=true;o.x=p.x-this.drag.dx;o.y=p.y-this.drag.dy;let b=this.bounds();o.x=clamp(o.x,b.left,b.right);o.y=clamp(o.y,44,this.canvas.clientHeight-42);o.homeX+=(o.x-o.homeX)*.012;o.homeY+=(o.y-o.homeY)*.012},
+up(e){let p=this.point(e),screen=this.data.view.screen;if(this.drag){let o=this.objs().find(x=>x.id===this.drag.id),d=this.dockHit(o.x,o.y),g=this.gateHit(o.x,o.y);if(d){o.docked=d.name;this.rule(o,d);this.toast(o.name+" → "+d.name)}else if(g){this.gate(o,g);this.toast(o.name+" → "+g.n)}else if(!this.drag.moved){this.objectPulse(o);this.toast("Pulse "+o.name)}this.drag=null;this.save();return}if(this.swipe){let dx=p.x-this.swipe.x;if(Math.abs(dx)>70){this.page(screen+(dx<0?1:-1));this.swipe=null;return}}if(screen===1){let idx=Math.floor((p.y-96)/39);if(idx>=0&&idx<this.objs().length){this.selected=idx;this.objectPulse(this.obj());this.toast("Chart pulse "+this.obj().name)}}else if(screen===2){this.pulse()}else if(screen===3){this.toast("Source meaning ≠ code meaning")}else {let g=this.gateHit(p.x,p.y);if(g)this.gate(this.obj(),g)}this.swipe=null;this.save()},
+objectPulse(o){o.energy=clamp(o.energy+24,0,100);o.pulse=1;o.vx+=(Math.random()*2-1)*(38/o.mass);o.vy+=(Math.random()*2-1)*(38/o.mass)-2;this.log("PULSE","Revive/maximise "+o.name)},
+gate(o,g){let b=this.bounds();if(g.pull==="up"){o.vy-=40/o.mass;o.homeY=b.top+56}if(g.pull==="down"){o.vy+=22/o.mass;o.homeY=b.bottom-70}if(g.pull==="left"){o.vx-=40/o.mass;o.homeX=b.left+55}if(g.pull==="right"){o.vx+=40/o.mass;o.homeX=b.right-55}o.energy=clamp(o.energy+18,0,100);o.pulse=.85;this.log("GATE","Gate "+g.n+" routed "+o.name)},
+rule(o,d){if(d.fn==="PULL"){o.vx*=1.35;o.vy*=1.35;o.energy=clamp(o.energy+15,0,100)}if(d.fn==="BUILD"){o.baseSize=clamp(o.baseSize+3,24,48);o.mass=clamp(o.mass+.25,.7,4)}if(d.fn==="TRACE")this.data.state.trace++;if(d.fn==="LIGHT"){o.energy=clamp(o.energy+10,0,100);o.pulse=1}if(d.fn==="MARK")o.pulse=1;this.log("DOCK",d.fn+" on "+o.name)},
+toggle(){this.playing=!this.playing;this.toast(this.playing?"Playing":"Paused");this.save()},
+toggleTray(){this.data.view.trayOpen=!this.data.view.trayOpen;this.layout();this.keepIn();this.save()},
+toggleHelp(){this.data.view.helpOpen=!this.data.view.helpOpen;this.save()},
+next(){this.selected=(this.selected+1)%this.objs().length;this.toast(this.obj().name);this.save()},
+prev(){this.selected=(this.selected-1+this.objs().length)%this.objs().length;this.toast(this.obj().name);this.save()},
+pulse(){if(this.data.view.screen===2){this.data.view.rotation+=Math.PI/4;this.objectPulse(this.obj());this.toast("Compass pulse")}else this.objectPulse(this.obj());this.save()},
+resetGold(){this.data=structuredClone(START);this.selected=1;this.playing=true;this.frame=0;this.traces=[];this.layout();this.keepIn();this.page(0);this.toast("Reset");this.save()},
+log(k,b){this.traces.unshift({at:new Date().toISOString(),kind:k,body:b,selected:this.obj()?.name,screen:this.data.view.screen,balance:this.balance?.()});if(this.traces.length>80)this.traces.pop()},
+toast(msg){let t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1050)},
+exportReceipt(){let o=this.obj(),m=this.metrics();let txt=["JM Actual Engine v12.0 — Portrait Living Visual Engine Final Gold","Created: "+MANIFEST.created,"Exported: "+new Date().toISOString(),"Status: "+MANIFEST.status,"Selected: "+o.name,"Speed "+this.speed(o).toFixed(2)+" · Energy "+Math.round(o.energy)+" · Balance "+m.balance,"Screen: "+m.screen,"Code Hand law: "+MANIFEST.sync_source.code_hand_law,"Connector law: "+MANIFEST.sync_source.connector_law,"Boundary: "+MANIFEST.claim_boundary,"","Gold laws:",...MANIFEST.gold_laws.map(x=>"- "+x),"","Latest trace:",JSON.stringify(this.traces.slice(0,8),null,2)].join("\n");download("JM_ACTUAL_ENGINE_v12_0_FINAL_GOLD_RECEIPT.txt",txt);this.log("EXPORT","Receipt exported")}
+};
+App.init();
+</script>
+<script id="jm-render-contact-v0-1">
+(function(){'use strict';
+/* JM RENDER CONTACT v0.1 | JM ECOSTATE | 2026-10-19
+ * Opt-in, engine-neutral contact surface for EXISTING JM renderer bodies.
+ * NOT CP2's recovered shader/mesh source. Does not replace or mutate a game.
+ * Donor contract: JM ONE ON ONE v0.6.0, SHA256
+ * d393e381db46bae9b3c758b72c8c82e380857cd7ab1ccab70b25a17f86c0c385
+ */
+const JM_RENDER_CONTACT_VERSION = '0.1.0';
+
+function requireFn(value, name) {
+  if (typeof value !== 'function') throw new TypeError(name + ' must be a function');
+}
+
+function detectInstancing(gl) {
+  if (!gl || typeof gl.getExtension !== 'function') return { kind: 'direct', extension: null };
+  if (typeof gl.drawElementsInstanced === 'function' && typeof gl.vertexAttribDivisor === 'function')
+    return { kind: 'webgl2', extension: null };
+  const ext = gl.getExtension('ANGLE_instanced_arrays');
+  return ext && typeof ext.drawElementsInstancedANGLE === 'function'
+    ? { kind: 'angle-webgl1', extension: ext }
+    : { kind: 'direct', extension: null };
+}
+
+/* General 3x3 inverse-transpose: works with nonuniform scale AND shear.
+ * Input is 4x4 column-major WebGL matrix; no division by zero is allowed.
+ */
+function normalMatrix3(m) {
+  if (!m || m.length !== 16) throw new TypeError('Expected 16-element column-major transform');
+  const a=m[0],b=m[4],c=m[8], d=m[1],e=m[5],f=m[9], g=m[2],h=m[6],i=m[10];
+  const A=e*i-f*h,B=f*g-d*i,C=d*h-e*g;
+  const D=c*h-b*i,E=a*i-c*g,F=b*g-a*h;
+  const G=b*f-c*e,H=c*d-a*f,I=a*e-b*d;
+  const determinant=a*A+b*B+c*C;
+  if(!Number.isFinite(determinant) || Math.abs(determinant)<1e-12) return null;
+  const n=[A,D,G,B,E,H,C,F,I].map(v=>v/determinant);
+  // n is column-major inverse-transpose of the upper-left 3x3.
+  return n.every(Number.isFinite) ? new Float32Array(n) : null;
+}
+
+/* Inherited game keeps sovereign gameplay and controls. Caller supplies real
+ * draw and drawInstanced routines from the original renderer.
+ * Consecutive equal opaque submissions may be combined; transparent,
+ * order-sensitive, or explicitly volatile items are always drawn in order.
+ * No assumptions about per-game meshes, shaders, state or physics.
+ */
+function createJMRenderContact({gl, draw, drawInstanced, clock=()=>performance.now(), maxBatch=512}={}) {
+  requireFn(draw, 'draw');
+  requireFn(clock, 'clock');
+  const availability=detectInstancing(gl);
+  const canInstance=availability.kind!=='direct' && typeof drawInstanced==='function';
+  const limit=Number.isInteger(maxBatch)&&maxBatch>0 ? maxBatch : 512;
+  let pending=[], key=null, started=0;
+  let stats={frame:0, draws:0, instances:0, direct:0, batched:0, cpuMs:0, mode:canInstance?availability.kind:'direct'};
+  const totals={frames:0, draws:0, direct:0, batched:0};
+  const staticCache=new Map();
+  function direct(item){draw(item,gl);stats.draws++;stats.direct++}
+  function flush(){
+    if(!pending.length)return;
+    if(canInstance && pending.length>1){
+      // The donor renderer MUST implement actual per-instance buffer setup.
+      drawInstanced(pending.slice(), gl, availability);
+      stats.draws++;stats.batched++;stats.instances+=pending.length;
+    } else for(const item of pending) direct(item);
+    pending=[];key=null;
+  }
+  function signature(item){
+    return String(item.meshId)+'\u001f'+String(item.materialId)+'\u001f'+String(item.shaderId||'')+'\u001f'+String(item.stateId||'');
+  }
+  function beginFrame(){
+    flush();
+    stats={frame:stats.frame+1,draws:0,instances:0,direct:0,batched:0,cpuMs:0,mode:canInstance?availability.kind:'direct'};
+    started=clock();
+  }
+  function submit(item){
+    if(!item || item.meshId==null || item.materialId==null)
+      throw new TypeError('Submission needs meshId and materialId');
+    if(item.transparent || item.orderSensitive || item.volatile){
+      flush();direct(item);return;
+    }
+    const k=signature(item);
+    if(key!==k || pending.length>=limit)flush();
+    key=k;pending.push(item);
+  }
+  function endFrame(){
+    flush();
+    stats.cpuMs=Math.max(0,clock()-started);
+    totals.frames++;totals.draws+=stats.draws;totals.direct+=stats.direct;totals.batched+=stats.batched;
+    return Object.freeze({...stats});
+  }
+  function compileStatic(id, revision, build, dispose=()=>{}){
+    requireFn(build,'build');requireFn(dispose,'dispose');
+    const existing=staticCache.get(id);
+    if(existing && existing.revision===revision)return existing.value;
+    if(existing)existing.dispose(existing.value);
+    const value=build();
+    staticCache.set(id,{revision,value,dispose});
+    return value;
+  }
+  function invalidateStatic(id){
+    const existing=staticCache.get(id);
+    if(!existing)return false;
+    staticCache.delete(id);existing.dispose(existing.value);return true;
+  }
+  function dispose(){flush();for(const id of [...staticCache.keys()])invalidateStatic(id)}
+  return Object.freeze({
+    availability, canInstance, beginFrame, submit, endFrame,
+    flush, compileStatic, invalidateStatic, dispose,
+    get lastFrame(){return Object.freeze({...stats})},
+    get totals(){return Object.freeze({...totals})}
+  });
+}
+
+window.JMRenderContact=Object.freeze({JM_RENDER_CONTACT_VERSION,createJMRenderContact,normalMatrix3,detectInstancing});
+})();
+</script>
+<script>
+
+(function(global){
+"use strict";
+
+const VERSION="12.1.0";
+const SCHEMA="jm.actual-engine.dual-render/12.1";
+const CLASSIFICATION={
+  identity:"JM Actual Engine / Visual Engine",
+  class:"SOVEREIGN_CROSS_DOMAIN_VISUAL_RENDER_ENGINE",
+  game_ecology_relation:"RENDERING_DONOR_TO_TEN_SPECIALIST_GAME_ENGINES",
+  game_engine_count_effect:"DO_NOT_AUTO_INCREMENT_TEN_ENGINE_SPECIALIST_COHORT",
+  law:"SOVEREIGN ENGINE != SPECIALIST GAME-ENGINE MEMBERSHIP; DONATION != ABSORPTION."
+};
+const LINEAGE={
+  parent_v12:{
+    body:"JM Actual Engine v12.0 — Portrait Living Visual Engine Final Gold",
+    sha256:"6b6f2cb04b1eb7bc214ac339cba63e2fb9657812ae98eac297a0de2c07ac5118",
+    bytes:31846,
+    role:"current living-visual shell and portrait interaction authority"
+  },
+  webgl_donor_v10:{
+    body:"JM Actual Engine v10.0 — Real 3D Hub Engine Candidate",
+    sha256:"98fa468f6e69598ceea3fcb08a70db32468bef326e355465e03f295b2abec1e0",
+    bytes:40358,
+    role:"WebGL renderer, camera, primitive/material and 3D motion donor"
+  },
+  visibility_donor_v10_1:{
+    body:"JM Actual Engine v10.1 — 3D Render Visibility Fix",
+    sha256:"56e493ff7936ae12522ed234a294b7a9a75f53bdfb21da88b7b1b83207e50afa",
+    bytes:16594,
+    role:"visibility/readability correction donor; phone screenshot proved context/loop, not commercial 3D"
+  }
+};
+
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function stable(v){
+  if(Array.isArray(v))return v.map(stable);
+  if(v&&typeof v==="object"){
+    const o={};Object.keys(v).sort().forEach(k=>o[k]=stable(v[k]));return o;
+  }
+  return v;
+}
+function hash(v){
+  const text=JSON.stringify(stable(v));
+  let h=2166136261;
+  for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}
+  return (h>>>0).toString(16).padStart(8,"0");
+}
+function hexColor(hex){
+  const h=String(hex||"#ffffff").replace("#","").trim();
+  const n=h.length===3
+    ? h.split("").map(x=>x+x).join("")
+    : h.padEnd(6,"f").slice(0,6);
+  return [
+    parseInt(n.slice(0,2),16)/255,
+    parseInt(n.slice(2,4),16)/255,
+    parseInt(n.slice(4,6),16)/255,
+    1
+  ];
+}
+function geometryFor(shape){
+  if(shape==="hex")return "hex-prism";
+  if(shape==="diamond")return "octa";
+  if(shape==="circle")return "octa";
+  return "cube";
+}
+function liveTo3D(data,selected=0,viewport={w:360,h:640},frame=0){
+  const w=Math.max(1,Number(viewport.w)||360);
+  const h=Math.max(1,Number(viewport.h)||640);
+  const objects=(data?.objects||[]).map((o,i)=>{
+    const energy=Number(o.energy)||0;
+    const mass=Number(o.mass)||1;
+    const size=Number(o.size)||30;
+    return {
+      id:o.id,
+      name:o.name,
+      short:o.short,
+      source_index:i,
+      selected:i===selected,
+      mesh:geometryFor(o.shape),
+      color:hexColor(o.color),
+      pos:[
+        ((Number(o.x)||0)/w-.5)*8.4,
+        (.5-(Number(o.y)||0)/h)*11.0,
+        (energy-55)/18+(mass-2)*.42
+      ],
+      scale:[
+        .34+size/75,
+        .34+size/75,
+        .34+size/75
+      ],
+      rot:[
+        ((Number(o.vy)||0)*.004)+(frame*.0025*(i%2?1:-1)),
+        ((Number(o.vx)||0)*.004)+(frame*.003*(i%2?-1:1)),
+        (i*.33)+(frame*.0015)
+      ],
+      energy,
+      mass,
+      motion:o.motion,
+      shape:o.shape
+    };
+  });
+  const idSet=new Set(objects.map(x=>x.id));
+  const links=(data?.links||[])
+    .filter(x=>Array.isArray(x)&&x.length>=2&&idSet.has(x[0])&&idSet.has(x[1]))
+    .map(([from,to])=>({from,to}));
+  const packet={
+    schema:"jm.actual-engine.render-scene/12.1",
+    objects,
+    links,
+    selected_id:objects[selected]?.id||objects[0]?.id||null
+  };
+  packet.scene_hash=hash({...packet,scene_hash:null});
+  return packet;
+}
+function receipt(scene,rendererState={}){
+  const body={
+    schema:"jm.actual-engine.render-receipt/12.1",
+    version:VERSION,
+    classification:CLASSIFICATION,
+    lineage:LINEAGE,
+    scene_hash:scene?.scene_hash||null,
+    object_count:scene?.objects?.length||0,
+    link_count:scene?.links?.length||0,
+    renderer:{
+      mode:rendererState.mode||"2d",
+      webgl_available:!!rendererState.webglAvailable,
+      webgl_running:!!rendererState.webglRunning,
+      fallback:rendererState.fallback||null
+    },
+    laws:[
+      "VISIBLE BODY FIRST; SYSTEM PROOF SECOND.",
+      "ONE LIVE STATE; MULTIPLE RENDER FACES.",
+      "RENDER DONATION != ENGINE IDENTITY MERGE.",
+      "WEBGL CONTEXT != COMMERCIAL 3D CROWN."
+    ],
+    boundary:
+      "Real WebGL prototype rendering is locally present when the browser supplies WebGL. "+
+      "Native GPU APIs, imported production meshes, commercial renderer performance and external-device proof remain separate."
+  };
+  body.receipt_hash=hash({...body,receipt_hash:null});
+  return body;
+}
+function selfTest(){
+  const tests=[];
+  const add=(name,pass,detail="")=>tests.push({name,pass:!!pass,detail});
+  try{
+    const source={
+      objects:[
+        {id:"a",name:"A",short:"A",x:90,y:160,vx:20,vy:-10,size:30,mass:1.5,energy:75,color:"#67e8f9",shape:"circle",motion:"fast"},
+        {id:"b",name:"B",short:"B",x:270,y:420,vx:-15,vy:12,size:40,mass:2.5,energy:45,color:"#fbbf24",shape:"square",motion:"heavy"}
+      ],
+      links:[["a","b"]]
+    };
+    const before=JSON.stringify(source);
+    const a=liveTo3D(source,1,{w:360,h:640},12);
+    const b=liveTo3D(source,1,{w:360,h:640},12);
+    add("state-to-scene-count",a.objects.length===2&&a.links.length===1);
+    add("identity-preserved",a.objects[0].id==="a"&&a.objects[1].id==="b");
+    add("selection-preserved",a.selected_id==="b"&&a.objects[1].selected===true);
+    add("shape-adapter",a.objects[0].mesh==="octa"&&a.objects[1].mesh==="cube");
+    add("deterministic-mapping",a.scene_hash===b.scene_hash,a.scene_hash);
+    add("source-not-mutated",JSON.stringify(source)===before);
+    const moved=clone(source);moved.objects[0].x+=20;
+    const c=liveTo3D(moved,1,{w:360,h:640},12);
+    add("live-state-change-reaches-render-scene",c.scene_hash!==a.scene_hash,`${a.scene_hash}/${c.scene_hash}`);
+    add("link-endpoints-survive",a.links[0].from==="a"&&a.links[0].to==="b");
+    const r=receipt(a,{mode:"3d",webglAvailable:true,webglRunning:true});
+    add("classification-keeps-ten-specialist-cohort",r.classification.game_engine_count_effect==="DO_NOT_AUTO_INCREMENT_TEN_ENGINE_SPECIALIST_COHORT");
+    add("lineage-preserved",
+      r.lineage.parent_v12.sha256==="6b6f2cb04b1eb7bc214ac339cba63e2fb9657812ae98eac297a0de2c07ac5118" &&
+      r.lineage.webgl_donor_v10.sha256==="98fa468f6e69598ceea3fcb08a70db32468bef326e355465e03f295b2abec1e0" &&
+      r.lineage.visibility_donor_v10_1.sha256==="56e493ff7936ae12522ed234a294b7a9a75f53bdfb21da88b7b1b83207e50afa"
+    );
+    add("webgl-crown-boundary",r.boundary.includes("Native GPU APIs")&&r.laws.includes("WEBGL CONTEXT != COMMERCIAL 3D CROWN."));
+  }catch(err){
+    add("self-test-harness",false,String(err?.stack||err));
+  }
+  return {
+    schema:"jm.actual-engine.self-test/12.1",
+    passed:tests.filter(x=>x.pass).length,
+    total:tests.length,
+    percent:tests.length?Math.round(tests.filter(x=>x.pass).length/tests.length*100000)/1000:0,
+    state:tests.every(x=>x.pass)?"DING":"HOLD",
+    tests
+  };
+}
+
+global.JMActualDualCore=Object.freeze({
+  VERSION,SCHEMA,CLASSIFICATION,LINEAGE,clone,hash,hexColor,geometryFor,liveTo3D,receipt,selfTest
+});
+})(typeof globalThis!=="undefined"?globalThis:this);
+
+</script>
+<script>
+
+(()=>{
+"use strict";
+
+const Core=JMActualDualCore;
+const stage=document.getElementById("jmStage");
+const glCanvas=document.getElementById("gl3d");
+const labelCanvas=document.getElementById("glLabels");
+const labelCtx=labelCanvas.getContext("2d");
+const badge=document.getElementById("glBadge");
+const buttons={
+  d2:document.getElementById("render2d"),
+  d3:document.getElementById("render3d"),
+  sync:document.getElementById("renderSync"),
+  reset:document.getElementById("cameraReset")
+};
+
+const R={
+  mode:"2d",
+  gl:null,
+  program:null,
+  locations:null,
+  meshes:{},
+  camera:{yaw:.62,pitch:-.34,distance:10.2,fov:56},
+  pointers:new Map(),
+  lastPinch:null,
+  webglAvailable:false,
+  webglRunning:false,
+  fallback:null,
+  scene:null,
+  lastSceneHash:null,
+  lastFrame:-1,
+  syncPass:false,
+  frameCounter:0,
+  lastTime:0,
+  jmRenderBindingCache:null,
+  jmRenderStats:{frames:0,draws:0,bufferBindCalls:0,meshSwitches:0,normalUniforms:0,glRenderMs:0}
+};
+
+function mat4Identity(){return [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]}
+function mat4Multiply(a,b){
+  const out=new Array(16).fill(0);
+  for(let c=0;c<4;c++)for(let r=0;r<4;r++)
+    out[c*4+r]=a[0*4+r]*b[c*4+0]+a[1*4+r]*b[c*4+1]+a[2*4+r]*b[c*4+2]+a[3*4+r]*b[c*4+3];
+  return out;
+}
+function mat4Perspective(fovy,aspect,near,far){
+  const f=1/Math.tan(fovy/2),nf=1/(near-far);
+  return [f/aspect,0,0,0,0,f,0,0,0,0,(far+near)*nf,-1,0,0,(2*far*near)*nf,0];
+}
+function vec3Norm(v){
+  const n=Math.hypot(v[0],v[1],v[2])||1;
+  return [v[0]/n,v[1]/n,v[2]/n];
+}
+function vec3Sub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
+function vec3Cross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function vec3Dot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function mat4LookAt(eye,target,up=[0,1,0]){
+  const z=vec3Norm(vec3Sub(eye,target));
+  const x=vec3Norm(vec3Cross(up,z));
+  const y=vec3Cross(z,x);
+  return [
+    x[0],y[0],z[0],0,
+    x[1],y[1],z[1],0,
+    x[2],y[2],z[2],0,
+    -vec3Dot(x,eye),-vec3Dot(y,eye),-vec3Dot(z,eye),1
+  ];
+}
+function mat4Translate(m,v){
+  const t=[1,0,0,0,0,1,0,0,0,0,1,0,v[0],v[1],v[2],1];
+  return mat4Multiply(m,t);
+}
+function mat4Scale(m,v){
+  const q=[v[0],0,0,0,0,v[1],0,0,0,0,v[2],0,0,0,0,1];
+  return mat4Multiply(m,q);
+}
+function mat4RotX(m,a){
+  const c=Math.cos(a),s=Math.sin(a);
+  return mat4Multiply(m,[1,0,0,0,0,c,s,0,0,-s,c,0,0,0,0,1]);
+}
+function mat4RotY(m,a){
+  const c=Math.cos(a),s=Math.sin(a);
+  return mat4Multiply(m,[c,0,-s,0,0,1,0,0,s,0,c,0,0,0,0,1]);
+}
+function mat4RotZ(m,a){
+  const c=Math.cos(a),s=Math.sin(a);
+  return mat4Multiply(m,[c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1]);
+}
+function transformPoint(m,p){
+  const x=p[0],y=p[1],z=p[2],w=1;
+  return [
+    m[0]*x+m[4]*y+m[8]*z+m[12]*w,
+    m[1]*x+m[5]*y+m[9]*z+m[13]*w,
+    m[2]*x+m[6]*y+m[10]*z+m[14]*w,
+    m[3]*x+m[7]*y+m[11]*z+m[15]*w
+  ];
+}
+function modelMatrix(o){
+  let m=mat4Identity();
+  m=mat4Translate(m,o.pos);
+  m=mat4RotX(m,o.rot[0]);
+  m=mat4RotY(m,o.rot[1]);
+  m=mat4RotZ(m,o.rot[2]);
+  m=mat4Scale(m,o.scale);
+  return m;
+}
+function cameraEye(){
+  const c=R.camera;
+  const cp=Math.cos(c.pitch),sp=Math.sin(c.pitch),cy=Math.cos(c.yaw),sy=Math.sin(c.yaw);
+  return [c.distance*cp*sy,c.distance*sp,c.distance*cp*cy];
+}
+function shader(type,src){
+  const gl=R.gl,s=gl.createShader(type);
+  gl.shaderSource(s,src);gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function compileProgram(){
+  const gl=R.gl;
+  // CP2-derived hemisphere/fresnel/fog equations, adapted to JM Actual Engine's own source semantics.
+  const vs=`
+attribute vec3 aPosition,aNormal;
+uniform mat4 uMVP,uModel;
+uniform mat3 uNormal;
+uniform vec4 uColor;
+uniform float uSelected;
+varying vec3 vN,vW,vLocal;
+varying vec4 vTint;
+varying float vSelected;
+void main(){
+ vec4 w=uModel*vec4(aPosition,1.0);
+ vW=w.xyz;vLocal=aPosition;
+ vN=normalize(uNormal*aNormal);
+ vTint=uColor;vSelected=uSelected;
+ gl_Position=uMVP*vec4(aPosition,1.0);
+}`;
+  const fs=`
+precision mediump float;
+varying vec3 vN,vW,vLocal;
+varying vec4 vTint;
+varying float vSelected;
+uniform vec3 uLight,uCam;
+void main(){
+ vec3 n=normalize(vN),l=normalize(uLight),v=normalize(uCam-vW);
+ float ndl=max(dot(n,l),0.),sky=.5+.5*n.y;
+ float fres=pow(1.-max(dot(n,v),0.),3.);
+ vec3 hemi=mix(vec3(.11,.13,.17),vec3(.32,.42,.51),sky);
+ vec3 c=vTint.rgb*(hemi+vec3(1.,.85,.69)*ndl*.68);
+ float spec=pow(max(dot(n,normalize(l+v)),0.),32.);
+ vec3 edge=vSelected>.5?vec3(.20,.75,1.0):vec3(.11,.18,.25);
+ c+=edge*(fres*.13+spec*.18)+vTint.rgb*.012;
+ // CP2-derived distance fog and filmic balance.
+ float fog=1.-exp(-length(uCam-vW)*.012);
+ c=mix(c,vec3(.035,.065,.105),fog);
+ c=c/(vec3(.82)+c*.25);
+ c+=vSelected*vec3(.09,.15,.20);
+ gl_FragColor=vec4(c,vTint.a);
+}`;
+  const p=gl.createProgram();
+  gl.attachShader(p,shader(gl.VERTEX_SHADER,vs));
+  gl.attachShader(p,shader(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(p);
+  if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));
+  R.program=p;
+  R.locations={
+    aPosition:gl.getAttribLocation(p,"aPosition"),
+    aNormal:gl.getAttribLocation(p,"aNormal"),
+    uMVP:gl.getUniformLocation(p,"uMVP"),
+    uModel:gl.getUniformLocation(p,"uModel"),
+    uNormal:gl.getUniformLocation(p,"uNormal"),
+    uColor:gl.getUniformLocation(p,"uColor"),
+    uLight:gl.getUniformLocation(p,"uLight"),
+    uCam:gl.getUniformLocation(p,"uCam"),
+    uSelected:gl.getUniformLocation(p,"uSelected")
+  };
+}
+function pushTri(vertices,normals,a,b,c,n){
+  for(const p of [a,b,c]){vertices.push(...p);normals.push(...n)}
+}
+function meshCube(){
+  const p=[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]];
+  const faces=[
+    [0,1,2,3,[0,0,-1]],[4,7,6,5,[0,0,1]],[0,4,5,1,[0,-1,0]],
+    [3,2,6,7,[0,1,0]],[1,5,6,2,[1,0,0]],[0,3,7,4,[-1,0,0]]
+  ];
+  const v=[],n=[];
+  for(const [a,b,c,d,no] of faces){
+    pushTri(v,n,p[a],p[b],p[c],no);pushTri(v,n,p[a],p[c],p[d],no);
+  }
+  return {v,n};
+}
+function meshOcta(){
+  const top=[0,1.25,0],bot=[0,-1.25,0];
+  const ring=[[1,0,0],[0,0,1],[-1,0,0],[0,0,-1]];
+  const v=[],n=[];
+  for(let i=0;i<4;i++){
+    const a=ring[i],b=ring[(i+1)%4];
+    const nt=vec3Norm(vec3Cross(vec3Sub(a,top),vec3Sub(b,top)));
+    const nb=vec3Norm(vec3Cross(vec3Sub(b,bot),vec3Sub(a,bot)));
+    pushTri(v,n,top,a,b,nt);pushTri(v,n,bot,b,a,nb);
+  }
+  return {v,n};
+}
+function meshHexPrism(){
+  const v=[],n=[],topY=.92,botY=-.92,N=6;
+  const ring=[];
+  for(let i=0;i<N;i++){
+    const a=i/N*Math.PI*2;
+    ring.push([Math.cos(a),0,Math.sin(a)]);
+  }
+  for(let i=0;i<N;i++){
+    const a=ring[i],b=ring[(i+1)%N];
+    pushTri(v,n,[0,topY,0],[a[0],topY,a[2]],[b[0],topY,b[2]],[0,1,0]);
+    pushTri(v,n,[0,botY,0],[b[0],botY,b[2]],[a[0],botY,a[2]],[0,-1,0]);
+    const no=vec3Norm([a[0]+b[0],0,a[2]+b[2]]);
+    pushTri(v,n,[a[0],botY,a[2]],[b[0],botY,b[2]],[b[0],topY,b[2]],no);
+    pushTri(v,n,[a[0],botY,a[2]],[b[0],topY,b[2]],[a[0],topY,a[2]],no);
+  }
+  return {v,n};
+}
+function createMesh(name,data){
+  const gl=R.gl,m={count:data.v.length/3,v:gl.createBuffer(),n:gl.createBuffer()};
+  gl.bindBuffer(gl.ARRAY_BUFFER,m.v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data.v),gl.STATIC_DRAW);
+  gl.bindBuffer(gl.ARRAY_BUFFER,m.n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(data.n),gl.STATIC_DRAW);
+  R.meshes[name]=m;
+}
+function initGL(){
+  try{
+    R.gl=glCanvas.getContext("webgl",{alpha:false,antialias:true,depth:true,preserveDrawingBuffer:false})
+      ||glCanvas.getContext("experimental-webgl");
+    if(!R.gl)throw new Error("WEBGL_CONTEXT_UNAVAILABLE");
+    R.webglAvailable=true;
+    R.jmRenderBindingCache=null;
+    compileProgram();
+    createMesh("cube",meshCube());
+    createMesh("octa",meshOcta());
+    createMesh("hex-prism",meshHexPrism());
+    R.webglRunning=true;
+    R.fallback=null;
+  }catch(err){
+    R.webglAvailable=false;R.webglRunning=false;R.fallback=String(err?.message||err);
+  }
+}
+function resize3D(){
+  const dpr=Math.max(1,Math.min(2,devicePixelRatio||1));
+  const rect=glCanvas.getBoundingClientRect();
+  const w=Math.max(1,Math.floor(rect.width*dpr)),h=Math.max(1,Math.floor(rect.height*dpr));
+  if(glCanvas.width!==w||glCanvas.height!==h){glCanvas.width=w;glCanvas.height=h}
+  if(labelCanvas.width!==w||labelCanvas.height!==h){labelCanvas.width=w;labelCanvas.height=h}
+  labelCtx.setTransform(dpr,0,0,dpr,0,0);
+  if(R.gl)R.gl.viewport(0,0,w,h);
+}
+function sceneFromLive(){
+  const rect=glCanvas.getBoundingClientRect();
+  const frame=Number(App.frame)||0;
+  R.scene=Core.liveTo3D(App.data,App.selected,{w:Math.max(1,rect.width),h:Math.max(1,rect.height)},frame);
+  R.lastSceneHash=R.scene.scene_hash;
+  return R.scene;
+}
+function viewProjection(){
+  const aspect=Math.max(.1,glCanvas.width/Math.max(1,glCanvas.height));
+  const p=mat4Perspective(R.camera.fov*Math.PI/180,aspect,.1,100);
+  const v=mat4LookAt(cameraEye(),[0,0,0],[0,1,0]);
+  return mat4Multiply(p,v);
+}
+function drawMesh(o,vp){
+  const gl=R.gl,m=R.meshes[o.mesh]||R.meshes.cube;
+  const model=modelMatrix(o),mvp=mat4Multiply(vp,model);
+  if(R.jmRenderBindingCache!==m){
+    R.jmRenderBindingCache=m;
+    R.jmRenderStats.meshSwitches++;
+    gl.bindBuffer(gl.ARRAY_BUFFER,m.v);R.jmRenderStats.bufferBindCalls++;
+    gl.enableVertexAttribArray(R.locations.aPosition);gl.vertexAttribPointer(R.locations.aPosition,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,m.n);R.jmRenderStats.bufferBindCalls++;
+    gl.enableVertexAttribArray(R.locations.aNormal);gl.vertexAttribPointer(R.locations.aNormal,3,gl.FLOAT,false,0,0);
+  }
+  const col=o.color.slice();
+  if(o.selected){col[0]=Math.min(1,col[0]+.18);col[1]=Math.min(1,col[1]+.18);col[2]=Math.min(1,col[2]+.18)}
+  gl.uniformMatrix4fv(R.locations.uModel,false,new Float32Array(model));
+  gl.uniformMatrix3fv(R.locations.uNormal,false,window.JMRenderContact.normalMatrix3(model)||new Float32Array([1,0,0,0,1,0,0,0,1]));R.jmRenderStats.normalUniforms++;
+  gl.uniformMatrix4fv(R.locations.uMVP,false,new Float32Array(mvp));
+  gl.uniform4fv(R.locations.uColor,new Float32Array(col));
+  gl.uniform1f(R.locations.uSelected,o.selected?1:0);
+  gl.drawArrays(gl.TRIANGLES,0,m.count);
+  R.jmRenderStats.draws++;
+}
+function drawFloor(vp){
+  const o={mesh:"cube",pos:[0,-4.75,0],rot:[0,0,0],scale:[5.2,.08,5.2],color:[.05,.10,.16,1],selected:false};
+  drawMesh(o,vp);
+}
+function project(vp,pos,w,h){
+  const q=transformPoint(vp,pos);
+  if(!q[3]||q[3]<=0)return null;
+  const nx=q[0]/q[3],ny=q[1]/q[3],nz=q[2]/q[3];
+  if(nz<-1||nz>1)return null;
+  return {x:(nx*.5+.5)*w,y:(1-(ny*.5+.5))*h,z:nz};
+}
+function drawLabels(scene,vp){
+  const w=labelCanvas.clientWidth,h=labelCanvas.clientHeight;
+  labelCtx.clearRect(0,0,w,h);
+  const points=new Map();
+  for(const o of scene.objects){
+    const p=project(vp,o.pos,w,h);if(p)points.set(o.id,p);
+  }
+  labelCtx.lineWidth=1.2;
+  for(const link of scene.links){
+    const a=points.get(link.from),b=points.get(link.to);if(!a||!b)continue;
+    const g=labelCtx.createLinearGradient(a.x,a.y,b.x,b.y);
+    g.addColorStop(0,"rgba(103,232,249,.35)");g.addColorStop(1,"rgba(251,191,36,.24)");
+    labelCtx.strokeStyle=g;labelCtx.beginPath();labelCtx.moveTo(a.x,a.y);labelCtx.lineTo(b.x,b.y);labelCtx.stroke();
+  }
+  labelCtx.textAlign="center";labelCtx.textBaseline="middle";
+  for(const o of scene.objects){
+    const p=points.get(o.id);if(!p)continue;
+    labelCtx.font=o.selected?"800 12px system-ui":"700 10px system-ui";
+    const label=`${o.short||o.name} · ${Math.round(o.energy)}`;
+    const mw=labelCtx.measureText(label).width+12;
+    labelCtx.fillStyle=o.selected?"rgba(3,8,20,.92)":"rgba(3,8,20,.66)";
+    labelCtx.fillRect(p.x-mw/2,p.y-28,mw,18);
+    labelCtx.strokeStyle=o.selected?"rgba(103,232,249,.9)":"rgba(255,255,255,.16)";
+    labelCtx.strokeRect(p.x-mw/2,p.y-28,mw,18);
+    labelCtx.fillStyle="#f8fbff";labelCtx.fillText(label,p.x,p.y-19);
+  }
+}
+function render3D(){
+  const jmFrameStarted=performance.now();
+  R.jmRenderStats.draws=0;R.jmRenderStats.bufferBindCalls=0;R.jmRenderStats.meshSwitches=0;R.jmRenderStats.normalUniforms=0;
+  resize3D();
+  if(!R.webglRunning){
+    badge.textContent=`WebGL HOLD · ${R.fallback||"unavailable"} · 2D remains authoritative`;
+    return;
+  }
+  const gl=R.gl,scene=sceneFromLive(),vp=viewProjection();
+  gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);
+  gl.clearColor(.012,.025,.055,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(R.program);
+  gl.uniform3fv(R.locations.uLight,new Float32Array(vec3Norm([.45,.88,.52])));
+  gl.uniform3fv(R.locations.uCam,new Float32Array(cameraEye()));
+  drawFloor(vp);
+  for(const o of scene.objects)drawMesh(o,vp);
+  drawLabels(scene,vp);
+  R.jmRenderStats.frames++;
+  R.jmRenderStats.glRenderMs=Math.max(0,performance.now()-jmFrameStarted);
+  badge.textContent=
+    `WebGL RUNNING · ${scene.objects.length} bodies · ${scene.links.length} routes · `+
+    `scene ${scene.scene_hash} · selected ${scene.selected_id||"—"}`;
+}
+function setMode(mode){
+  R.mode=mode==="3d"?"3d":"2d";
+  stage.classList.toggle("render3d",R.mode==="3d");
+  buttons.d2.classList.toggle("active",R.mode==="2d");
+  buttons.d3.classList.toggle("active",R.mode==="3d");
+  if(R.mode==="3d")render3D();
+  App.log("RENDER_MODE",R.mode==="3d"?"REAL 3D":"LIVE 2D");
+}
+function resetCamera(){
+  R.camera={yaw:.62,pitch:-.34,distance:10.2,fov:56};
+  if(R.mode==="3d")render3D();
+  App.log("CAMERA_RESET","v12.1 3D camera reset");
+}
+function syncCheck(){
+  const rect=glCanvas.getBoundingClientRect();
+  const a=Core.liveTo3D(App.data,App.selected,{w:Math.max(1,rect.width),h:Math.max(1,rect.height)},App.frame);
+  const b=Core.liveTo3D(App.data,App.selected,{w:Math.max(1,rect.width),h:Math.max(1,rect.height)},App.frame);
+  R.syncPass=a.scene_hash===b.scene_hash&&a.objects.length===App.data.objects.length&&a.selected_id===App.data.objects[App.selected]?.id;
+  buttons.sync.classList.toggle("active",R.syncPass);
+  buttons.sync.textContent=R.syncPass?"SYNC DING":"SYNC HOLD";
+  badge.textContent=`STATE↔RENDER ${R.syncPass?"DING":"HOLD"} · ${a.scene_hash}`;
+  App.log("RENDER_SYNC",R.syncPass?`DING ${a.scene_hash}`:"HOLD");
+  return R.syncPass;
+}
+
+buttons.d2.onclick=()=>setMode("2d");
+buttons.d3.onclick=()=>setMode("3d");
+buttons.sync.onclick=()=>syncCheck();
+buttons.reset.onclick=()=>resetCamera();
+
+glCanvas.addEventListener("pointerdown",e=>{
+  glCanvas.setPointerCapture?.(e.pointerId);
+  R.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(R.pointers.size===2){
+    const pts=[...R.pointers.values()];
+    R.lastPinch=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+  }
+});
+glCanvas.addEventListener("pointermove",e=>{
+  const old=R.pointers.get(e.pointerId);if(!old)return;
+  R.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(R.pointers.size===1){
+    const dx=e.clientX-old.x,dy=e.clientY-old.y;
+    R.camera.yaw+=dx*.007;
+    R.camera.pitch=Math.max(-1.25,Math.min(1.08,R.camera.pitch+dy*.006));
+  }else if(R.pointers.size===2){
+    const pts=[...R.pointers.values()];
+    const d=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+    if(R.lastPinch){
+      R.camera.distance=Math.max(4,Math.min(20,R.camera.distance-(d-R.lastPinch)*.025));
+    }
+    R.lastPinch=d;
+  }
+});
+function pointerEnd(e){
+  R.pointers.delete(e.pointerId);
+  if(R.pointers.size<2)R.lastPinch=null;
+}
+glCanvas.addEventListener("pointerup",pointerEnd);
+glCanvas.addEventListener("pointercancel",pointerEnd);
+glCanvas.addEventListener("wheel",e=>{
+  e.preventDefault();
+  R.camera.distance=Math.max(4,Math.min(20,R.camera.distance+Math.sign(e.deltaY)*.55));
+},{passive:false});
+
+window.addEventListener("resize",()=>{if(R.mode==="3d")render3D()});
+
+initGL();
+const staticSelf=Core.selfTest();
+const selfBadge=document.createElement("div");
+selfBadge.style.cssText="position:absolute;z-index:7;left:10px;top:50px;padding:6px 8px;border-radius:9px;background:rgba(3,7,18,.72);border:1px solid rgba(255,255,255,.12);font:800 9px/1.2 ui-monospace;color:#eaf5ff;pointer-events:none";
+selfBadge.textContent=`DUAL CORE ${staticSelf.state} ${staticSelf.passed}/${staticSelf.total}`;
+stage.appendChild(selfBadge);
+
+function loop(t){
+  R.frameCounter++;
+  R.lastTime=t;
+  if(R.mode==="3d")render3D();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+const originalReceipt=App.exportReceipt.bind(App);
+App.exportReceipt=()=>{
+  const scene=sceneFromLive();
+  const dual=Core.receipt(scene,{
+    mode:R.mode,
+    webglAvailable:R.webglAvailable,
+    webglRunning:R.webglRunning,
+    fallback:R.fallback
+  });
+  const packet={
+    parent_visual_receipt:{
+      engine:"JM Actual Engine v12.0 parent lane",
+      manifest:MANIFEST,
+      selected:App.data.objects[App.selected]?.id||null,
+      metrics:App.metrics(),
+      trace:App.traces.slice(0,8),
+      note:"v12.1 carries the parent receipt state inside the combined packet; the original v12 download function also remains callable through the API."
+    },
+    dual_render_receipt:dual,
+    self_test:Core.selfTest(),
+    live_state:{
+      selected:App.data.objects[App.selected]?.id||null,
+      frame:App.frame,
+      score:App.data.state.score,
+      energy:App.data.state.energy
+    }
+  };
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:"application/json"}));
+  a.download="JM_ACTUAL_ENGINE_v12_1_DUAL_RENDER_RECEIPT.json";
+  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),800);
+  App.log("RECEIPT","v12.1 dual-render receipt exported");
+};
+
+window.JMActualDualRenderer=Object.freeze({
+  jmRenderContact:()=>Object.freeze({version:window.JMRenderContact.JM_RENDER_CONTACT_VERSION,webgl:!!R.gl,instancing:window.JMRenderContact.detectInstancing(R.gl).kind,...R.jmRenderStats}),
+  cp2Lighting:()=>Object.freeze({source:'CP2 hemisphere+fresnel+distance fog',mode:'JM Actual Engine shader adaptation',sourceSHA256:'d393e381db46bae9b3c758b72c8c82e380857cd7ab1ccab70b25a17f86c0c385',hardwareVerified:false}),
+  state:R,
+  setMode,
+  resetCamera,
+  syncCheck,
+  render3D,
+  selfTest:()=>Core.selfTest(),
+  receipt:()=>Core.receipt(sceneFromLive(),{
+    mode:R.mode,
+    webglAvailable:R.webglAvailable,
+    webglRunning:R.webglRunning,
+    fallback:R.fallback
+  }),
+  parentReceiptDownload:()=>originalReceipt()
+});
+window.__JM_APP__={
+  id:"jm-actual-engine-v12.1-dual-render-rejoin-gold",
+  version:Core.VERSION,
+  classification:Core.CLASSIFICATION,
+  state:()=>Core.clone(App.data),
+  actions:{
+    render2d:()=>setMode("2d"),
+    render3d:()=>setMode("3d"),
+    sync:()=>syncCheck(),
+    cameraReset:()=>resetCamera(),
+    receipt:()=>JMActualDualRenderer.receipt(),
+    parentReceipt:()=>JMActualDualRenderer.parentReceiptDownload()
+  },
+  fingerprint:[
+    "v12-living-visual-parent-preserved",
+    "v10-webgl-renderer-rejoined",
+    "v10.1-visibility-boundary-preserved",
+    "single-live-state-dual-render-faces",
+    "webgl-honest-fallback",
+    "shape-to-3d-mesh-adapter",
+    "selection-and-route-sync",
+    "touch-orbit-and-pinch-camera",
+    "deterministic-render-scene-receipt",
+    "sovereign-cross-domain-render-engine"
+  ],
+  selfTest:()=>Core.selfTest()
+};
+})();
+
+</script>
+
+<style id="jm-actual-engine-v12-2-closure-style">
+#jmClosureChip{position:absolute;z-index:18;right:10px;top:50px;border:1px solid rgba(52,211,153,.52);border-radius:999px;background:rgba(3,12,18,.82);color:#9ff0cb;padding:6px 9px;font:900 9px/1 ui-monospace;letter-spacing:.05em;backdrop-filter:blur(10px)}
+#jmClosurePanel{position:fixed;z-index:80;inset:max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom));display:none;place-items:center;background:rgba(1,5,10,.66);backdrop-filter:blur(9px)}
+#jmClosurePanel.open{display:grid}.jmClosureCard{width:min(560px,100%);max-height:88dvh;overflow:auto;border:1px solid rgba(103,232,249,.34);border-radius:20px;background:linear-gradient(160deg,#0d1a29,#07111f);padding:14px;box-shadow:0 24px 90px #000a}.jmClosureHead{display:flex;align-items:center;justify-content:space-between;gap:8px}.jmClosureHead b{color:#67e8f9}.jmClosureHead button,.jmClosureActions button{border:1px solid rgba(255,255,255,.16);border-radius:10px;background:#101c2b;color:#f8fafc;min-height:38px;padding:7px 9px;font-weight:900}.jmClosureActions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}.jmClosureActions button:nth-child(1),.jmClosureActions button:nth-child(4){border-color:rgba(52,211,153,.45);color:#a9f4d1}.jmClosureRead{margin-top:10px;border:1px solid rgba(255,255,255,.12);border-radius:13px;padding:10px;background:#06101c;font:11px/1.45 ui-monospace;white-space:pre-wrap;color:#d9e8f7}.jmClosureLaw{margin-top:9px;color:#fbd27b;font:800 11px/1.4 ui-monospace}
+@media(max-width:520px){#jmClosureChip{top:48px;right:7px;font-size:8px;padding:5px 7px}.jmClosureActions{grid-template-columns:1fr}.jmClosureCard{padding:11px}}
+</style>
+<div id="jmClosureChip" role="button" tabindex="0" aria-label="Open v12.2 closure proof">FLAZ 12.2</div>
+<div id="jmClosurePanel" aria-hidden="true"><section class="jmClosureCard" role="dialog" aria-modal="true" aria-label="JM Actual Engine v12.2 closure">
+  <div class="jmClosureHead"><div><b>JM ACTUAL ENGINE v12.2</b><br><small>ENGINE CLOSURE · RECOVERY · FLAZ</small></div><button id="jmClosureClose" type="button">CLOSE</button></div>
+  <div class="jmClosureLaw">VISIBLE BODY FIRST · ONE LIVE STATE / MULTIPLE RENDER FACES · GAME IDENTITY IS NOT AN ENGINE DEPENDENCY</div>
+  <div class="jmClosureActions">
+    <button id="jmClosureContract" type="button">ENGINE CONTRACT</button>
+    <button id="jmClosureExport" type="button">EXPORT RECOVERY</button>
+    <button id="jmClosureImport" type="button">IMPORT + VALIDATE</button>
+    <button id="jmClosureProof" type="button">RUN CLOSURE PROOF</button>
+  </div>
+  <input id="jmClosureFile" type="file" accept="application/json,.json" hidden>
+  <div class="jmClosureRead" id="jmClosureRead">Closure body loading…</div>
+</section></div>
+<script id="jm-actual-engine-v12-2-closure">
+(()=>{
+'use strict';
+const VERSION='12.2.0';
+const PACK_SCHEMA='JM.ActualEngine.EnginePack/1.0';
+const CONTRACT=Object.freeze({
+  schema:'JM.EngineContract/1.0',
+  engine:{id:'jm-actual-engine',name:'JM Actual Engine / Visual Engine',version:VERSION,class:'SOVEREIGN_CROSS_DOMAIN_VISUAL_RENDER_ENGINE'},
+  purpose:'Translate one live visual-system state into multiple coherent render faces without importing a game identity.',
+  inputs:['live object state','links','selection','view/camera state','bounded interaction'],
+  capabilities:[
+    'portrait-first living visual surface','2D canvas render face','WebGL render face with honest fallback','deterministic live-state → render-scene mapping',
+    'shared-state dual-render synchronization','shape → mesh adaptation','touch orbit / pinch camera','safe-edge visual containment',
+    'render receipts / trace','versioned snapshot / validate / restore'
+  ],
+  outputs:['visible 2D state','visible 3D projection','render receipt','recovery pack'],
+  nonDependencies:['T-Boys','Core Clash','SS','LG','LL','any named game profile','HANDISCOVERED'],
+  boundaries:['not commercial-grade 3D','not native GPU/API proof','not public deployment proof','not full physics simulator'],
+  laws:['VISIBLE BODY FIRST; SYSTEM PROOF SECOND.','ONE LIVE STATE; MULTIPLE RENDER FACES.','RENDER DONATION != ENGINE IDENTITY MERGE.','WEBGL CONTEXT != COMMERCIAL 3D CROWN.','GAME PRESSURE MAY FORM AN ORGAN; GAME IDENTITY DOES NOT OWN THE ENGINE.']
+});
+const copy=v=>JSON.parse(JSON.stringify(v));
+const cleanPack=p=>{const q=copy(p);delete q.integrity;return q};
+const hash=v=>JMActualDualCore.hash(v);
+function snapshot(){
+  const rr=window.JMActualDualRenderer?.state||{};
+  return {
+    schema:'JM.ActualEngine.Snapshot/12.2',
+    app:{data:copy(App.data),selected:App.selected,playing:!!App.playing,frame:Number(App.frame)||0,traces:copy(App.traces||[])},
+    renderer:{mode:rr.mode||'2d',yaw:Number(rr.yaw)||0,pitch:Number(rr.pitch)||0,dist:Number(rr.dist)||0},
+    capturedAt:new Date().toISOString()
+  };
+}
+function pack(){
+  const body={schema:PACK_SCHEMA,engine:'jm-actual-engine',version:VERSION,parent:'12.1.0',contract:CONTRACT,lineage:copy(JMActualDualCore.LINEAGE),snapshot:snapshot(),fingerprint:['v12.0-portrait-living-parent','v10-webgl-donor','v12.1-dual-render-rejoin','v12.2-neutral-contract','single-live-state','dual-render-faces','validated-recovery-roundtrip','game-identity-not-required']};
+  body.integrity={algorithm:'FNV1A32-STABLE',hash:hash(body)};
+  return body;
+}
+function validate(p){
+  const checks=[];const add=(name,pass,detail='')=>checks.push({name,pass:!!pass,detail});
+  add('schema',p?.schema===PACK_SCHEMA,p?.schema||'missing');
+  add('engine',p?.engine==='jm-actual-engine',p?.engine||'missing');
+  add('versioned',typeof p?.version==='string'&&/^12\\.2/.test(p.version),p?.version||'missing');
+  add('state-body',Array.isArray(p?.snapshot?.app?.data?.objects)&&Array.isArray(p?.snapshot?.app?.data?.links),'objects + links');
+  add('render-state',!!p?.snapshot?.renderer?.mode,p?.snapshot?.renderer?.mode||'missing');
+  const got=p?.integrity?.hash||''; const want=hash(cleanPack(p));
+  add('integrity',got===want,got+'/'+want);
+  add('neutral-contract',Array.isArray(p?.contract?.nonDependencies)&&p.contract.nonDependencies.includes('T-Boys'),'game identity excluded');
+  return {ok:checks.every(x=>x.pass),checks,expectedHash:want};
+}
+function restore(p){
+  const v=validate(p); if(!v.ok) throw new Error('Recovery pack failed validation');
+  const a=p.snapshot.app;
+  App.data=copy(a.data);App.selected=Math.max(0,Math.min(App.data.objects.length-1,Number(a.selected)||0));App.playing=!!a.playing;App.frame=Number(a.frame)||0;App.traces=copy(a.traces||[]);
+  const rs=p.snapshot.renderer||{}; const live=window.JMActualDualRenderer?.state;
+  if(live){if(Number.isFinite(+rs.yaw))live.yaw=+rs.yaw;if(Number.isFinite(+rs.pitch))live.pitch=+rs.pitch;if(Number.isFinite(+rs.dist)&&+rs.dist>0)live.dist=+rs.dist;}
+  if(rs.mode==='3d')window.__JM_APP__?.actions?.render3d?.();else window.__JM_APP__?.actions?.render2d?.();
+  App.layout?.();App.keepIn?.();App.page?.(Math.max(0,Math.min(3,App.data.view?.screen||0)));App.save?.();
+  return v;
+}
+function proof(){
+  const checks=[];const add=(name,pass,detail='')=>checks.push({name,pass:!!pass,detail});
+  try{
+    const parent=JMActualDualCore.selfTest();add('dual-core-parent',parent.state==='DING'&&parent.passed===parent.total,`${parent.passed}/${parent.total}`);
+    add('engine-contract',CONTRACT.schema==='JM.EngineContract/1.0'&&CONTRACT.capabilities.length>=8,`${CONTRACT.capabilities.length} capabilities`);
+    add('game-neutral',CONTRACT.nonDependencies.includes('T-Boys')&&!CONTRACT.inputs.some(x=>/game profile/i.test(x)),'named game not required');
+    const p=pack();const v=validate(JSON.parse(JSON.stringify(p)));add('pack-validates',v.ok,p.integrity.hash);
+    const fp1=hash(p.snapshot.app.data);const wire=JSON.stringify(p);const q=JSON.parse(wire);const fp2=hash(q.snapshot.app.data);add('roundtrip-state',fp1===fp2,fp1+'/'+fp2);
+    const scene=JMActualDualCore.liveTo3D(q.snapshot.app.data,Math.max(0,Math.min((q.snapshot.app.data.objects||[]).length-1,q.snapshot.app.selected||0)),{w:360,h:640},12);add('render-projection',scene?.objects?.length===(q.snapshot.app.data.objects||[]).length,`${scene?.objects?.length||0} projected`);
+    add('recovery-contract',typeof restore==='function'&&v.checks.some(x=>x.name==='integrity'&&x.pass),'validate before restore');
+    add('boundary-honest',CONTRACT.boundaries.some(x=>/not commercial-grade 3D/i.test(x)),'commercial crown excluded');
+  }catch(e){add('closure-harness',false,String(e?.stack||e))}
+  const passed=checks.filter(x=>x.pass).length;return {schema:'JM.ActualEngine.ClosureProof/12.2',version:VERSION,passed,total:checks.length,state:passed===checks.length?'FLAZ':'HOLD',checks};
+}
+function download(name,text,type='application/json'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),900)}
+function show(obj){const el=document.getElementById('jmClosureRead');if(el)el.textContent=typeof obj==='string'?obj:JSON.stringify(obj,null,2)}
+function openPanel(){document.getElementById('jmClosurePanel')?.classList.add('open');document.getElementById('jmClosurePanel')?.setAttribute('aria-hidden','false');show(proof())}
+function closePanel(){document.getElementById('jmClosurePanel')?.classList.remove('open');document.getElementById('jmClosurePanel')?.setAttribute('aria-hidden','true')}
+const originalSave=App.save.bind(App);
+App.save=function(){originalSave();try{localStorage.setItem('JM_ACTUAL_ENGINE_v12_2_ENGINE_PACK',JSON.stringify(pack()))}catch(e){}};
+const chip=document.getElementById('jmClosureChip');chip?.addEventListener('click',openPanel);chip?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openPanel()}});
+document.getElementById('jmClosureClose')?.addEventListener('click',closePanel);
+document.getElementById('jmClosurePanel')?.addEventListener('click',e=>{if(e.target?.id==='jmClosurePanel')closePanel()});
+document.getElementById('jmClosureContract')?.addEventListener('click',()=>{show(CONTRACT);download('JM_ACTUAL_ENGINE_v12_2_ENGINE_CONTRACT.json',JSON.stringify(CONTRACT,null,2))});
+document.getElementById('jmClosureExport')?.addEventListener('click',()=>{const p=pack();show({status:'PACK EXPORTED',integrity:p.integrity,version:p.version});download('JM_ACTUAL_ENGINE_v12_2_RECOVERY_PACK.json',JSON.stringify(p,null,2))});
+document.getElementById('jmClosureImport')?.addEventListener('click',()=>document.getElementById('jmClosureFile')?.click());
+document.getElementById('jmClosureFile')?.addEventListener('change',async e=>{try{const f=e.target.files?.[0];if(!f)return;const p=JSON.parse(await f.text());const v=validate(p);if(!v.ok){show({status:'HOLD',validation:v});return}restore(p);show({status:'RESTORED',validation:v})}catch(err){show({status:'HOLD',error:String(err?.message||err)})}finally{e.target.value=''}});
+document.getElementById('jmClosureProof')?.addEventListener('click',()=>show(proof()));
+const p0=proof();chip.textContent=`${p0.state} 12.2 · ${p0.passed}/${p0.total}`;chip.style.borderColor=p0.state==='FLAZ'?'rgba(52,211,153,.62)':'rgba(251,191,36,.62)';
+try{localStorage.setItem('JM_ACTUAL_ENGINE_v12_2_ENGINE_PACK',JSON.stringify(pack()))}catch(e){}
+window.__JM_ACTUAL_ENGINE_CLOSURE__=Object.freeze({version:VERSION,contract:()=>copy(CONTRACT),snapshot,pack,validate,restore,proof});
+window.dispatchEvent(new CustomEvent('jm-engine-closure-ready',{detail:{engine:'JM Actual Engine',version:VERSION,state:p0.state}}));
+})();
+</script>
+
+</body>
+</html>

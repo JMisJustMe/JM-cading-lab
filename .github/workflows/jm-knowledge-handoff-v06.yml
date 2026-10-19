@@ -6,6 +6,7 @@ on:
       - '.agents/skills/jm-ecostate-route/tests/test_lovable_handoff.py'
       - '.agents/skills/jm-ecostate-route/host-trials/lovable-v0_1/JM_KNOWLEDGE_VISGUIDE_v0_6_ONEBODY.html'
       - '.github/workflows/jm-knowledge-handoff-v06.yml'
+      - '.agents/skills/jm-ecostate-route/SKILL.md'
   workflow_dispatch:
 permissions:
   contents: read

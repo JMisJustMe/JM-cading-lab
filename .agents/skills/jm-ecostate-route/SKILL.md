@@ -132,3 +132,28 @@ Current proof ladder: **source replay / integrity / lexical retrieval / existing
 Reference: `.agents/skills/jm-ecostate-route/AGENT_HOST_CONTACT_PROTOCOL_v0_5.md`. CLI negative checks: `python3 -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_*.py' -v`. Evidence workflow: `.github/workflows/jm-agent-skill-donor-contact-v02.yml`.
 
 **MAXIMAL CURRENT BOUNDARY = verified reversible knowledge carrier, NOT finished autonomous learning or a new JM engine.**
+
+
+## v0.6 — verified external HELD JSON → existing JM route (independently executed)
+
+The original Lovable browser app and JM sovereign Python+Node runtimes remain separate protected carriers; the additive `jm_lovable_handoff.py` is the explicit, bounded file-contact adapter. **Never use the displayed candidate JSON without the exact original source file.** The Lovable export stores source SHA256, selected line numbers, quarantine labels and quotations, but not the full source. A screenshot and a filename are insufficient provenance.
+
+For an authorised local review, collect **two files**: exact original UTF-8 `source.txt` and Lovable Review's `candidate.json`. No third-party upload or source execution:
+
+
+```sh
+python3 .agents/skills/jm-ecostate-route/jm_lovable_handoff.py \
+  --source /private/source.txt \
+  --lovable-json /private/candidate.json \
+  --query 'recover ancestors' \
+  --out /private/held-run \
+  --route-existing
+
+```
+
+
+The adapter fail-closes on SHA mismatches, edited quotations, invalid cited line numbers, stale source, forged `DING` / autoInstall, invalid export or existing output. On valid data it invokes the **unchanged** JM v0.5 intake, independent source replay, fresh lexical retrieval and (with `--route-existing`) the existing JM dual-language runtime. Its receipt stays `HELD` and cannot install, deploy or grant current-head authority. No imported source text acquires system-instruction status. The generated candidate indexes may quote personal text; keep the entire output private. Metadata-only receipts may be shared after review.
+
+`host-trials/lovable-v0_1/JM_KNOWLEDGE_VISGUIDE_v0_6_ONEBODY.html` is a working offline visual/interaction target that checks source SHA and cited lines in a browser. It does **not** run Python, Node or autonomous coding agents. CI uses only a synthetic JSON reconstruction of the visible owner sample, not the owner's exported JSON file. Owner's signed-in browser established HELD review UI; actual export/import across owner-controlled files, independent Codex/Copilot skill autodiscovery, hardware speech accuracy, trained model attention and a recipient capability uplift remain separately OPEN.
+
+**Exact integration CI evidence:** `https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39191716204`; 103/103 behavioral unit tests, 24/24 skill integrity checks, actual Python+Node JM route, independent original-source replay all PASS on the isolated candidate branch. No source promotion. **NO DING, NO CLAIM.**

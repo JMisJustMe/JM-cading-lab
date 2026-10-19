@@ -8,6 +8,7 @@ on:
       - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
       - 'navigator/estate-integration/bridge.js'
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'ailatheo/index.html'
       - 'scripts/jm_ailatheo_living_federation_conformance.py'
       - 'tests/ailatheo-estate-bridge-runtime.spec.mjs'
       - '.github/workflows/jm-estate-earned-integration.yml'
@@ -18,6 +19,7 @@ on:
       - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
       - 'navigator/estate-integration/bridge.js'
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'ailatheo/index.html'
       - 'scripts/jm_ailatheo_living_federation_conformance.py'
       - 'tests/ailatheo-estate-bridge-runtime.spec.mjs'
       - '.github/workflows/jm-estate-earned-integration.yml'
@@ -38,7 +40,7 @@ jobs:
         run: python services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
       - name: Build Mesh Python syntax
         run: python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/server.py
-      - name: Read-only relationship execution proof
+      - name: Read-only relationship planning proof
         working-directory: services/jm-ecostate-build-mesh-mcp-v0_5
         run: python test_relationship_operations.py
       - name: AILatheo carrier contract

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#050814">
-<title>JM WRESTLEFORM // DUAL EXPRESSIONS — 3D Wrestling Game v0.3.2 · JM Static Batch</title>
+<title>JM WRESTLEFORM // DUAL EXPRESSIONS — 3D Wrestling Game v0.3.1 · JM Render Contact</title>
 <style>
 :root{--bg:#050814;--panel:rgba(8,13,29,.84);--line:rgba(167,193,255,.20);--cyan:#63e9ff;--gold:#f5c85a;--hot:#ff7a65;--good:#56e2a0;--muted:#aeb8d1;--safe-b:env(safe-area-inset-bottom,0px);--safe-t:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -234,114 +234,6 @@ body.wf-sequencing.wf-sequence-idle .wBell{opacity:0!important}
  BOUNDARY "True WebGL rigid 3D sustained-combat checkpoint with strict combo authority, one contact manifold and paced rival exchange; not textured skeletal animation, motion capture, network PvP or final visual crown.";
 }</script>
 <script id="onebody" type="application/json">{"schema":"JM.ONEBODY.IR/CODEBODY_SHATTER_HALO_ARENA_ROUTE/0.3","identity":"CODEBODY: SHATTER HALO — Arena Route","version":"0.3.5-chain-integrity-contact-manifold-combat-rhythm","authority":"Theodore Benjamin Scott / JM / JMISJUSTME","parent":{"name":"Arena Route v0.2.5","role":"control/contact donor"},"donor":{"name":"Fight Clash Boxing v1.0 WebGL 3D","role":"true rigid WebGL renderer"},"preserved":["pull-hold-direct-release","two-thumb movement","range/contact truth","PushBody","input buffering","TraceBox","round recovery"],"added":["strict flow/combo separation","authored three-hit combo ceiling","single contact-manifold solver","paced answer and reset windows","two-body readable camera","quiet play view","training-view diagnostics"],"replaced":["photo cutout","duplicated photo planes","CSS layer articulation"],"boundary":"True WebGL rigid-body sustained-fight checkpoint with strict combo, contact-manifold and rhythm authority. Not skinned skeletal animation, textured final character art, motion capture, online PvP or release crown."}</script>
-<script id="jm-static-mesh-batch-0-2">
-(function(){'use strict';
-/* JM ECOSTATE STATIC BATCH ENGINE v0.2
- * Authorial purpose: live GPU static-geometry batching for JM WebGL games.
- * Clean implementation of principles documented in JM ONE ON ONE CP2 receipt.
- * NOT the exact unread Astra CP2 source file. No production/device claim.
- */
-const JM_STATIC_BATCH_VERSION='0.2.0';
-const VERT_STRIDE=14;
-const MAX_VERTICES=65535; // WebGL1-compatible unsigned short indices.
-const VS=`attribute vec3 aPos,aNor;attribute vec4 aColor;attribute vec3 aRim;attribute float aGlow;
-uniform mat4 uVP;varying vec3 vNor,vWorld,vRim;varying vec4 vColor;varying float vGlow;
-void main(){vWorld=aPos;vNor=aNor;vRim=aRim;vColor=aColor;vGlow=aGlow;gl_Position=uVP*vec4(aPos,1.0);}`;
-const FS=`precision mediump float;varying vec3 vNor,vWorld,vRim;varying vec4 vColor;varying float vGlow;
-uniform vec3 uLight,uCam;void main(){vec3 n=normalize(vNor);
-float d=max(dot(n,normalize(uLight)),0.0);
-float rim=pow(1.0-max(dot(n,normalize(uCam-vWorld)),0.0),2.1);
-vec3 c=vColor.rgb*(.24+d*.76)+vRim*rim*(.28+vGlow);
-gl_FragColor=vec4(c,vColor.a);}`;
-function safeShader(gl,type,src){
- const sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);
- if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error('JM shader compilation: '+gl.getShaderInfoLog(sh));
- return sh;
-}
-function createJMStaticBatcher(gl,{normalMatrix}={}){
- if(!gl||typeof gl.createBuffer!=='function')throw new TypeError('WebGL context required');
- if(typeof normalMatrix!=='function')throw new TypeError('Inverse-transpose normalMatrix provider required');
- let program=null,attributes=null,uniforms=null,batches=[],stats={compileCount:0,batchCount:0,sourceCalls:0,storedVertices:0,indices:0,draws:0};
- function setup(){
-  if(program)return;
-  const vert=safeShader(gl,gl.VERTEX_SHADER,VS),frag=safeShader(gl,gl.FRAGMENT_SHADER,FS);
-  const prog=gl.createProgram();gl.attachShader(prog,vert);gl.attachShader(prog,frag);gl.linkProgram(prog);
-  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error('JM static program link: '+gl.getProgramInfoLog(prog));
-  if(gl.deleteShader){gl.deleteShader(vert);gl.deleteShader(frag)}
-  program=prog;
-  attributes=['aPos','aNor','aColor','aRim','aGlow'].map(name=>gl.getAttribLocation(prog,name));
-  uniforms=Object.fromEntries(['uVP','uLight','uCam'].map(name=>[name,gl.getUniformLocation(prog,name)]));
- }
- function release(){
-  for(const batch of batches){gl.deleteBuffer?.(batch.vertices);gl.deleteBuffer?.(batch.indices)}
-  batches=[];stats.batchCount=stats.storedVertices=stats.indices=0;
- }
- function build(calls){
-  if(!Array.isArray(calls))throw new TypeError('Expected array of source draw records');
-  setup();
-  const next=[];let vertexList=[],indexList=[],count=0,totalVertices=0,totalIndices=0;
-  function commit(){
-   if(!indexList.length)return;
-   const v=gl.createBuffer(),i=gl.createBuffer();
-   gl.bindBuffer(gl.ARRAY_BUFFER,v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertexList),gl.STATIC_DRAW);
-   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,i);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(indexList),gl.STATIC_DRAW);
-   next.push({vertices:v,indices:i,count:indexList.length});
-   vertexList=[];indexList=[];count=0;
-  }
-  try{
-   for(const record of calls){
-    const {mesh,mat,color,rim,glow}=record, p=mesh?.cpuP,n=mesh?.cpuN,idx=mesh?.cpuI;
-    if(!p||!n||!idx||p.length!==n.length||p.length%3!==0||!mat||mat.length!==16)
-     throw new Error('Source mesh CPU geometry and 4x4 matrix required');
-    if(!color||color.length!==4||!rim||rim.length!==3)throw new Error('Colour/rim attributes invalid');
-    const normal=normalMatrix(mat);
-    if(!normal)throw new Error('Static transform must be invertible');
-    const vertices=p.length/3;
-    if(vertices>MAX_VERTICES)throw new Error('Single mesh exceeds WebGL1 uint16 range');
-    if(count+vertices>MAX_VERTICES)commit();
-    for(let k=0;k<p.length;k+=3){
-     const x=p[k],y=p[k+1],z=p[k+2],a=n[k],b=n[k+1],c=n[k+2];
-     const wx=mat[0]*x+mat[4]*y+mat[8]*z+mat[12],wy=mat[1]*x+mat[5]*y+mat[9]*z+mat[13],wz=mat[2]*x+mat[6]*y+mat[10]*z+mat[14];
-     let nx=normal[0]*a+normal[3]*b+normal[6]*c,ny=normal[1]*a+normal[4]*b+normal[7]*c,nz=normal[2]*a+normal[5]*b+normal[8]*c;
-     const inv=1/(Math.hypot(nx,ny,nz)||1);nx*=inv;ny*=inv;nz*=inv;
-     vertexList.push(wx,wy,wz,nx,ny,nz,color[0],color[1],color[2],color[3],rim[0],rim[1],rim[2],glow);
-    }
-    for(const i of idx){if(!Number.isInteger(i)||i<0||i>=vertices)throw Error('Index out of source range');indexList.push(count+i)}
-    count+=vertices;totalVertices+=vertices;totalIndices+=idx.length;
-   }
-   commit();
-  }catch(e){for(const batch of next){gl.deleteBuffer?.(batch.vertices);gl.deleteBuffer?.(batch.indices)}throw e}
-  release();batches=next;stats={compileCount:stats.compileCount+1,batchCount:batches.length,sourceCalls:calls.length,storedVertices:totalVertices,indices:totalIndices,draws:0};
-  return Object.freeze({...stats});
- }
- function draw({vp,light,cam,restoreProgram}){
-  if(!program||!batches.length)return 0;
-  if(vp?.length!==16||light?.length!==3||cam?.length!==3)throw new TypeError('Invalid scene uniforms');
-  gl.useProgram(program);
-  gl.uniformMatrix4fv(uniforms.uVP,false,new Float32Array(vp));
-  gl.uniform3fv(uniforms.uLight,new Float32Array(light));
-  gl.uniform3fv(uniforms.uCam,new Float32Array(cam));
-  const widths=[3,3,4,3,1],offsets=[0,12,24,40,52],stride=VERT_STRIDE*4;
-  for(const batch of batches){
-   gl.bindBuffer(gl.ARRAY_BUFFER,batch.vertices);
-   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,batch.indices);
-   for(let a=0;a<attributes.length;a++){
-    if(attributes[a]<0)continue;
-    gl.enableVertexAttribArray(attributes[a]);
-    gl.vertexAttribPointer(attributes[a],widths[a],gl.FLOAT,false,stride,offsets[a]);
-   }
-   gl.drawElements(gl.TRIANGLES,batch.count,gl.UNSIGNED_SHORT,0);stats.draws++;
-  }
-  if(restoreProgram)gl.useProgram(restoreProgram);
-  return batches.length;
- }
- function dispose(){release();if(program)gl.deleteProgram?.(program);program=null}
- return Object.freeze({build,draw,dispose,get stats(){return Object.freeze({...stats})}});
-}
-
-window.JMStaticMeshBatch=Object.freeze({JM_STATIC_BATCH_VERSION,createJMStaticBatcher});
-})();
-</script>
 <script id="jm-native-render-contact-0-1">
 (function(){'use strict';
 /* JM RENDER CONTACT v0.1 | JM ECOSTATE | 2026-10-19
@@ -475,14 +367,11 @@ const add=(a,b)=>a.map((v,i)=>v+b[i]),sub=(a,b)=>a.map((v,i)=>v-b[i]),mul=(a,s)=
 function meshBox(){const p=[],n=[],idx=[];const faces=[[[0,0,1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],[[0,0,-1],[1,-1,-1],[-1,-1,-1],[-1,1,-1],[1,1,-1]],[[1,0,0],[1,-1,1],[1,-1,-1],[1,1,-1],[1,1,1]],[[-1,0,0],[-1,-1,-1],[-1,-1,1],[-1,1,1],[-1,1,-1]],[[0,1,0],[-1,1,1],[1,1,1],[1,1,-1],[-1,1,-1]],[[0,-1,0],[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1]]];faces.forEach(f=>{let b=p.length/3;for(let i=1;i<5;i++){p.push(...f[i]);n.push(...f[0])}idx.push(b,b+1,b+2,b,b+2,b+3)});return makeMesh(p,n,idx)}
 function meshSphere(seg=16,rings=10){const p=[],n=[],idx=[];for(let y=0;y<=rings;y++){let v=y/rings,ph=v*Math.PI;for(let x=0;x<=seg;x++){let u=x/seg,th=u*Math.PI*2,s=Math.sin(ph),q=[Math.cos(th)*s,Math.cos(ph),Math.sin(th)*s];p.push(...q);n.push(...q)}}for(let y=0;y<rings;y++)for(let x=0;x<seg;x++){let a=y*(seg+1)+x,b=a+seg+1;idx.push(a,b,a+1,b,b+1,a+1)}return makeMesh(p,n,idx)}
 function meshCyl(seg=14){const p=[],n=[],idx=[];for(let y=0;y<2;y++)for(let i=0;i<=seg;i++){let a=i/seg*Math.PI*2,x=Math.cos(a),z=Math.sin(a);p.push(x,y*2-1,z);n.push(x,0,z)}for(let i=0;i<seg;i++){let a=i,b=i+seg+1;idx.push(a,b,a+1,b,b+1,a+1)}return makeMesh(p,n,idx)}
-function makeMesh(p,n,i){const o={v:gl.createBuffer(),n:gl.createBuffer(),i:gl.createBuffer(),count:i.length,cpuP:p.slice(),cpuN:n.slice(),cpuI:i.slice()};gl.bindBuffer(gl.ARRAY_BUFFER,o.v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(p),gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,o.n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(n),gl.STATIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,o.i);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(i),gl.STATIC_DRAW);return o}
+function makeMesh(p,n,i){const o={v:gl.createBuffer(),n:gl.createBuffer(),i:gl.createBuffer(),count:i.length};gl.bindBuffer(gl.ARRAY_BUFFER,o.v);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(p),gl.STATIC_DRAW);gl.bindBuffer(gl.ARRAY_BUFFER,o.n);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(n),gl.STATIC_DRAW);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,o.i);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(i),gl.STATIC_DRAW);return o}
 const meshes={box:meshBox(),sphere:meshSphere(),cyl:meshCyl()};
 const JMRenderOrg = window.JMRenderContact; // exact JM shared organ from /games-beyond/jm-render-contact
 const JMRenderMode = JMRenderOrg.detectInstancing(gl).kind;
 const JMRenderMetric = {frames:0,draws:0,meshChanges:0,transforms:0,cpuRenderMs:0};
-const JMStaticArenaBatcher=window.JMStaticMeshBatch.createJMStaticBatcher(gl,{normalMatrix:JMRenderOrg.normalMatrix3});
-let JMStaticCapturing=false,JMStaticRecords=[],JMStaticArenaStyle=null;
-
 let JMCurrentMesh = null;
 function bind(m){
  if(JMCurrentMesh===m)return;
@@ -494,7 +383,7 @@ function bind(m){
 glc.addEventListener('webglcontextlost',e=>{e.preventDefault();JMCurrentMesh=null;trace.push('JM_RENDER_CONTEXT_LOST',{recovery:'RELOAD_REQUIRED'});});
 glc.addEventListener('webglcontextrestored',()=>{JMCurrentMesh=null;trace.push('JM_RENDER_CONTEXT_RESTORED',{recovery:'RELOAD_REQUIRED'});});
 function rgba(hex,a=1){hex=hex.replace('#','');if(hex.length===3)hex=hex.split('').map(x=>x+x).join('');return[parseInt(hex.slice(0,2),16)/255,parseInt(hex.slice(2,4),16)/255,parseInt(hex.slice(4,6),16)/255,a]}
-let VP=M.id(),cam=[0,4.1,8.2];function draw(mesh,mat,color,rim=[.2,.6,1],glow=0){if(JMStaticCapturing){JMStaticRecords.push({mesh,mat,color,rim,glow});return}JMRenderMetric.draws++;bind(mesh);gl.uniformMatrix4fv(U.m,false,new Float32Array(mat));gl.uniform4fv(U.c,color);gl.uniform3fv(U.rim,rim);gl.uniform1f(U.g,glow);gl.drawElements(gl.TRIANGLES,mesh.count,gl.UNSIGNED_SHORT,0)}
+let VP=M.id(),cam=[0,4.1,8.2];function draw(mesh,mat,color,rim=[.2,.6,1],glow=0){JMRenderMetric.draws++;bind(mesh);gl.uniformMatrix4fv(U.m,false,new Float32Array(mat));gl.uniform4fv(U.c,color);gl.uniform3fv(U.rim,rim);gl.uniform1f(U.g,glow);gl.drawElements(gl.TRIANGLES,mesh.count,gl.UNSIGNED_SHORT,0)}
 function trs(p,s=[1,1,1],rx=0,ry=0,rz=0){
  JMRenderMetric.transforms++;
  // Tested against original four-matrix composition: 10,000 cases, error <= 4.45e-16.
@@ -626,7 +515,7 @@ function drawFighter(f,player){
   if(near){ovoid(local(torso,R,F,0,.30,.34),[.18,.065,.065],accent,.10);}
 }
 
-function JMCompileArenaGeometry(){
+function arena(){
   const gold=rgba('#d5ac64'),silver=rgba('#6e83a9');
   // Arena architecture — correct-sized elevated squared ring and ring skirt.
   draw(meshes.box,trs([0,-.35,0],[3.95,.28,2.80]),rgba('#131b31'),[.24,.55,.81]);
@@ -660,19 +549,6 @@ function JMCompileArenaGeometry(){
     draw(meshes.sphere,trs([x,.73,z],[.18,.19,.18]),rgba(tone),[.3,.5,.6]);
     draw(meshes.box,trs([x,.31,z],[.23,.33,.16]),rgba('#182437'),[.3,.5,.6]);
   }
-}
-function arena(){
- if(JMStaticArenaStyle!==WREST.style || JMStaticArenaBatcher.stats.compileCount===0){
-  JMStaticRecords=[];JMStaticCapturing=true;
-  try{JMCompileArenaGeometry()}
-  finally{JMStaticCapturing=false}
-  JMStaticArenaBatcher.build(JMStaticRecords);
-  JMStaticRecords=[];JMStaticArenaStyle=WREST.style;
-  trace.push('JM_STATIC_ARENA_COMPILED',{style:JMStaticArenaStyle,...JMStaticArenaBatcher.stats});
- }
- JMRenderMetric.draws+=JMStaticArenaBatcher.draw({vp:VP,light:[.55,1,.45],cam,restoreProgram:prog});
- // Static mesh shader owns attrib pointers; force legacy player/shadow binding afterward.
- JMCurrentMesh=null;
   // Floor spotlight pools follow wrestlers and ground their 3D contact.
   for(const f of [G.player,G.enemy]){
     draw(meshes.sphere,trs([f.x,.026,f.z],[.47,.005,.36]),rgba('#182d42'),[.2,.5,.7],.0);
@@ -796,20 +672,7 @@ const drawOverlay032=drawOverlay;
 drawOverlay=function(){drawOverlay032();let p=G.player,a=p.action;if(a){let ph=actionPhase(p,a.name),base=project([p.x,1.36,p.z]),tip=project([p.x+a.aim.x*(.45+(ATT[a.name]?.reach||1)*ph*.65),1.36+(a.name==='UPPER'?ph*.42:a.name==='BODY'?-ph*.18:0),p.z+a.aim.z*(.45+(ATT[a.name]?.reach||1)*ph*.65)]);octx.save();octx.globalAlpha=.25+.55*ph;octx.strokeStyle=a.name==='BREAK'?'#f5c85a':a.name==='HOOK'?'#ff8c66':a.name==='BODY'?'#56e2a0':'#63e9ff';octx.lineWidth=a.name==='BREAK'?5:3;octx.beginPath();octx.moveTo(base.x,base.y);octx.quadraticCurveTo((base.x+tip.x)/2,Math.min(base.y,tip.y)-24*ph,tip.x,tip.y);octx.stroke();octx.restore()}if(p.dashT>0){let pp=project([p.x,.9,p.z]);octx.save();octx.strokeStyle='rgba(99,233,255,.55)';octx.lineWidth=2;for(let i=0;i<5;i++){octx.beginPath();octx.moveTo(pp.x-18-i*6,pp.y-18+i*8);octx.lineTo(pp.x-55-i*8,pp.y-18+i*8);octx.stroke()}octx.restore()}if(p.parryT>0){let pp=project([p.x,1.35,p.z]);octx.save();octx.strokeStyle='rgba(245,200,90,.9)';octx.lineWidth=3;octx.beginPath();octx.arc(pp.x,pp.y,24+(1-p.parryT/.27)*14,0,Math.PI*2);octx.stroke();octx.restore()}};
 
 // Cleaner stage: fewer/thinner ropes, stronger depth floor, less obstruction.
-function JMCompileFinalArenaGeometry(){draw(meshes.box,trs([0,-.23,0],[3.8,.18,2.7]),rgba('#071022'),[.2,.5,1]);draw(meshes.box,trs([0,.0,0],[3.52,.05,2.45]),rgba('#28577d'),[.2,.7,1],.06);draw(meshes.sphere,trs([0,.055,0],[1.42,.018,1.42]),rgba('#8cb9dc',.3),[.4,.7,1],.04);for(let i=0;i<4;i++){let q=i*Math.PI/2+.25,x=Math.cos(q)*3.45,z=Math.sin(q)*2.35;draw(meshes.cyl,trs([x,.72,z],[.055,.78,.055]),rgba(i<2?'#1c76cb':'#c73850'),[1,.5,.2],.08)}for(let y of [.68,1.12]){for(let s of [-1,1]){cylBetween([-3.4,y,s*2.35],[3.4,y,s*2.35],.007,rgba(y>1?'#d9aa42':'#6f7d95'),[1,.75,.2],.03);cylBetween([s*3.4,y,-2.35],[s*3.4,y,2.35],.007,rgba(y>1?'#d9aa42':'#6f7d95'),[1,.75,.2],.03)}}for(let i=0;i<16;i++){let q=i/16*Math.PI*2,x=Math.cos(q)*4.7,z=Math.sin(q)*3.5;draw(meshes.box,trs([x,.28,z],[.19,.30,.19],0,-q,0),rgba(i%2?'#101c34':'#231728'),[.3,.4,.8])}}
-arena=function(){
- if(JMStaticArenaStyle!=='FINAL_RINGSIDE_035' || JMStaticArenaBatcher.stats.compileCount===0){
-  JMStaticRecords=[];JMStaticCapturing=true;
-  try { JMCompileFinalArenaGeometry(); }
-  finally { JMStaticCapturing=false; }
-  JMStaticArenaBatcher.build(JMStaticRecords);
-  JMStaticRecords=[];JMStaticArenaStyle='FINAL_RINGSIDE_035';
-  trace.push('JM_STATIC_FINAL_ARENA_COMPILED',{...JMStaticArenaBatcher.stats});
- }
- const actual=JMStaticArenaBatcher.draw({vp:VP,light:[.55,1,.45],cam,restoreProgram:prog});
- JMRenderMetric.draws+=actual;
- JMCurrentMesh=null; // graphics state restored for dynamic wrestler parts
-};
+arena=function(){draw(meshes.box,trs([0,-.23,0],[3.8,.18,2.7]),rgba('#071022'),[.2,.5,1]);draw(meshes.box,trs([0,.0,0],[3.52,.05,2.45]),rgba('#28577d'),[.2,.7,1],.06);draw(meshes.sphere,trs([0,.055,0],[1.42,.018,1.42]),rgba('#8cb9dc',.3),[.4,.7,1],.04);for(let i=0;i<4;i++){let q=i*Math.PI/2+.25,x=Math.cos(q)*3.45,z=Math.sin(q)*2.35;draw(meshes.cyl,trs([x,.72,z],[.055,.78,.055]),rgba(i<2?'#1c76cb':'#c73850'),[1,.5,.2],.08)}for(let y of [.68,1.12]){for(let s of [-1,1]){cylBetween([-3.4,y,s*2.35],[3.4,y,s*2.35],.007,rgba(y>1?'#d9aa42':'#6f7d95'),[1,.75,.2],.03);cylBetween([s*3.4,y,-2.35],[s*3.4,y,2.35],.007,rgba(y>1?'#d9aa42':'#6f7d95'),[1,.75,.2],.03)}}for(let i=0;i<16;i++){let q=i/16*Math.PI*2,x=Math.cos(q)*4.7,z=Math.sin(q)*3.5;draw(meshes.box,trs([x,.28,z],[.19,.30,.19],0,-q,0),rgba(i%2?'#101c34':'#231728'),[.3,.4,.8])}};
 
 const snapshot032=snapshot;
 snapshot=function(){let x=snapshot032();x.version='0.3.5';x.renderer='RAW_WEBGL_TWO_BODY_COMBAT';x.bigPush={dashReady:G.player.dashCd<=0,chainStep:G.player.chainStep,flow:G.flowScore,parryWindow:+G.player.parryT.toFixed(2),rivalTelegraph:G.enemy.tell?.name||null,attacks:Object.keys(ATT)};x.boundary='True raw-WebGL rigid 3D living-combat checkpoint with procedural mobility, route chains and counterplay; no textured skeletal-production crown.';return x};
@@ -1323,7 +1186,6 @@ window.JM_WRESTLE_RENDER_QA=Object.freeze({
  normalMatrix:transform=>JMRenderOrg.normalMatrix3(transform),
  donorSourceVerified:false,
  gpuBenchmarked:false,
- staticBatch:()=>({...JMStaticArenaBatcher.stats,style:JMStaticArenaStyle}),
  ownerAndroidVerified:false
 });
 trace.push('JM_RENDER_CONTACT_MOUNT',{provider:JMRenderMode,stage:'BOUNDARY_TEST',gameplay:'INHERITED_UNMODIFIED',donorSHA256:'d393e381db46bae9b3c758b72c8c82e380857cd7ab1ccab70b25a17f86c0c385',donorBytesVerified:false});

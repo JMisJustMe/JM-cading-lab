@@ -11,13 +11,19 @@ assert.equal(scripts.length,4,'3 renderer organs + original WRESTLEFORM gameplay
 for(const js of scripts){new Function(js)}
 const ids=new Set([...source.matchAll(/\bid=["']([a-zA-Z_$][\w$-]*)["']/g)].map(x=>x[1]).filter(x=>!x.includes('-')));
 const entries=new Map(),pending=[];
-let milliseconds=0,draws=0,binds=0;
+let milliseconds=0,draws=0,binds=0,transparentSubmissions=0,blendEnabled=false,depthWritable=true;
+const depthTransitions=[];
 const fake2d=new Proxy({}, {get:()=>()=>{}});
 const gl=new Proxy({
  createShader:()=>({}),createProgram:()=>({}),createBuffer:()=>({}),
  getShaderParameter:()=>true,getProgramParameter:()=>true,
  getAttribLocation:()=>0,getUniformLocation:()=>({}),
- getExtension:()=>null,drawElements:()=>draws++,bindBuffer:()=>binds++
+ getExtension:()=>null,
+ BLEND:'JM_BLEND', enable:k=>{if(k==='JM_BLEND')blendEnabled=true},
+ disable:k=>{if(k==='JM_BLEND')blendEnabled=false},
+ depthMask:v=>{depthWritable=v;depthTransitions.push(v)},
+ drawElements:()=>{draws++;if(blendEnabled&&!depthWritable)transparentSubmissions++},
+ bindBuffer:()=>binds++
 },{get(o,k){if(k in o)return o[k];return typeof k==='string'&&k===k.toUpperCase()?1:()=>{}}});
 function element(id){return {id,style:{setProperty(){}},dataset:{},innerHTML:'',textContent:'',value:'',hidden:false,
  width:900,height:570,classList:{add(){},remove(){},toggle(){return false},contains(){return false}},
@@ -75,6 +81,10 @@ milliseconds+=16.7;pending.pop()(milliseconds);
 assert.equal(window.JM_WRESTLE_RENDER_QA.current().frames,2);
 assert.equal(window.JM_WRESTLE_RENDER_QA.current().draws,frame.draws);
 assert.equal(window.JM_WRESTLE_RENDER_QA.staticBatch().compileCount,1,'static arena reused without recompiling');
+assert.equal(transparentSubmissions,6,'one alpha ring marking + two contact shadows over 2 frames');
+assert.deepEqual(depthTransitions,[false,true,false,true,false,true,false,true],'two transparent passes per frame restore depth');
+assert.equal(depthWritable,true,'depth writing restored after transparent primitives');
+assert.equal(blendEnabled,false,'blend state restored after transparent primitives');
 assert.equal(window.JM_WRESTLE_RENDER_QA.donorSourceVerified,false);
 assert.equal(window.JM_WRESTLE_RENDER_QA.gpuBenchmarked,false);
 console.log('JM WRESTLEFORM v0.3.4: first-open, 30-to-1 static + 1 alpha, 92 draws with contact shadows, normals, dual-mode PASS',JSON.stringify({draws:frame.draws,meshBindings:frame.meshChanges,mode:'dual',gpuClaim:false}));

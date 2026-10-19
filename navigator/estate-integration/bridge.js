@@ -72,7 +72,14 @@
       registry,
       registryUrl:sourceUrl,
       surface,
-      relationshipPolicy: Object.freeze({operations:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],scope:'public relationship navigation only; no merger or private write',proof:'Contact before crown; explicit authority and receiver proof for real merge'}),
+      relationshipPolicy: Object.freeze({
+        state:registry.relationship_policy?.schema==='JM.Estate.RelationshipOperations/1'?'PUBLIC_DECLARED_NOT_EXECUTED':'LEGACY_POLICY_HOLD',
+        operations:registry.relationship_policy?.schema==='JM.Estate.RelationshipOperations/1'
+          ? ['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'].filter(op=>registry.relationship_policy.operations?.includes(op))
+          : [],
+        scope:'Public relationship policy and navigation only; no merger or private write',
+        proof:'Contact before crown; explicit authority, execution and receiver proof for real merge'
+      }),
       resolve(id){return index.get(String(id||'').toLowerCase())||null},
       list(){return [...index.values()]},
       open(id){

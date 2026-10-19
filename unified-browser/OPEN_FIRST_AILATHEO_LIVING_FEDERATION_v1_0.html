@@ -159,7 +159,9 @@ window.addEventListener('jm-ailatheo-consequence-return',event=>{
   receiver:'JM_AILATHEO_CREATION_WORKBENCH_V3',
   event_kind:returned.receiverProof?.eventKind,event_id:returned.receiverProof?.eventId,
   bodies:returned.receiverProof?.bodyCount,links:returned.receiverProof?.linkCount,
-  proof_sha256:returned.proofSha256,claim:'VERIFIED_LOCAL_RECEIVER_CONSEQUENCE_NOT_EXTERNAL_PRIVATE_WRITE'};
+  proof_sha256:returned.proofSha256,
+  native_six_return:returned.nativeProof?{source:returned.nativeProof.source,executed_bodies:returned.nativeProof.testedBodies,gate_count:returned.nativeProof.gates,receipt_count:returned.nativeProof.receipts,sha256:returned.nativeProofSha256,claim:'SIX_LOCAL_NATIVE_INTERPRETERS_EXECUTED'}:null,
+  claim:'VERIFIED_LOCAL_RECEIVER_CONSEQUENCE_NOT_EXTERNAL_PRIVATE_WRITE'};
  try{localStorage.setItem(KEY,JSON.stringify({last:history.at(-1),history:history.slice(-24)}))}
  catch(e){$('headStatus').textContent='RETURN VERIFIED · TRACE SAVE HOLD'}
 });

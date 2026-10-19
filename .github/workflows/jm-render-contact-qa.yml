@@ -25,7 +25,11 @@ jobs:
         run: node games-beyond/jm-render-contact/JM_RENDER_CONTACT_v0_1.test.mjs
       - name: Verify real static geometry batching (mock WebGL1-capable backend)
         run: node games-beyond/jm-render-contact/JM_STATIC_BATCH_v0_2.test.mjs
+      - name: Verify contact-shadow blend/depth state restoration (simulated WebGL)
+        run: node games-beyond/jm-render-contact/JM_SOFT_CONTACT_SHADOW_v0_1.test.mjs
       - name: Verify WRESTLEFORM receiver first open and dual experience (mock only)
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_1_RECEIVER.test.mjs
       - name: Verify WRESTLEFORM v0.3.2 actual final arena consolidation and gameplay survival
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_2_STATIC_BATCH.test.mjs
+      - name: Verify WRESTLEFORM v0.3.3 soft-shadow, normal, batch and gameplay regression
+        run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_3_RENDER_EVOLUTION.test.mjs

@@ -23,3 +23,5 @@ jobs:
           node-version: '22'
       - name: Verify JM renderer provider contact, safety and fallback
         run: node games-beyond/jm-render-contact/JM_RENDER_CONTACT_v0_1.test.mjs
+      - name: Verify WRESTLEFORM receiver first open and dual experience (mock only)
+        run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_1_RECEIVER.test.mjs

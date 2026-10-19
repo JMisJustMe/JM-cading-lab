@@ -2,8 +2,27 @@
 """Source-scope regression gates: relationship planning never executes a merge."""
 import importlib
 import json
+import os
+import tempfile
 
-server = importlib.import_module("server")
+# An isolated, nonproduction registry fixture exercises source-level planning.
+# It is not the live v0.24 exact-byte registry and cannot earn a deployment Ding.
+registry = {
+    "schema":"JM.CareerCurrentProjectRegistry/0.24",
+    "date":"2026-10-19",
+    "body":"JM synthetic source-test fixture — NOT LIVE AUTHORITY",
+    "records":[{"id":"fixture","title":"Synthetic fixture only","status":"TEST_ONLY",
+                "summary":"No owner data","proof":"No external proof",
+                "boundary":"Fixture data is not a live current head"}],
+}
+with tempfile.NamedTemporaryFile(mode="w",encoding="utf-8",suffix=".json",delete=False) as f:
+    json.dump(registry,f)
+    fixture_path=f.name
+os.environ["JM_CURRENT_REGISTRY_PATH"]=fixture_path
+try:
+    server = importlib.import_module("server")
+finally:
+    os.unlink(fixture_path)
 server.resolve_current_head = lambda args: {
     "state": "CURRENT_DECLARED",
     "current_head": "mock current head of " + args["name"],

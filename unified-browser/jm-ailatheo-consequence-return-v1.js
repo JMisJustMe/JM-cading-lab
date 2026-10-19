@@ -100,7 +100,7 @@ function mountFederation(){
  const id=new URL(location.href).searchParams.get('jm_return_id');
  if(!id)return;
  const t=read();
- if(!validTicket(t)||t.id!==id||t.phase!=='RECEIVER_RETURN_READY'||!t.receiverProof)return hold('No matching fresh verified receiver return');
+ if(!validTicket(t)||t.id!==id||!['RECEIVER_RETURN_READY','FEDERATION_RETURN_VERIFIED'].includes(t.phase)||!t.receiverProof)return hold('No matching fresh verified receiver return');
  Promise.resolve().then(async()=>{
   if(await digest(t.intent)!==t.intentSha256||await digest(t.receiverProof)!==t.proofSha256)return hold('Return evidence hash mismatch');
   const {bodies,links}=loadPersistedProject();

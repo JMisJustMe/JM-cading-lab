@@ -113,7 +113,7 @@ jobs:
                   "action_type":"inspect",
               })
               assert op["mutation_performed"] is False, op
-              print(json.dumps({
+              smoke = {
                   "schema":"JM.BuildMesh.LiveVersionAwareSmoke/1",
                   "live_version":deployed_version,
                   "state":"LIVE_READ_ONLY_CONTACT_PASS",
@@ -121,7 +121,10 @@ jobs:
                   "relationship_operations_deployed":bool(live_status.get("relationship_operations")),
                   "relationship_source_promotion":"HOLD_UNTIL_NEWER_LIVE_SOURCE_RECOVERED",
                   "mutation_performed":False,
-              }, ensure_ascii=False, indent=2))
+              }
+              with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_LIVE_VERSION.json","w",encoding="utf-8") as f:
+                  json.dump(smoke,f,ensure_ascii=False,indent=2)
+              print(json.dumps(smoke, ensure_ascii=False, indent=2))
               raise SystemExit(0)
           assert deployed_version == "0.7.2", init
 
@@ -276,6 +279,8 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+          name: JM_BUILD_MESH_HOSTED_MCP_VERSION_SCOPED_PROOF
+          path: |
+            JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+            JM_BUILD_MESH_HOSTED_MCP_PROOF_LIVE_VERSION.json
           if-no-files-found: error

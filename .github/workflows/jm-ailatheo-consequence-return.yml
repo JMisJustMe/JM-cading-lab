@@ -7,6 +7,7 @@ on:
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
+      - 'tests/ailatheo-native-six-receiver-return.spec.mjs'
       - '.github/workflows/jm-ailatheo-consequence-return.yml'
   pull_request:
     branches: [main]
@@ -15,6 +16,7 @@ on:
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
+      - 'tests/ailatheo-native-six-receiver-return.spec.mjs'
       - '.github/workflows/jm-ailatheo-consequence-return.yml'
   workflow_dispatch:
 permissions: {contents: read}
@@ -37,3 +39,4 @@ jobs:
           python3 -m http.server 4177 --bind 127.0.0.1 >/tmp/ailatheo-http.log 2>&1 &
           sleep 2
           node tests/ailatheo-federation-consequence-return.spec.mjs
+          node tests/ailatheo-native-six-receiver-return.spec.mjs

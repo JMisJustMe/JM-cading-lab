@@ -30,8 +30,8 @@ export function normalMatrix3(m) {
   const D=c*h-b*i,E=a*i-c*g,F=b*g-a*h;
   const G=b*f-c*e,H=c*d-a*f,I=a*e-b*d;
   const determinant=a*A+b*B+c*C;
-  if(!Number.isFinite(determin) || Math.abs(determin)<1e-12) return null;
-  const n=[A,D,G,B,E,H,C,F,I].map(v=>v/determin);
+  if(!Number.isFinite(determinant) || Math.abs(determinant)<1e-12) return null;
+  const n=[A,D,G,B,E,H,C,F,I].map(v=>v/determinant);
   // n is column-major inverse-transpose of the upper-left 3x3.
   return n.every(Number.isFinite) ? new Float32Array(n) : null;
 }

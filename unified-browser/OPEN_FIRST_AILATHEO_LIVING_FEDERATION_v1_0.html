@@ -151,6 +151,18 @@ function showProof(){
  $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
 }
 $('proofBtn').onclick=showProof;
+window.addEventListener('jm-ailatheo-consequence-return',event=>{
+ const returned=event.detail;
+ const last=[...history].reverse().find(x=>x.contact===returned.intent);
+ if(!last)return;
+ last.receiver_return={transaction_id:returned.id,phase:returned.phase,
+  receiver:'JM_AILATHEO_CREATION_WORKBENCH_V3',
+  event_kind:returned.receiverProof?.eventKind,event_id:returned.receiverProof?.eventId,
+  bodies:returned.receiverProof?.bodyCount,links:returned.receiverProof?.linkCount,
+  proof_sha256:returned.proofSha256,claim:'VERIFIED_LOCAL_RECEIVER_CONSEQUENCE_NOT_EXTERNAL_PRIVATE_WRITE'};
+ try{localStorage.setItem(KEY,JSON.stringify({last:history.at(-1),history:history.slice(-24)}))}
+ catch(e){$('headStatus').textContent='RETURN VERIFIED · TRACE SAVE HOLD'}
+});
 window.addEventListener('jm-estate-integration-ready',event=>{
  const bridge=window.JMEstateIntegration,registry=event.detail.registry;
  estateLink={state:'CONNECTED_PUBLIC_READ_ONLY',source:event.detail.registryUrl,version:registry.version,routeCount:bridge?.list().length||0};
@@ -162,4 +174,4 @@ window.addEventListener('jm-estate-integration-hold',event=>{
 });
 $('recover').onclick=()=>{try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(!saved?.last){$('meaningText').textContent='No retained state to recover.';return}history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='PERSISTED STATE RECOVERED';$('meaningText').textContent='Teo OS continuity office returned the last retained contact. Executed history is preserved; the next contact may differ.';$('headStatus').textContent='RECOVERED'}catch(e){$('meaningText').textContent='RECOVERY HOLD — '+String(e?.message||e)}};
 $('close').onclick=()=>$('drawer').classList.remove('open');try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.last){history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='RE-ENTRY';$('meaningText').textContent='A retained route was found on entry. Press RECOVER to make continuity explicit.';$('headStatus').textContent='RETURN'}else render({})}catch{render({})}
-</script></body></html>
+</script><script defer src="./jm-ailatheo-consequence-return-v1.js" data-jm-relay="federation"></script></body></html>

@@ -29,7 +29,8 @@
     "IF RECOVERABLE, RECOVER FIRST",
     "RECOVER BEFORE BURDEN",
     "HOUSE BEFORE ARCHIVE",
-    "MESH ≠ MERGE",
+    "CONTACT DOES NOT IMPLY MERGER",
+    "EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE",
     "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
     "ACCESS ≠ AUTHORITY",
     "RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE",
@@ -228,5 +229,30 @@
     "current64_registry": "coding-estate/JM_CODING_ESTATE_CURRENT_64.json",
     "current64_standard": "coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md",
     "rule": "All 64 current coding identities inherit this build/governance floor; only the smallest relevant donor/body set enters a given execution route."
+  },
+  "relationship_policy": {
+    "schema": "JM.Estate.RelationshipOperations/1",
+    "date": "2026-10-19",
+    "state": "OWNER_CORRECTED_FORWARD",
+    "rule": "MESH ≠ MERGE was a historical non-equivalence safeguard, not a universal prohibition. Contact alone cannot claim merger; deliberate integration or merger is permitted when earned.",
+    "operations": [
+      "SEPARATE",
+      "MESH",
+      "INTEGRATE",
+      "MERGE",
+      "TRANSFORM",
+      "BREAKAWAY"
+    ],
+    "selection": "Choose the smallest beneficial relationship supported by intent, compatibility, explicit authority, proof and reversible recovery.",
+    "merger_gate": [
+      "participant source identities recovered",
+      "target identity and desired consequence explicit",
+      "authority for participating bodies resolved",
+      "migration and recovery route recorded",
+      "receiver behaviour independently tested",
+      "persisted consequence and receipt verified"
+    ],
+    "safety": "No silent overwrite, proof transfer, involuntary merger, loss of ancestry, or automatic external write.",
+    "applicability": "Whole JM ECOSTATE. Does not retroactively modify frozen source receipts."
   }
 }

@@ -644,6 +644,58 @@ def prepare_operation_gate(args):
         "privacy_rule": "Do not include raw private Library content in this capsule.",
     }
 
+RELATIONSHIP_OPERATIONS = ("SEPARATE", "MESH", "INTEGRATE", "MERGE", "TRANSFORM", "BREAKAWAY")
+
+def plan_relationship_operation(args):
+    """Read-only relationship decision: no merging, registry write, or authority transfer."""
+    op = str(args.get("operation") or "").upper().strip()
+    objective = str(args.get("objective") or "").strip()
+    bodies = args.get("bodies") or []
+    if op not in RELATIONSHIP_OPERATIONS:
+        raise ValueError("operation must be one of: " + ", ".join(RELATIONSHIP_OPERATIONS))
+    if not objective or not isinstance(bodies, list) or not 2 <= len(bodies) <= 8:
+        raise ValueError("objective and 2-8 bodies are required")
+    names = [str(n).strip() for n in bodies]
+    if any(not n for n in names) or len(set(n.lower() for n in names)) != len(names):
+        raise ValueError("all body identities must be nonempty and distinct")
+    resolved = []
+    for name in names:
+        head = resolve_current_head({"name": name})
+        profile = resolve_profile(name)
+        resolved.append({
+            "requested_name": name,
+            "authority_state": head.get("state", "ABSENCE_NOT_PROVEN"),
+            "hosted_current_head": head.get("current_head"),
+            "capability_profile_id": profile.get("id") if profile else None,
+        })
+    canonical = {"operation": op, "objective": objective, "bodies": names}
+    proposal_id = hashlib.sha256(json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()[:24]
+    missing = [r["requested_name"] for r in resolved if r["authority_state"] not in ("CURRENT_DECLARED", "CURRENT_CANDIDATE")]
+    gate = [
+        "Recover each participant and its strongest current authority",
+        "Resolve consent/authority, intended consequence and retained source identities",
+        "Define compatibility, receiving identity, transition and rollback",
+        "Implement via separately authorised private/owner host, never via this read-only planner",
+        "Test each receiver's actual behaviour and the fail/rollback path",
+        "Verify persisted consequence, trace, recovery and owner/device boundary before any Ding",
+    ]
+    return {
+        "schema": "JM.BuildMesh.RelationshipPlan/1",
+        "proposal_id": proposal_id,
+        "operation": op,
+        "objective": objective,
+        "participants": resolved,
+        "authority_gaps": missing,
+        "status": "PLAN_ONLY_HOLD_FOR_AUTHORITY" if missing else "PLAN_ONLY_CONTACT_READY",
+        "relationship_is_not_merger_proof": True,
+        "merge_requires_explicit_authority": op == "MERGE",
+        "steps": gate,
+        "mutation_performed": False,
+        "recipient_proof_transferred": False,
+        "owner_device_proof_claimed": False,
+        "boundary": "Intentional merge is permitted when earned; a planned or mapped relationship does not execute it.",
+    }
+
 def build_mesh_status(args):
     probe = bool(args.get("probe_navigator", True))
     nav = navigator_rpc("navigator_bridge_status", {}, use_cache=False) if probe else {"state": "NOT_PROBED"}
@@ -662,11 +714,14 @@ def build_mesh_status(args):
         "navigator_endpoint": NAVIGATOR_MCP,
         "navigator_contact": nav,
         "plugin_historical_register": "1,074 lineages retained in JM ECOSTATE Build Mesh package",
+        "relationship_operations": list(RELATIONSHIP_OPERATIONS),
+        "relationship_policy": "Contact alone does not establish a merge. Intentional merges may earn authority, implementation and receiver proof.",
         "laws": [
             "NO DING, NO CLAIM",
             "CONTACT BEFORE CROWN",
             "RECOVER BEFORE REBUILD",
-            "MESH ≠ MERGE",
+            "CONTACT DOES NOT IMPLY MERGER",
+            "EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE",
             "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
             "ACCESS ≠ AUTHORITY",
         ],
@@ -688,6 +743,7 @@ TOOLS = [
     {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"build_sync_contract","description":"Return the hosted snapshot identity plus private-host search/reconciliation rules without ingesting private Library content.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"plan_relationship_operation","description":"Create a proof-scoped, read-only plan for a chosen separate/mesh/integrate/merge/transform/breakaway relationship without changing bodies.","inputSchema":{"type":"object","properties":{"operation":{"type":"string","enum":["SEPARATE","MESH","INTEGRATE","MERGE","TRANSFORM","BREAKAWAY"]},"objective":{"type":"string"},"bodies":{"type":"array","minItems":2,"maxItems":8,"items":{"type":"string"}}},"required":["operation","objective","bodies"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"prepare_operation_gate","description":"Create a deterministic PLAN_ONLY operation capsule for a future host-authorized action; performs no write or deploy.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"action_type":{"type":"string"},"intended_change":{"type":"string"},"donors":{"type":"array","maxItems":8,"items":{"type":"string"}}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
 HANDLERS = {
@@ -705,6 +761,7 @@ HANDLERS = {
     "detect_propagation_gaps": detect_propagation_gaps,
     "plan_capability_inheritance": plan_capability_inheritance,
     "build_sync_contract": build_sync_contract,
+    "plan_relationship_operation": plan_relationship_operation,
     "prepare_operation_gate": prepare_operation_gate,
 }
 

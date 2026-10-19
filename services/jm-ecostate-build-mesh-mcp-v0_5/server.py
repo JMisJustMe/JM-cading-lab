@@ -12,7 +12,7 @@ from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
 
-VERSION = "0.7.0"
+VERSION = "0.8.6"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -22,14 +22,131 @@ SUPPORTED_PROTOCOLS = {"2025-06-18", "2025-03-26"}
 DEFAULT_PROTOCOL = "2025-06-18"
 NAV_CACHE_TTL = int(os.environ.get("JM_NAV_CACHE_TTL", "300"))
 NAV_CACHE = {}
-CURRENT_REGISTRY_SCHEMA = "JM.CareerCurrentProjectRegistry/0.3"
-CURRENT_REGISTRY_DATE = "2026-09-30"
-CURRENT_REGISTRY_BODY = "JM Opportunity Front Door v0.8 — Maximal Current"
-CURRENT_REGISTRY_SHA256 = "e9117d0b0380f9006e79358943de3f258c60d3c05ad429734d68e4c0978064da"
+SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
+CURRENT_REGISTRY_PATH = os.environ.get(
+    "JM_CURRENT_REGISTRY_PATH",
+    os.path.join(SERVICE_DIR, "current_registry.json"),
+)
 
-CURRENT = [{"id":"opportunity-v08","title":"JM Opportunity Front Door v0.8 — Maximal Current","status":"CURRENT DEVELOPMENT CANDIDATE · OWNER/PUBLIC CROWN OPEN","summary":"The former Hire-Me/UX route now operates as an opportunity front door: purpose and capability are independent projections over one source person, with employment retained as one route alongside commission, collaboration, licensing/publishing, research/consult and open future-fancy contact.","proof":"Built forward from v0.7 multi-capability projection while preserving the JM-native runtime spine, live project registry, no-dead-controls law and source/claim boundaries; later Library current pointer records v0.8 as PERFECT POLISH COMPLETE at packaged/current-maximal scope.","boundary":"v0.8 is the current packaged/FLAZ head; v0.5.1 remains the public/owner-contacted carrier until deliberate later deployment/contact."},{"id":"gripcube-rpa","title":"JM GripCube — Relational Projection Architecture v0.1.1","status":"LIVE REFERENCE RUNTIME · ASSISTANT QA PASS · OWNER CONTACT OPEN","summary":"GripCube was extracted from one website use into a broader one-body/many-projections architecture, then corrected by the no-dead-controls affordance law.","proof":"Current pointer names v0.1.1 as the reference runtime and preserves ONE BODY. MANY LEGIBLE PROJECTIONS.","boundary":"Universal/general architecture crown remains open pending wider real-body pressure tests."},{"id":"llm-core-v1","title":"JM LLM Core v1.0 — First Complete Edition","status":"FLAZ COMPLETE · FIRST COMPLETE EDITION","summary":"A real small causal language-model core with 4,096-token TokenBody, 256-token context and 7,875,147 learned parameters, advanced through bounded generation, retrieval and compositional routes.","proof":"Major first-edition lanes received direct contact; v0.15 retrieval exam 500/500 and v0.16 compositional/short-response exam 400/400 are preserved in the closure.","boundary":"Not claimed as frontier/general-assistant capability; free generation and broad reasoning remain advancement targets."},{"id":"llm2-v2","title":"JM LLM #2 v2.0 — Unified Executable Program Edition","status":"FLAZ COMPLETE · PACKAGE-PROVEN · ZIONFOLDERED","summary":"Nine current capabilities compile through one ProgramHead architecture into one bounded universal action program/interpreter, removing the v1.9 mode-router split from the success path.","proof":"Executable-program acquisition 46/46 PASS; full integration 23/23 PASS; deterministic program-bank reacquisition matched exactly.","boundary":"Bounded fixed-ISA program emission, not arbitrary code generation or unrestricted program induction."},{"id":"agi-v144","title":"JM AGI Lab v1.4.4 — Durability Settle / Live Integration","status":"FLAZ COMPLETE AT OWNER WINDOWS EDGE PROCESS-RESTART SCOPE","summary":"A bounded general-agent laboratory with explicit consequence verification and persistence/process-contact harnesses.","proof":"Assistant clean-sandbox battery 60/60 PASS; owner Windows Edge exact-body process-restart Ding earned with read-back/restore/process-zero evidence.","boundary":"No AGI or human-level intelligence claim; OS reboot, broader model contact and cross-device persistence remain separate."},{"id":"legal-v11","title":"JM LEGAL — Matter Router v0.8.2 + Pre-External Pilot Gate v1.1","status":"ROUTER CLOSED · PHASE A READY · EXTERNAL CONTACT OPEN","summary":"The matter-routing workbench reached corrected owner-device contact, then advanced to a bounded pre-external-pilot operating gate.","proof":"v0.8.2 deep QA 46/46 PASS and owner Test 001 auto-gate PASS; v1.1 operating gate regression 18/18 PASS.","boundary":"No live-client, regulated-activity, paid/public or incorporated-provider claim."},{"id":"secrets-v13","title":"Secrets of Silence — Flagship Master v1.3","status":"FLAGSHIP MASTERING COMPLETE AT ARTIFACT / ASSISTANT SCOPE","summary":"The flagship book was remastered around reader-first contact, agency/consequence precision and a restrained native reader interface.","proof":"69-page DOCX/interior, 71-page reader PDF, EPUB parse PASS and full visual QA are preserved in the closure.","boundary":"Live reader, owner-device and market contact remain separate."},{"id":"rukquss-v1","title":"RUKQUSS REALITY — Business Formation Decision v1.0","status":"FORMATION DECISION FLAZ COMPLETE · INCORPORATION OPEN","summary":"The commercial topology was settled as creator/source owner → licence gate → limited company → release/customer contact, with RUKQUSS REALITY LTD as the working legal name.","proof":"Decision/formation architecture frozen and re-entry ready.","boundary":"The company is not claimed incorporated or name-reserved until real Companies House evidence exists."},{"id":"targetbridge","title":"JM Target Bridge — Cross-Build × Cross-Engine Stage","status":"FLAZ COMPLETE AT DECLARED 4/4 PHYSICAL MATRIX","summary":"The bridge carries a bounded source body across host boundaries without manually reconstructing the test inside each host.","proof":"Original specimen and SPINBREAK slice each passed in GDevelop and Unity: 4/4 declared physical matrix.","boundary":"Unreal/other engines are forward expansion; recipient proof does not transfer automatically."},{"id":"kicshift-v11","title":"KICSHIFT v1.1 — Frame Authority / Contact Parity","status":"STANDARD-FLOOR FLAZ COMPLETE · HOLD / RETURN LATER","summary":"A three-way arena combat descendant preserving dual-vector movement, one-thumb combat flow, articulated contact, AI pressure and camera/frame authority.","proof":"Owner-phone contact confirmed all three fighters, full arena and primary controls visible/readable together.","boundary":"Browser/ECOSTATE standard floor, not a native/commercial release crown."},{"id":"ecostate-v2","title":"JMISJUSTME — JM ECOSTATE Professional Convergence v2.0","status":"BUILD COMPLETE · STATIC QA PASS · GITHUB SOURCE MERGED","summary":"One professional front door was built over many sovereign bodies, with Authuser as the creator-facing bridge into ECOSTATE.","proof":"Professional Convergence changes merged to main through the recorded GitHub source route.","boundary":"The retrieved v2.0 pointer keeps its independent deployment/contact gate distinct from source merge."},{"id":"authuser-v11","title":"JM AUTHUSER — Hawk-Read Successor v1.1","status":"CONCEPTUAL FLAZ COMPLETE · SUCCESSOR, NOT REWRITE","summary":"Authuser was reduced to a sharper creator→body→participatory-contact→creator-change relation while preserving stronger loop/practice/formation layers.","proof":"Five-gate hawk-read reduction and explicit event ≠ loop ≠ practice ≠ formation distinctions are frozen.","boundary":"Not an exhaustive historical-priority or universal originality claim."},{"id":"routecore-contact","title":"JM RouteCore — Execution Contact Checkpoint","status":"DING COMPLETE AT BIOS/QEMU EMULATOR SCOPE","summary":"The frozen BIOS disk was externally booted under QEMU/SeaBIOS and then pressure-tested with live PIT IRQ0 and PS/2 IRQ1 observability probes.","proof":"Kernel-ready boot markers returned; PIT IRQ0 and PS/2 IRQ1 contact receipts were observed.","boundary":"Physical-machine boot, physical IRQ/device contact and UEFI execution were not claimed by this checkpoint."},{"id":"coding-control-plane","title":"JM Coding / Cading / Runtime / OS Control Plane","status":"CURRENT CONTROL PLANE · 64 CODING IDENTITIES RECONCILED","summary":"The coding estate is routed through an integrated current head rather than a pile of rival front doors; OneBody Coding OS is the current integrated workbench, with specialist compiler/runtime/forge organs retained.","proof":"64 coding identities; 61/61 inherited maturation accounted; 3 post-census identities; 15/15 new-body executable proof; 10/10 root routes and 11/11 authority lanes connected in the control-plane closure.","boundary":"Current authority is typed by lane; specialist organs retain their own scope and owner/device gates."},{"id":"theory-second-order","title":"JM Theory Estate — First + Second-Order Strengthening","status":"51/51 STRICT BODIES · 7/7 FIRST-ORDER · 7/7 SECOND-ORDER","summary":"Completed theory bodies were pressure-tested against neighbours and then bridge-to-bridge without silently merging their offices.","proof":"51/51 strict-theory completion; 7/7 first strengthening runs; 7/7 second-order runs; strict count remained 51; silent merges 0.","boundary":"Internal conceptual completion and strengthening do not by themselves establish external scientific validation."},{"id":"social-economy","title":"JM ECOSTATE Social Economy Study v1.0","status":"RESEARCH 10/10 COMPLETE · CLAIM AUDIT 10/10 · FLAZ","summary":"A ten-run evidence-led study of public counters, active audience, retention, return, qualification and economic consequence across major social platforms.","proof":"10/10 research runs complete; 10/10 claim audit/reconstruction coverage; 0 open factual holds after reconciliation.","boundary":"Platform findings are evidence for publishing experiments, not a universal law of audience behaviour."},{"id":"music-release-run","title":"JM Release Run — Music Keeps the Mic","status":"FLAZ PARENT + LIVE RETURN CONTACT ADDENDUM","summary":"Exact lyric-source recovery shaped a release sequence, then later direct live freestyle contact produced a separate performance body without erasing the written route.","proof":"Music Master Index preserves 48 creative-work authorities; Release Run v1.0 is FLAZ; v1.1 records direct live vocal/freestyle contact.","boundary":"Wisdom’s Loading-specific mouth/body/beat runtime and public music release remain open."},{"id":"teaching-v52","title":"JM Teaching / Learning Engine v5.2","status":"ACTIVE LIVING DESCENDANT","summary":"A learner-centred engine with separate learner lanes, pressure, hints, recovery, trace, co-op, contact modes, adaptive skill traces and learner/parent choice over suggestions.","proof":"Current v5.2 carrier preserves the Engine/Pack split, Quick/Probe/Make/Read contact modes, living routes, Contact Compass and explicit non-ranking co-op logic.","boundary":"Family/learner contact remains human-governed; the person is never reduced to the route."}];
+def load_current_registry(path):
+    with open(path, "rb") as f:
+        raw = f.read()
+    try:
+        data = json.loads(raw.decode("utf-8"))
+    except Exception as exc:
+        raise RuntimeError(f"Current registry is not valid UTF-8 JSON: {exc}") from exc
+    if not isinstance(data, dict):
+        raise RuntimeError("Current registry root must be an object")
+    schema = str(data.get("schema") or "").strip()
+    date = str(data.get("date") or "").strip()
+    body = str(data.get("body") or "").strip()
+    records = data.get("records")
+    if not schema.startswith("JM.CareerCurrentProjectRegistry/"):
+        raise RuntimeError(f"Unexpected current registry schema: {schema!r}")
+    if not date or not body:
+        raise RuntimeError("Current registry date/body must be non-empty")
+    if not isinstance(records, list) or not records:
+        raise RuntimeError("Current registry records must be a non-empty array")
+    ids = []
+    required = ("id", "title", "status", "summary", "proof", "boundary")
+    for idx, item in enumerate(records):
+        if not isinstance(item, dict):
+            raise RuntimeError(f"Current registry record {idx} must be an object")
+        missing = [key for key in required if not str(item.get(key) or "").strip()]
+        if missing:
+            raise RuntimeError(f"Current registry record {idx} missing required fields: {missing}")
+        ids.append(item["id"])
+    if len(ids) != len(set(ids)):
+        raise RuntimeError("Current registry record ids must be unique")
+    return {
+        "schema": schema,
+        "date": date,
+        "body": body,
+        "records": records,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "bytes": len(raw),
+        "source": os.path.basename(path),
+        "path_mode": "ENV_OVERRIDE" if os.environ.get("JM_CURRENT_REGISTRY_PATH") else "SERVICE_LOCAL",
+        "hash_mode": "SHA256_EXACT_LOADED_BYTES",
+        "reload_policy": "PROCESS_START",
+    }
 
-OVERLAY = [{"name":"JMISJUSTME","summary":"JM ECOSTATE Professional Convergence v2.0","section":"Estate / public / device"},{"name":"JM Living Estate v1.3.0 Universal APK (API 36 rail)","summary":"","section":"Estate / public / device"},{"name":"Android Forge v1.4.1","summary":"dual-surface workshop / Project Shelf / OneBody route","section":"Estate / public / device"},{"name":"JM AUTHUSER","summary":"Hawk-Read Successor v1.1 conceptual successor; preserve creator/source-purpose lineage","section":"Estate / public / device"},{"name":"JM32-1DA compiler v2.2.1","summary":"","section":"Coding / runtime / OS"},{"name":"RouteOS Kernel Gate","summary":"PASS at proved scope","section":"Coding / runtime / OS"},{"name":"Zionfolder OS v0.5.1","summary":"","section":"Coding / runtime / OS"},{"name":"CadenVM v0.10","summary":"","section":"Coding / runtime / OS"},{"name":"JM RouteCore","summary":"BIOS/QEMU emulator-scope execution contact earned; physical-device proof not implied","section":"Coding / runtime / OS"},{"name":"JM32-1DA Cross-Device Runtime Adapter v0.2 complete at declared scope","summary":"","section":"Coding / runtime / OS"},{"name":"Coding Growth Mesh Programme","summary":"64/64 bodies; Generation 9 floor; 24,481 assertions PASS","section":"Coding / runtime / OS"},{"name":"PLAYFORM, JM GameCore, GameForge, GlyphPlay, GlyphForge, Kading Engine, JumpMotion v0.2","summary":"donor/runtime family","section":"Games / engines / interaction"},{"name":"JM Target Bridge v0.6","summary":"JM.TargetBridge/0.1; faces include GDevelop, Unity, Unreal, Godot, Phaser, Construct3, GameMaker, Defold, Bevy, MonoGame","section":"Games / engines / interaction"},{"name":"Western Sniper × House Siege executable v0.2 release descendant; standing executable flagship lane","summary":"","section":"Games / engines / interaction"},{"name":"FOURFOLD and Fight Clash executable descendants","summary":"","section":"Games / engines / interaction"},{"name":"SHIFT//FIELD active mutable-interaction lane; inherit existing donors before user mega-check","summary":"","section":"Games / engines / interaction"},{"name":"JM LLM Core v1.0 First Complete Edition protected complete ancestor","summary":"","section":"AI"},{"name":"JM LLM #2 v2.0 Unified Executable Program Edition","summary":"FLAZ complete, package-proven, Zionfoldered; current pointer dated 29 Sep 2026","section":"AI"},{"name":"JM AGI Lab v1.4.4 Durability Settle / Live Integration","summary":"owner Windows Edge exact-body process-restart durability scope; no AGI/human-level claim","section":"AI"},{"name":"JM LEGAL Matter Router Workbench v0.8.2","summary":"owner-device contact verified, current internal runtime head","section":"Legal / business"},{"name":"JM LEGAL Pre-External Pilot Operating Gate v1.1","summary":"Phase A ready; external operating contact open","section":"Legal / business"},{"name":"RUKQUSS REALITY Business Formation Decision v1.0","summary":"formation architecture closed; actual Companies House incorporation open","section":"Legal / business"},{"name":"Secrets of Silence Flagship Master v1.3","summary":"","section":"Writing / music / publishing"},{"name":"LyricStudio v0.4 BT","summary":"","section":"Writing / music / publishing"},{"name":"JM Release Run","summary":"Music Keeps the Mic FLAZ parent with live return-contact addendum","section":"Writing / music / publishing"},{"name":"Active lyric return lead: Wisdom’s Loading / SHIMS ACTION → Broke Broke → I Need A Good Time Vibe","summary":"","section":"Writing / music / publishing"},{"name":"JM Theory Estate First + Second-Order Strengthening","summary":"51/51 strict bodies; 7/7 first-order and 7/7 second-order at recorded scope","section":"Theory / human systems / research"},{"name":"JM ECOSTATE Social Economy Study v1.0","summary":"10/10 runs + claim audit complete","section":"Theory / human systems / research"},{"name":"JM Teaching / Learning Engine v5.2","summary":"","section":"Theory / human systems / research"},{"name":"HPC, Human Support Body Self, TheOverTime","summary":"BT/FLAZ at proved scopes","section":"Theory / human systems / research"},{"name":"PASSTACITIVITY","summary":"active shell → passive core","section":"Theory / human systems / research"},{"name":"ZooGate / JickMah","summary":"128-page theory edition; Twokniver 1 theory active; app lane parked","section":"Theory / human systems / research"},{"name":"JM CLOUD CONTACT SERVER public lineage; first public cloud Ding closed at v0.4.2 in recovered evidence","summary":"","section":"Cloud / contact"},{"name":"PHONE↔LAPTOP CONTACT RUNNER lineage","summary":"","section":"Cloud / contact"},{"name":"Cloud Bridge lineage","summary":"","section":"Cloud / contact"},{"name":"JM LIETOUCH P1B Separated-Device Semantic Ding v1.0 release-completed receipt preserved","summary":"","section":"Cloud / contact"},{"name":"JM3232 Navigator public-safe MCP donor","summary":"historically live-proven five-tool read-only public scope","section":"Cloud / contact"},{"name":"Bounded anti-crash census","summary":"BATCH → COUNT → CHECKPOINT → NEXT BATCH → TERMINAL CURSOR → CLOSE","section":"Storage / recovery"},{"name":"Permanent floor: BODY / IDENTITY RAIL ↔ CARRIER / BYTE RAIL","summary":"","section":"Storage / recovery"},{"name":"Retention","summary":"BYTE SIZE + FUNCTION + UNIQUENESS + RECOVERABILITY + CURRENT USE + DESCENDANT VIABILITY","section":"Storage / recovery"},{"name":"STORAGE COST MUST EARN RETRIEVAL VALUE","summary":"","section":"Storage / recovery"}];
+CURRENT_REGISTRY = load_current_registry(CURRENT_REGISTRY_PATH)
+CURRENT_REGISTRY_SCHEMA = CURRENT_REGISTRY["schema"]
+CURRENT_REGISTRY_DATE = CURRENT_REGISTRY["date"]
+CURRENT_REGISTRY_BODY = CURRENT_REGISTRY["body"]
+CURRENT_REGISTRY_SHA256 = CURRENT_REGISTRY["sha256"]
+CURRENT_REGISTRY_BYTES = CURRENT_REGISTRY["bytes"]
+CURRENT_REGISTRY_SOURCE = CURRENT_REGISTRY["source"]
+CURRENT_REGISTRY_PATH_MODE = CURRENT_REGISTRY["path_mode"]
+CURRENT_REGISTRY_HASH_MODE = CURRENT_REGISTRY["hash_mode"]
+CURRENT_REGISTRY_RELOAD_POLICY = CURRENT_REGISTRY["reload_policy"]
+CURRENT = CURRENT_REGISTRY["records"]
+
+OVERLAY = [{"name":"FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0","summary":"32/32 issues and 704/704 functional comic pages complete; frozen functional comic route; final bespoke illustration, lettering and print finishing remain descendant work","section":"Comics / visual story"},{"name":"JMISJUSTME","summary":"JM ECOSTATE Professional Convergence v2.0","section":"Estate / public / device"},{"name":"JM Living Estate v1.3.0 Universal APK (API 36 rail)","summary":"","section":"Estate / public / device"},{"name":"Android Forge v1.4.1","summary":"dual-surface workshop / Project Shelf / OneBody route","section":"Estate / public / device"},{"name":"JM AUTHUSER","summary":"Hawk-Read Successor v1.1 conceptual successor; preserve creator/source-purpose lineage","section":"Estate / public / device"},{"name":"JM32-1DA compiler v2.2.1","summary":"","section":"Coding / runtime / OS"},{"name":"RouteOS Kernel Gate","summary":"PASS at proved scope","section":"Coding / runtime / OS"},{"name":"Zionfolder OS v0.5.1","summary":"","section":"Coding / runtime / OS"},{"name":"CadenVM v0.10","summary":"","section":"Coding / runtime / OS"},{"name":"JM RouteCore","summary":"BIOS/QEMU emulator-scope execution contact earned; physical-device proof not implied","section":"Coding / runtime / OS"},{"name":"JM32-1DA Cross-Device Runtime Adapter v0.2 complete at declared scope","summary":"","section":"Coding / runtime / OS"},{"name":"Coding Growth Mesh Programme","summary":"64/64 bodies; Generation 9 floor; 24,481 assertions PASS","section":"Coding / runtime / OS"},{"name":"PLAYFORM, JM GameCore, GameForge, GlyphPlay, GlyphForge, Kading Engine, JumpMotion v0.2","summary":"donor/runtime family","section":"Games / engines / interaction"},{"name":"JM Target Bridge v0.6","summary":"JM.TargetBridge/0.1; faces include GDevelop, Unity, Unreal, Godot, Phaser, Construct3, GameMaker, Defold, Bevy, MonoGame","section":"Games / engines / interaction"},{"name":"Western Sniper × House Siege executable v0.2 release descendant; standing executable flagship lane","summary":"","section":"Games / engines / interaction"},{"name":"FOURFOLD and Fight Clash executable descendants","summary":"","section":"Games / engines / interaction"},{"name":"SHIFT//FIELD active mutable-interaction lane; inherit existing donors before user mega-check","summary":"","section":"Games / engines / interaction"},{"name":"JM LLM Core v1.0 First Complete Edition protected complete ancestor","summary":"","section":"AI"},{"name":"JM LLM #2 v2.0 Unified Executable Program Edition","summary":"FLAZ complete, package-proven, Zionfoldered; current pointer dated 29 Sep 2026","section":"AI"},{"name":"JM AGI Lab v1.4.4 Durability Settle / Live Integration","summary":"owner Windows Edge exact-body process-restart durability scope; no AGI/human-level claim","section":"AI"},{"name":"JM LEGAL Matter Router Workbench v0.8.2","summary":"owner-device contact verified, current internal runtime head","section":"Legal / business"},{"name":"JM LEGAL Pre-External Pilot Operating Gate v1.1","summary":"Phase A ready; external operating contact open","section":"Legal / business"},{"name":"RUKQUSS REALITY Business Formation Decision v1.0","summary":"formation architecture closed; actual Companies House incorporation open","section":"Legal / business"},{"name":"Secrets of Silence Flagship Master v1.3","summary":"","section":"Writing / music / publishing"},{"name":"LyricStudio v0.4 BT","summary":"","section":"Writing / music / publishing"},{"name":"JM Release Run","summary":"Music Keeps the Mic FLAZ parent with live return-contact addendum","section":"Writing / music / publishing"},{"name":"Active lyric return lead: Wisdom’s Loading / SHIMS ACTION → Broke Broke → I Need A Good Time Vibe","summary":"","section":"Writing / music / publishing"},{"name":"JM Theory Estate First + Second-Order Strengthening","summary":"51/51 strict bodies; 7/7 first-order and 7/7 second-order at recorded scope","section":"Theory / human systems / research"},{"name":"JM ECOSTATE Social Economy Study v1.0","summary":"10/10 runs + claim audit complete","section":"Theory / human systems / research"},{"name":"JM Teaching / Learning Engine v5.2","summary":"","section":"Theory / human systems / research"},{"name":"HPC, Human Support Body Self, TheOverTime","summary":"BT/FLAZ at proved scopes","section":"Theory / human systems / research"},{"name":"PASSTACITIVITY","summary":"active shell → passive core","section":"Theory / human systems / research"},{"name":"ZooGate / JickMah","summary":"128-page theory edition; Twokniver 1 theory active; app lane parked","section":"Theory / human systems / research"},{"name":"JM CLOUD CONTACT SERVER public lineage; first public cloud Ding closed at v0.4.2 in recovered evidence","summary":"","section":"Cloud / contact"},{"name":"PHONE↔LAPTOP CONTACT RUNNER lineage","summary":"","section":"Cloud / contact"},{"name":"Cloud Bridge lineage","summary":"","section":"Cloud / contact"},{"name":"JM LIETOUCH P1B Separated-Device Semantic Ding v1.0 release-completed receipt preserved","summary":"","section":"Cloud / contact"},{"name":"JM3232 Navigator public-safe MCP donor","summary":"historically live-proven five-tool read-only public scope","section":"Cloud / contact"},{"name":"Bounded anti-crash census","summary":"BATCH → COUNT → CHECKPOINT → NEXT BATCH → TERMINAL CURSOR → CLOSE","section":"Storage / recovery"},{"name":"Permanent floor: BODY / IDENTITY RAIL ↔ CARRIER / BYTE RAIL","summary":"","section":"Storage / recovery"},{"name":"Retention","summary":"BYTE SIZE + FUNCTION + UNIQUENESS + RECOVERABILITY + CURRENT USE + DESCENDANT VIABILITY","section":"Storage / recovery"},{"name":"STORAGE COST MUST EARN RETRIEVAL VALUE","summary":"","section":"Storage / recovery"}];
+
+ARTIFACT_SURFACE_PROFILES = {
+    "book": {
+        "label": "BOOK",
+        "aliases": ["books", "written", "publication", "manuscript"],
+        "default_outputs": ["docx", "pdf", "epub", "web"],
+        "build_gate": "Render the recovered current body into requested publication formats without changing source identity.",
+        "proof_gate": "Open/parse each output, verify page/chapter order, text integrity, metadata/version identity and declared visual quality.",
+        "delivery_gate": "Seat only verified outputs; direct open/download routes must resolve to the intended edition.",
+        "surface_boundary": "A valid DOCX/PDF/EPUB/web edition proves only that surface; one format does not silently prove the others.",
+    },
+    "comic": {
+        "label": "COMIC",
+        "aliases": ["comics", "cartoon", "visual story", "graphic"],
+        "default_outputs": ["pdf", "cbz", "web-reader"],
+        "build_gate": "Render the recovered visual-story body with page/panel order, assets and reading direction preserved.",
+        "proof_gate": "Verify every page asset, order, crop, text legibility and reader navigation at the claimed surface.",
+        "delivery_gate": "Seat verified PDF/CBZ/web-reader descendants with direct open/download routes.",
+        "surface_boundary": "Static PDF/CBZ proof does not imply web-reader animation/runtime proof, and vice versa.",
+    },
+    "theory": {
+        "label": "THEORY",
+        "aliases": ["theories", "research", "paper", "model"],
+        "default_outputs": ["md", "pdf", "html"],
+        "build_gate": "Preserve source wording, claim boundaries, references, provenance and version while rendering publication descendants.",
+        "proof_gate": "Check section completeness, citation/reference integrity, claim-boundary preservation and rendered readability.",
+        "delivery_gate": "Publish only the intended public-safe edition; retain source/current/archival distinction.",
+        "surface_boundary": "Publication integrity is not external scientific validation.",
+    },
+    "app": {
+        "label": "APP",
+        "aliases": ["apps", "application", "web app", "tool"],
+        "default_outputs": ["web", "package"],
+        "build_gate": "Build from the recovered current source/runtime using the declared host/profile rather than reconstructing from screenshots or descriptions.",
+        "proof_gate": "Launch, exercise primary controls/state/recovery, and verify the actual runtime surface named in the claim.",
+        "delivery_gate": "Seat a direct-open app/package route only after runtime contact passes.",
+        "surface_boundary": "Browser, hosted, desktop, offline and Android behavior remain separate proof jurisdictions.",
+    },
+    "apk": {
+        "label": "APK",
+        "aliases": ["android", "android app", "apk file"],
+        "default_outputs": ["apk", "direct-download-link"],
+        "build_gate": "Build the recovered app body through the Android route with declared SDK/signing/package identity.",
+        "proof_gate": "Verify package identity and build output; install/launch/device contact is required for an install/runtime claim.",
+        "delivery_gate": "Seat the verified APK plus a direct download/install route whose bytes match the intended artifact.",
+        "surface_boundary": "APK build PASS ≠ install PASS ≠ launch/runtime PASS.",
+    },
+    "download": {
+        "label": "DOWNLOAD / ADDABLE ROUTE",
+        "aliases": ["downloadable", "download link", "direct link", "addable", "install link", "public link"],
+        "default_outputs": ["manifest", "sha256", "direct-download-link"],
+        "build_gate": "Bind an already-governed artifact to a manifest/hash and intended public or private delivery seat.",
+        "proof_gate": "Resolve the route, retrieve the intended bytes/body, compare identity/hash where available, then reopen/install at the claimed level.",
+        "delivery_gate": "Return a direct route only after read-back proves it points to the intended current artifact.",
+        "surface_boundary": "A URL existing is not proof that it delivers the correct bytes, remains available, or installs/opens successfully.",
+    },
+}
+
+ARTIFACT_TYPE_ALIASES = {
+    alias: key
+    for key, profile in ARTIFACT_SURFACE_PROFILES.items()
+    for alias in [key, profile["label"].casefold(), *(profile.get("aliases") or [])]
+}
 
 def norm(value):
     value = (value or "").casefold()
@@ -64,6 +181,52 @@ def current_matches(query, limit=8):
     found.sort(key=lambda x: (x["score"], 1 if x["source"] == "current_project_registry" else 0), reverse=True)
     return found[:max(1, min(int(limit), 25))]
 
+def identity_strength(query, identity):
+    q, i = norm(query), norm(identity)
+    if not q or not i:
+        return 0.0
+    if q == i:
+        return 1.0
+    if len(q.split()) >= 2 and (q.startswith(i + " ") or i.startswith(q + " ")):
+        return 0.99
+    return 0.0
+
+def current_identity_matches(query, limit=8):
+    """Authority-safe current matches.
+
+    Fuzzy similarity remains available through current_matches() for discovery.
+    This function is intentionally identity-only so discovery resemblance can
+    never become current-head authority.
+    """
+    found = []
+    for item in CURRENT:
+        identities = [item.get("id", ""), item.get("title", "")]
+        identities += item.get("aliases") or []
+        score = max((identity_strength(query, value) for value in identities), default=0.0)
+        if score:
+            found.append({
+                "source": "current_project_registry",
+                "score": score,
+                "match_mode": "EXACT_IDENTITY" if score == 1.0 else "IDENTITY_PREFIX",
+                **item,
+            })
+    for item in OVERLAY:
+        identities = [item.get("name", "")]
+        identities += item.get("aliases") or []
+        score = max((identity_strength(query, value) for value in identities), default=0.0)
+        if score:
+            found.append({
+                "source": "current_overlay_2026-10-01",
+                "score": score,
+                "match_mode": "EXACT_IDENTITY" if score == 1.0 else "IDENTITY_PREFIX",
+                **item,
+            })
+    found.sort(
+        key=lambda x: (x["score"], 1 if x["source"] == "current_project_registry" else 0),
+        reverse=True,
+    )
+    return found[:max(1, min(int(limit), 25))]
+
 def authority_state(item):
     if not item:
         return "ABSENCE_NOT_PROVEN"
@@ -94,7 +257,7 @@ def navigator_rpc(tool_name, arguments=None, timeout=8, use_cache=True):
             "Content-Type": "application/json",
             "Accept": "application/json",
             "Origin": "https://chatgpt.com",
-            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.7 (+https://jmisjustme-estate.pages.dev/)",
+            "User-Agent": "JM-ECOSTATE-Build-Mesh/0.8.5 (+https://jmisjustme-estate.pages.dev/)",
             "MCP-Protocol-Version": DEFAULT_PROTOCOL,
         },
         method="POST",
@@ -166,9 +329,10 @@ def recover_build(args):
     if not query:
         raise ValueError("name or query is required")
     limit = int(args.get("limit") or 8)
-    local = current_matches(query, limit)
+    discovery = current_matches(query, limit)
+    authority = current_identity_matches(query, limit)
     nav = navigator_search(query, limit)
-    best = local[0] if local else None
+    best = authority[0] if authority else None
     state = authority_state(best)
     public_matches = meaningful_navigator_results(nav)
     if not best and public_matches:
@@ -178,26 +342,33 @@ def recover_build(args):
     return {
         "query": query,
         "resolution_state": state,
+        "resolution_basis": "LOCAL_IDENTITY" if best else ("NAVIGATOR_SNAPSHOT" if public_matches else "NO_AUTHORITY_MATCH"),
         "best_current_match": best,
-        "current_candidates": local,
+        "authority_candidates": authority,
+        "current_candidates": discovery,
         "navigator_contact": nav,
-        "claim_boundary": "Private/current Library pointers and direct runtime/owner receipts can outrank this hosted service.",
+        "claim_boundary": "Fuzzy discovery is not current-head authority. Private/current Library pointers and direct runtime/owner receipts can outrank this hosted service.",
     }
 
 def resolve_current_head(args):
     query = (args.get("name") or "").strip()
     if not query:
         raise ValueError("name is required")
-    local = current_matches(query, 10)
-    if local:
-        best = local[0]
+    authority = current_identity_matches(query, 10)
+    if authority:
+        best = authority[0]
+        # Current-registry authority is the explicit current declaration and
+        # therefore outranks a stale snapshot overlay at the same identity
+        # strength. Ambiguity within the same authority tier still fails closed.
+        best_tier = 1 if best.get("source") == "current_project_registry" else 0
         close = [
-            x for x in local[1:]
-            if x["score"] >= best["score"] - 0.035
+            x for x in authority[1:]
+            if x["score"] == best["score"]
+            and (1 if x.get("source") == "current_project_registry" else 0) == best_tier
             and norm(x.get("title") or x.get("name")) != norm(best.get("title") or best.get("name"))
         ]
         state = authority_state(best)
-        if close and best["score"] < 0.88:
+        if close:
             state = "CONFLICT_OPEN"
         return {
             "query": query,
@@ -205,10 +376,12 @@ def resolve_current_head(args):
             "current_head": best.get("title") or best.get("name"),
             "primary_evidence": best,
             "competing_candidates": close[:4],
-            "boundary": "Hosted current declaration; stronger direct current pointer/receipt can supersede it.",
+            "resolution_basis": "LOCAL_IDENTITY",
+            "boundary": "Hosted current authority requires identity contact; fuzzy similarity remains discovery-only. Stronger direct current pointer/receipt can supersede it.",
         }
     nav = navigator_search(query, 5)
     public_matches = meaningful_navigator_results(nav)
+    discovery = current_matches(query, 5)
     has_public = bool(public_matches)
     return {
         "query": query,
@@ -216,16 +389,18 @@ def resolve_current_head(args):
         "current_head": None,
         "public_evidence": nav,
         "meaningful_public_matches": public_matches,
-        "boundary": "No hosted current declaration found. Absence is not proved across the private Estate.",
+        "local_discovery_candidates": discovery,
+        "resolution_basis": "NAVIGATOR_SNAPSHOT" if has_public else "NO_AUTHORITY_MATCH",
+        "boundary": "No hosted identity-level current declaration found. Fuzzy local resemblance is discovery only; absence is not proved across the private Estate.",
     }
 
 def proof_state(args):
     query = (args.get("name") or "").strip()
     if not query:
         raise ValueError("name is required")
-    local = current_matches(query, 8)
-    if local:
-        item = local[0]
+    authority = current_identity_matches(query, 8)
+    if authority:
+        item = authority[0]
         return {
             "query": query,
             "state": authority_state(item),
@@ -234,14 +409,19 @@ def proof_state(args):
             "proof": item.get("proof"),
             "boundary": item.get("boundary") or item.get("summary"),
             "source": item["source"],
+            "resolution_basis": "LOCAL_IDENTITY",
             "note": "Recorded proof text is not a new runtime Ding.",
         }
     nav = navigator_search(query, 5)
+    public_matches = meaningful_navigator_results(nav)
     return {
         "query": query,
-        "state": "SNAPSHOT_ONLY" if meaningful_navigator_results(nav) else "ABSENCE_NOT_PROVEN",
+        "state": "SNAPSHOT_ONLY" if public_matches else "ABSENCE_NOT_PROVEN",
         "navigator_contact": nav,
-        "note": "Public source discovery does not itself prove runtime/current authority.",
+        "meaningful_public_matches": public_matches,
+        "local_discovery_candidates": current_matches(query, 5),
+        "resolution_basis": "NAVIGATOR_SNAPSHOT" if public_matches else "NO_AUTHORITY_MATCH",
+        "note": "Public source discovery and fuzzy local similarity do not themselves prove runtime/current authority.",
     }
 
 def trace_lineage(args):
@@ -307,14 +487,36 @@ def resolve_profile(name):
     q = (name or "").strip()
     if not q:
         return None
-    ranked = sorted(
-        ((profile_score(q, p), p) for p in CAPABILITY_PROFILES),
-        key=lambda x: x[0],
-        reverse=True,
-    )
-    if not ranked or ranked[0][0] < 0.34:
+
+    identity_hits = []
+    for profile in CAPABILITY_PROFILES:
+        identities = [profile.get("id",""), profile.get("name","")]
+        identities += profile.get("aliases") or []
+        for item in CURRENT:
+            if item.get("id") == profile.get("id"):
+                identities.append(item.get("title",""))
+        best = max((identity_strength(q, identity) for identity in identities), default=0.0)
+        if best:
+            identity_hits.append((best, profile))
+
+    if not identity_hits:
         return None
-    return {"score": round(ranked[0][0], 6), **ranked[0][1]}
+
+    identity_hits.sort(key=lambda x: x[0], reverse=True)
+    top_score = identity_hits[0][0]
+    top_profiles = {}
+    for score, profile in identity_hits:
+        if score != top_score:
+            break
+        top_profiles[profile.get("id")] = profile
+
+    # Multiple equally strong named identities are a HOLD, never an arbitrary
+    # capability crown.
+    if len(top_profiles) != 1:
+        return None
+
+    profile = next(iter(top_profiles.values()))
+    return {"score": round(top_score, 6), "resolution": "IDENTITY", **profile}
 
 def current_record_for_profile(profile):
     pid = (profile or {}).get("id")
@@ -348,9 +550,9 @@ def batch_recover_builds(args):
         name = str(raw).strip()
         if not name:
             continue
-        local = current_matches(name, 5)
-        if local:
-            best = local[0]
+        authority = current_identity_matches(name, 5)
+        if authority:
+            best = authority[0]
             results.append({
                 "query": name,
                 "state": authority_state(best),
@@ -358,14 +560,15 @@ def batch_recover_builds(args):
                 "proof": best.get("proof"),
                 "boundary": best.get("boundary") or best.get("summary"),
                 "source": best.get("source"),
-                "navigator_contact": "SKIPPED_LOCAL_AUTHORITY_FOUND",
+                "resolution_basis": "LOCAL_IDENTITY",
+                "navigator_contact": "SKIPPED_LOCAL_IDENTITY_AUTHORITY_FOUND",
             })
         else:
             results.append(recover_build({"name": name, "limit": 5}))
     return {
         "count": len(results),
         "results": results,
-        "optimization": "Local current authority is resolved before public donor contact; Navigator is only called for unresolved names.",
+        "optimization": "Identity-level local authority is resolved before public donor contact; fuzzy discovery never suppresses Navigator recovery.",
     }
 
 def find_capability_donors(args):
@@ -462,6 +665,8 @@ def build_capability_mesh(args):
                     "to": b.get("id"),
                     "relation": "SHARED_CAPABILITY",
                     "shared_capabilities": shared,
+                    "merge": False,
+                    "proof_transfer": False,
                 })
             else:
                 role_overlap = sorted(set(a.get("donor_roles") or []) & set(b.get("donor_roles") or []))
@@ -471,12 +676,68 @@ def build_capability_mesh(args):
                         "to": b.get("id"),
                         "relation": "SHARED_DONOR_ROLE",
                         "shared_roles": role_overlap,
+                        "merge": False,
+                        "proof_transfer": False,
                     })
+
+    # Explicit current-registry relations are valid mesh edges even when two
+    # bodies intentionally do not share a capability label. Relation edges
+    # preserve direction and never transfer proof or merge identity.
+    existing_relation_keys = set()
+    for edge in edges:
+        existing_relation_keys.add((edge.get("from"), edge.get("to"), edge.get("relation"), edge.get("declared_relation")))
+
+    for source in nodes:
+        record = current_record_for_profile(source) or {}
+        for raw_relation in record.get("relations") or []:
+            relation_name = None
+            target_name = None
+            if isinstance(raw_relation, dict):
+                relation_name = str(raw_relation.get("relation") or "").strip()
+                target_name = str(raw_relation.get("target") or "").strip()
+            elif isinstance(raw_relation, str):
+                if "→" in raw_relation:
+                    relation_name, target_name = [part.strip() for part in raw_relation.split("→", 1)]
+                elif "->" in raw_relation:
+                    relation_name, target_name = [part.strip() for part in raw_relation.split("->", 1)]
+            if not relation_name or not target_name:
+                continue
+
+            target = None
+            best = 0.0
+            for candidate in nodes:
+                if candidate.get("id") == source.get("id"):
+                    continue
+                identities = [candidate.get("id",""), candidate.get("name","")]
+                identities += candidate.get("aliases") or []
+                candidate_record = current_record_for_profile(candidate) or {}
+                identities += [candidate_record.get("title","")]
+                score = max((identity_strength(target_name, identity) for identity in identities if identity), default=0.0)
+                if score > best:
+                    best = score
+                    target = candidate
+            if not target or best < 0.99:
+                continue
+
+            key = (source.get("id"), target.get("id"), "DECLARED_RELATION", relation_name)
+            if key in existing_relation_keys:
+                continue
+            edges.append({
+                "from": source.get("id"),
+                "to": target.get("id"),
+                "relation": "DECLARED_RELATION",
+                "declared_relation": relation_name,
+                "relation_source": "current_project_registry",
+                "merge": False,
+                "proof_transfer": False,
+            })
+            existing_relation_keys.add(key)
+
     return {
         "objective": objective or None,
         "nodes": [donor_view(n, n.get("objective_score")) for n in nodes],
         "edges": edges,
-        "mesh_law": "EDGE ≠ MERGE. Shared capability is a contact reason, not identity collapse.",
+        "mesh_law": "EDGE ≠ MERGE. Edges may express shared capability/role or an explicit declared relation; no edge transfers proof or collapses identity.",
     }
 
 def detect_propagation_gaps(args):
@@ -567,18 +828,19 @@ def build_sync_contract(args):
             "00_CURRENT_POINTER current head FLAZ receipt",
         ]
     return {
-        "schema": "JM.BuildMesh.SovereignSyncContract/0.7",
+        "schema": "JM.BuildMesh.SovereignSyncContract/0.7.3",
         "hosted_snapshot": {
             "server_version": VERSION,
             "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
             "current_registry_date": CURRENT_REGISTRY_DATE,
             "current_registry_body": CURRENT_REGISTRY_BODY,
             "current_registry_sha256": CURRENT_REGISTRY_SHA256,
+            "current_registry_source": CURRENT_REGISTRY_SOURCE,
+            "current_registry_loaded_bytes": CURRENT_REGISTRY_BYTES,
+            "current_registry_path_mode": CURRENT_REGISTRY_PATH_MODE,
+            "current_registry_hash_mode": CURRENT_REGISTRY_HASH_MODE,
+            "current_registry_reload_policy": CURRENT_REGISTRY_RELOAD_POLICY,
             "current_project_records": len(CURRENT),
-        "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
-        "current_registry_date": CURRENT_REGISTRY_DATE,
-        "current_registry_body": CURRENT_REGISTRY_BODY,
-        "current_registry_sha256": CURRENT_REGISTRY_SHA256,
             "capability_profiles": len(CAPABILITY_PROFILES),
         },
         "private_contact_queries": private_queries,
@@ -586,13 +848,14 @@ def build_sync_contract(args):
             "DIRECT PRIVATE BODY / RECEIPT",
             "EXACT PRIVATE CURRENT / OPEN / REENTRY POINTER",
             "PRIVATE FLAZ / MANIFEST",
-            "HOSTED CURRENT REGISTRY",
+            "HOSTED EXTERNAL CURRENT REGISTRY",
             "HOSTED CAPABILITY PROFILE",
             "NAVIGATOR PUBLIC DONOR",
             "PACKAGED HISTORICAL SNAPSHOT",
         ],
         "privacy_rule": "Keep raw private Library evidence local to the host. Do not send private snippets or files to this public MCP merely to reconcile authority.",
         "drift_rule": "If exact private current evidence is newer/stronger than the hosted snapshot, mark SYNC_DRIFT and use the private evidence for the current answer.",
+        "registry_integrity_rule": "Hosted registry identity is computed from the exact bytes loaded at process start; hardcoded hash claims are forbidden.",
         "mutation_performed": False,
     }
 
@@ -642,6 +905,184 @@ def prepare_operation_gate(args):
         ],
         "mutation_performed": False,
         "privacy_rule": "Do not include raw private Library content in this capsule.",
+    }
+
+def plan_artifact_route(args):
+    target = (args.get("target") or "").strip()
+    requested_type = (args.get("artifact_type") or "").strip()
+    outputs = args.get("outputs") or []
+    objective = (args.get("objective") or "").strip()
+    if not target or not requested_type:
+        raise ValueError("target and artifact_type are required")
+    if not isinstance(outputs, list) or len(outputs) > 8:
+        raise ValueError("outputs must be an array of at most 8 strings")
+
+    type_key = ARTIFACT_TYPE_ALIASES.get(requested_type.casefold().strip())
+    if not type_key:
+        allowed = ", ".join(sorted(ARTIFACT_SURFACE_PROFILES))
+        raise ValueError(f"unsupported artifact_type; use one of: {allowed}")
+
+    surface = ARTIFACT_SURFACE_PROFILES[type_key]
+    authority = resolve_current_head({"name": target})
+    capability_profile = resolve_profile(target)
+    selected_outputs = [str(x).strip() for x in outputs if str(x).strip()] or list(surface["default_outputs"])
+
+    manifest_seed = {
+        "schema": "JM.ArtifactRoute/0.1",
+        "target": target,
+        "artifact_type": type_key,
+        "outputs": selected_outputs,
+        "objective": objective or None,
+        "hosted_authority_state": authority.get("state"),
+        "hosted_current_head": authority.get("current_head"),
+        "target_profile_id": capability_profile.get("id") if capability_profile else None,
+    }
+    route_id = hashlib.sha256(
+        json.dumps(manifest_seed, ensure_ascii=False, sort_keys=True, separators=(",",":")).encode("utf-8")
+    ).hexdigest()[:24]
+
+    return {
+        **manifest_seed,
+        "route_id": f"JMART-{route_id}",
+        "phase": "PLAN_ONLY",
+        "surface_profile": {
+            "label": surface["label"],
+            "default_outputs": list(surface["default_outputs"]),
+            "selected_outputs": selected_outputs,
+            "build_gate": surface["build_gate"],
+            "proof_gate": surface["proof_gate"],
+            "delivery_gate": surface["delivery_gate"],
+            "surface_boundary": surface["surface_boundary"],
+        },
+        "common_route": [
+            "RECOVER CURRENT BODY",
+            "LOCK SOURCE / IDENTITY / VERSION",
+            "SELECT SURFACE PROFILE",
+            "BUILD / RENDER",
+            "VERIFY AT CLAIM LEVEL",
+            "PACKAGE + MANIFEST / HASH",
+            "PUBLISH / INSTALL / SEAT",
+            "READ BACK ACTUAL CONSEQUENCE",
+            "RETURN DIRECT OPEN / DOWNLOAD ROUTE",
+            "WRITE RECEIPT + RECOVERY TRACE",
+        ],
+        "ownership_contract": [
+            "ROUTE MAY BUILD / PACKAGE / PUBLISH / DISTRIBUTE",
+            "ROUTE DOES NOT BECOME OWNER",
+            "SOURCE / RIGHTS / AUTHORIAL INTENT REMAIN WITH THEIR LAWFUL OWNER",
+        ],
+        "delivery_contract": {
+            "open_first": True,
+            "direct_route_required": True,
+            "link_rule": "LINK EXISTS ≠ CORRECT DELIVERY. Resolve and read back the intended body/bytes before Ding.",
+            "surface_difference_law": "SAME IDENTITY BODY ≠ SAME SURFACE BEHAVIOUR.",
+        },
+        "host_execution_rule": "This public MCP plans the artifact route only. Authorized host tools perform build/write/deploy/publish/install actions and must read back their consequences.",
+        "mutation_performed": False,
+        "boundary": "Artifact-general routing is shared; proof remains surface-specific. Mesh ≠ Merge.",
+    }
+
+
+
+def estate_keeper_contract(args):
+    scope = (args.get("scope") or "JM Estate / private Library maintenance").strip()
+    last_checkpoint = (args.get("last_checkpoint") or "").strip()
+    changed_count = args.get("changed_count")
+    unresolved_count = args.get("unresolved_count")
+    for label, value in (("changed_count", changed_count), ("unresolved_count", unresolved_count)):
+        if value is not None and (not isinstance(value, int) or value < 0):
+            raise ValueError(f"{label} must be a non-negative integer when supplied")
+
+    seed = {
+        "scope": scope,
+        "last_checkpoint": last_checkpoint or None,
+        "changed_count": changed_count,
+        "unresolved_count": unresolved_count,
+        "registry_sha256": CURRENT_REGISTRY_SHA256,
+        "server_version": VERSION,
+    }
+    contract_id = hashlib.sha256(
+        json.dumps(seed, ensure_ascii=False, sort_keys=True, separators=(",",":")).encode("utf-8")
+    ).hexdigest()[:24]
+
+    return {
+        "schema": "JM.BuildMesh.EstateKeeperContract/0.7.6",
+        "contract_id": f"JMKEEP-{contract_id}",
+        "phase": "HOST_CONTACT_REQUIRED",
+        "scope": scope,
+        "package_head": "JM ECOSTATE — Build Mesh v1.0.6 — Estate Keeper Convergence",
+        "hosted_runtime": VERSION,
+        "hosted_registry": {
+            "schema": CURRENT_REGISTRY_SCHEMA,
+            "date": CURRENT_REGISTRY_DATE,
+            "sha256": CURRENT_REGISTRY_SHA256,
+            "records": len(CURRENT),
+        },
+        "last_checkpoint": last_checkpoint or None,
+        "host_summary": {
+            "changed_count": changed_count,
+            "unresolved_count": unresolved_count,
+        },
+        "private_contact_queries": [
+            "JM ESTATE MAINTENANCE CONVERGENCE current reentry control",
+            "JM_MAGNIFYING_GLASS_CONTROL latest revision source_head",
+            "JM_LIBRARY_RECLAIM latest durable descendant current continuation",
+            "JM ECOSTATE Body Carrier Mesh v1.12 Physical Census Overlay current",
+            "current project registry latest version current pointer",
+        ],
+        "recovered_donor_routes": [
+            "JM Living Library — Estate-Wide Recursive Source Census ×32×10",
+            "JM Living Library Beneficial Access Core",
+            "JM Estate Live Registry",
+            "JM Estate Compass v1.5.0 — Lazy Library",
+            "JM Living Notebook / Estate Operating Tool v1.5B",
+            "JM Estate Circulation & Return v1.0",
+            "JM File Grabber / FLL BenefitMerge",
+            "JM ECOSTATE Body ↔ Carrier Mesh v1.12",
+            "JM Library Reclaim / JM Magnifying Glass",
+        ],
+        "authority_order": [
+            "DIRECT PRIVATE BODY / RECEIPT",
+            "EXACT PRIVATE CURRENT / OPEN / REENTRY POINTER",
+            "PRIVATE FLAZ / MANIFEST",
+            "HOSTED EXTERNAL CURRENT REGISTRY",
+            "HOSTED CAPABILITY PROFILE",
+            "NAVIGATOR PUBLIC DONOR",
+            "PACKAGED HISTORICAL SNAPSHOT",
+        ],
+        "delta_cycle": [
+            "RECOVER LATEST CONTROL / REENTRY",
+            "DETECT NEW OR CHANGED LIBRARY OBJECTS / REGISTRY DELTAS",
+            "RESOLVE EXISTING BODY / CARD / LINEAGE BEFORE CREATING ANY IDENTITY",
+            "ATTACH OR UPDATE CURRENT HEAD / CARRIER / PROOF / STORAGE ROLE",
+            "COMPARE WITH BODY↔CARRIER + RECLAIM CONTROL",
+            "CLASSIFY KEEP / RECOVERY / LINEAGE / THIN / RETIRE / HOLD",
+            "EXECUTE ONLY ALREADY-AUTHORIZED HOST-SIDE ACTIONS",
+            "READ BACK AND VERIFY ACTUAL DELTA",
+            "UPDATE DURABLE CONTROL + DRIFT RECEIPT",
+            "SEND ONLY BOUNDED NON-PRIVATE STATE SUMMARY TO PUBLIC BUILD MESH",
+        ],
+        "residency_states": ["KEEP", "RECOVERY", "LINEAGE", "THIN", "RETIRE", "HOLD"],
+        "existing_identity_rule": "Reuse the existing Registry Card/body identity. A new carrier does not become a new creation.",
+        "authority_rule": "Identity/current-head authority must be exact or privately re-contacted. Fuzzy discovery is never authority.",
+        "no_census_default": True,
+        "destructive_default": "HOLD",
+        "reclaim_rule": "Never double-credit prior mutations. Exact duplicate/containment/thinning requires live proof plus a retained survivor or recovery route.",
+        "privacy_rule": "Raw private Library files, snippets and identifiers stay local to the host; this public MCP accepts only bounded state summaries.",
+        "host_execution_rule": "This public MCP does not read or mutate the private Library. The host performs private contact and authorized consequence, then reads back and verifies.",
+        "mutation_performed": False,
+        "laws": [
+            "RECOVER BEFORE REBUILD",
+            "CONTACT BEFORE CROWN",
+            "NO DING, NO CLAIM",
+            "CONTACT DOES NOT IMPLY MERGER",
+            "EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE",
+            "BODY ≠ CARRIER",
+            "CARRIERS DO NOT MULTIPLY CREATIONS",
+            "CENSUS IS NOT THE NEXT JOB",
+            "FROM HERE, CONNECT — DO NOT RECOUNT",
+            "PRESERVING PROOF ≠ PRESERVING EVERY TRACE",
+        ],
     }
 
 RELATIONSHIP_OPERATIONS = ("SEPARATE", "MESH", "INTEGRATE", "MERGE", "TRANSFORM", "BREAKAWAY")
@@ -702,20 +1143,27 @@ def build_mesh_status(args):
     return {
         "server": SERVER_NAME,
         "version": VERSION,
-        "mode": "read-only authority / capability-mesh / sovereign-sync-contract / operation-planning service",
+        "mode": "read-only authority / external-current-registry / capability-mesh / artifact-router / sovereign-sync-contract / estate-keeper-contract / operation-planning service",
+        "estate_keeper_contract_schema": "JM.BuildMesh.EstateKeeperContract/0.7.6",
         "current_project_records": len(CURRENT),
         "current_registry_schema": CURRENT_REGISTRY_SCHEMA,
         "current_registry_date": CURRENT_REGISTRY_DATE,
         "current_registry_body": CURRENT_REGISTRY_BODY,
         "current_registry_sha256": CURRENT_REGISTRY_SHA256,
+        "current_registry_source": CURRENT_REGISTRY_SOURCE,
+        "current_registry_loaded_bytes": CURRENT_REGISTRY_BYTES,
+        "current_registry_path_mode": CURRENT_REGISTRY_PATH_MODE,
+        "current_registry_hash_mode": CURRENT_REGISTRY_HASH_MODE,
+        "current_registry_reload_policy": CURRENT_REGISTRY_RELOAD_POLICY,
         "overlay_entries": len(OVERLAY),
         "capability_profiles": len(CAPABILITY_PROFILES),
+        "artifact_surface_profiles": len(ARTIFACT_SURFACE_PROFILES),
         "navigator_cache_ttl_seconds": NAV_CACHE_TTL,
         "navigator_endpoint": NAVIGATOR_MCP,
         "navigator_contact": nav,
         "plugin_historical_register": "1,074 lineages retained in JM ECOSTATE Build Mesh package",
         "relationship_operations": list(RELATIONSHIP_OPERATIONS),
-        "relationship_policy": "Contact alone does not establish a merge. Intentional merges may earn authority, implementation and receiver proof.",
+        "relationship_policy": "Intentional merges require authority, implementation, receiver proof, persisted readback and recovery.",
         "laws": [
             "NO DING, NO CLAIM",
             "CONTACT BEFORE CROWN",
@@ -724,6 +1172,8 @@ def build_mesh_status(args):
             "EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE",
             "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
             "ACCESS ≠ AUTHORITY",
+            "CENSUS IS NOT THE NEXT JOB",
+            "FROM HERE, CONNECT — DO NOT RECOUNT",
         ],
         "boundary": "This public service does not own the Estate, does not access or ingest the private ChatGPT Library, and performs no writes. Private authority reconciliation stays local to the host.",
     }
@@ -743,6 +1193,8 @@ TOOLS = [
     {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"build_sync_contract","description":"Return the hosted snapshot identity plus private-host search/reconciliation rules without ingesting private Library content.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"estate_keeper_contract","description":"Return the delta-first host/private Estate Keeper contract for registry, body↔carrier, proof, storage and reclaim maintenance without ingesting private Library content or performing mutation.","inputSchema":{"type":"object","properties":{"scope":{"type":"string"},"last_checkpoint":{"type":"string"},"changed_count":{"type":"integer","minimum":0},"unresolved_count":{"type":"integer","minimum":0}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"plan_artifact_route","description":"Plan one governed artifact-general route for a book, comic, theory, app, APK or downloadable/addable link while keeping proof surface-specific.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"artifact_type":{"type":"string","enum":["book","comic","theory","app","apk","download"]},"outputs":{"type":"array","maxItems":8,"items":{"type":"string"}},"objective":{"type":"string"}},"required":["target","artifact_type"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_relationship_operation","description":"Create a proof-scoped, read-only plan for a chosen separate/mesh/integrate/merge/transform/breakaway relationship without changing bodies.","inputSchema":{"type":"object","properties":{"operation":{"type":"string","enum":["SEPARATE","MESH","INTEGRATE","MERGE","TRANSFORM","BREAKAWAY"]},"objective":{"type":"string"},"bodies":{"type":"array","minItems":2,"maxItems":8,"items":{"type":"string"}}},"required":["operation","objective","bodies"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"prepare_operation_gate","description":"Create a deterministic PLAN_ONLY operation capsule for a future host-authorized action; performs no write or deploy.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"action_type":{"type":"string"},"intended_change":{"type":"string"},"donors":{"type":"array","maxItems":8,"items":{"type":"string"}}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
 ]
@@ -761,8 +1213,10 @@ HANDLERS = {
     "detect_propagation_gaps": detect_propagation_gaps,
     "plan_capability_inheritance": plan_capability_inheritance,
     "build_sync_contract": build_sync_contract,
+    "estate_keeper_contract": estate_keeper_contract,
     "plan_relationship_operation": plan_relationship_operation,
     "prepare_operation_gate": prepare_operation_gate,
+    "plan_artifact_route": plan_artifact_route,
 }
 
 def tool_result(data):
@@ -779,7 +1233,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.7"
+    server_version = "JMBuildMeshNativeMCP/0.8.5"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")
@@ -855,7 +1309,7 @@ class Handler(BaseHTTPRequestHandler):
                 "protocolVersion": protocol,
                 "capabilities": {"tools": {"listChanged": False}},
                 "serverInfo": {"name": SERVER_NAME, "version": VERSION},
-                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Operation gates are PLAN_ONLY and non-mutating.",
+                "instructions": "Recover before rebuild. Search does not equal proof. Resolve authority before crown. Fuzzy discovery is never authority. Capability edges are contact reasons, not merges. Keep private Library evidence local to the host. Estate Keeper maintenance is delta-first: connect, do not recount. Operation gates, Keeper contracts and artifact routes are PLAN_ONLY and non-mutating. Artifact profiles share one spine while keeping surface proof separate.",
             }))
         if method == "ping":
             return self.send_json(200, rpc_result(request_id, {}))

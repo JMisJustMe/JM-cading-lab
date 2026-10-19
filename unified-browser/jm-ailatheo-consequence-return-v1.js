@@ -124,6 +124,13 @@ function mountWorkbench(){
  if(!validTicket(t)||t.id!==id||!['HANDOFF_PREPARED','RECEIVER_RETURN_READY'].includes(t.phase))return hold('Handoff missing or expired');
  const startedEventId=Number(window.JMAILatheoGripUI?.latestMaterialContact?.()?.id)||0;
  $('jmRelayStatus').textContent='Intent received from federation: '+t.intent+'\nNo project touched. Execute a real workbench action, then verify its persisted consequence.';
+ const gate=document.querySelector('#creatorPreviewGate .creatorPreviewCard');
+ if(gate&&!gate.querySelector('#jmRelayFirstRunNote')){
+  const note=document.createElement('p');note.id='jmRelayFirstRunNote';
+  note.textContent='Federation contact is waiting. Choose START BLANK to preserve the standard creator first-open, or EXPLORE SIGNAL GARDEN yourself. No background action will replace your project.';
+  note.style.cssText='padding:8px 10px;border:1px solid #64bbce;border-radius:9px;background:#102537;color:#fff;font-size:14px';
+  gate.appendChild(note);
+ }
  button('LOAD SIGNAL GARDEN (EMPTY PROJECT ONLY)','jmRelaySample',()=>{
   const ui=window.JMAILatheoCreatorPreview;
   if(!ui?.loadSignalGarden)return hold('Workbench recipient not initialised');

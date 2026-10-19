@@ -74,9 +74,11 @@ jobs:
           $execution = Get-Content -LiteralPath (Join-Path $carrier 'AILATHEO_NATIVE_EXECUTION.json') -Raw | ConvertFrom-Json
           $versionName = [string]$execution.carrier.versionName
           $versionCode = [int]$execution.carrier.versionCode
+          $previousVersionCode = 0
           $existingProof = 'downloads/AILATHEO_RECEIVER_BUILD_PROOF.json'
           if (Test-Path -LiteralPath $existingProof) {
             $previous = Get-Content -LiteralPath $existingProof -Raw | ConvertFrom-Json
+            $previousVersionCode = [int]$previous.version_code
             if ($versionCode -le [int]$previous.version_code) {
               throw "VERSION_CODE_HOLD: $versionCode is not higher than previous $($previous.version_code)."
             }
@@ -121,6 +123,7 @@ jobs:
             -VersionCode $versionCode `
             -OutputRoot $buildOut `
             -SigningMode release `
+            -PreviousVersionCode $previousVersionCode `
             -SigningKeystorePath $signer `
             -ExpectedSignerSha256 $expectedSigner 2>&1)
           $lines | ForEach-Object { Write-Host $_ }
@@ -143,6 +146,7 @@ jobs:
               -PackageName 'com.jmisjustme.ailatheocreation' `
               -VersionName '3.0.2-ci' -VersionCode ($versionCode+1) `
               -OutputRoot $round2 -SigningMode release `
+              -PreviousVersionCode $versionCode `
               -SigningKeystorePath $signer -ExpectedSignerSha256 $expectedSigner 2>&1)
             $secondJson = $secondLines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
             if (-not $secondJson) { throw 'SECOND_SIGNED_BUILD_HOLD' }
@@ -194,6 +198,9 @@ jobs:
             version_code=$versionCode
             signer_cert_sha256=$result.signer_cert_sha256
             signer_release_custody_verified=$releaseClaim
+            previous_version_code=$previousVersionCode
+            future_update_signing_eligible=$releaseClaim
+            existing_legacy_install_update_compatible=$false
             update_ready=$releaseClaim
             apk='AILatheo_Creation_v3_0_alpha.apk'
             bytes=(Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length

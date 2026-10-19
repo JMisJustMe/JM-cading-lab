@@ -279,8 +279,13 @@ public class MainActivity extends Activity {
     Invoke-Checked -FilePath $apksigner -Step 'APK signing' -Arguments ($signArgs + @($apk))
     $certLines = @(& $apksigner 'verify' '--verbose' '--print-certs' $apk 2>&1)
     if ($LASTEXITCODE -ne 0) { throw 'APK signature verification failed.' }
-    $certResult = [regex]::Match(($certLines | Out-String),'Signer #1 certificate SHA-256 digest:\s*([0-9a-fA-F:]+)')
-    if (-not $certResult.Success) { throw 'SIGNING_IDENTITY_HOLD: no APK certificate fingerprint.' }
+    $certText = ($certLines | ForEach-Object { [string]$_ }) -join [Environment]::NewLine
+    $certResult = [regex]::Match($certText,'(?im)certificate[^\r\n]*SHA[- ]?256[^\r\n]*?:\s*([0-9a-fA-F:]{64,95})')
+    if (-not $certResult.Success) {
+        # Output is only public signing certificate diagnostics, never passwords/keys.
+        Write-Warning ('APKSIGNER_PUBLIC_CERT_OUTPUT: ' + $certText.Substring(0,[Math]::Min($certText.Length,900)))
+        throw 'SIGNING_IDENTITY_HOLD: no APK certificate fingerprint.'
+    }
     $signerSha256 = ($certResult.Groups[1].Value -replace ':','').ToLowerInvariant()
     if ($signerSha256 -notmatch '^[0-9a-f]{64}$') { throw 'SIGNING_IDENTITY_HOLD: malformed APK certificate SHA-256.' }
     if ($SigningMode -eq 'release' -and $signerSha256 -ne ($ExpectedSignerSha256 -replace ':','').ToLowerInvariant()) {

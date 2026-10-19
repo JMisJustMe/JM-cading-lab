@@ -46,3 +46,10 @@ Blob SHA-1 is Git's content identifier; it is not the SHA-256 fingerprint shown 
 - PASS only for verified exact-file readbacks and executable source tests. No host-autodiscovery, source promotion, trained model or microphone Ding.
 
 **FLAZ ≠ merge, smoke test ≠ device acceptance, screenshot ≠ integration approval. NO DING, NO CLAIM.**
+
+## Live browser trial outcome — investigated, scoped, preserved
+- GitHub Actions run: https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39184142130 . Frozen donor source job **SUCCESS: 31/31**.
+- Read-only headless Chromium loaded the Lovable preview URL with HTTP **200**, but the page displayed the **Lovable login form**, not the Testbench. It then timed out waiting for the Testbench heading (45 seconds). No browser JS errors were observed before the login block.
+- Result: **HELD / PREVIEW_AUTHENTICATION_BLOCK**. Neither app failure nor successful unauthenticated live-browser functional check is established. User's authenticated-editor screenshot separately showed the interface rendering.
+- Synthetic live-preview receipt and login screenshot are preserved under workflow artifact `jm-lovable-host-contact-live-preview-receipts` (artifact ID `12156964608`, zip SHA-256 `1a0fe0799c4c72b2ef965dd59233f353edd59e417416278e0fa5a2dff41205ca`). No private credentials were supplied or requested.
+- The original Lovable runtime and user account session were not changed. To test the interactive app, use its signed-in editor preview; an unauthenticated CI browser cannot bypass the provider's login.

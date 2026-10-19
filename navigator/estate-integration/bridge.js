@@ -19,10 +19,12 @@
     return row;
   }
   async function loadRegistry(){
+    // The script-relative path works on both Cloudflare root and GitHub Pages /JM-cading-lab/.
+    const scriptRelative=script?.src?new URL('./public-registry.json',script.src).href:null;
     const sameOrigin=new URL(REG_PATH,location.origin).href;
     const canonical=new URL(REG_PATH,CANON).href;
     let last;
-    for(const url of [...new Set([sameOrigin,canonical])]){
+    for(const url of [...new Set([scriptRelative,sameOrigin,canonical].filter(Boolean))]){
       try{
         const res=await fetch(url,{cache:'no-store',headers:{'Accept':'application/json'}});
         if(!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -67,6 +69,7 @@
       registry,
       registryUrl:sourceUrl,
       surface,
+      relationshipPolicy: Object.freeze({operations:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],scope:'public relationship navigation only; no merger or private write',proof:'Contact before crown; explicit authority and receiver proof for real merge'}),
       resolve(id){return index.get(String(id||'').toLowerCase())||null},
       list(){return [...index.values()]},
       open(id){

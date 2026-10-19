@@ -21,6 +21,17 @@ async function check(viewport){
  page.on('pageerror',e=>errors.push(e.message));
  await page.goto(url,{waitUntil:'load'});
  need(await page.locator('.tile').count()===3,'MISSING_THREE_ACTUAL_BODIES');
+ // Actual Fold device screenshots: Gate Bloom action text must fit wholly inside its card.
+ // Assert rendered geometry, not merely the presence of words in HTML.
+ const layout=await page.evaluate(()=>{
+  const within=(outer,inner)=>{const o=outer.getBoundingClientRect(),i=inner.getBoundingClientRect();return i.top>=o.top-1&&i.bottom<=o.bottom+1&&i.left>=o.left-1&&i.right<=o.right+1};
+  const items=[...document.querySelectorAll('.tile')].map(x=>({id:x.id,actionInside:within(x,x.querySelector('em')),nameInside:within(x,x.querySelector('strong'))}));
+  const text=document.querySelector('header>div').getBoundingClientRect(),tag=document.querySelector('header .tag').getBoundingClientRect();
+  return {items,headerNotOverlapping:text.right<=tag.left+1,bottomPadding:parseFloat(getComputedStyle(document.querySelector('.app')).paddingBottom)};
+ });
+ need(layout.items.length===3&&layout.items.every(x=>x.actionInside&&x.nameInside),'OWNER_DEVICE_TILE_LABEL_CLIPPED '+JSON.stringify(layout));
+ need(layout.headerNotOverlapping,'ANDROID_HEADER_BADGE_OVERLAP '+JSON.stringify(layout));
+ need(layout.bottomPadding>=30,'ANDROID_SYSTEM_NAVIGATION_FOOTER_SPACING '+JSON.stringify(layout));
  need((await page.locator('#state').textContent()).includes('OneBody carrier ready'),'NOT_READY_ON_FIRST_OPEN');
  need(await page.locator('#lineA').getAttribute('x1')!==await page.locator('#lineA').getAttribute('x2'),'LINK_A_NOT_ACTUALLY_DRAWN');
  await page.locator('#recover').click();
@@ -54,6 +65,8 @@ async function check(viewport){
  await ctx.close();
 }
 try{
+ await check({width:320,height:700});
+ await check({width:360,height:800});
  await check({width:390,height:844});
  await check({width:1366,height:900});
  const page=await browser.newPage();

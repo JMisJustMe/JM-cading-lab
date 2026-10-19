@@ -1,4 +1,5 @@
 import { planEstateRoute } from "../coding-estate/integration/router-core.mjs";
+import { livingTouchCarrier } from "./ailatheo-native-touch-carrier.mjs";
 import { GameForge, JMVisualGraft, JMVisualRuntime } from "../coding-estate/sovereign-batch-six/direct/game-input-native-a.mjs";
 import { PLAYFORM, Seedform, PatternTapping } from "../coding-estate/sovereign-batch-six/direct/game-input-native-b.mjs";
 import { BuildGates, OneBodyDelivery, CadingIR } from "../coding-estate/sovereign-batch-four/direct/toolchain-native.mjs";
@@ -57,7 +58,7 @@ link runtime -> delivery kind=deliver`);
  gates: ["source","signal","route","state","trace","body","receipt","rebuild"]
  receipt: AILatheoBuildReceipt
  }`,{source:true,signal:true,route:true,state:true,trace:true,body:true,receipt:true,rebuild:true});
- const files={"AILatheoCreation.onebody.json":JSON.stringify(ir.ir),"BUILD_RECEIPT.json":JSON.stringify(gates.receipt),"00_OPEN_FIRST.html":"AILatheo creation carrier"};
+ const files={"AILatheoCreation.onebody.json":JSON.stringify(ir.ir),"BUILD_RECEIPT.json":JSON.stringify(gates.receipt),"00_OPEN_FIRST.html":livingTouchCarrier.replaceAll(String.fromCharCode(92,47,115,99,114,105,112,116,62),String.fromCharCode(47,115,99,114,105,112,116,62))};
  const delivery=OneBodyDelivery.execute(`package AILatheoCreationPack {
  source: AILatheoCreation.onebody.json
  build: AILatheoBuild
@@ -65,7 +66,7 @@ link runtime -> delivery kind=deliver`);
  package: AILatheoCreationPack
  open_first: 00_OPEN_FIRST.html
  }`,files);
- const carrier=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AILatheo Creation</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#08111d;color:#eef7ff;font-family:system-ui}.body{padding:32px;border:1px solid #345;border-radius:24px;background:#101d2d;box-shadow:0 0 70px #3cf3}button{font:inherit;padding:12px 18px;border-radius:12px}</style></head><body><main class="body"><h1>AILatheo Creation</h1><p id="state">OneBody carrier ready.</p><button id="contact">CONTACT</button></main><script>document.querySelector('#contact').onclick=()=>{document.querySelector('#state').textContent='VISIBLE CONSEQUENCE · native route carried';document.body.dataset.contact='ding'};<\/script></body></html>`;
+ const carrier=livingTouchCarrier.replaceAll(String.fromCharCode(92,47,115,99,114,105,112,116,62),String.fromCharCode(47,115,99,114,105,112,116,62));
  const carrierDigest=delivery.state.sha256;
  return {schema:"jm.ailatheo.creation-execution/0.3",intent,plan,executedBodies:["GameForge","PLAYFORM","Seedform Choice Interface","Pattern-Tapping","JMVisualGraft","JM Visual Interaction Runtime"],passed:forge.state.distinct&&play.result.mutuallyExecutable&&seed.result.governed&&tap.state.temporal&&visual.state.mechanicLinked&&interaction.result.consequenceReadable,receipts:[forge,play,seed,tap,visual,interaction,ir,gates,delivery].map(x=>x.receipt.resultDigest),oneBody:ir.ir,buildGates:gates.state,delivery:delivery.state,carrier:{html:carrier,digest:carrierDigest,entry:"index.html",forgeContract:{sourceDirectory:"AILatheoCreationPack",projectName:"AILatheo Creation",packageName:"com.jmisjustme.ailatheocreation",versionName:"3.0-alpha",versionCode:300}},state:{forge:forge.state,play:play.result,seed:seed.result,pattern:tap.state,visual:visual.state,interaction:interaction.result}};
 }

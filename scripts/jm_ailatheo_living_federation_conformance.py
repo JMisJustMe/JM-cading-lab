@@ -15,7 +15,7 @@ checks={
 'reentry':'RE-ENTRY' in s,
 'sha256':"SHA-256" in s and 'payload_sha256' in s,
 'return_packet':'AILATHEO_RETURN_PACKET_READY' in s,
-'truthful_contact':'CONTACT_ROUTED_LOCAL' in s and 'ding:null' in s and "textContent='ROUTED'" in s,
+'truthful_contact':"outcome:'CONTACT_ROUTED_LOCAL',ding:null" in s and "'ROUTED'" in s and 'persistence' in s,
 'public_link':'../navigator/estate-integration/bridge.js' in s and 'jm-estate-integration-ready' in s,
 'public_hold':'jm-estate-integration-hold' in s,
 'route_actions':'data-route' in s and 'JMEstateIntegration?.open' in s,

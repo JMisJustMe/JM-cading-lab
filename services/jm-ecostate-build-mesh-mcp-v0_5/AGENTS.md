@@ -121,7 +121,10 @@ Before changing anything:
 - **NO DING, NO CLAIM**
 - **CONTACT BEFORE CROWN**
 - **RECOVER BEFORE REBUILD**
-- **MESH ≠ MERGE**
+- **CONTACT DOES NOT IMPLY MERGER**
+- **EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE**
+
+Separate, Mesh, Integrate, Merge, Transform and Breakaway are eligible choices. A mesh edge never proves a merger; actual intentional merging requires authority, implementation, receiver proof and recovery. The older phrase *Mesh ≠ Merge* remains historical non-equivalence, not a general veto.
 - **BODY ≠ CARRIER ≠ ROUTE ≠ SEAT**
 - **ACCESS ≠ AUTHORITY**
 - **RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE**

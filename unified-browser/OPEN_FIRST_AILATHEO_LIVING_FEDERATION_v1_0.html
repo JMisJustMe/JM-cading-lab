@@ -37,11 +37,11 @@ async function conduct(){
  const digest=await hash(payload);
  const rec={schema:'jm.ailatheo.living-federation/1.1',time:new Date().toISOString(),contact:text,state,path:active.map(x=>x.id+':'+x.state.toUpperCase()),payload_sha256:digest.startsWith('fallback-')?null:digest,payload_digest:digest,digest_kind:digest.startsWith('fallback-')?'NONCRYPTO_FALLBACK':'SHA-256',estate_link:{...estateLink},outcome:'CONTACT_ROUTED_LOCAL',ding:null};
  history.push(rec);
- localStorage.setItem(KEY,JSON.stringify({last:rec,history:history.slice(-24)}));
+ try{localStorage.setItem(KEY,JSON.stringify({last:rec,history:history.slice(-24)}));rec.persistence='LOCAL_STORAGE'}catch(e){rec.persistence='MEMORY_ONLY_HOLD';rec.persistence_error=String(e?.message||e)}
  render(state);
  $('routeLabel').textContent='CONTACT_ROUTED_LOCAL';
  $('meaningText').textContent=explain(active,text);
- $('headStatus').textContent='ROUTED';
+ $('headStatus').textContent=rec.persistence==='MEMORY_ONLY_HOLD'?'ROUTED · SAVE HOLD':'ROUTED';
  $('pulse').classList.remove('go');void $('pulse').offsetWidth;$('pulse').classList.add('go');
 }
 function openDrawer(title,html){$('drawerTitle').textContent=title;$('drawerBody').innerHTML=html;$('drawer').classList.add('open')}

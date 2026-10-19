@@ -35,3 +35,7 @@ Run the source tests via `python3 -m unittest discover -s .agents/skills/jm-ecos
 Open `host-trials/lovable-v0_1/JM_KNOWLEDGE_VISGUIDE_v0_6_ONEBODY.html` for an offline interactive visual guide and browser-only JSON/source preflight. The VISGUIDE does not execute Python, Node, agent contact or promotion.
 
 **FLAZ does not merge; NO DING, NO CLAIM.**
+
+## Consolidated master and distributable source
+
+The single orientation/restore point is `00_START_HERE_JM_KNOWLEDGE_CONTACT_MASTER.md` in this directory. The corresponding protected checkpoints are `FLAZ_KNOWLEDGE_CONTACT_CP_2026-10-19.md` and `FLAZ_BLIND_AGENT_CONTACT_CP7_2026-10-19.md`. Together with this folder's executable modules, tests, fixtures, Lovable original source shadow, VISGUIDE and bounded CI, these form one unified **source kit**, not another agent or new acceptance phase. CI's `jm-knowledge-v05-public-safe-source-kit` artifact collects this entire project-local skill folder for offline distribution. Python/Node JM sovereign routing still requires a full checkout of the original repository; the source kit alone can demonstrate its local document intake/replay/query tests. Do not promote a HELD candidate merely because it is bundled.

@@ -29,3 +29,28 @@ This module is a **new, optional interface for existing JM WebGL renderers**. It
 ## Test
 Run `node games-beyond/jm-render-contact/JM_RENDER_CONTACT_v0_1.test.mjs`.
 Tests run on provider mocks and verify ordering, fallback, normal matrix and static cache; they do **not** establish pixel quality or physical GPU performance.
+
+---
+
+## Executed cross-game integration — 19 October 2026
+
+### Protected receiving bodies
+- `receivers/JM_WRESTLEFORM_DUAL_EXPRESSIONS_v0_3_1_RENDER_CONTACT.html` — buffer binding reuse, direct-TRS optimisation, diagnostics. Frozen predecessor; Git blob `164c07437cc07e2c6fe48ed17e7b7af2f14f8b56` preserved byte-for-byte.
+- `receivers/JM_WRESTLEFORM_DUAL_EXPRESSIONS_v0_3_2_STATIC_BATCH.html` — WRESTLEFORM's *last runtime arena override*, not a dead earlier renderer: 31 static geometry submissions → 1 actual GPU indexed draw; 119 → 89 draw submissions per frame in the simulated WebGL receiver.
+- `receivers/JM_WRESTLEFORM_DUAL_EXPRESSIONS_v0_3_3_RENDER_EVOLUTION.html` — v0.3.2 plus inverse-transpose corrected dynamic actor normals and 2 GPU soft-contact shadows. 119 → 91 submissions per frame (23.5% fewer); no draw-count drift on three consecutive mock frames.
+
+### Reusable executable JM organs
+- `JM_RENDER_CONTACT_v0_1.mjs` — conservative opaque grouping, WebGL2 / ANGLE / direct detection, normal matrix and disposal.
+- `JM_STATIC_BATCH_v0_2.mjs` — source geometry bake to world space, inverse-transpose normal transformation, interleaved material attributes, WebGL1-safe uint16 splitting, GPU buffer replacement/disposal.
+- `JM_SOFT_CONTACT_SHADOW_v0_1.mjs` — texture-free GPU radial contact shadows with explicit blend/depth state recovery.
+
+### First-open and contract evidence
+- WRESTLEFORM v0.3.3 fake-DOM + simulated WebGL: 3/3 frames at 91 actual draw calls, 91 frame-reported draws, single compile of 31 source arena draws, 979 stored vertices, 2,616 submitted static indices, 264 normal-matrix uniform uploads over three frames, 6 depth-mask transitions, first match started, SEQUENCEFORM → LIVEFORM route returned.
+- WRESTLEFORM gameplay and prior identities preserved; no removed gameplay mechanics.
+- Test files: `JM_RENDER_CONTACT_v0_1.test.mjs`, `JM_STATIC_BATCH_v0_2.test.mjs`, `JM_SOFT_CONTACT_SHADOW_v0_1.test.mjs`, `JM_WRESTLEFORM_v0_3_1_RECEIVER.test.mjs`, `JM_WRESTLEFORM_v0_3_2_STATIC_BATCH.test.mjs`, `JM_WRESTLEFORM_v0_3_3_RENDER_EVOLUTION.test.mjs`.
+- Run with Node.js 22 using `node games-beyond/jm-render-contact/<test-file>.mjs`. GitHub CI includes these but its remote conclusion is separate from in-chat simulation.
+
+### No proof inflation
+These are **real source edits and mocked rendering driver executions**, not browser WebGL shading validation or physical-device FPS evidence. Exact CP2 ZIP has been recovered as an archive, but the programmatic unpack/decode environment has failed; the shaders and mesh compiler inside it have **not been claimed as byte-identical transplanted CP2 code**.
+
+**Ding:** static geometry compiler and full simulated receiver contract **PASS**; hardware WebGL shading, comparable screen captures, Android/Fold touch and thermal endurance, CP2-byte donor proof and production promotion remain **HOLD**. Do not merge/release as canonical game without those gates.

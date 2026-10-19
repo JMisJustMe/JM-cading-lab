@@ -37,6 +37,8 @@ jobs:
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_4_ALPHA_SAFE.test.mjs
       - name: Verify byte-exact Astra CP2 GLSL shaders and WRESTLEFORM v0.3.5 gameplay
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_5_CP2_SHADER.test.mjs
+      - name: Prove CP2 actor instancing and direct fallback across 3 native GL routes
+        run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_6_CP2_INSTANCING.test.mjs
       - name: Verify JM Actual Engine live WebGL buffer reuse and corrected shading normals
         run: node games-beyond/jm-render-contact/JM_ACTUAL_ENGINE_v12_2_1_RENDER_CONTACT.test.mjs
       - name: Verify JM Actual Engine complete first-open source, dual-render sync and 2D return

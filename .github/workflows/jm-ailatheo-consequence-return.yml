@@ -1,0 +1,39 @@
+name: JM AILatheo Earned Receiver Return v1
+on:
+  push:
+    branches: [jm-ailatheo-consequence-return-20261019, main]
+    paths:
+      - 'unified-browser/jm-ailatheo-consequence-return-v1.js'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'tests/ailatheo-federation-consequence-return.spec.mjs'
+      - '.github/workflows/jm-ailatheo-consequence-return.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'unified-browser/jm-ailatheo-consequence-return-v1.js'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
+      - 'tests/ailatheo-federation-consequence-return.spec.mjs'
+      - '.github/workflows/jm-ailatheo-consequence-return.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  native-receiver-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Source syntax
+        run: node --check unified-browser/jm-ailatheo-consequence-return-v1.js
+      - name: Native routing/return browser dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright
+          npx playwright install --with-deps chromium
+      - name: Native AILatheo same-origin consequence and recovered return
+        run: |
+          python3 -m http.server 4177 --bind 127.0.0.1 >/tmp/ailatheo-http.log 2>&1 &
+          sleep 2
+          node tests/ailatheo-federation-consequence-return.spec.mjs

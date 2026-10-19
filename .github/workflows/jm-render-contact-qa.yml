@@ -33,3 +33,5 @@ jobs:
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_2_STATIC_BATCH.test.mjs
       - name: Verify WRESTLEFORM v0.3.3 soft-shadow, normal, batch and gameplay regression
         run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_3_RENDER_EVOLUTION.test.mjs
+      - name: Verify WRESTLEFORM v0.3.4 alpha-safe static shader and gameplay
+        run: node games-beyond/jm-render-contact/JM_WRESTLEFORM_v0_3_4_ALPHA_SAFE.test.mjs

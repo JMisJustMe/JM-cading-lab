@@ -42,6 +42,9 @@
     return new Map(rows.map(r=>[String(r.id).toLowerCase(),r]));
   }
   function installDoor(registry){
+    // AILatheo already presents real Estate destinations in its Proof Mode. A floating
+    // fallback link would cover its narrow, touch-first bottom controls.
+    if(surface==='ailatheo-federation') return;
     if(document.getElementById('jm-estate-integration-door')) return;
     const nav=document.getElementById('quickDoors');
     const href=registry.integration_route||new URL('/navigator/estate-integration/',CANON).href;

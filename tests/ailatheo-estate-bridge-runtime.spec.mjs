@@ -10,6 +10,13 @@ try {
   // Browser-served, independent public registry: direct link and real readback.
   for(const viewport of [{width:390,height:844},{width:1366,height:900}]){
     const context=await browser.newContext({viewport});
+    await context.route('https://jm-ecostate-build-mesh-mcp.onrender.com/mcp',async route=>{
+      const headers={'access-control-allow-origin':'*','access-control-allow-methods':'POST,OPTIONS','access-control-allow-headers':'accept,content-type'};
+      if(route.request().method()==='OPTIONS')return route.fulfill({status:204,headers});
+      const payload=JSON.parse(route.request().postData()||'{}');
+      must(payload.method==='tools/call'&&payload.params?.name==='build_mesh_status','BAD_MCP_PROBE_CALL');
+      return route.fulfill({status:200,headers:{...headers,'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:43,result:{structuredContent:{server:'JM ECOSTATE Build Mesh Native MCP',version:'0.8.5',current_registry_date:'2026-10-06',capability_profiles:34}}})});
+    });
     const page=await context.newPage();
     const errors=[];page.on('pageerror',e=>errors.push(e.message));
     await page.goto(base+body,{waitUntil:'domcontentloaded'});
@@ -20,6 +27,11 @@ try {
     must(linked.policy.operations.includes('MERGE')&&linked.policy.operations.includes('BREAKAWAY'),'RELATIONSHIP_POLICY_MISSING');
     await page.locator('#proofBtn').click();
     must(await page.locator('#drawer [data-route]').count()>=9,'REAL_ROUTE_BUTTONS_MISSING');
+    must(await page.locator('#probeMeshBtn').count()===1,'BUILD_MESH_PROBE_CONTROL_MISSING');
+    await page.locator('#probeMeshBtn').click();
+    await page.waitForFunction(()=>document.querySelector('#meshProbeResult')?.textContent.includes('LIVE_READ_ONLY_RETURNED'));
+    const mesh=await page.locator('#meshProbeResult').textContent();
+    must(mesh.includes('0.8.5')&&mesh.includes('not yet declared'),'MCP_READBACK_BOUNDARY_INVALID '+mesh);
     await page.locator('#close').click();
     await page.locator('#contact').fill('Connect the evidence, code and route without merging identities');
     await page.locator('#conduct').click();

@@ -54,3 +54,26 @@ Tests run on provider mocks and verify ordering, fallback, normal matrix and sta
 These are **real source edits and mocked rendering driver executions**, not browser WebGL shading validation or physical-device FPS evidence. Exact CP2 ZIP has been recovered as an archive, but the programmatic unpack/decode environment has failed; the shaders and mesh compiler inside it have **not been claimed as byte-identical transplanted CP2 code**.
 
 **Ding:** static geometry compiler and full simulated receiver contract **PASS**; hardware WebGL shading, comparable screen captures, Android/Fold touch and thermal endurance, CP2-byte donor proof and production promotion remain **HOLD**. Do not merge/release as canonical game without those gates.
+
+---
+
+## 19 October 2026: alpha-safe renderer and JM Actual Engine inheritance
+
+### WRESTLEFORM v0.3.4 (protected descendant)
+- `receivers/JM_WRESTLEFORM_DUAL_EXPRESSIONS_v0_3_4_ALPHA_SAFE.html` extends the protected v0.3.3 recipient.
+- Correctly separates the source's one alpha ring marking from 30 opaque static calls: 30 → 1 batched indexed draw, then 1 alpha-mark drawing call.
+- Plus 2 GPU soft contact-shadow calls and unchanged character draw path: original 119 → simulated 92 frame submissions (22.7% less).
+- Three consecutive mocked-WebGL frames: 92 actual / 92 reported draws, static compiled once, 1 translucent ring source, 1,656 static indices, alpha and depth states restored each frame, full game starts, LIVEFORM ↔ SEQUENCEFORM returns.
+- FLAZ claim remains **bounded to source/code simulation**, not physical Android or hardware GPU shading.
+
+### JM Actual Engine v12.2.1 (distinct sovereign engine recipient)
+- Source parent: `JM_ACTUAL_ENGINE_v12_2_ENGINE_CLOSURE_FLAZ.html` (70,029-character recovered Library copy), unchanged.
+- Recipient `receivers/JM_ACTUAL_ENGINE_v12_2_1_RENDER_CONTACT.html`: original 2D/3D engine, live scene, user controls, source lineage, v12.2 pack/restore/closure APIs kept.
+- Actual WebGL drawMesh now uses the JM Render Contact inverse-transpose normal-matrix provider (fixing direction distortion under nonuniform scale).
+- Caches repeated consecutive mesh vertex/normal attribute binding, and records actual provider draw/mesh-switch/CPU-frame counts. No fake instancing claim.
+- Controlled 6-object source-code draw comparison: 6 draws before/after; GL buffer binds 12 → 6 (50% for that sequence); same draw order and model transforms, 6 correct normal-matrix uploads.
+- Simulated first-open executes complete five-script HTML: WebGL context initialised, 2D → 3D → 2D works, sync route matches, scene renders twice, retained dual-core self-test 11/11. The separate v12.2 closure proof was 7/8 in the test's artificial DOM; owner/browser/device closure is **HOLD**.
+- Tested by `JM_ACTUAL_ENGINE_v12_2_1_RENDER_CONTACT.test.mjs` and `JM_ACTUAL_ENGINE_v12_2_1_FIRST_OPEN.test.mjs`.
+
+### Updated technical boundary
+This **is native renderer technology inherited across two independent JM recipients**: WRESTLEFORM and JM Actual Engine, with all parents frozen. It is a real code-integration descendant, not the original CP2-byte-perfect transplant. The CP2 ZIP archive has been materialized, but binary unzip in the local runtime remains unavailable. The current protected branch **must not be merged into main** or certified for Android hardware without actual browser/driver and device QA.

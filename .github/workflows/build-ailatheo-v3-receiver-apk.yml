@@ -94,7 +94,7 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw 'TEST_SIGNER_CREATE_FAILED' }
             $fingerprintText = (& keytool -list -v -keystore $signer -alias $env:JM_ANDROID_RELEASE_KEY_ALIAS `
               -storepass $env:JM_ANDROID_RELEASE_STOREPASS 2>&1 | Out-String)
-            $fingerprintHit = [regex]::Match($fingerprintText, 'SHA256:\\s*([0-9A-Fa-f:]{95})')
+            $fingerprintHit = [regex]::Match($fingerprintText, 'SHA256:\s*([0-9A-Fa-f:]{95})')
             if (-not $fingerprintHit.Success) { throw 'TEST_SIGNER_FINGERPRINT_MISSING' }
             $expectedSigner = ($fingerprintHit.Groups[1].Value -replace ':','').ToLowerInvariant()
             $releaseClaim = $false

@@ -58,6 +58,40 @@
     },
     "boundary": "Actual local HTTP server and process restart using recovered production source. No distributed/cloud or physical-device acceptance."
   },
-  "productionPromotion": "NOT_PERFORMED",
-  "credentialMaterialIncluded": false
+  "productionPromotion": {
+    "pullRequests": [
+      390,
+      391
+    ],
+    "sourceCommit": "586dd9090e4745ba07bd79c3eaae3801730df1ce",
+    "canonicalOperation": "PASS",
+    "workflowRun": 39446345070,
+    "workflowState": "DEPLOY_SUCCEEDED_POST_DEPLOY_CHECK_FAILED_WRONG_ENQUIRY_MARKER",
+    "rollbackBranch": "recovery/mission-002-pre-cloud-contact-2026-10-20"
+  },
+  "credentialMaterialIncluded": false,
+  "canonicalBrowser": {
+    "at": "2026-10-20T15:18:21.917Z",
+    "state": "PASS",
+    "tests": [
+      "actual-Federation-button-to-existing-live-cloud",
+      "signature-and-target-state-return",
+      "page-reload-recovery",
+      "clean-browser-context-private-file-import-and-live-recovery",
+      "offline-hold-no-false-success",
+      "online-recovery-after-offline"
+    ],
+    "checkpoint": {
+      "workspaceId": "ws_FXDRTCu2FXo",
+      "operationId": "b5c14c17-b838-489c-bfad-d711187e07f6",
+      "expectedContentHash": "1bc13ff5486eba2d949d97edfa92e72dd35c16584675f72b50d0b73526a7a7cf",
+      "state": "VERIFIED",
+      "revision": 1,
+      "contentHash": "1bc13ff5486eba2d949d97edfa92e72dd35c16584675f72b50d0b73526a7a7cf",
+      "receiptHash": "7629746480ba579da9c093fd584ca67a7d4a9bd518dd8c6cb6c861a3e7483642",
+      "cloudReceiptHash": "f8709ebf8d08be75c4c6ac6178dd01c91338322ed14701adb6005af106bd710b",
+      "cloudKeyId": "bd8abfb7c831ec8678ff4ade"
+    },
+    "boundary": "Real Edge browser on laptop, canonical Cloudflare Estate backend, existing live Render target. Physical Android and cloud replacement durability not claimed."
+  }
 }

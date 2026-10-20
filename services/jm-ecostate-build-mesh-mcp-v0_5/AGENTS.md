@@ -1,7 +1,7 @@
 # JM ECOSTATE — Build Mesh
 ## AGENTS.md — Coding-Body Operating Entrance
 
-**Revision:** v0.3 — Nested Build Mesh Sovereign / Portable Agent Body
+**Revision:** v0.4 — Relationship Authority Correction / Portable Agent Body
 
 **Purpose:** Give a compatible coding agent a lean, live operating entrance into the JM ECOSTATE Build Mesh without replacing the bodies, registries, runtimes, receipts, or authority sources it governs.
 
@@ -121,7 +121,8 @@ Before changing anything:
 - **NO DING, NO CLAIM**
 - **CONTACT BEFORE CROWN**
 - **RECOVER BEFORE REBUILD**
-- **MESH ≠ MERGE**
+- **CONTACT DOES NOT IMPLY MERGER**
+- **EARNED MERGE IS PERMITTED; IDENTITY AND PROOF REMAIN TRACEABLE**
 - **BODY ≠ CARRIER ≠ ROUTE ≠ SEAT**
 - **ACCESS ≠ AUTHORITY**
 - **RETURN TO EARLIER POINT ≠ RETURN TO EARLIER STATE**
@@ -131,6 +132,8 @@ Before changing anything:
 - **DO FOR SELF OFF OF OWN MERITS**
 
 Preserve frozen ancestors inside their earned scopes. Advance by append-forward descendants unless an explicit correction requires otherwise.
+
+Separate, Mesh, Merge, Transform and Breakaway are supported relationship choices. Integrate remains a compatible descriptive choice. The historical Mesh ≠ Merge statement means non-equivalence, not a universal veto. A planner does not execute these operations; real changes require scoped authority, recipient consequence, persistence, trace and recovery.
 
 ---
 
@@ -485,4 +488,4 @@ This nested AGENTS.md was formed against a live Build Mesh / Coding-Estate conta
 
 At each new run, resolve current state again.
 
-**RECOVER BEFORE REBUILD. CONTACT BEFORE CROWN. MESH ≠ MERGE. NO DING, NO CLAIM.**
+**RECOVER BEFORE REBUILD. CONTACT BEFORE CROWN. CONTACT DOES NOT IMPLY MERGER. EARNED MERGE IS PERMITTED. NO DING, NO CLAIM.**

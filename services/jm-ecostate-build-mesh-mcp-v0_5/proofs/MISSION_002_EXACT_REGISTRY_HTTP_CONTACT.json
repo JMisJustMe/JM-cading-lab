@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-20T14:50:33.545Z",
+  "state": "PASS",
+  "version": "0.8.6-candidate",
+  "registry": "0.24",
+  "registrySha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+  "passed": [
+    "search_builds",
+    "recover_build",
+    "resolve_current_head",
+    "proof_state",
+    "trace_lineage",
+    "continue_build_plan",
+    "build_mesh_status",
+    "batch_recover_builds",
+    "find_capability_donors",
+    "compare_builds",
+    "build_capability_mesh",
+    "detect_propagation_gaps",
+    "plan_capability_inheritance",
+    "build_sync_contract",
+    "estate_keeper_contract",
+    "plan_artifact_route",
+    "prepare_operation_gate",
+    "SEPARATE-plan-only",
+    "MESH-plan-only",
+    "MERGE-plan-only",
+    "TRANSFORM-plan-only",
+    "BREAKAWAY-plan-only"
+  ],
+  "boundary": "Actual local HTTP MCP with exact hosted registry and profiles. Hosted service remains v0.8.5; no production promotion or universal execution claim."
+}

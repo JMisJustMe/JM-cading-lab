@@ -25,11 +25,19 @@ export async function onRequest({request}){
     if(new TextEncoder().encode(body).length>32768)return reply(413,'CONTACT_TOO_LARGE');
     try{JSON.parse(body)}catch{return reply(400,'INVALID_JSON')}
   }
+  let timer;
   try{
-    const upstream=await fetch(CLOUD+route,{method:request.method,redirect:'error',
+    // Use explicit manual redirect rejection and a portable timer. Pages can run
+    // with an older compatibility date than the laptop's Web Fetch runtime.
+    const upstream=await Promise.race([fetch(CLOUD+route,{method:request.method,redirect:'manual',
       headers:{accept:'application/json',...(write?{'content-type':'application/json'}:{}),...(!publicRoute?{authorization:auth}:{})},
-      body,signal:AbortSignal.timeout(20000)});
+      body}),new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('TARGET_TIMEOUT')),20000)})]);
+    if(upstream.status>=300&&upstream.status<400)return reply(502,'TARGET_REDIRECT_BLOCKED');
     if(!upstream.headers.get('content-type')?.includes('application/json'))return reply(502,'TARGET_NOT_JSON');
     return new Response(await upstream.text(),{status:upstream.status,headers:HEADERS});
-  }catch{return reply(502,'TARGET_UNAVAILABLE')}
+  }catch(e){
+    // No payload, credential, response body or stack is recorded.
+    console.error('JM_CONTACT_TARGET_HOLD',String(e?.name||'Error'),String(e?.message||'').replace(auth,'[redacted]').slice(0,180));
+    return reply(502,e?.message==='TARGET_TIMEOUT'?'TARGET_TIMEOUT':'TARGET_UNAVAILABLE');
+  }finally{clearTimeout(timer)}
 }

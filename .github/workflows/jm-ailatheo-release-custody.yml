@@ -30,6 +30,50 @@ jobs:
             (Resolve-Path 'tools/Initialize-JMAILatheoReleaseSigning.ps1'),
             [ref]$tokens, [ref]$errors) | Out-Null
           if ($errors.Count) { throw ($errors | Out-String) }
+      - name: Windows PowerShell 5.1 actual owner entrypoint — keytool stderr and signer recovery
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $keyPath = Join-Path $env:RUNNER_TEMP 'JM-WINPS51-ORIGINAL-SIGNER'
+          $backupPath = Join-Path $env:RUNNER_TEMP 'JM-WINPS51-INDEPENDENT-BACKUP'
+          $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'JM-WINPS51-' + [guid]::NewGuid().ToString('N')
+          $script = Join-Path (Get-Location) 'tools/Initialize-JMAILatheoReleaseSigning.ps1'
+          try {
+            $params = @(
+              '-NoProfile','-ExecutionPolicy','Bypass','-File',$script,
+              '-CiTest','-SigningDirectory',$keyPath,'-BackupDirectory',$backupPath
+            )
+            # This is the same powershell.exe v5.1 interpreter invoked by the downloaded CMD.
+            & powershell.exe @params
+            if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_POWERSHELL_51_KEYTOOL_GENERATION_FAILED' }
+            $identity = Join-Path $keyPath 'AILatheo-release.p12'
+            $backup = Join-Path $backupPath 'AILatheo-release.p12'
+            if (-not (Test-Path $identity) -or -not (Test-Path $backup)) {
+              throw 'WINDOWS_POWERSHELL_51_IDENTITY_MISSING'
+            }
+            $first = (Get-FileHash $identity -Algorithm SHA256).Hash
+            if ((Get-FileHash $backup -Algorithm SHA256).Hash -ne $first) {
+              throw 'WINDOWS_POWERSHELL_51_BACKUP_MISMATCH'
+            }
+            & powershell.exe @params
+            if ($LASTEXITCODE -ne 0) { throw 'WINDOWS_POWERSHELL_51_EXISTING_KEY_REENTRY_FAILED' }
+            if ((Get-FileHash $identity -Algorithm SHA256).Hash -ne $first) {
+              throw 'WINDOWS_POWERSHELL_51_IDENTITY_ROTATED'
+            }
+            $env:JM_ANDROID_SIGNING_TEST_PASSPHRASE = 'WRONG-WINPS51-' + [guid]::NewGuid().ToString('N')
+            & powershell.exe @params 2>&1 | Out-Null
+            if ($LASTEXITCODE -eq 0) { throw 'WINDOWS_POWERSHELL_51_WRONG_PASSWORD_NOT_REJECTED' }
+            if ((Get-FileHash $identity -Algorithm SHA256).Hash -ne $first) {
+              throw 'WINDOWS_POWERSHELL_51_WRONG_PASSWORD_CHANGED_KEY'
+            }
+            $global:LASTEXITCODE = 0
+            Write-Host 'JM_WINPS51_ACTUAL_LAPTOP_SIGNING_PATH_PASS: generated one key, same-key rerun, exact backup, wrong-password HOLD'
+          }
+          finally {
+            Remove-Item Env:\JM_ANDROID_SIGNING_TEST_PASSPHRASE -ErrorAction SilentlyContinue
+            Remove-Item $keyPath,$backupPath -Recurse -Force -ErrorAction SilentlyContinue
+          }
+
       - name: Exercise isolated, non-release signer custody
         shell: pwsh
         run: |

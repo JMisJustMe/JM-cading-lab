@@ -21,13 +21,14 @@ const server=http.createServer(async(q,r)=>{
   r.writeHead(200,{'content-type':mime[path.extname(file)]||'application/octet-stream'});r.end(fs.readFileSync(file));
  }catch(e){r.writeHead(500);r.end('test host error')}
 });
-await new Promise(r=>server.listen(4177,'127.0.0.1',r));
+const remote=process.env.JM_CANONICAL_BASE;
+if(!remote)await new Promise(r=>server.listen(4177,'127.0.0.1',r));
 const browser=await chromium.launch({channel:'msedge',headless:true});
 const tests=[];
 try{
  const context=await browser.newContext({viewport:{width:390,height:844},acceptDownloads:true});
  const page=await context.newPage();
- await page.goto('http://127.0.0.1:4177/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html');
+ await page.goto((remote||'http://127.0.0.1:4177')+'/unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html');
  await page.locator('#contact').fill('Mission 002 browser synthetic source contact. Verify RouteVault consequence and return.');
  await page.locator('#proofBtn').click();
  await page.locator('#cloudHandle').fill('M002_UI_'+crypto.randomUUID().replaceAll('-','').slice(0,10));
@@ -47,6 +48,6 @@ try{
  await other.locator('#cloudStatus').filter({hasText:'IMPORTED RECOVERY VERIFIED'}).waitFor({timeout:60000});tests.push('clean-browser-context-private-file-import-and-live-recovery');
  await fresh.setOffline(true);await other.locator('#cloudRecover').click();await other.locator('#cloudStatus').filter({hasText:'HOLD'}).waitFor();tests.push('offline-hold-no-false-success');
  await fresh.setOffline(false);await other.locator('#cloudRecover').click();await other.locator('#cloudStatus').filter({hasText:'CLOUD RECOVERY VERIFIED'}).waitFor({timeout:60000});tests.push('online-recovery-after-offline');
- const proof={at:new Date().toISOString(),state:'PASS',tests,checkpoint:recovery.checkpoint,boundary:'Real Edge browser on laptop, local Estate backend relay, existing live Render target. Canonical Cloudflare deployment and physical Android not claimed.'};
- fs.writeFileSync(path.join(out,'browser-live-contact-proof.json'),JSON.stringify(proof,null,2));console.log(JSON.stringify(proof,null,2));
-}finally{await browser.close();await new Promise(r=>server.close(r))}
+ const proof={at:new Date().toISOString(),state:'PASS',tests,checkpoint:recovery.checkpoint,boundary:remote?'Real Edge browser on laptop, canonical Cloudflare Estate backend, existing live Render target. Physical Android and cloud replacement durability not claimed.':'Real Edge browser on laptop, local Estate backend relay, existing live Render target. Canonical Cloudflare deployment and physical Android not claimed.'};
+ fs.writeFileSync(path.join(out,remote?'canonical-browser-contact-proof.json':'browser-live-contact-proof.json'),JSON.stringify(proof,null,2));console.log(JSON.stringify(proof,null,2));
+}finally{await browser.close();if(!remote)await new Promise(r=>server.close(r))}

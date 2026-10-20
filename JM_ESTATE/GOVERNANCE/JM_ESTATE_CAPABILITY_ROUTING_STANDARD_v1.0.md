@@ -86,7 +86,7 @@ Examples:
 - **RECOVER BEFORE REBUILD**
 - **CONTACT BEFORE CROWN**
 - **NO DING, NO CLAIM**
-- **MESH ≠ MERGE**
+- **CONTACT DOES NOT IMPLY MERGER; EARNED MERGE IS PERMITTED**
 - **BODY ≠ CARRIER ≠ ROUTE ≠ SEAT**
 - **ACCESS ≠ AUTHORITY**
 - **OVERLAY / DONOR CUE ≠ CURRENT-PROJECT AUTHORITY**
@@ -110,3 +110,9 @@ Every selected body inherits the shared JM Build Laws · Preferences · Governan
 ## Re-entry
 
 > Classify the real task pressure, recover the relevant current Estate head instead of defaulting to the most familiar body, use capability profiles only as routing cues, preserve each body's jurisdiction and proof boundary, and require the receiving route to earn its own consequence.
+
+## Exact current re-entry · Mission 002
+
+The tables above preserve their 4 October creation-time snapshot; they are not a live census or a current-head crown. The machine field now points to the recovered exact v0.24 registry and 34 hosted capability profiles. The validator independently checks that pinned authority, preserves every historical profile ID, and allows current descendants to carry newer names and source classifications. Do not compare old names/counts to new current profiles as though time had stopped. Hosted runtime remains v0.8.5; v0.8.6 is held.
+
+Separate · Mesh · Merge · Transform · Breakaway are supported governed operation choices. Contact does not imply merger; an earned, explicitly authorised merge is permitted while preserving ancestry, identity, authority, trace and recovery. A routing cue supplies no execution authority or recipient proof.

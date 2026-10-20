@@ -142,7 +142,7 @@ function showProof(){
  const bridge=window.JMEstateIntegration;
  const routes=bridge?.list()||[];
  const local=history.at(-1);
- const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
+ const info={carrier:'Living Federation v1.1',estate_link:estateLink,local_receipts:history.length,local_digest_kind:local?.digest_kind||'NONE',relationships:['SEPARATE','MESH','INTEGRATE','MERGE','TRANSFORM','BREAKAWAY'],games_house_return:window.JMGamesBeyondReturn?.state?.()?.recipientProof||null,boundary:'Public route contact only. No private operation, merger or owner-device proof.'};
  const actions=routes.map(r=>'<button type="button" class="round" data-route="'+esc(r.id)+'">'+esc(r.name||r.id)+' ↗</button>').join('');
  openDrawer('Proof / diagnostic mode','<div class="diag"><div class="law">CONTACT DOES NOT IMPLY MERGER · EARNED MERGE IS PERMITTED · NO DING, NO CLAIM</div><div class="chips">'+offices.map(o=>'<span class="chip '+(local?.state[o.id]||'')+'">'+esc(o.name)+' · '+esc(local?.state[o.id]||'DIM')+'</span>').join('')+'</div><pre>'+esc(JSON.stringify(info,null,2))+'</pre><div class="chips">'+(actions||'<span class="chip">Public registry not linked · routes held</span>')+'</div><button type="button" class="round" id="probeMeshBtn">PROBE BUILD MESH · READ ONLY</button><pre id="meshProbeResult">Build Mesh not probed. No service claim.</pre><button type="button" class="round" id="searchMeshBtn">SEARCH BUILD MESH · LIVE</button><pre id="meshSearchResult">No live discovery has been queried.</pre><button type="button" class="round" id="runNativeRouter">RUN JM NATIVE ROUTER</button><pre id="nativeRouterResult">JM source-backed router not run. No engine execution claimed.</pre></div>');
  $('probeMeshBtn').addEventListener('click',()=>probeBuildMesh());
@@ -151,6 +151,16 @@ function showProof(){
  $('drawerBody').querySelectorAll('[data-route]').forEach(btn=>btn.addEventListener('click',()=>{if(!window.JMEstateIntegration?.open(btn.dataset.route))$('meaningText').textContent='ROUTE HOLD — destination not verified';}));
 }
 $('proofBtn').onclick=showProof;
+window.addEventListener('jm-games-beyond-return',event=>{
+ const t=event.detail,found=[...history].reverse().find(x=>x.contact===t.intent);
+ if(!found)return;
+ found.games_beyond_return={transaction_id:t.id,receiver:'JM_GAMES_BEYOND_V05',
+  receipt_key:t.recipientProof?.receiptKey,receipt_sha256:t.recipientProof?.receiptSha256,
+  body_count:t.recipientProof?.bodyCount,full_mount:t.recipientProof?.fullMount,
+  claim:'EXISTING_GAMES_BEYOND_PROOF_EXECUTED_AND_RECEIVER_INDEXEDDB_READBACK_VERIFIED; GAMES_NOT_EXECUTED'};
+ try{localStorage.setItem(KEY,JSON.stringify({last:history.at(-1),history:history.slice(-24)}))}
+ catch(e){$('headStatus').textContent='GAMES RECEIVER VERIFIED · TRACE SAVE HOLD'}
+});
 window.addEventListener('jm-ailatheo-consequence-return',event=>{
  const returned=event.detail;
  const last=[...history].reverse().find(x=>x.contact===returned.intent);
@@ -176,4 +186,4 @@ window.addEventListener('jm-estate-integration-hold',event=>{
 });
 $('recover').onclick=()=>{try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(!saved?.last){$('meaningText').textContent='No retained state to recover.';return}history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='PERSISTED STATE RECOVERED';$('meaningText').textContent='Teo OS continuity office returned the last retained contact. Executed history is preserved; the next contact may differ.';$('headStatus').textContent='RECOVERED'}catch(e){$('meaningText').textContent='RECOVERY HOLD — '+String(e?.message||e)}};
 $('close').onclick=()=>$('drawer').classList.remove('open');try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.last){history=saved.history||[saved.last];render(saved.last.state);$('routeLabel').textContent='RE-ENTRY';$('meaningText').textContent='A retained route was found on entry. Press RECOVER to make continuity explicit.';$('headStatus').textContent='RETURN'}else render({})}catch{render({})}
-</script><script defer src="./jm-ailatheo-consequence-return-v1.js" data-jm-relay="federation"></script></body></html>
+</script><script defer src="./jm-ailatheo-consequence-return-v1.js" data-jm-relay="federation"></script><script defer src="./jm-games-beyond-return-v1.js" data-jm-games-return="federation"></script></body></html>

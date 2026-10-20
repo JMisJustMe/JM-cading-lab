@@ -17,6 +17,7 @@ on:
       - "robots.txt"
       - "sitemap.xml"
       - "404.html"
+      - "assets/ecostate-v3/**"
       - "access/**"
       - "apps/**"
       - "author/**"
@@ -139,6 +140,8 @@ jobs:
           done
 
           # Source carriage remains in GitHub custody; the canonical Cloudflare carrier serves the reconstructed body.
+          mkdir -p cloudflare-estate/assets
+          cp -a assets/ecostate-v3 cloudflare-estate/assets/ecostate-v3
           rm -rf cloudflare-estate/navigator/source-authority
           rm -f cloudflare-estate/navigator/carrier-plan.json
 
@@ -147,6 +150,12 @@ jobs:
             for file in index.html STATUS.md PUBLICATION_RECEIPT.json; do
               [ ! -f "money-menu/$file" ] || cp "money-menu/$file" "cloudflare-estate/money-menu/$file"
             done
+            # This existing enquiry page is linked by the live Money Menu.
+            # Publish only its customer-facing body, not operations/outreach files.
+            if [ -f money-menu/launch/index.html ]; then
+              mkdir -p cloudflare-estate/money-menu/launch
+              cp money-menu/launch/index.html cloudflare-estate/money-menu/launch/index.html
+            fi
           fi
 
           # Overlay one contextual return-route organ on public front doors only.
@@ -367,6 +376,13 @@ jobs:
           python3 - <<'PY'
           import json
           from pathlib import Path
+          graphics=Path('assets/ecostate-v3')
+          published=Path('cloudflare-estate/assets/ecostate-v3')
+          manifest=json.loads((graphics/'manifest.json').read_text())
+          for name in [manifest['mark'],*manifest['heroes'].values()]:
+              assert (published/name).read_bytes()==(graphics/name).read_bytes(), name
+          assert 'Discover, Play, Create & Enquire' in Path('cloudflare-estate/money-menu/launch/index.html').read_text()
+          print('Assembled authored graphics and enquiry body PASS')
           r=json.loads(Path('cloudflare-estate/navigator/estate-integration/public-registry.json').read_text())
           assert r['schema']=='JM.Estate.PublicNervousSystem/1'
           assert r['canonical_root']=='https://jmisjustme-estate.pages.dev/'
@@ -400,6 +416,9 @@ jobs:
             ['/ecostate-griprail-v6.js', 'JMGripRail'],
             ['/ecostate-griprail-v6.css', '.griprail-track'],
             ['/money-menu/', 'ecostate-griprail-v6.js'],
+            ['/money-menu/launch/', 'Discover, Play, Create & Enquire'],
+            ['/assets/ecostate-v3/hero-front-door.svg', '<svg'],
+            ['/assets/ecostate-v3/jm-ecostate-mark.svg', '<svg'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
             ['/unified-browser/', 'AILATHEO_VISIBLE_CIRCUIT_DING'],
             ['/unified-browser/jm-ailatheo-consequence-return-v1.js', 'JM.AILatheo.ReceiverReturn/1'],

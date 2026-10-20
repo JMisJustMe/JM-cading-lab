@@ -72,15 +72,31 @@ try {
             '-keysize','3072','-validity','10000',
             '-dname','CN=AILatheo JM Release, OU=JM Android Forge, O=JMisJustMe, C=GB'
         )
-        & $keytool.Source @argsForKeytool 2>$null
-        if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $keystore)) {
+        # Windows PowerShell 5.1 translates harmless Java stderr notices (e.g. "Generating
+        # 3,072 bit RSA key pair") into ErrorRecord and throws under ErrorActionPreference=Stop.
+        # Suppress only that native stderr handling, preserving actual exit-code validation.
+        $formerPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = 'Continue'
+            & $keytool.Source @argsForKeytool 2>$null
+            $generationExit = $LASTEXITCODE
+        }
+        finally { $ErrorActionPreference = $formerPreference }
+        if ($generationExit -ne 0 -or -not (Test-Path -LiteralPath $keystore)) {
             throw 'SIGNING_KEY_CREATION_HOLD: no usable certificate was produced.'
         }
     }
     $listArgs = @('-list','-v','-storetype','PKCS12','-keystore',$keystore,
         '-alias',$alias,'-storepass:env','JM_ANDROID_SIGNING_SETUP_PASSWORD')
-    $publicLines = @(& $keytool.Source @listArgs 2>&1)
-    if ($LASTEXITCODE -ne 0) {
+    # The same Windows PowerShell 5.1 stderr adaptation also applies to keytool -list.
+    $formerPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $publicLines = @(& $keytool.Source @listArgs 2>&1)
+        $readbackExit = $LASTEXITCODE
+    }
+    finally { $ErrorActionPreference = $formerPreference }
+    if ($readbackExit -ne 0) {
         throw 'SIGNING_KEY_READBACK_HOLD: key could not be verified; existing bytes unchanged.'
     }
     $publicText = ($publicLines | ForEach-Object { [string]$_ }) -join [Environment]::NewLine

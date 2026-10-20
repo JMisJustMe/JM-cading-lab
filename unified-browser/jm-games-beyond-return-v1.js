@@ -94,9 +94,11 @@ function mountHouse(){
  if(!valid(t)||t.id!==id||!['HANDOFF_PREPARED','RECEIVER_RETURN_READY'].includes(t.phase))
   return status('GAMES RETURN HOLD — invalid, expired or changed handoff');
  status('Intent received: '+t.intent+'\nOriginal Games&Beyond House remains sovereign. No project, game or source modified by this handoff.');
- let prior=0;
- receipts().then(rows=>{prior=Math.max(0,...rows.map(x=>x.key))}).catch(()=>{});
- action('EXECUTE EXISTING GAMES HOUSE PROOF','jmGBExecute',()=>execute(t,prior),p);
+ const priorPromise=receipts().then(rows=>Math.max(0,...rows.map(x=>x.key)));
+ action('EXECUTE EXISTING GAMES HOUSE PROOF','jmGBExecute',async()=>{
+   const prior=await priorPromise;
+   return execute(t,prior);
+ },p);
  action('↩ RETURN VERIFIED GAMES HOUSE RECEIPT','jmGBReturn',()=>returnToFederation(t),p);
 }
 if(role==='federation')mountFederation();else mountHouse();

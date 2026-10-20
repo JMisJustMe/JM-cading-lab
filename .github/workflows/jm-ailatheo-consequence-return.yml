@@ -4,6 +4,10 @@ on:
     branches: [jm-ailatheo-consequence-return-20261019, main]
     paths:
       - 'unified-browser/jm-ailatheo-consequence-return-v1.js'
+      - 'unified-browser/jm-games-beyond-return-v1.js'
+      - 'games-beyond/index.html'
+      - 'games-beyond/app.js'
+      - 'tests/jm-games-beyond-federation-return.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
@@ -17,6 +21,10 @@ on:
     branches: [main]
     paths:
       - 'unified-browser/jm-ailatheo-consequence-return-v1.js'
+      - 'unified-browser/jm-games-beyond-return-v1.js'
+      - 'games-beyond/index.html'
+      - 'games-beyond/app.js'
+      - 'tests/jm-games-beyond-federation-return.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'tests/ailatheo-federation-consequence-return.spec.mjs'
@@ -37,7 +45,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - name: Source syntax
-        run: node --check unified-browser/jm-ailatheo-consequence-return-v1.js
+        run: |
+          node --check unified-browser/jm-ailatheo-consequence-return-v1.js
+          node --check unified-browser/jm-games-beyond-return-v1.js
       - name: Native routing/return browser dependencies
         run: |
           npm install --no-save --no-package-lock playwright
@@ -48,4 +58,5 @@ jobs:
           sleep 2
           node tests/ailatheo-federation-consequence-return.spec.mjs
           node tests/ailatheo-native-six-receiver-return.spec.mjs
+          node tests/jm-games-beyond-federation-return.spec.mjs
           node tests/ailatheo-android-touch-carrier.spec.mjs

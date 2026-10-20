@@ -147,6 +147,12 @@ jobs:
             for file in index.html STATUS.md PUBLICATION_RECEIPT.json; do
               [ ! -f "money-menu/$file" ] || cp "money-menu/$file" "cloudflare-estate/money-menu/$file"
             done
+            # This existing enquiry page is linked by the live Money Menu.
+            # Publish only its customer-facing body, not operations/outreach files.
+            if [ -f money-menu/launch/index.html ]; then
+              mkdir -p cloudflare-estate/money-menu/launch
+              cp money-menu/launch/index.html cloudflare-estate/money-menu/launch/index.html
+            fi
           fi
 
           # Overlay one contextual return-route organ on public front doors only.
@@ -400,6 +406,7 @@ jobs:
             ['/ecostate-griprail-v6.js', 'JMGripRail'],
             ['/ecostate-griprail-v6.css', '.griprail-track'],
             ['/money-menu/', 'ecostate-griprail-v6.js'],
+            ['/money-menu/launch/', 'Explore JM'],
             ['/earn-now/', 'ecostate-griprail-v6.js'],
             ['/unified-browser/', 'AILATHEO_VISIBLE_CIRCUIT_DING'],
             ['/unified-browser/jm-ailatheo-consequence-return-v1.js', 'JM.AILatheo.ReceiverReturn/1'],

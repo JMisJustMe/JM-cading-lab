@@ -119,18 +119,7 @@ jobs:
           if ($receipt.signing_mode -ne 'development' -or $receipt.signing_identity_pinned -or $receipt.update_ready) {
             throw 'DEVELOPMENT_SIGNING_ELEVATED_TO_RELEASE_AUTHORITY'
           }
-          if ($receipt.signer_cert_sha256 -notmatch '^[0-9a-f]{64}
-
-      - name: Confirm no repository build debris
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $forbidden = @('node_modules','build','.gradle')
-          foreach ($name in $forbidden) {
-            $hit = Get-ChildItem -LiteralPath . -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq $name -and $_.FullName -notmatch '[\\/]\.git[\\/]' } | Select-Object -First 1
-            if ($hit) { throw "Build debris found in repository: $($hit.FullName)" }
-          }
-) { throw 'DEVELOPMENT_CERTIFICATE_RECEIPT_MISSING' }
+          if ($receipt.signer_cert_sha256 -notmatch '^[0-9a-f]{64}$') { throw 'DEVELOPMENT_CERTIFICATE_RECEIPT_MISSING' }
 
       - name: Confirm no repository build debris
         shell: pwsh

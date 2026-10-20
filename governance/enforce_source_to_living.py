@@ -373,10 +373,10 @@ def build_register(root: Path) -> tuple[dict, dict]:
             "not_full_census_crowned": True,
         },
         "source_digests": {
-            str(head_path.relative_to(root)): digest(head),
-            str(authority_path.relative_to(root)): digest(authority),
-            str(stringline_path.relative_to(root)): digest(stringline),
-            str(policy_path.relative_to(root)): digest(policy),
+            head_path.relative_to(root).as_posix(): digest(head),
+            authority_path.relative_to(root).as_posix(): digest(authority),
+            stringline_path.relative_to(root).as_posix(): digest(stringline),
+            policy_path.relative_to(root).as_posix(): digest(policy),
         },
         "classification_authority": {
             "status": "PASS",

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import re,json
+import re,json,os,tempfile
 p=Path('unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html')
-s=p.read_text()
+s=p.read_text(encoding='utf-8')
 checks={
 'identity':all(x in s for x in ['AILatheo','ROD','JM AI Lab v2.0','Teo OS','Adaptive ECOSTATE','Ehilatheo']),
 'living_field':all(x in s for x in ['class="orb"','class="ring r1"','class="meaning"']),
@@ -27,5 +27,6 @@ checks={
 }
 assert all(checks.values()),checks
 js='\n'.join(re.findall(r'<script(?:\\s[^>]*)?>(.*?)</script>',s,re.I|re.S))
-Path('/tmp/ailatheo-living.js').write_text(js)
+output=Path('/tmp/ailatheo-living.js') if os.name!='nt' else Path(tempfile.gettempdir())/'ailatheo-living.js'
+output.write_text(js,encoding='utf-8')
 print(json.dumps({'schema':'jm.ailatheo.living-federation-conformance/1.0','status':'PASS','checks':checks,'status_scope':'STATIC_CONTRACT_ONLY_NO_DEVICE_DING'},indent=2))

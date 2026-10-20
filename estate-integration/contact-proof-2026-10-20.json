@@ -1,0 +1,63 @@
+{
+  "operationId": "JMOP-3b5c9c64cbc980ac184151f2",
+  "browser": {
+    "at": "2026-10-20T14:55:05.064Z",
+    "state": "PASS",
+    "tests": [
+      "actual-Federation-button-to-existing-live-cloud",
+      "signature-and-target-state-return",
+      "page-reload-recovery",
+      "clean-browser-context-private-file-import-and-live-recovery",
+      "offline-hold-no-false-success",
+      "online-recovery-after-offline"
+    ],
+    "checkpoint": {
+      "workspaceId": "ws_C6QQQqE5kKE",
+      "operationId": "551e551e-317a-41b4-b46c-9589caddfa1e",
+      "expectedContentHash": "eb6b2f5ea5375cf2f9aef24cdd34c94ffae39104994a6906bc17d6fb1a88a50f",
+      "state": "VERIFIED",
+      "revision": 1,
+      "contentHash": "eb6b2f5ea5375cf2f9aef24cdd34c94ffae39104994a6906bc17d6fb1a88a50f",
+      "receiptHash": "3b06647815a3a9ad55df561e368707d9ca63ecf574867839b5c91ce53741ee13",
+      "cloudReceiptHash": "488b0c77b2a93cb7bc05b284ad82b95f9c2bc885db868486b36368e218100c40",
+      "cloudKeyId": "ec056899cbf0f7e8a51bee67"
+    },
+    "boundary": "Real Edge browser on laptop, local Estate backend relay, existing live Render target. Canonical Cloudflare deployment and physical Android not claimed."
+  },
+  "localRestart": {
+    "operationId": "JMOP-3b5c9c64cbc980ac184151f2",
+    "at": "2026-10-20T14:54:02.882Z",
+    "state": "PASS",
+    "target": "http://127.0.0.1:18984",
+    "tests": [
+      "scoped-registration",
+      "real-http-workspace-create",
+      "real-http-routevault-save",
+      "target-content-hash-readback",
+      "mesh-receipt-readback",
+      "cloud-ECDSA-signature",
+      "fresh-client-recovery",
+      "tampered-checkpoint-rejected",
+      "invalid-credential-rejected",
+      "changed-signer-rejected",
+      "lost-response-recovery-without-replaying-write",
+      "actual-server-process-restart",
+      "same-signer-and-exact-state-after-restart",
+      "fixed-recipient-relay-rejects-unscoped-admin-and-cross-origin-writes"
+    ],
+    "checkpoint": {
+      "workspaceId": "ws_aRqjzMju_gw",
+      "operationId": "afb0572f-553d-46a3-8f60-e7e47e4ccbc1",
+      "expectedContentHash": "85c7b6bb8d625c912912c35dbe23d455bba8e8cda9bd240cab15632abd2e36be",
+      "state": "VERIFIED",
+      "revision": 1,
+      "contentHash": "85c7b6bb8d625c912912c35dbe23d455bba8e8cda9bd240cab15632abd2e36be",
+      "receiptHash": "5a82d2accfe4697f9b26ee3f4ec1e9721ec2c6c93fd2c94dc33255100aed6584",
+      "cloudReceiptHash": "0f39db0de49e65b5a37892d65a412eed4face6825bbd8f765b650c9384760bad",
+      "cloudKeyId": "e110b9ab6a75cdc99c173ad6"
+    },
+    "boundary": "Actual local HTTP server and process restart using recovered production source. No distributed/cloud or physical-device acceptance."
+  },
+  "productionPromotion": "NOT_PERFORMED",
+  "credentialMaterialIncluded": false
+}

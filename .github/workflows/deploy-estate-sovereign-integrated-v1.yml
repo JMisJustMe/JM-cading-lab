@@ -27,6 +27,7 @@ on:
       - "ailatheo/**"
       - "ailatheo-lineage/**"
       - "functions/api/ailatheo.js"
+      - "functions/api/estate-contact.js"
       - "tests/ailatheo-customer-entitlement.mjs"
       - "ai-federation/**"
       - "earn-now/**"
@@ -104,6 +105,9 @@ jobs:
           node --check estate-return-route.js
           node --check unified-browser/jm-ailatheo-consequence-return-v1.js
           node --check unified-browser/jm-games-beyond-return-v1.js
+          node --check functions/api/estate-contact.js
+          node --check unified-browser/jm-cloud-workspace-client.mjs
+          node --check unified-browser/jm-ailatheo-cloud-contact.mjs
           node navigator/mcp-public-v1/test.mjs
           node tests/ailatheo-customer-entitlement.mjs
           python3 -m json.tool navigator/estate-integration/public-registry.json >/dev/null

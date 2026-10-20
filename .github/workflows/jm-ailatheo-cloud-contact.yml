@@ -1,0 +1,38 @@
+name: AILatheo real workspace contact and restart
+on:
+  pull_request:
+    paths:
+      - 'functions/api/estate-contact.js'
+      - 'unified-browser/jm-*cloud*.mjs'
+      - 'unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html'
+      - 'tests/ailatheo-cloud-contact.mjs'
+      - '.github/workflows/jm-ailatheo-cloud-contact.yml'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  real-http-and-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with: {path: estate}
+      - uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 0921217d95285bcb21cda7a995d02f7ec0725810
+          path: cloud-contact
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install existing recipient dependencies
+        working-directory: cloud-contact
+        run: npm install --no-audit --no-fund
+      - name: Real HTTP, independent signature, tamper and process-restart recovery
+        working-directory: estate
+        env:
+          JM_PROOF_DIR: ${{ runner.temp }}/jm-contact-proof
+        run: node tests/ailatheo-cloud-contact.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ailatheo-contact-proof-no-credentials
+          path: ${{ runner.temp }}/jm-contact-proof/*.json
+          if-no-files-found: error

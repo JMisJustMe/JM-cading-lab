@@ -35,3 +35,13 @@ This integration is not complete merely because the control files exist.
 - [ ] Receipts record what was actually proved.
 
 Until these gates close, status remains WORKING INTEGRATION DESCENDANT, not FLAZ/crown.
+
+## Mission 002 · 20 October 2026 · executed contact delta
+
+Operation `JMOP-3b5c9c64cbc980ac184151f2` extends the existing AILatheo Proof drawer and existing Estate Functions host. `functions/api/estate-contact.js` relays only the fixed existing Cloud Contact recipient and scoped workspace routes; it carries no administrator credential or arbitrary target URL.
+
+**Proved:** actual Edge interaction → existing live Render Service Mesh → RouteVault save → exact target content readback → Receipt Generator verification → independent ECDSA-P256 signature check → initiating browser result. Page reload, a clean browser context with an explicitly imported private recovery file, offline HOLD and online recovery passed. The same client passed a real local server-process restart and recovery after a target save whose HTTP response was deliberately lost, without replaying the write. Receipt/key/checkpoint tampering is rejected.
+
+**Boundary:** the Estate browser/backend carrier was served locally during these tests. Canonical Cloudflare promotion is a separate gate. Live Service Mesh workspace storage is a runtime file, unlike the separate Postgres market store; no cloud replacement/redeploy durability is claimed. Credentials stay in session storage or an explicitly downloaded private recovery file and are excluded from source/evidence commits. No physical Android claim is earned. Machine evidence: `estate-integration/contact-proof-2026-10-20.json`.
+
+**Protected frontier:** hosted Mesh v0.8.5, exact registry v0.24 and Cloud Contact deployment remain unchanged by these tests. Held Mesh v0.8.6 is separately tested with the exact 27,978-byte registry (`7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31`) and current hosted capability profiles; those source tests do not deploy it.

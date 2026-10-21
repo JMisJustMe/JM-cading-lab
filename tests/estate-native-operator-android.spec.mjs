@@ -39,15 +39,16 @@ try{
   // already running JM WebView. Recover only this known system overlay; never
   // invent WebView geometry or skip a native-touch verification.
   let ui='',bounds=null;const recoveredSystemDialogs=[];
+  const rect=/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/;
   for(let attempt=0;attempt<5;attempt++){
     adb('shell','uiautomator','dump','/sdcard/jm-window.xml');
     ui=adb('shell','cat','/sdcard/jm-window.xml');
-    const node=ui.match(/<node[^>]*class="android\\.webkit\\.WebView"[^>]*>/)?.[0];
-    bounds=node?.match(/bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"/);
+    const node=ui.match(/<node[^>]*class="android[.]webkit[.]WebView"[^>]*>/)?.[0];
+    bounds=node?.match(rect);
     if(bounds)break;
     const waitNode=ui.includes("Pixel Launcher isn't responding")
-      ?ui.match(/<node[^>]*resource-id="android:id\\/aerr_wait"[^>]*>/)?.[0]:null;
-    const waitBounds=waitNode?.match(/bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"/);
+      ?ui.match(/<node[^>]*resource-id="android:id\/aerr_wait"[^>]*>/)?.[0]:null;
+    const waitBounds=waitNode?.match(rect);
     if(waitBounds){
       const x=Math.round((Number(waitBounds[1])+Number(waitBounds[3]))/2);
       const y=Math.round((Number(waitBounds[2])+Number(waitBounds[4]))/2);

@@ -82,7 +82,7 @@ function mount() {
   window.addEventListener('message',event=>{
     const d=event.data;
     if(event.source!==$('jmOperatorPreview').contentWindow||!worldLive||d?.token!==worldLive.token||d.type!=='jm.gameforge.spaces.event/1')return;
-    if(['transition','collect','locked'].includes(d.kind))trace('native.operator.world-event','native-world',d.kind,String(d.transitions));
+    if(['transition','collect','locked','relay','beacon','deliver'].includes(d.kind))trace('native.operator.world-event','native-world',d.kind,String(d.transitions));
   });
   async function mountWorld(scene){
     const boot=readWorldBoot(scene),frame=$('jmOperatorPreview');

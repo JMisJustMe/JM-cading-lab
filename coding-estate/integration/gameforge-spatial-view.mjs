@@ -23,8 +23,8 @@ export function installGameForgeSpatialView({GF,model,session,canvas},rendererFa
   }
   button.onclick=()=>{try{
     if(!renderer){rendererFactory();view=document.createElement('canvas');view.id='jm-spatial-canvas';view.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none';view.setAttribute('aria-label','JM Actual 3D connected world');canvas.parentElement.style.position='relative';canvas.parentElement.append(view);renderer=new window.JM_RAIN_RENDER.Renderer(view);if(renderer.error)throw Error(renderer.error);}
-    active=!active;view.hidden=!active;canvas.style.visibility=active?'hidden':'visible';button.textContent=active?'Return to 2D':'View in 3D';frame();
-  }catch(e){error=String(e.message||e);active=false;if(view)view.hidden=true;canvas.style.visibility='visible';button.textContent='3D HOLD · 2D available';}};
+    active=!active;view.hidden=!active;view.style.setProperty('display',active?'block':'none','important');view.style.pointerEvents=active?'auto':'none';canvas.style.visibility=active?'hidden':'visible';button.textContent=active?'Return to 2D':'View in 3D';frame();
+  }catch(e){error=String(e.message||e);active=false;if(view){view.hidden=true;view.style.setProperty('display','none','important');view.style.pointerEvents='none';}canvas.style.visibility='visible';button.textContent='3D HOLD · 2D available';}};
   function proof(){if(!active||!renderer)return {active:false,error};frame();const gl=renderer.gl,bytes=new Uint8Array(gl.drawingBufferWidth*gl.drawingBufferHeight*4);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,bytes);let hash=2166136261,variation=0;for(let i=0;i<bytes.length;i+=16){hash=Math.imul(hash^bytes[i],16777619);if(bytes[i]!==bytes[0])variation++;}return {active:true,...renderer.proof(),room:session.active,player:point(GF.player.x,GF.player.y),pixelDigest:(hash>>>0).toString(16),variation,error};}
   return {frame,proof};
 }

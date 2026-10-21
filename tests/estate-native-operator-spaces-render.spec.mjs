@@ -18,6 +18,7 @@ try{
   await frame.locator('#jm-space-dimension').click();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().spatial.active);
   const first3D=(await read()).spatial;assert.equal(first3D.webgl,true);assert.ok(first3D.drawCalls>2);assert.ok(first3D.variation>100);assert.equal(first3D.error,'');
+  await frame.locator('#cv').focus();await page.keyboard.down('ArrowRight');await page.waitForTimeout(180);await page.keyboard.up('ArrowRight');const moved3D=(await read()).spatial;assert.ok(moved3D.player.x>first3D.player.x);assert.notEqual(moved3D.pixelDigest,first3D.pixelDigest);
   await page.screenshot({path:'qa/estate-native-operator-spaces-3d-phone.png'});
   await frame.locator('#jm-space-dimension').click();
   const initial=await read();assert.equal(initial.session.active,0);assert.equal(initial.room.body,'burning');
@@ -70,7 +71,7 @@ try{
   const visual=await frame.evaluate(()=>window.JMRenderedWorldReadback());assert.ok(visual.pixels.painted>20000);
   assert.ok(await frame.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:'qa/estate-native-operator-spaces-recovered-phone.png'});
-  const trace=await page.evaluate(()=>window.JMEstateIntegration.trace());assert.ok(trace.some(r=>r.action==='native.operator.world-event'&&r.detail.state==='transition'));
+  const trace=await page.evaluate(()=>window.JMEstateIntegration.trace());assert.ok(trace.some(r=>r.action==='native.operator.world-event'&&r.detail.state==='relay'));assert.ok(trace.some(r=>r.action==='native.operator.world-event'&&r.detail.state==='deliver'));assert.ok(trace.some(r=>r.action==='native.operator.world-event'&&r.detail.state==='transition'));
   const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#jmOperatorDownload').click()]);
   const out='/tmp/JM_CONNECTED_WORLD_OPEN_FIRST.html';await download.saveAs(out);
   const standalone=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});standalone.on('pageerror',e=>errors.push(e.message));

@@ -1,15 +1,40 @@
 # JM ECOSTATE — Cross-AI Contact & Creation
 
-**v1.0 · 2026-10-21 · shared public-safe working entrypoint · JM / JMISJUSTME**
+**v1.1 · 2026-10-21 · PUBLIC SOURCE-ACCESS & CONTINUITY GUIDE · JM / JMISJUSTME**
 
-> **Purpose:** Equip the four existing AI environments (ChatGPT, Microsoft Copilot, Google Gemini, Perplexity) to read real JM sources, create new and useful technology, verify actual execution, preserve ancestry, and return work for earned integration. This is an operational handoff, not a new master catalogue or permission to publish private material.
+> **Purpose:** Make the EXISTING JM coding bodies, applications, theory, languages, shared mechanisms, games, recovery and integration sources FINDABLE and REUSABLE across ChatGPT, Copilot, Gemini and Perplexity. Do not require the owner to start from scratch in any AI. This is a source-access handoff, not a test competition, new master catalogue or permission to publish private material.
 
 ## How to use (any of the four AIs)
 
-1. Read this page using your actual web/repository connector. If access fails, report `HOLD` and the exact failure; don't pretend you read it.
-2. Read **Shared sources and safeguards**, then follow **only your own platform brief** below.
-3. Demonstrate a small actual source-contact test, then **independently create one genuinely new, useful application, game mechanic, parser, tool, language capability, renderer, interaction or other invention**. Choose something well-suited to your environment and creatively improve beyond the source. This is not a copywriting or architecture-inventory exercise.
-4. Return your actual deliverable, environment, test results, limitations and source paths using the compact receipt at the end. A new feature does not become an ECOSTATE integration simply because it is named JM.
+1. Read what your platform genuinely can access; reuse existing source and working functionality on demand. Do not regenerate JM components from chat summaries while canonical code is retrievable.
+2. Ask what the owner wants to create or continue, **then retrieve only the relevant coding bodies, games, apps, theories and shared mechanisms**. Follow the appropriate platform route below. Do not require Current64 or any other benchmark before normal development.
+3. If your web reader fails to fetch this file, mark that route `HOLD` and request the smallest needed excerpt or a provider-native connector. **Do not retry the same GitHub URLs indefinitely or treat a retrieval HOLD as a command to rebuild**.
+4. Create new functionality freely using JM-native or external-first routes. Preserve ancestor behaviour, functional integration, recovery and test scopes. Return the complete artifact and actual proof, not another inventory or synthetic reimplementation of source you couldn't access.
+
+## Existing source doors — SELECTIVE CONTACT, NOT A NEW CENSUS
+
+These are **directly observed paths in the existing public repository**. They are grouped by function, not claimed as a complete listing or as proof that every body is public. Navigate to the relevant existing authority before writing replacement code.
+
+| Area | Existing public route / authority |
+|---|---|
+| Coding bodies, compilers, languages, VM/runtime mechanisms | [coding-estate/](https://github.com/JMisJustMe/JM-cading-lab/tree/main/coding-estate) · [running standard](https://github.com/JMisJustMe/JM-cading-lab/blob/main/coding-estate/JM_CODING_ESTATE_RUNNING_STANDARD_v1_0.md) |
+| Coding-body compatibility and reuse | [EveryBody](https://github.com/JMisJustMe/JM-cading-lab/tree/main/coding-estate/everybody) |
+| Apps and tools | [apps-tools-games](https://github.com/JMisJustMe/JM-cading-lab/tree/main/apps-tools-games) · [Estate publication](https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-publication) |
+| Games, game engines, loops, touch/control quality | [Games&Beyond](https://github.com/JMisJustMe/JM-cading-lab/tree/main/games-beyond) · [working README](https://github.com/JMisJustMe/JM-cading-lab/blob/main/games-beyond/README.md) |
+| Psychology, language, philosophy/theory sources | [Theory](https://github.com/JMisJustMe/JM-cading-lab/tree/main/theory) · [public route status](https://github.com/JMisJustMe/JM-cading-lab/blob/main/theory/PUBLIC_ROUTE_STATUS_v0_20_1.md) |
+| Shared body/contact/reuse mechanisms | [BodyMesh](https://github.com/JMisJustMe/JM-cading-lab/tree/main/bodymesh) · [open-first source guide](https://github.com/JMisJustMe/JM-cading-lab/blob/main/bodymesh/00_OPEN_FIRST.md) |
+| End-to-end integration and existing authority map | [Estate integration](https://github.com/JMisJustMe/JM-cading-lab/tree/main/estate-integration) · [existing authority map](https://github.com/JMisJustMe/JM-cading-lab/blob/main/estate-integration/authority-map.json) |
+| Existing Estate route index | [Estate map](https://github.com/JMisJustMe/JM-cading-lab/blob/main/registry/estate-map.json) |
+| AI Federation current room | [existing AI Lab](https://github.com/JMisJustMe/JM-cading-lab/tree/main/ai-federation/jm-ai-lab-v2.0) |
+| Cloud contact server sources | [existing second GitHub repository](https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud) |
+
+The BodyMesh existing open-first source guide expressly identifies named native bodies Cading, Kading, JMLogic, FlowTalk, RouteCode, Quadze, PrimeBody, and TraceBox. The public Theory and Coding Estate directories **do not** exhaust all private, historical, locally kept or Library-only bodies. Never imply the private bodies are publicly fetchable just because their names appear here.
+
+**Additional owner-controlled rails (not public):** Dropbox has an existing `/JM Estate Custody Rails` folder with historical/recovery material, and Google Drive contains JM source artifacts. ChatGPT demonstrated connector-side read/list/search contact; Gemini independently reports Dropbox reads. This does **not** establish that Copilot or Perplexity has permission to read those systems. Do not disclose or publish those paths' private content to other AIs by assumption. Ask for owner-approved, minimum-scope access to the particular body needed.
+
+**Access status at this checkpoint:** authenticated ChatGPT GitHub fetches and selected Dropbox/Drive reads work; Copilot, Gemini and Perplexity each reported inability to fetch this recently committed contact guide through their unauthenticated web retrieval. Therefore **universal cross-AI source access is NOT yet verified**. GitHub version control is not a cross-platform memory or permission grant.
+
+**Fallback:** A user can paste this short access instruction into any blocked AI: “Do not restart JM ECOSTATE. Existing public source families are `coding-estate/`, `coding-estate/everybody/`, `games-beyond/`, `apps-tools-games/`, `estate-publication/`, `theory/`, `bodymesh/`, and `estate-integration/` under `JMisJustMe/JM-cading-lab`. If your web reader cannot read GitHub, say HOLD and ask for only the specific file needed or a connected source. This is an access problem, not missing foundations. Create new work after recovering what is relevant; don't reimplement from memory.” 
 
 ## Shared sources: pinned, public and recoverable
 
@@ -38,11 +63,11 @@ These are **existing authorities**, not copied source attachments. Read them sel
 - **Storage:** Canonical master belongs in owner-controlled source/storage. Reference pinned revisions instead of producing redundant ZIPs; track exact hashes and recovery points. Distinguish measured account usage from estimated byte savings, duplicate carriers or Trash. Mission 001 storage/custody remains a high priority.
 - **Practical experience:** Android-first where relevant; complete responsive usable controls, actual interaction, reload/re-entry, polish and original creative identity. A clean simple 2D game may be better than a broken heavyweight 3D prototype.
 
-## Platform-specific jobs (read only your own)
+## Platform-specific capabilities (use when relevant; not compulsory tests)
 
 ### MICROSOFT COPILOT — running code and proving the sandbox
 
-Your preflight claimed a Linux sandbox and shell execution but has not supplied an execution receipt. Prove or revise that claim: fetch the pinned Python validator and **both** JSON files (policy plus Current64); preserve the repository-relative `coding-estate/` paths; execute `python3 coding-estate/validate_coding_body_activation.py` if possible. Show exact runtime, command, exit status and literal output. Introduce duplicate/missing/unknown data only in disposable test copies. Then use your strongest actual execution capability to **invent and implement one new useful feature or application** with automated tests and a portable entrypoint. Return the deliverable and test transcript, not another speculative plan. No connector claim without a successful call.
+Use your actual sandbox to inspect, build and test the *relevant existing source* for the owner's chosen task. A pinned Current64 validator is available as an **optional** small execution check, not a gate for all other activity. Prove environment-specific claims when they become material; return actual working artifacts and results. If public GitHub access fails, request only the selected source file rather than restarting it.
 
 ### GOOGLE GEMINI — real storage contact plus phone-first invention
 
@@ -56,7 +81,7 @@ Your preflight claimed public web retrieval and Python/Jupyter execution, withou
 
 GitHub source reads were directly demonstrated, with Google Drive and Dropbox list access observed. Examine source or returning artifacts on-demand, rerun independent tests, preserve the original, and compare innovations to existing JM bodies. Turn valuable changes into actual shared engines, coding bodies or applications only when comparative value is demonstrated. Protect Mission 001 storage and no unnecessary new wrappers. No GitHub write/deploy/owner-device proof is conferred merely by read privileges. Use existing AI-federation and Estate structures rather than inventing another registry for this handoff.
 
-## Exact baseline test data
+## Optional Current64 baseline data (only when relevant)
 
 - `coding-estate/JM_CODING_ESTATE_CURRENT_64.json` has the 64-record `identities` array in the pinned baseline.
 - `coding-estate/JM_CODING_BODY_ACTIVATION_POLICY_v0_1.json` has 12 `baseline_active` members whose `code_id` sequence is `[3,6,7,8,10,26,27,28,29,62,63,64]`.

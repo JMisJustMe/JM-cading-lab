@@ -89,9 +89,9 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     for(const b of r.walls){ctx.fillStyle='#0008';ctx.fillRect(b.x+10,b.y+12,b.w,b.h);ctx.fillStyle=palette[1];ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle=palette[2];ctx.fillRect(b.x,b.y,b.w,5);ctx.strokeStyle='#ffffff22';ctx.strokeRect(b.x,b.y,b.w,b.h);}
     for(const d of r.doors){const open=session.opened.includes(d.edge);ctx.fillStyle=open?'#194e49':'#483421';ctx.fillRect(d.x-20,d.y-52,40,104);ctx.strokeStyle=open?'#9fffd1':'#f4c27c';ctx.lineWidth=4;ctx.strokeRect(d.x-22,d.y-54,44,108);ctx.fillStyle=open?'#9fffd1':'#f4c27c';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(d.to>session.active?'→':'←',d.x,d.y+4);}
     if(!session.collected.includes(r.key.id)){ctx.fillStyle='#fff0a0';ctx.shadowColor='#e7c46b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(r.key.x,r.key.y,12,0,7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#382508';ctx.fillRect(r.key.x-2,r.key.y-7,4,14);}
-    const q=model.progress(session),powered=q.powered.includes(session.active);ctx.fillStyle=powered?'#64ffd0':'#9b7536';ctx.fillRect(630,430,40,40);ctx.strokeStyle='#eeecd0';ctx.strokeRect(627,427,46,46);ctx.fillStyle='#edf9f2';ctx.font='14px system-ui';ctx.fillText(powered?'RELAY ON':'RELAY',620,490);
+    const q=model.progress(session),powered=q.powered.includes(session.active);ctx.fillStyle=powered?'#64ffd0':'#9b7536';ctx.globalAlpha=.45;ctx.fillRect(630,430,40,40);ctx.globalAlpha=1;ctx.strokeStyle='#eeecd0';ctx.strokeRect(627,427,46,46);ctx.fillStyle='#edf9f2';ctx.font='14px system-ui';ctx.fillText(powered?'RELAY ON':'RELAY',620,490);
     if(session.active===2&&!q.beacon){ctx.fillStyle=q.powered.length===3?'#9affcf':'#5e6875';ctx.beginPath();ctx.arc(720,110,20,0,7);ctx.fill();}
-    if(session.active===0){ctx.fillStyle=q.delivered?'#7affb9':'#325b77';ctx.fillRect(95,420,50,40);ctx.fillStyle='#fff';ctx.fillText(q.delivered?'RESTORED':'RETURN',90,480);}
+    if(session.active===0){ctx.fillStyle=q.delivered?'#7affb9':'#325b77';ctx.lineWidth=4;ctx.strokeStyle=ctx.fillStyle;ctx.strokeRect(95,420,50,40);ctx.fillStyle='#fff';ctx.fillText(q.delivered?'RESTORED':'RETURN',90,480);}
     ctx.textAlign='start';ctx.restore();spatial.frame();
   };
   applyRoom();if(initialSnapshot||session.rooms[session.active].snapshot)pause();updateControls();

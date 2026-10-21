@@ -19,7 +19,7 @@ export function installGameForgeSpatialView({GF,model,session,canvas},rendererFa
       if(!session.collected.includes(room.key.id)){const q=point(room.key.x,room.key.y);objects.push(o('octa',q.x,1.2,q.z,.55,1,.55,'#ffdf8c',.6));}
       return objects;};
     renderer.frame({player:p,camera:'FOLLOW',sceneObjects:dynamic},{scene_hash:model.spec+':'+session.active},performance.now()/1000);
-    if(renderer.gl.getError()!==renderer.gl.NO_ERROR){error='WEBGL_DRAW_HOLD';active=false;view.hidden=true;canvas.hidden=false;button.textContent='3D HOLD · return to 2D';}
+    if(renderer.gl.getError()!==renderer.gl.NO_ERROR){error='WEBGL_DRAW_HOLD';active=false;view.hidden=true;view.style.setProperty('display','none','important');view.style.pointerEvents='none';canvas.style.visibility='visible';canvas.hidden=false;button.textContent='3D HOLD · return to 2D';}
   }
   button.onclick=()=>{try{
     if(!renderer){rendererFactory();view=document.createElement('canvas');view.id='jm-spatial-canvas';view.style.cssText='position:absolute;inset:0;width:100%;height:100%;touch-action:none';view.setAttribute('aria-label','JM Actual 3D connected world');canvas.parentElement.style.position='relative';canvas.parentElement.append(view);renderer=new window.JM_RAIN_RENDER.Renderer(view);if(renderer.error)throw Error(renderer.error);}

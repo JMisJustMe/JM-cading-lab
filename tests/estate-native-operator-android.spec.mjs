@@ -59,15 +59,16 @@ async function move(axis,value){
   // A cold emulator may show another Launcher ANR AFTER its initial WebView
   // readback. Retry only when a verified system dialog actually interrupted
   // the real Android DOWN/UP contact; never count an ignored touch as success.
-  for(let attempt=0;attempt<5;attempt++){
+  for(let attempt=0;attempt<16;attempt++){
     await clearKnownLauncherOverlay('move-before-'+axis+'-'+attempt);
+    const beforeContact=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
     adb('shell','input','motionevent','DOWN',String(point.x),String(point.y));
     let reached=false;
     try{
       await page.waitForFunction(({axis,value,positive})=>{
         const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;
         return positive?p[axis]>=value-5:p[axis]<=value+5;
-      },{axis,value,positive},{timeout:15000,polling:80});
+      },{axis,value,positive},{timeout:9000,polling:80});
       reached=true;
     }catch(e){
       if(!/Timeout/.test(String(e.message||e)))throw e;
@@ -81,11 +82,18 @@ async function move(axis,value){
     }
     fs.writeFileSync(out+'/movement-retry-'+axis+'-'+attempt+'.json',
       JSON.stringify({axis,value,attempt,readback:await read(),overlays:recoveredSystemDialogs}));
+    const current=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
+    const progress=(positive?current-beforeContact:beforeContact-current);
     const count=recoveredSystemDialogs.length;
     await clearKnownLauncherOverlay('move-stalled-'+axis+'-'+attempt);
-    if(count===recoveredSystemDialogs.length){
-      throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-verified-system-interruption');
+    // A bounded native press may make *real* measurable progress without
+    // reaching the full distant destination in one contact. Continue only if
+    // that progress occurred, or an identified Pixel Launcher ANR interrupted
+    // the original contact; never fake a player update.
+    if(progress<4&&count===recoveredSystemDialogs.length){
+      throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-native-progress-or-verified-system-interruption');
     }
+    console.log('ANDROID_NATIVE_SEGMENT',axis,value,JSON.stringify({attempt,progress,position:current}));
   }
   throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':overlay-retry-exhausted');
 }

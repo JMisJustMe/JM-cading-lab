@@ -105,7 +105,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   function encounterAction(action){
     if(!model.encounter)return;
     canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();
-    const result=action==='engage'?model.encounter.engage(session):model.encounter.pulse(session,GF.player);
+    const result=action==='engage'?model.encounter.engage(session,GF.player,(x,y,r)=>model.free(model.rooms[session.active],x,y,r)):model.encounter.pulse(session,GF.player);
     events.push({...result,room:session.active});if(events.length>48)events.shift();
     const titles={'encounter-started':'GUARDIAN ACTIVE','pulse-hit':'PULSE HIT','pulse-miss':'PULSE OUT OF RANGE',
       'encounter-won':'GUARDIAN CLEARED','encounter-lost':'SHIELD DEPLETED',

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {assembleRegistry,loadNativeRegistry,executeNativeContact,probePublicContact} from '../navigator/estate-integration/native-operator.mjs';
 import {runNativeOperatorLane} from '../navigator/estate-integration/execution-lanes.mjs';
+import {saveLocalReturn,recoverLocalReturn,RETURN_SLOT} from '../navigator/estate-integration/return-checkpoint.mjs';
 const root='coding-estate/integration';
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'REGISTRY.json'),'utf8'));
 const parts=manifest.parts.map(rel=>JSON.parse(fs.readFileSync(path.join(root,rel),'utf8')));
@@ -61,8 +62,22 @@ const live=await probePublicContact(async url=>{
 });
 assert.equal(live.state,'PUBLIC_READ_RESPONSE');
 await assert.rejects(()=>probePublicContact(async()=>response({ok:false,error:'DOWN'},503)),/PUBLIC_CONTACT_HTTP_503/);
+const local=new Map();
+const store={getItem:key=>local.get(key)||null,setItem:(key,v)=>local.set(key,v)};
+const snapshot={schema:'jm.estate.operator.local-return/0.2',mode:'compile-js',input:'source = green.✓',summary:JSON.stringify(compiled.result)};
+await assert.rejects(()=>recoverLocalReturn(store),/LOCAL_RETURN_ABSENT/);
+const saved=await saveLocalReturn(store,snapshot);
+assert.equal(saved.state,'LOCAL_RETURN_READBACK_VERIFIED');
+assert.equal(saved.value.input,snapshot.input);
+assert.match(saved.sha256,/^[a-f0-9]{64}$/);
+const tampered=JSON.parse(store.getItem(RETURN_SLOT));tampered.body=tampered.body.replace('green','red');
+store.setItem(RETURN_SLOT,JSON.stringify(tampered));
+await assert.rejects(()=>recoverLocalReturn(store),/LOCAL_RETURN_HASH_MISMATCH/);
+await assert.rejects(()=>saveLocalReturn(store,{...snapshot,mode:'unauthorised'}),/RETURN_MODE_HOLD/);
+await assert.rejects(()=>saveLocalReturn(store,{...snapshot,summary:'x'.repeat(26001)}),/RETURN_SUMMARY_HOLD/);
+
 const page=fs.readFileSync('navigator/estate-integration/index.html','utf8');
-for(const marker of ['id="jmOperatorForm"','id="jmOperatorPreview"','sandbox="allow-scripts"','src="./native-operator.mjs"','id="routes"','id="trace"']){
+for(const marker of ['id="jmOperatorForm"','id="jmOperatorPreview"','id="jmOperatorSave"','id="jmOperatorRecover"','sandbox="allow-scripts"','src="./native-operator.mjs"','id="routes"','id="trace"']){
   assert.ok(page.includes(marker),'INTEGRATION_MARKER_MISSING:'+marker);
 }
-console.log(JSON.stringify({state:'LOCAL_SOURCE_REGRESSION_PASS',regressionScope:'native,route,compile-js,compile-rust,gamecore,os,relay-HOLD,canonical-door',registryBodies:registry.bodies.length,executedBodies:native.executedBodies.length,receipts:native.receipts.length,nativeLanes:6,visibleScene:true,publicProbeMockOnly:true,cloudWritePerformed:false,deviceProof:false},null,2));
+console.log(JSON.stringify({state:'LOCAL_SOURCE_REGRESSION_PASS',regressionScope:'native,route,compile-js,compile-rust,gamecore,os,relay-HOLD,canonical-door',registryBodies:registry.bodies.length,executedBodies:native.executedBodies.length,receipts:native.receipts.length,nativeLanes:6,visibleScene:true,publicProbeMockOnly:true,localReadbackVerified:true,tamperRejected:true,cloudWritePerformed:false,deviceProof:false},null,2));

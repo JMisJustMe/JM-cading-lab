@@ -18,6 +18,9 @@ try{
   await frame.locator('#jm-space-dimension').click();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().spatial.active);
   const first3D=(await read()).spatial;assert.equal(first3D.webgl,true);assert.ok(first3D.drawCalls>2);assert.ok(first3D.variation>100);assert.equal(first3D.error,'');
+  assert.equal(first3D.roomBody,'burning');assert.ok(first3D.architecture.objectCount>=68);assert.ok(first3D.architecture.features.motifCount>=20);
+  await frame.locator('#jm-space-camera').click();assert.equal((await read()).spatial.cameraMode,'ORBIT');
+  await frame.locator('#jm-space-camera').click();assert.equal((await read()).spatial.cameraMode,'FOLLOW');
   await frame.locator('#cv').focus();await page.keyboard.down('ArrowRight');await page.waitForTimeout(180);await page.keyboard.up('ArrowRight');const moved3D=(await read()).spatial;assert.ok(moved3D.player.x>first3D.player.x);assert.notEqual(moved3D.pixelDigest,first3D.pixelDigest);
   await page.screenshot({path:'qa/estate-native-operator-spaces-3d-phone.png'});
   await frame.locator('#jm-space-dimension').click();
@@ -43,6 +46,9 @@ try{
   await move('y',75);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===1);
   r=await read();assert.equal(r.room.body,'humanimals');assert.equal(r.room.walls.length,2);assert.deepEqual(r.session.opened,['0-1']);
+  await frame.locator('#jm-space-dimension').click();const living3D=(await read()).spatial;
+  assert.equal(living3D.roomBody,'humanimals');assert.notEqual(living3D.architecture.signature,first3D.architecture.signature);
+  assert.ok(living3D.architecture.objectCount>=68);await frame.locator('#jm-space-dimension').click();
   // Immediate return crosses the actual left door; collected state stays earned.
   await use();await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===0);
   r=await read();assert.deepEqual(r.session.collected,['key-0']);assert.equal(r.session.rooms[0].visits,2);assert.notEqual(r.camera.x,firstCamera);
@@ -52,6 +58,9 @@ try{
   await move('y',70);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===2);
   r=await read();assert.equal(r.room.body,'tboys');assert.deepEqual(r.session.opened,['0-1','1-2']);
+  await frame.locator('#jm-space-dimension').click();const tech3D=(await read()).spatial;
+  assert.equal(tech3D.roomBody,'tboys');assert.notEqual(tech3D.architecture.signature,living3D.architecture.signature);
+  assert.ok(tech3D.architecture.objectCount>=68);await frame.locator('#jm-space-dimension').click();
   await move('x',240);await move('y',130);await use();
   await power();await move('x',720);await move('y',110);await use();assert.equal((await read()).session.progress.beacon,true);
   await move('y',70);await move('x',110);await move('y',285);await use();assert.equal((await read()).session.active,1);
@@ -59,7 +68,7 @@ try{
   await use();assert.equal((await read()).session.active,1);
   await move('y',70);await move('x',110);await move('y',285);await use();assert.equal((await read()).session.active,0);
   await move('y',70);await move('x',120);await move('y',440);await use();assert.equal((await read()).session.progress.delivered,true);
-  await frame.locator('#jm-space-dimension').click();const final3D=(await read()).spatial;assert.ok(final3D.variation>100);assert.notEqual(final3D.pixelDigest,first3D.pixelDigest);await frame.locator('#jm-space-dimension').click();
+  await frame.locator('#jm-space-dimension').click();const final3D=(await read()).spatial;assert.ok(final3D.variation>100);assert.notEqual(final3D.pixelDigest,first3D.pixelDigest);assert.equal(final3D.roomBody,'burning');assert.equal(final3D.architecture.features.powered,true);await frame.locator('#jm-space-dimension').click();
   await page.locator('#jmOperatorSave').click();
   await page.waitForFunction(()=>/^(LOCAL_RETURN_READBACK_VERIFIED|SAVE HOLD)/.test(document.getElementById('jmOperatorStatus').textContent));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/^LOCAL_RETURN_READBACK_VERIFIED/);
@@ -93,5 +102,5 @@ try{
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

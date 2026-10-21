@@ -197,6 +197,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.os.Build;
+import android.graphics.Insets;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -214,7 +218,22 @@ public class MainActivity extends Activity {
         $offlineJava
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-        setContentView(webView);
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(0xff080c14);
+        root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            int left = insets.getSystemWindowInsetLeft(), top = insets.getSystemWindowInsetTop();
+            int right = insets.getSystemWindowInsetRight(), bottom = insets.getSystemWindowInsetBottom();
+            if (Build.VERSION.SDK_INT >= 30) {
+                Insets bars = insets.getInsets(android.view.WindowInsets.Type.systemBars() | android.view.WindowInsets.Type.displayCutout());
+                left = bars.left; top = bars.top; right = bars.right; bottom = bars.bottom;
+            }
+            FrameLayout.LayoutParams layout = (FrameLayout.LayoutParams)webView.getLayoutParams();
+            layout.setMargins(left, top, right, bottom); webView.setLayoutParams(layout);
+            return insets;
+        });
+        setContentView(root);
+        root.requestApplyInsets();
         webView.loadUrl("file:///android_asset/index.html");
     }
 

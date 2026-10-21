@@ -48,6 +48,13 @@ assert.match(html,/pickGround\(clientX,clientY\)/);
 assert.match(html,/requestedDestination:goal/);
 assert.match(html,/GF[.]coreObj[.]y=145/);
 assert.match(html,/An explicitly authored JM player/);
+assert.match(html,/JM-authored 2D environmental dressing/);
+assert.match(html,/if\(r.body==='burning'\)/);
+assert.match(html,/else if\(r.body==='humanimals'\)/);
+assert.match(html,/for\(const \[x,y\] of \[\[74,85\],\[822,85\]/);
+assert.match(html,/gait=Math.sin\(performance.now\(\)\*\.018\)/);
+assert.match(html,/Worded NEXT instructions belong in the fixed status bar/);
+
 assert.match(html,/jm-space-view-toolbar/);
 assert.match(html,/objective:model[.]objective\(session\)/);
 // Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.

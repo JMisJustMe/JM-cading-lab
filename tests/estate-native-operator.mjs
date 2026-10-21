@@ -62,6 +62,12 @@ const live=await probePublicContact(async url=>{
 });
 assert.equal(live.state,'PUBLIC_READ_RESPONSE');
 await assert.rejects(()=>probePublicContact(async()=>response({ok:false,error:'DOWN'},503)),/PUBLIC_CONTACT_HTTP_503/);
+const speech=runNativeOperatorLane('embodied','open gate',registry);
+assert.equal(speech.state,'EMBODIED_ROUTE_EXECUTED');
+assert.equal(speech.result.outcome.finalRoute,'accepted.route');
+assert.equal(speech.executedBodies.length,8);
+assert.ok(speech.result.receiptDigests.every(Boolean));
+assert.throws(()=>runNativeOperatorLane('embodied','unknown sound',registry));
 const local=new Map();
 const store={getItem:key=>local.get(key)||null,setItem:(key,v)=>local.set(key,v)};
 const snapshot={schema:'jm.estate.operator.local-return/0.2',mode:'compile-js',input:'source = green.✓',summary:JSON.stringify(compiled.result)};
@@ -80,4 +86,4 @@ const page=fs.readFileSync('navigator/estate-integration/index.html','utf8');
 for(const marker of ['id="jmOperatorForm"','id="jmOperatorPreview"','id="jmOperatorSave"','id="jmOperatorRecover"','sandbox="allow-scripts"','src="./native-operator.mjs"','id="routes"','id="trace"']){
   assert.ok(page.includes(marker),'INTEGRATION_MARKER_MISSING:'+marker);
 }
-console.log(JSON.stringify({state:'LOCAL_SOURCE_REGRESSION_PASS',regressionScope:'native,route,compile-js,compile-rust,gamecore,os,relay-HOLD,canonical-door',registryBodies:registry.bodies.length,executedBodies:native.executedBodies.length,receipts:native.receipts.length,nativeLanes:6,visibleScene:true,publicProbeMockOnly:true,localReadbackVerified:true,tamperRejected:true,cloudWritePerformed:false,deviceProof:false},null,2));
+console.log(JSON.stringify({state:'LOCAL_SOURCE_REGRESSION_PASS',regressionScope:'native,route,compile-js,compile-rust,gamecore,os,relay-HOLD,canonical-door',registryBodies:registry.bodies.length,executedBodies:native.executedBodies.length,receipts:native.receipts.length,nativeLanes:7,visibleScene:true,publicProbeMockOnly:true,localReadbackVerified:true,tamperRejected:true,cloudWritePerformed:false,deviceProof:false},null,2));

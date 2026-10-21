@@ -35,6 +35,10 @@ try{
   await page.locator('#jmOperatorMode').selectOption('os');
   await page.locator('#jmOperatorRun').click();
   await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('NATIVE_OS_CONTACT_EXECUTED'),null,{timeout:15000});
+  await page.locator('#jmOperatorMode').selectOption('embodied');
+  await page.locator('#jmOperatorRun').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('EMBODIED_ROUTE_EXECUTED'),null,{timeout:15000});
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/accepted.route/);
   await page.locator('#jmOperatorMode').selectOption('route');
   await page.locator('#jmOperatorIntent').fill('build a touch game with trace');
   await page.locator('#jmOperatorRun').click();
@@ -59,5 +63,5 @@ try{
   const original=await page.locator('#routes').locator('a').count();
   assert.ok(original>0,'ORIGINAL_ESTATE_ROUTES_LOST');
   assert.deepEqual(exceptions,[],'BROWSER_ERRORS');
-  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,sourceCompiler:true,gamecore:true,os:true,route:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
+  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,sourceCompiler:true,gamecore:true,os:true,route:true,embodied:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
 }finally{await browser.close()}

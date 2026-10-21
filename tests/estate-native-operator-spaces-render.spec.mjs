@@ -22,6 +22,7 @@ try{
     const positive=p[axis]<value,key=axis==='x'?(positive?'ArrowRight':'ArrowLeft'):(positive?'ArrowDown':'ArrowUp');
     await page.keyboard.down(key);
     try{await frame.waitForFunction(({axis,value,positive})=>{const r=window.JMConnectedWorldReadback();const p=r.session.rooms[r.session.active].snapshot.player;return positive?p[axis]>=value:p[axis]<=value},{axis,value,positive},{timeout:9000});}
+    catch(e){console.log('MOVE_FAILURE',axis,value,JSON.stringify(await read()),await frame.evaluate(()=>document.activeElement?.tagName));await page.screenshot({path:'qa/estate-native-operator-spaces-failure.png',fullPage:true});throw e;}
     finally{await page.keyboard.up(key);}
   }
   async function use(){const b=await frame.locator('#jm-space-use').boundingBox();assert.ok(b);await page.touchscreen.tap(b.x+b.width/2,b.y+b.height/2);}

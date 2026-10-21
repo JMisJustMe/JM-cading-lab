@@ -83,3 +83,20 @@ Deployment run 39446345070 deployed successfully but its post-deployment check u
 9. Keep Mission 001 storage retirements separately evidence-led toward 6 GB of *actual active quota*; operator source commits do not count as reclaimed bytes.
 
 **Closure status:** PARTIAL EXECUTION / RECOVERY ROUTE PROVED LOCALLY · WHOLE ECOSTATE OPEN. No final whole-system FLAZ or production crown.
+
+
+### Mission 002 · editable native receiver chain · 21 October 2026
+
+Operation `JMOP-0807a745f73c5401a048463a` inherits the exact PR #395 source checkpoint `7ee33aa9a2dcc49cfd6e76afff9c9e43c40f94bf`. Target remains `navigator/estate-integration/`; this adds one lane behind the same door, with no donor source replacement.
+
+**Executable delta:** editable JSON contains the existing FlowTalk, Kading and JMVM grammars. FlowTalk response state becomes CadenVM initial state; Kading is compiled into verified Caden bytecode; the resulting state becomes JMVM initial state, where authored assertions execute and a further state change is required. Each receiver returns its own native receipt, state digest and trace count. Inter-stage output/input digests must agree. Existing operator returns and the existing Estate trace carry the bounded consequence; explicit Save/Recover retains the result and source through the existing SHA-256 envelope, without replaying the program.
+
+**Source authority:** imports are the branch's existing `sovereign-ten/direct/language-native.mjs`, `sovereign-batch-two/direct/kading-jmp-native.mjs`, `root-caden-native.mjs` and `prime-jmvm-native.mjs`. Current-64 registry identifies FlowTalk, Kading, CadenVM and JMVM as distinct coding bodies. This is an adapter to recovered repository donors, not a claim that these donor versions supersede every private Estate head.
+
+**Local source proof:** changed authored receiver (`gate` → `bridge`) returns different actual state and receipt; denied cadence, failed JMVM assertion, missing consequence, invalid request, unsafe object paths and service calls give HOLD. Prototype state remains clean. Exact local return recovery passes. Existing operator regression, source route/execution tests, governance validator, batch-two 36/36 and native-ten 23/23 donor conformance pass.
+
+**Browser gate:** the existing PR Chromium workflow now exercises the editable chain, changed receiver, returned trace, Save/reload/Recover and failed-chain SAVE HOLD without a false PASS or overwriting the last successful recovery. Phone-sized and desktop screenshot artifacts are captured. Browser assertions are requirements until the exact resulting commit's CI run is independently read back.
+
+**Boundaries:** this is local JS-hosted execution of JM-native interpreters. FlowTalk uses declared intent/response syntax, not unconstrained natural-language understanding. Native trace digests and bytecode checksums are non-cryptographic. Services are unavailable; complete source/AST preflight blocks host calls and prototype paths before receiver execution. No host, device, cloud or production side effects are granted. Reload recovery restores the returned result, not a running VM session. Existing local schema/storage key and ancestor lanes are preserved. Cloudflare, physical Android, cross-device transport, open-ended AI, music/lyrics, renderer/game export parity and durable cloud replacement remain OPEN/HOLD. No Mission 001 retirement bytes are claimed.
+
+**Rollback / continuation:** protected checkpoint above remains the rollback anchor. Changes stay on existing draft PR #395; main and canonical deployment are not promoted by this operation. Run `node tests/estate-native-operator.mjs` and the existing Chromium workflow before claiming browser proof. Continue with actual authored creation/render/export receivers and governed portable recovery after this chain is proved; do not count selection or fixed demonstration as general authoring.

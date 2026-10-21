@@ -11,7 +11,7 @@ on:
       - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
-      - 'navigator/estate-integration/native-operator.mjs'
+      - 'navigator/estate-integration/*.mjs'
       - 'navigator/estate-integration/index.html'
       - 'tests/estate-native-operator*.mjs'
       - '.github/workflows/prove-ailatheo-v3.yml'
@@ -24,7 +24,7 @@ on:
       - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
-      - 'navigator/estate-integration/native-operator.mjs'
+      - 'navigator/estate-integration/*.mjs'
       - 'navigator/estate-integration/index.html'
       - 'tests/estate-native-operator*.mjs'
       - '.github/workflows/prove-ailatheo-v3.yml'
@@ -89,4 +89,5 @@ jobs:
           path: |
             qa/ailatheo-v3-gripcube/
             qa/ailatheo-v3-creator-preview/
+            qa/estate-native-operator-*.png
           if-no-files-found: ignore

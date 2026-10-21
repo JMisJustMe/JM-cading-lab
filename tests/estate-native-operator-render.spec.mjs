@@ -1,8 +1,10 @@
 // Existing Playwright job: real first-open and touch-return proof on a served host.
 // npx playwright... is provisioned by .github/workflows/prove-ailatheo-v3.yml
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {chromium} from 'playwright';
 const base=process.env.BASE_URL||'http://127.0.0.1:4177';
+fs.mkdirSync('qa',{recursive:true});
 const browser=await chromium.launch({headless:true});
 try{
   const page=await browser.newPage({viewport:{width:390,height:844},acceptDownloads:true});
@@ -39,6 +41,37 @@ try{
   await page.locator('#jmOperatorRun').click();
   await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('EMBODIED_ROUTE_EXECUTED'),null,{timeout:15000});
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/accepted.route/);
+  await page.locator('#jmOperatorMode').selectOption('native-chain');
+  const chainInput=await page.locator('#jmOperatorIntent').inputValue();
+  await page.locator('#jmOperatorIntent').fill(chainInput.replaceAll('gate','bridge').replaceAll('Gate','Bridge'));
+  await page.locator('#jmOperatorRun').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('NATIVE_PROGRAM_CHAIN_EXECUTED'));
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/"verified": true/);
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/"bridge"/);
+  const chainTrace=await page.evaluate(()=>window.JMEstateIntegration.trace());
+  assert.ok(chainTrace.some(row=>row.action==='native.operator.pass'&&row.detail.mode==='native-chain'));
+  await page.locator('#jmOperatorSave').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('LOCAL_RETURN_READBACK_VERIFIED'));
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#jmOperatorRecover').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('LOCAL RECOVERY VERIFIED'));
+  assert.equal(await page.locator('#jmOperatorMode').inputValue(),'native-chain');
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/"bridge"/);
+  // Failure cannot be saved over the last successful return or earn PASS.
+  const beforeFailure=await page.evaluate(()=>window.JMEstateIntegration.trace().filter(r=>r.action==='native.operator.pass').length);
+  await page.locator('#jmOperatorIntent').fill(chainInput.replace('allowed = true','allowed = false'));
+  await page.locator('#jmOperatorRun').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('HOLD'));
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/NATIVE_CHAIN_CADENCE_HOLD/);
+  assert.equal(await page.evaluate(()=>window.JMEstateIntegration.trace().filter(r=>r.action==='native.operator.pass').length),beforeFailure);
+  await page.locator('#jmOperatorSave').click();
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/SAVE HOLD/);
+  await page.locator('#jmOperatorRecover').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('LOCAL RECOVERY VERIFIED'));
+  await page.locator('#jmOperatorForm').scrollIntoViewIfNeeded();
+  await page.screenshot({path:'qa/estate-native-operator-phone.png',fullPage:true});
+  await page.setViewportSize({width:1365,height:900});
+  await page.screenshot({path:'qa/estate-native-operator-desktop.png',fullPage:true});
   await page.locator('#jmOperatorMode').selectOption('route');
   await page.locator('#jmOperatorIntent').fill('build a touch game with trace');
   await page.locator('#jmOperatorRun').click();
@@ -63,5 +96,5 @@ try{
   const original=await page.locator('#routes').locator('a').count();
   assert.ok(original>0,'ORIGINAL_ESTATE_ROUTES_LOST');
   assert.deepEqual(exceptions,[],'BROWSER_ERRORS');
-  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,sourceCompiler:true,gamecore:true,os:true,route:true,embodied:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
+  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,nativeProgramChain:true,changedReceiver:true,failedChainNoPass:true,sourceCompiler:true,gamecore:true,os:true,route:true,embodied:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
 }finally{await browser.close()}

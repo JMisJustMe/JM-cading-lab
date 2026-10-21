@@ -41,7 +41,13 @@ try{
   assert.ok((await read()).session.rooms[0].snapshot.player.x>first.snapshot.rooms[0].snapshot.player.x+5,'NATIVE_TOUCH_MOVEMENT_HOLD');
   await move('x',210);await move('y',130);await use();assert.ok((await read()).session.collected.includes('key-0'));
   await move('y',75);await move('x',800);await move('y',285);await use();assert.equal((await read()).session.active,1);
-  await page.locator('#jm-space-dimension').click();const spatial=(await read()).spatial;if(spatial.active){assert.ok(spatial.webgl&&spatial.drawCalls>2&&spatial.variation>100);fs.writeFileSync(out+'/android-3d-screen.png',execFileSync('adb',['exec-out','screencap','-p']));await page.locator('#jm-space-dimension').click();}
+  await page.locator('#jm-space-dimension').click();
+  const spatial=(await read()).spatial;
+  assert.ok(spatial.active,'ANDROID_3D_RENDER_HOLD:'+JSON.stringify(spatial));
+  assert.equal(spatial.error,'','ANDROID_3D_SHADER_HOLD');
+  assert.ok(spatial.webgl&&spatial.drawCalls>2&&spatial.variation>100,'ANDROID_3D_PIXELS_HOLD:'+JSON.stringify(spatial));
+  fs.writeFileSync(out+'/android-3d-screen.png',execFileSync('adb',['exec-out','screencap','-p']));
+  await page.locator('#jm-space-dimension').click();
   await page.evaluate(()=>{window.JMHostPauseSaved=false});adb('shell','input','keyevent','KEYCODE_HOME');await page.waitForFunction(()=>window.JMHostPauseSaved===true,null,{timeout:10000,polling:100});
   const saved=await read();assert.equal(await page.evaluate(()=>window.JMRenderedWorldReadback().paused),true);
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await page.waitForTimeout(200);assert.deepEqual((await read()).session,saved.session);

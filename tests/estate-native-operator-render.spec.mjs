@@ -39,8 +39,25 @@ try{
   await page.locator('#jmOperatorIntent').fill('build a touch game with trace');
   await page.locator('#jmOperatorRun').click();
   await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('PLAN_ONLY'),null,{timeout:15000});
+  await page.waitForFunction(()=>Boolean(window.JMEstateIntegration?.trace));
+  const priorTrace=await page.evaluate(()=>window.JMEstateIntegration.trace());
+  assert.ok(priorTrace.some(row=>row.action==='native.operator.pass'&&row.detail.mode==='gamecore'),'SHARED_BRIDGE_NATIVE_CONTACT_TRACE_MISSING');
+  await page.locator('#jmOperatorSave').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('LOCAL_RETURN_READBACK_VERIFIED'),null,{timeout:15000});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#jmOperatorRecover').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('LOCAL RECOVERY VERIFIED'),null,{timeout:15000});
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/PLAN_ONLY/);
+  assert.equal(await page.locator('#jmOperatorMode').inputValue(),'route');
+  await page.evaluate(()=>{
+    const key='JM_ESTATE_NATIVE_OPERATOR_RETURN_v02',p=JSON.parse(localStorage.getItem(key));
+    p.body=p.body.replace('touch','BROKEN');localStorage.setItem(key,JSON.stringify(p));
+  });
+  await page.locator('#jmOperatorRecover').click();
+  await page.waitForFunction(()=>document.getElementById('jmOperatorStatus')?.textContent.startsWith('RECOVERY HOLD'),null,{timeout:15000});
+  assert.match(await page.locator('#jmOperatorStatus').innerText(),/LOCAL_RETURN_HASH_MISMATCH/);
   const original=await page.locator('#routes').locator('a').count();
   assert.ok(original>0,'ORIGINAL_ESTATE_ROUTES_LOST');
   assert.deepEqual(exceptions,[],'BROWSER_ERRORS');
-  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,sourceCompiler:true,gamecore:true,os:true,route:true,exceptions},null,2));
+  console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,sourceCompiler:true,gamecore:true,os:true,route:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
 }finally{await browser.close()}

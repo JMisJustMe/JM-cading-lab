@@ -1,10 +1,11 @@
 // Additive spatial organ for the recovered GameForge receiver, not a new engine.
 // Inherits GF.player/GF.step/GF.draw and native body/hazard consequences.
 // Axis-separated blocking + bounded dt follows FTR v0.5.1 controls/world donors.
-export function GameForgeSpaces(world){
+export function GameForgeSpaces(world,encounterFactory){
   const order=['tboys','burning','humanimals'],offset=order.indexOf(world.body);
   if(offset<0||world.spaces!==3)throw Error('SPACES_SPEC_HOLD');
   const spec=JSON.stringify({body:world.body,hazards:world.hazards,targetX:world.targetX,spaces:3});
+  const encounter=typeof encounterFactory==='function'?encounterFactory():null;
   const rooms=Array.from({length:3},(_,i)=>({id:i,body:order[(offset+i)%3],name:['Crossing','Relay Hall','Living Reach'][i],
     world:{body:order[(offset+i)%3],hazards:world.hazards,targetX:Math.max(500,Math.min(780,world.targetX-i*55)),entered:true},
     walls:i===1?[{x:340,y:125,w:75,h:310},{x:590,y:340,w:130,h:50}]:[{x:380+i*45,y:185-i*35,w:65,h:240}],
@@ -27,7 +28,7 @@ export function GameForgeSpaces(world){
     if(s.rooms.reduce((n,m)=>n+m.visits,0)!==s.transitions+1||s.rooms[s.active].visits<1||s.collected.some(k=>s.rooms[Number(k.slice(-1))].visits<1)||s.opened.some(e=>s.rooms[Number(e[0])].visits<1||s.rooms[Number(e[2])].visits<1))throw Error('SPACES_LINEAGE_HOLD');
     if(requireCurrent&&s.rooms.some(m=>m.visits>0&&!m.snapshot))throw Error('SPACES_VISITED_MEMORY_MISSING');
     if(requireCurrent&&!s.rooms[s.active].snapshot)throw Error('SPACES_CURRENT_STATE_MISSING');
-    validateProgress(s);return s;
+    validateProgress(s);encounter?.validate(s);return s;
   }
   const progress=s=>s.progress||{powered:[],beacon:false,delivered:false};
   function validateProgress(s){const q=progress(s);if(!Array.isArray(q.powered)||new Set(q.powered).size!==q.powered.length||q.powered.some(i=>!Number.isInteger(i)||i<0||i>2||!s.collected.includes('key-'+i))||typeof q.beacon!=='boolean'||typeof q.delivered!=='boolean'||q.beacon&&q.powered.length!==3||q.delivered&&!q.beacon)throw Error('SPACES_OBJECTIVE_HOLD');return q;}
@@ -56,11 +57,11 @@ export function GameForgeSpaces(world){
     return at('relay','Power room relay',650,450);
   }
   function interact(s,p){validate(s,false);const n=nearby(s,p);if(!n)return {kind:'none'};if(n.locked)return {kind:'locked'};if(['relay','beacon','deliver'].includes(n.kind)){s.progress=structuredClone(progress(s));if(n.kind==='relay')s.progress.powered.push(s.active);if(n.kind==='beacon')s.progress.beacon=true;if(n.kind==='deliver')s.progress.delivered=true;return n;}if(n.kind==='collect'){s.collected.push(n.id);return n;}if(n.locked)return {kind:'locked'};if(!s.opened.includes(n.edge))s.opened.push(n.edge);const from=s.active;s.active=n.to;s.rooms[n.to].visits++;s.transitions++;return {kind:'transition',from,to:n.to,spawn:{x:n.to>from?110:790,y:285}};}
-  return {rooms,spec,create,validate,free,resolve,nearby,interact,progress,objective};
+  return {rooms,spec,create,validate,free,resolve,nearby,interact,progress,objective,encounter};
 }
 
 export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initialSnapshot,readArena,restoreArena,nativeStep,isPaused,resume,pause},factory,viewFactory,rendererFactory){
-  const model=factory(world);
+  const model=factory(world,window.JMGameForgeEncounter);
   let session=initialSnapshot||model.create();model.validate(session,Boolean(initialSnapshot));
   const events=[],keys=new Set();let goal=null,feedback=null,axis={x:0,y:0},last=performance.now(),persistError='',saveQueue=Promise.resolve();
   const camera={x:450,y:285,scale:1},canvas=GF.cv,ctx=GF.ctx,nativeDraw=GF.draw.bind(GF);

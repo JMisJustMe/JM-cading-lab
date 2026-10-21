@@ -1,0 +1,21 @@
+name: JM PlayZone Native World Capability
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/jm-playzone-avatar-world-organ-v25.js'
+      - 'coding-estate/integration/jm-playzone-biome-geometry-v26.js'
+      - 'coding-estate/integration/jm-playzone-native-world-organs-selftest.mjs'
+      - '.github/workflows/jm-playzone-native-world-capability.yml'
+  workflow_dispatch:
+jobs:
+  reusable-organs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JM native avatar + biome organ execution
+        run: node coding-estate/integration/jm-playzone-native-world-organs-selftest.mjs
+      - name: Existing 100-body JM integration regression
+        run: node coding-estate/integration/integration-selftest.mjs

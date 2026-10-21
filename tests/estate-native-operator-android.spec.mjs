@@ -62,19 +62,14 @@ async function move(axis,value){
   for(let attempt=0;attempt<16;attempt++){
     await clearKnownLauncherOverlay('move-before-'+axis+'-'+attempt);
     const beforeContact=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
-    adb('shell','input','motionevent','DOWN',String(point.x),String(point.y));
-    let reached=false;
-    try{
-      await page.waitForFunction(({axis,value,positive})=>{
-        const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;
-        return positive?p[axis]>=value-5:p[axis]<=value+5;
-      },{axis,value,positive},{timeout:9000,polling:80});
-      reached=true;
-    }catch(e){
-      if(!/Timeout/.test(String(e.message||e)))throw e;
-    }finally{
-      adb('shell','input','motionevent','UP',String(point.x),String(point.y));
-    }
+    // Android's shell motionevent DOWN can be cancelled by the system while
+    // Playwright polls for several seconds. A finite real Android swipe at the
+    // same control coordinate delivers a complete DOWN/MOVE/UP sequence.
+    // This is *not* a synthetic JS click and does not assign player state.
+    adb('shell','input','swipe',String(point.x),String(point.y),String(point.x),String(point.y),'1100');
+    await page.waitForTimeout(150);
+    const verified=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
+    const reached=positive?verified>=value-5:verified<=value+5;
     if(reached){
       const after=await read();
       console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify(after.session.rooms[after.session.active].snapshot.player));

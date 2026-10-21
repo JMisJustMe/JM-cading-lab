@@ -77,7 +77,13 @@ try{
   const saved=await read();assert.equal(await page.evaluate(()=>window.JMRenderedWorldReadback().paused),true);
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await page.waitForTimeout(200);assert.deepEqual((await read()).session,saved.session);
   fs.writeFileSync(out+'/android-screen.png',execFileSync('adb',['exec-out','screencap','-p']));
-  adb('shell','am','force-stop',pkg);await new Promise(r=>setTimeout(r,500));adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await connect();assert.deepEqual((await read()).session,saved.session);
+  // Native process death destroys the previous WebView debugging transport.
+  // Disconnect its stale Playwright target before restarting, then discover a
+  // genuinely new Android WebView and independently compare recovered state.
+  await device.close();device=null;page=null;
+  adb('shell','am','force-stop',pkg);await new Promise(r=>setTimeout(r,500));
+  adb('shell','am','start','-W','-n',pkg+'/.MainActivity');
+  await connect();assert.deepEqual((await read()).session,saved.session);
   const installedPath=adb('shell','pm','path',pkg).replace(/^package:/,'');adb('pull',installedPath,out+'/installed-exact.apk');assert.equal(sha(fs.readFileSync(out+'/installed-exact.apk')),proof.apk_sha256);fs.unlinkSync(out+'/installed-exact.apk');
   await page.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.body+=' ';window.JMWorldStorage.setItem(k,JSON.stringify(e))});
   await page.reload();await page.waitForFunction(()=>document.getElementById('jm-world-title').textContent.startsWith('WORLD HOLD'));assert.match(await page.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);

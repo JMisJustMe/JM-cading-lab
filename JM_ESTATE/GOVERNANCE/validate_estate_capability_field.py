@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import ast
+import hashlib
 import json
 import pathlib
 import sys
@@ -48,14 +49,27 @@ if snapshot.get("current_project_records")!=19:
 if snapshot.get("capability_profiles")!=29:
     errors.append("capability-profile snapshot count must be 29")
 
-if len(profiles)!=29:
-    errors.append(f"Build Mesh capability profile count expected 29, got {len(profiles)}")
-source_current=[p for p in profiles if str(p.get("source","")).startswith("current_project_registry")]
-source_overlay=[p for p in profiles if p.get("source")=="current_overlay"]
-if len(source_current)!=18:
-    errors.append(f"current-project capability profiles expected 18, got {len(source_current)}")
-if len(source_overlay)!=11:
-    errors.append(f"overlay capability profiles expected 11, got {len(source_overlay)}")
+# Creation-time tables preserve ancestry. Current descendants can change names
+# and source classification; validate their independently pinned source instead.
+current=field.get("authority_reentry") or {}
+registry_path=ROOT/"services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json"
+registry=load_json(registry_path)
+if current.get("registry_path")!=registry_path.relative_to(ROOT).as_posix():
+    errors.append("current registry re-entry path drift")
+if current.get("registry_schema")!=registry.get("schema"):
+    errors.append("current registry schema drift")
+if hashlib.sha256(registry_path.read_bytes()).hexdigest()!=current.get("registry_sha256"):
+    errors.append("exact current registry hash drift")
+if len(registry.get("records",[]))!=current.get("current_project_records"):
+    errors.append("current registry record count drift")
+profile_hash=hashlib.sha256(json.dumps(profiles,ensure_ascii=False,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+if profile_hash!=current.get("profiles_sha256_canonical_json") or len(profiles)!=current.get("capability_profiles"):
+    errors.append("exact current capability profiles drift")
+profile_ids=[p.get("id") for p in profiles]
+if len(set(profile_ids))!=len(profile_ids) or None in profile_ids:
+    errors.append("current profile identity collision")
+if not {r.get("id") for r in registry.get("records",[])}.issubset(set(profile_ids)):
+    errors.append("current registry recipient missing from capability profiles")
 
 heads=field.get("current_project_heads") or []
 overlays=field.get("overlay_and_donor_profiles") or []
@@ -64,17 +78,14 @@ if len(heads)!=19:
 if len(overlays)!=11:
     errors.append(f"machine field overlay profiles expected 11, got {len(overlays)}")
 
-source_names=[p.get("name") for p in source_current]
-field_profile_names=[p.get("name") for p in heads if p.get("id")!="ecostate-build-mesh-current"]
-if field_profile_names!=source_names:
-    errors.append("machine field current-profile names drift from capabilities.py")
-if [p.get("name") for p in overlays] != [p.get("name") for p in source_overlay]:
-    errors.append("machine field overlay names drift from capabilities.py")
+historical_ids={p.get("id") for p in heads+overlays if p.get("id")!="ecostate-build-mesh-current"}
+if not historical_ids.issubset(set(profile_ids)):
+    errors.append("historical donor ancestry missing from current profiles")
 if not any(p.get("id")=="ecostate-build-mesh-current" for p in heads):
     errors.append("Build Mesh current self-seat missing from 19-head field")
 
 required_laws={
-    "RECOVER BEFORE REBUILD","CONTACT BEFORE CROWN","NO DING, NO CLAIM","MESH ≠ MERGE",
+    "RECOVER BEFORE REBUILD","CONTACT BEFORE CROWN","NO DING, NO CLAIM","CONTACT DOES NOT IMPLY MERGER","EARNED MERGE IS PERMITTED",
     "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT","ACCESS ≠ AUTHORITY",
     "OVERLAY / DONOR CUE ≠ CURRENT-PROJECT AUTHORITY","DONOR PROOF ≠ RECEIVER PROOF"
 }
@@ -98,5 +109,5 @@ if errors:
     sys.exit(1)
 
 print("JM ESTATE WHOLE CAPABILITY ROUTER: PASS")
-print(f"current_project_heads={len(heads)} capability_profiles={len(profiles)} overlays={len(overlays)}")
+print(f"historical_head_seats={len(heads)} current_capability_profiles={len(profiles)} historical_overlay_seats={len(overlays)}")
 print("profile_is_authority=False overlay_is_current_head=False live_resolution_required=True")

@@ -61,17 +61,18 @@
   "productionPromotion": {
     "pullRequests": [
       390,
-      391
+      391,
+      392
     ],
-    "sourceCommit": "586dd9090e4745ba07bd79c3eaae3801730df1ce",
+    "sourceCommit": "b784c78e312ed05a2724bd1ea48851cdafada2fe",
+    "workflowRun": 39447967597,
+    "workflowState": "SUCCESS",
     "canonicalOperation": "PASS",
-    "workflowRun": 39446345070,
-    "workflowState": "DEPLOY_SUCCEEDED_POST_DEPLOY_CHECK_FAILED_WRONG_ENQUIRY_MARKER",
     "rollbackBranch": "recovery/mission-002-pre-cloud-contact-2026-10-20"
   },
   "credentialMaterialIncluded": false,
   "canonicalBrowser": {
-    "at": "2026-10-20T15:18:21.917Z",
+    "at": "2026-10-20T15:27:09.757Z",
     "state": "PASS",
     "tests": [
       "actual-Federation-button-to-existing-live-cloud",
@@ -82,16 +83,67 @@
       "online-recovery-after-offline"
     ],
     "checkpoint": {
-      "workspaceId": "ws_FXDRTCu2FXo",
-      "operationId": "b5c14c17-b838-489c-bfad-d711187e07f6",
-      "expectedContentHash": "1bc13ff5486eba2d949d97edfa92e72dd35c16584675f72b50d0b73526a7a7cf",
+      "workspaceId": "ws_lqJEs7g04MI",
+      "operationId": "a07f525a-dfaf-4232-b0ac-78026515c520",
+      "expectedContentHash": "f921923500141c17556def1352602da2585e1b08efb42c73a05904021e18edbb",
       "state": "VERIFIED",
       "revision": 1,
-      "contentHash": "1bc13ff5486eba2d949d97edfa92e72dd35c16584675f72b50d0b73526a7a7cf",
-      "receiptHash": "7629746480ba579da9c093fd584ca67a7d4a9bd518dd8c6cb6c861a3e7483642",
-      "cloudReceiptHash": "f8709ebf8d08be75c4c6ac6178dd01c91338322ed14701adb6005af106bd710b",
+      "contentHash": "f921923500141c17556def1352602da2585e1b08efb42c73a05904021e18edbb",
+      "receiptHash": "108a56938397fb41785181792121897a785040be9a6a5d1b3031df21087d0c45",
+      "cloudReceiptHash": "f59ab6f2e1d5f338005fb5fe5666a8104075564f0cc2d1da0f4d707d5e246ecd",
       "cloudKeyId": "bd8abfb7c831ec8678ff4ade"
     },
     "boundary": "Real Edge browser on laptop, canonical Cloudflare Estate backend, existing live Render target. Physical Android and cloud replacement durability not claimed."
+  },
+  "hostedMeshReadOnly": {
+    "schema": "JM.BuildMesh.HostedMCPProof/0.8.5",
+    "timestamp_utc": "2026-10-20T15:25:46.236876+00:00",
+    "source_commit": null,
+    "workflow_run_id": null,
+    "endpoint": "https://jm-ecostate-build-mesh-mcp.onrender.com/mcp",
+    "ready": "PASS",
+    "initialize": "PASS",
+    "tool_count": 17,
+    "tools": [
+      "search_builds",
+      "recover_build",
+      "resolve_current_head",
+      "proof_state",
+      "trace_lineage",
+      "continue_build_plan",
+      "build_mesh_status",
+      "batch_recover_builds",
+      "find_capability_donors",
+      "compare_builds",
+      "build_capability_mesh",
+      "detect_propagation_gaps",
+      "plan_capability_inheritance",
+      "build_sync_contract",
+      "estate_keeper_contract",
+      "plan_artifact_route",
+      "prepare_operation_gate"
+    ],
+    "navigator_donor_contact": "PASS",
+    "navigator_cache_second_call": "HIT",
+    "capability_profiles": 34,
+    "current_registry_schema": "JM.CareerCurrentProjectRegistry/0.24",
+    "current_registry_sha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+    "opportunity_current_head": "JM Opportunity Front Door v0.8 — Maximal Current",
+    "sovereign_sync_contract": "PASS",
+    "operation_gate": "PASS_PLAN_ONLY",
+    "operation_id": "JMOP-5a9a2404e4039e2135e9914d",
+    "buildmesh_exact_target": "PASS",
+    "buildmesh_target_profile_id": "ecostate-build-mesh-v102",
+    "batch_recovery": "PASS",
+    "donor_recovery": "PASS",
+    "propagation_gap_detection": "PASS",
+    "inheritance_planning": "PASS_NON_MUTATING",
+    "capability_mesh": "PASS",
+    "build_comparison": "PASS",
+    "unknown_state": "ABSENCE_NOT_PROVEN",
+    "routeos_lineage_state": "PUBLIC_LINEAGE_CONTACT",
+    "artifact_surface_profiles": 6,
+    "claim_boundary": "Proves hosted v0.8.5 read-only capability-mesh and artifact-router reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
+    "sha256_without_sha_field": "efeaff22a0c64f260b31890b742604ab2f3d30c9c00066c9856aaf68be87cccd"
   }
 }

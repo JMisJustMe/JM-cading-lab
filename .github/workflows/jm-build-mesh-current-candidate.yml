@@ -1,0 +1,32 @@
+name: Build Mesh candidate exact current-registry contact
+on:
+  pull_request:
+    paths:
+      - 'services/jm-ecostate-build-mesh-mcp-v0_5/**'
+      - 'tests/build-mesh-current-http.mjs'
+      - '.github/workflows/jm-build-mesh-current-candidate.yml'
+permissions: {contents: read}
+jobs:
+  exact-current-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Exact current snapshot, agent contract and relationship gates
+        run: |
+          python services/jm-ecostate-build-mesh-mcp-v0_5/proof_dynamic_registry.py
+          python services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
+          python services/jm-ecostate-build-mesh-mcp-v0_5/test_relationship_operations.py
+      - name: Actual HTTP MCP compatibility contact
+        env:
+          JM_PROOF_DIR: ${{ runner.temp }}/jm-candidate-proof
+        run: node tests/build-mesh-current-http.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-mesh-candidate-current-registry-proof
+          path: ${{ runner.temp }}/jm-candidate-proof/*.json
+          if-no-files-found: error

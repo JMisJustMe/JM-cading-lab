@@ -13,7 +13,7 @@ CAPABILITY_PROFILES = [
         "domain":"Estate / opportunity / career / commerce",
         "capabilities":["opportunity front door","purpose projection","capability projection","employment route","freelance commission route","collaboration route","licensing publishing route","research consult route","contact brief builder","GripCube projection"],
         "donor_roles":["opportunity routing","purpose-capability projection","contact handoff","multi-route front door"],
-        "open_frontiers":["v0.8 public deployment","v0.8 owner-device runtime Ding","live inbound opportunity contact","market conversion"]
+        "open_frontiers":["v0.8 owner-device runtime Ding","live inbound opportunity contact","paid conversion","executed collaboration/licence/contract","market conversion"]
     },
     {
         "id":"gripcube-rpa",
@@ -26,12 +26,12 @@ CAPABILITY_PROFILES = [
     },
     {
         "id":"llm-core-v1",
-        "name":"JM LLM Core v1.0 — First Complete Edition",
-        "source":"current_project_registry",
+        "name":"JM LLM Core v1.16 — Symbiosis Cycle 016",
+        "source":"external_current_registry_v0_24 + direct_cycle016_release_regression_receipt",
         "domain":"AI / language model",
-        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response"],
-        "donor_roles":["language-model core","retrieval route","bounded generation"],
-        "open_frontiers":["broader free generation","broader reasoning"]
+        "capabilities":["causal language modelling","tokenization","retrieval","bounded generation","semantic discrimination","compositional response","bounded modular arithmetic","bounded ordinary mathematical induction","bounded propositional truth tables","bounded predicate-quantifier formalization","leading-quantifier negation","finite-domain quantifier evaluation","bounded elementary combinatorics","factorial counting","permutation counting","combination counting","multiset permutation counting","product-rule counting","sum-rule counting","pigeonhole occupancy reasoning","bounded finite discrete probability","equally-likely event probability","complement probability","conditional probability","independence checks","binomial point probability","finite discrete expectation","finite discrete variance","bounded matrix algebra","matrix addition","scalar matrix multiplication","matrix multiplication up to 3x3","matrix transpose","determinant up to 3x3","exact 2x2 inverse","exact 2x2 linear-system solve","matrix-vector multiplication","bounded exact-rational 2x2 spectral work","2x2 characteristic polynomial","rationally split 2x2 eigenvalues","exact 2x2 eigenspace bases","bounded rational 2x2 diagonalizability","explicit 2x2 eigenpair verification","induction-intent activation gate","formal-logic intent activation gate","combinatorics intent activation gate","discrete-probability intent activation gate","matrix-algebra intent activation gate","spectral-intent activation gate","bounded exact-rational 2x2 singular value decomposition","exact rational 2x2 singular values","exact rational 2x2 U Sigma V^T","exact 2x2 SVD reconstruction verification","2x2 spectral norm","2x2 condition number from SVD","2x2 rank from SVD","SVD-intent activation gate","bounded exact-rational triangular 3x3 spectral work","3x3 characteristic polynomial","triangular 3x3 eigenvalues","exact triangular 3x3 eigenspace bases","bounded triangular 3x3 diagonalizability","explicit 3x3 eigenpair verification","triangular-3x3 spectral intent activation gate","concurrent capability convergence","bounded exact-rational 2x2 Moore-Penrose pseudoinverse","rank-0 2x2 pseudoinverse","rank-1 2x2 pseudoinverse","rank-2 2x2 pseudoinverse","exact four-Penrose-identity verification","pseudoinverse-intent activation gate","bounded exact-rational 2x2 minimum-norm least squares","rank-0 least-squares solution","rank-1 consistent minimum-norm solution","rank-1 inconsistent minimum-norm least-squares solution","rank-2 exact least-squares solution","exact normal-equation verification","exact minimum-norm row-space certification","least-squares intent activation gate","bounded exact-rational 2x2 column-space orthogonal projection","exact 2x2 column-space projector Q=A A+","exact projection p=Qb","exact residual decomposition r=b-p","exact residual orthogonality A^T r=0","exact projector symmetry and idempotence","exact projection candidate verification","projection-intent activation gate","bounded exact-rational unnormalised two-vector Gram-Schmidt in R2","exact classical ordered Gram-Schmidt u1/u2","dependent two-vector Gram-Schmidt handling","exact Gram-Schmidt orthogonality certification","exact Gram-Schmidt span/reconstruction certification","exact Gram-Schmidt candidate verification","Gram-Schmidt intent activation gate","bounded exact-rational unnormalised three-vector Gram-Schmidt in R2","exact classical ordered three-vector Gram-Schmidt u1/u2/u3","dependent-middle three-vector Gram-Schmidt handling","fully-dependent three-vector Gram-Schmidt handling","exact three-vector Gram-Schmidt pairwise-orthogonality certification","exact three-vector Gram-Schmidt span/reconstruction certification","exact three-vector Gram-Schmidt candidate verification","three-vector Gram-Schmidt intent activation gate","bounded exact-rational unnormalised two-vector Gram-Schmidt in R3","exact classical ordered two-vector Gram-Schmidt u1/u2 in R3","dependent two-vector R3 Gram-Schmidt handling","exact two-vector R3 Gram-Schmidt orthogonality certification","exact two-vector R3 Gram-Schmidt span/reconstruction certification","exact two-vector R3 Gram-Schmidt candidate verification","two-vector R3 Gram-Schmidt intent activation gate","bounded exact-rational unnormalised three-vector Gram-Schmidt in R3","exact classical ordered three-vector Gram-Schmidt u1/u2/u3 in R3","structural-dependence three-vector R3 Gram-Schmidt handling","exact three-vector R3 pairwise-orthogonality certification","exact three-vector R3 span/reconstruction certification","exact three-vector R3 Gram-Schmidt candidate verification","explicit-three-vector R3 routing-leak correction","three-vector R3 Gram-Schmidt intent activation gate","residual-gap capability acquisition","learned-route skill integration","cross-cycle capability retention","ECOSTATE rehearsal retention"],
+        "donor_roles":["language-model core","retrieval route","bounded generation","symbiosis capability-return donor","modular-arithmetic skill donor","ordinary-induction skill donor","bounded formal-logic skill donor","quantifier translation donor","bounded combinatorics skill donor","counting-rule donor","bounded discrete-probability skill donor","exact-rational probability executor donor","bounded matrix-algebra skill donor","exact-rational matrix executor donor","bounded spectral skill donor","exact-rational eigen executor donor","bounded SVD skill donor","exact-rational SVD executor donor","bounded triangular-3x3 spectral donor","concurrency-reconciliation donor","bounded pseudoinverse skill donor","exact Penrose-verification donor","bounded least-squares skill donor","minimum-norm solution donor","normal-equation verification donor","bounded orthogonal-projection donor","column-space projector donor","residual-decomposition verification donor","bounded Gram-Schmidt skill donor","exact orthogonalization verification donor","bounded three-vector R2 Gram-Schmidt donor","dependent-middle orthogonalization donor","bounded two-vector R3 Gram-Schmidt donor","dimension-jump orthogonalization donor","bounded three-vector R3 Gram-Schmidt donor","R3 boundary-correction donor"],
+        "open_frontiers":["learned-weight free modular generation","strong induction","structural induction","arbitrary first-order theorem proving","modal logic","temporal logic","second-order logic","inclusion-exclusion","generating functions","Catalan and Stirling systems","Burnside and Polya enumeration","graph enumeration","continuous distributions","concentration bounds","Markov chains","Bayesian networks","arbitrary covariance systems","complex and irrational spectra","general non-triangular 3x3 eigensolvers","4x4+ eigensolvers","arbitrary/rectangular/3x3+ SVD","irrational singular-vector bases","numerical SVD","truncated/randomized SVD","low-rank approximation","rectangular/3x3+ pseudoinverse","numerical-tolerance pseudoinverse","rectangular/3x3+ least squares","numerical-tolerance least squares","weighted least squares","constrained least squares","rectangular/3x3+ orthogonal projection","numerical-tolerance projection","weighted projection","oblique projection","arbitrary-subspace projection","QR-based projection","normalized/orthonormal Gram-Schmidt","zero-leading ordered Gram-Schmidt","four-vector+ Gram-Schmidt","modified Gram-Schmidt","numerical Gram-Schmidt","weighted-inner-product Gram-Schmidt","QR factorization","Jordan form","spectral theorem","power iteration","unrestricted diagonalization","broader free generation","broader reasoning"]
     },
     {
         "id":"llm2-v2",
@@ -266,7 +266,175 @@ CAPABILITY_PROFILES = [
         "capabilities":["bounded traversal","checkpointed pagination","anti-crash census","carrier accounting","terminal-cursor closure","recovery-safe scanning"],
         "donor_roles":["bounded traversal donor","checkpoint pattern","storage audit pattern"],
         "open_frontiers":["continued outside-Estate reconciliation where open"]
-    }
+    },
+    {
+        "id":"ftr-massive-push-v1",
+        "name":"FTR — The Massive Push / One Reality, Many Cuts — Series Master v1.0",
+        "aliases":["FTR — The Massive Push","The Massive Push","One Reality, Many Cuts"],
+        "source":"current_overlay",
+        "domain":"Comics / visual story",
+        "capabilities":[
+            "32-issue functional comic series architecture",
+            "704-page functional comic route",
+            "issue and page-order continuity",
+            "production-master DOCX/PDF packaging",
+            "704-page visual comic master",
+            "contact-sheet QA",
+            "Visual VTS preservation",
+            "descendant illustration/lettering routing"
+        ],
+        "donor_roles":[
+            "comic production route",
+            "page and issue continuity",
+            "functional visual-story master",
+            "comic QA pattern"
+        ],
+        "open_frontiers":[
+            "high-fidelity bespoke illustration",
+            "final lettering",
+            "print-production finishing",
+            "surface-specific web-reader proof"
+        ]
+    },
+    {
+        "id":"ecostate-build-mesh-v102",
+        "name":"JM ECOSTATE — Build Mesh",
+        "aliases":["JM ECOSTATE Build Mesh","Build Mesh","JM Build Mesh"],
+        "source":"external_current_registry_v0_24 + hosted_runtime_v0_8_5",
+        "domain":"Estate / control plane / artifact routing",
+        "capabilities":[
+            "exact target identity resolution",
+            "external current-registry loading",
+            "dynamic exact-byte registry hashing",
+            "fail-closed registry validation",
+            "current-head authority routing",
+            "authority-tier precedence: current registry over snapshot overlay",
+            "proof-boundary preservation",
+            "capability donor mesh",
+            "deterministic operation gates",
+            "artifact-general production routing",
+            "book publication route planning",
+            "comic publication route planning",
+            "theory publication route planning",
+            "app delivery route planning",
+            "APK delivery route planning",
+            "download and addable-link route planning",
+            "host-routed mutation separation",
+            "receipt and recovery routing",
+            "ownership and carrier separation",
+            "delta-first Estate maintenance planning",
+            "host-private Library keeper contract",
+            "registry-card and body↔carrier reconciliation routing",
+            "32_Cb sovereign-donor seating",
+            "JM32-1DA exact runtime-route seating",
+            "JM32-1DA Cross-Device Adapter separate-authority seating",
+            "JM LLM Core v1.16 Cycle 016 capability-return seating"
+        ],
+        "donor_roles":[
+            "control-plane routing",
+            "current-registry integrity donor",
+            "artifact dispatcher",
+            "proof-gate planner",
+            "host-operation planner",
+            "sovereignty boundary",
+            "Estate maintenance conductor"
+        ],
+        "open_frontiers":[
+            "host execution of artifact plans remains connector-specific",
+            "each output surface still requires its own contact proof",
+            "private Library authority remains local to the host"
+        ]
+    },
+    {
+        "id":"32cb-v21",
+        "name":"32_Cb — Sovereign Federation Runtime v2.1",
+        "aliases":["32_Cb","32Cb","32 Cb","32_Cb v2.1"],
+        "source":"external_current_registry_v0_5 + exact-private-authority-derived-seat",
+        "domain":"Coding / runtime / sovereign multi-target embodiment",
+        "capabilities":[
+            "owner-body-first multi-target embodiment",
+            "72 named owner profiles",
+            "JM-native operational engines",
+            "internal native external proof separation",
+            "host absence as HOLD not nonexistence",
+            "receipt-gated external proof",
+            "language runtime route wearing",
+            "multi-target sovereign execution identity"
+        ],
+        "donor_roles":[
+            "sovereign multi-target embodiment donor",
+            "runtime-route separation ancestor",
+            "source-host adaptation ancestor",
+            "proof-jurisdiction separation donor"
+        ],
+        "open_frontiers":[
+            "new external host contacts only with fresh receipts",
+            "new target profiles only through explicit embodiment",
+            "no proof transfer to descendants"
+        ]
+    },
+    {
+        "id":"jm32-1da-v221",
+        "name":"JM32-1DA v2.2.1 — Mixed-Axis Embodiment Correction",
+        "aliases":["JM32-1DA","JM32 1DA","JM32-1DA compiler v2.2.1","JM32-1DA v2.2.1"],
+        "source":"external_current_registry_v0_6 + exact-private-authority-derived-seat",
+        "domain":"Coding / compiler / runtime / governance / recovery",
+        "capabilities":[
+            "145 JM-callable routes",
+            "one-body executable runtime packaging",
+            "state governance federation compiler OS recovery continuity",
+            "four-language adapters",
+            "mixed-axis interaction and movement routing",
+            "deterministic byte-identical package reproduction",
+            "clean extraction verification",
+            "rollback restore",
+            "quarantine containment",
+            "capability revocation",
+            "quota gating",
+            "receipt-chain validation"
+        ],
+        "donor_roles":[
+            "runtime-route expansion descendant",
+            "one-body runtime donor",
+            "governed execution donor",
+            "recovery and rollback donor",
+            "multi-language adapter donor"
+        ],
+        "open_frontiers":[
+            "public name remains unset",
+            "native universal OS is not claimed",
+            "cross-device adapter v0.2 remains a separate authority",
+            "new recipient or device proof requires fresh contact"
+        ]
+    },
+    {
+        "id":"jm32-1da-cross-device-adapter-v02",
+        "name":"JM32-1DA Cross-Device Runtime Adapter v0.2",
+        "aliases":["JM32-1DA Cross-Device Adapter","JM32-1DA Cross-Device Runtime Adapter","Cross-Device Runtime Adapter v0.2"],
+        "source":"external_current_registry_v0_7 + current-best-proof-derived-seat",
+        "domain":"Cross-device / runtime adapter / TraceBox proof",
+        "capabilities":[
+            "seven-route cross-device test trace",
+            "device field adaptation",
+            "syntax-governed cross-device carrier",
+            "TraceBox receipt routing",
+            "sneeze recovery routing",
+            "export import continuity",
+            "trace replay",
+            "bounded device-route adaptation"
+        ],
+        "donor_roles":[
+            "cross-device adapter proof carrier",
+            "device-route adaptation donor",
+            "TraceBox continuity donor"
+        ],
+        "open_frontiers":[
+            "new named device runtime or app consequence requires fresh proof",
+            "standalone original code carrier hash remains unrecovered in this pass",
+            "native universal OS is not claimed",
+            "adapter proof does not transfer to the main runtime"
+        ]
+    },
 ]
 
 PROFILE_BY_ID = {p["id"]: p for p in CAPABILITY_PROFILES}

@@ -53,6 +53,7 @@ jobs:
               "detect_propagation_gaps",
               "plan_capability_inheritance",
               "build_sync_contract",
+              "estate_keeper_contract",
               "plan_artifact_route",
               "prepare_operation_gate",
           ]
@@ -89,10 +90,10 @@ jobs:
           init = rpc(1, "initialize", {
               "protocolVersion":"2025-06-18",
               "capabilities":{},
-              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.7.2"},
+              "clientInfo":{"name":"JM Build Mesh Hosted Proof","version":"0.8.5"},
           })
           assert init["serverInfo"]["name"] == "JM ECOSTATE Build Mesh Native MCP"
-          assert init["serverInfo"]["version"] == "0.7.2", init
+          assert init["serverInfo"]["version"] == "0.8.5", init
 
           listed = rpc(2, "tools/list", {})
           names = [t["name"] for t in listed["tools"]]
@@ -101,11 +102,13 @@ jobs:
           status = call(3, "build_mesh_status", {"probe_navigator":True})
           nav = status["navigator_contact"]
           assert nav.get("ok") is True and nav.get("state") == "PASS", nav
-          assert status["capability_profiles"] >= 30, status
+          assert status["capability_profiles"] == 34, status
+          assert status["current_project_records"] == 22, status
+          assert status["current_registry_loaded_bytes"] == 27978, status
           assert status.get("artifact_surface_profiles") == 6, status
           assert status["navigator_cache_ttl_seconds"] >= 60, status
-          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", status
-          assert status["current_registry_sha256"] == "fde60cf0274d5380115d938fc099d652af44f0747f354686b99562836a8e905b", status
+          assert status["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.24", status
+          assert status["current_registry_sha256"] == "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31", status
 
           llm2 = call(4, "resolve_current_head", {"name":"JM LLM #2"})
           assert llm2["state"] == "CURRENT_DECLARED"
@@ -122,7 +125,7 @@ jobs:
               "names":["JM LLM #2","JM AGI Lab v1.4.4","SHIFT//FIELD"]
           })
           assert batch["count"] == 3
-          assert batch["results"][0]["navigator_contact"] == "SKIPPED_LOCAL_AUTHORITY_FOUND"
+          assert batch["results"][0]["navigator_contact"] == "SKIPPED_LOCAL_IDENTITY_AUTHORITY_FOUND"
 
           donors = call(8, "find_capability_donors", {
               "target":"SHIFT//FIELD",
@@ -152,7 +155,7 @@ jobs:
           assert len(inheritance["donor_plan"]) >= 1
 
           mesh = call(11, "build_capability_mesh", {
-              "builds":["SHIFT//FIELD","KICSHIFT","JM Target Bridge","JM GripCube"],
+              "builds":["shiftfield","kicshift-v11","targetbridge","gripcube-rpa"],
               "max_nodes":8
           })
           assert len(mesh["nodes"]) >= 4
@@ -167,13 +170,13 @@ jobs:
           assert search2["navigator"].get("cache") == "HIT", search2["navigator"]
 
           opportunity = call(15, "resolve_current_head", {"name":"JM Opportunity Front Door"})
-          assert opportunity["state"] == "CURRENT_CANDIDATE", opportunity
+          assert opportunity["state"] == "CURRENT_DECLARED", opportunity
           assert "v0.8" in (opportunity.get("current_head") or ""), opportunity
-          assert "v0.5.1" in opportunity["primary_evidence"]["boundary"], opportunity
+          assert "owner-device UI contact" in opportunity["primary_evidence"]["boundary"], opportunity
 
           sync = call(16, "build_sync_contract", {"name":"JM Opportunity Front Door"})
-          assert sync["hosted_snapshot"]["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.4", sync
-          assert sync["hosted_snapshot"]["current_registry_sha256"] == "fde60cf0274d5380115d938fc099d652af44f0747f354686b99562836a8e905b", sync
+          assert sync["hosted_snapshot"]["current_registry_schema"] == "JM.CareerCurrentProjectRegistry/0.24", sync
+          assert sync["hosted_snapshot"]["current_registry_sha256"] == "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31", sync
           assert "local" in sync["privacy_rule"].lower(), sync
           assert sync["mutation_performed"] is False
 
@@ -204,7 +207,7 @@ jobs:
           assert buildmesh_gate["phase"] == "PLAN_ONLY", buildmesh_gate
 
           receipt = {
-              "schema":"JM.BuildMesh.HostedMCPProof/0.7.2",
+              "schema":"JM.BuildMesh.HostedMCPProof/0.8.5",
               "timestamp_utc":datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "source_commit":os.environ.get("GITHUB_SHA"),
               "workflow_run_id":os.environ.get("GITHUB_RUN_ID"),
@@ -233,11 +236,11 @@ jobs:
               "unknown_state":unknown["state"],
               "routeos_lineage_state":lineage["state"],
               "artifact_surface_profiles":status.get("artifact_surface_profiles"),
-              "claim_boundary":"Proves hosted v0.7.2 read-only capability-mesh and artifact-router reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
+              "claim_boundary":"Proves hosted v0.8.5 read-only capability-mesh and artifact-router reasoning, sovereign-sync contract generation, deterministic PLAN_ONLY operation gating, batching/caching and Build Mesh→Navigator contact. Raw private Library evidence remains local to the host; no write/mutation authority is claimed.",
           }
           raw = json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8")
           receipt["sha256_without_sha_field"] = hashlib.sha256(raw).hexdigest()
-          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json","w",encoding="utf-8") as f:
+          with open("JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5.json","w",encoding="utf-8") as f:
               json.dump(receipt,f,ensure_ascii=False,indent=2)
           print(json.dumps(receipt,ensure_ascii=False,indent=2))
           PY
@@ -245,6 +248,6 @@ jobs:
       - name: Upload proof receipt
         uses: actions/upload-artifact@v4
         with:
-          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2
-          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_7_2.json
+          name: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5
+          path: JM_BUILD_MESH_HOSTED_MCP_PROOF_v0_8_5.json
           if-no-files-found: error

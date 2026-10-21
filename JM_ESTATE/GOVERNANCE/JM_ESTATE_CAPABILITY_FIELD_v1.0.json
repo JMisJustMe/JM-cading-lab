@@ -1,10 +1,10 @@
 {
   "schema": "JM.EstateCapabilityField/1.0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "date": "2026-10-04",
-  "state": "ACTIVE_RUNNING_ROUTING_STANDARD",
+  "state": "ACTIVE_ROUTING_STANDARD_WITH_HISTORICAL_PROFILE_SNAPSHOT",
   "authority_class": "ROUTING_FIELD_NOT_CURRENT_HEAD_AUTHORITY",
-  "purpose": "Expose the whole current Estate capability field to compatible agents/builders without flattening project heads, overlays, donor cues or proof boundaries.",
+  "purpose": "Preserve creation-time donor ancestry and route agents to the exact recovered current registry before material action. Historical profile names below are not current-head authority.",
   "live_snapshot": {
     "current_project_records": 19,
     "current_registry_schema": "JM.CareerCurrentProjectRegistry/0.4",
@@ -16,13 +16,15 @@
     "RECOVER BEFORE REBUILD",
     "CONTACT BEFORE CROWN",
     "NO DING, NO CLAIM",
-    "MESH ≠ MERGE",
     "BODY ≠ CARRIER ≠ ROUTE ≠ SEAT",
     "ACCESS ≠ AUTHORITY",
     "CURRENT PROFILE ≠ PERMANENT CURRENT HEAD",
     "OVERLAY / DONOR CUE ≠ CURRENT-PROJECT AUTHORITY",
     "DONOR PROOF ≠ RECEIVER PROOF",
-    "ALL RELEVANT DOMAINS MAY INFORM THE ROUTE; ONLY EARNED BODIES ENTER EXECUTION"
+    "ALL RELEVANT DOMAINS MAY INFORM THE ROUTE; ONLY EARNED BODIES ENTER EXECUTION",
+    "CONTACT DOES NOT IMPLY MERGER",
+    "EARNED MERGE IS PERMITTED",
+    "PRESERVE ANCESTRY, IDENTITY, AUTHORITY, TRACE AND RECOVERY"
   ],
   "current_project_heads": [
     {
@@ -717,5 +719,14 @@
     ],
     "cross_domain_rule": "Cross-domain work may use multiple heads/donors, but each keeps its identity, authority and proof scope.",
     "currentness_rule": "Machine/profile entries are routing cues. Material work must resolve the current head and proof boundary at execution time."
+  },
+  "authority_reentry": {
+    "registry_path": "services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json",
+    "registry_schema": "JM.CareerCurrentProjectRegistry/0.24",
+    "registry_sha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+    "current_project_records": 22,
+    "capability_profiles": 34,
+    "profiles_sha256_canonical_json": "598dff63029dce9f9d2f3965f0b2a1451f44822a3558fa8618820bd26433b977",
+    "boundary": "Exact recovered hosted v0.8.5 source; candidate v0.8.6 remains held. Historical fields are retained, not recrowned. Capability metadata is not callable execution proof."
   }
 }

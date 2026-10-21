@@ -1,4 +1,8 @@
-// Recovered unchanged script organ from JM_NATIVE_SCENE_DOOR_WEBGL_CP2.html.
+// Adapted descendant of the recovered JM_NATIVE_SCENE_DOOR_WEBGL_CP2.html script organ.
+// An unused vertex-stage uTime declaration was removed and vertex float precision
+// aligned with fragment precision after Android WebView rejected the donor shader.
+// Original owner carrier and its hashes below remain preserved as ancestry,
+// NOT hashes of this repaired descendant module.
 // Original full carrier SHA-256: 6588ff741c580a68f0a484f790fb813e5933be8cbb2f120db7786acacd13ed4b
 // Renderer script SHA-256: ba2e1339ac686ff4c93621985f737fca12b8bb1b44fd3ead15472527adfdcbb0
 export function installJMActualRenderer(){
@@ -165,7 +169,7 @@ class JMWorldRenderer3D {
  constructor(canvas){this.canvas=canvas;this.gl=null;this.program=null;this.loc=null;this.meshes={};this.static=[];this.lastScene=null;this.drawCalls=0;this.error=null;this.w=1;this.h=1;
   try{const gl=canvas.getContext('webgl',{alpha:false,antialias:true,depth:true,powerPreference:'high-performance'})||canvas.getContext('experimental-webgl');if(!gl)throw Error('WEBGL_UNAVAILABLE');this.gl=gl;this.init();}catch(e){this.error=String(e.message||e)} }
  init(){const gl=this.gl;
- const vs=`attribute vec3 aPosition;attribute vec3 aNormal;attribute vec3 aColor;attribute float aGlow;uniform float uBatch; uniform mat4 uMVP;uniform mat4 uModel;uniform vec3 uColor;uniform float uGlow;uniform float uTime;varying vec3 vColor;varying vec3 vWorld;varying vec3 vNormal;varying float vGlow;
+ const vs=`precision mediump float;attribute vec3 aPosition;attribute vec3 aNormal;attribute vec3 aColor;attribute float aGlow;uniform float uBatch; uniform mat4 uMVP;uniform mat4 uModel;uniform vec3 uColor;uniform float uGlow;varying vec3 vColor;varying vec3 vWorld;varying vec3 vNormal;varying float vGlow;
  void main(){ vec4 wp=uModel*vec4(aPosition,1.);vWorld=wp.xyz;vNormal=normalize(mat3(uModel)*aNormal);vColor=mix(uColor,aColor,uBatch);vGlow=mix(uGlow,aGlow,uBatch);gl_Position=uMVP*vec4(aPosition,1.);}`;
  const fs=`precision mediump float;varying vec3 vColor;varying vec3 vWorld;varying vec3 vNormal;varying float vGlow;uniform vec3 uEye;uniform float uTime;
  void main(){vec3 n=normalize(vNormal);vec3 l=normalize(vec3(-.35,1.0,-.52));float diffuse=max(dot(n,l),0.0);vec3 eye=normalize(uEye-vWorld);float spec=pow(max(dot(reflect(-l,n),eye),0.0),22.0);float rim=pow(1.0-max(dot(n,eye),0.0),2.0);float shimmer=.5+.5*sin(vWorld.x*3.9+vWorld.z*4.6+uTime*2.1);vec3 light=vColor*(.52+diffuse*.80) + vec3(.62,.49,.42)*spec*.42+vec3(.19,.42,.57)*rim*.48;light+=vColor*vGlow*(.75+shimmer*.34);float dist=length(uEye-vWorld);float fog=smoothstep(35.0,95.0,dist)*.63;light=mix(light,vec3(.07,.16,.24),fog);light=1.-exp(-light*1.33);gl_FragColor=vec4(pow(light,vec3(.89)),1.);}`;

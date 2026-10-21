@@ -1,3 +1,5 @@
+import {installJMActualRenderer} from './jm-actual-renderer-organ.mjs';
+import {installGameForgeSpatialView} from './gameforge-spatial-view.mjs';
 import {GameForgeSpaces,installGameForgeSpaces} from './gameforge-spaces.mjs';
 // Exact recovered GameForge source remains in its existing lossless transport.
 // This module is a receiving adapter, not a second renderer or engine.
@@ -42,7 +44,7 @@ async function bootWorld(){
     Object.assign(GF.player,s.player);Object.assign(GF.coreObj,s.core);GF.hazards=s.hazards.map(h=>({...h}));Object.assign(GFPLAY.run,s.run);
   };
   if(world.spaces){
-    connected=await window.JMInstallGameForgeSpaces({GF,GFUX,GFPLAY,world,token:config.token,initialSnapshot:config.snapshot,readArena:read,restoreArena,nativeStep:originalStep,isPaused:()=>paused,resume:()=>paused=false,pause:()=>paused=true},window.JMGameForgeSpaces);
+    connected=await window.JMInstallGameForgeSpaces({GF,GFUX,GFPLAY,world,token:config.token,initialSnapshot:config.snapshot,readArena:read,restoreArena,nativeStep:originalStep,isPaused:()=>paused,resume:()=>paused=false,pause:()=>paused=true},window.JMGameForgeSpaces,window.JMInstallSpatialView,window.JMInstallActualRenderer);
   }else if(config.snapshot){restoreArena(config.snapshot);paused=true;}
   const readSnapshot=()=>connected?connected.capture():read();
   GF.fx=[];GFPLAY.particles=[];GF.flash=0;GF.renderCrew();GF.updateBg();GF.update();
@@ -98,7 +100,7 @@ export function makeGameForgeWorld(donor,world,token){
   // Only trusted, hash-verified donor text is accepted by the caller.
   const style='<style id="jm-world-view">html,body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}.app{display:flex!important;flex-direction:column!important;gap:5px!important;padding:6px!important;width:100%!important;max-width:none!important;height:100vh!important;box-sizing:border-box!important}.app>header,.app>.bodyRail,.app>.gameContractBar,.hudForm,.floatHud,.rivalIntentBar,.receipt,.forgePanel,.forgeBackdrop{display:none!important}.arenaWrap{flex:1!important;min-height:180px!important;border-radius:12px!important}canvas{touch-action:none!important;width:100%!important;height:100%!important}.cards{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;flex:none!important}.cards button{min-height:46px!important;font-size:11px!important;padding:4px!important}.cards #cRival,.cards #cAuto,#next1PChallenge,#returnGameList,.playStartPanel,.turnGuide{display:none!important}#jm-world-title{margin:0;font:700 14px system-ui;color:#f2d98f}#jm-world-help{font:11px system-ui;margin:0;color:#afc1d0}</style>';
   const storage='<script>window.addEventListener("error",e=>parent.postMessage({type:"jm.gameforge.world.return/1",kind:"hold",id:"boot",token:'+encode(token)+',error:"RENDERER_ERROR:"+e.message},"*"));window.JMWorldStorage=null;if(parent===window){try{window.JMWorldStorage=window.localStorage}catch(e){}}Object.defineProperty(window,"localStorage",{value:(()=>{const m=new Map();return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}})()});<\/script>';
-  const spatial=world.spaces?'<script>window.JMGameForgeSpaces='+GameForgeSpaces.toString()+';window.JMInstallGameForgeSpaces='+installGameForgeSpaces.toString()+';window.JMValidateArena='+validateArenaSnapshot.toString()+';</script>':'';
+  const spatial=world.spaces?'<script>window.JMGameForgeSpaces='+GameForgeSpaces.toString()+';window.JMInstallGameForgeSpaces='+installGameForgeSpaces.toString()+';window.JMInstallSpatialView='+installGameForgeSpatialView.toString()+';window.JMInstallActualRenderer='+installJMActualRenderer.toString()+';window.JMValidateArena='+validateArenaSnapshot.toString()+';</script>':'';
   const boot='<script type="application/json" id="jm-world-boot">'+encode({world,token,snapshot:null})+'</script>';
   return donor.replace('</head>',style+storage+'</head>').replace('<div class="app">','<div class="app"><h1 id="jm-world-title">JM resultant world</h1><p id="jm-world-help">Drag backwards on the arena and release. Act / Hit / Core / Hold change the live match.</p>')
     .replace('</body>',spatial+boot+'<script>('+bootWorld.toString()+')().catch(e=>{document.getElementById("jm-world-title").textContent="WORLD HOLD · "+e.message;parent.postMessage({type:"jm.gameforge.world.return/1",token:'+encode(token)+',kind:"hold",id:"boot",error:e.message},"*")});</script></body>');

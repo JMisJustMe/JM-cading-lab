@@ -27,4 +27,8 @@ const proof=await buildConnectedCarrier('/tmp/jm-connected-source-test');
 const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);
 assert.throws(()=>validateWorldSnapshot({...s,rooms:[]},world),/SPACES_MEMORY_HOLD/);
+const quest=m.create();assert.equal(m.interact(quest,{x:650,y:450}).kind,'locked');
+for(let i=0;i<3;i++){m.interact(quest,m.rooms[i].key);assert.equal(m.interact(quest,{x:650,y:450}).kind,'relay');if(i<2)m.interact(quest,{x:850,y:285});}
+assert.equal(m.interact(quest,{x:720,y:110}).kind,'beacon');m.interact(quest,{x:50,y:285});m.interact(quest,{x:50,y:285});assert.equal(m.interact(quest,{x:120,y:440}).kind,'deliver');assert.equal(quest.progress.delivered,true);
+assert.throws(()=>m.validate({...quest,progress:{powered:[],beacon:true,delivered:true}},false),/SPACES_OBJECTIVE_HOLD/);
 console.log(JSON.stringify({state:'CONNECTED_SPACES_SOURCE_PASS',doorsRequireContactAndKey:true,roundTripState:true,solidCollision:true,invalidStateHold:true,carrierSHA256:proof.sha256,browserProof:false}));

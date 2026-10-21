@@ -234,7 +234,7 @@ jobs:
               -SourceDirectory $worldDir -ProjectName 'JM Connected World' `
               -PackageName 'com.jmisjustme.estateworld.ci' -VersionName '0.1.0-ci' -VersionCode 1 `
               -OutputRoot $worldBuild -SigningMode release -PreviousVersionCode 0 `
-              -SigningKeystorePath $signer -ExpectedSignerSha256 $expectedSigner 2>&1)
+              -SigningKeystorePath $signer -ExpectedSignerSha256 $expectedSigner -EnableRuntimeProbe -OfflineOnly -TestSigner 2>&1)
             $worldJson = $worldLines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
             if (-not $worldJson) { throw 'CONNECTED_WORLD_APK_RESULT_MISSING' }
             $worldResult = $worldJson | ConvertFrom-Json
@@ -310,3 +310,40 @@ jobs:
             git commit -m "Publish verified AILatheo v3 APK [skip ci]"
             git push origin HEAD:main
           }
+
+  connected-world-android:
+    if: github.event_name == 'pull_request'
+    needs: receiver-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: ailatheo-ci-test-only-not-release
+          path: qa/android-package
+      - run: npm install --no-save playwright@1.54.1
+      - name: Enable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install, launch and exercise actual Android WebView
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: node tests/estate-native-operator-android.spec.mjs qa/android-package/connected-world
+      - name: Preserve actual Android runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-connected-world-android-runtime
+          path: qa/android-runtime/
+          if-no-files-found: warn

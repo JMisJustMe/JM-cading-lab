@@ -26,6 +26,15 @@ try{
     document.getElementById('cv').addEventListener('pointerdown',()=>window.__jm3dCanvasContact++,{once:true});});
   await frame.locator('#cv').click({position:{x:100,y:100}});
   assert.equal(await frame.evaluate(()=>window.__jm3dCanvasContact),1);
+  // Unlike overlay click-through, the 3D camera must turn its actual
+  // perspective floor ray into a native GameForge movement destination.
+  const area=await frame.locator('#cv').boundingBox();assert.ok(area);
+  await frame.locator('#cv').click({position:{x:area.width*.60,y:area.height*.65}});
+  const destination=(await read()).requestedDestination;
+  assert.ok(destination&&destination.x>=24&&destination.x<=876&&destination.y>=24&&destination.y<=546,
+    'JM_3D_GROUND_PICK_HOLD:'+JSON.stringify(destination));
+  const tapped3D=(await read()).spatial;assert.equal(tapped3D.active,true);
+  assert.ok(tapped3D.drawCalls>first3D.drawCalls,'JM_3D_DESTINATION_VISUAL_FEEDBACK_HOLD');
 
   await frame.locator('#cv').focus();await page.keyboard.down('ArrowRight');await page.waitForTimeout(180);await page.keyboard.up('ArrowRight');const moved3D=(await read()).spatial;assert.ok(moved3D.player.x>first3D.player.x);assert.notEqual(moved3D.pixelDigest,first3D.pixelDigest);
   await page.screenshot({path:'qa/estate-native-operator-spaces-3d-phone.png'});
@@ -108,5 +117,5 @@ try{
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

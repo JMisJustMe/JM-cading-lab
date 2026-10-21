@@ -23,9 +23,13 @@ function bootWorld(){
   const config=JSON.parse(document.getElementById('jm-world-boot').textContent);
   const world=config.world;
   // Deliberately use the donor's real start/apply and native draw/physics loop.
-  GF.applyBody(world.body,false);GFUX.start(false);
+  GF.applyBody(world.body,false);
+  const nativeStart=GFUX.start.bind(GFUX);
+  GFUX.start=function(restart=false){nativeStart(restart);
   GF.hazards=Array.from({length:world.hazards},(_,i)=>({x:260+i*58,y:150+(i%3)*120,r:20+i%3*3,type:world.body==='burning'?(i%2?'boost':'heat'):world.body==='humanimals'?'spirit':i%2?'mud':'bounce'}));
   GF.coreObj.x=world.targetX;GF.coreObj.y=285;
+  };
+  GFUX.start(false);
   let paused=false;
   const originalStep=GF.step.bind(GF);GF.step=function(){if(!paused)originalStep()};
   const read=()=>({schema:'jm.gameforge.world-snapshot/1',body:GF.body.id,p1:GF.p1,p2:GF.p2,energy:GF.energyVal,chain:GF.chain,round:GF.round,meter:GF.stateMeter,pActive:GF.pActive,rActive:GF.rActive,
@@ -78,7 +82,7 @@ export function withWorldSnapshot(html,snapshot){
 }
 export function makeGameForgeWorld(donor,world,token){
   // Only trusted, hash-verified donor text is accepted by the caller.
-  const style='<style id="jm-world-view">html,body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}.app{display:flex!important;flex-direction:column!important;gap:5px!important;padding:6px!important;width:100%!important;max-width:none!important;height:100vh!important;box-sizing:border-box!important}.app>header,.app>.bodyRail,.app>.gameContractBar,.hudForm,.floatHud,.rivalIntentBar,.receipt,.forgePanel,.forgeBackdrop{display:none!important}.arenaWrap{flex:1!important;min-height:180px!important;border-radius:12px!important}canvas{touch-action:none!important;width:100%!important;height:100%!important}.cards{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;flex:none!important}.cards button{min-height:46px!important;font-size:11px!important;padding:4px!important}.cards #cRival,.cards #cAuto,.playStartPanel,.turnGuide{display:none!important}#jm-world-title{margin:0;font:700 14px system-ui;color:#f2d98f}#jm-world-help{font:11px system-ui;margin:0;color:#afc1d0}</style>';
+  const style='<style id="jm-world-view">html,body{margin:0!important;width:100%!important;height:100%!important;overflow:hidden!important}.app{display:flex!important;flex-direction:column!important;gap:5px!important;padding:6px!important;width:100%!important;max-width:none!important;height:100vh!important;box-sizing:border-box!important}.app>header,.app>.bodyRail,.app>.gameContractBar,.hudForm,.floatHud,.rivalIntentBar,.receipt,.forgePanel,.forgeBackdrop{display:none!important}.arenaWrap{flex:1!important;min-height:180px!important;border-radius:12px!important}canvas{touch-action:none!important;width:100%!important;height:100%!important}.cards{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4px!important;flex:none!important}.cards button{min-height:46px!important;font-size:11px!important;padding:4px!important}.cards #cRival,.cards #cAuto,#next1PChallenge,#returnGameList,.playStartPanel,.turnGuide{display:none!important}#jm-world-title{margin:0;font:700 14px system-ui;color:#f2d98f}#jm-world-help{font:11px system-ui;margin:0;color:#afc1d0}</style>';
   const storage='<script>Object.defineProperty(window,"localStorage",{value:(()=>{const m=new Map();return {getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}})()});<\/script>';
   const boot='<script type="application/json" id="jm-world-boot">'+encode({world,token,snapshot:null})+'</script>';
   return donor.replace('</head>',style+storage+'</head>').replace('<div class="app">','<div class="app"><h1 id="jm-world-title">JM resultant world</h1><p id="jm-world-help">Drag backwards on the arena and release. Act / Hit / Core / Hold change the live match.</p>')

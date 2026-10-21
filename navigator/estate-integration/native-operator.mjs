@@ -151,6 +151,7 @@ function mount() {
         donorPromise??=loadGameForgeDonor();
         delivered=makeGameForgeWorld(await donorPromise,result.result.receiver.world,crypto.randomUUID());
         const render=await mountWorld(delivered);
+        $('jmOperatorPreview').scrollIntoView({block:'start'});
         const summary='WORLD_RENDERED · native-chain → GameCore → GameForge v3.16\n'
           +'Executed: '+result.executedBodies.join(' · ')+'\n'
           +'Actual renderer readback:\n'+JSON.stringify({world:render.world,pixels:render.pixels,snapshot:render.snapshot,nativeReceipts:result.result.receiver.receipts,chainStages:result.result.chain.stages},null,2)+'\n'

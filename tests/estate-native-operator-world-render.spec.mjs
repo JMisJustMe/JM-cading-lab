@@ -7,14 +7,16 @@ const browser=await chromium.launch({headless:true});
 try{
   const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true,acceptDownloads:true});
   const page=await context.newPage(),errors=[];
-  page.on('pageerror',e=>errors.push(e.message));
+  page.on('pageerror',e=>{errors.push(e.message);console.log('WORLD_PAGE_ERROR',e.stack)});
   assert.equal((await page.goto(base+'/navigator/estate-integration/')).status(),200);
   await page.locator('#jmOperatorMode').selectOption('native-world');
   const example=await page.locator('#jmOperatorIntent').inputValue();
   const run=async input=>{
     await page.locator('#jmOperatorIntent').fill(input);await page.locator('#jmOperatorRun').click();
     await page.waitForFunction(()=>/^(WORLD_RENDERED|HOLD)/.test(document.getElementById('jmOperatorStatus').textContent),null,{timeout:30000});
-    assert.match(await page.locator('#jmOperatorStatus').innerText(),/^WORLD_RENDERED/);
+    const status=await page.locator('#jmOperatorStatus').innerText();
+    if(!status.startsWith('WORLD_RENDERED')){console.log('WORLD_FAILED_ERRORS',errors);await page.screenshot({path:'qa/estate-native-operator-world-failure.png',fullPage:true});}
+    assert.match(status,/^WORLD_RENDERED/);
     return page.frames().find(f=>f.parentFrame()===page.mainFrame());
   };
   let frame=await run(example);

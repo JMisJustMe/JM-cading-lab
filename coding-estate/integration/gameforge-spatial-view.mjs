@@ -17,9 +17,12 @@ export function installGameForgeSpatialView({GF,model,session,canvas},rendererFa
   function frame(){
     if(!active||!renderer)return;
     const room=model.rooms[session.active],o=window.JM_RAIN_RENDER.object;
-    // Exact same source/output grammar in HTML, browser and APK; no hand-placed cover art.
-    const current=window.JMSpatialRoom(room,session,o,point);
-    if(current.signature!==lastSignature){
+    // Static room geometry is reconstructed only on real state changes.
+    // Actor/collectible animation below remains live on every frame.
+    const signature=room.body+':'+room.id+':'+Number(!!session.progress?.powered?.includes(room.id))+':'+session.opened.join('|');
+    if(signature!==lastSignature){
+      const current=window.JMSpatialRoom(room,session,o,point);
+      if(current.signature!==signature)throw Error('JM_SPATIAL_SCENE_SIGNATURE_HOLD');
       renderer.staticScene(current.models);
       layout={signature:current.signature,features:current.features,objectCount:current.models.length};
       lastSignature=current.signature;

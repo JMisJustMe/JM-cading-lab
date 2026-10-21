@@ -148,10 +148,46 @@ try{
   await standalone.reload();await standalone.waitForFunction(()=>document.getElementById('jm-world-title').textContent.startsWith('WORLD HOLD'));
   assert.match(await standalone.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);
   await standalone.close();
+  // Independent owner-playable native encounter, without modifying the
+  // existing completed quest test or assigning synthetic JavaScript positions.
+  const combatPage=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true});
+  combatPage.on('pageerror',e=>errors.push(e.message));
+  await combatPage.goto(pathToFileURL(out).href);
+  await combatPage.waitForFunction(()=>Boolean(window.JMConnectedWorldReadback?.()));
+  assert.equal((await combatPage.evaluate(()=>window.JMConnectedWorldReadback())).combat.phase,'idle');
+  await combatPage.locator('#jm-space-engage').tap();
+  const started=(await combatPage.evaluate(()=>window.JMConnectedWorldReadback()));
+  assert.equal(started.combat.phase,'active');
+  const actor=started.session.rooms[started.session.active].snapshot.player;
+  assert.ok(Math.hypot(actor.x-started.combat.guardian.x,actor.y-started.combat.guardian.y)<=160,
+    'JM_ENCOUNTER_TOO_FAR_TO_PLAY');
+  // Three actual touch pulses, with real cooldown and guardian chase/state,
+  // must defeat the actual native receiving guardian.
+  for(let i=0;i<3;i++){
+    await combatPage.locator('#jm-space-pulse').tap({timeout:12000});
+    await combatPage.waitForFunction(n=>{
+      const r=window.JMConnectedWorldReadback(),last=r.events.filter(e=>e.kind==='pulse-hit'||e.kind==='encounter-won');
+      return last.length>=n;
+    },i+1,{timeout:12000});
+  }
+  const victory=await combatPage.evaluate(()=>window.JMConnectedWorldReadback());
+  assert.equal(victory.combat.phase,'won');assert.deepEqual(victory.combat.wins,[0]);
+  assert.equal(victory.session.collected.length,saved.collected.length,'ENCOUNTER_REPLACED_QUEST_STATE_HOLD');
+  await combatPage.screenshot({path:'qa/estate-native-operator-encounter-phone.png',fullPage:true});
+  await combatPage.waitForFunction(()=>{
+    const raw=window.JMWorldStorage?.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700');
+    return raw&&JSON.parse(JSON.parse(raw).body).encounter?.rooms[0]?.phase==='won';
+  },null,{timeout:8000});
+  await combatPage.reload();
+  await combatPage.waitForFunction(()=>Boolean(window.JMConnectedWorldReadback?.()));
+  const recoveredCombat=await combatPage.evaluate(()=>window.JMConnectedWorldReadback());
+  assert.equal(recoveredCombat.combat.phase,'won');assert.deepEqual(recoveredCombat.combat.wins,[0]);
+  assert.deepEqual(recoveredCombat.session.encounter.wins,[0]);
+  await combatPage.close();
   // Hash-valid but structurally invalid memory must still be rejected on recovery.
   await page.evaluate(async()=>{const k='JM_ESTATE_NATIVE_OPERATOR_RETURN_v02',e=JSON.parse(localStorage.getItem(k));const v=JSON.parse(e.body);v.scene=v.scene.replace('"active":0','"active":99');e.body=JSON.stringify(v);e.sha256=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(e.body)))].map(x=>x.toString(16).padStart(2,'0')).join('');localStorage.setItem(k,JSON.stringify(e))});
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,ownerVisibleDimensionSwitch:true,clearCoreRelaySeparation:true,authorialAvatar:true,animatedAvatar:true,threeAuthored2DEnvironments:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,ownerVisibleDimensionSwitch:true,clearCoreRelaySeparation:true,authorialAvatar:true,animatedAvatar:true,threeAuthored2DEnvironments:true,optionalGuardianCombat:true,touchPulseVictory:true,guardianReloadRecovery:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

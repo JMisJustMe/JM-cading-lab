@@ -58,6 +58,7 @@ try{
   await frame.locator('#jm-space-dimension').click();
   assert.equal(await frame.locator('#jm-space-dimension').getAttribute('aria-pressed'),'false');
   const initial=await read();assert.equal(initial.session.active,0);assert.equal(initial.room.body,'burning');
+  await page.screenshot({path:'qa/estate-native-operator-spaces-2d-owner-phone.png'});
   await frame.locator('#cv').click({position:{x:70,y:100}});
   async function move(axis,value){
     const r=await read(),p=r.session.rooms[r.session.active].snapshot.player;
@@ -85,6 +86,7 @@ try{
   const firstCamera=r.camera.x;
   await move('y',75);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===1);
+  await page.screenshot({path:'qa/estate-native-operator-relay-hall-2d-owner-phone.png'});
   r=await read();assert.equal(r.room.body,'humanimals');assert.equal(r.objective.kind,'key');assert.equal(r.room.walls.length,2);assert.deepEqual(r.session.opened,['0-1']);
   await frame.locator('#jm-space-dimension').click();const living3D=(await read()).spatial;
   assert.equal(living3D.roomBody,'humanimals');assert.notEqual(living3D.architecture.signature,first3D.architecture.signature);

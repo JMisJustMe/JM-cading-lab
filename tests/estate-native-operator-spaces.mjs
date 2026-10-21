@@ -26,6 +26,9 @@ const variant=GameForgeSpaces({...world,body:'humanimals',hazards:3,targetX:550}
 const proof=await buildConnectedCarrier('/tmp/jm-connected-source-test');
 const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);
+// Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.
+assert.match(html,/precision mediump float;attribute vec3 aPosition/);
+assert.doesNotMatch(html,/uniform float uGlow;uniform float uTime;varying vec3 vColor/);
 assert.throws(()=>validateWorldSnapshot({...s,rooms:[]},world),/SPACES_MEMORY_HOLD/);
 const quest=m.create();assert.equal(m.interact(quest,{x:650,y:450}).kind,'locked');
 for(let i=0;i<3;i++){m.interact(quest,m.rooms[i].key);assert.equal(m.interact(quest,{x:650,y:450}).kind,'relay');if(i<2)m.interact(quest,{x:850,y:285});}

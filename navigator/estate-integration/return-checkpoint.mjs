@@ -1,6 +1,7 @@
 // Local, explicit owner-choice return checkpoint for JM Estate Native Operator.
 // Scoped to same-origin browser storage. SHA-256 detects accidental mismatch; it
 // is not an authentication signature or a substitute for durable cloud custody.
+import {readWorldBoot} from '../../coding-estate/integration/gameforge-world-carrier.mjs';
 export const RETURN_SLOT='JM_ESTATE_NATIVE_OPERATOR_RETURN_v02';
 const encoder=new TextEncoder();
 async function sha256(text,subtle){
@@ -9,10 +10,11 @@ async function sha256(text,subtle){
 }
 function validate(value) {
   if(!value||value.schema!=='jm.estate.operator.local-return/0.2')throw Error('RETURN_SCHEMA_HOLD');
-  if(!['native-chain','scene','route','compile-js','compile-rust','gamecore','os','embodied'].includes(value.mode))throw Error('RETURN_MODE_HOLD');
+  if(!['native-world','native-chain','scene','route','compile-js','compile-rust','gamecore','os','embodied'].includes(value.mode))throw Error('RETURN_MODE_HOLD');
   if(typeof value.summary!=='string'||!value.summary||value.summary.length>26000)throw Error('RETURN_SUMMARY_HOLD');
   if(typeof value.input!=='string'||value.input.length>2000)throw Error('RETURN_INPUT_HOLD');
   if(value.mode==='scene'&&(typeof value.scene!=='string'||!value.scene.startsWith('<!doctype html>')))throw Error('RETURN_SCENE_HOLD');
+  if(value.mode==='native-world'){if(typeof value.scene!=='string'||!value.scene.startsWith('<!DOCTYPE html>')&&!value.scene.startsWith('<!doctype html>'))throw Error('RETURN_SCENE_HOLD');readWorldBoot(value.scene);}
   return value;
 }
 export async function recoverLocalReturn(store,subtle=crypto.subtle) {
@@ -29,7 +31,7 @@ export async function recoverLocalReturn(store,subtle=crypto.subtle) {
 export async function saveLocalReturn(store,value,subtle=crypto.subtle) {
   validate(value);
   const body=JSON.stringify(value);
-  if(encoder.encode(body).length>100000)throw Error('LOCAL_RETURN_TOO_LARGE');
+  if(encoder.encode(body).length>250000)throw Error('LOCAL_RETURN_TOO_LARGE');
   const sum=await sha256(body,subtle);
   store.setItem(RETURN_SLOT,JSON.stringify({schema:'jm.estate.operator.local-envelope/0.2',sha256:sum,body}));
   const read=await recoverLocalReturn(store,subtle);

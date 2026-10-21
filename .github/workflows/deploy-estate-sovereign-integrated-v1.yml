@@ -143,6 +143,11 @@ jobs:
             [ ! -d "$dir" ] || cp -a "$dir" "cloudflare-estate/$dir"
           done
 
+          # Existing lossless GameForge authority is needed by the native-world receiver.
+          GF_DONOR=estate-publication/apps-tools-games/games-engines/source-authorities/gameforge-v3.16/transport
+          mkdir -p "cloudflare-estate/$GF_DONOR"
+          cp "$GF_DONOR"/MANIFEST.json "$GF_DONOR"/source.html.gz.b64.part* "cloudflare-estate/$GF_DONOR/"
+
           # Source carriage remains in GitHub custody; the canonical Cloudflare carrier serves the reconstructed body.
           mkdir -p cloudflare-estate/assets
           cp -a assets/ecostate-v3 cloudflare-estate/assets/ecostate-v3

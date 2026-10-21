@@ -1,5 +1,6 @@
 // JM ECOSTATE operator lanes v0.2: contact proven native organs rather than
 // describing them. Each lane is bounded and preserves its own proof jurisdiction.
+import {receiveExecutedWorld} from '../../coding-estate/integration/rendered-world-receiver.mjs';
 import {validateRegistry,planEstateRoute} from '../../coding-estate/integration/router-core.mjs';
 import {CadingCompiler} from '../../coding-estate/sovereign-batch-four/direct/toolchain-native.mjs';
 import {executeNativeContacts} from '../../coding-estate/integration/theogamy-contact.mjs';
@@ -18,6 +19,11 @@ export const NATIVE_CHAIN_EXAMPLE=JSON.stringify({
   jmvm:'machine GateCheck {\n instruction ASSERT gate.state == "open"\n instruction SET gate.verified = true\n instruction DING "GATE_VERIFIED"\n instruction HALT\n}'
 },null,2);
 
+const worldExample=JSON.parse(NATIVE_CHAIN_EXAMPLE);
+worldExample.flowtalk='utterance "enter the heat arena"\nas intent enterWorld(target="burning")\nrespond {\n world.body = "burning"\n world.hazards = 5\n world.targetX = 700\n world.allowed = true\n}';
+worldExample.caden='kading WorldCadence {\n cadence Enter {\n beat enter when world.allowed == true do world.ready = true\n recover denied do world.denied = true\n }\n}';
+worldExample.jmvm='machine WorldCheck {\n instruction ASSERT world.ready == true\n instruction SET world.verified = true\n instruction DING "WORLD_VERIFIED"\n instruction HALT\n}';
+export const NATIVE_WORLD_EXAMPLE=JSON.stringify(worldExample,null,2);
 // Donor runtimes use object paths. Preflight the complete request before any
 // receiver executes; the operator grants no host function/service capability.
 function checkProgram(value) {
@@ -55,6 +61,7 @@ function executeNativeChain(input){
     chosenIntent:language.resolution.intent,bytecodeChecksums:{caden:cadence.bytecode.header.checksum,jmvm:machine.runtime.checksum}};
 }
 export const OPERATOR_LANES=Object.freeze({
+  'native-world':{label:'Native chain → playable GameForge world',input:NATIVE_WORLD_EXAMPLE},
   'native-chain':{label:'FlowTalk → CadenVM → JMVM',input:NATIVE_CHAIN_EXAMPLE},
   route:{label:'Route a JM intention',input:'Build a touch visual game with drag aim, browser and Android delivery'},
   'compile-js':{label:'Cading → JavaScript',input:'source = landing.✓'},
@@ -75,6 +82,13 @@ export function runNativeOperatorLane(mode,input,registry){
   needInput(input);
   if(!Object.hasOwn(OPERATOR_LANES,mode))throw Error('OPERATOR_LANE_NOT_SUPPORTED');
   validate(registry);
+  if(mode==='native-world'){
+    const chain=executeNativeChain(input),receiver=receiveExecutedWorld(chain);
+    return {schema:'jm.estate.operator.return/0.2',mode,state:'WORLD_RECEIVER_EXECUTED_RENDER_PENDING',changed:true,
+      executedBodies:['FlowTalk','Kading','CadenVM','JMVM','Game-CODING','JMGameCore','JMVisualGraft','JMVisualRuntime','GameForge'],
+      result:{chain,receiver,receiptDigest:receiver.receiptDigest},
+      boundary:'Native state executed into supported GameForge world parameters. Actual visual PASS requires sandbox renderer readback; no arbitrary-world generation or Android claim.'};
+  }
   if(mode==='native-chain')return {
     schema:'jm.estate.operator.return/0.2',mode,state:'NATIVE_PROGRAM_CHAIN_EXECUTED',changed:true,
     executedBodies:['FlowTalk','Kading','CadenVM','JMVM'],result:executeNativeChain(input),

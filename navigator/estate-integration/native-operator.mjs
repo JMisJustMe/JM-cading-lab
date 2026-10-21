@@ -1,3 +1,4 @@
+import {loadGameForgeDonor,makeGameForgeWorld,readWorldBoot,withWorldSnapshot,waitWorldReturn} from '../../coding-estate/integration/gameforge-world-carrier.mjs';
 import {runNativeOperatorLane,OPERATOR_LANES} from './execution-lanes.mjs';
 import {saveLocalReturn,recoverLocalReturn} from './return-checkpoint.mjs';
 // JM Estate Native Operator v0.2 — extends the existing canonical integration door.
@@ -54,6 +55,8 @@ function mount() {
   let delivered=null;
   let latestReturn=null;
   let registryPromise=null;
+  let donorPromise=null;
+  let worldLive=null;
   const defaultSceneIntent='Build a touch visual game with drag aim, browser and Android delivery';
   $('jmOperatorMode').addEventListener('change',()=>{
     const mode=$('jmOperatorMode').value;
@@ -65,6 +68,8 @@ function mount() {
     $('jmOperatorPreview').hidden=true;
     $('jmOperatorDownload').disabled=true;
     delivered=null;
+    worldLive=null;
+    $('jmOperatorPreview').srcdoc='';
     latestReturn=null;
   });
   function status(message){$('jmOperatorStatus').textContent=message}
@@ -74,15 +79,33 @@ function mount() {
     if(!window.JMEstateIntegration)window.addEventListener('jm-estate-integration-ready',write,{once:true});
     else write();
   }
-  function displayReturn(v,recovery=false){
+  async function mountWorld(scene){
+    const boot=readWorldBoot(scene),frame=$('jmOperatorPreview');
+    const pending=waitWorldReturn(frame,boot.token,boot.world);
+    frame.title='Live resultant GameForge world';frame.hidden=false;frame.srcdoc=scene;
+    const readback=await pending;
+    if(boot.snapshot&&JSON.stringify(boot.snapshot)!==JSON.stringify(readback.snapshot))throw Error('WORLD_RECOVERY_READBACK_HOLD');
+    worldLive=boot;
+    return readback;
+  }
+  async function captureWorld(){
+    if(!worldLive)throw Error('WORLD_NOT_RENDERED');
+    const r=await waitWorldReturn($('jmOperatorPreview'),worldLive.token,worldLive.world,'snapshot',crypto.randomUUID());
+    delivered=withWorldSnapshot(delivered,r.snapshot);
+    latestReturn={...latestReturn,scene:delivered,summary:latestReturn.summary.split('\nLatest saved world readback:')[0]+'\nLatest saved world readback:\n'+JSON.stringify(r.snapshot,null,2)};
+    return r;
+  }
+  async function displayReturn(v,recovery=false){
     const option=$('jmOperatorMode').querySelector('option[value="'+v.mode+'"]');
     if(!option)throw Error('RETURN_LANE_NOT_MOUNTED');
     $('jmOperatorMode').value=v.mode;
     $('jmOperatorIntent').value=v.input;
     $('jmOperatorIntent').readOnly=['gamecore','os'].includes(v.mode);
-    delivered=v.mode==='scene'?v.scene:null;
+    delivered=['scene','native-world'].includes(v.mode)?v.scene:null;
+    worldLive=null;
     $('jmOperatorPreview').hidden=!delivered;
-    if(delivered)$('jmOperatorPreview').srcdoc=delivered;
+    if(v.mode==='native-world')await mountWorld(delivered);
+    else if(delivered)$('jmOperatorPreview').srcdoc=delivered;
     else $('jmOperatorPreview').srcdoc='';
     $('jmOperatorDownload').disabled=!delivered;
     latestReturn=v;
@@ -92,9 +115,14 @@ function mount() {
   form.addEventListener('submit',async event=>{
     event.preventDefault();
     $('jmOperatorRun').disabled=true;
+    $('jmOperatorMode').disabled=true;
+    $('jmOperatorSave').disabled=true;
+    $('jmOperatorRecover').disabled=true;
     $('jmOperatorDownload').disabled=true;
     $('jmOperatorPreview').hidden=true;
     delivered=null;
+    worldLive=null;
+    $('jmOperatorPreview').srcdoc='';
     latestReturn=null;
     status('CONTACT · Resolving the native coding registry and executing JM bodies…');
     try{
@@ -117,6 +145,21 @@ function mount() {
         latestReturn={schema:'jm.estate.operator.local-return/0.2',mode,input:$('jmOperatorIntent').value,summary,scene:delivered};
         status(summary);
         trace('native.operator.pass',mode,'NATIVE_SCENE_EXECUTED',result.receipts.length);
+      }else if(mode==='native-world'){
+        const input=$('jmOperatorIntent').value;
+        const result=runNativeOperatorLane(mode,input,registry);
+        donorPromise??=loadGameForgeDonor();
+        delivered=makeGameForgeWorld(await donorPromise,result.result.receiver.world,crypto.randomUUID());
+        const render=await mountWorld(delivered);
+        const summary='WORLD_RENDERED · native-chain → GameCore → GameForge v3.16\n'
+          +'Executed: '+result.executedBodies.join(' · ')+'\n'
+          +'Actual renderer readback:\n'+JSON.stringify({world:render.world,pixels:render.pixels,snapshot:render.snapshot,nativeReceipts:result.result.receiver.receipts,chainStages:result.result.chain.stages},null,2)+'\n'
+          +'Boundary: 2D playable native GameForge worlds (tboys / burning / humanimals), authored object count and target geometry. Browser result; no open-ended world generation, physical Android or cloud claim.';
+        latestReturn={schema:'jm.estate.operator.local-return/0.2',mode,input,summary,scene:delivered};
+        $('jmOperatorDownload').disabled=false;
+        status(summary);
+        trace('native.operator.pass',mode,'WORLD_RENDERED',result.result.receiptDigest);
+        trace('native.operator.render',mode,'CANVAS_READBACK',render.pixels.digest);
       }else{
         const result=runNativeOperatorLane(mode,$('jmOperatorIntent').value,registry);
         const summary=result.state+' · '+result.mode+'\n'
@@ -128,13 +171,14 @@ function mount() {
         status(summary);
         trace(result.state==='PLAN_ONLY'?'native.operator.plan':'native.operator.pass',mode,result.state,result.result?.receiptDigest||'');
       }
-    }catch(error){registryPromise=null;status('HOLD · '+String(error?.message||error)+' · no native execution success claimed.')}
-    finally{$('jmOperatorRun').disabled=false}
+    }catch(error){registryPromise=null;donorPromise=null;worldLive=null;delivered=null;$('jmOperatorPreview').hidden=true;$('jmOperatorPreview').srcdoc='';status('HOLD · '+String(error?.message||error)+' · no native execution success claimed.')}
+    finally{$('jmOperatorRun').disabled=false;$('jmOperatorMode').disabled=false;$('jmOperatorSave').disabled=false;$('jmOperatorRecover').disabled=false}
   });
   $('jmOperatorSave').addEventListener('click',async()=>{
     if(!latestReturn){status('SAVE HOLD · No executed return to save.');return;}
     $('jmOperatorSave').disabled=true;
     try{
+      if(latestReturn.mode==='native-world')await captureWorld();
       const saved=await saveLocalReturn(localStorage,latestReturn);
       status(saved.state+' · '+latestReturn.mode+' · SHA-256 '+saved.sha256.slice(0,16)+'…\n'+latestReturn.summary);
       trace('native.operator.local-save',latestReturn.mode,saved.state,saved.sha256);
@@ -145,16 +189,17 @@ function mount() {
     $('jmOperatorRecover').disabled=true;
     try{
       const recovered=await recoverLocalReturn(localStorage);
-      displayReturn(recovered.value,true);
+      await displayReturn(recovered.value,true);
       trace('native.operator.local-recovery',recovered.value.mode,recovered.state,recovered.sha256);
-    }catch(e){status('RECOVERY HOLD · '+String(e.message||e)+' · no recovery claimed.')}
+    }catch(e){latestReturn=null;worldLive=null;delivered=null;$('jmOperatorPreview').hidden=true;$('jmOperatorPreview').srcdoc='';$('jmOperatorDownload').disabled=true;status('RECOVERY HOLD · '+String(e.message||e)+' · no recovery claimed.')}
     finally{$('jmOperatorRecover').disabled=false}
   });
-  $('jmOperatorDownload').addEventListener('click',()=>{
+  $('jmOperatorDownload').addEventListener('click',async()=>{
     if(!delivered)return;
+    try{if(latestReturn?.mode==='native-world')await captureWorld()}catch(e){status('EXPORT HOLD · '+e.message);return;}
     const url=URL.createObjectURL(new Blob([delivered],{type:'text/html;charset=utf-8'}));
     const link=document.createElement('a');
-    link.href=url;link.download='JM_AILatheo_Native_Living_Touch_OPEN_FIRST.html';
+    link.href=url;link.download=latestReturn?.mode==='native-world'?'JM_GameForge_Resultant_World_OPEN_FIRST.html':'JM_AILatheo_Native_Living_Touch_OPEN_FIRST.html';
     document.body.append(link);link.click();link.remove();
     setTimeout(()=>URL.revokeObjectURL(url),1500);
     status($('jmOperatorStatus').textContent+'\nStandalone scene exported locally; device opening and persistence remain owner-test gates.');

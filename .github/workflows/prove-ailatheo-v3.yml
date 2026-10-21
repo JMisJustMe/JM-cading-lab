@@ -39,6 +39,7 @@ jobs:
       - run: node tests/ailatheo-v3-estate-route.mjs
       - run: node tests/ailatheo-v3-native-execution.mjs
       - run: node tests/estate-native-operator.mjs
+      - run: node tests/estate-native-operator-world.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
@@ -73,6 +74,10 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4177
         run: node tests/estate-native-operator-render.spec.mjs
+      - name: Render native-chain resultant worlds
+        env:
+          BASE_URL: http://127.0.0.1:4177
+        run: node tests/estate-native-operator-world-render.spec.mjs
       - name: Render and contact GripCube Workbench
         env:
           BASE_URL: http://127.0.0.1:4177

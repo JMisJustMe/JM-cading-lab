@@ -71,6 +71,9 @@ try{
   assert.ok(spatial.active,'ANDROID_3D_RENDER_HOLD:'+JSON.stringify(spatial));
   assert.equal(spatial.error,'','ANDROID_3D_SHADER_HOLD');
   assert.ok(spatial.webgl&&spatial.drawCalls>2&&spatial.variation>100,'ANDROID_3D_PIXELS_HOLD:'+JSON.stringify(spatial));
+  assert.equal(spatial.roomBody,'humanimals','ANDROID_3D_RECEIVING_ROOM_HOLD');
+  assert.ok(spatial.architecture?.objectCount>=68&&spatial.architecture.features?.motifCount>=20,
+    'ANDROID_3D_ARCHITECTURE_HOLD:'+JSON.stringify(spatial.architecture));
   fs.writeFileSync(out+'/android-3d-screen.png',execFileSync('adb',['exec-out','screencap','-p']));
   await page.locator('#jm-space-dimension').click();
   await page.evaluate(()=>{window.JMHostPauseSaved=false});adb('shell','input','keyevent','KEYCODE_HOME');await page.waitForFunction(()=>window.JMHostPauseSaved===true,null,{timeout:10000,polling:100});

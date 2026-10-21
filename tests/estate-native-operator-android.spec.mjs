@@ -35,7 +35,31 @@ try{
   adb('install','-r',apk);const manifest=adb('shell','dumpsys','package',pkg);fs.writeFileSync(out+'/installed-package.txt',manifest);assert.ok(manifest.includes(pkg));assert.ok(!manifest.includes('android.permission.INTERNET'),'OFFLINE_PACKAGE_PERMISSION_HOLD');
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await connect();
   const first=await page.evaluate(()=>window.JMRenderedWorldReadback());assert.ok(first.pixels.painted>20000);assert.equal(first.snapshot.active,0);
-  adb('shell','uiautomator','dump','/sdcard/jm-window.xml');const ui=adb('shell','cat','/sdcard/jm-window.xml');fs.writeFileSync(out+'/native-window.xml',ui);const node=ui.match(/<node[^>]*class="android.webkit.WebView"[^>]*>/)?.[0],bounds=node?.match(/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/);assert.ok(bounds,'NATIVE_WEBVIEW_BOUNDS_HOLD');nativeBounds={left:Number(bounds[1]),top:Number(bounds[2]),right:Number(bounds[3]),bottom:Number(bounds[4])};
+  // Cold Android emulators sometimes present a Pixel Launcher ANR over the
+  // already running JM WebView. Recover only this known system overlay; never
+  // invent WebView geometry or skip a native-touch verification.
+  let ui='',bounds=null;const recoveredSystemDialogs=[];
+  for(let attempt=0;attempt<5;attempt++){
+    adb('shell','uiautomator','dump','/sdcard/jm-window.xml');
+    ui=adb('shell','cat','/sdcard/jm-window.xml');
+    const node=ui.match(/<node[^>]*class="android\\.webkit\\.WebView"[^>]*>/)?.[0];
+    bounds=node?.match(/bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"/);
+    if(bounds)break;
+    const waitNode=ui.includes("Pixel Launcher isn't responding")
+      ?ui.match(/<node[^>]*resource-id="android:id\\/aerr_wait"[^>]*>/)?.[0]:null;
+    const waitBounds=waitNode?.match(/bounds="\\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\]"/);
+    if(waitBounds){
+      const x=Math.round((Number(waitBounds[1])+Number(waitBounds[3]))/2);
+      const y=Math.round((Number(waitBounds[2])+Number(waitBounds[4]))/2);
+      adb('shell','input','tap',String(x),String(y));
+      recoveredSystemDialogs.push({kind:'PIXEL_LAUNCHER_ANR_WAIT',attempt});
+    }
+    await new Promise(resolve=>setTimeout(resolve,600));
+  }
+  fs.writeFileSync(out+'/native-window.xml',ui);
+  fs.writeFileSync(out+'/native-system-overlays.json',JSON.stringify(recoveredSystemDialogs));
+  assert.ok(bounds,'NATIVE_WEBVIEW_BOUNDS_HOLD');
+  nativeBounds={left:Number(bounds[1]),top:Number(bounds[2]),right:Number(bounds[3]),bottom:Number(bounds[4])};
   fs.writeFileSync(out+'/native-geometry.json',JSON.stringify({bounds:nativeBounds,viewport:await page.evaluate(()=>({width:innerWidth,height:innerHeight,dpr:devicePixelRatio,visualScale:visualViewport.scale})),wm:adb('shell','wm','size')}));
   for(let attempt=0;attempt<3;attempt++){await hold('Move right',1000);if((await read()).session.rooms[0].snapshot.player.x>first.snapshot.rooms[0].snapshot.player.x+5)break;}
   assert.ok((await read()).session.rooms[0].snapshot.player.x>first.snapshot.rooms[0].snapshot.player.x+5,'NATIVE_TOUCH_MOVEMENT_HOLD');

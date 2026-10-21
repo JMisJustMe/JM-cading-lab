@@ -46,6 +46,9 @@ const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);assert.match(html,/window.JMSpatialRoom=function buildJMSpatialRoom/);
 assert.match(html,/pickGround\(clientX,clientY\)/);
 assert.match(html,/requestedDestination:goal/);
+assert.match(html,/GF[.]coreObj[.]y=145/);
+assert.match(html,/An explicitly authored JM player/);
+assert.match(html,/jm-space-view-toolbar/);
 assert.match(html,/objective:model[.]objective\(session\)/);
 // Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.
 assert.match(html,/precision mediump float;attribute vec3 aPosition/);

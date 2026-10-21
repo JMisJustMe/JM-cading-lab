@@ -95,8 +95,8 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     ctx.textAlign='start';ctx.restore();spatial.frame();
   };
   applyRoom();if(initialSnapshot||session.rooms[session.active].snapshot)pause();updateControls();
-  window.JMWorldSuspend=async()=>{pause();keys.clear();axis={x:0,y:0};goal=null;await persist();return capture();};
-  window.addEventListener('jm.host.pause',()=>{window.JMWorldSuspend().then(()=>window.JMHostPauseSaved=true)});
+  window.JMWorldSuspend=async()=>{pause();keys.clear();axis={x:0,y:0};goal=null;await persist();if(persistError)throw Error(persistError);return capture();};
+  window.addEventListener('jm.host.pause',()=>{window.JMWorldSuspend().then(()=>window.JMHostPauseSaved=true).catch(e=>{window.JMHostPauseHold=String(e.message||e)})});
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
   if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}

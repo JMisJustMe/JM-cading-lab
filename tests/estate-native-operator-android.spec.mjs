@@ -18,17 +18,79 @@ async function connect(){
 }
 const read=()=>page.evaluate(()=>window.JMConnectedWorldReadback());
 let nativeBounds=null;
+const recoveredSystemDialogs=[];
+const boundsPattern=/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/;
+async function clearKnownLauncherOverlay(phase) {
+  // Do not generalise to unrelated Android/app warnings. Recovery is limited
+  // to the known cold-emulator Pixel Launcher ANR, with the genuine Wait node.
+  for(let attempt=0;attempt<4;attempt++){
+    let ui='';
+    try {
+      adb('shell','uiautomator','dump','/sdcard/jm-anr-check.xml');
+      ui=adb('shell','cat','/sdcard/jm-anr-check.xml');
+    } catch(e) {
+      if(attempt===3)throw Error('ANDROID_UI_HIERARCHY_HOLD:'+phase+':'+String(e.message).slice(0,180));
+      await new Promise(r=>setTimeout(r,350));continue;
+    }
+    if(!ui.includes("Pixel Launcher isn't responding"))return attempt>0;
+    const node=ui.match(/<node[^>]*resource-id="android:id\/aerr_wait"[^>]*>/)?.[0];
+    const rect=node?.match(boundsPattern);
+    if(!rect)throw Error('ANDROID_UNKNOWN_SYSTEM_DIALOG_HOLD:'+phase);
+    const x=Math.round((Number(rect[1])+Number(rect[3]))/2);
+    const y=Math.round((Number(rect[2])+Number(rect[4]))/2);
+    adb('shell','input','tap',String(x),String(y));
+    recoveredSystemDialogs.push({kind:'PIXEL_LAUNCHER_ANR_WAIT',phase,attempt});
+    await new Promise(r=>setTimeout(r,350));
+  }
+  throw Error('ANDROID_LAUNCHER_ANR_REPEATED_HOLD:'+phase);
+}
 async function nativePoint(label){const box=await page.locator('[aria-label="'+label+'"]').boundingBox();assert.ok(box);const size=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));return {x:Math.round(nativeBounds.left+(box.x+box.width/2)*(nativeBounds.right-nativeBounds.left)/size.width),y:Math.round(nativeBounds.top+(box.y+box.height/2)*(nativeBounds.bottom-nativeBounds.top)/size.height)};}
-async function hold(label,duration){const p=await nativePoint(label);adb('shell','input','swipe',String(p.x),String(p.y),String(p.x),String(p.y),String(duration));await page.waitForTimeout(120);}
-async function move(axis,value){const r=await read(),p=r.session.rooms[r.session.active].snapshot.player;if(Math.abs(value-p[axis])<12)return;const positive=p[axis]<value,label=axis==='x'?(positive?'Move right':'Move left'):(positive?'Move down':'Move up'),point=await nativePoint(label);
-  adb('shell','input','motionevent','DOWN',String(point.x),String(point.y));try{
-    await page.waitForFunction(({axis,value,positive})=>{const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;return positive?p[axis]>=value-5:p[axis]<=value+5},{axis,value,positive},{timeout:120000,polling:80});
-    // Release native contact immediately at the observed threshold; readback follows UP.
-  }catch(e){fs.writeFileSync(out+'/movement-hold.json',JSON.stringify({axis,value,readback:await read()}));throw e;}finally{adb('shell','input','motionevent','UP',String(point.x),String(point.y));}
-  const after=await read();console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify(after.session.rooms[after.session.active].snapshot.player));
+async function hold(label,duration){
+  await clearKnownLauncherOverlay('initial-contact');
+  const p=await nativePoint(label);
+  adb('shell','input','swipe',String(p.x),String(p.y),String(p.x),String(p.y),String(duration));
+  await page.waitForTimeout(120);
+}
+async function move(axis,value){
+  const initial=await read(),p=initial.session.rooms[initial.session.active].snapshot.player;
+  if(Math.abs(value-p[axis])<12)return;
+  const positive=p[axis]<value,label=axis==='x'?(positive?'Move right':'Move left'):(positive?'Move down':'Move up');
+  const point=await nativePoint(label);
+  // A cold emulator may show another Launcher ANR AFTER its initial WebView
+  // readback. Retry only when a verified system dialog actually interrupted
+  // the real Android DOWN/UP contact; never count an ignored touch as success.
+  for(let attempt=0;attempt<5;attempt++){
+    await clearKnownLauncherOverlay('move-before-'+axis+'-'+attempt);
+    adb('shell','input','motionevent','DOWN',String(point.x),String(point.y));
+    let reached=false;
+    try{
+      await page.waitForFunction(({axis,value,positive})=>{
+        const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;
+        return positive?p[axis]>=value-5:p[axis]<=value+5;
+      },{axis,value,positive},{timeout:15000,polling:80});
+      reached=true;
+    }catch(e){
+      if(!/Timeout/.test(String(e.message||e)))throw e;
+    }finally{
+      adb('shell','input','motionevent','UP',String(point.x),String(point.y));
+    }
+    if(reached){
+      const after=await read();
+      console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify(after.session.rooms[after.session.active].snapshot.player));
+      return;
+    }
+    fs.writeFileSync(out+'/movement-retry-'+axis+'-'+attempt+'.json',
+      JSON.stringify({axis,value,attempt,readback:await read(),overlays:recoveredSystemDialogs}));
+    const count=recoveredSystemDialogs.length;
+    await clearKnownLauncherOverlay('move-stalled-'+axis+'-'+attempt);
+    if(count===recoveredSystemDialogs.length){
+      throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-verified-system-interruption');
+    }
+  }
+  throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':overlay-retry-exhausted');
 }
 
-async function use(){assert.equal(await page.locator('#jm-space-use').isEnabled(),true);const stamp=await page.evaluate(()=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])});const box=await page.locator('#jm-space-use').boundingBox(),size=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));const x=Math.round(nativeBounds.left+(box.x+box.width/2)*(nativeBounds.right-nativeBounds.left)/size.width),y=Math.round(nativeBounds.top+(box.y+box.height/2)*(nativeBounds.bottom-nativeBounds.top)/size.height);adb('shell','input','tap',String(x),String(y));await page.waitForFunction(stamp=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])!==stamp},stamp,{timeout:15000,polling:100});}
+async function use(){await clearKnownLauncherOverlay('use-contact');assert.equal(await page.locator('#jm-space-use').isEnabled(),true);const stamp=await page.evaluate(()=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])});const box=await page.locator('#jm-space-use').boundingBox(),size=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));const x=Math.round(nativeBounds.left+(box.x+box.width/2)*(nativeBounds.right-nativeBounds.left)/size.width),y=Math.round(nativeBounds.top+(box.y+box.height/2)*(nativeBounds.bottom-nativeBounds.top)/size.height);adb('shell','input','tap',String(x),String(y));await page.waitForFunction(stamp=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])!==stamp},stamp,{timeout:15000,polling:100});}
 
 
 try{
@@ -38,8 +100,8 @@ try{
   // Cold Android emulators sometimes present a Pixel Launcher ANR over the
   // already running JM WebView. Recover only this known system overlay; never
   // invent WebView geometry or skip a native-touch verification.
-  let ui='',bounds=null;const recoveredSystemDialogs=[];
-  const rect=/bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"/;
+  let ui='',bounds=null;
+  const rect=boundsPattern;
   for(let attempt=0;attempt<5;attempt++){
     adb('shell','uiautomator','dump','/sdcard/jm-window.xml');
     ui=adb('shell','cat','/sdcard/jm-window.xml');

@@ -72,7 +72,9 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     const r=model.rooms[session.active],m=session.rooms[session.active];
     GF.applyBody(r.body,false);GFUX.start(false);
     GF.hazards=Array.from({length:world.hazards},(_,i)=>({x:285+i*50,y:150+(i%3)*105,r:18+i%3*2,type:r.body==='burning'?(i%2?'boost':'heat'):r.body==='humanimals'?'spirit':i%2?'mud':'bounce'}));
-    GF.coreObj.x=r.world.targetX;GF.coreObj.y=460;
+    // The donor CORE remains part of native GameForge, but no longer sits
+    // directly on top of the real room RELAY + its objective waypoint.
+    GF.coreObj.x=r.world.targetX;GF.coreObj.y=145;
     if(m.snapshot)restoreArena(m.snapshot);
     if(spawn){GF.player.x=spawn.x;GF.player.y=spawn.y;GF.player.vx=GF.player.vy=0;}else if(!m.snapshot){GF.player.x=120;GF.player.y=285;}
     GF.fx=[];GFPLAY.particles=[];GF.flash=0;GFUX.firstMove=true;
@@ -87,7 +89,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   const controls=document.createElement('div');controls.id='jm-space-controls';
   controls.innerHTML='<div id="jm-space-pad" aria-label="Movement"><button data-move="0,-1" aria-label="Move up">▲</button><button data-move="-1,0" aria-label="Move left">◀</button><button data-move="0,1" aria-label="Move down">▼</button><button data-move="1,0" aria-label="Move right">▶</button></div><button id="jm-space-use">Explore</button><span id="jm-space-state"></span>';
   document.querySelector('.app').append(controls);
-  const style=document.createElement('style');style.textContent='.cards,.matchResultPanel,#banner{display:none!important}#jm-space-controls{display:grid;grid-template-columns:minmax(185px,1.2fr) minmax(110px,1fr);gap:6px;flex:none}#jm-space-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}#jm-space-controls button{min-height:48px;min-width:44px;padding:4px;touch-action:none;background:#122b3a;color:#e5f6ff;border:1px solid #42677e;border-radius:10px}#jm-space-use{background:#285244!important}#jm-space-state{grid-column:1/-1;font:11px system-ui;color:#bcd5da;min-height:16px}.arenaWrap{touch-action:none}.arenaWrap,#jm-space-controls{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}';document.head.append(style);
+  const style=document.createElement('style');style.textContent='.cards,.matchResultPanel,#banner{display:none!important}#jm-space-controls{display:grid;grid-template-columns:minmax(185px,1.2fr) minmax(110px,1fr);gap:6px;flex:none}#jm-space-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}#jm-space-controls button{min-height:54px;min-width:44px;padding:6px;touch-action:none;background:#122b3a;color:#e5f6ff;border:1px solid #42677e;border-radius:10px;font:700 17px system-ui}#jm-space-use{font-size:14px!important}#jm-space-use{background:#285244!important}#jm-space-state{grid-column:1/-1;font:600 13px/1.4 system-ui;color:#bcd5da;min-height:20px}.arenaWrap{touch-action:none}.arenaWrap,#jm-space-controls{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}';document.head.append(style);
   for(const b of controls.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);canvas.focus({preventScroll:true});resume();goal=null;const a=b.dataset.move.split(',').map(Number);axis={x:a[0],y:a[1]};});for(const type of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(type,()=>axis={x:0,y:0});}
   controls.addEventListener('contextmenu',e=>e.preventDefault());controls.addEventListener('selectstart',e=>e.preventDefault());canvas.parentElement.addEventListener('contextmenu',e=>e.preventDefault());
   const use=document.getElementById('jm-space-use');use.onclick=act;
@@ -108,6 +110,26 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     camera.scale=Math.max(canvas.width/560,canvas.height/500);const halfX=canvas.width/(2*camera.scale),halfY=canvas.height/(2*camera.scale);camera.x=Math.max(halfX,Math.min(900-halfX,camera.x));camera.y=Math.max(halfY,Math.min(570-halfY,camera.y));
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.save();ctx.translate(canvas.width/2,canvas.height/2);ctx.scale(camera.scale,camera.scale);ctx.translate(-camera.x,-camera.y);nativeDraw();
     const r=model.rooms[session.active],palette=r.body==='burning'?['#251415','#704535','#efb560']:r.body==='humanimals'?['#102525','#326158','#a7ebba']:['#102236','#355b79','#85d6f1'];
+    // An explicitly authored JM player, rather than inheriting GameForge's
+    // animal emoji as the only visible character on owner phone screens.
+    // This overlays the native sprite; it does not replace GF.player physics.
+    ctx.save();ctx.translate(GF.player.x,GF.player.y);
+    const speed=Math.hypot(GF.player.vx||0,GF.player.vy||0);
+    const facing=speed>.1?Math.atan2(GF.player.vy,GF.player.vx)+Math.PI/2:0;
+    ctx.rotate(facing);
+    const tint=r.body==='burning'?'#f4a46a':r.body==='humanimals'?'#71ead0':'#86baff';
+    ctx.fillStyle='#0a1d28';ctx.strokeStyle=tint;ctx.lineWidth=2.5;
+    ctx.shadowColor=tint;ctx.shadowBlur=6;ctx.beginPath();ctx.arc(0,0,GF.player.r+7,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+    ctx.fillStyle='#20394c';ctx.strokeStyle='#8ed7e7';ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.moveTo(-14,2);ctx.lineTo(-11,-7);ctx.lineTo(11,-7);ctx.lineTo(14,2);ctx.lineTo(9,17);ctx.lineTo(-9,17);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.strokeStyle=tint;ctx.lineWidth=6;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(-20,10);ctx.moveTo(11,0);ctx.lineTo(20,10);ctx.stroke();
+    ctx.strokeStyle='#5a8cab';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-6,16);ctx.lineTo(-8,24);ctx.moveTo(6,16);ctx.lineTo(8,24);ctx.stroke();
+    ctx.fillStyle='#d8e9dc';ctx.beginPath();ctx.arc(0,-12,9.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#122d3b';ctx.fillRect(-9,-15,18,6);
+    ctx.fillStyle=tint;ctx.fillRect(-6,-14,12,2);
+    ctx.fillStyle='#fbdb9a';ctx.beginPath();ctx.arc(0,5,3,0,Math.PI*2);ctx.fill();
+    ctx.restore();
     ctx.save();ctx.globalCompositeOperation='destination-over';ctx.fillStyle=palette[0];ctx.fillRect(0,0,900,570);ctx.restore();
     for(const b of r.walls){ctx.fillStyle='#0008';ctx.fillRect(b.x+10,b.y+12,b.w,b.h);ctx.fillStyle=palette[1];ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle=palette[2];ctx.fillRect(b.x,b.y,b.w,5);ctx.strokeStyle='#ffffff22';ctx.strokeRect(b.x,b.y,b.w,b.h);}
     for(const d of r.doors){const open=session.opened.includes(d.edge);ctx.fillStyle=open?'#194e49':'#483421';ctx.fillRect(d.x-20,d.y-52,40,104);ctx.strokeStyle=open?'#9fffd1':'#f4c27c';ctx.lineWidth=4;ctx.strokeRect(d.x-22,d.y-54,44,108);ctx.fillStyle=open?'#9fffd1':'#f4c27c';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(d.to>session.active?'→':'←',d.x,d.y+4);}

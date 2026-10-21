@@ -46,12 +46,26 @@ const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);assert.match(html,/window.JMSpatialRoom=function buildJMSpatialRoom/);
 assert.match(html,/pickGround\(clientX,clientY\)/);
 assert.match(html,/requestedDestination:goal/);
+assert.match(html,/objective:model[.]objective\(session\)/);
 // Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.
 assert.match(html,/precision mediump float;attribute vec3 aPosition/);
 assert.doesNotMatch(html,/uniform float uGlow;uniform float uTime;varying vec3 vColor/);
 assert.throws(()=>validateWorldSnapshot({...s,rooms:[]},world),/SPACES_MEMORY_HOLD/);
-const quest=m.create();assert.equal(m.interact(quest,{x:650,y:450}).kind,'locked');
-for(let i=0;i<3;i++){m.interact(quest,m.rooms[i].key);assert.equal(m.interact(quest,{x:650,y:450}).kind,'relay');if(i<2)m.interact(quest,{x:850,y:285});}
-assert.equal(m.interact(quest,{x:720,y:110}).kind,'beacon');m.interact(quest,{x:50,y:285});m.interact(quest,{x:50,y:285});assert.equal(m.interact(quest,{x:120,y:440}).kind,'deliver');assert.equal(quest.progress.delivered,true);
+const quest=m.create();
+assert.deepEqual(m.objective(quest),{kind:'key',label:'Collect Crossing key',room:0,x:210,y:130});
+assert.equal(m.interact(quest,{x:650,y:450}).kind,'locked');
+for(let i=0;i<3;i++){
+  m.interact(quest,m.rooms[i].key);
+  assert.deepEqual(m.objective(quest),{kind:'relay',label:'Power '+m.rooms[i].name+' relay',room:i,x:650,y:450});
+  assert.equal(m.interact(quest,{x:650,y:450}).kind,'relay');
+  if(i<2){assert.equal(m.objective(quest).kind,'door');m.interact(quest,{x:850,y:285});assert.equal(m.objective(quest).kind,'key');}
+}
+assert.equal(m.objective(quest).kind,'beacon');
+assert.equal(m.interact(quest,{x:720,y:110}).kind,'beacon');
+assert.equal(m.objective(quest).kind,'door');
+m.interact(quest,{x:50,y:285});m.interact(quest,{x:50,y:285});
+assert.deepEqual(m.objective(quest),{kind:'deliver',label:'Restore Crossing',room:0,x:120,y:440});
+assert.equal(m.interact(quest,{x:120,y:440}).kind,'deliver');
+assert.equal(quest.progress.delivered,true);assert.equal(m.objective(quest).kind,'complete');
 assert.throws(()=>m.validate({...quest,progress:{powered:[],beacon:true,delivered:true}},false),/SPACES_OBJECTIVE_HOLD/);
 console.log(JSON.stringify({state:'CONNECTED_SPACES_SOURCE_PASS',doorsRequireContactAndKey:true,roundTripState:true,solidCollision:true,invalidStateHold:true,carrierSHA256:proof.sha256,browserProof:false}));

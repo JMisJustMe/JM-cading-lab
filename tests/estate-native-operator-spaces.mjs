@@ -2,11 +2,47 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GameForgeSpaces} from '../coding-estate/integration/gameforge-spaces.mjs';
 import {buildJMSpatialRoom} from '../coding-estate/integration/gameforge-spatial-grammar.mjs';
+import {GameForgeEncounter} from '../coding-estate/integration/gameforge-encounter.mjs';
 import {buildConnectedCarrier} from '../scripts/build_gameforge_connected_carrier.mjs';
 import {readWorldBoot,validateWorldSnapshot} from '../coding-estate/integration/gameforge-world-carrier.mjs';
 const world={spaces:3,body:'burning',hazards:5,targetX:700,entered:true};
 const m=GameForgeSpaces(world),s=m.create();
 assert.deepEqual(m.rooms.map(r=>r.body),['burning','humanimals','tboys']);
+
+const engagedModel=GameForgeSpaces(world,GameForgeEncounter);
+const combat=engagedModel.encounter,run=engagedModel.create();
+assert.equal(combat.view(run).phase,'idle');
+assert.equal(combat.engage(run).kind,'encounter-started');
+assert.equal(combat.view(run).phase,'active');
+const sentinel=combat.view(run).guardian,originX=sentinel.x;
+const pursued=combat.step(run,{x:originX-130,y:sentinel.y},.04,()=>true);
+assert.equal(pursued,null);
+assert.ok(combat.view(run).guardian.x<originX,'NATIVE_GUARDIAN_AI_NOT_EXECUTED');
+assert.equal(combat.pulse(run,{x:10,y:10}).kind,'pulse-miss');
+assert.equal(combat.pulse(run,{x:sentinel.x,y:sentinel.y}).kind,'pulse-cooling');
+for(let k=0;k<18;k++)combat.step(run,{x:350,y:80},.04,()=>true);
+assert.equal(combat.pulse(run,{x:combat.view(run).guardian.x,y:combat.view(run).guardian.y}).kind,'pulse-hit');
+assert.equal(combat.view(run).guardian.hp,2);
+for(let k=0;k<18;k++)combat.step(run,{x:350,y:80},.04,()=>true);
+assert.equal(combat.pulse(run,{x:combat.view(run).guardian.x,y:combat.view(run).guardian.y}).kind,'pulse-hit');
+for(let k=0;k<18;k++)combat.step(run,{x:350,y:80},.04,()=>true);
+assert.equal(combat.pulse(run,{x:combat.view(run).guardian.x,y:combat.view(run).guardian.y}).kind,'encounter-won');
+assert.deepEqual(combat.view(run).wins,[0]);
+assert.equal(combat.view(run).guardian.hp,0);
+const savedCombat=JSON.parse(JSON.stringify(run));
+assert.doesNotThrow(()=>engagedModel.validate(savedCombat,false));
+assert.throws(()=>engagedModel.validate({...savedCombat,encounter:{...savedCombat.encounter,wins:[]}},false),/JM_ENCOUNTER_STATE_HOLD/);
+assert.throws(()=>engagedModel.validate({...savedCombat,encounter:{...savedCombat.encounter,shield:5}},false),/JM_ENCOUNTER_SCHEMA_HOLD/);
+const lose=engagedModel.create();
+combat.engage(lose);
+for(let i=0;i<135;i++)combat.step(lose,{x:735,y:190},.04,()=>true);
+assert.equal(combat.view(lose).phase,'lost');
+assert.equal(combat.view(lose).shield,0);
+assert.equal(combat.engage(lose).kind,'encounter-started');
+assert.equal(combat.view(lose).shield,4);
+const unengaged=engagedModel.create();
+assert.doesNotThrow(()=>engagedModel.validate(unengaged,false)); // old saves remain valid
+
 
 const spatialPoint=(x,y)=>({x:(x-450)/18,z:(y-285)/18});
 const primitive=(mesh,x,y,z,sx,sy,sz,color,em=0,rotY=0)=>({mesh,x,y,z,sx,sy,sz,color,em,rotY});
@@ -44,6 +80,9 @@ const variant=GameForgeSpaces({...world,body:'humanimals',hazards:3,targetX:550}
 const proof=await buildConnectedCarrier('/tmp/jm-connected-source-test');
 const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);assert.match(html,/window.JMSpatialRoom=function buildJMSpatialRoom/);
+assert.match(html,/window.JMGameForgeEncounter=function GameForgeEncounter/);
+assert.match(html,/Engage guardian/);
+assert.match(html,/encounter-won/);
 assert.match(html,/pickGround\(clientX,clientY\)/);
 assert.match(html,/requestedDestination:goal/);
 assert.match(html,/GF[.]coreObj[.]y=145/);

@@ -11,6 +11,9 @@ on:
       - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
+      - 'navigator/estate-integration/native-operator.mjs'
+      - 'navigator/estate-integration/index.html'
+      - 'tests/estate-native-operator*.mjs'
       - '.github/workflows/prove-ailatheo-v3.yml'
   pull_request:
     paths:
@@ -21,6 +24,9 @@ on:
       - 'functions/api/ailatheo.js'
       - 'ailatheo/**'
       - 'coding-estate/**'
+      - 'navigator/estate-integration/native-operator.mjs'
+      - 'navigator/estate-integration/index.html'
+      - 'tests/estate-native-operator*.mjs'
       - '.github/workflows/prove-ailatheo-v3.yml'
 permissions: {contents: read}
 jobs:
@@ -32,6 +38,7 @@ jobs:
         with: {node-version: '22'}
       - run: node tests/ailatheo-v3-estate-route.mjs
       - run: node tests/ailatheo-v3-native-execution.mjs
+      - run: node tests/estate-native-operator.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs
@@ -62,6 +69,10 @@ jobs:
           done
           cat /tmp/ailatheo-v3-http.log
           exit 1
+      - name: Render and contact JM Estate native operator
+        env:
+          BASE_URL: http://127.0.0.1:4177
+        run: node tests/estate-native-operator-render.spec.mjs
       - name: Render and contact GripCube Workbench
         env:
           BASE_URL: http://127.0.0.1:4177

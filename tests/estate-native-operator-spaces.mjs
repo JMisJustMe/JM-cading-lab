@@ -1,11 +1,29 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {GameForgeSpaces} from '../coding-estate/integration/gameforge-spaces.mjs';
+import {buildJMSpatialRoom} from '../coding-estate/integration/gameforge-spatial-grammar.mjs';
 import {buildConnectedCarrier} from '../scripts/build_gameforge_connected_carrier.mjs';
 import {readWorldBoot,validateWorldSnapshot} from '../coding-estate/integration/gameforge-world-carrier.mjs';
 const world={spaces:3,body:'burning',hazards:5,targetX:700,entered:true};
 const m=GameForgeSpaces(world),s=m.create();
 assert.deepEqual(m.rooms.map(r=>r.body),['burning','humanimals','tboys']);
+
+const spatialPoint=(x,y)=>({x:(x-450)/18,z:(y-285)/18});
+const primitive=(mesh,x,y,z,sx,sy,sz,color,em=0,rotY=0)=>({mesh,x,y,z,sx,sy,sz,color,em,rotY});
+const authored=m.rooms.map(room=>buildJMSpatialRoom(room,s,primitive,spatialPoint));
+assert.deepEqual(authored.map(scene=>scene.features.body),['burning','humanimals','tboys']);
+assert.equal(new Set(authored.map(scene=>scene.signature)).size,3);
+assert.ok(authored.every(scene=>scene.models.length>=68&&scene.features.motifCount>=20));
+assert.ok(authored[0].models.some(o=>o.mesh==='cylinder'&&o.color==='#b17055'));
+assert.ok(authored[1].models.some(o=>o.mesh==='octa'&&o.color==='#76d9a7'));
+assert.ok(authored[2].models.some(o=>o.mesh==='hex'&&o.color==='#8cdbff'));
+assert.ok(authored.every(scene=>scene.features.wallCount>0));
+const energised=buildJMSpatialRoom(m.rooms[0],{...s,progress:{powered:[0],beacon:false,delivered:false}},primitive,spatialPoint);
+assert.equal(energised.features.powered,true);
+assert.notEqual(energised.signature,authored[0].signature);
+assert.ok(energised.models.some(o=>o.mesh==='hex'&&o.color==='#64ffd1'));
+assert.throws(()=>buildJMSpatialRoom({...m.rooms[0],body:'unknown'},s,primitive,spatialPoint),/JM_SPATIAL_GRAMMAR_INPUT_HOLD/);
+
 assert.equal(m.interact(s,{x:850,y:285}).kind,'locked');assert.equal(s.active,0);
 assert.equal(m.interact(s,{x:210,y:130}).kind,'collect');
 assert.equal(m.interact(s,{x:120,y:285}).kind,'none');
@@ -25,7 +43,7 @@ const poisoned=JSON.parse(JSON.stringify(s));poisoned.rooms[0].extra=JSON.parse(
 const variant=GameForgeSpaces({...world,body:'humanimals',hazards:3,targetX:550});assert.equal(variant.rooms[0].body,'humanimals');assert.equal(variant.rooms[0].world.hazards,3);assert.notEqual(variant.spec,m.spec);
 const proof=await buildConnectedCarrier('/tmp/jm-connected-source-test');
 const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
-assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);
+assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);assert.match(html,/window.JMSpatialRoom=function buildJMSpatialRoom/);
 // Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.
 assert.match(html,/precision mediump float;attribute vec3 aPosition/);
 assert.doesNotMatch(html,/uniform float uGlow;uniform float uTime;varying vec3 vColor/);

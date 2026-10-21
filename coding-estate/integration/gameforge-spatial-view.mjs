@@ -62,6 +62,18 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
         models.push(o('octa',q.x,1.35+Math.sin(now*2)*.20,q.z,.53,.68,.53,'#ffe39a',.86));
         models.push(o('ring',q.x,.09,q.z,.86,.055,.86,'#ffdc80',.45));
       }
+      const combat= model.encounter?.view(session);
+      if(combat&&combat.phase!=='won'&&combat.guardian){
+        const r=combat.guardian,g=point(r.x,r.y),awake=combat.phase==='active';
+        const bodyColor=awake?'#d77b96':'#65a6c7';
+        models.push(o('ring',g.x,.11,g.z,1.15,.075,1.15,awake?'#ff98a8':'#74b9d4',awake?.58:.28));
+        models.push(o('hex',g.x,1.20+Math.sin(now*3)*.12,g.z,.66,.88,.52,bodyColor,awake?.45:.14));
+        models.push(o('octa',g.x,2.35+Math.sin(now*3)*.12,g.z,.60,.62,.60,awake?'#ffd2d5':'#a5deec',awake?.33:.18));
+        models.push(o('cube',g.x-.46,1.55,g.z,.18,.42,.20,bodyColor));
+        models.push(o('cube',g.x+.46,1.55,g.z,.18,.42,.20,bodyColor));
+        for(let hp=0;hp<r.hp;hp++)
+          models.push(o('octa',g.x+(hp-1)*.34,3.30,g.z,.12,.16,.12,'#ffcfad',.75));
+      }
       const destination=typeof getGoal==='function'?getGoal():null;
       if(destination&&Number.isFinite(destination.x)&&Number.isFinite(destination.y)){
         const target=point(destination.x,destination.y);
@@ -134,7 +146,7 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
     let hash=2166136261,variation=0;
     for(let i=0;i<bytes.length;i+=16){hash=Math.imul(hash^bytes[i],16777619);if(bytes[i]!==bytes[0])variation++;}
     return {active:true,...renderer.proof(),room:session.active,roomBody:model.rooms[session.active].body,
-      architecture:layout,cameraMode,objective:model.objective(session),player:point(GF.player.x,GF.player.y),
+      architecture:layout,cameraMode,objective:model.objective(session),combat:model.encounter?.view(session)||null,player:point(GF.player.x,GF.player.y),
       pixelDigest:(hash>>>0).toString(16),variation,error};
   }
   function isActive(){return active;}

@@ -33,7 +33,7 @@ export async function executeNativeContact(intent,registry) {
   const result=executeAILatheoCreation(intent.trim(),registry);
   if(result.schema!=='jm.ailatheo.creation-execution/0.3'||!result.passed
     ||!result.carrier?.html?.includes('<!doctype html>')
-    ||!result.delivery?.state?.sha256
+    ||!result.delivery?.sha256
     ||!result.receipts?.length) throw Error('NATIVE_EXECUTION_HOLD');
   return result;
 }
@@ -71,7 +71,7 @@ function mount() {
       status('NATIVE EXECUTION PASS (bounded AILatheo scene)\n'
         +'Executed: '+names+'\n'
         +'Native receipt digests: '+result.receipts.length
-        +'\nDelivery source digest (non-cryptographic): '+result.delivery.state.sha256
+        +'\nDelivery source digest (non-cryptographic): '+result.delivery.sha256
         +'\nPlan routes: '+result.plan.route.length
         +'\nVisible scene available below. Scene is sandboxed; export the standalone HTML for device-local save/recovery. '
         +'Not a general-purpose game generator, physical Android build, cloud save or whole-Estate Ding.');

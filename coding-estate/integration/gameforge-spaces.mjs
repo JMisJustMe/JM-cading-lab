@@ -243,6 +243,35 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     ctx.restore();
     for(const b of r.walls){ctx.fillStyle='#0008';ctx.fillRect(b.x+10,b.y+12,b.w,b.h);ctx.fillStyle=palette[1];ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle=palette[2];ctx.fillRect(b.x,b.y,b.w,5);ctx.strokeStyle='#ffffff22';ctx.strokeRect(b.x,b.y,b.w,b.h);}
     for(const d of r.doors){const open=session.opened.includes(d.edge);ctx.fillStyle=open?'#194e49':'#483421';ctx.fillRect(d.x-20,d.y-52,40,104);ctx.strokeStyle=open?'#9fffd1':'#f4c27c';ctx.lineWidth=4;ctx.strokeRect(d.x-22,d.y-54,44,108);ctx.fillStyle=open?'#9fffd1':'#f4c27c';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(d.to>session.active?'→':'←',d.x,d.y+4);}
+    // One embodied guardian per native room: GameForge coordinates, real AI
+    // movement, actual shield/Pulse contact and independently recoverable wins.
+    const combat=model.encounter?.view(session);
+    if(combat&&combat.phase!=='won'){
+      const guardian=combat.guardian,active=combat.phase==='active',t=performance.now()*.001;
+      ctx.save();ctx.translate(guardian.x,guardian.y);
+      ctx.shadowColor=active?'#ff8592':'#6fcfdb';ctx.shadowBlur=active?15:8;
+      ctx.strokeStyle=active?'#ffa0b0':'#6ea5ba';ctx.lineWidth=3;
+      ctx.fillStyle=active?'#582b4a':'#163b4d';
+      ctx.beginPath();ctx.moveTo(0,-27);ctx.lineTo(25,-8);ctx.lineTo(20,19);
+      ctx.lineTo(0,29);ctx.lineTo(-20,19);ctx.lineTo(-25,-8);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.fillStyle=active?'#ffd5d9':'#7fd8e7';ctx.fillRect(-14,-5,9,5);ctx.fillRect(5,-5,9,5);
+      ctx.strokeStyle=active?'#ffb0a0':'#8ab8ce';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,33+(active?Math.sin(t*4)*3:0),0,Math.PI*2);ctx.stroke();
+      if(active){
+        ctx.font='bold 11px system-ui';ctx.fillStyle='#fff5e5';ctx.textAlign='center';
+        ctx.fillText('GUARDIAN '+guardian.hp+'/3',0,-42);
+      }else{
+        ctx.font='bold 10px system-ui';ctx.fillStyle='#c4efef';ctx.textAlign='center';
+        ctx.fillText(combat.phase==='lost'?'RETRY AVAILABLE':'OPTIONAL GUARDIAN',0,-42);
+      }
+      ctx.restore();
+    }
+    if(feedback&&feedback.kind.startsWith('pulse-')){
+      const age=(performance.now()-feedback.start)/550;
+      if(age<1){ctx.save();ctx.strokeStyle=feedback.kind==='pulse-hit'?'#c1ffee':'#75d9e5';
+        ctx.globalAlpha=1-age;ctx.lineWidth=8*(1-age)+1;ctx.beginPath();
+        ctx.arc(GF.player.x,GF.player.y,25+150*age,0,Math.PI*2);ctx.stroke();ctx.restore();}
+    }
     if(!session.collected.includes(r.key.id)){ctx.fillStyle='#fff0a0';ctx.shadowColor='#e7c46b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(r.key.x,r.key.y,12,0,7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#382508';ctx.fillRect(r.key.x-2,r.key.y-7,4,14);}
     const q=model.progress(session),powered=q.powered.includes(session.active);ctx.fillStyle=powered?'#64ffd0':'#9b7536';ctx.globalAlpha=.45;ctx.fillRect(630,430,40,40);ctx.globalAlpha=1;ctx.strokeStyle='#eeecd0';ctx.strokeRect(627,427,46,46);ctx.fillStyle='#edf9f2';ctx.font='14px system-ui';ctx.fillText(powered?'RELAY ON':'RELAY',620,490);
     if(session.active===2&&!q.beacon){ctx.fillStyle=q.powered.length===3?'#9affcf':'#5e6875';ctx.beginPath();ctx.arc(720,110,20,0,7);ctx.fill();}

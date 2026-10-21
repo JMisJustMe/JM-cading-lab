@@ -145,6 +145,29 @@ try{
   assert.ok(spatial.architecture?.objectCount>=68&&spatial.architecture.features?.motifCount>=20,
     'ANDROID_3D_ARCHITECTURE_HOLD:'+JSON.stringify(spatial.architecture));
   fs.writeFileSync(out+'/android-3d-screen.png',execFileSync('adb',['exec-out','screencap','-p']));
+  // Assert real Android native touch on the visible JM perspective ground.
+  // A WebGL picture alone is NOT a 3D gameplay interaction proof.
+  await clearKnownLauncherOverlay('3d-ground-tap');
+  const arenaBox=await page.locator('#cv').boundingBox();
+  assert.ok(arenaBox,'ANDROID_3D_GROUND_CANVAS_HOLD');
+  const viewport=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));
+  const clientX=arenaBox.x+arenaBox.width*.60,clientY=arenaBox.y+arenaBox.height*.65;
+  const nativeX=Math.round(nativeBounds.left+clientX*(nativeBounds.right-nativeBounds.left)/viewport.width);
+  const nativeY=Math.round(nativeBounds.top+clientY*(nativeBounds.bottom-nativeBounds.top)/viewport.height);
+  const preTap=(await read()).session.rooms[1].snapshot.player;
+  adb('shell','input','tap',String(nativeX),String(nativeY));
+  await page.waitForFunction(()=>{
+    const r=window.JMConnectedWorldReadback(),p=r.requestedDestination;
+    return p&&p.x>=24&&p.x<=876&&p.y>=24&&p.y<=546;
+  },null,{timeout:15000,polling:100});
+  const selected3D=(await read()).requestedDestination;
+  assert.ok(Math.hypot(selected3D.x-preTap.x,selected3D.y-preTap.y)>12,'ANDROID_3D_GOAL_NOT_DISTINCT');
+  await page.waitForFunction(before=>{
+    const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;
+    return Math.hypot(p.x-before.x,p.y-before.y)>3;
+  },preTap,{timeout:20000,polling:100});
+  const movement3D=(await read()).session.rooms[1].snapshot.player;
+  fs.writeFileSync(out+'/android-3d-ground-tap.json',JSON.stringify({target:selected3D,before:preTap,after:movement3D,nativePoint:{x:nativeX,y:nativeY}}));
   await page.locator('#jm-space-dimension').click();
   await page.evaluate(()=>{window.JMHostPauseSaved=false});adb('shell','input','keyevent','KEYCODE_HOME');await page.waitForFunction(()=>window.JMHostPauseSaved===true,null,{timeout:10000,polling:100});
   const saved=await read();assert.equal(await page.evaluate(()=>window.JMRenderedWorldReadback().paused),true);
@@ -161,7 +184,7 @@ try{
   await page.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.body+=' ';window.JMWorldStorage.setItem(k,JSON.stringify(e))});
   await page.reload();await page.waitForFunction(()=>document.getElementById('jm-world-title').textContent.startsWith('WORLD HOLD'));assert.match(await page.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);
   assert.deepEqual(errors,[]);
-  const result={schema:'jm.connected-world.android-runtime/1',status:'ANDROID_EMULATOR_RUNTIME_PASS',sourceHead:proof.source_head,apk_sha256:proof.apk_sha256,asset_sha256:proof.asset_sha256,androidAPI:adb('shell','getprop','ro.build.version.sdk'),abi:adb('shell','getprop','ro.product.cpu.abi'),webview:adb('shell','dumpsys','webviewupdate'),installed:true,launched:true,nativeTouchMovement:true,nativeTouchNavigation:true,doorTraversal:true,spatialReceiver:spatial,lifecyclePause:true,processDeathExactRecovery:true,hashTamperHold:true,offlinePermissionBoundary:true,privilegedJSBridge:false,physicalDevice:false,release:false};
+  const result={schema:'jm.connected-world.android-runtime/1',status:'ANDROID_EMULATOR_RUNTIME_PASS',sourceHead:proof.source_head,apk_sha256:proof.apk_sha256,asset_sha256:proof.asset_sha256,androidAPI:adb('shell','getprop','ro.build.version.sdk'),abi:adb('shell','getprop','ro.product.cpu.abi'),webview:adb('shell','dumpsys','webviewupdate'),installed:true,launched:true,nativeTouchMovement:true,nativeTouchNavigation:true,doorTraversal:true,spatialReceiver:spatial,native3DGroundTapMovement:true,lifecyclePause:true,processDeathExactRecovery:true,hashTamperHold:true,offlinePermissionBoundary:true,privilegedJSBridge:false,physicalDevice:false,release:false};
   fs.writeFileSync(out+'/ANDROID_RUNTIME_PROOF.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 }catch(e){try{fs.writeFileSync(out+'/last-world.json',JSON.stringify(await read()));fs.writeFileSync(out+'/hold-screen.png',execFileSync('adb',['exec-out','screencap','-p']));}catch{}fs.writeFileSync(out+'/HOLD.txt',e.stack+'\n'+(page?await page.locator('body').innerText().catch(()=>'' ):''));throw e}
 finally{try{fs.writeFileSync(out+'/logcat.txt',adb('logcat','-d','-t','1500'));}catch{}if(device)await device.close()}

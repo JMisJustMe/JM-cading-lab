@@ -15,7 +15,24 @@ try{
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/^WORLD_RENDERED/);
   let frame=page.frames().find(f=>f.parentFrame()===page.mainFrame());
   const read=()=>frame.evaluate(()=>window.JMConnectedWorldReadback());
+  // Owner's physical phone feedback: 3D must be visible BEFORE the tall
+  // arena, and controls/labels must not obscure the relay.
+  const ownerUI=await frame.evaluate(()=>{
+    const bar=document.getElementById('jm-space-view-toolbar');
+    const arena=document.getElementById('cv').parentElement;
+    const btn=document.getElementById('jm-space-dimension');
+    const label=document.getElementById('jm-space-view-label');
+    const core=window.GF?.coreObj;
+    return {toolbarTop:bar?.getBoundingClientRect().top,arenaTop:arena?.getBoundingClientRect().top,
+      text:btn?.textContent,pressed:btn?.getAttribute('aria-pressed'),label:label?.textContent,
+      core:{x:core?.x,y:core?.y},stateFont:parseFloat(getComputedStyle(document.getElementById('jm-space-state')).fontSize)};
+  });
+  assert.ok(ownerUI.toolbarTop<ownerUI.arenaTop,'JM_PHONE_VIEW_SWITCH_BELOW_ARENA_HOLD');
+  assert.equal(ownerUI.text,'Switch to 3D');assert.equal(ownerUI.pressed,'false');assert.equal(ownerUI.label,'VIEW · 2D');
+  assert.ok(Math.hypot(ownerUI.core.x-650,ownerUI.core.y-450)>180,'CORE_RELAY_STILL_OVERLAPPING_HOLD');
+  assert.ok(ownerUI.stateFont>=13,'PHONE_STATUS_TEXT_TOO_SMALL_HOLD');
   await frame.locator('#jm-space-dimension').click();
+  assert.equal(await frame.locator('#jm-space-dimension').getAttribute('aria-pressed'),'true');
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().spatial.active);
   const first3D=(await read()).spatial;assert.equal(first3D.webgl,true);assert.ok(first3D.drawCalls>2);assert.ok(first3D.variation>100);assert.equal(first3D.error,'');
   assert.equal(first3D.roomBody,'burning');assert.equal(first3D.objective.kind,'key');assert.ok(first3D.architecture.objectCount>=68);assert.ok(first3D.architecture.features.motifCount>=20);
@@ -39,6 +56,7 @@ try{
   await frame.locator('#cv').focus();await page.keyboard.down('ArrowRight');await page.waitForTimeout(180);await page.keyboard.up('ArrowRight');const moved3D=(await read()).spatial;assert.ok(moved3D.player.x>first3D.player.x);assert.notEqual(moved3D.pixelDigest,first3D.pixelDigest);
   await page.screenshot({path:'qa/estate-native-operator-spaces-3d-phone.png'});
   await frame.locator('#jm-space-dimension').click();
+  assert.equal(await frame.locator('#jm-space-dimension').getAttribute('aria-pressed'),'false');
   const initial=await read();assert.equal(initial.session.active,0);assert.equal(initial.room.body,'burning');
   await frame.locator('#cv').click({position:{x:70,y:100}});
   async function move(axis,value){
@@ -117,5 +135,5 @@ try{
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,ownerVisibleDimensionSwitch:true,clearCoreRelaySeparation:true,authorialAvatar:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

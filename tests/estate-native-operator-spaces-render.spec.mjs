@@ -58,6 +58,13 @@ try{
   await frame.locator('#jm-space-dimension').click();
   assert.equal(await frame.locator('#jm-space-dimension').getAttribute('aria-pressed'),'false');
   const initial=await read();assert.equal(initial.session.active,0);assert.equal(initial.room.body,'burning');
+  const fingerprint=()=>frame.evaluate(()=>{
+    const cv=document.getElementById('cv'),bytes=cv.getContext('2d').getImageData(0,0,cv.width,cv.height).data;
+    let hash=2166136261;
+    for(let i=0;i<bytes.length;i+=97)hash=Math.imul(hash^bytes[i],16777619);
+    return (hash>>>0).toString(16);
+  });
+  const crossing2D=await fingerprint();
   await page.screenshot({path:'qa/estate-native-operator-spaces-2d-owner-phone.png'});
   await frame.locator('#cv').click({position:{x:70,y:100}});
   async function move(axis,value){
@@ -87,6 +94,8 @@ try{
   await move('y',75);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===1);
   await page.screenshot({path:'qa/estate-native-operator-relay-hall-2d-owner-phone.png'});
+  const living2D=await fingerprint();
+  assert.notEqual(living2D,crossing2D,'JM_OWNER_2D_ROOM_IDENTITIES_ARE_NOT_DISTINCT');
   r=await read();assert.equal(r.room.body,'humanimals');assert.equal(r.objective.kind,'key');assert.equal(r.room.walls.length,2);assert.deepEqual(r.session.opened,['0-1']);
   await frame.locator('#jm-space-dimension').click();const living3D=(await read()).spatial;
   assert.equal(living3D.roomBody,'humanimals');assert.notEqual(living3D.architecture.signature,first3D.architecture.signature);
@@ -144,5 +153,5 @@ try{
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,ownerVisibleDimensionSwitch:true,clearCoreRelaySeparation:true,authorialAvatar:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,ownerVisibleDimensionSwitch:true,clearCoreRelaySeparation:true,authorialAvatar:true,animatedAvatar:true,threeAuthored2DEnvironments:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

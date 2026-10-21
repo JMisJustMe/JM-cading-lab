@@ -67,6 +67,7 @@ assert.equal(speech.state,'EMBODIED_ROUTE_EXECUTED');
 assert.equal(speech.result.outcome.finalRoute,'accepted.route');
 assert.equal(speech.executedBodies.length,8);
 assert.ok(speech.result.receiptDigests.every(Boolean));
+assert.equal(speech.result.stages.length,8);
 assert.throws(()=>runNativeOperatorLane('embodied','unknown sound',registry));
 const local=new Map();
 const store={getItem:key=>local.get(key)||null,setItem:(key,v)=>local.set(key,v)};

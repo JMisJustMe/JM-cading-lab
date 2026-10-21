@@ -5,6 +5,7 @@ on:
       - 'coding-estate/integration/theogamy-contact.mjs'
       - 'coding-estate/integration/theogamy-contact-selftest.mjs'
       - '.github/workflows/jm-theogamy-contact.yml'
+      - 'coding-estate/integration/theogamy-private-donor-port.mjs'
   workflow_dispatch:
 jobs:
   native-contact:
@@ -16,5 +17,7 @@ jobs:
           node-version: '22'
       - name: THEOGAMY native contact proof
         run: node coding-estate/integration/theogamy-contact-selftest.mjs
+      - name: Source-preserving donor port proof
+        run: node coding-estate/integration/theogamy-private-donor-port.mjs
       - name: Existing 100-body integration regression
         run: node coding-estate/integration/integration-selftest.mjs

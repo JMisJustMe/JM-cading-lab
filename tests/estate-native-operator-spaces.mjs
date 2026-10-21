@@ -53,6 +53,9 @@ assert.match(html,/if\(r.body==='burning'\)/);
 assert.match(html,/else if\(r.body==='humanimals'\)/);
 assert.match(html,/for\(const \[x,y\] of \[\[74,85\],\[822,85\]/);
 assert.match(html,/gait=Math.sin\(performance.now\(\)\*\.018\)/);
+assert.match(html,/KEY ACQUIRED/);
+assert.match(html,/RELAY ONLINE/);
+assert.match(html,/Immediate action feedback belongs to the presentation/);
 assert.match(html,/Worded NEXT instructions belong in the fixed status bar/);
 
 assert.match(html,/jm-space-view-toolbar/);

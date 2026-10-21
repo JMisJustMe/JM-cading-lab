@@ -67,7 +67,14 @@ try{
     catch(e){console.log('MOVE_FAILURE',axis,value,JSON.stringify(await read()),await frame.evaluate(()=>document.activeElement?.tagName));await page.screenshot({path:'qa/estate-native-operator-spaces-failure.png',fullPage:true});throw e;}
     finally{await page.keyboard.up(key);}
   }
-  async function use(){const b=await frame.locator('#jm-space-use').boundingBox();assert.ok(b);await page.touchscreen.tap(b.x+b.width/2,b.y+b.height/2);}
+  async function use(){
+    const target=frame.locator('#jm-space-use');
+    assert.equal(await target.isEnabled(),true,'EXPLORE_DISABLED_OUTSIDE_CONTACT');
+    // Use Playwright's real mobile touch on the nested iframe target, rather
+    // than assuming its boundingBox stays at top-level coordinates after 3D
+    // view switching or Playwright auto-scrolling.
+    await target.tap();
+  }
   async function power(){await move('y',70);await move('x',780);await move('y',450);await move('x',650);await use();const p=(await read()).session;assert.ok(p.progress.powered.includes(p.active));await move('x',780);await move('y',70);}
   // Move against solid geometry; holding right may not tunnel through the wall.
   await move('y',285);await move('x',330);await page.keyboard.down('ArrowRight');await page.waitForTimeout(700);await page.keyboard.up('ArrowRight');

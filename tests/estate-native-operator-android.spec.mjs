@@ -101,10 +101,17 @@ try{
   // already running JM WebView. Recover only this known system overlay; never
   // invent WebView geometry or skip a native-touch verification.
   let ui='',bounds=null;
-  const rect=boundsPattern;
-  for(let attempt=0;attempt<5;attempt++){
-    adb('shell','uiautomator','dump','/sdcard/jm-window.xml');
-    ui=adb('shell','cat','/sdcard/jm-window.xml');
+  const rect=boundsPattern,bootHierarchyHolds=[];
+  for(let attempt=0;attempt<10;attempt++){
+    try{
+      // A cold Android accessibility service can return null-root without
+      // materializing an XML file. That is not a game's first-open failure.
+      adb('shell','uiautomator','dump','/sdcard/jm-window.xml');
+      ui=adb('shell','cat','/sdcard/jm-window.xml');
+    }catch(e){
+      bootHierarchyHolds.push({attempt,cause:'NO_ANDROID_UI_HIERARCHY_FILE'});
+      await new Promise(resolve=>setTimeout(resolve,500));continue;
+    }
     const node=ui.match(/<node[^>]*class="android[.]webkit[.]WebView"[^>]*>/)?.[0];
     bounds=node?.match(rect);
     if(bounds)break;
@@ -120,6 +127,7 @@ try{
     await new Promise(resolve=>setTimeout(resolve,600));
   }
   fs.writeFileSync(out+'/native-window.xml',ui);
+  fs.writeFileSync(out+'/native-hierarchy-attempts.json',JSON.stringify(bootHierarchyHolds));
   fs.writeFileSync(out+'/native-system-overlays.json',JSON.stringify(recoveredSystemDialogs));
   assert.ok(bounds,'NATIVE_WEBVIEW_BOUNDS_HOLD');
   nativeBounds={left:Number(bounds[1]),top:Number(bounds[2]),right:Number(bounds[3]),bottom:Number(bounds[4])};

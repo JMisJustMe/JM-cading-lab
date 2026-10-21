@@ -115,6 +115,13 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     const q=model.progress(session),powered=q.powered.includes(session.active);ctx.fillStyle=powered?'#64ffd0':'#9b7536';ctx.globalAlpha=.45;ctx.fillRect(630,430,40,40);ctx.globalAlpha=1;ctx.strokeStyle='#eeecd0';ctx.strokeRect(627,427,46,46);ctx.fillStyle='#edf9f2';ctx.font='14px system-ui';ctx.fillText(powered?'RELAY ON':'RELAY',620,490);
     if(session.active===2&&!q.beacon){ctx.fillStyle=q.powered.length===3?'#9affcf':'#5e6875';ctx.beginPath();ctx.arc(720,110,20,0,7);ctx.fill();}
     if(session.active===0){ctx.fillStyle=q.delivered?'#7affb9':'#325b77';ctx.lineWidth=4;ctx.strokeStyle=ctx.fillStyle;ctx.strokeRect(95,420,50,40);ctx.fillStyle='#fff';ctx.fillText(q.delivered?'RESTORED':'RETURN',90,480);}
+    // Same authoritative goal as the perspective waypoint; overlay is purely visual.
+    const next=model.objective(session);
+    if(Number.isFinite(next.x)&&Number.isFinite(next.y)){
+      ctx.save();ctx.strokeStyle='#fff7aa';ctx.fillStyle='#ffedaa';
+      ctx.lineWidth=3;ctx.setLineDash([6,5]);ctx.beginPath();ctx.arc(next.x,next.y,30,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+      ctx.font='bold 12px system-ui';ctx.fillText('NEXT',next.x-20,Math.max(20,next.y-38));ctx.restore();
+    }
     ctx.textAlign='start';ctx.restore();spatial.frame();
   };
   applyRoom();if(initialSnapshot||session.rooms[session.active].snapshot)pause();updateControls();

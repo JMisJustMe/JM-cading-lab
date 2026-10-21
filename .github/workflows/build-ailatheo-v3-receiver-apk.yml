@@ -8,6 +8,7 @@ on:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/ailatheo-native-touch-carrier.mjs'
       - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'tests/estate-native-operator-apk-asset.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'coding-estate/integration/**'
       - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
@@ -21,6 +22,7 @@ on:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/ailatheo-native-touch-carrier.mjs'
       - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'tests/estate-native-operator-apk-asset.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'coding-estate/integration/**'
       - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
@@ -273,6 +275,16 @@ jobs:
             } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $worldArtifact 'CONNECTED_WORLD_APK_PROOF.json') -Encoding UTF8
             Write-Host "CONNECTED_WORLD_APK_ASSET_EXACT_SHA256=$worldEmbeddedHash"
           }
+
+      - name: Execute actual packaged connected-world asset in Chromium
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install chromium
+          $worldArtifact = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-artifact/connected-world'
+          node tests/estate-native-operator-apk-asset.spec.mjs (Join-Path $worldArtifact 'JM_CONNECTED_WORLD_CI.apk') (Join-Path $worldArtifact 'CONNECTED_WORLD_APK_PROOF.json')
+          if ($LASTEXITCODE -ne 0) { throw 'CONNECTED_WORLD_PACKAGED_ASSET_EXECUTION_HOLD' }
 
       - name: Upload receiver build
         uses: actions/upload-artifact@v4

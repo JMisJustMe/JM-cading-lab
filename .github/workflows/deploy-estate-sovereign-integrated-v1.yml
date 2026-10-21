@@ -103,6 +103,10 @@ jobs:
           python3 governance/enforce_source_to_living.py check --root .
           python3 governance/verify_estate_classification.py --root .
           node --check navigator/estate-integration/bridge.js
+          node --check navigator/estate-integration/native-operator.mjs
+          node --check navigator/estate-integration/execution-lanes.mjs
+          node --check navigator/estate-integration/return-checkpoint.mjs
+          node tests/estate-native-operator.mjs
           node --check estate-return-route.js
           node --check unified-browser/jm-ailatheo-consequence-return-v1.js
           node --check unified-browser/jm-games-beyond-return-v1.js
@@ -270,6 +274,11 @@ jobs:
         run: |
           set -euo pipefail
           test -s cloudflare-estate/index.html
+          test -s cloudflare-estate/navigator/estate-integration/native-operator.mjs
+          test -s cloudflare-estate/navigator/estate-integration/execution-lanes.mjs
+          test -s cloudflare-estate/navigator/estate-integration/return-checkpoint.mjs
+          test -s cloudflare-estate/coding-estate/integration/REGISTRY.json
+          test -s cloudflare-estate/unified-browser/ailatheo-creation-runtime.mjs
           test -s cloudflare-estate/estate-return-route.js
           grep -Fq 'JM.EstateReturnRoute/0.1' cloudflare-estate/estate-return-route.js
           grep -Fq 'data-jm-context-return-route="v0.1"' cloudflare-estate/career/index.html

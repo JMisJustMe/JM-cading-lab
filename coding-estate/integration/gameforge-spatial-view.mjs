@@ -60,6 +60,15 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
         models.push(o('ring',target.x,.09,target.z,.76,.045,.76,'#94faff',.48));
         models.push(o('octa',target.x,.45+Math.sin(now*3)*.09,target.z,.18,.30,.18,'#b5ffff',.44));
       }
+      const next=model.objective(session);
+      if(Number.isFinite(next.x)&&Number.isFinite(next.y)){
+        const t=point(next.x,next.y);
+        const glow=next.kind==='door'?'#8afad5':next.kind==='key'?'#ffdb8b':
+          next.kind==='relay'?'#8dceff':next.kind==='beacon'?'#c7ffaa':'#a4ffcb';
+        models.push(o('ring',t.x,.11,t.z,1.11,.085,1.11,glow,.67));
+        models.push(o('octa',t.x,2.45+Math.sin(now*2.7)*.25,t.z,.35,.51,.35,glow,.82));
+        models.push(o('cube',t.x,1.1,t.z,.08,1.12,.08,glow,.29));
+      }
       const progression=model.progress(session);
       if(session.active===2&&!progression.beacon){
         const q=point(720,110);
@@ -115,7 +124,7 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
     let hash=2166136261,variation=0;
     for(let i=0;i<bytes.length;i+=16){hash=Math.imul(hash^bytes[i],16777619);if(bytes[i]!==bytes[0])variation++;}
     return {active:true,...renderer.proof(),room:session.active,roomBody:model.rooms[session.active].body,
-      architecture:layout,cameraMode,player:point(GF.player.x,GF.player.y),
+      architecture:layout,cameraMode,objective:model.objective(session),player:point(GF.player.x,GF.player.y),
       pixelDigest:(hash>>>0).toString(16),variation,error};
   }
   function isActive(){return active;}

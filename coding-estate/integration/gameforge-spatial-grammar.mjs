@@ -20,6 +20,8 @@ export function buildJMSpatialRoom(room,session,object,point){
   add('cube',0,-.045,0,25.1,.045,16.1,colors.tile);
   for(let x=-4;x<=4;x++)add('cube',x*5.5,.012,0,.034,.020,15.65,colors.line,.09);
   for(let z=-2;z<=2;z++)add('cube',0,.014,z*5.4,24.7,.020,.030,colors.line,.09);
+  for(const side of [-1,1])for(let i=-2;i<=1;i++)
+    add('cube',i*11+5.5,.036,side*12.4,2.4,.026,.14,colors.light,.20);
   for(const sg of [-1,1]){
     add('cube',sg*25.1,.35,0,.24,.35,16.0,colors.metal);
     add('cube',0,.35,sg*16.1,25.0,.35,.24,colors.metal);

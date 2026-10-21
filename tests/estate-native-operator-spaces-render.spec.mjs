@@ -18,7 +18,7 @@ try{
   await frame.locator('#jm-space-dimension').click();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().spatial.active);
   const first3D=(await read()).spatial;assert.equal(first3D.webgl,true);assert.ok(first3D.drawCalls>2);assert.ok(first3D.variation>100);assert.equal(first3D.error,'');
-  assert.equal(first3D.roomBody,'burning');assert.ok(first3D.architecture.objectCount>=68);assert.ok(first3D.architecture.features.motifCount>=20);
+  assert.equal(first3D.roomBody,'burning');assert.equal(first3D.objective.kind,'key');assert.ok(first3D.architecture.objectCount>=68);assert.ok(first3D.architecture.features.motifCount>=20);
   await frame.locator('#jm-space-camera').click();assert.equal((await read()).spatial.cameraMode,'ORBIT');
   await frame.locator('#jm-space-camera').click();assert.equal((await read()).spatial.cameraMode,'FOLLOW');
   // The JM WebGL canvas must not swallow live input from the original gameplay canvas.
@@ -55,12 +55,12 @@ try{
   await move('y',285);await move('x',330);await page.keyboard.down('ArrowRight');await page.waitForTimeout(700);await page.keyboard.up('ArrowRight');
   let r=await read();assert.ok(r.session.rooms[0].snapshot.player.x<=356,'WALL_COLLISION_FAILED');
   await move('x',210);await move('y',130);await use();
-  r=await read();assert.deepEqual(r.session.collected,['key-0']);
+  r=await read();assert.deepEqual(r.session.collected,['key-0']);assert.equal(r.objective.kind,'relay');
   await power();
   const firstCamera=r.camera.x;
   await move('y',75);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===1);
-  r=await read();assert.equal(r.room.body,'humanimals');assert.equal(r.room.walls.length,2);assert.deepEqual(r.session.opened,['0-1']);
+  r=await read();assert.equal(r.room.body,'humanimals');assert.equal(r.objective.kind,'key');assert.equal(r.room.walls.length,2);assert.deepEqual(r.session.opened,['0-1']);
   await frame.locator('#jm-space-dimension').click();const living3D=(await read()).spatial;
   assert.equal(living3D.roomBody,'humanimals');assert.notEqual(living3D.architecture.signature,first3D.architecture.signature);
   assert.ok(living3D.architecture.objectCount>=68);await frame.locator('#jm-space-dimension').click();
@@ -72,17 +72,17 @@ try{
   await power();
   await move('y',70);await move('x',800);await move('y',285);await use();
   await frame.waitForFunction(()=>window.JMConnectedWorldReadback().session.active===2);
-  r=await read();assert.equal(r.room.body,'tboys');assert.deepEqual(r.session.opened,['0-1','1-2']);
+  r=await read();assert.equal(r.room.body,'tboys');assert.equal(r.objective.kind,'key');assert.deepEqual(r.session.opened,['0-1','1-2']);
   await frame.locator('#jm-space-dimension').click();const tech3D=(await read()).spatial;
   assert.equal(tech3D.roomBody,'tboys');assert.notEqual(tech3D.architecture.signature,living3D.architecture.signature);
   assert.ok(tech3D.architecture.objectCount>=68);await frame.locator('#jm-space-dimension').click();
   await move('x',240);await move('y',130);await use();
-  await power();await move('x',720);await move('y',110);await use();assert.equal((await read()).session.progress.beacon,true);
+  await power();await move('x',720);await move('y',110);await use();assert.equal((await read()).session.progress.beacon,true);assert.equal((await read()).objective.kind,'door');
   await move('y',70);await move('x',110);await move('y',285);await use();assert.equal((await read()).session.active,1);
   await use();assert.equal((await read()).session.active,2); // same door remains traversable
   await use();assert.equal((await read()).session.active,1);
   await move('y',70);await move('x',110);await move('y',285);await use();assert.equal((await read()).session.active,0);
-  await move('y',70);await move('x',120);await move('y',440);await use();assert.equal((await read()).session.progress.delivered,true);
+  await move('y',70);await move('x',120);await move('y',440);await use();assert.equal((await read()).session.progress.delivered,true);assert.equal((await read()).objective.kind,'complete');
   await frame.locator('#jm-space-dimension').click();const final3D=(await read()).spatial;assert.ok(final3D.variation>100);assert.notEqual(final3D.pixelDigest,first3D.pixelDigest);assert.equal(final3D.roomBody,'burning');assert.equal(final3D.architecture.features.powered,true);await frame.locator('#jm-space-dimension').click();
   await page.locator('#jmOperatorSave').click();
   await page.waitForFunction(()=>/^(LOCAL_RETURN_READBACK_VERIFIED|SAVE HOLD)/.test(document.getElementById('jmOperatorStatus').textContent));
@@ -91,7 +91,7 @@ try{
   await page.reload();await page.locator('#jmOperatorRecover').click();
   await page.waitForFunction(()=>/^(LOCAL RECOVERY VERIFIED|RECOVERY HOLD)/.test(document.getElementById('jmOperatorStatus').textContent),null,{timeout:30000});
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/^LOCAL RECOVERY VERIFIED/);
-  frame=page.frames().find(f=>f.parentFrame()===page.mainFrame());assert.deepEqual((await read()).session,saved);
+  frame=page.frames().find(f=>f.parentFrame()===page.mainFrame());assert.deepEqual((await read()).session,saved);assert.equal((await read()).objective.kind,'complete');
   const visual=await frame.evaluate(()=>window.JMRenderedWorldReadback());assert.ok(visual.pixels.painted>20000);
   assert.ok(await frame.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:'qa/estate-native-operator-spaces-recovered-phone.png'});
@@ -117,5 +117,5 @@ try{
   await page.locator('#jmOperatorRecover').click();await page.waitForFunction(()=>document.getElementById('jmOperatorStatus').textContent.startsWith('RECOVERY HOLD'));
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/SPACES_SESSION_HOLD/);assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'CONNECTED_SPACES_BROWSER_PASS',viewport:'390x844',threeRealSpaces:true,doorTraversal:true,roundTripRetention:true,solidGeometry:true,cameraFollow:true,touchUse:true,keysRetained:true,exactReloadRecovery:true,standaloneFileFirstOpen:true,standaloneReloadCustody:true,standaloneHashRejection:true,invalidStateRejected:true,relayProgression:true,beaconRoundTrip:true,realJMWebGL:true,threeDistinctArchitectures:true,orbitCamera:true,threeDInputReachesNativeCanvas:true,perspectiveGroundPicking:true,progressionDerivedWaypoints:true,shared2DState:true,oldArenaSeparate:true,physicalAndroid:false}));
 }finally{await browser.close()}

@@ -83,6 +83,7 @@ function mount() {
     const boot=readWorldBoot(scene),frame=$('jmOperatorPreview');
     const pending=waitWorldReturn(frame,boot.token,boot.world);
     frame.title='Live resultant GameForge world';frame.hidden=false;frame.srcdoc=scene;
+    frame.scrollIntoView({block:'start'});
     const readback=await pending;
     if(boot.snapshot&&JSON.stringify(boot.snapshot)!==JSON.stringify(readback.snapshot))throw Error('WORLD_RECOVERY_READBACK_HOLD');
     worldLive=boot;

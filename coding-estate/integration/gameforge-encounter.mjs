@@ -23,7 +23,7 @@ export function GameForgeEncounter(){
     return true;
   }
   function ensure(s){if(!s.encounter)s.encounter=fresh();validate(s);return s.encounter;}
-  function view(s){const e=s.encounter;return !e?{phase:'idle',shield:4,wins:[],guardian:null}:{
+  function view(s){const e=s.encounter;return !e?{phase:'idle',shield:4,wins:[],guardian:{...fresh().rooms[s.active]}}:{
     phase:e.rooms[s.active].phase,shield:e.shield,wins:e.wins.slice(),
     guardian:{...e.rooms[s.active]}
   }}

@@ -1,5 +1,5 @@
 // Shared JM Actual 3D view of authoritative GameForge Spaces; no second game state.
-export function installGameForgeSpatialView({GF,model,session,canvas},rendererFactory){
+export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},rendererFactory){
   let renderer=null,view=null,active=false,lastSignature='',error='',layout=null,cameraMode='FOLLOW';
   const controls=document.getElementById('jm-space-controls');
   const button=document.createElement('button');button.id='jm-space-dimension';
@@ -53,6 +53,12 @@ export function installGameForgeSpatialView({GF,model,session,canvas},rendererFa
         const q=point(room.key.x,room.key.y);
         models.push(o('octa',q.x,1.35+Math.sin(now*2)*.20,q.z,.53,.68,.53,'#ffe39a',.86));
         models.push(o('ring',q.x,.09,q.z,.86,.055,.86,'#ffdc80',.45));
+      }
+      const destination=typeof getGoal==='function'?getGoal():null;
+      if(destination&&Number.isFinite(destination.x)&&Number.isFinite(destination.y)){
+        const target=point(destination.x,destination.y);
+        models.push(o('ring',target.x,.09,target.z,.76,.045,.76,'#94faff',.48));
+        models.push(o('octa',target.x,.45+Math.sin(now*3)*.09,target.z,.18,.30,.18,'#b5ffff',.44));
       }
       const progression=model.progress(session);
       if(session.active===2&&!progression.beacon){
@@ -112,5 +118,14 @@ export function installGameForgeSpatialView({GF,model,session,canvas},rendererFa
       architecture:layout,cameraMode,player:point(GF.player.x,GF.player.y),
       pixelDigest:(hash>>>0).toString(16),variation,error};
   }
-  return {frame,proof};
+  function isActive(){return active;}
+  function pickGoal(clientX,clientY){
+    if(!active||!renderer)return null;
+    const hit=renderer.pickGround(clientX,clientY);
+    if(!hit)return null;
+    const x=450+hit.x*18,y=285+hit.z*18;
+    if(!Number.isFinite(x)||!Number.isFinite(y)||x<24||x>876||y<24||y>546)return null;
+    return {x,y};
+  }
+  return {frame,proof,isActive,pickGoal};
 }

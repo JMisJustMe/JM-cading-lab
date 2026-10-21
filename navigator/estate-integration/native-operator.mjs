@@ -1,4 +1,5 @@
-// JM Estate Native Operator v0.1 — extends the existing canonical integration door.
+import {runNativeOperatorLane,OPERATOR_LANES} from './execution-lanes.mjs';
+// JM Estate Native Operator v0.2 — extends the existing canonical integration door.
 // Only the existing JM Coding Estate / AILatheo execution path is invoked here.
 // No owner credentials, arbitrary target URLs, background writes, or production claims.
 export function assembleRegistry(manifest, parts=[]) {
@@ -51,6 +52,18 @@ function mount() {
   const $=id=>document.getElementById(id);
   let delivered=null;
   let registryPromise=null;
+  const defaultSceneIntent='Build a touch visual game with drag aim, browser and Android delivery';
+  $('jmOperatorMode').addEventListener('change',()=>{
+    const mode=$('jmOperatorMode').value;
+    $('jmOperatorIntent').value=mode==='scene'?defaultSceneIntent:OPERATOR_LANES[mode]?.input||'';
+    $('jmOperatorIntent').readOnly=mode==='gamecore'||mode==='os';
+    $('jmOperatorStatus').textContent=mode==='scene'
+      ? 'Native AILatheo sample: the scene is a fixed donor demonstration, not arbitrary text-to-game generation.'
+      : 'Lane selected: '+(OPERATOR_LANES[mode]?.label||'UNKNOWN')+' · no contact executed yet.';
+    $('jmOperatorPreview').hidden=true;
+    $('jmOperatorDownload').disabled=true;
+    delivered=null;
+  });
   function status(message){$('jmOperatorStatus').textContent=message}
   form.addEventListener('submit',async event=>{
     event.preventDefault();
@@ -62,19 +75,28 @@ function mount() {
     try{
       registryPromise??=loadNativeRegistry();
       const registry=await registryPromise;
-      const result=await executeNativeContact($('jmOperatorIntent').value,registry);
-      delivered=result.carrier.html;
-      $('jmOperatorPreview').srcdoc=delivered;
-      $('jmOperatorPreview').hidden=false;
-      $('jmOperatorDownload').disabled=false;
-      const names=result.executedBodies.join(' · ');
-      status('NATIVE EXECUTION PASS (bounded AILatheo scene)\n'
-        +'Executed: '+names+'\n'
-        +'Native receipt digests: '+result.receipts.length
-        +'\nDelivery source digest (non-cryptographic): '+result.delivery.sha256
-        +'\nPlan routes: '+result.plan.route.length
-        +'\nVisible scene available below. Scene is sandboxed; export the standalone HTML for device-local save/recovery. '
-        +'Not a general-purpose game generator, physical Android build, cloud save or whole-Estate Ding.');
+      const mode=$('jmOperatorMode').value;
+      if(mode==='scene'){
+        const result=await executeNativeContact($('jmOperatorIntent').value,registry);
+        delivered=result.carrier.html;
+        $('jmOperatorPreview').srcdoc=delivered;
+        $('jmOperatorPreview').hidden=false;
+        $('jmOperatorDownload').disabled=false;
+        status('NATIVE EXECUTION PASS (existing fixed AILatheo touch scene)\n'
+          +'Executed: '+result.executedBodies.join(' · ')+'\n'
+          +'Native receipt digests: '+result.receipts.length
+          +'\nDelivery source digest (non-cryptographic): '+result.delivery.sha256
+          +'\nPlan routes: '+result.plan.route.length
+          +'\nThe intention selects JM bodies; the returned scene is the same bounded donor demonstration, not generated uniquely from the text. '
+          +'Export this standalone HTML for owner-device testing. Android build, cloud save and whole-Estate proof remain open.');
+      }else{
+        const result=runNativeOperatorLane(mode,$('jmOperatorIntent').value,registry);
+        status(result.state+' · '+result.mode+'\n'
+          +'Executed: '+result.executedBodies.join(' · ')+'\n'
+          +'Changed: '+result.changed+'\n'
+          +'Result:\n'+JSON.stringify(result.result,null,2)+'\n'
+          +'Boundary: '+result.boundary);
+      }
     }catch(error){registryPromise=null;status('HOLD · '+String(error?.message||error)+' · no native execution success claimed.')}
     finally{$('jmOperatorRun').disabled=false}
   });

@@ -61,6 +61,7 @@ async function bootWorld(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>reply('rendered','boot')));
 }
 export function validateArenaSnapshot(s,world){
+  const scan=v=>{if(v&&typeof v==='object')for(const [key,value] of Object.entries(v)){if(['__proto__','prototype','constructor'].includes(key))throw Error('WORLD_UNSAFE_KEY_HOLD');scan(value)}};scan(s);
   const finite=(n,lo,hi)=>typeof n==='number'&&Number.isFinite(n)&&n>=lo&&n<=hi;
   if(!s||s.schema!=='jm.gameforge.world-snapshot/1'||s.body!==world.body||!Array.isArray(s.hazards)||s.hazards.length!==world.hazards)throw Error('WORLD_SNAPSHOT_SCHEMA_HOLD');
   for(const key of ['p1','p2','energy','chain','round','meter'])if(!finite(s[key],0,100000))throw Error('WORLD_SNAPSHOT_VALUE_HOLD');

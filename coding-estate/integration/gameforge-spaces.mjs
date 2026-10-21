@@ -18,11 +18,14 @@ export function GameForgeSpaces(world){
   }
   function create(){return {schema:'jm.gameforge.connected-snapshot/1',spec,active:0,transitions:0,collected:[],opened:[],rooms:rooms.map((r,i)=>({visits:i===0?1:0,snapshot:null}))};}
   function validate(s,requireCurrent=true){
+    const scan=v=>{if(v&&typeof v==='object')for(const [key,value] of Object.entries(v)){if(['__proto__','prototype','constructor'].includes(key))throw Error('SPACES_UNSAFE_KEY_HOLD');scan(value)}};scan(s);
     if(!s||s.schema!=='jm.gameforge.connected-snapshot/1'||s.spec!==spec||!Number.isInteger(s.active)||s.active<0||s.active>2||!Number.isInteger(s.transitions)||s.transitions<0||s.transitions>100000)throw Error('SPACES_SESSION_HOLD');
     if(!Array.isArray(s.rooms)||s.rooms.length!==3||!Array.isArray(s.collected)||!Array.isArray(s.opened)||new Set(s.collected).size!==s.collected.length||new Set(s.opened).size!==s.opened.length)throw Error('SPACES_MEMORY_HOLD');
     if(s.collected.some(x=>!['key-0','key-1','key-2'].includes(x))||s.opened.some(x=>!['0-1','1-2'].includes(x)))throw Error('SPACES_PROGRESSION_HOLD');
     if(s.opened.some(x=>!s.collected.includes('key-'+x[0]))||s.active>0&&!s.opened.includes((s.active-1)+'-'+s.active))throw Error('SPACES_DOOR_AUTHORITY_HOLD');
     s.rooms.forEach((m,i)=>{if(!Number.isInteger(m.visits)||m.visits<0||m.visits>100000)throw Error('SPACES_VISITS_HOLD');if(m.snapshot&&(!m.snapshot.player||!free(rooms[i],m.snapshot.player.x,m.snapshot.player.y,m.snapshot.player.r)))throw Error('SPACES_SAVED_COLLISION_HOLD');});
+    if(s.rooms.reduce((n,m)=>n+m.visits,0)!==s.transitions+1||s.rooms[s.active].visits<1||s.collected.some(k=>s.rooms[Number(k.slice(-1))].visits<1)||s.opened.some(e=>s.rooms[Number(e[0])].visits<1||s.rooms[Number(e[2])].visits<1))throw Error('SPACES_LINEAGE_HOLD');
+    if(requireCurrent&&s.rooms.some(m=>m.visits>0&&!m.snapshot))throw Error('SPACES_VISITED_MEMORY_MISSING');
     if(requireCurrent&&!s.rooms[s.active].snapshot)throw Error('SPACES_CURRENT_STATE_MISSING');
     return s;
   }

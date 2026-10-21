@@ -94,16 +94,53 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   for(const b of controls.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);canvas.focus({preventScroll:true});resume();goal=null;const a=b.dataset.move.split(',').map(Number);axis={x:a[0],y:a[1]};});for(const type of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(type,()=>axis={x:0,y:0});}
   controls.addEventListener('contextmenu',e=>e.preventDefault());controls.addEventListener('selectstart',e=>e.preventDefault());canvas.parentElement.addEventListener('contextmenu',e=>e.preventDefault());
   const use=document.getElementById('jm-space-use');use.onclick=act;
-  window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D','e','E',' '].includes(e.key)){e.preventDefault();resume();keys.add(e.key.toLowerCase());goal=null;if((e.key.toLowerCase()==='e'||e.key===' ')&&!e.repeat)act();}});
+  // Optional encounter controls sit with (not over) the native touch deck.
+  const battle=document.createElement('div');battle.id='jm-space-battle';
+  battle.innerHTML='<button id="jm-space-engage" type="button">Engage guardian</button><button id="jm-space-pulse" type="button" disabled>⚡ Pulse</button><span id="jm-space-battle-state" aria-live="polite">Optional encounters · no effect on relay quest</span>';
+  controls.append(battle);
+  const battleCSS=document.createElement('style');
+  battleCSS.textContent='#jm-space-battle{grid-column:1/-1;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px;border:1px solid #4d6973;border-radius:10px;background:#0b2732}#jm-space-battle button{min-height:44px!important;min-width:98px!important;background:#27515c!important;color:#f6ffff!important;border:1px solid #78adbb!important;font-size:13px!important}#jm-space-battle button:disabled{opacity:.4}#jm-space-battle-state{font:600 12px/1.35 system-ui;color:#d2eeec;flex:1 1 170px}@media(max-width:420px){#jm-space-battle{flex-wrap:nowrap}#jm-space-battle button{min-width:0!important;flex:0 0 auto;padding:3px 7px!important;font-size:11px!important}#jm-space-battle-state{font-size:10px}}';
+  document.head.append(battleCSS);
+  const engageButton=battle.querySelector('#jm-space-engage'),pulseButton=battle.querySelector('#jm-space-pulse'),battleState=battle.querySelector('#jm-space-battle-state');
+  function encounterAction(action){
+    if(!model.encounter)return;
+    canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();
+    const result=action==='engage'?model.encounter.engage(session):model.encounter.pulse(session,GF.player);
+    events.push({...result,room:session.active});if(events.length>48)events.shift();
+    const titles={'encounter-started':'GUARDIAN ACTIVE','pulse-hit':'PULSE HIT','pulse-miss':'PULSE OUT OF RANGE',
+      'encounter-won':'GUARDIAN CLEARED','encounter-lost':'SHIELD DEPLETED',
+      'pulse-cooling':'PULSE RECHARGING','encounter-already-won':'ROOM CLEARED'};
+    if(titles[result.kind])feedback={kind:result.kind,text:titles[result.kind],start:performance.now()};
+    if(['encounter-started','pulse-hit','pulse-miss','encounter-won'].includes(result.kind))persist();
+    updateControls();
+  }
+  engageButton.onclick=()=>encounterAction('engage');
+  pulseButton.onclick=()=>encounterAction('pulse');
+
+  window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D','e','E',' ','f','F','g','G'].includes(e.key)){e.preventDefault();resume();keys.add(e.key.toLowerCase());goal=null;if((e.key.toLowerCase()==='e'||e.key===' ')&&!e.repeat)act();if(e.key.toLowerCase()==='f'&&!e.repeat)encounterAction('pulse');if(e.key.toLowerCase()==='g'&&!e.repeat)encounterAction('engage');}});
   window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();axis={x:0,y:0};});
   canvas.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);resume();if(spatial.isActive()){goal=spatial.pickGoal(e.clientX,e.clientY);return;}const box=canvas.getBoundingClientRect(),sx=(e.clientX-box.left)*canvas.width/box.width,sy=(e.clientY-box.top)*canvas.height/box.height;goal={x:(sx-canvas.width/2)/camera.scale+camera.x,y:(sy-canvas.height/2)/camera.scale+camera.y};};canvas.onpointermove=null;canvas.onpointerup=()=>{};canvas.onpointercancel=()=>goal=null;
   const spatial=viewFactory({GF,model,session,canvas,getGoal:()=>goal&&{...goal}},rendererFactory);
-  function updateControls(){const n=model.nearby(session,GF.player),task=model.objective(session);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'NEXT · '+task.label+' · Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(isPaused()?'Saved / paused — move to resume':'Live');}
+  function updateControls(){const n=model.nearby(session,GF.player),task=model.objective(session);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'NEXT · '+task.label+' · Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(isPaused()?'Saved / paused — move to resume':'Live');const ec=model.encounter?.view(session);
+    if(ec){
+      engageButton.disabled=ec.phase==='won'||ec.phase==='active';
+      engageButton.textContent=ec.phase==='won'?'Guardian cleared':ec.phase==='lost'?'Retry encounter':'Engage guardian';
+      pulseButton.disabled=ec.phase!=='active'||ec.guardian.cooldown>.02;
+      battleState.textContent=ec.phase==='active'?'SHIELD '+ec.shield+'/4 · Guardian '+ec.guardian.hp+'/3 · Victories '+ec.wins.length+'/3':
+        ec.phase==='won'?'GUARDIAN CLEARED · Victories '+ec.wins.length+'/3':
+        ec.phase==='lost'?'SHIELD LOST · retry any time':'Optional combat · F Pulse · G Engage';
+    }}
   GF.step=function(){const now=performance.now(),dt=Math.min(.033,Math.max(0,(now-last)/1000));last=now;if(isPaused()){updateControls();return;}
     let x=axis.x+(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0),y=axis.y+(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0);
     if(goal&&!x&&!y){const dx=goal.x-GF.player.x,dy=goal.y-GF.player.y,d=Math.hypot(dx,dy);if(d<9)goal=null;else{x=dx/d;y=dy/d;}}
     const norm=Math.max(1,Math.hypot(x,y)),old={x:GF.player.x,y:GF.player.y};GF.player.vx=x/norm*230*dt;GF.player.vy=y/norm*230*dt;
     nativeStep();const p=model.resolve(model.rooms[session.active],old,GF.player,GF.player.r);GF.player.x=p.x;GF.player.y=p.y;
+    const encounterResult=model.encounter?.step(session,GF.player,dt,(x,y,r)=>model.free(model.rooms[session.active],x,y,r));
+    if(encounterResult){
+      events.push({...encounterResult,room:session.active});
+      feedback={kind:encounterResult.kind,text:encounterResult.kind==='encounter-lost'?'SHIELD LOST':'GUARDIAN HIT',start:performance.now()};
+      persist();
+    }
     const alpha=1-Math.exp(-10*dt);camera.x+=(GF.player.x-camera.x)*alpha;camera.y+=(GF.player.y-camera.y)*alpha;updateControls();
   };
   GF.draw=function(){
@@ -245,5 +282,5 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
   if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}
-  return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events),feedback:feedback?{kind:feedback.kind,text:feedback.text}:null}),canSave:()=>true};
+  return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events),combat:model.encounter?.view(session)||null,feedback:feedback?{kind:feedback.kind,text:feedback.text}:null}),canSave:()=>true};
 }

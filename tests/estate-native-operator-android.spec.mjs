@@ -23,8 +23,9 @@ async function hold(label,duration){const p=await nativePoint(label);adb('shell'
 async function move(axis,value){const r=await read(),p=r.session.rooms[r.session.active].snapshot.player;if(Math.abs(value-p[axis])<12)return;const positive=p[axis]<value,label=axis==='x'?(positive?'Move right':'Move left'):(positive?'Move down':'Move up'),point=await nativePoint(label);
   adb('shell','input','motionevent','DOWN',String(point.x),String(point.y));try{
     await page.waitForFunction(({axis,value,positive})=>{const r=window.JMConnectedWorldReadback(),p=r.session.rooms[r.session.active].snapshot.player;return positive?p[axis]>=value-5:p[axis]<=value+5},{axis,value,positive},{timeout:120000,polling:80});
-    console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify((await read()).session.rooms[(await read()).session.active].snapshot.player));
+    // Release native contact immediately at the observed threshold; readback follows UP.
   }catch(e){fs.writeFileSync(out+'/movement-hold.json',JSON.stringify({axis,value,readback:await read()}));throw e;}finally{adb('shell','input','motionevent','UP',String(point.x),String(point.y));}
+  const after=await read();console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify(after.session.rooms[after.session.active].snapshot.player));
 }
 
 async function use(){assert.equal(await page.locator('#jm-space-use').isEnabled(),true);const stamp=await page.evaluate(()=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])});const box=await page.locator('#jm-space-use').boundingBox(),size=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));const x=Math.round(nativeBounds.left+(box.x+box.width/2)*(nativeBounds.right-nativeBounds.left)/size.width),y=Math.round(nativeBounds.top+(box.y+box.height/2)*(nativeBounds.bottom-nativeBounds.top)/size.height);adb('shell','input','tap',String(x),String(y));await page.waitForFunction(stamp=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])!==stamp},stamp,{timeout:15000,polling:100});}

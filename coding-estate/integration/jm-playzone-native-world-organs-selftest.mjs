@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const biome=require('./jm-playzone-biome-geometry-v26.js');
+const avatar=require('./jm-playzone-avatar-world-organ-v25.js');
+let assertions=0;
+const check=(x,m)=>{assert(x,m);assertions++};
+let fingerprints=new Set();
+for(const kind of ['forest','desert','ice','void']){
+ const emit=(seed)=>{const items=[];const receipt=biome.enrich((...a)=>items.push(a),{biome:kind},seed);return {items,receipt};};
+ const a=emit(4562),b=emit(4562),c=emit(4563);
+ check(a.items.length>=60,'biome must emit real geometry');
+ check(a.items.length===a.receipt.objectsAdded,'emission receipts');
+ check(JSON.stringify(a.items)===JSON.stringify(b.items),'same seed reproducible');
+ check(JSON.stringify(a.items)!==JSON.stringify(c.items),'seed matters');
+ check(a.receipt.biome===kind,'biome identity');
+ fingerprints.add(JSON.stringify(a.items));
+}
+check(fingerprints.size===4,'four independent geometry forms');
+const world={zoneId:'z1',geometry:[{id:'terrain',mesh:'cube',pos:[0,-.2,0],scale:[11,.3,11]},{id:'solid',mesh:'cube',pos:[0,1,0],scale:[1,1,1]}]};
+const p=avatar.create(world,{start:{x:5,z:5}});
+check(!p.free(0,0),'solid collision');
+check(p.free(5,5),'walkable space');
+check(p.move(-1,-1,1/30),'avatar movement');
+check(p.snapshot().steps>0,'animation progress');
+const models=p.models({object:(...a)=>({mesh:a[0],pos:a.slice(1,4)})});
+check(models.length>=8,'engine renderer objects');
+check(p.nearest({T:{kind:'GARDEN',alive:true,pos:{x:5,y:0,z:5}}},3).id==='T','contact proximity');
+const restored=p.restore({x:5,z:5});
+check(restored.x===5&&restored.z===5,'position recovery');
+console.log(JSON.stringify({schema:'jm.playzone.native-world-organ-proof/2.6',assertions,status:'PASS',boundary:'Node component proof; UI/WebGL/device separately verified'}));

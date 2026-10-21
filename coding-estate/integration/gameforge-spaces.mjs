@@ -33,8 +33,30 @@ export function GameForgeSpaces(world){
   function validateProgress(s){const q=progress(s);if(!Array.isArray(q.powered)||new Set(q.powered).size!==q.powered.length||q.powered.some(i=>!Number.isInteger(i)||i<0||i>2||!s.collected.includes('key-'+i))||typeof q.beacon!=='boolean'||typeof q.delivered!=='boolean'||q.beacon&&q.powered.length!==3||q.delivered&&!q.beacon)throw Error('SPACES_OBJECTIVE_HOLD');return q;}
   function nearby(s,p){const q=progress(s);if(Math.hypot(p.x-650,p.y-450)<65&&!q.powered.includes(s.active))return {kind:'relay',locked:!s.collected.includes('key-'+s.active),label:'Power room relay'};if(s.active===2&&Math.hypot(p.x-720,p.y-110)<65&&!q.beacon)return {kind:'beacon',locked:q.powered.length!==3,label:'Take living beacon'};if(s.active===0&&Math.hypot(p.x-120,p.y-440)<65&&q.beacon&&!q.delivered)return {kind:'deliver',label:'Restore Crossing'};return nearbyDoor(s,p);}
   function nearbyDoor(s,p){const r=rooms[s.active];if(!s.collected.includes(r.key.id)&&Math.hypot(p.x-r.key.x,p.y-r.key.y)<65)return {kind:'collect',id:r.key.id,label:'Collect relay key'};const d=r.doors.find(d=>Math.hypot(p.x-d.x,p.y-d.y)<75);if(d)return {kind:'door',...d,locked:!s.opened.includes(d.edge)&&!s.collected.includes(r.key.id),label:'Enter '+rooms[d.to].name};return null;}
+  // Pure authoritative next-goal readback. No new quest state or auto-routing.
+  // A return objective is always a genuine GameForge contact point in this room.
+  function objective(s){
+    const room=rooms[s.active],q=progress(s),here=s.active;
+    const at=(kind,label,x,y)=>({kind,label,room:here,x,y});
+    if(!s.collected.includes(room.key.id))
+      return at('key','Collect '+room.name+' key',room.key.x,room.key.y);
+    if(!q.powered.includes(here))
+      return at('relay','Power '+room.name+' relay',650,450);
+    if(q.beacon&&here===0&&!q.delivered)
+      return at('deliver','Restore Crossing',120,440);
+    if(q.delivered)
+      return {kind:'complete',label:'Crossing restored',room:here,x:null,y:null};
+    if(here===2&&q.powered.length===3&&!q.beacon)
+      return at('beacon','Claim living beacon',720,110);
+    const back=q.beacon||(here===2&&q.powered.length<3)||
+      (here===1&&!q.powered.includes(0));
+    const door=room.doors.find(d=>back?d.to===here-1:d.to===here+1)
+      ||room.doors.find(d=>d.to===here-1);
+    if(door)return at('door','Enter '+rooms[door.to].name,door.x,door.y);
+    return at('relay','Power room relay',650,450);
+  }
   function interact(s,p){validate(s,false);const n=nearby(s,p);if(!n)return {kind:'none'};if(n.locked)return {kind:'locked'};if(['relay','beacon','deliver'].includes(n.kind)){s.progress=structuredClone(progress(s));if(n.kind==='relay')s.progress.powered.push(s.active);if(n.kind==='beacon')s.progress.beacon=true;if(n.kind==='deliver')s.progress.delivered=true;return n;}if(n.kind==='collect'){s.collected.push(n.id);return n;}if(n.locked)return {kind:'locked'};if(!s.opened.includes(n.edge))s.opened.push(n.edge);const from=s.active;s.active=n.to;s.rooms[n.to].visits++;s.transitions++;return {kind:'transition',from,to:n.to,spawn:{x:n.to>from?110:790,y:285}};}
-  return {rooms,spec,create,validate,free,resolve,nearby,interact,progress};
+  return {rooms,spec,create,validate,free,resolve,nearby,interact,progress,objective};
 }
 
 export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initialSnapshot,readArena,restoreArena,nativeStep,isPaused,resume,pause},factory,viewFactory,rendererFactory){
@@ -73,7 +95,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();axis={x:0,y:0};});
   canvas.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);resume();if(spatial.isActive()){goal=spatial.pickGoal(e.clientX,e.clientY);return;}const box=canvas.getBoundingClientRect(),sx=(e.clientX-box.left)*canvas.width/box.width,sy=(e.clientY-box.top)*canvas.height/box.height;goal={x:(sx-canvas.width/2)/camera.scale+camera.x,y:(sy-canvas.height/2)/camera.scale+camera.y};};canvas.onpointermove=null;canvas.onpointerup=()=>{};canvas.onpointercancel=()=>goal=null;
   const spatial=viewFactory({GF,model,session,canvas,getGoal:()=>goal&&{...goal}},rendererFactory);
-  function updateControls(){const n=model.nearby(session,GF.player);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(model.progress(session).delivered?'Crossing restored':model.progress(session).beacon?'Return beacon to Crossing':'Power relays → claim beacon → return')+' · '+(isPaused()?'Saved / paused — move to resume':'Live');}
+  function updateControls(){const n=model.nearby(session,GF.player),task=model.objective(session);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'NEXT · '+task.label+' · Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(isPaused()?'Saved / paused — move to resume':'Live');}
   GF.step=function(){const now=performance.now(),dt=Math.min(.033,Math.max(0,(now-last)/1000));last=now;if(isPaused()){updateControls();return;}
     let x=axis.x+(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0),y=axis.y+(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0);
     if(goal&&!x&&!y){const dx=goal.x-GF.player.x,dy=goal.y-GF.player.y,d=Math.hypot(dx,dy);if(d<9)goal=null;else{x=dx/d;y=dy/d;}}
@@ -101,5 +123,5 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
   if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}
-  return {capture,read:()=>({session:capture(),camera:{...camera},requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events)}),canSave:()=>true};
+  return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events)}),canSave:()=>true};
 }

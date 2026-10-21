@@ -88,7 +88,7 @@ try{
   await move('y',285);await move('x',330);await page.keyboard.down('ArrowRight');await page.waitForTimeout(700);await page.keyboard.up('ArrowRight');
   let r=await read();assert.ok(r.session.rooms[0].snapshot.player.x<=356,'WALL_COLLISION_FAILED');
   await move('x',210);await move('y',130);await use();
-  r=await read();assert.deepEqual(r.session.collected,['key-0']);assert.equal(r.objective.kind,'relay');
+  r=await read();assert.deepEqual(r.session.collected,['key-0']);assert.equal(r.objective.kind,'relay');assert.equal(r.feedback?.kind,'collect');
   await power();
   const firstCamera=r.camera.x;
   await move('y',75);await move('x',800);await move('y',285);await use();
@@ -127,7 +127,7 @@ try{
   await page.reload();await page.locator('#jmOperatorRecover').click();
   await page.waitForFunction(()=>/^(LOCAL RECOVERY VERIFIED|RECOVERY HOLD)/.test(document.getElementById('jmOperatorStatus').textContent),null,{timeout:30000});
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/^LOCAL RECOVERY VERIFIED/);
-  frame=page.frames().find(f=>f.parentFrame()===page.mainFrame());assert.deepEqual((await read()).session,saved);assert.equal((await read()).objective.kind,'complete');
+  frame=page.frames().find(f=>f.parentFrame()===page.mainFrame());assert.deepEqual((await read()).session,saved);assert.equal((await read()).objective.kind,'complete');assert.equal((await read()).feedback,null);
   const visual=await frame.evaluate(()=>window.JMRenderedWorldReadback());assert.ok(visual.pixels.painted>20000);
   assert.ok(await frame.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:'qa/estate-native-operator-spaces-recovered-phone.png'});

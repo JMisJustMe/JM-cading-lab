@@ -71,7 +71,7 @@ function mount() {
       status('NATIVE EXECUTION PASS (bounded AILatheo scene)\n'
         +'Executed: '+names+'\n'
         +'Native receipt digests: '+result.receipts.length
-        +'\nDelivery SHA-256: '+result.delivery.state.sha256
+        +'\nDelivery source digest (non-cryptographic): '+result.delivery.state.sha256
         +'\nPlan routes: '+result.plan.route.length
         +'\nVisible scene available below. Scene is sandboxed; export the standalone HTML for device-local save/recovery. '
         +'Not a general-purpose game generator, physical Android build, cloud save or whole-Estate Ding.');

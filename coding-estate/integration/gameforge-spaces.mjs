@@ -62,7 +62,7 @@ export function GameForgeSpaces(world){
 export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initialSnapshot,readArena,restoreArena,nativeStep,isPaused,resume,pause},factory,viewFactory,rendererFactory){
   const model=factory(world);
   let session=initialSnapshot||model.create();model.validate(session,Boolean(initialSnapshot));
-  const events=[],keys=new Set();let goal=null,axis={x:0,y:0},last=performance.now(),persistError='',saveQueue=Promise.resolve();
+  const events=[],keys=new Set();let goal=null,feedback=null,axis={x:0,y:0},last=performance.now(),persistError='',saveQueue=Promise.resolve();
   const camera={x:450,y:285,scale:1},canvas=GF.cv,ctx=GF.ctx,nativeDraw=GF.draw.bind(GF);
   const storage=window.JMWorldStorage;canvas.tabIndex=0;
   const slot='JM_GAMEFORGE_CONNECTED_WORLD_v1_'+world.body+'_'+world.hazards+'_'+world.targetX;
@@ -85,7 +85,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   }
   function capture(){session.rooms[session.active].snapshot=readArena();return structuredClone(model.validate(session));}
   async function persist(){if(!storage)return;const body=JSON.stringify(capture());saveQueue=saveQueue.then(async()=>{storage.setItem(slot,JSON.stringify({schema:'jm.gameforge.spaces-envelope/1',token,body,sha256:await hash(body)}));persistError='';}).catch(e=>{persistError=String(e.message||e)});return saveQueue;}
-  function act(){canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();const result=model.interact(session,GF.player);events.push({...result,room:session.active});if(events.length>48)events.shift();if(result.kind==='transition')applyRoom(result.spawn);if(result.kind==='relay'){GF.energyVal=Math.min(100,GF.energyVal+25);for(const h of GF.hazards)h.type='boost';}if(['collect','transition','relay','beacon','deliver'].includes(result.kind))persist();updateControls();requestAnimationFrame(()=>{GF.draw();parent.postMessage({type:'jm.gameforge.spaces.event/1',token,kind:result.kind,from:result.from,to:result.to,active:session.active,body:GF.body.id,transitions:session.transitions,keys:session.collected.length},'*')});}
+  function act(){canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();const result=model.interact(session,GF.player);const names={collect:'KEY ACQUIRED',relay:'RELAY ONLINE',beacon:'BEACON CLAIMED',deliver:'CROSSING RESTORED',transition:'NEW ROOM',locked:'LOCKED'};if(names[result.kind])feedback={kind:result.kind,text:names[result.kind],start:performance.now()};events.push({...result,room:session.active});if(events.length>48)events.shift();if(result.kind==='transition')applyRoom(result.spawn);if(result.kind==='relay'){GF.energyVal=Math.min(100,GF.energyVal+25);for(const h of GF.hazards)h.type='boost';}if(['collect','transition','relay','beacon','deliver'].includes(result.kind))persist();updateControls();requestAnimationFrame(()=>{GF.draw();parent.postMessage({type:'jm.gameforge.spaces.event/1',token,kind:result.kind,from:result.from,to:result.to,active:session.active,body:GF.body.id,transitions:session.transitions,keys:session.collected.length},'*')});}
   const controls=document.createElement('div');controls.id='jm-space-controls';
   controls.innerHTML='<div id="jm-space-pad" aria-label="Movement"><button data-move="0,-1" aria-label="Move up">▲</button><button data-move="-1,0" aria-label="Move left">◀</button><button data-move="0,1" aria-label="Move down">▼</button><button data-move="1,0" aria-label="Move right">▶</button></div><button id="jm-space-use">Explore</button><span id="jm-space-state"></span>';
   document.querySelector('.app').append(controls);
@@ -218,6 +218,24 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
       // marker itself must not sit on top of relay labels or collectable names.
       ctx.beginPath();ctx.moveTo(next.x,next.y-39);ctx.lineTo(next.x-8,next.y-51);ctx.lineTo(next.x+8,next.y-51);ctx.closePath();ctx.fill();ctx.restore();
     }
+    // Immediate action feedback belongs to the presentation, not the saved
+    // progression schema. Existing GameForge events remain the only authority.
+    if(feedback){
+      const age=(performance.now()-feedback.start)/1350;
+      if(age>=1)feedback=null;
+      else{
+        const color=feedback.kind==='locked'?'#ffaf91':
+          feedback.kind==='collect'?'#ffe3a6':
+          feedback.kind==='relay'?'#84ffdb':'#abedff';
+        ctx.save();ctx.globalAlpha=Math.max(0,1-age);ctx.textAlign='center';
+        ctx.strokeStyle=color;ctx.lineWidth=3*(1-age)+1;
+        ctx.beginPath();ctx.arc(GF.player.x,GF.player.y,GF.player.r+15+age*27,0,Math.PI*2);ctx.stroke();
+        ctx.font='bold 13px system-ui';ctx.fillStyle=color;
+        ctx.shadowColor='#000';ctx.shadowBlur=4;
+        ctx.fillText(feedback.text,GF.player.x,GF.player.y-46-age*18);
+        ctx.restore();
+      }
+    }
     ctx.textAlign='start';ctx.restore();spatial.frame();
   };
   applyRoom();if(initialSnapshot||session.rooms[session.active].snapshot)pause();updateControls();
@@ -226,5 +244,5 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
   if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}
-  return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events)}),canSave:()=>true};
+  return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events),feedback:feedback?{kind:feedback.kind,text:feedback.text}:null}),canSave:()=>true};
 }

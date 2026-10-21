@@ -1,0 +1,20 @@
+name: JM Game Engine — Actual Contact Physics
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/jm-federation-contact-physics-v1.js'
+      - 'coding-estate/integration/jm-federation-contact-physics-selftest.mjs'
+      - '.github/workflows/jm-game-engine-contact-physics.yml'
+  workflow_dispatch:
+jobs:
+  physics-contact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove shared COMBOUND contact physics
+        run: node coding-estate/integration/jm-federation-contact-physics-selftest.mjs
+      - name: Existing coding estate integration regression
+        run: node coding-estate/integration/integration-selftest.mjs

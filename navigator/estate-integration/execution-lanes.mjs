@@ -4,13 +4,15 @@ import {validateRegistry,planEstateRoute} from '../../coding-estate/integration/
 import {CadingCompiler} from '../../coding-estate/sovereign-batch-four/direct/toolchain-native.mjs';
 import {executeNativeContacts} from '../../coding-estate/integration/theogamy-contact.mjs';
 import {runOSAdoptionProof} from '../../coding-estate/integration/adoption-proofs.mjs';
+import {runEmbodiedEight} from '../../coding-estate/everybody/role-qualified-61/native/embodied-eight-route.mjs';
 
 export const OPERATOR_LANES=Object.freeze({
   route:{label:'Route a JM intention',input:'Build a touch visual game with drag aim, browser and Android delivery'},
   'compile-js':{label:'Cading → JavaScript',input:'source = landing.✓'},
   'compile-rust':{label:'Cading → Rust',input:'source = landing.✓'},
   gamecore:{label:'GameCore + visual contact',input:'RUN EXISTING GAMECORE CONTACT'},
-  os:{label:'RouteCore + OS contact',input:'RUN EXISTING OS CONTACT'}
+  os:{label:'RouteCore + OS contact',input:'RUN EXISTING OS CONTACT'},
+  embodied:{label:'JM speech → meaning → route',input:'open gate'}
 });
 function needInput(input) {
   if(typeof input!=='string'||!input.trim()||input.length>2000)throw Error('CONTACT_REQUIRED_OR_TOO_LONG');
@@ -45,6 +47,17 @@ export function runNativeOperatorLane(mode,input,registry){
     return {schema:'jm.estate.operator.return/0.2',mode,state:'NATIVE_GAMECORE_STATE_CHANGED',changed:true,
       executedBodies:['JM Parser','GameCoding','JMGameCore','JMVisualGraft','JMVisualRuntime'],result:contact,
       boundary:'Executed existing fixed Island/Establish native proof scenario. This does not turn the arbitrary input into a new game, nor demonstrate rendered GPU/Android play.'};
+  }
+  if(mode==='embodied'){
+    // Simulated owner identity is an existing deterministic JM donor test value,
+    // NOT authentication or permission on the host or service.
+    const contact=runEmbodiedEight({utterance:input,identity:'owner'});
+    if(contact.outcome.finalRoute!=='accepted.route'||!contact.outcome.permitted||contact.identities?.length!==8)
+      throw Error('EMBODIED_RECEIVER_HOLD');
+    return {schema:'jm.estate.operator.return/0.2',mode,state:'EMBODIED_ROUTE_EXECUTED',changed:true,
+      executedBodies:contact.identities.map(row=>row[0]),
+      result:{outcome:contact.outcome,stages:contact.identities,receiptDigests:Object.values(contact.stages).map(row=>row.receipt?.resultDigest||null)},
+      boundary:'Existing eight-body speech, gesture and contact demonstration. The owner role is SIMULATED inside the local proof, not real authentication. Exact recognised utterance only; no open-ended NLP, device speech capture, remote write or receiver deployment.'};
   }
   const proof=runOSAdoptionProof();
   if(!proof.passed||proof.receipts?.length!==4)throw Error('OS_CONTACT_HOLD');

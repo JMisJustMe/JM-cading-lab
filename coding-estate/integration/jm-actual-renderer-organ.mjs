@@ -197,12 +197,38 @@ class JMWorldRenderer3D {
  frame(game,scene,time){if(!this.gl||this.error)return;this.resize();const gl=this.gl;
  // Behind-and-above perspective: genuine JM WebGL 3D, not a 2D canvas projection.
  const p=game.player;this.focus=this.focus||[p.x,1,p.z];this.focus[0]+=(p.x-this.focus[0])*.10;this.focus[2]+=(p.z-this.focus[2])*.10;
- const drift=(game.camera==='ORBIT'?Math.sin(time*.16)*5.5:0);const cam=[this.focus[0]+12+drift,16.5,this.focus[2]+26];const target=[this.focus[0],1.5,this.focus[2]];const vp=mat4Multiply(mat4Perspective(60*Math.PI/180,this.w/this.h,.15,185),mat4LookAt(cam,target));this.vp=vp;this.cam=cam;
+ const drift=(game.camera==='ORBIT'?Math.sin(time*.16)*5.5:0);const cam=[this.focus[0]+12+drift,16.5,this.focus[2]+26];const target=[this.focus[0],1.5,this.focus[2]];const vp=mat4Multiply(mat4Perspective(60*Math.PI/180,this.w/this.h,.15,185),mat4LookAt(cam,target));this.vp=vp;this.cam=cam;this.target=target;
  gl.clearColor(.015,.047,.081,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);this.drawSky(time);gl.useProgram(this.program);gl.uniform3fv(this.loc.eye,new Float32Array(cam));gl.uniform1f(this.loc.time,time);this.drawCalls=0;
  this.drawBatch(vp);
  const dynamic=game.sceneObjects(scene,time);
  for(const obj of dynamic)this.draw(obj,vp,cam,time);
  this.lastScene={source:scene?.scene_hash||null,drawCalls:this.drawCalls,webgl:true,actorCount:scene?.objects?.length||0,trianglesApprox:dynamic.length};
+ }
+ pickGround(clientX,clientY){
+  // Invert this scene's perspective camera ray onto the GameForge floor.
+  // This only selects a *requested destination*. GameForge retains movement,
+  // collision, door contact, progression and the actual player position.
+  if(!this.cam||!this.target||!this.w||!this.h)return null;
+  const box=this.canvas.getBoundingClientRect();
+  if(box.width<=0||box.height<=0)return null;
+  const nx=2*(clientX-box.left)/box.width-1;
+  const ny=1-2*(clientY-box.top)/box.height;
+  if(!Number.isFinite(nx)||!Number.isFinite(ny)||Math.abs(nx)>1||Math.abs(ny)>1)return null;
+  const eye=this.cam,forward=vec3Norm(vec3Sub(this.target,eye));
+  const right=vec3Norm(vec3Cross(forward,[0,1,0]));
+  const up=vec3Norm(vec3Cross(right,forward));
+  const spread=Math.tan(Math.PI/6),aspect=this.w/this.h;
+  const ray=vec3Norm([
+    forward[0]+right[0]*nx*spread*aspect+up[0]*ny*spread,
+    forward[1]+right[1]*nx*spread*aspect+up[1]*ny*spread,
+    forward[2]+right[2]*nx*spread*aspect+up[2]*ny*spread
+  ]);
+  if(ray[1]>=-.0001)return null;
+  const distance=-eye[1]/ray[1];
+  if(!Number.isFinite(distance)||distance<=0)return null;
+  const hit={x:eye[0]+ray[0]*distance,z:eye[2]+ray[2]*distance};
+  if(!Number.isFinite(hit.x)||!Number.isFinite(hit.z))return null;
+  return hit;
  }
  project(point){if(!this.vp)return null;const q=transformPoint(this.vp,point);if(q[3]<=.01)return null;return{x:(q[0]/q[3]*.5+.5)*this.canvas.clientWidth,y:(-.5*q[1]/q[3]+.5)*this.canvas.clientHeight,visible:Math.abs(q[0]/q[3])<1.25&&Math.abs(q[1]/q[3])<1.25}}
  proof(){return{schema:'jm.actual-engine.3d-rooftop-stage/2.0',renderPath:'JM Actual Engine-derived portable scene generation: v12.2 matrices/meshes + JM WebGL lit stage',webgl:!!this.gl&&!this.error,drawCalls:this.drawCalls,sceneHash:this.lastScene?.source||null,error:this.error,externals:0}}

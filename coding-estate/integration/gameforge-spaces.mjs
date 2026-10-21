@@ -71,8 +71,8 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   const use=document.getElementById('jm-space-use');use.onclick=act;
   window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D','e','E',' '].includes(e.key)){e.preventDefault();resume();keys.add(e.key.toLowerCase());goal=null;if((e.key.toLowerCase()==='e'||e.key===' ')&&!e.repeat)act();}});
   window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();axis={x:0,y:0};});
-  canvas.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);resume();const box=canvas.getBoundingClientRect(),sx=(e.clientX-box.left)*canvas.width/box.width,sy=(e.clientY-box.top)*canvas.height/box.height;goal={x:(sx-canvas.width/2)/camera.scale+camera.x,y:(sy-canvas.height/2)/camera.scale+camera.y};};canvas.onpointermove=null;canvas.onpointerup=()=>{};canvas.onpointercancel=()=>goal=null;
-  const spatial=viewFactory({GF,model,session,canvas},rendererFactory);
+  canvas.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);resume();if(spatial.isActive()){goal=spatial.pickGoal(e.clientX,e.clientY);return;}const box=canvas.getBoundingClientRect(),sx=(e.clientX-box.left)*canvas.width/box.width,sy=(e.clientY-box.top)*canvas.height/box.height;goal={x:(sx-canvas.width/2)/camera.scale+camera.x,y:(sy-canvas.height/2)/camera.scale+camera.y};};canvas.onpointermove=null;canvas.onpointerup=()=>{};canvas.onpointercancel=()=>goal=null;
+  const spatial=viewFactory({GF,model,session,canvas,getGoal:()=>goal&&{...goal}},rendererFactory);
   function updateControls(){const n=model.nearby(session,GF.player);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(model.progress(session).delivered?'Crossing restored':model.progress(session).beacon?'Return beacon to Crossing':'Power relays → claim beacon → return')+' · '+(isPaused()?'Saved / paused — move to resume':'Live');}
   GF.step=function(){const now=performance.now(),dt=Math.min(.033,Math.max(0,(now-last)/1000));last=now;if(isPaused()){updateControls();return;}
     let x=axis.x+(keys.has('arrowright')||keys.has('d')?1:0)-(keys.has('arrowleft')||keys.has('a')?1:0),y=axis.y+(keys.has('arrowdown')||keys.has('s')?1:0)-(keys.has('arrowup')||keys.has('w')?1:0);
@@ -101,5 +101,5 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
   document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
   if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}
-  return {capture,read:()=>({session:capture(),camera:{...camera},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events)}),canSave:()=>true};
+  return {capture,read:()=>({session:capture(),camera:{...camera},requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events)}),canSave:()=>true};
 }

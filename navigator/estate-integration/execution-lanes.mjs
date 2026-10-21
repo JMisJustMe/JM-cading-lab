@@ -56,7 +56,7 @@ export function runNativeOperatorLane(mode,input,registry){
       throw Error('EMBODIED_RECEIVER_HOLD');
     return {schema:'jm.estate.operator.return/0.2',mode,state:'EMBODIED_ROUTE_EXECUTED',changed:true,
       executedBodies:contact.identities.map(row=>row[0]),
-      result:{outcome:contact.outcome,stages:contact.identities,receiptDigests:Object.values(contact.stages).map(row=>row.receipt?.resultDigest||null)},
+      result:{outcome:contact.outcome,stages:contact.identities,receiptDigests:Object.values(contact.stages).flatMap(row=>row.receipt?.resultDigest?[row.receipt.resultDigest]:[])},
       boundary:'Existing eight-body speech, gesture and contact demonstration. The owner role is SIMULATED inside the local proof, not real authentication. Exact recognised utterance only; no open-ended NLP, device speech capture, remote write or receiver deployment.'};
   }
   const proof=runOSAdoptionProof();

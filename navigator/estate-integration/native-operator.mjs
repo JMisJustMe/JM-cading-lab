@@ -65,6 +65,7 @@ function mount() {
     $('jmOperatorPreview').hidden=true;
     $('jmOperatorDownload').disabled=true;
     delivered=null;
+    latestReturn=null;
   });
   function status(message){$('jmOperatorStatus').textContent=message}
   function trace(action,mode,state,receipt=''){

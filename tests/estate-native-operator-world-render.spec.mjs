@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
 const base=process.env.BASE_URL||'http://127.0.0.1:4177';
 fs.mkdirSync('qa',{recursive:true});
@@ -52,6 +53,27 @@ try{
   assert.equal(second.world.body,'humanimals');assert.equal(second.snapshot.hazards.length,3);assert.equal(second.snapshot.core.x,550);
   assert.notEqual(second.pixels.digest,first.pixels.digest,'DISTINCT_WORLD_PIXELS_REQUIRED');
   assert.notEqual(second.snapshot.hazards[0].type,first.snapshot.hazards[0].type);
+  assert.ok(await frame.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'WORLD_HORIZONTAL_OVERFLOW');
+  // Real touch tap drives the inherited native game action, not an adapter label.
+  const coreBox=await frame.locator('#cCore').boundingBox();
+  await page.touchscreen.tap(coreBox.x+coreBox.width/2,coreBox.y+coreBox.height/2);
+  const touched=await frame.evaluate(()=>window.JMRenderedWorldReadback());
+  assert.ok(touched.snapshot.p2<second.snapshot.p2,'TOUCH_ACTION_NO_GAME_CONSEQUENCE');
+  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#jmOperatorDownload').click()]);
+  assert.match(download.suggestedFilename(),/Resultant_World_OPEN_FIRST/);
+  const exported=await browser.newPage({viewport:{width:390,height:844}});
+  const exportErrors=[];exported.on('pageerror',e=>exportErrors.push(e.message));
+  const exportPath='/tmp/JM_GameForge_Resultant_World_OPEN_FIRST.html';
+  await download.saveAs(exportPath);
+  await exported.goto(pathToFileURL(exportPath).href);
+  await exported.waitForFunction(()=>Boolean(window.JMRenderedWorldReadback));
+  const standalone=await exported.evaluate(()=>window.JMRenderedWorldReadback());
+  assert.equal(standalone.world.body,'humanimals');
+  assert.equal(standalone.snapshot.p2,touched.snapshot.p2);
+  assert.ok(standalone.pixels.painted>3000);
+  assert.deepEqual(exportErrors,[]);
+  await exported.screenshot({path:'qa/estate-native-operator-world-standalone-phone.png'});
+  await exported.close();
   await page.locator('#jmOperatorPreview').scrollIntoViewIfNeeded();
   await page.screenshot({path:'qa/estate-native-operator-world-humanimals-phone.png'});
   const trace=await page.evaluate(()=>window.JMEstateIntegration.trace());
@@ -72,5 +94,5 @@ try{
   assert.match(await page.locator('#jmOperatorStatus').innerText(),/LOCAL_RETURN_HASH_MISMATCH/);
   assert.equal(await page.locator('#jmOperatorPreview').isVisible(),false);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({state:'WORLD_RENDER_BROWSER_PASS',viewport:'390x844',nativeGameWorldRendered:true,changedWorldPixels:true,physicsMovement:true,liveSnapshotReloadExact:true,canvasPixelRecovery:true,returnedTrace:true,failedChainHold:true,tamperHold:true,errors,physicalAndroid:false}));
+  console.log(JSON.stringify({state:'WORLD_RENDER_BROWSER_PASS',viewport:'390x844',nativeGameWorldRendered:true,changedWorldPixels:true,physicsMovement:true,touchGameAction:true,selfContainedFileFirstOpen:true,liveSnapshotReloadExact:true,canvasPixelRecovery:true,returnedTrace:true,failedChainHold:true,tamperHold:true,errors,physicalAndroid:false}));
 }finally{await browser.close()}

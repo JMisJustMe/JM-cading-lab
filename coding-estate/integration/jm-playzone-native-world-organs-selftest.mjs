@@ -25,7 +25,7 @@ check(p.move(-1,-1,1/30),'avatar movement');
 check(p.snapshot().steps>0,'animation progress');
 const models=p.models({object:(...a)=>({mesh:a[0],pos:a.slice(1,4)})});
 check(models.length>=8,'engine renderer objects');
-check(p.nearest({T:{kind:'GARDEN',alive:true,pos:{x:5,y:0,z:5}}},3).id==='T','contact proximity');
+check(p.nearest({T:{id:'T',kind:'GARDEN',alive:true,pos:{x:5,y:0,z:5}}},3).id==='T','contact proximity');
 const restored=p.restore({x:5,z:5});
 check(restored.x===5&&restored.z===5,'position recovery');
 console.log(JSON.stringify({schema:'jm.playzone.native-world-organ-proof/2.6',assertions,status:'PASS',boundary:'Node component proof; UI/WebGL/device separately verified'}));

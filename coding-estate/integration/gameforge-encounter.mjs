@@ -27,11 +27,17 @@ export function GameForgeEncounter(){
     phase:e.rooms[s.active].phase,shield:e.shield,wins:e.wins.slice(),
     guardian:{...e.rooms[s.active]}
   }}
-  function engage(s){
+  function engage(s,player,free){
     const e=ensure(s),r=e.rooms[s.active];
     if(r.phase==='won')return {kind:'encounter-already-won'};
     if(r.phase==='active')return {kind:'encounter-already-active'};
-    const [x,y]=spawn[s.active];
+    let [x,y]=spawn[s.active];
+    if(player&&typeof free==='function'){
+      const candidates=[[player.x+140,player.y],[player.x-140,player.y],
+        [player.x,player.y-140],[player.x,player.y+140]];
+      const near=candidates.find(q=>free(q[0],q[1],20));
+      if(near)[x,y]=near;
+    }
     Object.assign(r,{phase:'active',x,y,hp:3,cooldown:0,stun:0,attackDelay:1});
     e.shield=4;return {kind:'encounter-started',room:s.active};
   }

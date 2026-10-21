@@ -44,6 +44,8 @@ const variant=GameForgeSpaces({...world,body:'humanimals',hazards:3,targetX:550}
 const proof=await buildConnectedCarrier('/tmp/jm-connected-source-test');
 const html=fs.readFileSync('/tmp/jm-connected-source-test/index.html','utf8');
 assert.equal(readWorldBoot(html).world.spaces,3);assert.match(html,/window.GF=GF/);assert.match(html,/installGameForgeSpaces/);assert.match(html,/window.JMSpatialRoom=function buildJMSpatialRoom/);
+assert.match(html,/pickGround\(clientX,clientY\)/);
+assert.match(html,/requestedDestination:goal/);
 // Donor ancestry is protected: patched runtime shader must reach the actual packaged carrier.
 assert.match(html,/precision mediump float;attribute vec3 aPosition/);
 assert.doesNotMatch(html,/uniform float uGlow;uniform float uTime;varying vec3 vColor/);

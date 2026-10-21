@@ -115,6 +115,7 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     // This overlays the native sprite; it does not replace GF.player physics.
     ctx.save();ctx.translate(GF.player.x,GF.player.y);
     const speed=Math.hypot(GF.player.vx||0,GF.player.vy||0);
+    const moving=Math.min(1,speed/3),gait=Math.sin(performance.now()*.018)*moving;
     const facing=speed>.1?Math.atan2(GF.player.vy,GF.player.vx)+Math.PI/2:0;
     ctx.rotate(facing);
     const tint=r.body==='burning'?'#f4a46a':r.body==='humanimals'?'#71ead0':'#86baff';
@@ -123,14 +124,85 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     ctx.fillStyle='#20394c';ctx.strokeStyle='#8ed7e7';ctx.lineWidth=1.8;
     ctx.beginPath();ctx.moveTo(-14,2);ctx.lineTo(-11,-7);ctx.lineTo(11,-7);ctx.lineTo(14,2);ctx.lineTo(9,17);ctx.lineTo(-9,17);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.strokeStyle=tint;ctx.lineWidth=6;ctx.lineCap='round';
-    ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(-20,10);ctx.moveTo(11,0);ctx.lineTo(20,10);ctx.stroke();
-    ctx.strokeStyle='#5a8cab';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-6,16);ctx.lineTo(-8,24);ctx.moveTo(6,16);ctx.lineTo(8,24);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(-11,0);ctx.lineTo(-20,10+gait*5);ctx.moveTo(11,0);ctx.lineTo(20,10-gait*5);ctx.stroke();
+    ctx.strokeStyle='#5a8cab';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-6,16);ctx.lineTo(-8,24+gait*4);ctx.moveTo(6,16);ctx.lineTo(8,24-gait*4);ctx.stroke();
     ctx.fillStyle='#d8e9dc';ctx.beginPath();ctx.arc(0,-12,9.5,0,Math.PI*2);ctx.fill();
     ctx.fillStyle='#122d3b';ctx.fillRect(-9,-15,18,6);
     ctx.fillStyle=tint;ctx.fillRect(-6,-14,12,2);
     ctx.fillStyle='#fbdb9a';ctx.beginPath();ctx.arc(0,5,3,0,Math.PI*2);ctx.fill();
     ctx.restore();
     ctx.save();ctx.globalCompositeOperation='destination-over';ctx.fillStyle=palette[0];ctx.fillRect(0,0,900,570);ctx.restore();
+    // JM-authored 2D environmental dressing. These are visibly distinct
+    // structures derived from each room's original GameForge body identity,
+    // not a shared colour/image cover. Entirely visual: no phantom collision.
+    ctx.save();ctx.beginPath();ctx.rect(0,0,900,570);ctx.clip();
+    const visualTime=performance.now()*.001;
+    const halo=(x,y,radius,color,intensity=.20)=>{
+      ctx.save();ctx.globalAlpha=intensity;ctx.shadowColor=color;ctx.shadowBlur=12;
+      ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();ctx.restore();
+    };
+    // Foreground grid anchors the spatial proportions even when the source
+    // body uses its own internal background pattern.
+    ctx.lineWidth=1;ctx.strokeStyle=palette[2];ctx.globalAlpha=.10;
+    for(let x=45;x<900;x+=90){ctx.beginPath();ctx.moveTo(x,12);ctx.lineTo(x,558);ctx.stroke();}
+    for(let y=35;y<570;y+=90){ctx.beginPath();ctx.moveTo(12,y);ctx.lineTo(888,y);ctx.stroke();}
+    ctx.globalAlpha=1;
+    if(r.body==='burning'){
+      for(const [x,y] of [[76,92],[824,92],[76,490],[824,490]]){
+        ctx.fillStyle='#402e2a';ctx.strokeStyle='#c98457';ctx.lineWidth=4;
+        ctx.fillRect(x-23,y-22,46,44);ctx.strokeRect(x-20,y-20,40,40);
+        ctx.fillStyle='#d88551';ctx.fillRect(x-14,y-7,28,5);ctx.fillRect(x-14,y+5,28,5);
+        halo(x,y,10,'#ffb477',.27+.06*Math.sin(visualTime*2+x));
+      }
+      ctx.strokeStyle='#9a543f';ctx.lineWidth=7;ctx.globalAlpha=.50;
+      for(const y of [18,555]){
+        ctx.beginPath();ctx.moveTo(110,y);ctx.lineTo(790,y);ctx.stroke();
+        ctx.strokeStyle='#ffaf68';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(110,y);ctx.lineTo(790,y);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+      for(let i=0;i<13;i++){
+        const x=50+i*68,y=26+9*Math.sin(visualTime*.6+i);
+        halo(x,y,2.5,'#ffc68f',.16+.08*Math.sin(visualTime*1.4+i));
+      }
+    }else if(r.body==='humanimals'){
+      for(const [x,y] of [[70,84],[825,84],[70,490],[825,490]]){
+        ctx.save();ctx.globalAlpha=.84;ctx.fillStyle='#346e5b';
+        ctx.fillRect(x-7,y-18,14,49);
+        ctx.strokeStyle='#65ad8b';ctx.lineWidth=4;
+        ctx.beginPath();ctx.moveTo(x,y+25);ctx.lineTo(x-23,y+39);ctx.moveTo(x,y+25);ctx.lineTo(x+22,y+40);ctx.stroke();
+        for(const [dx,dy,rad] of [[0,-17,24],[-18,-7,19],[19,-7,18],[1,7,18]]){
+          ctx.fillStyle='#467e67';ctx.beginPath();ctx.arc(x+dx,y+dy,rad,0,Math.PI*2);ctx.fill();
+          ctx.strokeStyle='#8ed6ab';ctx.lineWidth=2;ctx.stroke();
+        }
+        ctx.restore();
+        halo(x,y-12,7,'#b8ffc6',.20+.06*Math.sin(visualTime*1.6+x));
+      }
+      for(let i=0;i<14;i++){
+        const x=42+(i*79)%820,y=56+(i*91)%470;
+        halo(x+Math.sin(visualTime+i)*6,y+Math.cos(visualTime*.8+i)*5,3,'#a7ffc4',.15+.09*Math.sin(visualTime+i));
+      }
+      ctx.strokeStyle='#6ba68a';ctx.lineWidth=2;ctx.globalAlpha=.22;
+      for(let i=0;i<7;i++){
+        const x=115+i*112;ctx.beginPath();ctx.moveTo(x,550);ctx.quadraticCurveTo(x-18,475,x+13,390);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+    }else{
+      for(const [x,y] of [[74,85],[822,85],[74,487],[822,487]]){
+        ctx.fillStyle='#274564';ctx.strokeStyle='#85c9e9';ctx.lineWidth=3;
+        ctx.fillRect(x-18,y-28,36,57);ctx.strokeRect(x-18,y-28,36,57);
+        ctx.fillStyle='#5fc9fb';ctx.fillRect(x-12,y-19,24,7);
+        for(let j=0;j<3;j++)ctx.fillRect(x-12,y-5+j*9,13+j*4,2);
+        halo(x,y-15,5,'#a2f4ff',.30+.06*Math.sin(visualTime*2+x));
+      }
+      ctx.strokeStyle='#4899d0';ctx.lineWidth=3;ctx.globalAlpha=.35;
+      for(let j=0;j<4;j++){
+        const y=40+j*163;ctx.beginPath();ctx.moveTo(10,y);ctx.lineTo(108,y);
+        ctx.moveTo(790,y);ctx.lineTo(892,y);ctx.stroke();
+      }
+      ctx.globalAlpha=1;
+      for(let i=0;i<8;i++)halo(130+i*95,35+Math.sin(visualTime+i)*6,2,'#7ad9ff',.23);
+    }
+    ctx.restore();
     for(const b of r.walls){ctx.fillStyle='#0008';ctx.fillRect(b.x+10,b.y+12,b.w,b.h);ctx.fillStyle=palette[1];ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle=palette[2];ctx.fillRect(b.x,b.y,b.w,5);ctx.strokeStyle='#ffffff22';ctx.strokeRect(b.x,b.y,b.w,b.h);}
     for(const d of r.doors){const open=session.opened.includes(d.edge);ctx.fillStyle=open?'#194e49':'#483421';ctx.fillRect(d.x-20,d.y-52,40,104);ctx.strokeStyle=open?'#9fffd1':'#f4c27c';ctx.lineWidth=4;ctx.strokeRect(d.x-22,d.y-54,44,108);ctx.fillStyle=open?'#9fffd1':'#f4c27c';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(d.to>session.active?'→':'←',d.x,d.y+4);}
     if(!session.collected.includes(r.key.id)){ctx.fillStyle='#fff0a0';ctx.shadowColor='#e7c46b';ctx.shadowBlur=14;ctx.beginPath();ctx.arc(r.key.x,r.key.y,12,0,7);ctx.fill();ctx.shadowBlur=0;ctx.fillStyle='#382508';ctx.fillRect(r.key.x-2,r.key.y-7,4,14);}
@@ -142,7 +214,9 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     if(Number.isFinite(next.x)&&Number.isFinite(next.y)){
       ctx.save();ctx.strokeStyle='#fff7aa';ctx.fillStyle='#ffedaa';
       ctx.lineWidth=3;ctx.setLineDash([6,5]);ctx.beginPath();ctx.arc(next.x,next.y,30,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
-      ctx.font='bold 12px system-ui';ctx.fillText('NEXT',next.x-20,Math.max(20,next.y-38));ctx.restore();
+      // Worded NEXT instructions belong in the fixed status bar. The world
+      // marker itself must not sit on top of relay labels or collectable names.
+      ctx.beginPath();ctx.moveTo(next.x,next.y-39);ctx.lineTo(next.x-8,next.y-51);ctx.lineTo(next.x+8,next.y-51);ctx.closePath();ctx.fill();ctx.restore();
     }
     ctx.textAlign='start';ctx.restore();spatial.frame();
   };

@@ -96,6 +96,18 @@ async function use(){await clearKnownLauncherOverlay('use-contact');assert.equal
 try{
   adb('install','-r',apk);const manifest=adb('shell','dumpsys','package',pkg);fs.writeFileSync(out+'/installed-package.txt',manifest);assert.ok(manifest.includes(pkg));assert.ok(!manifest.includes('android.permission.INTERNET'),'OFFLINE_PACKAGE_PERMISSION_HOLD');
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');await connect();
+  // This CI Android emulator's Pixel Launcher was independently observed
+  // repeatedly ANRing above the healthy JM WebView (see retained logcat).
+  // Quiesce only that identified launcher process WHILE our app is foreground;
+  // no change to the APK, the owner device or runtime game services.
+  const testEnvironment=[];
+  const isEmulator=adb('shell','getprop','ro.kernel.qemu')==='1';
+  if(isEmulator&&adb('shell','pm','path','com.google.android.apps.nexuslauncher').includes('package:')){
+    adb('shell','am','force-stop','com.google.android.apps.nexuslauncher');
+    testEnvironment.push('CI_PIXEL_LAUNCHER_QUIESCED');
+    await page.waitForFunction(()=>Boolean(window.JMConnectedWorldReadback?.()),null,{timeout:15000});
+  }
+  fs.writeFileSync(out+'/android-test-environment.json',JSON.stringify({isEmulator,interventions:testEnvironment}));
   const first=await page.evaluate(()=>window.JMRenderedWorldReadback());assert.ok(first.pixels.painted>20000);assert.equal(first.snapshot.active,0);
   // Cold Android emulators sometimes present a Pixel Launcher ANR over the
   // already running JM WebView. Recover only this known system overlay; never

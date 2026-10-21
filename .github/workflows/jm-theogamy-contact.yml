@@ -1,0 +1,20 @@
+name: JM THEOGAMY Cross-Body Contact
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/theogamy-contact.mjs'
+      - 'coding-estate/integration/theogamy-contact-selftest.mjs'
+      - '.github/workflows/jm-theogamy-contact.yml'
+  workflow_dispatch:
+jobs:
+  native-contact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: THEOGAMY native contact proof
+        run: node coding-estate/integration/theogamy-contact-selftest.mjs
+      - name: Existing 100-body integration regression
+        run: node coding-estate/integration/integration-selftest.mjs

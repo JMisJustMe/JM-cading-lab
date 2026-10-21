@@ -24,6 +24,8 @@ worldExample.flowtalk='utterance "enter the heat arena"\nas intent enterWorld(ta
 worldExample.caden='kading WorldCadence {\n cadence Enter {\n beat enter when world.allowed == true do world.ready = true\n recover denied do world.denied = true\n }\n}';
 worldExample.jmvm='machine WorldCheck {\n instruction ASSERT world.ready == true\n instruction SET world.verified = true\n instruction DING "WORLD_VERIFIED"\n instruction HALT\n}';
 export const NATIVE_WORLD_EXAMPLE=JSON.stringify(worldExample,null,2);
+const connectedExample={...worldExample,flowtalk:worldExample.flowtalk.replace(' world.body', ' world.spaces = 3\n world.body')};
+export const NATIVE_CONNECTED_WORLD_EXAMPLE=JSON.stringify(connectedExample,null,2);
 // Donor runtimes use object paths. Preflight the complete request before any
 // receiver executes; the operator grants no host function/service capability.
 function checkProgram(value) {
@@ -61,7 +63,7 @@ function executeNativeChain(input){
     chosenIntent:language.resolution.intent,bytecodeChecksums:{caden:cadence.bytecode.header.checksum,jmvm:machine.runtime.checksum}};
 }
 export const OPERATOR_LANES=Object.freeze({
-  'native-world':{label:'Native chain → playable GameForge world',input:NATIVE_WORLD_EXAMPLE},
+  'native-world':{label:'Native chain → playable GameForge world',input:NATIVE_CONNECTED_WORLD_EXAMPLE},
   'native-chain':{label:'FlowTalk → CadenVM → JMVM',input:NATIVE_CHAIN_EXAMPLE},
   route:{label:'Route a JM intention',input:'Build a touch visual game with drag aim, browser and Android delivery'},
   'compile-js':{label:'Cading → JavaScript',input:'source = landing.✓'},

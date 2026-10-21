@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {NATIVE_WORLD_EXAMPLE} from '../navigator/estate-integration/execution-lanes.mjs';
 import fs from 'node:fs';
 import {pathToFileURL} from 'node:url';
 import {chromium} from 'playwright';
@@ -11,7 +12,7 @@ try{
   page.on('pageerror',e=>{errors.push(e.message);console.log('WORLD_PAGE_ERROR',e.stack)});
   assert.equal((await page.goto(base+'/navigator/estate-integration/')).status(),200);
   await page.locator('#jmOperatorMode').selectOption('native-world');
-  const example=await page.locator('#jmOperatorIntent').inputValue();
+  const example=NATIVE_WORLD_EXAMPLE;
   const run=async input=>{
     await page.locator('#jmOperatorIntent').fill(input);await page.locator('#jmOperatorRun').click();
     await page.waitForFunction(()=>/^(WORLD_RENDERED|HOLD)/.test(document.getElementById('jmOperatorStatus').textContent),null,{timeout:30000});

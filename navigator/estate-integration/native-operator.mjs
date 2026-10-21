@@ -79,6 +79,11 @@ function mount() {
     if(!window.JMEstateIntegration)window.addEventListener('jm-estate-integration-ready',write,{once:true});
     else write();
   }
+  window.addEventListener('message',event=>{
+    const d=event.data;
+    if(event.source!==$('jmOperatorPreview').contentWindow||!worldLive||d?.token!==worldLive.token||d.type!=='jm.gameforge.spaces.event/1')return;
+    if(['transition','collect','locked'].includes(d.kind))trace('native.operator.world-event','native-world',d.kind,String(d.transitions));
+  });
   async function mountWorld(scene){
     const boot=readWorldBoot(scene),frame=$('jmOperatorPreview');
     const pending=waitWorldReturn(frame,boot.token,boot.world);
@@ -156,7 +161,7 @@ function mount() {
         const summary='WORLD_RENDERED · native-chain → GameCore → GameForge v3.16\n'
           +'Executed: '+result.executedBodies.join(' · ')+'\n'
           +'Actual renderer readback:\n'+JSON.stringify({world:render.world,pixels:render.pixels,snapshot:render.snapshot,nativeReceipts:result.result.receiver.receipts,chainStages:result.result.chain.stages},null,2)+'\n'
-          +'Boundary: 2D playable native GameForge worlds (tboys / burning / humanimals), authored object count and target geometry. Browser result; no open-ended world generation, physical Android or cloud claim.';
+          +'Boundary: 2D native GameForge worlds with optional three-space traversal, retained room state, solid geometry and camera follow. tboys / burning / humanimals bodies; authored object count and target geometry. Browser result; no open-ended world generation, physical Android or cloud claim.';
         latestReturn={schema:'jm.estate.operator.local-return/0.2',mode,input,summary,scene:delivered};
         $('jmOperatorDownload').disabled=false;
         status(summary);

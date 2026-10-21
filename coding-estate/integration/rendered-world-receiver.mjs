@@ -10,7 +10,8 @@ export function receiveExecutedWorld(chain){
   const contact=gameChain('entity World {\n entered = false\n}\nmechanic Enter {\n requires world.verified == true\n effect world.entered = true\n}',
     'organ WorldOrgan {\n handles = [World]\n rules = [Enter]\n invariants = {\n world.entered == true\n }\n}\nsystem WorldSystem {\n organs = [WorldOrgan]\n events = [Enter]\n identity = "JM.Estate.AuthoredWorld"\n}',chain.state);
   if(!contact.dispatch.executions.every(x=>x.applied))throw Error('WORLD_GAMECORE_HOLD');
-  const world={body:w.body,hazards:w.hazards,targetX:w.targetX,entered:contact.dispatch.state.world.entered};
+  if(w.spaces!==undefined&&w.spaces!==3)throw Error('SPACES_SPEC_HOLD');
+  const world={...(w.spaces?{spaces:3}:{}),body:w.body,hazards:w.hazards,targetX:w.targetX,entered:contact.dispatch.state.world.entered};
   const visual=JMVisualGraft.execute('visualgraft WorldView {\n mechanic: enter\n state_path: world.body\n expression: "world-{state}"\n asset: gameforge_v316\n contact: drag\n}',{world});
   const input=JMVisualRuntime.execute('interaction WorldTouch {\n field: arena\n inputs: ["drag","tap"]\n state_path: input.last\n feedback: collision\n render: immediate\n}',{type:'tap',value:'enter'},{world});
   const forge=GameForge.execute('gameforge EstateWorld {\n game: AuthoredWorld\n identity: JM.Estate.AuthoredWorld\n adapters: ["attachWorld"]\n build: buildWorld\n exports: ["browser"]\n}',

@@ -162,6 +162,8 @@ try{
   assert.equal(spatial.error,'','ANDROID_3D_SHADER_HOLD');
   assert.ok(spatial.webgl&&spatial.drawCalls>2&&spatial.variation>100,'ANDROID_3D_PIXELS_HOLD:'+JSON.stringify(spatial));
   assert.equal(spatial.roomBody,'humanimals','ANDROID_3D_RECEIVING_ROOM_HOLD');
+  assert.equal(spatial.objective?.kind,'key','ANDROID_3D_WORLD_GUIDANCE_HOLD');
+  assert.equal((await read()).objective.kind,spatial.objective.kind,'ANDROID_SHARED_OBJECTIVE_HOLD');
   assert.ok(spatial.architecture?.objectCount>=68&&spatial.architecture.features?.motifCount>=20,
     'ANDROID_3D_ARCHITECTURE_HOLD:'+JSON.stringify(spatial.architecture));
   fs.writeFileSync(out+'/android-3d-screen.png',execFileSync('adb',['exec-out','screencap','-p']));

@@ -1,4 +1,5 @@
 import {runNativeOperatorLane,OPERATOR_LANES} from './execution-lanes.mjs';
+import {saveLocalReturn,recoverLocalReturn} from './return-checkpoint.mjs';
 // JM Estate Native Operator v0.2 — extends the existing canonical integration door.
 // Only the existing JM Coding Estate / AILatheo execution path is invoked here.
 // No owner credentials, arbitrary target URLs, background writes, or production claims.
@@ -51,6 +52,7 @@ function mount() {
   if(!form)return;
   const $=id=>document.getElementById(id);
   let delivered=null;
+  let latestReturn=null;
   let registryPromise=null;
   const defaultSceneIntent='Build a touch visual game with drag aim, browser and Android delivery';
   $('jmOperatorMode').addEventListener('change',()=>{
@@ -65,12 +67,34 @@ function mount() {
     delivered=null;
   });
   function status(message){$('jmOperatorStatus').textContent=message}
+  function trace(action,mode,state,receipt=''){
+    const detail={mode,state,source:'JM Estate Native Operator',receipt:receipt?String(receipt).slice(0,64):undefined};
+    const write=()=>window.JMEstateIntegration?.receipt?.(action,detail);
+    if(!window.JMEstateIntegration)window.addEventListener('jm-estate-integration-ready',write,{once:true});
+    else write();
+  }
+  function displayReturn(v,recovery=false){
+    const option=$('jmOperatorMode').querySelector('option[value="'+v.mode+'"]');
+    if(!option)throw Error('RETURN_LANE_NOT_MOUNTED');
+    $('jmOperatorMode').value=v.mode;
+    $('jmOperatorIntent').value=v.input;
+    $('jmOperatorIntent').readOnly=['gamecore','os'].includes(v.mode);
+    delivered=v.mode==='scene'?v.scene:null;
+    $('jmOperatorPreview').hidden=!delivered;
+    if(delivered)$('jmOperatorPreview').srcdoc=delivered;
+    else $('jmOperatorPreview').srcdoc='';
+    $('jmOperatorDownload').disabled=!delivered;
+    latestReturn=v;
+    status((recovery?'LOCAL RECOVERY VERIFIED · ':'')+v.summary);
+  }
+
   form.addEventListener('submit',async event=>{
     event.preventDefault();
     $('jmOperatorRun').disabled=true;
     $('jmOperatorDownload').disabled=true;
     $('jmOperatorPreview').hidden=true;
     delivered=null;
+    latestReturn=null;
     status('CONTACT · Resolving the native coding registry and executing JM bodies…');
     try{
       registryPromise??=loadNativeRegistry();
@@ -82,23 +106,48 @@ function mount() {
         $('jmOperatorPreview').srcdoc=delivered;
         $('jmOperatorPreview').hidden=false;
         $('jmOperatorDownload').disabled=false;
-        status('NATIVE EXECUTION PASS (existing fixed AILatheo touch scene)\n'
+        const summary='NATIVE EXECUTION PASS (existing fixed AILatheo touch scene)\n'
           +'Executed: '+result.executedBodies.join(' · ')+'\n'
           +'Native receipt digests: '+result.receipts.length
           +'\nDelivery source digest (non-cryptographic): '+result.delivery.sha256
           +'\nPlan routes: '+result.plan.route.length
           +'\nThe intention selects JM bodies; the returned scene is the same bounded donor demonstration, not generated uniquely from the text. '
-          +'Export this standalone HTML for owner-device testing. Android build, cloud save and whole-Estate proof remain open.');
+          +'Export this standalone HTML for owner-device testing. Android build, cloud save and whole-Estate proof remain open.';
+        latestReturn={schema:'jm.estate.operator.local-return/0.2',mode,input:$('jmOperatorIntent').value,summary,scene:delivered};
+        status(summary);
+        trace('native.operator.pass',mode,'NATIVE_SCENE_EXECUTED',result.receipts.length);
       }else{
         const result=runNativeOperatorLane(mode,$('jmOperatorIntent').value,registry);
-        status(result.state+' · '+result.mode+'\n'
+        const summary=result.state+' · '+result.mode+'\n'
           +'Executed: '+result.executedBodies.join(' · ')+'\n'
           +'Changed: '+result.changed+'\n'
           +'Result:\n'+JSON.stringify(result.result,null,2)+'\n'
-          +'Boundary: '+result.boundary);
+          +'Boundary: '+result.boundary;
+        latestReturn={schema:'jm.estate.operator.local-return/0.2',mode,input:$('jmOperatorIntent').value,summary};
+        status(summary);
+        trace(result.state==='PLAN_ONLY'?'native.operator.plan':'native.operator.pass',mode,result.state,result.result?.receiptDigest||'');
       }
     }catch(error){registryPromise=null;status('HOLD · '+String(error?.message||error)+' · no native execution success claimed.')}
     finally{$('jmOperatorRun').disabled=false}
+  });
+  $('jmOperatorSave').addEventListener('click',async()=>{
+    if(!latestReturn){status('SAVE HOLD · No executed return to save.');return;}
+    $('jmOperatorSave').disabled=true;
+    try{
+      const saved=await saveLocalReturn(localStorage,latestReturn);
+      status(saved.state+' · '+latestReturn.mode+' · SHA-256 '+saved.sha256.slice(0,16)+'…\n'+latestReturn.summary);
+      trace('native.operator.local-save',latestReturn.mode,saved.state,saved.sha256);
+    }catch(e){status('SAVE HOLD · '+String(e.message||e)+' · no persistence claimed.')}
+    finally{$('jmOperatorSave').disabled=false}
+  });
+  $('jmOperatorRecover').addEventListener('click',async()=>{
+    $('jmOperatorRecover').disabled=true;
+    try{
+      const recovered=await recoverLocalReturn(localStorage);
+      displayReturn(recovered.value,true);
+      trace('native.operator.local-recovery',recovered.value.mode,recovered.state,recovered.sha256);
+    }catch(e){status('RECOVERY HOLD · '+String(e.message||e)+' · no recovery claimed.')}
+    finally{$('jmOperatorRecover').disabled=false}
   });
   $('jmOperatorDownload').addEventListener('click',()=>{
     if(!delivered)return;

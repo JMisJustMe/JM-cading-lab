@@ -17,7 +17,7 @@ export function GameForgeEncounter(){
       if(!r||!phase.includes(r.phase)||!Number.isInteger(r.hp)||r.hp<0||r.hp>3||
         !finite(r.x,900)||!finite(r.y,570)||!finite(r.cooldown,3)||!finite(r.stun,3)||!finite(r.attackDelay,3)||
         (r.phase==='won')!==(e.wins.includes(i))||(r.phase==='won'&&r.hp!==0)||
-        (r.phase==='active'&&r.hp===0)||(r.phase==='lost'&&e.shield!==0))
+        (r.phase==='active'&&r.hp===0)||(r.phase==='lost'&&r.hp<=0))
         throw Error('JM_ENCOUNTER_STATE_HOLD');
     });
     return true;

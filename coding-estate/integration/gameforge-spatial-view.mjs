@@ -1,12 +1,20 @@
 // Shared JM Actual 3D view of authoritative GameForge Spaces; no second game state.
 export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},rendererFactory){
   let renderer=null,view=null,active=false,lastSignature='',error='',layout=null,cameraMode='FOLLOW';
-  const controls=document.getElementById('jm-space-controls');
+  // Owner-device correction: switching dimension must be visible BEFORE the
+  // game canvas, not appended after a tall portrait arena and hidden below fold.
+  const toolbar=document.createElement('div');toolbar.id='jm-space-view-toolbar';
+  toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','Game viewing modes');
+  const label=document.createElement('span');label.id='jm-space-view-label';label.textContent='VIEW · 2D';
   const button=document.createElement('button');button.id='jm-space-dimension';
-  button.textContent='View in 3D';button.style.gridColumn='1/2';controls.append(button);
+  button.textContent='Switch to 3D';button.setAttribute('aria-pressed','false');
   const cameraButton=document.createElement('button');cameraButton.id='jm-space-camera';
-  cameraButton.textContent='Orbit camera';cameraButton.style.gridColumn='2/3';
-  cameraButton.disabled=true;controls.append(cameraButton);
+  cameraButton.textContent='Orbit camera';cameraButton.disabled=true;
+  toolbar.append(label,button,cameraButton);
+  canvas.parentElement.before(toolbar);
+  const style=document.createElement('style');
+  style.textContent='#jm-space-view-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 9px;border:1px solid #416474;border-radius:12px;background:#102b33;color:#e3fcff;font:600 13px system-ui}#jm-space-view-label{margin-right:auto;letter-spacing:.09em}#jm-space-view-toolbar button{min-height:44px;padding:7px 12px;border:1px solid #66a5c3;border-radius:10px;background:#143d51;color:#fff;font:600 13px system-ui;touch-action:manipulation}#jm-space-view-toolbar button:disabled{opacity:.44}#jm-space-view-toolbar #jm-space-dimension[aria-pressed="true"]{background:#256456;border-color:#94ffd7}@media(max-width:420px){#jm-space-view-label{flex-basis:100%}#jm-space-view-toolbar button{flex:1}}';
+  document.head.append(style);
   const point=(x,y)=>({x:(x-450)/18,z:(y-285)/18});
   cameraButton.onclick=()=>{
     if(!active)return;
@@ -87,7 +95,7 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
     if(renderer.gl.getError()!==renderer.gl.NO_ERROR){
       error='WEBGL_DRAW_HOLD';active=false;view.hidden=true;
       view.style.setProperty('display','none','important');cameraButton.disabled=true;
-      canvas.style.visibility='visible';button.textContent='3D HOLD · 2D ready';
+      canvas.style.visibility='visible';button.textContent='3D unavailable';button.setAttribute('aria-pressed','false');label.textContent='VIEW · 2D';
     }
   }
   button.onclick=()=>{
@@ -108,12 +116,14 @@ export function installGameForgeSpatialView({GF,model,session,canvas,getGoal},re
       cameraButton.disabled=!active;
       // Do not hide the 2D authority or move its touch targets under 3D.
       canvas.style.visibility='visible';
-      button.textContent=active?'Return to 2D':'View in 3D';
+      button.textContent=active?'Switch to 2D':'Switch to 3D';
+      button.setAttribute('aria-pressed',String(active));
+      label.textContent=active?'VIEW · 3D':'VIEW · 2D';
       if(active)frame();
     }catch(e){
       error=String(e.message||e);active=false;cameraButton.disabled=true;
       if(view){view.hidden=true;view.style.setProperty('display','none','important');}
-      canvas.style.visibility='visible';button.textContent='3D HOLD · 2D available';
+      canvas.style.visibility='visible';button.textContent='3D unavailable';button.setAttribute('aria-pressed','false');label.textContent='VIEW · 2D';
     }
   };
   function proof(){

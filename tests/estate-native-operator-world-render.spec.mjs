@@ -97,3 +97,6 @@ try{
   assert.deepEqual(errors,[]);
   console.log(JSON.stringify({state:'WORLD_RENDER_BROWSER_PASS',viewport:'390x844',nativeGameWorldRendered:true,changedWorldPixels:true,physicsMovement:true,touchGameAction:true,selfContainedFileFirstOpen:true,liveSnapshotReloadExact:true,canvasPixelRecovery:true,returnedTrace:true,failedChainHold:true,tamperHold:true,errors,physicalAndroid:false}));
 }finally{await browser.close()}
+
+// CP6 additive browser acceptance: source-gated resultant worlds rendered by inherited GameForge.
+await import('./mission002-world-law-render.spec.mjs');

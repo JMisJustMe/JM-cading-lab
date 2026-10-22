@@ -78,7 +78,10 @@ const out={schema:'jm.m002.workstream4.original-shared-mechanism/1',status:'PASS
    {media:'comic',schema:comic.state.schema,earned:comic.state.world.earned,reentries:comic.state.world.reentries,
     completed:comic.state.world.completed,units:comic.state.panels.length}],
   proof:'HOST_ACTUAL_EXECUTION_AND_PORTABLE_REEXECUTION',
-  holds:['exact original JS in CI','THEOGRAPHY','TheoPlus','rendered comic','physical Android']};
+  theoplus:{gaugerSchema:measuredGame.record.$schema,sourceSha256:THEOPLUS_GAUGER_SOURCE.sha256,
+    logicExecuted:measuredComic.logic.verified,gameClaim:measuredGame.status,comicClaim:measuredComic.status,
+    renderedGame:untestedGame.status,illustratedComic:untestedComic.status},
+  holds:['exact original JS not run in CI (independently executed from Library locally)','THEOGRAPHY native original','complete TheoPlus engine (bounded Gauger adapted)','rendered comic','physical Android owner acceptance']};
 fs.mkdirSync('qa/m002-foundations',{recursive:true});
 fs.writeFileSync('qa/m002-foundations/CONTACT_RECEIPT.json',JSON.stringify(out,null,2)+'\n');
 fs.writeFileSync('qa/m002-foundations/GAME_EXECUTED.json',JSON.stringify(game.state,null,2)+'\n');

@@ -21,7 +21,7 @@ public final class MainActivity extends Activity {
   static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.9";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
-  static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205;
+  static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205,CLOUD_RETURN_IMPORT=206;
   SharedPreferences sp;
   LinearLayout page;
   boolean wide;
@@ -325,6 +325,8 @@ public final class MainActivity extends Activity {
     btn(action,"Recovery  /  files and export",false,()->session("RECOVERY"));
     btn(page,"CONTINUE / Current JM Return Point →",true,()->{tab=9;render();});
     btn(page,"RESUME PROJECT / My working session →",false,()->{tab=8;render();});
+    btn(page,"LIVING HOME / Import cloud return →",false,()->cloudReturnImport());
+    btn(page,"LIVING HOME / Review pending return →",false,()->reviewCloudReturn());
     btn(page,"SETUP PLANS  /  One-touch JM configuration →",false,()->{tab=7;render();});
     btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
@@ -980,6 +982,41 @@ public final class MainActivity extends Activity {
       .setIntent(new Intent(this,MainActivity.class).setAction(Intent.ACTION_MAIN)).build();
     if(!m.requestPinShortcut(s,null))Toast.makeText(this,"HOLD · Shortcut not accepted",1).show();
   }
+  void cloudReturnImport(){
+    Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
+    i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
+    try{startActivityForResult(i,CLOUD_RETURN_IMPORT);}
+    catch(Exception e){Toast.makeText(this,"HOLD · JSON picker unavailable",Toast.LENGTH_LONG).show();}
+  }
+  void reviewCloudReturn(){
+    try{
+      JSONObject pending=CloudReturnBridge.pending(sp);
+      if(pending==null){Toast.makeText(this,"No staged Living Home return",Toast.LENGTH_LONG).show();return;}
+      String project=pending.getString("project_title");
+      String mission=pending.getString("mission_id");
+      String result=pending.getString("result");
+      int expected=pending.getInt("native_expected_revision");
+      String preview=result.length()>1000?result.substring(0,1000)+"…":result;
+      new AlertDialog.Builder(this).setTitle("JM / Living Home return · owner approval")
+        .setMessage("Project: "+project+"\\nMission: "+mission+"\\nExpected native revision: "+expected+
+          "\\n\\nUNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.\\n\\n"+
+          preview+"\\n\\nAppend as a NEW native session revision? No Return Point is overwritten.")
+        .setNegativeButton("Keep pending",null)
+        .setPositiveButton("Approve new JM checkpoint",(d,w)->{
+          try{
+            int revision=CloudReturnBridge.apply(sp);
+            Toast.makeText(this,"JM native checkpoint revision "+revision+" saved",Toast.LENGTH_LONG).show();
+            tab=8;render();
+          }catch(Exception e){
+            new AlertDialog.Builder(this).setTitle("HOLD · No project state changed")
+              .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+          }
+        }).show();
+    }catch(Exception e){
+      new AlertDialog.Builder(this).setTitle("HOLD · Pending return invalid")
+        .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+    }
+  }
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
@@ -992,7 +1029,23 @@ public final class MainActivity extends Activity {
     if(result!=RESULT_OK||data==null||data.getData()==null)return;
     Uri uri=data.getData();
     try{
-      if(req==EXPORT){
+      if(req==CLOUD_RETURN_IMPORT){
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        try(InputStream in=getContentResolver().openInputStream(uri)){
+          if(in==null)throw new IOException("Input unavailable");
+          byte[] b=new byte[2048];int n;
+          while((n=in.read(b))!=-1){
+            if(out.size()+n>CloudReturnBridge.MAX_LEDGER_BYTES)throw new IOException("Cloud return ledger exceeds 250 KB");
+            out.write(b,0,n);
+          }
+        }
+        JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+        if(active==null)throw new IllegalStateException("No active native JM project");
+        int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
+        JSONObject pending=CloudReturnBridge.select(out.toString("UTF-8"),active,revision);
+        CloudReturnBridge.stage(sp,pending);
+        reviewCloudReturn();
+      }else if(req==EXPORT){
         JSONObject j=new JSONObject();
         j.put("schema",SCHEMA);j.put("root",sp.getString("root",""));
         j.put("focus",sp.getString("focus","CREATE"));

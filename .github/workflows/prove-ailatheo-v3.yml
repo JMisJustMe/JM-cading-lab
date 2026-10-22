@@ -94,6 +94,13 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:4177
         run: node tests/ailatheo-v3-creator-preview-render.spec.mjs
+      - name: Preserve source-derived game/comic and OneBody results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-m002-foundational-game-comic
+          path: qa/m002-foundations/
+          if-no-files-found: warn
       - name: Upload Workbench visual receipts
         if: always()
         uses: actions/upload-artifact@v4

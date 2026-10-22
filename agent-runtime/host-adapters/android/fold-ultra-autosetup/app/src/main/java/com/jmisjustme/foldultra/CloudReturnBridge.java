@@ -61,7 +61,8 @@ public final class CloudReturnBridge {
       JSONObject outgoing=r.getJSONObject("outgoing");
       if(!"JM.LivingHome.CloudMission/1.0".equals(outgoing.optString("schema",""))||
           !mission.equals(outgoing.optString("missionId",""))||
-          !challenge.equals(outgoing.optString("challenge","")))
+          !challenge.equals(outgoing.optString("challenge",""))||
+          !r.getString("project").equals(outgoing.optString("project","")))
         throw new IllegalArgumentException("Mission source/challenge mismatch");
       JSONObject clean=new JSONObject();
       clean.put("schema","JM.FoldCloudReturnPending/1");

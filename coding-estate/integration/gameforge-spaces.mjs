@@ -1,10 +1,37 @@
 // Additive spatial organ for the recovered GameForge receiver, not a new engine.
 // Inherits GF.player/GF.step/GF.draw and native body/hazard consequences.
 // Axis-separated blocking + bounded dt follows FTR v0.5.1 controls/world donors.
-export function GameForgeSpaces(world,encounterFactory){
+export function GameForgeSpaces(world,encounterFactory,contactBoot=null){
   const order=['tboys','burning','humanimals'],offset=order.indexOf(world.body);
   if(offset<0||world.spaces!==3)throw Error('SPACES_SPEC_HOLD');
-  const spec=JSON.stringify({body:world.body,hazards:world.hazards,targetX:world.targetX,spaces:3});
+  // An explicit first-open CP7 capsule opts in. Ordinary GameForge saves,
+  // progression, quests, controls and donor rendering remain untouched.
+  const contactEnabled=contactBoot!==null;
+  if(contactEnabled && (contactBoot?.schema!=='jm.m002.cp7.inworld-contact/1' ||
+    !['bridge','arena'].includes(contactBoot.kind) ||
+    contactBoot.kind!==(world.body==='humanimals'?'bridge':world.body==='tboys'?'arena':'unsupported')))
+    throw Error('CP7_CONTACT_BOOT_AUTHORITY_HOLD');
+  const spec=JSON.stringify({body:world.body,hazards:world.hazards,targetX:world.targetX,spaces:3,
+    ...(contactEnabled?{inWorldContact:'two-current-cp7'}:{})});
+  const stations=[{id:'A',x:255,y:480},{id:'B',x:765,y:480}];
+  const contactStart=()=>({schema:'jm.m002.cp7.contact-state/1',earned:[],receipts:[],
+    shocks:0,routeOpen:false});
+  const contactOf=s=>contactEnabled?s.contactLaw:null;
+  const contactWithin=(p,station)=>Math.hypot(p.x-station.x,p.y-station.y)<58;
+  function validateContact(s){
+    if(!contactEnabled){if(s.contactLaw!==undefined)throw Error('CP7_LEGACY_STATE_CROSSOVER_HOLD');return;}
+    const c=s.contactLaw;
+    if(!c||c.schema!=='jm.m002.cp7.contact-state/1'||!Array.isArray(c.earned)||
+       c.earned.length>2||c.earned.some((id,i)=>id!=='A'&&id!=='B'||c.earned.indexOf(id)!==i)||
+       !Array.isArray(c.receipts)||c.receipts.length!==c.earned.length||
+       c.receipts.some((r,i)=>r?.kind!=='CURRENT_EARNED'||r.id!==c.earned[i]||
+         r.x!==stations.find(p=>p.id===r.id)?.x||r.y!==480||r.order!==i+1)||
+       !Number.isInteger(c.shocks)||c.shocks<0||c.shocks>1||
+       (c.shocks===1&&!c.earned.includes('A'))||
+       c.routeOpen!==(c.earned.length===2)||
+       s.opened.length>0&&!c.routeOpen)
+       throw Error('CP7_EARNED_STATE_AUTHORITY_HOLD');
+  }
   const encounter=typeof encounterFactory==='function'?encounterFactory():null;
   const rooms=Array.from({length:3},(_,i)=>({id:i,body:order[(offset+i)%3],name:['Crossing','Relay Hall','Living Reach'][i],
     world:{body:order[(offset+i)%3],hazards:world.hazards,targetX:Math.max(500,Math.min(780,world.targetX-i*55)),entered:true},
@@ -17,7 +44,8 @@ export function GameForgeSpaces(world,encounterFactory){
     for(let i=0;i<steps;i++){const nx=x+(next.x-old.x)/steps,ny=y+(next.y-old.y)/steps;if(free(room,nx,y,r))x=nx;if(free(room,x,ny,r))y=ny;}
     return {x,y};
   }
-  function create(){return {schema:'jm.gameforge.connected-snapshot/1',spec,active:0,transitions:0,collected:[],opened:[],rooms:rooms.map((r,i)=>({visits:i===0?1:0,snapshot:null}))};}
+  function create(){return {schema:'jm.gameforge.connected-snapshot/1',spec,active:0,transitions:0,collected:[],opened:[],rooms:rooms.map((r,i)=>({visits:i===0?1:0,snapshot:null})),
+    ...(contactEnabled?{contactLaw:contactStart()}:{})};}
   function validate(s,requireCurrent=true){
     const scan=v=>{if(v&&typeof v==='object')for(const [key,value] of Object.entries(v)){if(['__proto__','prototype','constructor'].includes(key))throw Error('SPACES_UNSAFE_KEY_HOLD');scan(value)}};scan(s);
     if(!s||s.schema!=='jm.gameforge.connected-snapshot/1'||s.spec!==spec||!Number.isInteger(s.active)||s.active<0||s.active>2||!Number.isInteger(s.transitions)||s.transitions<0||s.transitions>100000)throw Error('SPACES_SESSION_HOLD');
@@ -28,16 +56,28 @@ export function GameForgeSpaces(world,encounterFactory){
     if(s.rooms.reduce((n,m)=>n+m.visits,0)!==s.transitions+1||s.rooms[s.active].visits<1||s.collected.some(k=>s.rooms[Number(k.slice(-1))].visits<1)||s.opened.some(e=>s.rooms[Number(e[0])].visits<1||s.rooms[Number(e[2])].visits<1))throw Error('SPACES_LINEAGE_HOLD');
     if(requireCurrent&&s.rooms.some(m=>m.visits>0&&!m.snapshot))throw Error('SPACES_VISITED_MEMORY_MISSING');
     if(requireCurrent&&!s.rooms[s.active].snapshot)throw Error('SPACES_CURRENT_STATE_MISSING');
-    validateProgress(s);encounter?.validate(s);return s;
+    validateProgress(s);validateContact(s);encounter?.validate(s);return s;
   }
   const progress=s=>s.progress||{powered:[],beacon:false,delivered:false};
   function validateProgress(s){const q=progress(s);if(!Array.isArray(q.powered)||new Set(q.powered).size!==q.powered.length||q.powered.some(i=>!Number.isInteger(i)||i<0||i>2||!s.collected.includes('key-'+i))||typeof q.beacon!=='boolean'||typeof q.delivered!=='boolean'||q.beacon&&q.powered.length!==3||q.delivered&&!q.beacon)throw Error('SPACES_OBJECTIVE_HOLD');return q;}
-  function nearby(s,p){const q=progress(s);if(Math.hypot(p.x-650,p.y-450)<65&&!q.powered.includes(s.active))return {kind:'relay',locked:!s.collected.includes('key-'+s.active),label:'Power room relay'};if(s.active===2&&Math.hypot(p.x-720,p.y-110)<65&&!q.beacon)return {kind:'beacon',locked:q.powered.length!==3,label:'Take living beacon'};if(s.active===0&&Math.hypot(p.x-120,p.y-440)<65&&q.beacon&&!q.delivered)return {kind:'deliver',label:'Restore Crossing'};return nearbyDoor(s,p);}
-  function nearbyDoor(s,p){const r=rooms[s.active];if(!s.collected.includes(r.key.id)&&Math.hypot(p.x-r.key.x,p.y-r.key.y)<65)return {kind:'collect',id:r.key.id,label:'Collect relay key'};const d=r.doors.find(d=>Math.hypot(p.x-d.x,p.y-d.y)<75);if(d)return {kind:'door',...d,locked:!s.opened.includes(d.edge)&&!s.collected.includes(r.key.id),label:'Enter '+rooms[d.to].name};return null;}
+  function nearby(s,p){
+    const c=contactOf(s);
+    if(c&&s.active===0)for(const station of stations)
+      if(!c.earned.includes(station.id)&&contactWithin(p,station))
+        return {kind:'current',id:station.id,x:station.x,y:station.y,label:'Claim current '+station.id};
+    const q=progress(s);if(Math.hypot(p.x-650,p.y-450)<65&&!q.powered.includes(s.active))return {kind:'relay',locked:!s.collected.includes('key-'+s.active),label:'Power room relay'};if(s.active===2&&Math.hypot(p.x-720,p.y-110)<65&&!q.beacon)return {kind:'beacon',locked:q.powered.length!==3,label:'Take living beacon'};if(s.active===0&&Math.hypot(p.x-120,p.y-440)<65&&q.beacon&&!q.delivered)return {kind:'deliver',label:'Restore Crossing'};return nearbyDoor(s,p);}
+  function nearbyDoor(s,p){const r=rooms[s.active];if(!s.collected.includes(r.key.id)&&Math.hypot(p.x-r.key.x,p.y-r.key.y)<65)return {kind:'collect',id:r.key.id,label:'Collect relay key'};const d=r.doors.find(d=>Math.hypot(p.x-d.x,p.y-d.y)<75);if(d)return {kind:'door',...d,
+    locked:!s.opened.includes(d.edge)&&(!s.collected.includes(r.key.id)||
+      Boolean(contactOf(s)&&!contactOf(s).routeOpen)),
+    label:contactOf(s)&&!contactOf(s).routeOpen?'Two currents required':'Enter '+rooms[d.to].name};return null;}
   // Pure authoritative next-goal readback. No new quest state or auto-routing.
   // A return objective is always a genuine GameForge contact point in this room.
   function objective(s){
     const room=rooms[s.active],q=progress(s),here=s.active;
+    if(contactOf(s)&&s.active===0&&!contactOf(s).routeOpen){
+      const target=stations.find(p=>!contactOf(s).earned.includes(p.id));
+      return {kind:'current',label:'Reach & claim current '+target.id,room:0,x:target.x,y:target.y};
+    }
     const at=(kind,label,x,y)=>({kind,label,room:here,x,y});
     if(!s.collected.includes(room.key.id))
       return at('key','Collect '+room.name+' key',room.key.x,room.key.y);
@@ -56,17 +96,43 @@ export function GameForgeSpaces(world,encounterFactory){
     if(door)return at('door','Enter '+rooms[door.to].name,door.x,door.y);
     return at('relay','Power room relay',650,450);
   }
-  function interact(s,p){validate(s,false);const n=nearby(s,p);if(!n)return {kind:'none'};if(n.locked)return {kind:'locked'};if(['relay','beacon','deliver'].includes(n.kind)){s.progress=structuredClone(progress(s));if(n.kind==='relay')s.progress.powered.push(s.active);if(n.kind==='beacon')s.progress.beacon=true;if(n.kind==='deliver')s.progress.delivered=true;return n;}if(n.kind==='collect'){s.collected.push(n.id);return n;}if(n.locked)return {kind:'locked'};if(!s.opened.includes(n.edge))s.opened.push(n.edge);const from=s.active;s.active=n.to;s.rooms[n.to].visits++;s.transitions++;return {kind:'transition',from,to:n.to,spawn:{x:n.to>from?110:790,y:285}};}
-  return {rooms,spec,create,validate,free,resolve,nearby,interact,progress,objective,encounter};
+  function interact(s,p){validate(s,false);const n=nearby(s,p);if(!n)return {kind:'none'};
+    if(n.locked)return {kind:'locked',label:n.label};
+    if(n.kind==='current'){
+      const c=contactOf(s),station=stations.find(x=>x.id===n.id);
+      if(!c||s.active!==0||!contactWithin(p,station)||c.earned.includes(n.id))
+        throw Error('CP7_CURRENT_UNEARNED_CLAIM_HOLD');
+      c.earned.push(n.id);c.receipts.push({kind:'CURRENT_EARNED',id:n.id,x:station.x,y:station.y,order:c.earned.length});
+      c.routeOpen=c.earned.length===2;validateContact(s);
+      return {kind:'current',id:n.id,routeOpen:c.routeOpen,source:'CP7_TWO_CURRENT_GAMEFORGE_CONTACT'};
+    }if(['relay','beacon','deliver'].includes(n.kind)){s.progress=structuredClone(progress(s));if(n.kind==='relay')s.progress.powered.push(s.active);if(n.kind==='beacon')s.progress.beacon=true;if(n.kind==='deliver')s.progress.delivered=true;return n;}if(n.kind==='collect'){s.collected.push(n.id);return n;}if(n.locked)return {kind:'locked'};if(!s.opened.includes(n.edge))s.opened.push(n.edge);const from=s.active;s.active=n.to;s.rooms[n.to].visits++;s.transitions++;return {kind:'transition',from,to:n.to,spawn:{x:n.to>from?110:790,y:285}};}
+  function contactShock(s,p){
+    const c=contactOf(s);
+    if(!c||s.active!==0||c.shocks!==0||!c.earned.includes('A')||
+       Math.hypot(p.x-510,p.y-480)>56)return null;
+    c.shocks=1;
+    p.x=120;p.y=285;p.vx=0;p.vy=0;
+    validateContact(s);
+    return {kind:'contact-reentry',retained:[...c.earned],shocks:c.shocks,
+      source:'CP7_TWO_CURRENT_SAFE_REENTRY'};
+  }
+  return {rooms,spec,create,validate,free,resolve,nearby,interact,contactShock,contactOf,stations,
+    progress,objective,encounter};
 }
 
 export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initialSnapshot,readArena,restoreArena,nativeStep,isPaused,resume,pause},factory,viewFactory,rendererFactory){
-  const model=factory(world,window.JMGameForgeEncounter);
+  const cp7Element=document.getElementById('jm-m002-cp7-boot');
+  let contactBoot=null;
+  if(cp7Element){
+    try{contactBoot=JSON.parse(cp7Element.textContent)}catch{throw Error('CP7_BOOT_INVALID_JSON_HOLD')}
+  }
+  const model=factory(world,window.JMGameForgeEncounter,contactBoot);
   let session=initialSnapshot||model.create();model.validate(session,Boolean(initialSnapshot));
   const events=[],keys=new Set();let goal=null,feedback=null,axis={x:0,y:0},last=performance.now(),persistError='',saveQueue=Promise.resolve();
   const camera={x:450,y:285,scale:1},canvas=GF.cv,ctx=GF.ctx,nativeDraw=GF.draw.bind(GF);
   const storage=window.JMWorldStorage;canvas.tabIndex=0;
-  const slot='JM_GAMEFORGE_CONNECTED_WORLD_v1_'+world.body+'_'+world.hazards+'_'+world.targetX;
+  const slot='JM_GAMEFORGE_CONNECTED_WORLD_v1_'+world.body+'_'+world.hazards+'_'+world.targetX+
+    (contactBoot?'_CP7_EARNED_CONTACT':'');
   // Retain the last observed durable bytes. Another tab, corrupt write or
   // external edit must not be silently repaired by a timer/lifecycle save.
   let durableValue=storage?storage.getItem(slot):null;
@@ -83,7 +149,9 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     if(spawn){GF.player.x=spawn.x;GF.player.y=spawn.y;GF.player.vx=GF.player.vy=0;}else if(!m.snapshot){GF.player.x=120;GF.player.y=285;}
     GF.fx=[];GFPLAY.particles=[];GF.flash=0;GFUX.firstMove=true;
     document.getElementById('jm-world-title').textContent=r.name+' · '+GFUX.info().game;
-    document.getElementById('jm-world-help').textContent='Move with arrows / WASD, hold the direction pad, or tap a destination. Collect keys, power room relays, claim the beacon in Living Reach and bring it home. Doors enter real rooms.';
+    document.getElementById('jm-world-help').textContent=contactBoot?
+      'TWO CURRENT TRIAL · Walk to glowing currents A and B, tap Claim, keep them through the shock. The gate opens only after both. Explore the existing three-room quest.' :
+      'Move with arrows / WASD, hold the direction pad, or tap a destination. Collect keys, power room relays, claim the beacon in Living Reach and bring it home. Doors enter real rooms.';
     GF.renderCrew();GF.updateBg();GF.update();goal=null;camera.x=GF.player.x;camera.y=GF.player.y;
     events.push({kind:'room.entered',room:r.id,body:r.body,transitions:session.transitions});
   }
@@ -94,7 +162,8 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     if(storage.getItem(slot)!==durableValue)throw Error('SPACES_STORAGE_CONFLICT_HOLD');
     storage.setItem(slot,packed);durableValue=packed;persistError='';
   }).catch(e=>{persistError=String(e.message||e)});return saveQueue;}
-  function act(){canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();const result=model.interact(session,GF.player);const names={collect:'KEY ACQUIRED',relay:'RELAY ONLINE',beacon:'BEACON CLAIMED',deliver:'CROSSING RESTORED',transition:'NEW ROOM',locked:'LOCKED'};if(names[result.kind])feedback={kind:result.kind,text:names[result.kind],start:performance.now()};events.push({...result,room:session.active});if(events.length>48)events.shift();if(result.kind==='transition')applyRoom(result.spawn);if(result.kind==='relay'){GF.energyVal=Math.min(100,GF.energyVal+25);for(const h of GF.hazards)h.type='boost';}if(['collect','transition','relay','beacon','deliver'].includes(result.kind))persist();updateControls();requestAnimationFrame(()=>{GF.draw();parent.postMessage({type:'jm.gameforge.spaces.event/1',token,kind:result.kind,from:result.from,to:result.to,active:session.active,body:GF.body.id,transitions:session.transitions,keys:session.collected.length},'*')});}
+  function act(){canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();const result=model.interact(session,GF.player);const names={collect:'KEY ACQUIRED',relay:'RELAY ONLINE',beacon:'BEACON CLAIMED',deliver:'CROSSING RESTORED',transition:'NEW ROOM',locked:'LOCKED',
+      current:'CURRENT EARNED'};if(names[result.kind])feedback={kind:result.kind,text:names[result.kind],start:performance.now()};events.push({...result,room:session.active});if(events.length>48)events.shift();if(result.kind==='transition')applyRoom(result.spawn);if(result.kind==='relay'){GF.energyVal=Math.min(100,GF.energyVal+25);for(const h of GF.hazards)h.type='boost';}if(['collect','transition','relay','beacon','deliver','current'].includes(result.kind))persist();updateControls();requestAnimationFrame(()=>{GF.draw();parent.postMessage({type:'jm.gameforge.spaces.event/1',token,kind:result.kind,from:result.from,to:result.to,active:session.active,body:GF.body.id,transitions:session.transitions,keys:session.collected.length},'*')});}
   const controls=document.createElement('div');controls.id='jm-space-controls';
   controls.innerHTML='<div id="jm-space-pad" aria-label="Movement"><button data-move="0,-1" aria-label="Move up">▲</button><button data-move="-1,0" aria-label="Move left">◀</button><button data-move="0,1" aria-label="Move down">▼</button><button data-move="1,0" aria-label="Move right">▶</button></div><button id="jm-space-use">Explore</button><span id="jm-space-state"></span>';
   document.querySelector('.app').append(controls);
@@ -102,6 +171,12 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   for(const b of controls.querySelectorAll('[data-move]')){b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);canvas.focus({preventScroll:true});resume();goal=null;const a=b.dataset.move.split(',').map(Number);axis={x:a[0],y:a[1]};});for(const type of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(type,()=>axis={x:0,y:0});}
   controls.addEventListener('contextmenu',e=>e.preventDefault());controls.addEventListener('selectstart',e=>e.preventDefault());canvas.parentElement.addEventListener('contextmenu',e=>e.preventDefault());
   const use=document.getElementById('jm-space-use');use.onclick=act;
+  if(contactBoot){
+    const law=document.createElement('div');law.id='jm-cp7-state';
+    law.setAttribute('role','status');law.setAttribute('aria-live','polite');
+    law.style.cssText='grid-column:1/-1;padding:6px 9px;border:1px solid #61b9a9;border-radius:9px;background:#092b33;color:#c8fff0;font:700 14px system-ui';
+    law.textContent='A ○   B ○   WORLD LAW: DENIED';controls.append(law);
+  }
   // Optional encounter controls sit with (not over) the native touch deck.
   const battle=document.createElement('div');battle.id='jm-space-battle';
   battle.innerHTML='<button id="jm-space-engage" type="button">Engage guardian</button><button id="jm-space-pulse" type="button" disabled>⚡ Pulse</button><span id="jm-space-battle-state" aria-live="polite">Optional encounters · no effect on relay quest</span>';
@@ -129,7 +204,17 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.addEventListener('keyup',e=>keys.delete(e.key.toLowerCase()));window.addEventListener('blur',()=>{keys.clear();axis={x:0,y:0};});
   canvas.onpointerdown=e=>{e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);resume();if(spatial.isActive()){goal=spatial.pickGoal(e.clientX,e.clientY);return;}const box=canvas.getBoundingClientRect(),sx=(e.clientX-box.left)*canvas.width/box.width,sy=(e.clientY-box.top)*canvas.height/box.height;goal={x:(sx-canvas.width/2)/camera.scale+camera.x,y:(sy-canvas.height/2)/camera.scale+camera.y};};canvas.onpointermove=null;canvas.onpointerup=()=>{};canvas.onpointercancel=()=>goal=null;
   const spatial=viewFactory({GF,model,session,canvas,getGoal:()=>goal&&{...goal}},rendererFactory);
-  function updateControls(){const n=model.nearby(session,GF.player),task=model.objective(session);use.textContent=n?(n.locked?'Key needed':n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'NEXT · '+task.label+' · Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(isPaused()?'Saved / paused — move to resume':'Live');const ec=model.encounter?.view(session);
+  function updateControls(){const n=model.nearby(session,GF.player),task=model.objective(session);use.textContent=n?(n.locked?(contactBoot?n.label:'Key needed'):n.label):'Explore';use.disabled=!n;document.getElementById('jm-space-state').textContent=persistError?'Persistence HOLD · '+persistError:'NEXT · '+task.label+' · Keys '+session.collected.length+'/3 · relays '+model.progress(session).powered.length+'/3 · '+(isPaused()?'Saved / paused — move to resume':'Live');const ec=model.encounter?.view(session);
+    if(contactBoot){
+      const c=model.contactOf(session);
+      const route=c?.routeOpen?'ROUTE UNLOCKED':'GATE HELD';
+      document.getElementById('jm-space-state').textContent=
+        'CURRENTS '+c.earned.length+'/2 · '+route+' · SHOCKS '+c.shocks+' · NEXT '+task.label+
+        (persistError?' · PERSISTENCE HOLD '+persistError:'');
+      document.getElementById('jm-cp7-state').textContent=
+        (c.earned.includes('A')?'A ✓':'A ○')+'   '+(c.earned.includes('B')?'B ✓':'B ○')+
+        '   '+(c.routeOpen?'WORLD LAW: PASS':'WORLD LAW: DENIED');
+    }
     if(ec){
       engageButton.disabled=ec.phase==='won'||ec.phase==='active';
       engageButton.textContent=ec.phase==='won'?'Guardian cleared':ec.phase==='lost'?'Retry encounter':'Engage guardian';
@@ -143,6 +228,13 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     if(goal&&!x&&!y){const dx=goal.x-GF.player.x,dy=goal.y-GF.player.y,d=Math.hypot(dx,dy);if(d<9)goal=null;else{x=dx/d;y=dy/d;}}
     const norm=Math.max(1,Math.hypot(x,y)),old={x:GF.player.x,y:GF.player.y};GF.player.vx=x/norm*230*dt;GF.player.vy=y/norm*230*dt;
     nativeStep();const p=model.resolve(model.rooms[session.active],old,GF.player,GF.player.r);GF.player.x=p.x;GF.player.y=p.y;
+    const contactRecovery=model.contactShock(session,GF.player);
+    if(contactRecovery){
+      goal=null;keys.clear();axis={x:0,y:0};GF.player.vx=GF.player.vy=0;
+      events.push({...contactRecovery,room:session.active});
+      feedback={kind:'contact-reentry',text:'SHOCK · CURRENTS PRESERVED',start:performance.now()};
+      persist();
+    }
     const encounterResult=model.encounter?.step(session,GF.player,dt,(x,y,r)=>model.free(model.rooms[session.active],x,y,r));
     if(encounterResult){
       events.push({...encounterResult,room:session.active});
@@ -250,6 +342,29 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     }
     ctx.restore();
     for(const b of r.walls){ctx.fillStyle='#0008';ctx.fillRect(b.x+10,b.y+12,b.w,b.h);ctx.fillStyle=palette[1];ctx.fillRect(b.x,b.y,b.w,b.h);ctx.fillStyle=palette[2];ctx.fillRect(b.x,b.y,b.w,5);ctx.strokeStyle='#ffffff22';ctx.strokeRect(b.x,b.y,b.w,b.h);}
+    if(contactBoot&&session.active===0){
+      const c=model.contactOf(session),t=performance.now()*.003;
+      for(const station of model.stations){
+        const earned=c.earned.includes(station.id),pulse=5+Math.sin(t*2)*4;
+        ctx.save();ctx.shadowBlur=earned?8:18;ctx.shadowColor=earned?'#79f9b5':'#a0ecff';
+        ctx.fillStyle=earned?'#1d614c':'#175071';ctx.strokeStyle=earned?'#a9ffcf':'#b3f3ff';ctx.lineWidth=4;
+        ctx.beginPath();ctx.arc(station.x,station.y,24+pulse*.3,0,7);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#ecffff';ctx.font='bold 22px system-ui';ctx.textAlign='center';
+        ctx.fillText(earned?'✓':station.id,station.x,station.y+8);
+        ctx.font='bold 11px system-ui';ctx.fillText(earned?'RETAINED':'CLAIM',station.x,station.y-37);
+        ctx.restore();
+      }
+      ctx.save();ctx.strokeStyle=c.routeOpen?'#8dffb7':'#ffae80';ctx.lineWidth=6;ctx.setLineDash(c.routeOpen?[]:[7,6]);
+      ctx.beginPath();ctx.moveTo(831,215);ctx.lineTo(831,351);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=c.routeOpen?'#caffdf':'#ffbe99';ctx.textAlign='center';ctx.font='bold 13px system-ui';
+      ctx.fillText(c.routeOpen?'GATE READY':'2 CURRENTS',812,197);
+      if(c.shocks===0&&c.earned.includes('A')){
+        ctx.shadowColor='#ff8bb0';ctx.shadowBlur=16;ctx.strokeStyle='#ffa6c8';ctx.lineWidth=3;
+        ctx.beginPath();ctx.arc(510,480,56,0,7);ctx.stroke();
+        ctx.fillStyle='#fff4cf';ctx.fillText('SHOCK',510,399);
+      }
+      ctx.restore();
+    }
     for(const d of r.doors){const open=session.opened.includes(d.edge);ctx.fillStyle=open?'#194e49':'#483421';ctx.fillRect(d.x-20,d.y-52,40,104);ctx.strokeStyle=open?'#9fffd1':'#f4c27c';ctx.lineWidth=4;ctx.strokeRect(d.x-22,d.y-54,44,108);ctx.fillStyle=open?'#9fffd1':'#f4c27c';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(d.to>session.active?'→':'←',d.x,d.y+4);}
     // One embodied guardian per native room: GameForge coordinates, real AI
     // movement, actual shield/Pulse contact and independently recoverable wins.

@@ -456,6 +456,24 @@ public final class MainActivity extends Activity {
     if(incoming.isEmpty())return;
     // Clear delivery to prevent a replay on subsequent Activity lifecycle events.
     intent.removeExtra(Intent.EXTRA_TEXT);
+    // Explicit Living Home typed route: never fold cloud-return JSON into a freeform note.
+    if(incoming.startsWith("{")&&incoming.contains("JM.LivingHome.CP07.CloudReturn/1.0")){
+      if(incoming.length()>24000){
+        Toast.makeText(this,"HOLD · Share smaller ledger or use native JSON import",Toast.LENGTH_LONG).show();return;
+      }
+      try{
+        JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
+        if(active==null)throw new IllegalStateException("No active native JM project");
+        int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
+        JSONObject pending=CloudReturnBridge.select(incoming,active,revision);
+        CloudReturnBridge.stage(sp,pending);
+        reviewCloudReturn();
+      }catch(Exception e){
+        new AlertDialog.Builder(this).setTitle("HOLD · Living Home return refused")
+          .setMessage(e.getMessage()).setPositiveButton("OK",null).show();
+      }
+      return;
+    }
     if(incoming.length()>2500){
       Toast.makeText(this,"HOLD · Shared text exceeds 2,500 characters",Toast.LENGTH_LONG).show();
       return;

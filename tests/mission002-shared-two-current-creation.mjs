@@ -89,3 +89,6 @@ fs.writeFileSync('qa/m002-foundations/COMIC_STORYBOARD.json',JSON.stringify(comi
 fs.writeFileSync('qa/m002-foundations/ONEBODY_GAME_PORTABLE.json',JSON.stringify(game.oneBody.portable,null,2)+'\n');
 fs.writeFileSync('qa/m002-foundations/ONEBODY_COMIC_PORTABLE.json',JSON.stringify(comic.oneBody.portable,null,2)+'\n');
 console.log(JSON.stringify(out));
+
+// CP6 additive descendant: run the inherited actual native-world recipient proof.
+await import('./mission002-world-law-native-contact.mjs');

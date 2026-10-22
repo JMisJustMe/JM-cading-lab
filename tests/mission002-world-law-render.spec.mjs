@@ -44,20 +44,20 @@ try{
   eq(arena(before).core.x,spec.targetX,'TARGET_NOT_APPLIED');
   yes(before.pixels.painted>3000,'NO_CANVAS_PAINT');
   const loc=page.locator('#cv'),box=await loc.boundingBox();yes(Boolean(box),'NATIVE_GAME_CANVAS_MISSING');
-  await page.mouse.move(box.x+box.width*.14,box.y+box.height*.78);
-  await page.mouse.down();
-  await page.mouse.move(box.x+box.width*.06,box.y+box.height*.84,{steps:6});
-  await page.mouse.up();await page.waitForTimeout(140);
+  await loc.focus();
+  await page.keyboard.down('ArrowRight');await page.waitForTimeout(260);await page.keyboard.up('ArrowRight');
+  await page.waitForTimeout(100);
   const moved=await page.evaluate(()=>window.JMRenderedWorldReadback());
-  yes(Math.abs(arena(moved).player.x-arena(before).player.x)>2,'ACTUAL_INPUT_NO_MOVEMENT');
+  yes(arena(moved).player.x>arena(before).player.x+2,'ACTUAL_KEYBOARD_MOVEMENT_MISSING');
+  const touch=page.locator('#jm-space-dimension');yes(await touch.count()===1,'NATIVE_3D_TOUCH_CONTROL_MISSING');
+  await touch.tap();
+  await page.waitForFunction(()=>window.JMConnectedWorldReadback()?.spatial?.active===true,null,{timeout:12000});
+  const acted=await page.evaluate(()=>window.JMConnectedWorldReadback());
+  yes(acted.spatial.webgl===true&&acted.spatial.drawCalls>2,'REAL_TOUCH_NO_3D_GAME_CONSEQUENCE');
   await page.screenshot({path:mkdir+'/CP6_'+spec.kind.toUpperCase()+'_PHONE.png',fullPage:true});
-  const touch=page.locator('#cCore');yes(await touch.count()===1,'TOUCH_ACTION_MISSING');
-  const p2=arena(moved).p2;await touch.tap();await page.waitForTimeout(80);
-  const acted=await page.evaluate(()=>window.JMRenderedWorldReadback());
-  yes(arena(acted).p2<p2,'REAL_TOUCH_NO_GAME_CONSEQUENCE');
   eq(errors,[],'BROWSER_RUNTIME_ERRORS');
   results.push({kind:spec.kind,body:spec.body,painted:before.pixels.painted,pixelDigest:before.pixels.digest,initialX:arena(before).player.x,
-    movedX:arena(moved).player.x,p2Before:p2,p2After:arena(acted).p2,sourceSha256:output.source.sha256,
+    movedX:arena(moved).player.x,threeDTouch:acted.spatial.active,webglCalls:acted.spatial.drawCalls,sourceSha256:output.source.sha256,
     receiverReceipt:output.recipient.stateDigest,openFirstHtml:file});
   await page.close();
  }

@@ -37,10 +37,10 @@ const comic=executeSharedTwoCurrentCreation({medium:'comic',kind:'arena',actions
 test(comic.state.schema==='jm.m002.comic-sequence/1','COMIC_RECIPIENT_IDENTITY');
 test(comic.state.panels.length===arena.length,'REAL_PANELS_FROM_ACTION');
 test(comic.state.panels.filter(p=>p.shot==='close-up').length===2,'EARNED_PANEL_CAUSAL');
-test(comic.state.panels.filter(p=>p.shot==='wide-return').length===2,'RECOVERED_PANEL_CAUSAL');
+test(comic.state.panels.filter(p=>p.shot==='wide-return').length===3,'RECOVERED_PANEL_CAUSAL');
 test(comic.state.panels.some(p=>p.shot==='resolution'&&p.continuity.completed),'RESOLUTION_PANEL');
 test(comic.state.world.completed&&comic.state.world.earned.every(Boolean),'ARENA_REAL_CONSEQUENCE');
-test(comic.state.world.reentries===2,'ARENA_REENTRY');
+test(comic.state.world.reentries===3,'ARENA_REENTRY');
 test(comic.state.productionState==='STORYBOARD_JSON_NOT_ILLUSTRATED_PAGE','NO_FAKE_ARTWORK_PROOF');
 test(comic.oneBody.receipt.ok&&comic.oneBody.receipt.state.output_units===arena.length,'ONEBODY_COMIC_PORTABLE');
 test(executePortable(JSON.parse(JSON.stringify(comic.oneBody.portable))).state.completed===true,'COMIC_PORTABLE_REEXECUTION');

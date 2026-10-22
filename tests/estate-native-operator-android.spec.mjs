@@ -198,8 +198,25 @@ try{
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');
   await connect();assert.deepEqual((await read()).session,saved.session);
   const installedPath=adb('shell','pm','path',pkg).replace(/^package:/,'');adb('pull',installedPath,out+'/installed-exact.apk');assert.equal(sha(fs.readFileSync(out+'/installed-exact.apk')),proof.apk_sha256);fs.unlinkSync(out+'/installed-exact.apk');
-  await page.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.body+=' ';window.JMWorldStorage.setItem(k,JSON.stringify(e))});
-  await page.reload();await page.waitForFunction(()=>document.getElementById('jm-world-title').textContent.startsWith('WORLD HOLD'));assert.match(await page.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);
+  // Ordinary reload dispatches pagehide/visibilitychange and calls JMWorldSuspend,
+  // which legitimately rewrites a clean envelope. To prove boot-time tamper
+  // rejection, corrupt the durable slot, then KILL the Android process without
+  // a JS unload/save opportunity; start a fresh Android WebView from the APK.
+  await page.evaluate(()=>{
+    const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700';
+    const e=JSON.parse(window.JMWorldStorage.getItem(k));
+    if(e?.schema!=='jm.gameforge.spaces-envelope/1'||typeof e.body!=='string'||typeof e.sha256!=='string')throw Error('ANDROID_TAMPER_SETUP_HOLD');
+    e.body+=' ';window.JMWorldStorage.setItem(k,JSON.stringify(e));
+  });
+  await device.close();device=null;page=null;
+  adb('shell','am','force-stop',pkg);await new Promise(r=>setTimeout(r,500));
+  adb('shell','am','start','-W','-n',pkg+'/.MainActivity');
+  [device]=await _android.devices();assert.ok(device,'ANDROID_TAMPER_DEVICE_NOT_FOUND');
+  const heldWebview=await device.webView({pkg,timeout:30000});page=await heldWebview.page();
+  assert.ok(page.url().startsWith('file:///android_asset/'),'ANDROID_TAMPER_ASSET_LAUNCH_HOLD');
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.waitForFunction(()=>document.getElementById('jm-world-title')?.textContent.startsWith('WORLD HOLD'),null,{timeout:30000,polling:100});
+  assert.match(await page.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);
   assert.deepEqual(errors,[]);
   const result={schema:'jm.connected-world.android-runtime/1',status:'ANDROID_EMULATOR_RUNTIME_PASS',sourceHead:proof.source_head,apk_sha256:proof.apk_sha256,asset_sha256:proof.asset_sha256,androidAPI:adb('shell','getprop','ro.build.version.sdk'),abi:adb('shell','getprop','ro.product.cpu.abi'),webview:adb('shell','dumpsys','webviewupdate'),installed:true,launched:true,nativeTouchMovement:true,nativeTouchNavigation:true,doorTraversal:true,spatialReceiver:spatial,native3DGroundTapMovement:true,lifecyclePause:true,processDeathExactRecovery:true,hashTamperHold:true,offlinePermissionBoundary:true,privilegedJSBridge:false,physicalDevice:false,release:false};
   fs.writeFileSync(out+'/ANDROID_RUNTIME_PROOF.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result));

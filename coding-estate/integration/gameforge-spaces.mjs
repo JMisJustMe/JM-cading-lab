@@ -67,6 +67,9 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   const camera={x:450,y:285,scale:1},canvas=GF.cv,ctx=GF.ctx,nativeDraw=GF.draw.bind(GF);
   const storage=window.JMWorldStorage;canvas.tabIndex=0;
   const slot='JM_GAMEFORGE_CONNECTED_WORLD_v1_'+world.body+'_'+world.hazards+'_'+world.targetX;
+  // Retain the last observed durable bytes. Another tab, corrupt write or
+  // external edit must not be silently repaired by a timer/lifecycle save.
+  let durableValue=storage?storage.getItem(slot):null;
   const hash=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(x=>x.toString(16).padStart(2,'0')).join('');
   if(storage){const packed=storage.getItem(slot);if(packed){const e=JSON.parse(packed);if(e.token===token){if(e?.schema!=='jm.gameforge.spaces-envelope/1'||typeof e.body!=='string'||await hash(e.body)!==e.sha256)throw Error('SPACES_STORAGE_HASH_HOLD');session=JSON.parse(e.body);model.validate(session);session.rooms.forEach((m,i)=>{if(m.snapshot)window.JMValidateArena(m.snapshot,model.rooms[i].world)});}}}
   function applyRoom(spawn=null){
@@ -85,7 +88,12 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
     events.push({kind:'room.entered',room:r.id,body:r.body,transitions:session.transitions});
   }
   function capture(){session.rooms[session.active].snapshot=readArena();return structuredClone(model.validate(session));}
-  async function persist(){if(!storage)return;const body=JSON.stringify(capture());saveQueue=saveQueue.then(async()=>{storage.setItem(slot,JSON.stringify({schema:'jm.gameforge.spaces-envelope/1',token,body,sha256:await hash(body)}));persistError='';}).catch(e=>{persistError=String(e.message||e)});return saveQueue;}
+  async function persist(){if(!storage)return;const body=JSON.stringify(capture());saveQueue=saveQueue.then(async()=>{
+    const packed=JSON.stringify({schema:'jm.gameforge.spaces-envelope/1',token,body,sha256:await hash(body)});
+    // Check after the asynchronous digest and immediately before the write.
+    if(storage.getItem(slot)!==durableValue)throw Error('SPACES_STORAGE_CONFLICT_HOLD');
+    storage.setItem(slot,packed);durableValue=packed;persistError='';
+  }).catch(e=>{persistError=String(e.message||e)});return saveQueue;}
   function act(){canvas.focus({preventScroll:true});resume();session.rooms[session.active].snapshot=readArena();const result=model.interact(session,GF.player);const names={collect:'KEY ACQUIRED',relay:'RELAY ONLINE',beacon:'BEACON CLAIMED',deliver:'CROSSING RESTORED',transition:'NEW ROOM',locked:'LOCKED'};if(names[result.kind])feedback={kind:result.kind,text:names[result.kind],start:performance.now()};events.push({...result,room:session.active});if(events.length>48)events.shift();if(result.kind==='transition')applyRoom(result.spawn);if(result.kind==='relay'){GF.energyVal=Math.min(100,GF.energyVal+25);for(const h of GF.hazards)h.type='boost';}if(['collect','transition','relay','beacon','deliver'].includes(result.kind))persist();updateControls();requestAnimationFrame(()=>{GF.draw();parent.postMessage({type:'jm.gameforge.spaces.event/1',token,kind:result.kind,from:result.from,to:result.to,active:session.active,body:GF.body.id,transitions:session.transitions,keys:session.collected.length},'*')});}
   const controls=document.createElement('div');controls.id='jm-space-controls';
   controls.innerHTML='<div id="jm-space-pad" aria-label="Movement"><button data-move="0,-1" aria-label="Move up">▲</button><button data-move="-1,0" aria-label="Move left">◀</button><button data-move="0,1" aria-label="Move down">▼</button><button data-move="1,0" aria-label="Move right">▶</button></div><button id="jm-space-use">Explore</button><span id="jm-space-state"></span>';
@@ -309,7 +317,8 @@ export async function installGameForgeSpaces({GF,GFUX,GFPLAY,world,token,initial
   window.JMWorldSuspend=async()=>{pause();keys.clear();axis={x:0,y:0};goal=null;await persist();if(persistError)throw Error(persistError);return capture();};
   window.addEventListener('jm.host.pause',()=>{window.JMWorldSuspend().then(()=>window.JMHostPauseSaved=true).catch(e=>{window.JMHostPauseHold=String(e.message||e)})});
   window.addEventListener('jm.host.resume',()=>{keys.clear();axis={x:0,y:0};last=performance.now();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)window.JMWorldSuspend();});
-  if(storage){window.addEventListener('pagehide',()=>window.JMWorldSuspend());setInterval(persist,1800);}
+  const suspendFromHost=()=>window.JMWorldSuspend().catch(e=>{window.JMHostPauseHold=String(e.message||e);updateControls();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendFromHost();});
+  if(storage){window.addEventListener('pagehide',suspendFromHost);setInterval(persist,1800);}
   return {capture,read:()=>({session:capture(),camera:{...camera},objective:model.objective(session),requestedDestination:goal&&{...goal},spatial:spatial.proof(),room:structuredClone(model.rooms[session.active]),events:structuredClone(events),combat:model.encounter?.view(session)||null,feedback:feedback?{kind:feedback.kind,text:feedback.text}:null}),canSave:()=>true};
 }

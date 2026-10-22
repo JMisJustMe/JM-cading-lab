@@ -208,6 +208,11 @@ try{
     if(e?.schema!=='jm.gameforge.spaces-envelope/1'||typeof e.body!=='string'||typeof e.sha256!=='string')throw Error('ANDROID_TAMPER_SETUP_HOLD');
     e.body+=' ';window.JMWorldStorage.setItem(k,JSON.stringify(e));
   });
+  const corruptBytes=await page.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700'));
+  await page.waitForTimeout(3800);
+  const storageHold=await page.evaluate(async()=>{try{await window.JMWorldSuspend();return 'UNEXPECTED_SAVE'}catch(e){return e.message}});
+  assert.equal(storageHold,'SPACES_STORAGE_CONFLICT_HOLD');
+  assert.equal(await page.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700')),corruptBytes);
   await device.close();device=null;page=null;
   adb('shell','am','force-stop',pkg);await new Promise(r=>setTimeout(r,500));
   adb('shell','am','start','-W','-n',pkg+'/.MainActivity');

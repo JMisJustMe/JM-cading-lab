@@ -145,6 +145,12 @@ try{
   assert.deepEqual(await standalone.evaluate(()=>window.JMConnectedWorldReadback().session),stored);
   await standalone.screenshot({path:'qa/estate-native-operator-spaces-standalone-phone.png'});
   await standalone.evaluate(()=>{const k='JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700',e=JSON.parse(window.JMWorldStorage.getItem(k));e.body=e.body.replace('"active":0','"active":99');window.JMWorldStorage.setItem(k,JSON.stringify(e))});
+  const corruptBytes=await standalone.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700'));
+  // Exercise the real autosave interval and lifecycle save, not just a fast reload.
+  await standalone.waitForTimeout(3800);
+  const suspendHold=await standalone.evaluate(async()=>{try{await window.JMWorldSuspend();return 'UNEXPECTED_SAVE'}catch(e){return e.message}});
+  assert.equal(suspendHold,'SPACES_STORAGE_CONFLICT_HOLD');
+  assert.equal(await standalone.evaluate(()=>window.JMWorldStorage.getItem('JM_GAMEFORGE_CONNECTED_WORLD_v1_burning_5_700')),corruptBytes);
   await standalone.reload();await standalone.waitForFunction(()=>document.getElementById('jm-world-title').textContent.startsWith('WORLD HOLD'));
   assert.match(await standalone.locator('#jm-world-title').innerText(),/SPACES_STORAGE_HASH_HOLD/);
   await standalone.close();

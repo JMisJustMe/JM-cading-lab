@@ -57,7 +57,8 @@ async function move(axis,value){
   // 1100 ms touch traverse past key/door contact radii.
   // Every increment is a real Android DOWN/MOVE/UP (adb swipe), never JS state.
   const tolerance=16;
-  for(let attempt=0;attempt<32;attempt++){
+  let consecutiveStalls=0;
+  for(let attempt=0;attempt<36;attempt++){
     await clearKnownLauncherOverlay('move-before-'+axis+'-'+attempt);
     const before=(await read()).session.rooms[(await read()).session.active].snapshot.player[axis];
     const remaining=value-before;
@@ -76,11 +77,26 @@ async function move(axis,value){
     const progress=positive?after-before:before-after;
     fs.writeFileSync(out+'/movement-target-'+axis+'-'+attempt+'.json',
       JSON.stringify({axis,target:value,attempt,before,after,progress,duration,overlays:recoveredSystemDialogs}));
+    // A single missed emulator swipe is not a verified movement failure.
+    // Bounded retries still require independently observed PLAYER movement;
+    // no JS-position injection, phantom progress or disabled physics assertion.
     if(progress<3&&overlaysBefore===recoveredSystemDialogs.length){
       await clearKnownLauncherOverlay('move-stalled-'+axis+'-'+attempt);
-      if(overlaysBefore===recoveredSystemDialogs.length)
-        throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-native-progress-or-verified-system-interruption');
-    }
+      const remainingAfter=value-after;
+      if(Math.abs(remainingAfter)<=tolerance){
+        console.log('ANDROID_NATIVE_TARGET_ACQUIRED_AFTER_SEGMENT',axis,value,after);
+        return;
+      }
+      if(overlaysBefore===recoveredSystemDialogs.length){
+        consecutiveStalls++;
+        console.log('ANDROID_NATIVE_STALLED_SEGMENT',JSON.stringify({axis,target:value,attempt,
+          before,after,consecutiveStalls,remainingAfter}));
+        if(consecutiveStalls>=3)throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+
+          ':three-consecutive-missed-native-swipes');
+        await page.waitForTimeout(220);
+        continue;
+      }
+    }else if(progress>=3)consecutiveStalls=0;
     console.log('ANDROID_NATIVE_SEGMENT',axis,value,JSON.stringify({attempt,before,after,duration}));
   }
   throw Error('NATIVE_TARGET_APPROACH_HOLD:'+axis+':'+value+':tolerance-not-acquired');

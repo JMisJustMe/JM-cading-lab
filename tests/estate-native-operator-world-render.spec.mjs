@@ -100,3 +100,5 @@ try{
 
 // CP6 additive browser acceptance: source-gated resultant worlds rendered by inherited GameForge.
 await import('./mission002-world-law-render.spec.mjs');
+// CP7 opt-in source-selected GameForge route: ACTUAL in-world contact, then 2D/3D/recovery.
+await import('./mission002-cp7-inworld-render.spec.mjs');

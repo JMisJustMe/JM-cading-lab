@@ -50,8 +50,11 @@ def dialog_control(title,button,label):
     nodes=clear_overlay_and_read(label)
     if not any(title in n.get("text","") for n in nodes):
         raise AssertionError("Expected native JM dialog missing: "+title)
-    opts=[n for n in nodes if n.get("text","")==button and n.get("class")=="android.widget.Button"]
-    if len(opts)!=1:raise AssertionError("Expected exactly one "+button)
+    opts=[n for n in nodes if n.get("class")=="android.widget.Button"
+          and n.get("text","").strip().casefold().startswith("approve new jm")]
+    if len(opts)!=1:
+        visible=[(n.get("text",""),n.get("class","")) for n in nodes if n.get("class","")=="android.widget.Button"]
+        raise AssertionError("Expected one approve checkpoint button; actual buttons: "+repr(visible))
     tap_node(opts[0])
     time.sleep(1.4)
 

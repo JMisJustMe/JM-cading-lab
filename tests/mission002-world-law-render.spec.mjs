@@ -39,8 +39,9 @@ try{
   await page.waitForFunction(()=>typeof window.JMRenderedWorldReadback==='function'&&window.JMRenderedWorldReadback().pixels?.painted>3000,null,{timeout:35000});
   const before=await page.evaluate(()=>window.JMRenderedWorldReadback());
   eq(before.world.body,spec.body,'NATIVE_RENDERER_WRONG_BODY');
-  eq(before.snapshot.hazards.length,spec.hazards,'HAZARDS_NOT_APPLIED');
-  eq(before.snapshot.core.x,spec.targetX,'TARGET_NOT_APPLIED');
+  const arena=readback=>readback.snapshot.rooms[readback.snapshot.active].snapshot;
+  eq(arena(before).hazards.length,spec.hazards,'HAZARDS_NOT_APPLIED');
+  eq(arena(before).core.x,spec.targetX,'TARGET_NOT_APPLIED');
   yes(before.pixels.painted>3000,'NO_CANVAS_PAINT');
   const loc=page.locator('#cv'),box=await loc.boundingBox();yes(Boolean(box),'NATIVE_GAME_CANVAS_MISSING');
   await page.mouse.move(box.x+box.width*.14,box.y+box.height*.78);
@@ -48,15 +49,15 @@ try{
   await page.mouse.move(box.x+box.width*.06,box.y+box.height*.84,{steps:6});
   await page.mouse.up();await page.waitForTimeout(140);
   const moved=await page.evaluate(()=>window.JMRenderedWorldReadback());
-  yes(Math.abs(moved.snapshot.player.x-before.snapshot.player.x)>2,'ACTUAL_INPUT_NO_MOVEMENT');
+  yes(Math.abs(arena(moved).player.x-arena(before).player.x)>2,'ACTUAL_INPUT_NO_MOVEMENT');
   await page.screenshot({path:mkdir+'/CP6_'+spec.kind.toUpperCase()+'_PHONE.png',fullPage:true});
   const touch=page.locator('#cCore');yes(await touch.count()===1,'TOUCH_ACTION_MISSING');
-  const p2=moved.snapshot.p2;await touch.tap();await page.waitForTimeout(80);
+  const p2=arena(moved).p2;await touch.tap();await page.waitForTimeout(80);
   const acted=await page.evaluate(()=>window.JMRenderedWorldReadback());
-  yes(acted.snapshot.p2<p2,'REAL_TOUCH_NO_GAME_CONSEQUENCE');
+  yes(arena(acted).p2<p2,'REAL_TOUCH_NO_GAME_CONSEQUENCE');
   eq(errors,[],'BROWSER_RUNTIME_ERRORS');
-  results.push({kind:spec.kind,body:spec.body,painted:before.pixels.painted,pixelDigest:before.pixels.digest,initialX:before.snapshot.player.x,
-    movedX:moved.snapshot.player.x,p2Before:p2,p2After:acted.snapshot.p2,sourceSha256:output.source.sha256,
+  results.push({kind:spec.kind,body:spec.body,painted:before.pixels.painted,pixelDigest:before.pixels.digest,initialX:arena(before).player.x,
+    movedX:arena(moved).player.x,p2Before:p2,p2After:arena(acted).p2,sourceSha256:output.source.sha256,
     receiverReceipt:output.recipient.stateDigest,openFirstHtml:file});
   await page.close();
  }

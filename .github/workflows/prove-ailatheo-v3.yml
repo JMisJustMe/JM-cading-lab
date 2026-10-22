@@ -43,6 +43,7 @@ jobs:
       - run: node tests/estate-native-operator-spaces.mjs
       - run: node tests/mission002-source-aware-creation.mjs
       - run: node tests/mission002-sovereign-compiler-contact.mjs
+      - run: node tests/mission002-shared-two-current-creation.mjs
       - run: node tests/ailatheo-v3-workbench-contract.mjs
       - run: node tests/ailatheo-v3-standard-workbench.mjs
       - run: node tests/ailatheo-v3-gripcube-ui.mjs

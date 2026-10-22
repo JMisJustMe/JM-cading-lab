@@ -66,7 +66,8 @@ for(const d of defs){
  const reread=await recoverLocalReturn(storage);assert.deepEqual(readWorldBoot(reread.value.scene).world,world);assertions++;
  const tampered=JSON.parse(map.get(RETURN_SLOT));tampered.body+=' ';map.set(RETURN_SLOT,JSON.stringify(tampered));
  await assert.rejects(()=>recoverLocalReturn(storage),/LOCAL_RETURN_HASH_MISMATCH/);assertions++;
- await assert.rejects(()=>verifyOriginalCompilerWorldCapsule({...c,expectedWorld:{...c.expectedWorld,targetX:700}}),/CAPSULE_SHA256_HOLD/);assertions++;
+ await assert.rejects(()=>verifyOriginalCompilerWorldCapsule({...c,expectedWorld:{...c.expectedWorld,targetX:700}}),/PROGRAM_ALLOWLIST_HOLD/);assertions++;
+ await assert.rejects(()=>verifyOriginalCompilerWorldCapsule({...c,receiver:{...c.receiver,boundary:c.receiver.boundary+' altered'}}),/CAPSULE_SHA256_HOLD/);assertions++;
  await assert.rejects(()=>verifyOriginalCompilerWorldCapsule({...c,source:{...c.source,content:c.source.content+' '}}),/SOURCE_SHA256_HOLD/);assertions++;
  out.push({engine:d.engine,world,sourceSha256:c.source.sha256,receiptDigest:v.operator.execution.result.receiptDigest});
 }

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {executePortable} from '../coding-estate/everybody/compiler-core.mjs';
 import {executeSharedTwoCurrentCreation,ORIGINAL_SHARED_EXCHANGE} from '../coding-estate/integration/shared-two-current-creation.mjs';
+import {gaugeCreativeContact,THEOPLUS_GAUGER_SOURCE} from '../coding-estate/integration/theoplus-source-gauger-contact.mjs';
 let checks=0;
 const test=(value,name)=>{assert.ok(value,name);checks++};
 const mustThrow=(fn,re)=>{assert.throws(fn,re);checks++};
@@ -51,6 +52,25 @@ mustThrow(()=>executeSharedTwoCurrentCreation({medium:'comic',kind:'unknown',act
 mustThrow(()=>executeSharedTwoCurrentCreation({medium:'comic',kind:'arena',actions:['delete']}),/SELECTION_HOLD/);
 mustThrow(()=>executeSharedTwoCurrentCreation({medium:'game',kind:'bridge',actions:[]}),/SELECTION_HOLD/);
 mustThrow(()=>executeSharedTwoCurrentCreation({medium:'game',kind:'bridge',actions:Array(81).fill('right')}),/SELECTION_HOLD/);
+const gameBefore=JSON.stringify(game.state),comicBefore=JSON.stringify(comic.state);
+const measuredGame=gaugeCreativeContact(game,'executed-event-state');
+const measuredComic=gaugeCreativeContact(comic,'comic-storyboard');
+const untestedGame=gaugeCreativeContact(game,'rendered-playable-game');
+const untestedComic=gaugeCreativeContact(comic,'illustrated-comic');
+test(measuredGame.status==='EXECUTED_SCOPE_GAUGED'&&measuredComic.status==='EXECUTED_SCOPE_GAUGED','THEOPLUS_ACTUAL_PROVEN_SCOPE');
+test(measuredGame.record.record.possibility_states[0]==='POSSIBLE_NOW','THEOPLUS_PROVEN_STATE');
+test(measuredComic.logic.verified===true,'JMLOGIC_REAL_EXECUTION');
+test(untestedGame.status==='UNTESTED_SCOPE_HELD'&&untestedComic.status==='UNTESTED_SCOPE_HELD','NO_FAKE_RENDER_PROOF');
+test(untestedGame.record.record.possibility_states[0]==='NOT_YET_TESTED','NOT_IMPOSSIBLE');
+test(untestedComic.record.record.limit.location==='ILLUSTRATED_PAGE_RENDERING','PRECISE_PROOF_LIMIT');
+test(untestedGame.record.record.limit.cause_status==='UNKNOWN','NO_INVENTED_CAUSE');
+test(THEOPLUS_GAUGER_SOURCE.sha256==='02fe3fea097df6ee9485051e9611eec5d0d57bc1f013456703d3975c9a804a13','GAUGER_EXACT_SOURCE_HASH');
+test(JSON.stringify(game.state)===gameBefore&&JSON.stringify(comic.state)===comicBefore,'GAUGER_READONLY_RECIPIENT');
+mustThrow(()=>gaugeCreativeContact(game,'fully-shipped-apk'),/CLAIM_BOUNDARY_HOLD/);
+fs.mkdirSync('qa/m002-foundations',{recursive:true});
+fs.writeFileSync('qa/m002-foundations/THEOPLUS_GAUGER_GAME.json',JSON.stringify(measuredGame,null,2)+'\n');
+fs.writeFileSync('qa/m002-foundations/THEOPLUS_GAUGER_COMIC.json',JSON.stringify(measuredComic,null,2)+'\n');
+fs.writeFileSync('qa/m002-foundations/THEOPLUS_GAUGER_HOLDS.json',JSON.stringify({game:untestedGame,comic:untestedComic},null,2)+'\n');
 const out={schema:'jm.m002.workstream4.original-shared-mechanism/1',status:'PASS',checks,
   original:{sha256:ORIGINAL_SHARED_EXCHANGE.sha256,file:ORIGINAL_SHARED_EXCHANGE.file},
   actualRecipients:[{media:'game',schema:game.state.schema,earned:game.state.world.earned,

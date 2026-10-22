@@ -38,3 +38,13 @@ This offline command displays private note text locally on the trusted laptop. T
 4. **Actual Samsung Fold owner-device contact remains OPEN**. Generic emulator cannot prove hinge integration, Samsung Galaxy AI permission reachability, true physical touch continuity or real owner acceptance.
 
 Retain one source authority. Recover before rebuild. No Ding, no claim. Draft PR #371.
+
+
+## Living Home CP07 cloud-return intake — native integration candidate (22 Oct 2026)
+- The existing native Android app now offers **LIVING HOME / Import cloud return** from ROOT using Android's system JSON document picker, plus **Review pending return** on later re-entry.
+- This imports the *original* `JM.LivingHome.CP07.CloudReturn/1.0` ledger emitted by the existing CP07–CP09 Living Home family. No duplicate cloud transport, credential copy, embedded HTML replacement or new app permission is required.
+- Only a `RETURN_RECEIVED_UNVERIFIED` record whose mission/challenge match its original outgoing `JM.LivingHome.CloudMission/1.0` request AND whose project matches the selected Fold shelf project can be staged. The result remains explicitly untrusted external text; the import does not assert server authentication or real AI work.
+- An owner sees the project, mission, expected local revision and bounded result before **approving** a new native session revision. If the project changed, there is a newer checkpoint, a draft remains unsaved, the return was previously applied, or the note exceeds bounds, the operation refuses without intentional session mutation.
+- A successful approval atomically adds a new `SessionDeck` checkpoint, stores a replay marker, and clears the pending item. **Existing `ReentryEngine` Return Points and older source files remain untouched.**
+- Scope: authenticated server-to-browser contact remains with Living Home and the existing server. Native Fold Ultra currently consumes owner-selected portable receipts only. Live Android network transport, credential-managed background sync, device-to-device reception and physical Samsung confirmation remain HOLD. The pending/replay journal is local private app storage; the v0.9 configuration export is unchanged and is not a complete archive of these new metadata fields.
+- Source descendant: `jm/fold-ultra-living-home-return-20261022` based on unchanged PR #371 head `c33ccfe740943dd134122220a1e3755c49c3ec05`. Do not merge or change main without separate review.

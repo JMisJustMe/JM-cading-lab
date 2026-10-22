@@ -1,0 +1,31 @@
+name: Mission 002 Build Mesh Live Authority Reconciliation
+on:
+  pull_request:
+    branches: [work/mission002-bootstrap-20261022]
+    paths:
+      - "navigator/estate-integration/mesh-authority-reconciliation.mjs"
+      - "navigator/estate-integration/public-registry.json"
+      - "tests/mission002-mesh-live-authority.mjs"
+      - "tests/mission002-authority-projection.mjs"
+      - ".github/workflows/m002-mesh-live-authority.yml"
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  read-only-hosted-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22"}
+      - name: Prove original corrected source projection
+        run: node tests/mission002-authority-projection.mjs
+      - name: Direct hosted MCP + deployed registry readback
+        run: node tests/mission002-mesh-live-authority.mjs
+      - name: Preserve direct live readback without mutating hosted authority
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-m002-live-mesh-authority
+          path: qa/m002-mesh/
+          if-no-files-found: warn

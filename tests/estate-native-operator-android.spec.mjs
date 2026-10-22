@@ -52,45 +52,38 @@ async function hold(label,duration){
   await page.waitForTimeout(120);
 }
 async function move(axis,value){
-  const initial=await read(),p=initial.session.rooms[initial.session.active].snapshot.player;
-  if(Math.abs(value-p[axis])<12)return;
-  const positive=p[axis]<value,label=axis==='x'?(positive?'Move right':'Move left'):(positive?'Move down':'Move up');
-  const point=await nativePoint(label);
-  // A cold emulator may show another Launcher ANR AFTER its initial WebView
-  // readback. Retry only when a verified system dialog actually interrupted
-  // the real Android DOWN/UP contact; never count an ignored touch as success.
-  for(let attempt=0;attempt<16;attempt++){
+  // Deliberately approach native interaction targets instead of considering
+  // any overshoot a successful arrival. Slow emulator frames make a fixed
+  // 1100 ms touch traverse past key/door contact radii.
+  // Every increment is a real Android DOWN/MOVE/UP (adb swipe), never JS state.
+  const tolerance=16;
+  for(let attempt=0;attempt<32;attempt++){
     await clearKnownLauncherOverlay('move-before-'+axis+'-'+attempt);
-    const beforeContact=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
-    // Android's shell motionevent DOWN can be cancelled by the system while
-    // Playwright polls for several seconds. A finite real Android swipe at the
-    // same control coordinate delivers a complete DOWN/MOVE/UP sequence.
-    // This is *not* a synthetic JS click and does not assign player state.
-    adb('shell','input','swipe',String(point.x),String(point.y),String(point.x),String(point.y),'1100');
-    await page.waitForTimeout(150);
-    const verified=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
-    const reached=positive?verified>=value-5:verified<=value+5;
-    if(reached){
-      const after=await read();
-      console.log('ANDROID_NATIVE_MOVE',axis,value,JSON.stringify(after.session.rooms[after.session.active].snapshot.player));
+    const before=(await read()).session.rooms[(await read()).session.active].snapshot.player[axis];
+    const remaining=value-before;
+    if(Math.abs(remaining)<=tolerance){
+      console.log('ANDROID_NATIVE_TARGET_ACQUIRED',axis,value,JSON.stringify({attempt,position:before}));
       return;
     }
-    fs.writeFileSync(out+'/movement-retry-'+axis+'-'+attempt+'.json',
-      JSON.stringify({axis,value,attempt,readback:await read(),overlays:recoveredSystemDialogs}));
-    const current=(await read()).session.rooms[initial.session.active].snapshot.player[axis];
-    const progress=(positive?current-beforeContact:beforeContact-current);
-    const count=recoveredSystemDialogs.length;
-    await clearKnownLauncherOverlay('move-stalled-'+axis+'-'+attempt);
-    // A bounded native press may make *real* measurable progress without
-    // reaching the full distant destination in one contact. Continue only if
-    // that progress occurred, or an identified Pixel Launcher ANR interrupted
-    // the original contact; never fake a player update.
-    if(progress<4&&count===recoveredSystemDialogs.length){
-      throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-native-progress-or-verified-system-interruption');
+    const positive=remaining>0;
+    const label=axis==='x'?(positive?'Move right':'Move left'):(positive?'Move down':'Move up');
+    const point=await nativePoint(label);
+    const duration=Math.max(170,Math.min(650,Math.round(Math.abs(remaining)*4)));
+    const overlaysBefore=recoveredSystemDialogs.length;
+    adb('shell','input','swipe',String(point.x),String(point.y),String(point.x),String(point.y),String(duration));
+    await page.waitForTimeout(130);
+    const after=(await read()).session.rooms[(await read()).session.active].snapshot.player[axis];
+    const progress=positive?after-before:before-after;
+    fs.writeFileSync(out+'/movement-target-'+axis+'-'+attempt+'.json',
+      JSON.stringify({axis,target:value,attempt,before,after,progress,duration,overlays:recoveredSystemDialogs}));
+    if(progress<3&&overlaysBefore===recoveredSystemDialogs.length){
+      await clearKnownLauncherOverlay('move-stalled-'+axis+'-'+attempt);
+      if(overlaysBefore===recoveredSystemDialogs.length)
+        throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':no-native-progress-or-verified-system-interruption');
     }
-    console.log('ANDROID_NATIVE_SEGMENT',axis,value,JSON.stringify({attempt,progress,position:current}));
+    console.log('ANDROID_NATIVE_SEGMENT',axis,value,JSON.stringify({attempt,before,after,duration}));
   }
-  throw Error('NATIVE_TOUCH_MOVEMENT_HOLD:'+axis+':'+value+':overlay-retry-exhausted');
+  throw Error('NATIVE_TARGET_APPROACH_HOLD:'+axis+':'+value+':tolerance-not-acquired');
 }
 
 async function use(){await clearKnownLauncherOverlay('use-contact');assert.equal(await page.locator('#jm-space-use').isEnabled(),true);const stamp=await page.evaluate(()=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])});const box=await page.locator('#jm-space-use').boundingBox(),size=await page.evaluate(()=>({width:innerWidth,height:innerHeight}));const x=Math.round(nativeBounds.left+(box.x+box.width/2)*(nativeBounds.right-nativeBounds.left)/size.width),y=Math.round(nativeBounds.top+(box.y+box.height/2)*(nativeBounds.bottom-nativeBounds.top)/size.height);adb('shell','input','tap',String(x),String(y));await page.waitForFunction(stamp=>{const s=window.JMConnectedWorldReadback().session;return JSON.stringify([s.active,s.collected,s.progress,s.transitions])!==stamp},stamp,{timeout:15000,polling:100});}

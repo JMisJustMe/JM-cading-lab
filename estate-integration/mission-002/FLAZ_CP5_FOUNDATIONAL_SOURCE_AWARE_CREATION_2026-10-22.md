@@ -1,0 +1,21 @@
+# JM M002 CP5 — FOUNDATIONAL CREATION CONTACT · FLAZ · 22 October 2026
+
+**OPEN FIRST:** [PR399](https://github.com/JMisJustMe/JM-cading-lab/pull/399) exact source head `368c43ecb0ca3b974e5307ca588da49b1b087064`, based on existing PR397 native operator. This is an archival document on a separate FLAZ branch, not a change to the proven candidate source.
+
+## Original sources recovered
+- `/JM Estate/Game Mechanics/Shared Mechanics/JM_SHARED_MECHANISMS_ALL_GAME_EXCHANGE_v1_2.html`: 140,594 bytes SHA256 `63794bab0bdf612d1af5c6c3c0e2141bbf80a8ff33dbe64f4a416bb4290f85d3`. Original `freshWorld`/`worldAction`/`safeReentry` were independently executed from exact function text in Node VM: bridge 26 actions, 2 earned, 2 recoveries, completed; arena 25 actions, 2 earned, **3** recoveries (2 intentional FREE + 1 hazard), completed. Original function-segment SHA256 `f6b2b31d536c5f26088e1e6edfdd8cb9f0589e043d04810348366abad3f740a4`. Locally bounded vector input shim; not complete original HTML browser proof.
+- Distinct v1.3 native-contact descendant `JM_SHARED_MECHANISMS_v1_3_NATIVE_CONTACT.html` SHA256 `342d4b27aa3e6e90d17685fdbfba2c525b848eff1526c581e97d3d15a2eb9142`, protected original.
+- `/JM Estate/Theory/TheoPlus/THEOPLUS_GAUGER_USE_RECORD_SCHEMA_v0_1.json` SHA256 `02fe3fea097df6ee9485051e9611eec5d0d57bc1f013456703d3975c9a804a13`. Founding `THEOPLUS_FIRST_NAMING_AND_IDENTIFICATION_2026-07-30_0510_BST_v0_2.md` and v2.0 keeper separate. Original JSON is a use-record schema, not an executable Gauger engine.
+
+## Proven new local/repository-host contact
+- `coding-estate/integration/shared-two-current-creation.mjs`: source-derived original two-current mechanism wired through the **existing** THEOGAMY private-donor port, resulting in two distinctive executed recipients: `jm.m002.game-contact/1` game-event state and `jm.m002.comic-sequence/1` ordered continuity-bearing storyboard; both compiled and executed as portable OneBody IR, independent reexecution verified.
+- `coding-estate/integration/theoplus-source-gauger-contact.mjs`: original Gauger schema-derived record + **actual JMLogic rule execution** measures possible-now structured output against NOT_YET_TESTED illustrated/rendered outputs, with location and UNKNOWN cause. State read-only.
+- `tests/mission002-shared-two-current-creation.mjs`: **49 checks PASS** in GitHub CI at `bc84e0796e6db716d9fa3b15cb24fdcf92e9e684`, no original recipient mutation, no automatic promotion. Subsequent commit `368c43ec` only corrects machine receipt claim text to credit bounded TheoPlus adapter. Confirm exact-head latest CI separately.
+- `.github/workflows/prove-ailatheo-v3.yml`: existing inherited runner invokes test and preserves game event JSON, comic storyboard JSON, OneBody portable JSON and Gauger claim/hold JSON in `jm-m002-foundational-game-comic` CI artifact. [Evidence run](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39726676077) (prior complete contact) and [latest candidate workflow](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39727477855) (exact latest head; read conclusion before claiming all-workflow success).
+
+## Proof boundary and next work
+- Two original mechanical worlds really executed locally from original source. Adapted mechanism really executed through THEOGAMY → **actual state changes in game and non-game comic recipients** → OneBody runtime; full original HTML is not running inside GitHub.
+- NOT a complete gameplay engine or playable 3D game, NOT finished illustrated comic, not full native THEOGRAPHY or complete TheoPlus logic engine. Repo CI Android currently exercises inherited world carrier, not newly rendered game/comic contacts; physical Samsung test belongs in later combined APK batch with others.
+- PR399 draft, not merged/deployed; parent PR397 and existing originals unmodified; no provider calls, deletions, owner data/publication.
+- Next: recover exact THEOGRAPHY world-law authority and richer proven TheoPlus operating source, connect permitted/denied world state to real native receiver and compare cross-medium output; do not invent an original engine or restart. Full mission 002 remains incomplete.
+- Library pointer: `/JM Estate/Continuity/JM_M002_CP5_FOUNDATIONAL_CREATION_FLAZ_OPEN_FIRST_2026-10-22.md` (small, source-only, no original copies). Body/Carrier/Seat stay distinct.

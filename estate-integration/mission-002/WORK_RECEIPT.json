@@ -1,0 +1,628 @@
+{
+  "schema": "jm.mission002.work-receipt/1",
+  "date": "2026-10-22",
+  "operation": "JMOP-05ab26471c1dd776e9e8e8e2",
+  "source_head": "deb80728ce081da5288776dff4789d300d3dc661",
+  "repositories": {
+    "lab": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "deb80728ce081da5288776dff4789d300d3dc661",
+      "default_path": "."
+    },
+    "mesh": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "cc6b6f1ce594e3a09264e34fc03c1be947004754",
+      "default_path": "../mesh-candidate"
+    },
+    "physics": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "1db298c770b9ccf85e4415bbd47337e6fe6ebee5",
+      "default_path": "../physics-candidate"
+    },
+    "playzone": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "788137588b4a7ed4db6bcfdbd16122a73e0e7b94",
+      "default_path": "../playzone-candidate"
+    },
+    "cloud": {
+      "repository": "JMisJustMe/jm-cloud-contact-server-first-cloud",
+      "commit": "7c84f96b904aefd74dec564e88b21b55e178bc08",
+      "default_path": "../cloud-contact"
+    }
+  },
+  "dependency_checks": {
+    "lab": {
+      "status": "PASS",
+      "unexpected_changed_files": []
+    },
+    "mesh": {
+      "status": "PASS",
+      "unexpected_changed_files": []
+    },
+    "playzone": {
+      "status": "PASS",
+      "unexpected_changed_files": []
+    },
+    "physics": {
+      "status": "PASS",
+      "unexpected_changed_files": []
+    },
+    "cloud": {
+      "status": "PASS",
+      "unexpected_changed_files": []
+    }
+  },
+  "commands": {
+    "source": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/mission002-source-aware-creation.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.11,
+      "output_bytes": 407,
+      "output_sha256": "6e20c7992a1dcc34405ae2c6642e8a889758b69605cfddfd110924466bae6284",
+      "output": "{\"status\":\"PASS\",\"checks\":12,\"sourceHashRejection\":true,\"typedSource\":true,\"actualNativeReceiverMutation\":true,\"distinctAuthoredWorlds\":true,\"rendering\":\"SEPARATE_GATE\",\"historicalFoundationRecovery\":false}\n{\"status\":\"PASS\",\"checks\":7,\"publicMetadataToOneBody\":true,\"portableJsonReexecution\":true,\"privateCorpus\":\"EXCLUDED\",\"sourceSha256\":\"233ad4767c0155dbca29fa5532396a6542219260137bb4b8f9efd0920783b40e\"}\n"
+    },
+    "authority": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/mission002-authority-projection.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.06,
+      "output_bytes": 122,
+      "output_sha256": "cecd27a6c2d76f43bac376dc86546309278aa5dbc58962786809b5ad015db7d5",
+      "output": "{\"status\":\"PASS\",\"checks\":9,\"actualSourceRegistryConsumed\":true,\"hosted\":\"0.8.5\",\"candidate\":\"0.8.6\",\"publication\":false}\n"
+    },
+    "registry": {
+      "repo": "mesh",
+      "argv": [
+        "python3",
+        "services/jm-ecostate-build-mesh-mcp-v0_5/proof_dynamic_registry.py"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.07,
+      "output_bytes": 454,
+      "output_sha256": "4249fa84323c28673f13fdcc9242ad5a337d090b275144dcf4bc286feb2bde1e",
+      "output": "{\n  \"state\": \"PASS\",\n  \"server_version\": \"0.8.6\",\n  \"registry_schema\": \"JM.CareerCurrentProjectRegistry/0.24\",\n  \"registry_records\": 22,\n  \"registry_bytes\": 27978,\n  \"registry_sha256\": \"7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31\",\n  \"registry_source\": \"current_registry.json\",\n  \"hash_mode\": \"SHA256_EXACT_LOADED_BYTES\",\n  \"self_head\": \"JM ECOSTATE — Build Mesh — Hosted v0.8.5 Cycle 016 + Recursive Capability Protocol v1.0\"\n}\n"
+    },
+    "mesh": {
+      "repo": "mesh",
+      "argv": [
+        "node",
+        "tests/build-mesh-current-http.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 17.33,
+      "output_bytes": 959,
+      "output_sha256": "ef19020cb509ba79e6a01a2f95aaa48c5798fabeb53721065112696a80d9b388",
+      "output": "{\n  \"at\": \"2026-10-22T02:32:04.016Z\",\n  \"state\": \"PASS\",\n  \"version\": \"0.8.6-candidate\",\n  \"registry\": \"0.24\",\n  \"registrySha256\": \"7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31\",\n  \"passed\": [\n    \"search_builds\",\n    \"recover_build\",\n    \"resolve_current_head\",\n    \"proof_state\",\n    \"trace_lineage\",\n    \"continue_build_plan\",\n    \"build_mesh_status\",\n    \"batch_recover_builds\",\n    \"find_capability_donors\",\n    \"compare_builds\",\n    \"build_capability_mesh\",\n    \"detect_propagation_gaps\",\n    \"plan_capability_inheritance\",\n    \"build_sync_contract\",\n    \"estate_keeper_contract\",\n    \"plan_artifact_route\",\n    \"prepare_operation_gate\",\n    \"SEPARATE-plan-only\",\n    \"MESH-plan-only\",\n    \"MERGE-plan-only\",\n    \"TRANSFORM-plan-only\",\n    \"BREAKAWAY-plan-only\"\n  ],\n  \"boundary\": \"Actual local HTTP MCP with exact hosted registry and profiles. Hosted service remains v0.8.5; no production promotion or universal execution claim.\"\n}\n"
+    },
+    "relationships": {
+      "repo": "mesh",
+      "argv": [
+        "python3",
+        "services/jm-ecostate-build-mesh-mcp-v0_5/test_relationship_operations.py"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.05,
+      "output_bytes": 134,
+      "output_sha256": "c2316c0cd569ceee680a7803d0dc6172ed2d8061bd88cc652fdf2772f5212e51",
+      "output": "{\n  \"schema\": \"JM.BuildMesh.RelationshipPlanTests/1\",\n  \"state\": \"SOURCE_SCOPE_PASS\",\n  \"operations\": 6,\n  \"external_executions\": 0\n}\n"
+    },
+    "navigator": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "navigator/mcp-public-v1/test.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.07,
+      "output_bytes": 82,
+      "output_sha256": "d5d6be7ad9ae66cbeb526cad27242a407a10266cc6c248e15dc39a98d31499a3",
+      "output": "Navigator public MCP v0.2 Estate integration + Build Mesh lineage unit proof PASS\n"
+    },
+    "operator": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.12,
+      "output_bytes": 492,
+      "output_sha256": "3f576e477a413c0142922c5308ab44789b18312981059e55a02ce4d704a425a8",
+      "output": "{\n  \"state\": \"LOCAL_SOURCE_REGRESSION_PASS\",\n  \"regressionScope\": \"native,route,compile-js,compile-rust,gamecore,os,relay-HOLD,canonical-door\",\n  \"registryBodies\": 100,\n  \"executedBodies\": 6,\n  \"receipts\": 9,\n  \"nativeLanes\": 8,\n  \"nativeProgramChain\": true,\n  \"changedReceiver\": true,\n  \"serviceAndPrototypeHold\": true,\n  \"visibleScene\": true,\n  \"publicProbeMockOnly\": true,\n  \"localReadbackVerified\": true,\n  \"tamperRejected\": true,\n  \"cloudWritePerformed\": false,\n  \"deviceProof\": false\n}\n"
+    },
+    "world": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator-world.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.12,
+      "output_bytes": 250,
+      "output_sha256": "8c612972200249361e7751ba7024a10160cc0861b7cdd7c58172c0f6e7e302b8",
+      "output": "{\"state\":\"WORLD_RECEIVER_SOURCE_PASS\",\"nativeStateTransfer\":true,\"gameCoreMutation\":true,\"differentBodyAndGeometry\":true,\"donorSHA256Verified\":true,\"largeSceneRecovery\":true,\"tamperHold\":true,\"renderProof\":\"PENDING_REAL_BROWSER\",\"deviceProof\":false}\n"
+    },
+    "theogamy": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/integration/theogamy-contact-selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.08,
+      "output_bytes": 279,
+      "output_sha256": "a77bf2247d8e59377d18dd2e2c74044f511a016bde21f863115be8f193ede335",
+      "output": "{\n  \"schema\": \"jm.theogamy.contact-test/0.1\",\n  \"checks\": 18,\n  \"failures\": 0,\n  \"outcome\": \"HOST_EXECUTION_ONLY\",\n  \"adoption\": [\n    \"game\",\n    \"tool\",\n    \"os\"\n  ],\n  \"gardles\": {\n    \"body\": \"Gardles\",\n    \"native\": \"HOLD_SOURCE_NOT_MOUNTED\",\n    \"substituted\": false\n  }\n}\n"
+    },
+    "embodied": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.08,
+      "output_bytes": 2071,
+      "output_sha256": "53f20aab7251373cba407b685de1ee02800d7e4acbe2082a67ab2cbc50e856c1",
+      "output": "{\n  \"schema\": \"jm.embodied-eight.selftest/1.0\",\n  \"bodies\": [\n    \"Pattern-Tapping\",\n    \"Mudra Code\",\n    \"ContactCode\",\n    \"Command Glyphs\",\n    \"Speech-Code\",\n    \"SpeakGate\",\n    \"FlowTalk Body Route\",\n    \"Noncoding-Code\"\n  ],\n  \"historicalRecoveryClaim\": false,\n  \"passed\": 16,\n  \"failed\": 0,\n  \"checks\": [\n    {\n      \"name\": \"all eight bodies declare current-native bridge boundary\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Pattern-Tapping matches temporal body contact\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Pattern-Tapping rejects wrong event count\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Mudra Code matches ordered hand-form transitions\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Mudra Code preserves mismatch without false signal\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"ContactCode turns bounded physical contact into code signal\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"ContactCode does not promote out-of-band pressure\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Command Glyphs binds glyph plus pressure to route action\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Speech-Code resolves exact utterance through intent permission and route\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"SpeakGate requires both known identity and executable permission\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"FlowTalk Body Route preserves source wording and body meaning\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"Noncoding-Code carries meaning through signal action and trace\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"eight-body mesh reaches final route only through all embodied gates\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"identity failure blocks downstream speech execution\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"all eight AST IR runtime identities remain distinct\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"equal embodied input is deterministic at outcome level\",\n      \"passed\": true\n    }\n  ],\n  \"status\": \"EMBODIED_EIGHT_PASS\"\n}\n"
+    },
+    "onebody": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.06,
+      "output_bytes": 936,
+      "output_sha256": "14bd930f3c74db8459a31292849399fed73744f37acb231638b5be1614ffff6a",
+      "output": "{\n  \"schema\": \"jm.onebody-ir.forward-native-selftest/1.0\",\n  \"body\": \"IR / OneBody IR\",\n  \"historicalRecoveryClaim\": false,\n  \"passed\": 8,\n  \"failed\": 0,\n  \"checks\": [\n    {\n      \"name\": \"bridge boundary remains explicit\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"neutral nodes links and operations verify\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"portable lowering preserves source authority and identity\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"execution reaches route state assertion and Ding\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"dangling links are rejected\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"state mutation before SET is rejected\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"missing Ding is rejected\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"equal specs produce equal IR hashes\",\n      \"passed\": true\n    }\n  ],\n  \"status\": \"ONEBODY_IR_FORWARD_NATIVE_PASS\"\n}\n"
+    },
+    "integration": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/integration/integration-selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.08,
+      "output_bytes": 22322,
+      "output_sha256": "84ace8dd5e4a00d9cf659ebcd5219279b6af92f4304a9e1ef123f2ac40658e4b",
+      "output": "{\n  \"schema\": \"jm.sovereign-estate.integration-conformance/1.0\",\n  \"passed\": 12,\n  \"failed\": 0,\n  \"checks\": [\n    {\n      \"name\": \"01 registry validates at exactly 100 distinct bodies\",\n      \"passed\": true,\n      \"result\": {\n        \"valid\": true,\n        \"failures\": [],\n        \"count\": 100\n      }\n    },\n    {\n      \"name\": \"02 all bodies retain no-supremacy lock\",\n      \"passed\": true,\n      \"\n[bounded log excerpt; full digest above]\n      \"Pattern-Tapping\",\n              \"JMVisualGraft\",\n              \"JM Visual Interaction Runtime\"\n            ],\n            \"passed\": true,\n            \"receipts\": [\n              \"69090b50b312a913\",\n              \"6a7605ba6c78b974\",\n              \"a89c87ec59a82d57\",\n              \"9041c11e54a334bf\",\n              \"b18c8f268a5e4a80\",\n              \"2691abba84822e34\"\n            ]\n          },\n          {\n            \"name\": \"tool\",\n            \"project\": \"Cading compile API integration proof\",\n            \"bodies\": [\n              \"Parser\",\n              \"Compiler\",\n              \"Cading IR / OneBody IR\",\n              \"JS Emitter\",\n              \"compileCading API\"\n            ],\n            \"passed\": true,\n            \"receipts\": [\n              \"bf3d221e72925f48\",\n              \"7dd411f4104260a5\",\n              \"f732b35d2a3ec471\",\n              \"26fa3a60a940e6d5\"\n            ]\n          },\n          {\n            \"name\": \"os\",\n            \"project\": \"JM Estate OS integration proof\",\n            \"bodies\": [\n              \"RouteCore Native\",\n              \"OS_CODING\",\n              \"CodeHand RouteOS\",\n              \"Choice Box\"\n            ],\n            \"passed\": true,\n            \"receipts\": [\n              \"f8c45598bf1fe050\",\n              \"18c53486b98f058d\",\n              \"4e75b3392f167621\",\n              \"042af19edc160e42\"\n            ]\n          }\n        ]\n      }\n    },\n    {\n      \"name\": \"11 Batch Six documentation no longer claims Ding pending\",\n      \"passed\": true,\n      \"result\": {\n        \"corrected\": true\n      }\n    },\n    {\n      \"name\": \"12 privacy gate remains explicit and non-green\",\n      \"passed\": true,\n      \"result\": {\n        \"status\": \"external-admin-action-required\"\n      }\n    }\n  ],\n  \"privacyGate\": \"external-admin-action-required\"\n}\n"
+    },
+    "current64": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "coding-estate/validate_current_64_standard.py"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.02,
+      "output_bytes": 208,
+      "output_sha256": "bcf1b745f150a351d848c22b2df74569f318fa7ad365e218691a32f872302f14",
+      "output": "JM CODING ESTATE CURRENT 64 RUNNING STANDARD: PASS\ncurrent_coding_identities=64 inherited=61 post_census=3 adjacent_non_code=44\nhistorical_engineering_ecology=105 remains separate from current identity count\n"
+    },
+    "physics": {
+      "repo": "physics",
+      "argv": [
+        "node",
+        "coding-estate/integration/jm-federation-contact-physics-selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.07,
+      "output_bytes": 229,
+      "output_sha256": "0f736f1c7231403484e9a62b3e31e96536ae96ed16bb17f1a81967f33fed9aef",
+      "output": "{\n  \"schema\": \"jm.game-engine.contact-physics-proof/1.0\",\n  \"fixtures\": 250,\n  \"contacts\": 223,\n  \"outcome\": \"PASS\",\n  \"claim\": \"pair geometry and impulse only; original COMBOUND art, abilities, walls, AI remain outside scope\"\n}\n"
+    },
+    "playzone": {
+      "repo": "playzone",
+      "argv": [
+        "node",
+        "coding-estate/integration/jm-playzone-native-world-organs-selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.07,
+      "output_bytes": 157,
+      "output_sha256": "e1522318b1609c6efb179a19ce6d8cec416d25a31907e30e5831a7ad784a78c2",
+      "output": "{\"schema\":\"jm.playzone.native-world-organ-proof/2.6\",\"assertions\":28,\"status\":\"PASS\",\"boundary\":\"Node component proof; UI/WebGL/device separately verified\"}\n"
+    },
+    "spaces": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator-spaces.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.11,
+      "output_bytes": 246,
+      "output_sha256": "23cec8ca552cf5a95336405504c751c3916a5bed6ced849091a67af8ac605045",
+      "output": "{\"state\":\"CONNECTED_SPACES_SOURCE_PASS\",\"doorsRequireContactAndKey\":true,\"roundTripState\":true,\"solidCollision\":true,\"invalidStateHold\":true,\"carrierSHA256\":\"3a517564b3ffb77ac6ba9316bf796d65f92a9256480503c89c9df2c0f52716a6\",\"browserProof\":false}\n"
+    },
+    "build": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "scripts/build_gameforge_connected_carrier.mjs",
+        "/workspace/scratch/3866f7d2f295/mission002-proof/connected-world"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.13,
+      "output_bytes": 1310,
+      "output_sha256": "46ebe9e85754b3b1b663080b9fef6e55de9613e4f62f2af1ba09c19850ccd7ad",
+      "output": "{\"schema\":\"jm.gameforge.connected-carrier/1\",\"status\":\"SOURCE_EMITTED_BROWSER_PROOF_SEPARATE\",\"entry\":\"index.html\",\"sha256\":\"3a517564b3ffb77ac6ba9316bf796d65f92a9256480503c89c9df2c0f52716a6\",\"bytes\":192284,\"donorSHA256\":\"a2d814c947a80cd00d9bfae7086e004179c8d3b6c9876a922a4b3e8b3b2d2adb\",\"world\":{\"spaces\":3,\"body\":\"burning\",\"hazards\":5,\"targetX\":700,\"entered\":true},\"nativeReceipts\":{\"game\":\"d4984cb569bfa515\",\"core\":\"9ed9e10b7ad5b616\",\"visual\":\"76008a24bfbb41dd\",\"input\":\"c161501bcdc82d4b\",\"forge\":\"e2890ffd16f2c1ad\"},\"androidInstalled\":false,\"physicalDeviceProof\":false,\"sourceContact\":{\"source\":{\"identity\":\"PR395 / existing NATIVE_CONNECTED_WORLD_EXAMPLE\",\"sha256\":\"96ae2f0fc2c7fde58ee1d15e26ec2353f08fb353a157fefd8775041ba64d0750\",\"bytes\":559},\"sourceMaterialisation\":\"29dd5ccd4b50ae76\",\"decision\":[{\"type\":\"JMLDecision\",\"ruleName\":\"ExactSource\",\"matched\":true,\"actions\":[{\"type\":\"assign\",\"path\":\"creation.allowed\",\"value\":true}],\"outcomes\":[{\"source\":{\"verified\":true},\"creation\":{\"allowed\":true}}],\"stateDigest\":\"58340e757478c8c3\"}],\"boundary\":\"Exact caller-selected native program → Codifying → JMLogic → existing native world chain. Hash proves byte identity, not authorship, canonical authority or interpretation of unrelated prose. Rendering, device and publication require separate proof.\"}}\n"
+    },
+    "agents": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+        "--all",
+        "--run-local"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.4,
+      "output_bytes": 1747,
+      "output_sha256": "a4bbccfede8eaf13c7f89e6e277c6177e4c4c59504d32f2473a3a4a76475a3ef",
+      "output": "LOCAL REFERENCE PLUGS: PASS — Node/Python core parity preserved\nJM HOST ADAPTER CONFORMANCE: PASS\nadapters_checked=9 proof_levels=6 gates=9\n- python-reference-runtime: FUNCTION | open=host_contact,owner_device\n- node-reference-runtime: FUNCTION | open=host_contact,owner_device\n- chatgpt-mcp-host-adapter: FUNCTION | open=host_contact,owner_device\n- browser-airborne-carrier: HOST_CONTACT | open=owner_device\n- github-ci-execution-carrier: FUNCTION | open=host_contact,owner_device\n- android-phone-adapter: TRANSPORT | open=routing_meaning,host_contact,owner_device\n- codex-repository-agent-adapter: FUNCTION | open=host_contact,owner_device\n- cloud-execution-adapter-family: DECLARED | open=portable_contract_load,capability_negotiation,routing_meaning,host_contact,returned_consequence,recovery_reentry\n- other-compatible-host: DECLARED | open=portable_contract_load,capability_negotiation,routing_meaning,host_contact,returned_consequence,recovery_reentry\nOPEN BOUNDARIES PRESERVED:\n- python-reference-runtime: OPEN -> host_contact, owner_device\n- node-reference-runtime: OPEN -> host_contact, owner_device\n- chatgpt-mcp-host-adapter: OPEN -> host_contact, owner_device\n- browser-airborne-carrier: OPEN -> owner_device\n- github-ci-execution-carrier: OPEN -> host_contact, owner_device\n- android-phone-adapter: OPEN -> routing_meaning, host_contact, owner_device\n- codex-repository-agent-adapter: OPEN -> host_contact, owner_device\n- cloud-execution-adapter-family: OPEN -> portable_contract_load, capability_negotiation, routing_meaning, host_contact, returned_consequence, recovery_reentry\n- other-compatible-host: OPEN -> portable_contract_load, capability_negotiation, routing_meaning, host_contact, returned_consequence, recovery_reentry\n"
+    },
+    "cloud": {
+      "repo": "cloud",
+      "argv": [
+        "npm",
+        "run",
+        "preflight"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 3.29,
+      "output_bytes": 5521,
+      "output_sha256": "a71d49a802f8cc77d808db3c0cdc77cfd1222a507182fb3663b46c6a081733c7",
+      "output": "\n> jm-sovereign-agent-gateway@0.3.0 preflight\n> npm run check && npm run remain:selftest && npm run remain:integration && npm run remain:worker-return-test && npm run m002:cross-ai-test && npm run m002:http-roundtrip && npm run m002:source-return-test\n\n\n> jm-sovereign-agent-gateway@0.3.0 check\n> node --check gateway-cading-v0.2/JM_SOVEREIGN_AGENT_GATEWAY_CADING_JS_CARRIER_v0_2.mjs && node --check \n[bounded log excerpt; full digest above]\n 2,\n  \"deniedUnauthenticated\": true,\n  \"deniedClientCall\": true,\n  \"heldBeforeApproval\": true,\n  \"heldBeforeDispatch\": true,\n  \"heldOnStaleControl\": true,\n  \"providerOrderBothDirections\": true,\n  \"receiptsVerified\": true,\n  \"replayNoDuplicateRequests\": true,\n  \"restartRecovery\": true,\n  \"cadingTaskStatePreserved\": true,\n  \"realProviderContact\": false,\n  \"providerHttpCalls\": 4\n}\n\n> jm-sovereign-agent-gateway@0.3.0 m002:source-return-test\n> node --test gateway-remain-v0.3/JM_M002_SOURCE_RETURN_GATE_TEST_v0_1.mjs\n\n✔ source bytes and nonce produce a narrowly scoped PASS (1.12074ms)\n✔ source changed by one byte cannot pass (0.727266ms)\n✔ return claiming different source does not pass (0.229907ms)\n✔ reused return from another challenge is refused (0.188924ms)\n✔ malformed claims rejected, no provider identity trust (0.189455ms)\n✔ unknown source and replayed names cannot establish provenance (0.208765ms)\nℹ tests 6\nℹ suites 0\nℹ pass 6\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 95.221245\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\nnpm warn Unknown env config \"http-proxy\". This will stop working in the next major version of npm.\n"
+    },
+    "authoring": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/authoring-nine.selftest.mjs"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.07,
+      "output_bytes": 978,
+      "output_sha256": "d181ba34152ba59e9f4668adbe3f9a5ff2faf1d56611d3b2af5f0c5dfdfd1470",
+      "output": "{\n  \"schema\": \"jm.authoring-nine-selftest/1.0\",\n  \"passed\": true,\n  \"checks\": 18,\n  \"identities\": [\n    \"zezu.nwona / Cading Lab\",\n    \"CadenPad\",\n    \"JM Coding Body House — Intuitive Builder\",\n    \"Finger One\",\n    \"Finger One CodeStudio / GripCube\",\n    \"Finger Two\",\n    \"Lexicon\",\n    \"NameBank\",\n    \"Codeing Engine\"\n  ],\n  \"checkNames\": [\n    \"boundary-9-distinct\",\n    \"cading-lab-parse\",\n    \"cading-lab-ding-promotion\",\n    \"cadenpad-parse\",\n    \"cadenpad-open-first-runtime\",\n    \"coding-house-preserves-room-identities\",\n    \"coding-house-rejects-unknown-room-route\",\n    \"finger-one-selection-route\",\n    \"codestudio-project-trial\",\n    \"codestudio-rejects-unmounted-trial\",\n    \"finger-two-embodied-route\",\n    \"finger-two-rejects-unbound-kind\",\n    \"lexicon-executable-term\",\n    \"lexicon-rejects-unknown\",\n    \"namebank-alias-resolution\",\n    \"namebank-collision-protection\",\n    \"codeing-engine-pipeline\",\n    \"codeing-engine-source-authority-boundary\"\n  ]\n}\n"
+    },
+    "governance": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py"
+      ],
+      "exit": 0,
+      "status": "PASS",
+      "seconds": 0.02,
+      "output_bytes": 202,
+      "output_sha256": "de4b81e8e10a8ba500eea978392b4b3f742f9a23b4f5321b394efe503eb02f6b",
+      "output": "JM BUILD LAWS / PREFERENCES / GOVERNANCE STANDARD: PASS\nfoundational_laws=25 authority_gates=6 current_coding_identities=64\nhost_neutral=True source_replacement=False consequence_readback_required=True\n"
+    }
+  },
+  "lanes": [
+    {
+      "id": 1,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Private JM32-1DA/32_Cb release bodies remain CURRENT_DECLARED only; hashes/hosted records are not recovered source. Historical foundational source authority is not claimed for the new bounded adapter."
+    },
+    {
+      "id": 2,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "Hosted is v0.8.5. PR377 is v0.8.6 candidate; live public projection still says v0.7.3. Corrected v0.8.5 source projection is undeployed. No source merge/deployment authorised."
+    },
+    {
+      "id": 3,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "Bounded existing surfaces only. No full unification of every Estate room; public deployment and physical owner acceptance remain open."
+    },
+    {
+      "id": 4,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "THEOGAMY module is an explicitly scoped Shared Mechanisms adaptation. Exact original MMMBBB, VTSDGY, BTG, HOSF, TheoPlus, theography and Gardles sources are not mounted by this run. No automatic semantic interpretation of arbitrary prose."
+    },
+    {
+      "id": 5,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "JS-hosted native interpreters, not a native universal OS or activation of every current coding body. 32_Cb and JM32-1DA full carriers remain separate recovery HOLDs."
+    },
+    {
+      "id": 6,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "PR394/396 remain separate unmerged donors. Their node proof is not a new receiving game/GPU/device proof. No full COMBOUND or PlayZone authority replacement."
+    },
+    {
+      "id": 7,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Physical Samsung, owner signing/release custody, update compatibility and whole-receiver coverage remain HOLD. CI disposable package only."
+    },
+    {
+      "id": 8,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "Routing runtime proof is not LLM inference, sovereign identity proof or every-host execution. JM LLM Core recovered hosted authority is not independently rerun full model proof."
+    },
+    {
+      "id": 9,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "Mocked providers only. Actual provider requests remain disabled and unauthorised. No API billing or external AI activation."
+    },
+    {
+      "id": 10,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Metadata only; private Evernote/full lyrics, research corpus and latest JM Lyric Home are not imported or crowned. Public source counts are not a new custody census."
+    },
+    {
+      "id": 11,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "Local process restart is not Render disk restart, production deployment or cross-host return. render.yaml paid disk configuration was inspected only; no provision/change/charge."
+    },
+    {
+      "id": 12,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Same-browser storage and isolated local gateway only; no Library quota retirement, cloud-wide custody or cross-device durability claim. localStorage check is not distributed atomic compare-and-swap."
+    },
+    {
+      "id": 13,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Physical Fold/Samsung acceptance, GPU performance and installed update/release compatibility remain open. Local browser download failed (truncated ZIP); CI is the browser test environment."
+    },
+    {
+      "id": 14,
+      "contact_status": "PASS",
+      "declared_workstream_status": "WORKING",
+      "errors": [],
+      "remaining_holds": "Two bounded artifact paths, not complete book/comic/cartoon/audio production or arbitrary cross-medium transformation. Historical exact OneBody schema remains open in inherited source."
+    },
+    {
+      "id": 15,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "A passing plan is not an executed merge. Deliberate merge is permitted, but no merge, propagation to all recipients or transfer of receiver proof was performed."
+    },
+    {
+      "id": 16,
+      "contact_status": "PASS",
+      "declared_workstream_status": "VERIFIED",
+      "errors": [],
+      "remaining_holds": "No whole-Estate completion, main merge, deployment, release, deletion, provider charge or owner-device Ding. Only the named bounded evidence is promoted as proof."
+    }
+  ],
+  "boundary": "These are bounded host/source contacts. PASS here does not close the lane holds. Browser/Android CI, live readbacks and physical device evidence are separately recorded. No deploy, merge, release, external provider activation or private data deletion.",
+  "android": {
+    "workflow": 39711120349,
+    "job": 119602714784,
+    "source_head": "4b58b935794136a81688888064873246a865ab37",
+    "status": "SUCCESS",
+    "artifact_id": 12397761749,
+    "artifact_zip_sha256": "3b003447a0e21f0816ed34af7f98d5eb1df5287f0b7987908775169c3f1ab1d8",
+    "apk_artifact_id": 12397461241,
+    "apk_artifact_sha256": "7b6b39370840e2aa04cc0409d327678eff543745d7707d2b16bdcd012a2d59fc",
+    "proof": {
+      "schema": "jm.connected-world.android-runtime/1",
+      "status": "ANDROID_EMULATOR_RUNTIME_PASS",
+      "sourceHead": "4b58b935794136a81688888064873246a865ab37",
+      "apk_sha256": "947b32788eff284e5dce2ae92bdd679773ae34cf17070fd786dedb39d50955f8",
+      "asset_sha256": "5a3fd7a835ddc019f62aac241f1f463f3735585270f31263ada19f2f9b91fe36",
+      "androidAPI": "35",
+      "abi": "x86_64",
+      "webview": "Current WebView Update Service state\n  Current WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  Minimum targetSdkVersion: 33\n  Minimum WebView version code: 636771938\n  Number of relros started: 1\n  Number of relros finished: 1\n  WebView package dirty: false\n  Any WebView package installed: true\n  Preferred WebView package (name, version): (com.google.android.webview, 124.0.6367.219)\n  WebView packages:\n    Valid package com.google.android.webview (versionName: 124.0.6367.219, versionCode: 636771938, targetSdkVersion: 34) is  installed/enabled for all users\n    com.google.android.webview.beta is NOT installed.\n    com.google.android.webview.dev is NOT installed.\n    com.google.android.webview.canary is NOT installed.\n    com.google.android.webview.debug is NOT installed.\n    com.android.webview is NOT installed.",
+      "installed": true,
+      "launched": true,
+      "nativeTouchMovement": true,
+      "nativeTouchNavigation": true,
+      "doorTraversal": true,
+      "spatialReceiver": {
+        "active": true,
+        "schema": "jm.actual-engine.3d-rooftop-stage/2.0",
+        "renderPath": "JM Actual Engine-derived portable scene generation: v12.2 matrices/meshes + JM WebGL lit stage",
+        "webgl": true,
+        "drawCalls": 32,
+        "sceneHash": "humanimals:1:0:0-1",
+        "error": "",
+        "externals": 0,
+        "room": 1,
+        "roomBody": "humanimals",
+        "architecture": {
+          "signature": "humanimals:1:0:0-1",
+          "features": {
+            "body": "humanimals",
+            "doorCount": 2,
+            "wallCount": 2,
+            "powered": false,
+            "motifCount": 21
+          },
+          "objectCount": 79
+        },
+        "cameraMode": "FOLLOW",
+        "objective": {
+          "kind": "key",
+          "label": "Collect Relay Hall key",
+          "room": 1,
+          "x": 225,
+          "y": 130
+        },
+        "combat": {
+          "phase": "idle",
+          "shield": 4,
+          "wins": [],
+          "guardian": {
+            "phase": "idle",
+            "x": 755,
+            "y": 170,
+            "hp": 3,
+            "cooldown": 0,
+            "stun": 0,
+            "attackDelay": 1
+          }
+        },
+        "player": {
+          "x": -18.88888888888889,
+          "z": 0
+        },
+        "pixelDigest": "99124baa",
+        "variation": 138772
+      },
+      "native3DGroundTapMovement": true,
+      "lifecyclePause": true,
+      "processDeathExactRecovery": true,
+      "hashTamperHold": true,
+      "offlinePermissionBoundary": true,
+      "privilegedJSBridge": false,
+      "physicalDevice": false,
+      "release": false
+    },
+    "downloaded_crc_and_hash_pass": true,
+    "emulator_asset_exact_candidate_html": false,
+    "screenshot_inspected": true,
+    "physical_owner_device": false,
+    "candidate_html_LF_normalized_equal": true,
+    "cross_os_export_boundary": "Windows CI checkout serializes some module function bodies as CRLF; local Linux output uses LF. Exact APK-to-emitted-CI-source hash passes. Cross-OS exact bytes are not claimed."
+  },
+  "browser": {
+    "workflow": 39711120402,
+    "job": 119602430943,
+    "source_head": "4b58b935794136a81688888064873246a865ab37",
+    "status": "SUCCESS",
+    "viewport": "390x844 connected spaces + inherited Workbench suites",
+    "local_browser": "UNAVAILABLE; browser plugin js not exposed; Playwright download returned truncated ZIP. Explicit user request permits runtime/browser/emulator CI validation."
+  },
+  "ci_summary": {
+    "source_head": "4b58b935794136a81688888064873246a865ab37",
+    "all_17_pr_workflows": "SUCCESS",
+    "cloud_exact_head": "7c84f96b904aefd74dec564e88b21b55e178bc08",
+    "cloud_workflow": 39698881093,
+    "cloud_result": "SUCCESS"
+  },
+  "live_readbacks": {
+    "public_registry": {
+      "url": "https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json",
+      "sha256": "ba312377f661aa4cc0d847c3d4140d2fd87de6f52a3d4127118229353bf63f5b",
+      "equals_protected_baseline": true,
+      "advertised_hosted_version": "0.7.3",
+      "stale_projection": true
+    },
+    "mesh_direct": {
+      "version": "0.8.5",
+      "registry": "0.24",
+      "sha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+      "bytes": 27978,
+      "records": 22,
+      "profiles": 34,
+      "navigator": "PASS"
+    },
+    "public_catalogue": {
+      "url": "https://jmisjustme-estate.pages.dev/lyrics/catalogue-public.json",
+      "sha256": "233ad4767c0155dbca29fa5532396a6542219260137bb4b8f9efd0920783b40e",
+      "exact_repo_bytes": true,
+      "private_corpus": false
+    }
+  },
+  "authority_holds": {
+    "JM32-1DA": "CURRENT_DECLARED v2.2.1; complete original carrier not recovered in this run",
+    "32_Cb": "CURRENT_DECLARED v2.1; complete original carrier not recovered in this run",
+    "THEOGAMY": "Exact repo adaptation recovered; original full foundation current head ABSENCE_NOT_PROVEN through hosted search",
+    "OneBody": "Recovered forward IR explicitly sets historicalRecoveryClaim=false",
+    "private_foundations": "Not substituted by source-bound native program adapter"
+  },
+  "independent_agent_core_parity": {
+    "status": "PASS",
+    "queries": [
+      {
+        "query": "music",
+        "python_node_exact_bytes_equal": true,
+        "output_sha256": "c47af28233be1603b097132867d4ed1d23b643e6b03d31f965646bea9dacbd2c"
+      },
+      {
+        "query": "coding",
+        "python_node_exact_bytes_equal": true,
+        "output_sha256": "dd94819103e5095dcc7a99936d4700dc105ecde68e0de8bab2a8bcb880061edc"
+      },
+      {
+        "query": "theory",
+        "python_node_exact_bytes_equal": true,
+        "output_sha256": "01f910089a02042523113ddb5dce69b11c9868eb1fde2328274442d9e2257ede"
+      },
+      {
+        "query": "zzzz-no-known-domain",
+        "python_node_exact_bytes_equal": true,
+        "output_sha256": "d86ac7f44c74171fe20ff9f32156650c0ca62df8f34db9a1faefd32dcd7bca5c"
+      }
+    ]
+  },
+  "local_summary": {
+    "unique_commands": 21,
+    "passed": 21,
+    "workstream_contacts": 16,
+    "failed_contacts": 0,
+    "full_workstream_completion": false
+  },
+  "changed_files": [
+    ".github/workflows/prove-ailatheo-v3.yml",
+    "coding-estate/integration/gameforge-spaces.mjs",
+    "coding-estate/integration/source-aware-creation.mjs",
+    "navigator/estate-integration/public-registry.json",
+    "scripts/build_gameforge_connected_carrier.mjs",
+    "tests/estate-native-operator-android.spec.mjs",
+    "tests/estate-native-operator-spaces-render.spec.mjs",
+    "tests/mission002-authority-projection.mjs",
+    "tests/mission002-source-aware-creation.mjs"
+  ]
+}

@@ -1,0 +1,900 @@
+{
+  "schema": "jm.mission002.continuation-plan/1",
+  "date": "2026-10-22",
+  "priority": [
+    "002",
+    "001",
+    "003"
+  ],
+  "operation": "JMOP-05ab26471c1dd776e9e8e8e2",
+  "source_head": "deb80728ce081da5288776dff4789d300d3dc661",
+  "android_fix_head": "4b58b935794136a81688888064873246a865ab37",
+  "protected_ancestor": "865d379e8176b7f23583e12933a3226def0de647",
+  "repositories": {
+    "lab": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "deb80728ce081da5288776dff4789d300d3dc661",
+      "default_path": "."
+    },
+    "mesh": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "cc6b6f1ce594e3a09264e34fc03c1be947004754",
+      "default_path": "../mesh-candidate"
+    },
+    "physics": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "1db298c770b9ccf85e4415bbd47337e6fe6ebee5",
+      "default_path": "../physics-candidate"
+    },
+    "playzone": {
+      "repository": "JMisJustMe/JM-cading-lab",
+      "commit": "788137588b4a7ed4db6bcfdbd16122a73e0e7b94",
+      "default_path": "../playzone-candidate"
+    },
+    "cloud": {
+      "repository": "JMisJustMe/jm-cloud-contact-server-first-cloud",
+      "commit": "7c84f96b904aefd74dec564e88b21b55e178bc08",
+      "default_path": "../cloud-contact"
+    }
+  },
+  "commands": {
+    "source": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/mission002-source-aware-creation.mjs"
+      ]
+    },
+    "authority": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/mission002-authority-projection.mjs"
+      ]
+    },
+    "navigator": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "navigator/mcp-public-v1/test.mjs"
+      ]
+    },
+    "mesh": {
+      "repo": "mesh",
+      "argv": [
+        "node",
+        "tests/build-mesh-current-http.mjs"
+      ]
+    },
+    "registry": {
+      "repo": "mesh",
+      "argv": [
+        "python3",
+        "services/jm-ecostate-build-mesh-mcp-v0_5/proof_dynamic_registry.py"
+      ]
+    },
+    "relationships": {
+      "repo": "mesh",
+      "argv": [
+        "python3",
+        "services/jm-ecostate-build-mesh-mcp-v0_5/test_relationship_operations.py"
+      ]
+    },
+    "operator": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator.mjs"
+      ]
+    },
+    "world": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator-world.mjs"
+      ]
+    },
+    "spaces": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "tests/estate-native-operator-spaces.mjs"
+      ]
+    },
+    "theogamy": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/integration/theogamy-contact-selftest.mjs"
+      ]
+    },
+    "embodied": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/embodied-eight-route.selftest.mjs"
+      ]
+    },
+    "onebody": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/onebody-ir.selftest.mjs"
+      ]
+    },
+    "authoring": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/everybody/role-qualified-61/native/authoring-nine.selftest.mjs"
+      ]
+    },
+    "physics": {
+      "repo": "physics",
+      "argv": [
+        "node",
+        "coding-estate/integration/jm-federation-contact-physics-selftest.mjs"
+      ]
+    },
+    "playzone": {
+      "repo": "playzone",
+      "argv": [
+        "node",
+        "coding-estate/integration/jm-playzone-native-world-organs-selftest.mjs"
+      ]
+    },
+    "agents": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "agent-runtime/host-adapters/jm_host_adapter_conformance.py",
+        "--all",
+        "--run-local"
+      ]
+    },
+    "cloud": {
+      "repo": "cloud",
+      "argv": [
+        "npm",
+        "run",
+        "preflight"
+      ]
+    },
+    "integration": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "coding-estate/integration/integration-selftest.mjs"
+      ]
+    },
+    "governance": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py"
+      ]
+    },
+    "current64": {
+      "repo": "lab",
+      "argv": [
+        "python3",
+        "coding-estate/validate_current_64_standard.py"
+      ]
+    },
+    "build": {
+      "repo": "lab",
+      "argv": [
+        "node",
+        "scripts/build_gameforge_connected_carrier.mjs",
+        "{output}/connected-world"
+      ]
+    }
+  },
+  "lanes": [
+    {
+      "id": 1,
+      "workstream": "Source identity, authority and recovery",
+      "status": "WORKING",
+      "dependencies": [],
+      "commands": [
+        "source",
+        "authority"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/source-aware-creation.mjs",
+          "sha256": "db38dd5983aa7b1c2d14b4f3e83d273b0c49cf84bcfc6808a79d8519bc7e4b98",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/source-aware-creation.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/public-registry.json",
+          "sha256": "fb9d9f5f60672483f35bdc174dbeaeb51f2e3e5011de17013edfed6ab0c97f1c",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/public-registry.json"
+        }
+      ],
+      "actual_progress": "Exact selected program materialisation, source hash rejection and receiving world change pass. Public catalogue byte identity independently matches live Cloudflare. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Private JM32-1DA/32_Cb release bodies remain CURRENT_DECLARED only; hashes/hosted records are not recovered source. Historical foundational source authority is not claimed for the new bounded adapter.",
+      "next_chat": "JM M002 — Source Authority & Recovery",
+      "next_step": "Recover the exact JM32-1DA v2.2.1 and 32_Cb v2.1 current carriers from their private pointers; verify the declared hashes, then make one source-bound receiver contact without transferring their prior proof.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 1: Source identity, authority and recovery. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Recover the exact JM32-1DA v2.2.1 and 32_Cb v2.1 current carriers from their private pointers; verify the declared hashes, then make one source-bound receiver contact without transferring their prior proof. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 2,
+      "workstream": "Build Mesh and Navigator",
+      "status": "VERIFIED",
+      "dependencies": [
+        1
+      ],
+      "commands": [
+        "registry",
+        "mesh",
+        "relationships",
+        "navigator",
+        "authority"
+      ],
+      "sources": [
+        {
+          "repo": "mesh",
+          "path": "services/jm-ecostate-build-mesh-mcp-v0_5/server.py",
+          "sha256": "0728ec60a1689fc726c2d6df094b16023d34535b0a0ad8b8a0b4dc2d04d4be93",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/cc6b6f1ce594e3a09264e34fc03c1be947004754/services/jm-ecostate-build-mesh-mcp-v0_5/server.py"
+        },
+        {
+          "repo": "mesh",
+          "path": "services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json",
+          "sha256": "7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/cc6b6f1ce594e3a09264e34fc03c1be947004754/services/jm-ecostate-build-mesh-mcp-v0_5/current_registry.json"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/mcp-public-v1/worker.mjs",
+          "sha256": "1dedb43722970ddfad8434900cd696115b3566ec897bc228710bde2668eaa7e1",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/mcp-public-v1/worker.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/public-registry.json",
+          "sha256": "fb9d9f5f60672483f35bdc174dbeaeb51f2e3e5011de17013edfed6ab0c97f1c",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/public-registry.json"
+        }
+      ],
+      "actual_progress": "PR377 exact registry 27978 bytes, 22 records, 34 profiles; 17 inherited HTTP tools plus five relationship plans pass. Navigator read-only unit contact and actual candidate registry lineage return pass. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Hosted is v0.8.5. PR377 is v0.8.6 candidate; live public projection still says v0.7.3. Corrected v0.8.5 source projection is undeployed. No source merge/deployment authorised.",
+      "next_chat": "JM M002 — Build Mesh Authority Reconciliation",
+      "next_step": "Review the candidate projection against direct hosted status and PR377; reconcile against current main before proposing the smallest explicit deployment. Do not deploy automatically.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 2: Build Mesh and Navigator. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Review the candidate projection against direct hosted status and PR377; reconcile against current main before proposing the smallest explicit deployment. Do not deploy automatically. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 3,
+      "workstream": "Unified operating and creation surfaces",
+      "status": "VERIFIED",
+      "dependencies": [
+        1,
+        4,
+        5
+      ],
+      "commands": [
+        "operator",
+        "world"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/index.html",
+          "sha256": "1d8eef5934958a741eae0be789638ee76deb49ba48cd4e9451927d07b5b57896",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/index.html"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/native-operator.mjs",
+          "sha256": "384ac5e1abcad8006deac1b48e3b03bd00bfac836c55256d4df39dd8455c0a77",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/native-operator.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/execution-lanes.mjs",
+          "sha256": "2fa127210e80de3311a1cfb1b5b773ec69e300abde1b704b768bb4e7acab8826",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/execution-lanes.mjs"
+        }
+      ],
+      "actual_progress": "Existing native operator executes registry routing, typed native chain and returned state. PR395 browser workflow at 4b58b935 passed operator, worlds, connected spaces, GripCube and Creator Preview. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Bounded existing surfaces only. No full unification of every Estate room; public deployment and physical owner acceptance remain open.",
+      "next_chat": "JM M002 — Unified Native Operator",
+      "next_step": "Use the existing operator door and source-bound build; select one real additional receiver and prove visible consequence, returned receipt and recovery without replacing the current interface.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 3: Unified operating and creation surfaces. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Use the existing operator door and source-bound build; select one real additional receiver and prove visible consequence, returned receipt and recovery without replacing the current interface. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 4,
+      "workstream": "Foundational reasoning, language and creation bodies",
+      "status": "WORKING",
+      "dependencies": [
+        1
+      ],
+      "commands": [
+        "theogamy",
+        "source",
+        "embodied"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/theogamy-contact.mjs",
+          "sha256": "f5ab1d47d4470d3f581fa3a84f5b8e78e658c4333f4a6774d76360810f2930f5",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/theogamy-contact.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/source-aware-creation.mjs",
+          "sha256": "db38dd5983aa7b1c2d14b4f3e83d273b0c49cf84bcfc6808a79d8519bc7e4b98",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/source-aware-creation.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-ten/direct/language-native.mjs",
+          "sha256": "b2db5d51a2b0b26c65d928a5076f1af8bb0a556bbf17c0275a0806a37096168a",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-ten/direct/language-native.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs",
+          "sha256": "669469a75e97bdcf4caeef3a194aa83782bf1b5734ca05861f6fedc4c6464220",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs"
+        }
+      ],
+      "actual_progress": "THEOGAMY adaptation 18 checks; source-aware native creation 12 checks; embodied eight route runs real source grammars. Exact source SHA feeds Codifying, JMLogic and the existing native program chain. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "THEOGAMY module is an explicitly scoped Shared Mechanisms adaptation. Exact original MMMBBB, VTSDGY, BTG, HOSF, TheoPlus, theography and Gardles sources are not mounted by this run. No automatic semantic interpretation of arbitrary prose.",
+      "next_chat": "JM M002 — Foundational Source-Aware Creation",
+      "next_step": "Recover one exact original foundation donor and its current pointer; compare its actual grammar/mechanism to the executable adapter, then integrate the real difference through the existing THEOGAMY port.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 4: Foundational reasoning, language and creation bodies. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Recover one exact original foundation donor and its current pointer; compare its actual grammar/mechanism to the executable adapter, then integrate the real difference through the existing THEOGAMY port. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 5,
+      "workstream": "Coding, compilers, runtimes and operating systems",
+      "status": "VERIFIED",
+      "dependencies": [
+        1,
+        4
+      ],
+      "commands": [
+        "operator",
+        "world",
+        "onebody",
+        "integration",
+        "current64"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-ten/direct/language-native.mjs",
+          "sha256": "b2db5d51a2b0b26c65d928a5076f1af8bb0a556bbf17c0275a0806a37096168a",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-ten/direct/language-native.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-batch-two/direct/kading-jmp-native.mjs",
+          "sha256": "1fa5405832160af9db79494083bd7a0c4340d2b122e9b6ca939dd323e478bf1f",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-batch-two/direct/kading-jmp-native.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-batch-two/direct/root-caden-native.mjs",
+          "sha256": "096a685897794bc1b5360d9c14baaf65b70af7e6476e2fbb0d7be79e411a6f1f",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-batch-two/direct/root-caden-native.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/sovereign-batch-two/direct/prime-jmvm-native.mjs",
+          "sha256": "1959818ef1749ce1be134dd40c22792261af8da50967f017694065bb21c4c541",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/sovereign-batch-two/direct/prime-jmvm-native.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/adoption-proofs.mjs",
+          "sha256": "e7a4b98deca6a148cadb05dd7a4697110fa9bbb3737da1e58f72e07394692d61",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/adoption-proofs.mjs"
+        }
+      ],
+      "actual_progress": "FlowTalk -> Kading/CadenVM -> JMVM -> real Game-CODING/GameCore receiver passes, plus inherited game/tool/OS adoption tests and OneBody forward IR. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "JS-hosted native interpreters, not a native universal OS or activation of every current coding body. 32_Cb and JM32-1DA full carriers remain separate recovery HOLDs.",
+      "next_chat": "JM M002 — Coding Runtime Receiver Chain",
+      "next_step": "Connect one recovered compiler/runtime output to a real target receiver, verify state and return, retain current interpreter proof and test the target independently.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 5: Coding, compilers, runtimes and operating systems. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Connect one recovered compiler/runtime output to a real target receiver, verify state and return, retain current interpreter proof and test the target independently. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 6,
+      "workstream": "Shared engines, graphics, physics and rendering",
+      "status": "VERIFIED",
+      "dependencies": [
+        5
+      ],
+      "commands": [
+        "physics",
+        "playzone",
+        "spaces"
+      ],
+      "sources": [
+        {
+          "repo": "physics",
+          "path": "coding-estate/integration/jm-federation-contact-physics-v1.js",
+          "sha256": "690582e81171f4a29f91ce729e8c1674378da4a976d882ef2c721ffbeab12eea",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/1db298c770b9ccf85e4415bbd47337e6fe6ebee5/coding-estate/integration/jm-federation-contact-physics-v1.js"
+        },
+        {
+          "repo": "playzone",
+          "path": "coding-estate/integration/jm-playzone-avatar-world-organ-v25.js",
+          "sha256": "60911778e8fc0c6690263eb9427ccc1a507ec61787bde8719b5b335ef85085c2",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/788137588b4a7ed4db6bcfdbd16122a73e0e7b94/coding-estate/integration/jm-playzone-avatar-world-organ-v25.js"
+        },
+        {
+          "repo": "playzone",
+          "path": "coding-estate/integration/jm-playzone-biome-geometry-v26.js",
+          "sha256": "6f9c73efd8c22e72f28150406d7d55aff71ddb2978ae9379b8039d979e8a9bf3",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/788137588b4a7ed4db6bcfdbd16122a73e0e7b94/coding-estate/integration/jm-playzone-biome-geometry-v26.js"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/jm-actual-renderer-organ.mjs",
+          "sha256": "9062bc07fd1f68ec090a87c452b7279b8732ff10685c7af4046dbcf6c7763c91",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/jm-actual-renderer-organ.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/gameforge-spatial-view.mjs",
+          "sha256": "694110a76bd4fb80814b97f958f0e3c176ff1a127291a7e7c40ffa53d15b9f88",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/gameforge-spatial-view.mjs"
+        }
+      ],
+      "actual_progress": "Recovered PR394 pair physics: 250 fixtures, 223 contacts PASS. Recovered PR396: 28 component assertions PASS. PR395 browser renders actual shared 2D/3D state. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "PR394/396 remain separate unmerged donors. Their node proof is not a new receiving game/GPU/device proof. No full COMBOUND or PlayZone authority replacement.",
+      "next_chat": "JM M002 — Shared Engine Recipient Contact",
+      "next_step": "Select one actual receiver and integrate one shared donor organ; compare before/after gameplay and prove real renderer/physics contact before proposing propagation.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 6: Shared engines, graphics, physics and rendering. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Select one actual receiver and integrate one shared donor organ; compare before/after gameplay and prove real renderer/physics contact before proposing propagation. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 7,
+      "workstream": "Native interactive receiver execution",
+      "status": "WORKING",
+      "dependencies": [
+        3,
+        5,
+        6,
+        12
+      ],
+      "commands": [
+        "spaces",
+        "build"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/gameforge-spaces.mjs",
+          "sha256": "80c9916a737a24e227da7f87a4d7a949e9758dfe9ec2501cf0551bff7def163f",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/gameforge-spaces.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "scripts/build_gameforge_connected_carrier.mjs",
+          "sha256": "3604936df2c116b76a91d8356fcaaae9ffa068a0d6ac111568b448f53b0ceb4b",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/scripts/build_gameforge_connected_carrier.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "tests/estate-native-operator-android.spec.mjs",
+          "sha256": "91f49d0d48ec7c51e04b65ce2f4499a141b8bff91e770b1e5cc2bcd44530c514",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/tests/estate-native-operator-android.spec.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "tools/Build-JMAndroidForgeApk.ps1",
+          "sha256": "2e9668b8c48dac0577500b48cf77ab99313cc29d8f20b5a1f2b1236465b1703b",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/tools/Build-JMAndroidForgeApk.ps1"
+        }
+      ],
+      "actual_progress": "Actual signed offline APK installed and exercised in Android API35 x86_64 WebView at 4b58b935: native movement, door traversal, real 3D ground tap, lifecycle pause, process-death exact recovery and hash-tamper HOLD PASS. Emulator artifact independently downloaded, SHA256/CRC checked; extracted APK asset exactly equals CI-emitted source. Local Linux output is LF-normalized equivalent; exact cross-OS bytes differ. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Physical Samsung, owner signing/release custody, update compatibility and whole-receiver coverage remain HOLD. CI disposable package only.",
+      "next_chat": "JM M002 — Native Android Receiver Regression",
+      "next_step": "Inspect exact-head Android workflow and runtime artifact; verify native touches, 3D contact, process-death recovery and hash-tamper HOLD. Preserve any failure; never replace emulator proof with desktop Chromium.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 7: Native interactive receiver execution. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Inspect exact-head Android workflow and runtime artifact; verify native touches, 3D contact, process-death recovery and hash-tamper HOLD. Preserve any failure; never replace emulator proof with desktop Chromium. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 8,
+      "workstream": "JM AI and sovereign agent systems",
+      "status": "VERIFIED",
+      "dependencies": [
+        1,
+        5
+      ],
+      "commands": [
+        "agents"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "agent-runtime/jm_agent_runtime.py",
+          "sha256": "a4328ba72a3c278601a97e5d350b77df0eda104e3461dae4d25a14122344c573",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/agent-runtime/jm_agent_runtime.py"
+        },
+        {
+          "repo": "lab",
+          "path": "agent-runtime/jm-agent-runtime.mjs",
+          "sha256": "a4a43011d48894e5cf7bb0d819c3adaadec82ac15761318cb0152ce3486e8303",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/agent-runtime/jm-agent-runtime.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json",
+          "sha256": "2d18e14a429f931d17aee8b4853c52751ecd78f4b9059cb07ba8a5479d0c8a00",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/agent-runtime/JM_SOVEREIGN_AGENT_RUNTIME_CONTRACT_v0_1.json"
+        },
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_SOVEREIGN_AGENT_GATEWAY_REMAIN_v0_3.mjs",
+          "sha256": "1dae8ee9ec9aa21f83271e7a5be07638f658d1fd3e1cfc68721dc34795d8429c",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_SOVEREIGN_AGENT_GATEWAY_REMAIN_v0_3.mjs"
+        }
+      ],
+      "actual_progress": "Node/Python core outputs byte-identical for music, coding, theory and unknown queries (4/4); existing 9-host conformance passes with honest open levels. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Routing runtime proof is not LLM inference, sovereign identity proof or every-host execution. JM LLM Core recovered hosted authority is not independently rerun full model proof.",
+      "next_chat": "JM M002 — Sovereign Agent Runtime Contact",
+      "next_step": "Use the portable agent capsule with one bounded authorised worker task; prove returned consequence, unchanged task authority and persisted recovery through the existing gateway.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 8: JM AI and sovereign agent systems. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Use the portable agent capsule with one bounded authorised worker task; prove returned consequence, unchanged task authority and persisted recovery through the existing gateway. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 9,
+      "workstream": "Cross-AI and external tool integration",
+      "status": "VERIFIED",
+      "dependencies": [
+        8,
+        11,
+        12
+      ],
+      "commands": [
+        "cloud"
+      ],
+      "sources": [
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_CROSS_AI_RELAY_v0_1.mjs",
+          "sha256": "cdbef4c6a0f0131b8ea69dedece830f83d066e40f0af2d0b5c3396c6e8acae99",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_CROSS_AI_RELAY_v0_1.mjs"
+        },
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_M002_HTTP_ROUNDTRIP_TEST_v0_1.mjs",
+          "sha256": "8f2e20db34b205ac34fae6b05899e4d60a8906bd713fc708f0903856322fbaa7",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_M002_HTTP_ROUNDTRIP_TEST_v0_1.mjs"
+        },
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_M002_SOURCE_RETURN_GATE_v0_1.mjs",
+          "sha256": "c9567c5a014bd9441a22413dd507f3ec2bc5a0efe5796a62bef14164e02cae9d",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_M002_SOURCE_RETURN_GATE_v0_1.mjs"
+        }
+      ],
+      "actual_progress": "Full inherited preflight PASS; 9 relay tests and 6 source-return tests; HTTP gateway -> mocked two-provider adapters -> durable return in both directions passes, restart and replay included. CI 39698881093 SUCCESS at exact PR66 head. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Mocked providers only. Actual provider requests remain disabled and unauthorised. No API billing or external AI activation.",
+      "next_chat": "JM M002 — Cross-AI Governed Return",
+      "next_step": "Continue offline with one real source-bound task-return integration; keep provider network disabled. Present exact proposed disclosure/cost/route for owner approval before any real provider invocation.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 9: Cross-AI and external tool integration. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Continue offline with one real source-bound task-return integration; keep provider network disabled. Present exact proposed disclosure/cost/route for owner approval before any real provider invocation. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 10,
+      "workstream": "Knowledge, music, research and creative sources",
+      "status": "WORKING",
+      "dependencies": [
+        1,
+        4,
+        14
+      ],
+      "commands": [
+        "source",
+        "navigator"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "lyrics/catalogue-public.json",
+          "sha256": "233ad4767c0155dbca29fa5532396a6542219260137bb4b8f9efd0920783b40e",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/lyrics/catalogue-public.json"
+        },
+        {
+          "repo": "lab",
+          "path": "lyrics/index.html",
+          "sha256": "7f21e44687dad63de053c0ba841a9f902270f47a7c7a4efbf9113d4e459b6486",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/lyrics/index.html"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/source-aware-creation.mjs",
+          "sha256": "db38dd5983aa7b1c2d14b4f3e83d273b0c49cf84bcfc6808a79d8519bc7e4b98",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/source-aware-creation.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/mcp-public-v1/worker.mjs",
+          "sha256": "1dedb43722970ddfad8434900cd696115b3566ec897bc228710bde2668eaa7e1",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/mcp-public-v1/worker.mjs"
+        }
+      ],
+      "actual_progress": "Exact live/public catalogue equals repository bytes SHA256 233ad4767c0155dbca29fa5532396a6542219260137bb4b8f9efd0920783b40e. Public metadata executes into OneBody state, portable JSON re-executes; 7 checks PASS. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Metadata only; private Evernote/full lyrics, research corpus and latest JM Lyric Home are not imported or crowned. Public source counts are not a new custody census.",
+      "next_chat": "JM M002 — Knowledge & Music Source Contact",
+      "next_step": "Recover the current private lyric/source index and one selected work; preserve Braniak Lyrikz/JM attribution and original text, then make a local read/return contact without publishing the corpus.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 10: Knowledge, music, research and creative sources. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Recover the current private lyric/source index and one selected work; preserve Braniak Lyrikz/JM attribution and original text, then make a local read/return contact without publishing the corpus. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 11,
+      "workstream": "Cloud, servers, website and development infrastructure",
+      "status": "VERIFIED",
+      "dependencies": [
+        1,
+        8
+      ],
+      "commands": [
+        "cloud",
+        "navigator"
+      ],
+      "sources": [
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_SOVEREIGN_AGENT_GATEWAY_REMAIN_v0_3.mjs",
+          "sha256": "1dae8ee9ec9aa21f83271e7a5be07638f658d1fd3e1cfc68721dc34795d8429c",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_SOVEREIGN_AGENT_GATEWAY_REMAIN_v0_3.mjs"
+        },
+        {
+          "repo": "cloud",
+          "path": "render.yaml",
+          "sha256": "18be6a17aab50cf9c4b01a79a76af6392f166c3de8d7c16908ce49118b143ef6",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/render.yaml"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/public-registry.json",
+          "sha256": "fb9d9f5f60672483f35bdc174dbeaeb51f2e3e5011de17013edfed6ab0c97f1c",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/public-registry.json"
+        }
+      ],
+      "actual_progress": "Cloud candidate full local HTTP preflight, independent worker process return and restart recovery PASS; exact Cloudflare public registry readback equals source baseline. PR66 exact-head CI SUCCESS. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Local process restart is not Render disk restart, production deployment or cross-host return. render.yaml paid disk configuration was inspected only; no provision/change/charge.",
+      "next_chat": "JM M002 — Cloud Contact & Durability",
+      "next_step": "Read current Render service state without mutation, reconcile source/deployed SHA and storage mount, then propose a bounded persistent-host restart proof without deploy or provider activation.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 11: Cloud, servers, website and development infrastructure. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Read current Render service state without mutation, reconcile source/deployed SHA and storage mount, then propose a bounded persistent-host restart proof without deploy or provider activation. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 12,
+      "workstream": "Storage connectivity, persistence and custody",
+      "status": "WORKING",
+      "dependencies": [
+        1,
+        5
+      ],
+      "commands": [
+        "operator",
+        "spaces",
+        "cloud"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/gameforge-spaces.mjs",
+          "sha256": "80c9916a737a24e227da7f87a4d7a949e9758dfe9ec2501cf0551bff7def163f",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/gameforge-spaces.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "navigator/estate-integration/return-checkpoint.mjs",
+          "sha256": "522580c461df904c8e4772a77b535530d760f311ac54d98339bee4b02b70ca0b",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/navigator/estate-integration/return-checkpoint.mjs"
+        },
+        {
+          "repo": "cloud",
+          "path": "gateway-remain-v0.3/JM_WORKER_RETURN_LEDGER_v0_3_1.mjs",
+          "sha256": "1b80eb700aa399c87221bc9915567d5ae22f3c571903cb9db14c218877305ef7",
+          "url": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/blob/7c84f96b904aefd74dec564e88b21b55e178bc08/gateway-remain-v0.3/JM_WORKER_RETURN_LEDGER_v0_3_1.mjs"
+        }
+      ],
+      "actual_progress": "New observed-byte conflict guard preserves externally changed durable saves across autosave/lifecycle attempts; browser test passes conflict, tamper rejection and normal recovery. Gateway hash-chain/restart/idempotency tests pass. Android emulator also passes conflict retention, process-death recovery and hash-tamper HOLD at 4b58b935. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Same-browser storage and isolated local gateway only; no Library quota retirement, cloud-wide custody or cross-device durability claim. localStorage check is not distributed atomic compare-and-swap.",
+      "next_chat": "JM M002 — Persistence & Custody Contact",
+      "next_step": "Inspect the Android conflict proof, then exercise one supported cross-device export/import with exact byte/state readback. Recover conflicting bytes before any explicit replacement.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 12: Storage connectivity, persistence and custody. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Inspect the Android conflict proof, then exercise one supported cross-device export/import with exact byte/state readback. Recover conflicting bytes before any explicit replacement. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 13,
+      "workstream": "Device, offline and cross-platform execution",
+      "status": "WORKING",
+      "dependencies": [
+        7,
+        12
+      ],
+      "commands": [
+        "agents",
+        "build"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "tests/estate-native-operator-android.spec.mjs",
+          "sha256": "91f49d0d48ec7c51e04b65ce2f4499a141b8bff91e770b1e5cc2bcd44530c514",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/tests/estate-native-operator-android.spec.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "tests/estate-native-operator-spaces-render.spec.mjs",
+          "sha256": "63f2ce600af8b1fa63e937c5732a28c5402fb77a8b3a871296f888ca872ef5d5",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/tests/estate-native-operator-spaces-render.spec.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "agent-runtime/host-adapters/android/app/src/main/java/com/jmisjustme/sovereignagent/MainActivity.java",
+          "sha256": "6c11e2db6b8583543a945a50a73fa2b5aeee402d6a8a8eaf46654485fe9b7bda",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/agent-runtime/host-adapters/android/app/src/main/java/com/jmisjustme/sovereignagent/MainActivity.java"
+        },
+        {
+          "repo": "lab",
+          "path": "tools/Build-JMAndroidForgeApk.ps1",
+          "sha256": "2e9668b8c48dac0577500b48cf77ab99313cc29d8f20b5a1f2b1236465b1703b",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/tools/Build-JMAndroidForgeApk.ps1"
+        }
+      ],
+      "actual_progress": "Actual API35 x86_64 Android WebView emulator PASS at 4b58b935; independently checked artifact and signed APK/asset hashes. Browser mobile controls, offline standalone export/reload and native receiver tests pass. No physical owner-device claim. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Physical Fold/Samsung acceptance, GPU performance and installed update/release compatibility remain open. Local browser download failed (truncated ZIP); CI is the browser test environment.",
+      "next_chat": "JM M002 — Android Offline & Cross-Platform Acceptance",
+      "next_step": "Recover CI test APK and runtime proof at 4b58b935; only after package/source hash checks perform the owner-selected device test. Record physical device separately from emulator and browser.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 13: Device, offline and cross-platform execution. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Recover CI test APK and runtime proof at 4b58b935; only after package/source hash checks perform the owner-selected device test. Record physical device separately from emulator and browser. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 14,
+      "workstream": "Cross-medium authoring and export",
+      "status": "WORKING",
+      "dependencies": [
+        1,
+        4,
+        5
+      ],
+      "commands": [
+        "source",
+        "onebody",
+        "authoring",
+        "build"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs",
+          "sha256": "5bbbf87d8dc44c53db9b55a817e1b4c889e84645729f65aac9cc7ff647ecefd5",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/everybody/role-qualified-61/native/onebody-ir.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/everybody/role-qualified-61/native/authoring-nine.mjs",
+          "sha256": "e2a46445e94fd9319f45ed3da14434fbe832cd21d514d5f94c9482492ba721e9",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/everybody/role-qualified-61/native/authoring-nine.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "scripts/build_gameforge_connected_carrier.mjs",
+          "sha256": "3604936df2c116b76a91d8356fcaaae9ffa068a0d6ac111568b448f53b0ceb4b",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/scripts/build_gameforge_connected_carrier.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/source-aware-creation.mjs",
+          "sha256": "db38dd5983aa7b1c2d14b4f3e83d273b0c49cf84bcfc6808a79d8519bc7e4b98",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/source-aware-creation.mjs"
+        }
+      ],
+      "actual_progress": "Existing authoring-nine 18 checks and OneBody 8 checks pass. Exact program emits a self-contained game HTML; public music metadata emits a re-executable portable OneBody capsule. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "Two bounded artifact paths, not complete book/comic/cartoon/audio production or arbitrary cross-medium transformation. Historical exact OneBody schema remains open in inherited source. Windows CI and Linux serialized-function newlines differ; portable re-execution passes, but byte-identical cross-OS export remains HOLD.",
+      "next_chat": "JM M002 — Cross-Medium Source Export",
+      "next_step": "Take one recovered authoring body and prove its actual exported artifact reopens in the intended receiver with source identity and state preserved; choose a second medium only when its real source/exporter is recovered.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 14: Cross-medium authoring and export. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Take one recovered authoring body and prove its actual exported artifact reopens in the intended receiver with source identity and state preserved; choose a second medium only when its real source/exporter is recovered. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 15,
+      "workstream": "Capability inheritance, merge and propagation",
+      "status": "VERIFIED",
+      "dependencies": [
+        2,
+        4,
+        6
+      ],
+      "commands": [
+        "integration",
+        "theogamy",
+        "relationships",
+        "physics",
+        "playzone"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/adoption-proofs.mjs",
+          "sha256": "e7a4b98deca6a148cadb05dd7a4697110fa9bbb3737da1e58f72e07394692d61",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/adoption-proofs.mjs"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/integration/theogamy-private-donor-port.mjs",
+          "sha256": "5cb305182a4c005d1f9a5a489cba7ab83748e0c1d887e102dc1fd44b4c02f72c",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/integration/theogamy-private-donor-port.mjs"
+        },
+        {
+          "repo": "mesh",
+          "path": "services/jm-ecostate-build-mesh-mcp-v0_5/server.py",
+          "sha256": "0728ec60a1689fc726c2d6df094b16023d34535b0a0ad8b8a0b4dc2d04d4be93",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/cc6b6f1ce594e3a09264e34fc03c1be947004754/services/jm-ecostate-build-mesh-mcp-v0_5/server.py"
+        }
+      ],
+      "actual_progress": "Real inherited game/tool/OS adoption executes; actual shared engine donor selftests pass; five relationship plans preserve no-mutation/no-proof-transfer boundaries. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "A passing plan is not an executed merge. Deliberate merge is permitted, but no merge, propagation to all recipients or transfer of receiver proof was performed.",
+      "next_chat": "JM M002 — Earned Inheritance & Propagation",
+      "next_step": "Choose one named receiver/donor pair; recover both exact sources, integrate one capability on a bounded candidate and require receiver regression, return, persistence and rollback proof.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 15: Capability inheritance, merge and propagation. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Choose one named receiver/donor pair; recover both exact sources, integrate one capability on a bounded candidate and require receiver regression, return, persistence and rollback proof. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    },
+    {
+      "id": 16,
+      "workstream": "Governance, evidence, regression and promotion",
+      "status": "VERIFIED",
+      "dependencies": [
+        1,
+        2
+      ],
+      "commands": [
+        "governance",
+        "current64",
+        "integration",
+        "relationships"
+      ],
+      "sources": [
+        {
+          "repo": "lab",
+          "path": "JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json",
+          "sha256": "672160b7a837df9b18ec143e52a175ee5a46dd92ede464e89e85e376b9fad5b7",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/JM_ESTATE/GOVERNANCE/JM_BUILD_LAWS_PREFERENCES_GOVERNANCE_v1.0.json"
+        },
+        {
+          "repo": "lab",
+          "path": "JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py",
+          "sha256": "869a9ad1d69368b21c7b2c04daf22a9f4f39831c229c552b085ce9aca64306fe",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/JM_ESTATE/GOVERNANCE/validate_build_laws_governance.py"
+        },
+        {
+          "repo": "lab",
+          "path": "coding-estate/validate_current_64_standard.py",
+          "sha256": "d98570402f4b5c94d6f0aa5ff8a66c78248c8010ade32d9cd50c306f5c1e6bb5",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/deb80728ce081da5288776dff4789d300d3dc661/coding-estate/validate_current_64_standard.py"
+        },
+        {
+          "repo": "mesh",
+          "path": "services/jm-ecostate-build-mesh-mcp-v0_5/test_relationship_operations.py",
+          "sha256": "e1d0a65690e0f884fbb71261f799d715c6181d77c873eee774ae03eb7b1e46a5",
+          "url": "https://github.com/JMisJustMe/JM-cading-lab/blob/cc6b6f1ce594e3a09264e34fc03c1be947004754/services/jm-ecostate-build-mesh-mcp-v0_5/test_relationship_operations.py"
+        }
+      ],
+      "actual_progress": "Running governance/current-64 validators, inherited integration regression and candidate relationship boundaries pass. Sources, tests, holds and per-lane re-entry are retained in this existing project. All listed local commands re-executed by the shared runner with pinned source checks; see WORK_RECEIPT.json.",
+      "holds": "No whole-Estate completion, main merge, deployment, release, deletion, provider charge or owner-device Ding. Only the named bounded evidence is promoted as proof.",
+      "next_chat": "JM M002 — Mission 002 Evidence & Promotion Gate",
+      "next_step": "Read the execution ledger and machine receipt, refresh only changed authority/CI results, close the next blocking failure and propose promotion only for an independently proved scope.",
+      "rollback": "No source in this lane is promoted to main. Recover named source commits above. For the Android fix, revert only commit 4b58b935 on a reviewed descendant if necessary; retain 865d379e as immutable ancestry. For new adapters/projection, use the protected 4b58b935 parent; do not erase persisted user state.",
+      "continuation_prompt": "Continue JM ECOSTATE Mission 002 workstream 16: Governance, evidence, regression and promotion. Recover work/mission002-bootstrap-20261022 and read estate-integration/mission-002/EXECUTION_LEDGER.md, dependency-plan.json and WORK_RECEIPT.json. Verify current heads against the pinned sources; inherit completed bounded tests. Read the execution ledger and machine receipt, refresh only changed authority/CI results, close the next blocking failure and propose promotion only for an independently proved scope. Preserve originals and exact returned evidence. No merge, deploy, release, private deletion, provider charge or external AI activation. Finish with code/contact, actual tests, recovery and a precise handoff; mark unexecuted scope HOLD."
+    }
+  ]
+}

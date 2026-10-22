@@ -23,6 +23,12 @@ param(
 
     [string]$ExpectedSignerSha256,
 
+    [switch]$EnableRuntimeProbe,
+
+    [switch]$OfflineOnly,
+
+    [switch]$TestSigner,
+
     [ValidateRange(0, 2147483646)]
     [int]$PreviousVersionCode = 0,
 
@@ -32,6 +38,7 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ($EnableRuntimeProbe -and -not $PackageName.EndsWith('.ci')) { throw 'RUNTIME_PROBE_REQUIRES_CI_PACKAGE' }
 
 function Get-HighestAndroidDirectory {
     param(
@@ -159,11 +166,16 @@ try {
     New-Item -ItemType Directory -Path $javaPackageDir -Force | Out-Null
 
     $escapedProject = $ProjectName.Replace('&','&amp;').Replace('"','&quot;').Replace('<','&lt;').Replace('>','&gt;')
+    $internetPermission = if ($OfflineOnly) { '' } else { '<uses-permission android:name="android.permission.INTERNET" />' }
+    $cleartext = if ($OfflineOnly) { 'false' } else { 'true' }
+    $backup = if ($OfflineOnly) { 'false' } else { 'true' }
+    $probeJava = if ($EnableRuntimeProbe) { 'WebView.setWebContentsDebuggingEnabled(true);' } else { '' }
+    $offlineJava = if ($OfflineOnly) { 'settings.setBlockNetworkLoads(true); settings.setAllowContentAccess(false); settings.setAllowFileAccess(false); settings.setAllowFileAccessFromFileURLs(false); settings.setAllowUniversalAccessFromFileURLs(false); settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);' } else { '' }
     $manifest = @"
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="$PackageName">
-  <uses-permission android:name="android.permission.INTERNET" />
-  <application android:allowBackup="true" android:label="$escapedProject" android:usesCleartextTraffic="true" android:theme="@android:style/Theme.Material.Light.NoActionBar">
+  $internetPermission
+  <application android:allowBackup="$backup" android:label="$escapedProject" android:usesCleartextTraffic="$cleartext" android:theme="@android:style/Theme.Material.Light.NoActionBar">
     <activity android:name=".MainActivity" android:configChanges="keyboardHidden|orientation|screenSize" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -185,6 +197,10 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
+import android.view.ViewGroup;
+import android.os.Build;
+import android.graphics.Insets;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -192,18 +208,50 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        $probeJava
         webView = new WebView(this);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(true);
         settings.setAllowContentAccess(true);
+        $offlineJava
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
-        setContentView(webView);
+        FrameLayout root = new FrameLayout(this);
+        root.setBackgroundColor(0xff080c14);
+        root.addView(webView, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            int left = insets.getSystemWindowInsetLeft(), top = insets.getSystemWindowInsetTop();
+            int right = insets.getSystemWindowInsetRight(), bottom = insets.getSystemWindowInsetBottom();
+            if (Build.VERSION.SDK_INT >= 30) {
+                Insets bars = insets.getInsets(android.view.WindowInsets.Type.systemBars() | android.view.WindowInsets.Type.displayCutout());
+                left = bars.left; top = bars.top; right = bars.right; bottom = bars.bottom;
+            }
+            FrameLayout.LayoutParams layout = (FrameLayout.LayoutParams)webView.getLayoutParams();
+            layout.setMargins(left, top, right, bottom); webView.setLayoutParams(layout);
+            return insets;
+        });
+        setContentView(root);
+        root.requestApplyInsets();
         webView.loadUrl("file:///android_asset/index.html");
     }
 
+    @Override protected void onPause() {
+        if (webView != null) {
+            webView.evaluateJavascript("window.dispatchEvent(new Event('jm.host.pause'))", null);
+            webView.onPause();
+        }
+        super.onPause();
+    }
+    @Override protected void onResume() {
+        super.onResume();
+        if (webView != null) { webView.onResume(); webView.evaluateJavascript("window.dispatchEvent(new Event('jm.host.resume'))", null); }
+    }
+    @Override protected void onDestroy() {
+        if (webView != null) { webView.stopLoading(); webView.destroy(); webView = null; }
+        super.onDestroy();
+    }
     @Override
     public void onBackPressed() {
         if (webView != null && webView.canGoBack()) webView.goBack();
@@ -310,8 +358,12 @@ public class MainActivity extends Activity {
         signing_mode = $SigningMode
         signer_cert_sha256 = $signerSha256
         signing_identity_pinned = ($SigningMode -eq 'release')
-        update_ready = ($SigningMode -eq 'release')
-        signer_boundary = $(if ($SigningMode -eq 'release') { 'PINNED_OWNER_RELEASE_SIGNER_VERIFIED; install and device runtime are separate' } else { 'DEVELOPMENT_SIGNER_UNSTABLE; NOT RELEASE/UPDATE-READY' })
+        update_ready = ($SigningMode -eq 'release' -and -not $TestSigner)
+        signer_boundary = $(if ($TestSigner) { 'DISPOSABLE_CI_SIGNER; NO OWNER_RELEASE_CUSTODY' } elseif ($SigningMode -eq 'release') { 'PINNED_OWNER_RELEASE_SIGNER_VERIFIED; install and device runtime are separate' } else { 'DEVELOPMENT_SIGNER_UNSTABLE; NOT RELEASE/UPDATE-READY' })
+        runtime_probe_enabled = [bool]$EnableRuntimeProbe
+        offline_only = [bool]$OfflineOnly
+        javascript_bridge = 'NONE; no native privileged JS interface'
+        lifecycle = 'WebView pause/resume/destroy + JM host events'
         android_sdk = $sdk
         platform = $platformDir.Name
         build_tools = $buildToolsDir.Name
@@ -332,7 +384,7 @@ public class MainActivity extends Activity {
         bytes = $apkBytes
         signing_mode = $SigningMode
         signer_cert_sha256 = $signerSha256
-        update_ready = ($SigningMode -eq 'release')
+        update_ready = ($SigningMode -eq 'release' -and -not $TestSigner)
     } | ConvertTo-Json -Compress
 }
 finally {

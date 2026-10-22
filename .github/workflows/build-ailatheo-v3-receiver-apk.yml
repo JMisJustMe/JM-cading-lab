@@ -8,24 +8,30 @@ on:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/ailatheo-native-touch-carrier.mjs'
       - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'tests/estate-native-operator-apk-asset.spec.mjs'
+      - 'tests/estate-native-operator-android.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'coding-estate/integration/**'
       - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
       - 'coding-estate/sovereign-batch-six/direct/game-input-native-*.mjs'
       - 'tools/Build-JMAndroidForgeApk.ps1'
       - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
+      - 'scripts/build_gameforge_connected_carrier.mjs'
       - '.github/workflows/build-ailatheo-v3-receiver-apk.yml'
   pull_request:
     paths:
       - 'unified-browser/ailatheo-creation-runtime.mjs'
       - 'unified-browser/ailatheo-native-touch-carrier.mjs'
       - 'tests/ailatheo-android-touch-carrier.spec.mjs'
+      - 'tests/estate-native-operator-apk-asset.spec.mjs'
+      - 'tests/estate-native-operator-android.spec.mjs'
       - 'unified-browser/OPEN_FIRST_AILATHEO_CREATION_WORKBENCH_v3_0_ALPHA.html'
       - 'coding-estate/integration/**'
       - 'coding-estate/sovereign-batch-four/direct/toolchain-native.mjs'
       - 'coding-estate/sovereign-batch-six/direct/game-input-native-*.mjs'
       - 'tools/Build-JMAndroidForgeApk.ps1'
       - 'scripts/build_ailatheo_v3_receiver_carrier.mjs'
+      - 'scripts/build_gameforge_connected_carrier.mjs'
       - '.github/workflows/build-ailatheo-v3-receiver-apk.yml'
 
 permissions:
@@ -219,6 +225,69 @@ jobs:
           Write-Host "APK_BYTES=$((Get-Item (Join-Path $artifact 'AILatheo_Creation_v3_0_alpha.apk')).Length)"
           Write-Host "APK_SHA256=$actual"
 
+          # Add the actual connected-world carrier as a separate CI-only package.
+          # Preserve original AILatheo assets, signing authority and public download route.
+          if ($env:GITHUB_EVENT_NAME -eq 'pull_request') {
+            $worldDir = Join-Path $env:RUNNER_TEMP 'jm-connected-world-carrier'
+            node scripts/build_gameforge_connected_carrier.mjs $worldDir
+            if ($LASTEXITCODE -ne 0) { throw 'CONNECTED_WORLD_SOURCE_HOLD' }
+            $worldBuild = Join-Path $env:RUNNER_TEMP 'jm-connected-world-build'
+            $worldLines = @(& 'tools/Build-JMAndroidForgeApk.ps1' `
+              -SourceDirectory $worldDir -ProjectName 'JM Connected World' `
+              -PackageName 'com.jmisjustme.estateworld.ci' -VersionName '0.1.0-ci' -VersionCode 1 `
+              -OutputRoot $worldBuild -SigningMode release -PreviousVersionCode 0 `
+              -SigningKeystorePath $signer -ExpectedSignerSha256 $expectedSigner -EnableRuntimeProbe -OfflineOnly -TestSigner 2>&1)
+            $worldJson = $worldLines | Where-Object { $_ -is [string] -and $_.TrimStart().StartsWith('{') } | Select-Object -Last 1
+            if (-not $worldJson) { throw 'CONNECTED_WORLD_APK_RESULT_MISSING' }
+            $worldResult = $worldJson | ConvertFrom-Json
+            if (-not $worldResult.success -or $worldResult.signer_cert_sha256 -ne $result.signer_cert_sha256) { throw 'CONNECTED_WORLD_SIGNER_HOLD' }
+            $worldAssetHash = (Get-FileHash -LiteralPath (Join-Path $worldDir 'index.html') -Algorithm SHA256).Hash.ToLowerInvariant()
+            $worldPackage = [IO.Compression.ZipFile]::OpenRead($worldResult.apk)
+            try {
+              $worldEntry = $worldPackage.GetEntry('assets/index.html')
+              if (-not $worldEntry -or -not $worldPackage.GetEntry('classes.dex')) { throw 'CONNECTED_WORLD_APK_ENTRY_MISSING' }
+              $worldStream = $worldEntry.Open()
+              $worldMemory = [IO.MemoryStream]::new()
+              try { $worldStream.CopyTo($worldMemory); $worldBytes = $worldMemory.ToArray() }
+              finally { $worldStream.Dispose(); $worldMemory.Dispose() }
+              $worldEmbeddedHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($worldBytes)).ToLowerInvariant()
+              if ($worldEmbeddedHash -ne $worldAssetHash) { throw 'CONNECTED_WORLD_APK_ASSET_MISMATCH' }
+            } finally { $worldPackage.Dispose() }
+            $worldArtifact = Join-Path $artifact 'connected-world'
+            New-Item -ItemType Directory -Path $worldArtifact -Force | Out-Null
+            Copy-Item -LiteralPath $worldResult.apk -Destination (Join-Path $worldArtifact 'JM_CONNECTED_WORLD_CI.apk')
+            Copy-Item -LiteralPath $worldResult.receipt -Destination (Join-Path $worldArtifact 'ANDROID_BUILD_RECEIPT.json')
+            Copy-Item -LiteralPath (Join-Path $worldDir 'index.html') -Destination $worldArtifact
+            Copy-Item -LiteralPath (Join-Path $worldDir 'CONNECTED_WORLD_SOURCE_PROOF.json') -Destination $worldArtifact
+            [ordered]@{
+              schema='jm.connected-world.apk-proof/1'
+              status='CI_TEST_PACKAGE_NOT_RELEASE'
+              source_head='${{ github.event.pull_request.head.sha || github.sha }}'
+              checkout_sha='${{ github.sha }}'
+              package='com.jmisjustme.estateworld.ci'
+              entry='file:///android_asset/index.html'
+              apk_sha256=(Get-FileHash -LiteralPath $worldResult.apk -Algorithm SHA256).Hash.ToLowerInvariant()
+              asset_sha256=$worldEmbeddedHash
+              exact_asset_readback=$true
+              signer_cert_sha256=$worldResult.signer_cert_sha256
+              installed=$false
+              android_runtime_tested=$false
+              physical_owner_device=$false
+              release_signer_custody=$false
+            } | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $worldArtifact 'CONNECTED_WORLD_APK_PROOF.json') -Encoding UTF8
+            Write-Host "CONNECTED_WORLD_APK_ASSET_EXACT_SHA256=$worldEmbeddedHash"
+          }
+
+      - name: Execute actual packaged connected-world asset in Chromium
+        if: github.event_name == 'pull_request'
+        shell: pwsh
+        run: |
+          npm install --no-save playwright@1.54.1
+          npx playwright install chromium
+          $worldArtifact = Join-Path $env:RUNNER_TEMP 'ailatheo-receiver-artifact/connected-world'
+          node tests/estate-native-operator-apk-asset.spec.mjs (Join-Path $worldArtifact 'JM_CONNECTED_WORLD_CI.apk') (Join-Path $worldArtifact 'CONNECTED_WORLD_APK_PROOF.json')
+          if ($LASTEXITCODE -ne 0) { throw 'CONNECTED_WORLD_PACKAGED_ASSET_EXECUTION_HOLD' }
+
       - name: Upload receiver build
         uses: actions/upload-artifact@v4
         with:
@@ -243,3 +312,40 @@ jobs:
             git commit -m "Publish verified AILatheo v3 APK [skip ci]"
             git push origin HEAD:main
           }
+
+  connected-world-android:
+    if: github.event_name == 'pull_request'
+    needs: receiver-apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions: {contents: read}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/download-artifact@v4
+        with:
+          name: ailatheo-ci-test-only-not-release
+          path: qa/android-package
+      - run: npm install --no-save playwright@1.54.1
+      - name: Enable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install, launch and exercise actual Android WebView
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_7
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          script: node tests/estate-native-operator-android.spec.mjs qa/android-package/connected-world
+      - name: Preserve actual Android runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-connected-world-android-runtime
+          path: qa/android-runtime/
+          if-no-files-found: warn

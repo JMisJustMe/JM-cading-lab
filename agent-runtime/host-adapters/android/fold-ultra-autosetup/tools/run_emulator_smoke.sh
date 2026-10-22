@@ -132,3 +132,6 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_ui_
 
 # Negative proof follows positive native UI checks, leaving revision 3 in place.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_negative_flows.py
+
+# The CP07 cloud-return native intake is a distinct synthetic-on-emulator gate.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_living_home_share.py

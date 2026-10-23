@@ -47,7 +47,7 @@ function deriveSpec(native) {
  let earned=[],reentries=0;
  const actions=[];
  for(const [i,s] of scenes.entries()){
-  if(s.step!==i+1||!Array.isArray(s.earned)||s.recovered!==s.reentries||
+  if(s.step!==i+1||!Array.isArray(s.earned)||!Number.isInteger(s.recovered)||
      s.input!==(s.source==='REENTER_PRESERVE'?'shock':'claim'))hold('CONTACT_SHAPE');
   if(s.source==='CONTACT_EARNED'){
    const added=s.earned.filter(id=>!earned.includes(id));

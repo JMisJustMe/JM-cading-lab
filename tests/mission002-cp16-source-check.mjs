@@ -17,6 +17,8 @@ try{
    body:value?JSON.stringify(value):undefined});
   return {code:res.status,body:await res.json()};
  };
+ const noCredential=await fetch(base+'/v1/state');
+ assert.equal(noCredential.status,401);
  const start=await send('GET','/v1/state');
  assert.equal(start.body.revision,0);
  const id=randomUUID();

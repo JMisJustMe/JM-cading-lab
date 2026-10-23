@@ -18,3 +18,7 @@ Godot Android editor → Import existing project from this ZIP (`project.godot` 
 The literal earliest HTML source remains under `ancestry/SLINGFALL_v0_1_FIELD_CONTACT.html`, SHA-256 `b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62`. v0.2/v0.3/v0.4 project files remain separate. The `config/name` intentionally remains `SLINGFALL — Field Ascent` to preserve the Android Godot save identity. Existing schema-2 battles with no `operation` or `convoy` keys recover as Classic Siege. New mission fields are additive and remain persisted.
 
 Tests: inherited Python static suites plus `tests/test_v05_source.py`, and real-Godot `tests/host_logic_test.gd` on CI. Results are only promoted to a host-specific PASS after Godot itself runs those tests. Owner Fold touch feel, complete visually witnessed convoy match, performance and Android APK remain HOLD until observed. Never infer Android acceptance from Linux headless CI.
+
+## Real host acceptance (bounded)
+
+Native Linux Godot 4.7.2 headless run **39999092319** passed **64/64 gameplay and control assertions**, with no failures. See `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v05.json`. Classic Siege remains tested as inherited, new convoy gameplay and actual pointer input are tested as a separate bounded operation. This is not evidence that human-operated touch feel, visually rendered Android scene, APK export, or full game-balance have passed. Those remain HOLD.

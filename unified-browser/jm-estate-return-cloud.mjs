@@ -115,6 +115,12 @@ export function createEstateReturnCloud({request,token,onJournal=()=>{},journal=
   const j=validateJournal(deep(current));
   if(await digest(j.cipher)!==j.cipherSha256||
      j.parts.map(p=>p.data).join('')!==j.cipher)fail('LOCAL_CIPHER_DRIFT');
+  // Verify the exact remembered passphrase BEFORE any remote mutation. This
+  // prevents an accidental wrong-key upload which the owner could not restore.
+  try{
+   await crypto.subtle.decrypt({name:'AES-GCM',iv:deb64(j.iv),additionalData:aad},
+     await key(secret,deb64(j.salt)),deb64(j.cipher));
+  }catch{fail('PRE_UPLOAD_PASSPHRASE')}
   for(const p of j.parts){
    if(await digest(p.data)!==p.digest)fail('LOCAL_PART_DRIFT');
    const expected=intent(j,p);

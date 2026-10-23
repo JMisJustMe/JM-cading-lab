@@ -1,0 +1,77 @@
+name: JM Full Book Answer Evaluation v0.4
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_answer_eval.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_answer_eval.py'
+      - '.github/workflows/jm-knowledge-answer-eval-v04.yml'
+  workflow_dispatch:
+jobs:
+  answer-and-citation-contact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax plus inherited book and answer unit tests
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_answer_eval.py
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_answer_eval.py' -v
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_fullbook.py' -v
+      - name: Fetch complete original Gutenberg public-domain books
+        run: |
+          mkdir -p /tmp/jm-v04-books
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            https://www.gutenberg.org/cache/epub/57628/pg57628.txt \
+            -o /tmp/jm-v04-books/James_Principles_Vol1.txt
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            https://www.gutenberg.org/cache/epub/205/pg205.txt \
+            -o /tmp/jm-v04-books/Thoreau_Walden.txt
+      - name: Generate real-source extractive answers and score separately
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          questions=[
+            {"id":"J1","question":"habit enormous fly wheel society",
+             "answerable":True,"accepted_fragments":["enormous fly-wheel"],
+             "original_book":"James_Principles_Vol1.txt"},
+            {"id":"J2","question":"habit second nature ten times nature",
+             "answerable":True,"accepted_fragments":["ten times nature","second nature"],
+             "original_book":"James_Principles_Vol1.txt"},
+            {"id":"T1","question":"woods wished live deliberately",
+             "answerable":True,"accepted_fragments":["live deliberately","wished to live"],
+             "original_book":"Thoreau_Walden.txt"},
+            {"id":"T2","question":"mass men lead lives quiet desperation",
+             "answerable":True,"accepted_fragments":["quiet desperation"],
+             "original_book":"Thoreau_Walden.txt"},
+            {"id":"N1","question":"zirconiumunmatched photonophone",
+             "answerable":False,"accepted_fragments":[],"original_book":None}
+          ]
+          Path("/tmp/jm-v04-gold.json").write_text(json.dumps(questions),encoding="utf8")
+          PY
+          python .agents/skills/jm-ecostate-route/jm_knowledge_answer_eval.py \
+            --book /tmp/jm-v04-books/James_Principles_Vol1.txt \
+            --book /tmp/jm-v04-books/Thoreau_Walden.txt \
+            --gold /tmp/jm-v04-gold.json --out /tmp/jm-v04-answer-evaluation \
+            > /tmp/jm-v04-evaluation-summary.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path('/tmp/jm-v04-evaluation-summary.json').read_text(encoding='utf8'))
+          saved=json.loads(Path('/tmp/jm-v04-answer-evaluation/ANSWER_EVALUATION.json').read_text(encoding='utf8'))
+          assert saved["report"]==report
+          assert report["cases"]==5
+          assert report["citation_integrity_failures"]==0
+          assert report["abstentions"]>=1
+          assert report["total_model_calls"]==0
+          assert report["model_generated"] is False
+          print("REAL_BOOK_GROUNDED_ANSWER_EVALUATION",
+                {k:report[k] for k in ("cases","correct","wrong","abstentions","citation_integrity_failures","total_elapsed_ms")})
+          for r in report["results"]:
+            print(r["id"],"PASS" if r["passed"] else "HOLD",r["reason"],r["book"],str(r["answer_preview"])[:160])
+          PY

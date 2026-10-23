@@ -127,9 +127,12 @@ public final class CloudReturnBridge {
       if(sp.contains(key)&&!sp.getString(key,"").equals(old.optString(field,"")))
         throw new IllegalStateException("Unsaved JM draft exists: checkpoint it before applying this return");
     }
-    String evidence="\n\n[LIVING HOME RETURN · unverified provider text]\n"+
+    boolean signed="SERVER_RETURN_SIGNATURE_VERIFIED".equals(p.optString("evidence_state",""));
+    String badge=signed?"[LIVING HOME SERVER-SIGNED CONTACT · external task unverified]":"[LIVING HOME RETURN · unverified provider text]";
+    String provenance=signed?"\\nSigner: "+p.getString("server_key_id")+" · Receipt: "+p.getString("server_receipt_hash"):"";
+    String evidence="\n\n"+badge+"\n"+
       "Mission: "+p.getString("mission_id")+"\nSignal: "+p.getInt("return_signal_id")+"\n"+
-      p.getString("result");
+      p.getString("result")+provenance;
     String nextNote=old.getString("note")+evidence;
     if(nextNote.length()>SessionDeck.MAX_NOTES)
       throw new IllegalStateException("JM session note full; no content changed");

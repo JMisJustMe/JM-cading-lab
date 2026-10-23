@@ -135,3 +135,8 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_neg
 
 # The CP07 cloud-return native intake is a distinct synthetic-on-emulator gate.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_living_home_share.py
+
+# Separate live-Android public-signature gate: ephemeral synthetic fixture, real UI pin,
+# native ECDSA verify, owner checkpoint, denial/replay and cold restart.
+node agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/make_fold_signed_fixture.mjs emulator-proof
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_signed_return.py

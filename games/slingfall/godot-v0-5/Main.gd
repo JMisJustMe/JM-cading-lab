@@ -917,6 +917,17 @@ func _pointer_up(p: Vector2) -> void:
 	if p.y < 84 and p.x > 1060:
 		_toggle_pause()
 		return
+	# Direct cargo-tap is an escort command if any ally is already deployed;
+	# never silently launch a different selected champion instead of obeying.
+	if str(battle.get("operation","SECTOR")) == "CONVOY" and p.distance_to(Vector2(float(battle["convoy"]["x"]),float(battle["convoy"]["y"]))) < 100.0:
+		var ally_present = false
+		for hero in battle["heroes"]:
+			if hero["team"] == "blue" and _alive(hero) and hero["flight"].is_empty():
+				ally_present = true
+				break
+		if ally_present:
+			_issue_order(p)
+			return
 	if rally or int(battle["slots"]["blue"][selected]["active"]) != 0:
 		_issue_order(p)
 		return

@@ -4,6 +4,7 @@ on:
     paths:
       - 'coding-estate/integration/m002-cp14-authority-knowledge-fabric.mjs'
       - 'tests/mission002-cp14-authority-knowledge-fabric.mjs'
+      - 'tests/mission002-mesh-live-authority.mjs'
       - 'navigator/estate-integration/mesh-authority-reconciliation.mjs'
       - 'navigator/estate-integration/public-registry.json'
       - '.agents/skills/jm-ecostate-route/**'
@@ -34,10 +35,14 @@ jobs:
         run: python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_capability_recipient.py' -v
       - name: Prove original Python+Node knowledge to original CP13 multi-family JM receivers
         run: node tests/mission002-cp14-authority-knowledge-fabric.mjs
+      - name: Independently recheck real deployed registry and hosted Build Mesh MCP (no mutation)
+        run: node tests/mission002-mesh-live-authority.mjs
       - name: Preserve source replay receipt, not promotion
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jm-m002-cp14-authority-knowledge
-          path: qa/m002-foundations/CP14_*.json
+          path: |
+            qa/m002-foundations/CP14_*.json
+            qa/m002-mesh/live-authority-reconciliation.json
           if-no-files-found: warn

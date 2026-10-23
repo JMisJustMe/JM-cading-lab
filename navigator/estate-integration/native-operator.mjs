@@ -2,7 +2,7 @@ import {loadGameForgeDonor,makeGameForgeWorld,readWorldBoot,withWorldSnapshot,wa
 import {runNativeOperatorLane,OPERATOR_LANES} from './execution-lanes.mjs';
 import {saveLocalReturn,recoverLocalReturn} from './return-checkpoint.mjs';
 import {createEstateReturnCloud} from '../../unified-browser/jm-estate-return-cloud.mjs';
-import {createCloudWorkspaceClient,httpRequest} from '../../unified-browser/jm-cloud-workspace-client.mjs';
+import {createCloudWorkspaceClient,httpRequest,digest} from '../../unified-browser/jm-cloud-workspace-client.mjs';
 // JM Estate Native Operator v0.2 — extends the existing canonical integration door.
 // Only the existing JM Coding Estate / AILatheo execution path is invoked here.
 // No owner credentials, arbitrary target URLs, background writes, or production claims.
@@ -67,7 +67,7 @@ function mount() {
     const $p=id=>$(id);
     const remote=httpRequest(new URL('../../api/estate-contact',import.meta.url).href,{relay:true});
     const show=value=>$p('jmCloudReturnStatus').textContent=value;
-    let carrier=null,carrierToken=null,selectedRecovery=null,recoveredValue=null;
+    let carrier=null,carrierToken=null,selectedRecovery=null,recoveredValue=null,importedOriginal=null;
     const token=()=>$p('jmCloudCredential').value.trim();
     const secret=()=>$p('jmCloudPhrase').value;
     const readJournal=()=>{try{return JSON.parse(localStorage.getItem(SLOT)||'null')}catch{throw Error('LOCAL_ENCRYPTED_JOURNAL_JSON_HOLD')}};
@@ -102,8 +102,20 @@ function mount() {
       carrier=null;carrierToken=null;
       show('SCOPED CLOUD CONNECTION CREATED · credential retained in this input only. Export a private recovery bundle after your first saved return. No payload sent yet.');
     }));
+    $p('jmCloudNativeImport').addEventListener('change',()=>execute(async()=>{
+      const file=$p('jmCloudNativeImport').files?.[0];
+      if(!file||file.size>125000)throw Error('ORIGINAL_RETURN_FILE_SIZE_HOLD');
+      const body=JSON.parse(await file.text());
+      const value=body.envelope?.schema==='jm.m002.cp14.envelope/1'?body.envelope:body;
+      if(value?.schema!=='jm.m002.cp14.envelope/1'||
+         typeof value.body!=='string'||!/^[a-f0-9]{64}$/.test(value.sha256||'')||
+         await digest(value.body)!==value.sha256)
+        throw Error('ORIGINAL_CP14_RETURN_HASH_HOLD');
+      importedOriginal=value;recoveredValue=null;
+      show('ORIGINAL CP14 RETURN IMPORTED LOCALLY · SHA-256 of supplied bytes matches. This browser has NOT replayed original Python or authorised the source. Review origin before staging; NO cloud upload yet.');
+    }));
     $p('jmCloudStage').addEventListener('click',()=>execute(async()=>{
-      const value=latestReturn||(await recoverLocalReturn(localStorage)).value;
+      const value=importedOriginal||latestReturn||(await recoverLocalReturn(localStorage)).value;
       const result=await client().stage(value,secret());
       show('STAGED OFFLINE · '+result.parts+' encrypted portions. Explicitly Save to send the ciphertext. Original local result retained; no cloud write yet.');
     }));

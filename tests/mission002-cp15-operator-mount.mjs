@@ -9,10 +9,10 @@ const cloud=fs.readFileSync('unified-browser/jm-estate-return-cloud.mjs','utf8')
 for(const id of ['jmCloudReturnPanel','jmCloudHandle','jmCloudCredential','jmCloudPhrase',
  'jmCloudRegister','jmCloudStage','jmCloudPush','jmCloudExport','jmCloudRecoveryImport',
  'jmCloudPull','jmCloudDownloadResult','jmCloudApplyPermit','jmCloudApply',
- 'jmCloudReturnStatus'])yes(page.includes('id="'+id+'"'),'CP15_MISSING_OPERATOR_CONTROL_'+id);
+ 'jmCloudReturnStatus','jmCloudNativeImport'])yes(page.includes('id="'+id+'"'),'CP15_MISSING_OPERATOR_CONTROL_'+id);
 yes(operator.includes('mountCloudReturn();'),'CP15_NOT_MOUNTED_IN_ORIGINAL_OPERATOR');
 yes(operator.includes("import {createEstateReturnCloud}"),'CP15_NOT_USING_ORIGINAL_SHARDED_ADAPTER');
-yes(operator.includes("import {createCloudWorkspaceClient,httpRequest}"),'ORIGINAL_JM_CLOUD_CLIENT_NOT_INHERITED');
+yes(operator.includes("import {createCloudWorkspaceClient,httpRequest,digest}"),'ORIGINAL_JM_CLOUD_CLIENT_NOT_INHERITED');
 yes(operator.includes("readJournal()"),'NO_PENDING_CIPHERTEXT_JOURNAL');
 yes(operator.includes("jmCloudApplyPermit")&&operator.includes("LOCAL_REPLACEMENT_NOT_AUTHORISED"),
  'NO_EXPLICIT_CONFLICT_ACK');
@@ -24,6 +24,8 @@ yes(operator.includes('PRIVATE BUNDLE LOADED IN SESSION'),'NO_PRIVATE_KEY_IMPORT
 yes(!operator.includes('localStorage.setItem(SLOT,token')&&
  !operator.includes('localStorage.setItem(SLOT,result.token'),
  'SCOPED_SECRET_LEAKED_TO_LOCAL_STORAGE');
+yes(operator.includes('ORIGINAL_CP14_RETURN_HASH_HOLD')&&operator.includes('importedOriginal||latestReturn'),
+ 'CP16_ORIGINAL_CP14_IMPORT_NOT_CONNECTED_TO_CP15_ENCRYPTED_TRANSFER');
 yes(cloud.includes("await client.saveIntent(expected)"),'SIGNED_JM_CLOUD_ROUTE_NOT_EXECUTED');
 yes(cloud.includes("await crypto.subtle.encrypt"),'CLIENT_SIDE_ENCRYPTION_MISSING');
 yes(cloud.includes("await crypto.subtle.decrypt"),'DIFFERENT_CLIENT_CANNOT_DECRYPT');

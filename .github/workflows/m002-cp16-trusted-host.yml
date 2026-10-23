@@ -1,0 +1,36 @@
+name: JM Mission 002 CP16 Trusted Original Runtime
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp16-trusted-host.mjs'
+      - 'tests/fixtures/m002-cp16-provenance.mjs'
+      - 'tests/mission002-cp16-source-check.mjs'
+      - 'scripts/m002-cp16-run-local.mjs'
+      - 'navigator/estate-integration/native-operator.mjs'
+      - 'navigator/estate-integration/index.html'
+      - '.github/workflows/m002-cp16-trusted-host.yml'
+  push:
+    branches: ['integration/m002-cp16-trusted-execution-custody-20261023']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  original-authorised-host:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Syntax gates
+        run: |
+          node --check coding-estate/integration/m002-cp16-trusted-host.mjs
+          node --check scripts/m002-cp16-run-local.mjs
+          node --check navigator/estate-integration/native-operator.mjs
+          node --check tests/fixtures/m002-cp16-provenance.mjs
+          node --check tests/mission002-cp16-source-check.mjs
+      - name: Authorised real HTTP CP14 Python/native execute and recover
+        run: node tests/mission002-cp16-source-check.mjs

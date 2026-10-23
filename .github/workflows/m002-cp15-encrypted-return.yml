@@ -1,0 +1,31 @@
+name: JM Mission 002 CP15 Encrypted Cross-Device Return
+on:
+  pull_request:
+    paths:
+      - 'unified-browser/jm-estate-return-cloud.mjs'
+      - 'tests/fixtures/m002-cp15-signed-workspace-fixture.mjs'
+      - 'tests/mission002-cp15-encrypted-return.mjs'
+      - '.github/workflows/m002-cp15-encrypted-return.yml'
+      - 'navigator/estate-integration/**'
+  push:
+    branches:
+      - 'integration/m002-cp15-trusted-durable-return-20261023'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  signed-multipart-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check original JM cloud client and CP15 additions
+        run: |
+          node --check unified-browser/jm-cloud-workspace-client.mjs
+          node --check unified-browser/jm-estate-return-cloud.mjs
+          node --check tests/fixtures/m002-cp15-signed-workspace-fixture.mjs
+          node --check tests/mission002-cp15-encrypted-return.mjs
+      - name: Actual loopback HTTP encrypted signed return across isolated clients and restarted server
+        run: node tests/mission002-cp15-encrypted-return.mjs

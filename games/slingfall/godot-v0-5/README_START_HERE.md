@@ -11,7 +11,7 @@ This is an independently preserved playable successor to v0.4 Siege Circuit, not
 
 ## Owner-device workflow
 
-Godot Android editor → Import existing project from this ZIP (`project.godot` at ZIP root) → Play ▶ in landscape. Menu mission selector is above DEPLOY. Lower controls retain v0.4 positions. Drag or tap on the battlefield to deploy; when a champion is already out, order them toward the moving convoy by tapping the appropriate contested area/zone. Classic mode remains the default. The convoy mode can be completed without any network connection.
+Godot Android editor → Import existing project from this ZIP (`project.godot` at ZIP root) → Play ▶ in landscape. Menu mission selector is above DEPLOY. Lower controls retain v0.4 positions. Drag or tap on the battlefield to deploy; landed blue champions automatically escort the cargo and red champions try to intercept it. Tap the cargo to order all live allies to escort; tap a capture zone to reassign them to defend territory. Classic mode remains the default. The convoy mode can be completed without any network connection.
 
 ## Source inheritance and boundaries
 

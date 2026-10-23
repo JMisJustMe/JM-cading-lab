@@ -22,7 +22,8 @@ try{
  eq(await a.locator('#nativeOperator').count(),1,'NEW_RIVAL_OPERATOR_WAS_CREATED');
  eq(await a.locator('#jmDeviceReturn').count(),1,'SAME_OPERATOR_PANEL_MISSING');
  eq(await b.locator('#jmDeviceReturn').count(),1,'DEVICE_IMPORT_SURFACE_MISSING');
- eq(await b.evaluate(()=>localStorage.length),0,'LAPTOP_NOT_INDEPENDENT_STORAGE');
+ eq(await b.evaluate(()=>localStorage.getItem('JM_ESTATE_NATIVE_OPERATOR_RETURN_v02')),null,'LAPTOP_PROJECT_SLOT_NOT_EMPTY');
+ eq(await b.evaluate(()=>localStorage.getItem('JM_M002_CP13_DEVICE_TRANSFER_LEDGER_v01')),null,'LAPTOP_TRANSFER_LEDGER_NOT_EMPTY');
  await a.locator('#jmOperatorMode').selectOption('route');
  await a.locator('#jmOperatorIntent').fill('source-aware JM phone project A');
  await a.locator('#jmOperatorRun').click();

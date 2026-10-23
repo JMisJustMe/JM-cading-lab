@@ -10,7 +10,10 @@ rehash, and exact original line citations are mandatory.
 from __future__ import annotations
 import argparse,hashlib,importlib.metadata,json,re,tempfile,time
 from pathlib import Path
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np=None  # Optional: original JM knowledge and its tests do not require neural dependencies.
 import jm_knowledge_fullbook as books
 import jm_knowledge_answer_eval as v04
 import jm_knowledge_robustness_v05 as v05
@@ -60,6 +63,7 @@ def texts_and_lines(originals):
     return paragraphs
 
 def unit(vec):
+    if np is None: raise assurance.Held('SEMANTIC_EXTRAS_NOT_INSTALLED')
     a=np.asarray(vec,dtype=np.float32)
     norm=np.linalg.norm(a,axis=-1,keepdims=True)
     return a/np.maximum(norm,1e-8)

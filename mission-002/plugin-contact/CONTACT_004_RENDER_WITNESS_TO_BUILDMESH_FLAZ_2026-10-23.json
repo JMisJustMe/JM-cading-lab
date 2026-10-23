@@ -1,0 +1,56 @@
+{
+  "schema": "JM.Mission002.Contact004.CanonicalReceipt/1",
+  "date_utc": "2026-10-23",
+  "case": "Live Render persistence witness routed by isolated GitHub Actions runner into read-only Build Mesh operation gate",
+  "execution": {
+    "primary_run": 40037964065,
+    "verified_roundtrip_run": 40038045899,
+    "roundtrip_run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40038045899",
+    "workflow_commit_sha": "97d948a75cb893d5a92a0220ba8518fca833cb9f",
+    "status": "PASS",
+    "artifact_roundtrip_parse": "PASS",
+    "artifact_saved": "PASS"
+  },
+  "observation": {
+    "claim_boundary": "Proves externally brokered live return and deterministic nonmutating operation planning; does not prove direct Render-to-Build-Mesh networking or durable transaction in both services.",
+    "gate_deterministic": true,
+    "github_run_id": "40038045899",
+    "github_source_sha256": "3a183f2e1ed180f9ca769728c89f30bf09426581cb82ade5c97bed42c6f3b8f1",
+    "holds": [
+      "Independent direct SQL row readback",
+      "Cloudflare reauthorisation",
+      "Contact 001 canary propagation",
+      "Physical device consequence"
+    ],
+    "mesh_mutation_performed": false,
+    "mesh_operation_id": "JMOP-c66b0daa2ff36d1194133184",
+    "mesh_operation_phase": "PLAN_ONLY",
+    "mesh_server_name": "JM ECOSTATE Build Mesh Native MCP",
+    "mesh_server_version": "0.8.5",
+    "render_after_sha256": "c9dfa31cbb5cecf138b387b043154eda713343524729fa405958661b8f84771e",
+    "render_before_sha256": "c9dfa31cbb5cecf138b387b043154eda713343524729fa405958661b8f84771e",
+    "render_readback": {
+      "count": 99,
+      "current": "37303c1e-f8dd-48fa-9d35-0899cc75d9f9",
+      "prior": "c0460f86-77e1-4635-a818-b66855a87717"
+    },
+    "render_witness": {
+      "count": 99,
+      "current": "37303c1e-f8dd-48fa-9d35-0899cc75d9f9",
+      "prior": "c0460f86-77e1-4635-a818-b66855a87717"
+    },
+    "schema": "JM.Mission002.WitnessToBuildMeshContact/1",
+    "scope": "external-GitHub-runner-brokers-live-Render-witness-to-readonly-Build-Mesh-plan",
+    "status": "BOUNDED_PASS",
+    "utc": "2026-10-23T23:09:46.502540+00:00"
+  },
+  "scope_boundaries": {
+    "actual_proof": "Live GET Render returned a reported Postgres recovery witness; external runner sent witness identifiers to Build Mesh via public read-only MCP PLAN_ONLY; same operation ID on repeated calls; subsequent live GET matched witness and hash.",
+    "no_claim": "Direct Render-to-Build Mesh transport; direct SQL rows; cross-service database transaction; Cloudflare canary propagation; physical phone/laptop consequence.",
+    "cloudflare_connection": "HOLD — owner-reported reauthorisation error, no attempted reconnect",
+    "database_security": "external SQL connection prevented by existing empty allowlist; no changes",
+    "deployment": "no Render redeploy or restart, no main branch merge, no payment/vault writes",
+    "governance": "NO DING NO CLAIM; PROOF BOUNDARIES SEPARATE; MESH ≠ MERGE"
+  },
+  "next_gate": "Only an authorised internal database record readback / genuine state consequence or owner-restored Cloudflare access can close remaining physical or cross-service persistence claim. Do not bypass protected access."
+}

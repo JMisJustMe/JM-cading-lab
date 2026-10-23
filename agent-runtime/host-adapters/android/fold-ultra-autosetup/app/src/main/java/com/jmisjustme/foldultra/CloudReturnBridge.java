@@ -33,10 +33,13 @@ public final class CloudReturnBridge {
   }
   private static boolean matches(JSONObject row,JSONObject active)throws Exception {
     String localId=active.getString("id"),localTitle=active.getString("title");
-    if(localTitle.equalsIgnoreCase(row.optString("project","")))return true;
     JSONObject out=row.optJSONObject("outgoing");
     JSONObject source=out==null?null:out.optJSONObject("source");
-    return source!=null&&localId.equals(source.optString("id",""));
+    // CP06 project source IDs are authoritative for native matching when supplied.
+    // Never accept a familiar display title that conceals a different source ID.
+    String sourceId=source==null?"":source.optString("id","");
+    if(!sourceId.isEmpty())return localId.equals(sourceId);
+    return localTitle.equalsIgnoreCase(row.optString("project",""));
   }
   /** Refuse silent project substitution and keep only bounded, evidence-scoped fields. */
   public static JSONObject select(String json,JSONObject active,int revision)throws Exception {

@@ -168,10 +168,10 @@
       ],
       "role": "ESTATE_CONTROL_PLANE_PUBLIC_LINEAGE_SEAT",
       "status": "CURRENT_DECLARED",
-      "version": "package v1.0.5 / hosted MCP v0.7.3",
-      "source": "JM ECOSTATE — Build Mesh v1.0.5 Artifact-General Production Spine + Hosted Dynamic Registry Spine v0.7.3",
+      "version": "package v1.0.5 / hosted MCP v0.8.5",
+      "source": "JM ECOSTATE Build Mesh — hosted v0.8.5 Cycle 016; v0.8.6 remains PR377 candidate",
       "source_file": "navigator/estate-integration/public-registry.json",
-      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4 → v1.0.5; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1 → v0.7.2 → v0.7.3.",
+      "preserved": "Build Mesh v1.0 → v1.0.1 → v1.0.2 → v1.0.3 → v1.0.4 → v1.0.5; hosted MCP v0.5 → v0.6 → v0.7 → v0.7.1 → v0.7.2 → v0.7.3. Hosted v0.8.5 observed on 22 October 2026; v0.7.3 lineage retained below.",
       "lineage": [
         {
           "source_file": "JM_CAREER_CURRENT_PROJECT_REGISTRY_v0_4.json",
@@ -208,6 +208,12 @@
           "locator": "030153d32ce8c784ea9db9dd399bd76ee368f17b8c699e403c4889a8b1183934",
           "authority": "live hosted exact-byte registry readback + GitHub hosted proof + Render deployment receipt",
           "role": "dynamic current-registry spine FLAZ receipt"
+        },
+        {
+          "source_file": "JM ECOSTATE Build Mesh Native MCP build_mesh_status",
+          "locator": "v0.8.5 / registry v0.24",
+          "authority": "exact loaded registry SHA-256 7debfd83bb13ccebc94acf96978e567ceaf8772272cb1ccbcd0c6931850a5d31; 27978 bytes",
+          "role": "direct read-only live status recovered 2026-10-22; PR377 v0.8.6 is separate undeployed candidate"
         }
       ],
       "connections": [
@@ -218,13 +224,13 @@
         "JM Service Mesh / JM Cloud Contact Server"
       ],
       "authority": {
-        "primary": "JM.CareerCurrentProjectRegistry/0.4",
+        "primary": "JM.CareerCurrentProjectRegistry/0.24",
         "package_current": "v1.0.5",
-        "hosted_mcp_current": "v0.7.3",
-        "confirmation_status": "LIVE_READBACK_PASS · EXACT_BYTE_REGISTRY_HASH_PASS",
+        "hosted_mcp_current": "v0.8.5",
+        "confirmation_status": "DIRECT_MCP_READBACK_2026-10-22_SOURCE_PROJECTION_CANDIDATE_NOT_DEPLOYED",
         "source_owner": "JM / JMISJUSTME"
       },
-      "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection. Hosted registry authority is process-start scoped to the exact deployed bytes and does not transfer recipient/device proof."
+      "boundary": "Public-safe lineage seat only. It exposes no private owner data or write authority; current/private Estate evidence can outrank this public projection. Hosted registry authority is process-start scoped to the exact deployed bytes and does not transfer recipient/device proof. This forward source projection is a candidate until explicitly deployed; it must not claim PR377 v0.8.6 is live."
     }
   ],
   "relationship_policy": {

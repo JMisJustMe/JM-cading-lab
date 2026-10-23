@@ -79,6 +79,38 @@ class NativeKnowledgeCapabilityContact(unittest.TestCase):
             recipient.build(self.candidate,self.sources,"habit",self.out,top=1000)
         self.assertFalse(self.out.exists())
 
+    def test_forged_route_receipt_rejected_even_after_manifest_rehash(self):
+        # Simulate someone rewriting a self-consistent evidence + manifest pair.
+        # Exact source replay still succeeds; independent route replay MUST fail.
+        import hashlib
+        recipient.build(self.candidate,self.sources,"habit",self.out,top=3,
+                        route_existing=True)
+        path=self.out/"EVIDENCE_CARDS.json"
+        body=json.loads(path.read_text(encoding="utf8"))
+        body["route_receipt_sha256"]="0"*64
+        raw=recipient.encoded(body)
+        path.write_bytes(raw)
+        mp=self.out/"CONTACT_MANIFEST.json"
+        manifest=json.loads(mp.read_text(encoding="utf8"))
+        manifest["evidence_sha256"]=hashlib.sha256(raw).hexdigest()
+        mp.write_bytes(recipient.encoded(manifest))
+        with self.assertRaisesRegex(Exception,"ROUTE_RECEIPT_REPLAY_DRIFT"):
+            recipient.recover(self.candidate,self.sources,self.out)
+
+    def test_route_state_inflation_rejected_on_recovery(self):
+        recipient.build(self.candidate,self.sources,"habit",self.out,top=3)
+        path=self.out/"EVIDENCE_CARDS.json"
+        body=json.loads(path.read_text(encoding="utf8"))
+        body["existing_jm_runtime_contact"]="CLAIMED_EXECUTION"
+        raw=recipient.encoded(body)
+        path.write_bytes(raw)
+        mp=self.out/"CONTACT_MANIFEST.json"
+        manifest=json.loads(mp.read_text(encoding="utf8"))
+        manifest["evidence_sha256"]=recipient.digest(raw)
+        mp.write_bytes(recipient.encoded(manifest))
+        with self.assertRaisesRegex(Exception,"ROUTE_STATE_INVALID"):
+            recipient.recover(self.candidate,self.sources,self.out)
+
     def test_real_existing_python_node_route_then_local_recipient(self):
         # This calls the already-existing Python and Node JM sovereign routing
         # binaries; it does not execute/modify any selected coding body.

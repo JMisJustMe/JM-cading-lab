@@ -32,6 +32,21 @@
 <p class="muted" id="jmOperatorCloud" aria-live="polite">Cloud relay has not been checked. Scoped workspace saving and recovery remain within <a href="../../unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html">AILatheo's existing Proof drawer</a>.</p>
 <p class="muted">The embedded scene is isolated for safety: browser storage may be unavailable inside it. Export the standalone original to test the scene’s own persistence. Save/Recover above explicitly uses local browser storage for the operator return with SHA-256 readback, not cloud durability, signer authentication or physical Android proof.</p>
 </section>
+<section class="card op" id="jmDeviceReturn" aria-labelledby="jmTransferTitle">
+<div class="k">JM CP13 · Existing operator · Manual project return</div>
+<h2 id="jmTransferTitle">Export or import a verified JM project</h2>
+<p class="muted">Save a return using the original operator above. Export JSON and transfer the file yourself to another browser or device. No remote sync or automatic overwrite.</p>
+<div class="actions">
+<label for="jmTransferProject">Project <input id="jmTransferProject" value="JM Native Project" maxlength="40"></label>
+<label for="jmTransferDevice">Device label <input id="jmTransferDevice" value="Owner Device" maxlength="40"></label>
+<button type="button" id="jmTransferExport">Export saved project</button>
+<button type="button" id="jmTransferImport">Import project file</button>
+<button type="button" id="jmTransferReplace" hidden>Review and approve local replacement</button>
+<input id="jmTransferFile" type="file" accept=".json" hidden>
+</div>
+<pre id="jmTransferStatus" role="status" aria-live="polite">No project transferred.</pre>
+<p class="muted">SHA-256 is integrity only, not authentication. CP12 cross-media state is carried but is not automatically applied to a game or comic.</p>
+</section>
 <section class="grid" id="routes"></section>
 <section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
 </main>
@@ -52,5 +67,6 @@ window.addEventListener('jm-estate-integration-hold',e=>{
 });
 </script>
 <script type="module" src="./native-operator.mjs"></script>
+<script type="module" src="./m002-cp13-device-return-ui.mjs"></script>
 </body>
 </html>

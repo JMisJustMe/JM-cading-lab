@@ -1,0 +1,35 @@
+# JM ECOSTATE — Mission 002 · CP11 Actual Recipients · FLAZ
+**23 October 2026 · TESTED exact code, preserved original game, source-qualified outputs.**
+
+## OPEN FIRST / authority
+- [Draft PR408](https://github.com/JMisJustMe/JM-cading-lab/pull/408) exact HEAD `c2907d8e932750a4932fcaf0660d46ef5e90ae2d`; additive descendant on verified [CP10 PR407](https://github.com/JMisJustMe/JM-cading-lab/pull/407). This **archival branch** was created from the tested candidate without changing it. The earlier CP9, CP8, original FIVE//FLIP and COMBOUND remain independently protected.
+- [Actual Workbench CI run 39956228546](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39956228546) **completed SUCCESS** at this candidate. New test schema `jm.m002.cp11.actual-receivers/1`: `PASS_NATIVE_REAL_MUTATIONS`, **63/63 assertions**, 6 distinct permitted state-changing receiver returns and 6 denied routes with zero mutation, separate actor identities and verified OneBody native return. Inherited native/browser chain regressions PASS.
+- Six of seven GitHub CI workflows at this exact head were SUCCESS; [inherited APK/Android workflow 39956228483](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39956228483) had APK build SUCCESS and installed-emulator job in progress at recording time. If it later PASSes it tests inherited Android base world, **not** new CP11 owner-installed composition.
+
+## New true changes rather than another declaration
+**Two independent receiving applications:**
+1. FIVE//FLIP island v0.22, private one-file descendant of the user's FIVE//FLIP v0.20a original SHA256 `cd3136641cf5c3569a24adc07d7a59070fe280ef9e62290b2a20b890cc948e9e`. Existing illustrated 5v5 fighters, controls, direct/semi mode, combat engine, all 5 original SUIT skills, and CP9 physically earned A/shock/B stay intact. Newly applied COMPOSE choices have direct consequences: Protect = real allied guard timers 4.5 seconds (five allies), Explore = player x/y world leap (175 units before world clamp), Amplify = selected hostile character takes 20 actual health points in the verified local example. A/B must be earned physically before any COMPOSE; one-use, choice and source-bound activation tracked in separately hashed save envelope; tampering HOLD. Profile survives clean reopen but **the old in-progress match DOES NOT resume**.
+2. CP11 **Illustrated Comic Atelier** as a new panel beneath original CP10 five-medium Studio: earned contact and creative choices actually trigger editable 900×1160 illustrated comic pages, with three visibly distinct Guard/Passage/Surge motifs, editable per-panel dialogue, palettes, revision counter, signed-by-hash (not authenticated by external creator) save/recovery, PNG export. Distinct creative authoring interface and persisted drawn image edition; no earlier studio modes erased.
+
+The two application files embed the same byte-for-byte `CP11_SHARED_EFFECT_ORGAN.js` source-derived browser capability; game applies actual combat mutations while Comic Atelier draws actual Canvas pixels. Private source full game is in the owner’s ZIP only, not copied to public GitHub.
+**Proof separation:** The browser-host shared effect organ is a bounded adapter, **not** direct execution of original current-native ChoiceBox/CombiBind/JMLogic/OneBody modules in browser. Independently, public `coding-estate/integration/m002-cp11-real-recipient-effects.mjs` invokes the actual native CP10 composition from protected source and applies test-proven typed game/comic recipient mutations. Its test is `tests/mission002-cp11-real-recipients.mjs`, included in the early native stage of the inherited CI. Neither proof substitutes for the other.
+
+## Actual bounded device-like browser QA
+- `CP11_FIVE_FLIP_QA.json` **55/55 Chromium PASS** (source 873,141-byte standalone file): physically moved selected fighter to A/B using keyboard/game loop, real shock/reset with A retained, no premature compositional button, allied team guard, 175-unit leap, actual enemy HP damage, one-use activation and original SUIT ability still available, SHA-256 guarded profile readback across clean pages, tamper rejection, original manual/semi modes, 800×480 and 390×844 screenshots, no JS errors.
+- `CP11_COMIC_QA.json` **37/37 Chromium PASS** (source 45,092-byte standalone file): no page before earned contacts, shock retention, source/Choice selection, THREE different actual 900×1160 PNG files (not fake image metadata), 3 panels each, per-panel editable text, image palette change, saved edition restored, tampered save rejected, actor identity change, CP10 book/music/cartoon modes retained, zero browser errors.
+- **92/92 local browser checks** + **63/63 current-native GitHub checks** = **155/155 scoped assertions**, NOT 155 independent hardware tests. Chromium `page.set_content` and Map-backed storage simulate local browser storage; file-origin restrictions/real Android touch/Chrome GPU and persistent permissions may differ. Source references remain separate.
+
+## Exact user delivery
+- Single ZIP `JM_M002_CP11_MULTI_RECIPIENT_EFFECTS_FLAZ_2026-10-23.zip`, 3,225,466 bytes, SHA256 `46cd5ae32fde29b9646006ff3a820e61f89c51a4a0e723bf70d4236a69614778`, 17 entries, all ZIP CRC PASS, **16/16 SHA256 manifest entries matched**.
+- One-file game `FIVE_FLIP_CP11_COMPOSED_COMBAT_OPEN_FIRST.html`: 873,141 bytes, SHA256 `aab8b5fcc185422f55363df56ef1501e2ec6fece306c040d324577ec8aae95ce`.
+- One-file composer `JM_CP11_ILLUSTRATED_COMIC_ATELIER_OPEN_FIRST.html`: 45,092 bytes, SHA256 `e3e21258198b4f6b94d52ab37096896d51940e65059cce87a9302f3e32b322b8`.
+- Shared browser contract `CP11_SHARED_EFFECT_ORGAN.js`: SHA256 `e8a2cd73040925c55449795354d83fb9748cb61132c23b0f3e6cf8938d6e8fa8`.
+- ZIP includes original-sparing build scripts, rerunnable Playwright QA scripts, 5 real proof screenshots/image pages, QA receipts, OPEN_FIRST, SHA256SUMS; no duplicate original donor or unrequested public release.
+
+## LIMITS / NEXT
+- Real illustrated output here is a **simple drawn proof style**, not production quality comic assets; no finished book/music cartoon. No independent recovered THEOGRAPHY native executable. No main branch merge or cloud deployment.
+- Physical Samsung Android APK owner test deferred until the user’s combined batch. Inherited Android CI scope must be checked separately, and CP11-specific new carrier installation remains untested.
+- Game-only profile state restoration != entire in-progress match state. File:// storage privacy/permission differs by browser. SHA integrity does not cryptographically establish producer identity.
+- Next useful enhancement: propagate same true compositional choice consequences into another already-existing **JM-native engine** or distinctive game AND an independent non-game authoring tool, with higher production art/motion and real state recovery. Continue to multiply mechanisms rather than making contact into a universal substitute.
+
+**Standing:** SOURCE → SIGNAL → CONTACT → ROUTE PRESSURE → STATE CHANGE → DING → TRACE → RECOVERY → OUTPUT. Recover before rebuild; inheritance is not replacement; do for self off of own merits. No Ding, no claim.

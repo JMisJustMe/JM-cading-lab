@@ -1,0 +1,77 @@
+name: JM v0.7 Full Book Cross-Encoder Answer Contact
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_crossencoder_v07.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_crossencoder_v07.py'
+      - '.github/workflows/jm-knowledge-crossencoder-v07.yml'
+  workflow_dispatch:
+jobs:
+  real-model-cross-encoder-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install optional CPU-only ONNX neural runtime
+        run: python -m pip install --disable-pip-version-check 'fastembed==0.9.0'
+      - name: Native compilation and inherited unit tests
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_crossencoder_v07.py
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_crossencoder_v07.py' -v
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_semantic_v06.py' -v
+      - name: Retrieve unchanged complete Project Gutenberg originals
+        run: |
+          mkdir -p /tmp/jm-v07-books
+          curl --fail --location --retry 3 --max-time 120 --silent --show-error \
+             'https://www.gutenberg.org/cache/epub/57628/pg57628.txt' \
+             -o /tmp/jm-v07-books/James_Principles_Vol1.txt
+          curl --fail --location --retry 3 --max-time 120 --silent --show-error \
+             'https://www.gutenberg.org/cache/epub/205/pg205.txt' \
+             -o /tmp/jm-v07-books/Thoreau_Walden.txt
+      - name: Execute real neural embeddings plus reranker over sixteen questions
+        env:
+          OMP_NUM_THREADS: '2'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          python .agents/skills/jm-ecostate-route/jm_knowledge_crossencoder_v07.py \
+             --book /tmp/jm-v07-books/James_Principles_Vol1.txt \
+             --book /tmp/jm-v07-books/Thoreau_Walden.txt \
+             --gold .agents/skills/jm-ecostate-route/tests/fixtures/knowledge_v05_adversarial_gold.json \
+             --cache /tmp/jm-v07-onnx-models \
+             --out /tmp/jm-v07-real-result.json \
+             --pool 60 \
+             --threshold .30 \
+             --rerank-gate 0.0 \
+             > /tmp/jm-v07-stdout.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          saved=json.loads(Path('/tmp/jm-v07-real-result.json').read_text(encoding='utf8'))
+          assert saved==json.loads(Path('/tmp/jm-v07-stdout.json').read_text(encoding='utf8'))
+          assert saved['state']=='HELD'
+          assert saved['cases']==16
+          assert saved['indexed_paragraphs']>=1000
+          assert saved['models_cache_hash'] and len(saved['models_cache_hash'])==64
+          assert saved['generative_model_calls']==0
+          assert saved['llm_comparison']=='NOT_PERFORMED'
+          assert saved['gold_used_in_candidate'] is False
+          assert all(not row['v07_book'] or row['v07_source_verified'] for row in saved['rows'])
+          print('REAL_CROSS_ENCODER_AB', {key:saved[key] for key in (
+                'cases','v06_correct','v07_correct','gains','regressions',
+                'indexed_paragraphs','total_elapsed_ms','models_cache_hash')})
+          for cat,detail in saved['categories'].items():print('CATEGORY',cat,detail)
+          for row in saved['rows']:
+              print('CASE',row['id'],row['category'],row['v06_reason'],'->',row['v07_reason'],row['delta'],
+                    'book',row['v07_book'],'quote',row['v07_answer_preview'])
+          PY
+      - name: Print scope-only checksum; do not publish book or model files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p=Path('/tmp/jm-v07-real-result.json')
+          print('RECEIPT_SHA256',hashlib.sha256(p.read_bytes()).hexdigest())
+          PY

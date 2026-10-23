@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#090d12">
+<title>SPINBREAK v0.8 — JM INLINE Sam.E Body</title>
+<style>
+:root{
+  --viz-panel:#0f151d;--viz-card:#141d27;--viz-text:#f4f7fb;--viz-muted:#9eacbd;--viz-border:#2a394b;
+  --viz-accent:#74b9ff;--viz-accent-bg:#18314c;--viz-series-2:#56b8ff;--viz-series-3:#ff875f;
+  --viz-series-4:#c980ff;--viz-series-5:#f2c45e;--viz-series-6:#73d9b0;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#080b10;color:var(--viz-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+body{padding:14px}
+main{max-width:980px;margin:0 auto}
+</style>
+</head>
+<body>
+<main>
+<div id="spinbreak-v08" class="w-full min-w-0" tabindex="0" aria-label="SPINBREAK playable contact arena">
+  <style>
+    #spinbreak-v08{
+      --sb-panel:var(--viz-panel,#111821);
+      --sb-card:var(--viz-card,#151e29);
+      --sb-text:var(--viz-text,#f4f7fb);
+      --sb-muted:var(--viz-muted,#9eacbd);
+      --sb-border:var(--viz-border,#2a394b);
+      --sb-accent:var(--viz-accent,#7ab8ff);
+      --sb-accent-bg:var(--viz-accent-bg,#19314c);
+      --sb-you:var(--viz-series-2,#56b8ff);
+      --sb-a:var(--viz-series-3,#ff875f);
+      --sb-b:var(--viz-series-4,#c980ff);
+      --sb-hold:var(--viz-series-5,#f2c45e);
+      --sb-wake:var(--viz-series-6,#73d9b0);
+      color:var(--sb-text);
+      min-width:0;
+    }
+    #spinbreak-v08 *{box-sizing:border-box}
+    #spinbreak-v08 .sb-shell{display:grid;gap:8px;min-width:0}
+    #spinbreak-v08 .sb-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    #spinbreak-v08 .sb-brand{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}
+    #spinbreak-v08 .sb-brand strong{font-size:1rem;letter-spacing:.07em}
+    #spinbreak-v08 .sb-sub{font-size:.72rem;color:var(--sb-muted)}
+    #spinbreak-v08 .sb-badges{display:flex;gap:5px;flex-wrap:wrap}
+    #spinbreak-v08 .sb-badge{font-size:.68rem;border:1px solid var(--sb-border);border-radius:999px;padding:4px 7px;background:var(--sb-card);white-space:nowrap}
+    #spinbreak-v08 .sb-status{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+    #spinbreak-v08 .sb-stat{border:1px solid var(--sb-border);background:var(--sb-card);border-radius:11px;padding:6px 8px;min-width:0}
+    #spinbreak-v08 .sb-stat small{display:block;color:var(--sb-muted);font-size:.61rem;letter-spacing:.06em}
+    #spinbreak-v08 .sb-stat b{display:block;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #spinbreak-v08 .sb-playgrid{display:grid;grid-template-columns:minmax(0,1fr) 188px;grid-template-areas:"stage side" "controls side";gap:8px;align-items:start;min-width:0}
+    #spinbreak-v08 .sb-stage{grid-area:stage;position:relative;min-width:0;border:1px solid var(--sb-border);border-radius:15px;overflow:hidden;background:#0a0e13}
+    #spinbreak-v08 canvas{display:block;width:100%;aspect-ratio:4/3;touch-action:none;background:#0a0e13}
+    #spinbreak-v08 .sb-hint{position:absolute;right:7px;top:7px;max-width:58%;font-size:.62rem;line-height:1.3;color:#dce7f5;background:rgba(7,11,16,.72);border:1px solid rgba(255,255,255,.13);padding:4px 6px;border-radius:8px;pointer-events:none}
+    #spinbreak-v08 .sb-impact{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);opacity:0;transition:opacity .08s,transform .08s;font-size:.68rem;font-weight:800;background:rgba(7,11,16,.86);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:4px 7px;pointer-events:none;white-space:nowrap}
+    #spinbreak-v08 .sb-impact.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    #spinbreak-v08 .sb-controls{grid-area:controls;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:end}
+    #spinbreak-v08 .sb-routewrap{display:grid;gap:4px}
+    #spinbreak-v08 .sb-mini{font-size:.62rem;color:var(--sb-muted)}
+    #spinbreak-v08 .sb-pad{display:grid;grid-template-columns:40px 40px 40px;grid-template-rows:40px 40px 40px;gap:3px;width:max-content}
+    #spinbreak-v08 button{min-height:40px;border:1px solid var(--sb-border);border-radius:11px;background:var(--sb-card);color:var(--sb-text);padding:7px 9px;font-weight:750;cursor:pointer}
+    #spinbreak-v08 button:focus-visible{outline:2px solid var(--sb-accent);outline-offset:2px}
+    #spinbreak-v08 button[data-active="true"]{background:var(--sb-accent-bg);border-color:var(--sb-accent)}
+    #spinbreak-v08 button:disabled{opacity:.48;cursor:not-allowed}
+    #spinbreak-v08 .sb-empty{visibility:hidden;pointer-events:none}
+    #spinbreak-v08 .sb-actions{display:grid;grid-template-columns:repeat(5,minmax(58px,1fr));gap:5px}
+    #spinbreak-v08 .sb-actions button{font-size:.67rem;line-height:1.05;padding:7px 5px}
+    #spinbreak-v08 .sb-actions span{display:block;font-size:.56rem;font-weight:500;color:var(--sb-muted);margin-top:3px}
+    #spinbreak-v08 .sb-side{grid-area:side;display:grid;gap:7px;min-width:0}
+    #spinbreak-v08 .sb-card{border:1px solid var(--sb-border);background:var(--sb-card);border-radius:13px;padding:9px;min-width:0}
+    #spinbreak-v08 .sb-card h3{font-size:.7rem;letter-spacing:.07em;margin:0 0 6px}
+    #spinbreak-v08 .sb-card p{font-size:.66rem;line-height:1.35;color:var(--sb-muted);margin:0}
+    #spinbreak-v08 .sb-meterlabel{font-size:.62rem;margin-top:6px}
+    #spinbreak-v08 .sb-meter{height:6px;border-radius:999px;background:rgba(127,127,127,.18);overflow:hidden;margin-top:3px}
+    #spinbreak-v08 .sb-meter>span{display:block;height:100%;background:var(--sb-accent);width:50%}
+    #spinbreak-v08 .sb-history{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+    #spinbreak-v08 .sb-chip{font-size:.59rem;border:1px solid var(--sb-border);border-radius:999px;padding:3px 5px}
+    #spinbreak-v08 .sb-ftr{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:7px}
+    #spinbreak-v08 .sb-ftr span{font-size:.56rem;border:1px solid var(--sb-border);border-radius:8px;padding:5px 4px;text-align:center}
+    #spinbreak-v08 .sb-log{font: .58rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:86px;overflow:auto;border-top:1px solid var(--sb-border);padding-top:5px;margin-top:6px}
+    #spinbreak-v08 .sb-tracebtn{width:100%;margin-top:6px;font-size:.62rem}
+    #spinbreak-v08 .sb-footer{display:flex;justify-content:space-between;gap:7px;flex-wrap:wrap;font-size:.61rem;color:var(--sb-muted)}
+    #spinbreak-v08 .sb-live{color:var(--sb-text)}
+    @media(max-width:720px){
+      #spinbreak-v08 .sb-playgrid{grid-template-columns:1fr;grid-template-areas:"stage" "controls" "side"}
+      #spinbreak-v08 .sb-side{grid-template-columns:1fr 1fr}
+      #spinbreak-v08 .sb-status{grid-template-columns:repeat(3,minmax(0,1fr))}
+      #spinbreak-v08 canvas{aspect-ratio:4/3}
+    }
+    @media(max-width:500px){
+      #spinbreak-v08 .sb-brand strong{font-size:.9rem}
+      #spinbreak-v08 .sb-sub{font-size:.64rem}
+      #spinbreak-v08 .sb-status{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #spinbreak-v08 .sb-controls{grid-template-columns:1fr}
+      #spinbreak-v08 .sb-routewrap{display:none}
+      #spinbreak-v08 .sb-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+      #spinbreak-v08 .sb-side{grid-template-columns:1fr}
+      #spinbreak-v08 .sb-hint{max-width:65%;font-size:.58rem}
+    }
+  </style>
+
+  <div class="sb-shell">
+    <div class="sb-top">
+      <div class="sb-brand">
+        <strong>SPINBREAK // CONTACT ARENA</strong>
+        <span class="sb-sub">v0.8 · JM INLINE Sam.E body · FTR / PLAYFORM descendant</span>
+      </div>
+      <div class="sb-badges">
+        <span class="sb-badge" id="sb8Round">ROUND 1</span>
+        <span class="sb-badge" id="sb8Timer">45.0s</span>
+        <span class="sb-badge" id="sb8State">CONTACT RUNNING</span>
+      </div>
+    </div>
+
+    <div class="sb-status" aria-live="polite">
+      <div class="sb-stat"><small>SPIN</small><b id="sb8Spin">100</b></div>
+      <div class="sb-stat"><small>STABILITY</small><b id="sb8Stability">100</b></div>
+      <div class="sb-stat"><small>INTEGRITY</small><b id="sb8Integrity">100</b></div>
+      <div class="sb-stat"><small>STANCE</small><b id="sb8Stance">ROUTE</b></div>
+      <div class="sb-stat"><small>BODY</small><b id="sb8Body">SOURCE</b></div>
+    </div>
+
+    <div class="sb-playgrid">
+      <div class="sb-stage">
+        <canvas id="sb8Canvas" width="720" height="540" aria-label="SPINBREAK arena"></canvas>
+        <div class="sb-hint">DRAG = ROUTE + FLOW · HOLD = stability · KIC = impact · PULSE = timing · WAKE = recover</div>
+        <div class="sb-impact" id="sb8Impact">CONTACT</div>
+      </div>
+
+      <div class="sb-controls">
+        <div class="sb-routewrap">
+          <div class="sb-mini">ROUTE alternative</div>
+          <div class="sb-pad" aria-label="Directional route controls">
+            <span class="sb-empty"></span><button type="button" data-dir="up" aria-label="Route up">↑</button><span class="sb-empty"></span>
+            <button type="button" data-dir="left" aria-label="Route left">←</button><button type="button" id="sb8Pause">II</button><button type="button" data-dir="right" aria-label="Route right">→</button>
+            <span class="sb-empty"></span><button type="button" data-dir="down" aria-label="Route down">↓</button><span class="sb-empty"></span>
+          </div>
+        </div>
+
+        <div class="sb-actions">
+          <button type="button" id="sb8Hold">HOLD<span>brace</span></button>
+          <button type="button" id="sb8Kic">KIC<span>commit</span></button>
+          <button type="button" id="sb8Pulse">PULSE<span>time</span></button>
+          <button type="button" id="sb8Wake">WAKE<span>recover</span></button>
+          <button type="button" id="sb8Reset">RESET<span>source</span></button>
+        </div>
+      </div>
+
+      <div class="sb-side">
+        <section class="sb-card">
+          <h3>YOUR BODY</h3>
+          <p>Same start. Local history changes later contact.</p>
+          <div class="sb-meterlabel">Spin</div><div class="sb-meter"><span id="sb8SpinBar"></span></div>
+          <div class="sb-meterlabel">Stability</div><div class="sb-meter"><span id="sb8StabilityBar"></span></div>
+          <div class="sb-meterlabel">Integrity</div><div class="sb-meter"><span id="sb8IntegrityBar"></span></div>
+          <div class="sb-history" id="sb8History"><span class="sb-chip">SOURCE</span></div>
+        </section>
+
+        <section class="sb-card">
+          <h3>FTR AMATEUR PRO ROUTE</h3>
+          <p>Same control language; native device expression.</p>
+          <div class="sb-ftr">
+            <span>ROUTE<br>where</span><span>FLOW<br>how</span><span>HOLD<br>when</span>
+            <span>KIC<br>impact</span><span>PULSE<br>timing</span><span>WAKE<br>recover</span>
+          </div>
+          <button type="button" class="sb-tracebtn" id="sb8Trace">TRACE · CLOSED</button>
+          <div class="sb-log" id="sb8Log" hidden aria-live="polite"></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <span>Phone: drag / hold / flick / release · Laptop: WASD/arrows + H/K/P/R · FTR: ROUTE / FLOW / HOLD / KIC / PULSE / WAKE</span>
+      <span class="sb-live" id="sb8Announce">No Ding yet.</span>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const root=document.getElementById('spinbreak-v08');
+    if(!root || root.dataset.ready==='1') return;
+    root.dataset.ready='1';
+
+    const canvas=root.querySelector('#sb8Canvas'), ctx=canvas.getContext('2d');
+    const q=id=>root.querySelector('#'+id);
+    const ui={
+      round:q('sb8Round'),timer:q('sb8Timer'),state:q('sb8State'),
+      spin:q('sb8Spin'),stability:q('sb8Stability'),integrity:q('sb8Integrity'),
+      stance:q('sb8Stance'),body:q('sb8Body'),spinBar:q('sb8SpinBar'),
+      stabilityBar:q('sb8StabilityBar'),integrityBar:q('sb8IntegrityBar'),
+      history:q('sb8History'),impact:q('sb8Impact'),announce:q('sb8Announce'),
+      hold:q('sb8Hold'),kic:q('sb8Kic'),pulse:q('sb8Pulse'),wake:q('sb8Wake'),
+      reset:q('sb8Reset'),pause:q('sb8Pause'),trace:q('sb8Trace'),log:q('sb8Log')
+    };
+
+    const TAU=Math.PI*2, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const norm=(x,y)=>{const m=Math.hypot(x,y)||1;return{x:x/m,y:y/m}};
+    const dot=(ax,ay,bx,by)=>ax*bx+ay*by;
+    const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+    const angDiff=(a,b)=>wrap(a-b);
+    const reduced=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    const S={
+      running:!reduced,round:1,time:45,last:performance.now(),acc:0,contacts:0,dings:0,
+      shake:0,particles:[],drag:null,keys:new Set(),virtual:new Set(),traceOpen:false,
+      log:[],arena:{x:360,y:270,r:210},walls:[],pulseUntil:0,wakeUsed:false,roundTimer:null
+    };
+
+    function spinner(id,label,isPlayer,x,y,hue){
+      return {
+        id,label,isPlayer,x,y,vx:0,vy:0,r:25,mass:1,spin:100,stability:100,integrity:100,
+        alive:true,hue,rot:0,wobble:0,history:[],
+        sectors:Array.from({length:8},()=>({type:'SOURCE',level:0})),
+        hold:false,commit:0,commitDir:0,commitCooldown:0,aiCooldown:0,lastRoute:'SOURCE'
+      };
+    }
+
+    function buildWalls(){
+      const N=48, gates=[0,Math.PI/2,Math.PI,3*Math.PI/2], arr=[];
+      for(let i=0;i<N;i++){
+        const a=(i+.5)/N*TAU;
+        const baseOpen=gates.some(g=>Math.abs(angDiff(a,g))<.15);
+        arr.push({a,hp:baseOpen?0:100,baseOpen});
+      }
+      return arr;
+    }
+
+    function esc(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function log(msg){
+      S.log.unshift(msg); S.log=S.log.slice(0,10);
+      if(S.traceOpen) ui.log.innerHTML=S.log.map(x=>'<div>• '+esc(x)+'</div>').join('');
+    }
+
+    function impact(text,x,y){
+      const r=canvas.getBoundingClientRect();
+      ui.impact.textContent=text;
+      ui.impact.style.left=(x/canvas.width*r.width)+'px';
+      ui.impact.style.top=(y/canvas.height*r.height)+'px';
+      ui.impact.classList.add('show');
+      clearTimeout(impact.t);
+      impact.t=setTimeout(()=>ui.impact.classList.remove('show'),reduced?0:360);
+    }
+
+    function addParticles(x,y,count,hue){
+      if(reduced) return;
+      count=Math.min(count,Math.max(0,100-S.particles.length));
+      for(let i=0;i<count;i++){
+        const a=Math.random()*TAU,s=35+Math.random()*115;
+        S.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.22+Math.random()*.3,hue});
+      }
+    }
+
+    function sectorIndex(s,worldAngle){
+      const local=wrap(worldAngle-s.rot);
+      return ((Math.round(((local+Math.PI)/TAU)*8)%8)+8)%8;
+    }
+
+    function mutate(s,type,worldAngle){
+      const idx=sectorIndex(s,worldAngle), sec=s.sectors[idx];
+      if(sec.type===type) sec.level=Math.min(3,sec.level+1);
+      else s.sectors[idx]={type,level:1};
+      s.history.push(type); s.history=s.history.slice(-7); s.lastRoute=type;
+      if(type==='PLATE'){s.mass=clamp(s.mass+.05,1,1.32);s.stability=clamp(s.stability+2.5,0,100)}
+      if(type==='ECHO') s.spin=clamp(s.spin+1.5,0,100);
+      if(type==='SCAR') s.stability=clamp(s.stability-1,0,100);
+      log(s.label+' earned '+type+' at sector '+(idx+1)+'.');
+    }
+
+    function routeContact(A,B,relN,relT,pressure){
+      const glancing=Math.abs(relT)>Math.abs(relN)*.82;
+      const headOn=Math.abs(relN)>=Math.abs(relT)*1.05;
+      if(headOn && ((A.hold&&A.stability>30)||(B.hold&&B.stability>30)) && pressure>.42) return 'BRACE';
+      if(glancing && pressure>.58) return 'DEFLECT';
+      const pulseA=A.isPlayer && performance.now()<S.pulseUntil;
+      if((A.commit>0||B.commit>0) && glancing && pressure>.66) return 'SPIKE';
+      if((A.commit>0||B.commit>0) && headOn && pressure>.82) return 'PLATE';
+      if(pulseA && pressure>.5) return 'ECHO';
+      if(pressure>.8) return glancing?'SPIKE':'PLATE';
+      return pressure>.46?'SCAR':'TRACE';
+    }
+
+    function collide(A,B){
+      if(!A.alive||!B.alive) return;
+      const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy),min=A.r+B.r;
+      if(!d||d>=min) return;
+      const nx=dx/d,ny=dy/d,tx=-ny,ty=nx,over=min-d;
+      A.x-=nx*over*.5;A.y-=ny*over*.5;B.x+=nx*over*.5;B.y+=ny*over*.5;
+      const rvx=B.vx-A.vx,rvy=B.vy-A.vy,relN=dot(rvx,rvy,nx,ny),relT=dot(rvx,rvy,tx,ty);
+      if(relN>=0) return;
+
+      const pressure=clamp((Math.abs(relN)+Math.abs(relT)*.28)/170,0,2.3);
+      const route=routeContact(A,B,relN,relT,pressure);
+      const aAngle=Math.atan2(ny,nx), bAngle=wrap(aAngle+Math.PI);
+      const aSec=A.sectors[sectorIndex(A,aAngle)], bSec=B.sectors[sectorIndex(B,bAngle)];
+      const armorA=aSec.type==='PLATE'?1+.2*aSec.level:1, armorB=bSec.type==='PLATE'?1+.2*bSec.level:1;
+      const spikeA=aSec.type==='SPIKE'?1+.16*aSec.level:1, spikeB=bSec.type==='SPIKE'?1+.16*bSec.level:1;
+
+      let j=-(1.7)*relN/(1/A.mass+1/B.mass);
+      if(route==='BRACE') j*=1.04;
+      if(A.commit>0||B.commit>0) j*=1.1;
+      A.vx-=j*nx/A.mass;A.vy-=j*ny/A.mass;B.vx+=j*nx/B.mass;B.vy+=j*ny/B.mass;
+
+      const loss=pressure*3.35;
+      A.spin=clamp(A.spin-loss*spikeB/(A.hold?1.38:1),0,100);
+      B.spin=clamp(B.spin-loss*spikeA/(B.hold?1.38:1),0,100);
+      A.integrity=clamp(A.integrity-pressure*2.4*spikeB/armorA,0,100);
+      B.integrity=clamp(B.integrity-pressure*2.4*spikeA/armorB,0,100);
+      A.stability=clamp(A.stability-pressure*3/(A.hold?1.55:1),0,100);
+      B.stability=clamp(B.stability-pressure*3/(B.hold?1.55:1),0,100);
+      A.wobble=clamp(A.wobble+pressure*.1*(A.hold?.65:1),0,1.2);
+      B.wobble=clamp(B.wobble+pressure*.1*(B.hold?.65:1),0,1.2);
+
+      S.contacts++; S.shake=Math.min(5,S.shake+pressure*1.35);
+      if(!['TRACE','BRACE','DEFLECT'].includes(route)){
+        const primary=(A.commit>0||spikeA>spikeB)?A:B;
+        mutate(primary,route,primary===A?aAngle:bAngle);
+      }
+      if(route==='BRACE'){const br=A.hold?A:B;br.stability=clamp(br.stability+1.2,0,100)}
+      if(route==='DEFLECT'){const f=(Math.abs(relT)+1)*.07;A.vx-=tx*f;A.vy-=ty*f;B.vx+=tx*f;B.vy+=ty*f}
+      impact(route+' · '+pressure.toFixed(2),(A.x+B.x)/2,(A.y+B.y)/2);
+      addParticles((A.x+B.x)/2,(A.y+B.y)/2,5+Math.floor(pressure*3.5),route==='SPIKE'?38:route==='ECHO'?286:50);
+    }
+
+    function wallContact(s){
+      if(!s.alive) return;
+      const a=S.arena,dx=s.x-a.x,dy=s.y-a.y,d=Math.hypot(dx,dy),theta=Math.atan2(dy,dx),N=S.walls.length;
+      const idx=((Math.floor(((theta+TAU)%TAU)/TAU*N))%N+N)%N, seg=S.walls[idx], limit=a.r-s.r*.45;
+      if(d<=limit) return;
+      if(seg.hp<=0){
+        if(d>a.r+s.r*.12){s.alive=false;log(s.label+' left through an open route.');impact('RING OUT',s.x,s.y)}
+        return;
+      }
+      const n=norm(dx,dy),out=dot(s.vx,s.vy,n.x,n.y),pressure=clamp(Math.max(0,out)/180,0,2.1);
+      s.x=a.x+n.x*limit;s.y=a.y+n.y*limit;
+      if(out>0){
+        s.vx-=1.74*out*n.x;s.vy-=1.74*out*n.y;
+        s.spin=clamp(s.spin-pressure*1.15,0,100);
+        s.stability=clamp(s.stability-pressure*2.2,0,100);
+        s.wobble=clamp(s.wobble+pressure*.07,0,1.2);
+        if(pressure>.75){
+          seg.hp-=pressure*20; mutate(s,'ECHO',theta); impact('ECHO · WALL',s.x,s.y);
+          addParticles(s.x,s.y,4+Math.floor(pressure*3),205);
+        }
+        if(seg.hp<=0){seg.hp=0;log('Arena segment broke open. New exit created.');impact('FIELD BROKE',s.x,s.y)}
+      }
+    }
+
+    function playerInput(dt){
+      const p=S.spinners[0]; if(!p.alive) return;
+      let x=0,y=0,strength=0;
+      const has=k=>S.keys.has(k)||S.virtual.has(k);
+      if(has('left'))x-=1;if(has('right'))x+=1;if(has('up'))y-=1;if(has('down'))y+=1;
+      if(x||y) strength=1;
+      if(S.drag){
+        const dx=S.drag.x-S.drag.sx,dy=S.drag.y-S.drag.sy,d=Math.hypot(dx,dy);
+        if(d>8){const n=norm(dx,dy);x+=n.x;y+=n.y;strength=Math.max(strength,clamp((d-8)/70,0,1))}
+      }
+      if(x||y){
+        const n=norm(x,y),flow=(92+100*strength)*(p.spin/100*.22+.78)*(1-p.wobble*.16);
+        p.vx+=n.x*flow*dt;p.vy+=n.y*flow*dt;p.spin=clamp(p.spin-.13*strength*dt,0,100);p.commitDir=Math.atan2(n.y,n.x);
+      }
+      p.hold=ui.hold.dataset.active==='true';
+      if(p.hold){p.stability=clamp(p.stability+.75*dt,0,100);p.vx*=Math.pow(.98,dt*60);p.vy*=Math.pow(.98,dt*60);p.spin=clamp(p.spin-.15*dt,0,100)}
+      if(p.commit>0){p.commit=Math.max(0,p.commit-dt);const force=245;p.vx+=Math.cos(p.commitDir)*force*dt;p.vy+=Math.sin(p.commitDir)*force*dt;p.wobble=clamp(p.wobble+.1*dt,0,1.2);p.spin=clamp(p.spin-3*dt,0,100)}
+    }
+
+    function ai(dt,s,target){
+      if(!s.alive) return;
+      const dx=target.x-s.x,dy=target.y-s.y,d=Math.hypot(dx,dy),n=norm(dx,dy);
+      const orbit=(s.id==='A'?-1:1)*.25,nn=norm(n.x-n.y*orbit,n.y+n.x*orbit);
+      const force=102*(s.spin/100*.2+.8)*(1-s.wobble*.12);
+      s.vx+=nn.x*force*dt;s.vy+=nn.y*force*dt;
+      s.aiCooldown-=dt;
+      if(d<105&&s.aiCooldown<=0&&s.spin>18){s.commit=.18;s.commitDir=Math.atan2(dy,dx);s.aiCooldown=1.35+Math.random()*1.1;s.spin-=3.2}
+      s.hold=d<68&&Math.random()<.75*dt;
+    }
+
+    function update(dt){
+      if(!S.running) return;
+      S.time-=dt;playerInput(dt);
+      const p=S.spinners[0];
+      for(const s of S.spinners) if(!s.isPlayer) ai(dt,s,p);
+
+      for(const s of S.spinners){
+        if(!s.alive) continue;
+        s.commitCooldown=Math.max(0,s.commitCooldown-dt);
+        const speed=Math.hypot(s.vx,s.vy),max=292;
+        if(speed>max){s.vx*=max/speed;s.vy*=max/speed}
+        if(s.spin<36) s.wobble=clamp(s.wobble+((36-s.spin)/36)*.04*dt,0,1.2);
+        s.wobble=Math.max(0,s.wobble-(.18+s.stability/560)*dt);
+        if(s.wobble>.03){s.vx+=Math.cos(s.rot*1.7)*s.wobble*10*dt;s.vy+=Math.sin(s.rot*1.9)*s.wobble*10*dt}
+        const drag=Math.pow(.983,dt*60);s.vx*=drag;s.vy*=drag;
+        s.x+=s.vx*dt;s.y+=s.vy*dt;s.rot+=(5.2+7*s.spin/100)*(1-s.wobble*.08)*dt;
+        s.spin=clamp(s.spin-.075*dt*(1+speed/700),0,100);
+        wallContact(s);
+        if(s.spin<=0||s.integrity<=0){s.alive=false;log(s.label+' collapsed.')}
+      }
+
+      for(let i=0;i<S.spinners.length;i++)for(let j=i+1;j<S.spinners.length;j++)collide(S.spinners[i],S.spinners[j]);
+
+      for(const q of S.particles){q.x+=q.vx*dt;q.y+=q.vy*dt;q.vx*=.96;q.vy*=.96;q.life-=dt}
+      S.particles=S.particles.filter(q=>q.life>0); S.shake*=Math.pow(.08,dt);
+
+      const alive=S.spinners.filter(s=>s.alive);
+      if(alive.length<=1||S.time<=0){
+        const winner=alive[0]||[...S.spinners].sort((a,b)=>(b.alive-a.alive)||(b.spin+b.integrity)-(a.spin+a.integrity))[0];
+        resolveRound(winner);
+      }
+    }
+
+    function resolveRound(winner){
+      if(!S.running) return;
+      S.running=false;S.dings++;ui.state.textContent='DING · RESOLVED';
+      ui.announce.textContent='Ding '+S.dings+': '+winner.label+' survived the route.';
+      log('DING: '+winner.label+' survived.');impact('DING · '+winner.label,360,270);
+      clearTimeout(S.roundTimer);
+      S.roundTimer=setTimeout(()=>{S.round++;resetRound(false)},1000);
+    }
+
+    function resetRound(full=false){
+      clearTimeout(S.roundTimer);
+      if(full){S.round=1;S.dings=0}
+      S.time=45;S.contacts=0;S.shake=0;S.particles.length=0;S.drag=null;S.keys.clear();S.virtual.clear();S.pulseUntil=0;S.wakeUsed=false;S.walls=buildWalls();
+      S.spinners=[spinner('YOU','YOU',true,360,380,205),spinner('A','RIVAL A',false,300,205,18),spinner('B','RIVAL B',false,420,205,286)];
+      S.running=!reduced;S.last=performance.now();S.acc=0;log('SOURCE BODY recovered. Same start, new route.');syncUI();
+    }
+
+    function drawArena(){
+      const a=S.arena;ctx.fillStyle='#090d12';ctx.fillRect(0,0,canvas.width,canvas.height);
+      const g=ctx.createRadialGradient(a.x,a.y,18,a.x,a.y,a.r*1.18);g.addColorStop(0,'#182331');g.addColorStop(.72,'#0d151f');g.addColorStop(1,'#080b10');
+      ctx.fillStyle=g;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,TAU);ctx.fill();
+      ctx.strokeStyle='rgba(110,150,195,.15)';ctx.lineWidth=1;
+      for(let r=a.r*.25;r<a.r;r+=a.r*.25){ctx.beginPath();ctx.arc(a.x,a.y,r,0,TAU);ctx.stroke()}
+      ctx.beginPath();ctx.moveTo(a.x-a.r,a.y);ctx.lineTo(a.x+a.r,a.y);ctx.moveTo(a.x,a.y-a.r);ctx.lineTo(a.x,a.y+a.r);ctx.stroke();
+      const N=S.walls.length;ctx.lineWidth=8;ctx.lineCap='round';
+      for(let i=0;i<N;i++){
+        const seg=S.walls[i],a0=i/N*TAU+.018,a1=(i+1)/N*TAU-.018;if(seg.hp<=0)continue;
+        const frac=clamp(seg.hp/100,0,1);ctx.strokeStyle=frac>.5?'rgba(105,158,210,.72)':frac>.22?'rgba(230,170,82,.82)':'rgba(235,85,78,.9)';
+        ctx.beginPath();ctx.arc(a.x,a.y,a.r,a0,a1);ctx.stroke();
+      }
+      ctx.fillStyle='rgba(220,235,255,.18)';ctx.font='700 9px system-ui';ctx.textAlign='center';ctx.fillText('CONTACT FIELD',a.x,a.y+3);
+    }
+
+    function drawSpinner(s){
+      ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.rot);
+      const grad=ctx.createRadialGradient(-6,-8,3,0,0,s.r);grad.addColorStop(0,'hsl('+s.hue+' 90% 72%)');grad.addColorStop(.45,'hsl('+s.hue+' 70% 44%)');grad.addColorStop(1,'#111820');
+      ctx.fillStyle=grad;ctx.beginPath();ctx.arc(0,0,s.r,0,TAU);ctx.fill();ctx.strokeStyle=s.isPlayer?'rgba(240,248,255,.95)':'rgba(225,235,245,.56)';ctx.lineWidth=2;ctx.stroke();
+      for(let i=0;i<8;i++){
+        const sec=s.sectors[i],a=i/8*TAU,level=sec.level||0;ctx.save();ctx.rotate(a);
+        let ext=3,half=3,fill='rgba(220,235,250,.3)';
+        if(sec.type==='SPIKE'){ext=7+level*2;half=2.5;fill='rgba(255,205,95,.9)'}
+        if(sec.type==='PLATE'){ext=3+level;half=5+level;fill='rgba(145,210,255,.86)'}
+        if(sec.type==='ECHO'){ext=5+level;half=2.2;fill='rgba(200,155,255,.82)'}
+        if(sec.type==='SCAR'){ext=2+level;half=2.8;fill='rgba(255,125,125,.78)'}
+        ctx.fillStyle=fill;ctx.beginPath();ctx.moveTo(s.r-4,-half);ctx.lineTo(s.r+ext,0);ctx.lineTo(s.r-4,half);ctx.closePath();ctx.fill();ctx.restore();
+      }
+      ctx.fillStyle='#eef6ff';ctx.beginPath();ctx.arc(0,0,5,0,TAU);ctx.fill();ctx.restore();
+      ctx.textAlign='center';ctx.font='800 10px system-ui';ctx.fillStyle=s.alive?'#f3f7fb':'rgba(230,235,240,.35)';ctx.fillText(s.label,s.x,s.y-s.r-11);
+      const bw=46,bx=s.x-bw/2,by=s.y+s.r+7;ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(bx,by,bw,4);
+      ctx.fillStyle=s.spin>45?'#6de7a5':s.spin>20?'#e7b85b':'#ef6d6d';ctx.fillRect(bx,by,bw*clamp(s.spin/100,0,1),4);
+      if(s.hold){ctx.strokeStyle='rgba(130,210,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.x,s.y,s.r+7,0,TAU);ctx.stroke()}
+      if(s.commit>0){ctx.strokeStyle='rgba(255,190,80,.95)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(s.x+Math.cos(s.commitDir)*(s.r+21),s.y+Math.sin(s.commitDir)*(s.r+21));ctx.stroke()}
+    }
+
+    function drawInput(){
+      if(!S.drag) return;
+      const dx=S.drag.x-S.drag.sx,dy=S.drag.y-S.drag.sy,d=Math.hypot(dx,dy);
+      ctx.strokeStyle='rgba(130,215,255,.72)';ctx.fillStyle='rgba(130,215,255,.1)';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(S.drag.sx,S.drag.sy,54,0,TAU);ctx.stroke();
+      if(d>4){const n=norm(dx,dy),reach=Math.min(54,d),ex=S.drag.sx+n.x*reach,ey=S.drag.sy+n.y*reach;ctx.beginPath();ctx.arc(ex,ey,14,0,TAU);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(S.drag.sx,S.drag.sy);ctx.lineTo(ex,ey);ctx.stroke()}
+    }
+
+    function draw(){
+      const sx=(Math.random()-.5)*S.shake,sy=(Math.random()-.5)*S.shake;ctx.save();ctx.translate(sx,sy);drawArena();
+      for(const s of S.spinners) drawSpinner(s);
+      for(const q of S.particles){ctx.globalAlpha=clamp(q.life/.5,0,1);ctx.fillStyle='hsl('+q.hue+' 85% 68%)';ctx.fillRect(q.x-1.3,q.y-1.3,2.6,2.6)}
+      ctx.globalAlpha=1;drawInput();ctx.restore();
+    }
+
+    function syncUI(){
+      const p=S.spinners[0];
+      ui.round.textContent='ROUND '+S.round;ui.timer.textContent=Math.max(0,S.time).toFixed(1)+'s';
+      ui.spin.textContent=Math.round(p.spin);ui.stability.textContent=Math.round(p.stability);ui.integrity.textContent=Math.round(p.integrity);
+      ui.stance.textContent=p.hold?'HOLD':p.commit>0?'KIC':p.wobble>.55?'RECOVER':'ROUTE';
+      ui.body.textContent=p.history.length?p.history.slice(-2).join(' › '):'SOURCE';
+      ui.spinBar.style.width=clamp(p.spin,0,100)+'%';ui.stabilityBar.style.width=clamp(p.stability,0,100)+'%';ui.integrityBar.style.width=clamp(p.integrity,0,100)+'%';
+      ui.history.innerHTML=(p.history.length?p.history.slice(-6):['SOURCE']).map(x=>'<span class="sb-chip">'+esc(x)+'</span>').join('');
+      ui.state.textContent=S.running?'CONTACT RUNNING':'PAUSED';ui.pause.textContent=S.running?'II':'▶';ui.hold.dataset.active=p.hold?'true':'false';ui.wake.disabled=S.wakeUsed;
+      if(S.traceOpen) ui.log.innerHTML=S.log.map(x=>'<div>• '+esc(x)+'</div>').join('');
+    }
+
+    function loop(ts){
+      requestAnimationFrame(loop);
+      const raw=Math.min(.08,Math.max(0,(ts-S.last)/1000));S.last=ts;S.acc=Math.min(.14,S.acc+raw);const step=1/60;
+      while(S.acc>=step){update(step);S.acc-=step}
+      draw();syncUI();
+    }
+
+    function canvasPoint(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*canvas.width,y:(e.clientY-r.top)/r.height*canvas.height}}
+    canvas.addEventListener('pointerdown',e=>{if(!S.running)return;const p=canvasPoint(e);S.drag={id:e.pointerId,sx:p.x,sy:p.y,x:p.x,y:p.y,t:performance.now(),max:0};try{canvas.setPointerCapture(e.pointerId)}catch(_){}root.focus()});
+    canvas.addEventListener('pointermove',e=>{if(!S.drag||S.drag.id!==e.pointerId)return;const p=canvasPoint(e);S.drag.x=p.x;S.drag.y=p.y;S.drag.max=Math.max(S.drag.max,Math.hypot(p.x-S.drag.sx,p.y-S.drag.sy))});
+    function endDrag(e){
+      if(!S.drag||S.drag.id!==e.pointerId)return;
+      const d=S.drag,elapsed=performance.now()-d.t,dx=d.x-d.sx,dy=d.y-d.sy;
+      if(d.max>58&&elapsed<420){const p=S.spinners[0];p.commitDir=Math.atan2(dy,dx);triggerKic()}
+      S.drag=null;
+    }
+    canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
+
+    function triggerKic(){
+      const p=S.spinners[0];if(!S.running||!p.alive||p.spin<8||p.commitCooldown>0)return;
+      p.commit=.22;p.commitCooldown=.8;p.spin=clamp(p.spin-4.2,0,100);log('KIC committed current route.');impact('KIC',p.x,p.y);
+    }
+    function triggerPulse(){
+      if(!S.running)return;S.pulseUntil=performance.now()+620;ui.pulse.dataset.active='true';log('PULSE timing window opened.');
+      setTimeout(()=>ui.pulse.dataset.active='false',620);
+    }
+    function triggerWake(){
+      const p=S.spinners[0];if(!S.running||S.wakeUsed)return;
+      S.wakeUsed=true;p.wobble*=.35;p.stability=clamp(p.stability+16,0,100);p.spin=clamp(p.spin+7,0,100);p.integrity=clamp(p.integrity-3.5,0,100);
+      log('WAKE recovered stability by trading integrity.');impact('WAKE',p.x,p.y);
+    }
+
+    ui.kic.addEventListener('click',triggerKic);ui.pulse.addEventListener('click',triggerPulse);ui.wake.addEventListener('click',triggerWake);
+    ui.reset.addEventListener('click',()=>resetRound(true));
+    ui.pause.addEventListener('click',()=>{S.running=!S.running;S.last=performance.now();syncUI();root.focus()});
+    ui.trace.addEventListener('click',()=>{S.traceOpen=!S.traceOpen;ui.log.hidden=!S.traceOpen;ui.trace.textContent='TRACE · '+(S.traceOpen?'OPEN':'CLOSED');syncUI()});
+
+    ui.hold.addEventListener('pointerdown',()=>{ui.hold.dataset.active='true';root.focus()});
+    ['pointerup','pointerleave','pointercancel'].forEach(ev=>ui.hold.addEventListener(ev,()=>ui.hold.dataset.active='false'));
+
+    root.querySelectorAll('[data-dir]').forEach(btn=>{
+      const dir=btn.dataset.dir;
+      const on=()=>{S.virtual.add(dir);btn.dataset.active='true';root.focus()};
+      const off=()=>{S.virtual.delete(dir);btn.dataset.active='false'};
+      btn.addEventListener('pointerdown',on);['pointerup','pointerleave','pointercancel'].forEach(ev=>btn.addEventListener(ev,off));
+    });
+
+    root.addEventListener('keydown',e=>{
+      if(e.target&&['INPUT','TEXTAREA','SELECT','BUTTON'].includes(e.target.tagName))return;
+      const m={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down'};
+      if(m[e.code]){S.keys.add(m[e.code]);e.preventDefault()}
+      if(e.code==='KeyH'){ui.hold.dataset.active='true';e.preventDefault()}
+      if(e.code==='KeyK'||e.code==='Space'){triggerKic();e.preventDefault()}
+      if(e.code==='KeyP'){triggerPulse();e.preventDefault()}
+      if(e.code==='KeyR'){triggerWake();e.preventDefault()}
+    });
+    root.addEventListener('keyup',e=>{
+      const m={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down'};
+      if(m[e.code])S.keys.delete(m[e.code]);if(e.code==='KeyH')ui.hold.dataset.active='false';
+    });
+
+    if(reduced) ui.announce.textContent='Reduced motion enabled. Press ▶ to run; shake/particles are reduced.';
+    resetRound(true);requestAnimationFrame(loop);
+  })();
+  </script>
+</div>
+</main>
+</body>
+</html>

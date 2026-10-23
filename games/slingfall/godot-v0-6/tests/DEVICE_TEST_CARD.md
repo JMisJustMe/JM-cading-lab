@@ -1,11 +1,3 @@
-SLINGFALL v0.5 — optional Samsung Fold test (no test requested now)
+# SLINGFALL v0.6 — owner device observations (deferred)
 
-1. Open ZIP as Godot project; press Play in landscape.
-2. On title screen, tap MISSION switch to CONVOY EXTRACTION.
-3. Tap DEPLOY; launch a champion near the cargo at the south-west start.
-4. Observe cargo move only with escort; rival intercepts stop/hurt it; Warden restores its HP.
-5. Escort through all four checkpoints; verify separate victory banner and scrap.
-6. Switch back to CLASSIC ZONE SIEGE; confirm prior controls and profile progress.
-7. Close/reopen mid-convoy; verify exactly the previous position/progress returned.
-
-Android visual/touch/parity and APK status remain HOLD until actual owner evidence.
+No action required. When the owner chooses, import the ZIP in Godot 4 Android, open landscape, cycle CLASSIC / CONVOY / BEACON mission with the menu field and Play. Beacon third operation has three waves: 1 Dart, 2 Warden+Dart, 3 Bulwark+Warden+Dart. Try core command, charge by owning Crossroads, note readability, framerate, clarity and controls. Old matches should resume. Real mobile PASS requires observed playback and user device evidence; automated Linux tests do NOT supply it.

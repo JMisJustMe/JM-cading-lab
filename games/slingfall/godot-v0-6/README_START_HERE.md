@@ -6,7 +6,7 @@
 
 - **CLASSIC ZONE SIEGE:** original three-zone, first to score / time limit, champion flinging and automatic enemy deployment.
 - **CONVOY EXTRACTION:** protect and escort actual moving cargo through four checkpoints; Warden repairs, attackers interdict and damage the cargo.
-- **BEACON DEFENSE (new):** protect the signal core from **three successive class-specific assault waves** (Dart → Warden → Bulwark). Raiders physically strike and damage the core; Warden allies repair it, and owning Crossroads raises a finite damage-absorbing charge that opposing Warden raids can drain. Only cleared waves earn resupply and progression; destruction or timeout loses. Use the MISSION selector above DEPLOY to choose a mode.
+- **BEACON DEFENSE (new):** protect the signal core from **three successive multi-class assault waves** (1 Dart → 2 Warden+Dart → 3 Bulwark+Warden+Dart). Raiders physically strike and damage the core; Warden allies repair it, and owning Crossroads raises a finite damage-absorbing charge that opposing Warden raids can drain. Only cleared waves earn resupply and progression; destruction or timeout loses. Use the MISSION selector above DEPLOY to choose a mode.
 
 ## Visual and animation advances
 

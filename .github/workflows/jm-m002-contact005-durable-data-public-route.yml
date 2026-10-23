@@ -1,0 +1,110 @@
+name: JM M002 Contact 005 durable data and public route
+on:
+  push:
+    branches: [audit/mission-002-plugin-contact-20261023-v01]
+    paths:
+      - .github/workflows/jm-m002-contact005-durable-data-public-route.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safe-read-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Live data inheritance, pulse consequence, and public Pages contact
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os, json, time, hashlib, datetime, urllib.request, pathlib
+          ROOT='https://jm-cloud-contact-server-v05.onrender.com'
+          PAGES='https://jmisjustme-estate.pages.dev/navigator/estate-integration/public-registry.json'
+          H={'User-Agent':'JM-ECOSTATE-M002-ReadOnly/1','Accept':'application/json'}
+          def retrieve(url,cap=4000000):
+              req=urllib.request.Request(url,headers=H)
+              err=None
+              for i in range(7):
+                  try:
+                      with urllib.request.urlopen(req,timeout=30) as r:
+                          assert r.status==200, f'HTTP status {r.status}'
+                          raw=r.read(cap+1)
+                      assert len(raw)<=cap, 'response over evidence cap'
+                      return json.loads(raw),hashlib.sha256(raw).hexdigest(),len(raw)
+                  except Exception as e:
+                      err=e
+                      if i<6: time.sleep(5)
+              raise RuntimeError('read-only public contact failed: '+str(err)[:160])
+          p,h_p,_=retrieve(ROOT+'/market/v1/persistence')
+          d,h_d,_=retrieve(ROOT+'/market/v1/quick-flip/durability')
+          pulse,h_u,_=retrieve(ROOT+'/market/v1/pulse')
+          snapshots,h_s,size_s=retrieve(ROOT+'/market/v1/snapshots?limit=1200')
+          assert p.get('ok') is True and p.get('databaseConfigured') is True
+          assert p.get('mode')=='postgres' and p.get('ready') is True and p.get('durable') is True
+          c=p.get('continuity') or {}
+          assert c.get('recoveredPriorWitness') is True
+          assert d.get('ok') is True and d.get('ding') is True
+          assert d.get('witness',{}).get('currentWitnessId')==c.get('currentWitnessId')
+          assert d.get('witness',{}).get('priorWitnessId')==c.get('priorWitnessId')
+          assert snapshots.get('ok') is True and snapshots.get('count',0)>=5
+          rows=snapshots.get('snapshots',[])
+          assert len(rows)==snapshots['count'] and len(rows)<=1200
+          boot_ms=datetime.datetime.fromisoformat(p['lastLoadAt'].replace('Z','+00:00')).timestamp()*1000
+          stamps=[]
+          for row in rows:
+              stamp=row.get('fetchedAt')
+              if stamp:
+                  try: stamps.append(datetime.datetime.fromisoformat(stamp.replace('Z','+00:00')).timestamp()*1000)
+                  except ValueError: pass
+          inherited=[x for x in stamps if x<boot_ms-1000]
+          assert inherited, 'HOLD: no public record predating the latest persisted boot'
+          registry,reg_hash,reg_bytes=retrieve(PAGES,400000)
+          assert isinstance(registry,(dict,list)) and len(json.dumps(registry))>=30
+          source_hash=hashlib.sha256(pathlib.Path('mission-002/plugin-contact/jm-m002-canary-20261023-v01.json').read_bytes()).hexdigest()
+          start_count=int(pulse.get('snapshotCount') or 0)
+          start_run=pulse.get('lastRunAt')
+          start_seen={(x.get('fetchedAt'),x.get('symbol')) for x in rows}
+          new_pulse=None
+          final=None
+          for _ in range(9):
+              time.sleep(11)
+              next_pulse,_,_=retrieve(ROOT+'/market/v1/pulse')
+              snap_new,_,_=retrieve(ROOT+'/market/v1/snapshots?limit=32')
+              distinct=[x for x in snap_new.get('snapshots',[]) if (x.get('fetchedAt'),x.get('symbol')) not in start_seen]
+              if next_pulse.get('lastRunAt')!=start_run and distinct:
+                  new_pulse=next_pulse
+                  final=snap_new
+                  break
+          assert new_pulse is not None, 'HOLD: observed no new live data consequence within 99 seconds'
+          verify,hash_verify,_=retrieve(ROOT+'/market/v1/persistence')
+          assert verify.get('ok') is True and verify.get('ready') is True and verify.get('durable') is True
+          receipt={
+           'schema':'JM.M002.Contact005.DurableReturn/1','run_id':os.environ.get('GITHUB_RUN_ID'),
+           'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+           'scope':'public read-only evidence, no DB ACL change, no authentication retry',
+           'checks':{'persisted_mode':True,'durability_route_live':True,'witness_identical_between_routes':True,
+             'snapshots_predating_current_boot':True,'new_automatic_pulse_observed_and_returned':True,
+             'readback_after_pulse_ready':True,'public_cloudflare_pages_registry_contact':True},
+           'state':{'witnessCount':c.get('witnessCount'),'currentWitnessId':c.get('currentWitnessId'),
+             'priorWitnessId':c.get('priorWitnessId'),'inherited_snapshot_count_in_sample':len(inherited),
+             'sample_count':len(rows),'snapshot_total_before':snapshots.get('total'),
+             'pulse_run_before':start_run,'pulse_run_after':new_pulse.get('lastRunAt'),
+             'sample_response_bytes':size_s,'returned_snapshot_count_after':final.get('count')},
+           'source_sha256':source_hash,'persistence_sha256_before':h_p,'persistence_sha256_after':hash_verify,
+           'durability_sha256':h_d,'sample_sha256':h_s,'public_registry_sha256':reg_hash,
+           'registry_bytes':reg_bytes,'public_registry_type':type(registry).__name__,
+           'holds':['Not an independent SQL row query','No Contact 001 Cloudflare KV private return',
+                    'No owner-device physical consequence','No claim that the user requested a new server-side transaction'],
+           'claim':'Postgres-reported historical data return plus a newly observed live server pulse, read independently over HTTP. Public Pages reachable without provider authentication.'
+          }
+          pathlib.Path('CONTACT005_DURABLE_PUBLIC_RECEIPT.json').write_text(json.dumps(receipt,sort_keys=True,indent=2)+chr(10),encoding='utf-8')
+          assert json.loads(pathlib.Path('CONTACT005_DURABLE_PUBLIC_RECEIPT.json').read_text())==receipt
+          print(json.dumps(receipt,sort_keys=True))
+          print('CONTACT005_BOUNDED_PASS: INHERITED_HISTORICAL_DATA + FRESH_LIVE_PULSE + PUBLIC_PAGES')
+          PY
+      - name: Preserve receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_M002_CONTACT005_DURABLE_PUBLIC_RECEIPT
+          path: CONTACT005_DURABLE_PUBLIC_RECEIPT.json
+          if-no-files-found: error

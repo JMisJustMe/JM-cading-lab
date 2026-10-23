@@ -1,7 +1,10 @@
 """Synthetic native contacts; no neural download required for these unit tests."""
 import json,sys,tempfile,unittest
 from pathlib import Path
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np=None
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 import jm_knowledge_semantic_v06 as v06
@@ -19,6 +22,7 @@ class ToyEmbed:
                 float("unknownzirconium" in text),
             ],dtype=np.float32)
 
+@unittest.skipUnless(np is not None, 'Neural dependencies only needed for the optional v0.6 recipient')
 class NativeSemanticContact(unittest.TestCase):
     def setUp(self):
         t=tempfile.TemporaryDirectory()

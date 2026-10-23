@@ -83,22 +83,42 @@ def run(originals,folder,question="habit",top=6):
     candidate=folder.parent/(folder.name+"_JM_CANDIDATE")
     if candidate.exists():raise assurance.Held("CANDIDATE_EXISTS")
     intake.compile_sources(chunks,candidate,question)
+    if not isinstance(top,int) or not 1<=top<=20:raise assurance.Held("INVALID_TOP")
     found=query.query(candidate,chunks,question,top)
+    # Original JM source replay and lexical ranking remain sovereign and unchanged.
+    # Query a bounded 20-passage candidate pool; re-order only the downstream
+    # *presentation* by the ORIGINAL book parent, never by the chunk identity.
+    pool=query.query(candidate,chunks,question,20)
     verify(originals,folder)
-    if found["source_integrity"]!="PASS_REPLAY":raise assurance.Held("CANONICAL_REPLAY_FAILED")
+    if (found["source_integrity"]!="PASS_REPLAY" or
+        pool["source_integrity"]!="PASS_REPLAY"):raise assurance.Held("CANONICAL_REPLAY_FAILED")
     bookmap={c["sha256"]:(b["original_name"],b["sha256"],c["first_line"])
              for b in manifest["books"] for c in b["chunks"]}
-    matches=[]
-    for r in found["matches"]:
-        name,parent,start=bookmap[r["source_id"]]
-        matches.append({"original_name":name,"original_sha256":parent,
+    original_top=found["matches"]
+    first=[];rest=[];seen=set()
+    for r in pool["matches"]:
+        parent=bookmap[r["source_id"]][1]
+        if parent in seen:rest.append(r)
+        else:first.append(r);seen.add(parent)
+    selected=(first+rest)[:top]
+    def map_passages(rows):
+        out=[]
+        for r in rows:
+            name,parent,start=bookmap[r["source_id"]]
+            out.append({"original_name":name,"original_sha256":parent,
                         "original_line":(start+r["line"]-1) if r["line"] else None,
                         "chunk_sha256":r["source_id"],
                         "quote_UNTRUSTED_DATA":r["quote_UNTRUSTED_DATA"]})
+        return out
+    original_mapped=map_passages(original_top)
+    matches=map_passages(selected)
     return {"schema":SCHEMA,"state":"HELD","original_documents":manifest["original_documents"],
             "physical_chunks":manifest["chunks"],"matched_passages":len(matches),
             "canonical_chunk_coverage":found["source_coverage"]["distinct_source_documents"],
+            "canonical_original_document_coverage":len({r["original_sha256"] for r in original_mapped}),
             "true_document_coverage":len({r["original_sha256"] for r in matches}),
+            "parent_aware_policy":"FIRST_PER_ORIGINAL_DOCUMENT_THEN_ORIGINAL_ORDER",
+            "parent_aware_pool_limit":20,
             "original_sha256":[b["sha256"] for b in manifest["books"]],
             "original_replay":"PASS","canonical_jm_query_replay":"PASS",
             "matches":matches,"model_trained":False,"agent_executed":False,

@@ -1,6 +1,8 @@
 import {loadGameForgeDonor,makeGameForgeWorld,readWorldBoot,withWorldSnapshot,waitWorldReturn} from '../../coding-estate/integration/gameforge-world-carrier.mjs';
 import {runNativeOperatorLane,OPERATOR_LANES} from './execution-lanes.mjs';
 import {saveLocalReturn,recoverLocalReturn} from './return-checkpoint.mjs';
+import {createEstateReturnCloud} from '../../unified-browser/jm-estate-return-cloud.mjs';
+import {createCloudWorkspaceClient,httpRequest} from '../../unified-browser/jm-cloud-workspace-client.mjs';
 // JM Estate Native Operator v0.2 — extends the existing canonical integration door.
 // Only the existing JM Coding Estate / AILatheo execution path is invoked here.
 // No owner credentials, arbitrary target URLs, background writes, or production claims.
@@ -58,6 +60,103 @@ function mount() {
   let donorPromise=null;
   let worldLive=null;
   const defaultSceneIntent='Build a touch visual game with drag aim, browser and Android delivery';
+  function mountCloudReturn(){
+    const panel=$('jmCloudReturnPanel');
+    if(!panel)return;
+    const SLOT='JM_ESTATE_CP15_ENCRYPTED_LOCAL_JOURNAL_v1';
+    const $p=id=>$(id);
+    const remote=httpRequest(new URL('../../api/estate-contact',import.meta.url).href,{relay:true});
+    const show=value=>$p('jmCloudReturnStatus').textContent=value;
+    let carrier=null,carrierToken=null,selectedRecovery=null,recoveredValue=null;
+    const token=()=>$p('jmCloudCredential').value.trim();
+    const secret=()=>$p('jmCloudPhrase').value;
+    const readJournal=()=>{try{return JSON.parse(localStorage.getItem(SLOT)||'null')}catch{throw Error('LOCAL_ENCRYPTED_JOURNAL_JSON_HOLD')}};
+    const client=()=>{
+      const t=token();
+      if(!carrier||carrierToken!==t){
+        carrier=createEstateReturnCloud({request:remote,token:t,journal:readJournal(),onJournal:j=>{
+          localStorage.setItem(SLOT,JSON.stringify(j));
+          show('ENCRYPTED RETURN · '+j.state+' · '+j.parts.filter(p=>p.checkpoint).length+'/'+j.parts.length+' signed workspaces. No original plaintext stored in journal.');
+        }});
+        carrierToken=t;
+      }
+      return carrier;
+    };
+    async function execute(fn){
+      for(const button of panel.querySelectorAll('button'))button.disabled=true;
+      try{await fn()}catch(e){show('HOLD · '+String(e?.message||e).slice(0,180)+' · no success claimed. Pending journal remains recoverable.')}
+      finally{for(const button of panel.querySelectorAll('button'))button.disabled=false}
+    }
+    function saveJSON(value,filename){
+      const url=URL.createObjectURL(new Blob([JSON.stringify(value,null,2)],{type:'application/json'}));
+      const a=document.createElement('a');a.href=url;a.download=filename;
+      document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+    }
+    $p('jmCloudRegister').addEventListener('click',()=>execute(async()=>{
+      if(token())throw Error('EXISTING_CREDENTIAL_PRESENT — use your existing scoped seat');
+      const handle=$p('jmCloudHandle').value.trim();
+      if(!/^[A-Za-z0-9_-]{3,24}$/.test(handle))throw Error('INVALID_CONNECTION_HANDLE');
+      const seat=createCloudWorkspaceClient({request:remote});
+      const result=await seat.register(handle);
+      $p('jmCloudCredential').value=result.token; // explicit owner-controlled password field; never localStorage
+      carrier=null;carrierToken=null;
+      show('SCOPED CLOUD CONNECTION CREATED · credential retained in this input only. Export a private recovery bundle after your first saved return. No payload sent yet.');
+    }));
+    $p('jmCloudStage').addEventListener('click',()=>execute(async()=>{
+      const value=latestReturn||(await recoverLocalReturn(localStorage)).value;
+      const result=await client().stage(value,secret());
+      show('STAGED OFFLINE · '+result.parts+' encrypted portions. Explicitly Save to send the ciphertext. Original local result retained; no cloud write yet.');
+    }));
+    $p('jmCloudPush').addEventListener('click',()=>execute(async()=>{
+      const result=await client().push(secret());
+      selectedRecovery=result.recovery;
+      show('CLOUD SIGNED + DECRYPTED READBACK · '+result.parts+' encrypted portions · SHA-256 '+result.cipherSha256.slice(0,20)+'… · download PRIVATE recovery bundle. Actual server replacement and owner phone acceptance remain HOLD.');
+    }));
+    $p('jmCloudExport').addEventListener('click',()=>execute(async()=>{
+      if(!token())throw Error('CREDENTIAL_REQUIRED');
+      const recovery=selectedRecovery||client().recoveryBundle();
+      saveJSON({schema:'jm.m002.cp15.owner-import/1',credential:token(),recovery},
+        'JM_CP15_PRIVATE_RECOVERY_CREDENTIAL_KEEP_SECRET.json');
+      show('PRIVATE RECOVERY EXPORTED · includes your SCOPED CLOUD CREDENTIAL. Keep it offline, private and separate from the encryption phrase. Do not share the file.');
+    }));
+    $p('jmCloudRecoveryImport').addEventListener('change',()=>execute(async()=>{
+      const file=$p('jmCloudRecoveryImport').files?.[0];
+      if(!file||file.size>18000)throw Error('RECOVERY_IMPORT_SIZE_HOLD');
+      const data=JSON.parse(await file.text());
+      if(data.schema!=='jm.m002.cp15.owner-import/1'||!data.recovery||
+        !/^[A-Za-z0-9_.-]{20,2048}$/.test(data.credential||''))throw Error('PRIVATE_BUNDLE_FORMAT_HOLD');
+      selectedRecovery=data.recovery;$p('jmCloudCredential').value=data.credential;
+      carrier=null;carrierToken=null;recoveredValue=null;
+      show('PRIVATE BUNDLE LOADED IN SESSION · enter separate encryption phrase and select Read. No local state modified.');
+    }));
+    $p('jmCloudPull').addEventListener('click',()=>execute(async()=>{
+      const recovery=selectedRecovery||client().recoveryBundle();
+      const reader=createEstateReturnCloud({request:remote,token:token()});
+      const result=await reader.pull(recovery,secret());
+      recoveredValue=result.value;
+      let local=null;
+      try{local=(await recoverLocalReturn(localStorage)).value}catch{}
+      const conflict=local&&JSON.stringify(local)!==JSON.stringify(recoveredValue);
+      show('CLOUD SIGNED + DECRYPTED RETURN · '+result.parts+' encrypted parts. '
+       +(conflict?'CONFLICT: the local saved state differs; it was NOT overwritten. '
+          :'No local-state replacement performed. ')
+       +'Download the recovered full result to inspect it. Applying an operator return requires a separate explicit confirmation. Original JM source re-execution is NOT implied.');
+    }));
+    $p('jmCloudDownloadResult').addEventListener('click',()=>execute(async()=>{
+      if(!recoveredValue)throw Error('NO_VERIFIED_REMOTE_RETURN');
+      saveJSON(recoveredValue,'JM_CP15_RECOVERED_ORIGINAL_BODY.json');
+      show('FULL RECOVERED BODY EXPORTED · preserve original source identity and review it before applying. No state was changed.');
+    }));
+    $p('jmCloudApply').addEventListener('click',()=>execute(async()=>{
+      if(!$p('jmCloudApplyPermit').checked)throw Error('LOCAL_REPLACEMENT_NOT_AUTHORISED');
+      if(recoveredValue?.schema!=='jm.estate.operator.local-return/0.2')
+        throw Error('NOT_AN_OPERATOR_LOCAL_RETURN — download full body; no automatic type conversion');
+      await saveLocalReturn(localStorage,recoveredValue);
+      await displayReturn(recoveredValue,false);
+      $p('jmCloudApplyPermit').checked=false;
+      show('EXPLICIT LOCAL REPLACEMENT VERIFIED · saved and read back by original JM operator checkpoint. The cloud carrier restored the stored bytes; original source runtime NOT re-executed here.');
+    }));
+  }
   $('jmOperatorMode').addEventListener('change',()=>{
     const mode=$('jmOperatorMode').value;
     $('jmOperatorIntent').value=mode==='scene'?defaultSceneIntent:OPERATOR_LANES[mode]?.input||'';
@@ -218,6 +317,7 @@ function mount() {
     catch(e){$('jmOperatorCloud').textContent='PUBLIC CONTACT HOLD · '+String(e?.message||e)}
     finally{$('jmOperatorProbe').disabled=false}
   });
+  mountCloudReturn();
 }
 if(typeof document!=='undefined'){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();

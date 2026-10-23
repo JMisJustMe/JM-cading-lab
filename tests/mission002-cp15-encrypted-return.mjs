@@ -61,7 +61,7 @@ try{
  ok(staged.cipherSha256.length===64,'MISSING_ENCRYPTED_HASH');
  ok(!JSON.stringify(sending.journal()).includes('SOURCE_PROTECTED_CREATIVE_OPERATOR'),
   'PLAINTEXT_LEAKED_IN_JOURNAL');
- throws(()=>sending.stage(original,pass),/CP15_PENDING_TRANSFER_RECOVER_FIRST_HOLD/);
+ await rejects(()=>sending.stage(original,pass),/CP15_PENDING_TRANSFER_RECOVER_FIRST_HOLD/);
  const submitted=await sending.push(pass);
  eq(submitted.state,'CLOUD_SIGNED_AND_DECRYPTED_READBACK','NO_CLOUD_READBACK');
  eq(submitted.parts,staged.parts,'CHUNK_COUNT_DRIFT');

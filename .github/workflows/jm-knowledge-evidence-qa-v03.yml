@@ -1,0 +1,27 @@
+name: JM Knowledge Evidence QA v0.3
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_evidence_qa.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_evidence_qa.py'
+      - '.github/workflows/jm-knowledge-evidence-qa-v03.yml'
+  workflow_dispatch:
+jobs:
+  evidence-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile v0.3 and v0.2 native modules
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_evidence_qa.py
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_capability_recipient.py
+      - name: Run historical evidence QA plus inherited v0.2 recipient regression
+        run: |
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_evidence_qa.py' -v
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_capability_recipient.py' -v

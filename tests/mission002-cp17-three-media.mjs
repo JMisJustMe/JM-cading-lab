@@ -55,7 +55,9 @@ for(const choice of ['protect','explore','amplify']){
    hold(()=>returnCP17Edition(store,medium,artifact),/CP17_OWNER_APPROVAL_HOLD/);
    const applied=returnCP17Edition(store,medium,artifact,{approve:true});
    eq(applied.status,'SCOPED_CREATIVE_RETURN','NO_ACTUAL_CREATIVE_RETURN');
-   yes(!Object.keys(store).some(k=>k!==medium),'MEDIA_SOURCE_CROSSOVER');
+   eq(Object.fromEntries(Object.entries(store).filter(([k])=>k!==medium)),
+     Object.fromEntries(Object.entries(snapshot).filter(([k])=>k!==medium)),
+     'MEDIA_SOURCE_CROSSOVER');
   }else{
    hold(()=>returnCP17Edition(store,medium,artifact,{approve:true}),
     /CP17_EXISTING_EDITION_CONFLICT_HOLD/);

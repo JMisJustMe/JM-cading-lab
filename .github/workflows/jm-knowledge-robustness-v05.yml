@@ -1,0 +1,72 @@
+name: JM Knowledge Robustness v0.5 — Full Books
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_robustness_v05.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_robustness_v05.py'
+      - '.agents/skills/jm-ecostate-route/tests/fixtures/knowledge_v05_adversarial_gold.json'
+      - '.github/workflows/jm-knowledge-robustness-v05.yml'
+  workflow_dispatch:
+jobs:
+  adversarial-original-book-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Native compile and inherited v0.4 regression
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_robustness_v05.py
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_robustness_v05.py' -v
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_answer_eval.py' -v
+      - name: Download temporary original public-domain books
+        run: |
+          mkdir -p /tmp/jm-v05-books
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/57628/pg57628.txt' \
+            -o /tmp/jm-v05-books/James_Principles_Vol1.txt
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/205/pg205.txt' \
+            -o /tmp/jm-v05-books/Thoreau_Walden.txt
+      - name: Score 16 real-book direct, paraphrase, misattribution and unsupported questions
+        run: |
+          python .agents/skills/jm-ecostate-route/jm_knowledge_robustness_v05.py \
+            --book /tmp/jm-v05-books/James_Principles_Vol1.txt \
+            --book /tmp/jm-v05-books/Thoreau_Walden.txt \
+            --gold .agents/skills/jm-ecostate-route/tests/fixtures/knowledge_v05_adversarial_gold.json \
+            --out /tmp/jm-v05-fullbook-results.json > /tmp/jm-v05-stdout.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          output=Path('/tmp/jm-v05-fullbook-results.json')
+          report=json.loads(output.read_text(encoding='utf8'))
+          assert json.loads(Path('/tmp/jm-v05-stdout.json').read_text(encoding='utf8'))==report
+          assert report['state']=='HELD'
+          assert report['cases']==16
+          assert report['baseline']['citation_failures']==0
+          assert report['guarded']['citation_failures']==0
+          assert report['model_calls']==0
+          assert report['model_generated'] is False
+          assert report['model_comparison']=='NOT_YET_RUN'
+          print('REAL_BOOK_PARAPHRASE_ADVERSARIAL_AB', {k:report[k] for k in
+                ('cases','baseline','guarded','gains','regressions','elapsed_ms_total','model_comparison')})
+          for row in report['rows']:
+              print('CASE',row['id'],row['category'],'baseline',row['baseline']['reason'],
+                    'guarded',row['guarded']['reason'],'change',row['change'])
+          PY
+      - name: Publish proof metadata only, never private or public book bytes
+        run: |
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=Path('/tmp/jm-v05-fullbook-results.json')
+          r=json.loads(p.read_text())
+          print('BOOK_SOURCE_SCOPE=COMPLETE_TEMPORARY_GUTENBERG_ORIGINALS')
+          print('RECEIPT_SHA256',hashlib.sha256(p.read_bytes()).hexdigest())
+          print('CORRECTNESS',r['baseline']['correct'],r['guarded']['correct'])
+          PY

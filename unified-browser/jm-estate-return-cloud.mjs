@@ -121,6 +121,7 @@ export function createEstateReturnCloud({request,token,onJournal=()=>{},journal=
    if(p.checkpoint){
     const prior=await withCp(p.checkpoint).recover();
     if(prior.content?.intent!==expected)fail('REMOTE_CHUNK_DRIFT');
+    p.checkpoint=prior.checkpoint;retain(j);
    }else{
     const client=workspace(cp=>{j.parts[p.index].checkpoint=cp;retain(j)});
     const sent=await client.saveIntent(expected);
@@ -133,6 +134,7 @@ export function createEstateReturnCloud({request,token,onJournal=()=>{},journal=
   if(j.manifestCheckpoint){
    const got=await withCp(j.manifestCheckpoint).recover();
    if(got.content?.intent!==expectedManifest)fail('MANIFEST_DRIFT');
+   j.manifestCheckpoint=got.checkpoint;retain(j);
   }else{
    const client=workspace(cp=>{j.manifestCheckpoint=cp;retain(j)});
    const got=await client.saveIntent(expectedManifest);

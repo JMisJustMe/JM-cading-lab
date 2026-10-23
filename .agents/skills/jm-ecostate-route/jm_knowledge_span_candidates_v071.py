@@ -69,6 +69,8 @@ def main(argv=None):
         c=semantic.Contact(args.book,dense,args.cache/"source_index")
         tasks=json.loads(args.questions.read_text(encoding="utf8"))
         output=candidates(c,rr,tasks)
+        baseline=cross.CrossContact(c,rr,args.cache)
+        output['v07_baseline']={q['id']:baseline.answer(q['question']) for q in tasks}
         raw=(json.dumps(output,sort_keys=True,ensure_ascii=False,indent=2)+"\n").encode("utf8")
         args.out.parent.mkdir(parents=True,exist_ok=True)
         args.out.write_bytes(raw)

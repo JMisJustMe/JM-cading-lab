@@ -19,3 +19,7 @@ Same familiar selection and fling controls. Select a champion, tap/drag into the
 ## Source, status and evidence
 
 The immutable original HTML ancestor stays in `ancestry/`, SHA-256 `b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62`. The v0.2–v0.5 Godot projects are predecessors; their proofs and hold boundaries carry forward at their exact scopes. Python structural tests do NOT equal Godot runtime; native gameplay must be separately checked. Android owner-device feel, APK, complete session balance, and rendered visual judgement remain **HOLD**, with no request for a phone test right now.
+
+## Native verification completed
+
+GitHub Actions [Godot 4.7.2 run 40001872726](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40001872726) completed successfully with **90/90 real native headless GDScript gameplay checks**, 0 failures. All inherited offline structural suites total **82/82 PASS**. `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v06.json` is the scoped evidence card; it does not confer Android, visual quality, APK or whole-game production clearance. Source was corrected after an initial parse error, then wave two and three were expanded to multiple physically spawned raiders. The successful run is for the expanded final source. **No phone testing is requested.**

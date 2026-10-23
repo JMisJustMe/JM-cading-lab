@@ -1,9 +1,10 @@
 ; SLINGFALL v0.3 LIVING BATTLEFIELD — inherits v0.2 independent native Godot 4 branch.
+; Keep v0.2 config/name to preserve existing Godot user:// save directory.
 ; Original web build byte-preserved in ancestry/.
 config_version=5
 
 [application]
-config/name="SLINGFALL — Living Battlefield"
+config/name="SLINGFALL — Field Ascent"
 run/main_scene="res://Main.tscn"
 config/description="JM SLINGFALL: inherited native flinging and three contested zones; distinctive signature combat, tactical terrain and living weather."
 

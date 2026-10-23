@@ -87,7 +87,8 @@ try{
  await page.screenshot({path:out+'/CP14_OPERATOR_PHONE_TYPED_APPLIED.png',fullPage:true});
  const corrupt=await page.evaluate(()=>{
    const key='JM_M002_CP14_GAME_TYPED_RETURN_v01',p=JSON.parse(localStorage.getItem(key));
-   p.body=p.body.replace('JM Krix','Forger');localStorage.setItem(key,JSON.stringify(p));return p.sha256;
+   const changed=JSON.parse(p.body);changed.allies[0].hp=17;
+   p.body=JSON.stringify(changed);localStorage.setItem(key,JSON.stringify(p));return p.sha256;
  });
  await page.locator('#jmCP14Export').click();
  await page.waitForFunction(()=>document.getElementById('jmCP14Status').textContent.includes('CP14_LOCAL_HASH_HOLD'));

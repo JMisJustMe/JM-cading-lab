@@ -115,14 +115,24 @@ def recover(candidate,sources,out):
     if (old.get("schema")!=SCHEMA or old.get("state")!="HELD" or
         old.get("agent_executed") is not False or old.get("promotion")!="NOT_ALLOWED"):
         raise assurance.Held("RECIPIENT_AUTHORITY_INFLATION")
+    route_state=old.get("existing_jm_runtime_contact")
+    if route_state not in ("NOT_REQUESTED","PYTHON_NODE_ROUTING_ONLY"):
+        raise assurance.Held("ROUTE_STATE_INVALID")
+    # Re-contact the actual existing Python + Node JM route at recovery time.
+    # A 64-character hash alone is not a replay receipt: never copy it blindly
+    # from the untrusted saved evidence into the independently rebuilt result.
     rebuilt=build_data(candidate,sources,old["question"],old["top"],
-                       m["candidate_manifest_sha256"],False)
-    if old.get("existing_jm_runtime_contact")=="PYTHON_NODE_ROUTING_ONLY":
+                       m["candidate_manifest_sha256"],
+                       route_existing=(route_state=="PYTHON_NODE_ROUTING_ONLY"))
+    if route_state=="PYTHON_NODE_ROUTING_ONLY":
         route_hash=old.get("route_receipt_sha256")
-        if not isinstance(route_hash,str) or len(route_hash)!=64:
+        if (not isinstance(route_hash,str) or len(route_hash)!=64
+            or any(c not in "0123456789abcdef" for c in route_hash)):
             raise assurance.Held("ROUTE_RECEIPT_INVALID")
-        rebuilt["existing_jm_runtime_contact"]="PYTHON_NODE_ROUTING_ONLY"
-        rebuilt["route_receipt_sha256"]=route_hash
+        if route_hash!=rebuilt["route_receipt_sha256"]:
+            raise assurance.Held("ROUTE_RECEIPT_REPLAY_DRIFT")
+    elif old.get("route_receipt_sha256") is not None:
+        raise assurance.Held("UNEXPECTED_ROUTE_RECEIPT")
     if encoded(rebuilt)!=(out/EVIDENCE).read_bytes():
         raise assurance.Held("RECIPIENT_EXACT_REPLAY_DRIFT")
     return {"schema":SCHEMA,"state":"HELD","recovery":"PASS_SOURCE_AND_RESULT_REPLAY",

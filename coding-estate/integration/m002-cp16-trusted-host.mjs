@@ -117,7 +117,7 @@ export function createTrustedEstateServer(config){
       count:Object.keys(current.history).length,host:'LOOPBACK_ORIGINAL_JM_RUNTIME',
       boundary:'local sealed state; no production cloud/device claim'});
    }
-   if(req.method==='GET'&&/^\/v1/recover\/[a-f0-9-]{36}$/i.test(req.url)){
+   if(req.method==='GET'&&/^\/v1\/recover\/[a-f0-9-]{36}$/i.test(req.url)){
     const id=req.url.split('/').at(-1),current=read(),row=current.history[id];
     if(!row)hold('RECORD_ABSENT',404);
     if(row.meshDigest!==meshDigest)hold('AUTHORITY_DRIFT');

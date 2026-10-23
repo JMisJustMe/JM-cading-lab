@@ -47,6 +47,21 @@
 <pre id="jmTransferStatus" role="status" aria-live="polite">No project transferred.</pre>
 <p class="muted">SHA-256 is integrity only, not authentication. CP12 cross-media state is carried but is not automatically applied to a game or comic.</p>
 </section>
+<section class="card op" id="jmCP14RecipientReturn" aria-labelledby="jmCP14Title">
+<div class="k">CP14 · actual typed CP11 receiver custody · same operator</div>
+<h2 id="jmCP14Title">Review imported game or comic state</h2>
+<p class="muted">Import the CP13 project containing a CP12 exchange above, then register your ORIGINAL CP11 game and comic typed snapshots from a JSON file with keys <code>game</code> and <code>comic</code>. Preview how an earned change affects each body. Approval applies only to the selected typed receiver, not directly to a private game/comic app. Conflicts and duplicate applications HOLD.</p>
+<div class="actions">
+<button type="button" id="jmCP14Register">Register original typed snapshots</button>
+<input type="file" accept=".json,application/json" hidden id="jmCP14BaselineFile">
+<label for="jmCP14Kind">Recipient <select id="jmCP14Kind"><option value="game">Game state</option><option value="comic">Comic state</option></select></label>
+<button type="button" id="jmCP14Preview">Preview sourced change</button>
+<button type="button" id="jmCP14Commit" disabled>Approve reviewed application</button>
+<button type="button" id="jmCP14Export">Export current typed state</button>
+</div>
+<pre role="status" aria-live="polite" id="jmCP14Status">No original typed recipient has been registered or modified.</pre>
+<p class="muted">Important: SHA-256 is integrity only. This is a typed CP11 receiving body, not a live FIVE//FLIP gameplay file, finished comic or verified remote identity. CP13 transfer files are inspected and applied only after explicit review.</p>
+</section>
 <section class="grid" id="routes"></section>
 <section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
 </main>
@@ -68,5 +83,6 @@ window.addEventListener('jm-estate-integration-hold',e=>{
 </script>
 <script type="module" src="./native-operator.mjs"></script>
 <script type="module" src="./m002-cp13-device-return-ui.mjs"></script>
+<script type="module" src="./m002-cp14-recipient-custody-ui.mjs"></script>
 </body>
 </html>

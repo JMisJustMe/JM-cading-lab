@@ -252,6 +252,10 @@ func run_all() -> void:
 	blue_follower["y"] = 476.0
 	game._land(blue_follower)
 	check("V05 blue landfall assigns escort AI",blue_follower["order"] == "ESCORT")
+	game.selected = "warden"
+	game._pointer_down(Vector2(316,476))
+	game._pointer_up(Vector2(316,476))
+	check("V05 cargo touch issues escort rather than extra launch",blue_follower["order"] == "ESCORT" and game.battle["heroes"].size() == 1)
 	game._issue_order(Vector2(316,476))
 	check("V05 cargo tap preserves deliberate escort order",blue_follower["order"] == "ESCORT")
 	game.battle["energy"]["red"] = 100.0

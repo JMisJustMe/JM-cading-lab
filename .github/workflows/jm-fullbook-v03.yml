@@ -1,0 +1,63 @@
+name: JM Full Book Source Contact v0.3
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_fullbook.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_fullbook.py'
+      - '.github/workflows/jm-fullbook-v03.yml'
+  workflow_dispatch:
+jobs:
+  book-original-replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax and synthetic native-original integration
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_fullbook.py
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_fullbook.py' -v
+      - name: Fetch exact public-domain Gutenberg originals into temporary runner storage
+        run: |
+          mkdir -p /tmp/jm-public-books
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/57628/pg57628.txt' \
+            -o /tmp/jm-public-books/James_Principles_Vol1.txt
+          curl --fail --location --retry 3 --max-time 90 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/205/pg205.txt' \
+            -o /tmp/jm-public-books/Thoreau_Walden.txt
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          for p in sorted(Path('/tmp/jm-public-books').glob('*.txt')):
+              raw=p.read_bytes()
+              assert raw.startswith(b'The Project Gutenberg'),p
+              assert 100000<len(raw)<15000000,(p,len(raw))
+              print('Original public text:',p.name,'bytes',len(raw),'sha256',hashlib.sha256(raw).hexdigest())
+          PY
+      - name: Canonical JM original-book ingestion plus Python evidence query
+        run: |
+          python .agents/skills/jm-ecostate-route/jm_knowledge_fullbook.py \
+            --book /tmp/jm-public-books/James_Principles_Vol1.txt \
+            --book /tmp/jm-public-books/Thoreau_Walden.txt \
+            --folder /tmp/jm-fullbook-stage-v03 \
+            --query habit > /tmp/jm-fullbook-result.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/jm-fullbook-result.json'))
+          assert p["schema"]=="JM.KnowledgeFullBookCarrier/0.3"
+          assert p["state"]=="HELD"
+          assert p["original_documents"]==2
+          assert p["physical_chunks"]>2
+          assert p["physical_chunks"]<=12
+          assert p["original_replay"]=="PASS"
+          assert p["canonical_jm_query_replay"]=="PASS"
+          assert 0<=p["true_document_coverage"]<=2
+          assert p["promotion"]=="NOT_ALLOWED"
+          assert p["model_trained"] is False
+          print({k:p[k] for k in ("state","original_documents","physical_chunks","matched_passages","canonical_chunk_coverage","true_document_coverage","original_replay","canonical_jm_query_replay")})
+          PY

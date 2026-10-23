@@ -1,0 +1,111 @@
+name: JM Mission 002 witness-to-Build-Mesh governed contact
+on:
+  push:
+    branches:
+      - audit/mission-002-plugin-contact-20261023-v01
+    paths:
+      - .github/workflows/jm-m002-witness-to-buildmesh.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-witness-routing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - name: Route a real Render witness to Build Mesh PLAN_ONLY and read back
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, hashlib, pathlib, datetime, time
+          source = pathlib.Path('mission-002/plugin-contact/jm-m002-canary-20261023-v01.json').read_bytes()
+          canary = json.loads(source)
+          assert canary['id'] == 'jm-m002-canary-20261023-v01' and canary['production_mutation'] is False and canary['no_secrets'] is True
+          render_url='https://jm-cloud-contact-server-v05.onrender.com/market/v1/persistence'
+          mesh_url='https://jm-ecostate-build-mesh-mcp.onrender.com/mcp'
+          def http_json(url, data=None):
+              h={'Accept':'application/json','User-Agent':'JM-M002-GovernedWitness/1'}
+              if data is not None:
+                  h['Content-Type']='application/json'
+              req=urllib.request.Request(url,data=None if data is None else json.dumps(data).encode('utf-8'),headers=h,method='GET' if data is None else 'POST')
+              with urllib.request.urlopen(req,timeout=40) as resp:
+                  assert resp.status == 200
+                  b=resp.read(32769)
+                  assert len(b)<=32768, 'oversized public response'
+              return json.loads(b), hashlib.sha256(b).hexdigest()
+          def retry(fn):
+              err=None
+              for n in range(8):
+                  try: return fn()
+                  except Exception as e:
+                      err=e
+                      time.sleep(8)
+              raise RuntimeError(f'bounded contact unavailable: {type(err).__name__}: {str(err)[:140]}')
+          first,first_hash=retry(lambda:http_json(render_url))
+          c=first.get('continuity') or {}
+          assert first.get('ok') is True and first.get('databaseConfigured') is True
+          assert first.get('mode')=='postgres' and first.get('durable') is True and first.get('ready') is True
+          assert c.get('recoveredPriorWitness') is True
+          assert isinstance(c.get('witnessCount'),int) and c['witnessCount']>=98
+          assert isinstance(c.get('currentWitnessId'),str) and isinstance(c.get('priorWitnessId'),str)
+          assert c['priorWitnessId']!=c['currentWitnessId']
+          def rpc(i,method,params):
+              response,_=retry(lambda:http_json(mesh_url,{'jsonrpc':'2.0','id':i,'method':method,'params':params}))
+              assert 'error' not in response, response.get('error')
+              return response['result']
+          init=rpc(1,'initialize',{'protocolVersion':'2025-06-18','capabilities':{},'clientInfo':{'name':'JM Mission002 witness contact','version':'0.1'}})
+          assert init.get('serverInfo',{}).get('name')=='JM ECOSTATE Build Mesh Native MCP'
+          a={
+            'target':'JM CLOUD CONTACT SERVER',
+            'objective':'Contact 004: route observed Render witness '+c['currentWitnessId']+' with parent '+c['priorWitnessId']+' into a governed read-only Build Mesh proof plan; no promotion',
+            'action_type':'proof-only',
+            'intended_change':'none; do not write, redeploy, change ACL or touch user device'
+          }
+          def call(i):
+              r=rpc(i,'tools/call',{'name':'prepare_operation_gate','arguments':a})
+              assert r.get('isError') is not True
+              d=r.get('structuredContent') or {}
+              assert d, 'missing structured proof'
+              return d
+          gate=call(2)
+          gate_repeat=call(3)
+          assert gate['operation_id']==gate_repeat['operation_id'], 'non-deterministic gate'
+          assert gate['phase']=='PLAN_ONLY' and gate['mutation_performed'] is False
+          assert gate['target']==a['target'] and gate['objective']==a['objective']
+          assert gate['intended_change']==a['intended_change']
+          second,second_hash=retry(lambda:http_json(render_url))
+          d=second.get('continuity') or {}
+          assert second.get('durable') is True and second.get('ready') is True
+          assert d.get('witnessCount',-1)>=c['witnessCount']
+          assert d.get('currentWitnessId')==c['currentWitnessId'] or d.get('priorWitnessId')==c['currentWitnessId'], 'unexplained new witness'
+          receipt={
+            'schema':'JM.Mission002.WitnessToBuildMeshContact/1',
+            'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'scope':'external-GitHub-runner-brokers-live-Render-witness-to-readonly-Build-Mesh-plan',
+            'github_source_sha256':hashlib.sha256(source).hexdigest(),
+            'github_run_id':'${{ github.run_id }}',
+            'render_before_sha256':first_hash,
+            'render_after_sha256':second_hash,
+            'render_witness':{'current':c['currentWitnessId'],'prior':c['priorWitnessId'],'count':c['witnessCount']},
+            'render_readback':{'current':d.get('currentWitnessId'),'prior':d.get('priorWitnessId'),'count':d.get('witnessCount')},
+            'mesh_server_name':init['serverInfo']['name'],
+            'mesh_server_version':init['serverInfo'].get('version'),
+            'mesh_operation_id':gate['operation_id'],
+            'mesh_operation_phase':gate['phase'],
+            'mesh_mutation_performed':gate['mutation_performed'],
+            'gate_deterministic':True,
+            'status':'BOUNDED_PASS',
+            'holds':['Independent direct SQL row readback', 'Cloudflare reauthorisation', 'Contact 001 canary propagation', 'Physical device consequence'],
+            'claim_boundary':'Proves externally brokered live return and deterministic nonmutating operation planning; does not prove direct Render-to-Build-Mesh networking or durable transaction in both services.'
+          }
+          pathlib.Path('JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\\n',encoding='utf-8')
+          print(json.dumps(receipt,sort_keys=True))
+          print('CONTACT004_BOUNDED_PASS: LIVE_RENDER_WITNESS -> EXTERNAL_RUNNER -> BUILDMESH_PLAN_ONLY -> LIVE_RENDER_READBACK')
+          PY
+      - name: Preserve bounded receipt as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT
+          path: JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT.json
+          if-no-files-found: error

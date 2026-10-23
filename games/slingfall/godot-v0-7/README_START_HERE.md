@@ -19,3 +19,7 @@ Across Classic Siege, Convoy Extraction and Beacon Defense, three sequential **p
 
 Inherited v0.6 native source used as the foundation. Run `tests/qa_static.py`, `test_v03_source.py`, `test_v04_source.py`, `test_v05_source.py`, `test_v06_source.py`, `test_v07_source.py` and the actual Godot `tests/host_logic_test.gd`. Linux headless Godot runtime is separate from Android input/rendering proof. Samsung Fold touch, GPU performance, visual subjective quality and APK stay **HOLD** unless separately owner-tested. Existing frozen whole-line archive remains untouched. Repository branch/PR is a non-promoted descendant.
 
+
+## Earned scoped native result (24 October 2026)
+
+Godot **4.7.2 Linux headless** ran **104/104 gameplay checks, 0 failures**. The six inherited-plus-new Python source suites passed **97/97**. [Actual CI run 40039088424](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40039088424). Evidence: `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v07.json`. This proves bounded host gameplay, not Samsung Fold touch, actual device visuals, APK, or full cross-engine v0.7 parity. **Android HOLD; draft PR unmerged.** The GitHub source folder includes SVG portrait fallbacks; the downloadable ZIP additionally contains the original PNG portraits and complete package-specific hash manifest. Frozen v0.6 FLAZ untouched.

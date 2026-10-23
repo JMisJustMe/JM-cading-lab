@@ -15,6 +15,7 @@ func check(name: String, result: bool) -> void:
 		printerr("SLINGFALL GODOT HOST FAIL: ",name)
 
 func run_all() -> void:
+	print("SLINGFALL NATIVE TEST START")
 	var packed: PackedScene = load("res://Main.tscn")
 	check("Godot scene loads",packed != null)
 	if packed == null:

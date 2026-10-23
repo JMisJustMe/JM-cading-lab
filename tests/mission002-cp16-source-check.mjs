@@ -52,5 +52,5 @@ try{
  service=createTrustedEstateServer(f.config);
  assert.ok(service.boundary);
  await service.listen(0);
- console.log(JSON.stringify({status:'CP16_ORIGINAL_JM_LIVE_HTTP_PASS',revision:executed.body.revision}));
+ console.log(JSON.stringify({status:'CP16_ORIGINAL_JM_LIVE_HTTP_PASS',revision:second.body.revision}));
 }finally{if(service)await service.close();f.dispose()}

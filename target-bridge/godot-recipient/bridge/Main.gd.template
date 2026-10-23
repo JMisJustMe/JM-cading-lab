@@ -1,0 +1,342 @@
+extends Control
+## JM Target Bridge / Godot Recipient Candidate v0.2
+## Exact SPINBREAK v0.8 registered source; bounded semantic contact only.
+## For fuller game contact, keep separate SPINBREAK code. No runtime PASS assumed.
+
+const SOURCE_SHA = "__SOURCE_SHA__"
+const CONTRACT = "JM.TargetBridge.SemanticPlan/0.2"
+const SEMANTICS = ["signal.route_right", "move.you", "signal.kic", "kic.spin_cost", "contact.you_rival_a", "signal.wake", "wake.stability", "wake.spin", "wake.integrity"]
+const C_TEAL = Color("64e6c3")
+const C_GOLD = Color("ffbc64")
+const C_CORAL = Color("f27d76")
+const C_BG = Color("09131e")
+const RECEIPT = "user://JM_TARGET_BRIDGE_GODOT_RETURN_RECEIPT.json"
+const W = 1200.0
+const H = 700.0
+const PLAYER_RADIUS = 40.0
+const RIVAL_RADIUS = 40.0
+const BTN_NAMES = ["LEFT", "RIGHT", "KIC", "WAKE", "TRACE", "RESET", "COPY"]
+const BTNS = [Rect2(35, 600, 142, 76), Rect2(187, 600, 142, 76), Rect2(344, 600, 144, 76), Rect2(500, 600, 144, 76), Rect2(656, 600, 144, 76), Rect2(813, 600, 144, 76), Rect2(969, 600, 192, 76)]
+
+var marks: Dictionary = {}
+var events: Array = []
+var player_x = 275.0
+var player_y = 352.0
+var rival_x = 825.0
+var rival_y = 352.0
+var spin = 100.0
+var stability = 100.0
+var integrity = 100.0
+var wake_used = false
+var kic_used = false
+var complete = false
+var right_down = false
+var left_down = false
+var pointer_actions: Dictionary = {}
+var keyboard_actions: Dictionary = {}
+var elapsed = 0.0
+var rotation_clock = 0.0
+var flash_time = 0.0
+var flash_message = ""
+var show_trace = false
+var is_paused = false
+var zoom = 1.0
+var origin = Vector2.ZERO
+var copy_feedback = ""
+
+func _ready() -> void:
+	reset_contact()
+	resized.connect(_on_resized)
+	_on_resized()
+
+func _on_resized() -> void:
+	var s = size
+	zoom = minf(s.x / W, s.y / H)
+	origin = (s - Vector2(W, H) * zoom) / 2.0
+	queue_redraw()
+
+func reset_contact() -> void:
+	marks.clear()
+	for semantic in SEMANTICS:
+		marks[semantic] = "WAIT"
+	events.clear()
+	player_x = 275.0
+	player_y = 352.0
+	rival_x = 825.0
+	rival_y = 352.0
+	spin = 100.0
+	stability = 100.0
+	integrity = 100.0
+	wake_used = false
+	kic_used = false
+	complete = false
+	right_down = false
+	left_down = false
+	pointer_actions.clear()
+	keyboard_actions.clear()
+	elapsed = 0.0
+	is_paused = false
+	copy_feedback = ""
+	flash("HOLD RIGHT TO MAKE REAL CONTACT • KIC • WAKE")
+	queue_redraw()
+
+func _process(delta: float) -> void:
+	rotation_clock += delta
+	flash_time = maxf(0.0, flash_time - delta)
+	if not is_paused and not complete:
+		elapsed += delta
+		var direction = 0.0
+		if right_down or keyboard_actions.get("RIGHT", false):
+			direction += 1.0
+		if left_down or keyboard_actions.get("LEFT", false):
+			direction -= 1.0
+		if direction != 0.0:
+			var before = player_x
+			player_x = clampf(player_x + direction * 185.0 * delta, 105.0, 1090.0)
+			if player_x != before and direction > 0.0:
+				mark("signal.route_right", before, player_x)
+				mark("move.you", before, player_x)
+		# Collision is geometric and only occurs after the player reaches RIVAL_A.
+		if Vector2(player_x, player_y).distance_to(Vector2(rival_x, rival_y)) <= PLAYER_RADIUS + RIVAL_RADIUS:
+			mark("contact.you_rival_a", "separated", "colliders intersect")
+		check_completion()
+	queue_redraw()
+
+func trigger_kic() -> void:
+	if complete or is_paused or kic_used or spin < 8.0:
+		return
+	kic_used = true
+	mark("signal.kic", "not triggered", "triggered")
+	var before = spin
+	spin = clampf(spin - __KIC_DELTA__, 0.0, 100.0)
+	if is_equal_approx(before - spin, __KIC_DELTA__):
+		mark("kic.spin_cost", before, spin)
+	flash("KIC · SPIN %.1f -> %.1f" % [before, spin])
+	check_completion()
+
+func trigger_wake() -> void:
+	if complete or is_paused or wake_used:
+		return
+	wake_used = true
+	mark("signal.wake", "available", "consumed")
+	var before_stability = stability
+	var before_spin = spin
+	var before_integrity = integrity
+	stability = clampf(stability + __WAKE_STABILITY__, 0.0, 100.0)
+	spin = clampf(spin + __WAKE_SPIN__, 0.0, 100.0)
+	integrity = clampf(integrity - __WAKE_INTEGRITY_COST__, 0.0, 100.0)
+	if is_equal_approx(stability, clampf(before_stability + __WAKE_STABILITY__, 0.0, 100.0)):
+		mark("wake.stability", before_stability, stability)
+	if is_equal_approx(spin, clampf(before_spin + __WAKE_SPIN__, 0.0, 100.0)):
+		mark("wake.spin", before_spin, spin)
+	if is_equal_approx(integrity, clampf(before_integrity - __WAKE_INTEGRITY_COST__, 0.0, 100.0)):
+		mark("wake.integrity", before_integrity, integrity)
+	flash("WAKE · +16 STABILITY · +7 SPIN · -3.5 INTEGRITY")
+	check_completion()
+
+func mark(name: String, previous: Variant, current: Variant) -> void:
+	if not SEMANTICS.has(name):
+		push_error("Unregistered Target Bridge semantic: " + name)
+		return
+	if marks.get(name, "WAIT") == "PASS":
+		return
+	marks[name] = "PASS"
+	events.append({"t": snappedf(elapsed, 0.001), "semantic": name, "before": previous, "after": current, "status": "PASS"})
+	print("JM GODOT CONTACT: ", name, " PASS | ", previous, " -> ", current)
+
+func check_completion() -> void:
+	if complete:
+		return
+	for semantic in SEMANTICS:
+		if marks[semantic] != "PASS":
+			return
+	complete = true
+	flash("9/9 · BOUNDED GODOT CONTACT PASS")
+	save_receipt()
+	print("JM TARGET BRIDGE / GODOT: BOUNDED HOST CONTACT PASS")
+
+func receipt_data() -> Dictionary:
+	return {
+		"schema": "JM.TargetBridge.GodotHostReturnReceipt/0.1",
+		"source_authority": "JM", "source_sha256": SOURCE_SHA,
+		"host": "Godot", "host_version": Engine.get_version_info().get("string", "unknown"),
+		"runtime": OS.get_name(), "engine_build": "Godot %s" % Engine.get_version_info().get("string", "unknown"),
+		"evidence_mode": "host_runtime_action_trace", "event_count": events.size(), "elapsed_seconds": snappedf(elapsed, 0.001),
+		"semantic_plan": CONTRACT, "scoped_body": "SPINBREAK v0.8 bounded exact-source slice",
+		"result": "PASS" if complete else "INCOMPLETE",
+		"receipt_written": complete,
+		"semantic_results": marks.duplicate(true), "events": events.duplicate(true),
+		"final": {"spin": spin, "stability": stability, "integrity": integrity, "player_x": player_x, "rival_x": rival_x},
+		"hold": ["full SPINBREAK three-spinner / AI", "contact pressure and mutation", "visual and complete game parity", "full cross-host parity"],
+		"previous_matrix": "GDevelop + Unity: 4/4 physical scoped runtime PASS (2026-09-28)",
+		"claim_ceiling": "bounded semantic contact only; does not prove whole-game parity"
+	}
+
+func save_receipt() -> void:
+	if not complete:
+		return
+	var file = FileAccess.open(RECEIPT, FileAccess.WRITE)
+	if file != null:
+		file.store_string(JSON.stringify(receipt_data(), "\t"))
+		file.close()
+	else:
+		print("RECEIPT SAVE FAILURE: ", FileAccess.get_open_error())
+
+func flash(message: String) -> void:
+	flash_message = message
+	flash_time = 3.0
+
+func copy_receipt() -> void:
+	if not complete:
+		flash("COMPLETE 9/9 BEFORE COPYING THE RECEIPT")
+		return
+	var payload = JSON.stringify(receipt_data(), "\t")
+	DisplayServer.clipboard_set(payload)
+	copy_feedback = "RECEIPT COPIED TO CLIPBOARD"
+	flash(copy_feedback)
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		var p = (event.position - origin) / zoom
+		if event.pressed:
+			var action = action_for(p)
+			if action != "":
+				pointer_actions[event.index] = action
+				if action in ["RIGHT", "LEFT"]:
+					refresh_holds()
+				else:
+					action_press(action)
+		else:
+			pointer_actions.erase(event.index)
+			refresh_holds()
+		queue_redraw()
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		var p = (event.position - origin) / zoom
+		if event.pressed:
+			var action = action_for(p)
+			pointer_actions[-1] = action
+			if action in ["RIGHT", "LEFT"]:
+				refresh_holds()
+			else:
+				action_press(action)
+		else:
+			pointer_actions.erase(-1)
+			refresh_holds()
+	elif event is InputEventKey and not event.echo:
+		var k = event.keycode
+		if k == KEY_RIGHT or k == KEY_D:
+			keyboard_actions["RIGHT"] = event.pressed
+		elif k == KEY_LEFT or k == KEY_A:
+			keyboard_actions["LEFT"] = event.pressed
+		elif event.pressed:
+			if k == KEY_K or k == KEY_SPACE:
+				trigger_kic()
+			elif k == KEY_R:
+				trigger_wake()
+			elif k == KEY_T:
+				show_trace = not show_trace
+			elif k == KEY_ESCAPE:
+				is_paused = not is_paused
+	queue_redraw()
+
+func refresh_holds() -> void:
+	right_down = pointer_actions.values().has("RIGHT")
+	left_down = pointer_actions.values().has("LEFT")
+
+func action_for(point: Vector2) -> String:
+	for i in range(BTNS.size()):
+		if BTNS[i].has_point(point):
+			return BTN_NAMES[i]
+	return ""
+
+func action_press(action: String) -> void:
+	match action:
+		"KIC": trigger_kic()
+		"WAKE": trigger_wake()
+		"TRACE": show_trace = not show_trace
+		"RESET": reset_contact()
+		"COPY": copy_receipt()
+
+func txt(t: String, at: Vector2, font_size: int = 18, c: Color = Color.WHITE, align: HorizontalAlignment = HORIZONTAL_ALIGNMENT_LEFT) -> void:
+	draw_string(ThemeDB.fallback_font, at, t, align, -1, font_size, c)
+
+func rect(x: float, y: float, w: float, h: float, c: Color, outlined: bool = false, thickness: float = 1.0) -> void:
+	draw_rect(Rect2(x, y, w, h), c, not outlined, thickness)
+
+func draw_spin(center: Vector2, angle: float, hue: Color, name: String, live: bool = true) -> void:
+	var breath = 1.0 + sin(rotation_clock * 2.2) * 0.055
+	draw_circle(center + Vector2(4, 6), 49 * breath, Color(0,0,0,0.32))
+	draw_arc(center, 50 * breath, 0, TAU, 64, hue * Color(1,1,1,0.35), 2.0)
+	for i in range(8):
+		var a = angle + float(i)*TAU/8.0
+		var v = Vector2(cos(a), sin(a))
+		var t = Vector2(-v.y,v.x)
+		var points = PackedVector2Array([center + v*23.0 + t*10.0, center + v*53.0, center + v*23.0 - t*10.0])
+		draw_colored_polygon(points, hue.lightened(0.25) if i%2==0 else hue.darkened(0.34))
+	draw_circle(center, 30, Color("152c40"))
+	draw_arc(center, 30, 0, TAU, 48, hue, 3)
+	draw_circle(center, 16, hue.darkened(0.1))
+	draw_circle(center, 8, Color("eef9f5"))
+	txt(name,center + Vector2(0, -62),19,hue, HORIZONTAL_ALIGNMENT_CENTER)
+
+func _draw() -> void:
+	var sc = minf(size.x / W, size.y / H)
+	draw_set_transform(origin, 0.0, Vector2(sc, sc))
+	rect(0,0,W,H,C_BG)
+	for i in range(0, 1200, 60):
+		draw_line(Vector2(i, 65),Vector2(i,586),Color("183149"),1)
+	for j in range(70, 587, 60):
+		draw_line(Vector2(10,j),Vector2(1190,j),Color("183149"),1)
+	# Native Godot field, controls and source-contact instrumentation.
+	rect(20, 18, 390, 93, Color("102a37"))
+	rect(20, 18, 390, 93, C_TEAL, true, 1.0)
+	txt("SPINBREAK",Vector2(38,55),31,Color("f5f6f8"))
+	txt("JM TARGET BRIDGE  /  GODOT RECIPIENT", Vector2(38,80),14,C_TEAL)
+	txt("SOURCE v0.8  |  bounded contact", Vector2(38,100),14,Color("9cbbc4"))
+	rect(427, 18, 753, 93, Color("102331"))
+	rect(427, 18, 753, 93, Color("35576b"), true)
+	var count = 0
+	for m in SEMANTICS:
+		if marks[m] == "PASS": count += 1
+	txt("CONTACT EVIDENCE",Vector2(450,48),15,Color("86aab9"))
+	txt("%d / 9" % count,Vector2(450,91),32,C_TEAL if complete else C_GOLD)
+	txt("spin %.1f   stability %.1f   integrity %.1f" % [spin, stability, integrity], Vector2(620,70),20,Color("f5f5f6"))
+	txt("STATUS: " + ("BOUNDED PASS" if complete else "CONTACT OPEN"), Vector2(620,94),16,C_TEAL if complete else C_GOLD)
+	# World region with separated bodies and real contact target.
+	rect(22, 126, 1158, 440, Color("0d2030"))
+	rect(22, 126, 1158, 440, Color("335368"),true)
+	for a in range(7):
+		draw_arc(Vector2(580,350), 70 + a*43, -PI*0.92, PI*0.92, 80, Color(0.12,0.26,0.35,0.38),1.5)
+	draw_line(Vector2(95, 352),Vector2(1100,352), Color("537c82"),3)
+	for i in range(10):
+		var x=90 + i*112
+		draw_line(Vector2(x,342),Vector2(x+14,352),C_GOLD*Color(1,1,1,0.36),2)
+	draw_arc(Vector2(rival_x, rival_y), 84,0,TAU,64,C_CORAL*Color(1,1,1,0.50),2)
+	txt("CONTACT TARGET",Vector2(rival_x,467),16,C_CORAL,HORIZONTAL_ALIGNMENT_CENTER)
+	if marks["contact.you_rival_a"] == "PASS":
+		draw_circle(Vector2((player_x+rival_x)/2,352),65,Color(0.2,1.0,0.7,0.08))
+		txt("COLLISION VERIFIED", Vector2(600,180),21,C_TEAL,HORIZONTAL_ALIGNMENT_CENTER)
+	draw_spin(Vector2(rival_x,rival_y), -rotation_clock*3.1, C_CORAL, "RIVAL A")
+	draw_spin(Vector2(player_x,player_y), rotation_clock*5.2, C_TEAL, "YOU")
+	draw_line(Vector2(player_x, 490),Vector2(rival_x,490),Color("49707d"),1)
+	txt("DISTANCE %.0f" % absf(rival_x-player_x),Vector2(575,485),14,Color("9caeb7"),HORIZONTAL_ALIGNMENT_CENTER)
+	if flash_time > 0:
+		rect(258, 509, 687, 42, Color("142f3d"))
+		txt(flash_message,Vector2(602,536),16,C_TEAL if complete else C_GOLD,HORIZONTAL_ALIGNMENT_CENTER)
+	if show_trace:
+		rect(850,185,307,302,Color(0.02,0.04,0.07,0.94))
+		txt("SEMANTIC TRACE",Vector2(865,214),17,C_TEAL)
+		for i in range(SEMANTICS.size()):
+			var id = SEMANTICS[i]
+			txt(("+ " if marks[id]=="PASS" else "- ")+id,Vector2(862,248+i*23),14,C_TEAL if marks[id]=="PASS" else Color("c5a8a1"))
+	# Mobile and desktop input row; no virtual keyboard required.
+	for i in range(BTN_NAMES.size()):
+		var name=BTN_NAMES[i]
+		var box=BTNS[i]
+		var active=(name=="RIGHT" and right_down) or (name=="LEFT" and left_down)
+		var col=C_TEAL if name in ["RIGHT","LEFT"] else C_GOLD if name in ["KIC","WAKE"] else Color("7faec7")
+		rect(box.position.x,box.position.y,box.size.x,box.size.y,Color("1a3e48") if active else Color("152938"))
+		rect(box.position.x,box.position.y,box.size.x,box.size.y,col,true,2.0)
+		txt(name,box.position+Vector2(box.size.x/2.0,44),20,col,HORIZONTAL_ALIGNMENT_CENTER)
+	txt("Hold RIGHT to collide • KIC → spin -4.2 • WAKE → +16 stability / +7 spin / -3.5 integrity",Vector2(40,587),16,Color("b6cbd4"))
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

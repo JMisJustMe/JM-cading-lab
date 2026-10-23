@@ -261,7 +261,10 @@ func txt(t: String, at: Vector2, font_size: int = 18, c: Color = Color.WHITE, al
 	draw_string(ThemeDB.fallback_font, at, t, align, -1, font_size, c)
 
 func rect(x: float, y: float, w: float, h: float, c: Color, outlined: bool = false, thickness: float = 1.0) -> void:
-	draw_rect(Rect2(x, y, w, h), c, not outlined, thickness)
+	if outlined:
+		draw_rect(Rect2(x, y, w, h), c, false, thickness)
+	else:
+		draw_rect(Rect2(x, y, w, h), c, true)
 
 func draw_spin(center: Vector2, angle: float, hue: Color, name: String, live: bool = true) -> void:
 	var breath = 1.0 + sin(rotation_clock * 2.2) * 0.055

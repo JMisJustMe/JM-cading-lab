@@ -99,7 +99,8 @@ jobs:
             'holds':['Independent direct SQL row readback', 'Cloudflare reauthorisation', 'Contact 001 canary propagation', 'Physical device consequence'],
             'claim_boundary':'Proves externally brokered live return and deterministic nonmutating operation planning; does not prove direct Render-to-Build-Mesh networking or durable transaction in both services.'
           }
-          pathlib.Path('JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\\n',encoding='utf-8')
+          pathlib.Path('JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+chr(10),encoding='utf-8')
+          assert json.loads(pathlib.Path('JM_M002_CONTACT004_GOVERNED_WITNESS_RECEIPT.json').read_text(encoding='utf-8'))==receipt, 'artifact JSON round-trip failed'
           print(json.dumps(receipt,sort_keys=True))
           print('CONTACT004_BOUNDED_PASS: LIVE_RENDER_WITNESS -> EXTERNAL_RUNNER -> BUILDMESH_PLAN_ONLY -> LIVE_RENDER_READBACK')
           PY

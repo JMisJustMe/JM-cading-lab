@@ -84,3 +84,6 @@ fs.writeFileSync('qa/m002-foundations/CP15_NATIVE_RECIPIENT_ACTIVATION.json',
  JSON.stringify(evidence,null,2)+'\n');
 console.log(JSON.stringify({schema:evidence.schema,status:evidence.status,checks,
  appliedGameChoices:3,illustratedEditions:3,actorMapping:'EXPLICIT',ownerDevice:'HOLD'}));
+
+// CP16: distinct durable 5v5 match and editable comic revision custody.
+await import('./mission002-cp16-durable-recipient.mjs');

@@ -120,7 +120,7 @@ export function executeCP10Composition(input){
   status:allowed?'NATIVE_COMPOSITION_EXECUTED':'NATIVE_COMPOSITION_HELD',
   authorities:CP10_AUTHORITIES,medium:input.medium,subject:input.subject,
   chosen:input.choice,contact:{gate:contact.gate,state:contact.state,trace:contact.trace},
-  choice:{state:decision.state,receipt:decision.runtime.receipt},
+  choice:{state:decision.state,receipt:decision.receipt},
   combibind:{state:link.state,receipt:link.receipt},
   logic:{allowed,decisions:logic.runtime.decisions,receipt:logic.runtime.receipt},
   oneBody:{portable:portable.portable,receipt:portable.receipt},

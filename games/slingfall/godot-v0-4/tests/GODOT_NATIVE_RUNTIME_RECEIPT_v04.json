@@ -1,0 +1,44 @@
+{
+  "schema": "JM.Slingfall.GodotSiegeCircuit.NativeRuntimeReceipt/0.4",
+  "date": "2026-10-23",
+  "authority": "JM / JMISJUSTME",
+  "source_sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62",
+  "host": {
+    "engine": "Godot 4.7.2 stable",
+    "platform": "Ubuntu 24.04 GitHub Actions",
+    "mode": "actual headless Godot native GDScript runtime"
+  },
+  "evidence": {
+    "pull_request": 422,
+    "stacked_on_pr": 419,
+    "tested_commit": "a7343cfc81247af56609bbaca702561e185d3901",
+    "run": 39992770047,
+    "job": 120548458138,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39992770047",
+    "conclusion": "success"
+  },
+  "checks": {
+    "inherited_static": "30/30",
+    "v03_static": "20/20",
+    "v04_structural": "8/8",
+    "native_godot": "48/48",
+    "native_failures": 0
+  },
+  "earned": [
+    "three original heroes and zones",
+    "native launches, capture, enemy combat, match result, schema-2 resume",
+    "destructible cover absorbs and fails",
+    "Dart pierces intact cover",
+    "Bulwark damages barricade on landing",
+    "actual crosswind changes landing",
+    "ion telegraph occurs before strike damage/stun",
+    "adaptive rival counter-class"
+  ],
+  "holds": [
+    "Samsung Fold touch/visual proof deferred",
+    "Android APK export",
+    "full production balance/art polish",
+    "Unity or GDevelop full-v0.4 parity"
+  ],
+  "governance": "bounded Linux/native gameplay PASS; Android/device HOLD; draft PR not merged; v0.2 and v0.3 independent proofs preserved"
+}

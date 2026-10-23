@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#1a353b"/><stop offset="1" stop-color="#071b24"/></linearGradient><linearGradient id="steel" x2="0" y2="1"><stop stop-color="#9fa8a0"/><stop offset="1" stop-color="#253e49"/></linearGradient></defs>
+<rect width="256" height="256" fill="url(#bg)"/>
+<path d="M0 220 L80 190 L148 212 L256 159 V256 H0" fill="#325354" opacity=".55"/>
+<circle cx="128" cy="97" r="84" fill="#64eed0" opacity=".10"/>
+<path d="M20 38 L20 18 L79 18 M236 217 L236 237 L176 237" stroke="#64eed0" fill="none" stroke-width="6"/>
+
+<path d="M62 191 Q38 137 57 108 L83 82 L173 82 L201 108 Q218 141 193 191 Z" fill="#233f49" stroke="#a0aa9c" stroke-width="6"/>
+<path d="M93 109 L119 88 L157 100 L165 151 L144 189 L90 177 Z" fill="url(#steel)" stroke="#d5d2ad" stroke-width="6"/>
+<path d="M37 117 L87 105 L80 186 L42 184 Z M177 105 L219 117 L213 185 L178 183 Z" fill="#87948d" stroke="#203640" stroke-width="6"/>
+<path d="M99 68 L117 48 L150 51 L166 74 L157 110 L96 110 Z" fill="#2c404b" stroke="#bcc4b6" stroke-width="6"/>
+<path d="M108 76 H153 L147 89 H110 Z" fill="#74ffe2"/>
+<path d="M118 121 L143 118 L151 151 L131 172 L111 150 Z" fill="#194d54" stroke="#75ffe2" stroke-width="5"/>
+<circle cx="130" cy="142" r="13" fill="#8ffce0"/>
+<path d="M39 120 L20 149 L47 169 L73 132 Z" fill="#b6ac93" stroke="#223441" stroke-width="6"/>
+<path d="M193 120 L225 144 L212 178 L182 134 Z" fill="#b6ac93" stroke="#223441" stroke-width="6"/>
+
+<rect x="8" y="215" width="240" height="30" rx="5" fill="#06131b" opacity=".88"/>
+<text x="128" y="236" text-anchor="middle" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="bold" fill="#64eed0" letter-spacing="1">BULWARK</text>
+</svg>

@@ -89,3 +89,6 @@ try{
  fs.writeFileSync(dir+'/CP13_BROWSER_MANUAL_TRANSFER.json',JSON.stringify(record,null,2)+'\n');
  console.log(JSON.stringify({status:record.status,checks,roundTrips:2,tamperHold:true,conflictReview:true,errors:0}));
 }finally{await browser.close();}
+
+// CP14 original-operator typed game/comic import → approve → export browser acceptance.
+await import('./mission002-cp14-operator-browser.spec.mjs');

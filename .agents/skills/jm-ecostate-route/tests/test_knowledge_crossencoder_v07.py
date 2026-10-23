@@ -5,7 +5,10 @@ separately run in the full-book GitHub Actions job.
 """
 from pathlib import Path
 import sys,tempfile,unittest
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np=None
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 import jm_knowledge_crossencoder_v07 as v07
@@ -32,7 +35,7 @@ class CrossStub:
             if "society" in query and "fly-wheel" in row:score+=15
             yield float(score)
 
-@unittest.skipUnless(v06.np is not None,"Optional neural test runtime required")
+@unittest.skipUnless(np is not None and v06.np is not None,"Optional neural test runtime required")
 class CrossEncoderContact(unittest.TestCase):
     def setUp(self):
         tmp=tempfile.TemporaryDirectory()

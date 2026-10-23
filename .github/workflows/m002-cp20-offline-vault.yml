@@ -1,0 +1,30 @@
+name: JM Mission 002 CP20 Encrypted Offline Device Return
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp20-portable-vault.mjs'
+      - 'tests/mission002-cp20-offline-transfer.mjs'
+      - '.github/workflows/m002-cp20-offline-vault.yml'
+  push:
+    branches: ['integration/m002-cp20-offline-encrypted-device-return-20261024']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  five-media-cross-process-vault:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Preserve CP19 and CP20 syntax
+        run: |
+          node --check coding-estate/integration/m002-cp19-original-app-return.mjs
+          node --check coding-estate/integration/m002-cp20-portable-vault.mjs
+          node --check tests/mission002-cp20-offline-transfer.mjs
+      - name: Execute original CP19 five typed recipient exports
+        run: node tests/mission002-cp19-original-app-return.mjs
+      - name: CP20 five encrypted file transfers across separate Node processes
+        run: node tests/mission002-cp20-offline-transfer.mjs

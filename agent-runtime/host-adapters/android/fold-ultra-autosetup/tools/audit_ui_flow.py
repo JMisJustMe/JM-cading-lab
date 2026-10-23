@@ -107,6 +107,17 @@ def main():
     tap("Continue","advance_pair")
     has("GALAXY + JM","galaxy_discovery")
     tap("Continue","advance_galaxy")
+    # The hosted emulator sometimes registers a visible tap during a Pixel
+    # Launcher ANR transition without committing navigation. Verify the real
+    # native stage and retry ONE visible owner control if still at Galaxy.
+    n=dump("owner_stage_contact")
+    if not match(n,"READY / USER AUTHORITY"):
+        if match(n,"After entering JM") or match(n,"GALAXY + JM"):
+            RECEIPTS.append({"check":"galaxy_navigation_interference",
+                             "result":"RETRY","reason":"still on visible Galaxy stage"})
+            tap("Continue","advance_galaxy_retry")
+        else:
+            raise AssertionError("Owner entry not visible and earlier Galaxy stage not proven")
     has("READY / USER AUTHORITY","owner_entry")
     tap("ENTER JM FOLD ULTRA","enter_owner_workfield")
     has("JM PAIRED ROOT","native_root")

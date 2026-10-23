@@ -368,7 +368,7 @@ func _hit(h: Dictionary, damage: float, attacker: Dictionary = {}) -> void:
 	var armour = 0.83 if h["type"] == "bulwark" else 1.0
 	var actual_damage = damage * armour * (0.57 if float(h["shield"]) > 0 else 1.0)
 	h["hp"] = float(h["hp"]) - actual_damage
-	combat_events.append({"kind":"number","value":roundi(actual_damage),"p":Vector2(float(h["x"]),float(h["y"])-Vector2(0,86),"color":RED if h["team"] == "blue" else BLUE,"age":0.0,"ttl":0.84,"size":1.0})
+	combat_events.append({"kind":"number","value":roundi(actual_damage),"p":Vector2(float(h["x"]),float(h["y"]))-Vector2(0,86),"color":RED if h["team"] == "blue" else BLUE,"age":0.0,"ttl":0.84,"size":1.0})
 	h["flash"] = 0.20
 	if float(h["hp"]) <= 0:
 		h["hp"] = 0.0

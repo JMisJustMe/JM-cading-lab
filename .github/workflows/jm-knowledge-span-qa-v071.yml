@@ -1,0 +1,99 @@
+name: JM v0.7.1 Full Book Pretrained Answer-Span Contact
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_span_candidates_v071.py'
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_span_qa_v071.mjs'
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_span_verify_v071.py'
+      - '.github/workflows/jm-knowledge-span-qa-v071.yml'
+  workflow_dispatch:
+jobs:
+  full-original-book-span-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install optional ONNX candidate retrievers and native question-answering runtime
+        run: |
+          python -m pip install --disable-pip-version-check 'fastembed==0.9.0'
+          mkdir -p /tmp/jm-spanqa-node
+          cp .agents/skills/jm-ecostate-route/jm_knowledge_span_qa_v071.mjs /tmp/jm-spanqa-node/answerer.mjs
+          cd /tmp/jm-spanqa-node
+          npm init -y >/dev/null
+          npm install --no-save --package-lock=false '@huggingface/transformers@3.8.1'
+      - name: Compile original replay and verify candidate stages are syntactically valid
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_span_candidates_v071.py
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_span_verify_v071.py
+          python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_crossencoder_v07.py' -v
+      - name: Fetch both complete unchanged Gutenberg originals (temporary custody)
+        run: |
+          mkdir -p /tmp/jm-spanqa-originals
+          curl --fail --location --retry 3 --max-time 120 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/57628/pg57628.txt' \
+            -o /tmp/jm-spanqa-originals/James_Principles_Vol1.txt
+          curl --fail --location --retry 3 --max-time 120 --silent --show-error \
+            'https://www.gutenberg.org/cache/epub/205/pg205.txt' \
+            -o /tmp/jm-spanqa-originals/Thoreau_Walden.txt
+      - name: Isolate questions from independent scoring key (no gold to either model)
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          gold=Path('.agents/skills/jm-ecostate-route/tests/fixtures/knowledge_v05_adversarial_gold.json')
+          items=json.loads(gold.read_text(encoding='utf8'))
+          safe=[{'id':x['id'],'question':x['question']} for x in items]
+          assert len(safe)==16
+          assert all(set(x)=={'id','question'} for x in safe)
+          Path('/tmp/jm-spanqa-questions.json').write_text(json.dumps(safe),encoding='utf8')
+          print('GOLD_SEPARATED_FROM_INFERENCE',len(safe))
+          PY
+      - name: Original JM full-book replay, pretrained semantic and cross candidate export
+        env:
+          OMP_NUM_THREADS: '2'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          python .agents/skills/jm-ecostate-route/jm_knowledge_span_candidates_v071.py \
+             --book /tmp/jm-spanqa-originals/James_Principles_Vol1.txt \
+             --book /tmp/jm-spanqa-originals/Thoreau_Walden.txt \
+             --questions /tmp/jm-spanqa-questions.json \
+             --cache /tmp/jm-spanqa-onnx \
+             --out /tmp/jm-spanqa-candidates.json
+      - name: Execute real pretrained ONNX DistilBERT question answering over bounded contexts
+        env:
+          HF_HOME: /tmp/jm-spanqa-hf-cache
+        run: |
+          node /tmp/jm-spanqa-node/answerer.mjs \
+            --candidates /tmp/jm-spanqa-candidates.json \
+            --out /tmp/jm-spanqa-predictions.json
+      - name: Reverify exact original-book lines, score model against independent gold
+        run: |
+          python .agents/skills/jm-ecostate-route/jm_knowledge_span_verify_v071.py \
+            --book /tmp/jm-spanqa-originals/James_Principles_Vol1.txt \
+            --book /tmp/jm-spanqa-originals/Thoreau_Walden.txt \
+            --stage /tmp/jm-spanqa-candidates.json \
+            --predictions /tmp/jm-spanqa-predictions.json \
+            --gold .agents/skills/jm-ecostate-route/tests/fixtures/knowledge_v05_adversarial_gold.json \
+            --out /tmp/jm-spanqa-scored.json > /tmp/jm-spanqa-summary.json
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          file=Path('/tmp/jm-spanqa-scored.json')
+          r=json.loads(file.read_text(encoding='utf8'))
+          assert r==json.loads(Path('/tmp/jm-spanqa-summary.json').read_text(encoding='utf8'))
+          assert r['state']=='HELD' and r['cases']==16
+          assert r['generative_llm_calls']==0 and r['trained_by_JM'] is False
+          assert r['promotion']=='NOT_ALLOWED'
+          print('PRETRAINED_ANSWER_SPAN_FULL_BOOK_AB', {k:r[k] for k in
+            ('cases','v07_correct','v071_correct','gains','regressions','categories')})
+          for row in r['rows']:
+            print('CASE',row['id'],row['category'],row['baseline_reason'],
+               '->',row['qa_reason'],row['change'],row['book'],row['answer_preview'])
+          print('SCORE_RECEIPT_SHA256',hashlib.sha256(file.read_bytes()).hexdigest())
+          PY

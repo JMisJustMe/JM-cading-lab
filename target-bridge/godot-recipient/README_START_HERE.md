@@ -29,3 +29,9 @@ Added: source-registered code path validation, independent stdlib Python regress
 
 Offline (no Godot): `python tests/test_bridge.py` then `python bridge/verify_emission.py`.
 Native engine where available: `godot --headless --path . --script res://tests/host_logic_test.gd`.
+
+## Automated real Godot host contact — now earned (Linux only)
+
+On 23 October 2026, GitHub Actions workflow run **39980469720** performed actual **Godot 4.7.2 Linux headless import and GDScript runtime**: 14/14 source/emitter offline regressions passed, 21/21 native runtime checks passed, the nine-semantic bounded SPINBREAK consequence gate returned PASS, the JSON receipt was written and parsed, and the previous drawing-width warnings were eliminated. Proven source/commit/run/evidence and HOLDs: `tests/GODOT_HEADLESS_LINUX_RUNTIME_RECEIPT_v0_2.json`.
+
+This supersedes the earlier *pre-native-run* status in `tests/STATIC_QA_RESULT.json`. It does **not** prove owner Samsung Fold touch controls, displayed frame quality, or full SPINBREAK port. The draft PR remains unmerged. No owner test is requested at present.

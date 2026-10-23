@@ -925,7 +925,7 @@ func _draw_zones() -> void:
 		elif z["id"] == "SUPPLY":
 			for side in [-1,1]:
 				_rect(pos.x+side*26-11,pos.y-51,22,20,Color("886e52",0.66),Color("d5bd8d",0.52),1)
-			_circle(pos+Vector2(side*26,-53),4,Color(c.r,c.g,c.b,0.7))
+				_circle(pos+Vector2(side*26,-53),4,Color(c.r,c.g,c.b,0.7))
 		_circle(pos,r,Color("121c23",0.46))
 		draw_arc(pos,r,0,TAU,70,Color("bba981",0.38),3.0,true)
 		if absf(ctrl) > 0.5:

@@ -1,0 +1,33 @@
+# JM ECOSTATE · Mission 002 · CP12 Real Cross-Medium Production Return · FLAZ
+**23 October 2026 · Preserve, don't promote without consent.**
+
+## OPEN FIRST: Exact source, CI and user art
+- [Native CP12 draft PR #409](https://github.com/JMisJustMe/JM-cading-lab/pull/409), exact source commit `759f4d3617d71ca0c8c98a92fc866223627fee99`, stacked on validated [CP11 PR #408](https://github.com/JMisJustMe/JM-cading-lab/pull/408). This document is on an **archival descendant branch**, not a code modification to the tested candidate. Draft, unmerged, undeployed.
+- [GitHub Workbench run 39974539078](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39974539078): `jm.m002.cp12.actual-handoff-native-proof/1`, **54/54 PASS**, actual CP10 → CP11 native two-recipient mutations for Protect/Explore/Amplify, SHA-256 cross-recipient JSON envelope, write/read filesystem proof, stale-conflict/replay/tamper HOLDs, original recipients unchanged. Inherited Workbench/browser checks PASS.
+- [Android APK workflow run 39974539265](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39974539265): `receiver-apk` and `connected-world-android` jobs SUCCESS. **7/7** exact-head repository workflows SUCCESS. **This tests the inherited base Android receiver, NOT CP12 app exchange in a Samsung APK.**
+- Public typed native `coding-estate/integration/m002-cp12-cross-receiver-production.mjs` calls actual current-native CP11 `executeCP11Recipients`, which calls independent CP10 Contact Kernel / ChoiceBox / CombiBind / JMLogic / OneBody. Test `tests/mission002-cp12-cross-receiver.mjs`, invoked through inherited early native-stage suite. No duplicate engine, cloud server or automatic provider activation.
+
+## The owner-private cross-app embodiment
+**Two source-inheriting owner files** remain outside public GitHub:
+1. `FIVE_FLIP_CP12_CROSS_MEDIUM_COMBAT_OPEN_FIRST.html` (875,547 bytes, SHA-256 `a762c411358fe9b8db21bed2a1314271e3672765eee9aba7ca3f678cf0dcc807`) — genuine original FIVE//FLIP 5v5 CP11 descendant with all earlier modes/illustrated roster and effects. Player must physically earn A, survive positional shock preserving A, earn B, choose Protect/Explore/Amplify and activate the real combat effect. **A new additive button exports a receipt only AFTER that effect occurs**. Document byte integrity uses SHA-256 but is **not producer-signature authentication**.
+2. `JM_CP12_LIVING_COMIC_EXCHANGE_OPEN_FIRST.html` (51,806 bytes, SHA-256 `b218cdf01ad4acda94add7b2946e40660cfc5d1a9b4566aba1f98241ad688724`) — original CP11 multi-medium creative studio and editable Comic Atelier intact, with optional file-picker/paste import. Checks exact-source original FIVE//FLIP SHA, source Shared Mechanisms v1.2 SHA, contact identities A+B, choice ↔ actual effect, unkeyed hash integrity and replay. Materializes a **real editable 900×1160 illustration** in the existing Canvas renderer, including the imported **authentic selected fighter's original game portrait**. Supports edits, PNG, edition persistence and corrupt-save rejection.
+
+**Actual cross-app Playwright test:** 23/23 PASS, zero JS page errors. Movement to A by keyboard/game physics; tap actual on-screen CLAIM; shock preserving A; movement to B; combat Amplify activation on ARC; on-screen game Export downloads exact JSON file; Comic Atelier's **visible** file chooser and import button ingest it; actual Canvas nonblank (1,043,145 non-white pixels at 900×1160), inherits ARC original suit portrait, rendered PNG SHA-256 `b4f3ac684e68b47402abce927397df71006a53eab6188ba1bc92af37aeb2ebbd`, saved/reopened in a **fresh Chromium document** with shared isolated Map-backed storage; duplicate and altered receipt HOLD; changed saved edition HOLD.
+
+**Boundary:** Browser isolated Map storage is not file:// or physical Samsung persistence; native Node tests are separate source execution from user-private HTML adaptations. No automatic cloud return, producer cryptographic identity, whole live match restore, complete original THEOGRAPHY engine, finished production illustration, Android CP12 APK or Samsung native device proof.
+
+## Exact user delivery
+`JM_M002_CP12_CROSS_MEDIUM_PRODUCTION_FLAZ_2026-10-23.zip`: **2,009,546 bytes**, SHA-256 `61bd8096947f8ab75f66d9e85324319fadb486580db1d7733d7bf71d90ce6267`. 13 members, CRC PASS, 12/12 SHA-256 member proofs. Includes both first-open HTML apps, genuine example JSON, original game button-export JSON, illustrated PNG, phone-size app screenshots, native-source/promoted-scope consolidation map, browser QA, OPEN FIRST, exact hash manifest, local build and repeatable Playwright test. **This package is for its owner, not publication on public GitHub**.
+
+## Consolidation map — verified ancestry, NOT a merge
+- Protected main operator PR #395 → source graft PR #397 `c2f6800c` → foundation CP5 PR #399 `368c43ec` → world-law CP6 final PR #402 `96180f35` → CP7 corrected PR #404 `9aa9f90e` → CP9 shared kernel PR #405 `85bd8bfb` → CP10 native composition PR #407 `c2bc4205` → CP11 native recipients PR #408 `c2907d8e` → **CP12 PR #409 `759f4d36`**.
+- PRs #400/#401/#403 retain their historical tests, **not parallel forward authority**. Distinct Build Mesh PR #398 read-only verified, and PR #377 v0.8.6 undeployed; hosted Build Mesh v0.8.5 vs stale public v0.7.3 projected description must not be silently crowned. Physics PR #394 and PlayZone PR #396 are different unmerged organ candidates; no full COMBOUND/PlayZone transfer claimed.
+- Evidence is sufficient for **governed review**, NOT verified mergeability with the current main or production readiness. No merge, deploy, external AI charge, owner APK install, original file mutation, private data publication or storage deletion occurred.
+
+## Where Mission 002 remains
+- Full independent original-source recovery: MMMBBB, VTSDGY, BTG, HOSF, THEOGRAPHY, Gardles, complete TheoPlus. Preserve source and bounds.
+- True multi-body game/creative improvement: authored quality of unique character forms/animation, game progression and non-game production, beyond this bounded ARC example.
+- Integrated unified operator front door and whole-Estate branch promotion; actual cross-host source/work readback, cloud persistence and offline return across Android↔laptop↔cloud; real governed AI worker output versus mocked providers; source custody and cross-device conflict semantics.
+- Physical Samsung batch acceptance deferred per owner, including all APKs and this new exchange's game/comic file-picker capability. No time/installation request now.
+
+**Law:** Multi-based, not single purpose. Source → Signal → Contact → Route Pressure → State Change → Ding → Trace → Recovery → Output. Contact before crown. Integration ≠ Replacement. No Ding, no claim.

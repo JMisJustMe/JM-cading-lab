@@ -1,0 +1,41 @@
+{
+  "schema": "JM.Slingfall.WorldPulse.NativeRuntimeReceipt/0.7",
+  "date": "2026-10-24",
+  "original_ancestor_sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62",
+  "host": {
+    "engine": "Godot",
+    "version": "4.7.2 stable",
+    "platform": "Ubuntu GitHub Actions",
+    "mode": "actual headless GDScript"
+  },
+  "github": {
+    "draft_pr": 435,
+    "verified_commit": "7ea6d881095dd0915d5ab8d250d60499b9d9b37d",
+    "workflow_run": 40039088424,
+    "job": 120705644898,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40039088424"
+  },
+  "checks": {
+    "inherited_and_new_static": "97/97 PASS",
+    "real_native_gameplay": "104/104 PASS",
+    "native_failures": 0
+  },
+  "earned": [
+    "three original operations retain inherited loops and save schema 2",
+    "physical timed signal drops",
+    "living blue/red champion contested capture",
+    "finite energy/salvage/shield consequences only on earned contact",
+    "timer expiration without bonus",
+    "tap-to-order prevents accidental redeployment",
+    "live event retained across save/resume",
+    "pre-v0.7 save migration"
+  ],
+  "hold": [
+    "Samsung Fold owner-device touch acceptance",
+    "GPU/visual quality on device",
+    "Android APK",
+    "long-session balance",
+    "v0.7 full Unity/GDevelop parity"
+  ],
+  "status": "NATIVE_GODOT_LINUX_BOUNDED_PASS__ANDROID_HOLD"
+}

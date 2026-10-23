@@ -654,6 +654,13 @@ func _living_field_step(dt: float) -> void:
 				_event("ripple",_zone_position(zone),_team_color(side),1.25)
 	# An ion mark telegraphs danger before any damage happens; no arbitrary instant hits.
 	if new_event == "ION STORM":
+		# Tick hazards already present before this frame; newly warned zones
+		# never strike on the same step even when the simulation catches up.
+		for mark in battle["ion_marks"]:
+			mark["countdown"] = float(mark["countdown"]) - dt
+			if float(mark["countdown"]) <= 0.0:
+				_ion_impact(mark)
+		battle["ion_marks"] = battle["ion_marks"].filter(func(mark):return float(mark["countdown"]) > 0.0)
 		battle["ion_tick"] = float(battle["ion_tick"]) + dt
 		while float(battle["ion_tick"]) >= 5.0:
 			battle["ion_tick"] = float(battle["ion_tick"]) - 5.0
@@ -662,11 +669,6 @@ func _living_field_step(dt: float) -> void:
 			var zone = battle["zones"][index]
 			battle["ion_marks"].append({"x":zone["x"],"y":zone["y"],"radius":float(zone["r"])*0.80,"countdown":ION_WARNING_SECONDS})
 			_toast("ION STRIKE INCOMING • " + str(zone["id"]),0.9)
-		for mark in battle["ion_marks"]:
-			mark["countdown"] = float(mark["countdown"]) - dt
-			if float(mark["countdown"]) <= 0.0:
-				_ion_impact(mark)
-		battle["ion_marks"] = battle["ion_marks"].filter(func(mark):return float(mark["countdown"]) > 0.0)
 	for scar in battle["scars"]:
 		scar["ttl"] = float(scar["ttl"]) - dt
 	battle["scars"] = battle["scars"].filter(func(scar):return float(scar["ttl"]) > 0)

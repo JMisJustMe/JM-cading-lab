@@ -76,7 +76,7 @@ const CONVOY_INTERCEPT_RADIUS = 148.0
 const BEACON_AT = Vector2(608,351)
 const BEACON_MAX_HULL = 225.0
 const BEACON_DEFENSE_RADIUS = 126.0
-const BEACON_WAVES = ["dart","warden","bulwark"]
+const BEACON_WAVES = [["dart"],["warden","dart"],["bulwark","warden","dart"]]
 const OPERATIONS = ["SECTOR","CONVOY","BEACON"]
 
 func _ready() -> void:
@@ -124,7 +124,7 @@ func _new_battle() -> Dictionary:
 		"zones":zones,"heroes":[],"slots":slots,"captures":{"blue":0,"red":0},"ended":false,
 		"scars":[],"signatures":{"blue":0,"red":0},"salvage":{"blue":0,"red":0},"supply_tick":0.0,"field_event":"CLEAR",
 		"cover":barricades,"ion_tick":0.0,"ion_marks":[],"ion_index":0,"enemy_plan":"CONTEST",
-		"operation":"SECTOR","beacon":{"hull":BEACON_MAX_HULL,"charge":0.0,"wave":0,"cooldown":1.0,"paid":false,"complete":false,"under_attack":false,"raiders":0,"defenders":0,"last_hit":0.0,"repairs":0.0},"convoy":{"x":CONVOY_ROUTE[0].x,"y":CONVOY_ROUTE[0].y,"waypoint":1,"hull":CONVOY_MAX_HULL,"maxhull":CONVOY_MAX_HULL,"complete":false,"checkpoints":0,"progress":0.0,"escorts":0,"interceptors":0,"pulse":0.0}}
+		"operation":"SECTOR","beacon":{"hull":BEACON_MAX_HULL,"charge":0.0,"wave":0,"cooldown":1.0,"paid":false,"complete":false,"under_attack":false,"raiders":0,"defenders":0,"last_hit":0.0,"repairs":0.0,"spawned":0},"convoy":{"x":CONVOY_ROUTE[0].x,"y":CONVOY_ROUTE[0].y,"waypoint":1,"hull":CONVOY_MAX_HULL,"maxhull":CONVOY_MAX_HULL,"complete":false,"checkpoints":0,"progress":0.0,"escorts":0,"interceptors":0,"pulse":0.0}}
 
 func start_battle(variant: String = "") -> void:
 	if variant in OPERATIONS:
@@ -827,19 +827,27 @@ func _beacon_spawn_wave() -> bool:
 	var index = int(core["wave"])
 	if index >= BEACON_WAVES.size():
 		return false
-	var kind: String = BEACON_WAVES[index]
-	var slot: Dictionary = battle["slots"]["red"][kind]
-	if int(slot["active"]) != 0 or float(slot["ready_at"]) > float(battle["elapsed"]):
-		return false
-	battle["energy"]["red"] = maxf(float(battle["energy"]["red"]),positive_cost(kind))
-	if not _launch("red",kind,BEACON_AT+Vector2(48,-25)):
-		return false
+	var lineup: Array = BEACON_WAVES[index]
+	# Fail closed before touching anything: an encounter requires every role ready.
+	for kind in lineup:
+		var slot: Dictionary = battle["slots"]["red"][kind]
+		if int(slot["active"]) != 0 or float(slot["ready_at"]) > float(battle["elapsed"]):
+			return false
+	var combined_cost = 0.0
+	for kind in lineup:
+		combined_cost += positive_cost(kind)
+	battle["energy"]["red"] = maxf(float(battle["energy"]["red"]),combined_cost)
+	for i in range(lineup.size()):
+		var kind: String = lineup[i]
+		if not _launch("red",kind,BEACON_AT+Vector2(30.0+i*28.0,-30.0+i*26.0)):
+			return false
 	core["wave"] = index + 1
+	core["spawned"] = int(core.get("spawned",0))+lineup.size()
 	core["cooldown"] = 0.0
 	core["paid"] = false
-	battle["enemy_plan"] = "WAVE %d  //  %s" % [index + 1,kind.to_upper()]
+	battle["enemy_plan"] = "WAVE %d  //  %d RAIDERS" % [index + 1,lineup.size()]
 	_event("ripple",BEACON_AT,RED,2.8)
-	_toast("INCOMING WAVE %d / 3 — %s" % [index+1,kind.to_upper()],2.0)
+	_toast("INCOMING WAVE %d / 3 — %d RAIDERS" % [index+1,lineup.size()],2.0)
 	return true
 
 func _beacon_hit(damage: float) -> float:

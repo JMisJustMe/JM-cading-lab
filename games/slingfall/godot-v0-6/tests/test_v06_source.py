@@ -18,7 +18,7 @@ class BeaconStatic(unittest.TestCase):
  def test_earned_rewards(self): self.assertIn('WAVE %d CLEARED',S)
  def test_migrates_old(self): self.assertIn('if not battle.has("beacon"):',S)
  def test_false_completion_guard(self): self.assertIn('if raiders > 0:',S)
- def test_three_role_distinction(self): self.assertIn('const BEACON_WAVES = ["dart","warden","bulwark"]',S)
+ def test_three_role_distinction(self): self.assertIn('const BEACON_WAVES = [["dart"],["warden","dart"],["bulwark","warden","dart"]]',S)
  def test_old_modes_present(self):
   self.assertIn('func _convoy_step(dt: float)',S)
   self.assertIn('func _capture_step(dt: float)',S)

@@ -88,3 +88,6 @@ const receipt={schema:'jm.m002.cp13.portable-multi-host-proof/1',status:'PASS_DI
 fs.writeFileSync('qa/m002-foundations/CP13_DEVICE_RETURN_RECEIPT.json',JSON.stringify(receipt,null,2)+'\n');
 console.log(JSON.stringify({status:receipt.status,checks,roundTrips:2,conflictsHeld:true,
  originalIntact:true,cp12Transported:true}));
+
+// CP14: source-returned, separately approved CP11 game/comic application.
+await import('./mission002-cp14-recipient-custody.mjs');

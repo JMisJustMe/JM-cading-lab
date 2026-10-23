@@ -59,3 +59,5 @@ fs.mkdirSync('qa/m002-foundations',{recursive:true});
 fs.writeFileSync('qa/m002-foundations/CP12_NATIVE_HANDOFF_RECEIPT.json',JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({schema:report.schema,status:report.status,checks,choices:report.scenarios.length,mutationReceipts:report.scenarios.map(x=>x.mutations),
  holds:report.holds.length,boundary:'Actual disk readback; no cloud/device/browser-original integration assumed'}));
+
+await import('./mission002-cp13-portable-return.mjs');

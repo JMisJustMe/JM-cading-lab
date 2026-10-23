@@ -1,0 +1,64 @@
+{
+  "schema": "JM.Slingfall.GodotLivingBattlefield.RuntimeReceipt/0.3",
+  "date": "2026-10-23",
+  "ancestor": {
+    "filename": "SLINGFALL_v0_1_FIELD_CONTACT.html",
+    "sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62"
+  },
+  "inherited_native_branch": "SLINGFALL Godot Field Ascent v0.2",
+  "implementation": "SLINGFALL Godot v0.3 Living Battlefield",
+  "scope": "Genuine Godot 4.7.2 Linux headless scene execution and bounded gameplay-state verification",
+  "host": {
+    "engine": "Godot",
+    "version": "4.7.2-stable",
+    "platform": "GitHub Actions Ubuntu 24.04 Linux runner",
+    "mode": "Native headless"
+  },
+  "github": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "draft_pr": 419,
+    "workflow": "JM SLINGFALL Godot v0.3 native acceptance",
+    "passed_run_id": 39990468680,
+    "job_id": 120540593541,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39990468680"
+  },
+  "checks": {
+    "inherited_static": {
+      "passed": 30,
+      "total": 30
+    },
+    "new_static": {
+      "passed": 20,
+      "total": 20
+    },
+    "godot_native": {
+      "passed": 33,
+      "total": 33
+    },
+    "godot_script_import": "PASS",
+    "original_ancestor_hash": "PASS",
+    "zip_integrity": "PASS"
+  },
+  "native_observations": [
+    "Scene imported and native GDScript loaded",
+    "Blue and red champion launches consume inherited costs",
+    "Bulwark impact crater, armour and three-hit area signature",
+    "Warden support actually restores allied health",
+    "Supply ownership produces team energy pulse",
+    "Timed craters expire; crosswind and ion storm phase changes execute",
+    "Level 3 retains flat -4 energy discount",
+    "v0.2 schema-2 battle save can be resumed into additive v0.3 gameplay fields",
+    "Pause and resume, resolution, salvage, signature counters and save cleanup",
+    "Dart three-hit Razor Rush actually relocates striker",
+    "Warden three-hit Restoration Wave actually triggers in combat"
+  ],
+  "hold": [
+    "Actual Samsung Fold Android touchscreen gameplay / frame rate",
+    "Visual quality / character anatomy / legibility under rendered device viewport",
+    "Complete multi-match balance, difficulty tuning, every game-state path",
+    "Cross-engine Unity or GDevelop v0.3 mechanical parity",
+    "Standalone APK export"
+  ],
+  "claim": "Native Godot/Linux bounded game-system integration earned. Full phone acceptance remains HOLD.",
+  "governance": "Preserve v0.1 and v0.2 ancestors, do not replace unproven user experience."
+}

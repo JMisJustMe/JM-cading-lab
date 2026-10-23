@@ -78,3 +78,4 @@ const proof={schema:'jm.m002.cp9.multi-recipient-real-source/1',status:'PASS',ch
  ...output.map(x=>x.medium)],output,
  boundary:'In-repo Node exercises exact source and host data contracts. Owner-private CP8 game and production HTML run separately in local browser proof. No owner device, release, finished media, or original THEOGRAPHY execution.'};
 console.log(JSON.stringify(proof));
+

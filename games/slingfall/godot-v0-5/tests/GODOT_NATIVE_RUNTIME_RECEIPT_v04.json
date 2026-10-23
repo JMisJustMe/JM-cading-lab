@@ -1,0 +1,62 @@
+{
+  "schema": "JM.Slingfall.GodotSiegeCircuit.NativeRuntimeReceipt/0.4",
+  "date": "2026-10-23",
+  "authority": "JM / JMISJUSTME",
+  "ancestor": {
+    "file": "SLINGFALL_v0_1_FIELD_CONTACT.html",
+    "sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62"
+  },
+  "host": {
+    "engine": "Godot 4.7.2 stable",
+    "os": "Ubuntu 24.04 x86_64 GitHub Actions",
+    "mode": "actual headless native Godot import and GDScript execution"
+  },
+  "github": {
+    "repo": "JMisJustMe/JM-cading-lab",
+    "stacked_draft_pr": 422,
+    "base_pr": 419,
+    "tested_commit": "a7343cfc81247af56609bbaca702561e185d3901",
+    "run_id": 39992770047,
+    "job_id": 120548458138,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39992770047",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "qa": {
+    "inherited_static": {
+      "passed": 30,
+      "failed": 0
+    },
+    "v03_static": {
+      "passed": 20,
+      "failed": 0
+    },
+    "v04_structural": {
+      "passed": 8,
+      "failed": 0
+    },
+    "godot_native": {
+      "passed": 48,
+      "failed": 0
+    }
+  },
+  "native_observations": [
+    "native original loop and 3 heroes/3 zones",
+    "distinct inherited 3-hit signatures",
+    "live destructible cover absorbs damage, breaks and retires",
+    "Dart bypasses intact cover",
+    "Bulwark impact weakens cover",
+    "crosswind changes actual arrival and aim preview is source-coded",
+    "ION mark telegraphs before real damage/stun",
+    "adaptive rival counter-class selection",
+    "source profile, pause, match result, schema-2 recovery"
+  ],
+  "scoped_conclusion": "PASS native Godot/Linux bounded whole gameplay-system regression 48/48, 0 failures",
+  "hold": [
+    "Samsung Fold Android visual/touch/runtime acceptance",
+    "APK export",
+    "balance and production art polish",
+    "full gameplay parity in Unity/GDevelop"
+  ],
+  "governance": "v0.2 and v0.3 independent ancestors preserved; stacked draft PR not merged; no device or APK claims"
+}

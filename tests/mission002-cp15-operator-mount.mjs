@@ -12,7 +12,7 @@ for(const id of ['jmCloudReturnPanel','jmCloudHandle','jmCloudCredential','jmClo
  'jmCloudReturnStatus','jmCloudNativeImport'])yes(page.includes('id="'+id+'"'),'CP15_MISSING_OPERATOR_CONTROL_'+id);
 yes(operator.includes('mountCloudReturn();'),'CP15_NOT_MOUNTED_IN_ORIGINAL_OPERATOR');
 yes(operator.includes("import {createEstateReturnCloud}"),'CP15_NOT_USING_ORIGINAL_SHARDED_ADAPTER');
-yes(operator.includes("import {createCloudWorkspaceClient,httpRequest}"),'ORIGINAL_JM_CLOUD_CLIENT_NOT_INHERITED');
+yes(operator.includes("import {createCloudWorkspaceClient,httpRequest,digest}"),'ORIGINAL_JM_CLOUD_CLIENT_NOT_INHERITED');
 yes(operator.includes("readJournal()"),'NO_PENDING_CIPHERTEXT_JOURNAL');
 yes(operator.includes("jmCloudApplyPermit")&&operator.includes("LOCAL_REPLACEMENT_NOT_AUTHORISED"),
  'NO_EXPLICIT_CONFLICT_ACK');

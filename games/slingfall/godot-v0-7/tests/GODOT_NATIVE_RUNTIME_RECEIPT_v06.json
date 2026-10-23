@@ -1,0 +1,50 @@
+{
+  "schema": "JM.Slingfall.Beaconfall.NativeRuntimeReceipt/0.6",
+  "date": "2026-10-23",
+  "source_authority": "JM / JMISJUSTME",
+  "ancestor": {
+    "file": "ancestry/SLINGFALL_v0_1_FIELD_CONTACT.html",
+    "sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62"
+  },
+  "host": {
+    "engine": "Godot 4.7.2 stable",
+    "platform": "GitHub Actions ubuntu-24.04",
+    "mode": "actual headless native GDScript runtime"
+  },
+  "evidence": {
+    "repo": "JMisJustMe/JM-cading-lab",
+    "draft_pr": 430,
+    "workflow_name": "SLINGFALL Godot v0.6 beaconfall native acceptance",
+    "run_id": 40001872726,
+    "job_id": 120579740883,
+    "conclusion": "success",
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40001872726"
+  },
+  "checks": {
+    "native_godot_pass": 90,
+    "native_godot_fail": 0,
+    "offline_static_pass": 82,
+    "offline_static_fail": 0
+  },
+  "verified_transitions": [
+    "Classic zone Siege and convoy missions remain independently selectable and executable",
+    "First wave launches Dart, second Warden + Dart, third Bulwark + Warden + Dart",
+    "Six real opponent objects and three separate wave stages",
+    "Surviving raider blocks stage advance; rewards are not double-paid",
+    "Core damage originates from raider proximity and cooldown; Warden ally repairs hull",
+    "Crossroads ownership charges finite damage shield and core consumes it",
+    "Actual center tap issues defend order rather than spawning another selected unit",
+    "Three-wave earned win and independent destroyed-core loss",
+    "v0.2-v0.5 schema-2 saved game migration; in-progress Beacon stage recovers",
+    "Three-mode menu cycle wraps correctly"
+  ],
+  "holds": [
+    "Samsung Fold visual quality, human touch feel, frame pacing",
+    "Android APK export",
+    "Long-session balance/difficulty",
+    "GDevelop and Unity full v0.6 parity",
+    "Rendered character-art quality acceptance"
+  ],
+  "scope": "Godot/Linux headless behavioural contact PASS, not owner-device proof or production finish",
+  "governance": "Prior source and 4 Godot ancestors preserved; review PR remains draft and unmerged."
+}

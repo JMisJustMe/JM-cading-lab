@@ -1,0 +1,50 @@
+{
+  "schema": "JM.Slingfall.ConvoyFront.GodotNativeRuntimeReceipt/0.5",
+  "date": "2026-10-23",
+  "project": "SLINGFALL Godot v0.5 \u2014 Convoy Front",
+  "source_authority": "JM / JMISJUSTME",
+  "immutable_html_ancestor_sha256": "b15efb33886f267b0138ccd0296e7b48a93ba32e57c9fdfa6e6153b5085c5a62",
+  "godot_main_sha256": "ff369f76964e5c5a9d37670f5e43b339fc2a5adb8fa7ef29443d0730fe35e16f",
+  "host": {
+    "engine": "Godot 4.7.2 stable",
+    "platform": "Ubuntu GitHub Actions",
+    "mode": "headless real native GDScript runtime"
+  },
+  "github": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "draft_pr": 425,
+    "workflow_run_id": 39999092319,
+    "job_id": 120570196322,
+    "url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39999092319",
+    "result": "success"
+  },
+  "tests": {
+    "original_static": 30,
+    "v03_static": 20,
+    "v04_static": 8,
+    "v05_static": 8,
+    "godot_native": 64,
+    "godot_native_failures": 0
+  },
+  "observed": [
+    "Classic Siege playable state inherited",
+    "optional Convoy Extraction selected",
+    "cargo cannot move without escort",
+    "blue heroes escort and Warden actually repairs",
+    "enemy heroes halt and damage convoy",
+    "4 route checkpoints cause rewards and movement",
+    "extraction win independent of score",
+    "cargo loss causes defeat",
+    "schema-2 save migration defaults older games to Classic",
+    "auto escort/intercept orders on landfall",
+    "cargo tap commands live allies",
+    "actual pointer-up cargo touch issues escort instead of launching another selected champion"
+  ],
+  "remaining_hold": [
+    "Samsung Fold native touch, visual/animation owner acceptance",
+    "complete human-played operation balance",
+    "Android APK export",
+    "Unity/GDevelop full-v0.5 feature parity"
+  ],
+  "promotion": "BOUNDED GODOT/LINUX GAMEPLAY PASS; Android and complete-game quality HOLD; PR is draft/unmerged."
+}

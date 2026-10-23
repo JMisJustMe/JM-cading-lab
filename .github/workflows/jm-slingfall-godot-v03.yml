@@ -28,7 +28,10 @@ jobs:
           echo "GODOT_BIN=$GODOT_BIN" >> "$GITHUB_ENV"
       - name: Native Godot project import and GDScript parse
         run: |
-          "$GODOT_BIN" --headless --editor --path games/slingfall/godot-v0-3 --import --quit
+          "$GODOT_BIN" --headless --editor --path games/slingfall/godot-v0-3 --import --quit 2>&1 | tee /tmp/jm-slingfall-import.log
+          if grep -E 'SCRIPT ERROR|Parse Error|Failed to load script' /tmp/jm-slingfall-import.log; then
+            echo 'Godot script import FAILED despite process exit code'; exit 1
+          fi
       - name: Native whole gameplay contact test
         run: |
           timeout --signal=INT --kill-after=5s 35s "$GODOT_BIN" --headless --path games/slingfall/godot-v0-3 --script res://tests/host_logic_test.gd

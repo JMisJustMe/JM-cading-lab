@@ -1,0 +1,36 @@
+name: JM Mission 002 CP19 Original Application Return
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp19-original-app-return.mjs'
+      - 'tests/mission002-cp19-original-app-return.mjs'
+      - '.github/workflows/m002-cp19-original-app-return.yml'
+  push:
+    branches: ['integration/m002-cp19-original-app-device-return-20261023']
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  original-app-five-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Exact source syntax
+        run: |
+          node --check coding-estate/integration/m002-cp19-original-app-return.mjs
+          node --check tests/mission002-cp19-original-app-return.mjs
+      - name: CP18 inherited original execution and recovery
+        run: node tests/mission002-cp18-authorised-creative-return.mjs
+      - name: CP19 owner-local real native return to five private application import contracts
+        run: node tests/mission002-cp19-original-app-return.mjs
+      - name: Preserve scoped source-generated example packets
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: CP19-EXPLICIT-TEST-FIXTURES-NOT-OWNER-DATA
+          path: qa/m002-foundations/CP19_PACKETS/*.json
+          retention-days: 14

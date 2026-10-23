@@ -31,4 +31,4 @@ jobs:
           "$GODOT_BIN" --headless --editor --path games/slingfall/godot-v0-3 --import --quit
       - name: Native whole gameplay contact test
         run: |
-          "$GODOT_BIN" --headless --path games/slingfall/godot-v0-3 --script res://tests/host_logic_test.gd
+          timeout --signal=INT --kill-after=5s 35s "$GODOT_BIN" --headless --path games/slingfall/godot-v0-3 --script res://tests/host_logic_test.gd

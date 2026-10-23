@@ -128,10 +128,24 @@ func run_all() -> void:
 	var hp_after = float(guarded["hp"])
 	game._hit(guarded,20.0,{"type":"bulwark","team":"red","x":454.0,"y":347.0})
 	check("V04 ruined barricade can no longer protect hero",is_equal_approx(float(guarded["hp"]),hp_after-20.0))
+	var fresh_cover: Dictionary = game.battle["cover"][1]
+	guarded["x"] = float(fresh_cover["x"])
+	guarded["y"] = float(fresh_cover["y"])
+	var cover_before_pierce = float(fresh_cover["hp"])
+	var hp_before_pierce = float(guarded["hp"])
+	game._hit(guarded,10.0,{"type":"dart","team":"red","x":733.0,"y":208.0})
+	check("V04 Dart bypasses intact tactical cover",is_equal_approx(float(guarded["hp"]),hp_before_pierce-10.0) and is_equal_approx(float(fresh_cover["hp"]),cover_before_pierce))
+	game.battle["energy"]["blue"] = 100.0
+	game._launch("blue","bulwark",Vector2(653,208))
+	var breach_maker: Dictionary = game.battle["heroes"][1]
+	breach_maker["x"] = 653.0
+	breach_maker["y"] = 208.0
+	game._land(breach_maker)
+	check("V04 Bulwark landing causes real barricade damage",float(fresh_cover["hp"]) < cover_before_pierce)
 	game.battle["field_event"] = "CROSSWIND"
 	game.battle["energy"]["blue"] = 100.0
 	check("V04 crosswind field launch accepted",game._launch("blue","dart",Vector2(577,310)))
-	var dart: Dictionary = game.battle["heroes"][1]
+	var dart: Dictionary = game.battle["heroes"][2]
 	check("V04 crosswind recorded with incoming projectile",is_equal_approx(float(dart["flight"].get("drift",0.0)),game.CROSSWIND_DRIFT))
 	dart["flight"]["t"] = float(dart["flight"]["total"])-0.01
 	game._combat_step(0.02)

@@ -22,11 +22,11 @@ CP15 does **not** add a feature to FIVE//FLIP or any one game. It transports bou
 
 ## Exact test evidence
 
-CI [CP15 run 39998966323](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39998966323) tests:
-- **25/25** direct transport assertions; 15 actually encrypted/sharded workspaces, 3 independent clients, real HTTP, real ECDSA P-256 crypto, client-side AES-GCM and PBKDF2, separate-process HTTP provider restart with the original disk workspace and signer, content corruption, wrong password/credential, no duplicated writes, response-lost recovered through the ORIGINAL JM cloud client dashboard/receipts.
+CI [CP15 run 39999403107](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39999403107) tests:
+- **27/27** direct transport assertions; 15 actually encrypted/sharded workspaces, 3 independent clients, real HTTP, real ECDSA P-256 crypto, client-side AES-GCM and PBKDF2, separate-process HTTP provider restart with the original disk workspace and signer, content corruption, wrong password/credential, **wrong passphrase refused before any remote workspace mutation**, no duplicated writes, response-lost recovered through the ORIGINAL JM cloud client dashboard/receipts.
 - **23/23** inherited CP13 existing operator multi-family source regression checks (four original native execution families); original native operator regression command also PASS.
 - **27/27** source-scoped operator integration assertions: existing form/UI controls, real cloud module imported, private credential not written to ordinary local journal, manual apply, source-preserving return, original local checkpoint readback. This **does not** establish a fully tested physical browser UI; test is Node/static source scoped.
-- All source syntax gates PASS. 75 specifically counted CP13/CP15 assertions plus original operator regression.
+- All source syntax gates PASS. 77 specifically counted CP13/CP15 assertions plus original operator regression.
 
 **Important experimental boundary:** This CP15 test uses a separate isolated disk-backed HTTP **protocol fixture**, not the actual deployed production RouteVault provider. The original *client* and cryptographic signing algorithms are real and unchanged. No production service write, live RoundTrip provider claim or physical phone/laptop acceptance follows from the fixture. Previous AILatheo separate local/cloud acceptance remains separate evidence and is not automatically transferred to CP15.
 

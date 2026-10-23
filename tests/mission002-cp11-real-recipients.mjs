@@ -63,3 +63,6 @@ fs.mkdirSync('qa/m002-foundations',{recursive:true});
 fs.writeFileSync('qa/m002-foundations/CP11_REAL_RECIPIENT_RECEIPT.json',JSON.stringify(receipt,null,2)+'\n');
 console.log(JSON.stringify({schema:receipt.schema,status:receipt.status,checks,permitted:receipt.proof.length,
  denied:receipt.denials.length,gameEffects:kinds,creativeOwnerIds:ids}));
+
+// CP12: recoverable native game-to-comic handoff and negative custody gates.
+await import('./mission002-cp12-cross-receiver.mjs');

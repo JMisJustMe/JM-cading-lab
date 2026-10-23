@@ -1,0 +1,70 @@
+{
+  "schema": "JM.Mission002.Contact005.SealedEvidence/1",
+  "status": "BOUNDED_PASS",
+  "execution": {
+    "run_id": 40038541268,
+    "job_id": 120703863933,
+    "run_url": "https://github.com/JMisJustMe/JM-cading-lab/actions/runs/40038541268",
+    "conclusion": "success",
+    "workflow_commit": "4c2398986891b7673ade3637f15b9b9c0b67d8f5",
+    "artifact_id": 12538301622,
+    "artifact_name": "JM_M002_CONTACT005_DURABLE_PUBLIC_RECEIPT",
+    "artifact_zip_digest_sha256": "ca27f7aa965d8ed9e693d29048224e51f39df15fc5d45058218047b55011d97d"
+  },
+  "observed_receipt": {
+    "checks": {
+      "durability_route_live": true,
+      "new_automatic_pulse_observed_and_returned": true,
+      "persisted_mode": true,
+      "public_cloudflare_pages_registry_contact": true,
+      "readback_after_pulse_ready": true,
+      "snapshots_predating_current_boot": true,
+      "witness_identical_between_routes": true
+    },
+    "claim": "Postgres-reported historical data return plus a newly observed live server pulse, read independently over HTTP. Public Pages reachable without provider authentication.",
+    "durability_sha256": "f79b37b0cc59a1899c126a5b61cc6a7cfa93964e3474b900b69280165c54bee5",
+    "holds": [
+      "Not an independent SQL row query",
+      "No Contact 001 Cloudflare KV private return",
+      "No owner-device physical consequence",
+      "No claim that the user requested a new server-side transaction"
+    ],
+    "persistence_sha256_after": "13903434d1667241e1e45c03d440a0281b1389b6426939a807390037c127b54d",
+    "persistence_sha256_before": "344812b081b0075c66a6cbb1e9cca80362f18b54f6b358108e1d0473933b2570",
+    "public_registry_sha256": "ba312377f661aa4cc0d847c3d4140d2fd87de6f52a3d4127118229353bf63f5b",
+    "public_registry_type": "dict",
+    "registry_bytes": 9626,
+    "run_id": "40038541268",
+    "sample_sha256": "101b5285afb877210548c6f8e364793abb42a7240f9ee446e70a4698293eb0d1",
+    "schema": "JM.M002.Contact005.DurableReturn/1",
+    "scope": "public read-only evidence, no DB ACL change, no authentication retry",
+    "source_sha256": "3a183f2e1ed180f9ca769728c89f30bf09426581cb82ade5c97bed42c6f3b8f1",
+    "state": {
+      "currentWitnessId": "37303c1e-f8dd-48fa-9d35-0899cc75d9f9",
+      "inherited_snapshot_count_in_sample": 1160,
+      "priorWitnessId": "c0460f86-77e1-4635-a818-b66855a87717",
+      "pulse_run_after": "2026-10-23T23:15:29.250Z",
+      "pulse_run_before": "2026-10-23T23:14:29.325Z",
+      "returned_snapshot_count_after": 32,
+      "sample_count": 1200,
+      "sample_response_bytes": 1306639,
+      "snapshot_total_before": 5196,
+      "witnessCount": 99
+    },
+    "utc": "2026-10-23T23:15:33.979616+00:00"
+  },
+  "guards": {
+    "no_cloudflare_authorisation_attempts": true,
+    "no_db_firewall_change": true,
+    "no_production_deploy": true,
+    "no_main_branch_write": true,
+    "expiry_contact001_canary": "2026-10-23T23:02:54Z",
+    "irreducible_holds": [
+      "Cloudflare authenticated owner access and replacement KV contact",
+      "Independent SQL query: requires authorised internal execution or owner-managed local connection, not empty firewall bypass",
+      "Phone/laptop physical consequence requires owner device",
+      "Cross-service durable transaction/contact propagation not performed"
+    ]
+  },
+  "claim_boundary": "Server-returned historically stored records, fresh live pulse and public Pages HTTP publication are proved at bounded scope. Not direct SQL, not Cloudflare R2/KV custody readback, not phone consequence."
+}

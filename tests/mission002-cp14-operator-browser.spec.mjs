@@ -75,6 +75,7 @@ try{
  eq(c1.revision,1,'COMIC_REVISION_STUCK');
  await page.reload();
  await page.waitForFunction(()=>document.getElementById('jmCP14Export')!==null);
+ await page.locator('#jmCP14Kind').selectOption('comic');
  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#jmCP14Export').click()]);
  eq(download.suggestedFilename(),'JM_CP14_COMIC_TYPED_RETURN.json','ACTUAL_EXPORT_MISSING');
  const fileContent=JSON.parse(fs.readFileSync(await download.path(),'utf8'));

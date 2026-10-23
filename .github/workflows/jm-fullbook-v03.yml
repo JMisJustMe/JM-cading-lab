@@ -56,7 +56,8 @@ jobs:
           assert p["physical_chunks"]<=12
           assert p["original_replay"]=="PASS"
           assert p["canonical_jm_query_replay"]=="PASS"
-          assert 0<=p["true_document_coverage"]<=2
+          assert p["canonical_original_document_coverage"]==1, "unexpected change in unmodified chunk-policy baseline"
+          assert p["true_document_coverage"]==2, "original-book parent selection must preserve both books"
           assert p["promotion"]=="NOT_ALLOWED"
           assert p["model_trained"] is False
           print({k:p[k] for k in ("state","original_documents","physical_chunks","matched_passages","canonical_chunk_coverage","true_document_coverage","original_replay","canonical_jm_query_replay")})

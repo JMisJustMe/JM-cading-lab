@@ -5,6 +5,7 @@ on:
       - 'unified-browser/jm-estate-return-cloud.mjs'
       - 'tests/fixtures/m002-cp15-signed-workspace-fixture.mjs'
       - 'tests/mission002-cp15-encrypted-return.mjs'
+      - 'tests/mission002-cp15-operator-mount.mjs'
       - '.github/workflows/m002-cp15-encrypted-return.yml'
       - 'navigator/estate-integration/**'
   push:
@@ -27,5 +28,12 @@ jobs:
           node --check unified-browser/jm-estate-return-cloud.mjs
           node --check tests/fixtures/m002-cp15-signed-workspace-fixture.mjs
           node --check tests/mission002-cp15-encrypted-return.mjs
+          node --check tests/mission002-cp15-operator-mount.mjs
+          node --check navigator/estate-integration/native-operator.mjs
       - name: Actual loopback HTTP encrypted signed return across isolated clients and restarted server
         run: node tests/mission002-cp15-encrypted-return.mjs
+      - name: Original native Estate operator regression and cross-family integration
+        run: |
+          node tests/estate-native-operator.mjs
+          node tests/mission002-cp13-operator-fabric.mjs
+          node tests/mission002-cp15-operator-mount.mjs

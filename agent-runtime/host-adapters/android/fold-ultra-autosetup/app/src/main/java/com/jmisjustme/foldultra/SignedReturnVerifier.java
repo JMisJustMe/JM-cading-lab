@@ -30,19 +30,19 @@ public final class SignedReturnVerifier {
   /** JSON.stringify-compatible escaping. Android JSONObject.quote() escapes '/' as '\\/',
    * but the server's canonical JSON uses a literal '/', changing SHA-256. */
   private static String jsQuote(String value){
-    StringBuilder b=new StringBuilder("\\\"");
+    StringBuilder b=new StringBuilder("\"");
     for(int i=0;i<value.length();i++){
       char c=value.charAt(i);
       switch(c){
-        case '"': b.append("\\\\\\\"");break;
-        case '\\\\':b.append("\\\\\\\\");break;
-        case '\\b':b.append("\\\\b");break;
-        case '\\f':b.append("\\\\f");break;
-        case '\\n':b.append("\\\\n");break;
-        case '\\r':b.append("\\\\r");break;
-        case '\\t':b.append("\\\\t");break;
+        case '"': b.append("\\\"");break;
+        case '\\': b.append("\\\\");break;
+        case '\b': b.append("\\b");break;
+        case '\f': b.append("\\f");break;
+        case '\n': b.append("\\n");break;
+        case '\r': b.append("\\r");break;
+        case '\t': b.append("\\t");break;
         default:
-          if(c<0x20)b.append(String.format(java.util.Locale.ROOT,"\\\\u%04x",(int)c));
+          if(c<0x20)b.append(String.format(java.util.Locale.ROOT,"\\u%04x",(int)c));
           else b.append(c);
       }
     }

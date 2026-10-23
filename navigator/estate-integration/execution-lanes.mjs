@@ -62,8 +62,53 @@ function executeNativeChain(input){
   return {state:machine.runtime.state,stages,receiptDigest:machine.runtime.receipt.resultDigest,
     chosenIntent:language.resolution.intent,bytecodeChecksums:{caden:cadence.bytecode.header.checksum,jmvm:machine.runtime.checksum}};
 }
+// Existing operator now owns a multi-family contact action, not a game-specific
+// child. It executes real existing lanes; no unmounted CP13 Node-only ports are
+// claimed inside the browser. Save/recovery uses return-checkpoint SHA-256.
+export const ESTATE_FABRIC_OPERATOR_EXAMPLE=JSON.stringify({operations:[
+ {mode:'native-chain',input:NATIVE_CHAIN_EXAMPLE},
+ {mode:'compile-js',input:'source = federation.✓'},
+ {mode:'os',input:'RUN EXISTING OS CONTACT'},
+ {mode:'gamecore',input:'RUN EXISTING GAMECORE CONTACT'}
+]},null,2);
+const FABRIC_OPERATOR_ALLOW=new Set(['native-chain','compile-js','compile-rust','os','gamecore','embodied']);
+const FABRIC_FAMILY={'native-chain':'language','compile-js':'coding','compile-rust':'coding',
+ os:'systems',gamecore:'game',embodied:'embodiment'};
+function runOperatorFabric(text,registry){
+ let source;try{source=JSON.parse(text)}catch{throw Error('OPERATOR_FABRIC_JSON_HOLD')}
+ if(!source||Object.keys(source).join(',')!=='operations'||!Array.isArray(source.operations)||
+   source.operations.length<2||source.operations.length>6||
+   source.operations.some(x=>!x||!FABRIC_OPERATOR_ALLOW.has(x.mode)||
+     typeof x.input!=='string'||!x.input.trim()||x.input.length>2000)||
+   new Set(source.operations.map(x=>x.mode)).size!==source.operations.length||
+   new Set(source.operations.map(x=>FABRIC_FAMILY[x.mode])).size<2)
+  throw Error('OPERATOR_FABRIC_SCOPE_HOLD');
+ const operations=[],executed=[];
+ for(const spec of source.operations){
+  const done=runNativeOperatorLane(spec.mode,spec.input,registry);
+  if(!done.changed||!done.executedBodies?.length)throw Error('OPERATOR_FABRIC_EXECUTION_HOLD');
+  executed.push(...done.executedBodies);
+  operations.push({mode:spec.mode,family:FABRIC_FAMILY[spec.mode],
+    state:done.state,inputDigest:digest(spec.input),
+    resultDigest:digest(done.result),executedBodies:done.executedBodies,
+    // Useful actual state/output, rather than merely listing selected bodies.
+    returned:spec.mode==='native-chain'?{state:done.result.state,stages:done.result.stages}
+      :spec.mode.startsWith('compile-')?{target:done.result.target,source:done.result.output.body}
+      :spec.mode==='os'?{receipts:done.result.receipts}
+      :spec.mode==='gamecore'?{game:done.result.game,renderer:done.result.rendererContact}
+      :{outcome:done.result.outcome,receiptDigests:done.result.receiptDigests}});
+ }
+ return {schema:'jm.estate.operator.multifamily-return/0.1',
+  state:'NATIVE_MULTIFAMILY_EXECUTED',changed:true,mode:'estate-fabric',
+  executedBodies:[...new Set(executed)],familyCount:new Set(operations.map(x=>x.family)).size,
+  result:{operations,operationCount:operations.length,sourceInputDigest:digest(text),
+   resultDigest:digest(operations)},
+  boundary:'Direct existing native JM execution across distinct lanes. No CP13 Node-only private game/comic/creative-body bridge imported into browser; no cloud durable custody, Android physical proof, new model authority or arbitrary host services.'};
+}
+
 export const OPERATOR_LANES=Object.freeze({
   'native-world':{label:'Native chain → playable GameForge world',input:NATIVE_CONNECTED_WORLD_EXAMPLE},
+  'estate-fabric':{label:'Estate fabric → four independently executed JM bodies',input:ESTATE_FABRIC_OPERATOR_EXAMPLE},
   'native-chain':{label:'FlowTalk → CadenVM → JMVM',input:NATIVE_CHAIN_EXAMPLE},
   route:{label:'Route a JM intention',input:'Build a touch visual game with drag aim, browser and Android delivery'},
   'compile-js':{label:'Cading → JavaScript',input:'source = landing.✓'},
@@ -84,6 +129,7 @@ export function runNativeOperatorLane(mode,input,registry){
   needInput(input);
   if(!Object.hasOwn(OPERATOR_LANES,mode))throw Error('OPERATOR_LANE_NOT_SUPPORTED');
   validate(registry);
+  if(mode==='estate-fabric')return runOperatorFabric(input,registry);
   if(mode==='native-world'){
     const chain=executeNativeChain(input),receiver=receiveExecutedWorld(chain);
     return {schema:'jm.estate.operator.return/0.2',mode,state:'WORLD_RECEIVER_EXECUTED_RENDER_PENDING',changed:true,

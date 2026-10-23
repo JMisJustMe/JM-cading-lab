@@ -4,6 +4,10 @@ on:
     paths:
       - 'coding-estate/integration/m002-cp13-federated-execution.mjs'
       - 'tests/mission002-cp13-federated-execution.mjs'
+      - 'tests/mission002-cp13-operator-fabric.mjs'
+      - 'navigator/estate-integration/execution-lanes.mjs'
+      - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/return-checkpoint.mjs'
       - '.github/workflows/m002-cp13-federated-execution.yml'
   push:
     branches:
@@ -23,8 +27,12 @@ jobs:
         run: |
           node --check coding-estate/integration/m002-cp13-federated-execution.mjs
           node --check tests/mission002-cp13-federated-execution.mjs
+          node --check tests/mission002-cp13-operator-fabric.mjs
+          node --check navigator/estate-integration/execution-lanes.mjs
       - name: Cross-family real native JM execution, original-source replay and disk return
         run: node tests/mission002-cp13-federated-execution.mjs
+      - name: Existing Estate browser-operator multi-family native execution and checkpoint replay
+        run: node tests/mission002-cp13-operator-fabric.mjs
       - name: Preserve scoped receipt (no promotion)
         if: always()
         uses: actions/upload-artifact@v4

@@ -314,19 +314,30 @@ func run_all() -> void:
 	game._beacon_step(0.1)
 	check("V06 wave rewards cannot be paid twice",int(game.battle["salvage"]["blue"]) == salvage_one)
 	game._beacon_step(5.0)
-	check("V06 second distinct Warden wave occurs after clearance",int(core["wave"]) == 2 and int(game.battle["slots"]["red"]["warden"]["active"]) > 0)
-	var wave_two: Dictionary = game.battle["heroes"][2]
-	wave_two["hp"] = 0.0
-	wave_two["leaving"] = true
+	check("V06 second wave coordinates Warden and Dart",int(core["wave"]) == 2 and int(game.battle["slots"]["red"]["warden"]["active"]) > 0 and int(game.battle["slots"]["red"]["dart"]["active"]) > 0)
+	check("V06 second wave spawns two actual enemy bodies",int(core["spawned"]) == 3 and game.battle["heroes"].size() == 4)
+	var wave_two_warden: Dictionary = game.battle["heroes"][2]
+	var wave_two_dart: Dictionary = game.battle["heroes"][3]
+	wave_two_warden["hp"] = 0.0
+	wave_two_warden["leaving"] = true
 	game.battle["slots"]["red"]["warden"]["active"] = 0
+	game.battle["slots"]["red"]["warden"]["ready_at"] = 0.0
+	game._beacon_step(0.1)
+	check("V06 surviving Dart prevents advancing wave",int(core["wave"]) == 2 and not bool(core["paid"]))
+	wave_two_dart["hp"] = 0.0
+	wave_two_dart["leaving"] = true
+	game.battle["slots"]["red"]["dart"]["active"] = 0
+	game.battle["slots"]["red"]["dart"]["ready_at"] = 0.0
 	game._beacon_step(0.1)
 	game._beacon_step(5.0)
-	check("V06 third distinct Bulwark assault spawns",int(core["wave"]) == 3 and int(game.battle["slots"]["red"]["bulwark"]["active"]) > 0)
-	var wave_three: Dictionary = game.battle["heroes"][3]
+	check("V06 third wave coordinates all three fighter classes",int(core["wave"]) == 3 and int(game.battle["slots"]["red"]["bulwark"]["active"]) > 0 and int(game.battle["slots"]["red"]["warden"]["active"]) > 0 and int(game.battle["slots"]["red"]["dart"]["active"]) > 0)
+	check("V06 third wave fielded six total raiders",int(core["spawned"]) == 6)
 	core["hull"] = 225.0
-	wave_three["hp"] = 0.0
-	wave_three["leaving"] = true
-	game.battle["slots"]["red"]["bulwark"]["active"] = 0
+	for enemy in game.battle["heroes"]:
+		if enemy["team"] == "red":
+			enemy["hp"] = 0.0
+			enemy["leaving"] = true
+			game.battle["slots"]["red"][enemy["type"]]["active"] = 0
 	game._beacon_step(0.1)
 	check("V06 third wave does not instantly grant win",not bool(core["complete"]))
 	game._beacon_step(5.0)

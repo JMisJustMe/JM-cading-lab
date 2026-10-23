@@ -77,7 +77,7 @@ eq(types.size,3,'NOT_THREE_INDEPENDENT_MEDIA');
 eq(store.book.revision,3,'BOOK_REVISIONS_UNTRACKED');
 eq(store.music.revision,3,'MUSIC_REVISIONS_UNTRACKED');
 eq(store.cartoon.revision,3,'CARTOON_REVISIONS_UNTRACKED');
-eq(new Set(sources.map(x=>x.sha256)).size,9,'CHOICES_DID_NOT_AFFECT_MEDIA');
+eq(new Set(sources.map(x=>x.hash)).size,9,'CHOICES_DID_NOT_AFFECT_MEDIA');
 hold(()=>executeCP17Media({medium:'podcast',choice:'protect',subject:'JM Vexa',
  stations:3,actions}),/CP17_UNDECLARED_MEDIUM_HOLD/);
 hold(()=>executeCP17Media({medium:'book',choice:'protect',subject:'JM Vexa',

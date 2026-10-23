@@ -81,3 +81,6 @@ console.log(JSON.stringify({schema:receipt.schema,status:receipt.status,checks,
  media,choices,provenCompositions:receipt.complete.length,
  incompleteHolds:receipt.holds.length,uniqueAbilities:3,
  originalTheography:'HOLD',device:'HOLD'}));
+
+// CP11: actual CP10-composed state changes in two separately typed recipients.
+await import('./mission002-cp11-real-recipients.mjs');

@@ -32,6 +32,29 @@
 <p class="muted" id="jmOperatorCloud" aria-live="polite">Cloud relay has not been checked. Scoped workspace saving and recovery remain within <a href="../../unified-browser/OPEN_FIRST_AILATHEO_LIVING_FEDERATION_v1_0.html">AILatheo's existing Proof drawer</a>.</p>
 <p class="muted">The embedded scene is isolated for safety: browser storage may be unavailable inside it. Export the standalone original to test the scene’s own persistence. Save/Recover above explicitly uses local browser storage for the operator return with SHA-256 readback, not cloud durability, signer authentication or physical Android proof.</p>
 </section>
+<section class="card op" id="jmCloudReturnPanel" aria-labelledby="jmCloudReturnTitle">
+<div class="k">Mission 002 CP15 · opt-in encrypted Estate return</div>
+<h2 id="jmCloudReturnTitle">Encrypted return · independent devices</h2>
+<p class="muted">This uses the EXISTING scoped JM RouteVault cloud contact, not a new server. Only explicit Stage and Save will transmit; uploaded bodies are AES-GCM encrypted before transport. The existing provider’s signed receipts are verified on return. Cloud runtime-file storage is not proven permanent and actual phone/laptop contact is not yet accepted.</p>
+<div class="grid">
+ <label>Connection handle (new registration only)<input id="jmCloudHandle" maxlength="24" autocomplete="off" placeholder="3–24 letters, digits, _ or -" /></label>
+ <label>Scoped recovery credential<input id="jmCloudCredential" type="password" autocomplete="off" placeholder="Existing scoped credential (never auto-saved)" /></label>
+ <label>Independent encryption phrase<input id="jmCloudPhrase" type="password" autocomplete="off" placeholder="At least 20 characters; kept only in this field" /></label>
+ <label>Import private recovery bundle<input id="jmCloudRecoveryImport" type="file" accept="application/json,.json" /></label>
+</div>
+<div class="actions">
+ <button type="button" id="jmCloudRegister">Create scoped connection</button>
+ <button type="button" id="jmCloudStage">Stage executed return locally</button>
+ <button type="button" id="jmCloudPush">Explicitly save encrypted return</button>
+ <button type="button" id="jmCloudExport">Download PRIVATE recovery key + pointer</button>
+ <button type="button" id="jmCloudPull">Read encrypted return from cloud</button>
+ <button type="button" id="jmCloudDownloadResult">Download recovered full result</button>
+</div>
+<label style="margin-top:12px"><span><input type="checkbox" id="jmCloudApplyPermit" /> I authorise replacing my locally saved operator return after separately checking the recovered source</span></label>
+<div class="actions"><button type="button" id="jmCloudApply">Apply verified operator return locally</button></div>
+<pre id="jmCloudReturnStatus" role="status" aria-live="polite">No cloud action performed. Keep the private recovery bundle and encryption phrase separately. Never share them in chat.</pre>
+<p class="muted">HOLD boundaries: CP14 original Python source replay is not rerun by this browser carrier; an encrypted return proves stored bytes, not current original runtime execution or authorship. This route does not access private Library files on its own.</p>
+</section>
 <section class="grid" id="routes"></section>
 <section class="card"><div class="k">Bridge trace</div><pre id="trace">Waiting for shared bridge…</pre></section>
 </main>

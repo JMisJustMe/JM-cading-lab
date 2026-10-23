@@ -1,0 +1,23 @@
+{
+  "schema": "JM.Slingfall.Beaconfall.StaticQA/0.6",
+  "date": "2026-10-23",
+  "suites": {
+    "inherited_original_static": 30,
+    "v03_static": 20,
+    "v04_static": 8,
+    "v05_static": 8,
+    "v06_static": 16
+  },
+  "static_pass": 82,
+  "static_fail": 0,
+  "godot_native_pass": 90,
+  "godot_native_fail": 0,
+  "run": 40001872726,
+  "holds": [
+    "Samsung Fold visual quality, human touch feel, frame pacing",
+    "Android APK export",
+    "Long-session balance/difficulty",
+    "GDevelop and Unity full v0.6 parity",
+    "Rendered character-art quality acceptance"
+  ]
+}

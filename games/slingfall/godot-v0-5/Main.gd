@@ -400,6 +400,9 @@ func _land(h: Dictionary) -> void:
 			h["speed_boost"] = 5.0
 			_event("slash",p,_team_color(h["team"]),1.6)
 			_toast("DART • QUICK CLAIM")
+	# New mission orders: genuine AI-follow behaviour rather than a manual escort-only test.
+	if str(battle.get("operation","SECTOR")) == "CONVOY":
+		h["order"] = "ESCORT" if h["team"] == "blue" else "INTERCEPT"
 	if (h["x"] > 249.0 and h["x"] < 319.0) or (h["x"] > 887.0 and h["x"] < 960.0):
 		if h["type"] != "bulwark" and h["type"] != "dart":
 			_hit(h,12.0)
@@ -419,6 +422,17 @@ func _recall(kind: String) -> void:
 	_toast("%s EXTRACTED" % kind.to_upper())
 
 func _issue_order(point: Vector2) -> void:
+	if str(battle.get("operation","SECTOR")) == "CONVOY":
+		var cargo: Dictionary = battle["convoy"]
+		if point.distance_to(Vector2(float(cargo["x"]),float(cargo["y"]))) < 100.0:
+			var assigned = 0
+			for hero in battle["heroes"]:
+				if hero["team"] == "blue" and _alive(hero) and hero["flight"].is_empty():
+					hero["order"] = "ESCORT"
+					assigned += 1
+			rally = false
+			_toast("%d CHAMPIONS ESCORTING CARGO" % assigned if assigned > 0 else "DEPLOY A CHAMPION FIRST")
+			return
 	var target: Dictionary = {}
 	var min_distance = INF
 	for z in battle["zones"]:
@@ -586,26 +600,34 @@ func _combat_step(dt: float) -> void:
 				if int(h["combo"]) >= SIGNATURE_THRESHOLD and _alive(enemy):
 					_signature_attack(h, enemy)
 			continue
-		var zone: Dictionary = {}
-		for z in battle["zones"]:
-			if z["id"] == h["order"]:
-				zone = z
-				break
-		if zone.is_empty():
-			zone = _nearest_zone(h)
-			h["order"] = zone["id"]
-		if zone["owner"] == h["team"] and float(h["life"]) > 3:
-			h["move_tick"] = float(h["move_tick"]) + dt
-			if float(h["move_tick"]) > 4.4:
-				h["move_tick"] = 0.0
-				for z in battle["zones"]:
-					if z["owner"] != h["team"]:
-						zone = z
-						h["order"] = z["id"]
-						break
-		var destination = _zone_position(zone)
+		var cargo_order = str(battle.get("operation","SECTOR")) == "CONVOY" and str(h.get("order","")) in ["ESCORT","INTERCEPT"]
+		var destination = Vector2.ZERO
+		var arrival_radius = 28.0
+		if cargo_order:
+			var cargo_pos = Vector2(float(battle["convoy"]["x"]),float(battle["convoy"]["y"]))
+			destination = cargo_pos + (Vector2(-28,30) if h["team"] == "blue" else Vector2(36,-24))
+		else:
+			var zone: Dictionary = {}
+			for z in battle["zones"]:
+				if z["id"] == h["order"]:
+					zone = z
+					break
+			if zone.is_empty():
+				zone = _nearest_zone(h)
+				h["order"] = zone["id"]
+			if zone["owner"] == h["team"] and float(h["life"]) > 3:
+				h["move_tick"] = float(h["move_tick"]) + dt
+				if float(h["move_tick"]) > 4.4:
+					h["move_tick"] = 0.0
+					for z in battle["zones"]:
+						if z["owner"] != h["team"]:
+							zone = z
+							h["order"] = z["id"]
+							break
+			destination = _zone_position(zone)
+			arrival_radius = float(zone["r"]) * 0.62
 		var displacement = destination - here
-		if displacement.length() > float(zone["r"]) * 0.62:
+		if displacement.length() > arrival_radius:
 			var speed = float(stats["speed"]) * (1.55 if float(h["speed_boost"]) > 0 else 1.0)
 			var in_wire = (h["x"] > 270.0 and h["x"] < 315.0) or (h["x"] > 905.0 and h["x"] < 952.0)
 			if in_wire and h["type"] == "warden":
@@ -1392,7 +1414,7 @@ func _draw_hud() -> void:
 	_panel(Rect2(966,618,200,70),Color("293a40"),BLUE if rally else Color("627d7a"))
 	_txt("SQUAD RALLY" if int(profile["level"]) >= 2 else "RALLY LOCKED",1066,660,17,BLUE if rally else SAND)
 	if float(battle["elapsed"]) < 12:
-		_txt("SELECT A HERO  •  DRAG / TAP FIELD TO FLING  •  TAP A ZONE TO ORDER",600,591,13,SAND)
+		_txt("TAP CARGO TO ESCORT  •  TAP A ZONE TO REASSIGN  •  FLING CHAMPIONS" if str(battle.get("operation","SECTOR")) == "CONVOY" else "SELECT A HERO  •  DRAG / TAP FIELD TO FLING  •  TAP A ZONE TO ORDER",600,591,13,SAND)
 
 func _draw_overlay() -> void:
 	_rect(0,0,W,H,Color("091721",0.80))

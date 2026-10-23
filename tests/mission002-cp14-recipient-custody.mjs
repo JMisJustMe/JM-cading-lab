@@ -96,3 +96,6 @@ fs.writeFileSync('qa/m002-foundations/CP14_REAL_TYPED_RECIPIENT_RECEIPT.json',JS
 console.log(JSON.stringify({schema:report.schema,status:report.status,checks,
  choices:report.applications.length,applied:report.applications.length*2,
  conflicts:report.conflicts.length,partialAutoApply:false,actualDevice:false}));
+
+// CP15 real-game and illustrated-creative recipient activation after CP14 custody.
+await import('./mission002-cp15-full-recipient-activation.mjs');

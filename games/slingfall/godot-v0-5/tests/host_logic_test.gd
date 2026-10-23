@@ -245,6 +245,22 @@ func run_all() -> void:
 	game._save_file(game.SAVE_BATTLE,{"version":2,"battle":backward,"selected":"bulwark","next_enemy":2.8,"uid":game.uid})
 	game.resume_battle()
 	check("V05 v0.2-v0.4 saves recover as sector missions",game.battle["operation"] == "SECTOR" and game.battle.has("convoy"))
+	game.start_battle("CONVOY")
+	game._launch("blue","dart",Vector2(316,476))
+	var blue_follower: Dictionary = game.battle["heroes"][0]
+	blue_follower["x"] = 316.0
+	blue_follower["y"] = 476.0
+	game._land(blue_follower)
+	check("V05 blue landfall assigns escort AI",blue_follower["order"] == "ESCORT")
+	game._issue_order(Vector2(316,476))
+	check("V05 cargo tap preserves deliberate escort order",blue_follower["order"] == "ESCORT")
+	game.battle["energy"]["red"] = 100.0
+	game._launch("red","bulwark",Vector2(342,486))
+	var red_interceptor: Dictionary = game.battle["heroes"][1]
+	red_interceptor["x"] = 342.0
+	red_interceptor["y"] = 486.0
+	game._land(red_interceptor)
+	check("V05 rival landfall assigns convoy interception AI",red_interceptor["order"] == "INTERCEPT")
 	game.queue_free()
 	print("SLINGFALL GODOT NATIVE: ",checks," checks / ",failures," failures")
 	quit(0 if failures == 0 else 1)

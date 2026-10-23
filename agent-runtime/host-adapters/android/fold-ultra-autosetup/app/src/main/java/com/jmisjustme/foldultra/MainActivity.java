@@ -327,6 +327,7 @@ public final class MainActivity extends Activity {
     btn(page,"RESUME PROJECT / My working session →",false,()->{tab=8;render();});
     btn(page,"LIVING HOME / Import cloud return →",false,()->cloudReturnImport());
     btn(page,"LIVING HOME / Review pending return →",false,()->reviewCloudReturn());
+    btn(page,"LIVING HOME / Pin independent server signing key →",false,()->cloudSigningKeyPin());
     btn(page,"SETUP PLANS  /  One-touch JM configuration →",false,()->{tab=7;render();});
     btn(page,"PROJECT CONTACT  /  Open my JM shelf →",false,()->{tab=6;render();});
     btn(page,"USB CONTACT  /  Setup & recovery →",false,()->{tab=5;render();});
@@ -457,7 +458,8 @@ public final class MainActivity extends Activity {
     // Clear delivery to prevent a replay on subsequent Activity lifecycle events.
     intent.removeExtra(Intent.EXTRA_TEXT);
     // Explicit Living Home typed route: never fold cloud-return JSON into a freeform note.
-    if(incoming.startsWith("{")&&incoming.contains("JM.LivingHome.CP07.CloudReturn/1.0")){
+    if(incoming.startsWith("{")&&(incoming.contains("JM.LivingHome.CP07.CloudReturn/1.0")||
+       incoming.contains(SignedReturnVerifier.SCHEMA))){
       if(incoming.length()>24000){
         Toast.makeText(this,"HOLD · Share smaller ledger or use native JSON import",Toast.LENGTH_LONG).show();return;
       }
@@ -465,7 +467,7 @@ public final class MainActivity extends Activity {
         JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
         if(active==null)throw new IllegalStateException("No active native JM project");
         int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
-        JSONObject pending=CloudReturnBridge.select(incoming,active,revision);
+        JSONObject pending=inspectLivingHomeJson(incoming,active,revision);
         CloudReturnBridge.stage(sp,pending);
         reviewCloudReturn();
       }catch(Exception e){
@@ -1000,6 +1002,32 @@ public final class MainActivity extends Activity {
       .setIntent(new Intent(this,MainActivity.class).setAction(Intent.ACTION_MAIN)).build();
     if(!m.requestPinShortcut(s,null))Toast.makeText(this,"HOLD · Shortcut not accepted",1).show();
   }
+  void cloudSigningKeyPin(){
+    final EditText key=new EditText(this);
+    key.setSingleLine(true);key.setHint("24 hex digits from trusted /receipt-key");
+    key.setInputType(android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+    key.setFilters(new InputFilter[]{new InputFilter.LengthFilter(24)});
+    key.setText(sp.getString(SignedReturnVerifier.PIN,""));
+    new AlertDialog.Builder(this).setTitle("JM / Independent server signing key")
+      .setMessage("Check the signing key ID separately through the intended server /receipt-key. NEVER copy a key ID solely from an imported return bundle. A mismatch refuses signed contact.")
+      .setView(key).setNegativeButton("Cancel",null)
+      .setPositiveButton("Pin ID",(d,w)->{
+        String value=key.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
+        if(!value.matches("[0-9a-f]{24}")){
+          Toast.makeText(this,"HOLD · Expected 24 hexadecimal digits",Toast.LENGTH_LONG).show();return;
+        }
+        if(!sp.edit().putString(SignedReturnVerifier.PIN,value).commit()){
+          Toast.makeText(this,"HOLD · Key pin was not saved",Toast.LENGTH_LONG).show();return;
+        }
+        Toast.makeText(this,"JM verifier key pinned locally",Toast.LENGTH_LONG).show();
+      }).show();
+  }
+  JSONObject inspectLivingHomeJson(String input,JSONObject active,int revision)throws Exception{
+    JSONObject wrapper=new JSONObject(input);
+    if(SignedReturnVerifier.SCHEMA.equals(wrapper.optString("schema","")))
+      return SignedReturnVerifier.validate(input,active,revision,sp.getString(SignedReturnVerifier.PIN,""));
+    return CloudReturnBridge.select(input,active,revision);
+  }
   void cloudReturnImport(){
     Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
@@ -1015,9 +1043,13 @@ public final class MainActivity extends Activity {
       String result=pending.getString("result");
       int expected=pending.getInt("native_expected_revision");
       String preview=result.length()>1000?result.substring(0,1000)+"…":result;
+      boolean signed="SERVER_RETURN_SIGNATURE_VERIFIED".equals(pending.optString("evidence_state",""));
+      String proof=signed?"\\nSigned server receipt: "+pending.optString("server_receipt_hash","").substring(0,16)+"…"+
+        "\\nSigner: "+pending.optString("server_key_id","")+"\\n":"";
       new AlertDialog.Builder(this).setTitle("JM / Living Home return · owner approval")
         .setMessage("Project: "+project+"\\nMission: "+mission+"\\nExpected native revision: "+expected+
-          "\\n\\nUNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.\\n\\n"+
+          "\\n\\n"+(signed?"SERVER-SIGNED SIGNAL · transport verified; underlying task and AI identity UNVERIFIED.":
+             "UNVERIFIED EXTERNAL TEXT · not a proven model, server or device execution.")+proof+"\\n\\n"+
           preview+"\\n\\nAppend as a NEW native session revision? No Return Point is overwritten.")
         .setNegativeButton("Keep pending",null)
         .setPositiveButton("Approve new JM checkpoint",(d,w)->{
@@ -1060,7 +1092,7 @@ public final class MainActivity extends Activity {
         JSONObject active=ProjectShelf.find(sp,ProjectShelf.selected(sp));
         if(active==null)throw new IllegalStateException("No active native JM project");
         int revision=SessionDeck.find(sp,active.getString("id")).getInt("revision");
-        JSONObject pending=CloudReturnBridge.select(out.toString("UTF-8"),active,revision);
+        JSONObject pending=inspectLivingHomeJson(out.toString("UTF-8"),active,revision);
         CloudReturnBridge.stage(sp,pending);
         reviewCloudReturn();
       }else if(req==EXPORT){

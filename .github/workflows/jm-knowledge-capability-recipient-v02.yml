@@ -1,0 +1,23 @@
+name: JM Knowledge Capability Recipient v0.2
+on:
+  pull_request:
+    paths:
+      - '.agents/skills/jm-ecostate-route/jm_knowledge_capability_recipient.py'
+      - '.agents/skills/jm-ecostate-route/tests/test_knowledge_capability_recipient.py'
+      - '.github/workflows/jm-knowledge-capability-recipient-v02.yml'
+  workflow_dispatch:
+jobs:
+  canonical-recipient:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile native module, preserve original Python and Node source
+        run: python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_capability_recipient.py
+      - name: Execute scoped original-source replay, Python+Node route and real recipient tests
+        run: python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_capability_recipient.py' -v

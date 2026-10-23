@@ -62,6 +62,9 @@ try{
  ok(!JSON.stringify(sending.journal()).includes('SOURCE_PROTECTED_CREATIVE_OPERATOR'),
   'PLAINTEXT_LEAKED_IN_JOURNAL');
  await rejects(()=>sending.stage(original,pass),/CP15_PENDING_TRANSFER_RECOVER_FIRST_HOLD/);
+ const countUnwritten=Object.keys(JSON.parse(readFileSync(statePath,'utf8')).workspaces).length;
+ await rejects(()=>sending.push('wrong phrase but at least twenty characters'),/CP15_PRE_UPLOAD_PASSPHRASE_HOLD/);
+ eq(Object.keys(JSON.parse(readFileSync(statePath,'utf8')).workspaces).length,countUnwritten,'BAD_KEY_STARTED_REMOTE_WRITE');
  const submitted=await sending.push(pass);
  eq(submitted.state,'CLOUD_SIGNED_AND_DECRYPTED_READBACK','NO_CLOUD_READBACK');
  eq(submitted.parts,staged.parts,'CHUNK_COUNT_DRIFT');

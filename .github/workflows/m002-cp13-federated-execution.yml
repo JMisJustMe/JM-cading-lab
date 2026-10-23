@@ -1,0 +1,42 @@
+name: JM Mission 002 CP13 Federated Execution
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp13-federated-execution.mjs'
+      - 'tests/mission002-cp13-federated-execution.mjs'
+      - 'tests/mission002-cp13-operator-fabric.mjs'
+      - 'navigator/estate-integration/execution-lanes.mjs'
+      - 'navigator/estate-integration/index.html'
+      - 'navigator/estate-integration/return-checkpoint.mjs'
+      - '.github/workflows/m002-cp13-federated-execution.yml'
+  push:
+    branches:
+      - 'integration/m002-cp13-federated-estate-execution-20261023'
+  workflow_dispatch:
+jobs:
+  native-federation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax check
+        run: |
+          node --check coding-estate/integration/m002-cp13-federated-execution.mjs
+          node --check tests/mission002-cp13-federated-execution.mjs
+          node --check tests/mission002-cp13-operator-fabric.mjs
+          node --check navigator/estate-integration/execution-lanes.mjs
+      - name: Cross-family real native JM execution, original-source replay and disk return
+        run: node tests/mission002-cp13-federated-execution.mjs
+      - name: Existing Estate browser-operator multi-family native execution and checkpoint replay
+        run: node tests/mission002-cp13-operator-fabric.mjs
+      - name: Preserve scoped receipt (no promotion)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-m002-cp13-native-federation-receipts
+          path: qa/m002-foundations/CP13_*.json
+          if-no-files-found: warn

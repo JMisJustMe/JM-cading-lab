@@ -79,7 +79,7 @@ def verify(originals,folder):
 def run(originals,folder,question="habit",top=6):
     folder=Path(folder)
     manifest=verify(originals,folder)
-    chunks=[folder[c["file"]] for b in manifest["books"] for c in b["chunks"]]
+    chunks=[folder / c["file"] for b in manifest["books"] for c in b["chunks"]]
     candidate=folder.parent/(folder.name+"_JM_CANDIDATE")
     if candidate.exists():raise assurance.Held("CANDIDATE_EXISTS")
     intake.compile_sources(chunks,candidate,question)

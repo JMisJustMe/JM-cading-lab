@@ -98,3 +98,6 @@ try{
   assert.deepEqual(exceptions,[],'BROWSER_ERRORS');
   console.log(JSON.stringify({state:'BROWSER_NATIVE_OPERATOR_PASS',viewport:'390x844',existingRouteCards:original,sceneFirstOpen:true,actualTouchConsequence:true,standaloneExport:true,nativeProgramChain:true,changedReceiver:true,failedChainNoPass:true,sourceCompiler:true,gamecore:true,os:true,route:true,embodied:true,bridgeTrace:true,localRecovery:true,tamperHold:true,exceptions},null,2));
 }finally{await browser.close()}
+
+// CP13 actual file transfer via native operator between independent browser contexts.
+await import('./mission002-cp13-operator-browser.spec.mjs');

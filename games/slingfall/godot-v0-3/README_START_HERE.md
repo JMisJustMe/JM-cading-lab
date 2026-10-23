@@ -39,4 +39,6 @@ Creative source authority: JM / JMISJUSTME. Inherit before rebuild; preserve pro
 
 ## Earned runtime proof (Linux / not Android)
 
-Actual Godot 4.7.2 headless execution has now passed **31/31 native gameplay assertions**, in addition to 30/30 inherited and 20/20 new static checks. Exact runtime evidence: `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v03.json`, GitHub Actions [run 39989821813](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39989821813). The receipt covers launch, impact, combat signatures, support healing, Supply energy, weather, schema-2 save migration, pause and match result. **Samsung Fold touch, visual quality, and APK remain HOLD**. The PR remains draft and unmerged.
+Actual Godot 4.7.2 headless execution has now passed **33/33 native gameplay assertions**, in addition to 30/30 inherited and 20/20 new static checks. Exact runtime evidence: `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v03.json`, GitHub Actions [run 39990468680](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39990468680). The receipt covers launch, impact, combat signatures, support healing, Supply energy, weather, schema-2 save migration, pause and match result. **Samsung Fold touch, visual quality, and APK remain HOLD**. The PR remains draft and unmerged.
+
+**Expanded native evidence:** The third-hit Dart Razor Rush and Warden Restoration Wave now also PASS in [Godot 4.7.2 run 39990468680](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39990468680), totalling 33/33 game-state checks. Android touch and rendered visual parity are not claimed.

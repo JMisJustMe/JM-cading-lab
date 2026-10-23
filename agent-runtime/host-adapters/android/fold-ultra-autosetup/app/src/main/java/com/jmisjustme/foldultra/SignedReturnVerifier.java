@@ -27,6 +27,27 @@ public final class SignedReturnVerifier {
     for(byte b:bytes)sb.append(String.format(Locale.ROOT,"%02x",b&255));
     return sb.toString();
   }
+  /** JSON.stringify-compatible escaping. Android JSONObject.quote() escapes '/' as '\\/',
+   * but the server's canonical JSON uses a literal '/', changing SHA-256. */
+  private static String jsQuote(String value){
+    StringBuilder b=new StringBuilder("\\\"");
+    for(int i=0;i<value.length();i++){
+      char c=value.charAt(i);
+      switch(c){
+        case '"': b.append("\\\\\\\"");break;
+        case '\\\\':b.append("\\\\\\\\");break;
+        case '\\b':b.append("\\\\b");break;
+        case '\\f':b.append("\\\\f");break;
+        case '\\n':b.append("\\\\n");break;
+        case '\\r':b.append("\\\\r");break;
+        case '\\t':b.append("\\\\t");break;
+        default:
+          if(c<0x20)b.append(String.format(java.util.Locale.ROOT,"\\\\u%04x",(int)c));
+          else b.append(c);
+      }
+    }
+    return b.append('"').toString();
+  }
   /** Mirrors existing Node canonical sorted-key JSON for bounded ASCII/UTF-8 mission data. */
   private static String canon(Object v)throws Exception {
     if(v==null||v==JSONObject.NULL)return "null";
@@ -38,7 +59,7 @@ public final class SignedReturnVerifier {
       StringBuilder b=new StringBuilder("{");
       for(String k:keys){
         if(b.length()>1)b.append(',');
-        b.append(JSONObject.quote(k)).append(':').append(canon(j.get(k)));
+        b.append(jsQuote(k)).append(':').append(canon(j.get(k)));
       }
       return b.append('}').toString();
     }
@@ -51,7 +72,7 @@ public final class SignedReturnVerifier {
       }
       return b.append(']').toString();
     }
-    if(v instanceof String)return JSONObject.quote((String)v);
+    if(v instanceof String)return jsQuote((String)v);
     if(v instanceof Boolean)return v.toString();
     if(v instanceof Number){
       if(v instanceof Double||v instanceof Float)

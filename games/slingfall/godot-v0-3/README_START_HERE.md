@@ -24,7 +24,7 @@ This is a **playable whole-game successor** of the native SLINGFALL v0.2 project
 
 ## Inherited mechanics and constraints
 
-The original three-role launch costs, health pools, 105 score victory threshold, 140-second match, capture power, three-zone geometry, launch physics, recall, opposing AI, bunker costs, level 3 -4 cost, menu/result/screens and base save keys are preserved. This is a gameplay extension, not a replacement. **Saving uses the v0.2 schema version `2`** and migrates older matches by adding missing v0.3 fields on resume.
+The original three-role launch costs, health pools, 105 score victory threshold, 140-second match, capture power, three-zone geometry, launch physics, recall, opposing AI, bunker costs, level 3 -4 cost, menu/result/screens and base save keys are preserved. This is a gameplay extension, not a replacement. The project deliberately retains the v0.2 `config/name` so Godot can find the original `user://` directory. **Saving uses the v0.2 schema version `2`** and migrates older matches by adding missing v0.3 fields on resume.
 
 ## Proof and acceptance
 

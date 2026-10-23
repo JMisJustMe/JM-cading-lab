@@ -27,6 +27,11 @@ try{
  const recovered=await send('GET','/v1/recover/'+id);
  assert.equal(recovered.code,200);
  assert.equal(recovered.body.sha256,executed.body.sha256);
+ const retry=await send('POST','/v1/execute',input);
+ assert.equal(retry.code,200);
+ assert.equal(retry.body.sha256,executed.body.sha256);
+ const stale=await send('POST','/v1/execute',{...input,operationId:randomUUID()});
+ assert.equal(stale.code,409);
  await service.close();service=null;
  const intact=readFileSync(f.config.stateFile,'utf8');
  const changed=JSON.parse(intact);

@@ -36,3 +36,7 @@ The original three-role launch costs, health pools, 105 score victory threshold,
 **Scope boundary:** A successful headless test demonstrates native Godot GDScript execution, not touch quality, phone frame rate, production graphics parity, or an Android APK. Existing Unity/GDevelop Target Bridge v1.1 proof remains separate and untouched.
 
 Creative source authority: JM / JMISJUSTME. Inherit before rebuild; preserve proven working experiences.
+
+## Earned runtime proof (Linux / not Android)
+
+Actual Godot 4.7.2 headless execution has now passed **31/31 native gameplay assertions**, in addition to 30/30 inherited and 20/20 new static checks. Exact runtime evidence: `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v03.json`, GitHub Actions [run 39989821813](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39989821813). The receipt covers launch, impact, combat signatures, support healing, Supply energy, weather, schema-2 save migration, pause and match result. **Samsung Fold touch, visual quality, and APK remain HOLD**. The PR remains draft and unmerged.

@@ -65,6 +65,15 @@ func run_all() -> void:
 	bulwark["hp"] = 55.0
 	game._combat_step(0.07)
 	check("Warden support restores actual ally HP",float(bulwark["hp"]) > 55.0)
+	foe["stun"] = 0.0
+	foe["cool"] = 0.0
+	foe["combo"] = 2
+	warden["cool"] = 0.0
+	warden["combo"] = 2
+	var dart_start_x: float = float(foe["x"])
+	game._combat_step(0.07)
+	check("Dart third strike executes Razor Rush reposition",int(game.battle["signatures"]["red"]) >= 1 and float(foe["x"]) < dart_start_x)
+	check("Warden third strike executes Restoration Wave",int(game.battle["signatures"]["blue"]) >= 2 and int(warden["combo"]) == 0)
 	game.battle["energy"]["blue"] = 50.0
 	game.battle["zones"][2]["owner"] = "blue"
 	game._living_field_step(3.1)

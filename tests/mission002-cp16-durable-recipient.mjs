@@ -67,3 +67,6 @@ result.checks=checks;result.status='PASS_TWO_DIFFERENT_NATIVE_DURABLE_RECIPIENTS
 fs.writeFileSync('qa/m002-foundations/CP16_NATIVE_DURABLE_RECEIPT.json',JSON.stringify(result,null,2)+'\n');
 console.log(JSON.stringify({schema:result.schema,status:result.status,checks,gameFighters:10,
  editableComicEditions:history.entries.length,sourceOriginalsUntouched:true}));
+
+// CP17: three independently editable, source-bound native creative media outputs.
+await import('./mission002-cp17-three-media.mjs');

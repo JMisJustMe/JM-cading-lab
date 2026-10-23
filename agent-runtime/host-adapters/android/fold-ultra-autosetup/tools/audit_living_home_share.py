@@ -86,10 +86,40 @@ def run():
     nodes=clear_overlay_and_read("JM_CLOUD_REPLAY_HOLD")
     assert any("No project state changed" in x.get("text","") for x in nodes),"No replay HOLD"
     assert current(prefs())==entry,"Replay changed JM session"
+    # Dismiss replay HOLD before independent malformed-source attempts.
+    adb("shell","input","keyevent","4")
+    time.sleep(.45)
+    frozen=prefs()
+    # Negative: wrong outgoing challenge may not stage or mutate a checkpoint.
+    share(receipt(challenge,wrong=True))
+    nodes=clear_overlay_and_read("JM_CLOUD_TAMPER_CHALLENGE")
+    assert any("Living Home return refused" in x.get("text","") for x in nodes),"Tampered challenge not rejected"
+    assert current(prefs())==entry,"Challenge tamper mutated checkpoint"
+    adb("shell","input","keyevent","4")
+    time.sleep(.45)
+    # Negative: a matching displayed project name cannot hide a different source ID.
+    forged=receipt(challenge)
+    forged["missions"][0]["outgoing"]["source"]["id"]="wrong-shelf-project"
+    share(forged)
+    nodes=clear_overlay_and_read("JM_CLOUD_WRONG_SOURCE")
+    assert any("Living Home return refused" in x.get("text","") for x in nodes),"Wrong source ID not rejected"
+    assert current(prefs())==entry,"Wrong source mutated checkpoint"
+    assert prefs().get("reentry.points")==original_points,"Return Point changed on negative import"
+    adb("shell","input","keyevent","4")
+    time.sleep(.45)
+    # An actual process stop/reopen must retain the committed checkpoint and replay journal.
+    adb("shell","am","force-stop",PKG)
+    adb("shell","am","start","-W","-n",PKG+"/.MainActivity")
+    time.sleep(1.2)
+    restored=prefs()
+    assert current(restored)==entry,"Native cloud return disappeared after cold restart"
+    assert restored.get("livinghome.return.applied")==saved["livinghome.return.applied"]
     report={"schema":"JM.FoldCloudReturn.NativeEmulatorProof/1",
       "result":"PASS","scope":"SYNTHETIC_LEDGER_TO_NATIVE_ANDROID_UI_CHECKPOINT",
       "approved_revision":4,"return_points_unchanged":True,
-      "replay_rejected":True,"physical_fold_tested":False,"hosted_server_called":False}
+      "replay_rejected":True,"tampered_challenge_rejected":True,
+      "wrong_source_id_rejected":True,"cold_restart_persisted":True,
+      "physical_fold_tested":False,"hosted_server_called":False}
     (OUT/"LIVING_HOME_NATIVE_RETURN_RECEIPT.json").write_text(json.dumps(report,indent=2))
-    print("JM Living Home -> actual Android native: staged, owner-approved, revision 4, Return Point preserved, replay HOLD.")
+    print("JM Living Home -> native PASS: approved revision 4, Return Point preserved, replay/tamper/source rejected, cold restart persisted.")
 if __name__=="__main__":run()

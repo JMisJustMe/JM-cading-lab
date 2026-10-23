@@ -10,7 +10,7 @@ async function sha256(text,subtle){
 }
 function validate(value) {
   if(!value||value.schema!=='jm.estate.operator.local-return/0.2')throw Error('RETURN_SCHEMA_HOLD');
-  if(!['native-world','native-chain','scene','route','compile-js','compile-rust','gamecore','os','embodied'].includes(value.mode))throw Error('RETURN_MODE_HOLD');
+  if(!['native-world','native-chain','scene','route','compile-js','compile-rust','gamecore','os','embodied','estate-fabric'].includes(value.mode))throw Error('RETURN_MODE_HOLD');
   if(typeof value.summary!=='string'||!value.summary||value.summary.length>26000)throw Error('RETURN_SUMMARY_HOLD');
   if(typeof value.input!=='string'||value.input.length>2000)throw Error('RETURN_INPUT_HOLD');
   if(value.mode==='scene'&&(typeof value.scene!=='string'||!value.scene.startsWith('<!doctype html>')))throw Error('RETURN_SCENE_HOLD');

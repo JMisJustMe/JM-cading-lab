@@ -27,3 +27,7 @@ Download ZIP, use Godot Project Manager → Import, choose this ZIP → project 
 - Android Fold visual quality, touch responsiveness, APK export and full production-readiness remain separate device acceptance boundaries. Do not claim them without evidence.
 
 Ancestry and earlier v0.2/v0.3 FLAZ packages remain intact. This game workstream is distinct from the separate JM Target Bridge host compatibility work. Do not merge them merely because both can use Godot.
+
+## Actual Godot Linux host proof — earned
+
+**48/48 native gameplay assertions PASS, zero failures** on Godot **4.7.2 stable**, Ubuntu 24.04 GitHub Actions [run 39992770047](https://github.com/JMisJustMe/JM-cading-lab/actions/runs/39992770047). Original 30 and successor 20 static checks plus eight v0.4 structural checks also pass. `tests/GODOT_NATIVE_RUNTIME_RECEIPT_v04.json` records exact scope and holds. First native pass uncovered a time-step ion-warning bypass; corrected source now guarantees warning before strike. This result proves real Linux/Godot gameplay-state execution, **not** Fold touch acceptance, Android APK, or visual polish. User device testing remains deferred. Keep this draft descendant of v0.3 PR #419 unmerged until appropriate acceptance.

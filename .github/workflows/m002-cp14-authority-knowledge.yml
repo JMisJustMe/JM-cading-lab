@@ -1,0 +1,48 @@
+name: JM Mission 002 CP14 Authority and Knowledge Federation
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp14-authority-knowledge-fabric.mjs'
+      - 'tests/mission002-cp14-authority-knowledge-fabric.mjs'
+      - 'tests/mission002-mesh-live-authority.mjs'
+      - 'navigator/estate-integration/mesh-authority-reconciliation.mjs'
+      - 'navigator/estate-integration/public-registry.json'
+      - '.agents/skills/jm-ecostate-route/**'
+      - '.github/workflows/m002-cp14-authority-knowledge.yml'
+  push:
+    branches:
+      - 'integration/m002-cp14-authority-knowledge-return-20261023'
+  workflow_dispatch:
+permissions: {contents: read}
+jobs:
+  original-knowledge-federation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve original Python donor syntax and new native adapter
+        run: |
+          python -m py_compile .agents/skills/jm-ecostate-route/jm_knowledge_intake.py .agents/skills/jm-ecostate-route/jm_knowledge_assurance.py .agents/skills/jm-ecostate-route/jm_knowledge_query.py .agents/skills/jm-ecostate-route/jm_knowledge_capability_recipient.py .agents/skills/jm-ecostate-route/jm_skill_gate.py
+          node --check coding-estate/integration/m002-cp14-authority-knowledge-fabric.mjs
+          node --check tests/mission002-cp14-authority-knowledge-fabric.mjs
+      - name: Prove exact original JM Knowledge v0.2 recipient source replay
+        run: python -m unittest discover -s .agents/skills/jm-ecostate-route/tests -p 'test_knowledge_capability_recipient.py' -v
+      - name: Prove original Python+Node knowledge to original CP13 multi-family JM receivers
+        run: node tests/mission002-cp14-authority-knowledge-fabric.mjs
+      - name: Independently recheck real deployed registry and hosted Build Mesh MCP (no mutation)
+        run: node tests/mission002-mesh-live-authority.mjs
+      - name: Preserve source replay receipt, not promotion
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-m002-cp14-authority-knowledge
+          path: |
+            qa/m002-foundations/CP14_*.json
+            qa/m002-mesh/live-authority-reconciliation.json
+          if-no-files-found: warn

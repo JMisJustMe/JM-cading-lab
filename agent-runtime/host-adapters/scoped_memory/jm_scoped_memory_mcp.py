@@ -86,9 +86,15 @@ class JMScopedMCP:
                 or not all(c in "abcdefghijklmnopqrstuvwxyz0123456789_-" for c in note_name)):
             return tool_result({"status": "HOLD", "reason": "invalid note name"}, True)
         body = args.get("body")
-        if action == "write" and (not isinstance(body, str)
-                or not 0 < len(body.encode("utf-8")) <= MAX_BODY_BYTES):
-            return tool_result({"status": "HOLD", "reason": "invalid note body"}, True)
+        if action == "write":
+            if not isinstance(body, str):
+                return tool_result({"status": "HOLD", "reason": "invalid note body"}, True)
+            try:
+                body_bytes = len(body.encode("utf-8"))
+            except UnicodeError:
+                return tool_result({"status": "HOLD", "reason": "invalid Unicode body"}, True)
+            if not 0 < body_bytes <= MAX_BODY_BYTES:
+                return tool_result({"status": "HOLD", "reason": "invalid note body"}, True)
         mode = args.get("mode", "create")
         if action == "write" and mode not in ("create", "update"):
             return tool_result({"status": "HOLD", "reason": "invalid write mode"}, True)

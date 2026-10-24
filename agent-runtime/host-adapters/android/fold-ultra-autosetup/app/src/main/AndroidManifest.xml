@@ -24,12 +24,24 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="text/plain" />
             </intent-filter>
+            <!-- Selected images/PDFs require user Share and explicit in-app approval. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/png" />
+                <data android:mimeType="image/jpeg" />
+                <data android:mimeType="image/webp" />
+                <data android:mimeType="application/pdf" />
+            </intent-filter>
             <!-- Public, navigation-only deep link; no privileged device or JM state operation. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="jmfoldultra" android:host="open" android:path="/galaxy" />
+                <data android:scheme="jmfoldultra" android:host="open" android:path="/projects" />
+                <data android:scheme="jmfoldultra" android:host="open" android:path="/continue" />
+                <data android:scheme="jmfoldultra" android:host="open" android:path="/capture" />
             </intent-filter>
             <!-- Official Android static shortcut; same allowlisted GALAXY route. -->
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />

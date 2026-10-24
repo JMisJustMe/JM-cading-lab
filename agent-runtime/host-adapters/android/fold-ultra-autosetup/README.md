@@ -93,3 +93,56 @@ original source and user data; no promotion without physical device acceptance.
   verified → Samsung One UI shortcut visibility → Bixby voice/Routines acceptance.
 - Does not affect app sessions, private data, or the Samsung home-screen layout
   unless the owner intentionally pins a shortcut.
+
+
+## JM FOLD ULTRA v1.0 — LIVING DEVICE CONTACT (24 October 2026)
+
+**Inherited authority:** v0.9 / draft #371 → Living Home native guarded return draft #406 →
+Bixby deep-link / shortcuts draft #442 → v1.0 additive descendant (this branch).
+No replacement app; unchanged application ID com.jmisjustme.foldultra.
+Android carrier versionCode 10 / versionName 1.0.0, original v0.9 export schema retained
+for compatibility. Device rollout and Samsung physical tests remain HOLD.
+
+### One JM application, separate organs
+- **Command Deck**: Android launcher shortcuts JM Galaxy / JM Projects /
+  JM Continue / JM Capture, backed by exact, navigation-only
+  jmfoldultra://open/{galaxy,projects,continue,capture} deep links.
+  A public caller is NOT authenticated as Bixby. Initial owner setup is mandatory.
+- **Creation Houses**: preserve GAMES, MUSIC, BUILD (presented as CODING),
+  ESTATE (presented as INFRA), and add COMICS, CARTOONS, BOOKS. Unbound
+  bodies stay references rather than invented project URLs; user binds verified routes.
+- **Fold Workfields**: inherit SetupPlan's MAKE / PLAYTEST / RESEARCH /
+  RECOVERY and distinct compact/expanded density, rather than inventing a second
+  preset engine.
+- **Living Contact**: bounded local 48-entry event/owner-assertion ledger with
+  export; physical_verified is always false in automatic records. It is NOT
+  proof of Samsung caller identity, Galaxy AI integration or model execution.
+- **Creative Intake**: owner-approved Android Share/picker for PNG, JPEG, WebP,
+  PDF or plain text (<=2 MiB, at most 12 copies), copied to private JM files with
+  SHA-256. Owner can export an original after integrity verification or explicitly
+  delete the local copy. No background scanning or provider API access. Source
+  files remain LOCAL ONLY and are NOT in JSON configuration exports.
+- **Custody**: existing UsbBridge configuration now carries an optional
+  independently validated jm_extensions snapshot: pending Living Home CP07
+  return, applied/replay fingerprint history, contact ledger and intake metadata.
+  The same SharedPreferences commit as SessionDeck / Return Points stages the
+  imported extension fields. Legacy backups without jm_extensions do not
+  falsely claim to restore these newer bodies and leave current extension fields
+  untouched. External original media bytes never move with JSON.
+
+### Source authority / safety / physical gate
+- No extra Android permissions; document access only through explicit Android
+  grants. Bixby can launch the existing app on the owner's Samsung (Contact 001,
+  owner report). Bixby internal tab voice discovery and the v1.0 APK on Fold are
+  **NOT TESTED** until separately observed by the owner.
+- No local ML Kit / Gemini Nano invocation and no Bixby Automation Studio
+  capsule are included in this v1.0 candidate. They are separate experimental
+  providers, not phantom native features or replacements.
+- Do not uninstall or clear the v0.9 app to install a debug-signed v1.0 APK.
+  Verify signing certificate compatibility, preserve app-private sessions, then
+  test physical cold/warm shortcut, Share and Return Point operations.
+- Native unit/source checks, signed APK compilation, generic emulator regression,
+  negative, replay and source-drift tests gate promotion. Syntax PASS is not
+  runtime PASS. Generic Android is not a physical Samsung Fold Ding.
+
+**Recover → inherit → improve → test → compare → Ding → promote → preserve.**

@@ -30,17 +30,18 @@ def centre(rect):
     return str((vals[0]+vals[2])//2),str((vals[1]+vals[3])//2)
 
 def main():
-    if len(sys.argv)!=3 or sys.argv[1] not in ("COLD","WARM"):
-        raise SystemExit("Usage: probe_galaxy_screen.py COLD|WARM path/to/ui.xml")
+    if len(sys.argv) not in (3,4) or sys.argv[1] not in ("COLD","WARM","PROJECTS","CONTINUE","CAPTURE"):
+        raise SystemExit("Usage: probe_galaxy_screen.py COLD|WARM|PROJECTS|CONTINUE|CAPTURE output.xml [expected-text]")
     phase=sys.argv[1]
     path=Path(sys.argv[2])
+    expected=sys.argv[3] if len(sys.argv)==4 else "Your Fold already has tools."
     recovered=False
     for attempt in range(3):
         nodes=snapshot(path)
         texts=[label(n) for n in nodes]
-        if "Your Fold already has tools." in texts and any(
+        if any(expected in x for x in texts) and any(
              n.attrib.get("package")=="com.jmisjustme.foldultra" for n in nodes):
-            print(f"JM GALAXY {phase} PASS · native screen visible · system-recovery={recovered}")
+            print(f"JM ROUTE {phase} PASS · native screen visible · expected={expected} · system-recovery={recovered}")
             return
         if "Pixel Launcher isn't responding" in texts:
             if recovered:

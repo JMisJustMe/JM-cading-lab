@@ -28,7 +28,8 @@ public final class ProjectShelf {
         o.put("family",family);o.put("url",url);return o;
     }
     static boolean family(String value){
-        return "GAMES".equals(value)||"MUSIC".equals(value)||"BUILD".equals(value)||"ESTATE".equals(value);
+        return "GAMES".equals(value)||"MUSIC".equals(value)||"BUILD".equals(value)||"ESTATE".equals(value)||
+               "COMICS".equals(value)||"CARTOONS".equals(value)||"BOOKS".equals(value);
     }
     public static String safeUrl(String input) throws Exception{
         String url=input==null?"":input.trim();

@@ -2,7 +2,7 @@
 # Generic Android SDK 35 emulator smoke only; never a Samsung Fold physical Ding.
 set -eu
 mkdir -p emulator-proof
-APK="emulator-input/JM_FOLD_ULTRA_REENTRY_v0_9_DEBUG.apk"
+APK="emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk"
 if [ ! -s "$APK" ]; then
   echo "HOLD: missing exact build artifact: $APK" >&2
   ls -al emulator-input >&2 || true
@@ -144,6 +144,17 @@ python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_gal
 adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy' > emulator-proof/GALAXY_WARM_VIEW.txt
 sleep 2
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py WARM emulator-proof/GALAXY_WARM_UI.xml
+# New v1.0 routes must reach actual native rooms, not just resolve an Intent.
+for ROUTE in projects continue capture; do
+  adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d "jmfoldultra://open/$ROUTE" > "emulator-proof/CONTACT_V1_$ROUTE.txt"
+  sleep 2
+  case "$ROUTE" in
+    projects) EXPECT="Actual JM bodies." ; PHASE=PROJECTS ;;
+    continue) EXPECT="JM / RETURN POINT" ; PHASE=CONTINUE ;;
+    capture) EXPECT="Owner-selected originals." ; PHASE=CAPTURE ;;
+  esac
+  python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py "$PHASE" "emulator-proof/CONTACT_V1_$ROUTE.xml" "$EXPECT"
+done
 adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/GALAXY_AFTER_PREFS.xml
 python3 - <<'PY' > emulator-proof/GALAXY_CONTACT_RECEIPT.txt
 import xml.etree.ElementTree as ET

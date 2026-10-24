@@ -1,14 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-    <shortcut
-        android:shortcutId="jm_galaxy_tools"
-        android:enabled="true"
-        android:shortcutShortLabel="@string/jm_galaxy_short_label"
-        android:shortcutLongLabel="@string/jm_galaxy_long_label">
-        <intent
-            android:action="android.intent.action.VIEW"
+    <shortcut android:shortcutId="jm_galaxy_tools" android:enabled="true"
+        android:shortcutShortLabel="@string/jm_galaxy_tools_short_label"
+        android:shortcutLongLabel="@string/jm_galaxy_tools_long_label">
+        <intent android:action="android.intent.action.VIEW"
             android:targetPackage="com.jmisjustme.foldultra"
             android:targetClass="com.jmisjustme.foldultra.MainActivity"
             android:data="jmfoldultra://open/galaxy" />
+    </shortcut>
+    <shortcut android:shortcutId="jm_projects" android:enabled="true"
+        android:shortcutShortLabel="@string/jm_projects_short_label"
+        android:shortcutLongLabel="@string/jm_projects_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/projects" />
+    </shortcut>
+    <shortcut android:shortcutId="jm_continue" android:enabled="true"
+        android:shortcutShortLabel="@string/jm_continue_short_label"
+        android:shortcutLongLabel="@string/jm_continue_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/continue" />
+    </shortcut>
+    <shortcut android:shortcutId="jm_capture" android:enabled="true"
+        android:shortcutShortLabel="@string/jm_capture_short_label"
+        android:shortcutLongLabel="@string/jm_capture_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/capture" />
     </shortcut>
 </shortcuts>

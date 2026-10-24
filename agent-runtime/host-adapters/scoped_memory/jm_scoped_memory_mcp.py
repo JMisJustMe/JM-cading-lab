@@ -16,6 +16,7 @@ import sys
 
 from jm_scoped_memory_host import git_workspace, stable
 
+MODERN = "2026-07-28"
 PROTOCOL = "2025-11-25"
 SUPPORTED = {PROTOCOL, "2025-06-18", "2025-03-26"}
 SERVER = {"name": "jm-scoped-memory", "version": "0.3.0"}
@@ -127,6 +128,43 @@ class JMScopedMCP:
         except (ValueError, OSError, subprocess.SubprocessError) as exc:
             return tool_result({"status": "HOLD", "reason": type(exc).__name__}, True)
 
+    def modern(self, ident, method, params):
+        """Stateless 2026-07-28 MCP era. No legacy handshake or owner override."""
+        if not isinstance(params, dict):
+            return rpc_error(ident, -32602, "Modern request parameters required")
+        meta = params.get("_meta")
+        if not isinstance(meta, dict):
+            return rpc_error(ident, -32602, "Modern protocol metadata required")
+        version = meta.get("io.modelcontextprotocol/protocolVersion")
+        allowed = [MODERN, PROTOCOL, "2025-06-18", "2025-03-26"]
+        if version != MODERN:
+            return {"jsonrpc": "2.0", "id": ident,
+                    "error": {"code": -32022, "message": "Unsupported protocol version",
+                              "data": {"supportedVersions": allowed}}}
+        if not isinstance(meta.get("io.modelcontextprotocol/clientCapabilities"), dict):
+            return rpc_error(ident, -32602, "Modern clientCapabilities required")
+        def complete(result):
+            return success(ident, {**result, "resultType": "complete",
+                "_meta": {"io.modelcontextprotocol/serverInfo": SERVER}})
+        if method == "server/discover":
+            return complete({"supportedVersions": allowed,
+                             "capabilities": {"tools": {"listChanged": False}},
+                             "instructions": "Local OS/Git scope is host-bound. Write tool disabled by default. No live provider/device proof.",
+                             "ttlMs": 0, "cacheScope": "private"})
+        if method == "tools/list":
+            if params.get("cursor") not in (None, ""):
+                return rpc_error(ident, -32602, "Invalid modern cursor")
+            return complete({"tools": tool_defs(self.writes)})
+        if method == "tools/call":
+            name = params.get("name")
+            if not isinstance(name, str):
+                return rpc_error(ident, -32602, "Missing tool name")
+            if name not in {tool["name"] for tool in tool_defs(self.writes)}:
+                return rpc_error(ident, -32602, "Unknown or disabled tool")
+            return complete(self.call(name, params.get("arguments", {})))
+        # Modern removes ping and the 2025 lifecycle; do not accidentally fall back.
+        return rpc_error(ident, -32601, "Method not supported in 2026-07-28")
+
     def handle(self, value):
         if not isinstance(value, dict) or value.get("jsonrpc") != "2.0":
             return rpc_error(None, -32600, "Invalid Request")
@@ -138,6 +176,12 @@ class JMScopedMCP:
         if not isinstance(method, str):
             return rpc_error(ident, -32600, "Missing method")
         params = value.get("params", {})
+        if method == "server/discover" or (isinstance(params, dict)
+                and isinstance(params.get("_meta"), dict)
+                and "io.modelcontextprotocol/protocolVersion" in params["_meta"]):
+            if not request:
+                return None
+            return self.modern(ident, method, params)
         if method == "initialize":
             if not request or not isinstance(params, dict):
                 return rpc_error(ident, -32602, "Invalid initialize")

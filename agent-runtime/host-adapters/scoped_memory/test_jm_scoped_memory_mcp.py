@@ -69,8 +69,9 @@ class MCPContact(unittest.TestCase):
         data = self.send([req(2, "tools/list"), init(), req(3, "tools/list"),
                           READY, req(4, "unsupported"), req(5, "tools/list")])
         self.assertEqual(data[0]["error"]["code"], -32002)
-        self.assertEqual(data[2]["error"]["code"], -32601)
-        self.assertEqual(data[3]["result"]["tools"][0]["name"], "jm_memory_list")
+        self.assertEqual(data[2]["error"]["code"], -32002)
+        self.assertEqual(data[3]["error"]["code"], -32601)
+        self.assertEqual(data[4]["result"]["tools"][0]["name"], "jm_memory_list")
 
     def test_readonly_default_rejects_write_even_direct_call(self):
         data = self.send([init(), READY, call(2, "jm_memory_write",

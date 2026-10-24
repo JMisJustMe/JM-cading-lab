@@ -59,7 +59,7 @@ jobs:
         working-directory: coding-estate/integration/codegornization-cp02
         run: |
           mkdir -p evidence
-          echo "JM_TESTED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          export JM_TESTED_HEAD=$(git rev-parse HEAD)
           Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
           timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/inherited_on_recipient.gd > evidence/inherited-native.log 2>&1
           timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/conduct_test.gd > evidence/native.log 2>&1

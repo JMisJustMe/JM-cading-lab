@@ -7,9 +7,11 @@ var conduct_error = ""
 func _ready() -> void:
 	super._ready()
 	var rail = HBoxContainer.new()
+	rail.name = "ConductRail"
 	rail.position = Vector2(14,54)
 	for form in ["skyray","rootwarden","prismwisp"]:
 		var button = Button.new()
+		button.name = "Form_" + form
 		button.text = "FORM · " + form.to_upper()
 		button.custom_minimum_size = Vector2(180,42)
 		button.pressed.connect(func():
@@ -17,7 +19,7 @@ func _ready() -> void:
 				_toast("START A MISSION BEFORE FORM CONTACT")
 				return
 			var result = accept_file("res://packets/" + form + ".json")
-			_toast("FORM " + form.to_uppercase() if result.get("applied",false) else "FORM HOLD · " + conduct_error)
+			_toast("FORM " + form.to_upper() if result.get("applied",false) else "FORM HOLD · " + conduct_error)
 		)
 		rail.add_child(button)
 	add_child(rail)

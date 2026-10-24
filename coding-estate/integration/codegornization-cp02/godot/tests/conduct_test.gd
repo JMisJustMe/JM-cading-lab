@@ -83,6 +83,9 @@ func run() -> void:
 	hp = scene.battle["heroes"][1]["hp"]
 	scene.step_forms(0.05)
 	check("Prismwisp orbit makes original combat contact",scene.battle["heroes"][1]["hp"]<hp)
+	reset()
+	scene.get_node("ConductRail/Form_skyray").pressed.emit()
+	check("actual native FORM button commits and returns visible feedback",scene.conducted_state()["revision"]==1 and scene.conducted_state()["agents"][0]["form"]=="SKYRAY")
 	var failed = checks.filter(func(c):return not c["passed"])
 	var receipt = {"scope":"actual original SLINGFALL inherited GDScript scene plus typed Node→Godot result adapter; Linux headless, not Samsung","passed":checks.size()-failed.size(),"total":checks.size(),"checks":checks,"engine":Engine.get_version_info()["string"]}
 	var f = FileAccess.open("res://../evidence/native-tests.json",FileAccess.WRITE)

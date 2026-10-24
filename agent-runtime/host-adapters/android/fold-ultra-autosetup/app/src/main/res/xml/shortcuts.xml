@@ -11,4 +11,34 @@
             android:targetClass="com.jmisjustme.foldultra.MainActivity"
             android:data="jmfoldultra://open/galaxy" />
     </shortcut>
+    <shortcut
+        android:shortcutId="jm_games_shelf"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/jm_games_short_label"
+        android:shortcutLongLabel="@string/jm_games_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/games" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="jm_music_shelf"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/jm_music_short_label"
+        android:shortcutLongLabel="@string/jm_music_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/music" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="jm_return_points"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/jm_recovery_short_label"
+        android:shortcutLongLabel="@string/jm_recovery_long_label">
+        <intent android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/recovery" />
+    </shortcut>
 </shortcuts>

@@ -82,7 +82,7 @@ require("clearAllDrafts" in deck and "draftKey" in deck,
         "draft continuity and safe restore")
 require("sessionRoom()" in src and "SessionDeck.commit" in src and "SessionDeck.draft" in src,
         "native checkpoint edit/save available")
-require("session_deck" in src and "session_deck" in bridge and "session_deck" in cli,
+require(("session_deck" in src or "UsbBridge.configuration(sp)" in src) and "session_deck" in bridge and "session_deck" in cli,
         "portable session deck in all carriers")
 require("session_update" in bridge and "session-update" in cli and "expected_revision" in cli,
         "owner-approved laptop session proposal with compare-and-swap")

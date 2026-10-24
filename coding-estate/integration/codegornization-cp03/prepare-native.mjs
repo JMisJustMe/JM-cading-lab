@@ -1,0 +1,16 @@
+import {cp,readFile,writeFile,mkdir} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+const here=new URL('./',import.meta.url),prior=new URL('../codegornization-cp02/',here),target=new URL('godot/',here);
+execFileSync(process.execPath,[fileURLToPath(new URL('prepare-native.mjs',prior)),fileURLToPath(new URL('../../../games/slingfall/godot-v0-7',here))],{stdio:'inherit'});
+execFileSync(process.execPath,[fileURLToPath(new URL('emit-packets.mjs',prior))],{stdio:'inherit'});
+await mkdir(target,{recursive:true});
+for(const name of ['Main.gd','Main.tscn','project.godot','ConductRecipient.gd','ConductedMain.tscn','SourceSeal.gd','packets','assets','tests'])await cp(new URL('godot/'+name,prior),new URL(name,target),{recursive:true});
+const sha=b=>createHash('sha256').update(b).digest('hex');
+if(sha(await readFile(new URL('Main.gd',target)))!=='6c2859004bf3fbc8c0e13f94f4d9abca221459d595d589c3eeab861b79634b55')throw Error('ORIGINAL_MAIN_DRIFT');
+if(sha(await readFile(new URL('ConductRecipient.gd',target)))!=='1d088a06db0538a4a793d2682f25c0600329ec4e555b2f4c6be3d832d3f9e064')throw Error('CP02_RECIPIENT_DRIFT');
+await writeFile(new URL('project.godot',target),(await readFile(new URL('project.godot',target),'utf8')).replace('res://ConductedMain.tscn','res://CP03Main.tscn'));
+for(const [from,to] of [['inherited_on_recipient.gd','inherited_on_cp03.gd'],['conduct_test.gd','cp02_on_cp03.gd'],['cold_recover.gd','cold_on_cp03.gd']])await writeFile(new URL('tests/'+to,target),(await readFile(new URL('tests/'+from,target),'utf8')).replaceAll('res://ConductedMain.tscn','res://CP03Main.tscn'));
+await mkdir(new URL('evidence/',here),{recursive:true});
+console.log('CP03 native child prepared; original Main and CP02 recipient byte-exact');

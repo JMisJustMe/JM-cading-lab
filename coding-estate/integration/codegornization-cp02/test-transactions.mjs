@@ -22,6 +22,8 @@ check('exact snapshot source replay recovery',()=>assert.deepEqual(Journal.recov
 check('reordered committed history refuses',()=>{const x=j.snapshot();x.entries.reverse();assert.throws(()=>Journal.recover(x,seal))});
 check('rehashed forged history refuses original replay',()=>{const x=j.snapshot();x.entries[0].records[0].after.energy=999;assert.throws(()=>Journal.recover(x,seal))});
 check('native source records emitted for recipient',()=>assert.equal(j.records().length,3));
+check('compact snapshot regenerates original records without duplicate traces',()=>assert.deepEqual(Journal.recover(j.compact(),seal).snapshot(),j.snapshot()));
+check('compact forged commit hash refuses',()=>{const x=j.compact();x.commits[0].hash='bad';assert.throws(()=>Journal.recover(x,seal))});
 const journal=j.snapshot();await writeFile(new URL('./evidence/journal.json',import.meta.url),JSON.stringify(journal,null,2));
 await writeFile(new URL('./evidence/transaction-tests.json',import.meta.url),JSON.stringify({scope:'original JS six-executor prepare/atomic commit/CAS/idempotency/replay; resource context is caller-observed, not externally attested',passed:tests.filter(x=>x.passed).length,total:tests.length,tests},null,2));
 console.log(JSON.stringify({passed:tests.filter(x=>x.passed).length,total:tests.length,failed:tests.filter(x=>!x.passed)},null,2));if(tests.some(x=>!x.passed))process.exit(1);

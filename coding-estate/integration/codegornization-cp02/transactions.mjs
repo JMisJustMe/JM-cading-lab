@@ -41,7 +41,14 @@ export class Journal {
   entry.hash=digest(entry);this.entries.push(entry);return {applied:true,duplicate:false,entry:clone(entry)};
  }
  snapshot(){return {schema:'jm.cooperation.journal/2',sourceSeal:this.sourceSeal,seed:clone(this.seed),entries:clone(this.entries),head:this.head()}}
+ compact(){return {schema:'jm.cooperation.compact/2',sourceSeal:this.sourceSeal,seed:clone(this.seed),commits:this.entries.map(e=>({request:clone(e.request),hash:e.hash})),head:this.head()}}
  static recover(data,expectedSeal){
+  if(data?.schema==='jm.cooperation.compact/2'){
+   need(data.sourceSeal===expectedSeal&&Array.isArray(data.commits)&&data.commits.length<=200,'COMPACT_SOURCE_OR_LIMIT');
+   const j=new Journal({sourceSeal:expectedSeal,seed:data.seed});
+   for(const c of data.commits){const t=j.prepare(c.request);need(!t.duplicate,'COMPACT_DUPLICATE');const e=j.commit(t,c.request.context).entry;need(e.hash===c.hash,'COMPACT_REPLAY_MISMATCH')}
+   need(j.head()===data.head,'COMPACT_HEAD_MISMATCH');return j;
+  }
   need(data?.schema==='jm.cooperation.journal/2'&&data.sourceSeal===expectedSeal,'JOURNAL_SOURCE_DRIFT');
   need(Array.isArray(data.entries)&&data.entries.length<=200,'JOURNAL_LIMIT');
   const j=new Journal({sourceSeal:expectedSeal,seed:data.seed});

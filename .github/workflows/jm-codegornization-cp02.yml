@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -32,16 +34,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Recover the exact existing native recipient
         run: |
           node coding-estate/integration/codegornization-cp02/prepare-native.mjs games/slingfall/godot-v0-7
-          python -m pip install pillow
-          cd games/slingfall/godot-v0-7
-          python make_assets.py
-          cp assets/*.png ../../../coding-estate/integration/codegornization-cp02/godot/assets/
       - uses: actions/download-artifact@v4
         with:
           name: jm-cp02-original-produced-result
@@ -59,6 +59,7 @@ jobs:
         working-directory: coding-estate/integration/codegornization-cp02
         run: |
           mkdir -p evidence
+          echo "JM_TESTED_HEAD=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
           timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/inherited_on_recipient.gd > evidence/inherited-native.log 2>&1
           timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/conduct_test.gd > evidence/native.log 2>&1

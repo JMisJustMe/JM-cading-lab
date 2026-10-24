@@ -1166,7 +1166,7 @@ public final class MainActivity extends Activity {
   void file(boolean exporting){
     Intent i=new Intent(exporting?Intent.ACTION_CREATE_DOCUMENT:Intent.ACTION_OPEN_DOCUMENT);
     i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/json");
-    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v0_9.json");
+    if(exporting)i.putExtra(Intent.EXTRA_TITLE,"JM_FOLD_ULTRA_SETUP_v1_0.json");
     try{startActivityForResult(i,exporting?EXPORT:IMPORT);}
     catch(Exception e){Toast.makeText(this,"HOLD · Document picker unavailable",1).show();}
   }
@@ -1175,7 +1175,27 @@ public final class MainActivity extends Activity {
     if(result!=RESULT_OK||data==null||data.getData()==null)return;
     Uri uri=data.getData();
     try{
-      if(req==CLOUD_RETURN_IMPORT){
+      if(req==JM_INTAKE_PICK){
+        JMIntakeV1.review(this,sp,uri,getContentResolver().getType(uri),()->{tab=10;render();});
+      }else if(req==JM_INTAKE_EXPORT){
+        JSONObject row=pendingIntakeExport;pendingIntakeExport=null;
+        if(row==null)throw new IOException("Export selection expired; choose the original again");
+        File original=JMIntakeV1.checked(this,row);
+        try(InputStream in=new FileInputStream(original);
+            OutputStream out=getContentResolver().openOutputStream(uri,"w")){
+          if(out==null)throw new IOException("Export destination unavailable");
+          byte[] b=new byte[8192];int n;
+          while((n=in.read(b))!=-1)out.write(b,0,n);
+        }
+        Toast.makeText(this,"JM original exported to your selected location",Toast.LENGTH_LONG).show();
+      }else if(req==JM_CONTACT_EXPORT){
+        byte[] data=JMContactV1.exportReceipt(sp).toString(2).getBytes(StandardCharsets.UTF_8);
+        try(OutputStream out=getContentResolver().openOutputStream(uri,"w")){
+          if(out==null)throw new IOException("Contact export unavailable");
+          out.write(data);
+        }
+        Toast.makeText(this,"Scoped JM contact ledger exported",Toast.LENGTH_LONG).show();
+      }else if(req==CLOUD_RETURN_IMPORT){
         ByteArrayOutputStream out=new ByteArrayOutputStream();
         try(InputStream in=getContentResolver().openInputStream(uri)){
           if(in==null)throw new IOException("Input unavailable");
@@ -1192,30 +1212,15 @@ public final class MainActivity extends Activity {
         CloudReturnBridge.stage(sp,pending);
         reviewCloudReturn();
       }else if(req==EXPORT){
-        JSONObject j=new JSONObject();
-        j.put("schema",SCHEMA);j.put("root",sp.getString("root",""));
-        j.put("focus",sp.getString("focus","CREATE"));
-        j.put("ready",sp.getBoolean("ready",false));j.put("stage",sp.getInt("stage",0));
-        JSONObject marks=new JSONObject();for(String key:NATIVE_KEYS)marks.put(key,sp.getBoolean("tried."+key,false));
-        j.put("native_owner_marks",marks);j.put("native_group",sp.getString("native.group","ASSIST"));
-        j.put("session",sp.getString("session","MAKE"));
-        JSONObject ownerTests=new JSONObject();
-        ownerTests.put("compact",sp.getBoolean("owner.compact_tested",false));
-        ownerTests.put("expanded",sp.getBoolean("owner.expanded_tested",false));
-        ownerTests.put("reopen",sp.getBoolean("owner.reopen_tested",false));
-        j.put("owner_test_marks",ownerTests);
-        j.put("project_shelf",ProjectShelf.all(sp));
-        j.put("active_project",ProjectShelf.selected(sp));
-        j.put("layout_compact",SetupPlan.layout(sp,false));
-        j.put("layout_expanded",SetupPlan.layout(sp,true));
-        j.put("setup_last",sp.getString("setup.last",""));
-        j.put("session_deck",SessionDeck.all(sp));
-        j.put("return_points",ReentryEngine.all(sp));
+        // One prevalidated native export body; Living Home + contact metadata travel
+        // atomically with the established SessionDeck / ReturnPoint config.
+        // Private JM Intake original payload files are NOT included.
+        JSONObject j=UsbBridge.configuration(sp);
         try(OutputStream o=getContentResolver().openOutputStream(uri,"w")){
           if(o==null)throw new IOException("Output unavailable");
           o.write(j.toString(2).getBytes(StandardCharsets.UTF_8));
         }
-        Toast.makeText(this,"JM configuration exported",1).show();
+        Toast.makeText(this,"JM v1.0 configuration and bounded contact metadata exported (not media payloads)",Toast.LENGTH_LONG).show();
       }else if(req==PREFLIGHT_EXPORT){
         String receipt=sp.getString("preflight.last","");
         if(receipt.isEmpty())throw new IOException("Run diagnostics before exporting a receipt");
@@ -1258,7 +1263,7 @@ public final class MainActivity extends Activity {
           if(!present)throw new IllegalArgumentException("Active project missing from imported shelf");
         }
         new AlertDialog.Builder(this).setTitle("Import JM configuration?")
-          .setMessage("Replace only this app's note, focus and opening progress? Samsung data and launcher stay untouched.")
+          .setMessage("Owner-approved JM configuration restore can replace root, sessions, Return Points, Living Home replay metadata and included contact receipts. A local rollback is saved first. Media original bytes are NOT inside JSON. Continue?")
           .setNegativeButton("Cancel",null)
           .setPositiveButton("Import",(d,w)->{
             if(SCHEMA.equals(schema)){
@@ -1266,7 +1271,7 @@ public final class MainActivity extends Activity {
                 UsbBridge.write(this,"local_import_rollback.json",UsbBridge.configuration(sp).toString(2));
                 UsbBridge.applyConfig(sp,j);
                 tab=0;render();
-                Toast.makeText(this,"JM v0.7 configuration imported; previous state saved",Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"JM configuration and included extension metadata imported; rollback saved",Toast.LENGTH_LONG).show();
               }catch(Exception problem){
                 new AlertDialog.Builder(this).setTitle("HOLD · Import not confirmed")
                   .setMessage(problem.getMessage()).setPositiveButton("OK",null).show();

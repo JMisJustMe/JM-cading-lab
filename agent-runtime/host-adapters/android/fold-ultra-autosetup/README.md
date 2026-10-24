@@ -48,3 +48,37 @@ Retain one source authority. Recover before rebuild. No Ding, no claim. Draft PR
 - A successful approval atomically adds a new `SessionDeck` checkpoint, stores a replay marker, and clears the pending item. **Existing `ReentryEngine` Return Points and older source files remain untouched.**
 - Scope: authenticated server-to-browser contact remains with Living Home and the existing server. Native Fold Ultra currently consumes owner-selected portable receipts only. Live Android network transport, credential-managed background sync, device-to-device reception and physical Samsung confirmation remain HOLD. The pending/replay journal is local private app storage; the v0.9 configuration export is unchanged and is not a complete archive of these new metadata fields.
 - Source descendant: `jm/fold-ultra-living-home-return-20261022` based on unchanged PR #371 head `c33ccfe740943dd134122220a1e3755c49c3ec05`. Do not merge or change main without separate review.
+
+## JM × Bixby — GALAXY navigation-only contact candidate (24 October 2026)
+
+Inherits the tested native Fold Ultra v0.9 / Living Home return branch. This small addition
+does **not** add another app, alter the Samsung launcher, request permissions, enable
+Galaxy AI private APIs, rewrite saved sessions, or bypass owner approvals.
+
+- Exact external Android route: `jmfoldultra://open/galaxy`.
+- When JM initial setup is complete, a matching Android `ACTION_VIEW` request opens
+  the existing **GALAXY** tab (compact or unfolded layout) on either a cold launch or
+  `onNewIntent` warm delivery.
+- Before setup is complete the existing prelaunch remains visible; no automatic setup
+  occurs. Unknown URLs are refused rather than interpreted as arbitrary commands.
+- This is a **public navigation entry point**, not an authenticated control channel.
+  Future session-changing commands must stay behind existing owner approval and
+  revision checks. The original Android Share/CP07 guarded return route is unchanged.
+- Generic emulator smoke now attempts implicit VIEW resolution, verifies text rendered
+  on the actual GALAXY native screen twice, and checks that protected storage is
+  unchanged. Source-contract unit tests check the allowlist/manifest structure.
+
+Developer test after building/installing a **compatible signed build**:
+
+```sh
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy'
+```
+
+A spoken “Bixby, open JM Fold Ultra” has already worked on the owner's device;
+a request to navigate *inside* it did not. This update makes a technical route
+available to Android. **It does not prove that Bixby interprets the internal-tab
+command.** Test via a compatible Samsung Routine/shortcut independently.
+
+Do not uninstall an earlier app merely to install a new debug-signed build:
+signature mismatch and private-session data may be at risk. Preserve the
+original source and user data; no promotion without physical device acceptance.

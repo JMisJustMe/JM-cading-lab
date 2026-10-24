@@ -16,7 +16,7 @@ if(!p.includes('res://CP03Main.tscn'))throw Error('CP03_MAIN_SCENE_NOT_FOUND');
 await writeFile(project,p.replace('res://CP03Main.tscn','res://CP08Main.tscn'));
 const cfg=new URL('export_presets.cfg',target);
 let exportText=await readFile(cfg,'utf8');
-exportText=exportText.replaceAll('org.jmecostate.slingfall.cp03','org.jmecostate.slingfall.cp08');
+exportText=exportText.replaceAll('org.jmecostate.slingfall.cp03','org.jmecostate.slingfall.cp08').replaceAll('Android Fold CP03','Android Fold CP08').replaceAll('JM SLINGFALL CP03','JM SLINGFALL CP08').replaceAll('0.7.2-cp03','0.8.0-cp08');
 await writeFile(cfg,exportText);
 // Verify the unchanged ancestor source files by deterministic SHA-256 in CP03's prepare script.
 // This CP08 directory owns only CP08 scripts and a generated copy of the parent project.

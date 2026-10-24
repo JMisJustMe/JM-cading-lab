@@ -158,6 +158,9 @@ print("PASS · Android implicit deep link → native GALAXY screen, cold and war
 print("NOT CLAIMED · Bixby understands the spoken section name, physical Samsung device test, Galaxy AI API access")
 PY
 
+# Contact 003: seven exact app room routes, actual UI, cold/warm and fail-closed input.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_bixby_multiroom.py
+
 # Negative proof follows positive native UI checks, leaving revision 3 in place.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_negative_flows.py
 

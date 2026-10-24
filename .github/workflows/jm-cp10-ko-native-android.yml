@@ -1,0 +1,106 @@
+name: JM CP10 KO Family Native Contact and Fold recipient
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/codegornization-cp10/**'
+      - '.github/workflows/jm-cp10-ko-native-android.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Recover exact native ancestors and official engine templates
+        run: |
+          node coding-estate/everybody/role-qualified-61/kocodifying/kocodifying-source-aware-smoke.mjs
+          node coding-estate/everybody/role-qualified-61/jmlogic/jmlogic-source-aware-smoke.mjs
+          node coding-estate/integration/codegornization-cp10/prepare-native.mjs
+          curl -fL --retry 2 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -o /tmp/godot.zip
+          echo '87f6e6be292929e363d15ed9052f277b2ba4e95ed994e1e099048097be2dfd03  /tmp/godot.zip' | sha256sum -c -
+          unzip -q /tmp/godot.zip -d /tmp/godot
+          chmod +x /tmp/godot/Godot_v4.5.2-stable_linux.x86_64
+          echo '/tmp/godot' >> "$GITHUB_PATH"
+          curl -fL --retry 2 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_export_templates.tpz -o /tmp/templates.tpz
+          echo 'ea50e5183f057d42b22120d0d0340205b98f51f8ff13c33c70fd4ac9077d2019  /tmp/templates.tpz' | sha256sum -c -
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.5.2.stable"
+          unzip -p /tmp/templates.tpz templates/android_debug.apk > "$HOME/.local/share/godot/export_templates/4.5.2.stable/android_debug.apk"
+      - name: Actual native regression and input lifecycle
+        working-directory: coding-estate/integration/codegornization-cp10
+        run: |
+          mkdir -p evidence
+          Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/inherited_on_cp03.gd > evidence/inherited.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp02_on_cp03.gd > evidence/cp02.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cold_on_cp03.gd > evidence/cold.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/native_input_test.gd > evidence/input.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/director_native_test.gd > evidence/director.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/director_cold_test.gd > evidence/director-cold.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp08_tactics_test.gd > evidence/cp08-tactics.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp09_living_rivals_test.gd > evidence/cp09-living.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp10_ko_contact_test.gd > evidence/cp10-ko-native.log 2>&1
+      - name: Configure exact native Android export
+        run: |
+          mkdir -p "$HOME/.config/godot" /tmp/cp03-custody
+          keytool -genkeypair -keystore /tmp/cp03-custody/debug.keystore -alias androiddebugkey -storepass android -keypass android -dname 'CN=JM CP09 Native Test,O=JM ECOSTATE,C=GB' -keyalg RSA -keysize 2048 -validity 10000
+          python3 - <<'PY'
+          import pathlib,os,json
+          cfg=pathlib.Path.home()/'.config/godot/editor_settings-4.5.tres'
+          settings={'export/android/android_sdk_path':os.environ['ANDROID_HOME'],'export/android/java_sdk_path':os.environ['JAVA_HOME'],'export/android/debug_keystore':'/tmp/cp03-custody/debug.keystore','export/android/debug_keystore_user':'androiddebugkey','export/android/debug_keystore_pass':'android'}
+          cfg.write_text('[gd_resource type="EditorSettings" format=3]\n\n[resource]\n'+'\n'.join(k+' = '+json.dumps(v) for k,v in settings.items())+'\n')
+          PY
+      - name: Build actual signed ARM64 Godot APK
+        working-directory: coding-estate/integration/codegornization-cp10
+        env:
+          GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /tmp/cp03-custody/debug.keystore
+          GODOT_ANDROID_KEYSTORE_DEBUG_USER: androiddebugkey
+          GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: android
+        run: |
+          Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --export-debug 'Android Fold CP10' "$PWD/JM_SLINGFALL_CP10_KO_NATIVE_FOLD_TEST.apk" > evidence/export.log 2>&1
+          python3 - <<'PY'
+          import pathlib,os,subprocess,zipfile,json,hashlib,struct
+          apk=pathlib.Path('JM_SLINGFALL_CP10_KO_NATIVE_FOLD_TEST.apk')
+          assert apk.is_file()
+          tools=sorted((pathlib.Path(os.environ['ANDROID_HOME'])/'build-tools').glob('*/apksigner'))[-1].parent
+          r=subprocess.run([str(tools/'apksigner'),'verify','--verbose','--print-certs',str(apk)],check=True,capture_output=True,text=True)
+          pathlib.Path('evidence/signature.txt').write_text(r.stdout)
+          r=subprocess.run([str(tools/'aapt'),'dump','badging',str(apk)],check=True,capture_output=True,text=True)
+          pathlib.Path('evidence/badging.txt').write_text(r.stdout)
+          with zipfile.ZipFile(apk) as z:
+            assert z.testzip() is None
+            assert 'lib/arm64-v8a/libgodot_android.so' in z.namelist()
+            assert not any(n.endswith('.html') for n in z.namelist())
+            alignment=[]
+            for name in z.namelist():
+              if name.startswith('lib/arm64-v8a/') and name.endswith('.so'):
+                b=z.read(name);assert b[:4]==b'\x7fELF' and b[4]==2
+                off=struct.unpack_from('<Q',b,32)[0];size,count=struct.unpack_from('<HH',b,54)
+                for i in range(count):
+                  ph=struct.unpack_from('<IIQQQQQQ',b,off+i*size)
+                  if ph[0]==1:
+                    assert ph[7]>=16384 and ph[2]%16384==ph[3]%16384,(name,ph[7])
+                    alignment.append({'library':name,'segment':i,'alignment':ph[7],'congruent16K':True})
+            pathlib.Path('evidence/native-16k-alignment.json').write_text(json.dumps(alignment,indent=2))
+          r=subprocess.run([str(tools/'zipalign'),'-c','-P','16','-v','4',str(apk)],check=True,capture_output=True,text=True)
+          pathlib.Path('evidence/zipalign.txt').write_text(r.stdout)
+          pathlib.Path('evidence/android-package.json').write_text(json.dumps({'status':'PROVEN','scope':'actual signed native Godot ARM64 APK construction, signature, ELF16K and ZIP alignment verification; install/launch/physical owner-device NOT TESTED','bytes':apk.stat().st_size,'sha256':hashlib.sha256(apk.read_bytes()).hexdigest(),'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'run':os.environ['GITHUB_RUN_ID']},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp10-ko-native-android-and-evidence
+          path: |
+            coding-estate/integration/codegornization-cp10/JM_SLINGFALL_CP10_KO_NATIVE_FOLD_TEST.apk
+            coding-estate/integration/codegornization-cp10/evidence/
+          retention-days: 30

@@ -112,7 +112,7 @@ public final class MainActivity extends Activity {
     scroll.setVerticalScrollBarEnabled(false);
     page=new LinearLayout(this);page.setOrientation(1);
     page.setPadding(dp(wide?30:18),dp(wide?44:30),dp(wide?30:18),dp(30));scroll.addView(page);
-    label(page,"JM / ECOSTATE     •     FOLD ULTRA 0.9",12,MUTED,true);space(page,14);
+    label(page,"JM / ECOSTATE     •     FOLD ULTRA 1.0",12,MUTED,true);space(page,14);
     View accent=new View(this);accent.setBackground(grad(BLUE,PURPLE,7));
     page.addView(accent,new LinearLayout.LayoutParams(dp(wide?168:105),dp(4)));space(page,20);
     if(sp.getBoolean("ready",false))dashboard();else prelaunch();
@@ -1055,6 +1055,9 @@ public final class MainActivity extends Activity {
         card(row.getString("kind"),row.getString("name"),row.getString("proof"),TEAL);
       }
     }catch(Exception e){card("HOLD","Contact ledger invalid",e.getMessage(),PURPLE);}
+    card("EXTERNAL PROVIDERS / HOLD","No private Samsung AI access asserted",
+      "Bixby Automation Studio and Gemini Nano ML Kit remain separately gated experiments. "+
+      "Current JM contact receipts prove only their own local scope.",PURPLE);
     btn(page,"← JM root",false,()->{tab=0;render();});
   }
   void markContact(String event){

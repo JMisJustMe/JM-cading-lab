@@ -1,0 +1,72 @@
+name: JM CODEGORNIZATION CP02 — original bodies to native returning state
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/codegornization-cp02/**'
+      - '.github/workflows/jm-codegornization-cp02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute original six-body batches and transport real results
+        working-directory: coding-estate/integration/codegornization-cp02
+        run: |
+          mkdir -p evidence
+          node test-transactions.mjs
+          node emit-packets.mjs
+          node provider-transport.mjs produce
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jm-cp02-original-produced-result
+          path: coding-estate/integration/codegornization-cp02/provider-output/
+          retention-days: 30
+  native-recipient:
+    needs: original-execution
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover the exact existing native recipient
+        run: |
+          node coding-estate/integration/codegornization-cp02/prepare-native.mjs games/slingfall/godot-v0-7
+          python -m pip install pillow
+          cd games/slingfall/godot-v0-7
+          python make_assets.py
+          cp assets/*.png ../../../coding-estate/integration/codegornization-cp02/godot/assets/
+      - uses: actions/download-artifact@v4
+        with:
+          name: jm-cp02-original-produced-result
+          path: coding-estate/integration/codegornization-cp02/provider-input/
+      - name: Admit actual independent-job packet bytes and replay source
+        working-directory: coding-estate/integration/codegornization-cp02
+        run: node provider-transport.mjs receive
+      - name: Install pinned official native Godot engine
+        run: |
+          curl -fL --retry 2 -o /tmp/godot.zip https://github.com/godotengine/godot-builds/releases/download/4.4.1-stable/Godot_v4.4.1-stable_linux.x86_64.zip
+          unzip -q /tmp/godot.zip -d /tmp/jm-godot
+          chmod +x /tmp/jm-godot/Godot_v4.4.1-stable_linux.x86_64
+          echo '/tmp/jm-godot' >> "$GITHUB_PATH"
+      - name: Execute actual native recipient, inherited modes and returning state
+        working-directory: coding-estate/integration/codegornization-cp02
+        run: |
+          mkdir -p evidence
+          Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
+          timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/inherited_on_recipient.gd > evidence/inherited-native.log 2>&1
+          timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/conduct_test.gd > evidence/native.log 2>&1
+          node verify-native-return.mjs
+          timeout 60s Godot_v4.4.1-stable_linux.x86_64 --headless --path godot --script res://tests/cold_recover.gd > evidence/cold.log 2>&1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp02-native-return-recovery
+          path: coding-estate/integration/codegornization-cp02/evidence/
+          retention-days: 30

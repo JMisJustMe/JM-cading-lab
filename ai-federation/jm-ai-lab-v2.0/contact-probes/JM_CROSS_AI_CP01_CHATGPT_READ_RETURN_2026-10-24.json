@@ -1,0 +1,51 @@
+{
+  "schema": "JM.AI.CrossAIContactReadReturn/0.2",
+  "date": "2026-10-24",
+  "checkpoint": "CP02_CHATGPT_SOURCE_CONTACT",
+  "probe_id": "JM-XAI-20261022-CP01",
+  "contact_nonce": "57a4592b96e1ad4e9f4d53fa07f80ec0",
+  "return_tag": "CONTACT-IS-NOT-MERGE",
+  "platform": "ChatGPT",
+  "source_url": "https://github.com/JMisJustMe/JM-cading-lab/blob/492001a22054a712fa2e7c35bf6a8d71a4f519be/ai-federation/jm-ai-lab-v2.0/contact-probes/JM_CROSS_AI_CONTACT_CP01_2026-10-22.md",
+  "access_method": "Connected GitHub plugin fetch_file, original-commit-pinned UTF-8 read",
+  "original_probe_commit": "492001a22054a712fa2e7c35bf6a8d71a4f519be",
+  "original_probe_blob_sha": "128253c5729873cf54ede56bc1272eec3e73b758",
+  "guide_read": true,
+  "guide_path": "ai-federation/jm-ai-lab-v2.0/CROSS_AI_CONTACT_CREATION_v1.md",
+  "guide_blob_sha": "f1a92a0cdf5c214a7c4b0a3d01ad3693fbd36b9c",
+  "legacy_github_host_adapter_blob_sha": "699dc576453cfaa172467c9fcf8f89c9ec58c8a4",
+  "legacy_host_contact_probe_blob_sha": "07c2f3257a530b1b9c543f2c71e7295541fb7efc",
+  "observation": "CP01 and v1.1 guide already exist and are mutually source-aligned; rebuilding a master cross-AI catalogue would be redundant. An existing Gemini ↔ OpenAI relay is held as separate draft PR #66 in jm-cloud-contact-server-first-cloud.",
+  "build_mesh_contact": {
+    "actual_tool": "mcp__JM_ECOSTATE___Build_Mesh__build_mesh_status",
+    "status": "READ_ONLY_RESPONSE_PASS",
+    "server": "JM ECOSTATE Build Mesh Native MCP",
+    "version": "0.8.5",
+    "navigator_contact": "PASS",
+    "navigator_version": "0.2.0-estate-integration.1",
+    "owner_private_write_exposed": false,
+    "note": "Public Build Mesh read contact is not a private Estate authority merge or live Gemini session contact."
+  },
+  "github_source_contact": "PASS_EXACT_NONCE_AND_GIT_BLOB",
+  "read_stage_state_change": "READ_ONLY",
+  "writeback_authority": "Separate user-requested isolated evidence branch; original CP01 source stays byte-unchanged; no main merge",
+  "separate_provider_status": {
+    "gemini_current_session": "NOT_RUN_UNVERIFIED_BY_THIS_RECEIPT",
+    "copilot": "NOT_RUN",
+    "perplexity": "NOT_RUN",
+    "gemini_report_supplied_by_owner": "On its prior lane, GitHub fetch and remote MCP invocation were blocked before tool dispatch; this does not establish endpoint failure.",
+    "actual_model_api_exchange": "NOT_PERFORMED",
+    "cross_ai_relay_reference": "https://github.com/JMisJustMe/jm-cloud-contact-server-first-cloud/pull/66",
+    "known_auth_gate": "Historical 2026-10-21 relay note reports Gemini API key absent and OpenAI API secret authentication HTTP 401; no credentials inspected in this contact."
+  },
+  "contact_scope": "Real ChatGPT-session GitHub source read plus Build Mesh read-only tool contact; not independent model identity attestation or cross-provider execution.",
+  "limits": [
+    "Source nonce is PUBLIC and is not proof of provider identity.",
+    "A self-reported model receipt is not cryptographic authentication.",
+    "Gemini cannot be crowned until a separate observed Gemini-side read/report.",
+    "No production, paid API, cloud server, device, or private Library write.",
+    "Owner-authorised contact has to be verified per lane; GitHub does not automatically synchronize chat state."
+  ],
+  "mutation_performed_by_original_read": false,
+  "lineage_policy": "RECOVER_BEFORE_REBUILD; INTEGRATION_NOT_REPLACEMENT; NO_DING_NO_CLAIM"
+}

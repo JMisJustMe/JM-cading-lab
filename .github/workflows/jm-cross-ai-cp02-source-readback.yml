@@ -1,0 +1,51 @@
+name: JM Cross-AI CP02 — exact source readback and scope gate
+on:
+  push:
+    branches:
+      - experiment/cross-ai-contact-return-20261024
+    paths:
+      - "ai-federation/jm-ai-lab-v2.0/contact-probes/**"
+      - ".github/workflows/jm-cross-ai-cp02-source-readback.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-contact-acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout isolated CP02 source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Run exact original CP01/guide/host adapter readback and anti-forgery tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ai-federation/jm-ai-lab-v2.0/contact-probes/JM_CROSS_AI_CP02_VERIFY.mjs | tee JM_CP02_SOURCE_RETURN_CI.json
+      - name: Recover existing Sovereign Gateway source-return gate at pinned source commit
+        uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/jm-cloud-contact-server-first-cloud
+          ref: 7c84f96b904aefd74dec564e88b21b55e178bc08
+          path: .cross-ai-gateway
+          persist-credentials: false
+      - name: Exercise existing Mission 002 source-return gate against original CP01 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ai-federation/jm-ai-lab-v2.0/contact-probes/JM_CP02_SOURCE_RETURN_GATE_INTEGRATION.mjs | tee JM_CP02_EXISTING_GATE_CI.json
+      - name: Preserve machine-readable test witness
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-cross-ai-cp02-source-return
+          path: |
+            JM_CP02_SOURCE_RETURN_CI.json
+            JM_CP02_EXISTING_GATE_CI.json
+          if-no-files-found: error
+      - name: No provider-run promotion
+        run: echo "CONTACT=SCOPE_LIMITED_CHATGPT_SOURCE_READBACK; GEMINI=NOT_RUN; MODEL_API=NOT_RUN; PRODUCTION_MUTATION=NONE"

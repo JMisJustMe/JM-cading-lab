@@ -40,6 +40,8 @@ jobs:
         run: node tests/mission002-cp21-ko-creative.mjs source-cp10/coding-estate/integration/codegornization-cp10/godot/packets/ko_aegis.json
       - name: Preserve native composition regression
         run: node tests/mission002-cp10-multi-mechanism.mjs
+      - name: Execute original CP19 exports to generate exact CP20 test fixtures
+        run: node tests/mission002-cp19-original-app-return.mjs
       - name: Preserve CP20 encrypted five-media regression
         run: node tests/mission002-cp20-offline-transfer.mjs
       - name: Export bounded actual media

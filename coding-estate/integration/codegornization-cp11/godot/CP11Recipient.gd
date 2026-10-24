@@ -33,10 +33,27 @@ func _ready() -> void:
 	ko_trace_label.add_theme_font_size_override("font_size",15)
 	ko_trace_label.add_theme_color_override("font_color",Color("d5f8ec"))
 	ko_trace_label.text = _ko_trace_summary()
+	ko_trace_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	ko_trace_panel.add_child(ko_trace_label)
 	add_child(ko_trace_panel)
 	_fit_native_controls()
 	_sync_native_rails()
+
+func _fit_native_controls() -> void:
+	super._fit_native_controls()
+	if is_instance_valid(ko_trace_panel):
+		_fit_ko_trace(get_viewport_rect().size)
+
+func _fit_ko_trace(view_size: Vector2) -> void:
+	if not is_instance_valid(ko_trace_panel):
+		return
+	var width: float = minf(455.0,maxf(240.0,view_size.x-24.0))
+	var height: float = minf(244.0,maxf(140.0,view_size.y-130.0))
+	ko_trace_panel.custom_minimum_size = Vector2(width,height)
+	ko_trace_panel.size = Vector2(width,height)
+	ko_trace_panel.position = Vector2(maxf(12.0,view_size.x-width-12.0),maxf(105.0,minf(184.0,view_size.y-height-12.0)))
+	if is_instance_valid(ko_trace_label):
+		ko_trace_label.add_theme_font_size_override("font_size",12 if view_size.x<540 else 15)
 
 func _toggle_ko_trace() -> void:
 	if mode != "playing":

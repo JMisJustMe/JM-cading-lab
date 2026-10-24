@@ -1,0 +1,11 @@
+import {cp,mkdir,readFile,writeFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {createHash} from 'node:crypto';
+const donor=resolve(process.argv[2]||'cp02-recovery/SLINGFALL_GODOT_v0_7_WORLD_PULSE'),target=new URL('./godot/',import.meta.url);
+const hash=b=>createHash('sha256').update(b).digest('hex');
+if(hash(await readFile(join(donor,'Main.gd')))!=='6c2859004bf3fbc8c0e13f94f4d9abca221459d595d589c3eeab861b79634b55')throw Error('ORIGINAL_GODOT_SOURCE_DRIFT');
+await mkdir(target,{recursive:true});await mkdir(new URL("packets/",target),{recursive:true});
+for(const n of ['Main.gd','Main.tscn','project.godot','assets','tests'])await cp(join(donor,n),new URL(n,target),{recursive:true});
+const old=await readFile(new URL('tests/host_logic_test.gd',target),'utf8');await writeFile(new URL('tests/inherited_on_recipient.gd',target),old.replaceAll('res://Main.tscn','res://ConductedMain.tscn'));
+let project=await readFile(new URL('project.godot',target),'utf8');await writeFile(new URL('project.godot',target),project.replace('run/main_scene="res://Main.tscn"','run/main_scene="res://ConductedMain.tscn"'));
+console.log('Original SLINGFALL source pinned; separate native scene graft prepared');

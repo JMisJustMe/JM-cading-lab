@@ -19,7 +19,9 @@ import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
   static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.9";
-  static final String GALAXY_CONTACT_URI="jmfoldultra://open/galaxy";
+  static final String JM_CONTACT_PREFIX="jmfoldultra://open/";
+  // Transient display selector: never alter a chosen JM project via an external link.
+  String routeProjectFilter=null;
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205,CLOUD_RETURN_IMPORT=206;
@@ -42,11 +44,11 @@ public final class MainActivity extends Activity {
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     render();
-    if(!routeGalaxyIntent(getIntent())&&state==null)inspectIncoming(getIntent());
+    if(!routeJmRoomIntent(getIntent())&&state==null)inspectIncoming(getIntent());
   }
   @Override protected void onNewIntent(Intent intent){
     super.onNewIntent(intent);setIntent(intent);
-    if(!routeGalaxyIntent(intent))inspectIncoming(intent);
+    if(!routeJmRoomIntent(intent))inspectIncoming(intent);
     UsbBridge.offer(this,sp,()->render());
   }
   @Override protected void onPause(){
@@ -60,7 +62,7 @@ public final class MainActivity extends Activity {
   @Override public void onConfigurationChanged(Configuration c){super.onConfigurationChanged(c);render();}
   @Override public void onBackPressed(){
     if(!sp.getBoolean("ready",false) && sp.getInt("stage",0)>0){stage(sp.getInt("stage",0)-1);return;}
-    if(sp.getBoolean("ready",false)&&tab>0){tab=0;render();return;}
+    if(sp.getBoolean("ready",false)&&tab>0){routeProjectFilter=null;tab=0;render();return;}
     super.onBackPressed();
   }
   int dp(float n){return (int)(getResources().getDisplayMetrics().density*n+0.5f);}
@@ -270,7 +272,7 @@ public final class MainActivity extends Activity {
       b.setBackground(bg(i==tab?BLUE:PANEL,i==tab?0:0xff334a67,12));
       LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(50),1);
       p.setMargins(i==0?0:dp(3),0,i==2?0:dp(3),0);tabs.addView(b,p);
-      b.setOnClickListener(v->{tab=value;render();});
+      b.setOnClickListener(v->{routeProjectFilter=null;tab=value;render();});
     }
     space(page,12);
     if(tab==0)root();else if(tab==1)nativeHub();else if(tab==2)routes();else if(tab==3)control();else if(tab==4)preflight();else if(tab==5)usbRoom();else if(tab==6)projectRoom();else if(tab==7)automationRoom();else if(tab==8)sessionRoom();else reentryRoom();
@@ -449,20 +451,35 @@ public final class MainActivity extends Activity {
         else url("https://jmisjustme.github.io/JM-cading-lab/");
       }).show();
   }
-  // Bounded external navigation only. No project, note, permission or Galaxy AI state is changed.
-  // Caller authentication is NOT asserted: a public deep link may come from any app.
-  // Keep mutating JM actions behind their existing owner-approval gates.
-  boolean routeGalaxyIntent(Intent intent){
+  // Contact 003: ONLY navigational public entry points; no privileged Bixby API,
+  // project selection, session commit, note edit, permission or external app launch.
+  // Public ACTION_VIEW callers are never authenticated as the device owner.
+  boolean routeJmRoomIntent(Intent intent){
     if(intent==null||!Intent.ACTION_VIEW.equals(intent.getAction()))return false;
-    if(!GALAXY_CONTACT_URI.equals(intent.getDataString())){
+    Uri uri=intent.getData();
+    if(uri==null||!"jmfoldultra".equals(uri.getScheme())||!"open".equals(uri.getHost()))
+      return false;
+    String address=intent.getDataString();
+    int destination=-1;
+    String viewFamily=null;
+    // Exact URI allowlist also excludes fragments, query strings and encoded variants.
+    if((JM_CONTACT_PREFIX+"root").equals(address))destination=0;
+    else if((JM_CONTACT_PREFIX+"galaxy").equals(address))destination=1;
+    else if((JM_CONTACT_PREFIX+"projects").equals(address))destination=6;
+    else if((JM_CONTACT_PREFIX+"games").equals(address)){destination=6;viewFamily="GAMES";}
+    else if((JM_CONTACT_PREFIX+"music").equals(address)){destination=6;viewFamily="MUSIC";}
+    else if((JM_CONTACT_PREFIX+"sessions").equals(address))destination=8;
+    else if((JM_CONTACT_PREFIX+"recovery").equals(address))destination=9;
+    if(destination<0){
       Toast.makeText(this,"HOLD · Unknown JM navigation link",Toast.LENGTH_SHORT).show();
       return true;
     }
     if(!sp.getBoolean("ready",false)){
-      Toast.makeText(this,"HOLD · Complete JM setup before opening GALAXY",Toast.LENGTH_LONG).show();
+      Toast.makeText(this,"HOLD · Complete JM setup before opening JM rooms",Toast.LENGTH_LONG).show();
       return true;
     }
-    tab=1;
+    tab=destination;
+    routeProjectFilter=viewFamily;
     render();
     return true;
   }
@@ -857,7 +874,7 @@ public final class MainActivity extends Activity {
   void projectRoom(){
     title("JM / PROJECT CONTACT · 0.6","Actual JM bodies.\nOne connected shelf.",
       "These are references to your projects—not project copies. Unbound projects stay visible without fabricated launch URLs.");
-    String filter=sp.getString("project.family","GAMES");
+    String filter=routeProjectFilter!=null?routeProjectFilter:sp.getString("project.family","GAMES");
     LinearLayout tags=new LinearLayout(this);tags.setOrientation(0);page.addView(tags);
     for(String family:new String[]{"GAMES","MUSIC","BUILD","ESTATE"}){
       final String f=family;
@@ -866,7 +883,7 @@ public final class MainActivity extends Activity {
       b.setBackground(bg(family.equals(filter)?BLUE:PANEL,family.equals(filter)?0:0xff334a67,12));
       LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(48),1);
       p.setMargins(dp(2),0,dp(2),0);tags.addView(b,p);
-      b.setOnClickListener(v->{sp.edit().putString("project.family",f).apply();render();});
+      b.setOnClickListener(v->{routeProjectFilter=null;sp.edit().putString("project.family",f).apply();render();});
     }
     space(page,12);
     try{

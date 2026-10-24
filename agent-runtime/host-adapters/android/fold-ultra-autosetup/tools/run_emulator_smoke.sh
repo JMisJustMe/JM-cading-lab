@@ -59,6 +59,18 @@ required={"setup.last":"PLAYTEST","project.active":"jm-games-house","layout.comp
 for k,v in required.items():
     assert values.get(k)==v,(k,values.get(k),v)
 PY
+# An applied PLAYTEST preset is *not* the owner's initial five-step JM entry.
+# Complete the native prelaunch through its visible controls on the disposable
+# emulator; never fake 'ready' or weaken the production deep-link readiness gate.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/emulator_enter_jm.py > emulator-proof/OWNER_PRELAUNCH_ENTRY.txt
+adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/OWNER_READY_PREFS.xml
+python3 - <<'PY'
+import xml.etree.ElementTree as ET
+root=ET.parse("emulator-proof/OWNER_READY_PREFS.xml").getroot()
+ready=next((x.get("value") for x in root if x.get("name")=="ready"),None)
+assert ready=="true",f"Owner-simulated entry did not complete: ready={ready}"
+print("PASS · disposable emulator's real UI entered JM")
+PY
 # JM × Bixby Contact 002: prove a real implicit Android VIEW dispatch,
 # cold/reentry and onNewIntent path, with no protected project/session mutation.
 adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/GALAXY_BEFORE_PREFS.xml

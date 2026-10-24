@@ -10,6 +10,17 @@ if [ ! -s "$APK" ]; then
 fi
 
 adb install "$APK"
+# Separate read-only verifier: compares installed emulator APK's real certificate
+# and version to our exact candidate. It never installs or resets any app.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/jm_fold_upgrade_gate.py \
+  --candidate "$APK" --device > emulator-proof/JM_UPGRADE_READ_ONLY_PRECHECK.json
+python3 - <<'PY'
+import json
+d=json.load(open("emulator-proof/JM_UPGRADE_READ_ONLY_PRECHECK.json"))
+assert d["status"]=="PASS_PREINSTALL_READ_ONLY",d
+assert all(d["checks"].values()),d
+print("JM read-only APK installed-vs-candidate certificate/version gate PASS on generic Android emulator")
+PY
 adb shell wm size 720x1600
 adb shell wm density 320
 adb shell am start -W -n com.jmisjustme.foldultra/.MainActivity > emulator-proof/NARROW_START.txt

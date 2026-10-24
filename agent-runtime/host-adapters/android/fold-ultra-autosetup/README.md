@@ -146,3 +146,71 @@ Do not uninstall the earlier JM app to overcome incompatible APK signing,
 clear its private data, or promote this descendant over Contact 002 without
 source + runtime + owner comparisons. The future v1.0 Quick Capture, live sync,
 device AI and full Fold Workfield upgrades remain **proposed**, not built here.
+
+
+### Read-only physical-device update eligibility gate (Contact 003)
+
+Android only accepts an installed-app update when the app ID matches, signing
+certificates match (or Android verifies a valid key-rotation proof), and the
+new APK versionCode is no lower. Current Contact 002/003 artifacts use CI
+debug keys that may be different from one another and from the APK installed
+on the actual Fold. **NEVER uninstall or clear app data to force an upgrade.**
+
+An original owner-controlled signing key may enable a genuine compatible
+update **only if that key signed the APK already installed**. Do not create a
+different keystore and assume it will replace the current app. If the signing
+key is lost, the data-preserving same-package update remains HOLD.
+
+The working Android build now includes the local, read-only Python gate
+`tools/jm_fold_upgrade_gate.py`, which tests installed package ID, certificate
+digest, version code and permissions. It never installs, uninstalls, resets
+Android, changes Bixby, asks for keystore secrets or reads private JM sessions.
+
+#### Owner-authorised trusted laptop procedure
+
+Prerequisites: Android SDK build-tools (apksigner, aapt), platform-tools (adb),
+Python 3, owner-authorised USB debugging and USB cable. The script will refuse
+ambiguous device lists; you may pass `--serial` if you have multiple devices.
+Copy the candidate APK to the laptop and run:
+
+```sh
+python3 JM_FOLD_UPGRADE_GATE_READ_ONLY.py --candidate ./JM_FOLD_ULTRA_REENTRY_v0_9_DEBUG.apk --device
+```
+
+The script temporarily copies only the **installed app binary** using Android
+package-manager/ADB tools, compares signatures locally and deletes its temporary
+copy. It makes no installation changes. Output states:
+- `PASS_PREINSTALL_READ_ONLY`: certificates, ID, version and no new permissions match the
+  *current installed APK*. This is a preflight, **not** a successful install.
+- `HOLD`: mismatch, unreadable app/certificate, unavailable SDK/ADB or ambiguous device.
+  **Do not uninstall**; recover the original signing authority instead.
+- `MATCHES_SUPPLIED_APK_NOT_DEVICE`: offline comparison only, never Samsung proof.
+
+The offline-only comparison option is
+`--candidate proposed.apk --baseline-apk earlier.apk`. A pass against a
+file is *not* proof that the same file is installed on the phone.
+
+The script writes the APK digest and **public signing certificate fingerprint**
+to stdout; these are verification information, not private signing keys.
+Never provide a keystore, passphrase, app-private backup or sensitive data
+through a chat or commit. A different signing certificate is a legitimate
+`HOLD`, not an instruction to reinstall or reset. Android valid signing-key
+rotation is not automatically evaluated by this simple checker.
+
+After an owner-verified preflight, preserve/export the existing JM configuration
+through its already-approved native export path before any explicit upgrade.
+Device installation, Bixby phrase acceptance and project data continuity
+require separate proof. Source: https://developer.android.com/google/play/app-updates
+
+#### Bixby speech test after an approved upgrade
+
+On supported Samsung software, Bixby Quick Commands can map a spoken phrase
+to a supported action. Samsung documents the discoverability path
+Bixby → Discover → More options → Quick commands → add a command, but these
+menus are version/region-dependent:
+https://www.samsung.com/us/support/answer/ANS10001392/
+
+First touch-test a visible **JM Galaxy / JM Games / JM Music / JM Return** shortcut.
+Only then try Bixby phrasing, and note whether it launches that precise
+internal screen or only the main app. A successful Android deep link alone does
+not imply Samsung/Bixby native deep-link recognition.

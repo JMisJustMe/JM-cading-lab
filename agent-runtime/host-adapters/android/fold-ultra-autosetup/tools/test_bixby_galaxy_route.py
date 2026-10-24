@@ -27,6 +27,27 @@ class GalaxyContact(unittest.TestCase):
                                 for a in f.findall("action")) for f in filters))
         self.assertNotIn("<uses-permission", MANIFEST)
 
+    def test_launcher_shortcut_is_navigation_only(self):
+        root = ET.fromstring(MANIFEST)
+        activity = root.find("./application/activity")
+        meta = [x for x in activity.findall("meta-data")
+                if x.attrib.get(N+"name")=="android.app.shortcuts"]
+        self.assertEqual(len(meta),1)
+        self.assertEqual(meta[0].attrib.get(N+"resource"),"@xml/shortcuts")
+        shortcuts = ET.parse(ROOT/"app/src/main/res/xml/shortcuts.xml").getroot()
+        items = shortcuts.findall("shortcut")
+        self.assertEqual(len(items),1)
+        item = items[0]
+        self.assertEqual(item.attrib.get(N+"shortcutId"),"jm_galaxy_tools")
+        target = item.find("intent")
+        self.assertEqual(target.attrib.get(N+"action"),"android.intent.action.VIEW")
+        self.assertEqual(target.attrib.get(N+"data"),"jmfoldultra://open/galaxy")
+        self.assertEqual(target.attrib.get(N+"targetPackage"),"com.jmisjustme.foldultra")
+        self.assertEqual(target.attrib.get(N+"targetClass"),"com.jmisjustme.foldultra.MainActivity")
+        strings = ET.parse(ROOT/"app/src/main/res/values/strings.xml").getroot()
+        labels = {x.attrib["name"]:x.text for x in strings.findall("string")}
+        self.assertEqual(labels["jm_galaxy_short_label"],"JM Galaxy")
+
     def test_exact_allowlist_and_lifecycle(self):
         self.assertIn('GALAXY_CONTACT_URI="jmfoldultra://open/galaxy"', MAIN)
         self.assertIn("GALAXY_CONTACT_URI.equals(intent.getDataString())", MAIN)

@@ -65,15 +65,13 @@ adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prel
 adb shell am force-stop com.jmisjustme.foldultra
 adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy' > emulator-proof/GALAXY_COLD_VIEW.txt
 sleep 3
-adb shell uiautomator dump /sdcard/jm_galaxy_dump.xml > emulator-proof/GALAXY_DUMP_STATUS.txt
-adb shell cat /sdcard/jm_galaxy_dump.xml > emulator-proof/GALAXY_COLD_UI.xml
-grep -Fq 'Your Fold already has tools.' emulator-proof/GALAXY_COLD_UI.xml
+# Recover at most once from a known *Pixel Launcher* system ANR overlay,
+# without treating app invocation alone as a GALAXY screen PASS.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py COLD emulator-proof/GALAXY_COLD_UI.xml
 # Warm dispatch must reach the existing Activity through onNewIntent.
 adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy' > emulator-proof/GALAXY_WARM_VIEW.txt
 sleep 2
-adb shell uiautomator dump /sdcard/jm_galaxy_dump.xml > /dev/null
-adb shell cat /sdcard/jm_galaxy_dump.xml > emulator-proof/GALAXY_WARM_UI.xml
-grep -Fq 'Your Fold already has tools.' emulator-proof/GALAXY_WARM_UI.xml
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py WARM emulator-proof/GALAXY_WARM_UI.xml
 adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/GALAXY_AFTER_PREFS.xml
 python3 - <<'PY' > emulator-proof/GALAXY_CONTACT_RECEIPT.txt
 import xml.etree.ElementTree as ET

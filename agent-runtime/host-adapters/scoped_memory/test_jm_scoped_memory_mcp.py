@@ -122,7 +122,8 @@ class MCPContact(unittest.TestCase):
     def test_malformed_and_oversized_and_bad_unicode_hold(self):
         request = call(2, "jm_memory_write", {"name": "x", "body": "\ud800"})
         x = self.send([init(), READY, request], write=True)
-        self.assertTrue("error" in x[-1] or x[-1]["result"]["isError"])
+        self.assertTrue(x[-1]["result"]["isError"])
+        self.assertEqual(x[-1]["result"]["structuredContent"]["status"], "HOLD")
         y = self.send([init(), READY, call(2, "jm_memory_write",
                       {"name": "x", "body": "a"*8193})], write=True)
         self.assertTrue(y[-1]["result"]["isError"])

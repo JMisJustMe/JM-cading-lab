@@ -96,6 +96,7 @@ public final class UsbBridge {
         o.put("setup_last",sp.getString("setup.last",""));
         o.put("session_deck",SessionDeck.all(sp));
         o.put("return_points",ReentryEngine.all(sp));
+        o.put("jm_extensions",JMContactV1.extras(sp));
         o.put("usb_snapshot_requires_owner_approval",true);
         return o;
     }
@@ -157,6 +158,7 @@ public final class UsbBridge {
         if(CONFIG_SCHEMA.equals(schema)){
             ReentryEngine.checkLinks(o.getJSONArray("return_points"),o.getJSONArray("project_shelf"));
         }
+        if(o.has("jm_extensions"))JMContactV1.validateExtras(o.getJSONObject("jm_extensions"));
         return o;
     }
     static void checkConfig(JSONObject config)throws Exception{validateConfig(config);}
@@ -201,6 +203,7 @@ public final class UsbBridge {
             // Earlier backups contain no explicit return-point authority.
             ReentryEngine.stage(e,new org.json.JSONArray());
         }
+        if(o.has("jm_extensions"))JMContactV1.stageExtras(e,o.getJSONObject("jm_extensions"));
         if(!e.commit())throw new IOException("Local settings commit failed");
     }
     private static void receipt(Activity a,String id,String status,String kind,String detail){

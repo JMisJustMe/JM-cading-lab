@@ -136,7 +136,7 @@ class JMScopedMCP:
             if not request or not isinstance(params, dict):
                 return rpc_error(ident, -32602, "Invalid initialize")
             supplied = params.get("protocolVersion")
-            self.protocol = supplied if supplied in SUPPORTED else PROTOCOL
+            self.protocol = supplied if isinstance(supplied, str) and supplied in SUPPORTED else PROTOCOL
             self.initialized = True
             self.ready = False
             return success(ident, {"protocolVersion": self.protocol,
@@ -182,7 +182,7 @@ def main():
         try:
             msg = json.loads(raw)
             result = server.handle(msg)
-        except (ValueError, UnicodeDecodeError, TypeError):
+        except (ValueError, UnicodeError, TypeError):
             result = rpc_error(None, -32700, "Parse error")
         if result is not None:
             sys.stdout.write(stable(result) + "\n")

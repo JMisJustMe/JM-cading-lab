@@ -48,8 +48,11 @@ func run() -> void:
 	scene._toggle_ko_trace()
 	check("KO trace can close without ending match or removing source",not scene.ko_trace_panel.visible and scene.mode=="playing" and scene.battle.has("ko_return"))
 	scene._toggle_ko_trace()
-	scene.mode="result"
+	# Use actual inherited match completion, never fake mode=result without
+	# allocating battle.won/earned. Every headless SCRIPT ERROR is a CI HOLD.
+	scene._finish()
 	scene._sync_native_rails()
+	check("real game result is finalised with score/reward fields",scene.mode=="result" and scene.battle.has("won") and scene.battle.has("earned"))
 	check("victory hides KO trace and original form controls",not scene.ko_trace_panel.visible and not scene.get_node("CooperationRail").visible)
 	var native_evidence = {
 		"schema":"jm.ko-native-evidence/1",

@@ -2,7 +2,7 @@
 # Generic Android SDK 35 emulator smoke only; never a Samsung Fold physical Ding.
 set -eu
 mkdir -p emulator-proof
-APK="emulator-input/JM_FOLD_ULTRA_REENTRY_v0_9_DEBUG.apk"
+APK="emulator-input/JM_FOLD_ULTRA_LIVING_CONTACT_v1_0_DEBUG.apk"
 if [ ! -s "$APK" ]; then
   echo "HOLD: missing exact build artifact: $APK" >&2
   ls -al emulator-input >&2 || true

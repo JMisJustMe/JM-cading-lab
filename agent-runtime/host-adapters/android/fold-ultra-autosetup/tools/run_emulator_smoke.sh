@@ -130,6 +130,34 @@ printf '%s\n' \
 # solely on ADB-injected state changes. This can legitimately HOLD.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_ui_flow.py
 
+# The existing UI audit has just completed all five native prelaunch stages and checked ready=true.
+# JM × Bixby Contact 002: prove a real implicit Android VIEW dispatch,
+# cold/reentry and onNewIntent path, with no protected project/session mutation.
+adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/GALAXY_BEFORE_PREFS.xml
+adb shell am force-stop com.jmisjustme.foldultra
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy' > emulator-proof/GALAXY_COLD_VIEW.txt
+sleep 3
+# Recover at most once from a known *Pixel Launcher* system ANR overlay,
+# without treating app invocation alone as a GALAXY screen PASS.
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py COLD emulator-proof/GALAXY_COLD_UI.xml
+# Warm dispatch must reach the existing Activity through onNewIntent.
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/galaxy' > emulator-proof/GALAXY_WARM_VIEW.txt
+sleep 2
+python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/probe_galaxy_screen.py WARM emulator-proof/GALAXY_WARM_UI.xml
+adb exec-out run-as com.jmisjustme.foldultra cat shared_prefs/jm.fold.ultra.prelaunch.v0.2.xml > emulator-proof/GALAXY_AFTER_PREFS.xml
+python3 - <<'PY' > emulator-proof/GALAXY_CONTACT_RECEIPT.txt
+import xml.etree.ElementTree as ET
+def values(path):
+    return {node.get("name"):(node.get("value") if node.get("value") is not None else node.text)
+            for node in ET.parse(path).getroot()}
+a=values("emulator-proof/GALAXY_BEFORE_PREFS.xml")
+b=values("emulator-proof/GALAXY_AFTER_PREFS.xml")
+for field in ["root","project.shelf","session.deck","reentry.points","project.active","ready"]:
+    assert a.get(field)==b.get(field),(field,a.get(field),b.get(field))
+print("PASS · Android implicit deep link → native GALAXY screen, cold and warm; protected state unchanged")
+print("NOT CLAIMED · Bixby understands the spoken section name, physical Samsung device test, Galaxy AI API access")
+PY
+
 # Negative proof follows positive native UI checks, leaving revision 3 in place.
 python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/audit_negative_flows.py
 

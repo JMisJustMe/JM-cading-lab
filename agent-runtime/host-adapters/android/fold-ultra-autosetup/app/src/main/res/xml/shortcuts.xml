@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="jm_galaxy_tools"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/jm_galaxy_short_label"
+        android:shortcutLongLabel="@string/jm_galaxy_long_label">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.jmisjustme.foldultra"
+            android:targetClass="com.jmisjustme.foldultra.MainActivity"
+            android:data="jmfoldultra://open/galaxy" />
+    </shortcut>
+</shortcuts>

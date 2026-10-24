@@ -87,7 +87,7 @@ The extra tests launch independent **real** operating-system processes, require 
 - \`jm_memory_read\`: read a named note
 - \`jm_memory_write\`: create/update a named note, **only when the hosting process explicitly enables writes**
 
-The server supports the MCP **stdio JSON-RPC handshake lifecycle** at \`2025-03-26\`, \`2025-06-18\` and \`2025-11-25\` (see official MCP protocol). A \`2026-07-28\` modern/sessionless client must negotiate fallback to a supported legacy version; a modern-only client is **not** supported. Implements \`initialize\`, \`notifications/initialized\`, \`tools/list\`, \`tools/call\`, \`ping\`, standard tool results, and a fail-closed protocol boundary. MCP messages never share stdout with diagnostic logs; executable source is Python standard library only.
+The server supports the MCP **stdio JSON-RPC handshake lifecycle** at \`2025-03-26\`, \`2025-06-18\` and \`2025-11-25\` (see official MCP protocol). As of **v0.4**, the same server also supports the \`2026-07-28\` stateless modern protocol through \`server/discover\` and per-request \`_meta\` (see the dual-era section below). Implements \`initialize\`, \`notifications/initialized\`, \`tools/list\`, \`tools/call\`, \`ping\`, standard tool results, and a fail-closed protocol boundary. MCP messages never share stdout with diagnostic logs; executable source is Python standard library only.
 
 **Local first-open** from inside a Git working tree:
 
@@ -120,3 +120,16 @@ python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-l
 \`\`\`
 
 These use separate test MCP client processes to check handshakes, discovery, read-only default, write/read/readback, cross-session recovery, concurrent process writes, workspace isolation, malformed arguments and protocol failures. Existing v0.1 and v0.2 executable tests are retained in the same inherited CI. No separate master file, archive, duplicated runtime, dependency or new JM body was created. Remove only the v0.3 file and test to roll back this increment.
+
+
+## v0.4 dual-era MCP compatibility — stateless 2026-07-28
+
+The same \`jm_scoped_memory_mcp.py\` serves **both** the legacy handshake versions and the modern stateless MCP revision \`2026-07-28\`.
+
+- Modern clients may call \`server/discover\` or directly \`tools/list\` / \`tools/call\` with \`params._meta["io.modelcontextprotocol/protocolVersion"] = "2026-07-28"\` and the required \`clientCapabilities\` object. No \`initialize\`/initialized handshake is used on those requests.
+- The discovery result advertises the supported revisions and capabilities, returns \`resultType:"complete"\`, server identity in result \`_meta\`, and \`ttlMs:0\` / \`cacheScope:"private"\` to avoid assuming an account-independent cached result.
+- Modern \`tools/list\` / \`tools/call\` return the modern \`resultType\` and server \`_meta\`. Methods deleted in the modern era (such as \`ping\`) remain unavailable. Unsupported versions fail with a version error instead of silently downgrading data authority.
+- Both eras reuse **the same** local JM repository-process bridge, original sovereign core, host-bound identity/workspace, opt-in write policy, memory files and locks. There is no second memory database or silent migration.
+- Modern and legacy proof remains **local MCP wire + persisted consequence**, not proof of a specific installed AI provider/phone or remote device. The client identity advertised in protocol \`_meta\` is not authentication.
+
+CI adds independent stateless modern protocol subprocess tests for discovery, direct calls, restart, concurrency, workspace isolation, version errors, deleted-method rejection and default write HOLD, while rerunning all older tests. Release/owner-device contact must be earned separately.

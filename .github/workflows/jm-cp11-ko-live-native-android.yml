@@ -51,6 +51,13 @@ jobs:
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp09_living_rivals_test.gd > evidence/cp09-living.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp10_ko_contact_test.gd > evidence/cp10-ko-native.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp11_ko_live_test.gd > evidence/cp11-live-native.log 2>&1
+          # Headless Godot tests may return 0 despite scripting errors after assertions.
+          # A native PASS is not earned until the raw execution log is error-free.
+          if grep -nE 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' evidence/cp11-live-native.log; then
+            echo "::error::CP11 native script error despite assertions"
+            exit 1
+          fi
+          grep -q 'CP11 KO LIVE SUMMARY 21/21' evidence/cp11-live-native.log
       - name: Configure exact native Android export
         run: |
           mkdir -p "$HOME/.config/godot" /tmp/cp03-custody

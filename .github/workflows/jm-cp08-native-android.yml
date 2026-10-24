@@ -37,6 +37,7 @@ jobs:
       - name: Actual native regression and input lifecycle
         working-directory: coding-estate/integration/codegornization-cp08
         run: |
+          mkdir -p evidence
           Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/inherited_on_cp03.gd > evidence/inherited.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp02_on_cp03.gd > evidence/cp02.log 2>&1

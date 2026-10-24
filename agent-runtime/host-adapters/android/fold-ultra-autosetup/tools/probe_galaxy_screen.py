@@ -24,7 +24,7 @@ def label(node):
     return node.attrib.get("text", "")
 
 def centre(rect):
-    vals=[int(v) for v in re.findall(r"\\d+", rect)]
+    vals=[int(v) for v in re.findall(r"\d+", rect)]
     if len(vals)!=4:
         raise AssertionError("Malformed Android UI bounds")
     return str((vals[0]+vals[2])//2),str((vals[1]+vals[3])//2)
@@ -54,7 +54,7 @@ def main():
             recovered=True
             (path.parent/(f"GALAXY_{phase}_ENVIRONMENT.txt")).write_text(
                "Transient Pixel Launcher ANR blocked UI hierarchy; pressed system Wait once. "
-               "Not counted as JM app failure or proof.\\n")
+               "Not counted as JM app failure or proof.\n")
             time.sleep(4)
         else:
             if attempt==2:

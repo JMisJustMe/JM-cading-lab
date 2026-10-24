@@ -78,7 +78,7 @@ func run() -> void:
 	d=scene.accept_ko_live()
 	check("BEACON gameplay protected",not d.get("applied",false) and d.get("error","")=="NOT_ACTIVE_SECTOR")
 	begin()
-	scene.mode="result"
+	scene._finish() # inherited legitimate result transition, not fabricated state
 	scene._sync_native_rails()
 	check("KO live and inherited rails hide on results screen",not scene.get_node("CooperationRail").visible and not scene.ko11_label.visible)
 	var failed: int=checks.count(false)

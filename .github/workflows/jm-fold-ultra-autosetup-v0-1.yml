@@ -1,0 +1,100 @@
+name: JM Fold Ultra v0.9 Complete Prelaunch Build
+on:
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/android/fold-ultra-autosetup/**'
+      - '.github/workflows/jm-fold-ultra-autosetup-v0-1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-carrier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android API 36
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
+      - name: Gradle 8.13
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.13'
+      - name: Verify bounded prelaunch contracts
+        run: python3 agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/verify_prelaunch.py
+      - name: Offline USB bridge unit tests
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/android/fold-ultra-autosetup/tools -p 'test_*.py' -v
+      - name: Compile Fold prelaunch
+        shell: bash
+        working-directory: agent-runtime/host-adapters/android/fold-ultra-autosetup
+        run: gradle --no-daemon :app:assembleDebug
+      - name: Audit signed Android carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          R=agent-runtime/host-adapters/android/fold-ultra-autosetup
+          APK="$R/app/build/outputs/apk/debug/app-debug.apk"
+          mkdir -p /tmp/jm-fold-prelaunch
+          cp "$APK" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_REENTRY_v0_9_DEBUG.apk
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump badging "$APK" > /tmp/jm-fold-prelaunch/BADGING.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs "$APK" > /tmp/jm-fold-prelaunch/SIGNATURE.txt
+          unzip -t "$APK" > /tmp/jm-fold-prelaunch/ZIP_INTEGRITY.txt
+          "$ANDROID_HOME/build-tools/36.0.0/aapt" dump permissions "$APK" > /tmp/jm-fold-prelaunch/PERMISSIONS.txt
+          grep -Fq "package: name='com.jmisjustme.foldultra'" /tmp/jm-fold-prelaunch/BADGING.txt
+          grep -Fq "versionName='0.9.0'" /tmp/jm-fold-prelaunch/BADGING.txt
+          grep -Fq "android.intent.action.SEND" "$R/app/src/main/AndroidManifest.xml"
+          if grep -E 'uses-permission:|uses-permission-sdk-23:' /tmp/jm-fold-prelaunch/PERMISSIONS.txt; then
+            echo 'UNEXPECTED PERMISSION: HOLD'
+            exit 1
+          fi
+          sha256sum /tmp/jm-fold-prelaunch/*.apk > /tmp/jm-fold-prelaunch/SHA256.txt
+          cp "$R/tools/jm_fold_usb_bridge.py" /tmp/jm-fold-prelaunch/JM_FOLD_USB_LAPTOP_BRIDGE_v0_9.py
+          cp "$R/README.md" /tmp/jm-fold-prelaunch/JM_FOLD_ULTRA_v0_9_README.md
+          sha256sum /tmp/jm-fold-prelaunch/*.py /tmp/jm-fold-prelaunch/*.md > /tmp/jm-fold-prelaunch/LAPTOP_TOOLS_SHA256.txt
+          printf 'APK compilation + signing + permissions PASS. Physical Fold UI/device DING OPEN.\n' > /tmp/jm-fold-prelaunch/RECEIPT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_9_CARRIER
+          path: /tmp/jm-fold-prelaunch/
+          if-no-files-found: error
+          retention-days: 14
+
+  generic-android-smoke:
+    name: Generic Android emulator — not a Fold DING
+    needs: native-carrier
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the exact compiled APK
+        uses: actions/download-artifact@v4
+        with:
+          name: JM_FOLD_ULTRA_COMPLETE_PRELAUNCH_v0_9_CARRIER
+          path: emulator-input
+      - name: Enable KVM on hosted runner
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Cold-start narrow / wide on generic Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          emulator-boot-timeout: 700
+          script: sh agent-runtime/host-adapters/android/fold-ultra-autosetup/tools/run_emulator_smoke.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: JM_FOLD_ULTRA_v0_9_GENERIC_ANDROID_SCREEN_PROOF
+          path: emulator-proof/
+          if-no-files-found: warn
+          retention-days: 14

@@ -17,6 +17,13 @@ func run() -> void:
 	check("inherited CP10 native execution and entire gameplay API exists",scene.has_method("accept_ko_contact") and scene.has_method("_cp9_special_step") and scene.has_method("accept_cue"))
 	check("actual KO TRACE button shares inherited native touch ownership",scene.has_node("CooperationRail/KOTraceButton") and scene._buttons().has(scene.get_node("CooperationRail/KOTraceButton")))
 	check("KO owner proof panel hidden on menu",not scene.ko_trace_panel.visible)
+	scene._fit_ko_trace(Vector2(400,850))
+	var narrow: bool = scene.ko_trace_panel.position.x>=0.0 and scene.ko_trace_panel.position.x+scene.ko_trace_panel.custom_minimum_size.x<=400.0 and scene.ko_trace_panel.position.y+scene.ko_trace_panel.custom_minimum_size.y<=850.0
+	check("KO trace box fits Fold narrow portrait contact",narrow)
+	scene._fit_ko_trace(Vector2(1050,620))
+	var wide: bool = scene.ko_trace_panel.position.x>=0.0 and scene.ko_trace_panel.position.x+scene.ko_trace_panel.custom_minimum_size.x<=1050.0 and scene.ko_trace_panel.position.y+scene.ko_trace_panel.custom_minimum_size.y<=620.0
+	check("KO trace box fits Fold landscape contact",wide)
+	scene._fit_ko_trace(scene.get_viewport_rect().size)
 	scene.start_battle("SECTOR")
 	scene.set_process(false)
 	scene._toggle_ko_trace()

@@ -37,3 +37,5 @@ jobs:
         run: python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
       - name: Validate sovereign agent contract
         run: python3 services/jm-ecostate-build-mesh-mcp-v0_5/validate_agent_contract.py
+      - name: Test optional scoped-memory contact against JM sovereign core
+        run: python3 -m unittest discover -s agent-runtime/host-adapters/scoped_memory -p 'test_*.py' -v

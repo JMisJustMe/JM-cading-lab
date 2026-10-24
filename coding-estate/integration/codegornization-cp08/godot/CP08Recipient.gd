@@ -12,6 +12,20 @@ func _ready() -> void:
 	cp8_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(cp8_label)
 
+func _land(h: Dictionary) -> void:
+	# Gemini CP8-DEFECT-001: a CP8 rival's mid-flight intent belongs to
+	# the child, but the parent still owns every physical landing effect.
+	var intended: String = str(h.get("order",""))
+	var tagged_sector_rival: bool = not battle.is_empty() and str(battle.get("operation","SECTOR")) == "SECTOR" and str(h.get("team","")) == "red" and h.has("cp8_directive")
+	super._land(h)
+	if not tagged_sector_rival or intended.is_empty():
+		return
+	# Never reassert malformed/stale targets; only an actual live zone id.
+	for zone in battle.get("zones",[]):
+		if str(zone.get("id","")) == intended:
+			h["order"] = intended
+			return
+
 func _enemy_step(dt: float) -> void:
 	if battle.is_empty():
 		return

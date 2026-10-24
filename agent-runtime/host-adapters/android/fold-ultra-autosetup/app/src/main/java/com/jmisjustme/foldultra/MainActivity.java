@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 
 public final class MainActivity extends Activity {
   static final String PREF="jm.fold.ultra.prelaunch.v0.2", SCHEMA="JM.FoldUltraSetup/0.9";
+  static final String GALAXY_CONTACT_URI="jmfoldultra://open/galaxy";
   static final int BG=0xff090E19,PANEL=0xff141E30,WHITE=0xffEDF4FF,MUTED=0xffA8B9D0;
   static final int BLUE=0xff77BFFF,PURPLE=0xffC5A0FF,TEAL=0xff74E4D2;
   static final int EXPORT=203,IMPORT=204,PREFLIGHT_EXPORT=205,CLOUD_RETURN_IMPORT=206;
@@ -41,10 +42,11 @@ public final class MainActivity extends Activity {
     getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
     getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     render();
-    if(state==null)inspectIncoming(getIntent());
+    if(!routeGalaxyIntent(getIntent())&&state==null)inspectIncoming(getIntent());
   }
   @Override protected void onNewIntent(Intent intent){
-    super.onNewIntent(intent);setIntent(intent);inspectIncoming(intent);
+    super.onNewIntent(intent);setIntent(intent);
+    if(!routeGalaxyIntent(intent))inspectIncoming(intent);
     UsbBridge.offer(this,sp,()->render());
   }
   @Override protected void onPause(){
@@ -446,6 +448,23 @@ public final class MainActivity extends Activity {
         else if(kind.equals("RESEARCH"))app("com.openai.chatgpt");
         else url("https://jmisjustme.github.io/JM-cading-lab/");
       }).show();
+  }
+  // Bounded external navigation only. No project, note, permission or Galaxy AI state is changed.
+  // Caller authentication is NOT asserted: a public deep link may come from any app.
+  // Keep mutating JM actions behind their existing owner-approval gates.
+  boolean routeGalaxyIntent(Intent intent){
+    if(intent==null||!Intent.ACTION_VIEW.equals(intent.getAction()))return false;
+    if(!GALAXY_CONTACT_URI.equals(intent.getDataString())){
+      Toast.makeText(this,"HOLD · Unknown JM navigation link",Toast.LENGTH_SHORT).show();
+      return true;
+    }
+    if(!sp.getBoolean("ready",false)){
+      Toast.makeText(this,"HOLD · Complete JM setup before opening GALAXY",Toast.LENGTH_LONG).show();
+      return true;
+    }
+    tab=1;
+    render();
+    return true;
   }
   void inspectIncoming(Intent intent){
     if(intent==null||!Intent.ACTION_SEND.equals(intent.getAction()))return;

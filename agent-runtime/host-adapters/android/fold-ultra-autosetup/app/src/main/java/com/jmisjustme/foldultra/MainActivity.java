@@ -1189,10 +1189,10 @@ public final class MainActivity extends Activity {
         }
         Toast.makeText(this,"JM original exported to your selected location",Toast.LENGTH_LONG).show();
       }else if(req==JM_CONTACT_EXPORT){
-        byte[] data=JMContactV1.exportReceipt(sp).toString(2).getBytes(StandardCharsets.UTF_8);
+        byte[] contactBytes=JMContactV1.exportReceipt(sp).toString(2).getBytes(StandardCharsets.UTF_8);
         try(OutputStream out=getContentResolver().openOutputStream(uri,"w")){
           if(out==null)throw new IOException("Contact export unavailable");
-          out.write(data);
+          out.write(contactBytes);
         }
         Toast.makeText(this,"Scoped JM contact ledger exported",Toast.LENGTH_LONG).show();
       }else if(req==CLOUD_RETURN_IMPORT){

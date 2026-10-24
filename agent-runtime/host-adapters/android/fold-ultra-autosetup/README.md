@@ -93,3 +93,56 @@ original source and user data; no promotion without physical device acceptance.
   verified → Samsung One UI shortcut visibility → Bixby voice/Routines acceptance.
 - Does not affect app sessions, private data, or the Samsung home-screen layout
   unless the owner intentionally pins a shortcut.
+
+
+## JM Fold Ultra × Bixby — Contact 003 multi-room source candidate (24 October 2026)
+
+Inherits immutable-intent Contact 002 at source commit `f7f4af81ad80055e5c32fd3ba1757329b114eefa`,
+draft PR #442. This is a **separate source branch**, not an update to the
+owner-installed Android app, not native Bixby command-registration, and not
+permission to replace existing sessions or the prior FLAZ.
+
+### Exact URI interface (navigation only)
+- `jmfoldultra://open/root` → existing JM ROOT dashboard.
+- `jmfoldultra://open/galaxy` → existing GALAXY capability explorer.
+- `jmfoldultra://open/projects` → existing ProjectShelf, saved filter.
+- `jmfoldultra://open/games` → existing ProjectShelf temporarily showing GAMES.
+- `jmfoldultra://open/music` → existing ProjectShelf temporarily showing MUSIC.
+- `jmfoldultra://open/sessions` → existing SessionDeck room.
+- `jmfoldultra://open/recovery` → existing ReentryEngine Return Point room.
+
+Input is an exact URL, matched only for Android ACTION_VIEW and canonical
+`jmfoldultra://open/` values. Query strings, fragments, encoded paths and
+unknown routes are HOLD; no source-text execution. Setup remains mandatory.
+
+The public navigation handler does not select projects, commit checkpoints,
+set permissions, import cloud returns, open external apps or persist a new
+project category. The Games/Music category override is **transient UI state**,
+not a change to ProjectShelf or SharedPreferences.
+
+### Static shortcuts
+Four existing-app static launcher shortcuts are `JM Galaxy`, `JM Games`,
+`JM Music` and `JM Return`. Android launchers may display fewer shortcuts
+than the XML declares. ROOT, PROJECTS and SESSIONS are still exact deep links,
+and the existing main app icon remains the ROOT entry route when entered
+normally. No Samsung home layout or default-assistant settings are changed.
+
+### Build/test and owner-device constraints
+Android `ACTION_VIEW` can be exercised on a compatible installed build via:
+```sh
+adb shell am start -W -a android.intent.action.VIEW -c android.intent.category.BROWSABLE -d 'jmfoldultra://open/music'
+```
+The generic Android CI suite re-runs inherited v0.9, Contact 002, and this
+candidate's seven-room real UI checks. Test scripts strictly require an
+emulator before simulating any owner UI contact. Do not declare PASS until
+workflow results and receipts confirm it.
+
+Samsung/Bixby may not understand a spoken instruction aimed at a static
+shortcut or deep link. Real **voice → JM internal room** requires the owner
+to verify directly on the Fold after a signature-compatible update, or
+through a separately confirmed supported Routine/quick command.
+
+Do not uninstall the earlier JM app to overcome incompatible APK signing,
+clear its private data, or promote this descendant over Contact 002 without
+source + runtime + owner comparisons. The future v1.0 Quick Capture, live sync,
+device AI and full Fold Workfield upgrades remain **proposed**, not built here.

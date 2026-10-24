@@ -49,10 +49,11 @@ func run() -> void:
 	var hero=actor()
 	check("original native launch and landing valid",not hero.is_empty() and hero["flight"].is_empty())
 	hero["shield"]=0.0
+	var real_balance_before_tamper: float=float(scene.battle["energy"]["blue"])
 	var tampered=envelope.duplicate(true)
 	tampered["payloadSHA256"]="1".repeat(64)
 	denied=scene.accept_ko_contact(tampered)
-	check("tampered KO packet holds and does not spend energy",not denied["applied"] and denied["error"]=="KO_SOURCE_BYTES" and is_equal_approx(float(scene.battle["energy"]["blue"]),100.0))
+	check("tampered KO packet holds and does not spend energy",not denied["applied"] and denied["error"]=="KO_SOURCE_BYTES" and is_equal_approx(float(scene.battle["energy"]["blue"]),real_balance_before_tamper))
 	scene.battle["energy"]["blue"]=5.0
 	denied=scene.accept_ko_contact(envelope)
 	check("real native energy gate refuses underspend",not denied["applied"] and denied["error"]=="INSUFFICIENT_ENERGY" and is_equal_approx(float(hero["shield"]),0.0))

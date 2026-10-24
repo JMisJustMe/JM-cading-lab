@@ -5,11 +5,12 @@ func _initialize() -> void:call_deferred("run")
 func check(name: String,ok: bool) -> void:
 	checks.append({"name":name,"passed":ok})
 	print("NATIVE INPUT ","PASS " if ok else "FAIL ",name)
-func touch(p: Vector2,down: bool,id: int=0) -> void:
+func touch(p: Vector2,down: bool,id: int=0,canceled: bool=false) -> void:
 	var e=InputEventScreenTouch.new()
 	e.position=p
 	e.pressed=down
 	e.index=id
+	e.canceled=canceled
 	root.push_input(e,true)
 func run() -> void:
 	scene=load("res://CP03Main.tscn").instantiate()
@@ -50,8 +51,45 @@ func run() -> void:
 	scene.resume_battle()
 	scene.set_process(false)
 	check("saved original resume restores companion",scene.conducted_state()["revision"]==1 and scene.conducted_state()["agents"][0]["form"]=="SKYRAY")
+	# Cancellation is not a release/commit. Exercise actual viewport routing.
+	scene.start_battle("BEACON")
+	scene.set_process(false)
+	before=JSON.stringify(scene.battle)
+	touch(p,true,8)
+	touch(p,false,8,true)
+	check("cancelled FORM preserves battle",JSON.stringify(scene.battle)==before)
+	check("cancelled FORM clears only its reservation",not scene.ui_touches.has(8) and not scene.hold_started.has(8))
+	scene.start_battle("BEACON")
+	scene.pair_companions()
+	var braid: Vector2=scene.get_node("CooperationRail").get_child(1).get_global_rect().get_center()
+	before=JSON.stringify(scene.battle)
+	touch(braid,true,9)
+	# Deterministic elapsed hold; no wall-clock sleep or altered cue fixture.
+	scene.hold_started[9]=Time.get_ticks_msec()-700
+	touch(braid,false,9,true)
+	check("cancelled held BRAID does not spend energy or journal cue",JSON.stringify(scene.battle)==before)
+	touch(Vector2(700,350),true,10)
+	touch(Vector2(850,370),false,10,true)
+	check("cancelled fling has no battle consequence",JSON.stringify(scene.battle)==before)
+	check("cancelled fling clears gesture",not scene.dragging and scene.touch_id==-1)
+	touch(Vector2(700,350),true,11)
+	touch(Vector2(500,450),false,12,true)
+	check("unrelated cancellation preserves owning field pointer",scene.dragging and scene.touch_id==11)
+	touch(braid,true,13)
+	touch(braid,false,13,true)
+	check("control cancellation preserves independent field pointer",scene.dragging and scene.touch_id==11)
+	touch(Vector2(700,350),false,11,true)
+	touch(braid,true,14)
+	scene.hold_started[14]=Time.get_ticks_msec()-700
+	touch(braid,false,14)
+	check("fresh held BRAID commits after cancellation",scene.battle.has("cue") and scene.battle["cue_history"].size()==1)
+	before=JSON.stringify(scene.battle)
+	touch(braid,true,15)
+	scene.hold_started[15]=Time.get_ticks_msec()-700
+	touch(braid,false,15)
+	check("duplicate BRAID after recovery remains idempotent",JSON.stringify(scene.battle)==before)
 	var failed=checks.filter(func(c):return not c["passed"])
 	var f=FileAccess.open("res://../evidence/native-input-tests.json",FileAccess.WRITE)
-	f.store_string(JSON.stringify({"scope":"real Godot Linux viewport-injected touch and lifecycle notification; no physical Android input claim","passed":checks.size()-failed.size(),"total":checks.size(),"checks":checks},"  "))
+	f.store_string(JSON.stringify({"scope":"real Godot viewport-injected touch and lifecycle notification; no physical Android input claim","host":OS.get_name(),"passed":checks.size()-failed.size(),"total":checks.size(),"checks":checks},"  "))
 	f.close()
 	quit(0 if failed.is_empty() else 1)

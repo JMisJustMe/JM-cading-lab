@@ -52,6 +52,18 @@ func _is_native_control(p: Vector2) -> bool:
 	return get_node("ConductRail").get_global_rect().has_point(p) or contact_panel.get_global_rect().has_point(p) or (has_node("CooperationRail") and get_node("CooperationRail").get_global_rect().has_point(p))
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
+		# Android cancellation revokes this pointer; it never commits intent.
+		if event.canceled:
+			var button = ui_touches.get(event.index)
+			ui_touches.erase(event.index)
+			hold_started.erase(event.index)
+			if is_instance_valid(button):
+				button.set_pressed_no_signal(button in ui_touches.values())
+			if event.index==touch_id:
+				dragging=false
+				touch_id=-1
+			get_viewport().set_input_as_handled()
+			return
 		if event.pressed and _is_native_control(event.position):
 			var hit: Button = null
 			for button in _buttons():

@@ -77,7 +77,7 @@ func _ko_trace_summary() -> String:
 	lines.append("BUILD: JS DONORS  /  DEVICE: NATIVE GODOT")
 	if sources.is_empty():
 		lines.append("SOURCE HOLD")
-	return "\n".join(lines)
+	return "\n".join(PackedStringArray(lines))
 
 func _sync_native_rails() -> void:
 	super._sync_native_rails()

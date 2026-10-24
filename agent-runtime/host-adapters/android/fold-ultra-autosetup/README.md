@@ -82,3 +82,14 @@ command.** Test via a compatible Samsung Routine/shortcut independently.
 Do not uninstall an earlier app merely to install a new debug-signed build:
 signature mismatch and private-session data may be at risk. Preserve the
 original source and user data; no promotion without physical device acceptance.
+
+### Android launcher shortcut (same app, no new authority)
+- The existing JM app declares a static **JM Galaxy** shortcut pointing to the same
+  allowlisted `jmfoldultra://open/galaxy` destination. On a supported launcher,
+  long-press the JM Fold Ultra icon, then tap the shortcut; optionally pin it.
+- Android standard launcher behaviour can make the shortcut discoverable to some
+  assistants. **No Bixby discovery or voice-invocation compatibility is claimed.**
+- Voice-facing integration is staged as: Android URI verified → launcher shortcut
+  verified → Samsung One UI shortcut visibility → Bixby voice/Routines acceptance.
+- Does not affect app sessions, private data, or the Samsung home-screen layout
+  unless the owner intentionally pins a shortcut.

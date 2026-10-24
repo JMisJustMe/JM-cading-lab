@@ -22,7 +22,7 @@ require("JM.FoldUltraSetup/0.9" in src, "current export schema")
 for old in ["JM.FoldUltraSetup/0.8", "JM.FoldUltraSetup/0.7", "JM.FoldUltraSetup/0.6", "JM.FoldUltraSetup/0.5", "JM.FoldUltraSetup/0.4", "JM.FoldUltraSetup/0.3", "JM.FoldUltraSetup/0.2", "JM.FoldUltraRoot/0.1"]:
     require(old in src, "schema migration guard "+old)
 require("JM.FoldUltraPreflight/0.4" in diagnostics, "preflight JSON contract")
-require("versionCode 9" in gradle and "versionName '0.9.0'" in gradle, "version code/name")
+require("versionCode 10" in gradle and "versionName '1.0.0'" in gradle, "version code/name")
 require("targetSdk 35" in gradle and "compileSdk 36" in gradle, "Android SDK context")
 require('android.intent.action.SEND' in manifest and 'text/plain' in manifest, "explicit Android Share intake")
 require('android:launchMode="singleTop"' in manifest, "share handoff activity")
@@ -40,7 +40,7 @@ require('nativeHub()' in src and 'void session(String kind)' in src, "inherited 
 require('getPackageInfo(a.getPackageName(),PackageManager.GET_PERMISSIONS)' in diagnostics,
         "on-device permission inspection")
 require('PREFLIGHT_EXPORT' in src and 'ACTION_CREATE_DOCUMENT' in src, "explicit receipt export")
-require("JM_FOLD_ULTRA_SETUP_v0_9.json" in src, "correctly named configuration export")
+require("JM_FOLD_ULTRA_SETUP_v1_0.json" in src, "correctly named configuration export")
 require(len(re.findall(r'capability\("',src))==8, "eight native capability records")
 require("COMPACT_OWNER" in diagnostics and "EXPANDED_OWNER" in diagnostics and "REOPEN_OWNER" in diagnostics,
         "owner-gated physical contact marks")
@@ -98,3 +98,12 @@ require("reentry-return" in cli and "local_return_point" in cli, "laptop reentry
 require('sp.edit().putInt("nav.last",tab)' in src, "last room continuity")
 require("MAX_BYTES=524288" in bridge and "MAX_SIZE = 524288" in cli, "bounded estate export")
 print("JM FOLD ULTRA v0.9: WORKSPACE RETURN + PRELAUNCH CONTRACT PASS")
+
+contact=(root/"app/src/main/java/com/jmisjustme/foldultra/JMContactV1.java").read_text(encoding="utf-8")
+intake=(root/"app/src/main/java/com/jmisjustme/foldultra/JMIntakeV1.java").read_text(encoding="utf-8")
+usbfull=(root/"app/src/main/java/com/jmisjustme/foldultra/UsbBridge.java").read_text(encoding="utf-8")
+require('JM.FoldLivingContact/1.0' in contact and 'validateExtras' in contact, "native bounded contact extension")
+require('JMIntakeV1.registry' in contact and 'stageExtras' in contact, "intake metadata and portable contact custody")
+require('JMContactV1.validateExtras' in usbfull and 'JMContactV1.stageExtras' in usbfull, "atomic JM metadata restore")
+require('MAX_BYTES=2*1024*1024' in intake and 'LIMIT=12' in intake, "bounded owner-selected original intake")
+require('JMIntakeV1.checked(this,row)' in src, "SHA-verified source export")

@@ -87,27 +87,36 @@ public final class CloudReturnBridge {
     String raw=sp.getString(PENDING_KEY,"");
     if(raw.isEmpty())return null;
     JSONObject p=new JSONObject(raw);
+    verifyPending(p);
+    return p;
+  }
+  public static void verifyPending(JSONObject p)throws Exception{
     if(!"JM.FoldCloudReturnPending/1".equals(p.optString("schema","")))throw new IllegalArgumentException("Unknown cloud return");
     if(!p.getString("challenge").matches("[0-9a-f]{32}"))throw new IllegalArgumentException("Challenge changed");
     if(p.getString("result").length()>3000||p.getString("fingerprint").length()!=64)
       throw new IllegalArgumentException("Receipt corrupted");
     if(!digest(p.getString("mission_id")+"\n"+p.getString("challenge")+"\n"+p.getInt("return_signal_id")).equals(p.getString("fingerprint")))
       throw new IllegalArgumentException("Return identity changed");
-    return p;
   }
   public static void stage(SharedPreferences sp,JSONObject p)throws Exception {
     if(!sp.edit().putString(PENDING_KEY,p.toString()).commit())throw new IOException("Pending return not saved");
   }
-  private static JSONArray applied(SharedPreferences sp)throws Exception{
+  public static JSONArray appliedForExport(SharedPreferences sp)throws Exception{
     String raw=sp.getString(APPLIED_KEY,"");
     JSONArray a=raw.isEmpty()?new JSONArray():new JSONArray(raw);
+    validateApplied(a);
+    return a;
+  }
+  private static JSONArray applied(SharedPreferences sp)throws Exception{
+    return appliedForExport(sp);
+  }
+  public static void validateApplied(JSONArray a)throws Exception{
     if(a.length()>100)throw new IllegalArgumentException("Applied receipt history invalid");
     HashSet<String> marks=new HashSet<>();
     for(int i=0;i<a.length();i++){
       String m=a.getString(i);
       if(!m.matches("[0-9a-f]{64}")||!marks.add(m))throw new IllegalArgumentException("Applied receipt history corrupted");
     }
-    return a;
   }
   public static int apply(SharedPreferences sp)throws Exception {
     JSONObject p=pending(sp);

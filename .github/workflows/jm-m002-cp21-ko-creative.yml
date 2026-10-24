@@ -1,0 +1,53 @@
+name: JM Mission 002 CP21 KO to Actual Creative Return
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp21-ko-creative-return.mjs'
+      - 'tests/mission002-cp21-ko-creative.mjs'
+      - '.github/workflows/jm-m002-cp21-ko-creative.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-ko-creative-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Separate exact original CP10 source
+        uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/JM-cading-lab
+          ref: 06c008bf0fb7eb8c1c0f1492db6e63808a95cafd
+          path: source-cp10
+          persist-credentials: false
+      - name: Execute original KO donor source and compare exact shared bodies
+        run: |
+          set -euo pipefail
+          test "$(git -C source-cp10 rev-parse HEAD)" = "06c008bf0fb7eb8c1c0f1492db6e63808a95cafd"
+          cmp coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs source-cp10/coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs
+          cmp coding-estate/sovereign-ten/direct/language-native.mjs source-cp10/coding-estate/sovereign-ten/direct/language-native.mjs
+          node source-cp10/coding-estate/integration/codegornization-cp10/emit-ko-contact.mjs
+      - name: Run actual original CP17 recipients and refusal tests
+        env:
+          CP21_EXPORT: '1'
+        run: node tests/mission002-cp21-ko-creative.mjs source-cp10/coding-estate/integration/codegornization-cp10/godot/packets/ko_aegis.json
+      - name: Preserve native composition regression
+        run: node tests/mission002-cp10-multi-mechanism.mjs
+      - name: Execute original CP19 exports to generate exact CP20 test fixtures
+        run: node tests/mission002-cp19-original-app-return.mjs
+      - name: Preserve CP20 encrypted five-media regression
+        run: node tests/mission002-cp20-offline-transfer.mjs
+      - name: Export bounded actual media
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_M002_CP21_KO_ACTUAL_MEDIA
+          path: cp21-output/
+          retention-days: 20

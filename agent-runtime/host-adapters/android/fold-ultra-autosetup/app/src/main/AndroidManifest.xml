@@ -31,6 +31,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="jmfoldultra" android:host="open" android:path="/galaxy" />
             </intent-filter>
+            <!-- Official Android static shortcut; same allowlisted GALAXY route. -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
     </application>
 </manifest>

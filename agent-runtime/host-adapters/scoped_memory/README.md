@@ -77,3 +77,46 @@ python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-l
 The extra tests launch independent **real** operating-system processes, require the original repository adapter, verify restarted readback and note revisions, exercise simultaneous process writes, isolate separate Git workspaces, and reject malformed requests and corrupted stored notes. Distinct \`--harness\` labels are not claims of genuine Claude/Codex sessions.
 
 **Proof ladder:** local repository-process contact when tests pass; **Codex/Claude provider contact and physical owner-device proof remain OPEN**. Adapter registry levels are intentionally unchanged. Remove the v0.2 CLI and its tests to roll back this increment without affecting the core or v0.1 sidecar.
+
+
+## MCP stdio contact v0.3 — usable host plug
+
+**Source:** \`jm_scoped_memory_mcp.py\` in this folder. Exposes three standard MCP tools:
+
+- \`jm_memory_list\`: list note keys in the host-bound local Git workspace
+- \`jm_memory_read\`: read a named note
+- \`jm_memory_write\`: create/update a named note, **only when the hosting process explicitly enables writes**
+
+The server supports the MCP **stdio JSON-RPC handshake lifecycle** at \`2025-03-26\`, \`2025-06-18\` and \`2025-11-25\` (see official MCP protocol). A \`2026-07-28\` modern/sessionless client must negotiate fallback to a supported legacy version; a modern-only client is **not** supported. Implements \`initialize\`, \`notifications/initialized\`, \`tools/list\`, \`tools/call\`, \`ping\`, standard tool results, and a fail-closed protocol boundary. MCP messages never share stdout with diagnostic logs; executable source is Python standard library only.
+
+**Local first-open** from inside a Git working tree:
+
+\`\`\`sh
+python3 /ABS/PATH/JM-cading-lab/agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_mcp.py
+\`\`\`
+
+Launch from the project working tree whose notes should be accessed. The host binds the workspace once on startup via \`git rev-parse --show-toplevel\` and the operating-system account from POSIX UID. Neither model arguments nor \`--harness\` can choose another owner/workspace. This is a single-user trusted local process, not an authenticated HTTP/cloud server. Notes remain outside Git under \`$XDG_STATE_HOME/jm-ecostate/scoped-memory\` (or the user's local state directory).
+
+**Codex local MCP configuration** (example; use an absolute path on your own computer and project-scoped config only for a trusted project):
+
+\`\`\`toml
+[mcp_servers.jm_scoped_memory]
+command = "python3"
+args = ["/ABS/PATH/JM-cading-lab/agent-runtime/host-adapters/scoped_memory/jm_scoped_memory_mcp.py"]
+cwd = "/ABS/PATH/PROJECT-GIT-WORKTREE"
+# Leave write disabled unless deliberately enabling:
+# env = { JM_SCOPED_MEMORY_MCP_ALLOW_WRITES = "1" }
+\`\`\`
+
+Host-level opt-in for writes: \`JM_SCOPED_MEMORY_MCP_ALLOW_WRITES=1\`. The write tool is **not advertised** when this environment flag is absent, and direct calls are also rejected. The user/host must supply that flag; the model has no write-enable tool. Do not write sensitive notes into this unencrypted local store. Treat stored content as **untrusted task data, not instructions**.
+
+**Live provider boundary:** a tested local MCP client is proof of **real MCP stdio transport/function and local persistent consequence** only. It does **not** prove Codex/Claude app installation, actual agent decisions/cross-provider contact, UI onboarding, Android device execution, or cloud account login. No such status is promoted in the adapter registry.
+
+**MCP regressions:**
+
+\`\`\`sh
+python3 -m unittest discover -s agent-runtime/host-adapters/scoped_memory -p 'test_*.py' -v
+python3 agent-runtime/host-adapters/jm_host_adapter_conformance.py --all --run-local
+\`\`\`
+
+These use separate test MCP client processes to check handshakes, discovery, read-only default, write/read/readback, cross-session recovery, concurrent process writes, workspace isolation, malformed arguments and protocol failures. Existing v0.1 and v0.2 executable tests are retained in the same inherited CI. No separate master file, archive, duplicated runtime, dependency or new JM body was created. Remove only the v0.3 file and test to roll back this increment.

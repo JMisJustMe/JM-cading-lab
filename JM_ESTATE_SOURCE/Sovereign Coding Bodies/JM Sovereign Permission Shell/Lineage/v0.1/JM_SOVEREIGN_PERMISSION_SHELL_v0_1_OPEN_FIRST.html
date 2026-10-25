@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>JM Sovereign Permission Lab</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eef4ff;background:#0b0f17}
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#17243b 0,#0b0f17 42%);padding:18px}
+    main{max-width:760px;margin:0 auto}.eyebrow{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:#9bb7e7}
+    h1{font-size:clamp(1.8rem,8vw,3.25rem);line-height:.96;margin:.45rem 0 1rem} p{line-height:1.55;color:#c5d0e3}
+    .keeper{font-size:1.05rem;color:#fff;border-left:3px solid #8fb8ff;padding:.35rem 0 .35rem 1rem;margin:1rem 0 1.4rem}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:rgba(20,29,45,.9);border:1px solid #2b3c59;border-radius:16px;padding:14px}
+    .label{font-size:.74rem;color:#9db0cc;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:6px;font-weight:750;overflow-wrap:anywhere}
+    .good{color:#9ef0bd}.warn{color:#ffd391}.bad{color:#ff9b9b}.controls{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+    button{appearance:none;border:0;border-radius:13px;padding:13px 16px;font-weight:800;background:#eaf1ff;color:#111927;min-height:48px}
+    button.secondary{background:#253650;color:#edf4ff} button:disabled{opacity:.45}.meter{height:22px;border-radius:999px;background:#111a28;border:1px solid #314461;overflow:hidden}
+    .meter>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#85a8ff,#9ef0bd);transition:width 70ms linear}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#070a10;border:1px solid #27354c;border-radius:14px;padding:12px;max-height:280px;overflow:auto;font-size:.78rem;color:#cbd8ed}
+    .route{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:14px 0}.route span{text-align:center;background:#172236;border:1px solid #2c3e5b;border-radius:10px;padding:9px 5px;font-size:.72rem}
+    footer{font-size:.78rem;color:#7f91ab;margin-top:22px}.full{grid-column:1/-1}@media(max-width:520px){.grid{grid-template-columns:1fr}.route{grid-template-columns:repeat(2,1fr)}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">JM / RouteOS PermissionGate proof</div>
+  <h1>Sovereign Permission Lab</h1>
+  <p class="keeper">The HTML requests. The shell mediates. Android verifies. <strong>You decide.</strong></p>
+
+  <section class="grid" aria-label="Permission gate status">
+    <div class="card"><div class="label">Secure context</div><div id="secure" class="value">Checking…</div></div>
+    <div class="card"><div class="label">Media devices</div><div id="media" class="value">Checking…</div></div>
+    <div class="card"><div class="label">Current origin</div><div id="origin" class="value"></div></div>
+    <div class="card"><div class="label">Microphone stream</div><div id="streamState" class="value warn">Inactive</div></div>
+  </section>
+
+  <div class="route" aria-label="Authority route">
+    <span>1 · INTENT</span><span>2 · HTML REQUEST</span><span>3 · SHELL GATE</span>
+    <span>4 · USER DECISION</span><span>5 · OS RELEASE</span><span>6 · RECEIPT</span>
+  </div>
+
+  <section class="card full">
+    <div class="label">Live microphone proof</div>
+    <p>Tap only when you intend to use the microphone. The native shell asks again before handing the hardware route to this HTML body.</p>
+    <div class="controls">
+      <button id="start">Request microphone</button>
+      <button id="stop" class="secondary" disabled>Stop and close route</button>
+      <button id="copy" class="secondary">Copy session receipts</button>
+    </div>
+    <div class="meter" aria-label="Microphone level"><span id="level"></span></div>
+    <p id="diagnostic">No request made yet.</p>
+  </section>
+
+  <section class="card full" style="margin-top:12px">
+    <div class="label">Visible session receipt</div>
+    <pre id="log">[]</pre>
+  </section>
+
+  <footer>v0.1 proves microphone handoff only. It does not override Android, grant access to other apps, or inspect the phone globally.</footer>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const receipts = [];
+  let stream = null;
+  let audioContext = null;
+  let animationFrame = null;
+
+  function receipt(event, result, detail = {}) {
+    const body = {timestamp: new Date().toISOString(), event, result, ...detail};
+    receipts.push(body);
+    $('log').textContent = JSON.stringify(receipts, null, 2);
+    try { localStorage.setItem('jm_permission_session', JSON.stringify(receipts)); } catch (_) {}
+    return body;
+  }
+
+  function gate(id, ok, yes, no) {
+    const node = $(id); node.textContent = ok ? yes : no; node.className = `value ${ok ? 'good' : 'bad'}`;
+  }
+
+  gate('secure', window.isSecureContext, 'PASS', 'BLOCKED');
+  gate('media', !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia), 'AVAILABLE', 'UNAVAILABLE');
+  $('origin').textContent = location.origin;
+  $('origin').className = `value ${location.protocol === 'https:' ? 'good' : 'warn'}`;
+  receipt('PAGE_OPEN', 'READY', {secureContext: window.isSecureContext, origin: location.origin});
+
+  async function startMicrophone() {
+    if (stream) return;
+    $('diagnostic').textContent = 'Request travelling: HTML → native shell → Android → user…';
+    receipt('MIC_REQUEST', 'STARTED');
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+      $('streamState').textContent = 'ACTIVE'; $('streamState').className = 'value good';
+      $('start').disabled = true; $('stop').disabled = false;
+      $('diagnostic').textContent = 'Microphone route is open. The meter is processed locally in this page.';
+      receipt('MIC_REQUEST', 'GRANTED', {tracks: stream.getAudioTracks().length});
+      runMeter(stream);
+      stream.getAudioTracks().forEach(track => track.addEventListener('ended', () => stopAll('track-ended')));
+    } catch (error) {
+      stream = null;
+      $('streamState').textContent = 'INACTIVE'; $('streamState').className = 'value warn';
+      $('diagnostic').textContent = `${error.name}: ${error.message}`;
+      receipt('MIC_REQUEST', 'FAILED', {name: error.name, message: error.message});
+    }
+  }
+
+  function runMeter(mediaStream) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    audioContext.createMediaStreamSource(mediaStream).connect(analyser);
+    const values = new Uint8Array(analyser.frequencyBinCount);
+    const tick = () => {
+      analyser.getByteFrequencyData(values);
+      const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+      $('level').style.width = `${Math.min(100, average * 1.6)}%`;
+      animationFrame = requestAnimationFrame(tick);
+    };
+    tick();
+  }
+
+  function stopAll(reason = 'user-stop') {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    stream = null;
+    if (audioContext) audioContext.close().catch(() => {});
+    audioContext = null;
+    $('level').style.width = '0%';
+    $('streamState').textContent = 'INACTIVE'; $('streamState').className = 'value warn';
+    $('start').disabled = false; $('stop').disabled = true;
+    $('diagnostic').textContent = `Microphone route closed: ${reason}.`;
+    receipt('MIC_ROUTE', 'CLOSED', {reason});
+  }
+
+  window.jmStopAllMedia = stopAll;
+  window.jmNativePermissionEvent = nativeReceipt => {
+    receipts.push({source: 'native-shell', ...nativeReceipt});
+    $('log').textContent = JSON.stringify(receipts, null, 2);
+    try { localStorage.setItem('jm_permission_session', JSON.stringify(receipts)); } catch (_) {}
+  };
+
+  $('start').addEventListener('click', startMicrophone);
+  $('stop').addEventListener('click', () => stopAll('user-stop'));
+  $('copy').addEventListener('click', async () => {
+    const text = JSON.stringify(receipts, null, 2);
+    try {
+      await navigator.clipboard.writeText(text);
+      $('diagnostic').textContent = 'Session receipt copied.';
+    } catch (_) {
+      const area = document.createElement('textarea'); area.value = text; document.body.appendChild(area); area.select();
+      document.execCommand('copy'); area.remove(); $('diagnostic').textContent = 'Session receipt copied.';
+    }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && stream) stopAll('page-hidden'); });
+})();
+</script>
+</body>
+</html>

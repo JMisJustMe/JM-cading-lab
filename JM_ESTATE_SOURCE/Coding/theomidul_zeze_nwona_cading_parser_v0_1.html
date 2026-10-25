@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Theomidul / zeze.nwona Cading Parser v0.1</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#10131a; color:#f5f7fb; line-height:1.45; }
+    body { margin:0; padding:18px; max-width:980px; margin-inline:auto; }
+    header, section { background:#171b25; border:1px solid #2a3142; border-radius:18px; padding:16px; margin-bottom:14px; box-shadow:0 10px 28px rgba(0,0,0,.22); }
+    h1,h2,h3 { margin-top:0; }
+    h1 { font-size:1.35rem; }
+    h2 { font-size:1.05rem; }
+    textarea { width:100%; min-height:90px; resize:vertical; border-radius:14px; border:1px solid #3b455e; padding:12px; box-sizing:border-box; background:#0d1018; color:#f5f7fb; font:1rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    button { border:0; border-radius:999px; padding:10px 14px; margin:8px 8px 0 0; cursor:pointer; font-weight:700; background:#f5f7fb; color:#10131a; }
+    button.secondary { background:#2a3142; color:#f5f7fb; border:1px solid #3b455e; }
+    pre { overflow:auto; background:#0d1018; border:1px solid #2a3142; border-radius:14px; padding:12px; color:#dfe7ff; white-space:pre-wrap; }
+    code { background:#0d1018; border:1px solid #2a3142; border-radius:6px; padding:1px 5px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+    .card { background:#0d1018; border:1px solid #2a3142; border-radius:14px; padding:12px; }
+    .pass { color:#8ff0a4; font-weight:800; }
+    .warn { color:#ffd479; font-weight:800; }
+    .fail { color:#ff8f8f; font-weight:800; }
+    .tiny { opacity:.78; font-size:.92rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Theomidul / zeze.nwona Cading Parser v0.1</h1>
+    <p>This is the first tiny interpreter-style proof. It reads a cading line, detects tokens, and returns structured JSON.</p>
+    <p class="tiny">Current operators: <code>,</code> Comma Travel, <code>.</code> Foolstopped, <code>.✓</code> Fullstopped, <code>=</code> Speakuals.</p>
+  </header>
+
+  <section>
+    <h2>Input</h2>
+    <textarea id="input">Zzza, za-zuh, zuzz = zeze.nwona.✓</textarea>
+    <div>
+      <button onclick="runParse()">Parse cading line</button>
+      <button class="secondary" onclick="loadExample('Zzza, za-zuh, zuzz = zeze.nwona.✓')">Example: fullstopped</button>
+      <button class="secondary" onclick="loadExample('Zzza, za-zuh.')">Example: foolstopped early</button>
+      <button class="secondary" onclick="loadExample('TheOnly {pre}, Theought.all.native {post}.✓')">Example: pre/post</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Result</h2>
+    <div id="status"></div>
+    <pre id="output"></pre>
+  </section>
+
+  <section>
+    <h2>Operator notes</h2>
+    <div class="grid">
+      <div class="card"><h3><code>,</code> Comma Travel</h3><p>Splits items but keeps them grouped as one travel-chain.</p></div>
+      <div class="card"><h3><code>.</code> Foolstopped</h3><p>Marks a stop as questionable if it is not validated by <code>✓</code>.</p></div>
+      <div class="card"><h3><code>.✓</code> Fullstopped</h3><p>Marks a stop as checked enough for this stage.</p></div>
+      <div class="card"><h3><code>=</code> Speakuals</h3><p>Maps the left side into a speakable/usable landing on the right side.</p></div>
+    </div>
+  </section>
+
+<script>
+/*
+  CADING PARSER v0.1
+
+  Coding lesson:
+  A parser turns raw text into structure.
+
+  raw text:
+    Zzza, za-zuh, zuzz = zeze.nwona.✓
+
+  structured data:
+    {
+      variants: ["Zzza", "za-zuh", "zuzz"],
+      relation_operator: "=",
+      relation_name: "speakuals",
+      landing: "zeze.nwona",
+      completion_state: "fullstopped"
+    }
+*/
+
+function loadExample(text) {
+  document.getElementById("input").value = text;
+  runParse();
+}
+
+function parseCadingLine(rawInput) {
+  const raw = rawInput.trim();
+
+  const result = {
+    raw_input: raw,
+    tokens_detected: [],
+    operators: {},
+    meaning_read: "",
+    warnings: [],
+    distortion_score: 0,
+    status: "unknown"
+  };
+
+  if (!raw) {
+    result.status = "fail";
+    result.warnings.push("empty_input");
+    result.distortion_score = 4;
+    return result;
+  }
+
+  // 1. Detect completion state.
+  // .✓ = fullstopped. . alone = foolstopped.
+  let line = raw;
+  if (line.endsWith(".✓")) {
+    result.tokens_detected.push(".✓");
+    result.operators.completion = {
+      symbol: ".✓",
+      name: "fullstopped",
+      state: "validated_enough_for_now"
+    };
+    line = line.slice(0, -2).trim();
+  } else if (line.endsWith(".")) {
+    result.tokens_detected.push(".");
+    result.operators.completion = {
+      symbol: ".",
+      name: "foolstopped",
+      state: "questionable_stop"
+    };
+    line = line.slice(0, -1).trim();
+    result.warnings.push("line_stopped_without_validation");
+    result.distortion_score = Math.max(result.distortion_score, 2);
+  } else {
+    result.operators.completion = {
+      symbol: null,
+      name: "open",
+      state: "not_stopped"
+    };
+    result.warnings.push("no_stop_operator_found");
+    result.distortion_score = Math.max(result.distortion_score, 1);
+  }
+
+  // 2. Detect speakuals relation.
+  // For v0.1, we only support one equals sign.
+  const equalsIndex = line.indexOf("=");
+  if (equalsIndex !== -1) {
+    result.tokens_detected.push("=");
+    result.operators.relation = {
+      symbol: "=",
+      name: "speakuals",
+      state: "left_becomes_speakable_as_right"
+    };
+
+    const left = line.slice(0, equalsIndex).trim();
+    const right = line.slice(equalsIndex + 1).trim();
+
+    result.left = left;
+    result.landing = right || null;
+
+    if (!right) {
+      result.warnings.push("speakuals_missing_landing");
+      result.distortion_score = Math.max(result.distortion_score, 3);
+    }
+  } else {
+    result.left = line;
+    result.landing = null;
+    result.warnings.push("no_speakuals_operator_found");
+    result.distortion_score = Math.max(result.distortion_score, 2);
+  }
+
+  // 3. Detect comma travel-chain on the left side.
+  if (result.left.includes(",")) {
+    result.tokens_detected.push(",");
+    result.operators.travel = {
+      symbol: ",",
+      name: "comma_travel",
+      state: "variant_chain"
+    };
+
+    result.variants = result.left
+      .split(",")
+      .map(item => item.trim())
+      .filter(Boolean);
+  } else {
+    result.operators.travel = {
+      symbol: null,
+      name: "single_item",
+      state: "no_comma_chain"
+    };
+    result.variants = [result.left].filter(Boolean);
+  }
+
+  // 4. Detect pre/post tags.
+  result.pre_post = {
+    has_pre: raw.includes("{pre}"),
+    has_post: raw.includes("{post}")
+  };
+  if (result.pre_post.has_pre) result.tokens_detected.push("{pre}");
+  if (result.pre_post.has_post) result.tokens_detected.push("{post}");
+
+  // 5. Generate human meaning read.
+  const hasLanding = Boolean(result.landing);
+  const completionName = result.operators.completion.name;
+
+  if (result.variants.length > 1 && hasLanding && completionName === "fullstopped") {
+    result.meaning_read = "Variants travel through comma-points and land as " + result.landing + "; the stop is validated.";
+    result.status = "pass";
+    result.distortion_score = Math.max(result.distortion_score, 1);
+  } else if (result.variants.length > 1 && !hasLanding && completionName === "foolstopped") {
+    result.meaning_read = "A travel-chain started but stopped before a landing was declared.";
+    result.status = "warning";
+    result.warnings.push("travel_chain_stopped_without_landing");
+    result.distortion_score = Math.max(result.distortion_score, 3);
+  } else if (hasLanding && completionName === "fullstopped") {
+    result.meaning_read = "A statement lands as " + result.landing + " and is validated enough for this stage.";
+    result.status = "pass";
+  } else {
+    result.meaning_read = "The line is readable, but needs more checking before clean completion.";
+    result.status = result.distortion_score >= 3 ? "warning" : "partial";
+  }
+
+  // 6. NOTA log: observe without taking.
+  result.NOTA = {
+    notake: "no premature ownership or final claim",
+    observe: "tokens and operators detected",
+    tally: {
+      token_count: result.tokens_detected.length,
+      variant_count: result.variants.length,
+      warning_count: result.warnings.length
+    },
+    analyse: "distortion score " + result.distortion_score + " on 0-4 scale"
+  };
+
+  return result;
+}
+
+function runParse() {
+  const input = document.getElementById("input").value;
+  const parsed = parseCadingLine(input);
+
+  const statusEl = document.getElementById("status");
+  const outputEl = document.getElementById("output");
+
+  let cls = "warn";
+  let label = "PARTIAL";
+  if (parsed.status === "pass") {
+    cls = "pass";
+    label = "PASS";
+  } else if (parsed.status === "fail") {
+    cls = "fail";
+    label = "FAIL";
+  } else if (parsed.status === "warning") {
+    cls = "warn";
+    label = "WARNING";
+  }
+
+  statusEl.innerHTML = `
+    <p><span class="${cls}">${label}</span></p>
+    <p><strong>Meaning:</strong> ${escapeHtml(parsed.meaning_read || "No meaning read generated.")}</p>
+    <p><strong>Distortion score:</strong> ${parsed.distortion_score} / 4</p>
+  `;
+
+  outputEl.textContent = JSON.stringify(parsed, null, 2);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+runParse();
+</script>
+</body>
+</html>

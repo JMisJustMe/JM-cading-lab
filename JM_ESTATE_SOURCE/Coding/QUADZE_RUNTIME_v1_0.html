@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Quadze Runtime v1.0 — Branching Route Engine</title>
+<style>
+:root{--bg:#07101d;--panel:#111c31;--panel2:#0b1424;--line:#2a3a61;--txt:#f5f7ff;--muted:#aeb8cf;--green:#45e388;--yellow:#ffd86b;--red:#ff6380;--blue:#60d5ff;--violet:#a77bff}*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 10% 0%,#20294a 0,#07101d 45%,#050914 100%);color:var(--txt);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}body{max-width:760px;margin:0 auto;padding:16px 14px 40px}.card{background:linear-gradient(180deg,rgba(17,28,49,.96),rgba(10,18,32,.96));border:1px solid var(--line);border-radius:24px;padding:22px;margin:14px 0;box-shadow:0 0 0 1px rgba(255,255,255,.02),0 18px 50px rgba(0,0,0,.28)}h1{font-size:clamp(2rem,8vw,3.4rem);line-height:1.03;margin:0 0 10px}h2{font-size:1.75rem;margin:0 0 14px}.lead{font-size:1.12rem;line-height:1.5;color:var(--muted);font-weight:650}.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.chip{padding:10px 14px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-weight:900;letter-spacing:.04em;background:rgba(255,255,255,.035)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.metric{min-height:112px}.label{color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-size:.92rem}.value{font-size:2.25rem;font-weight:1000;margin-top:6px}.ok{color:var(--green)}.wait{color:var(--yellow)}.bad{color:var(--red)}.states{display:grid;grid-template-columns:1fr 1fr;gap:12px}.state{border:1px solid var(--line);border-radius:18px;padding:18px;min-height:174px;background:#0a1322;transition:.25s}.state.active{border-color:var(--violet);box-shadow:0 0 0 2px rgba(167,123,255,.45),0 0 24px rgba(167,123,255,.18)}.state h3{font-size:2rem;margin:0 0 4px}.state .name{font-size:1.05rem;font-weight:900;margin-bottom:14px}.state .beh{min-height:64px;border:1px dashed #415174;border-radius:16px;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;font-weight:1000;font-size:1.05rem}.routes{display:grid;gap:12px}.route{border:1px solid var(--line);border-radius:18px;padding:15px;background:#0a1322}.route.ok{border-color:rgba(69,227,136,.7)}.route .path{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:1rem;line-height:1.55;white-space:pre-wrap}.btns{display:grid;gap:12px}.btn{border:0;border-radius:18px;padding:18px 16px;font-size:1rem;font-weight:1000;color:#06101d;background:linear-gradient(135deg,#88a8ff,#57ddf2);box-shadow:inset 0 -2px rgba(0,0,0,.1)}.btn:nth-child(2){background:linear-gradient(135deg,#b674ff,#84a2ff)}.btn:nth-child(3){background:linear-gradient(135deg,#ff7187,#ffd566)}pre{white-space:pre-wrap;word-break:break-word;margin:0;background:#050b14;border:1px solid var(--line);border-radius:16px;padding:16px;color:#dfe8ff;font-size:.9rem;line-height:1.45;max-height:360px;overflow:auto}.formula{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.footer{color:var(--muted);font-size:.95rem;line-height:1.4}@media(max-width:520px){body{padding:12px 10px 30px}.card{border-radius:22px;padding:20px;margin:12px 0}.grid,.states{grid-template-columns:1fr 1fr;gap:10px}.metric{min-height:105px}.value{font-size:2rem}.state{min-height:158px;padding:14px}.state h3{font-size:1.65rem}.state .beh{font-size:.9rem;min-height:58px}.lead{font-size:1rem}}
+</style>
+</head>
+<body>
+<section class="card">
+<h1>Quadze Runtime v1.0</h1>
+<div class="lead">Branching Route Engine — proves multiple valid routes through Q0–Q3. Tests state preservation, transition preservation, chain completion, and branch completion.</div>
+<div class="chips"><span class="chip">OPEN-FIRST</span><span class="chip">ANDROID FIT</span><span class="chip">BRANCHING</span><span class="chip">NO DING, NO CLAIM</span></div>
+</section>
+
+<section class="grid" id="metrics"></section>
+
+<section class="card">
+<h2>Quadze States</h2>
+<div class="states" id="states"></div>
+</section>
+
+<section class="card">
+<h2>Branch Routes</h2>
+<div class="routes" id="routes"></div>
+</section>
+
+<section class="card">
+<h2>Actions</h2>
+<div class="btns"><button class="btn" onclick="runAll()">Run Branching Route Test</button><button class="btn" onclick="exportReceipt()">Export Receipt</button><button class="btn" onclick="resetRun()">Reset</button></div>
+</section>
+
+<section class="card">
+<h2>TraceBox</h2>
+<pre id="trace"></pre>
+</section>
+
+<section class="card">
+<h2>Receipt Export</h2>
+<pre id="receipt"></pre>
+</section>
+
+<section class="card formula">
+<h2>Formula Body</h2>
+<pre>Q = {Q0,Q1,Q2,Q3}
+Δ_Q = {δij | Qi → Qj}
+Γ_main = δ01 ∘ δ12 ∘ δ23 ∘ δ30
+Γ_A = Q0 → Q1 → Q2 → Q3 → Q0
+Γ_B = Q0 → Q1 → Q3 → Q0
+P_R = 4/4
+P_T = 5/5
+P_Γ = 1/1
+P_B = 2/2
+P_R=1 ∧ P_T=1 ∧ P_Γ=1 ∧ P_B=1 ⇒ DING</pre>
+</section>
+
+<section class="card footer">
+<strong>Claim boundary:</strong> This freeze demonstrates this v1.0 implementation completing defined Quadze branching routes on Android/browser host. It does not claim all future Quadze architectures, distributed runtimes, or external implementations are proven.
+</section>
+
+<script>
+const STATES={Q0:{name:'Structural Absence',beh:'EMPTY SLOT — absence has structure'},Q1:{name:'Functional Presence',beh:'ACTIVE OBJECT — presence acts'},Q2:{name:'Epistemic Potential',beh:'POTENTIAL HELD OPEN — awaiting distinction'},Q3:{name:'Semantic Relevance',beh:'MEANING LINK — relevance connected'}};
+const ROUTES=[
+ {id:'MAIN',label:'Full Chain Γ',path:['Q0','Q1','Q2','Q3','Q0']},
+ {id:'A',label:'Branch Route A',path:['Q0','Q1','Q2','Q3','Q0']},
+ {id:'B',label:'Branch Route B',path:['Q0','Q1','Q3','Q0']}
+];
+let trace=[], completedRoutes={}, seenStates={}, transitions={};
+function el(id){return document.getElementById(id)}
+function log(type,msg,obj={}){trace.push({n:trace.length+1,time:new Date().toISOString(),type,msg,...obj});renderTrace()}
+function resetRun(){trace=[];completedRoutes={};seenStates={};transitions={};renderAll();el('receipt').textContent='Run test first.'}
+function transition(a,b,route){seenStates[a]=true;seenStates[b]=true;transitions[a+'→'+b]=true;log('TRANSITION',`${route}: ${a} → ${b}`,{before:a,after:b,route});renderAll();}
+function runRoute(r){log('ROUTE_START',`${r.label} started`,{route:r.id,path:r.path.join('→')});for(let i=0;i<r.path.length-1;i++){transition(r.path[i],r.path[i+1],r.id)}completedRoutes[r.id]=true;log('ROUTE_PASS',`${r.label} completed`,{route:r.id});}
+function score(){const pr=Object.keys(STATES).filter(k=>seenStates[k]).length; const neededT=['Q0→Q1','Q1→Q2','Q2→Q3','Q3→Q0','Q1→Q3']; const pt=neededT.filter(k=>transitions[k]).length; const pg=completedRoutes.MAIN?1:0; const pb=['A','B'].filter(k=>completedRoutes[k]).length; const ding=pr===4&&pt===5&&pg===1&&pb===2; return {pr,pt,pg,pb,ding}}
+function runAll(){resetRun();log('BOOT','D(Z0)=Q loaded. Branching test started.');ROUTES.forEach(runRoute); const s=score(); if(s.ding){log('DING','P_R=4/4, P_T=5/5, P_Γ=1/1, P_B=2/2. Claim permitted inside this test.',s)}else{log('BUGG','Branching route test incomplete.',s)}renderAll();exportReceipt(false)}
+function renderMetrics(){const s=score();el('metrics').innerHTML=`<div class="card metric"><div class="label">P_R State Preservation</div><div class="value ${s.pr===4?'ok':'wait'}">${s.pr}/4</div></div><div class="card metric"><div class="label">P_T Transition Preservation</div><div class="value ${s.pt===5?'ok':'wait'}">${s.pt}/5</div></div><div class="card metric"><div class="label">P_Γ Full Chain</div><div class="value ${s.pg===1?'ok':'wait'}">${s.pg}/1</div></div><div class="card metric"><div class="label">P_B Branches</div><div class="value ${s.pb===2?'ok':'wait'}">${s.pb}/2</div></div><div class="card metric"><div class="label">Result</div><div class="value ${s.ding?'ok':'wait'}">${s.ding?'DING':'WAIT'}</div></div><div class="card metric"><div class="label">Claim</div><div class="value ${s.ding?'ok':'bad'}">${s.ding?'PERMITTED':'BLOCKED'}</div></div>`}
+function renderStates(){const last=trace.slice().reverse().find(t=>t.after)?.after;el('states').innerHTML=Object.entries(STATES).map(([k,v])=>`<div class="state ${last===k?'active':''}"><h3>${k}</h3><div class="name">${v.name}</div><div class="beh">${seenStates[k]?v.beh:'Waiting for route.'}</div></div>`).join('')}
+function renderRoutes(){el('routes').innerHTML=ROUTES.map(r=>`<div class="route ${completedRoutes[r.id]?'ok':''}"><strong>${r.label}</strong><div class="path">${r.path.join(' → ')}</div><div>${completedRoutes[r.id]?'PASS':'Waiting'}</div></div>`).join('')}
+function renderTrace(){el('trace').textContent=JSON.stringify(trace,null,2)}
+function renderAll(){renderMetrics();renderStates();renderRoutes();renderTrace()}
+function exportReceipt(show=true){const s=score();const receipt={title:'Quadze Runtime v1.0 Branching Route Engine Freeze',version:'v1.0',status:s.ding?'PASS':'WAIT',statePreservation:`${s.pr}/4`,transitionPreservation:`${s.pt}/5`,fullChain:`${s.pg}/1`,branches:`${s.pb}/2`,claim:s.ding?'PERMITTED':'BLOCKED',routes:ROUTES.map(r=>({id:r.id,path:r.path,complete:!!completedRoutes[r.id]})),trace};el('receipt').textContent=JSON.stringify(receipt,null,2);if(show)log('EXPORT','Receipt exported.',{status:receipt.status});}
+window.addEventListener('load',()=>{renderAll();runAll();});
+</script>
+</body></html>

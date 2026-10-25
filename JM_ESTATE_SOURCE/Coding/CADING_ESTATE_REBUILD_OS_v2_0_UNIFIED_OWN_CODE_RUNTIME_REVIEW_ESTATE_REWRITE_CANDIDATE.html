@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Cading Estate Rebuild OS v2.0 — Unified Own-Code Runtime Review / Estate Rewrite Candidate</title>
+<style>
+:root{--bg:#05070b;--fg:#00ff77;--gold:#ffd84d;--red:#ff4d4d;--blue:#5fd8ff;--muted:#a7d8b5}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--bg);color:var(--fg);font-family:ui-monospace,Consolas,monospace}
+header{position:sticky;top:0;z-index:40;background:#020202;border-bottom:1px solid var(--fg);padding:8px}
+h1{font-size:clamp(14px,4.2vw,18px);line-height:1.15;margin:0;color:var(--gold)}
+h2{font-size:13px;color:var(--gold);margin:8px 0}.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.chip{border:1px solid var(--fg);border-radius:999px;padding:3px 7px;background:#000;font-size:11px}.pass{border-color:var(--gold)!important;color:var(--gold)!important}.fail{border-color:var(--red)!important;color:var(--red)!important}
+nav{display:flex;gap:7px;overflow-x:auto;scroll-snap-type:x proximity;padding:7px 0 2px}
+nav button{min-width:128px;scroll-snap-align:start}
+button,textarea{width:100%;border:1px solid var(--fg);border-radius:10px;background:#000;color:var(--fg);font-family:inherit;padding:9px 7px;margin:3px 0;font-size:12px;touch-action:manipulation}
+textarea{min-height:150px;resize:vertical}button.primary{border-color:var(--gold);color:var(--gold)}button.blue{border-color:var(--blue);color:var(--blue)}button.red{border-color:var(--red);color:var(--red)}
+main{padding:8px;max-width:100vw;overflow-x:hidden}.screen{display:none}.screen.on{display:block}
+.card{border:1px solid var(--fg);border-radius:15px;background:rgba(0,0,0,.48);padding:8px;margin:0 0 8px;overflow:hidden}
+.desktop,.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.icon{border:1px solid rgba(0,255,119,.75);border-radius:16px;background:#000;padding:10px;min-height:86px;display:flex;flex-direction:column;justify-content:space-between}
+.icon strong{color:var(--gold);font-size:12px;line-height:1.2}.icon span{font-size:10.5px;color:#a7d8b5;line-height:1.3}
+pre{white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;background:#000;border:1px solid rgba(0,255,119,.55);border-radius:10px;padding:8px;min-height:80px;max-height:390px;overflow:auto;font-size:11px}
+.tableScroller{width:100%;overflow-x:auto;border:1px solid rgba(0,255,119,.3);border-radius:10px}table{width:100%;min-width:1080px;border-collapse:collapse;font-size:11px;background:#000}td,th{border:1px solid rgba(0,255,119,.5);padding:5px;vertical-align:top;overflow-wrap:anywhere}th{color:var(--gold)}
+.statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.stat{border:1px solid rgba(0,255,119,.55);border-radius:12px;background:#020202;padding:8px}.stat b{color:var(--gold)}
+@media(min-width:760px){.desktop,.grid{grid-template-columns:repeat(3,1fr)}.statgrid{grid-template-columns:repeat(4,1fr)}nav{display:grid;grid-template-columns:repeat(6,1fr);overflow:visible}nav button{min-width:0}}
+</style>
+</head>
+<body>
+<header>
+<h1>Cading Estate Rebuild OS v2.0 — Unified Own-Code Runtime Review / Estate Rewrite Candidate</h1>
+<div class="chips">
+<span class="chip pass">v1.9 Freeze: loaded</span>
+<span class="chip" id="runtimeChip">Runtime: not run</span>
+<span class="chip" id="estateChip">Estate: not reviewed</span>
+<span class="chip" id="buttonChip">Buttons: not run</span>
+<span class="chip" id="screenChip">ScreenFit: not run</span>
+<span class="chip" id="exportChip">Export: not run</span>
+</div>
+<nav>
+<button onclick="showScreen('home')">HOME</button>
+<button onclick="showScreen('runtime')">RUNTIME</button>
+<button onclick="showScreen('estate')">ESTATE</button>
+<button onclick="showScreen('matrix')">MATRIX</button>
+<button onclick="showScreen('checks')">CHECKS</button>
+<button onclick="showScreen('export')">EXPORT</button>
+</nav>
+</header>
+<main>
+<section id="home" class="screen on">
+<div class="card"><h2>Unified Runtime Review Home</h2>
+<div class="desktop">
+<button class="icon" onclick="runRuntimeReview()"><strong>Run Runtime Review</strong><span>source → functions → carrier → boundary</span></button>
+<button class="icon" onclick="runEstateReview()"><strong>Estate Rewrite Review</strong><span>decide candidate status without crown</span></button>
+<button class="icon" onclick="loadRuntimeMatrix()"><strong>Runtime Matrix</strong><span>whole-chain status board</span></button>
+<button class="icon" onclick="showScreen('matrix')"><strong>Status Board</strong><span>owned-safe, upgrade-candidate, carrier-needed</span></button>
+<button class="icon" onclick="runFullIntegrity()"><strong>Integrity Gate</strong><span>runtime + estate + buttons + screen + export</span></button>
+<button class="icon" onclick="makeExportPack()"><strong>Export v2.0</strong><span>estate rewrite candidate pack</span></button>
+</div></div>
+<div class="card"><h2>v2.0 Principle</h2><pre>v1.9 froze safe claim language.
+
+v2.0 purpose:
+Review the whole own-code runtime route as one body.
+
+It can say:
+The estate has a unified own-code runtime review body.
+The first function chain is ownership-upgrade-candidate.
+The estate can now be called an ESTATE REWRITE CANDIDATE.
+
+It cannot say:
+Everything is fully native-machine-owned.
+Every body is rewritten.
+No bridge remains.
+Filesystem / ZIP / download / device input are fully owned.
+
+Boundary:
+Estate Rewrite Candidate is not Estate Rewrite Crown.</pre></div>
+</section>
+
+<section id="runtime" class="screen">
+<div class="card"><h2>Unified Runtime Review</h2>
+<button class="primary" onclick="runRuntimeReview()">RUN RUNTIME REVIEW</button>
+<div id="runtimeStats" class="statgrid"></div>
+<pre id="runtimeOut">Runtime review not run yet.</pre></div>
+</section>
+
+<section id="estate" class="screen">
+<div class="card"><h2>Estate Rewrite Candidate Review</h2>
+<button class="primary" onclick="runEstateReview()">RUN ESTATE REVIEW</button>
+<pre id="estateOut">Estate review not run yet.</pre></div>
+</section>
+
+<section id="matrix" class="screen">
+<div class="card"><h2>Runtime Matrix</h2>
+<button class="primary" onclick="loadRuntimeMatrix()">LOAD RUNTIME MATRIX</button>
+<div id="matrixTable"></div></div>
+</section>
+
+<section id="checks" class="screen">
+<div class="card"><h2>SelfCheck + ButtonCheck + ScreenFit</h2>
+<button class="primary" onclick="runRuntimeGate()">RUN RUNTIME GATE</button>
+<button class="blue" onclick="runButtonCheck()">RUN BUTTON CHECK</button>
+<button class="blue" onclick="runScreenFit()">RUN SCREENFIT</button>
+<button class="blue" onclick="runFullIntegrity()">RUN FULL INTEGRITY</button>
+<pre id="checkOut">Checks not run yet.</pre></div>
+</section>
+
+<section id="export" class="screen">
+<div class="card"><h2>Export v2.0 Runtime Review Pack</h2>
+<button class="primary" onclick="makeExportPack()">EXPORT v2.0 PACK</button>
+<button class="red" onclick="resetAll()">RESET</button>
+<pre id="exportOut">Waiting...</pre></div>
+<div class="card"><h2>TraceBox</h2><pre id="traceOut">[]</pre></div>
+</section>
+</main>
+<script>
+const screens=["home","runtime","estate","matrix","checks","export"];
+let TraceBox=[], RuntimeMatrix=[], RuntimeReview=null, EstateReview=null, RuntimeGate=null, ButtonCheck=null, ScreenFit=null, ExportPack=null;
+
+const runtimeSeed=[
+ {layer:"SOURCE",item:"SOURCE AUTHORITY",status:"OWNED-SAFE",basis:"JM/Theodore source authority + route grammar",carrier:"none as authority",boundary:"no machine-runtime overclaim"},
+ {layer:"FUNCTION",item:"MOVE",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.2 replacement candidate",carrier:"HTML/JS state movement carrier still present",boundary:"not fully native movement"},
+ {layer:"FUNCTION",item:"SIGNAL / INPUT",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.3 replacement candidate",carrier:"browser/touch/click/key carrier still present",boundary:"not device-native input"},
+ {layer:"FUNCTION",item:"COLLECT",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.4 replacement candidate",carrier:"HTML/JS contact/score/token state carrier still present",boundary:"not fully native collect"},
+ {layer:"FUNCTION",item:"TRACE",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.5 replacement candidate",carrier:"JSON/UI render/storage carrier still present",boundary:"not native trace storage/rendering"},
+ {layer:"FUNCTION",item:"DING",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.6 replacement candidate",carrier:"UI/status/JSON Ding carrier still present",boundary:"not native Ding storage/rendering"},
+ {layer:"FUNCTION",item:"EXPORT",status:"OWNERSHIP-UPGRADE-CANDIDATE",basis:"v1.7 replacement candidate",carrier:"HTML/JS text export + Zionfolder/ZIP support",boundary:"not filesystem/download/ZIP owned"},
+ {layer:"ESTATE",item:"OWN-CODE REWRITE PROGRAMME",status:"ESTATE-REWRITE-CANDIDATE",basis:"v1.8 matrix + v1.9 crown review",carrier:"HTML/PWA/Zionfolder current delivery",boundary:"not all estate rewritten"}
+];
+
+function $(id){return document.getElementById(id)}
+function trace(phase,data){TraceBox.push({time:new Date().toISOString(),phase,...data});$("traceOut").textContent=JSON.stringify(TraceBox,null,2)}
+function chip(id,text,ok){const el=$(id);el.textContent=text;el.className="chip "+(ok===true?"pass":ok===false?"fail":"")}
+function showScreen(id){screens.forEach(s=>$(s).classList.toggle("on",s===id));setTimeout(runScreenFit,40)}
+
+function loadRuntimeMatrix(){
+ RuntimeMatrix=runtimeSeed.map(x=>({...x,loaded:true}));
+ renderRuntimeMatrix();
+ trace("runtime-matrix-loaded",{count:RuntimeMatrix.length});
+ return RuntimeMatrix;
+}
+function renderRuntimeMatrix(){
+ if(!RuntimeMatrix.length){$("matrixTable").innerHTML="<pre>Runtime matrix not loaded.</pre>";return}
+ $("matrixTable").innerHTML='<div class="tableScroller"><table><thead><tr><th>Layer</th><th>Item</th><th>Status</th><th>Basis</th><th>Carrier Still Present</th><th>Boundary</th></tr></thead><tbody>'+RuntimeMatrix.map(r=>`<tr><td>${r.layer}</td><td>${r.item}</td><td>${r.status}</td><td>${r.basis}</td><td>${r.carrier}</td><td>${r.boundary}</td></tr>`).join("")+'</tbody></table></div>';
+}
+
+function runRuntimeReview(){
+ if(!RuntimeMatrix.length)loadRuntimeMatrix();
+ const counts={
+  ownedSafe:RuntimeMatrix.filter(x=>x.status==="OWNED-SAFE").length,
+  upgradeCandidates:RuntimeMatrix.filter(x=>x.status==="OWNERSHIP-UPGRADE-CANDIDATE").length,
+  estateCandidates:RuntimeMatrix.filter(x=>x.status==="ESTATE-REWRITE-CANDIDATE").length,
+  finalCrowns:0
+ };
+ RuntimeReview={
+  time:new Date().toISOString(),
+  status:"UNIFIED_RUNTIME_REVIEW_PASS_NOT_CROWNED",
+  route:"SOURCE → FUNCTION CHAIN → CARRIER REVIEW → BOUNDARY → ESTATE REWRITE CANDIDATE",
+  counts,
+  allowed:[
+    "unified own-code runtime review body",
+    "ownership-upgrade-candidate functions",
+    "estate rewrite candidate"
+  ],
+  blocked:[
+    "full native-machine ownership",
+    "all estate bodies rewritten",
+    "no carrier/bridge remains",
+    "filesystem/ZIP/download fully owned",
+    "device input fully owned"
+  ],
+  boundary:"Unified runtime review pass is not final native-machine crown."
+ };
+ $("runtimeStats").innerHTML=Object.entries(counts).map(([k,v])=>`<div class="stat"><b>${k}</b><br>${v}</div>`).join("");
+ $("runtimeOut").textContent=JSON.stringify(RuntimeReview,null,2);
+ chip("runtimeChip","Runtime: PASS",true);
+ trace("runtime-review",RuntimeReview);
+ return RuntimeReview;
+}
+
+function runEstateReview(){
+ if(!RuntimeReview)runRuntimeReview();
+ EstateReview={
+  time:new Date().toISOString(),
+  status:"ESTATE_REWRITE_CANDIDATE_OPENED",
+  decision:"The estate may now be called an Estate Rewrite Candidate because the source authority, first function chain, matrix review, crown review, and runtime review are coherently gated.",
+  safePhrase:"Cading Estate Rebuild OS is an Estate Rewrite Candidate / Unified Own-Code Runtime Review body.",
+  unsafePhrase:"Cading Estate is fully native-machine-owned or fully rewritten.",
+  next:"v2.1 should intake real estate bodies into this candidate runtime review, starting with OWNMADE and Cading v19B.",
+  boundary:"Estate Rewrite Candidate is not Estate Rewrite Crown."
+ };
+ $("estateOut").textContent=JSON.stringify(EstateReview,null,2);
+ chip("estateChip","Estate: candidate",true);
+ trace("estate-review",EstateReview);
+ return EstateReview;
+}
+
+function runRuntimeGate(){
+ const checks=[
+  ["runtime matrix loaded",RuntimeMatrix.length===8],
+  ["runtime review run",!!RuntimeReview],
+  ["estate review run",!!EstateReview],
+  ["source authority owned-safe",RuntimeMatrix.some(x=>x.item==="SOURCE AUTHORITY"&&x.status==="OWNED-SAFE")],
+  ["six upgrade candidates present",RuntimeMatrix.filter(x=>x.status==="OWNERSHIP-UPGRADE-CANDIDATE").length===6],
+  ["estate candidate present",RuntimeMatrix.some(x=>x.status==="ESTATE-REWRITE-CANDIDATE")],
+  ["final crowns zero",!!(RuntimeReview&&RuntimeReview.counts.finalCrowns===0)],
+  ["boundary retained",!!(EstateReview&&EstateReview.boundary)]
+ ];
+ const fail=checks.filter(x=>!x[1]);
+ const status=fail.length?"FAIL":"PASS";
+ RuntimeGate={time:new Date().toISOString(),status,checks,boundary:"Runtime gate pass means estate rewrite candidate, not estate rewrite crown."};
+ $("checkOut").textContent=renderChecks();
+ trace("runtime-gate-"+status.toLowerCase(),RuntimeGate);
+ return RuntimeGate;
+}
+
+function runButtonCheck(){
+ const buttons=[...document.querySelectorAll("button")];
+ const missing=buttons.filter(b=>!b.getAttribute("onclick"));
+ const named=["showScreen","runRuntimeReview","runEstateReview","loadRuntimeMatrix","runFullIntegrity","makeExportPack","runRuntimeGate","runButtonCheck","runScreenFit","resetAll"];
+ const missingFn=named.filter(n=>typeof window[n]!=="function");
+ const status=(missing.length===0&&missingFn.length===0)?"PASS":"FAIL";
+ ButtonCheck={time:new Date().toISOString(),status,buttonCount:buttons.length,missingOnclick:missing.map(b=>b.textContent.trim()),missingFunctions:missingFn};
+ chip("buttonChip","Buttons: "+status,status==="PASS");
+ $("checkOut").textContent=renderChecks();
+ trace("button-check",ButtonCheck);
+ return ButtonCheck;
+}
+
+function runScreenFit(){
+ const viewport=innerWidth,docW=document.documentElement.scrollWidth,bodyW=document.body.scrollWidth;
+ const bad=[...document.querySelectorAll("button,textarea")].filter(el=>el.getBoundingClientRect().width>viewport+2);
+ const active=document.querySelector(".screen.on");
+ const activeW=active?active.scrollWidth:docW;
+ const status=(docW<=viewport+2&&bodyW<=viewport+2&&bad.length===0&&activeW<=viewport+2)?"PASS":"FAIL";
+ ScreenFit={time:new Date().toISOString(),status,viewport,documentWidth:docW,bodyWidth:bodyW,badControls:bad.length,activeWidth:activeW};
+ chip("screenChip","ScreenFit: "+status,status==="PASS");
+ $("checkOut").textContent=renderChecks();
+ trace("screenfit",ScreenFit);
+ return ScreenFit;
+}
+
+function renderChecks(){
+ return "RUNTIME GATE\n"+(RuntimeGate?JSON.stringify(RuntimeGate,null,2):"not run")+
+ "\n\nBUTTON CHECK\n"+(ButtonCheck?JSON.stringify(ButtonCheck,null,2):"not run")+
+ "\n\nSCREENFIT\n"+(ScreenFit?JSON.stringify(ScreenFit,null,2):"not run");
+}
+
+function runFullIntegrity(){
+ if(!RuntimeMatrix.length)loadRuntimeMatrix();
+ if(!RuntimeReview)runRuntimeReview();
+ if(!EstateReview)runEstateReview();
+ runRuntimeGate();
+ runButtonCheck();
+ runScreenFit();
+ makeExportPack();
+ showScreen("export");
+}
+
+function makeExportPack(){
+ if(!RuntimeMatrix.length)loadRuntimeMatrix();
+ if(!RuntimeReview)runRuntimeReview();
+ if(!EstateReview)runEstateReview();
+ if(!RuntimeGate)runRuntimeGate();
+ if(!ButtonCheck)runButtonCheck();
+ if(!ScreenFit)runScreenFit();
+ ExportPack={
+  exportedAt:new Date().toISOString(),
+  version:"Cading-Estate-Rebuild-OS-v2.0-Unified-Own-Code-Runtime-Review-Estate-Rewrite-Candidate",
+  lane:"Cading Estate Rebuild OS — Own-Code Rewrite Programme",
+  claim:"The OS now has a unified own-code runtime review and may safely call the estate an Estate Rewrite Candidate.",
+  boundary:"v2.0 is Estate Rewrite Candidate, not Estate Rewrite Crown or full native-machine ownership.",
+  v19Freeze:"Android crown review receipt freeze loaded",
+  safeClaim:"Unified Own-Code Runtime Review body; first function chain ownership-upgrade-candidate; estate rewrite candidate.",
+  blockedClaim:"full native-machine ownership, all estate rewritten, no bridge remains, filesystem/ZIP/download/device input fully owned",
+  runtimeMatrix:RuntimeMatrix,
+  runtimeReview:RuntimeReview,
+  estateReview:EstateReview,
+  runtimeGate:RuntimeGate,
+  buttonCheck:ButtonCheck,
+  screenFit:ScreenFit,
+  TraceBox
+ };
+ $("exportOut").textContent="EXPORT OS v2.0 UNIFIED OWN-CODE RUNTIME REVIEW / ESTATE REWRITE CANDIDATE PACK\n"+JSON.stringify(ExportPack,null,2);
+ chip("exportChip","Export: ready",true);
+ trace("export-v2-0-pack",{status:"ready"});
+ return ExportPack;
+}
+
+function resetAll(){
+ TraceBox=[];RuntimeMatrix=[];RuntimeReview=null;EstateReview=null;RuntimeGate=null;ButtonCheck=null;ScreenFit=null;ExportPack=null;
+ $("traceOut").textContent="[]";$("exportOut").textContent="Waiting...";$("checkOut").textContent="Checks not run yet.";$("runtimeOut").textContent="Runtime review not run yet.";$("estateOut").textContent="Estate review not run yet.";$("runtimeStats").innerHTML="";renderRuntimeMatrix();
+ chip("runtimeChip","Runtime: not run",null);chip("estateChip","Estate: not reviewed",null);chip("buttonChip","Buttons: not run",null);chip("screenChip","ScreenFit: not run",null);chip("exportChip","Export: not run",null);
+}
+renderRuntimeMatrix();setTimeout(runScreenFit,100);
+</script>
+</body>
+</html>

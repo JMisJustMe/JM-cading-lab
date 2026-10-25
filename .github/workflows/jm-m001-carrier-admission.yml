@@ -1,0 +1,39 @@
+name: JM M001 Carrier Admission Preflight
+
+on:
+  push:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/**'
+      - '.github/workflows/jm-m001-carrier-admission.yml'
+  pull_request:
+    paths:
+      - 'agent-runtime/host-adapters/storage-admission/**'
+      - '.github/workflows/jm-m001-carrier-admission.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate-self-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout original JM repository
+        uses: actions/checkout@v4
+      - name: Python syntax contact
+        run: python3 -m py_compile agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py
+      - name: Execute read-only, synthetic anti-duplication gates
+        run: |
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py --self-test | tee /tmp/jm-m001-preflight.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          proof = json.loads(Path('/tmp/jm-m001-preflight.json').read_text())
+          assert proof['schema'] == 'JM.M001.CarrierAdmissionSelfTest/0.1'
+          assert proof['pass'] is True
+          assert proof['checks'] == 7
+          assert all(proof['cases'].values())
+          assert proof['boundary'].startswith('SYNTHETIC')
+          print('JM M001 ADMISSION PREFLIGHT: PASS 7/7; private carriers not loaded')
+          PY

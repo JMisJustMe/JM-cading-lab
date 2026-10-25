@@ -122,6 +122,7 @@ func run() -> void:
 	refused=scene.accept_cp16_route("BOGUS")
 	check("invalid action held",not bool(refused.get("applied",false)))
 	scene._finish()
+	scene._sync_native_rails()
 	check("routes cannot fire on result screen",not bool(scene.accept_cp16_route("GUARD").get("applied",false)))
 	check("deck hidden on result",not scene.cp15_dock.visible)
 	var output=OS.get_environment("CP16_EVIDENCE_DIR")

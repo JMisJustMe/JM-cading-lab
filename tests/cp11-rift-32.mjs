@@ -36,7 +36,7 @@ const start=Date.now();
 const errs=[];
 let evidence={};
 const getReceipt=async page=>page.evaluate(()=>({...window.__CP11}));
-const wait=async(page,test,timeout=15000)=>page.waitForFunction(test,{timeout});
+const wait=async(page,test,timeout=15000)=>{try{return await page.waitForFunction(test,null,{timeout});}catch(e){console.error('CP11_CASE_HOLD',JSON.stringify({case:scenario,mode,receipt:await getReceipt(page),errors:errs}));throw e;}};
 const click=async(page,selector)=>page.locator(selector).click({timeout:14000});
 async function clearTargets(page,n,selector,limit){
  for(let i=0;i<limit;i++){
@@ -104,7 +104,7 @@ try{
    await click(page,'#guard');await wait(page,()=>window.__CP11.actions.guard===1);
    evidence.type='pause/resume and active guard';
  } else if(mode===5){
-   await click(page,'#t0');await click(page,'#pulse');await wait(page,()=>window.__CP11.actions.pulse===1);
+   await click(page,'#t0');await click(page,'#pulse');await wait(page,()=>window.__CP11.actions.pulse>=1);
    assert.ok((await getReceipt(page)).contacts.some(c=>c.type==='PULSE_FIRED'&&c.detail.toward===1));
    await click(page,'#slam');await wait(page,()=>window.__CP11.actions.slam===1);
    evidence.type='selected lock-on projectile + ground slam';

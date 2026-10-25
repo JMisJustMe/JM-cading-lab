@@ -163,7 +163,7 @@ function hitEcho(t,amount,kind){
 }
 function spawnRiftTrial(){
  if(run.phase!==2||!run.victory||run.health<=0)return;
- run.phase=3;run.victory=false;run.trialVictory=false;run.facets=[];run.lock=1;run.dashCooldown=0;
+ run.phase=3;run.victory=false;run.trialVictory=false;run.facets=[];run.lock=1;run.dashCooldown=0;run.cooldown.surge=0;
  $('stage').classList.add('is-trial');run.scene.fog.color.setHex(0x271c30);run.scene.background.setHex(0x191623);
  const palette=[0xffb56b,0xdd87fa,0x70fff2],roles=['BULWARK','MIRROR','HEART'];
  for(let k=0;k<3;k++){

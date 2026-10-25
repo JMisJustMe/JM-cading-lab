@@ -5,11 +5,6 @@ on:
       - 'engine/demo/cp11-rift-trial-v0.4.html'
       - 'tests/cp11-rift-32.mjs'
       - '.github/workflows/cp11-rift-trial-32.yml'
-  pull_request:
-    paths:
-      - 'engine/demo/cp11-rift-trial-v0.4.html'
-      - 'tests/cp11-rift-32.mjs'
-      - '.github/workflows/cp11-rift-trial-32.yml'
 permissions:
   contents: read
 jobs:

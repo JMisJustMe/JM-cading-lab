@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>32_Cb — Full Current-Scope Coding Body v1.2 FLAZ</title>
+<style>
+:root{
+  --bg:#080b10;--panel:#10151c;--panel2:#171f29;--text:#f4f7fb;--muted:#9ba8b8;
+  --line:#2a3645;--accent:#8bd5ff;--good:#72e4a4;--warn:#ffd56e;--bad:#ff8080;--violet:#c8adff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.48}
+main{max-width:1200px;margin:auto;padding:14px}
+h1{font-size:clamp(2.5rem,8vw,5.8rem);letter-spacing:-.06em;margin:.02em 0}
+h2{margin:0 0 .7rem} h3{margin:1rem 0 .45rem}
+.sub{color:var(--muted);margin:.2rem 0 1rem}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.badge{border:1px solid var(--line);border-radius:999px;padding:.28rem .62rem;color:var(--accent);font-size:.84rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-top:12px}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+textarea,input,select{width:100%;background:#06090d;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+textarea{min-height:250px;resize:vertical}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit;cursor:pointer;margin:5px 5px 0 0}
+button:hover{border-color:var(--accent)}
+pre{white-space:pre-wrap;word-break:break-word;background:#06090d;border:1px solid var(--line);border-radius:10px;padding:11px;min-height:80px;margin:.5rem 0}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:7px;text-align:left;vertical-align:top}
+code{color:#cdeeff}.law{border-left:4px solid var(--accent);padding:10px 12px;background:#0c1219;margin:8px 0}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.violet{color:var(--violet)}.muted{color:var(--muted)}
+.small{font-size:.9rem}.tiny{font-size:.78rem}.scroll{overflow:auto}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#map .badge{display:inline-block;margin:3px 2px}
+.statusline{font-weight:700}
+details{border-top:1px solid var(--line);margin-top:9px;padding-top:9px}summary{cursor:pointer;color:var(--accent)}
+@media(max-width:850px){.grid,.grid2{grid-template-columns:1fr}main{padding:9px}textarea{min-height:210px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="badges">
+    <span class="badge">JM CODING ESTATE</span>
+    <span class="badge">SOVEREIGN CODING BODY</span>
+    <span class="badge">ONEBODY</span>
+    <span class="badge">HOSTED WEB RUNTIME</span>
+    <span class="badge">v1.2 FLAZ</span>
+    <span class="badge">32/32 SELF-TEST TARGET</span>
+  </div>
+  <h1>32_Cb</h1>
+  <p class="sub"><strong>Full Current-Scope Sovereign Positional Route Coding Body</strong> — root law: <code>3 ↔ C | 2 ↔ B</code> by alphabet placement.</p>
+
+  <section class="card">
+    <div class="law"><strong>ROOT:</strong> in POSITION/AZ mode, alphabet placement is a reversible mapping: A=1 … Z=26. Therefore <code>3 ↔ C</code> and <code>2 ↔ B</code>.</div>
+    <div class="law"><strong>32_Cb:</strong> the left rail <code>32</code> and right rail <code>Cb</code> can carry the same positional route and cross-check one another. The underscore <code>_</code> is the local bridge/check separator.</div>
+    <div class="law"><strong>POWER:</strong> v1.2 keeps the bridge but adds governed multi-layer reading, FlowTalk contact, stateful execution, branches, macro-functions, assertions, standard library calls, project/program workspace, versioned SavePack, lint/format, receipt history, Backloop, recovery and full trace.</div>
+    <div class="law"><strong>BOUNDARY:</strong> this is a tested hosted web implementation of <em>32_Cb</em>. It is not a claim that all Cading/CadenVM functions have been merged into it, nor that it is a native standalone runtime or universal cipher. <strong>MESH ≠ MERGE.</strong></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>32_Cb Workbench</h2>
+      <textarea id="src"># 32_Cb full-scope demonstration
+CHECK 32_Cb
+ENC Cb
+DEC 3.2
+FLOW 32
+PHRASE 4|1|2|12|B|32
+SET score 3
+ADD score 2
+IF score >= 5 THEN OUTPUT "route-open" ELSE OUTPUT "route-hold"
+DEF shout = LIB UPPER free_to_build
+CALL shout
+ASSERT BRIDGE 32_Cb
+ASSERT EQ score 5
+PROJECT CREATE First32CbProject
+PROJECT META version 1.2.0
+PROJECT META author JM
+PROGRAM SAVE demo
+TRACE full-demo-complete
+BACKLOOP
+DING</textarea>
+      <div>
+        <button id="run">RUN</button>
+        <button data-demo="bridge">BRIDGE</button>
+        <button data-demo="flow">FLOW</button>
+        <button data-demo="branch">BRANCH</button>
+        <button data-demo="function">FUNCTION</button>
+        <button data-demo="project">PROJECT</button>
+        <button data-demo="bugg">BUGG/RECOVER</button>
+        <button id="lint">LINT</button>
+        <button id="format">FORMAT</button>
+        <button id="save">SAVE LOCAL</button>
+        <button id="load">LOAD LOCAL</button>
+        <button id="export">EXPORT SAVEPACK</button>
+        <label><button type="button" id="importBtn">IMPORT SAVEPACK</button><input type="file" id="importFile" accept=".json,application/json" hidden></label>
+      </div>
+      <h3>Runtime Receipt</h3>
+      <pre id="out"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Live State</h2>
+      <pre id="state"></pre>
+      <h3>Project / Program</h3>
+      <pre id="project"></pre>
+      <h3>Claim State</h3>
+      <pre id="claim"></pre>
+      <h3>Quick Line</h3>
+      <input id="quick" value="CHECK 32_Cb">
+      <button id="quickRun">EXECUTE</button>
+      <pre id="quickOut"></pre>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Command Surface</h2>
+    <div class="scroll">
+      <table>
+        <tr><th>Family</th><th>Commands</th><th>Purpose</th></tr>
+        <tr><td>Bridge</td><td><code>CHECK</code> <code>ENC</code> <code>DEC</code> <code>IR</code> <code>ROUNDTRIP</code></td><td>position↔letter translation, comparison and IR</td></tr>
+        <tr><td>Flow</td><td><code>FLOW</code> <code>PHRASE</code> <code>OP</code></td><td>sound-route/contact readings and operator registry inspection</td></tr>
+        <tr><td>State</td><td><code>SET</code> <code>GET</code> <code>CHANGE</code> <code>ADD</code> <code>SUB</code> <code>MUL</code> <code>DIV</code></td><td>state storage and mutation</td></tr>
+        <tr><td>Control</td><td><code>IF ... THEN ... ELSE ...</code> <code>HOLD</code></td><td>bounded route choice and unresolved state</td></tr>
+        <tr><td>Functions</td><td><code>DEF name = command</code> <code>CALL name</code></td><td>named reusable route commands</td></tr>
+        <tr><td>Stdlib</td><td><code>LIB UPPER</code> <code>LOWER</code> <code>LEN</code> <code>TYPE</code> <code>AZPOS</code> <code>AZLET</code></td><td>small built-in library</td></tr>
+        <tr><td>Memory</td><td><code>REMEMBER</code> <code>RECALL</code></td><td>named runtime memory</td></tr>
+        <tr><td>Output</td><td><code>OUTPUT</code> <code>EMIT</code></td><td>returned values and events</td></tr>
+        <tr><td>Trust</td><td><code>ASSERT BRIDGE</code> <code>ASSERT EQ</code> <code>ASSERT EXISTS</code></td><td>explicit validation gates</td></tr>
+        <tr><td>Recovery</td><td><code>TRACE</code> <code>BUGG</code> <code>RECOVER</code> <code>UNDO</code> <code>BACKLOOP</code> <code>DING</code></td><td>trace, fault, rollback, after-run return and closure</td></tr>
+        <tr><td>Workspace</td><td><code>PROJECT CREATE/META/INFO</code> <code>PROGRAM SAVE/LOAD/LIST/DELETE</code></td><td>project identity, metadata and named programs</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>A–Z Position Rail</h2>
+      <div id="map"></div>
+      <p class="small muted">Bare digit strings are read one digit at a time for positions 1–9. Positions 10–26 require separators or brackets: <code>10.13</code>, <code>10-13</code>, or <code>[10][13]</code>.</p>
+      <div class="law"><strong>CASE ≠ POSITION.</strong> Numeric position recovers canonical uppercase identity, not source case. Source case remains metadata.</div>
+    </section>
+
+    <section class="card">
+      <h2>Layer Jurisdiction</h2>
+      <table>
+        <tr><th>Carrier</th><th>Layer</th><th>Reading</th></tr>
+        <tr><td><code>32</code></td><td>POSITION</td><td>3,2 → C,B</td></tr>
+        <tr><td><code>32</code></td><td>JM32 / FLOWTALK</td><td>THREE-TWO / FREE TO</td></tr>
+        <tr><td><code>32</code></td><td>NUMBER</td><td>thirty-two</td></tr>
+        <tr><td><code>12</code></td><td>FLOWTALK</td><td>one-two / one-to / want-to</td></tr>
+        <tr><td><code>Z0</code></td><td>JM SYMBOLIC</td><td>ZED ZERO / SOURCE-CENTRE</td></tr>
+        <tr><td><code>0</code></td><td>NUMBER</td><td>zero; not automatically Z0</td></tr>
+      </table>
+      <div class="law"><strong>SAME MARK ≠ SINGLE FUNCTION.</strong> Layer and route-state decide jurisdiction.</div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Current Chat Contact — 41212B32</h2>
+    <div class="law"><code>4 | 1 | 2 | 12 | B | 32</code> → <strong>FOR ONE TO WANT TO BE FREE TO</strong></div>
+    <p>This is registered as a <strong>JM-native FlowTalk reading</strong>, not a universal cipher. The live source gloss plus prior JM sound-routes support it; the phrase remains unfinished after <em>FREE TO</em>.</p>
+  </section>
+
+  <section class="card">
+    <h2>FlowTalk / Sound-Route Register</h2>
+    <table>
+      <tr><th>Seed</th><th>Current readings</th><th>Claim status</th></tr>
+      <tr><td><code>4</code></td><td>four / for</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>2</code></td><td>two / to / too</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>B</code></td><td>B / bee / be</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>12</code></td><td>one-two / one-to / want-to</td><td>JM FlowTalk precedent; context required</td></tr>
+      <tr><td><code>32</code></td><td>three-two / FREE TO</td><td>established JM32 route; not universal identity</td></tr>
+      <tr><td><code>Z0</code></td><td>Zed Zero / Source-Centre</td><td>JM symbolic route; ordinary 0 remains distinct</td></tr>
+    </table>
+    <div class="law"><strong>SOUND-SEED ≠ FINAL MEANING.</strong> Sound opens possibility. Contact, trace and claim-status govern use.</div>
+  </section>
+
+  <section class="card">
+    <h2>Operator Contact Register</h2>
+    <div class="scroll">
+      <table>
+        <tr><th>Operator/body</th><th>32_Cb treatment</th></tr>
+        <tr><td><code>_</code></td><td>implemented bridge/check separator local to 32_Cb</td></tr>
+        <tr><td><code>=</code> Speakuals</td><td>documented executed Cading operator; not silently repurposed by 32_Cb</td></tr>
+        <tr><td><code>,</code> Comma Travel</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>.</code> Foolstopped</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>.✓</code> Fullstopped</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>NOTA</code></td><td>registry contact: notake.observe.tally.analyse</td></tr>
+        <tr><td><code>Backloop</code></td><td>implemented locally as after-run receipt return into next route decision</td></tr>
+        <tr><td><code>SAYSWHO()</code></td><td>registry contact only: authority challenge; source operating model, not claimed as production compiler syntax</td></tr>
+        <tr><td><code>NOOWNER()</code></td><td>registry contact only: false-possession removal</td></tr>
+        <tr><td><code>CONTACTCHECK()</code></td><td>registry contact only: verify by contact before route decision</td></tr>
+        <tr><td><code>32÷×&</code></td><td>existing candidate open-field representative / free.to.divide.timesand</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Architecture</h2>
+    <pre>SOURCE
+→ PROTECT SOURCE / CLAIM STATUS
+→ FLOWTALK IF SOUND/MEANING IS LIVE
+→ TOKENISE
+→ IDENTIFY LAYER
+→ PARSE
+→ POSITION / FLOW / STATE / CONTROL ROUTE ANALYSE
+→ INTERMEDIATE ROUTEFORM
+→ ASSERT / VALIDATE
+→ EXECUTE / STATE CHANGE
+→ DING | BUGG | HOLD
+→ TRACE RECEIPT
+→ BACKLOOP / RECOVER / OUTPUT
+→ PROJECT / PROGRAM SAVEPACK
+→ RETURN</pre>
+  </section>
+
+  <section class="card">
+    <h2>32_Cb Constitution — Full Current Scope</h2>
+    <ol>
+      <li><strong>POSITION BEFORE ASSUMPTION.</strong> A1Z26 applies only in POSITION/AZ jurisdiction.</li>
+      <li><strong>BRIDGE MUST MATCH.</strong> Parallel numeric/alphabet rails require explicit agreement.</li>
+      <li><strong>CASE ≠ POSITION.</strong> Preserve case; do not invent it from number.</li>
+      <li><strong>SAME-MARK ≠ SINGLE-FUNCTION.</strong> Route/layer controls meaning.</li>
+      <li><strong>SOUND-SEED ≠ FINAL MEANING.</strong> Phonetic contact is a route opening, not final proof.</li>
+      <li><strong>CAN-BE ≠ IS.</strong> Possibility is not identity.</li>
+      <li><strong>SPEC-FUNCTION ≠ CODE-FUNCTION ≠ REAL-WORLD FUNCTION.</strong> Keep implementation claims scoped.</li>
+      <li><strong>MESH ≠ MERGE.</strong> Donor systems remain themselves.</li>
+      <li><strong>TRACE BEFORE CROWN.</strong> State change must remain recoverable.</li>
+      <li><strong>BUGG IS ROUTE INFORMATION.</strong> Faults name the break.</li>
+      <li><strong>RECOVER BEFORE REBUILD.</strong> Reuse last-known-good state where possible.</li>
+      <li><strong>BACKLOOP AFTER PROOF.</strong> Return outcome into the next patch/source decision without restarting the body.</li>
+      <li><strong>REVERSIBLE WHEN POSSIBLE.</strong> Position↔letter conversion should round-trip under one alphabet profile.</li>
+      <li><strong>NO DING, NO CLAIM.</strong> Ding is always scoped.</li>
+    </ol>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Intermediate Routeform Example</h2>
+      <pre>{
+  "body": "32_Cb",
+  "version": "1.2",
+  "layer": "POSITION/AZ",
+  "source": {"numeric":"32","alpha":"Cb"},
+  "positions": [3,2],
+  "alphaPositions": [3,2],
+  "case": ["UPPER","LOWER"],
+  "bridge": "_",
+  "match": true,
+  "claimStatus": "PROOF-OUTPUT@POSITION/AZ",
+  "state": "DING",
+  "traceRequired": true
+}</pre>
+    </section>
+    <section class="card">
+      <h2>Completion Boundary</h2>
+      <p><strong class="good">Complete now:</strong> positional bridge language; governed multi-layer resolver; current FlowTalk contacts; bounded stateful runtime; branch/function/assertion/stdlib rails; runtime memory and recovery; Backloop; project/program workspace; metadata/versioning; local SavePack; portable import/export; lint/format; trace and receipt history; 32-test proof harness.</p>
+      <p><strong class="warn">Open by design:</strong> native standalone runtime, arbitrary natural-language compilation, universal phonetic grammar, universal intent detection, universal cipher claim, and parity with every separate CadenVM/JICKMA/Cading branch.</p>
+      <p>Those are <strong>future expansion doors</strong>, not unfinished v1.2 obligations.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Self-Test / FLAZ Gate</h2>
+    <button id="test">RUN 32-TEST SUITE</button>
+    <pre id="tests"></pre>
+  </section>
+
+  <section class="card">
+    <h2>FLAZ Crown</h2>
+    <div class="law"><strong>32_Cb is a hosted sovereign positional route-code body in which numeric letter positions and alphabet carriers can run on parallel rails, validate each other, coexist with other lawful readings without collapse, execute bounded stateful routes, preserve trace/recovery, and carry project-level continuity in one recoverable body.</strong></div>
+    <p><strong>Keeper:</strong> <code>3 ↔ C | 2 ↔ B | 32_Cb</code></p>
+    <p><strong>Secondary keeper:</strong> <code>POSITION CAN CARRY IDENTITY WITHOUT OWNING ALL MEANING.</code></p>
+    <p><strong>Completion keeper:</strong> <code>FULL CURRENT SCOPE ≠ ALL FUTURE POSSIBILITY.</code></p>
+    <p class="muted small">Status: FULL CURRENT-SCOPE CLOSURE · FROZEN · LOCKED · ANCHORED · FLAZ. v1.0 remains founding ancestor. v1.1 is an ordinary superseded descendant once v1.2 is proven current.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+const ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const STORAGE_KEY='32_Cb_ProjectSavePack_v1_2';
+
+const flowRegistry={
+  '4':{readings:['four','for'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  '2':{readings:['two','to','too'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  'B':{readings:['B','bee','be'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  '12':{readings:['one-two','one-to','want-to'],status:'JM_FLOWTALK_PRECEDENT_CONTEXT_REQUIRED'},
+  '32':{readings:['three-two','FREE TO'],status:'JM32_ESTABLISHED_ROUTE_NOT_UNIVERSAL_IDENTITY'},
+  'Z0':{readings:['Zed Zero','Source-Centre'],status:'JM_SYMBOLIC_ROUTE_0_NOT_AUTOMATICALLY_Z0'}
+};
+
+const operatorRegistry={
+  'NOTA':{definition:'notake.observe.tally.analyse',status:'SOURCE_BACKED_OPERATOR_LANGUAGE'},
+  'BACKLOOP':{definition:'after-run proof return into next patch/source decision',status:'IMPLEMENTED_LOCALLY'},
+  'SAYSWHO()':{definition:'challenge claimed authority',status:'SOURCE_OPERATING_MODEL_NOT_PRODUCTION_COMPILER_SYNTAX'},
+  'NOOWNER()':{definition:'remove false-possession claim before routing by contact/function',status:'SOURCE_OPERATING_MODEL'},
+  'CONTACTCHECK()':{definition:'check a claim/body by contact before route decision',status:'SOURCE_OPERATING_MODEL'},
+  '32÷×&':{definition:'free.to.divide.timesand',status:'SOURCE_CANDIDATE_OPEN_FIELD_REPRESENTATIVE'}
+};
+
+function freshRuntime(){
+  return {
+    vars:{},memory:{},functions:{},events:[],outputs:[],trace:[],
+    history:[],lastKnownGood:null,lastReceipt:null,
+    status:'READY',ding:false,bugg:null,claimStatus:'WORKING_MODEL',
+    project:{
+      name:null,meta:{version:'1.2.0',author:'JM'},programs:{},activeProgram:null,
+      receiptHistory:[],createdAt:null,updatedAt:null
+    }
+  };
+}
+let rt=freshRuntime();
+
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function now(){return new Date().toISOString();}
+function simpleHash(str){
+  let h=2166136261>>>0;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
+  return ('00000000'+h.toString(16)).slice(-8);
+}
+function alphaPos(ch){
+  const i=ALPHA.indexOf(String(ch).toUpperCase());
+  return i<0?null:i+1;
+}
+function posChar(n){
+  n=Number(n);return Number.isInteger(n)&&n>=1&&n<=26?ALPHA[n-1]:null;
+}
+function caseOf(ch){
+  if(!/[A-Za-z]/.test(ch))return'NONE';
+  return ch===ch.toUpperCase()?'UPPER':'LOWER';
+}
+function validateNums(nums){
+  if(!nums.length||nums.some(n=>!Number.isInteger(n)||n<1||n>26))
+    throw new Error('positions must be integers 1–26');
+}
+function parsePositions(raw){
+  const s=String(raw).trim();
+  if(!s)throw new Error('empty numeric rail');
+  if(s==='0')throw new Error('0 has no A–Z position; ordinary 0 and Z0 are distinct governed routes');
+  if(s.includes('[')){
+    const matches=[...s.matchAll(/\[(\d{1,2})\]/g)];
+    const residue=s.replace(/\[(\d{1,2})\]/g,'').replace(/[\s.,:;|/\-]/g,'');
+    if(!matches.length||residue)throw new Error('invalid bracketed position rail');
+    const nums=matches.map(m=>Number(m[1]));validateNums(nums);return nums;
+  }
+  if(/[\s.,:;|/\-]/.test(s)){
+    const nums=s.split(/[\s.,:;|/\-]+/).filter(Boolean).map(Number);
+    validateNums(nums);return nums;
+  }
+  if(/^\d+$/.test(s)){
+    const nums=[...s].map(Number);
+    if(nums.some(n=>n===0))throw new Error('0 cannot be silently mapped into A–Z placement');
+    validateNums(nums);return nums;
+  }
+  throw new Error('numeric rail not recognised');
+}
+function parseLetters(raw){
+  const chars=[...String(raw).trim()].filter(c=>/[A-Za-z]/.test(c));
+  if(!chars.length)throw new Error('alphabet rail contains no A–Z letters');
+  return chars;
+}
+function encodeLetters(raw){
+  const chars=parseLetters(raw);
+  return {chars,positions:chars.map(alphaPos),case:chars.map(caseOf),
+    dotted:chars.map(alphaPos).join('.'),bracketed:chars.map(c=>`[${alphaPos(c)}]`).join('')};
+}
+function decodePositions(raw){
+  const positions=parsePositions(raw);
+  return {positions,letters:positions.map(posChar).join('')};
+}
+function bridgeIR(expr){
+  const parts=String(expr).trim().split('_');
+  if(parts.length!==2)throw new Error('bridge body requires exactly one underscore: numeric_alpha');
+  const numeric=parsePositions(parts[0]),alpha=encodeLetters(parts[1]);
+  const len=Math.max(numeric.length,alpha.positions.length),diffs=[];
+  for(let i=0;i<len;i++){
+    if(numeric[i]!==alpha.positions[i]){
+      diffs.push({index:i+1,numeric:numeric[i]??null,alpha:alpha.positions[i]??null,letter:alpha.chars[i]??null});
+    }
+  }
+  const match=diffs.length===0;
+  return {
+    body:String(expr).trim(),version:'1.2',layer:'POSITION/AZ',
+    source:{numeric:parts[0],alpha:parts[1]},positions:numeric,
+    alphaPositions:alpha.positions,alphaCarrier:alpha.chars,case:alpha.case,
+    bridge:'_',canonicalAlpha:numeric.map(posChar).join(''),
+    diffs,match,claimStatus:match?'PROOF-OUTPUT@POSITION/AZ':'BUGG@POSITION/AZ',
+    state:match?'DING':'BUGG',traceRequired:true
+  };
+}
+function bridgeText(expr){
+  const ir=bridgeIR(expr);
+  return [
+    `${ir.state}: ${ir.body}`,
+    `LAYER: ${ir.layer}`,
+    `NUMERIC: [${ir.positions.join(', ')}]`,
+    `ALPHA: ${ir.alphaCarrier.join('')} -> [${ir.alphaPositions.join(', ')}]`,
+    `CASE: ${ir.case.join(' / ')}`,
+    `CANON: ${ir.canonicalAlpha}`,
+    `MATCH: ${ir.match}`,
+    ir.diffs.length?`DIFF: ${JSON.stringify(ir.diffs)}`:'',
+    `CLAIM: ${ir.claimStatus}`
+  ].filter(Boolean).join('\n');
+}
+function flow(token){
+  const key=String(token).trim();
+  const entry=flowRegistry[key]||flowRegistry[key.toUpperCase()];
+  return entry?{token:key,...entry}:{token:key,readings:[],status:'UNKNOWN/HOLD'};
+}
+function phraseRoute(raw){
+  const s=String(raw).trim();
+  if(s==='4|1|2|12|B|32'){
+    return {source:s,reading:'FOR ONE TO WANT TO BE FREE TO',status:'JM_NATIVE_FLOWTALK_READING_NOT_UNIVERSAL_CIPHER'};
+  }
+  return {source:s,reading:null,status:'UNKNOWN/HOLD'};
+}
+function parseValue(v){
+  const s=String(v??'').trim();
+  if(s.startsWith('$'))return rt.vars[s.slice(1)];
+  if(/^[-+]?\d+(\.\d+)?$/.test(s))return Number(s);
+  if((s.startsWith('"')&&s.endsWith('"'))||(s.startsWith("'")&&s.endsWith("'")))return s.slice(1,-1);
+  if(s==='true')return true;if(s==='false')return false;if(s==='null')return null;
+  return s;
+}
+function note(msg){rt.trace.push(String(msg));}
+function snapshot(){
+  rt.history.push(clone({vars:rt.vars,memory:rt.memory,functions:rt.functions,status:rt.status,bugg:rt.bugg}));
+  if(rt.history.length>50)rt.history.shift();
+}
+function markGood(){
+  rt.lastKnownGood=clone({vars:rt.vars,memory:rt.memory,functions:rt.functions});
+}
+function fail(reason){
+  rt.status='BUGG';rt.bugg=String(reason);note(`BUGG: ${reason}`);return`BUGG: ${reason}`;
+}
+function compare(a,op,b){
+  if(op==='==')return a==b;if(op==='===')return a===b;if(op==='!=')return a!=b;if(op==='!==')return a!==b;
+  if(op==='>')return a>b;if(op==='<')return a<b;if(op==='>=')return a>=b;if(op==='<=')return a<=b;
+  throw new Error(`unsupported comparator ${op}`);
+}
+function libCall(rest){
+  const [fnRaw,...parts]=rest.split(/\s+/);const fn=String(fnRaw||'').toUpperCase();
+  const arg=parseValue(parts.join(' '));
+  if(fn==='UPPER')return String(arg).toUpperCase();
+  if(fn==='LOWER')return String(arg).toLowerCase();
+  if(fn==='LEN')return String(arg).length;
+  if(fn==='TYPE')return arg===null?'null':Array.isArray(arg)?'array':typeof arg;
+  if(fn==='AZPOS')return encodeLetters(String(arg)).dotted;
+  if(fn==='AZLET')return decodePositions(String(arg)).letters;
+  throw new Error(`unknown LIB function ${fnRaw}`);
+}
+function projectInfo(){
+  return {
+    name:rt.project.name,meta:rt.project.meta,programCount:Object.keys(rt.project.programs).length,
+    activeProgram:rt.project.activeProgram,receiptCount:rt.project.receiptHistory.length,
+    createdAt:rt.project.createdAt,updatedAt:rt.project.updatedAt
+  };
+}
+function saveProgram(name,source){
+  if(!rt.project.name)throw new Error('create a project first');
+  rt.project.programs[name]={name,version:rt.project.meta.version||'0.0.0',source,hash:simpleHash(source),savedAt:now()};
+  rt.project.activeProgram=name;rt.project.updatedAt=now();note(`PROGRAM SAVE ${name}`);return rt.project.programs[name];
+}
+function savePack(){
+  return {
+    body:'32_Cb',version:'1.2',kind:'ProjectSavePack',
+    project:clone(rt.project),runtime:{vars:clone(rt.vars),memory:clone(rt.memory),functions:clone(rt.functions)},
+    exportedAt:now()
+  };
+}
+function loadPack(pack){
+  if(!pack||pack.body!=='32_Cb')throw new Error('not a 32_Cb SavePack');
+  if(!pack.project)throw new Error('SavePack missing project');
+  rt.project=clone(pack.project);
+  if(pack.runtime){rt.vars=clone(pack.runtime.vars||{});rt.memory=clone(pack.runtime.memory||{});rt.functions=clone(pack.runtime.functions||{});}
+  rt.status='RECOVERED';note('SAVEPACK IMPORT');snapshot();
+}
+function makeReceipt(source){
+  return {
+    body:'32_Cb',version:'1.2',host:'browser-js',
+    sourceHash:simpleHash(source),status:rt.status,ding:rt.ding,bugg:rt.bugg,
+    claimStatus:rt.claimStatus,project:projectInfo(),
+    vars:clone(rt.vars),memory:clone(rt.memory),events:clone(rt.events),
+    outputs:clone(rt.outputs),trace:clone(rt.trace),timestamp:now()
+  };
+}
+function executeInlineCommand(cmd){return executeLine(cmd,{programSource:document.getElementById('src')?.value||''});}
+
+function executeLine(line,ctx={}){
+  const raw=String(line).trim();
+  if(!raw||raw.startsWith('#')||raw.startsWith('//'))return null;
+
+  // IF name OP value THEN command [ELSE command]
+  if(/^IF\s+/i.test(raw)){
+    try{
+      const m=raw.match(/^IF\s+(\S+)\s+(===|!==|==|!=|>=|<=|>|<)\s+(.+?)\s+THEN\s+(.+?)(?:\s+ELSE\s+(.+))?$/i);
+      if(!m)throw new Error('IF syntax: IF name >= value THEN command ELSE command');
+      const left=rt.vars[m[1]],right=parseValue(m[3]),yes=m[4],no=m[5];
+      const chosen=compare(left,m[2],right)?yes:no;
+      note(`IF ${m[1]} ${m[2]} ${JSON.stringify(right)} -> ${chosen?'ROUTE':'NO_ROUTE'}`);
+      return chosen?`IF -> ${executeInlineCommand(chosen)}`:'IF -> HOLD (no ELSE route)';
+    }catch(e){return fail(e.message);}
+  }
+
+  const [cmdRaw]=raw.split(/\s+/,1);const cmd=String(cmdRaw).toUpperCase();const rest=raw.slice(cmdRaw.length).trim();
+  try{
+    if(cmd==='CHECK'){
+      const ir=bridgeIR(rest);note(`CHECK ${rest} -> ${ir.state}`);
+      if(ir.match){rt.status='ROUTED';snapshot();}else{rt.status='BUGG';rt.bugg=`bridge mismatch ${rest}`;}
+      return bridgeText(rest);
+    }
+    if(cmd==='ENC'){
+      const r=encodeLetters(rest);note(`ENC ${rest} -> ${r.dotted}`);snapshot();
+      return`ENC ${rest} -> ${r.dotted} | ${r.bracketed} | CASE ${r.case.join('/')}`;
+    }
+    if(cmd==='DEC'){
+      const r=decodePositions(rest);note(`DEC ${rest} -> ${r.letters}`);snapshot();
+      return`DEC ${rest} -> ${r.letters} | POSITION DOES NOT RECONSTRUCT CASE`;
+    }
+    if(cmd==='FLOW'){
+      const r=flow(rest);note(`FLOW ${rest} -> ${r.status}`);
+      return`FLOW ${r.token}\nREADINGS: ${r.readings.join(' | ')||'(none)'}\nCLAIM: ${r.status}`;
+    }
+    if(cmd==='PHRASE'){
+      const r=phraseRoute(rest);note(`PHRASE ${rest} -> ${r.status}`);
+      return r.reading?`PHRASE: ${r.reading}\nCLAIM: ${r.status}`:`HOLD: phrase route unknown`;
+    }
+    if(cmd==='OP'){
+      const key=rest.trim().toUpperCase();const entry=operatorRegistry[key]||operatorRegistry[rest.trim()];
+      if(!entry)return`HOLD: operator ${rest} not registered`;
+      return`OP ${rest}\nDEFINITION: ${entry.definition}\nSTATUS: ${entry.status}`;
+    }
+    if(cmd==='IR'){
+      const ir=bridgeIR(rest);note(`IR ${rest} -> ${ir.state}`);return JSON.stringify(ir,null,2);
+    }
+    if(cmd==='ROUNDTRIP'){
+      const e=encodeLetters(rest),d=decodePositions(e.dotted),canonical=parseLetters(rest).join('').toUpperCase();
+      const ok=d.letters===canonical;note(`ROUNDTRIP ${rest} -> ${ok?'PASS':'BUGG'}`);
+      return`${ok?'DING':'BUGG'} ROUNDTRIP ${rest} -> ${e.dotted} -> ${d.letters}`;
+    }
+    if(cmd==='SET'||cmd==='CHANGE'){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error(`${cmd} requires name and value`);
+      snapshot();rt.vars[m[1]]=parseValue(m[2]);rt.status='STATE_CHANGED';note(`${cmd} ${m[1]}=${JSON.stringify(rt.vars[m[1]])}`);markGood();
+      return`${cmd}: ${m[1]}=${JSON.stringify(rt.vars[m[1]])}`;
+    }
+    if(cmd==='GET'){const name=rest.trim();note(`GET ${name}`);return`GET ${name} -> ${JSON.stringify(rt.vars[name])}`;}
+    if(['ADD','SUB','MUL','DIV'].includes(cmd)){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error(`${cmd} requires name and number`);
+      const name=m[1],n=Number(parseValue(m[2]));if(!Number.isFinite(n))throw new Error(`${cmd} requires numeric operand`);
+      let cur=Number(rt.vars[name]??0);if(!Number.isFinite(cur))throw new Error(`${name} is not numeric`);
+      snapshot();
+      if(cmd==='ADD')cur+=n;if(cmd==='SUB')cur-=n;if(cmd==='MUL')cur*=n;if(cmd==='DIV'){if(n===0)throw new Error('DIV by zero');cur/=n;}
+      rt.vars[name]=cur;rt.status='STATE_CHANGED';note(`${cmd} ${name} ${n} -> ${cur}`);markGood();return`${cmd}: ${name}=${cur}`;
+    }
+    if(cmd==='DEF'){
+      const m=rest.match(/^(\S+)\s*=\s*(.+)$/);if(!m)throw new Error('DEF syntax: DEF name = command');
+      snapshot();rt.functions[m[1]]=m[2];note(`DEF ${m[1]}`);markGood();return`DEF: ${m[1]} = ${m[2]}`;
+    }
+    if(cmd==='CALL'){
+      const name=rest.trim();if(!rt.functions[name])throw new Error(`function ${name} not found`);
+      note(`CALL ${name}`);return`CALL ${name} -> ${executeInlineCommand(rt.functions[name])}`;
+    }
+    if(cmd==='LIB'){const result=libCall(rest);note(`LIB ${rest} -> ${JSON.stringify(result)}`);return`LIB -> ${JSON.stringify(result)}`;}
+    if(cmd==='REMEMBER'){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('REMEMBER requires name and value');
+      snapshot();rt.memory[m[1]]=parseValue(m[2]);note(`REMEMBER ${m[1]}`);markGood();return`REMEMBERED ${m[1]}=${JSON.stringify(rt.memory[m[1]])}`;
+    }
+    if(cmd==='RECALL'){const name=rest.trim();note(`RECALL ${name}`);return`RECALL ${name} -> ${JSON.stringify(rt.memory[name])}`;}
+    if(cmd==='OUTPUT'){const v=parseValue(rest);rt.outputs.push(v);note(`OUTPUT ${JSON.stringify(v)}`);return`OUTPUT: ${JSON.stringify(v)}`;}
+    if(cmd==='EMIT'){rt.events.push(rest);note(`EMIT ${rest}`);return`EMIT: ${rest}`;}
+    if(cmd==='ASSERT'){
+      const [kindRaw,...parts]=rest.split(/\s+/);const kind=String(kindRaw||'').toUpperCase();const arg=parts.join(' ');
+      if(kind==='BRIDGE'){
+        const ok=bridgeIR(arg).match;note(`ASSERT BRIDGE ${arg} -> ${ok}`);if(ok)markGood();if(!ok)return fail(`ASSERT BRIDGE failed: ${arg}`);return`ASSERT PASS: BRIDGE ${arg}`;
+      }
+      if(kind==='EQ'){
+        const m=arg.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('ASSERT EQ requires name value');
+        const ok=rt.vars[m[1]]==parseValue(m[2]);note(`ASSERT EQ ${m[1]} -> ${ok}`);if(!ok)return fail(`ASSERT EQ failed: ${m[1]}`);return`ASSERT PASS: EQ ${m[1]}`;
+      }
+      if(kind==='EXISTS'){
+        const name=arg.trim();const ok=Object.prototype.hasOwnProperty.call(rt.vars,name);note(`ASSERT EXISTS ${name} -> ${ok}`);
+        if(!ok)return fail(`ASSERT EXISTS failed: ${name}`);return`ASSERT PASS: EXISTS ${name}`;
+      }
+      throw new Error(`unknown ASSERT kind ${kindRaw}`);
+    }
+    if(cmd==='TRACE'){note(rest||'trace');return`TRACE: ${rest||'trace'}`;}
+    if(cmd==='HOLD'){rt.status='HOLD';note(`HOLD ${rest}`);return`HOLD: ${rest||'unresolved'}`;}
+    if(cmd==='BUGG')return fail(rest||'declared route fault');
+    if(cmd==='RECOVER'){
+      if(rt.lastKnownGood){rt.vars=clone(rt.lastKnownGood.vars);rt.memory=clone(rt.lastKnownGood.memory);rt.functions=clone(rt.lastKnownGood.functions);}
+      rt.bugg=null;rt.status='RECOVERED';note(`RECOVER ${rest||'last-known-good'}`);return`RECOVERED: ${rest||'last-known-good'}`;
+    }
+    if(cmd==='UNDO'){
+      const s=rt.history.pop();if(!s)return'HOLD: no undo state';
+      rt.vars=clone(s.vars);rt.memory=clone(s.memory);rt.functions=clone(s.functions);rt.status='RECOVERED';rt.bugg=null;note('UNDO');
+      return'RECOVERED: previous runtime snapshot restored';
+    }
+    if(cmd==='BACKLOOP'){
+      const prior=rt.lastReceipt?{status:rt.lastReceipt.status,ding:rt.lastReceipt.ding,bugg:rt.lastReceipt.bugg,sourceHash:rt.lastReceipt.sourceHash}:null;
+      note('BACKLOOP');return prior?`BACKLOOP: ${JSON.stringify(prior)}`:'BACKLOOP: no prior receipt yet; current proof will become next contact';
+    }
+    if(cmd==='PROJECT'){
+      const [subRaw,...parts]=rest.split(/\s+/);const sub=String(subRaw||'').toUpperCase();const arg=parts.join(' ');
+      if(sub==='CREATE'){
+        const name=arg.trim();if(!name)throw new Error('PROJECT CREATE requires name');
+        snapshot();rt.project={name,meta:{version:'1.2.0',author:'JM'},programs:{},activeProgram:null,receiptHistory:[],createdAt:now(),updatedAt:now()};
+        note(`PROJECT CREATE ${name}`);return`PROJECT CREATED: ${name}`;
+      }
+      if(sub==='META'){
+        const m=arg.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('PROJECT META requires key value');
+        if(!rt.project.name)throw new Error('create a project first');
+        const mv=m[1].toLowerCase()==='version'?m[2].trim().replace(/^['\"]|['\"]$/g,''):parseValue(m[2]);rt.project.meta[m[1]]=mv;rt.project.updatedAt=now();note(`PROJECT META ${m[1]}`);
+        return`PROJECT META: ${m[1]}=${JSON.stringify(rt.project.meta[m[1]])}`;
+      }
+      if(sub==='INFO')return JSON.stringify(projectInfo(),null,2);
+      throw new Error(`unknown PROJECT action ${subRaw}`);
+    }
+    if(cmd==='PROGRAM'){
+      const [subRaw,...parts]=rest.split(/\s+/);const sub=String(subRaw||'').toUpperCase();const name=parts.join(' ').trim();
+      if(sub==='SAVE'){
+        if(!name)throw new Error('PROGRAM SAVE requires name');
+        const p=saveProgram(name,ctx.programSource||document.getElementById('src')?.value||'');return`PROGRAM SAVED: ${p.name} ${p.hash}`;
+      }
+      if(sub==='LOAD'){
+        const p=rt.project.programs[name];if(!p)throw new Error(`program ${name} not found`);
+        rt.project.activeProgram=name;rt.project.updatedAt=now();note(`PROGRAM LOAD ${name}`);
+        if(document.getElementById('src'))document.getElementById('src').value=p.source;
+        return`PROGRAM LOADED: ${name} ${p.hash}`;
+      }
+      if(sub==='LIST')return`PROGRAMS: ${Object.keys(rt.project.programs).join(', ')||'(none)'}`;
+      if(sub==='DELETE'){
+        if(!rt.project.programs[name])throw new Error(`program ${name} not found`);
+        delete rt.project.programs[name];if(rt.project.activeProgram===name)rt.project.activeProgram=null;rt.project.updatedAt=now();note(`PROGRAM DELETE ${name}`);
+        return`PROGRAM DELETED: ${name}`;
+      }
+      throw new Error(`unknown PROGRAM action ${subRaw}`);
+    }
+    if(cmd==='DING'){rt.ding=true;rt.status='DING';rt.claimStatus='PROOF-OUTPUT@CURRENT_RUN';note('DING');return'DING: declared route completed inside current runtime scope';}
+    if(cmd==='CLAIM'){rt.claimStatus=rest||'WORKING_MODEL';note(`CLAIM ${rt.claimStatus}`);return`CLAIM STATUS: ${rt.claimStatus}`;}
+    return fail(`unknown instruction "${cmdRaw}"`);
+  }catch(e){return fail(e.message);}
+}
+
+function executeProgram(source){
+  rt.trace=[];rt.outputs=[];rt.events=[];rt.ding=false;rt.bugg=null;rt.status='RUNNING';rt.claimStatus='WORKING_MODEL';
+  const results=[],lines=String(source).split(/\r?\n/);
+  for(let i=0;i<lines.length;i++){
+    const res=executeLine(lines[i],{programSource:source});
+    if(res!==null)results.push(`[${i+1}] ${res}`);
+  }
+  if(rt.status==='RUNNING')rt.status='HOLD';
+  const receipt=makeReceipt(source);rt.lastReceipt=clone(receipt);
+  if(rt.project.name){rt.project.receiptHistory.push(clone(receipt));if(rt.project.receiptHistory.length>50)rt.project.receiptHistory.shift();rt.project.updatedAt=now();}
+  return results.join('\n\n');
+}
+
+function knownCommands(){return new Set(['CHECK','ENC','DEC','FLOW','PHRASE','OP','IR','ROUNDTRIP','SET','GET','CHANGE','ADD','SUB','MUL','DIV','DEF','CALL','LIB','REMEMBER','RECALL','OUTPUT','EMIT','ASSERT','TRACE','HOLD','BUGG','RECOVER','UNDO','BACKLOOP','PROJECT','PROGRAM','DING','CLAIM','IF']);}
+function lintSource(source){
+  const issues=[],lines=String(source).split(/\r?\n/),known=knownCommands();
+  lines.forEach((line,i)=>{
+    const s=line.trim();if(!s||s.startsWith('#')||s.startsWith('//'))return;
+    const cmd=s.split(/\s+/)[0].toUpperCase();
+    if(!known.has(cmd))issues.push(`L${i+1}: unknown command ${cmd}`);
+    if(cmd==='CHECK'){
+      const arg=s.slice(5).trim();try{bridgeIR(arg)}catch(e){issues.push(`L${i+1}: CHECK ${e.message}`);}
+    }
+    if(cmd==='IF'&&!/\sTHEN\s/i.test(s))issues.push(`L${i+1}: IF missing THEN`);
+  });
+  return issues.length?issues:['PASS: no lint issues'];
+}
+function formatSource(source){
+  const known=knownCommands();
+  return String(source).split(/\r?\n/).map(line=>{
+    const lead=line.match(/^\s*/)[0],s=line.trim();
+    if(!s||s.startsWith('#')||s.startsWith('//'))return line;
+    const first=s.split(/\s+/)[0],upper=first.toUpperCase();
+    return known.has(upper)?lead+upper+s.slice(first.length):line;
+  }).join('\n');
+}
+function downloadJSON(obj,name){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+}
+function render(){
+  document.getElementById('state').textContent=JSON.stringify({
+    status:rt.status,ding:rt.ding,bugg:rt.bugg,vars:rt.vars,memory:rt.memory,functions:rt.functions,events:rt.events,outputs:rt.outputs
+  },null,2);
+  document.getElementById('project').textContent=JSON.stringify(projectInfo(),null,2);
+  document.getElementById('claim').textContent=`CLAIM STATUS: ${rt.claimStatus}\nNO DING, NO CLAIM beyond the current validated scope.`;
+}
+
+const demos={
+bridge:`CHECK 32_Cb
+IR 32_Cb
+ROUNDTRIP Cb
+ASSERT BRIDGE 32_Cb
+DING`,
+flow:`FLOW 4
+FLOW 12
+FLOW 32
+FLOW Z0
+PHRASE 4|1|2|12|B|32
+OP NOTA
+OP SAYSWHO()
+TRACE sound-seed-is-not-final-meaning
+DING`,
+branch:`SET score 3
+ADD score 2
+IF score >= 5 THEN OUTPUT "PASS" ELSE OUTPUT "HOLD"
+ASSERT EQ score 5
+DING`,
+function:`DEF shout = LIB UPPER free_to_build
+CALL shout
+DEF letter = LIB AZLET 3.2
+CALL letter
+DING`,
+project:`PROJECT CREATE First32CbProject
+PROJECT META version 1.2.0
+PROJECT META author JM
+PROGRAM SAVE demo
+PROJECT INFO
+PROGRAM LIST
+TRACE project-workspace-ready
+DING`,
+bugg:`SET x 7
+CHECK 32_CA
+TRACE preserve-source
+RECOVER last-known-good
+ASSERT EXISTS x
+CHECK 32_Cb
+BACKLOOP
+DING`
+};
+
+document.getElementById('run').onclick=()=>{
+  const source=document.getElementById('src').value;
+  document.getElementById('out').textContent=executeProgram(source);render();
+};
+document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{
+  document.getElementById('src').value=demos[b.dataset.demo];document.getElementById('run').click();
+});
+document.getElementById('quickRun').onclick=()=>{
+  const r=executeLine(document.getElementById('quick').value,{programSource:document.getElementById('src').value});
+  document.getElementById('quickOut').textContent=r??'';render();
+};
+document.getElementById('lint').onclick=()=>document.getElementById('out').textContent=lintSource(document.getElementById('src').value).join('\n');
+document.getElementById('format').onclick=()=>document.getElementById('src').value=formatSource(document.getElementById('src').value);
+document.getElementById('save').onclick=()=>{
+  const pack=savePack();localStorage.setItem(STORAGE_KEY,JSON.stringify(pack));note('LOCAL SAVEPACK');document.getElementById('out').textContent='DING: local ProjectSavePack stored';render();
+};
+document.getElementById('load').onclick=()=>{
+  const raw=localStorage.getItem(STORAGE_KEY);if(!raw){document.getElementById('out').textContent='HOLD: no local SavePack found';return;}
+  loadPack(JSON.parse(raw));document.getElementById('out').textContent='DING: local ProjectSavePack restored';render();
+};
+document.getElementById('export').onclick=()=>downloadJSON(savePack(),'32_Cb_ProjectSavePack_v1_2.json');
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{loadPack(JSON.parse(await f.text()));document.getElementById('out').textContent='DING: imported ProjectSavePack';render();}
+  catch(err){document.getElementById('out').textContent=`BUGG: ${err.message}`;}
+};
+
+const tests=[
+  ['01 bridge pass',()=>bridgeIR('32_Cb').match===true],
+  ['02 bridge mismatch',()=>bridgeIR('32_CA').match===false],
+  ['03 JM bridge',()=>bridgeIR('[10][13]_JM').match===true],
+  ['04 encode Cb',()=>encodeLetters('Cb').dotted==='3.2'],
+  ['05 decode 3.2',()=>decodePositions('3.2').letters==='CB'],
+  ['06 decode JM',()=>decodePositions('[10][13]').letters==='JM'],
+  ['07 zero rejected',()=>{try{decodePositions('0');return false}catch(e){return true}}],
+  ['08 case metadata',()=>encodeLetters('Cb').case.join(',')==='UPPER,LOWER'],
+  ['09 roundtrip',()=>decodePositions(encodeLetters('Route').dotted).letters==='ROUTE'],
+  ['10 flow 32',()=>flow('32').readings.includes('FREE TO')],
+  ['11 flow 12',()=>flow('12').readings.includes('want-to')],
+  ['12 flow Z0',()=>flow('Z0').readings.includes('Source-Centre')],
+  ['13 phrase route',()=>phraseRoute('4|1|2|12|B|32').reading==='FOR ONE TO WANT TO BE FREE TO'],
+  ['14 OP NOTA',()=>operatorRegistry.NOTA.definition==='notake.observe.tally.analyse'],
+  ['15 state set',()=>{rt=freshRuntime();executeLine('SET x 3');return rt.vars.x===3}],
+  ['16 state add',()=>{rt=freshRuntime();executeLine('SET x 3');executeLine('ADD x 2');return rt.vars.x===5}],
+  ['17 div zero BUGG',()=>{rt=freshRuntime();executeLine('SET x 5');const x=executeLine('DIV x 0');return /^BUGG/.test(x)}],
+  ['18 memory',()=>{rt=freshRuntime();executeLine('REMEMBER a 32_Cb');return rt.memory.a==='32_Cb'}],
+  ['19 IF true',()=>{rt=freshRuntime();executeLine('SET x 5');const x=executeLine('IF x >= 5 THEN OUTPUT yes ELSE OUTPUT no');return rt.outputs.at(-1)==='yes'}],
+  ['20 IF false',()=>{rt=freshRuntime();executeLine('SET x 1');executeLine('IF x >= 5 THEN OUTPUT yes ELSE OUTPUT no');return rt.outputs.at(-1)==='no'}],
+  ['21 DEF/CALL',()=>{rt=freshRuntime();executeLine('DEF f = LIB UPPER hello');return executeLine('CALL f').includes('HELLO')}],
+  ['22 LIB LEN',()=>{rt=freshRuntime();return executeLine('LIB LEN hello').includes('5')}],
+  ['23 ASSERT BRIDGE pass',()=>{rt=freshRuntime();return executeLine('ASSERT BRIDGE 32_Cb').startsWith('ASSERT PASS')}],
+  ['24 ASSERT EQ fail',()=>{rt=freshRuntime();executeLine('SET x 1');return executeLine('ASSERT EQ x 2').startsWith('BUGG')}],
+  ['25 RECOVER',()=>{rt=freshRuntime();executeLine('SET x 7');executeLine('BUGG test');executeLine('RECOVER last');return rt.vars.x===7&&rt.status==='RECOVERED'}],
+  ['26 UNDO',()=>{rt=freshRuntime();executeLine('SET x 1');executeLine('SET x 2');executeLine('UNDO');return rt.vars.x===1}],
+  ['27 project create',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');return rt.project.name==='P'}],
+  ['28 project metadata',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');executeLine('PROJECT META version 9.9');return rt.project.meta.version==='9.9'}],
+  ['29 program save',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');saveProgram('a','CHECK 32_Cb');return rt.project.programs.a.hash===simpleHash('CHECK 32_Cb')}],
+  ['30 savepack roundtrip',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');executeLine('SET x 4');const p=savePack();rt=freshRuntime();loadPack(p);return rt.project.name==='P'&&rt.vars.x===4}],
+  ['31 lint catches unknown',()=>lintSource('WUT thing')[0].includes('unknown command')],
+  ['32 DING',()=>{rt=freshRuntime();executeLine('DING');return rt.ding===true&&rt.status==='DING'}]
+];
+
+document.getElementById('test').onclick=()=>{
+  const old=clone(rt),lines=[];let pass=0;
+  for(const [name,fn] of tests){
+    let ok=false;try{ok=!!fn()}catch(e){ok=false;}
+    if(ok)pass++;lines.push(`${ok?'PASS':'FAIL'}  ${name}`);
+  }
+  rt=old;lines.unshift(`${pass}/${tests.length} tests PASS`);
+  document.getElementById('tests').textContent=lines.join('\n');render();
+};
+
+document.getElementById('map').innerHTML=ALPHA.split('').map((c,i)=>`<span class="badge">${i+1}↔${c}</span>`).join('');
+document.getElementById('run').click();
+document.getElementById('test').click();
+
+})();
+</script>
+</body>
+</html>

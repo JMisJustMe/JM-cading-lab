@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM v5.1 Deep Phone Contact</title>
+<style>
+body{font-family:system-ui;background:#07111f;color:#eef4ff;margin:0;padding:22px}
+h1{font-size:34px}.card{background:#111e35;border:1px solid #2b4268;border-radius:18px;padding:18px;margin:14px 0}
+button{width:100%;padding:18px;border:0;border-radius:14px;font-size:20px;font-weight:800}
+#pad{height:230px;border:2px dashed #5476a7;border-radius:18px;touch-action:none;margin-top:14px}
+pre{white-space:pre-wrap;word-break:break-word;font-size:12px}
+.good{color:#8cf2ad}.hold{color:#ffd878}
+</style>
+</head>
+<body>
+<h1>JM v5.1 — Deep Phone Contact</h1>
+<p><b>Law:</b> RETURNED CONTACT CROWNS ONLY THE RAIL IT TOUCHED.</p>
+<div class="card">
+<button id="run">RUN DEEP CONTACT</button>
+<p>Then drag a finger around the pad and move/tilt the phone for about 5 seconds.</p>
+<div id="pad"></div>
+</div>
+<div class="card"><button id="save">SAVE RECEIPT JSON</button></div>
+<div class="card"><pre id="out"></pre></div>
+<script>
+const R={schema:"jm.v5.1.deep-phone-contact/v1",ts:null,source:"actual browser/device contact",
+secureContext:isSecureContext,
+pointer:{samples:0,state:"HOLD"},touch:{samples:0,state:"HOLD"},
+motion:{samples:0,state:"HOLD"},orientation:{samples:0,state:"HOLD"},
+genericSensors:{accelerometer:"UNTESTED",gyroscope:"UNTESTED"},
+webgl:{state:"HOLD"},webgpu:{state:"HOLD"},webcrypto:{state:"HOLD"},wasm:{state:"HOLD"},
+boundaries:[
+"WebGL readback proves browser GPU render contact, not native Vulkan/OpenCL/CUDA.",
+"WebGPU DING requires compute dispatch + mapped readback, not adapter presence alone.",
+"Non-extractable WebCrypto key does not prove StrongBox/TEE hardware backing."
+]};
+const out=document.querySelector("#out"),pad=document.querySelector("#pad");
+function show(){out.textContent=JSON.stringify(R,null,2)}
+["pointerdown","pointermove","pointerup"].forEach(ev=>pad.addEventListener(ev,e=>{R.pointer.samples++;R.pointer.state="DING";show()}));
+["touchstart","touchmove","touchend"].forEach(ev=>pad.addEventListener(ev,e=>{R.touch.samples++;R.touch.state="DING";show()},{passive:true}));
+window.addEventListener("devicemotion",e=>{R.motion.samples++;R.motion.state="DING";R.motion.last={ax:e.accelerationIncludingGravity?.x??null,ay:e.accelerationIncludingGravity?.y??null,az:e.accelerationIncludingGravity?.z??null};show()});
+window.addEventListener("deviceorientation",e=>{R.orientation.samples++;R.orientation.state="DING";R.orientation.last={alpha:e.alpha,beta:e.beta,gamma:e.gamma};show()});
+
+async function requestMotion(){
+  for (const [name,C] of [["motion",window.DeviceMotionEvent],["orientation",window.DeviceOrientationEvent]]){
+    try{
+      if(C && typeof C.requestPermission==="function"){
+        const p=await C.requestPermission();
+        R[name].permission=p;
+      } else R[name].permission="no-explicit-request-api";
+    }catch(e){R[name].permission="denied-or-error:"+e.name}
+  }
+}
+
+function webgl(){
+  try{
+    const c=document.createElement("canvas"); c.width=c.height=16;
+    const gl=c.getContext("webgl2",{preserveDrawingBuffer:true});
+    if(!gl){R.webgl={state:"HOLD",reason:"webgl2 unavailable"};return}
+    const vs=gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs,"#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0,1);}");
+    gl.compileShader(vs);
+    const fs=gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs,"#version 300 es\nprecision highp float;out vec4 o;void main(){o=vec4(0.0,1.0,0.0,1.0);}");
+    gl.compileShader(fs);
+    const pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);gl.useProgram(pr);
+    const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    const loc=gl.getAttribLocation(pr,"p");gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    const px=new Uint8Array(4);gl.readPixels(8,8,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);
+    const dbg=gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer=dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
+    const ok=px[1]>200 && px[0]<30 && px[2]<30;
+    R.webgl={state:ok?"DING":"BUGG",render_readback:Array.from(px),renderer,version:gl.getParameter(gl.VERSION)};
+  }catch(e){R.webgl={state:"BUGG",error:e.name+":"+e.message}}
+}
+
+async function webgpu(){
+  if(!navigator.gpu){R.webgpu={state:"HOLD",reason:"navigator.gpu absent"};return}
+  try{
+    const adapter=await navigator.gpu.requestAdapter();
+    if(!adapter){R.webgpu={state:"HOLD",reason:"no adapter"};return}
+    const device=await adapter.requestDevice();
+    const input=new Uint32Array([1,2,3,4]);
+    const a=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_DST});
+    const b=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.STORAGE|GPUBufferUsage.COPY_SRC});
+    const read=device.createBuffer({size:input.byteLength,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
+    device.queue.writeBuffer(a,0,input);
+    const module=device.createShaderModule({code:`@group(0) @binding(0) var<storage,read> a: array<u32>;
+@group(0) @binding(1) var<storage,read_write> b: array<u32>;
+@compute @workgroup_size(1) fn main(@builtin(global_invocation_id) id: vec3<u32>){ let i=id.x; if(i<4u){b[i]=a[i]*2u;}}`});
+    const pipe=device.createComputePipeline({layout:"auto",compute:{module,entryPoint:"main"}});
+    const bg=device.createBindGroup({layout:pipe.getBindGroupLayout(0),entries:[{binding:0,resource:{buffer:a}},{binding:1,resource:{buffer:b}}]});
+    const enc=device.createCommandEncoder(); const pass=enc.beginComputePass();pass.setPipeline(pipe);pass.setBindGroup(0,bg);pass.dispatchWorkgroups(4);pass.end();enc.copyBufferToBuffer(b,0,read,0,input.byteLength);device.queue.submit([enc.finish()]);
+    await read.mapAsync(GPUMapMode.READ); const got=Array.from(new Uint32Array(read.getMappedRange().slice(0)));read.unmap();
+    const ok=JSON.stringify(got)===JSON.stringify([2,4,6,8]);
+    R.webgpu={state:ok?"DING":"BUGG",scope:"actual compute dispatch + readback",input:Array.from(input),output:got,features:Array.from(adapter.features||[])};
+  }catch(e){R.webgpu={state:"HOLD",reason:e.name+":"+e.message}}
+}
+
+async function cryptoTest(){
+  try{
+    const kp=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},false,["sign","verify"]);
+    const msg=new TextEncoder().encode("JM v5.1 returned contact");
+    const sig=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},kp.privateKey,msg);
+    const ok=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},kp.publicKey,sig,msg);
+    let privateExportRejected=false;
+    try{await crypto.subtle.exportKey("pkcs8",kp.privateKey)}catch(e){privateExportRejected=true}
+    R.webcrypto={state:(ok&&privateExportRejected)?"DING":"BUGG",signature_verified:ok,non_extractable_private_key:privateExportRejected,signature_bytes:sig.byteLength,hardware_backing:"UNKNOWN_FROM_WEBCRYPTO_API"};
+  }catch(e){R.webcrypto={state:"BUGG",error:e.name+":"+e.message}}
+}
+
+async function sensors(){
+  for(const [name,C] of [["accelerometer",window.Accelerometer],["gyroscope",window.Gyroscope]]){
+    if(!C){R.genericSensors[name]="UNAVAILABLE";continue}
+    try{
+      const s=new C({frequency:20}); let samples=0;
+      const done=new Promise(resolve=>{
+        s.addEventListener("reading",()=>{samples++;if(samples>=2){s.stop();resolve("DING")}});
+        s.addEventListener("error",e=>resolve("HOLD:"+e.error?.name));
+        setTimeout(()=>{try{s.stop()}catch{};resolve(samples?"DING":"HOLD:NO_SAMPLES")},1800);
+      });
+      s.start();R.genericSensors[name]=await done;
+    }catch(e){R.genericSensors[name]="HOLD:"+e.name}
+  }
+}
+
+async function wasm(){
+  try{
+    const bin=new Uint8Array([0,97,115,109,1,0,0,0,1,7,1,96,2,127,127,1,127,3,2,1,0,7,7,1,3,97,100,100,0,0,10,9,1,7,0,32,0,32,1,106,11]);
+    const {instance}=await WebAssembly.instantiate(bin);
+    const v=instance.exports.add(3,2);
+    R.wasm={state:v===5?"DING":"BUGG",result:v};
+  }catch(e){R.wasm={state:"BUGG",error:e.name+":"+e.message}}
+}
+
+document.querySelector("#run").onclick=async()=>{
+  R.ts=new Date().toISOString(); R.pointer.samples=R.touch.samples=R.motion.samples=R.orientation.samples=0;
+  await requestMotion(); webgl(); await Promise.all([webgpu(),cryptoTest(),sensors(),wasm()]);
+  show();
+};
+document.querySelector("#save").onclick=()=>{
+  R.saved_at=new Date().toISOString();
+  const blob=new Blob([JSON.stringify(R,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="JM_V5_1_PHONE_DEEP_CONTACT_RECEIPT.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+show();
+</script>
+</body></html>

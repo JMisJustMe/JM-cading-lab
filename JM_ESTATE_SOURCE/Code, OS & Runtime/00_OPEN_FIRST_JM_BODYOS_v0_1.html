@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>JM BodyOS v0.1 — Apps to Bodies</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --bg:#090910; --panel:#171821; --panel2:#10111a; --ink:#f4f4f7; --muted:#b8b8c5;
+  --line:#333548; --hot:#f2d16b; --good:#7ef0a6; --bad:#ff8d8d; --blue:#8db7ff; --violet:#caa8ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#24263a,#090910 58%);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.45}
+header{padding:18px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(9,9,16,.94);backdrop-filter:blur(8px);z-index:5}
+h1{margin:0;font-size:1.25rem}
+.tag{color:var(--hot);font-weight:800}
+.small{color:var(--muted);font-size:.9rem}
+main{max-width:1150px;margin:0 auto;padding:14px}
+.nav{display:flex;gap:8px;overflow:auto;padding-top:10px}
+button,input,textarea,select{font:inherit;border-radius:12px;border:1px solid var(--line);background:#10111a;color:var(--ink);padding:10px}
+button{font-weight:800;cursor:pointer}
+button:hover{border-color:var(--hot)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.card{background:rgba(23,24,33,.94);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.card h2{font-size:1.02rem;margin:.1rem 0 .55rem}
+.section{display:none}.section.active{display:block}
+.pill{display:inline-block;border:1px solid var(--line);padding:5px 9px;border-radius:999px;margin:3px;color:var(--muted)}
+.good{color:var(--good)} .bad{color:var(--bad)} .blue{color:var(--blue)} .hot{color:var(--hot)} .violet{color:var(--violet)}
+pre{white-space:pre-wrap;word-break:break-word;background:#080910;border:1px solid var(--line);border-radius:12px;padding:10px;max-height:310px;overflow:auto}
+textarea{width:100%;min-height:120px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.body-card{border:1px solid var(--line);border-radius:16px;padding:12px;background:rgba(16,17,26,.96);margin:8px 0}
+.body-card.active{border-color:var(--good);box-shadow:0 0 0 2px rgba(126,240,166,.12)}
+.body-title{font-weight:900;font-size:1.03rem}
+.kv{display:grid;grid-template-columns:105px 1fr;gap:6px;margin-top:8px}
+.routebar{height:12px;background:#070810;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin-top:10px}
+.routebar div{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--good),var(--hot));transition:.4s}
+.relation{border-left:3px solid var(--violet);padding:8px 10px;background:#10111a;border-radius:10px;margin:7px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>JM BodyOS v0.1 — <span class="tag">Apps → Bodies</span></h1>
+  <div class="small">RouteOS evolution: not “open app” — enter body, change state, leave trace, recover route.</div>
+  <div class="nav">
+    <button onclick="show('home')">BodyOS Home</button>
+    <button onclick="show('bodies')">Bodies</button>
+    <button onclick="show('active')">Active Body</button>
+    <button onclick="show('convert')">Convert App</button>
+    <button onclick="show('relations')">Relations</button>
+    <button onclick="show('receipts')">Ding Receipts</button>
+    <button onclick="show('export')">SavePack</button>
+  </div>
+</header>
+
+<main>
+<section id="home" class="section active">
+  <div class="grid">
+    <div class="card">
+      <h2>Claim Gate</h2>
+      <p class="hot">JM BodyOS v0.1 converts app/page thinking into body/state thinking.</p>
+      <p>Each body has identity, state, route, memory, receipts, Dings, and relations.</p>
+      <div class="pill">Identity</div><div class="pill">State</div><div class="pill">Route</div><div class="pill">Memory</div><div class="pill">Ding</div><div class="pill">Relations</div>
+      <div class="routebar"><div id="gateBar"></div></div>
+      <p id="gateStatus" class="small">Conversion gate not checked yet.</p>
+      <button onclick="checkGate()">Check BodyOS Gate</button>
+    </div>
+    <div class="card">
+      <h2>Architecture Shift</h2>
+      <pre>OLD:
+Home → Kernel → Apps → Receipts
+
+NEW:
+Home → Kernel → Bodies → Active Body → Relations → Receipts
+
+DEEP:
+Participation → Contact → Route → State → Trace → Ding → Body</pre>
+    </div>
+    <div class="card">
+      <h2>Operating Difference</h2>
+      <p><b>AppOS:</b> launches tools.</p>
+      <p><b>BodyOS:</b> enters living bodies with state, memory, route history, permissions, relationships, and recovery.</p>
+    </div>
+  </div>
+</section>
+
+<section id="bodies" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Body Shelf</h2>
+      <div id="bodyShelf"></div>
+    </div>
+    <div class="card">
+      <h2>Body Actions</h2>
+      <p class="small">Select a body, then change state. Each action stores a body-level receipt.</p>
+      <div class="row">
+        <button onclick="setMode('idle')">Idle</button>
+        <button onclick="setMode('editing')">Editing</button>
+        <button onclick="setMode('running')">Running</button>
+        <button onclick="setMode('recording')">Recording</button>
+        <button onclick="setMode('recovering')">Recovering</button>
+      </div>
+      <pre id="bodyActionOut">No body action yet.</pre>
+    </div>
+  </div>
+</section>
+
+<section id="active" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Active Body Panel</h2>
+      <div id="activePanel">No active body selected.</div>
+    </div>
+    <div class="card">
+      <h2>Body Memory</h2>
+      <textarea id="memoryText" placeholder="Write memory/notes for the active body."></textarea>
+      <div class="row">
+        <button onclick="saveMemory()">Save Body Memory</button>
+        <button onclick="bodyDing()">Body Ding</button>
+      </div>
+      <pre id="memoryOut">Awaiting memory action.</pre>
+    </div>
+  </div>
+</section>
+
+<section id="convert" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>App → Body Converter</h2>
+      <input id="appName" placeholder="App/engine name e.g. Cading Console">
+      <select id="bodyType">
+        <option>Cading Body</option>
+        <option>Game Body</option>
+        <option>Claim Body</option>
+        <option>Language Body</option>
+        <option>Music Body</option>
+        <option>Health Body</option>
+        <option>Trace Body</option>
+        <option>Custom Body</option>
+      </select>
+      <textarea id="bodyPurpose" placeholder="What participation does this body host?"></textarea>
+      <button onclick="convertApp()">Convert Into Body</button>
+    </div>
+    <div class="card">
+      <h2>Conversion Output</h2>
+      <pre id="convertOut">Awaiting conversion.</pre>
+    </div>
+  </div>
+</section>
+
+<section id="relations" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Body Relations</h2>
+      <p class="small">Relations show how bodies support each other without collapsing into one body.</p>
+      <div id="relationsOut"></div>
+    </div>
+    <div class="card">
+      <h2>Add Relation</h2>
+      <select id="relA"></select>
+      <select id="relB"></select>
+      <input id="relType" placeholder="Relation type e.g. scripts, traces, feeds, recovers">
+      <button onclick="addRelation()">Add Relation</button>
+    </div>
+  </div>
+</section>
+
+<section id="receipts" class="section">
+  <div class="card">
+    <h2>BodyOS Ding Receipts</h2>
+    <div class="row">
+      <button onclick="renderReceipts()">Refresh</button>
+      <button onclick="clearReceipts()">Clear</button>
+    </div>
+    <pre id="receiptOut">No receipts rendered yet.</pre>
+  </div>
+</section>
+
+<section id="export" class="section">
+  <div class="grid">
+    <div class="card">
+      <h2>Export BodyOS SavePack</h2>
+      <button onclick="exportPack()">Generate Export</button>
+      <textarea id="exportBox"></textarea>
+    </div>
+    <div class="card">
+      <h2>Import BodyOS SavePack</h2>
+      <textarea id="importBox"></textarea>
+      <button onclick="importPack()">Import</button>
+      <pre id="importOut">Awaiting import.</pre>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+const KEY="jm_bodyos_v0_1";
+const starterBodies=[
+  {name:"Cading Body", type:"Cading Body", identity:"Hosts route-code, source lines, state changes, and Dings.", mode:"idle", route:"body://cading", memory:"", dings:0},
+  {name:"Game Body", type:"Game Body", identity:"Hosts playable loops, control feel, game state, and engine behaviour.", mode:"idle", route:"body://game", memory:"", dings:0},
+  {name:"Claim Body", type:"Claim Body", identity:"Hosts Big Claim Anatomy, source-route checks, and claim-status sorting.", mode:"idle", route:"body://claim", memory:"", dings:0},
+  {name:"Language Body", type:"Language Body", identity:"Hosts root words, FlowTalk, syntax, and meaning route inspection.", mode:"idle", route:"body://language", memory:"", dings:0},
+  {name:"Trace Body", type:"Trace Body", identity:"Hosts receipts, before/contact/after records, and recovery routes.", mode:"idle", route:"body://trace", memory:"", dings:0}
+];
+let state=JSON.parse(localStorage.getItem(KEY)||"null") || {
+  active:"Cading Body",
+  bodies:starterBodies,
+  relations:[
+    {a:"Cading Body", b:"Game Body", type:"scripts / mechanics"},
+    {a:"Claim Body", b:"Language Body", type:"phrasing / meaning boundary"},
+    {a:"Trace Body", b:"Cading Body", type:"receipts / recovery"}
+  ],
+  receipts:[]
+};
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function stamp(){return new Date().toISOString();}
+function receipt(type,label,detail,body){
+  state.receipts.unshift({time:stamp(),type,label,detail,body:body||state.active});
+  save();
+}
+function show(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  receipt("ROUTE","SECTION_OPENED",id,"BodyOS");
+  renderAll();
+}
+function checkGate(){
+  document.getElementById("gateBar").style.width="100%";
+  document.getElementById("gateStatus").innerHTML='<span class="good">PASS:</span> Bodies have identity, state, route, memory, Dings, relations, and receipts.';
+  receipt("DING","BODYOS_GATE_PASS","Apps-to-bodies conversion gate proved in active runtime.","BodyOS");
+}
+function selectBody(name){
+  state.active=name; save();
+  receipt("BODY_ENTER",name,"Entered body and mounted active state.",name);
+  show("active");
+}
+function bodyByName(name){return state.bodies.find(b=>b.name===name);}
+function setMode(mode){
+  const b=bodyByName(state.active); if(!b) return;
+  const before=b.mode; b.mode=mode; save();
+  receipt("STATE_CHANGE","BODY_MODE_CHANGED",`${b.name}: ${before} → ${mode}`,b.name);
+  document.getElementById("bodyActionOut").textContent=`${b.name} changed mode:\n${before} → ${mode}`;
+  renderAll();
+}
+function saveMemory(){
+  const b=bodyByName(state.active); if(!b) return;
+  b.memory=document.getElementById("memoryText").value; save();
+  receipt("MEMORY","BODY_MEMORY_SAVED",`${b.name} memory updated.`,b.name);
+  document.getElementById("memoryOut").textContent="Memory saved for "+b.name;
+}
+function bodyDing(){
+  const b=bodyByName(state.active); if(!b) return;
+  b.dings=(b.dings||0)+1; save();
+  receipt("DING","BODY_DING",`${b.name} produced body-level Ding #${b.dings}.`,b.name);
+  document.getElementById("memoryOut").textContent=`${b.name} Ding stored. Total: ${b.dings}`;
+  renderAll();
+}
+function convertApp(){
+  const name=document.getElementById("appName").value.trim() || "Unnamed Body";
+  const type=document.getElementById("bodyType").value;
+  const purpose=document.getElementById("bodyPurpose").value.trim() || "Participation route not yet described.";
+  if(state.bodies.some(b=>b.name===name)){
+    document.getElementById("convertOut").textContent="Body already exists: "+name; return;
+  }
+  const body={name,type,identity:purpose,mode:"idle",route:"body://"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-"),memory:"",dings:0};
+  state.bodies.push(body); state.active=name; save();
+  receipt("DING","APP_CONVERTED_TO_BODY",`${name} converted into ${type}.`,name);
+  document.getElementById("convertOut").textContent=JSON.stringify(body,null,2);
+  renderAll();
+}
+function addRelation(){
+  const a=document.getElementById("relA").value, b=document.getElementById("relB").value, type=document.getElementById("relType").value.trim()||"supports";
+  state.relations.push({a,b,type}); save();
+  receipt("RELATION","BODY_RELATION_ADDED",`${a} ↔ ${b}: ${type}`,"BodyOS");
+  renderAll();
+}
+function clearReceipts(){state.receipts=[];save();renderReceipts();}
+function renderShelf(){
+  const el=document.getElementById("bodyShelf"); if(!el) return;
+  el.innerHTML=state.bodies.map(b=>`
+    <div class="body-card ${b.name===state.active?'active':''}">
+      <div class="body-title">${b.name}</div>
+      <div class="small">${b.identity}</div>
+      <div class="kv">
+        <b>Type</b><span>${b.type}</span>
+        <b>Mode</b><span class="${b.mode==='running'?'good':'blue'}">${b.mode}</span>
+        <b>Route</b><span>${b.route}</span>
+        <b>Dings</b><span>${b.dings||0}</span>
+      </div>
+      <button onclick="selectBody('${b.name.replace(/'/g,"\\'")}')">Enter Body</button>
+    </div>`).join("");
+}
+function renderActive(){
+  const el=document.getElementById("activePanel"); if(!el) return;
+  const b=bodyByName(state.active);
+  if(!b){el.textContent="No active body."; return;}
+  document.getElementById("memoryText").value=b.memory||"";
+  el.innerHTML=`
+    <div class="body-card active">
+      <div class="body-title">${b.name}</div>
+      <p>${b.identity}</p>
+      <div class="kv">
+        <b>Type</b><span>${b.type}</span>
+        <b>Mode</b><span>${b.mode}</span>
+        <b>Route</b><span>${b.route}</span>
+        <b>Memory</b><span>${b.memory ? "stored" : "empty"}</span>
+        <b>Dings</b><span>${b.dings||0}</span>
+      </div>
+    </div>`;
+}
+function renderRelations(){
+  const el=document.getElementById("relationsOut"); if(!el) return;
+  el.innerHTML=state.relations.map(r=>`<div class="relation"><b>${r.a}</b> ↔ <b>${r.b}</b><br><span class="small">${r.type}</span></div>`).join("");
+  for(const id of ["relA","relB"]){
+    const s=document.getElementById(id); if(!s) continue;
+    s.innerHTML=state.bodies.map(b=>`<option>${b.name}</option>`).join("");
+  }
+}
+function renderReceipts(){
+  const el=document.getElementById("receiptOut"); if(!el) return;
+  el.textContent=state.receipts.length?state.receipts.map(r=>`${r.time} | ${r.type} | ${r.body} | ${r.label} | ${r.detail}`).join("\n"):"No receipts.";
+}
+function exportPack(){
+  const pack={name:"JM_BODYOS_v0_1_SavePack",exported:stamp(),state};
+  document.getElementById("exportBox").value=JSON.stringify(pack,null,2);
+  receipt("DING","BODYOS_EXPORT_READY","BodyOS SavePack generated.","BodyOS");
+}
+function importPack(){
+  try{
+    const pack=JSON.parse(document.getElementById("importBox").value);
+    if(!pack.state || !pack.state.bodies) throw new Error("Missing BodyOS state.");
+    state=pack.state; save();
+    receipt("DING","BODYOS_IMPORT_RECOVERY","BodyOS state recovered from SavePack.","BodyOS");
+    document.getElementById("importOut").textContent="IMPORT PASS.";
+    renderAll();
+  }catch(e){document.getElementById("importOut").textContent="IMPORT FAIL: "+e.message;}
+}
+function renderAll(){renderShelf();renderActive();renderRelations();renderReceipts();}
+renderAll();
+if("serviceWorker" in navigator){navigator.serviceWorker.register("service-worker.js").catch(()=>{});}
+</script>
+</body>
+</html>

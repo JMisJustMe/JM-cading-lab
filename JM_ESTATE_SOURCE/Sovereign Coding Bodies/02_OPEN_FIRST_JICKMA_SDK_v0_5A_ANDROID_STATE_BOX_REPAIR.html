@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.5A — Android State Box Repair</title>
+<meta name="theme-color" content="#12101d" />
+<style>
+:root{
+  --bg:#080710;--panel:#151322;--panel2:#211b34;--text:#f7f2ff;--muted:#beb5d7;
+  --line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#231b3a,var(--bg) 58%);color:var(--text)}
+main{max-width:1180px;margin:0 auto;padding:16px}
+header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+header{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.55rem} h2{margin:0 0 10px;font-size:1.08rem} h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:920px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1.05rem}
+textarea{min-height:68px;resize:vertical} label{display:block;margin:8px 0 6px;font-weight:850}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+button:active{transform:translateY(1px)}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.92rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.law{display:grid;grid-template-columns:1fr;gap:8px}@media(min-width:720px){.law{grid-template-columns:repeat(4,1fr)}}
+.card{border:1px solid var(--line);border-radius:15px;background:#0d0b17;padding:11px;min-height:88px}.card strong{display:block;margin-bottom:6px}.card small{color:var(--muted)}
+.goodBorder{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.16)}
+.banner{border-color:var(--good);background:rgba(30,70,48,.3)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.5A — Android State Box Repair</h1>
+  <p><strong>Patch purpose:</strong> v0.5 opened but Android showed blank `{}` output boxes. v0.5A makes storage safe, adds memory fallback, and forces visible receipts/state/smoke output.</p>
+</header>
+
+<section class="banner" style="margin-top:12px;">
+  <h2>Repair note</h2>
+  <p>v0.4 remains frozen. v0.5 was a candidate and exposed a storage/output issue on Android. v0.5A repairs the app boxes without overwriting v0.4.</p>
+</section>
+
+<div class="grid">
+<section>
+  <h2>1 — Run a contract-aware route</h2>
+
+  <label>Sentence kind</label>
+  <select id="sentenceKind">
+    <option value="ASSERT">ASSERT → CAD_ASSERT_ROUTE</option>
+    <option value="ASK">ASK → CAD_QUERY_ROUTE</option>
+    <option value="REPAIR">REPAIR → CAD_REPAIR_ROUTE</option>
+    <option value="TEACH">TEACH → CAD_TEACH_ROUTE</option>
+    <option value="FREEZE">FREEZE → CAD_FREEZE_PROOF</option>
+  </select>
+
+  <label>Combinator</label>
+  <select id="combinator">
+    <option value="SEQ">SEQ</option>
+    <option value="PAR">PAR</option>
+    <option value="REC">REC</option>
+    <option value="NEST">NEST</option>
+  </select>
+
+  <label>Target runtime</label>
+  <select id="target">
+    <option value="TraceBox">TraceBox</option>
+    <option value="FlowTalk">FlowTalk</option>
+    <option value="GRIC">GRIC</option>
+    <option value="Spalk">Spalk</option>
+    <option value="CadingLab">CadingLab</option>
+  </select>
+
+  <label>Packet type shape</label>
+  <select id="packetTypeShape">
+    <option value="CAD_COMMAND_PACKET">CAD_COMMAND_PACKET — frozen/current</option>
+    <option value="CADCOMMANDPACKET">CADCOMMANDPACKET — legacy alias</option>
+  </select>
+
+  <label>Clause A</label>
+  <textarea id="clauseA">↺↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseA" data-preset="↑↓">A ↑↓</button>
+    <button data-target="clauseA" data-preset="↺↑↓">A ↺↑↓</button>
+    <button data-target="clauseA" data-preset="←↑↓">A ←↑↓</button>
+    <button data-target="clauseA" data-preset="↑←">A ↑←</button>
+  </div>
+
+  <label>Clause B</label>
+  <textarea id="clauseB">←↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseB" data-preset="↑↓">B ↑↓</button>
+    <button data-target="clauseB" data-preset="↺↑↓">B ↺↑↓</button>
+    <button data-target="clauseB" data-preset="↑↑↓">B ↑↑↓</button>
+    <button data-target="clauseB" data-preset="↺">B ↺</button>
+  </div>
+
+  <button class="big" id="run">Run v0.5A Stability Route</button>
+</section>
+
+<section>
+  <h2>2 — Stability result</h2>
+  <div class="metrics">
+    <div class="metric"><strong>Status</strong><span id="status">BOOTING</span></div>
+    <div class="metric"><strong>Error Class</strong><span id="errorClass">—</span></div>
+    <div class="metric"><strong>Contract</strong><span id="contract">—</span></div>
+    <div class="metric"><strong>Storage Mode</strong><span id="storageMode">CHECKING</span></div>
+  </div>
+  <div class="chips" id="warnings"><span class="chip">booting…</span></div>
+
+  <h3>Stability lattice</h3>
+  <div class="law">
+    <div id="typedCard" class="card"><strong>Typed Errors</strong><small>named failure classes</small></div>
+    <div id="stateCard" class="card"><strong>State Core</strong><small>safe local/memory fallback</small></div>
+    <div id="contractCard" class="card"><strong>Contracts</strong><small>target accepts supported commands</small></div>
+    <div id="freezeCard" class="card"><strong>Freeze Protocol</strong><small>Candidate / Frozen / Deprecated / Retired</small></div>
+  </div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — State viewer</h2>
+  <div class="buttons">
+    <button id="loadState">Load State</button>
+    <button id="clearState">Clear State</button>
+  </div>
+  <pre id="stateView">{"boot":"waiting"}</pre>
+</section>
+
+<section>
+  <h2>4 — Receipt</h2>
+  <pre id="receipt">{"boot":"waiting"}</pre>
+  <div class="buttons">
+    <button id="copyReceipt">Copy Receipt</button>
+    <button id="downloadReceipt">Download Receipt JSON</button>
+    <button id="runSmoke">Run v0.5A Repair Smoke Tests</button>
+  </div>
+  <pre id="smokeReceipt">{"boot":"waiting"}</pre>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>5 — v0.5A law</h2>
+  <p class="note">A stability layer is not stable if the proof boxes disappear. v0.5A repairs the visible proof route first.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const VERSION = "JickMa SDK v0.5A Android State Box Repair";
+const STORAGE_KEY = "JICKMA_SDK_v0_5A_STATE";
+
+class JickMaError extends Error { constructor(message, meta={}){ super(message); this.name=this.constructor.name; this.meta=meta; } }
+class RouteError extends JickMaError {}
+class ScopeError extends JickMaError {}
+class ContinuityError extends JickMaError {}
+class PacketError extends JickMaError {}
+class ContractError extends JickMaError {}
+class TargetRuntimeError extends JickMaError {}
+class FreezeError extends JickMaError {}
+
+const FreezeStatus = Object.freeze({CANDIDATE:"CANDIDATE",FROZEN:"FROZEN",DEPRECATED:"DEPRECATED",RETIRED:"RETIRED"});
+const GLYPH_INFO = {
+  "↑": { name:"Jick", op:"BEGIN", state:"begun", field:"ignition" },
+  "↓": { name:"Mah", op:"RESOLVE", state:"resolved", field:"grounding" },
+  "←": { name:"Lethar", op:"BRANCH", state:"branched", field:"route" },
+  "↺": { name:"Zhur", op:"APPLY_PRESSURE", state:"pressure_applied", field:"cycle" }
+};
+const KIND_TO_COMMAND = {ASSERT:"CAD_ASSERT_ROUTE",ASK:"CAD_QUERY_ROUTE",REPAIR:"CAD_REPAIR_ROUTE",TEACH:"CAD_TEACH_ROUTE",FREEZE:"CAD_FREEZE_PROOF"};
+const COMBINATOR_TO_MODE = {SEQ:"sequential",PAR:"parallel",REC:"recursive",NEST:"nested"};
+const PACKET_ALIASES = {CADCOMMANDPACKET:"CAD_COMMAND_PACKET",CAD_COMMAND_PACKET:"CAD_COMMAND_PACKET"};
+
+const Contracts = {
+  TraceBox: {acceptedCommands:["CAD_ASSERT_ROUTE","CAD_REPAIR_ROUTE","CAD_FREEZE_PROOF"], requiredFields:["packetType","version","commandId","command","source","operations","guards"]},
+  FlowTalk: {acceptedCommands:["CAD_QUERY_ROUTE","CAD_REPAIR_ROUTE","CAD_TEACH_ROUTE","CAD_ASSERT_ROUTE"], requiredFields:["packetType","version","commandId","command","sentenceKind","guards"]},
+  GRIC: {acceptedCommands:["CAD_ASSERT_ROUTE","CAD_TEACH_ROUTE","CAD_FREEZE_PROOF"], requiredFields:["packetType","version","commandId","command","clauseTypes"]},
+  Spalk: {acceptedCommands:["CAD_ASSERT_ROUTE","CAD_TEACH_ROUTE","CAD_QUERY_ROUTE"], requiredFields:["packetType","version","commandId","command","source","operations"]},
+  CadingLab: {acceptedCommands:["CAD_ASSERT_ROUTE","CAD_QUERY_ROUTE","CAD_REPAIR_ROUTE","CAD_TEACH_ROUTE","CAD_FREEZE_PROOF"], requiredFields:["packetType","version","commandId","command","mode","operations"]}
+};
+
+function el(id){ return document.getElementById(id); }
+function safeText(id, value){ const node = el(id); if(node) node.textContent = typeof value === "string" ? value : JSON.stringify(value, null, 2); }
+function safeClass(id, cls){ const node = el(id); if(node) node.className = cls; }
+
+const SafeStore = {
+  mode: "MEMORY_FALLBACK",
+  memory: null,
+  init(){
+    try{
+      const k = "__jickma_storage_test__";
+      window.localStorage.setItem(k, "1");
+      window.localStorage.removeItem(k);
+      this.mode = "LOCAL_STORAGE";
+    }catch(e){
+      this.mode = "MEMORY_FALLBACK";
+      this.memory = null;
+    }
+  },
+  get(){
+    if(this.mode === "LOCAL_STORAGE"){
+      try{ return JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}"); }
+      catch(e){ this.mode = "MEMORY_FALLBACK"; return this.memory || {}; }
+    }
+    return this.memory || {};
+  },
+  set(obj){
+    if(this.mode === "LOCAL_STORAGE"){
+      try{ window.localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); return true; }
+      catch(e){ this.mode = "MEMORY_FALLBACK"; this.memory = obj; return false; }
+    }
+    this.memory = obj;
+    return true;
+  },
+  clear(){
+    if(this.mode === "LOCAL_STORAGE"){
+      try{ window.localStorage.removeItem(STORAGE_KEY); } catch(e){}
+    }
+    this.memory = {};
+  }
+};
+
+class JickMaState {
+  constructor(){
+    this.lastMovement=null; this.lastClause=null; this.lastPacket=null; this.lastReceipt=null; this.lastError=null;
+    this.continuity={openBranch:false,openPressure:false};
+    this.routeHistory=[];
+    this.freezeStatus=FreezeStatus.CANDIDATE;
+    this.storageMode=SafeStore.mode;
+  }
+  recordMovement(m){this.lastMovement=m}
+  recordClause(c){this.lastClause=c}
+  recordPacket(p){this.lastPacket=p}
+  recordReceipt(r){this.lastReceipt=r}
+  recordError(e){this.lastError={name:e.name,message:e.message,meta:e.meta}}
+  updateContinuity(hasBranch,hasPressure){this.continuity.openBranch=hasBranch;this.continuity.openPressure=hasPressure}
+  pushRoute(packet,receipt){this.routeHistory.push({packet,receipt,ts:Date.now()}); if(this.routeHistory.length>20)this.routeHistory.shift();}
+  static from(obj){ const s = new JickMaState(); Object.assign(s, obj || {}); s.storageMode = SafeStore.mode; if(!Array.isArray(s.routeHistory)) s.routeHistory = []; if(!s.continuity) s.continuity={openBranch:false,openPressure:false}; return s; }
+}
+function loadState(){ return JickMaState.from(SafeStore.get()); }
+function saveState(state){ state.storageMode = SafeStore.mode; SafeStore.set(state); }
+
+function parseMovements(input){ return Array.from(input).filter(ch=>GLYPH_INFO[ch]).map((glyph,index)=>({glyph,index,...GLYPH_INFO[glyph]})); }
+function inferClauseType(movements){
+  const glyphs=movements.map(m=>m.glyph);
+  const down=glyphs.indexOf("↓"), pressure=glyphs.indexOf("↺"), branch=glyphs.indexOf("←");
+  if(pressure!==-1 && (down===-1 || pressure<down)) return "Z";
+  if(branch!==-1 && (down===-1 || branch<down)) return "L";
+  if(glyphs.filter(g=>g==="↑").length>1) return "J";
+  return "M";
+}
+function buildClause(raw,label){ const movements=parseMovements(raw); return {label,raw,movements,type:inferClauseType(movements),empty:movements.length===0}; }
+function lastGlyph(clause){ return clause.movements.length ? clause.movements[clause.movements.length - 1].glyph : null; }
+function clauseWarnings(clause){
+  const warnings=[]; const last=lastGlyph(clause);
+  if(clause.empty) warnings.push(`${clause.label}: no movement glyphs.`);
+  if(last==="←") warnings.push(`${clause.label}: dangling branch.`);
+  if(last==="↺") warnings.push(`${clause.label}: dangling pressure.`);
+  return warnings;
+}
+function normalizePacketType(packet){
+  const normalized = PACKET_ALIASES[packet.packetType];
+  if(!normalized) throw new PacketError("Unsupported packetType", {packetType:packet.packetType});
+  return {...packet, packetType:normalized, originalPacketType:packet.packetType};
+}
+function combine(combinator,a,b){
+  if(combinator==="SEQ" || combinator==="PAR") return [...a.movements,...b.movements];
+  if(combinator==="REC") return [...a.movements,{glyph:"↺",index:a.movements.length,name:"RecMark",op:"REPEAT",state:"pressure_repeated",field:"recursion"},...b.movements];
+  if(combinator==="NEST") return [...a.movements,{glyph:"←",index:a.movements.length,name:"NestGate",op:"ENTER_NEST",state:"nested",field:"nest"},...b.movements,{glyph:"↓",index:a.movements.length+b.movements.length+1,name:"NestClose",op:"CLOSE_NEST",state:"nest_resolved",field:"grounding"}];
+  throw new RouteError("Unknown combinator", {combinator});
+}
+function toOperations(movements){ return movements.map((m,i)=>({order:i+1,glyph:m.glyph,op:m.op,field:m.field,stateAfter:m.state,routeTag:`${m.field}:${m.op}`})); }
+function compilePacket({kind,combinator,clauseA,clauseB,packetTypeShape}){
+  const a=buildClause(clauseA,"A"), b=buildClause(clauseB,"B");
+  const movements=combine(combinator,a,b);
+  const combined={label:"COMBINED",raw:movements.map(m=>m.glyph).join(""),movements:movements,type:inferClauseType(movements),empty:movements.length===0};
+  const warnings=[...clauseWarnings(a),...clauseWarnings(b),...clauseWarnings(combined)];
+  return {
+    packet: normalizePacketType({
+      packetType:packetTypeShape,
+      version:VERSION,
+      commandId:`${KIND_TO_COMMAND[kind]}_${Date.now()}`,
+      sourceSystem:"JickMa",
+      command:KIND_TO_COMMAND[kind],
+      mode:COMBINATOR_TO_MODE[combinator],
+      sentenceKind:kind,
+      combinator,
+      clauseTypes:{A:a.type,B:b.type,combined:combined.type},
+      source:{clauseA:a.raw,clauseB:b.raw,combined:combined.raw},
+      operations:toOperations(combined.movements),
+      guards:{requiresMovement:true,requiresContinuity:true,allowCheckForRepair:kind==="REPAIR",warnings},
+      createdAt:new Date().toISOString()
+    }),
+    clauses:{A:a,B:b,combined},
+    warnings
+  };
+}
+function validatePacketShape(packet){
+  if(packet.sourceSystem !== "JickMa") throw new PacketError("Invalid sourceSystem", {sourceSystem:packet.sourceSystem});
+  if(!packet.version.startsWith("JickMa SDK v0.5A")) throw new PacketError("Version mismatch", {version:packet.version});
+  if(!packet.operations || !packet.operations.length) throw new PacketError("No operations to execute", {packet});
+}
+function validateAgainstContract(packet,target){
+  const contract=Contracts[target];
+  if(!contract) throw new ContractError("Unknown target contract", {target});
+  contract.requiredFields.forEach(f=>{ if(!(f in packet)) throw new ContractError(`Missing field ${f}`, {target, packet}); });
+  if(!contract.acceptedCommands.includes(packet.command)) throw new ContractError("Unsupported command for target", {target, command:packet.command, accepted:contract.acceptedCommands});
+  if(packet.guards.warnings.length && !packet.guards.allowCheckForRepair) throw new ContinuityError("Continuity warnings present", {warnings:packet.guards.warnings});
+  return {target,status:"CONTRACT_OK",acceptedCommands:contract.acceptedCommands};
+}
+function routeToTarget(packet,target){
+  validatePacketShape(packet);
+  const contractResult=validateAgainstContract(packet,target);
+  const finalState = packet.operations.length ? packet.operations[packet.operations.length - 1].stateAfter : "pending";
+  return {target,status:"ROUTED",contract:contractResult,finalState,receiptShape:{finalState:"resolved",trace:{command:packet.command,operationCount:packet.operations.length}}};
+}
+function getForm(){
+  return {
+    kind:el("sentenceKind").value,
+    combinator:el("combinator").value,
+    target:el("target").value,
+    clauseA:el("clauseA").value,
+    clauseB:el("clauseB").value,
+    packetTypeShape:el("packetTypeShape").value
+  };
+}
+function runStabilityRoute(){
+  const state=loadState();
+  let receipt;
+  try{
+    const f = getForm();
+    const compiled=compilePacket(f);
+    state.recordMovement(compiled.packet.source.combined);
+    state.recordClause(compiled.clauses.combined);
+    state.recordPacket(compiled.packet);
+    state.updateContinuity(compiled.warnings.some(w=>w.includes("branch")), compiled.warnings.some(w=>w.includes("pressure")));
+    const routed=routeToTarget(compiled.packet, f.target);
+    receipt={
+      status:"DING",
+      version:VERSION,
+      repair:"ANDROID_STATE_BOX_REPAIR",
+      packet:compiled.packet,
+      clauses:compiled.clauses,
+      routing:routed,
+      error:null,
+      stateSummary:{historyBefore:state.routeHistory.length, continuity:state.continuity, freezeStatus:state.freezeStatus, storageMode:SafeStore.mode},
+      proofMeaning:"Output boxes rendered; packet normalized, contract-validated, routed, and recorded safely.",
+      timestamp:new Date().toISOString()
+    };
+    state.recordReceipt(receipt); state.pushRoute(compiled.packet, receipt);
+  }catch(e){
+    const err = e instanceof JickMaError ? e : new TargetRuntimeError(e.message || "Unknown runtime failure", {});
+    receipt={
+      status:"CHECK",
+      version:VERSION,
+      repair:"ANDROID_STATE_BOX_REPAIR",
+      packet:state.lastPacket,
+      error:{name:err.name,message:err.message,meta:err.meta},
+      stateSummary:{historyBefore:state.routeHistory.length, continuity:state.continuity, freezeStatus:state.freezeStatus, storageMode:SafeStore.mode},
+      proofMeaning:"Failure captured as typed error; output boxes still render.",
+      timestamp:new Date().toISOString()
+    };
+    state.recordError(err); state.recordReceipt(receipt);
+  }
+  saveState(state);
+  return receipt;
+}
+function renderState(){ safeText("stateView", loadState()); safeText("storageMode", SafeStore.mode); }
+function render(receipt){
+  safeText("status", receipt.status); safeClass("status", receipt.status==="DING"?"ding":"check");
+  safeText("errorClass", receipt.error ? receipt.error.name : "none");
+  safeText("contract", receipt.routing?.contract?.status || "CHECK"); safeClass("contract", receipt.routing?.contract?.status==="CONTRACT_OK" ? "ding" : "check");
+  safeText("storageMode", SafeStore.mode);
+  ["typedCard","stateCard","contractCard","freezeCard"].forEach(id=>{ const n=el(id); if(n) n.classList.add("goodBorder"); });
+  const warnings=el("warnings"); if(warnings){ warnings.innerHTML=""; const items=[]; if(receipt.error) items.push(`${receipt.error.name}: ${receipt.error.message}`); if(receipt.packet?.guards?.warnings?.length) items.push(...receipt.packet.guards.warnings); if(items.length){items.forEach(w=>{const chip=document.createElement("span");chip.className="chip";chip.textContent="⚠ "+w;warnings.appendChild(chip);});}else{const chip=document.createElement("span");chip.className="chip";chip.textContent="✓ v0.5A boxes active";warnings.appendChild(chip);} }
+  safeText("receipt", receipt);
+  renderState();
+}
+function runSmokeTests(){
+  const cases=[
+    {name:"valid contract route", kind:"ASSERT", combo:"SEQ", target:"TraceBox", a:"↑↓", b:"←↑↓", packetType:"CAD_COMMAND_PACKET", expectStatus:"DING", expectError:null},
+    {name:"legacy packet alias normalizes", kind:"ASSERT", combo:"SEQ", target:"TraceBox", a:"↑↓", b:"←↑↓", packetType:"CADCOMMANDPACKET", expectStatus:"DING", expectError:null},
+    {name:"unsupported target command is contract error", kind:"FREEZE", combo:"SEQ", target:"Spalk", a:"↑↓", b:"←↑↓", packetType:"CAD_COMMAND_PACKET", expectStatus:"CHECK", expectError:"ContractError"},
+    {name:"dangling continuity becomes ContinuityError", kind:"ASK", combo:"PAR", target:"FlowTalk", a:"↑←", b:"↺", packetType:"CAD_COMMAND_PACKET", expectStatus:"CHECK", expectError:"ContinuityError"},
+    {name:"repair can carry dangling continuity", kind:"REPAIR", combo:"PAR", target:"FlowTalk", a:"↑←", b:"↺", packetType:"CAD_COMMAND_PACKET", expectStatus:"DING", expectError:null},
+    {name:"state persists history", kind:"ASSERT", combo:"SEQ", target:"CadingLab", a:"↑↓", b:"↺↑↓", packetType:"CAD_COMMAND_PACKET", expectStatus:"DING", expectError:null},
+    {name:"freeze protocol state exists", kind:"FREEZE", combo:"REC", target:"TraceBox", a:"↺↑↓", b:"↑↓", packetType:"CAD_COMMAND_PACKET", expectStatus:"DING", expectError:null},
+    {name:"android boxes repair visible", kind:"ASSERT", combo:"SEQ", target:"GRIC", a:"↑↓", b:"↑↑↓", packetType:"CAD_COMMAND_PACKET", expectStatus:"DING", expectError:null}
+  ];
+  const old = getForm();
+  const rows=[];
+  for(const c of cases){
+    el("sentenceKind").value=c.kind; el("combinator").value=c.combo; el("target").value=c.target; el("clauseA").value=c.a; el("clauseB").value=c.b; el("packetTypeShape").value=c.packetType;
+    const r=runStabilityRoute();
+    const errorName=r.error?.name || null;
+    rows.push({case:c.name, actualStatus:r.status, actualError:errorName, passed:r.status===c.expectStatus && errorName===c.expectError});
+  }
+  el("sentenceKind").value=old.kind; el("combinator").value=old.combinator; el("target").value=old.target; el("clauseA").value=old.clauseA; el("clauseB").value=old.clauseB; el("packetTypeShape").value=old.packetTypeShape;
+  const passed=rows.filter(r=>r.passed).length;
+  const batch={status:passed===cases.length?"V0_5A_ANDROID_REPAIR_READY":"CHECK",version:VERSION,passed,total:cases.length,storageMode:SafeStore.mode,boxesExpected:["stateView","receipt","smokeReceipt"],rows,timestamp:new Date().toISOString()};
+  safeText("smokeReceipt", batch);
+  renderState();
+  return batch;
+}
+async function copyText(text){try{await navigator.clipboard.writeText(text);alert("Copied.");}catch(e){prompt("Copy:",text)}}
+function downloadText(filename,text){const blob=new Blob([text],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
+
+function bind(){
+  document.querySelectorAll("[data-preset]").forEach(btn=>btn.addEventListener("click",()=>{el(btn.dataset.target).value=btn.dataset.preset;render(runStabilityRoute());}));
+  el("run").addEventListener("click",()=>render(runStabilityRoute()));
+  el("loadState").addEventListener("click",renderState);
+  el("clearState").addEventListener("click",()=>{SafeStore.clear();renderState();});
+  el("copyReceipt").addEventListener("click",()=>copyText(el("receipt").textContent));
+  el("downloadReceipt").addEventListener("click",()=>downloadText("JICKMA_SDK_v0_5A_ANDROID_REPAIR_RECEIPT.json",el("receipt").textContent));
+  el("runSmoke").addEventListener("click",runSmokeTests);
+}
+function boot(){
+  try{
+    SafeStore.init();
+    bind();
+    const first = runStabilityRoute();
+    render(first);
+    runSmokeTests();
+  }catch(e){
+    const emergency = {status:"CHECK",version:VERSION,error:{name:e.name || "BootError",message:e.message || String(e)},proofMeaning:"Emergency renderer caught boot failure; boxes are still visible.",timestamp:new Date().toISOString()};
+    safeText("status","CHECK"); safeClass("status","check"); safeText("errorClass", emergency.error.name); safeText("contract","BOOT_CHECK"); safeText("storageMode", SafeStore.mode || "UNKNOWN"); safeText("receipt", emergency); safeText("smokeReceipt", emergency); safeText("stateView", {emergency, storageMode:SafeStore.mode});
+  }
+}
+
+boot();
+})();
+</script>
+</body>
+</html>

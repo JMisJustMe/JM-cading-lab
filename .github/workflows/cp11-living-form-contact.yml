@@ -1,0 +1,29 @@
+name: CP11 Mesh Living Form Real Contact
+on:
+  push:
+    paths: ['engine/demo/cp11-living-form.html', 'tests/cp11-living-form-browser.mjs', 'tests/cp11-navigation-browser.mjs', '.github/workflows/cp11-living-form-contact.yml']
+  pull_request:
+    paths: ['engine/demo/cp11-living-form.html', 'tests/cp11-living-form-browser.mjs', 'tests/cp11-navigation-browser.mjs', '.github/workflows/cp11-living-form-contact.yml']
+permissions:
+  contents: read
+jobs:
+  cp11-webgl-gameplay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Run actual CP11 WebGL, combat, recovery, Fold-shape UI proof
+        run: node tests/cp11-living-form-browser.mjs
+      - name: Run CP11 navigation and narrow mobile controls
+        run: node tests/cp11-navigation-browser.mjs
+      - name: Retain scene and navigation screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp11-mesh-living-form-real-webgl
+          path: cp11-evidence/*.png
+          if-no-files-found: ignore

@@ -89,5 +89,19 @@
   },
   "manifest_proof": {
     "result": "PROSPECTIVE_ONLY_NOT_32_PASS"
+  },
+  "host_and_surfaces": {
+    "source": "GitHub child draft PR #466",
+    "originalDonorRuntime": "Node22 isolated V8 VM, exact source-hash gated",
+    "native": "Godot 4.5.2 Linux, 32 independent runs",
+    "android": "Inherited CP11 signed candidate, not changed",
+    "owner": "Physical Fold remains untested",
+    "production": "main protected and unchanged"
+  },
+  "escalation": {
+    "nativeFail": "Stop first failing process, preserve 0..N-1 receipts and original green parent",
+    "sourceMismatch": "HOLD; do not substitute a reimplementation for founding executable",
+    "judgeOrIdentityOrRouteFailure": "HOLD candidate; never crown",
+    "ownerDevice": "Must be physically played before owner acceptance"
   }
 }

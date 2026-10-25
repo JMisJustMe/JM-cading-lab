@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"><meta name="theme-color" content="#08131e"><title>JM CP11 — LIVING FORM v0.4 · RIFT TRIAL</title><link rel="icon" href="data:,">
+<style>
+:root{color-scheme:dark;--cyan:#78edec;--gold:#f3c783;--ink:#06121c;--line:#366476;--paper:#e9f7f7}*{box-sizing:border-box}html{background:var(--ink)}body{margin:0;color:var(--paper);background:linear-gradient(160deg,#142d3a,#071420 55%,#101b28);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;min-height:100dvh;overscroll-behavior-y:none}button{font:inherit;color:inherit;touch-action:manipulation;user-select:none;cursor:pointer}button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}.shell{width:min(1100px,100%);margin:auto;padding:12px 14px 20px}.mast{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px}.brand{font-size:10px;letter-spacing:.23em;font-weight:900;color:var(--gold)}h1{font-size:clamp(23px,4vw,37px);line-height:1.08;margin:2px 0 0;font-weight:900;letter-spacing:.065em}h1 em{font-style:normal;color:var(--cyan)}.gate{border:1px solid #4b8994;border-radius:50px;background:#122d3b;padding:9px 12px;color:var(--cyan);font-size:11px;font-weight:800;white-space:nowrap}.hud{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:10px}.hud div{border:1px solid #376073;border-radius:11px;background:#132838b5;text-align:center;padding:7px 5px}.hud b{font-size:clamp(17px,4vw,26px);font-variant-numeric:tabular-nums;color:#f3d5a1}.hud small{display:block;font-size:9px;letter-spacing:.09em;color:#c1d8d9}.play{position:relative;height:min(61svh,650px);min-height:300px;border:1px solid #416a79;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,#254c57,#081825 70%);box-shadow:0 12px 42px #0007}.play canvas{width:100%;height:100%;display:block;touch-action:none}.scene-label{position:absolute;top:13px;left:14px;pointer-events:none;text-shadow:0 2px 6px #000}.scene-label b{font-size:13px;letter-spacing:.21em;display:block}.scene-label span{font-size:11px;color:#b6d7d7}.progress{position:absolute;bottom:13px;left:13px;right:13px;border-radius:12px;background:#071722d9;border:1px solid #4a7e82;display:flex;align-items:center;gap:10px;padding:9px 11px;pointer-events:none}.progress .line{flex:1;height:7px;border-radius:10px;background:#153440;overflow:hidden}.progress .line>div{background:linear-gradient(90deg,#49c9d8,#f7cb83);width:0%;height:100%;transition:width .4s}.progress small{font-size:10px;font-weight:800;letter-spacing:.065em;color:#cbdede}.toast{position:absolute;top:62px;left:50%;transform:translateX(-50%);background:#112e37eb;border:1px solid #578c91;border-radius:13px;padding:8px 12px;text-align:center;font-size:12px;max-width:85%;pointer-events:none;opacity:0;transition:opacity .2s}.toast.visible{opacity:1}.controls{display:grid;grid-template-columns:minmax(100px,1fr) repeat(4,minmax(0,1fr));gap:8px;margin-top:11px}.controls button{border:1px solid #477587;border-radius:14px;background:linear-gradient(160deg,#19435a,#102a3e);font-weight:900;font-size:12px;padding:12px 5px;min-height:65px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;box-shadow:inset 0 1px #ffffff14}.controls button b{font-size:19px;color:var(--cyan)}.controls button.power{background:linear-gradient(160deg,#796241,#3d2d29);border-color:#a48a62}.controls button.power b{color:#ffe0a0}.controls button:active,.controls button.pressed{transform:translateY(2px);filter:brightness(1.35)}button:disabled{opacity:.5;filter:grayscale(.45);cursor:default}.movepad{display:flex;align-items:stretch;gap:6px}.movepad button{flex:1;min-width:0}.under{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;color:#c1d3d7;font-size:11px}.under b{color:var(--cyan)}.under button{padding:8px 13px;background:#173040;border:1px solid #466778;border-radius:10px;font-size:11px}.footer{border-top:1px solid #244859;margin-top:12px;padding-top:8px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;color:#729b9e;font-size:10px}.footer strong{color:#b3d2cc}.failure{display:none;padding:14px;background:#532929;color:#fff}.failure.show{display:block}
+@media(max-width:700px){.shell{padding:10px 10px 18px}.play{height:53svh;min-height:295px}.controls{grid-template-columns:repeat(4,1fr);gap:6px}.movepad{grid-column:span 4;justify-content:space-between}.movepad button{min-height:44px}.controls button{min-height:63px;font-size:11px}.under{font-size:10px;align-items:flex-start}.hud small{font-size:8px}}@media(orientation:landscape) and (max-height:550px){.shell{max-width:1200px;display:grid;grid-template-columns:minmax(0,1fr) 178px;gap:5px 12px}.mast,.hud,.under,.footer{grid-column:1 / -1}.mast{margin-bottom:0}.hud{margin-bottom:0}.play{height:67svh;min-height:260px}.controls{grid-template-columns:1fr 1fr;align-content:center;margin:0}.movepad{grid-column:span 2}.controls button{min-height:52px}.scene-label{top:7px;left:9px}.progress{bottom:7px}}
+
+/* CP11 v0.2 · navigable touch field — no engine replacement */
+.navrow{display:flex;gap:13px;align-items:center;margin-top:10px;border:1px solid #386579;border-radius:17px;padding:9px 11px;background:linear-gradient(115deg,#142d3c,#0b2231)}
+.joybox{display:flex;align-items:center;flex-direction:column;gap:4px;min-width:114px;color:#9fcbd1;font-size:10px;letter-spacing:.04em}.joy{position:relative;width:104px;height:104px;flex-shrink:0;border-radius:50%;background:radial-gradient(circle,#113a4b,#0a2433);border:2px solid #55a2aa;box-shadow:0 0 0 5px #1b485244,inset 0 2px 12px #0007;touch-action:none;user-select:none}.joy.active{border-color:#cafaf3}.joyaxes{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#3d8190;font-size:69px;font-weight:200;pointer-events:none}.joynub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:45px;height:45px;border-radius:50%;border:2px solid #8af2eb;background:linear-gradient(135deg,#6ce1e1,#14748b);box-shadow:0 2px 14px #000b;pointer-events:none}
+.navinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}.targetbar{display:flex;align-items:center;gap:5px}.targetbar strong{font-size:10px;color:#d8bd90;letter-spacing:.08em;margin-right:auto}.targetbar button,.views button{font-weight:900;background:#173c4c;border:1px solid #447987;border-radius:9px;padding:8px 10px;font-size:11px;min-height:38px}.targetbar button.selected{background:#e3d69c;color:#122a34;border-color:#edca78}.targetbar button.broken{opacity:.4;text-decoration:line-through}.targetbar #next{color:#91eff1}.targetinfo{color:#ecdfaa;font-size:12px;font-weight:800;min-height:18px}.views{display:flex;gap:5px;flex-wrap:wrap}.views button{flex:1;padding:6px 6px;min-height:33px;color:#beeef0}.navhelp{color:#90b6c2;font-size:10px}.controls{grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:9px}.controls button{min-height:67px}
+.downed:not([hidden]){display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(90deg,#543b37,#2a2834);border:1px solid #e6a47b;border-radius:13px;padding:10px;margin-top:8px}.downed strong{color:#ffcf9e}.downed span{font-size:11px}.downed button{background:#e3bf84;color:#182b36;border:0;border-radius:10px;padding:11px;font-weight:900}.downed[hidden]{display:none}
+.scene-label{z-index:1}.play{height:min(59svh,680px)}.scene-label span{font-size:10px}
+@media(max-width:700px){.play{height:45svh;min-height:245px}.navrow{padding:7px;gap:10px}.joybox{min-width:110px}.navhelp{font-size:9px}.targetbar button{padding:7px 7px}.targetbar strong{font-size:9px}.targetinfo{font-size:11px}.views button{font-size:10px}}
+@media(max-width:460px) and (orientation:portrait){.play{height:43svh;min-height:240px}.hud{gap:4px;margin-bottom:7px}.navrow{margin-top:7px}.scene-label b{font-size:11px}.scene-label span{font-size:9px}.progress small{font-size:9px}}
+@media(max-width:385px){.joybox{min-width:95px}.joy{width:92px;height:92px}.navrow{gap:6px}.targetbar button{padding:6px 5px}.targetbar strong{font-size:8px}.navhelp{display:none}}
+@media(orientation:landscape) and (max-height:550px){.shell{grid-template-columns:minmax(0,1fr) minmax(210px,300px)}.navrow{grid-column:2;grid-row:3;align-items:center}.controls{grid-column:2;grid-row:4;align-self:start}.under,.footer{grid-column:1/-1}.play{grid-column:1;grid-row:3/5;height:60svh;min-height:235px}.joy{width:82px;height:82px}.joybox{min-width:85px}.navhelp{display:none}.targetbar{flex-wrap:wrap}.targetbar strong{width:100%}}
+
+/* CP11 v0.3 — phase-earned gameplay and readable visual consequences */
+.phaseflare{position:absolute;z-index:2;top:50%;left:50%;width:min(92%,390px);transform:translate(-50%,-50%);background:linear-gradient(160deg,#173d4eea,#312b2beb);border:2px solid #f5d39b;border-radius:18px;padding:16px 14px;box-shadow:0 0 35px #ffe2a333,0 8px 35px #0009;text-align:center;pointer-events:none;animation:heart-in .35s ease-out}.phaseflare[hidden]{display:none}.phaseflare strong{display:block;color:#ffe5aa;font-size:clamp(17px,4vw,25px);letter-spacing:.07em}.phaseflare span{display:block;color:#def7f7;font-size:12px;margin-top:8px}@keyframes heart-in{from{opacity:0;transform:translate(-50%,-45%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.play::after{content:'';pointer-events:none;position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 34px #36bec622}.controls button{transition:filter .12s,transform .12s,background .2s}.controls button.ready{box-shadow:inset 0 1px #ffffff50,0 0 12px #d7ae684a}.targetinfo{line-height:1.25}
+.dashrow{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.dashrow button{padding:8px 10px;border:1px solid #6a9a99;border-radius:10px;background:linear-gradient(135deg,#215364,#183341);font-size:11px;font-weight:900;color:#dcfffa;min-height:37px}.dashrow #trial{background:linear-gradient(90deg,#915c3b,#5b354b);border-color:#e0a66d;color:#ffe6ba}.dashrow #trial[hidden]{display:none}.dashrow small{color:#d6bd88;font-size:9px;letter-spacing:.03em}.play.is-trial{box-shadow:0 0 25px #d98f6340,inset 0 0 40px #c96c5832}
+@media(max-width:460px){.dashrow{gap:5px}.dashrow button{padding:7px;font-size:10px}.dashrow small{width:100%;font-size:9px}}
+.scene-label span{max-width:85%;display:block}
+@media (max-width:460px) and (orientation:portrait){.shell{padding-top:7px}.mast{margin-bottom:6px}.brand{font-size:9px}.hud div{padding:5px 3px}.hud{margin-bottom:5px}.navrow{margin-top:5px}.controls{margin-top:7px}.controls button{min-height:60px}.play{height:43svh;min-height:238px}.under{margin-top:7px}}
+</style></head><body><div class="shell">
+<header class="mast"><div><div class="brand">JM ECOSTATE / GAME-CODING × GAMECORE × PLAYZONE</div><h1>CP11 <em>LIVING FORM</em></h1></div><div id="gate" class="gate">CONTACTING…</div></header>
+<div class="hud"><div><b id="seals">0 / 3</b><small id="seals-label">SEALS BROKEN</small></div><div><b id="hp">100</b><small>GUARDIAN HEALTH</small></div><div><b id="energy">0%</b><small id="energy-label">AWAKEN CHARGE</small></div><div><b id="fps">—</b><small>LIVE FPS</small></div></div>
+<section class="play" id="stage"><canvas id="surface" aria-label="Living Rootwarden 3D battle arena. Drag to orbit the camera"></canvas><div class="scene-label"><b>ROOTWARDEN / RIFT TRIAL</b><span>LEFT THUMB moves · RIGHT controls fight · Drag 3D to orbit</span></div><div class="toast" id="toast" role="status"></div><div class="phaseflare" id="phaseflare" aria-live="polite" hidden><strong id="phase-title">THE HEART AWAKENS</strong><span id="phase-sub">A deeper encounter begins</span></div><div class="progress"><small id="quest">SHATTER THE THREE RELIC SEALS</small><div class="line"><div id="progress"></div></div><small id="hits">0/6</small></div></section>
+<div class="navrow" aria-label="Movement and targeting">
+<div class="joybox"><div id="joy" class="joy" role="group" aria-label="Move Rootwarden in any direction" tabindex="0"><div class="joyaxes">＋</div><div id="joynub" class="joynub"></div></div><span>MOVE · drag thumb</span></div>
+<div class="navinfo"><div class="targetbar"><strong>LOCK ON</strong><button id="t0" class="target" aria-label="Target one">1</button><button id="t1" class="target selected" aria-label="Target two">2</button><button id="t2" class="target" aria-label="Target three">3</button><button id="next" aria-label="Switch to next living target">NEXT ↻</button></div><div id="targetinfo" class="targetinfo">LOCK · RELIC 2 / 2 HP</div><div class="views"><button id="view">CAMERA: WIDE</button><button id="center">RE-CENTRE</button><button id="pause">PAUSE</button></div><div class="dashrow"><button id="dash" aria-label="Dash to evade enemy strikes">↗ DASH / EVADE</button><button id="trial" hidden>OPEN THE RIFT TRIAL</button><small id="medals">RECORD · 0 SEALS / 0 ECHO / 0 CROWN</small></div><div class="navhelp">Move freely · Target each form · Dash on F · Finish the Echoes to unlock the Rift Crown</div></div></div>
+<div class="controls" aria-label="Living Form combat controls"><button id="pulse"><b>✦</b>PULSE</button><button id="slam"><b>⬡</b>SLAM</button><button id="guard"><b>◈</b>GUARD</button><button class="power" id="awaken"><b>✧</b>AWAKEN</button></div>
+<div id="downed" class="downed" hidden><strong>ROOTWARDEN DOWN</strong><span>Keep seals and echoes intact.</span><button id="recover">RECOVER · KEEP PROGRESS</button></div>
+<div class="under"><span id="contact"><b>CP10 intact.</b> CP11 v0.4: RIFT TRIAL · original phases and controls inherited · original controls preserved.</span><button id="restart">RESTART</button></div>
+<footer class="footer"><span>JM CP11 Living Form v0.4 · Rift Trial · Source authority: Theodore Benjamin Scott / JMISJUSTME</span><span id="trace">SOURCE GATE · AWAITING LIVE RUN</span></footer>
+<div class="failure" id="failure"></div>
+</div>
+<script type="module">
+const $=id=>document.getElementById(id);
+const RECEIPT={version:'JM.CP11.LivingForm/0.4',donorHead:'95a529c26341751af3d26f1a4499a1481801c047',donorGate:'JMOP-2ecbf4d767fce914f43bd0b6',state:'BOOT',compiledOrgans:0,vertices:0,triangles:0,drawCalls:0,fps:0,seals:0,hits:0,health:100,charge:0,awakened:false,actorPosition:{x:0,z:0},target:2,motion:{x:0,z:0},cameraMode:'wide',recoveries:0,phase:1,echoes:0,victory:false,actions:{pulse:0,slam:0,guard:0,awaken:0,surge:0},contacts:[],lastError:null,trial:false,facets:0,dashes:0,record:null};window.__CP11=RECEIPT;
+const BASE='https://cdn.jsdelivr.net/gh/JMisJustMe/JM-cading-lab@95a529c26341751af3d26f1a4499a1481801c047/engine/';
+const THREE_URL='https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+let THREE,JMMeshCompiler,JMPlayZoneAdapter;
+const RECORD_KEY='JM.CP11.RiftTrial.v0.4';
+function loadRecord(){try{const v=JSON.parse(localStorage.getItem(RECORD_KEY)||'null');return v&&v.version==='0.4'?v:{version:'0.4',seals:0,echoes:0,trial:0,runs:0};}catch{return {version:'0.4',seals:0,echoes:0,trial:0,runs:0};}}
+let record=loadRecord();
+function commitRecord(patch){record={...record,...patch};try{localStorage.setItem(RECORD_KEY,JSON.stringify(record));}catch{};document.getElementById('medals').textContent='RECORD · '+record.seals+' SEALS / '+record.echoes+' ECHO / '+record.trial+' CROWN';}
+
+function notify(t){const e=$('toast');e.textContent=t;e.classList.add('visible');clearTimeout(notify.timer);notify.timer=setTimeout(()=>e.classList.remove('visible'),2200)}
+function contact(type,detail={}){RECEIPT.contacts.push({type,detail,at:Math.round(performance.now())});if(RECEIPT.contacts.length>48)RECEIPT.contacts.shift();}
+function currentTargets(){return run.phase===3?run.facets:run.phase===2?run.echoes:run.targets;}
+function announcePhase(title,subtitle,duration=3.2){$('phase-title').textContent=title;$('phase-sub').textContent=subtitle;$('phaseflare').hidden=false;run.flareUntil=run.clock+duration;}
+function phaseProgress(){const e=run.echoes;return e.reduce((n,t)=>n+(3-t.hp),0);}
+function disposeGroup(group){if(!group)return;run.scene.remove(group);group.traverse(o=>{if(o.isMesh){o.geometry?.dispose();o.material?.dispose();}});}
+function syncHud(){
+ const n=run.targets.filter(t=>t.hp===0).length,echoed=run.echoes.filter(t=>!t.hp).length;
+ RECEIPT.seals=n;RECEIPT.hits=run.targets.reduce((v,t)=>v+(2-t.hp),0);
+ RECEIPT.health=Math.round(run.health);RECEIPT.charge=Math.round(run.charge);RECEIPT.awakened=run.awakened;
+ RECEIPT.phase=run.phase;RECEIPT.echoes=echoed;RECEIPT.victory=run.victory;RECEIPT.trial=run.phase===3;RECEIPT.facets=run.facets.filter(t=>!t.hp).length;RECEIPT.record={...record};
+ $('seals').textContent=run.phase===3?RECEIPT.facets+' / 3':run.phase===2?echoed+' / 3':n+' / 3';
+ $('seals-label').textContent=run.phase===3?'CROWN FACETS':run.phase===2?'ECHOES BANISHED':'SEALS BROKEN';
+ $('hp').textContent=String(Math.round(run.health));$('energy').textContent=Math.round(run.charge)+'%';
+ $('energy-label').textContent=run.phase>=2?'HEART POWER':'AWAKEN CHARGE';
+ const count=run.phase===3?run.facets.reduce((v,t)=>v+(4-t.hp),0):run.phase===2?phaseProgress():RECEIPT.hits,total=run.phase===3?12:run.phase===2?9:6;
+ $('hits').textContent=count+'/'+total;$('progress').style.width=(count/total*100)+'%';
+ $('quest').textContent=run.trialVictory?'THE RIFT IS SEALED · CROWN TRIAL COMPLETE':run.phase===3?'DISMANTLE THE THREE CROWN FACETS':run.victory?'THE VALE REMEMBERS · TRIAL UNLOCKED':run.phase===2?'BANISH THE THREE CORRUPTION ECHOES':n===3?'AWAKEN THE ROOTWARDEN':'SHATTER THE THREE RELIC SEALS';
+ const power=$('awaken');power.disabled=run.phase===1?n<3:run.victory||run.charge<45;
+ power.innerHTML=run.phase>=2?'<b>✹</b>SURGE':'<b>✧</b>AWAKEN';
+ power.classList.toggle('ready',!power.disabled);
+ $('downed').hidden=run.health>0;
+ $('trial').hidden=!(run.phase===2&&run.victory);
+ $('dash').disabled=run.dashCooldown>0||run.health<=0||run.paused;
+ $('dash').textContent=run.dashCooldown>0?'DASH · '+run.dashCooldown.toFixed(1)+'s':'↗ DASH / EVADE';
+ selectVisualTarget();
+}
+
+let run={targets:[],health:100,charge:0,awakened:false,projectiles:[],enemyBolts:[],effects:[],cooldown:{pulse:0,slam:0,guard:0,surge:0},guardTime:0,lastEnemy:0,move:0,body:null,meshParts:[],coreAdapter:null,core:null,pivots:{},actor:null,renderer:null,scene:null,camera:null,cameraTheta:0.12,spin:false,clock:0,hitFlash:0,moveZ:0,lock:1,viewWide:true,paused:false,phase:1,echoes:[],facets:[],victory:false,trialVictory:false,flareUntil:0,dashCooldown:0,invulnerable:5,lastDamage:0,regenT:0,downNotified:false};
+function livingTarget(){const t=currentTargets()[run.lock];return t&&t.hp>0?t:null;}
+
+function selectVisualTarget(){
+ const list=currentTargets();for(let i=0;i<3;i++){const b=$('t'+i);if(!b)continue;const t=list[i];b.classList.toggle('selected',i===run.lock);b.classList.toggle('broken',!!t&&!t.hp);b.disabled=!!t&&!t.hp;b.setAttribute('aria-label',(run.phase===3?'Crown facet ':run.phase===2?'Corruption echo ':'Relic ')+(i+1));}
+ const t=livingTarget();const status=$('targetinfo');
+ if(status)status.textContent=run.victory?'FIELD RESTORED · ALL ECHOES BANISHED':t?(run.phase===3?'CROWN ':run.phase===2?'ECHO ':'RELIC ')+(t.k+1)+' · '+t.hp+'/'+(run.phase===3?4:run.phase===2?3:2)+' HITS · LOCKED':run.phase===1&&run.targets.every(t=>!t.hp)?'ALL SEALS BROKEN · AWAKEN READY':'CHOOSE A LIVING TARGET';
+ RECEIPT.target=t?t.k+1:0;
+}
+
+function setTarget(idx){const t=currentTargets()[idx];if(!t||t.hp<=0)return;run.lock=idx;selectVisualTarget();contact('TARGET_LOCK',{phase:run.phase,target:idx+1});notify('LOCKED · '+(run.phase===3?'CROWN ':run.phase===2?'ECHO ':'RELIC ')+(idx+1));}
+
+function nextTarget(){const active=currentTargets().map((t,i)=>t.hp>0?i:-1).filter(i=>i>=0);if(!active.length)return;const cursor=active.find(i=>i>run.lock);setTarget(cursor===undefined?active[0]:cursor);}
+
+function chooseNextOnBreak(){if(livingTarget())return;const alive=currentTargets().findIndex(t=>t.hp>0);if(alive>=0){run.lock=alive;selectVisualTarget();}else selectVisualTarget();}
+
+const root=(color,metalness=.22,roughness=.6,emissive=0x000000)=>new THREE.MeshStandardMaterial({color,roughness,metalness,flatShading:true,emissive,emissiveIntensity:emissive?0.5:0,side:THREE.DoubleSide});
+function authoredGem(name,rad,height,sides=7,deform='none',amp=.08){const pts=[],faces=[];for(let ring=0;ring<2;ring++){const y=ring? -height/2: height/2;const rr=rad*(ring?1.0:.87);for(let j=0;j<sides;j++){const a=2*Math.PI*j/sides+Math.PI/sides;pts.push([Math.cos(a)*rr,y,Math.sin(a)*rr]);}}const top=pts.length;pts.push([0,height*.8,0]);const bottom=pts.length;pts.push([0,-height*.82,0]);for(let i=0;i<sides;i++){let j=(i+1)%sides;faces.push([i,j,sides+i],[j,sides+j,sides+i],[top,i,j],[bottom,sides+j,sides+i]);}const src=['mesh '+name+' {',...pts.map(v=>'v '+v.map(n=>n.toFixed(6)).join(' ')),...faces.map(f=>'f '+f.join(' ')),'color #38bdf8','deform '+deform+' amp='+amp+' freq=2.7','}'].join('\n');const ir=JMMeshCompiler.compile(src);RECEIPT.compiledOrgans++;RECEIPT.vertices+=ir.vertexBuffer.length/3;RECEIPT.triangles+=ir.indexBuffer.length/3;return ir;}
+function mountPart(group,name,xyz,radius,height,mat,sides=7,spinY=0,deform='none'){const adapter=new JMPlayZoneAdapter(THREE);const ir=authoredGem(name,radius,height,sides,deform);const mesh=adapter.createMesh(ir);mesh.name='JM.CP11.'+name;mesh.position.set(...xyz);mesh.rotation.y=spinY;mesh.material.dispose();mesh.material=mat;group.add(mesh);run.meshParts.push({name,adapter,mesh});return mesh;}
+function stoneCylinder(radius,thick,color,segments=42){const m=new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,thick,segments),root(color,.35,.7));return m;}
+function buildWorld(){const scene=new THREE.Scene();scene.background=new THREE.Color(0x081b27);scene.fog=new THREE.FogExp2(0x0b2030,.032);run.scene=scene;const camera=new THREE.PerspectiveCamera(44,1,.05,100);camera.position.set(0,3,9);run.camera=camera;
+ const renderer=new THREE.WebGLRenderer({canvas:$('surface'),antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.65));renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.35;run.renderer=renderer;
+ scene.add(new THREE.HemisphereLight(0x87eaf5,0x303546,2.05));const key=new THREE.DirectionalLight(0xe5fff7,3.6);key.position.set(4,8,6);scene.add(key);const rim=new THREE.PointLight(0xff9a63,48,18,2);rim.position.set(-4,4,-4);scene.add(rim);const azure=new THREE.PointLight(0x47ceef,40,16,2);azure.position.set(4,2,3);scene.add(azure);
+ const floor=new THREE.Mesh(new THREE.CircleGeometry(12,80),new THREE.MeshStandardMaterial({color:0x142b35,roughness:.95,metalness:.03}));floor.rotation.x=-Math.PI/2;floor.position.y=-.18;scene.add(floor);
+ const grid=new THREE.GridHelper(18,18,0x267b88,0x205465);grid.position.y=-.15;grid.material.transparent=true;grid.material.opacity=.3;scene.add(grid);
+ for(let k=0;k<3;k++){let ring=new THREE.Mesh(new THREE.TorusGeometry(3.4+k*.38,.018,5,120),new THREE.MeshBasicMaterial({color:k===0?0x55b9c6:0x395e71,transparent:true,opacity:k===0?.57:.2}));ring.rotation.x=-Math.PI/2;ring.position.y=-.1;scene.add(ring)}
+ const stoneBatch=new THREE.InstancedMesh(new THREE.CylinderGeometry(1,1,1,5),root(0x314650,.35,.7),18),beaconBatch=new THREE.InstancedMesh(new THREE.OctahedronGeometry(1,0),new THREE.MeshBasicMaterial({color:0xffffff}),18),dummy=new THREE.Object3D();
+ for(let i=0;i<18;i++){const a=i*Math.PI*2/18,r=5.4+(i%3)*.36,h=1+i%4*.7,rad=.16+i%3*.045,x=Math.sin(a)*r,z=Math.cos(a)*r;
+ dummy.position.set(x,h/2-.16,z);dummy.scale.set(rad,h,rad);dummy.rotation.set(0,0,(i%2?1:-1)*.10);dummy.updateMatrix();stoneBatch.setMatrixAt(i,dummy.matrix);
+ dummy.position.set(x,h-.16+.2,z);dummy.scale.set(.16,.16,.16);dummy.rotation.set(0,0,0);dummy.updateMatrix();beaconBatch.setMatrixAt(i,dummy.matrix);
+ beaconBatch.setColorAt(i,new THREE.Color(i%3?0x4da3b2:0xce9d66));}
+ stoneBatch.instanceMatrix.needsUpdate=true;beaconBatch.instanceMatrix.needsUpdate=true;scene.add(stoneBatch,beaconBatch);
+ for(let k=0;k<3;k++){const x=(k-1)*2.55,z=-1.45;const g=new THREE.Group();g.position.set(x,0,z);const stem=stoneCylinder(.25,.8,0x52646c,7);stem.position.y=.2;g.add(stem);const relic=mountPart(g,'Seal_'+(k+1),[0,1.20,0],.45,1.0,root([0xff8e6c,0xa97eff,0x69eee5][k],.37,.18,[0xff4b30,0x6c37ff,0x10a4cc][k]),6,0,'pulse');const aura=new THREE.Mesh(new THREE.TorusGeometry(.75,.042,6,38),new THREE.MeshBasicMaterial({color:[0xff9e7c,0xa58eff,0x75f7fa][k]}));aura.position.y=1.23;g.add(aura);scene.add(g);run.targets.push({group:g,mesh:relic,ring:aura,x,hp:2,k,vy:0});}
+ }
+function buildRootwarden(){const actor=new THREE.Group();run.actor=actor;run.scene.add(actor);const body=new THREE.Group();actor.add(body);run.body=body;const st=root(0x405c67,.33,.82),light=root(0x6b9294,.42,.46),edge=root(0xb68b65,.64,.35),dark=root(0x1c3546,.55,.58),shine=root(0x3bdbed,.37,.25,0x008ab4),heart=root(0x75faff,.28,.2,0x14bbdf),eye=new THREE.MeshBasicMaterial({color:0xc4fdff});
+ // Source-authored torso, shoulders, layered abdomen and back plating
+ mountPart(body,'Carapace',[0,2.16,0],.88,1.28,st,8,Math.PI/8);mountPart(body,'ChestPlate',[0,2.33,.49],.72,.83,light,6,Math.PI/6);mountPart(body,'Waist',[0,1.40,0],.6,.53,dark,7);mountPart(body,'BackCrest',[0,2.38,-.6],.55,1.1,edge,5);
+ for(let side of [-1,1]){const shoulder=new THREE.Group();shoulder.position.set(side*.95,2.68,0);body.add(shoulder);run.pivots[side<0?'left':'right']=shoulder;mountPart(shoulder,(side<0?'L':'R')+'Shoulder',[0,0,0],.54,.67,st,7);mountPart(shoulder,(side<0?'L':'R')+'UpperArm',[side*.12,-.59,0],.32,.97,light,6);const forearm=new THREE.Group();forearm.position.set(side*.12,-1.03,0);shoulder.add(forearm);run.pivots[side<0?'leftElbow':'rightElbow']=forearm;mountPart(forearm,(side<0?'L':'R')+'Gauntlet',[0,-.27,0],.41,.70,edge,6);for(let f=-1;f<=1;f++)mountPart(forearm,(side<0?'L':'R')+'Claw'+f,[f*.19,-.78,.10],.105,.38,dark,4);
+ const leg=new THREE.Group();leg.position.set(side*.42,1.2,0);body.add(leg);run.pivots[side<0?'legL':'legR']=leg;mountPart(leg,(side<0?'L':'R')+'Thigh',[0,-.28,0],.36,.80,st,6);mountPart(leg,(side<0?'L':'R')+'Shin',[0,-.83,.04],.31,.68,light,6);mountPart(leg,(side<0?'L':'R')+'Foot',[0,-1.13,.23],.43,.30,dark,6);}
+ const head=new THREE.Group();head.position.set(0,3.36,.02);body.add(head);run.pivots.head=head;mountPart(head,'FacePlate',[0,0,0],.58,.77,st,7);mountPart(head,'CrownPlate',[0,.39,-.03],.60,.42,light,6);
+ for(let side of [-1,1]){mountPart(head,(side<0?'L':'R')+'CrownHorn',[side*.46,.62,0],.18,.70,edge,5,0,'wave');const e=new THREE.Mesh(new THREE.BoxGeometry(.22,.095,.09),eye);e.position.set(side*.23,.045,.52);e.rotation.z=side*.17;head.add(e);}
+ const jaw=new THREE.Mesh(new THREE.BoxGeometry(.48,.045,.055),eye);jaw.position.set(0,-.30,.52);head.add(jaw);
+ // Real JM-source-compiled expression organs: visor facets and asymmetrical crown crest.
+ const browMat=root(0x99e9ea,.60,.25,0x17657e),goldMat=root(0xe5bd80,.56,.3,0x3a2112);
+ for(const side of [-1,1]){
+  mountPart(head,(side<0?'L':'R')+'BrowRune',[side*.255,.17,.56],.19,.12,browMat,5,side*.17);
+  mountPart(head,(side<0?'L':'R')+'CrownSpur',[side*.55,.47,-.18],.17,.43,goldMat,5,side*.32);
+  mountPart(body,(side<0?'L':'R')+'ChestSigil',[side*.58,2.62,.67],.15,.34,shine,6,side*.16,'pulse');
+  mountPart(body,(side<0?'L':'R')+'BackFin',[side*.60,2.65,-.69],.26,.78,dark,5,side*.3);
+ }
+ const core=mountPart(body,'HeartCore',[0,2.26,.83],.38,.68,heart,8,0,'pulse');run.core=core;run.coreAdapter=run.meshParts.find(p=>p.name==='HeartCore').adapter;
+ const shield=new THREE.Mesh(new THREE.SphereGeometry(1.78,20,12),new THREE.MeshBasicMaterial({color:0x84ffff,transparent:true,opacity:.11,depthWrite:false,side:THREE.DoubleSide}));shield.position.y=1.95;shield.visible=false;actor.add(shield);run.shield=shield;
+ const aura=new THREE.Mesh(new THREE.TorusGeometry(.65,.048,8,48),new THREE.MeshBasicMaterial({color:0x8df9ff,transparent:true,opacity:.4}));aura.rotation.x=-Math.PI/2;aura.position.y=.03;actor.add(aura);run.aura=aura;
+ }
+function hit(t,amount,kind){if(t.kind==='facet')return hitFacet(t,amount,kind);if(t.kind==='echo')return hitEcho(t,amount,kind);if(t.hp<=0)return;t.hp=Math.max(0,t.hp-amount);run.charge=Math.min(100,run.charge+14);run.hitFlash=.5;t.mesh.scale.setScalar(t.hp===0?.12:1.28);const at=new THREE.Vector3(t.x,1.3,-1.45);burst(at,kind==='slam'?0xffd4a1:0x7ffaff,12);contact('RELIC_HIT',{relic:t.k+1,kind,hp:t.hp});if(!t.hp){t.ring.visible=false;run.health=Math.min(100,run.health+12);notify('SEAL '+(t.k+1)+' BROKEN · +12 HEALTH');commitRecord({seals:Math.max(record.seals,run.targets.filter(x=>x.hp===0).length)});contact('SEAL_BROKEN',{relic:t.k+1,heal:12});chooseNextOnBreak();}syncHud();}
+function spawnEchoes(){
+ const palette=[0xfc9675,0xb39afc,0x8becdf];
+ run.echoes=[];run.phase=2;run.victory=false;run.lock=1;RECEIPT.phase=2;
+ for(let k=0;k<3;k++){
+  const x=(k-1)*2.55,z=-2.05+(k%2)*.38;const group=new THREE.Group();group.position.set(x,0,z);
+  const shell=root([0x853c55,0x54457e,0x2c6975][k],.22,.38,[0x582338,0x32235d,0x155968][k]);
+  const coreMat=root(palette[k],.38,.19,palette[k]);
+  const mesh=mountPart(group,'CorruptionEcho'+(k+1),[0,1.45,0],.48,.90,shell,7,0,'pulse');
+  const core=mountPart(group,'EchoHeart'+(k+1),[0,1.5,.44],.21,.36,coreMat,6,0,'pulse');
+  const crest=mountPart(group,'EchoCrest'+(k+1),[0,2.01,-.10],.19,.48,shell,5);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.82,.055,6,26),new THREE.MeshBasicMaterial({color:palette[k],transparent:true,opacity:.87}));ring.rotation.x=Math.PI/2;ring.position.y=1.45;group.add(ring);
+  const eye=new THREE.Mesh(new THREE.BoxGeometry(.34,.07,.08),new THREE.MeshBasicMaterial({color:palette[k]}));eye.position.set(0,1.65,.50);group.add(eye);
+  run.scene.add(group);run.echoes.push({kind:'echo',group,mesh,core,crest,ring,hp:3,k,x,z,phase:1});
+ }
+ contact('ECHO_WAVE',{count:3,eachHP:3,organs:RECEIPT.compiledOrgans});
+ announcePhase('THE ECHOES ANSWER','Break 3 living corruption echoes to restore the field',4);
+ syncHud();
+}
+function hitEcho(t,amount,kind){
+ if(t.hp<=0)return;
+ t.hp=Math.max(0,t.hp-amount);t.mesh.scale.setScalar(t.hp===0?.11:1.16);
+ burst(new THREE.Vector3(t.x,1.45,t.z),[0xffac97,0xaf9eff,0x84f8ef][t.k],8);
+ contact('ECHO_HIT',{echo:t.k+1,kind,remaining:t.hp});
+ if(t.hp===0){t.ring.visible=false;run.health=Math.min(100,run.health+8);run.charge=Math.min(100,run.charge+18);contact('ECHO_BANISHED',{echo:t.k+1});notify('ECHO '+(t.k+1)+' BANISHED · +8 HEALTH');chooseNextOnBreak();}
+ if(run.echoes.every(t=>t.hp===0)&&!run.victory){
+  run.victory=true;run.health=Math.max(run.health,60);run.charge=100;
+  for(let k=0;k<5;k++)burst(new THREE.Vector3((k-2)*.85,1.25+(.3*k),-1),k%2?0xffd797:0x68f8e7,7);
+  commitRecord({seals:Math.max(record.seals,3),echoes:Math.max(record.echoes,3)});contact('HEARTWAKE_VICTORY',{echoes:3,seals:3,restored:true});
+  announcePhase('THE VALE REMEMBERS','All 3 seals and 3 echoes overcome · You restored the field',8);
+ }
+ syncHud();
+}
+function spawnRiftTrial(){
+ if(run.phase!==2||!run.victory||run.health<=0)return;
+ run.phase=3;run.victory=false;run.trialVictory=false;run.facets=[];run.lock=1;run.dashCooldown=0;
+ $('stage').classList.add('is-trial');run.scene.fog.color.setHex(0x271c30);run.scene.background.setHex(0x191623);
+ const palette=[0xffb56b,0xdd87fa,0x70fff2],roles=['BULWARK','MIRROR','HEART'];
+ for(let k=0;k<3;k++){
+  const x=(k-1)*2.7,z=-2.45;const g=new THREE.Group();g.position.set(x,0,z);
+  const mat=root([0x946044,0x68478b,0x226977][k],.54,.22,palette[k]);
+  const gem=root(palette[k],.42,.18,palette[k]);
+  const body=mountPart(g,'RiftFacet_'+roles[k],[0,1.65,0],.72,1.45,mat,8,0,'pulse');
+  const heart=mountPart(g,'RiftEye_'+roles[k],[0,1.80,.66],.28,.45,gem,7,0,'pulse');
+  mountPart(g,'RiftCrest_'+roles[k],[0,2.62,-.1],.21,.68,mat,6,0,'wave');
+  for(const side of [-1,1])mountPart(g,'RiftWing_'+roles[k]+'_'+side,[side*.66,1.86,-.22],.19,.9,mat,5,side*.34,'wave');
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.93,.065,7,36),new THREE.MeshBasicMaterial({color:palette[k],transparent:true,opacity:.95}));ring.position.y=1.65;g.add(ring);
+  run.scene.add(g);run.facets.push({kind:'facet',role:roles[k],group:g,mesh:body,heart,ring,x,z,k,hp:4});
+ }
+ run.charge=100;run.health=Math.max(run.health,80);run.invulnerable=5;
+ contact('RIFT_TRIAL_OPEN',{roles,seals:3,echoes:3,facets:3});
+ announcePhase('CROWN OF THE RIFT','Three distinct Crown Facets guard the final threshold',5);
+ notify('RIFT TRIAL · THREE FACETS · DASH TO EVADE');syncHud();
+}
+function hitFacet(t,amount,kind){
+ if(t.hp<=0)return;
+ const old=t.hp;t.hp=Math.max(0,t.hp-amount);
+ t.mesh.scale.setScalar(t.hp===0?.12:1.15);
+ burst(new THREE.Vector3(t.x,1.65,t.z),[0xffbd81,0xd9a2ff,0x74f9e9][t.k],9);
+ contact('RIFT_FACET_HIT',{facet:t.k+1,role:t.role,kind,damage:old-t.hp,hp:t.hp});
+ if(t.hp===0){t.ring.visible=false;run.charge=Math.min(100,run.charge+24);run.health=Math.min(100,run.health+10);contact('RIFT_FACET_BROKEN',{facet:t.k+1,role:t.role});notify(t.role+' BROKEN · +10 HEALTH');chooseNextOnBreak();}
+ if(run.facets.every(x=>x.hp===0)&&!run.trialVictory){
+  run.trialVictory=true;run.victory=true;run.health=Math.max(run.health,70);run.charge=100;
+  $('stage').classList.remove('is-trial');run.scene.background.setHex(0x0e3135);run.scene.fog.color.setHex(0x144550);
+  for(let i=0;i<7;i++)burst(new THREE.Vector3((i-3)*.6,1.1+i*.25,-1.7),i%2?0xf5c77f:0x71f9dd,8);
+  record.trial=Math.max(record.trial,1);commitRecord({trial:record.trial});
+  contact('RIFT_TRIAL_VICTORY',{facets:3,seals:3,echoes:3});
+  announcePhase('THE HEART HOLDS','Rift Crown dismantled · The Vale is safe',8);
+ }
+ syncHud();
+}
+function dash(){
+ if(run.health<=0||run.paused||run.victory||run.dashCooldown>0)return;
+ const dx=run.move||Math.sin(run.cameraTheta),dz=run.moveZ||-Math.cos(run.cameraTheta),len=Math.hypot(dx,dz)||1;
+ const old={x:run.actor.position.x,z:run.actor.position.z};
+ run.actor.position.x=Math.max(-3.45,Math.min(3.45,old.x+(dx/len)*1.8));
+ run.actor.position.z=Math.max(-2,Math.min(3.2,old.z+(dz/len)*1.8));
+ run.invulnerable=Math.max(run.invulnerable,.85);run.dashCooldown=2.8;RECEIPT.dashes++;
+ for(let i=0;i<6;i++)burst(new THREE.Vector3(run.actor.position.x,0.4+i*.24,run.actor.position.z),0x7decf0,2);
+ contact('DASH_EVADE',{from:old,to:{x:run.actor.position.x,z:run.actor.position.z},invulnerable:run.invulnerable});
+ notify('DASH · EVADE WINDOW');syncHud();
+}
+function burst(position,color,count=10){for(let k=0;k<count;k++){const m=new THREE.Mesh(new THREE.TetrahedronGeometry(.09+Math.random()*.07,0),new THREE.MeshBasicMaterial({color,transparent:true,opacity:1}));m.position.copy(position);run.scene.add(m);const a=Math.random()*Math.PI*2;const phi=(Math.random()-.15)*Math.PI;run.effects.push({kind:'shard',mesh:m,t:0,duration:.6+Math.random()*.4,v:new THREE.Vector3(Math.cos(a)*Math.cos(phi),Math.sin(phi)+.75,Math.sin(a)*Math.cos(phi)).multiplyScalar(1.5+Math.random()*2)});}}
+function makeBall(color,r=.14){return new THREE.Mesh(new THREE.IcosahedronGeometry(r,1),new THREE.MeshBasicMaterial({color}));}
+function pulse(){
+ if(run.health<=0||run.victory||run.cooldown.pulse>0||run.paused)return;
+ const target=livingTarget()||currentTargets().find(t=>t.hp>0);
+ if(!target){notify(run.phase===2?'FIELD RESTORED':'ALL SEALS BROKEN · AWAKEN');return;}
+ run.cooldown.pulse=run.phase===2?.33:.45;run.pivots.right.rotation.x=-1.25;
+ const orb=makeBall(run.awakened?0xffdda3:0x66f3ff,run.awakened?.25:.21);
+ orb.position.set(run.actor.position.x+.65,2.1,run.actor.position.z+.55);
+ run.scene.add(orb);run.projectiles.push({mesh:orb,target,t:0,speed:run.awakened?14:9});
+ RECEIPT.actions.pulse++;contact('PULSE_FIRED',{phase:run.phase,toward:target.k+1});notify('PULSE → '+(run.phase===3?'CROWN ':run.phase===2?'ECHO ':'RELIC ')+(target.k+1));
+}
+
+function slam(){
+ if(run.health<=0||run.victory||run.cooldown.slam>0||run.paused)return;
+ run.cooldown.slam=run.awakened?2.0:2.8;run.pivots.left.rotation.x=-1.6;run.pivots.right.rotation.x=-1.6;
+ const ring=new THREE.Mesh(new THREE.RingGeometry(.7,.77,56),new THREE.MeshBasicMaterial({color:run.awakened?0xffd68f:0x69deec,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false}));ring.rotation.x=-Math.PI/2;ring.position.set(run.actor.position.x,-.02,run.actor.position.z);run.scene.add(ring);run.effects.push({kind:'ring',mesh:ring,t:0,duration:.65});
+ let landed=0;
+ for(const t of currentTargets()){const d=Math.hypot(t.x-run.actor.position.x,(t.z??-1.45)-run.actor.position.z);if(t.hp>0&&d<(run.awakened?4.5:3.8)){hit(t,1,'slam');landed++;}}
+ RECEIPT.actions.slam++;contact('SLAM',{phase:run.phase,landed});notify(landed?'SLAM · '+landed+' CONTACTS':'SLAM · MOVE INTO RANGE');
+}
+
+function guard(){if(run.health<=0||run.cooldown.guard>0||run.paused||run.victory)return;run.guardTime=2.6;run.cooldown.guard=3.5;RECEIPT.actions.guard++;contact('GUARD',{duration:2.6});notify('GUARD FIELD ACTIVE');}
+function awaken(){
+ if(run.awakened){return surge();}
+ if(run.targets.some(t=>t.hp>0)){notify('BREAK ALL THREE SEALS FIRST');return;}
+ if(run.health<=0){notify('RECOVER FIRST');return;}
+ run.awakened=true;run.charge=100;RECEIPT.actions.awaken++;
+ for(let i=0;i<5;i++)burst(new THREE.Vector3(run.actor.position.x,1+i*.6,run.actor.position.z),i%2?0xf9bf7b:0x78ffff,12);
+ run.core.material.color.setHex(0xffd28b);run.core.material.emissive.setHex(0xdb9134);run.aura.material.color.setHex(0xffd58b);run.actor.scale.setScalar(1.08);
+ contact('AWAKENED',{seals:3});notify('ROOTWARDEN AWAKENED · ECHOES INBOUND');
+ spawnEchoes();
+}
+function surge(){
+ if(run.phase<2||run.health<=0||run.paused||run.victory||run.charge<45||run.cooldown.surge>0)return;
+ run.charge-=45;run.cooldown.surge=7;run.guardTime=Math.max(run.guardTime,1.1);
+ burst(new THREE.Vector3(run.actor.position.x,2,run.actor.position.z),0xffd696,21);
+ let affected=0;
+ for(const e of currentTargets()){if(e.hp>0){hit(e,1,'surge');affected++;}}
+ RECEIPT.actions.surge++;contact('HEART_SURGE',{affected,charge:run.charge});notify('HEART SURGE · '+affected+' ECHO CONTACTS');syncHud();
+}
+
+function recover(){if(run.health>0){notify('GUARDIAN STILL STANDING');return;}run.health=72;run.invulnerable=6;run.lastEnemy=0;run.lastDamage=0;run.regenT=0;run.guardTime=1.5;run.downNotified=false;run.actor.position.set(0,0,0);run.move=0;run.moveZ=0;resetJoy();for(const bolt of run.enemyBolts){run.scene.remove(bolt.mesh);bolt.mesh.geometry.dispose();bolt.mesh.material.dispose();}run.enemyBolts=[];RECEIPT.recoveries++;contact('RECOVER_CONTACT',{health:72,seals:RECEIPT.seals});notify('RECOVERED · SEAL PROGRESS KEPT');syncHud();}
+function restart(){run.facets.forEach(t=>disposeGroup(t.group));run.facets=[];$('stage').classList.remove('is-trial');run.scene.background.setHex(0x081b27);run.scene.fog.color.setHex(0x0b2030);run.trialVictory=false;run.dashCooldown=0;run.echoes.forEach(t=>disposeGroup(t.group));run.echoes=[];run.phase=1;run.victory=false;run.flareUntil=0;$('phaseflare').hidden=true;run.targets.forEach(t=>disposeGroup(t.group));run.projectiles.forEach(p=>run.scene?.remove(p.mesh));run.enemyBolts.forEach(p=>run.scene?.remove(p.mesh));run.effects.forEach(p=>run.scene?.remove(p.mesh));for(const p of run.meshParts)p.adapter.dispose();run.meshParts=[];run.targets=[];run.projectiles=[];run.enemyBolts=[];run.effects=[];run.health=100;run.charge=0;run.awakened=false;run.cooldown={pulse:0,slam:0,guard:0,surge:0};run.guardTime=0;run.lastEnemy=0;run.actor?.parent?.remove(run.actor);run.actor=null;run.cameraTheta=0.12;run.move=0;run.moveZ=0;run.lock=1;run.paused=false;run.invulnerable=5;run.lastDamage=0;run.regenT=0;run.downNotified=false;run.viewWide=true;RECEIPT.phase=1;RECEIPT.echoes=0;RECEIPT.facets=0;RECEIPT.victory=false;RECEIPT.trial=false;run.camera.fov=44;run.camera.updateProjectionMatrix();$('view').textContent='CAMERA: WIDE';$('pause').textContent='PAUSE';resetJoy();buildWorldTargetsOnly();buildRootwarden();syncHud();contact('RESTART');notify('NEW CONTACT RUN');}
+function buildWorldTargetsOnly(){const colors=[0xff8e6c,0xa97eff,0x69eee5];for(let k=0;k<3;k++){const x=(k-1)*2.55,z=-1.45;const g=new THREE.Group();g.position.set(x,0,z);const stem=stoneCylinder(.25,.8,0x52646c,7);stem.position.y=.2;g.add(stem);const relic=mountPart(g,'Seal_'+(k+1)+'_restart',[0,1.20,0],.45,1,root(colors[k],.37,.18,[0xff4b30,0x6c37ff,0x10a4cc][k]),6,0,'pulse');const ring=new THREE.Mesh(new THREE.TorusGeometry(.75,.042,6,38),new THREE.MeshBasicMaterial({color:colors[k]}));ring.position.y=1.23;g.add(ring);run.scene.add(g);run.targets.push({group:g,mesh:relic,ring,x,hp:2,k});}}
+function resize(){const r=$('stage').getBoundingClientRect();if(!run.renderer||r.width<1||r.height<1)return;run.camera.aspect=r.width/r.height;run.camera.updateProjectionMatrix();run.renderer.setSize(r.width,r.height,false);}
+let joyPointer=null;
+function resetJoy(){run.move=0;run.moveZ=0;$('joynub').style.transform='translate(-50%,-50%)';$('joy').classList.remove('active');RECEIPT.motion={x:0,z:0};}
+function inputJoy(e){const b=$('joy').getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2,rad=b.width*.32;const dx=(e.clientX-cx)/rad,dy=(e.clientY-cy)/rad,m=Math.hypot(dx,dy)||1;run.move=(Math.abs(dx)<.12?0:dx/Math.max(1,m));run.moveZ=(Math.abs(dy)<.12?0:dy/Math.max(1,m));$('joynub').style.transform='translate(calc(-50% + '+(run.move*rad)+'px),calc(-50% + '+(run.moveZ*rad)+'px))';RECEIPT.motion={x:run.move,z:run.moveZ};}
+function bind(){
+ const on=(id,fn)=>$(id).addEventListener('click',fn);
+ on('dash',dash);on('trial',spawnRiftTrial);on('pulse',pulse);on('slam',slam);on('guard',guard);on('awaken',awaken);on('restart',restart);on('recover',recover);on('next',nextTarget);
+ for(let i=0;i<3;i++)on('t'+i,()=>setTarget(i));
+ on('view',()=>{run.viewWide=!run.viewWide;$('view').textContent='CAMERA: '+(run.viewWide?'WIDE':'HERO');RECEIPT.cameraMode=run.viewWide?'wide':'hero';contact('CAMERA_MODE',{mode:RECEIPT.cameraMode});});
+ on('center',()=>{run.cameraTheta=0.12;run.viewWide=true;$('view').textContent='CAMERA: WIDE';RECEIPT.cameraMode='wide';notify('CAMERA RECENTRED');contact('CAMERA_RECENTER');});
+ on('pause',()=>{run.paused=!run.paused;$('pause').textContent=run.paused?'RESUME':'PAUSE';notify(run.paused?'PAUSED · ENEMIES STOPPED':'RESUMED');contact('PAUSE',{active:run.paused});});
+ const joy=$('joy');joy.addEventListener('pointerdown',e=>{e.preventDefault();if(joyPointer!==null)return;joyPointer=e.pointerId;joy.setPointerCapture(e.pointerId);joy.classList.add('active');inputJoy(e);});
+ joy.addEventListener('pointermove',e=>{if(joyPointer===e.pointerId){e.preventDefault();inputJoy(e);}});
+ const release=e=>{if(joyPointer===e.pointerId){joyPointer=null;resetJoy();}};for(const name of ['pointerup','pointercancel','lostpointercapture'])joy.addEventListener(name,release);
+ document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();if(e.repeat&&['j','k','l',' '].includes(k))return;if(k==='a'||k==='arrowleft')run.move=-1;if(k==='d'||k==='arrowright')run.move=1;if(k==='w'||k==='arrowup')run.moveZ=-1;if(k==='s'||k==='arrowdown')run.moveZ=1;if(k==='f')dash();if(k==='t')spawnRiftTrial();if(k==='j'||k===' ')pulse();if(k==='k')slam();if(k==='l')guard();if(k==='e')awaken();if(k==='q')nextTarget();if(k==='r')recover();if(k==='p')$('pause').click();if(k==='c')$('center').click();});
+ document.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(['a','d','arrowleft','arrowright'].includes(k))run.move=0;if(['w','s','arrowup','arrowdown'].includes(k))run.moveZ=0;});
+ addEventListener('blur',()=>{resetJoy();});
+ const cvs=$('surface');let p=null;cvs.addEventListener('pointerdown',e=>{p={id:e.pointerId,x:e.clientX};cvs.setPointerCapture(e.pointerId)});cvs.addEventListener('pointermove',e=>{if(p&&e.pointerId===p.id){run.cameraTheta=Math.max(-.85,Math.min(.85,run.cameraTheta+(e.clientX-p.x)*.005));p.x=e.clientX;}});const end=e=>{if(p&&p.id===e.pointerId)p=null;};cvs.addEventListener('pointerup',end);cvs.addEventListener('pointercancel',end);
+ new ResizeObserver(resize).observe($('stage'));
+}
+function tick(dt,t){run.clock=t;const actor=run.actor;if(!actor||run.paused)return;if(run.flareUntil&&t>run.flareUntil){$('phaseflare').hidden=true;run.flareUntil=0;}run.dashCooldown=Math.max(0,run.dashCooldown-dt);if(Math.floor(t*3)%3===0&&run.dashCooldown>0)$('dash').textContent='DASH · '+run.dashCooldown.toFixed(1)+'s';else if(run.dashCooldown===0)$('dash').textContent='↗ DASH / EVADE';run.invulnerable=Math.max(0,run.invulnerable-dt);run.lastDamage+=dt;run.regenT+=dt;if(run.phase===2&&!run.victory&&run.charge<100){run.charge=Math.min(100,run.charge+dt*5.5);if(Math.floor(t*2)%2===0)syncHud();}if(run.health>0&&run.health<100&&run.lastDamage>7&&run.regenT>1.2){run.health=Math.min(100,run.health+2);run.regenT=0;syncHud();}for(const key in run.cooldown)run.cooldown[key]=Math.max(0,run.cooldown[key]-dt);run.guardTime=Math.max(0,run.guardTime-dt);run.shield.visible=run.guardTime>0;run.shield.material.opacity=.09+.055*Math.sin(t*13)**2;
+ if(run.health>0){actor.position.x=Math.max(-3.45,Math.min(3.45,actor.position.x+run.move*dt*3.35));actor.position.z=Math.max(-2.0,Math.min(3.2,actor.position.z+run.moveZ*dt*3.35));RECEIPT.actorPosition={x:actor.position.x,z:actor.position.z};run.body.position.y=Math.sin(t*1.7)*.07;run.body.rotation.z=-run.move*.08+Math.sin(t*.95)*.013;run.pivots.head.rotation.y=Math.sin(t*.7)*.1;run.pivots.left.rotation.x+=(-.16+Math.sin(t*1.9)*.07-run.pivots.left.rotation.x)*Math.min(1,dt*7);run.pivots.right.rotation.x+=(.08+Math.sin(t*1.8+2)*.09-run.pivots.right.rotation.x)*Math.min(1,dt*6);run.pivots.legL.rotation.x=Math.sin(t*7)*.21*Math.min(1,Math.hypot(run.move,run.moveZ));run.pivots.legR.rotation.x=-run.pivots.legL.rotation.x;}
+ run.aura.rotation.z=t*.19;run.coreAdapter?.update(t);for(const part of run.meshParts){if(part.name.includes('CrownHorn')||part.name.startsWith('Seal_')||part.name.startsWith('Echo')||part.name.startsWith('CorruptionEcho'))part.adapter.update(t*.7)}
+ for(const target of run.targets){target.group.rotation.y+=dt*.22;const y=Math.sin(t*1.6+target.k)*.13;target.mesh.position.y=1.20+y;target.ring.rotation.y=t*.85;target.ring.position.y=1.23+y;target.ring.scale.setScalar(target.k===run.lock&&target.hp>0?1.20:1);target.ring.material.color.setHex(target.k===run.lock&&target.hp>0?0xffefab:[0xff9e7c,0xa58eff,0x75f7fa][target.k]);target.mesh.scale.lerp(new THREE.Vector3(target.hp?1:.02,target.hp?1:.02,target.hp?1:.02),Math.min(1,dt*7));}
+ for(const echo of run.echoes){
+  echo.group.rotation.y+=dt*(echo.hp>0?.63:.06);
+  echo.group.position.y=echo.hp>0?Math.sin(t*2.1+echo.k*1.6)*.16:-.8;
+  echo.core.material.emissiveIntensity=echo.hp>0?.45+Math.sin(t*4+echo.k)**2*.55:0;
+  echo.ring.rotation.z=t*.9;echo.ring.scale.setScalar(echo.k===run.lock&&echo.hp>0?1.18:1);
+ }
+ for(const f of run.facets){
+  f.group.rotation.y+=dt*(f.k===0?.35:f.k===1?-.65:.48);
+  f.group.position.y=f.hp>0?Math.sin(t*(f.k===1?3.6:1.6)+f.k)*.12:-.7;
+  f.heart.material.emissiveIntensity=f.hp>0?.5+.35*Math.sin(t*3+f.k)**2:0;
+  f.ring.scale.setScalar(f.k===run.lock&&f.hp>0?1.24:1);
+ }
+ for(let i=run.projectiles.length-1;i>=0;i--){const q=run.projectiles[i];const dest=new THREE.Vector3(q.target.x,q.target.kind==='facet'?1.75:q.target.kind==='echo'?1.5:1.25,q.target.z??-1.45);const v=dest.clone().sub(q.mesh.position);const dist=v.length();if(dist<.32||q.t>2){hit(q.target,1,'pulse');run.scene.remove(q.mesh);q.mesh.geometry.dispose();q.mesh.material.dispose();run.projectiles.splice(i,1);continue;}q.mesh.position.addScaledVector(v.normalize(),Math.min(dist,dt*q.speed));q.mesh.rotation.y+=dt*14;q.t+=dt;}
+ if(!run.victory&&run.health>0&&run.invulnerable<=0){run.lastEnemy+=dt;if(run.lastEnemy>(run.phase===3?3.35:run.phase===2?4.3:5.2)){run.lastEnemy=0;const living=currentTargets().filter(q=>q.hp>0);if(living.length){const s=living[Math.floor(Math.random()*living.length)];const b=makeBall(run.phase===3?[0xffa970,0xc78fff,0x66eae8][s.k]:0xff7759,run.phase===3?.19:.16);b.position.set(s.x,1.48,s.z??-1.45);run.scene.add(b);run.enemyBolts.push({mesh:b,t:0});contact('ENEMY_BOLT',{phase:run.phase,from:s.k+1});}}}
+ for(let i=run.enemyBolts.length-1;i>=0;i--){const q=run.enemyBolts[i],dest=new THREE.Vector3(actor.position.x,1.72,actor.position.z),v=dest.sub(q.mesh.position),d=v.length();if(d<.28||q.t>4){if(run.guardTime>0||run.invulnerable>0){burst(q.mesh.position,0x9bf7ff,7);contact('GUARD_BLOCK')}else{run.health=Math.max(0,run.health-(run.phase===3?11:9));run.lastDamage=0;run.regenT=0;run.invulnerable=1.1;run.hitFlash=.8;contact('HEALTH_LOSS',{health:run.health});notify(run.health?'HIT · -'+(run.phase===3?11:9)+' HEALTH':'ROOTWARDEN DOWN · TAP RECOVER');syncHud();}run.scene.remove(q.mesh);q.mesh.geometry.dispose();q.mesh.material.dispose();run.enemyBolts.splice(i,1);continue;}q.mesh.position.addScaledVector(v.normalize(),Math.min(d,dt*2.2));q.t+=dt;}
+ for(let i=run.effects.length-1;i>=0;i--){let f=run.effects[i];f.t+=dt;let n=f.t/f.duration;if(n>=1){run.scene.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();run.effects.splice(i,1);continue;}if(f.kind==='ring'){f.mesh.scale.setScalar(1+n*7);f.mesh.material.opacity=(1-n)*.77;}else{f.mesh.position.addScaledVector(f.v,dt);f.v.y-=dt*4;f.mesh.scale.setScalar(1-n);f.mesh.material.opacity=1-n;}}
+ const target=livingTarget(),aspect=run.camera.aspect||.7,portrait=aspect<.75;const camR=run.viewWide?(portrait?15.0:11.3):(portrait?11.5:9.2);const fx=actor.position.x*(run.viewWide?.58:.76)+(target?target.x*.05:0),fz=actor.position.z*.52+(target?(target.z??-1.45)*.09:0);const nextFov=run.viewWide?(portrait?49:44):44;if(run.camera.fov!==nextFov){run.camera.fov=nextFov;run.camera.updateProjectionMatrix();}run.camera.position.set(fx+Math.sin(run.cameraTheta)*camR,portrait?6.1:4.4,fz+Math.cos(run.cameraTheta)*camR);run.camera.lookAt(fx,1.45,fz);
+ run.hitFlash=Math.max(0,run.hitFlash-dt);$('stage').style.borderColor=run.hitFlash>0?'#e3b57e':'#416a79';}
+try{const [a,b,c]=await Promise.all([import(BASE+'gamecore/JMMeshCompiler.js'),import(BASE+'playzone/JMPlayZoneAdapter.js'),import(THREE_URL)]);JMMeshCompiler=a.JMMeshCompiler;JMPlayZoneAdapter=b.JMPlayZoneAdapter;THREE=c;RECEIPT.state='INITIALIZING';buildWorld();buildRootwarden();bind();resize();commitRecord({runs:record.runs+1});syncHud();contact('SOURCE_COMPILED',{organs:RECEIPT.compiledOrgans,vertices:RECEIPT.vertices,triangles:RECEIPT.triangles});$('gate').textContent='LIVE CONTACT';notify('ROOTWARDEN ONLINE · PULSE TO ENGAGE');let last=performance.now(),tickFps=last,frames=0;function loop(now){const dt=Math.min(.06,(now-last)/1000);last=now;tick(dt,now/1000);run.renderer.render(run.scene,run.camera);RECEIPT.drawCalls=run.renderer.info.render.calls;frames++;if(now-tickFps>1000){RECEIPT.fps=Math.round(frames*1000/(now-tickFps));$('fps').textContent=String(RECEIPT.fps);$('trace').textContent='LIVE · '+RECEIPT.compiledOrgans+' JM ORGANS · '+RECEIPT.drawCalls+' DRAWS · '+RECEIPT.vertices+' SOURCE VERTICES';tickFps=now;frames=0;}RECEIPT.state=RECEIPT.drawCalls>0?'LIVE_WEBGL':'HOLD_NO_DRAWS';requestAnimationFrame(loop);}requestAnimationFrame(loop);
+}catch(e){RECEIPT.state='HOLD';RECEIPT.lastError=e.stack||e.message;$('gate').textContent='CONTACT HOLD';$('failure').classList.add('show');$('failure').textContent='CP11 CONTACT HOLD · '+e.message;console.error(e);}
+</script></body></html>

@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JM32-1DA v1.7 Starter Scaffold</title>
+<style>
+body{margin:0;background:#05070c;color:#f8fbff;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;line-height:1.5;padding:16px}
+main{max-width:1080px;margin:auto}
+h1{font-size:clamp(2.1rem,7vw,5rem);line-height:.92;letter-spacing:-.06em;margin:.25em 0}
+h2{color:#ffd166}p,li{color:#acbad0}
+.card{border:1px solid #29374d;background:#101827;border-radius:24px;padding:16px;margin:12px 0;box-shadow:0 22px 70px rgba(0,0,0,.24)}
+pre{white-space:pre-wrap;word-break:break-word;background:#04070d;border:1px dashed #344155;border-radius:18px;padding:13px;color:#eef5ff;max-height:560px;overflow:auto}
+button{border:1px solid rgba(131,247,178,.5);background:rgba(131,247,178,.08);color:#83f7b2;border-radius:15px;padding:10px 12px;font-weight:950;cursor:pointer;min-height:42px}
+.tag,.status{display:inline-block;border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:3px 8px;font-size:.78rem;font-weight:950;margin:3px}
+.tag{color:#72e7ff}.status{color:#ffdc86;border-color:rgba(255,209,102,.42);background:rgba(255,209,102,.12)}
+/* JM32-1DA v1.7 Default Inheritance UX Core */
+.ux-row,.copy-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.ux-status,.copy-status{min-height:1.2em;font-weight:800;color:#83f7b2}
+.ux-status[data-status-type=hold],.copy-status[data-status-type=hold]{color:#ffdc86}
+.ux-status[data-status-type=fallback],.copy-status[data-status-type=fallback]{color:#ff8fa3}
+.manual-fallback,.manual-copy-fallback{width:100%;min-height:120px;margin-top:10px;border-radius:14px;border:1px dashed #ff8fa3;background:#04070d;color:#eef5ff;padding:12px;font:inherit;white-space:pre-wrap}
+.manual-link-fallback a{color:#72e7ff;font-weight:900}
+
+</style>
+</head>
+<body>
+<main>
+<span class="tag">JM32-1DA</span><span class="tag">v1.7</span><span class="status">BASE SCAFFOLD / DEFAULT INHERITANCE</span>
+<h1>Starter Scaffold</h1>
+<p>Future builds start here. Direct action is born in. Fallback is recovery-only.</p>
+
+<div class="card"><h2>Scaffold Body</h2><pre>JM32-1DA v1.7 BASE BUILD SCAFFOLD / DEFAULT INHERITANCE TEMPLATE
+
+STATUS:
+BASE SCAFFOLD / DEFAULT INHERITANCE TEMPLATE / ZIONFOLDER
+
+PURPOSE:
+Make v1.6 inherited Action / Entry UX part of the starting body for every future build.
+
+CORE LAW:
+A PATCH BECOMES DEFAULT ONLY WHEN IT ENTERS THE BUILD TEMPLATE
+
+SECOND LAW:
+NO BASE SCAFFOLD, NO DEFAULT INHERITANCE
+
+THIRD LAW:
+EVERY BUILD MUST START FROM THE CURRENT LOVED BODY
+
+FOURTH LAW:
+NEW BODY WITHOUT CURRENT SCAFFOLD = LEGACY RISK
+
+WHAT v1.7 DOES:
+- provides a clean starter HTML body,
+- includes default inherited UX CSS,
+- includes default inherited UX JavaScript,
+- includes direct copy/open/download functions,
+- includes inline status slots,
+- makes manual fallback recovery-only,
+- includes build checklist,
+- includes receipt template,
+- includes test card.
+
+DEFAULT ACTION ROUTE:
+user action → direct action first → inline status/result → fallback only if blocked.
+
+DING CONDITIONS:
+- new build starts from scaffold,
+- v1.7 UX core present,
+- copy/open/download route present,
+- fallback is not default,
+- build receipt states scaffold inherited.
+
+NO DING CONDITIONS:
+- new build starts from older legacy body,
+- copy/open/download functions missing,
+- manual fallback appears first,
+- scaffold inheritance not receipted.
+</pre></div>
+
+<div class="card"><h2>Copy Demo</h2>
+<pre id="copyDemo">v1.7 scaffold copy demo. Expected route: click → copied → inline status.</pre>
+<div class="ux-row"><button type="button" onclick="copyBlock('copyDemo')">Copy Demo</button><span class="ux-status" data-ux-status="copyDemo" aria-live="polite"></span></div>
+</div>
+
+<div class="card"><h2>Link Demo</h2>
+<pre>Expected route: click → direct open attempt → fallback link only if blocked.</pre>
+<div class="ux-row"><button type="button" onclick="openDirect('https://example.com','linkDemo')">Open Link Demo</button><span class="ux-status" data-ux-status="linkDemo" aria-live="polite"></span></div>
+</div>
+
+<div class="card"><h2>Build Checklist</h2><pre id="checklist">v1.7 DEFAULT BUILD CHECKLIST
+
+Before building:
+[ ] Start from v1.7 scaffold.
+[ ] Confirm UX core CSS present.
+[ ] Confirm UX core JS present.
+[ ] Confirm copyBlock() present.
+[ ] Confirm openDirect() present.
+[ ] Confirm downloadDirect() present.
+[ ] Confirm manual fallback is recovery-only.
+
+During build:
+[ ] Every Copy button has target id.
+[ ] Every Copy button has ux/copy status span.
+[ ] Every Link/Open button attempts direct open first.
+[ ] Every Download button attempts direct download first.
+[ ] No prompt/manual copy box as default path.
+[ ] Open-first entry visible.
+[ ] Re-entry snippet visible if needed.
+[ ] Boundary visible.
+[ ] Receipt visible.
+
+After build:
+[ ] Run Copy Direct test.
+[ ] Run Link Direct test.
+[ ] Run Download Direct test if applicable.
+[ ] Run blocked fallback test if possible.
+[ ] Add scaffold inheritance receipt.
+[ ] Ding / No Ding stated.
+</pre>
+<div class="ux-row"><button type="button" onclick="copyBlock('checklist')">Copy Checklist</button><span class="ux-status" data-ux-status="checklist" aria-live="polite"></span></div></div>
+
+<div class="card"><h2>Receipt Template</h2><pre id="receiptTemplate">v1.7 SCAFFOLD INHERITANCE RECEIPT TEMPLATE
+
+BUILD NAME:
+[ ]
+
+BUILD VERSION:
+[ ]
+
+STARTED FROM:
+[ ] JM32-1DA v1.7 Base Build Scaffold
+[ ] Other: [ ]
+
+UX CORE PRESENT:
+[ ] CSS
+[ ] JS
+[ ] copyBlock()
+[ ] openDirect()
+[ ] downloadDirect()
+[ ] inline status
+[ ] fallback recovery-only
+
+ACTION TESTS:
+Copy direct: [ PASS / HOLD / FAIL / N/A ]
+Link direct: [ PASS / HOLD / FAIL / N/A ]
+Download direct: [ PASS / HOLD / FAIL / N/A ]
+Fallback only after blocked: [ PASS / HOLD / FAIL / N/A ]
+
+BOUNDARY:
+[ ]
+
+DING:
+[ ]
+
+NO DING:
+[ ]
+</pre>
+<div class="ux-row"><button type="button" onclick="copyBlock('receiptTemplate')">Copy Receipt Template</button><span class="ux-status" data-ux-status="receiptTemplate" aria-live="polite"></span></div></div>
+
+<div class="card"><h2>Test Card</h2><pre>v1.7 BASE SCAFFOLD TEST CARD
+
+Test 1 — Scaffold Born-In UX
+Action:
+Open a new build created from this scaffold.
+Expected:
+UX CSS and UX JS are already present.
+
+Test 2 — Copy Direct
+Action:
+Click Copy on scaffold demo block.
+Expected:
+Direct copy + inline “Copied.”
+NO DING if manual box appears first.
+
+Test 3 — Link Direct
+Action:
+Click Open Link Demo.
+Expected:
+Direct open attempted first.
+Fallback link only appears if blocked.
+
+Test 4 — Download Direct
+Action:
+Click Download Demo if a downloadable target exists.
+Expected:
+Direct download/open first.
+Fallback link only if blocked.
+
+Test 5 — Legacy Risk
+Source:
+A new build starts from an old body without v1.7 UX core.
+Expected:
+NO DING. NEW BODY WITHOUT CURRENT SCAFFOLD = LEGACY RISK.
+
+DING:
+Future build starts from v1.7 scaffold and direct-action UX is born in.
+</pre></div>
+</main>
+<script>
+/* JM32-1DA v1.7 Default Inheritance UX Core
+   Born-in behavior: direct action first, fallback only if blocked.
+*/
+function uxStatus(k,m,t){
+  const e=document.querySelector('[data-ux-status="'+k+'"]')||document.querySelector('[data-copy-status="'+k+'"]');
+  if(!e)return;
+  e.textContent=m;
+  e.dataset.statusType=t||"info";
+  setTimeout(()=>{if(e.textContent===m)e.textContent=""},2000);
+}
+function getUxText(id){
+  const e=document.getElementById(id);
+  return e?(e.innerText||e.textContent||""):"";
+}
+async function copyBlock(id){
+  const s=getUxText(id);
+  if(!s.trim()){uxStatus(id,"Nothing to copy","hold");return false}
+  try{
+    if(navigator.clipboard&&window.isSecureContext){
+      await navigator.clipboard.writeText(s);
+      uxStatus(id,"Copied","pass");
+      return true;
+    }
+  }catch(e){}
+  try{
+    const a=document.createElement("textarea");
+    a.value=s;
+    a.readOnly=true;
+    a.style.position="fixed";
+    a.style.top="-1000px";
+    a.style.left="-1000px";
+    a.style.opacity="0";
+    document.body.appendChild(a);
+    a.focus();
+    a.select();
+    a.setSelectionRange(0,a.value.length);
+    const ok=document.execCommand("copy");
+    document.body.removeChild(a);
+    if(ok){uxStatus(id,"Copied","pass");return true}
+  }catch(e){}
+  manualTextFallback(id,s);
+  uxStatus(id,"Copy blocked — select text below","fallback");
+  return false;
+}
+function openDirect(url,k){
+  if(!url){uxStatus(k,"No link target","hold");return false}
+  try{
+    const w=window.open(url,"_blank","noopener,noreferrer");
+    if(w){uxStatus(k,"Opened","pass");return true}
+  }catch(e){}
+  manualLinkFallback(k,url);
+  uxStatus(k,"Open blocked — use fallback link","fallback");
+  return false;
+}
+function downloadDirect(url,file,k){
+  if(!url){uxStatus(k,"No download target","hold");return false}
+  try{
+    const a=document.createElement("a");
+    a.href=url;
+    if(file)a.download=file;
+    a.rel="noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    uxStatus(k,"Download started","pass");
+    return true;
+  }catch(e){}
+  manualLinkFallback(k,url);
+  uxStatus(k,"Download blocked — use fallback link","fallback");
+  return false;
+}
+function manualTextFallback(k,s){
+  let b=document.querySelector('[data-manual-text="'+k+'"]');
+  if(!b){
+    b=document.createElement("textarea");
+    b.dataset.manualText=k;
+    b.className="manual-fallback";
+    b.readOnly=true;
+    (document.querySelector('[data-ux-status="'+k+'"]')?.parentNode||document.querySelector('[data-copy-status="'+k+'"]')?.parentNode||document.body).appendChild(b);
+  }
+  b.value=s;
+  b.hidden=false;
+  b.focus();
+  b.select();
+}
+function manualLinkFallback(k,u){
+  let p=document.querySelector('[data-manual-link="'+k+'"]');
+  if(!p){
+    p=document.createElement("p");
+    p.dataset.manualLink=k;
+    p.className="manual-link-fallback";
+    const a=document.createElement("a");
+    a.target="_blank";
+    a.rel="noopener noreferrer";
+    p.appendChild(a);
+    (document.querySelector('[data-ux-status="'+k+'"]')?.parentNode||document.body).appendChild(p);
+  }
+  const a=p.querySelector("a");
+  a.href=u;
+  a.textContent="Open fallback link";
+  p.hidden=false;
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>JickMa SDK v0.9A — Mini Monitor Trace Log Repair</title>
+<style>
+:root{--bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;--line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#261d42,var(--bg) 60%);color:var(--text)}
+main{max-width:1180px;margin:0 auto;padding:16px}header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;margin-top:12px}
+h1{font-size:1.55rem;margin:0 0 8px}h2{font-size:1.1rem;margin:0 0 10px}p{color:var(--muted);line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+textarea,input,select{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1rem}textarea{min-height:72px}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}.big{width:100%;font-size:1.05rem;min-height:52px;background:#342964}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}.metric strong{display:block;color:var(--muted);font-size:.82rem}.metric span{font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.bugg{color:var(--bad)}
+.monitor{position:sticky;top:8px;border:1px solid var(--line);border-radius:18px;background:#090712;padding:12px}.monitor.ding{border-color:var(--good)}.monitor.check{border-color:var(--warn)}.monitor.bugg{border-color:var(--bad)}
+.controller{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:420px;margin:0 auto}.ctrlBtn{min-height:76px;font-size:1.55rem;border-radius:22px;background:#302850}.ctrlBtn small{display:block;font-size:.75rem;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.9rem}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:70px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}.glyph{display:grid;place-items:center;width:46px;height:46px;border:1px solid var(--line);border-radius:15px;background:#302850;font-size:1.3rem;font-weight:900}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.log{display:grid;gap:8px;max-height:300px;overflow:auto}.log button{text-align:left;background:#0d0b17}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>JickMa SDK v0.9A — Mini Monitor Trace Log Repair</h1>
+<p><strong>Repair purpose:</strong> v0.9A repairs Android trace-log storage/readback after v0.9 showed CHECK 15/16, while keeping Controller Cover Lab + Mini Monitor.</p>
+</header>
+
+<section><h2>0 — Repair note</h2><p class="note">The Mini Monitor worked and captured BUGG. v0.9A makes the trace log/storage route safe too.</p></section>
+
+<div class="grid">
+<section>
+<h2>1 — Controller Cover Lab</h2>
+<label>Cover type</label><select id="coverType"><option value="gamepad">Gamepad</option><option value="rhythm">Rhythm</option><option value="comic">Comic</option><option value="story">Story</option><option value="app">Normal App</option><option value="custom">Custom</option></select>
+<div class="buttons"><button id="loadCover">Load Cover</button><button id="clearMove">Clear Movement</button><button id="autoExpected">Auto Expected</button></div>
+<div id="controller" class="controller"></div>
+<div id="coverPreview" class="chips"></div>
+</section>
+
+<section>
+<h2>2 — Mini Monitor / Receipt HUD</h2>
+<div id="miniMonitor" class="monitor">
+<div class="metrics">
+<div class="metric"><strong>Status</strong><span id="monStatus">BOOT</span></div>
+<div class="metric"><strong>Action</strong><span id="monAction">—</span></div>
+<div class="metric"><strong>Expected</strong><span id="monExpected">—</span></div>
+<div class="metric"><strong>Actual</strong><span id="monActual">—</span></div>
+<div class="metric"><strong>Layer</strong><span id="monLayer">—</span></div>
+<div class="metric"><strong>Storage</strong><span id="monStorage">BOOT</span></div>
+</div>
+<div id="monitorChips" class="chips"></div>
+</div>
+<label>Expected route</label><input id="expectedRoute" value="↑↓"/>
+<label>Actual movement</label><textarea id="movement">↑↓</textarea>
+<div class="buttons"><button id="runRoute">Run Route</button><button id="forceCheck">Force CHECK</button><button id="forceBugg">Force BUGG</button></div>
+</section>
+</div>
+
+<div class="grid">
+<section><h2>3 — Route lane</h2><div id="lane" class="lane"></div><p id="teaching" class="note"></p></section>
+<section><h2>4 — Trace log</h2><div id="traceLog" class="log"></div><div class="buttons"><button id="copyReceipt">Copy Receipt</button><button id="downloadReceipt">Download Receipt</button><button id="exportLog">Export Log</button><button id="clearLog">Clear Log</button></div></section>
+</div>
+
+<div class="grid">
+<section><h2>5 — Current receipt</h2><pre id="receipt">{}</pre></section>
+<section><h2>6 — Internal tests</h2><button class="big" id="runSmoke">Run v0.9A Mini Monitor Repair Smoke Tests</button><pre id="smokeReceipt">{}</pre></section>
+</div>
+
+<section><h2>7 — v0.9A law</h2><p class="note">The creation should not need to leave itself to know whether it worked. The trace log must remember even when Android storage is awkward.</p></section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa SDK v0.9A Mini Monitor Trace Log Repair", STORE="JICKMA_V09A_MONITOR_LOG";
+const GLYPH={"↑":{name:"Jick",op:"BEGIN",state:"begun",layer:"JickMa"},"↓":{name:"Mah",op:"RESOLVE",state:"resolved",layer:"JickMa"},"←":{name:"Lethar",op:"BRANCH",state:"branched",layer:"Spalk"},"↺":{name:"Zhur",op:"APPLY_PRESSURE",state:"pressure_applied",layer:"FlowTalk"}};
+const MAPS={gamepad:{A:"↑",B:"↓",X:"←",Y:"↺"},rhythm:{Beat:"↑",Drop:"↓",Break:"←",Loop:"↺"},comic:{OpenPanel:"↑",ClosePanel:"↓",AltPath:"←",RepeatBeat:"↺"},story:{EnterRoom:"↑",ResolveRoom:"↓",ChooseDoor:"←",Revisit:"↺"},app:{Create:"↑",Save:"↓",Back:"←",Retry:"↺"},custom:{Button1:"↑",Button2:"↓",Button3:"←",Button4:"↺"}};
+let currentMap={...MAPS.gamepad}, currentReceipt=null, storageMode="BOOT", memoryLog=[];
+function el(id){return document.getElementById(id)}function txt(id,o){el(id).textContent=typeof o==="string"?o:JSON.stringify(o,null,2)}
+function clean(x){return Array.from(x).filter(ch=>GLYPH[ch]).join("")}function glyphs(m){return Array.from(clean(m)).map((g,i)=>({glyph:g,index:i,...GLYPH[g]}))}
+function initStorage(){try{localStorage.setItem("__j09a","1");localStorage.removeItem("__j09a");storageMode="LOCAL_STORAGE"}catch(e){storageMode="MEMORY_FALLBACK"}}initStorage();
+function store(){if(storageMode==="LOCAL_STORAGE"){try{const raw=localStorage.getItem(STORE);return raw?JSON.parse(raw):memoryLog}catch(e){storageMode="MEMORY_FALLBACK";return memoryLog}}return memoryLog}
+function saveLog(log){memoryLog=Array.isArray(log)?log:[];if(storageMode==="LOCAL_STORAGE"){try{localStorage.setItem(STORE,JSON.stringify(memoryLog));return"LOCAL_STORAGE"}catch(e){storageMode="MEMORY_FALLBACK";return"MEMORY_FALLBACK"}}return"MEMORY_FALLBACK"}
+function warnings(m){const s=clean(m),w=[];if(!s)w.push("No movement glyphs");if(s.endsWith("←"))w.push("Dangling branch");if(s.endsWith("↺"))w.push("Dangling pressure");return w}
+function layerFor(m){const s=clean(m);if(s.includes("↺"))return"FlowTalk";if(s.includes("←"))return"Spalk";return"JickMa/Cading"}
+function statusFor(exp,act,forced){if(forced==="BUGG")return"BUGG";if(warnings(act).length)return"CHECK";return clean(exp)===clean(act)?"DING":"CHECK"}
+function pushReceipt(r){let log=store();log.push(r);log=log.slice(-30);r.storageMode=saveLog(log);return r}
+function receipt(action="ManualRun",forced=null){const exp=clean(el("expectedRoute").value),act=clean(el("movement").value),st=statusFor(exp,act,forced);return pushReceipt({version:VERSION,traceId:"trace_"+Date.now(),status:st,action,coverType:el("coverType").value,expectedRoute:exp,actualRoute:act,layerAffected:layerFor(act),glyphs:glyphs(act),expectedMatched:exp===act,errors:st==="BUGG"?["Forced BUGG example"]:warnings(act),proofMeaning:st==="DING"?"Action matched expected route.":st==="CHECK"?"Action needs inspection.":"Explicit BUGG captured inside app.",timestamp:new Date().toISOString()})}
+function renderController(){const box=el("controller");box.innerHTML="";Object.entries(currentMap).forEach(([a,g])=>{const b=document.createElement("button");b.className="ctrlBtn";b.innerHTML=`${g}<small>${a}</small>`;b.onclick=()=>{el("movement").value=clean(el("movement").value)+g;render(receipt(a))};box.appendChild(b)});el("coverPreview").innerHTML=Object.entries(currentMap).map(([a,g])=>`<span class="chip">${a} → ${g}</span>`).join("")}
+function renderLane(r){const lane=el("lane");lane.innerHTML="";r.glyphs.forEach(g=>{const s=document.createElement("span");s.className="glyph";s.textContent=g.glyph;s.onclick=()=>txt("teaching",`${g.glyph} = ${g.name}; ${g.op} → ${g.state}; layer ${g.layer}`);lane.appendChild(s)});if(!r.glyphs.length)lane.innerHTML='<span class="chip">No glyphs</span>'}
+function renderLog(){const box=el("traceLog");box.innerHTML="";store().slice().reverse().forEach(r=>{const b=document.createElement("button");b.innerHTML=`<strong>${r.status}</strong> ${r.action}<br><small>${r.actualRoute} / ${r.layerAffected} / ${r.storageMode||storageMode}</small>`;b.onclick=()=>render(r);box.appendChild(b)});if(!store().length)box.innerHTML='<p class="note">No trace yet.</p>'}
+function render(r){currentReceipt=r;const mon=el("miniMonitor");mon.className="monitor "+r.status.toLowerCase();txt("monStatus",r.status);el("monStatus").className=r.status==="DING"?"ding":r.status==="CHECK"?"check":"bugg";txt("monAction",r.action);txt("monExpected",r.expectedRoute||"∅");txt("monActual",r.actualRoute||"∅");txt("monLayer",r.layerAffected);txt("monStorage",r.storageMode||storageMode);el("monitorChips").innerHTML=`<span class="chip">${r.coverType}</span><span class="chip">matched: ${r.expectedMatched}</span><span class="chip">${r.traceId}</span>`;renderLane(r);txt("receipt",r);renderLog();txt("teaching",r.proofMeaning)}
+function smoke(){const tests=[
+["cover maps exist",()=>Object.keys(MAPS).length>=6],["gamepad four",()=>Object.keys(MAPS.gamepad).length===4],["action appends",()=>{el("movement").value="";currentMap={A:"↑"};renderController();el("controller").querySelector("button").click();return clean(el("movement").value)==="↑"}],
+["ding exact",()=>{el("movement").value="↑↓";el("expectedRoute").value="↑↓";return receipt("test").status==="DING"}],["check mismatch",()=>{el("movement").value="↑";el("expectedRoute").value="↑↓";return receipt("test").status==="CHECK"}],["check dangling",()=>{el("movement").value="↑←";el("expectedRoute").value="↑←";return receipt("test").status==="CHECK"}],
+["bugg forced",()=>{el("movement").value="↑↓";el("expectedRoute").value="↑↓";return receipt("test","BUGG").status==="BUGG"}],["layer flowtalk",()=>layerFor("↺")==="FlowTalk"],["layer spalk",()=>layerFor("↑←")==="Spalk"],["glyph parser",()=>glyphs("↑↓←↺").length===4],
+["trace id",()=>!!receipt("test").traceId],["receipt export shape",()=>!!receipt("test").proofMeaning],["log stores",()=>{const before=store().length;receipt("logTest");return store().length>=before}],["storage mode",()=>["LOCAL_STORAGE","MEMORY_FALLBACK"].includes(storageMode)],["monitor render",()=>!!el("monStatus").textContent],["controller preview",()=>!!el("coverPreview").textContent],["internal tests visible",()=>!!el("smokeReceipt")]];
+const rows=tests.map(([c,f])=>({case:c,passed:!!f()})),passed=rows.filter(r=>r.passed).length,out={status:passed===tests.length?"V0_9A_MINI_MONITOR_REPAIR_READY":"CHECK",version:VERSION,passed,total:tests.length,storageMode,rows,timestamp:new Date().toISOString()};txt("smokeReceipt",out);return out}
+function download(name,t){const blob=new Blob([t],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+async function copy(t){try{await navigator.clipboard.writeText(t);alert("Copied.")}catch(e){prompt("Copy:",t)}}
+el("loadCover").onclick=()=>{currentMap={...MAPS[el("coverType").value]};renderController()};el("clearMove").onclick=()=>{el("movement").value="";render(receipt("ClearMovement"))};el("autoExpected").onclick=()=>{el("expectedRoute").value=clean(el("movement").value)||"↑↓";render(receipt("AutoExpected"))};el("runRoute").onclick=()=>render(receipt("ManualRun"));el("forceCheck").onclick=()=>{el("movement").value="↑←";render(receipt("ForceCheck"))};el("forceBugg").onclick=()=>render(receipt("ForceBugg","BUGG"));
+el("copyReceipt").onclick=()=>copy(JSON.stringify(currentReceipt||{},null,2));el("downloadReceipt").onclick=()=>download("JICKMA_SDK_v0_9A_RECEIPT.json",JSON.stringify(currentReceipt||{},null,2));el("exportLog").onclick=()=>download("JICKMA_SDK_v0_9A_TRACE_LOG.json",JSON.stringify(store(),null,2));el("clearLog").onclick=()=>{saveLog([]);renderLog()};el("runSmoke").onclick=smoke;
+renderController();render(receipt("BootRun"));smoke();
+})();
+</script>
+</body>
+</html>

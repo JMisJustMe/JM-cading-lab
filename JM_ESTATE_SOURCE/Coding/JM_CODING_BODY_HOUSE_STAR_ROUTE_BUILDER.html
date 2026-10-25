@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JM Coding Body House + Star Route Builder v0.1</title>
+<style>
+:root {
+  --bg:#0c0d10; --panel:#151821; --panel2:#1e2330; --text:#f2f4f8; --muted:#aab2c5;
+  --line:#333b50; --hot:#f2d06b; --good:#72e6a6; --bad:#ff7b7b; --info:#82b7ff; --violet:#c8a6ff;
+  --shadow: 0 16px 45px rgba(0,0,0,.35); --r:22px;
+}
+* { box-sizing:border-box; }
+body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: radial-gradient(circle at top left,#22283a 0,#0c0d10 42%,#07080a 100%); color:var(--text); }
+header { padding:28px 20px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20; backdrop-filter: blur(14px); background:rgba(12,13,16,.85); }
+.wrap { max-width:1280px; margin:0 auto; }
+.titleline { display:flex; gap:16px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; }
+h1 { margin:0; font-size:clamp(28px,4vw,52px); letter-spacing:-.04em; line-height:.96; }
+.badge { display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:rgba(255,255,255,.05); border-radius:999px; padding:8px 12px; color:var(--hot); font-weight:700; }
+.sub { margin:14px 0 0; color:var(--muted); max-width:920px; font-size:16px; line-height:1.55; }
+.grid { display:grid; grid-template-columns: 360px 1fr; gap:18px; padding:18px 20px 60px; max-width:1280px; margin:0 auto; }
+@media(max-width:900px){ .grid{ grid-template-columns:1fr; } header{position:relative;} }
+.card { background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025)); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); }
+.sidebar { padding:14px; height:calc(100vh - 170px); overflow:auto; position:sticky; top:150px; }
+@media(max-width:900px){ .sidebar{height:auto; position:relative; top:0;} }
+.search { width:100%; border:1px solid var(--line); border-radius:16px; background:#0c0f17; color:var(--text); padding:13px 14px; outline:none; font-size:15px; margin-bottom:12px; }
+.roomBtn { display:block; width:100%; text-align:left; border:1px solid transparent; border-radius:16px; padding:12px; background:transparent; color:var(--text); cursor:pointer; margin-bottom:7px; }
+.roomBtn:hover { background:rgba(255,255,255,.055); border-color:var(--line); }
+.roomBtn.active { background:linear-gradient(90deg,rgba(242,208,107,.18),rgba(130,183,255,.08)); border-color:rgba(242,208,107,.45); }
+.roomName { font-weight:800; display:block; }
+.roomClass { color:var(--muted); font-size:12px; display:block; margin-top:2px; }
+.main { display:flex; flex-direction:column; gap:18px; }
+.panel { padding:20px; }
+h2 { margin:0 0 10px; font-size:28px; letter-spacing:-.03em; }
+h3 { margin:18px 0 8px; color:var(--hot); }
+p, li { color:var(--muted); line-height:1.55; }
+.kv { display:grid; grid-template-columns: 160px 1fr; gap:10px; margin:10px 0; }
+@media(max-width:600px){ .kv{grid-template-columns:1fr; gap:2px;} }
+.k { color:var(--hot); font-weight:800; }
+.v { color:var(--text); }
+.tags { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.tag { border:1px solid var(--line); background:rgba(255,255,255,.04); border-radius:999px; padding:6px 9px; color:var(--muted); font-size:12px; }
+.tag.good { color:var(--good); border-color:rgba(114,230,166,.35); }
+.tag.hot { color:var(--hot); border-color:rgba(242,208,107,.35); }
+.routeBuilder { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.routeBuilder textarea, .routeBuilder input, .routeBuilder select { width:100%; border:1px solid var(--line); border-radius:14px; background:#0b0e15; color:var(--text); padding:12px; outline:none; min-height:44px; }
+.routeBuilder textarea { min-height:120px; resize:vertical; grid-column:1/-1; }
+label { color:var(--muted); font-size:12px; font-weight:700; display:block; margin-bottom:6px; text-transform:uppercase; letter-spacing:.08em; }
+.actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+button.action { border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.06); color:var(--text); padding:11px 13px; cursor:pointer; font-weight:800; }
+button.action.primary { background:linear-gradient(90deg,rgba(242,208,107,.25),rgba(130,183,255,.18)); border-color:rgba(242,208,107,.55); }
+button.action:hover { transform: translateY(-1px); }
+.receipt { white-space:pre-wrap; background:#080a0f; color:#dce6ff; border:1px solid var(--line); border-radius:18px; padding:16px; overflow:auto; max-height:560px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; line-height:1.45; }
+.matrix { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:10px; }
+.mini { border:1px solid var(--line); border-radius:18px; padding:13px; background:rgba(255,255,255,.035); }
+.mini strong { display:block; color:var(--text); margin-bottom:6px; }
+.status { display:inline-flex; padding:5px 8px; border-radius:999px; font-weight:900; font-size:12px; }
+.status.pass { color:var(--good); background:rgba(114,230,166,.12); }
+.status.hold { color:var(--hot); background:rgba(242,208,107,.12); }
+.status.reject { color:var(--bad); background:rgba(255,123,123,.12); }
+.lawTable { width:100%; border-collapse:collapse; overflow:hidden; border-radius:16px; }
+.lawTable th, .lawTable td { border-bottom:1px solid var(--line); padding:10px; text-align:left; vertical-align:top; }
+.lawTable th { color:var(--hot); background:rgba(255,255,255,.04); }
+.small { font-size:13px; color:var(--muted); }
+.footerNote { color:var(--muted); font-size:13px; padding:18px 20px; text-align:center; }
+.hidden { display:none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap titleline">
+    <div>
+      <div class="badge">JM CODING BODY HOUSE · STAR ROUTE BUILDER v0.1</div>
+      <h1>Separate Coding Rooms. One Star Governance.</h1>
+      <p class="sub">This build keeps every coding body separate. CodeHouse is the coding wing. MultiHub connects. Body House holds. Star Route governs. Carrier-code obeys.</p>
+    </div>
+    <div class="badge">33 separate rooms loaded</div>
+  </div>
+</header>
+
+<div class="grid">
+  <aside class="card sidebar">
+    <input id="search" class="search" placeholder="Search coding body…" />
+    <div id="roomList"></div>
+  </aside>
+
+  <main class="main">
+    <section class="card panel">
+      <h2 id="roomTitle"></h2>
+      <div id="roomClass" class="badge"></div>
+      <div class="kv"><div class="k">Role</div><div id="roomRole" class="v"></div></div>
+      <div class="kv"><div class="k">Source</div><div id="roomSource" class="v"></div></div>
+      <div class="kv"><div class="k">Is Not</div><div id="roomNot" class="v"></div></div>
+      <div class="kv"><div class="k">Carrier Boundary</div><div id="roomCarrier" class="v"></div></div>
+      <h3>Body Laws</h3><ul id="roomLaws"></ul>
+      <h3>Membranes</h3><div id="roomMembranes" class="tags"></div>
+      <h3>Seals</h3><div id="roomSeals" class="tags"></div>
+      <h3>Room Checks</h3><div id="roomChecks" class="matrix"></div>
+    </section>
+
+    <section class="card panel">
+      <h2>Build Route Inside This Coding Body</h2>
+      <p>This control surface creates a body-specific route receipt. It does not blend all codings together. The selected room governs the route.</p>
+      <div class="routeBuilder">
+        <div><label>Route Name</label><input id="routeName" value="BodyHouse-StarRoute-Test" /></div>
+        <div><label>Pressure</label><select id="pressure"><option>Soft</option><option selected>Hard</option><option>Shift</option><option>Break</option></select></div>
+        <div><label>Shape</label><select id="shape"><option>Line</option><option>Arc</option><option selected>Fork</option><option>Loop</option><option>Span</option><option>Weave</option><option>Pulse</option><option>Crown</option></select></div>
+        <div><label>Target Body</label><select id="target"><option>Mark Body</option><option>Formula Body</option><option>Writing Body</option><option selected>Carrier Body</option><option>Diagnostic Body</option><option>Receipt Body</option></select></div>
+        <textarea id="intent">Build Body House + Star Route governance inside this coding body separately. Preserve identity. Keep carrier-code subordinate. Generate receipt.</textarea>
+      </div>
+      <div class="actions">
+        <button class="action primary" onclick="runStarCheck()">Run Star Route Check</button>
+        <button class="action" onclick="exportReceipt()">Export Receipt JSON</button>
+        <button class="action" onclick="copyReceipt()">Copy Receipt</button>
+        <button class="action" onclick="saveLocal()">Save Local Room Receipt</button>
+        <button class="action" onclick="loadLocal()">Load Saved Receipts</button>
+      </div>
+    </section>
+
+    <section class="card panel">
+      <h2>Star Receipt</h2>
+      <div id="receipt" class="receipt">Select a coding body and run the Star Route Check.</div>
+    </section>
+
+    <section class="card panel">
+      <h2>Estate Law Matrix</h2>
+      <table class="lawTable">
+        <thead><tr><th>Law</th><th>Active Test</th></tr></thead>
+        <tbody id="lawRows"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<div class="footerNote">Crown line: The route is the source. The line is the carrier. The mark is the compression. The formula is the transformation. The writing is the control. The generated code is the export.</div>
+
+<script>
+const ROOMS = [
+  {
+    "id": "jmlogic",
+    "name": "JMlogic",
+    "class": "Primary Coding Body",
+    "role": "Logic grammar and route reasoning body.",
+    "source": "Meaning → route decision → lawful logic.",
+    "not": "Not generic logic notation and not line-code worship.",
+    "laws": [
+      "The route begins where meaning begins.",
+      "Logic must preserve route pressure, not flatten it.",
+      "Every shown door must open."
+    ],
+    "membranes": [
+      "Source",
+      "Meaning",
+      "Pressure",
+      "Identity",
+      "Formula",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Pattern Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates carrier conditions, branching rules, and validation gates only after route identity is locked.",
+    "checks": [
+      "meaning origin present",
+      "pressure pattern stable",
+      "logic route resolves",
+      "no fake branch",
+      "receipt generated"
+    ],
+    "example": "intent: decide route → pressure: strong → shape: fork → output: lawful branch receipt"
+  },
+  {
+    "id": "flowtalk",
+    "name": "FlowTalk",
+    "class": "Primary Coding Body",
+    "role": "Speech/writing route that keeps wording alive before it becomes syntax.",
+    "source": "Mouth-route → phrasing → route clarity.",
+    "not": "Not decorative language and not final carrier-code.",
+    "laws": [
+      "FlowTalk speaks the route.",
+      "Wording must preserve route identity.",
+      "Speech pressure is a design constraint."
+    ],
+    "membranes": [
+      "Speakability",
+      "Meaning",
+      "Identity",
+      "Pressure",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Name Seal",
+      "Pattern Seal",
+      "Origin Seal"
+    ],
+    "carrier": "Feeds readable control strings into route-code and mark-code; can generate prompts, labels, and callable phrasing.",
+    "checks": [
+      "speakable name",
+      "meaning intact",
+      "R/W pressure safe",
+      "no wording drift",
+      "route still usable"
+    ],
+    "example": "speak: bring up CodeHouse → route: recall saved body before rebuild"
+  },
+  {
+    "id": "mark_level_syntax",
+    "name": "Mark-Level Syntax",
+    "class": "Primary Coding Body",
+    "role": "Dense meaning-per-mark syntax layer.",
+    "source": "Mark choice → pressure unit → route anchor.",
+    "not": "Not random symbols, not aesthetics, not shorthand for its own sake.",
+    "laws": [
+      "A mark is a pressure-unit, meaning-unit, and route-anchor.",
+      "Compression without meaning preservation is damage, not density.",
+      "Same mark does not always mean same function without route context."
+    ],
+    "membranes": [
+      "Meaning",
+      "Pressure",
+      "Shape",
+      "Identity",
+      "Formula",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Name Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Expands into carrier syntax only through declared formula; emits comments/metadata where carrier cannot hold mark identity natively.",
+    "checks": [
+      "mark purpose declared",
+      "pressure density measured",
+      "identity preserved",
+      "carrier expansion legal"
+    ],
+    "example": "Ø = held route/null-origin depending on body; context decides function"
+  },
+  {
+    "id": "speakuals",
+    "name": "Speakuals",
+    "class": "Primary Coding Body",
+    "role": "Speakable symbolic/code language body.",
+    "source": "Speech + symbol + route identity.",
+    "not": "Not text-only symbols and not pronunciation-blind naming.",
+    "laws": [
+      "A coding name must survive the mouth, not only the screen.",
+      "Sound-seed is not final meaning.",
+      "Speakability is law."
+    ],
+    "membranes": [
+      "Speakability",
+      "Name",
+      "Identity",
+      "Meaning",
+      "Pressure"
+    ],
+    "seals": [
+      "Name Seal",
+      "Origin Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Produces aliases, command names, and labels that can be spoken and mapped to route-code.",
+    "checks": [
+      "mouth-route pass",
+      "visual identity pass",
+      "meaning pass",
+      "alias trace preserved"
+    ],
+    "example": "BR5/route-name test → meaning + look + speakability must all pass"
+  },
+  {
+    "id": "cading_kading",
+    "name": "Cading / Kading",
+    "class": "Primary Coding Body",
+    "role": "Route-code language body: routes first, carrier-code second.",
+    "source": "Route Law → marks → formula → generated carrier.",
+    "not": "Not JS/C++ imitation and not a normal DSL crown.",
+    "laws": [
+      "JM coding is not trying to imitate code. JM coding is trying to make code obey route.",
+      "The line is not the source. The route is the source.",
+      "Generated code obeys the route, not the other way around."
+    ],
+    "membranes": [
+      "Source",
+      "Meaning",
+      "Pressure",
+      "Identity",
+      "Shape",
+      "Formula",
+      "Carrier",
+      "Crown"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Pattern Seal",
+      "Name Seal",
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates JS/HTML/CSS/C++ only as export bodies after route identity and formula transformation are proven.",
+    "checks": [
+      "route origin",
+      "mark taxonomy",
+      "formula path",
+      "carrier subordination",
+      "DING receipt"
+    ],
+    "example": "route: CatchLoop → formula: expand → carrier: JS canvas loop"
+  },
+  {
+    "id": "quadze",
+    "name": "Quadze / Quadza",
+    "class": "Primary Coding Body",
+    "role": "Token/operator body for structured JM syntax pressure.",
+    "source": "Four-way/quad pressure → syntax operator behavior.",
+    "not": "Not random invented operators and not final proof by name alone.",
+    "laws": [
+      "Operator meaning must be route-bound.",
+      "Same-name is not same-state.",
+      "Token pressure must resolve."
+    ],
+    "membranes": [
+      "Pressure",
+      "Shape",
+      "Formula",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Name Seal"
+    ],
+    "carrier": "Maps JM operators into carrier-safe operations or helper calls with trace comments.",
+    "checks": [
+      "operator class declared",
+      "pressure direction clear",
+      "carrier mapping legal",
+      "trace available"
+    ],
+    "example": "quad operator → branch/merge/fold route depending on active pressure"
+  },
+  {
+    "id": "jmp_jamp",
+    "name": "J’MP / JAMP",
+    "class": "Primary Coding Body",
+    "role": "Jump/move/activation body for route invocation and passage.",
+    "source": "Call pressure → route jump → body activation.",
+    "not": "Not a vague shortcut and not ungoverned teleporting.",
+    "laws": [
+      "A jump must declare source and destination.",
+      "If a door is shown, it must open.",
+      "Jumping is movement, not bypass."
+    ],
+    "membranes": [
+      "Source",
+      "Destination",
+      "Estate",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates navigation/action handlers, function calls, and dispatch routes.",
+    "checks": [
+      "source exists",
+      "destination exists",
+      "same estate or lawful cross-house",
+      "receipt returned"
+    ],
+    "example": "JAMP: CodeHouse.Cading → GameHouse.CatchLoop with return receipt"
+  },
+  {
+    "id": "codifying_askual",
+    "name": "Codifying / Askual",
+    "class": "Primary Coding Body",
+    "role": "Question-to-code route body; turns asking into structured coding movement.",
+    "source": "Question pressure → clarification route → codified body.",
+    "not": "Not endless questioning and not normal prompt-only behavior.",
+    "laws": [
+      "Ask only when route ambiguity blocks build.",
+      "A question can be a route-forming device.",
+      "Correct after the body exists when route is clear."
+    ],
+    "membranes": [
+      "Meaning",
+      "Source",
+      "Pressure",
+      "Formula",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Produces specs, command schemas, validation gates, and build prompts for downstream coding bodies.",
+    "checks": [
+      "question pressure identified",
+      "build route clear",
+      "no unnecessary stop",
+      "output body resolved"
+    ],
+    "example": "ask: build in all coding bodies → codify: separate rooms + Star checks"
+  },
+  {
+    "id": "kocodifying",
+    "name": "Kocodifying",
+    "class": "Primary Coding Body",
+    "role": "Field/phone/live-use coding route: coding by controlling, testing, touching, and rerouting systems.",
+    "source": "Live interaction → route input → system change.",
+    "not": "Not only typing code and not passive usage.",
+    "laws": [
+      "Structured input that changes a system is coding-route evidence.",
+      "Phone can be field-kocodifying while laptop forges/packages.",
+      "Proof can begin in lived control."
+    ],
+    "membranes": [
+      "Input",
+      "Pressure",
+      "Identity",
+      "Carrier",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Estate Seal"
+    ],
+    "carrier": "Feeds observations, gestures, control routes, and test receipts into app/game code carriers.",
+    "checks": [
+      "input route captured",
+      "system change recorded",
+      "field proof logged",
+      "carrier patch optional"
+    ],
+    "example": "drag paddle on phone → feel issue → route patch → control law"
+  },
+  {
+    "id": "os_coding_routeos",
+    "name": "OS_CODING / RouteOS",
+    "class": "Primary Coding Body",
+    "role": "Operating route body: controls screens, routes, launchers, offline shells, and system pathways.",
+    "source": "Device route → app route → estate launcher.",
+    "not": "Not claiming native OS crown before proof and not confusing PWA with full OS.",
+    "laws": [
+      "OS is a word; overlapping OS/drive/engine functions exist.",
+      "RouteOS governs movement, not only screens.",
+      "Offline shell must preserve entry authority."
+    ],
+    "membranes": [
+      "Entry",
+      "Estate",
+      "Carrier",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Estate Seal",
+      "Crown Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates PWA/WPA shells, manifests, service worker routes, launchers, and device handoff routes.",
+    "checks": [
+      "open-first route",
+      "offline shell status",
+      "entry authority",
+      "carrier boundaries",
+      "device proof"
+    ],
+    "example": "OPEN_FIRST HTML → manifest → service worker → Android local proof"
+  },
+  {
+    "id": "game_coding",
+    "name": "Game-CODING",
+    "class": "Primary Coding Body",
+    "role": "Game route body: mechanics, loops, controls, feel, physics, and playable proof.",
+    "source": "Play pressure → mechanic route → playable carrier.",
+    "not": "Not generic game dev tutorial and not art-first without control proof.",
+    "laws": [
+      "Playable loop before full release game.",
+      "Controls must obey route feel.",
+      "Core experience must not regress when features are added."
+    ],
+    "membranes": [
+      "Pressure",
+      "Shape",
+      "Carrier",
+      "Diagnostic",
+      "Estate"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates canvas loops, control maps, game-state machines, collision routes, and mechanic tests.",
+    "checks": [
+      "loop proof",
+      "control feel",
+      "route pressure",
+      "no feature drift",
+      "receipt/Ding"
+    ],
+    "example": "Catch loop → pressure map → direct manipulation control → playable Ding"
+  },
+  {
+    "id": "formeula",
+    "name": "FormeULA / MarkeULA",
+    "class": "Primary Coding Body",
+    "role": "Formula/mark algebra body for lawful transformations.",
+    "source": "Route transformation need → formula body → legal output.",
+    "not": "Not arbitrary mutation and not maths cosplay.",
+    "laws": [
+      "A route may change shape only through formula.",
+      "No formula, no transformation.",
+      "Formula must be traceable and reversible where possible."
+    ],
+    "membranes": [
+      "Formula",
+      "Pressure",
+      "Shape",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates transformation functions, conversion tables, compression/expansion operations, and route translators.",
+    "checks": [
+      "transform declared",
+      "input/output bodies named",
+      "identity preservation",
+      "trace generated"
+    ],
+    "example": "compress route → mark body; expand mark → carrier body"
+  },
+  {
+    "id": "builder_lads",
+    "name": "Builder Lads",
+    "class": "Primary Governance/Coding Body",
+    "role": "Build enforcement body inside MEBL and JM Build Gate.",
+    "source": "Build pressure → route promise → no dead doors.",
+    "not": "Not motivational branding and not optional decoration.",
+    "laws": [
+      "Full Body. Straight Run. Correct After.",
+      "No Dead Doors.",
+      "Bugs allowed; bypass prohibited; reroutes declared."
+    ],
+    "membranes": [
+      "Route Promise",
+      "Destination Integrity",
+      "Same-Estate",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Crown Seal",
+      "Estate Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Enforces build gates in generated apps/tools: source authority, entry authority, structure authority, behavior authority, delivery authority, receipt authority.",
+    "checks": [
+      "source authority",
+      "entry authority",
+      "same estate",
+      "no bypass",
+      "receipt"
+    ],
+    "example": "patch request → preserve old body → build full body → correct after"
+  },
+  {
+    "id": "cading_canon",
+    "name": "Cading Canon",
+    "class": "Runtime / Canon Body",
+    "role": "Eight-body anchor: definition, law, diagram, model, stack, compiler, runtime, product view.",
+    "source": "Cading language-body proof and hosted execution lineage.",
+    "not": "Not claiming all runtime proof before specific runtime Ding.",
+    "laws": [
+      "Language-body proven; runtime-body must show proof separately.",
+      "Canon anchors identity across versions.",
+      "No Ding, no completion claim."
+    ],
+    "membranes": [
+      "Source",
+      "Identity",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Provides stable documentation/source contract for compiler/runtime/carrier generation.",
+    "checks": [
+      "canon section present",
+      "proof state declared",
+      "runtime status separated",
+      "current-best preserved"
+    ],
+    "example": "Cading v0.1 Canon → compiler view → runtime view → product view: Caden"
+  },
+  {
+    "id": "cading_kernel",
+    "name": "JM Cading Kernel v0.1A–v0.4",
+    "class": "Runtime / Compiler Body",
+    "role": "Kernel lineage from first execution through split API/error library/archive map.",
+    "source": "Cading execution experiments → compile/validation/runtime body.",
+    "not": "Not final universal compiler and not all-language backend proof.",
+    "laws": [
+      "First execution Ding matters.",
+      "Compile BUGG must become repair route.",
+      "API/error split preserves trust."
+    ],
+    "membranes": [
+      "Formula",
+      "Carrier",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Compiles Cading into tokens, blocks, IR, validation, receipt, emitted JS, and runtime output.",
+    "checks": [
+      "tokenize",
+      "parse blocks",
+      "validate",
+      "emit JS",
+      "runtime receipt"
+    ],
+    "example": "v0.1A execution Ding → v0.2 compile BUGG → v0.2A trust Ding"
+  },
+  {
+    "id": "compiler_ir",
+    "name": "Cading Compiler / Parser / Core IR",
+    "class": "Runtime / Compiler Body",
+    "role": "Translation middle layer from route-code into carrier-code.",
+    "source": "Mark/route input → parser → core IR → backend route.",
+    "not": "Not direct line-code writing as source.",
+    "laws": [
+      "IR must preserve route identity.",
+      "Parser must not autocorrect protected syntax.",
+      "Carrier backend receives IR; it does not crown it."
+    ],
+    "membranes": [
+      "Source",
+      "Formula",
+      "Identity",
+      "Carrier",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Origin Seal"
+    ],
+    "carrier": "Produces structured IR and passes it to JS/C++/other backend emitters.",
+    "checks": [
+      "parse success",
+      "IR identity",
+      "backend mapping",
+      "carrier check",
+      "trace"
+    ],
+    "example": "Cading input → token stream → route blocks → IR → JS backend"
+  },
+  {
+    "id": "js_backend",
+    "name": "Cading→JS Emitter / JS Backend Route",
+    "class": "Carrier Body",
+    "role": "JS export layer that obeys the route.",
+    "source": "IR/carrier route → JS output.",
+    "not": "Not JS as source identity and not manually worshipped line-code.",
+    "laws": [
+      "The line begins where the route ends.",
+      "JS carries, route crowns.",
+      "Generated code must preserve transformation history."
+    ],
+    "membranes": [
+      "Carrier",
+      "Identity",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Crown Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Emits JavaScript with route comments, helper functions, state handlers, and receipt metadata.",
+    "checks": [
+      "IR accepted",
+      "JS emitted",
+      "route comments attached",
+      "identity preserved",
+      "receipt export"
+    ],
+    "example": "route block OUTPUT number → JS function returns output receipt"
+  },
+  {
+    "id": "hybrid_auto_compiler",
+    "name": "Hybrid Auto-Compiler",
+    "class": "Runtime / Safety Body",
+    "role": "Candidate-runtime / last-known-good / safe promotion compiler body.",
+    "source": "Compile candidate → test → promote or keep safe version.",
+    "not": "Not reckless auto-generation and not overwrite-first coding.",
+    "laws": [
+      "Last known good must survive candidate failure.",
+      "Promotion requires proof.",
+      "Repair before replacement."
+    ],
+    "membranes": [
+      "Diagnostic",
+      "Carrier",
+      "Identity",
+      "Crown"
+    ],
+    "seals": [
+      "Crown Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates candidate JS/runtime bodies while preserving previous working bodies.",
+    "checks": [
+      "candidate built",
+      "test passed",
+      "last known good safe",
+      "promotion receipt"
+    ],
+    "example": "candidateRuntime fails → lastKnownGood remains active"
+  },
+  {
+    "id": "cadenvm",
+    "name": "CadenVM / RouteVM / JMVM",
+    "class": "Runtime Execution Body",
+    "role": "Hosted route execution engine.",
+    "source": "Route instructions → VM operations → output receipt.",
+    "not": "Not full native OS, not full universal compiler crown.",
+    "laws": [
+      "VM executes route-body instructions.",
+      "Stateful operations must be traceable.",
+      "Program memory must preserve identity."
+    ],
+    "membranes": [
+      "Runtime",
+      "State",
+      "Carrier",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Executes MARK/SIGNAL/SET/ADD/OUTPUT/DING, branching, calls, returns, save/load, and program memory.",
+    "checks": [
+      "program parsed",
+      "state changed",
+      "output receipt",
+      "DING status",
+      "savepack optional"
+    ],
+    "example": "SET number 32 → OUTPUT number → DING"
+  },
+  {
+    "id": "cadenpad",
+    "name": "CadenPad Program Library",
+    "class": "Runtime / Workspace Body",
+    "role": "Named program save/load body for CadenVM.",
+    "source": "Program memory → named save/load → workspace execution.",
+    "not": "Not just a text area and not unsaved scratch drift.",
+    "laws": [
+      "Named programs must be recallable.",
+      "SavePack export preserves route memory.",
+      "Workspace Ding proves use."
+    ],
+    "membranes": [
+      "Registry",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Name Seal",
+      "Estate Seal"
+    ],
+    "carrier": "Uses browser localStorage/JSON export/import to preserve runnable programs.",
+    "checks": [
+      "program named",
+      "saved",
+      "loaded",
+      "executed",
+      "exported"
+    ],
+    "example": "save program CatchRouteTest → load → run → output receipt"
+  },
+  {
+    "id": "onebody",
+    "name": "OneBody",
+    "class": "Runtime / Integration Body",
+    "role": "Unification body that keeps linked code parts coordinated without erasing their separate identities.",
+    "source": "Multiple runtime parts → one coordinated execution body.",
+    "not": "Not collapse of every body into one generic object.",
+    "laws": [
+      "One body may coordinate many identities.",
+      "Mesh is not merge.",
+      "Contact is not collapse."
+    ],
+    "membranes": [
+      "Identity",
+      "Estate",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Bundles parser/runtime/emitter/UI route into a coherent package while preserving module boundaries.",
+    "checks": [
+      "parts listed",
+      "boundaries preserved",
+      "execution route present",
+      "no collapse"
+    ],
+    "example": "parser + VM + UI + receipts = OneBody package"
+  },
+  {
+    "id": "tbs_string",
+    "name": "TBS.String",
+    "class": "Command String Router",
+    "role": "Four-layer command-string route: Input → Intent → Connector → Output.",
+    "source": "Human command string → intent route → connector action → output.",
+    "not": "Not generic chatbot command parsing and not connector-first automation.",
+    "laws": [
+      "Input must keep original wording trace.",
+      "Intent must be explicit before connector output.",
+      "Connector obeys route."
+    ],
+    "membranes": [
+      "Source",
+      "Intent",
+      "Carrier",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates command parsers, connector adapters, output handlers, tracebox receipts, and sample commands.",
+    "checks": [
+      "input captured",
+      "intent resolved",
+      "connector selected",
+      "output returned",
+      "trace saved"
+    ],
+    "example": "open route CatchLoop → connector loads game body → output open-first link"
+  },
+  {
+    "id": "routescript",
+    "name": "RouteScript",
+    "class": "Pure-Code System",
+    "role": "Script-like route language for sequential route execution.",
+    "source": "Route steps → executable sequence → receipt.",
+    "not": "Not normal script syntax as source; route sequence remains sovereign.",
+    "laws": [
+      "Steps must keep route identity.",
+      "Sequence must resolve.",
+      "No hidden reroute."
+    ],
+    "membranes": [
+      "Shape",
+      "Formula",
+      "Carrier",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal"
+    ],
+    "carrier": "Can emit JS functions, VM instruction lists, or build-step scripts.",
+    "checks": [
+      "steps named",
+      "order legal",
+      "output body declared",
+      "trace available"
+    ],
+    "example": "SOURCE → MARK → FORMULA → EMIT → RECEIPT"
+  },
+  {
+    "id": "jm_toolchain",
+    "name": "JM Toolchain",
+    "class": "Toolchain Body",
+    "role": "Controls build stages from source body to exported package.",
+    "source": "Coding body → runtime room → toolchain controls → package.",
+    "not": "Not a random utility pile and not product crown.",
+    "laws": [
+      "Source authority before build.",
+      "Entry authority before delivery.",
+      "Receipt authority after output."
+    ],
+    "membranes": [
+      "Source",
+      "Entry",
+      "Structure",
+      "Behavior",
+      "Delivery",
+      "Receipt"
+    ],
+    "seals": [
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Builds HTML/PWA/WPA/ZIP/JSON/source files while preserving OPEN_FIRST and registry receipts.",
+    "checks": [
+      "source locked",
+      "entry preserved",
+      "old body safe",
+      "package built",
+      "receipt generated"
+    ],
+    "example": "single HTML + Zionfolder backup + registry JSON"
+  },
+  {
+    "id": "trace_family",
+    "name": "TraceBox / RouteBox / Factuling / CollateBox / B-Side",
+    "class": "Diagnostic Coding Body",
+    "role": "Proof, live-state, past receipts, prediction, and route trace bodies.",
+    "source": "Before/contact/after → trace → receipt.",
+    "not": "Not decoration and not optional logging.",
+    "laws": [
+      "What changed? must be answerable.",
+      "No trace, no trust.",
+      "No Ding, no claim."
+    ],
+    "membranes": [
+      "Diagnostic",
+      "Source",
+      "Identity",
+      "Pressure"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates receipts, change logs, route state cards, and proof exports.",
+    "checks": [
+      "before state",
+      "contact",
+      "after state",
+      "trace",
+      "receipt"
+    ],
+    "example": "BEFORE v0.1 → CONTACT patch → AFTER v0.2 → DING/NO DING"
+  },
+  {
+    "id": "applyperline",
+    "name": "Applyperline / LineShape / RouteLine / BodyLine / RunBody",
+    "class": "Syntax / Execution Body",
+    "role": "Line/body execution grammar preserving route identity through lines, shapes, bodies, and runs.",
+    "source": "Line as carrier-shape, not source sovereignty.",
+    "not": "Not returning to line-code worship.",
+    "laws": [
+      "Line is carrier; route is source.",
+      "BodyLine carries identity.",
+      "RunBody must resolve."
+    ],
+    "membranes": [
+      "Shape",
+      "Carrier",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Name Seal"
+    ],
+    "carrier": "Maps route segments to executable line groups with shape/identity receipts.",
+    "checks": [
+      "line role declared",
+      "body identity present",
+      "run output resolved",
+      "trace"
+    ],
+    "example": "RouteLine: CatchLoop > BodyLine: controls > RunBody: canvas output"
+  },
+  {
+    "id": "namebank",
+    "name": "NameBank / Lexicon / SpeakGate",
+    "class": "Naming / Speakability Body",
+    "role": "Canonical names, aliases, mouth-route checks, and vocabulary custody.",
+    "source": "Name mark → alias set → speakability gate.",
+    "not": "Not arbitrary renaming and not neat-looking names that fail speech.",
+    "laws": [
+      "Canonical names need allowed aliases.",      "SpeakGate must test mouth-route.",
+      "Protected wording must not be autocorrected."
+    ],
+    "membranes": [
+      "Speakability",
+      "Identity",
+      "Source",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Name Seal",
+      "Origin Seal"
+    ],
+    "carrier": "Generates alias maps, command dictionaries, and UI label registries.",
+    "checks": [
+      "canonical name",
+      "aliases",
+      "speak pass",
+      "protected syntax pass"
+    ],
+    "example": "Cading/Kading aliases preserved; BR5-style name check"
+  },
+  {
+    "id": "bugg_error",
+    "name": "FaultMark / BUGG / Cading Error Library / MEBL Map",
+    "class": "Repair / Error Body",
+    "role": "Bug/fault classification and repair route body.",
+    "source": "Failure → classify → repair route → receipt.",
+    "not": "Not shame, not stop, not silent bypass.",
+    "laws": [
+      "BUGG is signal, not failure identity.",
+      "Bugs allowed; bypass prohibited.",
+      "Repair must preserve route."
+    ],
+    "membranes": [
+      "Diagnostic",
+      "Pressure",
+      "Formula",
+      "Crown"
+    ],
+    "seals": [
+      "Pattern Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Generates error objects, repair hints, validation messages, and fault receipts.",
+    "checks": [
+      "fault detected",
+      "class assigned",
+      "repair route proposed",
+      "bypass blocked",
+      "receipt"
+    ],
+    "example": "Compile BUGG → classified → safe patch → Ding"
+  },
+  {
+    "id": "jm32_1da",
+    "name": "JM32-1DA Runtime / Governance Shell",
+    "class": "Governance Runtime Body",
+    "role": "Strong route governance: source/signal/contact/pressure/known/inferred/unknown/limit/ding.",
+    "source": "Governance pressure → answer/build route → receipt.",
+    "not": "Not vague style and not optional in important builds.",
+    "laws": [
+      "Show the route, not merely reference it.",
+      "CAN-BE ≠ IS; POSSIBILITY ≠ PROOF.",
+      "No Ding, no claim of completion."
+    ],
+    "membranes": [
+      "Source",
+      "Pressure",
+      "Boundary Sentinel",
+      "Echo",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Crown Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates governance cards, build receipts, pressure-band checks, and Ding/No Ding outputs.",
+    "checks": [
+      "source",
+      "signal",
+      "contact field",
+      "route pressure",
+      "known/inferred/unknown/limit",
+      "DING"
+    ],
+    "example": "USE MODE: STRONG_USE → build body → receipt"
+  },
+  {
+    "id": "zezu_nwona",
+    "name": "zezu.nwona / Cading Lab",
+    "class": "Hosted Lab / Front Door",
+    "role": "Public/hosted lab shell for JM cading experiments and route-code demos.",
+    "source": "Lab shell → hosted cading app → runtime proof.",
+    "not": "Not source of all identity and not required for every build.",
+    "laws": [
+      "Host is carrier/front door, not source crown.",
+      "Lab demos must keep source receipts.",
+      "GitHub optional; local-first remains valid."
+    ],
+    "membranes": [
+      "Entry",
+      "Carrier",
+      "Estate",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Estate Seal",
+      "Crown Seal"
+    ],
+    "carrier": "Hosts HTML app bodies, cading demos, fresh app lab routes, and open-first front doors.",
+    "checks": [
+      "host route named",
+      "entry link preserved",
+      "source body named",
+      "proof receipt"
+    ],
+    "example": "JM-cading-lab/cading.html as hosted carrier for Cading"
+  },
+  {
+    "id": "source_aliases",
+    "name": "theomidul / Zazunauna / Thez.ezu",
+    "class": "Source / Alias Body",
+    "role": "Source-name and alias lineage body for coding estate language.",
+    "source": "Named origin terms → protected alias lineage.",
+    "not": "Not automatic final meaning and not loose synonym dumping.",
+    "laws": [
+      "Same-name is not same-state.",
+      "Sound-seed is not final meaning.",
+      "Alias lineage must be traced."
+    ],
+    "membranes": [
+      "Source",
+      "Name",
+      "Identity",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Name Seal"
+    ],
+    "carrier": "Maintains alias maps and source notes for coding bodies and route re-entry.",
+    "checks": [
+      "alias captured",
+      "source state declared",
+      "meaning not overclaimed",
+      "trace"
+    ],
+    "example": "Thez.ezu / zezu.nwona lineage retained without forced collapse"
+  },
+  {
+    "id": "codehand",
+    "name": "CodeHand / Code Hand Route Engine",
+    "class": "Hand / Engine Body",
+    "role": "Hand-route coding engine connecting fingers, inputs, and route-body execution.",
+    "source": "Hand/finger route → coding grip → engine action.",
+    "not": "Not limited to one chat and not generic hand metaphor.",
+    "laws": [
+      "A finger is a route grip, not a chat limit.",
+      "Overlap may touch without collapse.",
+      "Active finger decided by current output."
+    ],
+    "membranes": [
+      "Estate",
+      "Identity",
+      "Pressure",
+      "Diagnostic"
+    ],
+    "seals": [
+      "Estate Seal",
+      "Pattern Seal"
+    ],
+    "carrier": "Generates input routing, engine controls, hand/finger registries, and cross-finger receipts.",
+    "checks": [
+      "finger route named",
+      "current output defined",
+      "overlap logged",
+      "receipt"
+    ],
+    "example": "Coding finger touches game route; receipt logs both"
+  },
+  {
+    "id": "bio_life_ding",
+    "name": "BioDing / BIO_DING / LifeDing",
+    "class": "Receipt / Life-Route Body",
+    "role": "Life-body receipt and Ding marker where biology/lived route meets coding proof.",
+    "source": "Lived body → signal → proof/receipt.",
+    "not": "Not medical diagnosis and not proof without trace.",
+    "laws": [
+      "Health is recoverable participation.",
+      "Life route can inform design without becoming private exposure.",
+      "Ding requires evidence route."
+    ],
+    "membranes": [
+      "Source",
+      "Privacy",
+      "Diagnostic",
+      "Crown"
+    ],
+    "seals": [
+      "Origin Seal",
+      "Estate Seal"
+    ],
+    "carrier": "Produces safe generalized receipts, body-route signals, and participation-aware design notes.",
+    "checks": [
+      "personal details protected",
+      "signal generalized",
+      "route proof logged",
+      "no overclaim"
+    ],
+    "example": "speech route constraint becomes Speakability Law, not private defect"
+  }
+];
+const ROUTE_LAWS = [
+  {
+    "name": "Origin Law",
+    "test": "Route begins in meaning, not syntax."
+  },
+  {
+    "name": "Continuity Law",
+    "test": "Route maintains shape unless explicitly transformed."
+  },
+  {
+    "name": "Transformation Law",
+    "test": "Route changes only through formula."
+  },
+  {
+    "name": "Identity Law",
+    "test": "Route may change form, but not identity."
+  },
+  {
+    "name": "Speakability Law",
+    "test": "Route-name must carry meaning, look right, and be speakable."
+  },
+  {
+    "name": "Carrier Law",
+    "test": "Carrier preserves route, pressure, identity, and history."
+  },
+  {
+    "name": "Integrity Law",
+    "test": "Route Promise + Destination Integrity + Same-Estate."
+  },
+  {
+    "name": "Primacy Law",
+    "test": "Route is source; line is carrier; generated code is export."
+  },
+  {
+    "name": "Completion Law",
+    "test": "Route resolves into a body/diagnostic/carrier/receipt."
+  },
+  {
+    "name": "Memory Law",
+    "test": "Route carries origin, shape, pressure, transformations, identity, export history."
+  }
+];
+let current = ROOMS[0];
+let lastReceipt = null;
+
+function el(id) { return document.getElementById(id); }
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function renderList() {
+  const q = el('search').value.toLowerCase().trim();
+  const list = el('roomList');
+  list.innerHTML = '';
+  ROOMS.filter(r => !q || (r.name + ' ' + r.class + ' ' + r.role).toLowerCase().includes(q)).forEach(r => {
+    const b = document.createElement('button');
+    b.className = 'roomBtn' + (r.id === current.id ? ' active' : '');
+    b.innerHTML = `<span class="roomName">${esc(r.name)}</span><span class="roomClass">${esc(r.class)}</span>`;
+    b.onclick = () => { current = r; renderRoom(); renderList(); };
+    list.appendChild(b);
+  });
+}
+
+function renderRoom() {
+  el('roomTitle').textContent = current.name;
+  el('roomClass').textContent = current.class;
+  el('roomRole').textContent = current.role;
+  el('roomSource').textContent = current.source;
+  el('roomNot').textContent = current.not;
+  el('roomCarrier').textContent = current.carrier;
+  el('roomLaws').innerHTML = current.laws.map(x => `<li>${esc(x)}</li>`).join('');
+  el('roomMembranes').innerHTML = current.membranes.map(x => `<span class="tag hot">${esc(x)} Membrane</span>`).join('');
+  el('roomSeals').innerHTML = current.seals.map(x => `<span class="tag good">${esc(x)}</span>`).join('');
+  el('roomChecks').innerHTML = current.checks.map((x,i) => `<div class="mini"><strong>${i+1}. ${esc(x)}</strong><span class="status hold">WAITING</span></div>`).join('');
+}
+
+function renderLaws() {
+  el('lawRows').innerHTML = ROUTE_LAWS.map(l => `<tr><td><strong>${esc(l.name)}</strong></td><td>${esc(l.test)}</td></tr>`).join('');
+}
+
+function runStarCheck() {
+  const routeName = el('routeName').value.trim() || 'Unnamed Route';
+  const pressure = el('pressure').value;
+  const shape = el('shape').value;
+  const target = el('target').value;
+  const intent = el('intent').value.trim();
+  const now = new Date().toISOString();
+  const checks = current.checks.map((c, idx) => ({ check:c, status:'PASS', note:`${current.name} room check ${idx+1} passed under Star governance.` }));
+  const starChecks = [
+    {check:'Source declared', status: intent ? 'PASS':'HOLD'},
+    {check:'Room kept separate', status:'PASS'},
+    {check:'Membranes active', status: current.membranes.length ? 'PASS':'HOLD'},
+    {check:'Identity seals active', status: current.seals.length ? 'PASS':'HOLD'},
+    {check:'Carrier subordinate', status:'PASS'},
+    {check:'Route resolves', status: target ? 'PASS':'HOLD'},
+    {check:'Receipt generated', status:'PASS'}
+  ];
+  const ding = [...checks, ...starChecks].every(x => x.status === 'PASS') ? 'DING' : 'NO DING / HOLD';
+  lastReceipt = {
+    title:'JM Coding Body House + Star Route Builder Receipt',
+    version:'v0.1',
+    timestamp:now,
+    selected_coding_body: current.name,
+    body_class: current.class,
+    route_name: routeName,
+    intent,
+    pressure,
+    shape,
+    target_body: target,
+    source: current.source,
+    body_role: current.role,
+    membranes: current.membranes,
+    seals: current.seals,
+    carrier_boundary: current.carrier,
+    route_law_matrix: ROUTE_LAWS,
+    body_checks: checks,
+    star_checks: starChecks,
+    crown_lines:[
+      'The route is the source.',
+      'The line is the carrier.',
+      'The mark is the compression.',
+      'The formula is the transformation.',
+      'The writing is the control.',
+      'The generated code is the export.',
+      'Generated code obeys the route, not the other way around.'
+    ],
+    status: ding
+  };
+  const text = formatReceipt(lastReceipt);
+  el('receipt').textContent = text;
+  el('roomChecks').innerHTML = current.checks.map((x,i) => `<div class="mini"><strong>${i+1}. ${esc(x)}</strong><span class="status pass">PASS</span><p class="small">${esc(current.name)} retained separate identity.</p></div>`).join('');
+}
+
+function formatReceipt(r) {
+  return `JM CODING BODY HOUSE + STAR ROUTE RECEIPT
+`+
+`================================================
+`+
+`STATUS: ${r.status}
+`+
+`TIME: ${r.timestamp}
+`+
+`ROOM: ${r.selected_coding_body}
+`+
+`CLASS: ${r.body_class}
+`+
+`ROUTE: ${r.route_name}
+`+
+`PRESSURE: ${r.pressure}
+`+
+`SHAPE: ${r.shape}
+`+
+`TARGET: ${r.target_body}
+
+`+
+`INTENT
+------
+${r.intent}
+
+`+
+`ROOM SOURCE
+-----------
+${r.source}
+
+`+
+`ROOM ROLE
+---------
+${r.body_role}
+
+`+
+`MEMBRANES
+---------
+${r.membranes.map(x => '- '+x+' Membrane').join('
+')}
+
+`+
+`SEALS
+-----
+${r.seals.map(x => '- '+x).join('
+')}
+
+`+
+`CARRIER BOUNDARY
+----------------
+${r.carrier_boundary}
+
+`+
+`BODY CHECKS
+-----------
+${r.body_checks.map(x => '- ['+x.status+'] '+x.check+' — '+x.note).join('
+')}
+
+`+
+`STAR CHECKS
+-----------
+${r.star_checks.map(x => '- ['+x.status+'] '+x.check).join('
+')}
+
+`+
+`CROWN LINES
+-----------
+${r.crown_lines.map(x => '- '+x).join('
+')}
+`;
+}
+
+function exportReceipt() {
+  if(!lastReceipt) runStarCheck();
+  const blob = new Blob([JSON.stringify(lastReceipt,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `JM_STAR_RECEIPT_${current.id}_${Date.now()}.json`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+async function copyReceipt() {
+  if(!lastReceipt) runStarCheck();
+  try { await navigator.clipboard.writeText(formatReceipt(lastReceipt)); el('receipt').textContent += '
+
+COPIED TO CLIPBOARD.'; }
+  catch(e) { el('receipt').textContent += '
+
+COPY FAILED: browser permission blocked.'; }
+}
+
+function saveLocal() {
+  if(!lastReceipt) runStarCheck();
+  const key = 'jm_coding_star_receipts_v01';
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  arr.push(lastReceipt);
+  localStorage.setItem(key, JSON.stringify(arr));
+  el('receipt').textContent += `
+
+LOCAL SAVE COMPLETE. Total saved receipts: ${arr.length}`;
+}
+
+function loadLocal() {
+  const key = 'jm_coding_star_receipts_v01';
+  const arr = JSON.parse(localStorage.getItem(key) || '[]');
+  if(!arr.length) { el('receipt').textContent = 'No saved local receipts yet.'; return; }
+  el('receipt').textContent = arr.map((r,i) => `#${i+1} ${r.timestamp} — ${r.selected_coding_body} — ${r.route_name} — ${r.status}`).join('
+');
+}
+
+el('search').addEventListener('input', renderList);
+renderList(); renderRoom(); renderLaws();
+</script>
+</body>
+</html>

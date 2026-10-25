@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Estate Shelf · RouteOS v2.1A</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--bg:#05080d;--surface:#0c1621;--line:rgba(111,207,248,.18);--text:#eef8fb;--muted:#96abb8;--cyan:#55d9ff;--gold:#ffd66c}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0,rgba(31,137,181,.2),transparent 34%),var(--bg);color:var(--text)}
+main{width:min(920px,100%);margin:auto;padding:max(24px,env(safe-area-inset-top)) 18px max(30px,env(safe-area-inset-bottom))}
+header{padding:22px 0 26px}h1{margin:0;font-size:clamp(2.4rem,11vw,5.4rem);line-height:.96;letter-spacing:-.055em}header p{max-width:650px;color:#b5c8d2;line-height:1.6;font-size:1rem}
+.shelf{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{display:grid;min-height:280px;padding:22px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(145deg,rgba(18,35,50,.94),rgba(7,15,23,.96));box-shadow:0 22px 50px rgba(0,0,0,.25)}
+.mark{width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(85,217,255,.25);border-radius:17px;background:rgba(85,217,255,.08);color:var(--cyan);font-size:1.4rem;font-weight:900}.card h2{margin:24px 0 8px;font-size:1.35rem}.card p{margin:0;color:var(--muted);line-height:1.55}.card button{align-self:end;margin-top:24px;border:1px solid rgba(85,217,255,.38);border-radius:13px;padding:12px 14px;color:var(--text);background:linear-gradient(135deg,#0d83b2,#155777);font:800 .9rem inherit;cursor:pointer}
+.card.router .mark{color:var(--gold);border-color:rgba(255,214,108,.26);background:rgba(255,214,108,.08)}.law{margin-top:14px;padding:17px;border-left:3px solid var(--gold);background:rgba(255,214,108,.05);color:#c5d4dc;line-height:1.55}.law b{color:var(--gold)}
+footer{margin-top:20px;color:var(--muted);font-size:.76rem;line-height:1.55}code{color:var(--cyan);word-break:break-all}
+@media(max-width:650px){.shelf{grid-template-columns:1fr}.card{min-height:245px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JM Estate Shelf</h1>
+  <p>Two usable RouteOS doors, mounted for the unified Compass browser. You do not need to remember package names or route syntax—tap the body you want.</p>
+</header>
+<section class="shelf">
+  <article class="card">
+    <div class="mark">♛</div>
+    <h2>Five Crowns</h2>
+    <p>Move through PrimitiveRoute, DispatchRoute, EntryRoute, KernelContractRoute and OrchestrationRoute. Fault, recover and reach the permanent anchor.</p>
+    <button data-cartridge="five-crowns">Open Five Crowns</button>
+  </article>
+  <article class="card router">
+    <div class="mark">↯</div>
+    <h2>Sovereign Estate Router</h2>
+    <p>Describe the next thing you want to build. Route it through the canonical 100-body estate with source, trace, Ding and identity laws intact.</p>
+    <button data-cartridge="estate-router">Open Estate Router</button>
+  </article>
+</section>
+<div class="law"><b>No supreme body.</b> The shelf connects proven bodies without flattening their names, provenance or proof boundaries.</div>
+<footer>
+  Native package: <code>com.jmisjustme.routeos.gameestate</code><br>
+  Primary routes: <code>jmrouteos://cartridge/five-crowns</code> and <code>jmrouteos://cartridge/estate-router</code>
+</footer>
+</main>
+<script>
+(function(){
+  function valid(id){return /^[A-Za-z0-9._-]{1,120}$/.test(id);}
+  function openCartridge(id){
+    if(!valid(id)) return;
+    if(window.AndroidCompass && typeof window.AndroidCompass.openRouteOSCartridge === "function"){
+      window.AndroidCompass.openRouteOSCartridge(id);
+      return;
+    }
+    location.href="jmrouteos://cartridge/"+encodeURIComponent(id);
+  }
+  document.querySelectorAll("[data-cartridge]").forEach(function(button){
+    button.addEventListener("click",function(){openCartridge(button.dataset.cartridge);});
+  });
+})();
+</script>
+</body>
+</html>

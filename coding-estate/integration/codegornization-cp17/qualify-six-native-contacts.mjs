@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname} from 'node:path';
 const here=new URL('./',import.meta.url);
 const cp11=new URL('../codegornization-cp11/',here);
-const evidence=new URL('godot/evidence/cp16-32/',cp11);
+const evidence=new URL('evidence/cp16-32/',cp11);
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const originals=[
  {name:'JudgeMaker',variable:'JMJudgeMaker',file:new URL('../codegornization-cp12-converged/donors/JM_JudgeMaker.html',here),sha256:'f0dbce602b239e84c415350d16675127b27d771842b5cd12819432fee874dde6'},

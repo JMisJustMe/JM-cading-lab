@@ -31,9 +31,9 @@ let browser;
 try{
  browser=await chromium.launch({headless:true,executablePath:chrome,args:['--no-sandbox','--enable-webgl','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
  const page=await browser.newPage({viewport:{width:920,height:790},deviceScaleFactor:1});
- const errors=[];page.on('pageerror',e=>errors.push('PAGE '+e.message));page.on('console',m=>{if(m.type()==='error')errors.push('CONSOLE '+m.text())});
+ const errors=[];const requestFailures=[];page.on('requestfailed',q=>requestFailures.push(q.url()+' '+q.failure()?.errorText));page.on('pageerror',e=>errors.push('PAGE '+e.message));page.on('console',m=>{if(m.type()==='error')errors.push('CONSOLE '+m.text())});
  await page.goto('http://127.0.0.1:'+port+served,{waitUntil:'load'});
- await page.waitForFunction(()=>window.__CP11?.state==='LIVE_WEBGL',{timeout:45000});
+ await page.waitForFunction(()=>window.__CP11?.state==='LIVE_WEBGL',{timeout:18000}).catch(async error=>{console.error('CP11_BOOT_HOLD',JSON.stringify({receipt:await page.evaluate(()=>window.__CP11),errors,failedRequests:requestFailures}));mkdirSync('cp11-evidence',{recursive:true});await page.screenshot({path:'cp11-evidence/cp11-heartwake-boot-hold.png'});throw error;});
  await page.waitForFunction(()=>window.__CP11?.fps>0,{timeout:15000});
  const initial=await page.evaluate(()=>({...window.__CP11}));
  assert.equal(initial.version,'JM.CP11.LivingForm/0.3');

@@ -1,0 +1,72 @@
+name: JM CP12 original JudgeMaker qualifying three CP11 native returns
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/codegornization-cp12-converged/**'
+      - 'registry/build-routes/JM_CP12_KO_CONVERGED_JUDGEMAKER_BUILD_ROUTE_MANIFEST_v0.1.json'
+      - '.github/workflows/jm-cp12-judgemaker-converged.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-judgemaker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Guard exact original JudgeMaker source and syntax
+        run: |
+          echo 'f0dbce602b239e84c415350d16675127b27d771842b5cd12819432fee874dde6  coding-estate/integration/codegornization-cp12-converged/donors/JM_JudgeMaker.html' | sha256sum -c -
+          node --check coding-estate/integration/codegornization-cp12-converged/adjudicate-converged-native.mjs
+      - name: Execute original KO donor family and construct exact inherited native recipient
+        run: |
+          node coding-estate/everybody/role-qualified-61/kocodifying/kocodifying-source-aware-smoke.mjs
+          node coding-estate/everybody/role-qualified-61/jmlogic/jmlogic-source-aware-smoke.mjs
+          node coding-estate/integration/codegornization-cp11/prepare-native.mjs
+          curl -fL --retry 2 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -o /tmp/godot.zip
+          echo '87f6e6be292929e363d15ed9052f277b2ba4e95ed994e1e099048097be2dfd03  /tmp/godot.zip' | sha256sum -c -
+          mkdir -p /tmp/cp12-godot
+          unzip -q /tmp/godot.zip -d /tmp/cp12-godot
+          chmod +x /tmp/cp12-godot/Godot_v4.5.2-stable_linux.x86_64
+          echo '/tmp/cp12-godot' >> "$GITHUB_PATH"
+      - name: Actual inherited native game return, original KO-source verification and JudgeMaker qualification
+        run: |
+          set -euo pipefail
+          mkdir -p coding-estate/integration/codegornization-cp11/evidence coding-estate/integration/codegornization-cp12-converged/evidence
+          cd coding-estate/integration/codegornization-cp11
+          Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --editor --import --quit > evidence/import.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp10_ko_contact_test.gd > evidence/cp10-native.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp11_ko_live_test.gd > evidence/cp11-live.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp11_converged_native_test.gd > evidence/cp11-converged.log 2>&1
+          node verify-converged-return.mjs > evidence/cp11-original-ko-reverse.log 2>&1
+          cd ../../..
+          node coding-estate/integration/codegornization-cp12-converged/adjudicate-converged-native.mjs > coding-estate/integration/codegornization-cp12-converged/evidence/judgemaker-original.log 2>&1
+          python3 - <<'PY'
+          from pathlib import Path
+          import re,json
+          a=Path('coding-estate/integration/codegornization-cp11/evidence')
+          for file,pattern in [('cp11-live.log',r'CP11 KO LIVE SUMMARY 21/21'),
+                               ('cp11-converged.log',r'CP11 CONVERGED SUMMARY 25/25')]:
+              s=(a/file).read_text()
+              assert re.search(pattern,s),f'MISSING_NATIVE_PASS:{file}'
+              assert not re.search(r'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load',s),f'NATIVE_SCRIPT_ERROR:{file}'
+          p=Path('coding-estate/integration/codegornization-cp12-converged/evidence/cp12-converged-judgemaker-verdicts.json')
+          q=json.loads(p.read_text())
+          assert len(q['qualified'])==3
+          assert [x['action'] for x in q['qualified']]==['AEGIS','TRIAGE','COUNTER']
+          assert all(x['actual']['verdict']=='QUALIFIED' and len(x['negativeHolds'])==6 for x in q['qualified'])
+          print('JM CP12 original donor / real Godot native 3-action receipts qualified; 18 negative HOLDs passed')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp12-original-judgemaker-converged-native-proof
+          path: |
+            coding-estate/integration/codegornization-cp11/evidence/
+            coding-estate/integration/codegornization-cp12-converged/evidence/
+          retention-days: 30

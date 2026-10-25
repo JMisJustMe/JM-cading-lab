@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>JM Command Register v0.1 — TBS Panel</title>
+<style>
+  :root{
+    --bg:#080a12;
+    --panel:#111521;
+    --panel2:#171d2b;
+    --ink:#f4f7ff;
+    --muted:#a9b4d0;
+    --line:rgba(255,255,255,.12);
+    --hot:#7cf7d4;
+    --gold:#ffd66b;
+    --violet:#b99cff;
+    --red:#ff7d8a;
+    --blue:#83b7ff;
+    --green:#9bffad;
+    --shadow:0 18px 60px rgba(0,0,0,.45);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 0%, rgba(124,247,212,.18), transparent 28%),
+      radial-gradient(circle at 85% 8%, rgba(185,156,255,.16), transparent 30%),
+      radial-gradient(circle at 50% 110%, rgba(255,214,107,.12), transparent 36%),
+      var(--bg);
+    overflow-x:hidden;
+  }
+  a{color:var(--hot)}
+  .app{
+    min-height:100%;
+    display:grid;
+    grid-template-rows:auto auto 1fr auto;
+  }
+  header{
+    position:sticky;
+    top:0;
+    z-index:20;
+    backdrop-filter: blur(18px);
+    background:linear-gradient(180deg, rgba(8,10,18,.94), rgba(8,10,18,.72));
+    border-bottom:1px solid var(--line);
+  }
+  .head{
+    padding:14px 14px 12px;
+    max-width:1220px;
+    margin:0 auto;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .brand{display:flex;gap:11px;align-items:center;min-width:0}
+  .seal{
+    width:42px;height:42px;border-radius:15px;
+    display:grid;place-items:center;
+    background:linear-gradient(135deg, rgba(124,247,212,.22), rgba(185,156,255,.28));
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:0 0 0 1px rgba(124,247,212,.08) inset;
+    flex:0 0 auto;
+    font-weight:900;
+  }
+  h1{font-size:17px;line-height:1.05;margin:0;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sub{font-size:12px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .statusbar{display:flex;gap:8px;align-items:center;overflow:auto;scrollbar-width:none;max-width:56vw;padding-bottom:2px}
+  .statusbar::-webkit-scrollbar{display:none}
+  .pill{
+    white-space:nowrap;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.05);
+    border-radius:999px;
+    padding:7px 10px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .pill.hot{color:#08231d;background:var(--hot);border-color:transparent;font-weight:800}
+  .pill.gold{color:#2b2101;background:var(--gold);border-color:transparent;font-weight:800}
+  .navwrap{
+    border-bottom:1px solid var(--line);
+    background:rgba(8,10,18,.55);
+  }
+  nav{
+    max-width:1220px;
+    margin:0 auto;
+    display:flex;
+    gap:9px;
+    overflow:auto;
+    padding:10px 14px;
+    scrollbar-width:none;
+  }
+  nav::-webkit-scrollbar{display:none}
+  .navbtn, button{
+    appearance:none;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.06);
+    color:var(--ink);
+    border-radius:999px;
+    padding:10px 13px;
+    font-weight:750;
+    font-size:13px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .navbtn.active, button.primary{
+    background:linear-gradient(135deg, rgba(124,247,212,.95), rgba(131,183,255,.9));
+    color:#06141d;
+    border-color:transparent;
+  }
+  main{
+    width:100%;
+    max-width:1220px;
+    margin:0 auto;
+    padding:16px 14px 28px;
+  }
+  section{display:none;animation:rise .18s ease-out}
+  section.active{display:block}
+  @keyframes rise{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .hero{
+    display:grid;
+    grid-template-columns:1.35fr .65fr;
+    gap:14px;
+    align-items:stretch;
+  }
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.035));
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:17px;
+  }
+  .titleline{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+  h2{font-size:22px;line-height:1.05;margin:0 0 9px}
+  h3{font-size:15px;line-height:1.15;margin:0 0 9px;color:var(--ink)}
+  p{color:var(--muted);line-height:1.5;margin:0 0 12px;font-size:14px}
+  .bigquote{
+    border-left:4px solid var(--hot);
+    background:rgba(124,247,212,.06);
+    padding:13px 14px;
+    border-radius:16px;
+    font-size:15px;
+    line-height:1.45;
+    margin:12px 0 0;
+  }
+  .mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .mini{
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:12px;
+    background:rgba(255,255,255,.045);
+  }
+  .mini strong{display:block;font-size:18px;margin-bottom:2px}
+  .mini span{font-size:12px;color:var(--muted)}
+  .keygrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .key{padding:13px;border-radius:18px;border:1px solid var(--line);background:rgba(255,255,255,.045)}
+  .key b{display:block;margin-bottom:5px;color:var(--ink)}
+  .key span{display:block;font-size:12px;color:var(--muted);line-height:1.35}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 14px}
+  .filter.active{background:rgba(124,247,212,.18);border-color:rgba(124,247,212,.55);color:var(--hot)}
+  .register{
+    display:grid;
+    gap:10px;
+  }
+  .row{
+    display:grid;
+    grid-template-columns:1.05fr 1.65fr .75fr 1.1fr 1.8fr;
+    gap:10px;
+    align-items:stretch;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.04);
+    border-radius:20px;
+    padding:10px;
+  }
+  .cell{padding:7px 8px;min-width:0}
+  .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+  .value{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+  .bodyname{font-weight:900;font-size:15px;color:var(--ink)}
+  .badgebar{display:flex;gap:5px;flex-wrap:wrap}
+  .badge{
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:4px 7px;
+    font-size:11px;
+    color:var(--muted);
+    background:rgba(255,255,255,.045);
+  }
+  .badge.yes{color:#061b10;background:var(--green);border-color:transparent;font-weight:800}
+  .badge.best{color:#06141d;background:var(--hot);border-color:transparent;font-weight:800}
+  .badge.strong{color:#221900;background:var(--gold);border-color:transparent;font-weight:800}
+  .badge.block{color:#2a0509;background:var(--red);border-color:transparent;font-weight:800}
+  .badge.library{color:#06141d;background:var(--blue);border-color:transparent;font-weight:800}
+  .badge.memory{color:#140b25;background:var(--violet);border-color:transparent;font-weight:800}
+  .stack{display:grid;gap:10px;counter-reset:step}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.04);padding:12px}
+  .step::before{counter-increment:step;content:counter(step);width:30px;height:30px;border-radius:11px;display:grid;place-items:center;background:rgba(124,247,212,.16);border:1px solid rgba(124,247,212,.4);font-weight:900;color:var(--hot)}
+  .split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .candidate{border:1px solid var(--line);border-radius:20px;background:rgba(255,255,255,.04);padding:14px;margin-bottom:10px}
+  .candidate .pick{display:flex;justify-content:space-between;gap:10px;align-items:center}
+  .score{font-weight:900;color:var(--gold)}
+  .blocked-list{display:grid;gap:8px;margin-top:8px}
+  .blocked{border:1px solid rgba(255,125,138,.26);background:rgba(255,125,138,.055);border-radius:17px;padding:11px;color:#ffd6da;font-size:13px}
+  .receipt{
+    border:1px solid rgba(124,247,212,.28);
+    background:linear-gradient(135deg, rgba(124,247,212,.08), rgba(185,156,255,.06));
+  }
+  textarea{
+    width:100%;min-height:280px;resize:vertical;
+    border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.22);color:var(--ink);
+    padding:12px;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;font-size:12px;line-height:1.45;
+  }
+  .toast{
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(20px);
+    opacity:0;pointer-events:none;
+    background:#f4f7ff;color:#07101a;border-radius:999px;padding:10px 14px;font-weight:900;box-shadow:var(--shadow);z-index:50;
+    transition:.2s ease;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{padding:16px;color:var(--muted);text-align:center;font-size:12px;border-top:1px solid var(--line);background:rgba(0,0,0,.14)}
+  .hidden{display:none!important}
+  @media(max-width:900px){
+    .hero,.split{grid-template-columns:1fr}
+    .keygrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .row{grid-template-columns:1fr}
+    .statusbar{max-width:42vw}
+    h2{font-size:20px}
+  }
+  @media(max-width:520px){
+    .head{align-items:flex-start}
+    .seal{width:38px;height:38px;border-radius:13px}
+    h1{font-size:15px}
+    .sub{font-size:11px}
+    .statusbar{max-width:34vw;flex-direction:column;align-items:flex-end;gap:5px;overflow:visible}
+    .pill{font-size:10px;padding:5px 7px}
+    main{padding:12px 10px 24px}
+    .card{padding:14px;border-radius:20px}
+    .keygrid{grid-template-columns:1fr}
+    .mini-grid{grid-template-columns:1fr 1fr}
+    .navbtn,button{font-size:12px;padding:9px 11px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="head">
+      <div class="brand">
+        <div class="seal">CR</div>
+        <div class="brandtext">
+          <h1>JM Command Register v0.1</h1>
+          <div class="sub">TBS-ready estate control panel · working-crown chooser body</div>
+        </div>
+      </div>
+      <div class="statusbar" aria-label="status badges">
+        <span class="pill hot">DING: created</span>
+        <span class="pill gold">OPEN_FIRST</span>
+        <span class="pill">No Ding / No Claim</span>
+      </div>
+    </div>
+    <div class="navwrap">
+      <nav aria-label="panel navigation">
+        <button class="navbtn active" data-tab="overview">Overview</button>
+        <button class="navbtn" data-tab="keys">State Keys</button>
+        <button class="navbtn" data-tab="register">Register</button>
+        <button class="navbtn" data-tab="stack">Mounted Stack</button>
+        <button class="navbtn" data-tab="polish">Polish Route</button>
+        <button class="navbtn" data-tab="blockers">Blockers</button>
+        <button class="navbtn" data-tab="export">Export</button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="overview" class="active">
+      <div class="hero">
+        <div class="card">
+          <div class="titleline">
+            <div>
+              <h2>Estate chooser, not another estate.</h2>
+              <p>This panel turns the memory cloud into a command surface. It declares what exists, what is current-best, what is direct-library, what is memory-known, and what moves next.</p>
+            </div>
+          </div>
+          <div class="bigquote">
+            <b>Command lock:</b><br>
+            Estate OS is the house. Master Tool Register is the map. Current Best Register is the chooser. Crown Register is the authority. FLL BenefitMerge is the gatherer. JMStudio is the craft room.
+          </div>
+          <div class="mini-grid">
+            <div class="mini"><strong id="countBodies">0</strong><span>registered bodies</span></div>
+            <div class="mini"><strong id="countBest">0</strong><span>current-best / strong</span></div>
+            <div class="mini"><strong id="countLibrary">0</strong><span>direct-library anchors</span></div>
+            <div class="mini"><strong id="countPolish">0</strong><span>polish candidates</span></div>
+          </div>
+        </div>
+        <div class="card receipt">
+          <h3>Ding Receipt</h3>
+          <p><b>State before:</b> estate known but decision surface not fully declared.</p>
+          <p><b>State after:</b> estate has a control body for exists / current-best / memory-known / direct-library / next-for-polish.</p>
+          <p><b>Claim status:</b> working-crown command body, not final universal estate crown.</p>
+          <p><b>Next lawful move:</b> mount this panel into JM Estate OS / TBS and use it to choose the first polish/product body.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="keys">
+      <div class="card">
+        <h2>Register State Keys</h2>
+        <p>These keys are the semantic backbone of the estate. They stop everything from becoming “all true at once.”</p>
+        <div class="keygrid" id="stateKeys"></div>
+      </div>
+    </section>
+
+    <section id="register">
+      <div class="card">
+        <h2>Command Register Table</h2>
+        <p>Use filters to shrink the estate into a practical next move. This is the chooser panel, not a storage pile.</p>
+        <div class="toolbar" id="filters">
+          <button class="filter active" data-filter="all">All</button>
+          <button class="filter" data-filter="current">Current-best / strong</button>
+          <button class="filter" data-filter="library">Direct-library</button>
+          <button class="filter" data-filter="polish">Next-for-polish</button>
+          <button class="filter" data-filter="blocked">Overclaim-sensitive</button>
+        </div>
+        <div class="register" id="registerRows"></div>
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="card">
+        <h2>First Lawful Mounted Stack</h2>
+        <p>This is the correct order to mount into Estate OS / TBS. It turns the carrier into a command surface.</p>
+        <div class="stack" id="mountedStack"></div>
+      </div>
+    </section>
+
+    <section id="polish">
+      <div class="split">
+        <div class="card">
+          <h2>First Monetisation / Polish Route</h2>
+          <p>Do not monetise the whole estate at once. Polish one body, extract the reusable engine/control lesson, then apply it outward.</p>
+          <div id="polishCandidates"></div>
+        </div>
+        <div class="card">
+          <h2>Selected First Product Body</h2>
+          <p>This selection saves locally on this device. It is not a final crown; it is a command choice.</p>
+          <div class="bigquote" id="selectedBody">No body selected yet.</div>
+          <div class="toolbar">
+            <button class="primary" onclick="clearSelection()">Clear selection</button>
+          </div>
+          <h3>Correct order</h3>
+          <div class="step"><div><b>Polish Route Catch or 128 Hand first.</b><br><span class="subline">Small loop, visible proof, phone-first testing.</span></div></div>
+          <div class="step"><div><b>Extract reusable engine/control lesson.</b><br><span class="subline">Input, contact, scoring, route pressure, trace.</span></div></div>
+          <div class="step"><div><b>Apply into T-Boys and larger worlds.</b><br><span class="subline">Identity bodies receive proven mechanics.</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="blockers">
+      <div class="card">
+        <h2>Overclaim Blockers</h2>
+        <p>These are not insults to the estate. They protect the route from false crowns.</p>
+        <div class="blocked-list" id="blockedList"></div>
+        <div class="bigquote">
+          <b>Safe wording:</b> working-crown · current-best · proof floor · active build · candidate · parked-build · retrieved source · memory-known until checked.
+        </div>
+      </div>
+    </section>
+
+    <section id="export">
+      <div class="card">
+        <h2>Export / Mount Data</h2>
+        <p>The JSON below is embedded in this panel. Copy or download it to mount into another TBS room, Current Best Register, or Crown Register.</p>
+        <div class="toolbar">
+          <button class="primary" onclick="copyJSON()">Copy JSON</button>
+          <button onclick="downloadJSON()">Download JSON</button>
+          <button onclick="downloadHTMLCopy()">Download HTML Copy</button>
+        </div>
+        <textarea id="jsonBox" spellcheck="false"></textarea>
+      </div>
+    </section>
+  </main>
+  <footer>
+    JM Command Register v0.1 · OPEN_FIRST · standalone HTML · no external dependencies · crown-safe working body
+  </footer>
+</div>
+<div class="toast" id="toast">Copied</div>
+<script>
+const COMMAND_REGISTER = {
+  meta:{
+    title:"JM Command Register v0.1",
+    status:"Foundational command register",
+    crown_status:"Working-crown control body",
+    parent_carrier:"JM Estate OS / TBS",
+    purpose:"Declare what exists, what is current-best, what is memory-known, what is direct-library, and what moves next for polish / monetise.",
+    governing_law:"80% Living Map / 20% Retrieval Gap",
+    delivery:"OPEN_FIRST standalone HTML panel with embedded JSON"
+  },
+  command_lock:[
+    "Estate OS is the house.",
+    "Master Tool Register is the map.",
+    "Current Best Register is the chooser.",
+    "Crown Register is the authority.",
+    "FLL BenefitMerge is the gatherer.",
+    "JMStudio is the craft room."
+  ],
+  state_keys:[
+    {key:"Exists", meaning:"Known by memory, library, register, receipt, or prior build."},
+    {key:"Current-best", meaning:"Best available body to start from right now."},
+    {key:"Memory-known", meaning:"Known from saved/working continuity but needs direct retrieval before file-state claims."},
+    {key:"Direct-library", meaning:"Surfaced directly from File Library or uploaded source."},
+    {key:"Next-for-polish", meaning:"Candidate for product polish, release shaping, public packaging, or monetisation route."},
+    {key:"Parked", meaning:"Real but not the current push."},
+    {key:"Blocked from overclaim", meaning:"Promising, but proof does not yet support final/native/universal/full-release claims."}
+  ],
+  register:[
+    {house:"OS / Full Circle", body:"JM Estate OS / TBS", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as main command surface", tags:["current","library"]},
+    {house:"Master Estate", body:"Master Tool Register", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as estate map / inventory layer", tags:["current","library"]},
+    {house:"Master Estate", body:"Current Best Register", exists:true, current_best:"Working", source_state:"Memory-known + register-known", action:"Make the chooser table explicit", tags:["current","memory"]},
+    {house:"Master Estate", body:"Crown Register", exists:true, current_best:"Working", source_state:"Memory-known + register-known", action:"Separate crown / working-crown / open / parked", tags:["current","memory"]},
+    {house:"Build / Merge", body:"FLL BenefitMerge", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use for file/folder gathering and version-benefit extraction", tags:["current","library","polish"]},
+    {house:"Coding", body:"All Coding Register", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as Coding House source floor", tags:["current","library"]},
+    {house:"Coding", body:"JM Coding / Cading OneBody Manuscript", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as the language/runtime explanation spine", tags:["current","library"]},
+    {house:"THEO", body:"THEO Proof Tool v0.2A", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Carry as current runnable THEO proof-tool floor", tags:["current","library","polish"]},
+    {house:"Games", body:"Game Register / House 01 rota", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as first game polish shelf", tags:["current","library","polish"]},
+    {house:"Games", body:"Route Catch", exists:true, current_best:"Strong candidate", source_state:"Register-known", action:"Polish as first small playable proof", tags:["current","polish"]},
+    {house:"Games", body:"128 Hand Direct Manipulation", exists:true, current_best:"Strong candidate", source_state:"Register-known", action:"Polish touch/control feel proof", tags:["current","polish"]},
+    {house:"Games", body:"T-Boys", exists:true, current_best:"Strong identity candidate", source_state:"Register-known + memory-known", action:"Use after engine/polish extraction", tags:["current","memory","polish"]},
+    {house:"Story-Game", body:"PlayZone / Reali-T Clash", exists:true, current_best:"Strong branch", source_state:"Memory-known + library surfaced", action:"Preserve as separate product/world branch", tags:["current","memory","polish"]},
+    {house:"Apps / Tools", body:"JM Singular Link MultiHub", exists:true, current_best:"Working", source_state:"Library-known", action:"Keep as hub/release link body", tags:["current","library"]},
+    {house:"Studio", body:"JMStudio v4.0", exists:true, current_best:"Yes", source_state:"Direct-library", action:"Use as craft-ready public/product room", tags:["current","library","polish"]},
+    {house:"Delivery", body:"OPEN_FIRST / Zionfolder / PWA Companion", exists:true, current_best:"Yes", source_state:"Direct-library + receipt-known", action:"Use as delivery law for every package", tags:["current","library"]},
+    {house:"Governance", body:"JM32-1DA / Cold Ding / TraceBox", exists:true, current_best:"Working", source_state:"Direct-library + memory-known", action:"Use as proof / receipt / claim gate", tags:["current","library","memory"]},
+    {house:"Theory", body:"MEBL / FormeULA / Root Method / Quadze", exists:true, current_best:"Working", source_state:"Memory-known + some direct-library", action:"Feed products, do not let theory drift dominate", tags:["current","memory"]},
+    {house:"Music / Lyrics", body:"LyricStudio / Archive / Notepad route", exists:true, current_best:"Open", source_state:"Memory-known", action:"Park until first tool/game/product route is cleaner", tags:["memory"]}
+  ],
+  mounted_stack:[
+    {body:"Master Tool Register", role:"Map what exists."},
+    {body:"Current Best Register", role:"Choose the strongest version per lane."},
+    {body:"Crown Register", role:"Separate final crown, working-crown, open crown, parked, and blocked."},
+    {body:"All Coding Register", role:"Carry the 13 coding bodies and coding-house summons."},
+    {body:"JM Coding / Cading OneBody Manuscript", role:"Preserve the language spine: Cading describes route, Coding executes route."},
+    {body:"THEO Proof Tool v0.2A", role:"Carry the current Parser → Compiler → Runtime proof floor."},
+    {body:"Games House 01 rota", role:"Start game polish from Route Catch / 128 Hand / T-Boys lane."},
+    {body:"FLL BenefitMerge", role:"Gather scattered files, compare versions, extract earlier-version benefits."},
+    {body:"JMStudio v4.0", role:"Craft product-ready surfaces from polished bodies."},
+    {body:"Delivery Standard", role:"OPEN_FIRST, receipt, manifest/PWA where relevant, README/version card, no fake doors."}
+  ],
+  polish_candidates:[
+    {body:"Route Catch", score:"First", reason:"Smallest playable arcade proof; best for fast polish, phone proof, public demo, engine extraction."},
+    {body:"128 Hand Direct Manipulation", score:"First/Second", reason:"Best touch/control feel proof; useful for mobile-first interaction, thumb/finger testing, future hand/fighting engine."},
+    {body:"T-Boys", score:"After extraction", reason:"Strongest identity game candidate; should receive proven engine/control lessons after first polish pass."},
+    {body:"FLL BenefitMerge", score:"Tool lane", reason:"Best internal monetisation/support tool candidate for file/folder gathering and version-benefit extraction."},
+    {body:"THEO Proof Tool v0.2A", score:"Proof lane", reason:"Strong proof-tool floor; polish only without overclaiming v0.3 punct-execution."}
+  ],
+  blockers:[
+    "Universal Compiler Crown",
+    "Full Native OS Crown",
+    "Full APK Estate",
+    "Full public reproducible proof corpus",
+    "Full runtime QA across every body",
+    "THEO v0.3 punct-execution",
+    "JMStudios final crown",
+    "Entire Games house being release-ready",
+    "Every theory body being product-ready"
+  ],
+  ding_receipt:{
+    ding:"Command Register v0.1 created and mounted as TBS-ready HTML panel.",
+    state_before:"Estate known but decision surface not fully declared.",
+    state_after:"Estate has a control body for exists / current-best / memory-known / direct-library / next-for-polish.",
+    claim_status:"Working-crown command body, not final universal estate crown.",
+    next_lawful_move:"Mount into JM Estate OS / TBS and choose the first polish/product body."
+  }
+};
+
+function $(q){return document.querySelector(q)}
+function $all(q){return Array.from(document.querySelectorAll(q))}
+function showToast(text){const t=$('#toast'); t.textContent=text; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1600)}
+
+function badgeFor(text){
+  const low=String(text).toLowerCase();
+  let cls='badge';
+  if(low.includes('yes')) cls+=' yes';
+  if(low.includes('strong') || low.includes('first')) cls+=' strong';
+  if(low.includes('direct') || low.includes('library')) cls+=' library';
+  if(low.includes('memory')) cls+=' memory';
+  if(low.includes('blocked')) cls+=' block';
+  if(low.includes('working')) cls+=' best';
+  return `<span class="${cls}">${text}</span>`;
+}
+function renderCounts(){
+  const r=COMMAND_REGISTER.register;
+  $('#countBodies').textContent=r.length;
+  $('#countBest').textContent=r.filter(x=>String(x.current_best).match(/yes|strong|working/i)).length;
+  $('#countLibrary').textContent=r.filter(x=>String(x.source_state).toLowerCase().includes('library')).length;
+  $('#countPolish').textContent=r.filter(x=>x.tags.includes('polish')).length;
+}
+function renderKeys(){
+  $('#stateKeys').innerHTML=COMMAND_REGISTER.state_keys.map(k=>`<div class="key"><b>${k.key}</b><span>${k.meaning}</span></div>`).join('');
+}
+function renderRegister(filter='all'){
+  const rows=COMMAND_REGISTER.register.filter(r=>{
+    if(filter==='all') return true;
+    if(filter==='current') return r.tags.includes('current');
+    if(filter==='library') return r.tags.includes('library');
+    if(filter==='polish') return r.tags.includes('polish');
+    if(filter==='blocked') return /THEO|JMStudio|Games|Theory|Coding|Governance/i.test(r.house+r.body);
+    return true;
+  });
+  $('#registerRows').innerHTML=rows.map(r=>`
+    <article class="row">
+      <div class="cell"><div class="label">House</div><div class="value">${r.house}</div></div>
+      <div class="cell"><div class="label">Body</div><div class="bodyname">${r.body}</div></div>
+      <div class="cell"><div class="label">State</div><div class="badgebar">${badgeFor('Exists')} ${badgeFor(r.current_best)}</div></div>
+      <div class="cell"><div class="label">Source</div><div class="badgebar">${badgeFor(r.source_state)}</div></div>
+      <div class="cell"><div class="label">Command Action</div><div class="value">${r.action}</div></div>
+    </article>
+  `).join('') || '<p>No register bodies match this filter.</p>';
+}
+function renderStack(){
+  $('#mountedStack').innerHTML=COMMAND_REGISTER.mounted_stack.map(s=>`<div class="step"><div><b>${s.body}</b><br><span style="color:var(--muted);font-size:13px;line-height:1.4">${s.role}</span></div></div>`).join('');
+}
+function selectCandidate(body){
+  localStorage.setItem('jm_command_register_selected_body', body);
+  renderSelection();
+  showToast('Selected: '+body);
+}
+function clearSelection(){
+  localStorage.removeItem('jm_command_register_selected_body');
+  renderSelection();
+  showToast('Selection cleared');
+}
+function renderPolish(){
+  $('#polishCandidates').innerHTML=COMMAND_REGISTER.polish_candidates.map(c=>`
+    <div class="candidate">
+      <div class="pick"><h3>${c.body}</h3><span class="score">${c.score}</span></div>
+      <p>${c.reason}</p>
+      <button onclick="selectCandidate('${c.body.replace(/'/g,"\\'")}')">Select as first product body</button>
+    </div>
+  `).join('');
+  renderSelection();
+}
+function renderSelection(){
+  const s=localStorage.getItem('jm_command_register_selected_body');
+  $('#selectedBody').innerHTML=s ? `<b>${s}</b><br><span style="color:var(--muted)">Command choice saved locally. Next: polish interface, confirm phone use, add receipt export, package OPEN_FIRST.</span>` : 'No body selected yet.';
+}
+function renderBlockers(){
+  $('#blockedList').innerHTML=COMMAND_REGISTER.blockers.map(b=>`<div class="blocked">${b}</div>`).join('');
+}
+function renderJSON(){
+  $('#jsonBox').value=JSON.stringify(COMMAND_REGISTER,null,2);
+}
+async function copyJSON(){
+  const text=JSON.stringify(COMMAND_REGISTER,null,2);
+  try{await navigator.clipboard.writeText(text); showToast('JSON copied');}
+  catch(e){$('#jsonBox').select(); document.execCommand('copy'); showToast('JSON selected/copied');}
+}
+function downloadJSON(){
+  const blob=new Blob([JSON.stringify(COMMAND_REGISTER,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='JM_COMMAND_REGISTER_v0_1.json'; a.click(); URL.revokeObjectURL(a.href); showToast('JSON download started');
+}
+function downloadHTMLCopy(){
+  const html='<!doctype html>\n'+document.documentElement.outerHTML;
+  const blob=new Blob([html],{type:'text/html'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='JM_COMMAND_REGISTER_v0_1_TBS_PANEL_OPEN_FIRST.html'; a.click(); URL.revokeObjectURL(a.href); showToast('HTML copy download started');
+}
+function setupTabs(){
+  $all('.navbtn').forEach(btn=>btn.addEventListener('click',()=>{
+    $all('.navbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    $all('main section').forEach(s=>s.classList.remove('active'));
+    $('#'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab==='export') renderJSON();
+  }));
+}
+function setupFilters(){
+  $all('.filter').forEach(btn=>btn.addEventListener('click',()=>{
+    $all('.filter').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderRegister(btn.dataset.filter);
+  }));
+}
+function boot(){
+  renderCounts(); renderKeys(); renderRegister(); renderStack(); renderPolish(); renderBlockers(); renderJSON(); setupTabs(); setupFilters();
+}
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+name: JM Mission 002 CP22 Native KO to Original Owner Studio
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/m002-cp22-owner-original-studio-return.mjs'
+      - 'tests/mission002-cp22-owner-original-studio.mjs'
+      - '.github/workflows/jm-m002-cp22-owner-original-return.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-ko-owner-return:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/checkout@v4
+        with:
+          repository: JMisJustMe/JM-cading-lab
+          ref: 06c008bf0fb7eb8c1c0f1492db6e63808a95cafd
+          path: source-cp10
+          persist-credentials: false
+      - name: Check original KO source identity and execute separate native donor
+        run: |
+          test "$(git -C source-cp10 rev-parse HEAD)" = '06c008bf0fb7eb8c1c0f1492db6e63808a95cafd'
+          cmp coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs source-cp10/coding-estate/sovereign-batch-two/direct/codifying-kocodifying-native.mjs
+          cmp coding-estate/sovereign-ten/direct/language-native.mjs source-cp10/coding-estate/sovereign-ten/direct/language-native.mjs
+          node source-cp10/coding-estate/integration/codegornization-cp10/emit-ko-contact.mjs
+      - name: Run CP21 native→CP22 original media return
+        env:
+          CP22_EXPORT_DIR: cp22-owner-return
+        run: node tests/mission002-cp22-owner-original-studio.mjs source-cp10/coding-estate/integration/codegornization-cp10/godot/packets/ko_aegis.json
+      - name: Inherited original CP21 and CP20 regressions
+        run: |
+          node tests/mission002-cp21-ko-creative.mjs source-cp10/coding-estate/integration/codegornization-cp10/godot/packets/ko_aegis.json
+          node tests/mission002-cp19-original-app-return.mjs
+          node tests/mission002-cp20-offline-transfer.mjs
+      - name: Export typed native owner-review packets
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JM_M002_CP22_ORIGINAL_STUDIO_NATIVE_KO_REVIEW_PACKETS
+          path: cp22-owner-return/
+          retention-days: 20

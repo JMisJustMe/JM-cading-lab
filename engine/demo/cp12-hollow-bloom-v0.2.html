@@ -24,7 +24,7 @@
 @media (max-width:460px) and (orientation:portrait){.shell{padding-top:7px}.mast{margin-bottom:6px}.brand{font-size:9px}.hud div{padding:5px 3px}.hud{margin-bottom:5px}.navrow{margin-top:5px}.controls{margin-top:7px}.controls button{min-height:60px}.play{height:43svh;min-height:238px}.under{margin-top:7px}}
 .nativebar{padding:7px 10px;margin-top:7px;border:1px solid #507986;border-radius:10px;background:#11313f;display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap;font-size:10px;color:#d1edef}.nativebar strong{color:#f4d499}#route-glance{color:#f4d499;font-size:10px;border:1px solid #5e7979;border-radius:8px;padding:5px 7px;background:#1d3541;white-space:normal;max-width:220px} 
 /* CP12: visual-first layer, additive over proven CP11 v0.6 */
-.subtitle{display:block;font-size:10px;letter-spacing:.33em;color:#e5c68b;margin-top:3px;font-weight:700}
+.subtitle{display:block;font-size:9px;letter-spacing:.16em;color:#e5c68b;margin-top:3px;font-weight:700}
 .mast-actions{display:flex;gap:8px;align-items:center}.focus-btn{background:#e2ca94;color:#122c32;border:1px solid #f4dfa9;font-weight:900;font-size:10px;letter-spacing:.04em;border-radius:30px;padding:10px 12px;min-height:39px}
 .play{background:radial-gradient(ellipse at 50% 30%,#1b5652 0%,#091b28 64%);box-shadow:0 12px 40px #0009,0 0 0 1px #73b6af44;}
 .play:before{content:'';pointer-events:none;position:absolute;z-index:1;inset:0;background:linear-gradient(180deg,#02121f1f 0%,transparent 35%,#07142158 100%);border-radius:inherit}
@@ -41,9 +41,9 @@ body.focus-mode .shell{padding-bottom:max(12px,env(safe-area-inset-bottom))}
 @media(max-width:460px){.brand{font-size:8px}.mast-actions{gap:4px}.focus-btn{padding:7px 8px;font-size:9px}.gate{padding:6px 7px;font-size:9px}.play{height:50svh;min-height:300px}.scene-label span{font-size:9px}.navrow{padding:7px}.targetbar{gap:3px}}
 @media(orientation:landscape) and (max-height:550px){.mast{grid-column:1/-1}.play{height:65svh}.navrow{align-self:stretch}.focus-btn{padding:6px}}
 </style></head><body class="focus-mode"><div class="shell">
-<header class="mast"><div><div class="brand">JM ECOSTATE / GAME-CODING × GAMECORE × PLAYZONE</div><h1>JM <em>HOLLOW BLOOM</em><small class="subtitle">T H E &nbsp; V A L E &nbsp; A W A K E N S</small></h1></div><div class="mast-actions"><button id="focus" class="focus-btn" aria-label="Toggle game focus or developer details">FOCUS · ON</button><div id="gate" class="gate">CONTACTING…</div></div></header>
+<header class="mast"><div><div class="brand">JM ECOSTATE / GAME-CODING × GAMECORE × PLAYZONE</div><h1>JM <em>HOLLOW BLOOM</em><small class="subtitle">THE VALE AWAKENS</small></h1></div><div class="mast-actions"><button id="focus" class="focus-btn" aria-label="Toggle game focus or developer details">FOCUS · ON</button><div id="gate" class="gate">CONTACTING…</div></div></header>
 <div class="hud"><div><b id="seals">0 / 3</b><small id="seals-label">SEALS BROKEN</small></div><div><b id="hp">100</b><small>GUARDIAN HEALTH</small></div><div><b id="energy">0%</b><small id="energy-label">AWAKEN CHARGE</small></div><div><b id="fps">—</b><small>LIVE FPS</small></div></div>
-<section class="play" id="stage"><canvas id="surface" aria-label="Living Rootwarden 3D battle arena. Drag to orbit the camera"></canvas><div class="scene-label"><b>HOLLOW WARDEN · THE WALKING THRESHOLD</b><span>Wake the buried world · strike its three seals · orbit to explore</span></div><div class="toast" id="toast" role="status"></div><div class="phaseflare" id="phaseflare" aria-live="polite" hidden><strong id="phase-title">THE HEART AWAKENS</strong><span id="phase-sub">A deeper encounter begins</span></div><div class="progress"><small id="quest">SHATTER THE THREE RELIC SEALS</small><div class="line"><div id="progress"></div></div><small id="hits">0/6</small></div></section>
+<section class="play" id="stage"><canvas id="surface" aria-label="Living Rootwarden 3D battle arena. Drag to orbit the camera"></canvas><div class="scene-label"><b>HOLLOW WARDEN</b><span>A living threshold · wake the three seals</span></div><div class="toast" id="toast" role="status"></div><div class="phaseflare" id="phaseflare" aria-live="polite" hidden><strong id="phase-title">THE HEART AWAKENS</strong><span id="phase-sub">A deeper encounter begins</span></div><div class="progress"><small id="quest">SHATTER THE THREE RELIC SEALS</small><div class="line"><div id="progress"></div></div><small id="hits">0/6</small></div></section>
 <div class="navrow" aria-label="Movement and targeting">
 <div class="joybox"><div id="joy" class="joy" role="group" aria-label="Move Rootwarden in any direction" tabindex="0"><div class="joyaxes">＋</div><div id="joynub" class="joynub"></div></div><span>MOVE · drag thumb</span></div>
 <div class="navinfo"><div class="targetbar"><strong>LOCK ON</strong><button id="t0" class="target" aria-label="Target one">1</button><button id="t1" class="target selected" aria-label="Target two">2</button><button id="t2" class="target" aria-label="Target three">3</button><button id="next" aria-label="Switch to next living target">NEXT ↻</button></div><div id="targetinfo" class="targetinfo">LOCK · RELIC 2 / 2 HP</div><div class="views"><button id="view">CAMERA: WIDE</button><button id="center">RE-CENTRE</button><button id="pause">PAUSE</button></div><div class="dashrow"><button id="dash" aria-label="Dash to evade enemy strikes">↗ DASH / EVADE</button><small id="route-glance" aria-live="polite">JM ROUTE · CONNECTING</small><button id="trial" hidden>OPEN THE RIFT TRIAL</button><small id="medals">RECORD · 0 SEALS / 0 ECHO / 0 CROWN</small></div><div class="navhelp">Move freely · Target each form · Dash on F · Finish the Echoes to unlock the Rift Crown</div></div></div>
@@ -333,19 +333,19 @@ function skinHollowWarden(){
  body.traverse(obj=>{if(obj.isMesh)obj.visible=false;});
  const leaf=root(0x174b4b,.26,.54),shell=root(0x266f6a,.30,.34),night=root(0x0b2731,.46,.34),jade=root(0x5bc6ab,.44,.31,0x0b4138),
  amber=root(0xf6bc72,.51,.29,0x51300c),lumen=root(0x91ffdc,.20,.25,0x18b69b),bone=root(0x78918b,.26,.64);
- const energy=new THREE.MeshBasicMaterial({color:0xc0ffe6,transparent:true,opacity:.87,side:THREE.DoubleSide,depthWrite:false});
+ const energy=new THREE.MeshBasicMaterial({color:0xb6ffe2,transparent:true,opacity:.60,side:THREE.DoubleSide,depthWrite:false});
  const copper=new THREE.MeshBasicMaterial({color:0xe6c38b,transparent:true,opacity:.89,side:THREE.DoubleSide,depthWrite:false});
  const nodes=[];let orb=root(0x6dffe1,.23,.16,0x23dcb2);
  // Core of the Hollow Warden: a sun seed suspended inside six walking petals.
- const seed=mountPart(body,'HollowSeed',[0,2.12,.30],.32,.84,orb,9,0,'pulse');
+ const seed=mountPart(body,'HollowSeed',[0,2.12,.30],.27,.67,orb,9,0,'pulse');
  seed.visible=true;run.hollow.seed=seed;
  for(let i=0;i<6;i++){
   const a=(i/6)*Math.PI*2,x=Math.sin(a),y=Math.cos(a),height=i%2?.95:1.25;
   const petal=bloomBlade(body,'SeedPetal'+i,[[x*.24,2.1+y*.27,.37],[x*.46,2.1+y*.65,.33],[x*.82,2.1+y*(.65+height*.34),.23],[x*.68,2.1+y*(.65+height),.08]],.47,i%2?shell:leaf);
   nodes.push(petal);
  }
- const wheel=bloomOrbit(body,.67,.047,copper,0,2.12,.82);wheel.rotation.y=.22;
- const iris=bloomOrbit(body,.51,.042,energy,0,2.12,.86);iris.rotation.y=-.26;
+ const wheel=bloomOrbit(body,.55,.033,copper,0,2.12,.82);wheel.rotation.y=.22;
+ const iris=bloomOrbit(body,.39,.028,energy,0,2.12,.86);iris.rotation.y=-.26;
  run.hollow.rings=[wheel,iris];
  for(let i=0;i<4;i++){
   const a=i*Math.PI/2,rad=.36;
@@ -382,6 +382,21 @@ function skinHollowWarden(){
  run.hollow.antlers=[l,rr];run.hollow.petalNodes=nodes;
  run.hollow.visible=true;RECEIPT.hollow.avatar=true;
 }
+function dressHollowTargets(){
+ // Targets retain their native HP/contact route; only their visible identities change.
+ const colors=[0xffb27b,0xcba0ff,0x77f5d9];
+ for(const t of run.targets){
+  if(t.bloomFlower)continue;
+  const flower=new THREE.Group();flower.position.set(0,1.23,.06);t.group.add(flower);
+  const pigment=root(colors[t.k],.23,.43,colors[t.k]);
+  for(let i=0;i<5;i++){
+   const a=i*2*Math.PI/5,x=Math.cos(a),y=Math.sin(a);
+   bloomBlade(flower,'LockFlower_'+t.k+'_'+i,[[x*.08,y*.09,0],[x*.24,y*.22,.08],[x*.51,y*.46,.01],[x*.64,y*.58,-.12]],.30,pigment);
+  }
+  const pupil=new THREE.Mesh(new THREE.OctahedronGeometry(.18,0),new THREE.MeshBasicMaterial({color:0xf5e2ae}));pupil.position.z=.17;flower.add(pupil);
+  t.mesh.visible=false;t.bloomFlower=flower;
+ }
+}
 function buildHollowVale(){
  const scene=run.scene;if(!scene)return;
  const h=run.hollow;h.worldBuilt=true;h.blooms=[];h.ribbons=[];
@@ -402,11 +417,11 @@ function buildHollowVale(){
  const rootmat=new THREE.MeshStandardMaterial({color:0x2b6661,roughness:.60,metalness:.15});
  // Twisted seed-root ribs bend inward to the island instead of identical upright pillars.
  for(let i=0;i<10;i++){
-  const a=i*Math.PI*2/10,r=4.15+i%3*.50;
-  const x=Math.cos(a)*r,z=Math.sin(a)*r-.3;
-  const pts=[[x,-.25,z],[x*1.22,.6,z*1.18],[x*1.16,1.8+(i%4)*.24,z*.95],[x*.76,2.30+(i%3)*.30,z*.72]];
+  const side=i%2?-1:1,rank=Math.floor(i/2);
+  const x=side*(3.5+rank*.42),z=-2.4-rank*.82;
+  const pts=[[x,-.25,z],[x+side*.48,.60,z-.38],[x+side*.22,1.78+(i%4)*.24,z-.70],[x-side*.2,2.36+(i%3)*.30,z-1.0]];
   bloomCurve(scene,pts,.095,rootmat);
-  if(i%2===0){const seed=new THREE.Mesh(new THREE.OctahedronGeometry(.20,0),i%4===0?gold:light);seed.position.set(x*.76,2.31+(i%3)*.30,z*.72);scene.add(seed);h.blooms.push(seed);}
+  if(i%2===0){const seed=new THREE.Mesh(new THREE.OctahedronGeometry(.20,0),i%4===0?gold:light);seed.position.set(x-side*.2,2.37+(i%3)*.30,z-1.0);scene.add(seed);h.blooms.push(seed);}
  }
  // Ground veins drawn with curved ribbons, authored contacts are physical game progress.
  for(let i=0;i<12;i++){
@@ -465,12 +480,12 @@ function buildValeEnvironment(){
  }pillars.instanceMatrix.needsUpdate=true;scene.add(pillars);art.worldBatches++;
  // Broken arch is a visible destination, not merely a flat skybox.
  const archPoints=[];for(let i=0;i<=20;i++){const a=Math.PI*(1-i/20);archPoints.push(new THREE.Vector3(Math.cos(a)*3.15,4.0+Math.sin(a)*1.7,-7.1));}
- const arch=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(archPoints),35,.23,6,false),new THREE.MeshStandardMaterial({color:0x9b8e75,metalness:.42,roughness:.57}));scene.add(arch);
- const archGlow=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(archPoints),38,.035,5,false),new THREE.MeshBasicMaterial({color:0xffdba0}));scene.add(archGlow);art.archGlow=archGlow;
+ const arch=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(archPoints),35,.23,6,false),new THREE.MeshStandardMaterial({color:0x9b8e75,metalness:.42,roughness:.57}));scene.add(arch);arch.visible=false;
+ const archGlow=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(archPoints),38,.035,5,false),new THREE.MeshBasicMaterial({color:0xffdba0}));scene.add(archGlow);archGlow.visible=false;art.archGlow=archGlow;
  // Ancient runes floating above the stone gate.
  for(let i=0;i<7;i++){
   const x=(i-3)*.68,y=4.0+Math.cos((i-3)*.38)*1.45;
-  const glyph=new THREE.Mesh(new THREE.OctahedronGeometry(.12,0),new THREE.MeshBasicMaterial({color:i%2?0xffdfa0:0x87fff0,transparent:true,opacity:.8}));glyph.position.set(x,y,-7);scene.add(glyph);art.runes.push(glyph);
+  const glyph=new THREE.Mesh(new THREE.OctahedronGeometry(.12,0),new THREE.MeshBasicMaterial({color:i%2?0xffdfa0:0x87fff0,transparent:true,opacity:.8}));glyph.position.set(x,y,-7);scene.add(glyph);glyph.visible=false;art.runes.push(glyph);
  }
  // Twenty-four individually colored crystals in a single GPU batch.
  const gemGeom=new THREE.OctahedronGeometry(1,0);
@@ -577,7 +592,7 @@ function buildRootwarden(){const actor=new THREE.Group();run.actor=actor;run.sce
  const shield=new THREE.Mesh(new THREE.SphereGeometry(1.78,20,12),new THREE.MeshBasicMaterial({color:0x84ffff,transparent:true,opacity:.11,depthWrite:false,side:THREE.DoubleSide}));shield.position.y=1.95;shield.visible=false;actor.add(shield);run.shield=shield;
  const aura=new THREE.Mesh(new THREE.TorusGeometry(.65,.048,8,48),new THREE.MeshBasicMaterial({color:0x8df9ff,transparent:true,opacity:.4}));aura.rotation.x=-Math.PI/2;aura.position.y=.03;actor.add(aura);run.aura=aura;buildValeCharacter();
   }
-function hit(t,amount,kind){if(t.kind==='facet')return hitFacet(t,amount,kind);if(t.kind==='echo')return hitEcho(t,amount,kind);if(t.hp<=0)return;t.hp=Math.max(0,t.hp-amount);run.charge=Math.min(100,run.charge+14);run.hitFlash=.5;t.mesh.scale.setScalar(t.hp===0?.12:1.28);const at=new THREE.Vector3(t.x,1.3,-1.45);burst(at,kind==='slam'?0xffd4a1:0x7ffaff,12);contact('RELIC_HIT',{relic:t.k+1,kind,hp:t.hp});nativeBridge?.onHit(t.k+1,kind,amount);valeImpact(t,kind);hollowImpact(t,kind);if(!t.hp){t.ring.visible=false;run.health=Math.min(100,run.health+12);notify('SEAL '+(t.k+1)+' BROKEN · +12 HEALTH');commitRecord({seals:Math.max(record.seals,run.targets.filter(x=>x.hp===0).length)});contact('SEAL_BROKEN',{relic:t.k+1,heal:12});chooseNextOnBreak();}syncHud();}
+function hit(t,amount,kind){if(t.kind==='facet')return hitFacet(t,amount,kind);if(t.kind==='echo')return hitEcho(t,amount,kind);if(t.hp<=0)return;t.hp=Math.max(0,t.hp-amount);run.charge=Math.min(100,run.charge+14);run.hitFlash=.5;t.mesh.scale.setScalar(t.hp===0?.12:1.28);const at=new THREE.Vector3(t.x,1.3,-1.45);burst(at,kind==='slam'?0xffd4a1:0x7ffaff,12);contact('RELIC_HIT',{relic:t.k+1,kind,hp:t.hp});nativeBridge?.onHit(t.k+1,kind,amount);valeImpact(t,kind);hollowImpact(t,kind);if(!t.hp){t.ring.visible=false;if(t.bloomFlower)t.bloomFlower.visible=false;run.health=Math.min(100,run.health+12);notify('SEAL '+(t.k+1)+' BROKEN · +12 HEALTH');commitRecord({seals:Math.max(record.seals,run.targets.filter(x=>x.hp===0).length)});contact('SEAL_BROKEN',{relic:t.k+1,heal:12});chooseNextOnBreak();}syncHud();}
 function spawnEchoes(){
  const palette=[0xfc9675,0xb39afc,0x8becdf];
  run.echoes=[];run.phase=2;run.victory=false;run.lock=1;RECEIPT.phase=2;
@@ -708,7 +723,7 @@ function surge(){
 }
 
 function recover(){if(run.health>0){notify('GUARDIAN STILL STANDING');return;}run.health=72;run.invulnerable=6;run.lastEnemy=0;run.lastDamage=0;run.regenT=0;run.guardTime=1.5;run.downNotified=false;run.actor.position.set(0,0,0);run.move=0;run.moveZ=0;resetJoy();for(const bolt of run.enemyBolts){run.scene.remove(bolt.mesh);bolt.mesh.geometry.dispose();bolt.mesh.material.dispose();}run.enemyBolts=[];RECEIPT.recoveries++;contact('RECOVER_CONTACT',{health:72,seals:RECEIPT.seals});notify('RECOVERED · SEAL PROGRESS KEPT');syncHud();}
-function restart(){nativeBridge?.reset();run.facets.forEach(t=>disposeGroup(t.group));run.facets=[];$('stage').classList.remove('is-trial');run.scene.background.setHex(0x081b27);run.scene.fog.color.setHex(0x0b2030);run.trialVictory=false;run.dashCooldown=0;run.echoes.forEach(t=>disposeGroup(t.group));run.echoes=[];run.phase=1;run.victory=false;run.flareUntil=0;$('phaseflare').hidden=true;run.targets.forEach(t=>disposeGroup(t.group));run.projectiles.forEach(p=>run.scene?.remove(p.mesh));run.enemyBolts.forEach(p=>run.scene?.remove(p.mesh));run.effects.forEach(p=>run.scene?.remove(p.mesh));for(const p of run.meshParts)p.adapter.dispose();run.meshParts=[];run.targets=[];run.projectiles=[];run.enemyBolts=[];run.effects=[];run.health=100;run.charge=0;run.awakened=false;run.cooldown={pulse:0,slam:0,guard:0,surge:0};run.guardTime=0;run.lastEnemy=0;run.actor?.parent?.remove(run.actor);run.actor=null;run.cameraTheta=0.12;run.move=0;run.moveZ=0;run.lock=1;run.paused=false;run.invulnerable=5;run.lastDamage=0;run.regenT=0;run.downNotified=false;run.viewWide=true;RECEIPT.phase=1;RECEIPT.echoes=0;RECEIPT.facets=0;RECEIPT.victory=false;RECEIPT.trial=false;run.camera.fov=44;run.camera.updateProjectionMatrix();$('view').textContent='CAMERA: WIDE';$('pause').textContent='PAUSE';resetJoy();buildWorldTargetsOnly();buildRootwarden();skinHollowWarden();syncHud();contact('RESTART');notify('NEW CONTACT RUN');}
+function restart(){nativeBridge?.reset();run.facets.forEach(t=>disposeGroup(t.group));run.facets=[];$('stage').classList.remove('is-trial');run.scene.background.setHex(0x081b27);run.scene.fog.color.setHex(0x0b2030);run.trialVictory=false;run.dashCooldown=0;run.echoes.forEach(t=>disposeGroup(t.group));run.echoes=[];run.phase=1;run.victory=false;run.flareUntil=0;$('phaseflare').hidden=true;run.targets.forEach(t=>disposeGroup(t.group));run.projectiles.forEach(p=>run.scene?.remove(p.mesh));run.enemyBolts.forEach(p=>run.scene?.remove(p.mesh));run.effects.forEach(p=>run.scene?.remove(p.mesh));for(const p of run.meshParts)p.adapter.dispose();run.meshParts=[];run.targets=[];run.projectiles=[];run.enemyBolts=[];run.effects=[];run.health=100;run.charge=0;run.awakened=false;run.cooldown={pulse:0,slam:0,guard:0,surge:0};run.guardTime=0;run.lastEnemy=0;run.actor?.parent?.remove(run.actor);run.actor=null;run.cameraTheta=0.12;run.move=0;run.moveZ=0;run.lock=1;run.paused=false;run.invulnerable=5;run.lastDamage=0;run.regenT=0;run.downNotified=false;run.viewWide=true;RECEIPT.phase=1;RECEIPT.echoes=0;RECEIPT.facets=0;RECEIPT.victory=false;RECEIPT.trial=false;run.camera.fov=44;run.camera.updateProjectionMatrix();$('view').textContent='CAMERA: WIDE';$('pause').textContent='PAUSE';resetJoy();buildWorldTargetsOnly();buildRootwarden();skinHollowWarden();dressHollowTargets();syncHud();contact('RESTART');notify('NEW CONTACT RUN');}
 function buildWorldTargetsOnly(){const colors=[0xff8e6c,0xa97eff,0x69eee5];for(let k=0;k<3;k++){const x=(k-1)*2.55,z=-1.45;const g=new THREE.Group();g.position.set(x,0,z);const stem=stoneCylinder(.25,.8,0x52646c,7);stem.position.y=.2;g.add(stem);const relic=mountPart(g,'Seal_'+(k+1)+'_restart',[0,1.20,0],.45,1,root(colors[k],.37,.18,[0xff4b30,0x6c37ff,0x10a4cc][k]),6,0,'pulse');const ring=new THREE.Mesh(new THREE.TorusGeometry(.75,.042,6,38),new THREE.MeshBasicMaterial({color:colors[k]}));ring.position.y=1.23;g.add(ring);run.scene.add(g);run.targets.push({group:g,mesh:relic,ring,x,hp:2,k});}}
 function resize(){const r=$('stage').getBoundingClientRect();if(!run.renderer||r.width<1||r.height<1)return;run.camera.aspect=r.width/r.height;run.camera.updateProjectionMatrix();run.renderer.setSize(r.width,r.height,false);}
 let joyPointer=null;
@@ -752,6 +767,6 @@ function tick(dt,t){run.clock=t;const actor=run.actor;if(!actor||run.paused)retu
  for(let i=run.effects.length-1;i>=0;i--){let f=run.effects[i];f.t+=dt;let n=f.t/f.duration;if(n>=1){run.scene.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();run.effects.splice(i,1);continue;}if(f.kind==='ring'){f.mesh.scale.setScalar(1+n*7);f.mesh.material.opacity=(1-n)*.77;}else{f.mesh.position.addScaledVector(f.v,dt);f.v.y-=dt*4;f.mesh.scale.setScalar(1-n);f.mesh.material.opacity=1-n;}}
  const target=livingTarget(),aspect=run.camera.aspect||.7,portrait=aspect<.75;const camR=run.viewWide?(portrait?12.3:10.5):(portrait?11.5:9.2);const fx=actor.position.x*(run.viewWide?.58:.76)+(target?target.x*.05:0),fz=actor.position.z*.52+(target?(target.z??-1.45)*.09:0);const nextFov=run.viewWide?(portrait?49:44):44;if(run.camera.fov!==nextFov){run.camera.fov=nextFov;run.camera.updateProjectionMatrix();}run.camera.position.set(fx+Math.sin(run.cameraTheta)*camR,portrait?6.1:4.4,fz+Math.cos(run.cameraTheta)*camR);run.camera.lookAt(fx,1.45,fz);
  updateValeArt(dt,t);updateHollow(dt,t);run.hitFlash=Math.max(0,run.hitFlash-dt);$('stage').style.borderColor=run.hitFlash>0?'#e3b57e':'#416a79';}
-try{const [a,b,c]=await Promise.all([import(BASE+'gamecore/JMMeshCompiler.js'),import(BASE+'playzone/JMPlayZoneAdapter.js'),import(THREE_URL)]);JMMeshCompiler=a.JMMeshCompiler;JMPlayZoneAdapter=b.JMPlayZoneAdapter;THREE=c;RECEIPT.state='INITIALIZING';buildWorld();buildRootwarden();run.hollow={blades:0,avatar:false,world:false,worldAwakenings:0,shocks:[]};RECEIPT.hollow={avatar:false,world:false,blades:0,worldAwakenings:0};buildHollowVale();skinHollowWarden();RECEIPT.visual.built=true;bind();resize();contact('JM_CP12_VISUAL_BUILD',{organs:RECEIPT.visual.organs,instanced:RECEIPT.visual.worldBatches});commitRecord({runs:record.runs+1});syncHud();try{const [gameBodies,logicBodies]=await Promise.all([import(NATIVE_GAME_URL),import(NATIVE_LOGIC_URL)]);nativeBridge=attachNativeCombat(gameBodies,logicBodies);contact('JM_THREE_BODY_CONTACT',{game:'Game-CODING',core:'JM GameCore',policy:'JMLogic',native:true});}catch(nativeError){RECEIPT.native={online:false,resonance:0,reason:String(nativeError?.message||nativeError)};$('native-score').textContent='JM NATIVE HOLD · ORIGINAL COMBAT PRESERVED';contact('JM_NATIVE_HOLD',{reason:RECEIPT.native.reason});}try{const routeModule=await import(NATIVE_ROUTE_URL);routeBridge=attachNativeRoute(routeModule);$('route-glance').textContent='JM ROUTEOS · VERIFIED · READY';contact('JM_ROUTEOS_READY',{checksum:routeBridge.checksum});}catch(routeError){RECEIPT.route={online:false,reason:String(routeError?.message||routeError)};$('route-glance').textContent='JM ROUTE HOLD · NORMAL DASH';contact('JM_ROUTEOS_HOLD',{reason:RECEIPT.route.reason});}contact('SOURCE_COMPILED',{organs:RECEIPT.compiledOrgans,vertices:RECEIPT.vertices,triangles:RECEIPT.triangles});$('gate').textContent='LIVE CONTACT';notify('ROOTWARDEN ONLINE · PULSE TO ENGAGE');let last=performance.now(),tickFps=last,frames=0;function loop(now){const dt=Math.min(.06,(now-last)/1000);last=now;tick(dt,now/1000);run.renderer.render(run.scene,run.camera);RECEIPT.drawCalls=run.renderer.info.render.calls;frames++;if(now-tickFps>1000){RECEIPT.fps=Math.round(frames*1000/(now-tickFps));$('fps').textContent=String(RECEIPT.fps);$('trace').textContent='LIVE · '+RECEIPT.compiledOrgans+' JM ORGANS · '+RECEIPT.drawCalls+' DRAWS · '+RECEIPT.vertices+' SOURCE VERTICES';tickFps=now;frames=0;}RECEIPT.state=RECEIPT.drawCalls>0?'LIVE_WEBGL':'HOLD_NO_DRAWS';requestAnimationFrame(loop);}requestAnimationFrame(loop);
+try{const [a,b,c]=await Promise.all([import(BASE+'gamecore/JMMeshCompiler.js'),import(BASE+'playzone/JMPlayZoneAdapter.js'),import(THREE_URL)]);JMMeshCompiler=a.JMMeshCompiler;JMPlayZoneAdapter=b.JMPlayZoneAdapter;THREE=c;RECEIPT.state='INITIALIZING';buildWorld();buildRootwarden();run.hollow={blades:0,avatar:false,world:false,worldAwakenings:0,shocks:[]};RECEIPT.hollow={avatar:false,world:false,blades:0,worldAwakenings:0};buildHollowVale();skinHollowWarden();dressHollowTargets();RECEIPT.visual.built=true;bind();resize();contact('JM_CP12_VISUAL_BUILD',{organs:RECEIPT.visual.organs,instanced:RECEIPT.visual.worldBatches});commitRecord({runs:record.runs+1});syncHud();try{const [gameBodies,logicBodies]=await Promise.all([import(NATIVE_GAME_URL),import(NATIVE_LOGIC_URL)]);nativeBridge=attachNativeCombat(gameBodies,logicBodies);contact('JM_THREE_BODY_CONTACT',{game:'Game-CODING',core:'JM GameCore',policy:'JMLogic',native:true});}catch(nativeError){RECEIPT.native={online:false,resonance:0,reason:String(nativeError?.message||nativeError)};$('native-score').textContent='JM NATIVE HOLD · ORIGINAL COMBAT PRESERVED';contact('JM_NATIVE_HOLD',{reason:RECEIPT.native.reason});}try{const routeModule=await import(NATIVE_ROUTE_URL);routeBridge=attachNativeRoute(routeModule);$('route-glance').textContent='JM ROUTEOS · VERIFIED · READY';contact('JM_ROUTEOS_READY',{checksum:routeBridge.checksum});}catch(routeError){RECEIPT.route={online:false,reason:String(routeError?.message||routeError)};$('route-glance').textContent='JM ROUTE HOLD · NORMAL DASH';contact('JM_ROUTEOS_HOLD',{reason:RECEIPT.route.reason});}contact('SOURCE_COMPILED',{organs:RECEIPT.compiledOrgans,vertices:RECEIPT.vertices,triangles:RECEIPT.triangles});$('gate').textContent='LIVE CONTACT';notify('ROOTWARDEN ONLINE · PULSE TO ENGAGE');let last=performance.now(),tickFps=last,frames=0;function loop(now){const dt=Math.min(.06,(now-last)/1000);last=now;tick(dt,now/1000);run.renderer.render(run.scene,run.camera);RECEIPT.drawCalls=run.renderer.info.render.calls;frames++;if(now-tickFps>1000){RECEIPT.fps=Math.round(frames*1000/(now-tickFps));$('fps').textContent=String(RECEIPT.fps);$('trace').textContent='LIVE · '+RECEIPT.compiledOrgans+' JM ORGANS · '+RECEIPT.drawCalls+' DRAWS · '+RECEIPT.vertices+' SOURCE VERTICES';tickFps=now;frames=0;}RECEIPT.state=RECEIPT.drawCalls>0?'LIVE_WEBGL':'HOLD_NO_DRAWS';requestAnimationFrame(loop);}requestAnimationFrame(loop);
 }catch(e){RECEIPT.state='HOLD';RECEIPT.lastError=e.stack||e.message;$('gate').textContent='CONTACT HOLD';$('failure').classList.add('show');$('failure').textContent='CP11 CONTACT HOLD · '+e.message;console.error(e);}
 </script></body></html>

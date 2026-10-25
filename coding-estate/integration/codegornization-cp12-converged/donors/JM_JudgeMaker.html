@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111"><title>JM JudgeMaker v1.0</title><style>
+*{box-sizing:border-box}body{font-family:Inter,system-ui,sans-serif;margin:0;min-height:100vh}main{max-width:1100px;margin:auto;padding:22px}.hero{padding:22px;border-radius:22px;margin-bottom:16px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{padding:16px;border-radius:18px}textarea,select,button,input{width:100%;font:inherit;border-radius:12px;padding:10px;margin:.35rem 0}textarea{min-height:260px;font-family:ui-monospace,monospace}button{cursor:pointer;font-weight:800}pre{white-space:pre-wrap;word-break:break-word;padding:14px;border-radius:14px;max-height:520px;overflow:auto}.row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:.8rem;font-weight:800}.muted{opacity:.75}.formula{font-family:ui-monospace,monospace;font-weight:700}@media(max-width:760px){.grid,.row{grid-template-columns:1fr}main{padding:12px}}
+body{background:#120f0a;color:#f4ead7}.hero,.panel,pre{background:#1d1710;border:1px solid #725f3c}.hero{box-shadow:0 0 0 1px #2b2115 inset}textarea,input,select{background:#0f0c09;color:#fff;border:1px solid #6d5a38}button{background:#d5b36b;color:#211708;border:0}.badge{background:#33260f;color:#ffd77f}</style></head><body><main><section class="hero"><span class="badge">JM CODING BODY 62/64 · v1.0</span><h1>⚖️ JudgeMaker</h1><p><b>Qualification Calculus & Adjudication Runtime</b></p><p class="formula">JUDGE(candidate, qualification, evidence/conditions) → verdict + reasons + trace</p><p class="muted">Native job: determine whether something qualifies as/for something under explicit criteria — without collapsing qualification into identity.</p></section><div class="grid"><section class="panel"><h2>Candidate</h2><textarea id="candidate"></textarea></section><section class="panel"><h2>Qualification specification</h2><textarea id="spec"></textarea></section></div><div class="row"><button id="run">RUN JUDGEMENT</button><button id="meta">META-JUDGE SPEC</button><button id="tests">RUN SELF-TESTS</button><button id="load">LOAD CODING-BODY DONOR</button></div><button id="clear">CLEAR RESULT</button><pre id="out">Ready.</pre></main><script>
+const JMJudgeMaker=(()=>{
+  const get=(o,p)=>String(p||'').split('.').filter(Boolean).reduce((a,k)=>a==null?undefined:a[k],o);
+  const exists=v=>v!==undefined && v!==null;
+  function op(actual,name,expected){
+    if(!exists(actual))return {known:false,pass:false};
+    const f={
+      equals:(a,b)=>JSON.stringify(a)===JSON.stringify(b),not_equals:(a,b)=>JSON.stringify(a)!==JSON.stringify(b),
+      truthy:a=>!!a,falsy:a=>!a,gte:(a,b)=>Number(a)>=Number(b),gt:(a,b)=>Number(a)>Number(b),lte:(a,b)=>Number(a)<=Number(b),lt:(a,b)=>Number(a)<Number(b),
+      contains:(a,b)=>Array.isArray(a)?a.includes(b):String(a).includes(String(b)),in:(a,b)=>Array.isArray(b)&&b.includes(a),
+      type:(a,b)=>Array.isArray(a)?b==='array':typeof a===b,exists:()=>true,regex:(a,b)=>new RegExp(String(b)).test(String(a))
+    }[name||'equals'];
+    if(!f)throw Error('Unknown operator: '+name); return {known:true,pass:!!f(actual,expected)};
+  }
+  function criterion(candidate,c){
+    const actual=get(candidate,c.path), r=op(actual,c.op||'equals',c.value), weight=Number(c.weight??1);
+    return {...c,actual,known:r.known,pass:r.pass,weight,earned:r.known&&r.pass?weight:0};
+  }
+  function judge(candidate,spec={}){
+    const rs=(spec.criteria||[]).map(c=>criterion(candidate,c));
+    const known=rs.filter(r=>r.known), totalWeight=known.reduce((s,r)=>s+r.weight,0), earned=known.reduce((s,r)=>s+r.earned,0);
+    const score=totalWeight?earned/totalWeight:0, threshold=Number(spec.threshold??1);
+    const missingRequired=rs.filter(r=>r.required&&!r.known), failedRequired=rs.filter(r=>r.required&&r.known&&!r.pass);
+    const contradictions=(spec.contradictions||[]).map(c=>criterion(candidate,c)).filter(r=>r.known&&r.pass);
+    let verdict;
+    if(missingRequired.length)verdict='INSUFFICIENT_EVIDENCE';
+    else if(contradictions.length)verdict='CONTRADICTED';
+    else if(failedRequired.length)verdict='NOT_QUALIFIED';
+    else if(score>=threshold)verdict='QUALIFIED';
+    else if(score>0)verdict='PARTIALLY_QUALIFIED';
+    else verdict='NOT_QUALIFIED';
+    const confidence=rs.length?known.length/rs.length:0;
+    return {body:'JM JudgeMaker',version:'1.0',nativeQuestion:'Does this qualify under these conditions?',qualification:spec.name||null,verdict,score:+score.toFixed(4),confidence:+confidence.toFixed(4),threshold,criteria:rs,missingRequired,failedRequired,contradictions,trace:rs.map(r=>`${r.path} ${r.op||'equals'} ${JSON.stringify(r.value)} => ${r.known?(r.pass?'PASS':'FAIL'):'UNKNOWN'} [w=${r.weight}]`)};
+  }
+  function metaJudge(spec){return judge(spec,{name:'well-formed qualification specification',threshold:1,criteria:[{path:'name',op:'truthy',required:true},{path:'criteria',op:'type',value:'array',required:true},{path:'threshold',op:'gte',value:0,required:true},{path:'threshold',op:'lte',value:1,required:true}]});}
+  function selfTests(){
+    const base={name:'Body',nativeComputationalRole:true,distinctExecutionSemantics:true,wrapperOnly:false};
+    const spec={name:'coding body',threshold:1,criteria:[{path:'nativeComputationalRole',op:'equals',value:true,required:true},{path:'distinctExecutionSemantics',op:'equals',value:true,required:true},{path:'wrapperOnly',op:'equals',value:false,required:true}]};
+    const tests=[]; const push=(name,cond,detail)=>tests.push({name,pass:!!cond,detail});
+    let r=judge(base,spec);push('qualifies valid candidate',r.verdict==='QUALIFIED',r.verdict);
+    r=judge({...base,wrapperOnly:true},spec);push('rejects failed required criterion',r.verdict==='NOT_QUALIFIED',r.verdict);
+    r=judge({nativeComputationalRole:true},spec);push('detects missing evidence',r.verdict==='INSUFFICIENT_EVIDENCE',r.verdict);
+    const ms=metaJudge(spec);push('spec can itself be judged',ms.verdict==='QUALIFIED',ms.verdict);
+    r=judge({x:5},{name:'weighted',threshold:.6,criteria:[{path:'x',op:'gte',value:5,weight:2},{path:'x',op:'lt',value:0,weight:1}]});push('weighted threshold works',r.verdict==='QUALIFIED',r.score);
+    return {body:'JM JudgeMaker',passed:tests.filter(t=>t.pass).length,total:tests.length,tests};
+  }
+  return {judge,metaJudge,selfTests};
+})();
+if(typeof document!=='undefined'){
+ const $=x=>document.getElementById(x), exampleCandidate={name:'ExampleBody',nativeComputationalRole:true,distinctExecutionSemantics:true,wrapperOnly:false,testsPassed:12}, exampleSpec={name:'independent coding body',threshold:1,criteria:[{path:'nativeComputationalRole',op:'equals',value:true,required:true},{path:'distinctExecutionSemantics',op:'equals',value:true,required:true},{path:'wrapperOnly',op:'equals',value:false,required:true}],contradictions:[{path:'testsPassed',op:'lt',value:0}]};
+ const load=()=>{$('candidate').value=JSON.stringify(exampleCandidate,null,2);$('spec').value=JSON.stringify(exampleSpec,null,2)}; load();
+ $('run').onclick=()=>{try{$('out').textContent=JSON.stringify(JMJudgeMaker.judge(JSON.parse($('candidate').value),JSON.parse($('spec').value)),null,2)}catch(e){$('out').textContent='ERROR: '+e.message}};
+ $('meta').onclick=()=>{try{$('out').textContent=JSON.stringify(JMJudgeMaker.metaJudge(JSON.parse($('spec').value)),null,2)}catch(e){$('out').textContent='ERROR: '+e.message}};
+ $('tests').onclick=()=>{$('out').textContent=JSON.stringify(JMJudgeMaker.selfTests(),null,2)};$('load').onclick=load;$('clear').onclick=()=>{$('out').textContent='Ready.'};
+}
+</script></body></html>

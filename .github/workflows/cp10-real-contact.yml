@@ -1,0 +1,38 @@
+name: CP10 Mesh Bridge Real Contact
+on:
+  push:
+    paths:
+      - 'engine/**'
+      - 'tests/cp10-*.mjs'
+      - '.github/workflows/cp10-real-contact.yml'
+  pull_request:
+    paths:
+      - 'engine/**'
+      - 'tests/cp10-*.mjs'
+      - '.github/workflows/cp10-real-contact.yml'
+permissions:
+  contents: read
+jobs:
+  real-three-and-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned real Three.js and headless Chromium driver
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Real Three.js geometry and regressions
+        run: node --test tests/cp10-mesh-bridge.test.mjs tests/cp10-three-real.test.mjs
+      - name: Real Chromium / WebGL source-to-pixels contact
+        run: node tests/cp10-browser-contact.mjs
+      - name: Preserve browser evidence screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp10-real-webgl-contact
+          path: |
+            cp10-real-webgl-desktop.png
+            cp10-real-webgl-fold-layout.png
+          if-no-files-found: ignore

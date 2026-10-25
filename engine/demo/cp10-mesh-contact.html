@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#081321">
+<title>JM CP10 · Living Mesh Contact</title>
+<style>
+:root{color-scheme:dark;--bg:#081321;--panel:#0f2335;--line:#2f5a68;--light:#e7f8f9;--muted:#a8c9cb;--aqua:#68ecf1;--gold:#eebf73}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 7%,#193a43,#081321 65%);color:var(--light);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:16px clamp(14px,3vw,36px) 6px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font-size:clamp(20px,3.1vw,32px);letter-spacing:.04em;margin:3px 0 0;font-weight:800}h1 span{color:var(--aqua)}
+.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.18em;font-weight:800}
+.pill{border:1px solid #467683;background:#112c3b;border-radius:30px;padding:10px 14px;font-size:12px;font-weight:800;color:var(--aqua)}
+main{padding:12px clamp(12px,3vw,36px) 22px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,1fr);gap:16px;max-width:1600px;margin:auto}
+.viewport,.workbench{border:1px solid #30566c;border-radius:22px;background:linear-gradient(130deg,#132a3b,#091726);overflow:hidden;box-shadow:0 22px 55px #0005}
+.stage{position:relative;height:clamp(330px,60vh,750px);overflow:hidden;background:radial-gradient(ellipse at center,#143243 0%,#091421 65%)}
+canvas{width:100%;height:100%;display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}
+.overprint{pointer-events:none;position:absolute;top:16px;left:16px;max-width:80%}
+.overprint strong{display:block;font-size:14px;letter-spacing:.15em}.overprint small{color:var(--muted)}
+.watermark{position:absolute;bottom:14px;left:16px;right:16px;color:#b4d7da;font-size:11px;pointer-events:none}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid #315e67}
+.metric{padding:13px 9px;text-align:center;border-right:1px solid #315e67}.metric:last-child{border:0}
+.metric b{display:block;font-size:clamp(17px,2.8vw,26px);color:var(--aqua);font-variant-numeric:tabular-nums}.metric small{font-size:10px;color:var(--muted);letter-spacing:.07em}
+.workbench{padding:18px;display:flex;flex-direction:column;gap:13px}
+h2{font-size:15px;letter-spacing:.08em;margin:0;color:var(--gold)}
+p{color:var(--muted);font-size:12px;line-height:1.5;margin:0}
+textarea{width:100%;min-height:205px;flex:1;background:#071622;border:1px solid #3a6372;border-radius:12px;padding:13px;color:#d6eff1;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;resize:vertical;outline-color:var(--aqua)}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+button{touch-action:manipulation;min-height:49px;border:1px solid #497783;background:#193d49;color:white;border-radius:12px;padding:9px;font-size:13px;font-weight:800}
+button.primary{background:#b8f2e5;color:#092132;border-color:#b8f2e5}
+button:active{transform:scale(.98)}button:focus-visible{outline:2px solid var(--gold)}
+#status{min-height:40px;border-left:3px solid var(--aqua);padding:9px 11px;background:#09212e;color:#c4eeee;font-size:12px;overflow-wrap:anywhere}
+.proof{border-top:1px solid var(--line);padding-top:10px;font-size:11px;color:#a9c6cd}
+@media(max-width:850px){main{grid-template-columns:1fr}.stage{height:clamp(330px,56vh,600px)}.workbench{min-height:300px}textarea{min-height:190px}}
+@media(max-width:460px){header{padding-top:12px}.metric{padding:9px 4px}.metric small{font-size:9px}.stage{height:50vh;min-height:310px}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">JM ECOSTATE / GAME-CODING × GAMECORE × PLAYZONE</div>
+<h1>CP10 <span>Living Mesh</span> Contact</h1></div><div class="pill" id="state">ENGINE CHECK</div></header>
+<main>
+<section class="viewport" aria-label="Real Three.js mesh renderer">
+ <div class="stage" id="stage"><canvas id="surface" aria-label="Drag or touch to rotate the source-authored mesh"></canvas>
+ <div class="overprint"><strong>GOLEMCORE / CONTACT STUDY</strong><small>Rotate with finger • source → buffers → 3D</small></div>
+ <div class="watermark">Representative mesh, not the owner's previously pictured source. FPS and draw calls belong only to this live session.</div></div>
+ <div class="metrics" aria-live="polite">
+ <div class="metric"><b id="vertices">—</b><small>VERTICES</small></div>
+ <div class="metric"><b id="triangles">—</b><small>TRIANGLES</small></div>
+ <div class="metric"><b id="drawcalls">—</b><small>DRAW CALLS</small></div>
+ <div class="metric"><b id="fps">—</b><small>MEASURED FPS</small></div></div>
+</section>
+<aside class="workbench">
+ <h2>SOURCE FORGE / EDIT LIVE</h2>
+ <p>Zero-based <code>v</code> and <code>f</code> syntax. Recompile the mesh without changing GameCore or PlayZone identities. Invalid source preserves the last good mesh.</p>
+ <textarea id="source" spellcheck="false" aria-label="JM authored mesh source"></textarea>
+ <div class="actions"><button id="compile" class="primary">COMPILE + RENDER</button><button id="toggle">DEFORM: ON</button><button id="spin">ROTATE: ON</button><button id="reset">RESET VIEW</button></div>
+ <div id="status" role="status">Loading real Three.js engine…</div>
+ <div class="proof">BROWSER / WEBGL CONTACT GATE · Real geometry and material, dynamic normals/bounds, source validation, independent scene ownership. Hardware evidence must come from each actual device.</div>
+</aside>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const ui={state:$('state'),status:$('status'),source:$('source'),vertices:$('vertices'),triangles:$('triangles'),drawcalls:$('drawcalls'),fps:$('fps'),canvas:$('surface'),stage:$('stage')};
+const source=['mesh GolemCore {'];
+for(let i=0;i<7;i++){const a=i*2*Math.PI/7;source.push('v '+(Math.cos(a)*1.22).toFixed(5)+' 0 '+(Math.sin(a)*1.22).toFixed(5));}
+source.push('v 0 1.6 0','v 0 -1.35 0');
+for(let i=0;i<7;i++){const j=(i+1)%7;source.push('f 7 '+i+' '+j,'f 8 '+j+' '+i);}
+source.push('color #38bdf8','deform wave amp=0.16 freq=2.6','}');
+ui.source.value=source.join('\n');
+window.__CP10={ready:false,actualWebGL:false,vertices:0,triangles:0,drawCalls:0,deformMoved:false,turns:0,error:null};
+const status=(label,ok=true)=>{ui.status.textContent=label;ui.state.textContent=ok?'LIVE CONTACT':'CONTACT HOLD';ui.state.style.color=ok?'#68ecf1':'#eebf73';window.__CP10.error=ok?null:label;};
+try{
+ const [{JMMeshCompiler},{JMPlayZoneAdapter},THREE]=await Promise.all([
+   import('../gamecore/JMMeshCompiler.js'),import('../playzone/JMPlayZoneAdapter.js'),
+   import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js')
+ ]);
+ const renderer=new THREE.WebGLRenderer({canvas:ui.canvas,antialias:true,preserveDrawingBuffer:true});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,2));
+ renderer.outputColorSpace=THREE.SRGBColorSpace;
+ const scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x0b1c2a);
+ const camera=new THREE.PerspectiveCamera(38,1,0.1,100);
+ camera.position.set(0,0.55,5.9);
+ const ambient=new THREE.AmbientLight(0xffffff,1.25);
+ const key=new THREE.DirectionalLight(0xa3fffc,2.75);key.position.set(3,5,4);
+ const rim=new THREE.DirectionalLight(0xffcf91,2);rim.position.set(-3,-1,-4);
+ scene.add(ambient,key,rim);
+ const adapter=new JMPlayZoneAdapter(THREE);
+ let spinning=true,last=performance.now(),frames=0,lastFps=last,deformed=false;
+ const compile=()=>{
+   try{
+     const ir=JMMeshCompiler.compile(ui.source.value);
+     const mesh=adapter.createMesh(ir);
+     mesh.rotation.set(-0.22,0.15,0);
+     scene.add(mesh);
+     ui.vertices.textContent=String(ir.vertexBuffer.length/3);
+     ui.triangles.textContent=String(ir.indexBuffer.length/3);
+     window.__CP10.vertices=ir.vertexBuffer.length/3;
+     window.__CP10.triangles=ir.indexBuffer.length/3;
+     status('SOURCE → Float32/Uint16 → real THREE.BufferGeometry → WebGL');
+   }catch(e){status('SOURCE HOLD · '+e.message,false);}
+ };
+ $('compile').addEventListener('click',compile);
+ $('toggle').addEventListener('click',()=>{
+   adapter.setDeformEnabled(!adapter.deformEnabled);
+   $('toggle').textContent='DEFORM: '+(adapter.deformEnabled?'ON':'OFF');
+ });
+ $('spin').addEventListener('click',()=>{spinning=!spinning;$('spin').textContent='ROTATE: '+(spinning?'ON':'OFF');});
+ $('reset').addEventListener('click',()=>{if(adapter.currentMesh)adapter.currentMesh.rotation.set(-0.22,0.15,0);});
+ let drag=null;
+ ui.canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};ui.canvas.setPointerCapture(e.pointerId);});
+ ui.canvas.addEventListener('pointermove',e=>{
+   if(!drag||!adapter.currentMesh)return;
+   adapter.currentMesh.rotation.y+=(e.clientX-drag.x)*0.009;
+   adapter.currentMesh.rotation.x+=(e.clientY-drag.y)*0.009;
+   drag={x:e.clientX,y:e.clientY};window.__CP10.turns++;
+ });
+ ui.canvas.addEventListener('pointerup',()=>drag=null);
+ ui.canvas.addEventListener('pointercancel',()=>drag=null);
+ const size=()=>{
+   const r=ui.stage.getBoundingClientRect();
+   if(r.width<1||r.height<1)return;
+   camera.aspect=r.width/r.height;camera.updateProjectionMatrix();
+   renderer.setSize(r.width,r.height,false);
+ };
+ new ResizeObserver(size).observe(ui.stage);size();
+ compile();
+ const loop=now=>{
+   const dt=Math.min(0.1,(now-last)/1000);last=now;
+   if(adapter.currentMesh&&spinning)adapter.currentMesh.rotation.y+=dt*.24;
+   if(adapter.currentMesh&&adapter.deformEnabled){
+     adapter.update(now/1000);
+     const p=adapter.currentMesh.geometry.getAttribute('position').array;
+     const b=adapter.basePositions;
+     if(p.some((v,i)=>Math.abs(v-b[i])>0.0001))deformed=true;
+   }
+   renderer.render(scene,camera);
+   frames++;const elapsed=now-lastFps;
+   if(elapsed>=1000){ui.fps.textContent=String(Math.round(frames*1000/elapsed));lastFps=now;frames=0;}
+   const calls=renderer.info.render.calls;
+   ui.drawcalls.textContent=String(calls);window.__CP10.drawCalls=calls;
+   window.__CP10.deformMoved=deformed;
+   window.__CP10.actualWebGL=Boolean(renderer.getContext());
+   window.__CP10.ready=Boolean(adapter.currentMesh&&calls>0&&window.__CP10.actualWebGL);
+   requestAnimationFrame(loop);
+ };
+ requestAnimationFrame(loop);
+}catch(err){status('ENGINE HOLD · '+err.message,false);}
+</script>
+</body>
+</html>

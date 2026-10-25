@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.3 — Cading Command Bridge</title>
+<meta name="theme-color" content="#14111f" />
+<style>
+:root{
+  --bg:#080710;--panel:#151322;--panel2:#211b34;--text:#f7f2ff;--muted:#beb5d7;
+  --line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:radial-gradient(circle at top,#221b38,var(--bg) 58%);color:var(--text)
+}
+main{max-width:1120px;margin:0 auto;padding:16px}
+header,section{
+  border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);
+  padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)
+}
+header{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.62rem}
+h2{margin:0 0 10px;font-size:1.08rem}
+h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{
+  width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);
+  padding:12px;font-size:1.05rem
+}
+textarea{min-height:72px;resize:vertical}
+label{display:block;margin:8px 0 6px;font-weight:850}
+button{
+  border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);
+  color:var(--text);font-weight:850;cursor:pointer
+}
+button:active{transform:translateY(1px)}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}
+.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.92rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+th{color:var(--muted);font-size:.85rem}
+.route{
+  display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px
+}
+@media(min-width:700px){.route{grid-template-columns:repeat(4,1fr)}}
+.step{
+  border:1px solid var(--line);border-radius:16px;background:#0d0b17;padding:12px;min-height:88px
+}
+.step strong{display:block;margin-bottom:6px}
+.step span{color:var(--muted);font-size:.9rem}
+.activeStep{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.18)}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.oplist{display:flex;flex-wrap:wrap;gap:8px}
+.op{padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:#0d0b17;font-weight:850}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.3 — Cading Command Bridge</h1>
+  <p><strong>Purpose:</strong> compile JickMa sentences into Cading-style command packets, validate them, simulate execution, and produce route receipts.</p>
+</header>
+
+<div class="grid">
+<section>
+  <h2>1 — JickMa source</h2>
+  <label>Sentence kind</label>
+  <select id="sentenceKind">
+    <option value="ASSERT">ASSERT — state route</option>
+    <option value="ASK">ASK — query route</option>
+    <option value="REPAIR">REPAIR — repair route</option>
+    <option value="TEACH">TEACH — explain route</option>
+    <option value="FREEZE">FREEZE — proof route</option>
+  </select>
+
+  <label>Combinator</label>
+  <select id="combinator">
+    <option value="SEQ">SEQ — run A then B</option>
+    <option value="PAR">PAR — hold A beside B</option>
+    <option value="REC">REC — repeat pressure route</option>
+    <option value="NEST">NEST — B inside A</option>
+  </select>
+
+  <label>Clause A</label>
+  <textarea id="clauseA">↺↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseA" data-preset="↑↓">A ↑↓</button>
+    <button data-target="clauseA" data-preset="↺↑↓">A ↺↑↓</button>
+    <button data-target="clauseA" data-preset="←↑↓">A ←↑↓</button>
+    <button data-target="clauseA" data-preset="↑↑↓">A ↑↑↓</button>
+    <button data-target="clauseA" data-preset="↑←">A ↑←</button>
+  </div>
+
+  <label>Clause B</label>
+  <textarea id="clauseB">←↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseB" data-preset="↑↓">B ↑↓</button>
+    <button data-target="clauseB" data-preset="↺↑↓">B ↺↑↓</button>
+    <button data-target="clauseB" data-preset="←↑↓">B ←↑↓</button>
+    <button data-target="clauseB" data-preset="↑↑↓">B ↑↑↓</button>
+    <button data-target="clauseB" data-preset="↺">B ↺</button>
+  </div>
+
+  <label>Target runtime/body</label>
+  <select id="target">
+    <option value="TraceBox">TraceBox</option>
+    <option value="FlowTalk">FlowTalk</option>
+    <option value="GRIC">GRIC</option>
+    <option value="Spalk">Spalk</option>
+    <option value="CadingLab">CadingLab</option>
+  </select>
+
+  <button class="big" id="run">Compile + Execute Bridge</button>
+</section>
+
+<section>
+  <h2>2 — Bridge result</h2>
+  <div class="metrics">
+    <div class="metric"><strong>Status</strong><span id="status">—</span></div>
+    <div class="metric"><strong>Command</strong><span id="command">—</span></div>
+    <div class="metric"><strong>Validation</strong><span id="validation">—</span></div>
+    <div class="metric"><strong>Final State</strong><span id="state">—</span></div>
+  </div>
+  <div class="chips" id="warnings"></div>
+
+  <h3>Bridge route</h3>
+  <div class="route">
+    <div class="step activeStep"><strong>1 Source</strong><span>JickMa sentence</span></div>
+    <div class="step activeStep"><strong>2 Compile</strong><span>Cading packet</span></div>
+    <div class="step activeStep"><strong>3 Validate</strong><span>guards + continuity</span></div>
+    <div class="step activeStep"><strong>4 Execute</strong><span>receipt + state</span></div>
+  </div>
+
+  <h3>Operations</h3>
+  <div class="oplist" id="ops"></div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — Cading command packet</h2>
+  <pre id="packet">{}</pre>
+</section>
+
+<section>
+  <h2>4 — Execution receipt</h2>
+  <pre id="receipt">{}</pre>
+  <div class="buttons">
+    <button id="copyReceipt">Copy Receipt</button>
+    <button id="downloadReceipt">Download Receipt JSON</button>
+    <button id="runSmoke">Run v0.3 Bridge Smoke Tests</button>
+  </div>
+  <pre id="smokeReceipt">{}</pre>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>5 — What this bridge means</h2>
+  <p class="note">JickMa gives the movement grammar. Cading receives the packet. Validation decides whether it can run. Execution creates state-change. Receipt preserves proof.</p>
+</section>
+</main>
+
+<script>
+const VERSION = "JickMa SDK v0.3 Cading Command Bridge";
+
+const GLYPH_INFO = {
+  "↑": { name:"Jick", op:"BEGIN", state:"begun", field:"ignition" },
+  "↓": { name:"Mah", op:"RESOLVE", state:"resolved", field:"grounding" },
+  "←": { name:"Lethar", op:"BRANCH", state:"branched", field:"route" },
+  "↺": { name:"Zhur", op:"APPLY_PRESSURE", state:"pressure_applied", field:"cycle" }
+};
+
+const KIND_TO_COMMAND = {
+  ASSERT:"CAD_ASSERT_ROUTE",
+  ASK:"CAD_QUERY_ROUTE",
+  REPAIR:"CAD_REPAIR_ROUTE",
+  TEACH:"CAD_TEACH_ROUTE",
+  FREEZE:"CAD_FREEZE_PROOF"
+};
+
+const COMBINATOR_TO_MODE = {
+  SEQ:"sequential",
+  PAR:"parallel",
+  REC:"recursive",
+  NEST:"nested"
+};
+
+let lastReceipt = null;
+
+function el(id){return document.getElementById(id)}
+function parseMovements(input){
+  return [...input].filter(ch=>GLYPH_INFO[ch]).map((glyph,index)=>({glyph,index,...GLYPH_INFO[glyph]}));
+}
+function inferClauseType(movements){
+  const glyphs = movements.map(m=>m.glyph);
+  const down = glyphs.indexOf("↓");
+  const pressure = glyphs.indexOf("↺");
+  const branch = glyphs.indexOf("←");
+  if(pressure !== -1 && (down === -1 || pressure < down)) return "Z";
+  if(branch !== -1 && (down === -1 || branch < down)) return "L";
+  if(glyphs.filter(g=>g==="↑").length > 1) return "J";
+  return "M";
+}
+function buildClause(raw,label){
+  const movements = parseMovements(raw);
+  return {label,raw,movements,type:inferClauseType(movements),empty:movements.length===0};
+}
+function continuityWarnings(clause){
+  const warnings=[];
+  const last = clause.movements.at(-1)?.glyph ?? null;
+  if(clause.empty) warnings.push(`${clause.label}: no movement glyphs.`);
+  if(last==="←") warnings.push(`${clause.label}: dangling branch.`);
+  if(last==="↺") warnings.push(`${clause.label}: dangling pressure.`);
+  return warnings;
+}
+function combine(combinator,a,b){
+  if(combinator==="SEQ") return [...a.movements,...b.movements];
+  if(combinator==="PAR") return [...a.movements,...b.movements];
+  if(combinator==="REC") return [...a.movements,{glyph:"↺",index:a.movements.length,name:"RecMark",op:"REPEAT",state:"pressure_repeated",field:"recursion"},...b.movements];
+  if(combinator==="NEST") return [...a.movements,{glyph:"←",index:a.movements.length,name:"NestGate",op:"ENTER_NEST",state:"nested",field:"nest"},...b.movements,{glyph:"↓",index:a.movements.length+b.movements.length+1,name:"NestClose",op:"CLOSE_NEST",state:"nest_resolved",field:"grounding"}];
+  return [];
+}
+function toOperations(movements){
+  return movements.map((m,i)=>({
+    order:i+1,
+    glyph:m.glyph,
+    op:m.op,
+    field:m.field,
+    stateAfter:m.state,
+    routeTag:`${m.field}:${m.op}`
+  }));
+}
+function compileToCadingPacket({kind,combinator,a,b,target}){
+  const combinedMovements = combine(combinator,a,b);
+  const combined = {label:"COMBINED",raw:combinedMovements.map(m=>m.glyph).join(""),movements:combinedMovements,type:inferClauseType(combinedMovements),empty:combinedMovements.length===0};
+  const command = KIND_TO_COMMAND[kind];
+  const operations = toOperations(combined.movements);
+  const warnings = [...continuityWarnings(a),...continuityWarnings(b),...continuityWarnings(combined)];
+  const packet = {
+    packetType:"CAD_COMMAND_PACKET",
+    version:VERSION,
+    commandId:`${command}_${Date.now()}`,
+    sourceSystem:"JickMa",
+    targetRuntime:target,
+    command,
+    mode:COMBINATOR_TO_MODE[combinator],
+    sentenceKind:kind,
+    combinator,
+    clauseTypes:{A:a.type,B:b.type,combined:combined.type},
+    source:{clauseA:a.raw,clauseB:b.raw,combined:combined.raw},
+    operations,
+    guards:{
+      requiresMovement: true,
+      requiresContinuity: true,
+      allowCheckForRepair: kind === "REPAIR",
+      warnings
+    },
+    createdAt:new Date().toISOString()
+  };
+  return {packet,combined,warnings};
+}
+function validatePacket(packet){
+  const errors=[];
+  if(!packet.operations.length) errors.push("No operations to execute.");
+  if(packet.guards.warnings.length && !packet.guards.allowCheckForRepair){
+    errors.push("Continuity warnings present. Use REPAIR or resolve dangling movement.");
+  }
+  const ok = errors.length === 0;
+  return {ok,status:ok?"VALID":"CHECK",errors};
+}
+function executePacket(packet,validation){
+  const events=[];
+  let state="pending";
+  if(!validation.ok){
+    return {status:"CHECK",finalState:"blocked",events,reason:validation.errors};
+  }
+  for(const op of packet.operations){
+    state=op.stateAfter;
+    events.push({order:op.order,op:op.op,glyph:op.glyph,state});
+  }
+  return {status:"DING",finalState:state,events,reason:[]};
+}
+function bridgeRun(){
+  const kind=el("sentenceKind").value;
+  const combinator=el("combinator").value;
+  const target=el("target").value;
+  const a=buildClause(el("clauseA").value,"A");
+  const b=buildClause(el("clauseB").value,"B");
+  const compiled=compileToCadingPacket({kind,combinator,a,b,target});
+  const validation=validatePacket(compiled.packet);
+  const execution=executePacket(compiled.packet,validation);
+  const receipt={
+    status:execution.status,
+    version:VERSION,
+    bridge:"JickMa → Cading",
+    command:compiled.packet.command,
+    mode:compiled.packet.mode,
+    validation,
+    finalState:execution.finalState,
+    packet:compiled.packet,
+    execution,
+    proofMeaning:execution.status==="DING"
+      ? "JickMa sentence compiled into a valid Cading-style command packet and executed."
+      : "JickMa sentence compiled, but validation blocked execution or requires repair.",
+    timestamp:new Date().toISOString()
+  };
+  return receipt;
+}
+function render(receipt){
+  lastReceipt=receipt;
+  el("status").textContent=receipt.status;
+  el("status").className=receipt.status==="DING"?"ding":"check";
+  el("command").textContent=receipt.command;
+  el("validation").textContent=receipt.validation.status;
+  el("validation").className=receipt.validation.ok?"ding":"check";
+  el("state").textContent=receipt.finalState;
+
+  const warnings=el("warnings"); warnings.innerHTML="";
+  const allWarnings=[...receipt.packet.guards.warnings,...receipt.validation.errors];
+  if(allWarnings.length){
+    allWarnings.forEach(w=>{const chip=document.createElement("span");chip.className="chip";chip.textContent="⚠ "+w;warnings.appendChild(chip);});
+  }else{
+    const chip=document.createElement("span");chip.className="chip";chip.textContent="✓ Bridge route clear";warnings.appendChild(chip);
+  }
+
+  const ops=el("ops"); ops.innerHTML="";
+  receipt.packet.operations.forEach(o=>{
+    const div=document.createElement("div"); div.className="op"; div.textContent=`${o.glyph} ${o.op}`; ops.appendChild(div);
+  });
+
+  el("packet").textContent=JSON.stringify(receipt.packet,null,2);
+  el("receipt").textContent=JSON.stringify(receipt,null,2);
+}
+function runSmokeTests(){
+  const cases=[
+    {kind:"ASSERT",combo:"SEQ",a:"↑↓",b:"←↑↓",target:"TraceBox",expect:"DING"},
+    {kind:"FREEZE",combo:"REC",a:"↺↑↓",b:"↑↓",target:"CadingLab",expect:"DING"},
+    {kind:"TEACH",combo:"NEST",a:"↑↓",b:"↑↑↓",target:"FlowTalk",expect:"DING"},
+    {kind:"ASK",combo:"PAR",a:"↑←",b:"↺",target:"TraceBox",expect:"CHECK"},
+    {kind:"REPAIR",combo:"PAR",a:"↑←",b:"↺",target:"FlowTalk",expect:"DING"}
+  ];
+  const old={kind:el("sentenceKind").value,combo:el("combinator").value,a:el("clauseA").value,b:el("clauseB").value,target:el("target").value};
+  const rows=[];
+  for(const c of cases){
+    el("sentenceKind").value=c.kind; el("combinator").value=c.combo; el("clauseA").value=c.a; el("clauseB").value=c.b; el("target").value=c.target;
+    const r=bridgeRun();
+    rows.push({case:c,actualStatus:r.status,command:r.command,passed:r.status===c.expect});
+  }
+  el("sentenceKind").value=old.kind; el("combinator").value=old.combo; el("clauseA").value=old.a; el("clauseB").value=old.b; el("target").value=old.target;
+  const passed=rows.filter(r=>r.passed).length;
+  const batch={status:passed===cases.length?"V0_3_BRIDGE_READY":"CHECK",version:VERSION,passed,total:cases.length,rows,timestamp:new Date().toISOString()};
+  el("smokeReceipt").textContent=JSON.stringify(batch,null,2);
+  return batch;
+}
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text);alert("Copied.");}
+  catch{prompt("Copy:",text)}
+}
+function downloadText(filename,text){
+  const blob=new Blob([text],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+
+document.querySelectorAll("[data-preset]").forEach(btn=>{
+  btn.addEventListener("click",()=>{el(btn.dataset.target).value=btn.dataset.preset;render(bridgeRun());});
+});
+el("run").addEventListener("click",()=>render(bridgeRun()));
+el("copyReceipt").addEventListener("click",()=>copyText(el("receipt").textContent));
+el("downloadReceipt").addEventListener("click",()=>downloadText("JICKMA_SDK_v0_3_CADING_BRIDGE_RECEIPT.json",el("receipt").textContent));
+el("runSmoke").addEventListener("click",()=>runSmokeTests());
+render(bridgeRun());
+runSmokeTests();
+</script>
+</body>
+</html>

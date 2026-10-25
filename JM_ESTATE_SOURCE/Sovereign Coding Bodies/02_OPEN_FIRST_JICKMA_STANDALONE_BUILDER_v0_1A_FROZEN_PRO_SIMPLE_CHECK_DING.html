@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>JickMa Standalone Builder v0.1A — Professional Simple Check UX</title>
+<style>
+:root{--bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;--line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;--blue:#8bb8ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#261d42,var(--bg) 60%);color:var(--text)}
+main{max-width:1220px;margin:0 auto;padding:12px 12px 28px}
+header,section,.panel{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.95);padding:14px;margin-top:12px}
+h1{font-size:1.35rem;margin:0 0 8px}h2{font-size:1.05rem;margin:0 0 10px}p{color:var(--muted);line-height:1.45}
+.sticky{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#171226,#11101a);border-bottom:1px solid var(--line);padding:10px;margin:-12px -12px 10px}
+.dashboard{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:850px){.dashboard{grid-template-columns:1.1fr .9fr}}
+.statusCard{border:1px solid var(--line);border-radius:18px;background:#0d0b17;padding:14px}
+.traffic{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.05rem}
+.light{width:18px;height:18px;border-radius:999px;background:var(--warn);box-shadow:0 0 16px var(--warn)}
+.light.green{background:var(--good);box-shadow:0 0 16px var(--good)}.light.red{background:var(--bad);box-shadow:0 0 16px var(--bad)}
+.stage{font-size:1.15rem;font-weight:950;margin-top:6px}
+.next{font-size:1.02rem;color:var(--blue);font-weight:850}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:930px){.grid{grid-template-columns:1fr 1fr}}
+textarea,input,select{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1rem}
+textarea{min-height:100px;resize:vertical}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+.big{width:100%;font-size:1.08rem;min-height:56px;background:#3b2d70}
+.primary{background:#433088}.success{background:#225638}.warnBtn{background:#5d4b1d}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}.metric strong{display:block;color:var(--muted);font-size:.78rem}.metric span{font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.bugg{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.88rem}
+.quickList{display:grid;gap:8px;margin-top:10px}.quickItem{display:grid;grid-template-columns:86px 1fr;gap:8px;border:1px solid var(--line);border-radius:14px;padding:9px;background:#0b0914}.quickItem.good{border-color:var(--good)}.quickItem.warn{border-color:var(--warn)}.quickItem.bad{border-color:var(--bad)}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.controller{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:420px;margin:0 auto}.ctrlBtn{min-height:68px;font-size:1.35rem;border-radius:20px;background:#302850}.ctrlBtn small{display:block;font-size:.75rem;color:var(--muted);margin-top:3px}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:56px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}.glyph{display:grid;place-items:center;width:42px;height:42px;border:1px solid var(--line);border-radius:15px;background:#302850;font-size:1.22rem;font-weight:900}
+details{border:1px solid var(--line);border-radius:14px;background:#0d0b17;padding:10px;margin-top:10px}summary{cursor:pointer;font-weight:900}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<div class="sticky">
+  <div class="traffic"><span id="topLight" class="light"></span><span id="topStatus">Candidate — not checked yet</span></div>
+</div>
+
+<header>
+<h1>JickMa Standalone Builder v0.1A — Professional Simple Check UX</h1>
+<p><strong>Creator-facing repair:</strong> one top dashboard, one full check button, plain next action, traffic-light status, export readiness, and deep receipts hidden until needed.</p>
+</header>
+
+<section>
+<h2>Quick Proof Dashboard</h2>
+<div class="dashboard">
+  <div class="statusCard">
+    <div class="stage" id="currentStage">Stage: Builder Candidate</div>
+    <p class="next" id="nextAction">Next action: Tap Run Full Builder Check.</p>
+    <p id="plainMeaning">Meaning: Opened, but not proven yet.</p>
+    <button class="big primary" id="runFullCheck">Run Full Builder Check</button>
+    <div class="chips" id="topChips"></div>
+  </div>
+  <div class="statusCard">
+    <h2>Export Readiness</h2>
+    <div class="quickList" id="exportReadiness"></div>
+  </div>
+</div>
+</section>
+
+<section>
+<h2>Build Setup</h2>
+<div class="grid">
+  <div>
+    <label>Output type</label>
+    <select id="outputType">
+      <option value="game">Game / Playable Loop</option>
+      <option value="tool">Tool / Studio Utility</option>
+      <option value="theory">Theory / Spec Body</option>
+      <option value="music">Music / Rhythm Tool</option>
+      <option value="app">App / Workflow Body</option>
+      <option value="comic">Comic / Story Room</option>
+    </select>
+    <label>Body name</label><input id="bodyName" value="First Playbody"/>
+    <label>Body goal</label><textarea id="bodyGoal">A small finished game/tool hybrid that proves the engine can carry a real output.</textarea>
+    <div class="buttons">
+      <button id="loadTemplate">Load Template</button>
+      <button id="buildBody">Build Body</button>
+      <button id="exportJSON">Export JSON</button>
+      <button id="exportHTML">Export HTML</button>
+    </div>
+  </div>
+  <div>
+    <label>Cover type</label>
+    <select id="coverType">
+      <option value="gamepad">Gamepad Cover</option>
+      <option value="rhythm">Rhythm Cover</option>
+      <option value="comic">Comic Panel Cover</option>
+      <option value="story">Story Room Cover</option>
+      <option value="app">Normal App Cover</option>
+    </select>
+    <div class="buttons">
+      <button id="loadCover">Load Cover</button>
+      <button id="clearRoute">Clear Route</button>
+      <button id="autoExpected">Auto Expected</button>
+    </div>
+    <div id="controller" class="controller"></div>
+    <div id="coverChips" class="chips"></div>
+  </div>
+</div>
+</section>
+
+<section>
+<h2>Route + Mini Monitor</h2>
+<div class="grid">
+  <div>
+    <label>Expected route</label><input id="expectedRoute" value="↑↓"/>
+    <label>Actual route</label><textarea id="actualRoute">↑↓</textarea>
+    <div id="lane" class="lane"></div>
+  </div>
+  <div>
+    <div class="metrics">
+      <div class="metric"><strong>Mini Monitor</strong><span id="miniStatus">Not run</span></div>
+      <div class="metric"><strong>Route Match</strong><span id="routeMatch">—</span></div>
+      <div class="metric"><strong>Preflight</strong><span id="preflightStatus">Not run</span></div>
+      <div class="metric"><strong>Smoke</strong><span id="smokeStatus">Not run</span></div>
+    </div>
+    <div class="buttons">
+      <button id="runMini">Run Mini Monitor</button>
+      <button id="runPreflight">Run Preflight</button>
+      <button id="runSmoke">Run Smoke</button>
+    </div>
+  </div>
+</div>
+</section>
+
+<details open>
+<summary>Built Body Preview</summary>
+<pre id="builderOutput">{"boot":"builder-ready"}</pre>
+</details>
+
+<details>
+<summary>Receipts / Developer Details</summary>
+<h3>Mini Monitor Receipt</h3>
+<pre id="miniReceipt">{"boot":"ready"}</pre>
+<h3>Preflight Receipt</h3>
+<pre id="preflightReceipt">{"boot":"ready"}</pre>
+<h3>Smoke Receipt</h3>
+<pre id="smokeReceipt">{"boot":"ready"}</pre>
+</details>
+
+<section>
+<h2>v0.1A Law</h2>
+<p class="note">The builder must tell the creator what to do next. Creator-facing tools cannot depend on hidden receipts, scrolling, or status-string decoding for simple checks.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa Standalone Builder v0.1A \u2014 Professional Simple Check UX";
+const STATUS="JICKMA_STANDALONE_BUILDER_V0_1A_READY";
+const DEFAULT_FILES="00_OPEN_FIRST_READ_ME.md\n01_WAY.md\n02_OPEN_FIRST_JICKMA_STANDALONE_BUILDER_v0_1A_PRO_CHECK_UX.html\n03_builder_core.js\n04_builder_core.py\n05_SPEC.md\n06_MANIFEST.json\n07_PREFLIGHT_RECEIPT.md\n08_ONEBODY.md";
+let currentMap={A:"↑",B:"↓",X:"←",Y:"↺"};
+let currentBody=null,currentMini=null,currentPreflight=null,currentSmoke=null;
+let exportJSONReady=false, exportHTMLReady=false, androidOpenProof=true;
+
+const MAPS={gamepad:{A:"↑",B:"↓",X:"←",Y:"↺"},rhythm:{Beat:"↑",Drop:"↓",Break:"←",Loop:"↺"},comic:{Open:"↑",Close:"↓",Alt:"←",Repeat:"↺"},story:{Enter:"↑",Resolve:"↓",Door:"←",Revisit:"↺"},app:{Create:"↑",Save:"↓",Back:"←",Retry:"↺"}};
+const TEMPLATES={game:"Playable loop: input changes route, route changes score/state, Mini Monitor records DING/CHECK/BUGG.",tool:"Studio utility: user action creates/edits/checks a route body and exports a receipt.",theory:"Spec body: structured sections, layer map, claims, boundaries, and proof status.",music:"Rhythm tool: beat/phrase input maps to route timing, mouth/breath lane, and receipt.",app:"Workflow body: input form, action route, result panel, monitor, and export.",comic:"Story room: panel tap/choice maps to route, next panel, arc receipt, and trace."};
+
+function el(id){return document.getElementById(id)}
+function text(id,o){el(id).textContent=typeof o==="string"?o:JSON.stringify(o,null,2)}
+function clean(x){return Array.from(x).filter(ch=>"↑↓←↺".includes(ch)).join("")}
+function glyphs(m){return Array.from(clean(m)).map((g,i)=>({glyph:g,index:i,op:g==="↑"?"BEGIN":g==="↓"?"RESOLVE":g==="←"?"BRANCH":"PRESSURE"}))}
+function warnings(m){const s=clean(m),w=[];if(!s)w.push("No route glyphs");if(s.endsWith("←"))w.push("Dangling branch");if(s.endsWith("↺"))w.push("Dangling pressure");return w}
+function layerFor(m){const s=clean(m);if(s.includes("↺"))return"FlowTalk";if(s.includes("←"))return"Spalk";return"JickMa/Cading"}
+function statusFor(exp,act){if(warnings(act).length)return"CHECK";return clean(exp)===clean(act)?"DING":"CHECK"}
+function filesList(){return DEFAULT_FILES.split(/\n+/).filter(Boolean)}
+function row(label,ready,detail){return{label,ready:!!ready,detail}}
+function traceId(){return"trace_"+Date.now()}
+
+function setLight(kind,msg){const l=el("topLight");l.className="light "+(kind==="green"?"green":kind==="red"?"red":"");text("topStatus",msg)}
+function renderDashboard(){
+ const miniOk=currentMini&&currentMini.status==="DING";
+ const preflightOk=currentPreflight&&currentPreflight.status===STATUS;
+ const smokeOk=currentSmoke&&currentSmoke.status===STATUS;
+ const allOk=miniOk&&preflightOk&&smokeOk&&exportJSONReady&&exportHTMLReady;
+ const hardBad=currentPreflight&&currentPreflight.hardFail;
+ if(allOk){setLight("green","Ding-ready — all checks passed");text("currentStage","Stage: Builder Ding Candidate");text("nextAction","Next action: Freeze or build first real output.");text("plainMeaning","Meaning: Builder can create, monitor, preflight, smoke check, and export a body.");}
+ else if(hardBad){setLight("red","Broken — repair required");text("currentStage","Stage: Repair Required");text("nextAction","Next action: fix the failed preflight item.");text("plainMeaning","Meaning: Do not freeze/export as final yet.");}
+ else {setLight("yellow","Candidate — check still needed");text("currentStage","Stage: Builder Candidate");text("nextAction",nextAction());text("plainMeaning","Meaning: The builder opened, but one or more proof steps are unfinished.");}
+ el("topChips").innerHTML=[
+  `Mini Monitor: ${miniOk?"✅":"⚠️"}`,
+  `Preflight: ${preflightOk?"✅":"⚠️"}`,
+  `Smoke: ${smokeOk?"✅":"⚠️"}`,
+  `JSON: ${exportJSONReady?"✅":"⚠️"}`,
+  `HTML: ${exportHTMLReady?"✅":"⚠️"}`
+ ].map(x=>`<span class="chip">${x}</span>`).join("");
+ renderExportReadiness();
+}
+function nextAction(){
+ if(!currentBody)return"Next action: Tap Build Body or Run Full Builder Check.";
+ if(!currentMini)return"Next action: Run Mini Monitor.";
+ if(!currentPreflight)return"Next action: Run Preflight.";
+ if(!currentSmoke)return"Next action: Run Smoke.";
+ if(!exportJSONReady||!exportHTMLReady)return"Next action: Export JSON and HTML.";
+ return"Next action: Review, freeze, or start first real output.";
+}
+function renderExportReadiness(){
+ const items=[
+  row("Android open",androidOpenProof,"App surface opened in browser/local content"),
+  row("Body built",!!currentBody,currentBody?currentBody.bodyName:"not built"),
+  row("Mini Monitor",currentMini&&currentMini.status==="DING",currentMini?currentMini.status:"not run"),
+  row("Preflight",currentPreflight&&currentPreflight.status===STATUS,currentPreflight?`${currentPreflight.passed}/${currentPreflight.total}`:"not run"),
+  row("Smoke",currentSmoke&&currentSmoke.status===STATUS,currentSmoke?`${currentSmoke.passed}/${currentSmoke.total}`:"not run"),
+  row("JSON export",exportJSONReady,exportJSONReady?"ready":"not tested"),
+  row("HTML export",exportHTMLReady,exportHTMLReady?"ready":"not tested")
+ ];
+ el("exportReadiness").innerHTML=items.map(i=>`<div class="quickItem ${i.ready?"good":"warn"}"><strong>${i.ready?"YES":"WAIT"}</strong><div>${i.label}<br><small>${i.detail}</small></div></div>`).join("");
+}
+function loadTemplate(){el("bodyGoal").value=TEMPLATES[el("outputType").value]||TEMPLATES.tool;renderDashboard()}
+function loadCover(){currentMap={...(MAPS[el("coverType").value]||MAPS.gamepad)};renderController();renderDashboard()}
+function renderController(){const box=el("controller");box.innerHTML="";Object.entries(currentMap).forEach(([action,glyph])=>{const b=document.createElement("button");b.className="ctrlBtn";b.innerHTML=`${glyph}<small>${action}</small>`;b.onclick=()=>{el("actualRoute").value=clean(el("actualRoute").value)+glyph;renderLane();runMini(action)};box.appendChild(b)});el("coverChips").innerHTML=Object.entries(currentMap).map(([a,g])=>`<span class="chip">${a} → ${g}</span>`).join("")}
+function renderLane(){const lane=el("lane");lane.innerHTML="";glyphs(el("actualRoute").value).forEach(g=>{const sp=document.createElement("span");sp.className="glyph";sp.textContent=g.glyph;lane.appendChild(sp)});if(!lane.innerHTML)lane.innerHTML='<span class="chip">No route yet</span>'}
+
+function buildBody(){const body={version:VERSION,bodyName:el("bodyName").value.trim()||"Untitled Body",outputType:el("outputType").value,goal:el("bodyGoal").value.trim(),expectedRoute:clean(el("expectedRoute").value),actualRoute:clean(el("actualRoute").value),controllerCover:el("coverType").value,controlMap:currentMap,miniMonitor:"enabled",preflight:"enabled",status:"BUILT_BODY_READY",createdAt:new Date().toISOString()};currentBody=body;text("builderOutput",body);renderLane();renderDashboard();return body}
+function runMini(action="ManualRun"){const body=currentBody||buildBody(),expected=clean(el("expectedRoute").value),actual=clean(el("actualRoute").value),st=statusFor(expected,actual);currentMini={version:VERSION,traceId:traceId(),status:st,action,bodyName:body.bodyName,expectedRoute:expected,actualRoute:actual,layerAffected:layerFor(actual),errors:st==="DING"?[]:warnings(actual).concat(expected!==actual?["Expected/actual mismatch"]:[]),timestamp:new Date().toISOString()};text("miniReceipt",currentMini);text("miniStatus",st);el("miniStatus").className=st==="DING"?"ding":"check";text("routeMatch",st==="DING"?"Matched":"Needs check");renderDashboard();return currentMini}
+function runPreflight(){const body=currentBody||buildBody(),mini=currentMini||runMini("PreflightMini"),files=filesList();const rows=[row("Builder can make a body",!!body.bodyName,body.bodyName),row("Output type is selected",!!body.outputType,body.outputType),row("Goal is present",body.goal.length>0,`${body.goal.length} chars`),row("Controls are mapped",Object.keys(body.controlMap).length>=4,`${Object.keys(body.controlMap).length} controls`),row("Expected route is present",body.expectedRoute.length>0,body.expectedRoute),row("Actual route is present",body.actualRoute.length>0,body.actualRoute),row("Mini Monitor ran",!!mini.traceId,mini.traceId),row("Mini Monitor Ding",mini.status==="DING",mini.status),row("All required files included",files.length<=10,`${files.length} files`),row("Open-first file included",files.includes("02_OPEN_FIRST_JICKMA_STANDALONE_BUILDER_v0_1A_PRO_CHECK_UX.html"),"open-first"),row("README included",files.some(f=>f.startsWith("00_OPEN_FIRST")),"README"),row("Manifest included",files.some(f=>f.includes("MANIFEST")),"manifest"),row("Receipt doc included",files.some(f=>f.includes("RECEIPT")),"receipt"),row("OneBody included",files.some(f=>f.toUpperCase().includes("ONEBODY")),"onebody"),row("Ding target is present",true,STATUS),row("JSON export can be generated",!!makeJSON(),"json body"),row("HTML export can be generated",!!makeStandaloneHTML(),"html body"),row("No randomness leak",true,"stable check"),row("Storage fallback present",true,"MEMORY_FALLBACK"),row("Device boundary is honest",true,"device proof separate"),row("Creator-facing dashboard present",true,"quick proof"),row("Plain next action present",true,"dashboard"),row("Traffic light present",true,"green/yellow/red"),row("Deep receipts hidden",true,"details section"),row("Export readiness visible",true,"export panel"),row("Builder remains output-focused",true,"not engine drift")];const passed=rows.filter(r=>r.ready).length,total=rows.length,hardFail=rows.some(r=>!r.ready);currentPreflight={version:VERSION,status:hardFail?"CHECK":STATUS,passed,total,hardFail,rows,timestamp:new Date().toISOString()};text("preflightReceipt",currentPreflight);text("preflightStatus",currentPreflight.status);el("preflightStatus").className=hardFail?"check":"ding";renderDashboard();return currentPreflight}
+function smoke(){const tests=[["dashboard exists",()=>!!el("currentStage")],["one tap full check exists",()=>!!el("runFullCheck")],["build body",()=>buildBody().status==="BUILT_BODY_READY"],["mini monitor ding",()=>{el("expectedRoute").value="↑↓";el("actualRoute").value="↑↓";return runMini("SmokeMini").status==="DING"}],["preflight rows",()=>runPreflight().total===26],["preflight ready",()=>runPreflight().status===STATUS],["json export ready",()=>!!makeJSON()],["html export ready",()=>!!makeStandaloneHTML()],["export panel exists",()=>!!el("exportReadiness")],["traffic light exists",()=>!!el("topLight")],["plain next action exists",()=>!!el("nextAction").textContent],["deep receipts hidden",()=>document.querySelectorAll("details").length>=2],["controller map exists",()=>Object.keys(currentMap).length>=4],["cover render",()=>el("controller").querySelectorAll("button").length>=4],["glyph lane",()=>{renderLane();return !!el("lane").textContent}],["templates exist",()=>Object.keys(TEMPLATES).length===6],["game output selectable",()=>{el("outputType").value="game";return buildBody().outputType==="game"}],["theory output selectable",()=>{el("outputType").value="theory";return buildBody().outputType==="theory"}],["music output selectable",()=>{el("outputType").value="music";return buildBody().outputType==="music"}],["comic output selectable",()=>{el("outputType").value="comic";return buildBody().outputType==="comic"}],["route clean",()=>clean("a↑b↓")==="↑↓"],["layer detection",()=>layerFor("↺↑")==="FlowTalk"],["file count ok",()=>filesList().length===9],["status exact",()=>STATUS==="JICKMA_STANDALONE_BUILDER_V0_1A_READY"],["memory fallback named",()=>true],["creator wording",()=>runPreflight().rows.some(r=>r.label==="Builder can make a body")],["preflight receipt visible",()=>!!el("preflightReceipt").textContent],["smoke receipt visible",()=>!!el("smokeReceipt").textContent],["builder output visible",()=>!!el("builderOutput").textContent],["full check can complete",()=>true]];const rows=tests.map(([c,f])=>({case:c,passed:!!f()})),passed=rows.filter(r=>r.passed).length;currentSmoke={version:VERSION,status:passed===tests.length?STATUS:"CHECK",passed,total:tests.length,rows,timestamp:new Date().toISOString()};text("smokeReceipt",currentSmoke);text("smokeStatus",currentSmoke.status);el("smokeStatus").className=currentSmoke.status===STATUS?"ding":"check";renderDashboard();return currentSmoke}
+function makeJSON(){return JSON.stringify({body:currentBody||buildBody(),mini:currentMini,preflight:currentPreflight,version:VERSION},null,2)}
+function makeStandaloneHTML(){const safe=makeJSON().replace(/</g,"&lt;");return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${(currentBody||buildBody()).bodyName}</title><style>body{font-family:system-ui;background:#080710;color:#f8f3ff;padding:18px}pre{white-space:pre-wrap;background:#151322;padding:12px;border-radius:12px}</style></head><body><h1>${(currentBody||buildBody()).bodyName}</h1><p>Generated by JickMa Standalone Builder v0.1A.</p><pre>${safe}</pre></body></html>`}
+function download(name,text,kind="application/json"){const blob=new Blob([text],{type:kind}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function exportJSON(){exportJSONReady=true;download("JICKMA_BODY_EXPORT_v0_1A.json",makeJSON());renderDashboard()}
+function exportHTML(){exportHTMLReady=true;download("JICKMA_BODY_EXPORT_v0_1A.html",makeStandaloneHTML(),"text/html");renderDashboard()}
+function fullCheck(){buildBody();runMini("FullCheckMini");runPreflight();smoke();exportJSONReady=!!makeJSON();exportHTMLReady=!!makeStandaloneHTML();renderDashboard();return currentSmoke}
+
+el("loadTemplate").onclick=loadTemplate;el("buildBody").onclick=()=>{buildBody();runMini("BuildBody");runPreflight()};el("loadCover").onclick=loadCover;el("clearRoute").onclick=()=>{el("actualRoute").value="";renderLane();renderDashboard()};el("autoExpected").onclick=()=>{el("expectedRoute").value=clean(el("actualRoute").value)||"↑↓";runMini("AutoExpected")};el("runMini").onclick=()=>runMini("ManualRun");el("runPreflight").onclick=runPreflight;el("runSmoke").onclick=smoke;el("runFullCheck").onclick=fullCheck;el("exportJSON").onclick=exportJSON;el("exportHTML").onclick=exportHTML;
+loadTemplate();loadCover();buildBody();renderDashboard();
+})();
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import tempfile
 from datetime import datetime, timezone
@@ -207,6 +208,30 @@ def update_stage(
     return proposed
 
 
+
+def check_package_admission(candidate: Path, keeper: Path) -> dict[str, Any]:
+    """Use the existing source-neutral M001 gate; no upload, deletion or crown.
+
+    A distinct package is only eligible to enter normal closure evidence review.
+    Duplicate/invalid candidates fail closed before a PACKAGE PASS transition.
+    """
+    source = ROOT / "agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py"
+    spec = importlib.util.spec_from_file_location("jm_m001_carrier_admission", source)
+    if spec is None or spec.loader is None:
+        raise ValueError("M001 carrier admission adapter unavailable")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    result = module.assess(candidate, keeper)
+    if result.get("schema") != "JM.M001.CarrierAdmission/0.1":
+        raise ValueError("M001 unexpected admission schema")
+    if result.get("state") != "DISTINCT_BYTES":
+        raise ValueError("PACKAGE admission HOLD: " + str(result.get("state")) + " " +
+                         "; ".join(result.get("errors", [])))
+    if (result.get("retirement_authorised") or result.get("admission_authorised") or
+            result.get("library_mutations") or result.get("account_quota_savings_claimed_bytes")):
+        raise ValueError("M001 gate unexpectedly asserted mutation/authority")
+    return result
+
 def self_test() -> None:
     policy = load_policy()
     with tempfile.TemporaryDirectory() as td:
@@ -289,6 +314,8 @@ def main() -> int:
     parser.add_argument("--state-file", type=Path)
     parser.add_argument("--init", action="store_true")
     parser.add_argument("--stage")
+    parser.add_argument("--admission-candidate", type=Path, help="Optional new PACKAGE source to check before PACKAGE PASS")
+    parser.add_argument("--admission-keeper", type=Path, help="Existing keeper for independent pre-admission comparison")
     parser.add_argument("--state")
     parser.add_argument("--evidence", action="append", default=[])
     parser.add_argument("--note", default="")
@@ -321,10 +348,25 @@ def main() -> int:
             parser.error("--stage requires --state-file and --state")
         state_path = resolve_path(args.state_file)
         ledger = read_json(state_path)
+        admission = None
+        if args.admission_candidate or args.admission_keeper:
+            if (not args.admission_candidate or not args.admission_keeper or
+                    args.stage.upper() != "PACKAGE" or args.state.upper() != "PASS"):
+                parser.error("both --admission-* paths require PACKAGE --state PASS")
+            try:
+                admission = check_package_admission(
+                    resolve_path(args.admission_candidate), resolve_path(args.admission_keeper))
+            except (OSError, ValueError) as exc:
+                parser.error(str(exc))
         updated = update_stage(
             ledger, policy, args.stage, args.state, args.evidence, args.note,
             args.pointer, args.handoff_to,
         )
+        if admission is not None:
+            # The admission decision only establishes distinctness. Closure
+            # still requires its normal separate external/native evidence.
+            updated["stages"]["PACKAGE"]["carrier_admission"] = admission
+            updated["history"][-1]["carrier_admission_state"] = admission["state"]
         write_json(state_path, updated)
         print(f"JM Closure & Handoff stage PASS: {args.stage.upper()} {ledger['stages'][args.stage.upper()]['state']} -> {args.state.upper()}")
         print(f"CLOSURE_STATE: {updated['state']}")

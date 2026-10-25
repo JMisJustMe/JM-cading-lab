@@ -1,0 +1,126 @@
+name: JM CP13 original 63-64 bodies x 32 independent native KO executions
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/codegornization-cp13/**'
+      - 'registry/build-routes/JM_CP13_JANGLE_JOURMAZE_32_NATIVE_BUILD_ROUTE_MANIFEST_v0.1.json'
+      - '.github/workflows/jm-cp13-original-bodies-native-32.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-bodies-native-32:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover exact original 62-64 donor sources and inherited game
+        run: |
+          set -euo pipefail
+          echo 'f0dbce602b239e84c415350d16675127b27d771842b5cd12819432fee874dde6  coding-estate/integration/codegornization-cp12-converged/donors/JM_JudgeMaker.html' | sha256sum -c -
+          echo 'cdb57ae2376e219f253b2f57382d11d4b378b305c408a6468d6757d2a9e88302  coding-estate/integration/codegornization-cp13/donors/JM_JangleMonitor.html' | sha256sum -c -
+          echo '56c5ff4f76a222eb32d6b01d955ed0fe45d5389e5c14cba12f8e7618157545db  coding-estate/integration/codegornization-cp13/donors/JM_JourMaze.html' | sha256sum -c -
+          node --check coding-estate/integration/codegornization-cp13/verify-native-32.mjs
+          node coding-estate/integration/codegornization-cp11/prepare-native.mjs
+          cp coding-estate/integration/codegornization-cp13/native/cp13_sweep.gd coding-estate/integration/codegornization-cp11/godot/tests/cp13_sweep.gd
+          curl -fL --retry 2 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -o /tmp/cp13-godot.zip
+          echo '87f6e6be292929e363d15ed9052f277b2ba4e95ed994e1e099048097be2dfd03  /tmp/cp13-godot.zip' | sha256sum -c -
+          mkdir -p /tmp/cp13-godot
+          unzip -q /tmp/cp13-godot.zip -d /tmp/cp13-godot
+          chmod +x /tmp/cp13-godot/Godot_v4.5.2-stable_linux.x86_64
+          echo /tmp/cp13-godot >> "$GITHUB_PATH"
+      - name: Run inherited live gameplay and original JudgeMaker prerequisite
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess,re
+          p=Path('coding-estate/integration/codegornization-cp11')
+          (p/'evidence').mkdir(parents=True,exist_ok=True)
+          exe='/tmp/cp13-godot/Godot_v4.5.2-stable_linux.x86_64'
+          specs=[('--editor --import --quit','cp13-import.log'),('cp10_ko_contact_test.gd','cp13-cp10.log'),
+             ('cp11_ko_live_test.gd','cp13-cp11-live.log'),
+             ('cp11_converged_native_test.gd','cp13-cp11-converged.log'),
+             ('native_input_test.gd','cp13-input-lifecycle.log')]
+          for name,log in specs:
+              args=[exe,'--headless','--path','godot']
+              args+=['--editor','--import','--quit'] if name.startswith('--') else ['--script','res://tests/'+name]
+              run=subprocess.run(args,cwd=p,capture_output=True,text=True,timeout=70)
+              out=run.stdout+'\n'+run.stderr
+              (p/'evidence'/log).write_text(out)
+              if run.returncode!=0 or re.search(r'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load',out):
+                  raise SystemExit('INHERITED_NATIVE_HOLD:'+name+'\n'+out[-3000:])
+          assert 'CP11 KO LIVE SUMMARY 21/21' in (p/'evidence/cp13-cp11-live.log').read_text()
+          assert 'CP11 CONVERGED SUMMARY 25/25' in (p/'evidence/cp13-cp11-converged.log').read_text()
+          PY
+          node coding-estate/integration/codegornization-cp11/verify-converged-return.mjs
+          node coding-estate/integration/codegornization-cp12-converged/adjudicate-converged-native.mjs
+          echo 'INHERITED KO LIVE / CONVERGED / ORIGINAL JUDGEMAKER PASS'
+      - name: Thirty-two separate real native Godot executions with variant battle facts
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os,subprocess,re
+          root=Path.cwd()
+          game=root/'coding-estate/integration/codegornization-cp11'
+          out=root/'coding-estate/integration/codegornization-cp13/evidence/native-32'
+          out.mkdir(parents=True,exist_ok=True)
+          executable='/tmp/cp13-godot/Godot_v4.5.2-stable_linux.x86_64'
+          history=[]
+          for i in range(32):
+              target=out/f'sweep-{i:02d}.json'
+              env=os.environ.copy()
+              env['JM_SWEEP_INDEX']=str(i)
+              env['JM_SWEEP_OUT']=str(target)
+              process=subprocess.run([executable,'--headless','--path','godot','--script','res://tests/cp13_sweep.gd'],
+                  cwd=game,env=env,capture_output=True,text=True,timeout=80)
+              output=process.stdout+'\n'+process.stderr
+              (out/f'sweep-{i:02d}.log').write_text(output)
+              errors=re.findall(r'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load',output)
+              summary=re.search(rf'CP13 NATIVE RUN {i} SUMMARY (\d+)/(\d+)',output)
+              successful=process.returncode==0 and bool(summary) and summary[1]==summary[2] and int(summary[1])>=15 and target.is_file() and not errors
+              history.append({'index':i,'successful':successful,'returncode':process.returncode,
+                             'checks':summary[0] if summary else None,'scriptErrors':errors})
+              print(f'CP13 SEPARATE NATIVE PROCESS {i+1:02d}/32: {"PASS" if successful else "HOLD"}',flush=True)
+              if not successful:
+                  (out/'campaign-progress.json').write_text(json.dumps(history,indent=2))
+                  print(output[-5000:])
+                  raise SystemExit(f'CP13 NATIVE PROCESS HOLD at {i}; no 32/32 claim')
+          assert len(history)==32 and all(x['successful'] for x in history)
+          (out/'campaign-progress.json').write_text(json.dumps(history,indent=2))
+          print('32/32 INDEPENDENT GODOT NATIVE PROCESSES PASSED',flush=True)
+          PY
+      - name: Execute original JudgeMaker, JangleMonitor, JourMaze on every actual native receipt
+        run: |
+          set -euo pipefail
+          node coding-estate/integration/codegornization-cp13/verify-native-32.mjs > coding-estate/integration/codegornization-cp13/evidence/CP13_ORIGINAL_BODIES_32.log 2>&1
+          cat coding-estate/integration/codegornization-cp13/evidence/CP13_ORIGINAL_BODIES_32.log
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('coding-estate/integration/codegornization-cp13/evidence/CP13_32_RUN_ORIGINAL_BODIES_RECEIPT.json')
+          assert p.exists()
+          data=json.loads(p.read_text())
+          assert data['summary']['nativeIndependentProcessRuns']==32
+          assert data['summary']['admitted']==32
+          assert data['summary']['negativeJudgeMakerHolds']==32
+          assert data['summary']['negativeJangleBreakpoints']==32
+          assert data['summary']['negativeJourMazeRouteBlocks']==32
+          assert len(data['cases'])==32
+          assert all(x['authorisedForCustody'] for x in data['cases'])
+          print('32/32 native and original preserved bodies independent proof readback PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp13-original-jangle-jourmaze-32-native-receipts
+          path: |
+            coding-estate/integration/codegornization-cp13/evidence/
+            coding-estate/integration/codegornization-cp11/evidence/cp13-*
+          retention-days: 30

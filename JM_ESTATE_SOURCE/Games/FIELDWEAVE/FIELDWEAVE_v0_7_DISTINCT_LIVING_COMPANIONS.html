@@ -1,0 +1,1518 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08101a">
+<title>JM HANDPRINT · FIELDWEAVE v0.7 LIVING COMPANIONS</title>
+<style>
+:root{color-scheme:dark;--bg:#070e18;--card:#142438;--line:#294257;--ink:#e7f7ff;--muted:#91adc1;--aqua:#75eddf;--gold:#f9ce83;--pink:#ffa1d0}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(ellipse at 50% -20%,#19384a 0,#070e18 70%);font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:2px solid #79e9f5;outline-offset:2px}button:disabled{opacity:.45;cursor:default}header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px;max-width:1200px;margin:auto}h1{font-size:clamp(18px,4vw,25px);margin:0;letter-spacing:.04em}.sub{font-size:11px;color:#8caac4;letter-spacing:.17em;font-weight:800;text-transform:uppercase}.actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.smallbtn{border:1px solid #35536b;border-radius:11px;padding:9px 11px;background:#12273a;font-weight:750;font-size:12px}.smallbtn:hover,.stance button:hover{border-color:#5ee0d8}main{max-width:1200px;margin:auto;padding:0 12px 28px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 9px}.stat{padding:8px 10px;border:1px solid #284457;border-radius:12px;background:linear-gradient(145deg,#182e40,#0e1b2d)}.stat span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.15em;font-weight:850}.stat b{font-size:19px;font-variant-numeric:tabular-nums}.frame{background:#08121c;border:1px solid #385669;border-radius:19px;box-shadow:0 10px 44px #0008;overflow:hidden;position:relative;isolation:isolate}.frame:before{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid #b0f9f51e;border-radius:19px;z-index:2}canvas{width:100%;aspect-ratio:16/9;display:block;touch-action:none;cursor:crosshair}.over{position:absolute;inset:0;display:none;place-items:center;background:#030c16c9;z-index:3;padding:20px;text-align:center}.over.visible{display:grid}.over h2{font-size:clamp(28px,6vw,55px);line-height:1.08;margin:0 0 12px}.over p{color:#b3cfdf;max-width:430px}.over button{border:1px solid #8cfbef;background:#163e49;padding:12px 20px;border-radius:12px;font-weight:800}.hudline{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:9px 4px 3px;color:#a6becd;font-size:12px}.hudline strong{color:#91eee0}.stance{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}.stance button{background:linear-gradient(140deg,#172c3e,#0d1c2a);border:1px solid #355166;border-radius:14px;padding:11px 4px;display:grid;grid-template-columns:auto 1fr;align-items:center;text-align:left;gap:9px}.stance button.active{border-color:#77e6df;background:linear-gradient(120deg,#14464b,#182738);box-shadow:inset 0 0 0 1px #77e6df5b}.stance .sym{font-size:22px;width:32px;text-align:center}.stance strong,.stance small{display:block}.stance strong{font-size:13px}.stance small{font-size:11px;color:#9bb6c7}.info{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}.panel{border:1px solid #263d51;background:#0c1928;border-radius:14px;padding:12px;min-width:0}.panel h3{margin:0 0 8px;color:#c6f1ef;font-size:13px;letter-spacing:.04em}.panel p{font-size:12px;color:#afc4d0;margin:7px 0}.panel code{font:11px ui-monospace,SFMono-Regular,Consolas,monospace;color:#f8e1b1;word-break:break-word}.trace{height:134px;overflow:auto;background:#040c14;padding:9px;border-radius:9px;white-space:pre-wrap;font:11px/1.55 ui-monospace,Consolas,monospace;color:#a6d6dd}.proof{display:grid;gap:6px;font:12px/1.35 ui-monospace,monospace}.proof .pass{color:#8ee7c8}.proof .hold{color:#ffcb91}#status{font-weight:760;color:#a3e7dc}details{margin-top:10px;border-top:1px solid #273e50;padding-top:8px;font-size:12px;color:#abc7d3}summary{cursor:pointer;color:#e5f2f3;font-weight:700}.foot{color:#91aebe;font-size:11px;margin:11px 3px}.footerctrls{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.footerctrls .smallbtn{flex:1}@media(max-width:630px){header{padding:10px 12px;align-items:start}.actions{max-width:150px}.stats{gap:5px}.stat{padding:6px}.stat b{font-size:16px}.stat span{font-size:9px}.frame{border-radius:13px}.info{grid-template-columns:1fr}.stance button{padding:9px 5px;gap:1px;grid-template-columns:1fr;text-align:center}.stance .sym{margin:auto}.stance strong{font-size:12px}.stance small{font-size:9px}.hudline{font-size:11px}}
+@media (orientation:landscape) and (max-height:600px){header{padding:5px 12px;align-items:center}header .sub{display:none}h1{font-size:17px}.smallbtn{padding:5px 8px}.stats{margin-bottom:5px;gap:5px}.stat{padding:3px 7px}.stat span{font-size:9px}.stat b{font-size:14px}.frame{width:fit-content;max-width:100%;margin:auto}canvas{width:auto;height:min(calc(100dvh - 132px),52vw);max-width:100%;margin:auto}.hudline{padding-top:5px}}
+
+/* v0.2 inherited UI, v0.3 forward-only Living Ecology layer */
+@media(max-width:630px){.frame.evolving{height:455px}.frame.evolving .over{overflow-y:auto;align-items:center}.frame.evolving .upgradeDock{max-width:100%}}
+.skillbtn{border-color:#7d69ad;background:linear-gradient(130deg,#40234d,#1d354f);color:#f4ddff;flex-shrink:0}
+.skillbtn.ready{box-shadow:0 0 0 1px #c9a5f96b,inset 0 0 16px #e18eff24}
+.upgradeDock{max-width:630px;margin:auto}
+.upgradeDock[hidden]{display:none!important}
+.upgradeLabel{color:#9cece0;font-size:11px;font-weight:900;letter-spacing:.22em;margin-bottom:11px}
+.upgradeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.upgradeGrid button{display:grid;align-content:center;gap:6px;min-height:112px;background:linear-gradient(135deg,#163c44,#17243d);border:1px solid #5c9295;border-radius:15px;color:#e5ffff;padding:13px 8px;min-width:0}
+.upgradeGrid button:hover{background:#23616b;border-color:#9eefe1}
+.upgradeGrid button b{font-size:13px;letter-spacing:.06em}
+.upgradeGrid button small{font-size:11px;color:#abc7d0;line-height:1.3}
+#status{max-width:450px}
+@media(max-width:630px){.hudline{align-items:center}.skillbtn{width:100%;min-height:42px}.upgradeGrid{grid-template-columns:1fr}.upgradeGrid button{min-height:65px;padding:7px}.upgradeGrid button b{font-size:12px}.upgradeGrid button small{font-size:10px}.over{padding:12px}.over h2{font-size:28px}.over p{font-size:12px}}
+@media(orientation:landscape) and (max-height:600px){.skillbtn{padding:5px 9px}.upgradeGrid button{min-height:45px}.upgradeGrid{grid-template-columns:repeat(3,1fr)}}
+
+/* v0.3 · expanded functional control rail and creature-led environment */
+.abilityRail{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.abilityRail button{min-height:39px}
+.focusbtn{border-color:#428c8e;background:linear-gradient(130deg,#153e49,#143147)}
+.echobtn{border-color:#ae7859;background:linear-gradient(130deg,#493427,#262340);color:#ffe4ad}
+.echobtn.ready{box-shadow:inset 0 0 17px #ffaa6c38,0 0 0 1px #ffd48e88}
+.fieldHints{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:8px 1px}
+.fieldHints>div{background:linear-gradient(120deg,#122438,#112b38);border:1px solid #315367;padding:8px 10px;border-radius:10px;min-width:0}
+.fieldHints span{display:block;color:#7ea6b7;font-size:9px;letter-spacing:.13em;font-weight:850;text-transform:uppercase}
+.fieldHints b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#b9f3ea}
+@media(max-width:630px){.abilityRail{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.abilityRail button{font-size:10px;padding:7px 4px;min-height:42px}.abilityRail .skillbtn{width:auto;grid-column:span 2}.hudline>span{max-width:100%}.fieldHints{gap:4px}.fieldHints>div{padding:6px}.fieldHints b{font-size:10px}}
+@media(orientation:landscape) and (max-height:600px){.fieldHints{margin:4px 1px}.fieldHints>div{padding:4px 7px}.abilityRail button{min-height:32px}}
+
+.relaybtn{border-color:#64cc9e88!important;background:linear-gradient(140deg,#103b35,#152d40)!important}
+.fieldHints{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.fieldHints>div:nth-child(4){border-color:#b5a7eb55}
+.fieldHints>div:nth-child(5){border-color:#7ce7bf55}
+@media(max-width:700px){.fieldHints{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fieldHints>div:last-child{grid-column:span 2}}
+.conductRail{padding:12px;margin:8px 0;border:1px solid #6ca19a;border-radius:14px;background:#102a34}.conductRail>button{min-height:48px;width:100%;touch-action:none}.conductRail>span{display:block;font-size:12px;color:#c8e9e4;margin:8px 0}.conductRail .footerctrls{display:grid;grid-template-columns:repeat(2,1fr)}
+</style></head><body>
+<header><div><div class="sub">JM HANDPRINT · LIVING FIELD · CONDUCTED FORMS</div><h1>FIELDWEAVE <span style="color:#8cdece">v0.6 · LIVING COOPERATION</span></h1></div><div class="actions"><button id="pause" class="smallbtn">Ⅱ Pause</button><button id="restart" class="smallbtn">↺ New run</button><button id="sound" class="smallbtn" aria-pressed="false">♫ Off</button></div></header>
+<main>
+<section class="stats" aria-label="Play statistics"><div class="stat"><span>Score</span><b id="score">0</b></div><div class="stat"><span>Wave</span><b id="wave">1 / 4</b></div><div class="stat"><span>Beacon</span><b id="health">100%</b></div><div class="stat"><span>Energy</span><b id="energy">100</b></div></section>
+<div class="frame"><canvas id="game" width="960" height="540" aria-label="FIELDWEAVE interactive arena. Pull back leftwards from the launcher on the left and release to fire. Choose a stance below." tabindex="0"></canvas><div class="over" id="overlay"><div><div class="sub">JM FIELDWEAVE</div><h2 id="endTitle">FIELD STABLE</h2><p id="endMsg">Good contact.</p><div id="upgradeDock" class="upgradeDock" hidden><div class="upgradeLabel">CHOOSE ONE · NEXT WAVE</div><div class="upgradeGrid"><button type="button" data-upgrade="guidance"><b>∿ GUIDANCE</b><small>Thread turns harder toward threats</small></button><button type="button" data-upgrade="resonance"><b>✺ RESONANCE</b><small>Wider Bloom and greater impact focus</small></button><button type="button" data-upgrade="aegis"><b>⬡ AEGIS</b><small>Restore Beacon and reinforce its shell</small></button></div></div><button id="continue">Play again ↗</button></div></div></div>
+<div class="hudline"><span><strong id="status">Pull ← from the beacon, release → toward the field.</strong></span><span id="charge">Pressure 0.0 / 10</span><div class="abilityRail"><button class="smallbtn skillbtn" id="surge" type="button">◈ FIELD SLOW · 28 energy</button><button class="smallbtn focusbtn" id="focusFire" type="button">◎ TARGET FIRE · auto aim</button><button class="smallbtn echobtn" id="echo" type="button">✷ ECHO BURST · 0%</button><button class="smallbtn relaybtn" id="relay" type="button">⬡ DEPLOY RELAY · 34 energy</button></div></div>
+<div class="conductRail"><button id="conduct" class="smallbtn skillbtn">HOLD · MEND / LANCE / NOVA · 22 energy</button><span id="conductStatus">Choose a glyph, hold and release. Two different conducted glyphs earn a living companion: Skyray, Rootwarden or Prismwisp.</span><div class="footerctrls"><button id="formSheet" class="smallbtn">Save companion animation sheet</button><button id="card" class="smallbtn">Save form card</button><button id="motif" class="smallbtn">Save WAV motif</button><button id="hostSave" class="smallbtn">Host checkpoint</button><button id="hostRecover" class="smallbtn">Host recover</button></div></div><div class="fieldHints" aria-label="Living field situation"><div><span>Nearest threat</span><b id="threat">FIELD QUIET</b></div><div><span>Intercepted</span><b id="intercepts">0 BOLTS</b></div><div><span>Echo charge</span><b id="echoMeter">0 / 100</b></div><div><span>Field front</span><b id="front">VERDANT · RESONANT GROWTH</b></div><div><span>Active relays</span><b id="relayCount">0 / 2</b></div></div>
+<div class="stance" aria-label="GlyphBody mode selection"><button data-glyph="~" class="active"><span class="sym" style="color:#83f3e6">∿</span><span><strong>THREAD</strong><small>Guided · low cost</small></span></button><button data-glyph="!" ><span class="sym" style="color:#facf8a">✦</span><span><strong>PIERCE</strong><small>Fast · shield break</small></span></button><button data-glyph="*"><span class="sym" style="color:#f4a0ce">✺</span><span><strong>BLOOM</strong><small>Wide · multi-hit</small></span></button></div>
+<div class="info"><section class="panel"><h3>WHAT YOU ARE PLAYING · RELAY FRONTIER</h3><p>Drag backwards from the beacon on the left, then release to send a living pulse forward. Aim at incoming forms before they reach the beacon. Every contact must pass the bodies' route and state rules.</p><p><b>THREAD</b> curves toward targets; <b>PIERCE</b> is faster and continues through enemies; <b>BLOOM</b> strikes neighbouring forms. Watch <b>Manta wing-dives, Bramble splits, Weaver phasing, Darter lunges, Sentry attacks</b> and the fourth-wave <b>Guardian</b>. Evolve between waves, intercept hostile bolts, use FIELD SLOW, earn an ECHO BURST through actual contacts, and <b>deploy up to two relay allies</b> to protect vulnerable lanes. Each wave changes the environment: VERDANT rewards clears, CROSSWIND bends shots, ION STORM speeds enemy bolts, and ECLIPSE strengthens enemy phasing. Relays fire traceable THREAD pulses but can be destroyed by hostile bolts.</p><div class="footerctrls"><button id="tests" class="smallbtn">Run contact tests</button><button id="export" class="smallbtn">Export receipts</button><button id="import" class="smallbtn">Import run</button><input type="file" id="file" hidden accept="application/json,.json" /></div><details><summary>Source bodies & proof boundary</summary><p>Runs source-grammar interpreters based on the current-native <b>JM Sovereign Batch Three</b>: ContactBand (drag distance classified, not actual touch-force sensor); GlyphBody (shot selection); FormulaGate (hit permission); RouteFrame (success/deflection); StateField (shield → exposed → cleared). The local game loop, physics and renderer are new JavaScript carrier logic. This is <b>not</b> a claim of importing the entire Batch Three implementation or of independent native Android execution.</p><p>Body identity is preserved by separate source programs and receipts, not represented as five distinct operating-system processes. The game does not use Sovereign Ten RouteVM / JM GameCore. This v0.6 descendant inherits the frozen v0.1→v0.3 contact rules and adds a separate JS carrier for allied relay behaviour and changing field conditions. The inherited combat path remains source-aligned. The new CONDUCT path separately embeds the recovered original Batch Three JavaScript executors at commit b4c5cb7135c17be97c211c12d8b748e2bb0ca0d5, connected by a new adapter. This is original JS execution, not compiled Android/native-engine proof. Its six-body result also produces an SVG form card and PCM WAV motif. Living companions inherit committed pairs of original routes. Physical owner-device acceptance remains HOLD.</p></details></section>
+<section class="panel"><h3>LIVE BODY CONTACT · TRACE</h3><div class="proof" id="proof"><div class="hold">No contact yet — drag and release to begin.</div></div><p><b id="bodyCount">0</b> committed traces · <b id="clears">0</b> cleared forms · last contact <code id="contactId">—</code></p><div class="trace" id="log" aria-live="off">FIELDWEAVE ready. Actual play creates receipts here.</div></section></div><div class="foot">Source lineage: JMisJustMe/JM-cading-lab · Sovereign Batch Three, current-native v1. Game harness: FIELDWEAVE v0.6 Living Cooperation, inheriting protected v0.5 Conducted Forms; v0.1 FLAZ remains original. Local browser saving is best-effort; use Export for transferable evidence. Android portrait and landscape, mouse and touch are supported.</div></main>
+<script>
+window.JM_CONDUCT=(()=>{
+const core=(()=>{
+class NativeError extends Error {
+  constructor(code, message, details = {}) {
+    super(message);
+    this.name = 'NativeError';
+    this.code = code;
+    this.details = details;
+  }
+}
+function need(condition, code, message, details = {}) {
+  if (!condition) throw new NativeError(code, message, details);
+}
+function stable(value) {
+  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+function digest(value) {
+  const text = typeof value === 'string' ? value : stable(value);
+  let hash = 0xcbf29ce484222325n;
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= BigInt(text.charCodeAt(i));
+    hash = BigInt.asUintN(64, hash * 0x100000001b3n);
+  }
+  return hash.toString(16).padStart(16, '0');
+}
+function valueOf(raw) {
+  const text = String(raw ?? '').trim();
+  if (!text) return null;
+  if ((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))) {
+    return text.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
+  }
+  if (text === 'true') return true;
+  if (text === 'false') return false;
+  if (text === 'null') return null;
+  if (/^-?\d+(?:\.\d+)?$/.test(text)) return Number(text);
+  if ((text.startsWith('[') && text.endsWith(']')) || (text.startsWith('{') && text.endsWith('}'))) {
+    try { return JSON.parse(text.replace(/'/g, '"')); } catch {}
+  }
+  return text;
+}
+function listOf(raw) {
+  const text = String(raw ?? '').trim().replace(/^\[/, '').replace(/\]$/, '');
+  if (!text) return [];
+  return splitTop(text).map(valueOf);
+}
+function splitTop(text, delimiter = ',') {
+  const out = [];
+  let depth = 0, quote = '', start = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === '\\') i += 1;
+      else if (ch === quote) quote = '';
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote = ch;
+    else if ('([{'.includes(ch)) depth += 1;
+    else if (')]}'.includes(ch)) depth -= 1;
+    else if (ch === delimiter && depth === 0) {
+      out.push(text.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  out.push(text.slice(start).trim());
+  return out.filter(Boolean);
+}
+function getPath(object, path) {
+  return String(path).split('.').filter(Boolean).reduce((value, key) => value == null ? undefined : value[key], object);
+}
+function setPath(object, path, value) {
+  const keys = String(path).split('.').filter(Boolean);
+  need(keys.length, 'EMPTY_PATH', 'State path cannot be empty.');
+  let cursor = object;
+  for (const key of keys.slice(0, -1)) {
+    if (!cursor[key] || typeof cursor[key] !== 'object') cursor[key] = {};
+    cursor = cursor[key];
+  }
+  cursor[keys.at(-1)] = value;
+  return value;
+}
+function blocks(source, keyword) {
+  const output = [];
+  const pattern = new RegExp(`\\b${keyword}\\s+([A-Za-z_][\\w.-]*)(?:\\s*\\(([^)]*)\\))?\\s*\\{`, 'g');
+  let match;
+  while ((match = pattern.exec(source))) {
+    const open = pattern.lastIndex - 1;
+    let depth = 1, quote = '', index = open + 1;
+    for (; index < source.length && depth; index += 1) {
+      const ch = source[index];
+      if (quote) {
+        if (ch === '\\') index += 1;
+        else if (ch === quote) quote = '';
+      } else if (ch === '"' || ch === "'") quote = ch;
+      else if (ch === '{') depth += 1;
+      else if (ch === '}') depth -= 1;
+    }
+    need(depth === 0, 'UNCLOSED_BLOCK', `Unclosed ${keyword} block ${match[1]}.`);
+    output.push({ name: match[1], params: match[2] ?? '', body: source.slice(open + 1, index - 1), start: match.index, end: index });
+    pattern.lastIndex = index;
+  }
+  return output;
+}
+function linesOf(body) {
+  return String(body).split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#') && !line.startsWith('//'));
+}
+function assignments(body) {
+  const result = {};
+  for (const line of linesOf(body)) {
+    const match = line.match(/^([A-Za-z_][\w.-]*)\s*(?::|=)\s*(.+)$/);
+    if (match) result[match[1]] = valueOf(match[2]);
+  }
+  return result;
+}
+function compare(left, op, right) {
+  return ({'==': left === right, '!=': left !== right, '>': left > right, '<': left < right, '>=': left >= right, '<=': left <= right})[op];
+}
+function evalCondition(text, state = {}) {
+  const raw = String(text).trim();
+  for (const logical of [' or ', ' and ']) {
+    const index = raw.indexOf(logical);
+    if (index > -1) {
+      const left = evalCondition(raw.slice(0, index), state);
+      const right = evalCondition(raw.slice(index + logical.length), state);
+      return logical.trim() === 'or' ? left || right : left && right;
+    }
+  }
+  if (raw.startsWith('not ')) return !evalCondition(raw.slice(4), state);
+  const match = raw.match(/^([A-Za-z_][\w.]*)\s*(==|!=|>=|<=|>|<)\s*(.+)$/);
+  if (match) {
+    const rightText = match[3].trim();
+    const right = /^[A-Za-z_][\w.]*$/.test(rightText) && !['true','false','null'].includes(rightText)
+      ? getPath(state, rightText)
+      : valueOf(rightText);
+    return compare(getPath(state, match[1]), match[2], right);
+  }
+  return Boolean(getPath(state, raw));
+}
+function parseAction(text) {
+  const raw = String(text).trim().replace(/;$/, '');
+  if (raw === 'end') return { type: 'end' };
+  const assign = raw.match(/^([A-Za-z_][\w.]*)\s*(=|\+=|-=)\s*(.+)$/);
+  if (assign) return { type: 'assign', path: assign[1], op: assign[2], value: valueOf(assign[3]) };
+  const route = raw.match(/^route\s+([A-Za-z_][\w.-]*)$/);
+  if (route) return { type: 'route', value: route[1] };
+  const emit = raw.match(/^emit\s+([A-Za-z_][\w.-]*)$/);
+  if (emit) return { type: 'emit', value: emit[1] };
+  const show = raw.match(/^(?:show|say)\s+(.+)$/);
+  if (show) return { type: 'show', value: valueOf(show[1]) };
+  throw new NativeError('INVALID_ACTION', `Cannot parse action: ${raw}`);
+}
+function applyAction(action, state, trace = null) {
+  trace?.emit('action.begin', action);
+  let result;
+  if (action.type === 'assign') {
+    const current = getPath(state, action.path);
+    const next = action.op === '=' ? action.value : action.op === '+=' ? Number(current ?? 0) + Number(action.value) : Number(current ?? 0) - Number(action.value);
+    result = setPath(state, action.path, next);
+  } else if (action.type === 'route') result = state.nextRoute = action.value;
+  else if (action.type === 'emit') result = (state.events ??= []).push(action.value);
+  else if (action.type === 'show') result = (state.messages ??= []).push(action.value);
+  else if (action.type === 'end') result = state.ended = true;
+  else throw new NativeError('UNKNOWN_ACTION', action.type);
+  trace?.emit('action.end', { action, result });
+  return result;
+}
+class Trace {
+  constructor(body) { this.body = body; this.events = []; }
+  emit(type, payload = {}) {
+    const event = { index: this.events.length, body: this.body, type, payload };
+    event.digest = digest(event);
+    this.events.push(event);
+    return event;
+  }
+  receipt(claim, result) {
+    return { schema: 'jm.native.receipt/1.0', body: this.body, claim, eventCount: this.events.length, traceDigest: digest(this.events), resultDigest: digest(result) };
+  }
+}
+function formulaTokens(source) {
+  const tokens = String(source).match(/\d+(?:\.\d+)?|[A-Za-z_][\w.]*|[()+\-*/]/g) ?? [];
+  need(tokens.join('').replace(/\s/g,'') === String(source).replace(/\s/g,''), 'FORMULA_BAD_TOKEN', `Invalid formula ${source}.`);
+  return tokens;
+}
+function evalFormula(source, vars = {}) {
+  const tokens = formulaTokens(source);
+  const out = [], ops = [];
+  const prec = {'+':1,'-':1,'*':2,'/':2};
+  for (const token of tokens) {
+    if (/^\d/.test(token) || /^[A-Za-z_]/.test(token)) out.push(token);
+    else if (token === '(') ops.push(token);
+    else if (token === ')') {
+      while (ops.length && ops.at(-1) !== '(') out.push(ops.pop());
+      need(ops.pop() === '(', 'FORMULA_PAREN', 'Unbalanced formula parentheses.');
+    } else {
+      while (ops.length && prec[ops.at(-1)] >= prec[token]) out.push(ops.pop());
+      ops.push(token);
+    }
+  }
+  while (ops.length) {
+    const op = ops.pop(); need(op !== '(', 'FORMULA_PAREN', 'Unbalanced formula parentheses.'); out.push(op);
+  }
+  const stack = [];
+  for (const token of out) {
+    if (/^\d/.test(token)) stack.push(Number(token));
+    else if (/^[A-Za-z_]/.test(token)) {
+      const value = getPath(vars, token);
+      need(Number.isFinite(Number(value)), 'FORMULA_UNKNOWN_VAR', `Unknown numeric formula variable ${token}.`);
+      stack.push(Number(value));
+    } else {
+      const b = stack.pop(), a = stack.pop();
+      need(Number.isFinite(a) && Number.isFinite(b), 'FORMULA_STACK', 'Malformed formula.');
+      stack.push(token === '+' ? a+b : token === '-' ? a-b : token === '*' ? a*b : a/b);
+    }
+  }
+  need(stack.length === 1 && Number.isFinite(stack[0]), 'FORMULA_RESULT', 'Formula did not yield one finite value.');
+  return stack[0];
+}
+
+return {NativeError,need,stable,digest,valueOf,listOf,splitTop,getPath,setPath,blocks,linesOf,assignments,compare,evalCondition,parseAction,applyAction,Trace,evalFormula};})();
+const field=(()=>{
+const { Trace, applyAction, blocks, evalCondition, evalFormula, need, parseAction, setPath, splitTop, valueOf }=core;
+
+function regexFrom(raw) {
+  const match = String(raw).match(/^\/([\s\S]*)\/([gimsuy]*)$/);
+  need(match, 'TOKEN_BAD_REGEX', `Expected /pattern/flags, got ${raw}.`);
+  const flags = match[2].replace('g','');
+  return new RegExp(`^(?:${match[1]})`, flags);
+}
+
+const TokenBody = {
+  parse(source) {
+    const defs = [];
+    for (const raw of String(source).split(/\r?\n/).map(line=>line.trim()).filter(Boolean)) {
+      let match = raw.match(/^token\s+([A-Za-z_][\w.-]*)\s+(\/.*\/[gimsuy]*)$/);
+      if (match) { defs.push({type:'token',name:match[1],pattern:match[2],regex:regexFrom(match[2])}); continue; }
+      match = raw.match(/^skip\s+([A-Za-z_][\w.-]*)\s+(\/.*\/[gimsuy]*)$/);
+      if (match) { defs.push({type:'skip',name:match[1],pattern:match[2],regex:regexFrom(match[2])}); continue; }
+      throw Object.assign(new Error(`Invalid TokenBody declaration ${raw}`),{code:'TOKEN_BAD_DECL'});
+    }
+    need(defs.some(def=>def.type==='token'),'TOKEN_NO_TOKENS','TokenBody requires token declarations.');
+    return {type:'TokenBodyProgram',defs};
+  },
+  lower(ast) {
+    return {type:'TokenAutomaton',states:ast.defs.map((def,index)=>({id:index,kind:def.type,name:def.name,pattern:def.pattern})),priority:ast.defs.map(def=>def.name)};
+  },
+  execute(source, input) {
+    const ast=this.parse(source), ir=this.lower(ast), trace=new Trace('TokenBody'), tokens=[];
+    let rest=String(input), offset=0;
+    while(rest.length){
+      let matched=null;
+      for(const def of ast.defs){
+        const found=rest.match(def.regex);
+        if(found && found[0].length){ matched={def,text:found[0]}; break; }
+      }
+      need(matched,'TOKEN_NO_MATCH',`No token matched at offset ${offset}.`,{rest});
+      trace.emit('lexeme.matched',{name:matched.def.name,type:matched.def.type,text:matched.text,offset});
+      if(matched.def.type==='token') tokens.push({type:matched.def.name,value:matched.text,offset});
+      offset+=matched.text.length; rest=rest.slice(matched.text.length);
+    }
+    return {ast,ir,tokens,trace:trace.events,receipt:trace.receipt('tokenise source with body-defined lexical priority',tokens)};
+  }
+};
+
+const PunctBody = {
+  parse(source) {
+    const puncts=[], sequences=[];
+    for(const raw of String(source).split(/\r?\n/).map(line=>line.trim()).filter(Boolean)){
+      let match=raw.match(/^punct\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+effect=([A-Za-z_][\w.-]*)$/);
+      if(match){ puncts.push({name:match[1],symbol:valueOf(match[2]),effect:match[3]}); continue; }
+      match=raw.match(/^sequence\s+([A-Za-z_][\w.-]*)\s*=\s*\[([^\]]*)\]$/);
+      if(match){ sequences.push({name:match[1],members:splitTop(match[2]).map(valueOf).map(String)}); continue; }
+      throw Object.assign(new Error(`Invalid PunctBody declaration ${raw}`),{code:'PUNCT_BAD_DECL'});
+    }
+    need(puncts.length,'PUNCT_NONE','PunctBody requires punctuation declarations.');
+    const names=new Set(puncts.map(p=>p.name));
+    sequences.forEach(seq=>seq.members.forEach(member=>need(names.has(member),'PUNCT_UNKNOWN_MEMBER',`${seq.name} uses ${member}.`)));
+    return {type:'PunctBodyProgram',puncts,sequences};
+  },
+  lower(ast){
+    return {type:'PunctEffectGraph',nodes:ast.puncts.map(p=>({id:`punct:${p.name}`,...p})).concat(ast.sequences.map(s=>({id:`sequence:${s.name}`,...s}))),edges:ast.sequences.flatMap(s=>s.members.map(m=>({from:`punct:${m}`,to:`sequence:${s.name}`,kind:'member'})))};
+  },
+  execute(source,input){
+    const ast=this.parse(source),ir=this.lower(ast),trace=new Trace('PunctBody'),events=[];
+    const defs=[...ast.puncts].sort((a,b)=>String(b.symbol).length-String(a.symbol).length);
+    let index=0,text=String(input);
+    while(index<text.length){
+      const def=defs.find(item=>text.startsWith(String(item.symbol),index));
+      if(def){ const event={index,name:def.name,symbol:def.symbol,effect:def.effect};events.push(event);trace.emit('punct.applied',event);index+=String(def.symbol).length; }
+      else index+=1;
+    }
+    return {ast,ir,events,completed:events.some(event=>event.effect==='complete'),trace:trace.events,receipt:trace.receipt('turn punctuation into operational effects',events)};
+  }
+};
+
+const GlyphBody = {
+  parse(source){
+    const glyphs=[];
+    for(const raw of String(source).split(/\r?\n/).map(line=>line.trim()).filter(Boolean)){
+      const match=raw.match(/^glyph\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+pressure=([A-Za-z_][\w.-]*)\s+route=([A-Za-z_][\w.-]*)$/);
+      need(match,'GLYPH_BAD_DECL',`Invalid GlyphBody declaration ${raw}.`);
+      glyphs.push({name:match[1],symbol:valueOf(match[2]),pressure:match[3],route:match[4]});
+    }
+    need(glyphs.length,'GLYPH_NONE','GlyphBody requires glyphs.');
+    need(new Set(glyphs.map(g=>g.symbol)).size===glyphs.length,'GLYPH_DUPLICATE_SYMBOL','Glyph symbols must be unique.');
+    return {type:'GlyphBodyProgram',glyphs};
+  },
+  lower(ast){return {type:'GlyphPressureGraph',nodes:ast.glyphs.map(g=>({id:`glyph:${g.name}`,...g})),edges:ast.glyphs.map(g=>({from:`glyph:${g.name}`,to:`route:${g.route}`,kind:g.pressure}))};},
+  execute(source,symbol){
+    const ast=this.parse(source),ir=this.lower(ast),trace=new Trace('GlyphBody');
+    const glyph=ast.glyphs.find(candidate=>candidate.symbol===symbol);
+    need(glyph,'GLYPH_UNKNOWN',`Unknown glyph ${symbol}.`);
+    const state={glyph:glyph.name,symbol:glyph.symbol,pressure:glyph.pressure,nextRoute:glyph.route};
+    trace.emit('glyph.read',state);
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('read glyph pressure into route action',state)};
+  }
+};
+
+const RouteFrame = {
+  parse(source){
+    const frames=blocks(source,'frame').map(block=>{
+      let entry=null;const steps=[];
+      for(const line of String(block.body).split(/\r?\n/).map(v=>v.trim()).filter(Boolean)){
+        let m=line.match(/^entry\s+([A-Za-z_][\w.-]*)$/); if(m){entry=m[1];continue;}
+        m=line.match(/^step\s+([A-Za-z_][\w.-]*)\s+goto\s+([A-Za-z_][\w.-]*)$/);
+        if(m){steps.push({name:m[1],kind:'goto',target:m[2]});continue;}
+        m=line.match(/^step\s+([A-Za-z_][\w.-]*)\s+when\s+(.+?)\s+goto\s+([A-Za-z_][\w.-]*)\s+else\s+([A-Za-z_][\w.-]*)$/);
+        if(m){steps.push({name:m[1],kind:'branch',condition:m[2],target:m[3],otherwise:m[4]});continue;}
+        m=line.match(/^step\s+([A-Za-z_][\w.-]*)\s+do\s+(.+?)(?:\s+end)?$/);
+        if(m){steps.push({name:m[1],kind:'action',action:parseAction(m[2]),end:/\s+end$/.test(line)});continue;}
+        throw Object.assign(new Error(`Invalid RouteFrame line ${line}`),{code:'FRAME_BAD_STEP'});
+      }
+      need(entry && steps.length,'FRAME_CORE_REQUIRED',`Frame ${block.name} requires entry and steps.`);
+      const names=new Set(steps.map(step=>step.name));
+      need(names.has(entry),'FRAME_ENTRY_UNKNOWN',`Unknown entry ${entry}.`);
+      steps.forEach(step=>{if(step.target)need(names.has(step.target),'FRAME_TARGET_UNKNOWN',`${step.name} targets ${step.target}.`);if(step.otherwise)need(names.has(step.otherwise),'FRAME_TARGET_UNKNOWN',`${step.name} targets ${step.otherwise}.`);});
+      return {type:'RouteFrame',name:block.name,entry,steps};
+    });
+    need(frames.length,'FRAME_NONE','RouteFrame requires frame.');
+    return {type:'RouteFrameProgram',frames};
+  },
+  lower(ast){return {type:'RouteFrameGraphSet',graphs:ast.frames.map(frame=>({name:frame.name,entry:`${frame.name}:${frame.entry}`,nodes:frame.steps.map(step=>({id:`${frame.name}:${step.name}`,...step})),edges:frame.steps.flatMap(step=>step.kind==='goto'?[{from:`${frame.name}:${step.name}`,to:`${frame.name}:${step.target}`,kind:'goto'}]:step.kind==='branch'?[{from:`${frame.name}:${step.name}`,to:`${frame.name}:${step.target}`,kind:'true',condition:step.condition},{from:`${frame.name}:${step.name}`,to:`${frame.name}:${step.otherwise}`,kind:'false',condition:step.condition}]:[])}))};},
+  execute(source,initial={}){
+    const ast=this.parse(source),ir=this.lower(ast),frame=ast.frames[0],trace=new Trace('RouteFrame'),state=structuredClone(initial);
+    let current=frame.entry,count=0;
+    while(current&&!state.ended){
+      need(count++<128,'FRAME_LOOP','RouteFrame exceeded transition limit.');
+      const step=frame.steps.find(item=>item.name===current); need(step,'FRAME_MISSING_STEP',current);
+      trace.emit('step.enter',{frame:frame.name,step:current});
+      if(step.kind==='goto')current=step.target;
+      else if(step.kind==='branch'){const pass=evalCondition(step.condition,state);trace.emit('branch.checked',{condition:step.condition,pass});current=pass?step.target:step.otherwise;}
+      else{applyAction(step.action,state,trace);if(step.end)state.ended=true;current=null;}
+    }
+    const result={frame:frame.name,state,transitions:count};
+    return {ast,ir,...result,trace:trace.events,receipt:trace.receipt('execute framed route with visible entry and branches',result)};
+  }
+};
+
+const StateField = {
+  parse(source){
+    const fields=blocks(source,'field').map(block=>{
+      const states=[];const transitions=[];
+      for(const line of String(block.body).split(/\r?\n/).map(v=>v.trim()).filter(Boolean)){
+        let m=line.match(/^state\s+([A-Za-z_][\w.-]*)$/); if(m){states.push(m[1]);continue;}
+        m=line.match(/^transition\s+([A-Za-z_][\w.-]*)\s+([A-Za-z_][\w.-]*)\s*->\s*([A-Za-z_][\w.-]*)(?:\s+when\s+(.+))?$/);
+        if(m){transitions.push({name:m[1],from:m[2],to:m[3],condition:m[4]??null});continue;}
+        throw Object.assign(new Error(`Invalid StateField line ${line}`),{code:'STATEFIELD_BAD_LINE'});
+      }
+      need(states.length>=2&&transitions.length,'STATEFIELD_CORE',`Field ${block.name} requires states and transitions.`);
+      const set=new Set(states);transitions.forEach(t=>{need(set.has(t.from)&&set.has(t.to),'STATEFIELD_UNKNOWN_STATE',`${t.name} has unknown state.`);});
+      return {type:'StateField',name:block.name,states,transitions};
+    });
+    need(fields.length,'STATEFIELD_NONE','StateField requires field.');
+    return {type:'StateFieldProgram',fields};
+  },
+  lower(ast){return {type:'StateTransitionGraphSet',graphs:ast.fields.map(field=>({name:field.name,nodes:field.states.map(state=>({id:`${field.name}:${state}`,state})),edges:field.transitions.map(t=>({from:`${field.name}:${t.from}`,to:`${field.name}:${t.to}`,name:t.name,condition:t.condition}))}))};},
+  execute(source,transitionName,initial={}){
+    const ast=this.parse(source),ir=this.lower(ast),field=ast.fields[0],trace=new Trace('StateField'),state=structuredClone(initial);
+    state.fields??={};state.fields[field.name]??=field.states[0];
+    const transition=field.transitions.find(t=>t.name===transitionName);need(transition,'STATEFIELD_UNKNOWN_TRANSITION',transitionName);
+    need(state.fields[field.name]===transition.from,'STATEFIELD_WRONG_FROM',`Expected ${transition.from}.`);
+    if(transition.condition)need(evalCondition(transition.condition,state),'STATEFIELD_GUARD_FAILED',transition.condition);
+    state.fields[field.name]=transition.to;setPath(state,`${field.name[0].toLowerCase()+field.name.slice(1)}.state`,transition.to);
+    trace.emit('transition.applied',{field:field.name,...transition});
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('apply guarded state-field transition',state)};
+  }
+};
+
+const ContactBand = {
+  parse(source){
+    const bands=blocks(source,'band').map(block=>{
+      const range=block.body.match(/\brange\s+(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)/);
+      need(range,'BAND_RANGE_REQUIRED',`Band ${block.name} requires range.`);
+      const zones=[...block.body.matchAll(/\bzone\s+([A-Za-z_][\w.-]*)\s+(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)\s+route\s+([A-Za-z_][\w.-]*)/g)].map(m=>({name:m[1],min:Number(m[2]),max:Number(m[3]),route:m[4]}));
+      need(zones.length,'BAND_ZONES_REQUIRED',`Band ${block.name} requires zones.`);
+      const min=Number(range[1]),max=Number(range[2]);
+      zones.forEach(zone=>need(zone.min>=min&&zone.max<=max&&zone.min<=zone.max,'BAND_ZONE_RANGE',zone.name));
+      return {type:'ContactBand',name:block.name,min,max,zones};
+    });
+    need(bands.length,'BAND_NONE','ContactBand requires band.');
+    return {type:'ContactBandProgram',bands};
+  },
+  lower(ast){return {type:'ContactBandGraphSet',graphs:ast.bands.map(b=>({name:b.name,range:[b.min,b.max],nodes:b.zones.map(z=>({id:`zone:${z.name}`,...z})),edges:b.zones.map(z=>({from:`pressure:${z.min}-${z.max}`,to:`route:${z.route}`,kind:z.name}))}))};},
+  execute(source,pressure){
+    const ast=this.parse(source),ir=this.lower(ast),band=ast.bands[0],trace=new Trace('ContactBand');
+    need(Number(pressure)>=band.min&&Number(pressure)<=band.max,'BAND_PRESSURE_OUTSIDE',pressure);
+    const zone=band.zones.find(z=>Number(pressure)>=z.min&&Number(pressure)<=z.max);need(zone,'BAND_GAP',`No zone for ${pressure}.`);
+    const state={band:band.name,pressure:Number(pressure),zone:zone.name,nextRoute:zone.route};
+    trace.emit('pressure.classified',state);
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('classify contact pressure into route band',state)};
+  }
+};
+
+const FormulaGate = {
+  parse(source){
+    const gates=blocks(source,'gate').map(block=>{
+      const params=splitTop(block.params).map(v=>v.trim()).filter(Boolean);
+      const formula=block.body.match(/\bformula\s+(.+)/);
+      const pass=block.body.match(/\bpass\s+when\s+(.+)/);
+      const onpass=block.body.match(/\bonpass\s+(.+)/);
+      const onfail=block.body.match(/\bonfail\s+(.+)/);
+      need(params.length&&formula&&pass&&onpass&&onfail,'FGATE_CORE',`Gate ${block.name} requires params, formula, pass, onpass and onfail.`);
+      return {type:'FormulaGate',name:block.name,params,formula:formula[1].trim(),condition:pass[1].trim(),onpass:parseAction(onpass[1]),onfail:parseAction(onfail[1])};
+    });
+    need(gates.length,'FGATE_NONE','FormulaGate requires gate.');
+    return {type:'FormulaGateProgram',gates};
+  },
+  lower(ast){return {type:'FormulaGateGraphSet',graphs:ast.gates.map(g=>({name:g.name,nodes:[{id:'formula',formula:g.formula},{id:'condition',condition:g.condition},{id:'pass',action:g.onpass},{id:'fail',action:g.onfail}],edges:[{from:'formula',to:'condition',kind:'result'},{from:'condition',to:'pass',kind:'true'},{from:'condition',to:'fail',kind:'false'}]}))};},
+  execute(source,args={},initial={}){
+    const ast=this.parse(source),ir=this.lower(ast),gate=ast.gates[0],trace=new Trace('FormulaGate'),state=structuredClone(initial);
+    gate.params.forEach(param=>need(Object.hasOwn(args,param),'FGATE_ARG_MISSING',param));
+    const result=evalFormula(gate.formula,args);state.result=result;
+    const passed=evalCondition(gate.condition,state);applyAction(passed?gate.onpass:gate.onfail,state,trace);
+    trace.emit('gate.decided',{gate:gate.name,result,condition:gate.condition,passed});
+    return {ast,ir,state,passed,trace:trace.events,receipt:trace.receipt('evaluate formula then gate consequence',state)};
+  }
+};
+
+return {TokenBody,PunctBody,GlyphBody,RouteFrame,StateField,ContactBand,FormulaGate};})();
+const embodied=(()=>{
+const { Trace, applyAction, assignments, blocks, need, parseAction, splitTop, valueOf }=core;
+
+const FormulaBornCode = {
+  parse(source){
+    const wordbodies=blocks(source,'wordbody').map(block=>{
+      const data=assignments(block.body);
+      need(data.word&&data.image&&data.state,'FBC_WORD_CORE',`WordBody ${block.name} requires word, image and state.`);
+      return {type:'FBCWordBody',name:block.name,word:data.word,image:data.image,state:data.state};
+    });
+    const formulas=blocks(source,'formula').map(block=>{
+      const data=assignments(block.body);
+      need(data.from&&data.glyph&&data.route,'FBC_FORMULA_CORE',`Formula ${block.name} requires from, glyph and route.`);
+      return {type:'FBCFormula',name:block.name,from:data.from,glyph:data.glyph,route:data.route};
+    });
+    need(wordbodies.length&&formulas.length,'FBC_CORE','Formula-Born Code requires wordbody and formula.');
+    const names=new Set(wordbodies.map(item=>item.name)); formulas.forEach(item=>need(names.has(item.from),'FBC_UNKNOWN_WORD_BODY',item.from));
+    return {type:'FBCProgram',wordbodies,formulas};
+  },
+  lower(ast){return {type:'FBCTransformationGraph',wordNodes:ast.wordbodies.map(w=>({id:`word:${w.name}`,...w})),formulaNodes:ast.formulas.map(f=>({id:`formula:${f.name}`,...f})),edges:ast.formulas.map(f=>({from:`word:${f.from}`,to:`formula:${f.name}`,kind:'formula-born'}))};},
+  execute(source,name=null){
+    const ast=this.parse(source),ir=this.lower(ast),trace=new Trace('Formula-Born Code');
+    const formula=name?ast.formulas.find(item=>item.name===name):ast.formulas[0];need(formula,'FBC_UNKNOWN_FORMULA',name);
+    const word=ast.wordbodies.find(item=>item.name===formula.from);
+    const command={word:word.word,image:word.image,state:word.state,glyph:formula.glyph,nextRoute:formula.route};
+    trace.emit('wordbody.read',word);trace.emit('commandglyph.born',command);
+    return {ast,ir,state:command,trace:trace.events,receipt:trace.receipt('turn word-image-state formula into command glyph',command)};
+  }
+};
+
+const NoncodingCode = {
+  parse(source){
+    const signals=blocks(source,'signal').map(block=>{
+      const data=assignments(block.body);
+      need(data.meaning&&data.form&&data.action,'NCC_SIGNAL_CORE',`Signal ${block.name} requires meaning, form and action.`);
+      return {type:'NCCSignal',name:block.name,meaning:data.meaning,form:data.form,action:data.action};
+    });
+    need(signals.length,'NCC_NONE','Noncoding-Code requires signals.');
+    return {type:'NCCProgram',signals};
+  },
+  lower(ast){return {type:'NCCMeaningSignalGraph',nodes:ast.signals.flatMap(s=>[{id:`meaning:${s.name}`,kind:'meaning',value:s.meaning},{id:`signal:${s.name}`,kind:s.form,value:s.name},{id:`action:${s.name}`,kind:'action',value:s.action}]),edges:ast.signals.flatMap(s=>[{from:`meaning:${s.name}`,to:`signal:${s.name}`,kind:'signal'},{from:`signal:${s.name}`,to:`action:${s.name}`,kind:'action'}])};},
+  execute(source,name=null){
+    const ast=this.parse(source),ir=this.lower(ast),trace=new Trace('Noncoding-Code');
+    const signal=name?ast.signals.find(item=>item.name===name):ast.signals[0];need(signal,'NCC_UNKNOWN_SIGNAL',name);
+    const state={meaning:signal.meaning,form:signal.form,signal:signal.name,nextRoute:signal.action};
+    trace.emit('meaning.signalled',state);trace.emit('action.routed',{route:signal.action});
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('carry meaning through non-typed signal into action',state)};
+  }
+};
+
+const ContactCode = {
+  parse(source){
+    const contacts=blocks(source,'contact').map(block=>{
+      const data=assignments(block.body);
+      const pressure=block.body.match(/\bpressure\s*(>=|<=|>|<|==)\s*(-?\d+(?:\.\d+)?)/);
+      const hold=block.body.match(/\bhold\s*(>=|<=|>|<|==)\s*(-?\d+(?:\.\d+)?)/);
+      const effect=block.body.match(/\beffect\s+(.+)/);
+      need(data.target&&pressure&&hold&&effect,'CC_CORE',`Contact ${block.name} requires target, pressure, hold and effect.`);
+      return {type:'CCContact',name:block.name,target:data.target,pressure:{op:pressure[1],value:Number(pressure[2])},hold:{op:hold[1],value:Number(hold[2])},effect:parseAction(effect[1])};
+    });
+    need(contacts.length,'CC_NONE','ContactCode requires contacts.');
+    return {type:'CCProgram',contacts};
+  },
+  lower(ast){return {type:'CCContactGraph',nodes:ast.contacts.map(c=>({id:`contact:${c.name}`,...c})),edges:ast.contacts.map(c=>({from:`pressure:${c.pressure.op}${c.pressure.value}`,to:`contact:${c.name}`,kind:`hold:${c.hold.op}${c.hold.value}`}))};},
+  execute(source,input={},initial={}){
+    const ast=this.parse(source),ir=this.lower(ast),contact=ast.contacts[0],trace=new Trace('ContactCode'),state=structuredClone(initial);
+    const compare=(left,rule)=>({'==':left===rule.value,'>=':left>=rule.value,'<=':left<=rule.value,'>':left>rule.value,'<':left<rule.value})[rule.op];
+    need(input.target===contact.target,'CC_WRONG_TARGET',input.target);
+    const passed=compare(Number(input.pressure),contact.pressure)&&compare(Number(input.hold),contact.hold);
+    trace.emit('contact.measured',{...input,passed});
+    if(passed)applyAction(contact.effect,state,trace);
+    return {ast,ir,state,passed,trace:trace.events,receipt:trace.receipt('turn contact pressure and duration into state change',state)};
+  }
+};
+
+function normalMorse(value){return String(value).trim().replace(/\s+/g,' ').replace(/\bPAUSE\b/gi,'gap');}
+const MorseMinus = {
+  parse(source){
+    const mappings=[];
+    for(const raw of String(source).split(/\r?\n/).map(v=>v.trim()).filter(Boolean)){
+      const m=raw.match(/^morse\s+([A-Za-z_][\w.-]*)\s+("(?:\\.|[^"])*"|'(?:\\.|[^'])*')\s+route\s+([A-Za-z_][\w.-]*)$/);
+      need(m,'MM_BAD_DECL',`Invalid MorseMinus declaration ${raw}.`);
+      mappings.push({name:m[1],pattern:normalMorse(valueOf(m[2])),route:m[3]});
+    }
+    need(mappings.length,'MM_NONE','MorseMinus requires mappings.');
+    need(new Set(mappings.map(item=>item.pattern)).size===mappings.length,'MM_DUPLICATE','MorseMinus patterns must be unique.');
+    return {type:'MMProgram',mappings};
+  },
+  lower(ast){return {type:'MMSignalRouteGraph',nodes:ast.mappings.map(m=>({id:`morse:${m.name}`,...m})),edges:ast.mappings.map(m=>({from:`signal:${m.pattern}`,to:`route:${m.route}`,kind:'minimal'}))};},
+  execute(source,signal){
+    const ast=this.parse(source),ir=this.lower(ast),trace=new Trace('MorseMinus'),pattern=normalMorse(signal);
+    const mapping=ast.mappings.find(item=>item.pattern===pattern);need(mapping,'MM_UNKNOWN_SIGNAL',pattern);
+    const state={signal:pattern,meaning:mapping.name,nextRoute:mapping.route};
+    trace.emit('minimal.signal.read',state);
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('carry route meaning through reduced signal',state)};
+  }
+};
+
+const MorseMinusZeroGrip = {
+  parse(source){
+    const routes=blocks(source,'zerogrip').map(block=>{
+      const data=assignments(block.body);
+      need(data.hinge&&data.signal&&data.max_force!=null&&data.route,'MMZG_CORE',`ZeroGrip ${block.name} requires hinge, signal, max_force and route.`);
+      return {type:'MMZGRoute',name:block.name,hinge:data.hinge,signal:normalMorse(data.signal),maxForce:Number(data.max_force),route:data.route};
+    });
+    need(routes.length,'MMZG_NONE','MorseMinus ZeroGrip requires zerogrip route.');
+    return {type:'MMZGProgram',routes};
+  },
+  lower(ast){return {type:'MMZGSoftRouteGraph',nodes:ast.routes.map(r=>({id:`zerogrip:${r.name}`,...r})),edges:ast.routes.map(r=>({from:`hinge:${r.hinge}`,to:`route:${r.route}`,kind:`max-force:${r.maxForce}`}))};},
+  execute(source,input){
+    const ast=this.parse(source),ir=this.lower(ast),route=ast.routes[0],trace=new Trace('MorseMinus ZeroGrip');
+    need(input.hinge===route.hinge,'MMZG_BAD_HINGE',input.hinge);
+    need(normalMorse(input.signal)===route.signal,'MMZG_BAD_SIGNAL',input.signal);
+    need(Number(input.force)<=route.maxForce,'MMZG_OVERPRESSURE',input.force);
+    const state={hinge:route.hinge,signal:route.signal,force:Number(input.force),grip:'zero',nextRoute:route.route};
+    trace.emit('soft.route.accepted',state);
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('route command without overpressure',state)};
+  }
+};
+
+const MudraCode = {
+  parse(source){
+    const mudras=blocks(source,'mudra').map(block=>{
+      const data=assignments(block.body);
+      need(data.shape&&data.hold!=null&&data.route&&data.state,'MUDRA_CORE',`Mudra ${block.name} requires shape, hold, route and state.`);
+      return {type:'Mudra',name:block.name,shape:data.shape,hold:Number(data.hold),route:data.route,state:data.state};
+    });
+    need(mudras.length,'MUDRA_NONE','Mudra Code requires mudra.');
+    return {type:'MudraProgram',mudras};
+  },
+  lower(ast){return {type:'MudraGestureGraph',nodes:ast.mudras.map(m=>({id:`mudra:${m.name}`,...m})),edges:ast.mudras.map(m=>({from:`shape:${m.shape}`,to:`route:${m.route}`,kind:`hold:${m.hold}`}))};},
+  execute(source,input){
+    const ast=this.parse(source),ir=this.lower(ast),mudra=ast.mudras.find(m=>m.shape===input.shape);need(mudra,'MUDRA_UNKNOWN_SHAPE',input.shape);
+    need(Number(input.hold)>=mudra.hold,'MUDRA_HOLD_SHORT',input.hold);
+    const trace=new Trace('Mudra Code'),state={mudra:mudra.name,shape:mudra.shape,held:Number(input.hold),bodyState:mudra.state,nextRoute:mudra.route};
+    trace.emit('gesture.completed',state);
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('turn held hand shape into routed state command',state)};
+  }
+};
+
+const JickMa = {
+  parse(source){
+    const readers=blocks(source,'jickma').map(block=>{
+      const data=assignments(block.body);
+      need(data.before&&data.contact&&data.trace&&data.gift&&data.after,'JICKMA_CORE',`JickMa ${block.name} requires before, contact, trace, gift and after.`);
+      return {type:'JickMaReader',name:block.name,before:data.before,contact:data.contact,trace:data.trace,gift:data.gift,after:data.after};
+    });
+    need(readers.length,'JICKMA_NONE','JickMa requires reader.');
+    return {type:'JickMaProgram',readers};
+  },
+  lower(ast){return {type:'JickMaTransformGraph',nodes:ast.readers.flatMap(r=>[{id:`before:${r.name}`,value:r.before},{id:`contact:${r.name}`,value:r.contact},{id:`trace:${r.name}`,value:r.trace},{id:`gift:${r.name}`,value:r.gift},{id:`after:${r.name}`,value:r.after}]),edges:ast.readers.flatMap(r=>[{from:`before:${r.name}`,to:`contact:${r.name}`,kind:'touch'},{from:`contact:${r.name}`,to:`trace:${r.name}`,kind:'reveal'},{from:`trace:${r.name}`,to:`gift:${r.name}`,kind:'transform'},{from:`gift:${r.name}`,to:`after:${r.name}`,kind:'become'}])};},
+  execute(source,input){
+    const ast=this.parse(source),ir=this.lower(ast),reader=ast.readers[0],trace=new Trace('JickMa / JickMah');
+    need(input.before===reader.before&&input.contact===reader.contact,'JICKMA_CONTACT_MISMATCH','JickMa before/contact mismatch.');
+    const state={sideBe:reader.before,contact:reader.contact,trace:reader.trace,gift:reader.gift,sideAf:reader.after};
+    trace.emit('contact.read',{before:reader.before,contact:reader.contact});trace.emit('gift.formed',{trace:reader.trace,gift:reader.gift,after:reader.after});
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('read contact and transform trace into gift and after-state',state)};
+  }
+};
+
+const MoodDrills = {
+  parse(source){
+    const drills=blocks(source,'drill').map(block=>{
+      const data=assignments(block.body);
+      const stepsMatch=block.body.match(/\bsteps\s*=\s*\[([^\]]*)\]/);
+      need(data.mood&&data.intensity!=null&&stepsMatch&&data.shift&&data.route,'MOOD_CORE',`Drill ${block.name} requires mood, intensity, steps, shift and route.`);
+      return {type:'MoodDrill',name:block.name,mood:data.mood,intensity:Number(data.intensity),steps:splitTop(stepsMatch[1]).map(valueOf).map(String),shift:data.shift,route:data.route};
+    });
+    need(drills.length,'MOOD_NONE','Mood Drills requires drill.');
+    return {type:'MoodProgram',drills};
+  },
+  lower(ast){return {type:'MoodShiftGraph',nodes:ast.drills.flatMap(d=>[{id:`mood:${d.name}`,value:d.mood},{id:`drill:${d.name}`,steps:d.steps},{id:`shift:${d.name}`,value:d.shift}]),edges:ast.drills.flatMap(d=>[{from:`mood:${d.name}`,to:`drill:${d.name}`,kind:`intensity:${d.intensity}`},{from:`drill:${d.name}`,to:`shift:${d.name}`,kind:'practice'},{from:`shift:${d.name}`,to:`route:${d.route}`,kind:'route'}])};},
+  execute(source,input){
+    const ast=this.parse(source),ir=this.lower(ast),drill=ast.drills.find(d=>d.mood===input.mood);need(drill,'MOOD_UNKNOWN',input.mood);
+    need(Number(input.intensity)>=drill.intensity,'MOOD_INTENSITY_LOW',input.intensity);
+    const trace=new Trace('Mood Drills'),completed=[];
+    for(const step of drill.steps){completed.push(step);trace.emit('drill.step',{step,index:completed.length-1});}
+    const state={before:drill.mood,intensity:Number(input.intensity),completed,after:drill.shift,nextRoute:drill.route};
+    trace.emit('mood.shifted',{from:drill.mood,to:drill.shift});
+    return {ast,ir,state,trace:trace.events,receipt:trace.receipt('use drill sequence to shift operational mood state',state)};
+  }
+};
+
+return {FormulaBornCode,NoncodingCode,ContactCode,MorseMinus,MorseMinusZeroGrip,MudraCode,JickMa,MoodDrills};})();
+const cooperation=(()=>{
+const { stable, digest, need }=core;
+
+// A pure sequential cooperation runner. Bodies own their parsers and executors;
+// a plan owns only argument mapping. No ambient state or executable input packets.
+function cooperate(adapters, plan, input) {
+  const values = Object.create(null), trace = [];
+  for (const step of plan) {
+    need(!Object.hasOwn(values, step.id), 'DUPLICATE_STEP');
+    need(Object.hasOwn(adapters, step.body), 'UNKNOWN_BODY');
+    const args = step.args(structuredClone(input), structuredClone(values));
+    const output = adapters[step.body](...args);
+    values[step.id] = structuredClone(output);
+    trace.push({step:step.id, body:step.body, args, output:structuredClone(output)});
+  }
+  return {values, trace, traceDigest:digest(trace)};
+}
+function equal(a,b) { return stable(a) === stable(b); }
+
+return {cooperate,equal};})();
+const conduct=(()=>{
+const {ContactBand, GlyphBody, FormulaGate, RouteFrame, StateField}=field;
+const {ContactCode}=embodied;
+const {need, stable, digest}=core;
+const {cooperate, equal}=cooperation;
+
+const SOURCES=Object.freeze({
+ ContactBand:'band Conduct {\n range 0..10\n zone soft 0..3.49 route mend\n zone firm 3.49..7.49 route lance\n zone hard 7.49..10 route nova\n}',
+ GlyphBody:'glyph Mend "~" pressure=soft route=mend\nglyph Lance "!" pressure=firm route=lance\nglyph Nova "*" pressure=wide route=nova',
+ ContactCode:'contact Conduct {\n target = field\n pressure >= 1\n hold >= 0.35\n effect contact.accepted = true\n}',
+ FormulaGate:'gate Conduct(force, focus) {\n formula force + focus\n pass when result >= 7\n onpass target.authorized = true\n onfail target.authorized = false\n}',
+ RouteFrame:'frame Conduct {\n entry check\n step check when target.authorized == true goto commit else reject\n step commit do target.hit = true end\n step reject do target.hit = false end\n}',
+ StateField:'field Pattern {\n state dormant\n state live\n transition Activate dormant -> live when target.authorized == true\n}'
+});
+const ORIGINALS={ContactBand, GlyphBody, ContactCode, FormulaGate, RouteFrame, StateField};
+const adapters=Object.fromEntries(Object.entries(ORIGINALS).map(([name,body])=>[name,(...args)=>body.execute(...args)]));
+const plan=[
+ {id:'band',body:'ContactBand',args:i=>[SOURCES.ContactBand,i.pressure]},
+ {id:'glyph',body:'GlyphBody',args:i=>[SOURCES.GlyphBody,i.glyph]},
+ {id:'contact',body:'ContactCode',args:i=>[SOURCES.ContactCode,{target:'field',pressure:i.pressure,hold:i.hold},{}]},
+ {id:'gate',body:'FormulaGate',args:(i,v)=>[SOURCES.FormulaGate,{force:v.band.state.pressure,focus:v.contact.passed?5:0},{target:{authorized:false}}]},
+ {id:'route',body:'RouteFrame',args:(i,v)=>[SOURCES.RouteFrame,v.gate.state]},
+ {id:'field',body:'StateField',args:(i,v)=>{need(v.contact.passed&&v.route.state.target.hit,'CONTACT_HOLD');return[SOURCES.StateField,'Activate',v.route.state]}}
+];
+const sourceDigest=digest(SOURCES);
+function conduct(input, before) {
+ need(input && /^[A-Za-z0-9_-]{1,60}$/.test(input.id),'BAD_ID');
+ need(Number.isFinite(input.pressure)&&input.pressure>=1&&input.pressure<=10,'BAD_PRESSURE');
+ need(Number.isFinite(input.hold)&&input.hold>=.35&&input.hold<=3,'BAD_DURATION');
+ need(['~','!','*'].includes(input.glyph),'BAD_GLYPH');
+ need(before&&Number.isFinite(before.energy)&&before.energy>=22&&before.energy<=100,'ENERGY_HOLD');
+ need(Number.isInteger(before.revision)&&before.revision>=0,'BAD_REVISION');
+ const exact={id:input.id,glyph:input.glyph,pressure:input.pressure,hold:input.hold};
+ const result=cooperate(adapters,plan,exact), v=result.values;
+ const route=v.glyph.state.nextRoute, strength=+(input.pressure+input.hold*2).toFixed(3);
+ const pattern={id:input.id,route,strength,duration:4+input.hold*2,radius:80+input.pressure*8,color:({'~':'#79f6d4','!':'#ffd080','*':'#ff9bd6'})[input.glyph],notes:({'~':[60,64,67],'!':[55,62,69],'*':[60,67,74,79]})[input.glyph],state:v.field.state.fields.Pattern};
+ const record={schema:'jm.conduct/1',sourceDigest,input:exact,before:structuredClone(before),after:{energy:before.energy-22,revision:before.revision+1},pattern,trace:result.trace};
+ record.digest=digest(record);return record;
+}
+function replay(record){
+ need(record?.schema==='jm.conduct/1'&&record.sourceDigest===sourceDigest,'SOURCE_DRIFT');
+ const actual=conduct(record.input,record.before);
+ need(equal(actual,record),'REPLAY_MISMATCH');return actual;
+}
+function replayLedger(records){
+ need(Array.isArray(records)&&records.length<=200,'LEDGER_LIMIT');const ids=new Set();
+ return records.map((r,i)=>{need(!ids.has(r?.input?.id),'DUPLICATE_OPERATION');ids.add(r.input.id);need(r.before.revision===i,'REVISION_GAP');return replay(r)});
+}
+function cardSVG(record){
+ const p=replay(record).pattern; // All rendered values derive from finite, closed inputs.
+ const shape=p.route==='mend'?'<path d="M210 105v100m-50-50h100"/>':p.route==='lance'?'<path d="M130 200l160-95-65 120 5-60z"/>':'<path d="M210 95l15 40 45-15-25 40 35 30-45-2-25 40-10-45-45 2 35-30-25-40 40 15z"/>';
+ return `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="280" viewBox="0 0 420 280"><rect width="420" height="280" rx="22" fill="#0c1928"/><g fill="none" stroke="${p.color}" stroke-width="6" stroke-linecap="round">${shape}</g><text x="24" y="40" font-family="sans-serif" font-size="19" fill="${p.color}">JM FIELDWEAVE · ${p.route.toUpperCase()}</text><text x="24" y="252" font-family="sans-serif" font-size="14" fill="white">Strength ${p.strength} · ${p.duration.toFixed(1)}s · ${record.digest}</text></svg>`;
+}
+function score(record){const p=replay(record).pattern;return {schema:'jm.conduct.score/1',source:record.digest,bpm:108,events:p.notes.map((midi,i)=>({midi,start:i*.22,duration:.5,velocity:.55}))};}
+function wav(record){
+ const events=score(record).events,rate=22050,n=Math.ceil((events.at(-1).start+.6)*rate),buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+ const str=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};str(0,'RIFF');v.setUint32(4,36+n*2,true);str(8,'WAVE');str(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,rate,true);v.setUint32(28,rate*2,true);v.setUint16(32,2,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,n*2,true);
+ for(let i=0;i<n;i++){let a=0;for(const e of events){const t=i/rate-e.start;if(t>=0&&t<e.duration)a+=Math.sin(t*2*Math.PI*440*2**((e.midi-69)/12))*Math.min(1,t/.012)*(1-t/e.duration)*.22;}v.setInt16(44+i*2,Math.max(-1,Math.min(1,a))*32767,true)}
+ return new Uint8Array(buf);
+}
+
+return {SOURCES,ORIGINALS,sourceDigest,conduct,replay,replayLedger,cardSVG,score,wav};})();
+return conduct;})();
+</script>
+<script>const JM_SOURCE_SEAL="372dc076f255f3dc9239739dfe370f27c1f992fb77f5adb946a2e7f47a9627f4";window.JM_TX=(()=>{const {conduct,replayLedger}=window.JM_CONDUCT;const {digest,stable,need}=(()=>{
+class NativeError extends Error {
+  constructor(code, message, details = {}) {
+    super(message);
+    this.name = 'NativeError';
+    this.code = code;
+    this.details = details;
+  }
+}
+function need(condition, code, message, details = {}) {
+  if (!condition) throw new NativeError(code, message, details);
+}
+function stable(value) {
+  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable(value[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+function digest(value) {
+  const text = typeof value === 'string' ? value : stable(value);
+  let hash = 0xcbf29ce484222325n;
+  for (let i = 0; i < text.length; i += 1) {
+    hash ^= BigInt(text.charCodeAt(i));
+    hash = BigInt.asUintN(64, hash * 0x100000001b3n);
+  }
+  return hash.toString(16).padStart(16, '0');
+}
+function valueOf(raw) {
+  const text = String(raw ?? '').trim();
+  if (!text) return null;
+  if ((text.startsWith('"') && text.endsWith('"')) || (text.startsWith("'") && text.endsWith("'"))) {
+    return text.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
+  }
+  if (text === 'true') return true;
+  if (text === 'false') return false;
+  if (text === 'null') return null;
+  if (/^-?\d+(?:\.\d+)?$/.test(text)) return Number(text);
+  if ((text.startsWith('[') && text.endsWith(']')) || (text.startsWith('{') && text.endsWith('}'))) {
+    try { return JSON.parse(text.replace(/'/g, '"')); } catch {}
+  }
+  return text;
+}
+function listOf(raw) {
+  const text = String(raw ?? '').trim().replace(/^\[/, '').replace(/\]$/, '');
+  if (!text) return [];
+  return splitTop(text).map(valueOf);
+}
+function splitTop(text, delimiter = ',') {
+  const out = [];
+  let depth = 0, quote = '', start = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+    if (quote) {
+      if (ch === '\\') i += 1;
+      else if (ch === quote) quote = '';
+      continue;
+    }
+    if (ch === '"' || ch === "'") quote = ch;
+    else if ('([{'.includes(ch)) depth += 1;
+    else if (')]}'.includes(ch)) depth -= 1;
+    else if (ch === delimiter && depth === 0) {
+      out.push(text.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  out.push(text.slice(start).trim());
+  return out.filter(Boolean);
+}
+function getPath(object, path) {
+  return String(path).split('.').filter(Boolean).reduce((value, key) => value == null ? undefined : value[key], object);
+}
+function setPath(object, path, value) {
+  const keys = String(path).split('.').filter(Boolean);
+  need(keys.length, 'EMPTY_PATH', 'State path cannot be empty.');
+  let cursor = object;
+  for (const key of keys.slice(0, -1)) {
+    if (!cursor[key] || typeof cursor[key] !== 'object') cursor[key] = {};
+    cursor = cursor[key];
+  }
+  cursor[keys.at(-1)] = value;
+  return value;
+}
+function blocks(source, keyword) {
+  const output = [];
+  const pattern = new RegExp(`\\b${keyword}\\s+([A-Za-z_][\\w.-]*)(?:\\s*\\(([^)]*)\\))?\\s*\\{`, 'g');
+  let match;
+  while ((match = pattern.exec(source))) {
+    const open = pattern.lastIndex - 1;
+    let depth = 1, quote = '', index = open + 1;
+    for (; index < source.length && depth; index += 1) {
+      const ch = source[index];
+      if (quote) {
+        if (ch === '\\') index += 1;
+        else if (ch === quote) quote = '';
+      } else if (ch === '"' || ch === "'") quote = ch;
+      else if (ch === '{') depth += 1;
+      else if (ch === '}') depth -= 1;
+    }
+    need(depth === 0, 'UNCLOSED_BLOCK', `Unclosed ${keyword} block ${match[1]}.`);
+    output.push({ name: match[1], params: match[2] ?? '', body: source.slice(open + 1, index - 1), start: match.index, end: index });
+    pattern.lastIndex = index;
+  }
+  return output;
+}
+function linesOf(body) {
+  return String(body).split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#') && !line.startsWith('//'));
+}
+function assignments(body) {
+  const result = {};
+  for (const line of linesOf(body)) {
+    const match = line.match(/^([A-Za-z_][\w.-]*)\s*(?::|=)\s*(.+)$/);
+    if (match) result[match[1]] = valueOf(match[2]);
+  }
+  return result;
+}
+function compare(left, op, right) {
+  return ({'==': left === right, '!=': left !== right, '>': left > right, '<': left < right, '>=': left >= right, '<=': left <= right})[op];
+}
+function evalCondition(text, state = {}) {
+  const raw = String(text).trim();
+  for (const logical of [' or ', ' and ']) {
+    const index = raw.indexOf(logical);
+    if (index > -1) {
+      const left = evalCondition(raw.slice(0, index), state);
+      const right = evalCondition(raw.slice(index + logical.length), state);
+      return logical.trim() === 'or' ? left || right : left && right;
+    }
+  }
+  if (raw.startsWith('not ')) return !evalCondition(raw.slice(4), state);
+  const match = raw.match(/^([A-Za-z_][\w.]*)\s*(==|!=|>=|<=|>|<)\s*(.+)$/);
+  if (match) {
+    const rightText = match[3].trim();
+    const right = /^[A-Za-z_][\w.]*$/.test(rightText) && !['true','false','null'].includes(rightText)
+      ? getPath(state, rightText)
+      : valueOf(rightText);
+    return compare(getPath(state, match[1]), match[2], right);
+  }
+  return Boolean(getPath(state, raw));
+}
+function parseAction(text) {
+  const raw = String(text).trim().replace(/;$/, '');
+  if (raw === 'end') return { type: 'end' };
+  const assign = raw.match(/^([A-Za-z_][\w.]*)\s*(=|\+=|-=)\s*(.+)$/);
+  if (assign) return { type: 'assign', path: assign[1], op: assign[2], value: valueOf(assign[3]) };
+  const route = raw.match(/^route\s+([A-Za-z_][\w.-]*)$/);
+  if (route) return { type: 'route', value: route[1] };
+  const emit = raw.match(/^emit\s+([A-Za-z_][\w.-]*)$/);
+  if (emit) return { type: 'emit', value: emit[1] };
+  const show = raw.match(/^(?:show|say)\s+(.+)$/);
+  if (show) return { type: 'show', value: valueOf(show[1]) };
+  throw new NativeError('INVALID_ACTION', `Cannot parse action: ${raw}`);
+}
+function applyAction(action, state, trace = null) {
+  trace?.emit('action.begin', action);
+  let result;
+  if (action.type === 'assign') {
+    const current = getPath(state, action.path);
+    const next = action.op === '=' ? action.value : action.op === '+=' ? Number(current ?? 0) + Number(action.value) : Number(current ?? 0) - Number(action.value);
+    result = setPath(state, action.path, next);
+  } else if (action.type === 'route') result = state.nextRoute = action.value;
+  else if (action.type === 'emit') result = (state.events ??= []).push(action.value);
+  else if (action.type === 'show') result = (state.messages ??= []).push(action.value);
+  else if (action.type === 'end') result = state.ended = true;
+  else throw new NativeError('UNKNOWN_ACTION', action.type);
+  trace?.emit('action.end', { action, result });
+  return result;
+}
+class Trace {
+  constructor(body) { this.body = body; this.events = []; }
+  emit(type, payload = {}) {
+    const event = { index: this.events.length, body: this.body, type, payload };
+    event.digest = digest(event);
+    this.events.push(event);
+    return event;
+  }
+  receipt(claim, result) {
+    return { schema: 'jm.native.receipt/1.0', body: this.body, claim, eventCount: this.events.length, traceDigest: digest(this.events), resultDigest: digest(result) };
+  }
+}
+function formulaTokens(source) {
+  const tokens = String(source).match(/\d+(?:\.\d+)?|[A-Za-z_][\w.]*|[()+\-*/]/g) ?? [];
+  need(tokens.join('').replace(/\s/g,'') === String(source).replace(/\s/g,''), 'FORMULA_BAD_TOKEN', `Invalid formula ${source}.`);
+  return tokens;
+}
+function evalFormula(source, vars = {}) {
+  const tokens = formulaTokens(source);
+  const out = [], ops = [];
+  const prec = {'+':1,'-':1,'*':2,'/':2};
+  for (const token of tokens) {
+    if (/^\d/.test(token) || /^[A-Za-z_]/.test(token)) out.push(token);
+    else if (token === '(') ops.push(token);
+    else if (token === ')') {
+      while (ops.length && ops.at(-1) !== '(') out.push(ops.pop());
+      need(ops.pop() === '(', 'FORMULA_PAREN', 'Unbalanced formula parentheses.');
+    } else {
+      while (ops.length && prec[ops.at(-1)] >= prec[token]) out.push(ops.pop());
+      ops.push(token);
+    }
+  }
+  while (ops.length) {
+    const op = ops.pop(); need(op !== '(', 'FORMULA_PAREN', 'Unbalanced formula parentheses.'); out.push(op);
+  }
+  const stack = [];
+  for (const token of out) {
+    if (/^\d/.test(token)) stack.push(Number(token));
+    else if (/^[A-Za-z_]/.test(token)) {
+      const value = getPath(vars, token);
+      need(Number.isFinite(Number(value)), 'FORMULA_UNKNOWN_VAR', `Unknown numeric formula variable ${token}.`);
+      stack.push(Number(value));
+    } else {
+      const b = stack.pop(), a = stack.pop();
+      need(Number.isFinite(a) && Number.isFinite(b), 'FORMULA_STACK', 'Malformed formula.');
+      stack.push(token === '+' ? a+b : token === '-' ? a-b : token === '*' ? a*b : a/b);
+    }
+  }
+  need(stack.length === 1 && Number.isFinite(stack[0]), 'FORMULA_RESULT', 'Formula did not yield one finite value.');
+  return stack[0];
+}
+
+return {NativeError,need,stable,digest,valueOf,listOf,splitTop,getPath,setPath,blocks,linesOf,assignments,compare,evalCondition,parseAction,applyAction,Trace,evalFormula};})();
+
+
+
+// Journal authority is commit admission/replay, never body ownership or world truth.
+// digest is the inherited deterministic fingerprint, NOT cryptographic attestation.
+const clone=x=>structuredClone(x);
+function formation(records){
+ const pair=records.slice(-2).map(r=>r.pattern.route).sort().join('+');
+ return pair==='lance+mend'?'SKYRAY':pair==='mend+nova'?'ROOTWARDEN':pair==='lance+nova'?'PRISMWISP':null;
+}
+class Journal {
+ constructor({sourceSeal,seed=[]}={}){
+  need(typeof sourceSeal==='string'&&/^[a-f0-9]{64}$/.test(sourceSeal),'SOURCE_SEAL_REQUIRED');
+  replayLedger(seed);this.sourceSeal=sourceSeal;this.seed=clone(seed);this.entries=[];
+ }
+ head(){return this.entries.at(-1)?.hash||digest({sourceSeal:this.sourceSeal,seed:this.seed})}
+ records(){return [...clone(this.seed),...this.entries.flatMap(e=>clone(e.records))]} prepare(request){
+  need(request&&/^[A-Za-z0-9_-]{1,60}$/.test(request.id),'BAD_TRANSACTION_ID');
+  const prior=this.entries.find(e=>e.request.id===request.id);
+  if(prior){need(stable(prior.request)===stable(request),'IDEMPOTENCY_CONFLICT');return {duplicate:true,entry:clone(prior)}}
+  need(request.expectedRevision===this.entries.length,'STALE_REVISION');
+  need(request.sourceSeal===this.sourceSeal,'SOURCE_SEAL_DRIFT');
+  need(request.context&&Number.isFinite(request.context.energy),'BAD_CONTEXT');
+  need(Array.isArray(request.inputs)&&request.inputs.length>=1&&request.inputs.length<=4,'BATCH_LIMIT');
+  const previous=this.records(),records=[];let before={energy:request.context.energy,revision:previous.length};
+  const ids=new Set(previous.map(r=>r.input.id));
+  for(const input of request.inputs){need(!ids.has(input.id),'DUPLICATE_RECORD');ids.add(input.id);const r=conduct(input,before);records.push(r);before=r.after;}
+  need(previous.length+records.length<=200,'LEDGER_LIMIT');
+  const ticket={schema:'jm.cooperation.ticket/2',baseHead:this.head(),request:clone(request),records,formation:formation([...previous,...records])};
+  ticket.hash=digest(ticket);return ticket;
+ }
+ commit(ticket,liveContext){
+  need(ticket&&ticket.request||ticket?.duplicate,'BAD_TICKET');
+  if(ticket.duplicate){const p=this.prepare(ticket.entry.request);need(p.duplicate,'DUPLICATE_TICKET_INVALID');return {...p,applied:false}}
+  const actual=this.prepare(ticket.request);
+  if(actual.duplicate)return {...actual,applied:false};
+  need(stable(actual)===stable(ticket),'TICKET_TAMPER');
+  need(stable(liveContext)===stable(ticket.request.context),'CONTEXT_CHANGED');
+  const entry={schema:'jm.cooperation.commit/2',revision:this.entries.length+1,previous:this.head(),request:clone(ticket.request),records:clone(ticket.records),formation:ticket.formation};
+  entry.hash=digest(entry);this.entries.push(entry);return {applied:true,duplicate:false,entry:clone(entry)};
+ }
+ snapshot(){return {schema:'jm.cooperation.journal/2',sourceSeal:this.sourceSeal,seed:clone(this.seed),entries:clone(this.entries),head:this.head()}}
+ compact(){return {schema:'jm.cooperation.compact/2',sourceSeal:this.sourceSeal,seed:clone(this.seed),commits:this.entries.map(e=>({request:clone(e.request),hash:e.hash})),head:this.head()}}
+ static recover(data,expectedSeal){
+  if(data?.schema==='jm.cooperation.compact/2'){
+   need(data.sourceSeal===expectedSeal&&Array.isArray(data.commits)&&data.commits.length<=200,'COMPACT_SOURCE_OR_LIMIT');
+   const j=new Journal({sourceSeal:expectedSeal,seed:data.seed});
+   for(const c of data.commits){const t=j.prepare(c.request);need(!t.duplicate,'COMPACT_DUPLICATE');const e=j.commit(t,c.request.context).entry;need(e.hash===c.hash,'COMPACT_REPLAY_MISMATCH')}
+   need(j.head()===data.head,'COMPACT_HEAD_MISMATCH');return j;
+  }
+  need(data?.schema==='jm.cooperation.journal/2'&&data.sourceSeal===expectedSeal,'JOURNAL_SOURCE_DRIFT');
+  need(Array.isArray(data.entries)&&data.entries.length<=200,'JOURNAL_LIMIT');
+  const j=new Journal({sourceSeal:expectedSeal,seed:data.seed});
+  for(const e of data.entries){const ticket=j.prepare(e.request);need(!ticket.duplicate,'JOURNAL_DUPLICATE');const got=j.commit(ticket,e.request.context);need(stable(got.entry)===stable(e),'JOURNAL_REPLAY_MISMATCH')}
+  need(j.head()===data.head,'JOURNAL_HEAD_MISMATCH');return j;
+ }
+}
+
+return {formation,Journal};})();window.JM_FORMS=(()=>{
+const FORMS=Object.freeze({
+ SKYRAY:{name:'Skyray',color:'#ffd080',role:'Pursues threats, strikes through shields and catches bolts',shape:'ray'},
+ ROOTWARDEN:{name:'Rootwarden',color:'#7af3bd',role:'Roots approaching forms and renews relay life',shape:'grove'},
+ PRISMWISP:{name:'Prismwisp',color:'#d2a2ff',role:'Orbits the field and refracts attacks toward threats',shape:'prism'}
+});
+function formSVG(kind,frame=0){
+ const p=FORMS[kind];if(!p)throw Error('UNKNOWN_FORM');
+ const flap=Math.sin(frame*Math.PI/3)*18;
+ const body=kind==='SKYRAY'?`<path d="M80 ${150-flap}L170 126L196 140L310 ${150-flap}L215 176L195 230L178 170Z" fill="${p.color}"/><path d="M196 142L214 139L204 148Z" fill="#122537"/>`:kind==='ROOTWARDEN'?`<path d="M196 210V105M196 180L115 140M196 160L270 115M196 140L150 85M196 195L280 190" stroke="${p.color}" stroke-width="14" stroke-linecap="round"/><g fill="${p.color}"><ellipse cx="130" cy="117" rx="45" ry="24"/><ellipse cx="245" cy="98" rx="48" ry="27"/><ellipse cx="187" cy="70" rx="41" ry="29"/></g><circle cx="186" cy="130" r="5" fill="white"/><circle cx="205" cy="130" r="5" fill="white"/>`:`<g transform="rotate(${frame*12} 196 145)"><path d="M196 57L253 145L196 231L139 145Z" fill="${p.color}"/><path d="M196 57V231M139 145H253" stroke="white" stroke-width="3"/><ellipse cx="196" cy="145" rx="99" ry="36" fill="none" stroke="${p.color}" stroke-width="4"/></g>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" width="392" height="300" viewBox="0 0 392 300"><rect width="392" height="300" rx="22" fill="#0b1b2b"/><circle cx="196" cy="145" r="110" fill="#173744"/>${body}<text x="20" y="34" fill="${p.color}" font-family="sans-serif" font-size="18">JM FIELDWEAVE · ${p.name.toUpperCase()}</text><text x="20" y="278" fill="#bddddc" font-family="sans-serif" font-size="12">CODEGORNIZATION · earned cooperation form · frame ${frame+1}</text></svg>`;
+}
+function formSheet(kind){const frames=Array.from({length:6},(_,i)=>{const inner=formSVG(kind,i).replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'');return `<g transform="translate(${(i%3)*392} ${Math.floor(i/3)*300})">${inner}</g>`}).join('');return `<svg xmlns="http://www.w3.org/2000/svg" width="1176" height="600" viewBox="0 0 1176 600">${frames}</svg>`}
+
+return {FORMS,formSVG,formSheet};})();</script><script>
+'use strict';
+// FIELDWEAVE v0.4 — separate descendant of v0.3; frozen v0.1/v0.2 and v0.3 preserved.
+// Independently inspectable source contracts from coding-estate/sovereign-batch-three/direct/field-primitives-native.mjs
+const BODY_SOURCES=Object.freeze({
+ ContactBand:`band PullDistance {\n range 0..10\n zone soft 0..3.49 route weave\n zone firm 3.5..7.49 route pierce\n zone hard 7.5..10 route surge\n}`,
+ GlyphBody:`glyph Thread "~" pressure=soft route=thread\nglyph Pierce "!" pressure=firm route=pierce\nglyph Bloom "*" pressure=wide route=bloom`,
+ FormulaGate:`gate Strike(force, focus) {\n formula force + focus\n pass when result >= 7\n onpass target.authorized = true\n onfail target.authorized = false\n}`,
+ RouteFrame:`frame Impact {\n entry check\n step check when target.authorized == true goto hit else reject\n step hit do target.hit = true end\n step reject do target.hit = false end\n}`,
+ StateField:`field Target {\n state shielded\n state exposed\n state cleared\n transition Crack shielded -> exposed when target.authorized == true\n transition Clear exposed -> cleared when target.authorized == true\n}`
+});
+const fail=(code,msg)=>{const e=new Error(msg||code);e.code=code;throw e};const need=(x,c,m)=>{if(!x)fail(c,m)};
+const copy=o=>JSON.parse(JSON.stringify(o));
+const pathGet=(obj,path)=>String(path).split('.').reduce((x,k)=>x?.[k],obj);
+const pathSet=(obj,path,value)=>{const p=path.split('.');let cur=obj;for(const part of p.slice(0,-1))cur=cur[part]??=(Object.create(null));cur[p.at(-1)]=value;return value};
+const parseVal=s=>{s=String(s).trim();if(/^['"].*['"]$/.test(s))return s.slice(1,-1);if(s==='true')return true;if(s==='false')return false;if(/^-?\d+(?:\.\d+)?$/.test(s))return Number(s);return s};
+function sourceBlocks(source,key){const re=new RegExp('\\b'+key+'\\s+([\\w.-]+)(?:\\(([^)]*)\\))?\\s*\\{','g'),out=[];let m;while((m=re.exec(source))){let depth=1,j=re.lastIndex;for(;j<source.length&&depth;j++){if(source[j]==='{')depth++;if(source[j]==='}')depth--;}need(!depth,'UNCLOSED_BLOCK',key);out.push({name:m[1],params:m[2]||'',body:source.slice(re.lastIndex,j-1)});re.lastIndex=j}return out;}
+function condition(txt,state){txt=txt.trim();const m=txt.match(/^([\w.]+)\s*(==|!=|>=|<=|>|<)\s*(.+)$/);if(!m)return Boolean(pathGet(state,txt));const a=pathGet(state,m[1]),b=parseVal(m[3]);return ({'==':a===b,'!=':a!==b,'>=':a>=b,'<=':a<=b,'>':a>b,'<':a<b})[m[2]]}
+function action(src,state){const m=src.trim().match(/^([\w.]+)\s*=\s*(.+)$/);need(m,'INVALID_ACTION',src);pathSet(state,m[1],parseVal(m[2]));}
+function receipt(body,claim,state){return{body,claim,result:copy(state)};}
+const ContactBand={parse(src){const b=sourceBlocks(src,'band')[0];need(b,'BAND_NONE');const rr=b.body.match(/range\s+(-?[\d.]+)\.\.(-?[\d.]+)/);need(rr,'BAND_RANGE_REQUIRED');const zones=[...b.body.matchAll(/zone\s+([\w.-]+)\s+(-?[\d.]+)\.\.(-?[\d.]+)\s+route\s+([\w.-]+)/g)].map(m=>({zone:m[1],min:+m[2],max:+m[3],route:m[4]}));need(zones.length,'BAND_ZONES_REQUIRED');return{name:b.name,min:+rr[1],max:+rr[2],zones}},execute(src,pressure){const b=this.parse(src);need(pressure>=b.min&&pressure<=b.max,'BAND_PRESSURE_OUTSIDE');const z=b.zones.find(x=>pressure>=x.min&&pressure<=x.max);need(z,'BAND_GAP');const state={pressure,zone:z.zone,nextRoute:z.route};return{state,receipt:receipt('ContactBand','classify pull-length band',state)}}};
+const GlyphBody={parse(src){const g=[...src.matchAll(/glyph\s+([\w.-]+)\s+"(.+?)"\s+pressure=([\w.-]+)\s+route=([\w.-]+)/g)].map(m=>({name:m[1],symbol:m[2],pressure:m[3],route:m[4]}));need(g.length,'GLYPH_NONE');need(new Set(g.map(x=>x.symbol)).size===g.length,'GLYPH_DUPLICATE_SYMBOL');return g},execute(src,sym){const g=this.parse(src).find(x=>x.symbol===sym);need(g,'GLYPH_UNKNOWN',sym);const state={glyph:g.name,symbol:g.symbol,pressure:g.pressure,nextRoute:g.route};return{state,receipt:receipt('GlyphBody','resolve glyph-selected shot',state)}}};
+const FormulaGate={parse(src){const b=sourceBlocks(src,'gate')[0];need(b,'FGATE_NONE');const form=b.body.match(/formula\s+(.+)/),pass=b.body.match(/pass\s+when\s+(.+)/),yes=b.body.match(/onpass\s+(.+)/),no=b.body.match(/onfail\s+(.+)/);need(form&&pass&&yes&&no,'FGATE_CORE');return{name:b.name,params:b.params.split(',').map(x=>x.trim()),formula:form[1],pass:pass[1],yes:yes[1],no:no[1]}},execute(src,args,initial={}){const b=this.parse(src),state=copy(initial);b.params.forEach(k=>need(Object.hasOwn(args,k),'FGATE_ARG_MISSING'));const m=b.formula.match(/^([\w]+)\s*\+\s*([\w]+)$/);need(m,'FORMULA_UNSUPPORTED');state.result=Number(args[m[1]])+Number(args[m[2]]);need(Number.isFinite(state.result),'FORMULA_RESULT');const passed=condition(b.pass,state);action(passed?b.yes:b.no,state);return{state,passed,receipt:receipt('FormulaGate','gate hit consequence',state)}}};
+const RouteFrame={parse(src){const b=sourceBlocks(src,'frame')[0];need(b,'FRAME_NONE');const entry=b.body.match(/entry\s+([\w.-]+)/)?.[1],steps=[];for(const line of b.body.split('\n').map(x=>x.trim()).filter(x=>x.startsWith('step '))){let m=line.match(/^step\s+([\w.-]+)\s+when\s+(.+?)\s+goto\s+([\w.-]+)\s+else\s+([\w.-]+)$/);if(m){steps.push({name:m[1],kind:'branch',cond:m[2],yes:m[3],no:m[4]});continue}m=line.match(/^step\s+([\w.-]+)\s+do\s+(.+?)\s+end$/);if(m){steps.push({name:m[1],kind:'action',code:m[2]});continue}fail('FRAME_BAD_STEP',line)}need(entry&&steps.length,'FRAME_CORE');return{entry,steps}},execute(src,initial){const b=this.parse(src),state=copy(initial);let cur=b.entry,stepCount=0;while(cur){need(++stepCount<=32,'FRAME_LOOP');const s=b.steps.find(x=>x.name===cur);need(s,'FRAME_STEP');if(s.kind==='branch')cur=condition(s.cond,state)?s.yes:s.no;else{action(s.code,state);state.ended=true;cur=null}}return{state,transitions:stepCount,receipt:receipt('RouteFrame','choose impact route',state)}}};
+const StateField={parse(src){const b=sourceBlocks(src,'field')[0];need(b,'STATEFIELD_NONE');const states=[...b.body.matchAll(/\bstate\s+([\w.-]+)/g)].map(x=>x[1]),transitions=[...b.body.matchAll(/transition\s+([\w.-]+)\s+([\w.-]+)\s*->\s*([\w.-]+)(?:\s+when\s+([^\n}]+))?/g)].map(x=>({name:x[1],from:x[2],to:x[3],guard:x[4]?.trim()}));need(states.length>=2&&transitions.length,'STATEFIELD_CORE');return{name:b.name,states,transitions}},execute(src,name,initial){const b=this.parse(src),s=copy(initial),t=b.transitions.find(x=>x.name===name);need(t,'STATEFIELD_UNKNOWN_TRANSITION');s.fields??={};s.fields[b.name]??=b.states[0];need(s.fields[b.name]===t.from,'STATEFIELD_WRONG_FROM');if(t.guard)need(condition(t.guard,s),'STATEFIELD_GUARD_FAILED');s.fields[b.name]=t.to;pathSet(s,b.name[0].toLowerCase()+b.name.slice(1)+'.state',t.to);return{state:s,receipt:receipt('StateField','guarded target transition',s)}}};
+window.JM_BODIES={ContactBand,GlyphBody,FormulaGate,RouteFrame,StateField,BODY_SOURCES};
+// From this point: FIELDWEAVE-specific JavaScript recipient and game-loop carrier. Relay Frontier inherits the complete v0.3 ecology, adding physical ally relays, enemy counterplay, changing world fronts and telegraphed attacks.
+const CAN=document.getElementById('game'),CTX=CAN.getContext('2d'),W=960,H=540;
+const EL=id=>document.getElementById(id);const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const TAU=Math.PI*2;let seed=4201;function rand(){seed=(1664525*seed+1013904223)>>>0;return seed/4294967296}
+let st,pointer=null,playing=true,paused=false,lastT=0,audio=null,audioOn=false,seq=0;
+const FRONT_NAMES=['VERDANT','CROSSWIND','ION STORM','ECLIPSE'];
+const FRONT_DESCRIPTIONS=['resonant growth · clears replenish energy','wind shear · projectiles drift','static surge · hostile bolts accelerate','deep phase · Weavers cloak longer'];
+function frontFor(wave){return FRONT_NAMES[clamp(Number(wave||1)-1,0,3)]}
+const accent={thread:'#78f9d9',pierce:'#ffd187',bloom:'#ffa9d7'};
+function makeState(){return{version:'FIELDWEAVE/0.5',score:0,wave:1,health:100,energy:100,clearCount:0,shotCount:0,combo:0,mode:'~',age:0,nextEnemy:0.8,enemySeq:0,waveSpawns:0,waveTotal:7,projectiles:[],enemies:[],sparks:[],ripples:[],log:[],receipts:[],ended:false,won:false,lastBodies:{},lastContact:'—',surgeLeft:0,surgeCooldown:0,awaitingUpgrade:false,upgrades:{guidance:0,resonance:0,aegis:0},guardianSpawned:false,ascensions:[],hostileShots:[],hostileSeq:0,intercepts:0,echo:0,echoBursts:0,focusShots:0,worldEvents:[],backgroundPhase:0,front:'VERDANT',relays:[],relaySeq:0,relayCooldown:0,relayShots:0,relayInterceptions:0,frontEnergies:0,stormBolts:0}}
+function log(body,event,detail){const line=`${String(++seq).padStart(3,'0')} · ${body} · ${event}${detail?' · '+detail:''}`;st.log.push({n:seq,at:+st.age.toFixed(2),body,event,detail});if(st.log.length>150)st.log.shift();EL('log').textContent=st.log.slice(-24).map(x=>`${String(x.n).padStart(3,'0')} ${x.body}: ${x.event}${x.detail?' · '+x.detail:''}`).join('\n');EL('log').scrollTop=EL('log').scrollHeight;}
+function register(body,result,detail){st.receipts.push({sequence:++seq,time:+st.age.toFixed(3),body,detail,receipt:result.receipt});if(st.receipts.length>900)st.receipts.shift();st.lastBodies[body]=detail||'RUN';}
+function newRun(){st=makeState();st.conductLedger=[];st.conductZones=[];st.conductCooldown=0;st.forms=[];seed=4201;seq=0;pointer=null;playing=true;paused=false;lastT=0;EL('pause').textContent='Ⅱ Pause';EL('overlay').classList.remove('visible');EL('upgradeDock').hidden=true;EL('continue').hidden=false;document.querySelector('.frame').classList.remove('evolving');EL('log').textContent='FIELDWEAVE ready. Five separate JM bodies govern a living field.';EL('status').textContent='New run · draw back from the beacon or use TARGET FIRE when a threat arrives.';log('Field','new session','4 waves · 4 moving fronts · physical relays · living ecology');setStance(st.mode);refreshUI();}
+function offerEvolution(){st.awaitingUpgrade=true;paused=true;pointer=null;EL('overlay').classList.add('visible');EL('upgradeDock').hidden=false;EL('continue').hidden=true;document.querySelector('.frame').classList.add('evolving');EL('endTitle').textContent='FIELD EVOLVING';EL('endMsg').textContent=`Wave ${st.wave} cleared. Choose how the living system changes for the next wave.`;EL('status').textContent='Wave clear · choose one earned upgrade to continue.';log('Handprint','PRE-TREE','choose one adaptation; POST-TREE tests its next consequence');saveLocal();}
+function chooseEvolution(name){need(st.awaitingUpgrade,'EVOLUTION_NOT_OFFERED');need(['guidance','resonance','aegis'].includes(name),'EVOLUTION_UNKNOWN');st.upgrades[name]++;st.ascensions.push({afterWave:st.wave,name,at:+st.age.toFixed(2)});if(name==='aegis')st.health=clamp(st.health+22,0,100);if(name==='resonance')st.energy=clamp(st.energy+12,0,100);if(name==='guidance')st.energy=clamp(st.energy+9,0,100);log('Handprint','EVOLVE',`${name} ${st.upgrades[name]} · earned choice`);st.awaitingUpgrade=false;st.wave++;st.front=frontFor(st.wave);st.relays=[];st.relayCooldown=0;log('Field','FRONT SHIFT',st.front+' · '+FRONT_DESCRIPTIONS[st.wave-1]);st.waveSpawns=0;st.waveTotal=6+st.wave*2;st.nextEnemy=1.6;st.health=clamp(st.health+6,0,100);st.energy=clamp(st.energy+12,0,100);st.enemies=[];st.projectiles=[];st.hostileShots=[];st.guardianSpawned=false;paused=false;EL('pause').textContent='Ⅱ Pause';EL('overlay').classList.remove('visible');EL('upgradeDock').hidden=true;EL('continue').hidden=false;document.querySelector('.frame').classList.remove('evolving');EL('status').textContent=`Wave ${st.wave} · ${st.front} · ${name.toUpperCase()} inherited. Relays can be redeployed.`;tone(880,.17);refreshUI();saveLocal();}
+function fieldSlow(){if(!st||paused||st.ended||st.awaitingUpgrade)return false;if(st.surgeCooldown>0||st.energy<28){EL('status').textContent='Field slow unavailable · insufficient energy or cooling down.';return false}const b=ContactBand.execute(BODY_SOURCES.ContactBand,9);register('ContactBand',b,'SURGE · hard contact');const f=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:9,focus:5},{target:{authorized:false}});register('FormulaGate',f,'SURGE gate '+(f.passed?'PASS':'HOLD'));const r=RouteFrame.execute(BODY_SOURCES.RouteFrame,f.state);register('RouteFrame',r,'SURGE '+(r.state.target.hit?'ACTIVE':'HOLD'));if(!r.state.target.hit)return false;st.energy-=28;st.surgeLeft=4.2;st.surgeCooldown=12;st.ripples.push({x:launch.x,y:launch.y,r:18,a:1,color:'#bb9eff'});log('Handprint','FIELD SLOW','4.2s at 36% movement · 28 energy');EL('status').textContent='FIELD SLOW active · world motion reduced, player input remains responsive.';tone(245,.25);refreshUI();return true;}
+document.querySelectorAll('[data-upgrade]').forEach(b=>b.addEventListener('click',()=>chooseEvolution(b.dataset.upgrade)));
+EL('surge').addEventListener('click',fieldSlow);
+function deployRelay(atX,atY){
+ if(!st||paused||st.ended||st.awaitingUpgrade)return false;
+ if(st.relays.length>=2||st.relayCooldown>0||st.energy<34){EL('status').textContent='Relay HOLD · need 34 energy, open slot and no cooldown.';return false;}
+ // Automatic placement tracks the most urgent enemy lane, while remaining away from the beacon.
+ const nearest=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x)[0];
+ const x=clamp(Number.isFinite(atX)?atX:370,280,600),y=clamp(Number.isFinite(atY)?atY:(nearest?nearest.y:265),85,445);
+ const pressure=7.8;
+ const band=ContactBand.execute(BODY_SOURCES.ContactBand,pressure),glyph=GlyphBody.execute(BODY_SOURCES.GlyphBody,'~');
+ register('ContactBand',band,'relay deployment · '+band.state.zone);register('GlyphBody',glyph,'relay allegiance · '+glyph.state.glyph);
+ // Deployment permission is checked through the same native FormulaGate + RouteFrame contracts.
+ const fg=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:pressure,focus:5},{target:{authorized:false}});
+ register('FormulaGate',fg,'relay activation gate');const rf=RouteFrame.execute(BODY_SOURCES.RouteFrame,fg.state);register('RouteFrame',rf,'relay activation route');
+ if(!rf.state.target.hit)return false;
+ st.energy-=34;st.relayCooldown=7.2;const relay={id:'R'+(++st.relaySeq),x,y,health:2,life:19,fireClock:.25,shots:0};st.relays.push(relay);
+ st.ripples.push({x,y,r:18,a:1,color:'#7cf0be'});spark(x,y,'#7ef2bf',20,1.1);
+ log('Handprint','RELAY DEPLOYED',`${relay.id} · ${Math.round(x)},${Math.round(y)} · energy -34`);
+ EL('status').textContent=`${relay.id} placed · fires guided THREAD pulses · bolts can break it.`;
+ tone(665,.22,'triangle');refreshUI();saveLocal();return true;
+}
+EL('relay').addEventListener('click',()=>deployRelay());
+function paintStance(g){document.querySelectorAll('.stance button').forEach(b=>{b.classList.toggle('active',b.dataset.glyph===g);b.setAttribute('aria-pressed',String(b.dataset.glyph===g))});}
+function setStance(g){const result=GlyphBody.execute(BODY_SOURCES.GlyphBody,g);if(st){st.mode=g;register('GlyphBody',result,result.state.glyph);log('GlyphBody','selected',result.state.glyph)}paintStance(g);return result;}
+function spawnEnemy(kindOverride){const t=st.enemySeq++,kind=kindOverride||(['orb','manta','bramble','weaver','darter','sentry'][t%6]),rad=kind==='guardian'?51:kind==='manta'?34:kind==='weaver'?29:kind==='sentry'?31:kind==='darter'?22:kind==='shard'?17:26;const y=kind==='guardian'?273:100+rand()*330;st.enemies.push({id:'F'+(t+1),kind,x:1005+rand()*65,y,base:y,phase:rand()*TAU,r:rad,speed:kind==='guardian'?26:kind==='shard'?73:kind==='darter'?39+st.wave*7:kind==='sentry'?21+st.wave*4:20+st.wave*8+rand()*8,shape:rand()*TAU,shield:'shielded',cleared:false,weak:kind==='manta'?'thread':kind==='bramble'?'bloom':kind==='weaver'?'pierce':kind==='guardian'?'bloom':kind==='sentry'?'pierce':kind==='darter'?'thread':'any',born:st.age,offspring:false,ghost:false,attackClock:kind==='sentry'?1.6:kind==='guardian'?3:99,dashClock:1.0,bodyTurn:0});st.waveSpawns++;log('Field','new form',`${kind} ${st.waveSpawns}/${st.waveTotal}`);}
+function sprout(e){if(e.offspring||e.kind!=='bramble')return;e.offspring=true;for(let i of [-1,1]){const n=st.enemySeq++;st.enemies.push({id:'S'+n,kind:'shard',x:e.x+18,y:clamp(e.y+i*38,65,445),base:clamp(e.y+i*38,65,445),phase:0,r:15,speed:82+st.wave*2,shape:0,shield:'exposed',cleared:false,weak:'thread',born:st.age,offspring:true,ghost:false});}st.ripples.push({x:e.x,y:e.y,r:7,a:1,color:'#ffb276'});log('Field','BRAMBLE SPROUT',`${e.id} → 2 attack seedlings`);}
+function tone(freq=250,dur=.08,type='sine'){if(!audioOn)return;try{audio??=new (window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,audio.currentTime);g.gain.setValueAtTime(.075,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+dur);o.connect(g).connect(audio.destination);o.start();o.stop(audio.currentTime+dur)}catch{}}
+const launch={x:142,y:310};
+function startAim(x,y){if(!playing||paused||st.ended)return;if(x>320 || Math.hypot(x-launch.x,y-launch.y)>165){EL('status').textContent='Start near the beacon on the left, then pull backward.';return}pointer={x,y,startX:x,startY:y,pid:null};}
+function fireContact(dx,dy,pull,channel='drag'){
+ if(!st||paused||st.ended||st.awaitingUpgrade)return false;
+ if(pull<14){EL('status').textContent='Pull farther back from the beacon to launch.';return false}
+ const pressure=Math.round(clamp(pull/145*10,0,10)*100)/100;
+ let contact;
+ try{contact=ContactBand.execute(BODY_SOURCES.ContactBand,pressure)}catch(e){log('ContactBand','reject',e.code);return false}
+ register('ContactBand',contact,`${pressure.toFixed(1)} → ${contact.state.zone}`);
+ const glyph=GlyphBody.execute(BODY_SOURCES.GlyphBody,st.mode);register('GlyphBody',glyph,glyph.state.glyph);
+ const mode=glyph.state.nextRoute;
+ const energyCost={thread:6,pierce:9,bloom:14}[mode]+(contact.state.zone==='hard'?4:0);
+ if(st.energy<energyCost){EL('status').textContent='Not enough energy — it regenerates. Try again.';log('Field','energy HOLD',`${Math.floor(st.energy)} < ${energyCost}`);tone(120,.18);return false}
+ st.energy-=energyCost;
+ const angle=Math.atan2(dy,dx),speed=360+pressure*29+(mode==='pierce'?65:0);
+ const dev=contact.state.zone==='hard'?.055*Math.sin(st.shotCount*4.4):0,a=angle+dev;
+ st.projectiles.push({id:'P'+(++st.shotCount),mode,pressure,band:contact.state.zone,x:launch.x,y:launch.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,r:mode==='bloom'?10:7,life:3,alive:true,trail:[],hits:[]});
+ st.ripples.push({x:launch.x,y:launch.y,r:9,a:1,color:accent[mode]});
+ log('Hand',channel==='focus'?'TARGET FIRE':'launch',`${mode} · pressure ${pressure.toFixed(1)} · ${contact.state.zone}`);
+ tone(mode==='bloom'?315:mode==='pierce'?520:405,.09,'triangle');
+ EL('status').textContent=channel==='focus'?'Target Fire launched through both contact and glyph bodies.':'Shot committed. Contact determines the consequence.';
+ refreshUI();return true;
+}
+function releaseAim(x,y){if(!pointer)return false;const dx=launch.x-x,dy=launch.y-y,pull=Math.hypot(dx,dy);pointer=null;return fireContact(dx,dy,pull,'drag')}
+function focusFire(){if(!st||paused||st.ended||st.awaitingUpgrade)return false;
+ const target=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x)[0];
+ if(!target){EL('status').textContent='Target Fire waiting for a form — or aim manually.';return false}
+ const dx=target.x-launch.x,dy=target.y-launch.y,angle=Math.atan2(dy,dx),pull=98;
+ const ok=fireContact(Math.cos(angle)*pull,Math.sin(angle)*pull,pull,'focus');if(ok)st.focusShots++;return ok;
+}
+function makeHostileShot(e,offset=0){const a=Math.atan2(launch.y-e.y+offset,launch.x-e.x),spd=e.kind==='guardian'?180:148;
+ const shot={id:'H'+(++st.hostileSeq),source:e.kind,x:e.x-23,y:e.y,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:e.kind==='guardian'?10:7,phase:0};
+ st.hostileShots.push(shot);st.ripples.push({x:e.x,y:e.y,r:13,a:1,color:'#ffa878'});
+ log('Ecology','HOSTILE BOLT',`${e.kind} → beacon · intercept or evade`);tone(177,.08,'sawtooth');return shot;
+}
+function echoBurst(){if(!st||paused||st.ended||st.awaitingUpgrade||st.echo<100)return false;
+ const targets=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x).slice(0,3);
+ if(!targets.length){EL('status').textContent='Echo ready · target required.';return false}
+ st.echo=0;st.echoBursts++;const cb=ContactBand.execute(BODY_SOURCES.ContactBand,9);
+ const gb=GlyphBody.execute(BODY_SOURCES.GlyphBody,'!');register('ContactBand',cb,'ECHO · hard contact');register('GlyphBody',gb,'ECHO · Pierce route');
+ for(const enemy of targets){if(enemy.cleared)continue;st.ripples.push({x:enemy.x,y:enemy.y,r:8,a:1,color:'#ffce8f'});
+  const p={id:'ECHO'+st.echoBursts+'-'+enemy.id,mode:gb.state.nextRoute,pressure:cb.state.pressure,band:'hard',x:enemy.x,y:enemy.y,r:9,alive:true,hits:[]};
+  hitEnemy(p,enemy);
+ }
+ log('Handprint','ECHO BURST',`${targets.length} contacts · actual FormulaGate/RouteFrame/StateField transitions`);
+ EL('status').textContent='ECHO BURST committed through five bodies.';tone(935,.25,'triangle');refreshUI();saveLocal();return true;
+}
+EL('focusFire').addEventListener('click',focusFire);
+EL('echo').addEventListener('click',echoBurst);
+
+function spark(x,y,col,n=12,pow=1){for(let i=0;i<n;i++){let a=rand()*TAU,s=25+rand()*155*pow;st.sparks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.3+rand()*.52,orig:.82,col,r:1.3+rand()*2.9})}}
+function hitEnemy(p,e){if(p.hits.includes(e.id)||e.cleared)return;const dx=e.x-p.x,dy=e.y-p.y;const focus=clamp(7-Math.hypot(dx,dy)/14+st.upgrades.resonance*0.45,1,7);const affinity=e.weak==='any'||e.weak===p.mode?2:0;const phasePenalty=e.kind==='weaver'&&e.ghost?3.7:0;const force=clamp(p.pressure*(p.mode==='pierce'?1.12:1)+affinity+(p.mode==='bloom'?1:0)+st.upgrades.resonance*0.8-phasePenalty,0,14);const fg=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:+force.toFixed(2),focus:+focus.toFixed(2)},{target:{authorized:false}});register('FormulaGate',fg,`${fg.state.result.toFixed(1)} → ${fg.passed?'PASS':'HOLD'}`);const rf=RouteFrame.execute(BODY_SOURCES.RouteFrame,fg.state);register('RouteFrame',rf,rf.state.target.hit?'HIT':'DEFLECT');const hit=rf.state.target.hit;st.lastContact=hit?`DING · ${e.id}`:`HOLD · ${e.id}`;
+if(hit){let tname=e.shield==='shielded'?'Crack':'Clear';const initial={target:{authorized:true},fields:{Target:e.shield}};const sf=StateField.execute(BODY_SOURCES.StateField,tname,initial);register('StateField',sf,`${e.id}: ${e.shield} → ${sf.state.fields.Target}`);e.shield=sf.state.fields.Target;if(e.shield==='cleared'){e.cleared=true;st.clearCount++;st.combo++;st.echo=clamp(st.echo+23,0,100);st.score+=120+Math.min(10,st.combo)*10;st.energy=clamp(st.energy+7+(st.front==='VERDANT'?4:0),0,100);if(st.front==='VERDANT')st.frontEnergies+=4;spark(e.x,e.y,accent[p.mode],24,1.4);tone(730,.15,'sine');log('StateField','CLEAR',`${e.id} · +${120+Math.min(10,st.combo)*10}`)}else{st.score+=25;st.echo=clamp(st.echo+5,0,100);spark(e.x,e.y,accent[p.mode],10);tone(550,.08);log('StateField','CRACK',`${e.id} shield → exposed`)} }else{st.combo=0;spark(p.x,p.y,'#8f9daf',6);tone(110,.12,'sawtooth');log('RouteFrame','HOLD','contact without sufficient force + focus')}
+if(p.mode==='bloom'){st.ripples.push({x:e.x,y:e.y,r:11,a:1,color:accent.bloom});for(const q of st.enemies){if(q.id!==e.id&&!q.cleared&&Math.hypot(q.x-e.x,q.y-e.y)<105+st.upgrades.resonance*55){const pp={...p,id:p.id+'-b',pressure:p.pressure*.72,mode:'bloom',hits:[]};hitEnemySecondary(pp,q)}}}p.hits.push(e.id);if(p.mode!=='pierce')p.alive=false;refreshUI();}
+function hitEnemySecondary(p,e){const fg=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:p.pressure,focus:5},{target:{authorized:false}});register('FormulaGate',fg,'BLOOM neighbor '+(fg.passed?'PASS':'HOLD'));const rf=RouteFrame.execute(BODY_SOURCES.RouteFrame,fg.state);register('RouteFrame',rf,'BLOOM '+(rf.state.target.hit?'HIT':'DEFLECT'));if(!rf.state.target.hit)return;const sf=StateField.execute(BODY_SOURCES.StateField,e.shield==='shielded'?'Crack':'Clear',{target:{authorized:true},fields:{Target:e.shield}});register('StateField',sf,'bloom neighbor '+e.id);e.shield=sf.state.fields.Target;if(e.shield==='cleared'){e.cleared=true;st.clearCount++;st.echo=clamp(st.echo+20,0,100);st.score+=100;spark(e.x,e.y,accent.bloom,17)}}
+function step(dt){
+tickCooperativeForms(dt);
+tickConduct(dt);
+st.age+=dt;st.energy=Math.min(100,st.energy+dt*7.5);st.surgeLeft=Math.max(0,st.surgeLeft-dt);st.surgeCooldown=Math.max(0,st.surgeCooldown-dt);const worldRate=st.surgeLeft>0?.36:1;st.nextEnemy-=dt*worldRate;st.relayCooldown=Math.max(0,(st.relayCooldown||0)-dt);
+if(st.waveSpawns<st.waveTotal&&st.nextEnemy<=0){if(st.wave===4&&st.waveSpawns===st.waveTotal-1&&!st.guardianSpawned){spawnEnemy('guardian');st.guardianSpawned=true;}else spawnEnemy();st.nextEnemy=(1.35-.13*st.wave)+rand()*.32;}
+for(const e of st.enemies){if(e.cleared)continue;const localTime=st.age-e.born;e.x-=e.speed*dt*worldRate;
+if(e.kind==='manta'){e.y=e.base+Math.sin(st.age*2.7+e.phase)*57+(e.x<460?Math.sin(st.age*3.8+e.phase)*24:0);}
+else if(e.kind==='weaver'){e.y=e.base+Math.sin(st.age*1.9+e.phase)*49;e.ghost=Math.sin(st.age*2.6+e.phase)>(st.front==='ECLIPSE'?-.25:.3);}
+else if(e.kind==='guardian'){e.y=e.base+Math.sin(st.age*.67+e.phase)*37;if(localTime>2&&Math.floor(localTime/4)!==Math.floor((localTime-dt)/4)){st.energy=Math.max(0,st.energy-7);log('Guardian','SIPHON','-7 energy · interrupt with a shot');st.ripples.push({x:e.x,y:e.y,r:10,a:1,color:'#d7a8ff'});}}
+else if(e.kind==='darter'){
+   e.dashClock-=dt*worldRate;
+   if(e.dashClock<=0){e.dashClock=1.55;e.speed=Math.min(175,e.speed+14);e.base=clamp(e.base+(rand()>.5?1:-1)*95,70,450);st.ripples.push({x:e.x,y:e.y,r:8,a:1,color:'#ffc27e'});log('Darter','LUNGE',e.id+' shifts lane and accelerates')}
+   e.y=e.base+Math.sin(st.age*7+e.phase)*17;
+ }else if(e.kind==='sentry'){e.y=e.base+Math.sin(st.age*.9+e.phase)*14;}
+ else {e.y=e.base+Math.sin(st.age*(e.kind==='shard'?3.6:1.5)+e.phase)*26;}
+ if(e.kind==='sentry'||e.kind==='guardian'){
+   e.attackClock-=dt*worldRate;
+   if(e.attackClock<=0&&e.x>160){makeHostileShot(e);if(e.kind==='guardian')makeHostileShot(e,105);e.attackClock=e.kind==='guardian'?3.5:2.6;}
+ }
+if(e.kind==='bramble'&&e.x<700&&e.x>100)sprout(e);
+if(e.x<65){e.cleared=true;const bleed=(e.kind==='guardian'?25:e.kind==='shard'?8:e.shield==='exposed'?12:18)*(1-st.upgrades.aegis*.12);st.health=Math.max(0,st.health-bleed);st.combo=0;spark(77,e.y,'#ff8c8c',14);log('Field','breach',`beacon ${st.health.toFixed(0)}% · ${e.kind}`);tone(130,.3,'sawtooth')}
+}
+for(const relay of st.relays){
+ if(relay.health<=0)continue;relay.life-=dt;relay.fireClock-=dt;
+ if(relay.life<=0){relay.health=0;log('Field','RELAY EXPIRED',relay.id);continue;}
+ if(relay.fireClock<=0){
+ const candidates=st.enemies.filter(e=>!e.cleared&&e.x>relay.x+12).sort((a,b)=>Math.hypot(a.x-relay.x,a.y-relay.y)-Math.hypot(b.x-relay.x,b.y-relay.y));
+ const e=candidates[0];if(e){const angle=Math.atan2(e.y-relay.y,e.x-relay.x),band=ContactBand.execute(BODY_SOURCES.ContactBand,7),glyph=GlyphBody.execute(BODY_SOURCES.GlyphBody,'~');
+  register('ContactBand',band,relay.id+' fire pressure '+band.state.zone);register('GlyphBody',glyph,relay.id+' fire route '+glyph.state.nextRoute);
+  st.projectiles.push({id:relay.id+'P'+(++relay.shots),mode:glyph.state.nextRoute,pressure:band.state.pressure,band:band.state.zone,x:relay.x,y:relay.y,vx:Math.cos(angle)*485,vy:Math.sin(angle)*485,r:5,life:2.5,alive:true,trail:[],hits:[],relayId:relay.id});
+  st.relayShots++;relay.fireClock=1.35;st.ripples.push({x:relay.x,y:relay.y,r:8,a:1,color:'#78f0bc'});
+  log('Handprint','RELAY FIRE',relay.id+' → '+e.id);
+ }else relay.fireClock=.3;
+ }
+}
+st.relays=st.relays.filter(r=>r.health>0&&r.life>0);
+for(const p of st.projectiles){if(!p.alive)continue;p.life-=dt;p.trail.push({x:p.x,y:p.y});if(p.trail.length>16)p.trail.shift();if(p.mode==='thread'){const e=st.enemies.filter(e=>!e.cleared&&e.x>p.x).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];if(e){const desired=Math.atan2(e.y-p.y,e.x-p.x),old=Math.atan2(p.vy,p.vx),turn=Math.atan2(Math.sin(desired-old),Math.cos(desired-old));const ang=old+clamp(turn,-dt*(1.8+st.upgrades.guidance*1.3),dt*(1.8+st.upgrades.guidance*1.3)),speed=Math.hypot(p.vx,p.vy);p.vx=Math.cos(ang)*speed;p.vy=Math.sin(ang)*speed;}}if(st.front==='CROSSWIND'){p.vy+=Math.sin(st.age*1.65)*72*dt;}p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.life<=0||p.x<-30||p.x>W+50||p.y<-50||p.y>H+50){p.alive=false;continue}for(const e of st.enemies){if(!e.cleared&&Math.hypot(e.x-p.x,e.y-p.y)<e.r+p.r){hitEnemy(p,e);if(!p.alive)break}}}
+for(const bolt of st.hostileShots){
+  bolt.phase+=dt;bolt.x+=bolt.vx*dt*worldRate*(st.front==='ION STORM'?1.38:1);bolt.y+=bolt.vy*dt*worldRate*(st.front==='ION STORM'?1.38:1);
+  for(const p of st.projectiles){if(!p.alive)continue;
+    if(Math.hypot(p.x-bolt.x,p.y-bolt.y)<p.r+bolt.r+4){bolt.dead=true;p.alive=p.mode==='pierce';st.intercepts++;st.echo=clamp(st.echo+9,0,100);st.score+=35;spark(bolt.x,bolt.y,'#f8d68f',10);log('Handprint','INTERCEPT','hostile bolt disrupted by player contact');break;}}
+  if(!bolt.dead){for(const relay of st.relays){if(relay.health>0&&Math.hypot(bolt.x-relay.x,bolt.y-relay.y)<bolt.r+23){
+   relay.health--;bolt.dead=true;st.relayInterceptions++;spark(bolt.x,bolt.y,'#7af2cf',13);log('Field','RELAY STRUCK',`${relay.id} shell ${relay.health}/2`);
+   if(relay.health<=0){st.ripples.push({x:relay.x,y:relay.y,r:12,a:1,color:'#ff9974'});log('Field','RELAY BROKEN',relay.id);}break;}}
+ }
+ if(!bolt.dead&&bolt.x<launch.x-55){bolt.dead=true;const loss=bolt.source==='guardian'?10:6;st.health=Math.max(0,st.health-loss*(1-st.upgrades.aegis*.12));st.combo=0;
+   spark(launch.x,launch.y,'#ff8c90',12);log('Field','BOLT BREACH',`-${loss} beacon · ${bolt.source}`);}
+  if(bolt.x<-35||bolt.x>W+35||bolt.y<-40||bolt.y>H+40)bolt.dead=true;
+ }
+ st.hostileShots=st.hostileShots.filter(b=>!b.dead);
+ for(const r of st.ripples){r.r+=dt*135;r.a-=dt*1.65}for(const p of st.sparks){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=80*dt;p.life-=dt}st.ripples=st.ripples.filter(x=>x.a>0);st.sparks=st.sparks.filter(x=>x.life>0);st.projectiles=st.projectiles.filter(x=>x.alive);st.enemies=st.enemies.filter(x=>!x.cleared);if(st.health<=0){endGame(false);return}
+if(st.waveSpawns>=st.waveTotal&&st.enemies.length===0&&st.projectiles.length===0&&st.hostileShots.length===0){if(st.wave===4){endGame(true);return}offerEvolution();return}
+if((st.age*5|0)!==((st.age-dt)*5|0)){refreshUI();saveLocal()}
+}
+
+function endGame(won){st.ended=true;st.won=won;playing=false;EL('upgradeDock').hidden=true;EL('continue').hidden=false;document.querySelector('.frame').classList.remove('evolving');EL('overlay').classList.add('visible');EL('endTitle').textContent=won?'FIELD STABLE':'BEACON LOST';EL('endMsg').textContent=won?`Four changing fronts survived. ${st.clearCount} forms cleared, ${st.score} score. Export your independent contact receipts.`:`You reached wave ${st.wave} and cleared ${st.clearCount} forms. The next run can go further.`;EL('status').textContent=won?'Four-wave contact complete · device confirmation still separate.':'Run ended · try a different glyph or pressure band.';log('Field','session ended',won?'WIN':'LOSS');saveLocal()}
+function refreshUI(){if(!st)return;const sk=EL('surge');sk.disabled=st.surgeCooldown>0||st.energy<28||st.ended||st.awaitingUpgrade;sk.classList.toggle('ready',!sk.disabled);sk.textContent=st.surgeLeft>0?`◈ SLOW ${st.surgeLeft.toFixed(1)}s`:st.surgeCooldown>0?`◈ COOLDOWN ${st.surgeCooldown.toFixed(0)}s`:'◈ FIELD SLOW · 28 energy';EL('score').textContent=st.score.toLocaleString();EL('wave').textContent=`${st.wave} / 4`;EL('health').textContent=Math.round(st.health)+'%';EL('energy').textContent=Math.round(st.energy);EL('bodyCount').textContent=st.receipts.length;EL('clears').textContent=st.clearCount;EL('contactId').textContent=st.lastContact;
+ const near=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x)[0];
+ EL('threat').textContent=near?`${near.kind.toUpperCase()} · ${Math.max(0,Math.round(near.x-launch.x))}m`:'FIELD QUIET';
+ EL('intercepts').textContent=`${st.intercepts||0} BOLTS`;
+ EL('echoMeter').textContent=`${Math.floor(st.echo||0)} / 100`;
+ const frontIndex=Math.max(0,FRONT_NAMES.indexOf(st.front));EL('front').textContent=`${st.front} · ${FRONT_DESCRIPTIONS[frontIndex].split(' · ')[0].toUpperCase()}`;
+ EL('relayCount').textContent=`${st.relays.length} / 2 · ${st.relayShots} SHOTS`;
+ const deploy=EL('relay');deploy.disabled=st.relays.length>=2||st.relayCooldown>0||st.energy<34||st.ended||st.awaitingUpgrade;deploy.textContent=st.relayCooldown>0?`⬡ RELAY COOLDOWN ${st.relayCooldown.toFixed(0)}s`:`⬡ DEPLOY RELAY · 34 energy`;
+ deploy.classList.toggle('ready',!deploy.disabled);
+ EL('echo').disabled=st.ended||st.awaitingUpgrade||st.echo<100||!st.enemies.some(e=>!e.cleared);
+ EL('echo').textContent=st.echo>=100?'✷ ECHO BURST · READY':`✷ ECHO BURST · ${Math.floor(st.echo||0)}%`;
+ EL('echo').classList.toggle('ready',st.echo>=100);
+ EL('focusFire').disabled=st.ended||st.awaitingUpgrade||!st.enemies.some(e=>!e.cleared);const names=['ContactBand','GlyphBody','FormulaGate','RouteFrame','StateField'];EL('proof').innerHTML=names.map(name=>`<div class="${st.lastBodies[name]?'pass':'hold'}">${st.lastBodies[name]?'✓':'○'} ${name}: ${esc(st.lastBodies[name]||'not activated')}</div>`).join('');}
+function esc(s){return String(s).replace(/[&<>"']/g,k=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[k]))}
+function line(x1,y1,x2,y2,color,width=1){CTX.strokeStyle=color;CTX.lineWidth=width;CTX.beginPath();CTX.moveTo(x1,y1);CTX.lineTo(x2,y2);CTX.stroke()}
+function glow(x,y,r,col,amount=.35){const g=CTX.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col);g.addColorStop(1,'transparent');CTX.globalAlpha=amount;CTX.fillStyle=g;CTX.fillRect(x-r,y-r,r*2,r*2);CTX.globalAlpha=1}
+function drawLivingDepth(){
+ const time=st.age;
+ // Distant tower ecology, river-lights and moving cloud bands: separate parallax planes.
+ for(let layer=0;layer<3;layer++){
+  const alpha=[.045,.08,.11][layer];CTX.save();CTX.globalAlpha=alpha;
+  CTX.fillStyle=['#69e5f0','#78bce8','#64d4b8'][layer];
+  for(let i=0;i<10;i++){
+   const speed=[1.5,3,6][layer],x=((i*144+layer*58-time*speed+1100)%1100)-75;
+   const y=310+layer*44+(i*37)%75,h=50+((i*17)%42);
+   CTX.beginPath();CTX.moveTo(x-18,y+110);CTX.lineTo(x-11,y-h*.25);CTX.lineTo(x,y-h);CTX.lineTo(x+12,y-h*.3);CTX.lineTo(x+20,y+110);CTX.closePath();CTX.fill();
+  }CTX.restore();
+ }
+ for(let i=0;i<24;i++){
+  const x=(i*79+47)%960,y=110+(i*59)%330,r=.6+(i%4)*.33;
+  CTX.fillStyle=`rgba(114,241,224,${.1+.08*Math.sin(time*.7+i)})`;
+  CTX.beginPath();CTX.arc(x+Math.sin(time*.3+i)*8,y+Math.cos(time*.5+i)*7,r,0,TAU);CTX.fill();
+ }
+}
+function drawEnemy(e){
+ const t=st.age,dam=e.shield==='exposed',r=e.r;
+ const colors={orb:'#f789ae',manta:'#8af3f0',bramble:'#edb97c',weaver:'#c6a9ff',darter:'#f4d68b',sentry:'#f5ad93',guardian:'#e8a7ff',shard:'#ffbd92'};
+ const col=colors[e.kind]||colors.orb;
+ glow(e.x,e.y,r*2.3,col,e.kind==='guardian'?.27:.18);
+ CTX.save();CTX.translate(e.x,e.y);CTX.shadowBlur=15;CTX.shadowColor=col;
+ CTX.lineWidth=2.6;CTX.strokeStyle=col;CTX.fillStyle='#111e30';
+ const poly=(points)=>{CTX.beginPath();for(let i=0;i<points.length;i++){const p=points[i];if(!i)CTX.moveTo(p[0],p[1]);else CTX.lineTo(p[0],p[1])}CTX.closePath();CTX.fill();CTX.stroke();};
+ if(e.kind==='manta'){
+  const flap=Math.sin(t*8+e.phase)*.5;
+  poly([[-r*1.65,-r*.08],[-r*.6,-r*(1.05+flap)],[-r*.17,-r*.4],[0,-r*.22],[r*.17,-r*.4],[r*.6,-r*(1.05+flap)],[r*1.65,-r*.08],[r*.8,r*.44],[0,r*.63],[-r*.8,r*.44]]);
+  CTX.strokeStyle='#8cffec';CTX.lineWidth=1.8;CTX.beginPath();CTX.moveTo(0,r*.45);CTX.lineTo(0,r*1.6);CTX.moveTo(-r*.95,-r*.3);CTX.lineTo(-r*.5,r*.1);CTX.moveTo(r*.95,-r*.3);CTX.lineTo(r*.5,r*.1);CTX.stroke();
+  for(const eye of [-1,1]){CTX.fillStyle='#e0ffff';CTX.beginPath();CTX.arc(eye*r*.32,0,3.3,0,TAU);CTX.fill();}
+ }else if(e.kind==='bramble'){
+  CTX.rotate(Math.sin(t*.8+e.shape)*.2);
+  const pts=[];for(let i=0;i<18;i++){const a=i/18*TAU,R=i%2?r*1.43:r*.78;pts.push([Math.cos(a)*R,Math.sin(a)*R]);}poly(pts);
+  CTX.strokeStyle='#d7e9a5';CTX.lineWidth=2;for(let i=0;i<6;i++){const a=i*TAU/6+t*.14;CTX.beginPath();CTX.moveTo(Math.cos(a)*r*.4,Math.sin(a)*r*.4);CTX.quadraticCurveTo(Math.cos(a+.25)*r,Math.sin(a+.25)*r,Math.cos(a+.3)*r*1.22,Math.sin(a+.3)*r*1.22);CTX.stroke();}
+  CTX.fillStyle='#fbd29f';CTX.beginPath();CTX.ellipse(0,0,r*.36,r*.56,0,0,TAU);CTX.fill();
+ }else if(e.kind==='weaver'){
+  CTX.globalAlpha=e.ghost?.38:1;const arms=8;
+  for(let i=0;i<arms;i++){const a=i*TAU/arms+t*.2;CTX.strokeStyle=col;CTX.lineWidth=4;CTX.beginPath();CTX.moveTo(0,0);CTX.bezierCurveTo(Math.cos(a+.3)*r*.8,Math.sin(a+.3)*r*.8,Math.cos(a-.4)*r*1.3,Math.sin(a-.4)*r*1.3,Math.cos(a)*r*1.6,Math.sin(a)*r*1.6);CTX.stroke();}
+  poly([[0,-r*.7],[r*.65,0],[0,r*.7],[-r*.65,0]]);
+  CTX.globalAlpha=1;
+ }else if(e.kind==='darter'){
+  const tw=Math.sin(t*12+e.phase);
+  poly([[-r*1.7,-r*.4],[-r*.6,-r*.44],[0,-r*.9],[r*1.58,0],[0,r*.85],[-r*.6,r*.42],[-r*1.7,r*.44],[-r*(1.22+.3*tw),0]]);
+  CTX.strokeStyle='#ffe4b0';CTX.lineWidth=2;CTX.beginPath();CTX.moveTo(-r*.8,-r*.25);CTX.lineTo(r*.9,0);CTX.lineTo(-r*.8,r*.25);CTX.stroke();
+ }else if(e.kind==='sentry'){
+  CTX.rotate(Math.sin(t*.6)*.12);
+  poly([[-r,-r*.52],[-r*.65,-r*.9],[r*.64,-r*.9],[r,-r*.52],[r,r*.52],[r*.64,r*.9],[-r*.65,r*.9],[-r,r*.52]]);
+  for(const a of [-1,1]){CTX.fillStyle='#f7b486';CTX.fillRect(-r*.72,a*r*.64-r*.1,r*1.44,r*.18);}
+  CTX.strokeStyle='#ffbf98';CTX.lineWidth=5;CTX.beginPath();CTX.moveTo(-r*.65,0);CTX.lineTo(-r*1.6,0);CTX.stroke();
+  CTX.fillStyle='#eb555a';CTX.beginPath();CTX.arc(0,0,r*.37,0,TAU);CTX.fill();
+ }else if(e.kind==='guardian'){
+  CTX.rotate(t*.1);const pts=[];for(let i=0;i<16;i++){let a=i/16*TAU,R=i%2?r*1.28:r*.85;pts.push([Math.cos(a)*R,Math.sin(a)*R])}poly(pts);
+  CTX.strokeStyle='#ffc6ef';CTX.lineWidth=3;for(let i=0;i<4;i++){const a=i*TAU/4-t*.28;CTX.beginPath();CTX.arc(0,0,r*(.66+i*.2),a,a+1.25);CTX.stroke();}
+  for(let i=0;i<4;i++){const a=i*TAU/4+t*.25;CTX.fillStyle='#e9a4ff';CTX.beginPath();CTX.arc(Math.cos(a)*r*1.65,Math.sin(a)*r*1.65,5.2,0,TAU);CTX.fill();}
+ }else if(e.kind==='shard'){
+  poly([[0,-r*1.5],[r*.83,0],[0,r],[ -r*.85,0]]);
+ }else{
+  CTX.beginPath();CTX.ellipse(0,0,r,r*.85,0,0,TAU);CTX.fill();CTX.stroke();
+  CTX.lineWidth=2.2;CTX.strokeStyle='#f6bcce';for(let i=0;i<3;i++){const a=i*TAU/3+t*.35;CTX.beginPath();CTX.moveTo(Math.cos(a)*r*.5,Math.sin(a)*r*.5);CTX.lineTo(Math.cos(a)*r*1.4,Math.sin(a)*r*1.4);CTX.stroke();}
+ }
+ if(e.kind!=='sentry'&&e.kind!=='manta'){
+  CTX.fillStyle=col;CTX.globalAlpha=.55;CTX.beginPath();CTX.ellipse(0,0,r*.46,r*.43,0,0,TAU);CTX.fill();CTX.globalAlpha=1;
+  CTX.fillStyle='#091722';CTX.beginPath();CTX.arc(0,0,r*.27,0,TAU);CTX.fill();CTX.fillStyle=col;CTX.beginPath();CTX.arc(-3,-3,3.5,0,TAU);CTX.fill();
+ }
+ CTX.shadowBlur=0;
+ if(!dam){CTX.strokeStyle='#ccfffbaa';CTX.lineWidth=2;CTX.setLineDash([7,5]);CTX.beginPath();CTX.ellipse(0,0,r*1.5,r*1.5,0,0,TAU);CTX.stroke();CTX.setLineDash([])}
+ else {CTX.strokeStyle='#fff2';CTX.lineWidth=2.5;CTX.beginPath();CTX.moveTo(-r*.6,-r*.4);CTX.lineTo(r*.45,r*.5);CTX.stroke();}
+ CTX.restore();
+}
+
+function draw(){const w=W,h=H;CTX.clearRect(0,0,w,h);const g=CTX.createLinearGradient(0,0,w,h);g.addColorStop(0,'#0c2532');g.addColorStop(.58,'#071622');g.addColorStop(1,'#17182e');CTX.fillStyle=g;CTX.fillRect(0,0,w,h);
+drawLivingDepth();
+// Four actual arena fronts produce different visible worlds as well as different movement rules.
+const frontTint={VERDANT:'#64e9ac',CROSSWIND:'#8dd3ff','ION STORM':'#ffd291',ECLIPSE:'#c19bff'}[st.front]||'#77ecd7';
+CTX.fillStyle=frontTint;CTX.globalAlpha=.025+(Math.sin(st.age*2)+1)*.014;CTX.fillRect(0,0,W,H);CTX.globalAlpha=1;
+if(st.front==='CROSSWIND'){for(let i=0;i<25;i++){const x=((i*131+st.age*75)%1100)-80,y=(i*53)%530;line(x,y,x+40,y-8,'#b2dcff22',1.5)}}
+if(st.front==='ION STORM'){for(let i=0;i<8;i++){const x=(i*145+st.age*15)%960,y=80+(i*117)%350;glow(x,y,38,'#f5c374',.095)}}
+if(st.front==='ECLIPSE'){glow(760,130,260,'#ad88ff',.095);CTX.globalAlpha=.12;CTX.fillStyle='#04020f';CTX.fillRect(0,0,W,H);CTX.globalAlpha=1;}
+
+for(let i=0;i<105;i++){const x=((i*181+71)%960),y=(i*119+58)%540,v=.3+.7*Math.sin(i*66+st.age*.3)**2;CTX.fillStyle=`rgba(185,235,237,${v*.18})`;CTX.fillRect(x,y,1.3,1.3)}
+for(let j=0;j<6;j++){CTX.strokeStyle='rgba(66,155,165,.13)';CTX.lineWidth=1;CTX.beginPath();for(let x=0;x<=w;x+=9){const yy=100+j*82+8*Math.sin(x*.012+st.age*.25+j);if(x===0)CTX.moveTo(x,yy);else CTX.lineTo(x,yy)}CTX.stroke()}
+const land=CTX.createLinearGradient(0,400,0,540);land.addColorStop(0,'#16424a88');land.addColorStop(1,'#132331');CTX.fillStyle=land;CTX.beginPath();CTX.moveTo(0,455);for(let x=0;x<=W;x+=14)CTX.lineTo(x,460+16*Math.sin(x*.019)+11*Math.sin(x*.07));CTX.lineTo(W,H);CTX.lineTo(0,H);CTX.fill();
+for(let i=0;i<6;i++){let x=280+i*135+10*Math.sin(i*2);glow(x,450,55,'#2bdac6',.06);line(x,444,x-10,490,'#2a9b94',1.5);line(x,444,x+15,474,'#2a9b94',1.5)}
+const pulse=(Math.sin(st.age*3)+1)/2;glow(launch.x,launch.y,115,'#64e9d5',.2+pulse*.08);CTX.save();CTX.translate(launch.x,launch.y);CTX.shadowBlur=22;CTX.shadowColor='#67ecd9';CTX.fillStyle='#123c47';CTX.strokeStyle='#7fecdf';CTX.lineWidth=3;CTX.beginPath();CTX.arc(0,0,41,0,TAU);CTX.fill();CTX.stroke();CTX.shadowBlur=0;CTX.strokeStyle='#91f2e7';CTX.lineWidth=2;for(let i=0;i<6;i++){let a=i*TAU/6+st.age*.28;line(Math.cos(a)*30,Math.sin(a)*30,Math.cos(a)*50,Math.sin(a)*50,'#75d8c8aa',2)}CTX.fillStyle='#8ff4e6';CTX.beginPath();CTX.arc(0,0,17,0,TAU);CTX.fill();CTX.fillStyle='#08303d';CTX.beginPath();CTX.arc(0,0,8,0,TAU);CTX.fill();CTX.restore();
+// Autonomous physical relay allies are visually separate from the source Beacon.
+for(const relay of st.relays){glow(relay.x,relay.y,78,'#58eabb',.26);CTX.save();CTX.translate(relay.x,relay.y);CTX.rotate(st.age*.3);
+ CTX.strokeStyle='#91f9c7';CTX.lineWidth=3;CTX.shadowBlur=14;CTX.shadowColor='#49eabe';CTX.beginPath();for(let n=0;n<6;n++){let a=n*TAU/6;let x=Math.cos(a)*24,y=Math.sin(a)*24;if(!n)CTX.moveTo(x,y);else CTX.lineTo(x,y);}CTX.closePath();CTX.stroke();CTX.shadowBlur=0;
+ for(let n=0;n<3;n++){let a=n*TAU/3-st.age*.9;CTX.fillStyle='#91f9c7';CTX.beginPath();CTX.arc(Math.cos(a)*15,Math.sin(a)*15,3,0,TAU);CTX.fill();}
+ CTX.fillStyle='#112d35';CTX.beginPath();CTX.arc(0,0,10,0,TAU);CTX.fill();CTX.fillStyle='#a9ffdd';CTX.fillRect(-3,-3,6,6);CTX.restore();
+ CTX.font='bold 11px system-ui';CTX.fillStyle='#9bf7d0';CTX.fillText(relay.id+' · '+Math.ceil(relay.life)+'s',relay.x-19,relay.y+41);
+}
+for(const e of st.enemies)if(!e.cleared)drawEnemy(e);
+for(const e of st.enemies){if((e.kind==='sentry'||e.kind==='guardian')&&e.attackClock<.75&&e.attackClock>0){CTX.save();CTX.setLineDash([6,12]);line(e.x-20,e.y,launch.x,launch.y,'#ff8c7daa',2);CTX.setLineDash([]);CTX.font='bold 11px system-ui';CTX.fillStyle='#ffd4a2';CTX.fillText('CHARGING',e.x-32,e.y-e.r-16);CTX.restore();}}
+if(st.surgeLeft>0){CTX.fillStyle='rgba(117,103,198,.055)';CTX.fillRect(0,0,W,H);CTX.strokeStyle='#9b85ff44';CTX.lineWidth=7;CTX.strokeRect(4,4,W-8,H-8);}
+for(const bolt of st.hostileShots){glow(bolt.x,bolt.y,31,'#ff9c71',.36);CTX.save();CTX.translate(bolt.x,bolt.y);CTX.rotate(st.age*4+bolt.phase);CTX.strokeStyle='#ffd3a8';CTX.lineWidth=2;CTX.fillStyle='#c84a51';CTX.beginPath();CTX.moveTo(-bolt.r*1.8,0);CTX.lineTo(0,-bolt.r);CTX.lineTo(bolt.r*1.8,0);CTX.lineTo(0,bolt.r);CTX.closePath();CTX.fill();CTX.stroke();CTX.restore();}
+for(const p of st.projectiles){CTX.strokeStyle=accent[p.mode]+'77';CTX.lineWidth=p.mode==='bloom'?7:4;CTX.beginPath();p.trail.forEach((v,i)=>i?CTX.lineTo(v.x,v.y):CTX.moveTo(v.x,v.y));CTX.stroke();glow(p.x,p.y,p.mode==='bloom'?58:36,accent[p.mode],.35);CTX.fillStyle=accent[p.mode];CTX.beginPath();CTX.arc(p.x,p.y,p.r,0,TAU);CTX.fill();CTX.strokeStyle='#ffffffc7';CTX.lineWidth=1.5;CTX.stroke()}
+for(const r of st.ripples){CTX.globalAlpha=Math.max(0,r.a);CTX.strokeStyle=r.color;CTX.lineWidth=3;CTX.beginPath();CTX.arc(r.x,r.y,r.r,0,TAU);CTX.stroke();CTX.globalAlpha=1}for(const s of st.sparks){CTX.globalAlpha=clamp(s.life/s.orig,0,1);CTX.fillStyle=s.col;CTX.beginPath();CTX.arc(s.x,s.y,s.r,0,TAU);CTX.fill();CTX.globalAlpha=1}
+if(pointer){const dx=launch.x-pointer.x,dy=launch.y-pointer.y,pp=clamp(Math.hypot(dx,dy)/145*10,0,10);const a=Math.atan2(dy,dx),speed=360+pp*29;CTX.setLineDash([5,7]);for(let i=1;i<17;i++){const t=i*.09,x=launch.x+Math.cos(a)*speed*t,y=launch.y+Math.sin(a)*speed*t;CTX.fillStyle='#a5f7ea88';CTX.beginPath();CTX.arc(x,y,Math.max(1.4,4-i*.13),0,TAU);CTX.fill()}CTX.setLineDash([]);line(launch.x,launch.y,pointer.x,pointer.y,'#afe9da',3);glow(pointer.x,pointer.y,27,'#64e9d5',.33);EL('charge').textContent=`Pressure ${pp.toFixed(1)} / 10 · ${pp<3.5?'SOFT':pp<7.5?'FIRM':'HARD'}`}else EL('charge').textContent='Pressure 0.0 / 10';CTX.font='600 12px system-ui';CTX.fillStyle='#96d0d3';CTX.fillText('HANDPRINT BEACON',76,381);CTX.fillStyle='#c4dce1a6';CTX.fillText(`WAVE ${st.wave} · ${st.waveSpawns}/${st.waveTotal} FORMS`,722,34);CTX.font='700 13px system-ui';CTX.fillStyle='#abecde';CTX.fillText(`FRONT ${st.front} · RELAYS ${st.relays.length}/2`,655,54);
+}
+function frame(t){if(!lastT)lastT=t;const dt=Math.min((t-lastT)/1000,.035);lastT=t;if(st&&!paused&&!st.ended)step(dt);if(st){draw();drawConduct();drawCooperativeForms()}requestAnimationFrame(frame)}
+function coords(ev){const r=CAN.getBoundingClientRect();return{x:(ev.clientX-r.left)*W/r.width,y:(ev.clientY-r.top)*H/r.height}}
+CAN.addEventListener('pointerdown',ev=>{if(st.ended)return;const p=coords(ev);startAim(p.x,p.y);if(pointer){pointer.pid=ev.pointerId;try{CAN.setPointerCapture(ev.pointerId)}catch{}ev.preventDefault()}});CAN.addEventListener('pointermove',ev=>{if(pointer&&pointer.pid===ev.pointerId){const p=coords(ev);pointer.x=p.x;pointer.y=p.y;ev.preventDefault()}});CAN.addEventListener('pointerup',ev=>{if(pointer&&pointer.pid===ev.pointerId){const p=coords(ev);releaseAim(p.x,p.y);ev.preventDefault()}});CAN.addEventListener('pointercancel',()=>pointer=null);
+document.querySelectorAll('.stance button').forEach(b=>b.addEventListener('click',()=>setStance(b.dataset.glyph)));
+EL('pause').onclick=()=>{if(st.ended||st.awaitingUpgrade)return;paused=!paused;EL('pause').textContent=paused?'▶ Resume':'Ⅱ Pause';EL('status').textContent=paused?'World paused — session retained.':'World resumed.';saveLocal()};EL('restart').onclick=newRun;EL('continue').onclick=newRun;EL('sound').onclick=()=>{audioOn=!audioOn;EL('sound').textContent=audioOn?'♫ On':'♫ Off';EL('sound').setAttribute('aria-pressed',String(audioOn));tone(450,.12)};
+window.addEventListener('keydown',ev=>{if(ev.key===' '){ev.preventDefault();EL('pause').click()}if(['1','2','3'].includes(ev.key))setStance(['~','!','*'][Number(ev.key)-1]);if(ev.key.toLowerCase()==='s')fieldSlow();});
+const SAVENAME='jm.handprint.fieldweave.v06';function snapshot(){return{schema:'jm.fieldweave.session/0.5',savedAt:new Date().toISOString(),sourceDigests:'source-aligned-v0.4 · five bodies + separate relay recipient',ancestry:'FIELDWEAVE/0.1 FLAZ SHA-256 526c118ea914ac3ebe6aa01734e6dbed8c76b3849d4c5837505848f5623b81c5',state:st,seq,seed}}
+function saveLocal(){try{localStorage.setItem(SAVENAME,JSON.stringify(snapshot()))}catch{}}
+function restore(data){need(['jm.fieldweave.session/0.1','jm.fieldweave.session/0.2','jm.fieldweave.session/0.3','jm.fieldweave.session/0.4','jm.fieldweave.session/0.5'].includes(data?.schema),'BAD_IMPORT_SCHEMA');need(['FIELDWEAVE/0.1','FIELDWEAVE/0.2','FIELDWEAVE/0.3','FIELDWEAVE/0.4','FIELDWEAVE/0.5'].includes(data.state?.version),'BAD_IMPORT_VERSION');need(Number.isFinite(data.state?.score)&&Number.isFinite(data.state?.health)&&Number.isFinite(data.state?.wave)&&data.state.wave>=1&&data.state.wave<=4&&Number.isFinite(data.state?.energy)&&['~','!','*'].includes(data.state?.mode)&&Array.isArray(data.state?.enemies)&&Array.isArray(data.state?.projectiles)&&Array.isArray(data.state?.log)&&Array.isArray(data.state?.receipts)&&(!data.state.hostileShots||Array.isArray(data.state.hostileShots)),'BAD_IMPORT_STATE');need(data.state.enemies.length<500&&data.state.projectiles.length<500&&data.state.log.length<1000&&data.state.receipts.length<2000&&(data.state.hostileShots||[]).length<300,'BAD_IMPORT_LIMIT');JM_CONDUCT.replayLedger(data.state.conductLedger||[]);if(data.state.transactionLog){const restoredJournal=JM_TX.Journal.recover(data.state.transactionLog,JM_SOURCE_SEAL);need(JSON.stringify(restoredJournal.records())===JSON.stringify(data.state.conductLedger||[]),'JOURNAL_GAME_LEDGER_MISMATCH')}need(!data.state.forms||Array.isArray(data.state.forms)&&data.state.forms.length<=2&&data.state.forms.every(a=>['SKYRAY','ROOTWARDEN','PRISMWISP'].includes(a.kind)&&Number.isFinite(a.x)&&Number.isFinite(a.y)&&Number.isFinite(a.life)&&a.life>=0&&a.life<=18),'BAD_FORM_STATE');need(!data.state.conductZones||Array.isArray(data.state.conductZones)&&data.state.conductZones.length<=20&&data.state.conductZones.every(z=>Number.isFinite(z.x)&&Number.isFinite(z.y)&&Number.isFinite(z.life)&&z.life>=0&&z.life<=10&&['mend','lance','nova'].includes(z.route)),'BAD_CONDUCT_ZONE');const former=data.state.version!=='FIELDWEAVE/0.5';st={...makeState(),...data.state,version:'FIELDWEAVE/0.5',front:frontFor(data.state.wave),relays:Array.isArray(data.state.relays)?data.state.relays.filter(r=>r&&Number.isFinite(r.x)&&Number.isFinite(r.y)&&Number.isFinite(r.life)&&Number.isFinite(r.health)).slice(0,2):[],relaySeq:Number(data.state.relaySeq)||0,relayCooldown:clamp(Number(data.state.relayCooldown)||0,0,60),relayShots:Number(data.state.relayShots)||0,relayInterceptions:Number(data.state.relayInterceptions)||0,frontEnergies:Number(data.state.frontEnergies)||0,hostileShots:Array.isArray(data.state.hostileShots)?data.state.hostileShots:[],hostileSeq:Number(data.state.hostileSeq)||0,intercepts:Number(data.state.intercepts)||0,echo:clamp(Number(data.state.echo)||0,0,100),echoBursts:Number(data.state.echoBursts)||0,focusShots:Number(data.state.focusShots)||0,upgrades:{...makeState().upgrades,...data.state.upgrades},ascensions:data.state.ascensions||[],surgeLeft:data.state.surgeLeft||0,surgeCooldown:data.state.surgeCooldown||0,awaitingUpgrade:data.state.awaitingUpgrade||false};st.relays=st.relays.map(r=>({...r,fireClock:Number.isFinite(r.fireClock)?r.fireClock:.4,shots:Number(r.shots)||0}));st.enemies=st.enemies.map(e=>({...e,attackClock:Number.isFinite(e.attackClock)?e.attackClock:(e.kind==='guardian'?3:99),dashClock:Number.isFinite(e.dashClock)?e.dashClock:1,ghost:Boolean(e.ghost)}));seq=Number(data.seq)||0;seed=Number(data.seed)||4201;paused=true;playing=!st.ended;pointer=null;EL('pause').textContent='▶ Resume';EL('overlay').classList.toggle('visible',Boolean(st.ended||st.awaitingUpgrade));EL('upgradeDock').hidden=!st.awaitingUpgrade;EL('continue').hidden=Boolean(st.awaitingUpgrade);document.querySelector('.frame').classList.toggle('evolving',Boolean(st.awaitingUpgrade));EL('endTitle').textContent=st.awaitingUpgrade?'FIELD EVOLVING':st.won?'FIELD STABLE':'BEACON LOST';EL('endMsg').textContent=st.awaitingUpgrade?'Recovered between-wave choice. Select an evolution.':`Restored session. Score ${st.score}.`;EL('log').textContent=st.log.slice(-24).map(x=>`${x.n} ${x.body}: ${x.event} · ${x.detail}`).join('\n');paintStance(st.mode||'~');EL('status').textContent=former?'Earlier run migrated and paused; inherited contacts preserved.':st.awaitingUpgrade?'Choice recovered — select one upgrade.':'Session recovered and paused. Resume to continue.';refreshUI();}
+
+EL('export').onclick=()=>{const blob=new Blob([JSON.stringify(snapshot(),null,2)],{type:'application/json'}),u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='JM_FIELDWEAVE_Contact_Receipts_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);};EL('import').onclick=()=>EL('file').click();EL('file').addEventListener('change',async ev=>{const f=ev.target.files?.[0];if(!f)return;try{need(f.size<3000000,'FILE_TOO_LARGE');restore(JSON.parse(await f.text()));saveLocal()}catch(e){EL('status').textContent='Import HOLD · '+(e.code||e.message)}ev.target.value=''});
+// Local tests are deterministic specimen calls to the five source-grammar implementations.
+function nativeTests(){const reports=[];const t=(name,fn)=>{try{const detail=fn();reports.push({name,pass:true,detail})}catch(e){reports.push({name,pass:false,error:e.code||e.message})}};
+t('ContactBand soft/firm/hard',()=>{for(const [v,k] of [[1,'soft'],[5,'firm'],[9,'hard']])need(ContactBand.execute(BODY_SOURCES.ContactBand,v).state.zone===k,'BAND_WRONG');return'3 classified'});
+t('ContactBand rejects overflow',()=>{let reject=false;try{ContactBand.execute(BODY_SOURCES.ContactBand,11)}catch(e){reject=e.code==='BAND_PRESSURE_OUTSIDE'}need(reject,'BAND_OVERFLOW_NOT_REJECTED');return'rejected'});
+t('GlyphBody distinct stances',()=>{need(GlyphBody.execute(BODY_SOURCES.GlyphBody,'~').state.nextRoute==='thread','GLYPH_A');need(GlyphBody.execute(BODY_SOURCES.GlyphBody,'!').state.nextRoute==='pierce','GLYPH_B');need(GlyphBody.execute(BODY_SOURCES.GlyphBody,'*').state.nextRoute==='bloom','GLYPH_C');return'3 unique'});
+t('FormulaGate PASS and HOLD',()=>{need(FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:4,focus:5},{target:{}}).passed,'FORMULA_PASS');need(!FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:1,focus:2},{target:{}}).passed,'FORMULA_HOLD');return'2 branches'});
+t('RouteFrame HIT and DEFLECT',()=>{need(RouteFrame.execute(BODY_SOURCES.RouteFrame,{target:{authorized:true}}).state.target.hit,'ROUTE_TRUE');need(!RouteFrame.execute(BODY_SOURCES.RouteFrame,{target:{authorized:false}}).state.target.hit,'ROUTE_FALSE');return'2 outcomes'});
+t('StateField protected transition',()=>{const x=StateField.execute(BODY_SOURCES.StateField,'Crack',{target:{authorized:true},fields:{Target:'shielded'}});need(x.state.fields.Target==='exposed','STATE_CRACK');const y=StateField.execute(BODY_SOURCES.StateField,'Clear',x.state);need(y.state.fields.Target==='cleared','STATE_CLEAR');return'crack+clear'});
+t('StateField rejects unauthorized',()=>{let no=false;try{StateField.execute(BODY_SOURCES.StateField,'Crack',{target:{authorized:false},fields:{Target:'shielded'}})}catch(e){no=e.code==='STATEFIELD_GUARD_FAILED'}need(no,'STATE_UNGUARDED');return'rejected'});
+t('Integration: pulse → gate → frame → state',()=>{const p=ContactBand.execute(BODY_SOURCES.ContactBand,6),g=GlyphBody.execute(BODY_SOURCES.GlyphBody,'!'),f=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:p.state.pressure,focus:5},{target:{authorized:false}}),r=RouteFrame.execute(BODY_SOURCES.RouteFrame,f.state),s=StateField.execute(BODY_SOURCES.StateField,'Crack',{target:{authorized:r.state.target.hit},fields:{Target:'shielded'}});need(g.state.nextRoute==='pierce'&&s.state.fields.Target==='exposed','INTEGRATION_FAIL');return'4 chained consequence bodies + glyph'});
+t('Living Ecology · distinct enemy contracts',()=>{const candidates=['orb','manta','bramble','weaver','guardian','shard','darter','sentry'];need(new Set(candidates).size===8,'KINDS_COLLAPSED');need(['thread','pierce','bloom'].every(m=>['thread','pierce','bloom'].includes(m)),'MODES_COLLAPSED');return'8 distinct field forms'});
+t('Living Ecology · evolution is earned',()=>{const v=makeState();need(!v.awaitingUpgrade&&v.upgrades.guidance===0&&v.ascensions.length===0,'UNEARNED_EVOLUTION');return'locked until wave clear'});
+t('Living Ecology · transfer ancestry',()=>{need(snapshot().schema==='jm.fieldweave.session/0.5'&&snapshot().ancestry.includes('526c118'),'ANCESTOR_LOST');return'frozen v0.1 ancestry tagged'});
+t('Living Ecology · no premature Ding',()=>{const g=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:0,focus:1},{target:{authorized:false}});need(!g.passed,'UNPROVEN_DING');return'held without permitted impact'});
+t('Living Ecology · Echo earned only by contact',()=>{const v=makeState();need(v.echo===0,'ECHO_UNEARNED');return 'starts 0 / 100'});
+t('Living Ecology · hostile shots have identity',()=>{const v=makeState();need(v.hostileShots.length===0&&v.intercepts===0,'HOSTILES_NOT_ISOLATED');return 'separate hostile roster'});
+t('Living Ecology · forward recovery format',()=>{need(snapshot().schema==='jm.fieldweave.session/0.5','MIGRATION_BAD');return '0.4 session + prior ancestry'});
+t('Living Ecology · touch contact and focus share pressure chain',()=>{const c=ContactBand.execute(BODY_SOURCES.ContactBand,6.76);need(c.state.zone==='firm','FOCUS_NOT_CLASSIFIED');return 'firm band inherited'});
+t('Relay Frontier · new ally slots are bounded',()=>{const v=makeState();need(Array.isArray(v.relays)&&v.relays.length===0&&v.relayCooldown===0,'RELAY_START');return '0 of 2 physical relays';});
+t('Relay Frontier · four functional fronts',()=>{need(FRONT_NAMES.length===4&&FRONT_NAMES.every((f,i)=>frontFor(i+1)===f),'FRONT_MAPPING');return '4 biome conditions';});
+t('Relay Frontier · source-aligned relay authority',()=>{const cb=ContactBand.execute(BODY_SOURCES.ContactBand,7.8),fg=FormulaGate.execute(BODY_SOURCES.FormulaGate,{force:7.8,focus:5},{target:{authorized:false}});need(cb.state.zone==='hard'&&fg.passed&&RouteFrame.execute(BODY_SOURCES.RouteFrame,fg.state).state.target.hit,'RELAY_GATE');return 'ContactBand → FormulaGate → RouteFrame';});
+t('Relay Frontier · backward recovery schema',()=>{const v=makeState();need(v.version==='FIELDWEAVE/0.5'&&snapshot().schema==='jm.fieldweave.session/0.5','RELAY_SCHEMA');return '0.1/0.2/0.3 eligible';});
+return reports};
+EL('tests').onclick=()=>{const r=nativeTests(),ok=r.filter(x=>x.pass).length;EL('status').textContent=`Contact tests ${ok}/${r.length} ${ok===r.length?'PASS':'HOLD'} — details in trace.`;log('Selftest',`${ok}/${r.length}`,r.filter(x=>!x.pass).map(x=>x.name+':'+x.error).join('; ')||'all source-grammar test cases');EL('log').textContent+='\n'+r.map(x=>`${x.pass?'✓':'✗'} ${x.name}${x.pass?' — '+x.detail:' — '+x.error}`).join('\n');EL('log').scrollTop=EL('log').scrollHeight;};
+window.JM_FIELDWEAVE={nativeTests,makeState,snapshot,getState:()=>st,spawnEnemy,hitEnemy,step,offerEvolution,chooseEvolution,fieldSlow,focusFire,echoBurst,deployRelay,makeHostileShot,restore,makeContact:(v)=>ContactBand.execute(BODY_SOURCES.ContactBand,v),forceHit:()=>{const e={id:'TEST',kind:'orb',x:470,y:290,r:25,shield:'shielded',weak:'any',cleared:false},p={id:'TEST_P',pressure:7,mode:'pierce',x:470,y:290,r:7,alive:true,hits:[]};st.enemies.push(e);hitEnemy(p,e);return e}};
+// New recipient adapter. Existing FIELDWEAVE hit/clear rules remain authoritative.
+function runConduct(hold){
+ if(paused||st.ended||st.awaitingUpgrade||st.energy<22||(st.conductCooldown||0)>0){EL('conductStatus').textContent=paused?'Resume the field before conducting.':'Conduct HOLD · need 22 energy and an open cooldown.';return false;}
+ const ledger=st.conductLedger||[],duration=+Math.min(3,hold).toFixed(3);need(ledger.length<200,'LEDGER_FULL_EXPORT_FIRST');
+ try{
+ const r=JM_CONDUCT.conduct({id:'C'+ledger.length,glyph:st.mode,pressure:+Math.min(10,2+duration*3).toFixed(3),hold:duration},{energy:st.energy,revision:ledger.length});
+ const earnedForm=admitConduct(r,ledger);
+ const nearest=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x)[0],x=nearest?clamp(nearest.x,260,760):480,y=nearest?nearest.y:265;
+ // Publish only after all six independent executors succeed.
+ st.energy=r.after.energy;st.conductLedger=[...ledger,r];st.conductCooldown=8;
+ const p=r.pattern;st.conductZones??=[];st.conductZones.push({...p,x,y,life:p.duration,clock:0,phase:0});
+ if(p.route==='mend'){st.health=clamp(st.health+8+p.strength,0,100);st.relays.forEach(q=>{q.health=Math.min(3,q.health+1);q.life=Math.min(24,q.life+4)})}
+ for(const t of r.trace)register(t.body,t.output,'CONDUCT '+p.route+' · original executor');
+ log('CODEGORNIZATION','CONDUCT COMMITTED',p.route+' · six original executors · '+r.digest);
+ EL('conductStatus').textContent=p.route.toUpperCase()+' live · '+p.duration.toFixed(1)+'s · form card and WAV motif ready';
+ spawnCooperativeForm(earnedForm);saveLocal();refreshUI();return r;
+ }catch(e){EL('conductStatus').textContent='Conduct HOLD · '+(e.code||e.message);return false}
+}
+function tickConduct(dt){
+ st.conductCooldown=Math.max(0,(st.conductCooldown||0)-dt);
+ for(const z of st.conductZones||[]){z.life-=dt;z.phase=(z.phase||0)+dt;z.clock-=dt;if(z.clock>0)continue;z.clock=.85;
+  if(z.route==='mend'){st.hostileShots=st.hostileShots.filter(b=>Math.hypot(b.x-z.x,b.y-z.y)>z.radius);continue;}
+  for(const e of st.enemies.slice()){if(e.cleared)continue;
+   const inside=z.route==='lance'?Math.abs(e.y-z.y)<28&&e.x>142:Math.hypot(e.x-z.x,e.y-z.y)<z.radius;
+   if(inside)hitEnemy({id:z.id+'_'+z.phase,mode:z.route==='lance'?'pierce':'bloom',pressure:Math.min(10,z.strength),x:e.x,y:e.y,r:8,alive:true,hits:[]},e);
+  }
+ }
+ st.conductZones=(st.conductZones||[]).filter(z=>z.life>0);
+}
+function drawConduct(){
+ for(const z of st.conductZones||[]){CTX.save();CTX.globalAlpha=Math.min(.85,z.life*.5);CTX.strokeStyle=z.color;CTX.fillStyle=z.color;CTX.lineWidth=3;CTX.shadowColor=z.color;CTX.shadowBlur=18;
+  if(z.route==='lance'){CTX.beginPath();CTX.moveTo(142,z.y);CTX.lineTo(945,z.y);CTX.stroke();for(let x=210;x<940;x+=75){CTX.beginPath();CTX.moveTo(x-18,z.y-14);CTX.lineTo(x+8,z.y);CTX.lineTo(x-18,z.y+14);CTX.stroke()}}
+  else {const r=z.radius*(.82+Math.sin(z.phase*5)*.08);CTX.beginPath();CTX.arc(z.x,z.y,r,0,TAU);CTX.stroke();CTX.globalAlpha*=.12;CTX.fill();CTX.globalAlpha=.85;CTX.translate(z.x,z.y);CTX.rotate(z.phase*.6);if(z.route==='mend'){CTX.fillRect(-5,-23,10,46);CTX.fillRect(-23,-5,46,10)}else{for(let i=0;i<6;i++){CTX.rotate(TAU/6);CTX.beginPath();CTX.moveTo(20,0);CTX.lineTo(48,12);CTX.lineTo(38,-12);CTX.closePath();CTX.stroke()}}}
+ CTX.restore();}
+}
+let conductDown=null,conductPointer=null;
+EL('conduct').addEventListener('pointerdown',ev=>{ev.preventDefault();if(conductPointer!==null)return;conductPointer=ev.pointerId;conductDown=performance.now();EL('conduct').setPointerCapture(ev.pointerId);EL('conductStatus').textContent='Conducting… release after a short hold';});
+EL('conduct').addEventListener('pointerup',ev=>{if(ev.pointerId!==conductPointer)return;const held=(performance.now()-conductDown)/1000;conductDown=null;conductPointer=null;runConduct(held);});
+EL('conduct').addEventListener('pointercancel',()=>{conductDown=null;conductPointer=null;EL('conductStatus').textContent='Contact cancelled';});
+function downloadConduct(content,mime,name){const u=URL.createObjectURL(new Blob([content],{type:mime})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+EL('card').onclick=()=>{const r=st.conductLedger?.at(-1);if(!r){EL('conductStatus').textContent='Conduct a form first';return}downloadConduct(JM_CONDUCT.cardSVG(r),'image/svg+xml','JM_'+r.pattern.route+'_FORM.svg')};
+EL('motif').onclick=()=>{const r=st.conductLedger?.at(-1);if(!r){EL('conductStatus').textContent='Conduct a form first';return}downloadConduct(JM_CONDUCT.wav(r),'audio/wav','JM_'+r.pattern.route+'_MOTIF.wav')};
+async function hostContact(recover){
+ const token=document.querySelector('meta[name="jm-host-token"]')?.content;if(!token){EL('conductStatus').textContent='Host HOLD · standalone works offline. Start included localhost host for persistent return.';return}
+ try{const res=await fetch('/v1/checkpoint',{method:recover?'GET':'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:recover?undefined:JSON.stringify(snapshot())});const data=await res.json();if(!res.ok)throw Error(data.error);if(recover)restore(data.snapshot);EL('conductStatus').textContent='Host '+(recover?'recovered':'committed')+' revision '+data.revision+' · SHA-256 '+data.sha256.slice(0,16)}catch(e){EL('conductStatus').textContent='Host HOLD · '+e.message}
+}
+EL('hostSave').onclick=()=>hostContact(false);EL('hostRecover').onclick=()=>hostContact(true);
+window.JM_FIELDWEAVE.runConduct=runConduct;
+window.JM_FIELDWEAVE.drawConduct=drawConduct;
+
+// New adapter only: original five-body combat and v0.5 six-body conduct remain.
+const journalCache=new WeakMap();
+function admitConduct(record,ledger){
+ let journal=journalCache.get(st);
+ if(!journal){journal=st.transactionLog?JM_TX.Journal.recover(st.transactionLog,JM_SOURCE_SEAL):new JM_TX.Journal({sourceSeal:JM_SOURCE_SEAL,seed:ledger});journalCache.set(st,journal)}
+ const context={energy:st.energy,world:ledger.length};
+ const request={id:record.input.id,sourceSeal:JM_SOURCE_SEAL,expectedRevision:journal.entries.length,context,inputs:[record.input]};
+ const ticket=journal.prepare(request);
+ need(JSON.stringify(ticket.records[0])===JSON.stringify(record),'NATIVE_CONDUCT_DRIFT');
+ const committed=journal.commit(ticket,context);need(committed.applied,'DUPLICATE_GAME_MUTATION');
+ st.transactionLog=journal.compact();return committed.entry.formation;
+}
+function spawnCooperativeForm(kind){
+ if(!kind)return;
+ st.forms??=[];if(st.forms.length>=2)st.forms.shift();
+ const target=st.enemies.filter(e=>!e.cleared).sort((a,b)=>a.x-b.x)[0];
+ st.forms.push({id:'F'+st.conductLedger.length,kind,x:target?clamp(target.x,300,760):480,y:target?target.y:265,age:0,life:18,clock:0,contacts:0});
+ log('CODEGORNIZATION','FORM EARNED',kind+' · two distinct source routes cooperate');
+ EL('conductStatus').textContent=kind+' joined the field · independent form behaviour active';
+}
+function tickCooperativeForms(dt){
+ for(const a of st.forms||[]){
+  a.age+=dt;a.life-=dt;a.clock-=dt;const enemy=st.enemies.filter(e=>!e.cleared).sort((x,y)=>x.x-y.x)[0];
+  if(a.kind==='SKYRAY'){
+   if(enemy){a.x+=(enemy.x-a.x)*Math.min(1,dt*3);a.y=enemy.y-38+Math.sin(a.age*5)*22;if(a.clock<=0){hitEnemy({id:a.id+'_'+a.age,mode:'pierce',pressure:7.5,x:enemy.x,y:enemy.y,r:8,alive:true,hits:[]},enemy);a.clock=.95;a.contacts++}}
+   const n=st.hostileShots.length;st.hostileShots=st.hostileShots.filter(b=>Math.hypot(b.x-a.x,b.y-a.y)>28);a.contacts+=n-st.hostileShots.length;
+  }else if(a.kind==='ROOTWARDEN'){
+   for(const e of st.enemies)if(!e.cleared&&Math.hypot(e.x-a.x,e.y-a.y)<140){e.x+=e.speed*dt*.55;a.contacts++}
+   if(a.clock<=0){for(const r of st.relays)if(Math.hypot(r.x-a.x,r.y-a.y)<240){r.life=Math.min(24,r.life+1.5);r.health=Math.min(3,r.health+.2)}a.clock=1}
+  }else{
+   a.x=480+Math.cos(a.age*1.7)*165;a.y=265+Math.sin(a.age*1.7)*95;
+   if(enemy&&a.clock<=0){hitEnemy({id:a.id+'_'+a.age,mode:'thread',pressure:6.5,x:enemy.x,y:enemy.y,r:8,alive:true,hits:[]},enemy);a.clock=1.2;a.contacts++}
+   if(st.front==='CROSSWIND')for(const p of st.projectiles)if(Math.hypot(p.x-a.x,p.y-a.y)<100)p.vy+=Math.sin(a.age*4)*dt*90;
+  }
+ }
+ st.forms=(st.forms||[]).filter(a=>a.life>0);
+}
+
+// JM FIELDWEAVE v0.7 — character presence: separate anatomies, not a shared colour swap.
+function jmBodyAscent(a){
+ const kind=a.kind,age=a.age||0;CTX.save();CTX.translate(a.x,a.y);
+ if(kind==='SKYRAY'){
+  // Wing membrane and wake trails answer to flap frequency and travel speed.
+  for(let wing of [-1,1]){const beat=Math.sin(age*8+wing*.4),flap=wing*(38+beat*9);
+   const grd=CTX.createLinearGradient(0,-10,flap,12);grd.addColorStop(0,'#b5fff7e5');grd.addColorStop(1,'#50ceb922');CTX.fillStyle=grd;
+   CTX.beginPath();CTX.moveTo(0,-7);CTX.quadraticCurveTo(flap*.4,-26-beat*8,flap,-16-beat*13);CTX.quadraticCurveTo(flap*.65,14,0,9);CTX.fill();
+   CTX.strokeStyle='#d5ffecbb';CTX.lineWidth=1.5;CTX.beginPath();CTX.moveTo(0,-7);CTX.lineTo(flap,-16-beat*13);CTX.stroke();
+  }
+  CTX.fillStyle='#e4fffb';CTX.beginPath();CTX.moveTo(-6,-10);CTX.lineTo(9,-12);CTX.lineTo(16,-1);CTX.lineTo(-4,5);CTX.closePath();CTX.fill();
+ }else if(kind==='ROOTWARDEN'){
+  // Limb identity: living ground-root footwork, opposed branching branches and heartwood.
+  CTX.strokeStyle='#baf9bcaa';CTX.lineWidth=4;for(let side of [-1,1]){
+   CTX.beginPath();CTX.moveTo(side*5,18);CTX.bezierCurveTo(side*15,28,side*(31+Math.sin(age*3)*7),35,side*44,27);CTX.stroke();
+   CTX.lineWidth=2;CTX.beginPath();CTX.moveTo(side*25,32);CTX.lineTo(side*24,47);CTX.stroke();CTX.lineWidth=4;
+  }
+  CTX.strokeStyle='#d0ffad';CTX.lineWidth=2;
+  for(let i=0;i<5;i++){const x=(i-2)*13,y=-21-Math.abs(i-2)*2;CTX.beginPath();CTX.moveTo(x*.55,-7);CTX.quadraticCurveTo(x, y+8, x+Math.sin(age*2+i)*4,y);CTX.stroke()}
+  CTX.fillStyle='#e9ffaa';CTX.beginPath();CTX.arc(-7,-3,2.7,0,Math.PI*2);CTX.arc(7,-3,2.7,0,Math.PI*2);CTX.fill();
+ }else if(kind==='PRISMWISP'){
+  // Prism faceting refracts in concentric opposed orbital directions.
+  for(let i=0;i<6;i++){const t=age*(i%2?1.2:-1.3)+i*Math.PI/3,r=29+5*Math.sin(age*3+i);
+   const x=Math.cos(t)*r,y=Math.sin(t)*r*.56;CTX.fillStyle=i%2?'#cff2ffb2':'#ffbaddb2';CTX.beginPath();CTX.moveTo(x,y-7);CTX.lineTo(x+6,y);CTX.lineTo(x,y+7);CTX.lineTo(x-6,y);CTX.closePath();CTX.fill();
+  }
+  CTX.strokeStyle='#dbedff';CTX.lineWidth=2;CTX.beginPath();CTX.ellipse(0,0,34,12,age*.7,0,TAU);CTX.stroke();
+ }
+ CTX.restore();
+}
+
+function drawCooperativeForms(){
+ for(const a of st.forms||[]){const spec=JM_FORMS.FORMS[a.kind];if(!spec)continue;CTX.save();CTX.translate(a.x,a.y);CTX.shadowBlur=18;CTX.shadowColor=spec.color;CTX.fillStyle=spec.color;CTX.strokeStyle=spec.color;CTX.lineWidth=3;
+  if(a.kind==='SKYRAY'){const f=Math.sin(a.age*8)*13;CTX.beginPath();CTX.moveTo(-36,-f);CTX.lineTo(-6,-12);CTX.lineTo(8,-3);CTX.lineTo(36,-f);CTX.lineTo(5,15);CTX.closePath();CTX.fill();CTX.beginPath();CTX.moveTo(0,8);CTX.lineTo(-22,38);CTX.stroke()}
+  else if(a.kind==='ROOTWARDEN'){CTX.beginPath();for(let i=0;i<6;i++){const ang=i*TAU/6;CTX.moveTo(0,0);CTX.lineTo(Math.cos(ang)*(50+Math.sin(a.age*3)*7),Math.sin(ang)*40)}CTX.stroke();for(let i=0;i<3;i++){CTX.beginPath();CTX.ellipse((i-1)*22,-22+Math.sin(a.age*2+i)*5,23,14,0,0,TAU);CTX.fill()}CTX.fillStyle='#1b3440';CTX.fillRect(-7,-4,4,5);CTX.fillRect(5,-4,4,5)}
+  else {CTX.rotate(a.age*2);CTX.beginPath();CTX.moveTo(0,-26);CTX.lineTo(19,0);CTX.lineTo(0,26);CTX.lineTo(-19,0);CTX.closePath();CTX.fill();CTX.strokeStyle='white';CTX.beginPath();CTX.ellipse(0,0,38,13,0,0,TAU);CTX.stroke()}
+  CTX.restore();jmBodyAscent(a);CTX.font='bold 10px system-ui';CTX.fillStyle=spec.color;CTX.fillText(spec.name.toUpperCase(),a.x-30,a.y-43);
+ }
+}
+document.getElementById('formSheet').onclick=()=>{const kind=st.forms?.at(-1)?.kind;if(!kind){EL('conductStatus').textContent='Conduct two different glyphs to earn a companion first.';return}downloadConduct(JM_FORMS.formSheet(kind),'image/svg+xml','JM_'+kind+'_ANIMATION_SHEET.svg')};
+window.JM_FIELDWEAVE.getJournal=()=>st.transactionLog||null;
+
+newRun();try{const saved=localStorage.getItem(SAVENAME);if(saved&&(JSON.parse(saved)?.state?.shotCount>0||JSON.parse(saved)?.state?.conductLedger?.length>0)){restore(JSON.parse(saved));}else if(!saved){for(const key of ['jm.handprint.fieldweave.v05','jm.handprint.fieldweave.v04','jm.handprint.fieldweave.v03','jm.handprint.fieldweave.v02']){const old=localStorage.getItem(key);if(old&&JSON.parse(old)?.state?.shotCount>0){restore(JSON.parse(old));break;}}}}catch{}requestAnimationFrame(frame);
+</script></body></html>

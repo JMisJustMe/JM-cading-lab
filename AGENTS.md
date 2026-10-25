@@ -44,6 +44,8 @@ This is a shared **first-contact behaviour**, not another Estate, memory store, 
 
 **25 October 2026 bounded smoke:** Direct hosted search for `travelboardstorage` returned unrelated bodies. A separately supplied `TBS` lineage hint located public `EH-002` (Command Register TBS Panel), `OS-001` (Estate OS / TBS), `AU-003` (Stringline / TBS) and `RL-TBS-BODY-CHECK`. This proves hint-based *public ancestor discovery*, neither identity equivalence nor current executable authority. Every new host must earn its own contact.
 
+**Optional public-safe game branch hints:** `registry/cross-client-game-reentry-hints-v0_1.json` preserves seven **navigation cues**, not current-head crowns. Read it only when relevant; stronger direct receipts override it and raw private source stays private.
+
 **Keeper:** RECOVER THE ANCESTOR · PRESERVE THE SPARK · CONNECT ONLY WHAT EVIDENCE EARNS.
 
 ## Estate production inheritance — ALL PRODUCT BODIES

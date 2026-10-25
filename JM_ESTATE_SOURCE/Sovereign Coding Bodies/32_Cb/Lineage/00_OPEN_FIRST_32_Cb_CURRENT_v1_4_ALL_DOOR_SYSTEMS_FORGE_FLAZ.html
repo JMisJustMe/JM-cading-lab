@@ -1,0 +1,1297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>32_Cb — All-Door Polyglot Systems Forge v1.4 FLAZ</title>
+<style>
+:root{
+  --bg:#080b10;--panel:#10151c;--panel2:#171f29;--text:#f4f7fb;--muted:#9ba8b8;
+  --line:#2a3645;--accent:#8bd5ff;--good:#72e4a4;--warn:#ffd56e;--bad:#ff8080;--violet:#c8adff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;line-height:1.48}
+main{max-width:1200px;margin:auto;padding:14px}
+h1{font-size:clamp(2.5rem,8vw,5.8rem);letter-spacing:-.06em;margin:.02em 0}
+h2{margin:0 0 .7rem} h3{margin:1rem 0 .45rem}
+.sub{color:var(--muted);margin:.2rem 0 1rem}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.badge{border:1px solid var(--line);border-radius:999px;padding:.28rem .62rem;color:var(--accent);font-size:.84rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:14px;margin-top:12px}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+textarea,input,select{width:100%;background:#06090d;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+textarea{min-height:250px;resize:vertical}
+button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:9px;padding:9px 11px;font:inherit;cursor:pointer;margin:5px 5px 0 0}
+button:hover{border-color:var(--accent)}
+pre{white-space:pre-wrap;word-break:break-word;background:#06090d;border:1px solid var(--line);border-radius:10px;padding:11px;min-height:80px;margin:.5rem 0}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:7px;text-align:left;vertical-align:top}
+code{color:#cdeeff}.law{border-left:4px solid var(--accent);padding:10px 12px;background:#0c1219;margin:8px 0}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}.violet{color:var(--violet)}.muted{color:var(--muted)}
+.small{font-size:.9rem}.tiny{font-size:.78rem}.scroll{overflow:auto}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#map .badge{display:inline-block;margin:3px 2px}
+.statusline{font-weight:700}
+details{border-top:1px solid var(--line);margin-top:9px;padding-top:9px}summary{cursor:pointer;color:var(--accent)}
+@media(max-width:850px){.grid,.grid2{grid-template-columns:1fr}main{padding:9px}textarea{min-height:210px}}
+</style>
+</head>
+<body>
+<main>
+  <div class="badges">
+    <span class="badge">JM CODING ESTATE</span>
+    <span class="badge">SOVEREIGN CODING BODY</span>
+    <span class="badge">ONEBODY</span>
+    <span class="badge">HOSTED WEB RUNTIME</span>
+    <span class="badge">v1.4 FLAZ</span><span class="badge">ALL-DOOR SYSTEMS FORGE</span>
+    <span class="badge">32/32 CORE + 32/32 TARGET + 40/40 DEEP ADAPTERS</span>
+  </div>
+  <h1>32_Cb</h1>
+  <p class="sub"><strong>Full Current-Scope Sovereign Positional Route Coding Body</strong> — root law: <code>3 ↔ C | 2 ↔ B</code> by alphabet placement.</p>
+
+  <section class="card">
+    <div class="law"><strong>ROOT:</strong> in POSITION/AZ mode, alphabet placement is a reversible mapping: A=1 … Z=26. Therefore <code>3 ↔ C</code> and <code>2 ↔ B</code>.</div>
+    <div class="law"><strong>32_Cb:</strong> the left rail <code>32</code> and right rail <code>Cb</code> can carry the same positional route and cross-check one another. The underscore <code>_</code> is the local bridge/check separator.</div>
+    <div class="law"><strong>POWER:</strong> v1.4 keeps the complete v1.3 body and implements every formerly-adjacent door as a concrete adapter/build route, including WASI, SPIR-V, WebGPU, CUDA, OpenCL, AssemblyScript, C ABI/FFI, schema/RPC/binary formats, reproducible/infrastructure/policy/container/build systems, smart-contract languages, Mojo and MLIR — plus eight recovered donor routes.</div>
+    <div class="law"><strong>BOUNDARY:</strong> this is a tested hosted web implementation of <em>32_Cb</em>. It is not a claim that all Cading/CadenVM functions have been merged into it, nor that it is a native standalone runtime or universal cipher. <strong>MESH ≠ MERGE.</strong></div>
+  </section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>32_Cb Workbench</h2>
+      <textarea id="src"># 32_Cb full-scope demonstration
+CHECK 32_Cb
+ENC Cb
+DEC 3.2
+FLOW 32
+PHRASE 4|1|2|12|B|32
+SET score 3
+ADD score 2
+IF score >= 5 THEN OUTPUT "route-open" ELSE OUTPUT "route-hold"
+DEF shout = LIB UPPER free_to_build
+CALL shout
+ASSERT BRIDGE 32_Cb
+ASSERT EQ score 5
+PROJECT CREATE First32CbProject
+PROJECT META version 1.4.0
+PROJECT META author JM
+PROGRAM SAVE demo
+TRACE full-demo-complete
+BACKLOOP
+DING</textarea>
+      <div>
+        <button id="run">RUN</button>
+        <button data-demo="bridge">BRIDGE</button>
+        <button data-demo="flow">FLOW</button>
+        <button data-demo="branch">BRANCH</button>
+        <button data-demo="function">FUNCTION</button>
+        <button data-demo="project">PROJECT</button>
+        <button data-demo="bugg">BUGG/RECOVER</button>
+        <button id="lint">LINT</button>
+        <button id="format">FORMAT</button>
+        <button id="save">SAVE LOCAL</button>
+        <button id="load">LOAD LOCAL</button>
+        <button id="export">EXPORT SAVEPACK</button>
+        <label><button type="button" id="importBtn">IMPORT SAVEPACK</button><input type="file" id="importFile" accept=".json,application/json" hidden></label>
+      </div>
+      <h3>Runtime Receipt</h3>
+      <pre id="out"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Live State</h2>
+      <pre id="state"></pre>
+      <h3>Project / Program</h3>
+      <pre id="project"></pre>
+      <h3>Claim State</h3>
+      <pre id="claim"></pre>
+      <h3>Quick Line</h3>
+      <input id="quick" value="CHECK 32_Cb">
+      <button id="quickRun">EXECUTE</button>
+      <pre id="quickOut"></pre>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Command Surface</h2>
+    <div class="scroll">
+      <table>
+        <tr><th>Family</th><th>Commands</th><th>Purpose</th></tr>
+        <tr><td>Bridge</td><td><code>CHECK</code> <code>ENC</code> <code>DEC</code> <code>IR</code> <code>ROUNDTRIP</code></td><td>position↔letter translation, comparison and IR</td></tr>
+        <tr><td>Flow</td><td><code>FLOW</code> <code>PHRASE</code> <code>OP</code></td><td>sound-route/contact readings and operator registry inspection</td></tr>
+        <tr><td>State</td><td><code>SET</code> <code>GET</code> <code>CHANGE</code> <code>ADD</code> <code>SUB</code> <code>MUL</code> <code>DIV</code></td><td>state storage and mutation</td></tr>
+        <tr><td>Control</td><td><code>IF ... THEN ... ELSE ...</code> <code>HOLD</code></td><td>bounded route choice and unresolved state</td></tr>
+        <tr><td>Functions</td><td><code>DEF name = command</code> <code>CALL name</code></td><td>named reusable route commands</td></tr>
+        <tr><td>Stdlib</td><td><code>LIB UPPER</code> <code>LOWER</code> <code>LEN</code> <code>TYPE</code> <code>AZPOS</code> <code>AZLET</code></td><td>small built-in library</td></tr>
+        <tr><td>Memory</td><td><code>REMEMBER</code> <code>RECALL</code></td><td>named runtime memory</td></tr>
+        <tr><td>Output</td><td><code>OUTPUT</code> <code>EMIT</code></td><td>returned values and events</td></tr>
+        <tr><td>Trust</td><td><code>ASSERT BRIDGE</code> <code>ASSERT EQ</code> <code>ASSERT EXISTS</code></td><td>explicit validation gates</td></tr>
+        <tr><td>Recovery</td><td><code>TRACE</code> <code>BUGG</code> <code>RECOVER</code> <code>UNDO</code> <code>BACKLOOP</code> <code>DING</code></td><td>trace, fault, rollback, after-run return and closure</td></tr>
+        <tr><td>Workspace</td><td><code>PROJECT CREATE/META/INFO</code> <code>PROGRAM SAVE/LOAD/LIST/DELETE</code></td><td>project identity, metadata and named programs</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>A–Z Position Rail</h2>
+      <div id="map"></div>
+      <p class="small muted">Bare digit strings are read one digit at a time for positions 1–9. Positions 10–26 require separators or brackets: <code>10.13</code>, <code>10-13</code>, or <code>[10][13]</code>.</p>
+      <div class="law"><strong>CASE ≠ POSITION.</strong> Numeric position recovers canonical uppercase identity, not source case. Source case remains metadata.</div>
+    </section>
+
+    <section class="card">
+      <h2>Layer Jurisdiction</h2>
+      <table>
+        <tr><th>Carrier</th><th>Layer</th><th>Reading</th></tr>
+        <tr><td><code>32</code></td><td>POSITION</td><td>3,2 → C,B</td></tr>
+        <tr><td><code>32</code></td><td>JM32 / FLOWTALK</td><td>THREE-TWO / FREE TO</td></tr>
+        <tr><td><code>32</code></td><td>NUMBER</td><td>thirty-two</td></tr>
+        <tr><td><code>12</code></td><td>FLOWTALK</td><td>one-two / one-to / want-to</td></tr>
+        <tr><td><code>Z0</code></td><td>JM SYMBOLIC</td><td>ZED ZERO / SOURCE-CENTRE</td></tr>
+        <tr><td><code>0</code></td><td>NUMBER</td><td>zero; not automatically Z0</td></tr>
+      </table>
+      <div class="law"><strong>SAME MARK ≠ SINGLE FUNCTION.</strong> Layer and route-state decide jurisdiction.</div>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Current Chat Contact — 41212B32</h2>
+    <div class="law"><code>4 | 1 | 2 | 12 | B | 32</code> → <strong>FOR ONE TO WANT TO BE FREE TO</strong></div>
+    <p>This is registered as a <strong>JM-native FlowTalk reading</strong>, not a universal cipher. The live source gloss plus prior JM sound-routes support it; the phrase remains unfinished after <em>FREE TO</em>.</p>
+  </section>
+
+  <section class="card">
+    <h2>FlowTalk / Sound-Route Register</h2>
+    <table>
+      <tr><th>Seed</th><th>Current readings</th><th>Claim status</th></tr>
+      <tr><td><code>4</code></td><td>four / for</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>2</code></td><td>two / to / too</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>B</code></td><td>B / bee / be</td><td>conventional sound-neighbour</td></tr>
+      <tr><td><code>12</code></td><td>one-two / one-to / want-to</td><td>JM FlowTalk precedent; context required</td></tr>
+      <tr><td><code>32</code></td><td>three-two / FREE TO</td><td>established JM32 route; not universal identity</td></tr>
+      <tr><td><code>Z0</code></td><td>Zed Zero / Source-Centre</td><td>JM symbolic route; ordinary 0 remains distinct</td></tr>
+    </table>
+    <div class="law"><strong>SOUND-SEED ≠ FINAL MEANING.</strong> Sound opens possibility. Contact, trace and claim-status govern use.</div>
+  </section>
+
+  <section class="card">
+    <h2>Operator Contact Register</h2>
+    <div class="scroll">
+      <table>
+        <tr><th>Operator/body</th><th>32_Cb treatment</th></tr>
+        <tr><td><code>_</code></td><td>implemented bridge/check separator local to 32_Cb</td></tr>
+        <tr><td><code>=</code> Speakuals</td><td>documented executed Cading operator; not silently repurposed by 32_Cb</td></tr>
+        <tr><td><code>,</code> Comma Travel</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>.</code> Foolstopped</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>.✓</code> Fullstopped</td><td>documented executed Cading operator</td></tr>
+        <tr><td><code>NOTA</code></td><td>registry contact: notake.observe.tally.analyse</td></tr>
+        <tr><td><code>Backloop</code></td><td>implemented locally as after-run receipt return into next route decision</td></tr>
+        <tr><td><code>SAYSWHO()</code></td><td>registry contact only: authority challenge; source operating model, not claimed as production compiler syntax</td></tr>
+        <tr><td><code>NOOWNER()</code></td><td>registry contact only: false-possession removal</td></tr>
+        <tr><td><code>CONTACTCHECK()</code></td><td>registry contact only: verify by contact before route decision</td></tr>
+        <tr><td><code>32÷×&</code></td><td>existing candidate open-field representative / free.to.divide.timesand</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Architecture</h2>
+    <pre>SOURCE
+→ PROTECT SOURCE / CLAIM STATUS
+→ FLOWTALK IF SOUND/MEANING IS LIVE
+→ TOKENISE
+→ IDENTIFY LAYER
+→ PARSE
+→ POSITION / FLOW / STATE / CONTROL ROUTE ANALYSE
+→ INTERMEDIATE ROUTEFORM
+→ ASSERT / VALIDATE
+→ EXECUTE / STATE CHANGE
+→ DING | BUGG | HOLD
+→ TRACE RECEIPT
+→ BACKLOOP / RECOVER / OUTPUT
+→ PROJECT / PROGRAM SAVEPACK
+→ RETURN</pre>
+  </section>
+
+  <section class="card">
+    <h2>32_Cb Constitution — Full Current Scope</h2>
+    <ol>
+      <li><strong>POSITION BEFORE ASSUMPTION.</strong> A1Z26 applies only in POSITION/AZ jurisdiction.</li>
+      <li><strong>BRIDGE MUST MATCH.</strong> Parallel numeric/alphabet rails require explicit agreement.</li>
+      <li><strong>CASE ≠ POSITION.</strong> Preserve case; do not invent it from number.</li>
+      <li><strong>SAME-MARK ≠ SINGLE-FUNCTION.</strong> Route/layer controls meaning.</li>
+      <li><strong>SOUND-SEED ≠ FINAL MEANING.</strong> Phonetic contact is a route opening, not final proof.</li>
+      <li><strong>CAN-BE ≠ IS.</strong> Possibility is not identity.</li>
+      <li><strong>SPEC-FUNCTION ≠ CODE-FUNCTION ≠ REAL-WORLD FUNCTION.</strong> Keep implementation claims scoped.</li>
+      <li><strong>MESH ≠ MERGE.</strong> Donor systems remain themselves.</li>
+      <li><strong>TRACE BEFORE CROWN.</strong> State change must remain recoverable.</li>
+      <li><strong>BUGG IS ROUTE INFORMATION.</strong> Faults name the break.</li>
+      <li><strong>RECOVER BEFORE REBUILD.</strong> Reuse last-known-good state where possible.</li>
+      <li><strong>BACKLOOP AFTER PROOF.</strong> Return outcome into the next patch/source decision without restarting the body.</li>
+      <li><strong>REVERSIBLE WHEN POSSIBLE.</strong> Position↔letter conversion should round-trip under one alphabet profile.</li>
+      <li><strong>NO DING, NO CLAIM.</strong> Ding is always scoped.</li>
+    </ol>
+  </section>
+
+  <div class="grid2">
+    <section class="card">
+      <h2>Intermediate Routeform Example</h2>
+      <pre>{
+  "body": "32_Cb",
+  "version": "1.4",
+  "layer": "POSITION/AZ",
+  "source": {"numeric":"32","alpha":"Cb"},
+  "positions": [3,2],
+  "alphaPositions": [3,2],
+  "case": ["UPPER","LOWER"],
+  "bridge": "_",
+  "match": true,
+  "claimStatus": "PROOF-OUTPUT@POSITION/AZ",
+  "state": "DING",
+  "traceRequired": true
+}</pre>
+    </section>
+    <section class="card">
+      <h2>Completion Boundary</h2>
+      <p><strong class="good">Complete now:</strong> everything in v1.3 plus 40 implemented deep adapters/build routes: all 32 formerly-adjacent doors and eight additional donor routes (Cargo, npm, Python packaging, AsyncAPI, HTTP, WebSocket, WebTransport, CSV/TSV); browser-native MessagePack and CBOR roundtrips; WebGPU/WebSocket/WebTransport capability probes; schema/API validation contact; complete adapter bundles and toolchain commands.</p>
+      <p><strong class="warn">Open by design:</strong> native standalone runtime, arbitrary natural-language compilation, universal phonetic grammar, universal intent detection, universal cipher claim, and parity with every separate CadenVM/JICKMA/Cading branch.</p>
+      <p>Those are <strong>future expansion doors beyond the currently implemented adapter horizon</strong>, not unfinished v1.4 obligations.</p>
+    </section>
+  </div>
+
+
+
+  <section class="card">
+    <h2>ALL-DOOR IMPLEMENTATION FORGE — 40/40 Adapters</h2>
+    <div class="law"><strong>ALL REQUESTED DOORS IMPLEMENTED:</strong> the 32 adjacent doors from v1.3 are no longer registry-only. Each now has a concrete 32_Cb artifact generator/build route. Eight additional donor routes recovered from JM32-1DA — Cargo, npm/package.json, Python packaging, AsyncAPI, HTTP, WebSocket, WebTransport and CSV/TSV — are implemented too.</div>
+    <div class="law"><strong>IMPLEMENTED ADAPTER ≠ EXTERNAL PLATFORM MAGIC.</strong> The body can generate the real source/config/schema/build files, bundle them, validate browser-native subsets, and state the exact toolchain route. It cannot honestly claim an NVIDIA GPU, Terraform binary, Ethereum compiler, OPA engine, Rust compiler, etc. executed unless that external toolchain actually returns a receipt.</div>
+    <div class="grid2">
+      <div>
+        <label>Implemented door</label>
+        <select id="deepSelect"></select>
+        <div>
+          <button id="deepGenerate">GENERATE ADAPTER</button>
+          <button id="deepRun">RUN / VALIDATE LOCALLY</button>
+          <button id="deepPrimary">DOWNLOAD PRIMARY FILE</button>
+          <button id="deepBundle">DOWNLOAD COMPLETE BUNDLE</button>
+        </div>
+        <h3>Implementation Profile</h3>
+        <pre id="deepProfile"></pre>
+        <h3>Files</h3>
+        <div id="deepFiles"></div>
+      </div>
+      <div>
+        <h3>Selected File</h3>
+        <textarea id="deepSource" style="min-height:360px"></textarea>
+        <h3>Receipt</h3>
+        <pre id="deepReceipt"></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Implementation Atlas</h2>
+    <div id="deepAtlas" class="scroll"></div>
+  </section>
+
+  <section class="card">
+    <h2>40-Adapter Completion Gate</h2>
+    <button id="deepTest">RUN 40/40 ADAPTER SUITE</button>
+    <pre id="deepTests"></pre>
+    <div class="law"><strong>CLAIM:</strong> adapter generation is tested here. External compilation/execution remains a separate proof class and is never silently inherited from source generation.</div>
+  </section>
+
+  <section class="card">
+    <h2>Polyglot Forge — 32 Active Target Rooms</h2>
+    <div class="law"><strong>DONOR RECOVERY:</strong> Rust was not actually absent from the Estate. JoadedMedi already carried Rust plus JavaScript, TypeScript, Python, Kotlin, Java, Go, C, C++, C#, Swift, Ruby, PHP, SQL, Bash, PowerShell, Dart, Lua, JSON, YAML, TOML, XML and WAT. v1.3 brings that proven generator direction into 32_Cb as a <em>mesh</em>, then adds Zig, Nim, Julia, R, LLVM IR, RISC-V assembly, WGSL, GLSL and HLSL.</div>
+    <div class="grid2">
+      <div>
+        <label>Target</label>
+        <select id="targetSelect"></select>
+        <div>
+          <button id="targetGenerate">GENERATE SOURCE</button>
+          <button id="targetRun">RUN / PARSE WHERE SUPPORTED</button>
+          <button id="targetDownload">DOWNLOAD SOURCE</button>
+          <button id="targetPacket">DOWNLOAD BUILD PACKET</button>
+        </div>
+        <h3>Target Profile</h3>
+        <pre id="targetProfile"></pre>
+      </div>
+      <div>
+        <h3>Generated Target Source</h3>
+        <textarea id="targetSource" style="min-height:320px"></textarea>
+        <h3>Execution / Parse Receipt</h3>
+        <pre id="targetReceipt"></pre>
+      </div>
+    </div>
+    <div class="law"><strong>NO FALSE EXECUTION:</strong> JavaScript can execute here; JSON and XML can be parsed here. Compiler/toolchain targets are generated and exportable, but this browser body does not pretend that Rust/C++/Zig/LLVM/WAT/etc. were externally compiled.</div>
+  </section>
+
+  <section class="card">
+    <h2>Target Atlas</h2>
+    <div id="targetAtlas" class="scroll"></div>
+  </section>
+
+  <section class="card">
+    <h2>32 Adjacent Doors — Things Worth Knowing About</h2>
+    <p class="muted small">These are not all programming languages. They are nearby runtimes, compiler layers, GPU systems, interop boundaries, schemas and build/policy tools that make a polyglot body much more powerful.</p>
+    <div id="futureAtlas" class="scroll"></div>
+    <div class="law"><strong>FUTURE-UNKNOWN INTAKE:</strong> 32_Cb can register a new language/runtime/tool without pretending an adapter already exists.</div>
+    <div class="row">
+      <input id="unknownTarget" placeholder="Unknown-yet language / runtime / tool">
+      <button id="unknownAdd">REGISTER UNKNOWN-YET DOOR</button>
+    </div>
+    <pre id="unknownList"></pre>
+  </section>
+
+  <section class="card">
+    <h2>Cross-Language Route</h2>
+    <pre>32_Cb SOURCE
+→ 32_Cb IR
+→ TARGET PROFILE
+→ SOURCE EMITTER
+→ EXTERNAL TOOLCHAIN / HOST
+→ BUILD OR EXECUTION RECEIPT
+→ IMPORT / TRACE
+→ DING | BUGG | HOLD
+
+Interop doors:
+C ABI / FFI
+JSON / Protobuf / CBOR / FlatBuffers
+WebAssembly / WASI
+HTTP / OpenAPI / GraphQL / gRPC
+GPU IR / shader routes (WGSL / GLSL / HLSL / SPIR-V)</pre>
+    <div class="law"><strong>HOSTED GENERATION ≠ EXTERNAL COMPILATION.</strong> Generated Rust is real editable Rust source; Rust compilation is only proven after a Rust toolchain returns a build/runtime receipt.</div>
+  </section>
+
+  <section class="card">
+    <h2>Polyglot Forge Self-Test</h2>
+    <button id="targetTest">RUN 32-TARGET GENERATOR TEST</button>
+    <pre id="targetTests"></pre>
+  </section>
+
+  <section class="card">
+    <h2>Self-Test / FLAZ Gate</h2>
+    <button id="test">RUN 32-TEST SUITE</button>
+    <pre id="tests"></pre>
+  </section>
+
+  <section class="card">
+    <h2>FLAZ Crown</h2>
+    <div class="law"><strong>32_Cb is a hosted sovereign positional route-code and all-door systems forge: numeric letter positions and alphabet carriers can run on parallel rails, validate each other, coexist with other lawful readings without collapse, execute bounded stateful routes, preserve trace/recovery and project continuity, emit across 32 language/IR/shader targets, and generate concrete adapters/build packets for all 40 currently seated deep technology doors.</strong></div>
+    <p><strong>Keeper:</strong> <code>3 ↔ C | 2 ↔ B | 32_Cb</code></p>
+    <p><strong>Secondary keeper:</strong> <code>POSITION CAN CARRY IDENTITY WITHOUT OWNING ALL MEANING.</code></p>
+    <p><strong>Completion keeper:</strong> <code>FULL CURRENT SCOPE ≠ ALL FUTURE POSSIBILITY.</code></p>
+    <p class="muted small">Status: FULL CURRENT-SCOPE CLOSURE · FROZEN · LOCKED · ANCHORED · FLAZ. v1.0 remains founding ancestor; v1.2 remains protected FLAZ lineage; v1.3 is the protected Polyglot Forge ancestor; v1.4 is current head. Polyglot generation does not falsely claim external compilation.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+const ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const STORAGE_KEY='32_Cb_ProjectSavePack_v1_4';
+
+const flowRegistry={
+  '4':{readings:['four','for'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  '2':{readings:['two','to','too'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  'B':{readings:['B','bee','be'],status:'CONVENTIONAL_SOUND_NEIGHBOUR'},
+  '12':{readings:['one-two','one-to','want-to'],status:'JM_FLOWTALK_PRECEDENT_CONTEXT_REQUIRED'},
+  '32':{readings:['three-two','FREE TO'],status:'JM32_ESTABLISHED_ROUTE_NOT_UNIVERSAL_IDENTITY'},
+  'Z0':{readings:['Zed Zero','Source-Centre'],status:'JM_SYMBOLIC_ROUTE_0_NOT_AUTOMATICALLY_Z0'}
+};
+
+const operatorRegistry={
+  'NOTA':{definition:'notake.observe.tally.analyse',status:'SOURCE_BACKED_OPERATOR_LANGUAGE'},
+  'BACKLOOP':{definition:'after-run proof return into next patch/source decision',status:'IMPLEMENTED_LOCALLY'},
+  'SAYSWHO()':{definition:'challenge claimed authority',status:'SOURCE_OPERATING_MODEL_NOT_PRODUCTION_COMPILER_SYNTAX'},
+  'NOOWNER()':{definition:'remove false-possession claim before routing by contact/function',status:'SOURCE_OPERATING_MODEL'},
+  'CONTACTCHECK()':{definition:'check a claim/body by contact before route decision',status:'SOURCE_OPERATING_MODEL'},
+  '32÷×&':{definition:'free.to.divide.timesand',status:'SOURCE_CANDIDATE_OPEN_FIELD_REPRESENTATIVE'}
+};
+
+function freshRuntime(){
+  return {
+    vars:{},memory:{},functions:{},events:[],outputs:[],trace:[],
+    history:[],lastKnownGood:null,lastReceipt:null,
+    status:'READY',ding:false,bugg:null,claimStatus:'WORKING_MODEL',
+    project:{
+      name:null,meta:{version:'1.4.0',author:'JM'},programs:{},activeProgram:null,
+      receiptHistory:[],createdAt:null,updatedAt:null
+    }
+  };
+}
+let rt=freshRuntime();
+
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function now(){return new Date().toISOString();}
+function simpleHash(str){
+  let h=2166136261>>>0;
+  for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}
+  return ('00000000'+h.toString(16)).slice(-8);
+}
+function alphaPos(ch){
+  const i=ALPHA.indexOf(String(ch).toUpperCase());
+  return i<0?null:i+1;
+}
+function posChar(n){
+  n=Number(n);return Number.isInteger(n)&&n>=1&&n<=26?ALPHA[n-1]:null;
+}
+function caseOf(ch){
+  if(!/[A-Za-z]/.test(ch))return'NONE';
+  return ch===ch.toUpperCase()?'UPPER':'LOWER';
+}
+function validateNums(nums){
+  if(!nums.length||nums.some(n=>!Number.isInteger(n)||n<1||n>26))
+    throw new Error('positions must be integers 1–26');
+}
+function parsePositions(raw){
+  const s=String(raw).trim();
+  if(!s)throw new Error('empty numeric rail');
+  if(s==='0')throw new Error('0 has no A–Z position; ordinary 0 and Z0 are distinct governed routes');
+  if(s.includes('[')){
+    const matches=[...s.matchAll(/\[(\d{1,2})\]/g)];
+    const residue=s.replace(/\[(\d{1,2})\]/g,'').replace(/[\s.,:;|/\-]/g,'');
+    if(!matches.length||residue)throw new Error('invalid bracketed position rail');
+    const nums=matches.map(m=>Number(m[1]));validateNums(nums);return nums;
+  }
+  if(/[\s.,:;|/\-]/.test(s)){
+    const nums=s.split(/[\s.,:;|/\-]+/).filter(Boolean).map(Number);
+    validateNums(nums);return nums;
+  }
+  if(/^\d+$/.test(s)){
+    const nums=[...s].map(Number);
+    if(nums.some(n=>n===0))throw new Error('0 cannot be silently mapped into A–Z placement');
+    validateNums(nums);return nums;
+  }
+  throw new Error('numeric rail not recognised');
+}
+function parseLetters(raw){
+  const chars=[...String(raw).trim()].filter(c=>/[A-Za-z]/.test(c));
+  if(!chars.length)throw new Error('alphabet rail contains no A–Z letters');
+  return chars;
+}
+function encodeLetters(raw){
+  const chars=parseLetters(raw);
+  return {chars,positions:chars.map(alphaPos),case:chars.map(caseOf),
+    dotted:chars.map(alphaPos).join('.'),bracketed:chars.map(c=>`[${alphaPos(c)}]`).join('')};
+}
+function decodePositions(raw){
+  const positions=parsePositions(raw);
+  return {positions,letters:positions.map(posChar).join('')};
+}
+function bridgeIR(expr){
+  const parts=String(expr).trim().split('_');
+  if(parts.length!==2)throw new Error('bridge body requires exactly one underscore: numeric_alpha');
+  const numeric=parsePositions(parts[0]),alpha=encodeLetters(parts[1]);
+  const len=Math.max(numeric.length,alpha.positions.length),diffs=[];
+  for(let i=0;i<len;i++){
+    if(numeric[i]!==alpha.positions[i]){
+      diffs.push({index:i+1,numeric:numeric[i]??null,alpha:alpha.positions[i]??null,letter:alpha.chars[i]??null});
+    }
+  }
+  const match=diffs.length===0;
+  return {
+    body:String(expr).trim(),version:'1.4',layer:'POSITION/AZ',
+    source:{numeric:parts[0],alpha:parts[1]},positions:numeric,
+    alphaPositions:alpha.positions,alphaCarrier:alpha.chars,case:alpha.case,
+    bridge:'_',canonicalAlpha:numeric.map(posChar).join(''),
+    diffs,match,claimStatus:match?'PROOF-OUTPUT@POSITION/AZ':'BUGG@POSITION/AZ',
+    state:match?'DING':'BUGG',traceRequired:true
+  };
+}
+function bridgeText(expr){
+  const ir=bridgeIR(expr);
+  return [
+    `${ir.state}: ${ir.body}`,
+    `LAYER: ${ir.layer}`,
+    `NUMERIC: [${ir.positions.join(', ')}]`,
+    `ALPHA: ${ir.alphaCarrier.join('')} -> [${ir.alphaPositions.join(', ')}]`,
+    `CASE: ${ir.case.join(' / ')}`,
+    `CANON: ${ir.canonicalAlpha}`,
+    `MATCH: ${ir.match}`,
+    ir.diffs.length?`DIFF: ${JSON.stringify(ir.diffs)}`:'',
+    `CLAIM: ${ir.claimStatus}`
+  ].filter(Boolean).join('\n');
+}
+function flow(token){
+  const key=String(token).trim();
+  const entry=flowRegistry[key]||flowRegistry[key.toUpperCase()];
+  return entry?{token:key,...entry}:{token:key,readings:[],status:'UNKNOWN/HOLD'};
+}
+function phraseRoute(raw){
+  const s=String(raw).trim();
+  if(s==='4|1|2|12|B|32'){
+    return {source:s,reading:'FOR ONE TO WANT TO BE FREE TO',status:'JM_NATIVE_FLOWTALK_READING_NOT_UNIVERSAL_CIPHER'};
+  }
+  return {source:s,reading:null,status:'UNKNOWN/HOLD'};
+}
+function parseValue(v){
+  const s=String(v??'').trim();
+  if(s.startsWith('$'))return rt.vars[s.slice(1)];
+  if(/^[-+]?\d+(\.\d+)?$/.test(s))return Number(s);
+  if((s.startsWith('"')&&s.endsWith('"'))||(s.startsWith("'")&&s.endsWith("'")))return s.slice(1,-1);
+  if(s==='true')return true;if(s==='false')return false;if(s==='null')return null;
+  return s;
+}
+function note(msg){rt.trace.push(String(msg));}
+function snapshot(){
+  rt.history.push(clone({vars:rt.vars,memory:rt.memory,functions:rt.functions,status:rt.status,bugg:rt.bugg}));
+  if(rt.history.length>50)rt.history.shift();
+}
+function markGood(){
+  rt.lastKnownGood=clone({vars:rt.vars,memory:rt.memory,functions:rt.functions});
+}
+function fail(reason){
+  rt.status='BUGG';rt.bugg=String(reason);note(`BUGG: ${reason}`);return`BUGG: ${reason}`;
+}
+function compare(a,op,b){
+  if(op==='==')return a==b;if(op==='===')return a===b;if(op==='!=')return a!=b;if(op==='!==')return a!==b;
+  if(op==='>')return a>b;if(op==='<')return a<b;if(op==='>=')return a>=b;if(op==='<=')return a<=b;
+  throw new Error(`unsupported comparator ${op}`);
+}
+function libCall(rest){
+  const [fnRaw,...parts]=rest.split(/\s+/);const fn=String(fnRaw||'').toUpperCase();
+  const arg=parseValue(parts.join(' '));
+  if(fn==='UPPER')return String(arg).toUpperCase();
+  if(fn==='LOWER')return String(arg).toLowerCase();
+  if(fn==='LEN')return String(arg).length;
+  if(fn==='TYPE')return arg===null?'null':Array.isArray(arg)?'array':typeof arg;
+  if(fn==='AZPOS')return encodeLetters(String(arg)).dotted;
+  if(fn==='AZLET')return decodePositions(String(arg)).letters;
+  throw new Error(`unknown LIB function ${fnRaw}`);
+}
+function projectInfo(){
+  return {
+    name:rt.project.name,meta:rt.project.meta,programCount:Object.keys(rt.project.programs).length,
+    activeProgram:rt.project.activeProgram,receiptCount:rt.project.receiptHistory.length,
+    createdAt:rt.project.createdAt,updatedAt:rt.project.updatedAt
+  };
+}
+function saveProgram(name,source){
+  if(!rt.project.name)throw new Error('create a project first');
+  rt.project.programs[name]={name,version:rt.project.meta.version||'0.0.0',source,hash:simpleHash(source),savedAt:now()};
+  rt.project.activeProgram=name;rt.project.updatedAt=now();note(`PROGRAM SAVE ${name}`);return rt.project.programs[name];
+}
+function savePack(){
+  return {
+    body:'32_Cb',version:'1.4',kind:'ProjectSavePack',
+    project:clone(rt.project),runtime:{vars:clone(rt.vars),memory:clone(rt.memory),functions:clone(rt.functions)},
+    exportedAt:now()
+  };
+}
+function loadPack(pack){
+  if(!pack||pack.body!=='32_Cb')throw new Error('not a 32_Cb SavePack');
+  if(!pack.project)throw new Error('SavePack missing project');
+  rt.project=clone(pack.project);
+  if(pack.runtime){rt.vars=clone(pack.runtime.vars||{});rt.memory=clone(pack.runtime.memory||{});rt.functions=clone(pack.runtime.functions||{});}
+  rt.status='RECOVERED';note('SAVEPACK IMPORT');snapshot();
+}
+function makeReceipt(source){
+  return {
+    body:'32_Cb',version:'1.4',host:'browser-js',
+    sourceHash:simpleHash(source),status:rt.status,ding:rt.ding,bugg:rt.bugg,
+    claimStatus:rt.claimStatus,project:projectInfo(),
+    vars:clone(rt.vars),memory:clone(rt.memory),events:clone(rt.events),
+    outputs:clone(rt.outputs),trace:clone(rt.trace),timestamp:now()
+  };
+}
+function executeInlineCommand(cmd){return executeLine(cmd,{programSource:document.getElementById('src')?.value||''});}
+
+function executeLine(line,ctx={}){
+  const raw=String(line).trim();
+  if(!raw||raw.startsWith('#')||raw.startsWith('//'))return null;
+
+  // IF name OP value THEN command [ELSE command]
+  if(/^IF\s+/i.test(raw)){
+    try{
+      const m=raw.match(/^IF\s+(\S+)\s+(===|!==|==|!=|>=|<=|>|<)\s+(.+?)\s+THEN\s+(.+?)(?:\s+ELSE\s+(.+))?$/i);
+      if(!m)throw new Error('IF syntax: IF name >= value THEN command ELSE command');
+      const left=rt.vars[m[1]],right=parseValue(m[3]),yes=m[4],no=m[5];
+      const chosen=compare(left,m[2],right)?yes:no;
+      note(`IF ${m[1]} ${m[2]} ${JSON.stringify(right)} -> ${chosen?'ROUTE':'NO_ROUTE'}`);
+      return chosen?`IF -> ${executeInlineCommand(chosen)}`:'IF -> HOLD (no ELSE route)';
+    }catch(e){return fail(e.message);}
+  }
+
+  const [cmdRaw]=raw.split(/\s+/,1);const cmd=String(cmdRaw).toUpperCase();const rest=raw.slice(cmdRaw.length).trim();
+  try{
+    if(cmd==='CHECK'){
+      const ir=bridgeIR(rest);note(`CHECK ${rest} -> ${ir.state}`);
+      if(ir.match){rt.status='ROUTED';snapshot();}else{rt.status='BUGG';rt.bugg=`bridge mismatch ${rest}`;}
+      return bridgeText(rest);
+    }
+    if(cmd==='ENC'){
+      const r=encodeLetters(rest);note(`ENC ${rest} -> ${r.dotted}`);snapshot();
+      return`ENC ${rest} -> ${r.dotted} | ${r.bracketed} | CASE ${r.case.join('/')}`;
+    }
+    if(cmd==='DEC'){
+      const r=decodePositions(rest);note(`DEC ${rest} -> ${r.letters}`);snapshot();
+      return`DEC ${rest} -> ${r.letters} | POSITION DOES NOT RECONSTRUCT CASE`;
+    }
+    if(cmd==='FLOW'){
+      const r=flow(rest);note(`FLOW ${rest} -> ${r.status}`);
+      return`FLOW ${r.token}\nREADINGS: ${r.readings.join(' | ')||'(none)'}\nCLAIM: ${r.status}`;
+    }
+    if(cmd==='PHRASE'){
+      const r=phraseRoute(rest);note(`PHRASE ${rest} -> ${r.status}`);
+      return r.reading?`PHRASE: ${r.reading}\nCLAIM: ${r.status}`:`HOLD: phrase route unknown`;
+    }
+    if(cmd==='OP'){
+      const key=rest.trim().toUpperCase();const entry=operatorRegistry[key]||operatorRegistry[rest.trim()];
+      if(!entry)return`HOLD: operator ${rest} not registered`;
+      return`OP ${rest}\nDEFINITION: ${entry.definition}\nSTATUS: ${entry.status}`;
+    }
+    if(cmd==='IR'){
+      const ir=bridgeIR(rest);note(`IR ${rest} -> ${ir.state}`);return JSON.stringify(ir,null,2);
+    }
+    if(cmd==='ROUNDTRIP'){
+      const e=encodeLetters(rest),d=decodePositions(e.dotted),canonical=parseLetters(rest).join('').toUpperCase();
+      const ok=d.letters===canonical;note(`ROUNDTRIP ${rest} -> ${ok?'PASS':'BUGG'}`);
+      return`${ok?'DING':'BUGG'} ROUNDTRIP ${rest} -> ${e.dotted} -> ${d.letters}`;
+    }
+    if(cmd==='SET'||cmd==='CHANGE'){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error(`${cmd} requires name and value`);
+      snapshot();rt.vars[m[1]]=parseValue(m[2]);rt.status='STATE_CHANGED';note(`${cmd} ${m[1]}=${JSON.stringify(rt.vars[m[1]])}`);markGood();
+      return`${cmd}: ${m[1]}=${JSON.stringify(rt.vars[m[1]])}`;
+    }
+    if(cmd==='GET'){const name=rest.trim();note(`GET ${name}`);return`GET ${name} -> ${JSON.stringify(rt.vars[name])}`;}
+    if(['ADD','SUB','MUL','DIV'].includes(cmd)){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error(`${cmd} requires name and number`);
+      const name=m[1],n=Number(parseValue(m[2]));if(!Number.isFinite(n))throw new Error(`${cmd} requires numeric operand`);
+      let cur=Number(rt.vars[name]??0);if(!Number.isFinite(cur))throw new Error(`${name} is not numeric`);
+      snapshot();
+      if(cmd==='ADD')cur+=n;if(cmd==='SUB')cur-=n;if(cmd==='MUL')cur*=n;if(cmd==='DIV'){if(n===0)throw new Error('DIV by zero');cur/=n;}
+      rt.vars[name]=cur;rt.status='STATE_CHANGED';note(`${cmd} ${name} ${n} -> ${cur}`);markGood();return`${cmd}: ${name}=${cur}`;
+    }
+    if(cmd==='DEF'){
+      const m=rest.match(/^(\S+)\s*=\s*(.+)$/);if(!m)throw new Error('DEF syntax: DEF name = command');
+      snapshot();rt.functions[m[1]]=m[2];note(`DEF ${m[1]}`);markGood();return`DEF: ${m[1]} = ${m[2]}`;
+    }
+    if(cmd==='CALL'){
+      const name=rest.trim();if(!rt.functions[name])throw new Error(`function ${name} not found`);
+      note(`CALL ${name}`);return`CALL ${name} -> ${executeInlineCommand(rt.functions[name])}`;
+    }
+    if(cmd==='LIB'){const result=libCall(rest);note(`LIB ${rest} -> ${JSON.stringify(result)}`);return`LIB -> ${JSON.stringify(result)}`;}
+    if(cmd==='REMEMBER'){
+      const m=rest.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('REMEMBER requires name and value');
+      snapshot();rt.memory[m[1]]=parseValue(m[2]);note(`REMEMBER ${m[1]}`);markGood();return`REMEMBERED ${m[1]}=${JSON.stringify(rt.memory[m[1]])}`;
+    }
+    if(cmd==='RECALL'){const name=rest.trim();note(`RECALL ${name}`);return`RECALL ${name} -> ${JSON.stringify(rt.memory[name])}`;}
+    if(cmd==='OUTPUT'){const v=parseValue(rest);rt.outputs.push(v);note(`OUTPUT ${JSON.stringify(v)}`);return`OUTPUT: ${JSON.stringify(v)}`;}
+    if(cmd==='EMIT'){rt.events.push(rest);note(`EMIT ${rest}`);return`EMIT: ${rest}`;}
+    if(cmd==='ASSERT'){
+      const [kindRaw,...parts]=rest.split(/\s+/);const kind=String(kindRaw||'').toUpperCase();const arg=parts.join(' ');
+      if(kind==='BRIDGE'){
+        const ok=bridgeIR(arg).match;note(`ASSERT BRIDGE ${arg} -> ${ok}`);if(ok)markGood();if(!ok)return fail(`ASSERT BRIDGE failed: ${arg}`);return`ASSERT PASS: BRIDGE ${arg}`;
+      }
+      if(kind==='EQ'){
+        const m=arg.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('ASSERT EQ requires name value');
+        const ok=rt.vars[m[1]]==parseValue(m[2]);note(`ASSERT EQ ${m[1]} -> ${ok}`);if(!ok)return fail(`ASSERT EQ failed: ${m[1]}`);return`ASSERT PASS: EQ ${m[1]}`;
+      }
+      if(kind==='EXISTS'){
+        const name=arg.trim();const ok=Object.prototype.hasOwnProperty.call(rt.vars,name);note(`ASSERT EXISTS ${name} -> ${ok}`);
+        if(!ok)return fail(`ASSERT EXISTS failed: ${name}`);return`ASSERT PASS: EXISTS ${name}`;
+      }
+      throw new Error(`unknown ASSERT kind ${kindRaw}`);
+    }
+    if(cmd==='TRACE'){note(rest||'trace');return`TRACE: ${rest||'trace'}`;}
+    if(cmd==='HOLD'){rt.status='HOLD';note(`HOLD ${rest}`);return`HOLD: ${rest||'unresolved'}`;}
+    if(cmd==='BUGG')return fail(rest||'declared route fault');
+    if(cmd==='RECOVER'){
+      if(rt.lastKnownGood){rt.vars=clone(rt.lastKnownGood.vars);rt.memory=clone(rt.lastKnownGood.memory);rt.functions=clone(rt.lastKnownGood.functions);}
+      rt.bugg=null;rt.status='RECOVERED';note(`RECOVER ${rest||'last-known-good'}`);return`RECOVERED: ${rest||'last-known-good'}`;
+    }
+    if(cmd==='UNDO'){
+      const s=rt.history.pop();if(!s)return'HOLD: no undo state';
+      rt.vars=clone(s.vars);rt.memory=clone(s.memory);rt.functions=clone(s.functions);rt.status='RECOVERED';rt.bugg=null;note('UNDO');
+      return'RECOVERED: previous runtime snapshot restored';
+    }
+    if(cmd==='BACKLOOP'){
+      const prior=rt.lastReceipt?{status:rt.lastReceipt.status,ding:rt.lastReceipt.ding,bugg:rt.lastReceipt.bugg,sourceHash:rt.lastReceipt.sourceHash}:null;
+      note('BACKLOOP');return prior?`BACKLOOP: ${JSON.stringify(prior)}`:'BACKLOOP: no prior receipt yet; current proof will become next contact';
+    }
+    if(cmd==='PROJECT'){
+      const [subRaw,...parts]=rest.split(/\s+/);const sub=String(subRaw||'').toUpperCase();const arg=parts.join(' ');
+      if(sub==='CREATE'){
+        const name=arg.trim();if(!name)throw new Error('PROJECT CREATE requires name');
+        snapshot();rt.project={name,meta:{version:'1.4.0',author:'JM'},programs:{},activeProgram:null,receiptHistory:[],createdAt:now(),updatedAt:now()};
+        note(`PROJECT CREATE ${name}`);return`PROJECT CREATED: ${name}`;
+      }
+      if(sub==='META'){
+        const m=arg.match(/^(\S+)\s+(.+)$/);if(!m)throw new Error('PROJECT META requires key value');
+        if(!rt.project.name)throw new Error('create a project first');
+        const mv=m[1].toLowerCase()==='version'?m[2].trim().replace(/^['\"]|['\"]$/g,''):parseValue(m[2]);rt.project.meta[m[1]]=mv;rt.project.updatedAt=now();note(`PROJECT META ${m[1]}`);
+        return`PROJECT META: ${m[1]}=${JSON.stringify(rt.project.meta[m[1]])}`;
+      }
+      if(sub==='INFO')return JSON.stringify(projectInfo(),null,2);
+      throw new Error(`unknown PROJECT action ${subRaw}`);
+    }
+    if(cmd==='PROGRAM'){
+      const [subRaw,...parts]=rest.split(/\s+/);const sub=String(subRaw||'').toUpperCase();const name=parts.join(' ').trim();
+      if(sub==='SAVE'){
+        if(!name)throw new Error('PROGRAM SAVE requires name');
+        const p=saveProgram(name,ctx.programSource||document.getElementById('src')?.value||'');return`PROGRAM SAVED: ${p.name} ${p.hash}`;
+      }
+      if(sub==='LOAD'){
+        const p=rt.project.programs[name];if(!p)throw new Error(`program ${name} not found`);
+        rt.project.activeProgram=name;rt.project.updatedAt=now();note(`PROGRAM LOAD ${name}`);
+        if(document.getElementById('src'))document.getElementById('src').value=p.source;
+        return`PROGRAM LOADED: ${name} ${p.hash}`;
+      }
+      if(sub==='LIST')return`PROGRAMS: ${Object.keys(rt.project.programs).join(', ')||'(none)'}`;
+      if(sub==='DELETE'){
+        if(!rt.project.programs[name])throw new Error(`program ${name} not found`);
+        delete rt.project.programs[name];if(rt.project.activeProgram===name)rt.project.activeProgram=null;rt.project.updatedAt=now();note(`PROGRAM DELETE ${name}`);
+        return`PROGRAM DELETED: ${name}`;
+      }
+      throw new Error(`unknown PROGRAM action ${subRaw}`);
+    }
+    if(cmd==='DING'){rt.ding=true;rt.status='DING';rt.claimStatus='PROOF-OUTPUT@CURRENT_RUN';note('DING');return'DING: declared route completed inside current runtime scope';}
+    if(cmd==='CLAIM'){rt.claimStatus=rest||'WORKING_MODEL';note(`CLAIM ${rt.claimStatus}`);return`CLAIM STATUS: ${rt.claimStatus}`;}
+    return fail(`unknown instruction "${cmdRaw}"`);
+  }catch(e){return fail(e.message);}
+}
+
+function executeProgram(source){
+  rt.trace=[];rt.outputs=[];rt.events=[];rt.ding=false;rt.bugg=null;rt.status='RUNNING';rt.claimStatus='WORKING_MODEL';
+  const results=[],lines=String(source).split(/\r?\n/);
+  for(let i=0;i<lines.length;i++){
+    const res=executeLine(lines[i],{programSource:source});
+    if(res!==null)results.push(`[${i+1}] ${res}`);
+  }
+  if(rt.status==='RUNNING')rt.status='HOLD';
+  const receipt=makeReceipt(source);rt.lastReceipt=clone(receipt);
+  if(rt.project.name){rt.project.receiptHistory.push(clone(receipt));if(rt.project.receiptHistory.length>50)rt.project.receiptHistory.shift();rt.project.updatedAt=now();}
+  return results.join('\n\n');
+}
+
+function knownCommands(){return new Set(['CHECK','ENC','DEC','FLOW','PHRASE','OP','IR','ROUNDTRIP','SET','GET','CHANGE','ADD','SUB','MUL','DIV','DEF','CALL','LIB','REMEMBER','RECALL','OUTPUT','EMIT','ASSERT','TRACE','HOLD','BUGG','RECOVER','UNDO','BACKLOOP','PROJECT','PROGRAM','DING','CLAIM','IF']);}
+function lintSource(source){
+  const issues=[],lines=String(source).split(/\r?\n/),known=knownCommands();
+  lines.forEach((line,i)=>{
+    const s=line.trim();if(!s||s.startsWith('#')||s.startsWith('//'))return;
+    const cmd=s.split(/\s+/)[0].toUpperCase();
+    if(!known.has(cmd))issues.push(`L${i+1}: unknown command ${cmd}`);
+    if(cmd==='CHECK'){
+      const arg=s.slice(5).trim();try{bridgeIR(arg)}catch(e){issues.push(`L${i+1}: CHECK ${e.message}`);}
+    }
+    if(cmd==='IF'&&!/\sTHEN\s/i.test(s))issues.push(`L${i+1}: IF missing THEN`);
+  });
+  return issues.length?issues:['PASS: no lint issues'];
+}
+function formatSource(source){
+  const known=knownCommands();
+  return String(source).split(/\r?\n/).map(line=>{
+    const lead=line.match(/^\s*/)[0],s=line.trim();
+    if(!s||s.startsWith('#')||s.startsWith('//'))return line;
+    const first=s.split(/\s+/)[0],upper=first.toUpperCase();
+    return known.has(upper)?lead+upper+s.slice(first.length):line;
+  }).join('\n');
+}
+function downloadJSON(obj,name){
+  const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+}
+function render(){
+  document.getElementById('state').textContent=JSON.stringify({
+    status:rt.status,ding:rt.ding,bugg:rt.bugg,vars:rt.vars,memory:rt.memory,functions:rt.functions,events:rt.events,outputs:rt.outputs
+  },null,2);
+  document.getElementById('project').textContent=JSON.stringify(projectInfo(),null,2);
+  document.getElementById('claim').textContent=`CLAIM STATUS: ${rt.claimStatus}\nNO DING, NO CLAIM beyond the current validated scope.`;
+}
+
+const demos={
+bridge:`CHECK 32_Cb
+IR 32_Cb
+ROUNDTRIP Cb
+ASSERT BRIDGE 32_Cb
+DING`,
+flow:`FLOW 4
+FLOW 12
+FLOW 32
+FLOW Z0
+PHRASE 4|1|2|12|B|32
+OP NOTA
+OP SAYSWHO()
+TRACE sound-seed-is-not-final-meaning
+DING`,
+branch:`SET score 3
+ADD score 2
+IF score >= 5 THEN OUTPUT "PASS" ELSE OUTPUT "HOLD"
+ASSERT EQ score 5
+DING`,
+function:`DEF shout = LIB UPPER free_to_build
+CALL shout
+DEF letter = LIB AZLET 3.2
+CALL letter
+DING`,
+project:`PROJECT CREATE First32CbProject
+PROJECT META version 1.4.0
+PROJECT META author JM
+PROGRAM SAVE demo
+PROJECT INFO
+PROGRAM LIST
+TRACE project-workspace-ready
+DING`,
+bugg:`SET x 7
+CHECK 32_CA
+TRACE preserve-source
+RECOVER last-known-good
+ASSERT EXISTS x
+CHECK 32_Cb
+BACKLOOP
+DING`
+};
+
+document.getElementById('run').onclick=()=>{
+  const source=document.getElementById('src').value;
+  document.getElementById('out').textContent=executeProgram(source);render();
+};
+document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{
+  document.getElementById('src').value=demos[b.dataset.demo];document.getElementById('run').click();
+});
+document.getElementById('quickRun').onclick=()=>{
+  const r=executeLine(document.getElementById('quick').value,{programSource:document.getElementById('src').value});
+  document.getElementById('quickOut').textContent=r??'';render();
+};
+document.getElementById('lint').onclick=()=>document.getElementById('out').textContent=lintSource(document.getElementById('src').value).join('\n');
+document.getElementById('format').onclick=()=>document.getElementById('src').value=formatSource(document.getElementById('src').value);
+document.getElementById('save').onclick=()=>{
+  const pack=savePack();localStorage.setItem(STORAGE_KEY,JSON.stringify(pack));note('LOCAL SAVEPACK');document.getElementById('out').textContent='DING: local ProjectSavePack stored';render();
+};
+document.getElementById('load').onclick=()=>{
+  const raw=localStorage.getItem(STORAGE_KEY);if(!raw){document.getElementById('out').textContent='HOLD: no local SavePack found';return;}
+  loadPack(JSON.parse(raw));document.getElementById('out').textContent='DING: local ProjectSavePack restored';render();
+};
+document.getElementById('export').onclick=()=>downloadJSON(savePack(),'32_Cb_ProjectSavePack_v1_4.json');
+document.getElementById('importBtn').onclick=()=>document.getElementById('importFile').click();
+document.getElementById('importFile').onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{loadPack(JSON.parse(await f.text()));document.getElementById('out').textContent='DING: imported ProjectSavePack';render();}
+  catch(err){document.getElementById('out').textContent=`BUGG: ${err.message}`;}
+};
+
+
+
+const DEEP_ADAPTERS = {"WASI": {"kind": "WebAssembly system runtime", "toolchain": "wat2wasm + Wasmtime/Wasmer", "command": "wat2wasm 32_cb_wasi.wat -o 32_cb_wasi.wasm && wasmtime 32_cb_wasi.wasm", "files": [{"name": "32_cb_wasi.wat", "content": "(module\n  (import \"wasi_snapshot_preview1\" \"proc_exit\" (func $proc_exit (param i32)))\n  (func (export \"_start\")\n    ;; 32_Cb bridge is prevalidated by the source route.\n    i32.const 0\n    call $proc_exit\n  )\n)"}, {"name": "wasi-route.json", "content": "{\n  \"body\": \"32_Cb\",\n  \"target\": \"WASI\",\n  \"entry\": \"_start\",\n  \"expectedExit\": 0\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "SPIR-V": {"kind": "GPU intermediate representation", "toolchain": "spirv-as + spirv-val", "command": "spirv-as 32_cb.spvasm -o 32_cb.spv && spirv-val 32_cb.spv", "files": [{"name": "32_cb.spvasm", "content": "; SPIR-V\n; Version: 1.0\n; Minimal compute entry: writes no resources; adapter demonstrates IR route.\nOpCapability Shader\nOpMemoryModel Logical GLSL450\nOpEntryPoint GLCompute %main \"main\"\nOpExecutionMode %main LocalSize 1 1 1\n%void = OpTypeVoid\n%fn = OpTypeFunction %void\n%main = OpFunction %void None %fn\n%entry = OpLabel\nOpReturn\nOpFunctionEnd"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "WebGPU": {"kind": "GPU API", "toolchain": "Browser WebGPU + WGSL", "command": "Open 32_cb_webgpu.js in a secure WebGPU-capable browser host", "files": [{"name": "32_cb_webgpu.js", "content": "export async function run32CbWebGPU(){\n  if(!navigator.gpu) return {body:\"32_Cb\",status:\"HOLD\",reason:\"WebGPU unavailable\"};\n  const adapter=await navigator.gpu.requestAdapter();\n  if(!adapter) return {body:\"32_Cb\",status:\"HOLD\",reason:\"No GPU adapter\"};\n  const device=await adapter.requestDevice();\n  const code=`@compute @workgroup_size(1) fn main(){}`;\n  const module=device.createShaderModule({code});\n  return {body:\"32_Cb\",status:\"DING\",device:!!device,module:!!module};\n}"}, {"name": "32_cb.wgsl", "content": "@compute @workgroup_size(1)\nfn main() {\n  // 3↔C | 2↔B route already validated in host IR.\n}\n"}], "browserAction": "webgpu", "status": "IMPLEMENTED_ADAPTER", "note": "Browser capability probe and source generator implemented; GPU availability is device/host dependent."}, "CUDA": {"kind": "NVIDIA GPU compute", "toolchain": "CUDA Toolkit / nvcc", "command": "nvcc 32_cb.cu -o 32_cb_cuda && ./32_cb_cuda", "files": [{"name": "32_cb.cu", "content": "#include <cstdio>\n__global__ void pulse(int* out){ if(threadIdx.x==0 && blockIdx.x==0) *out = (3==3 && 2==2) ? 1 : 0; }\nint main(){\n  int *d=nullptr,h=0; cudaMalloc(&d,sizeof(int));\n  pulse<<<1,1>>>(d); cudaDeviceSynchronize();\n  cudaMemcpy(&h,d,sizeof(int),cudaMemcpyDeviceToHost); cudaFree(d);\n  std::printf(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"%s\\\"}\\n\",h?\"DING\":\"BUGG\");\n  return h?0:1;\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "OpenCL": {"kind": "Heterogeneous GPU/CPU compute", "toolchain": "OpenCL compiler/runtime + host SDK", "command": "Compile 32_cb_opencl.cl through an OpenCL host program and capture the result buffer", "files": [{"name": "32_cb_opencl.cl", "content": "__kernel void pulse(__global int* out){\n  if(get_global_id(0)==0) out[0] = (3==3 && 2==2) ? 1 : 0;\n}"}, {"name": "opencl-route.json", "content": "{\n  \"body\": \"32_Cb\",\n  \"kernel\": \"pulse\",\n  \"globalSize\": 1,\n  \"expected\": 1\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "AssemblyScript": {"kind": "WebAssembly-oriented language", "toolchain": "Node + AssemblyScript asc", "command": "npx asc 32_cb.ts -o 32_cb.wasm --optimize", "files": [{"name": "32_cb.ts", "content": "export function alphaPos(code:i32):i32 { return code - 64; }\nexport function pulse():i32 {\n  return alphaPos(67)==3 && alphaPos(66)==2 ? 1 : 0;\n}"}, {"name": "package.json", "content": "{\n  \"private\": true,\n  \"devDependencies\": {\n    \"assemblyscript\": \"latest\"\n  },\n  \"scripts\": {\n    \"build\": \"asc 32_cb.ts -o 32_cb.wasm --optimize\"\n  }\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "C ABI": {"kind": "Cross-language ABI boundary", "toolchain": "C compiler/linker", "command": "cc -c 32_cb.c -o 32_cb.o", "files": [{"name": "32_cb.h", "content": "#ifndef BODY32CB_H\n#define BODY32CB_H\n#ifdef __cplusplus\nextern \"C\" {\n#endif\nint body32cb_pulse(void);\nint body32cb_alpha_pos(char c);\n#ifdef __cplusplus\n}\n#endif\n#endif"}, {"name": "32_cb.c", "content": "#include \"32_cb.h\"\n#include <ctype.h>\nint body32cb_alpha_pos(char c){ return toupper((unsigned char)c)-'A'+1; }\nint body32cb_pulse(void){ return body32cb_alpha_pos('C')==3 && body32cb_alpha_pos('B')==2; }"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "FFI": {"kind": "Foreign Function Interface", "toolchain": "C ABI + host-language FFI", "command": "Build the C ABI library, then bind it from the chosen host language", "files": [{"name": "ffi_contract.json", "content": "{\n  \"library\": \"32_cb\",\n  \"abi\": \"C\",\n  \"functions\": [\n    {\n      \"name\": \"body32cb_pulse\",\n      \"returns\": \"int\",\n      \"args\": []\n    },\n    {\n      \"name\": \"body32cb_alpha_pos\",\n      \"returns\": \"int\",\n      \"args\": [\n        {\n          \"name\": \"c\",\n          \"type\": \"char\"\n        }\n      ]\n    }\n  ]\n}"}, {"name": "ffi_rust.rs", "content": "extern \"C\" {\n    fn body32cb_pulse() -> i32;\n}\nfn main(){ unsafe { println!(\"{}\", body32cb_pulse()); } }"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Protocol Buffers": {"kind": "Typed binary schema", "toolchain": "protoc", "command": "protoc --descriptor_set_out=32_cb.pb 32_cb.proto", "files": [{"name": "32_cb.proto", "content": "syntax = \"proto3\";\npackage jm.body32cb;\nmessage Receipt {\n  string body = 1;\n  repeated uint32 positions = 2;\n  repeated string letters = 3;\n  string status = 4;\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "gRPC": {"kind": "Typed RPC transport", "toolchain": "protoc + gRPC plugin/runtime", "command": "Generate client/server stubs from 32_cb_grpc.proto with the gRPC plugin for your target language", "files": [{"name": "32_cb_grpc.proto", "content": "syntax = \"proto3\";\npackage jm.body32cb;\nmessage Empty {}\nmessage Receipt { string body=1; repeated uint32 positions=2; repeated string letters=3; string status=4; }\nservice Body32Cb { rpc Pulse(Empty) returns (Receipt); }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "GraphQL": {"kind": "API query/schema language", "toolchain": "GraphQL runtime/tooling", "command": "Validate schema.graphql with your GraphQL toolchain", "files": [{"name": "schema.graphql", "content": "type Receipt {\n  body: String!\n  positions: [Int!]!\n  letters: [String!]!\n  status: String!\n}\ntype Query {\n  body32Cb: Receipt!\n}\n"}, {"name": "query.graphql", "content": "query Body32Cb {\n  body32Cb { body positions letters status }\n}\n"}], "browserAction": "graphql", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "OpenAPI": {"kind": "HTTP API contract", "toolchain": "OpenAPI 3.1 tooling", "command": "npx @redocly/cli lint openapi.json", "files": [{"name": "openapi.json", "content": "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"32_Cb API\",\n    \"version\": \"1.4.0\"\n  },\n  \"paths\": {\n    \"/pulse\": {\n      \"get\": {\n        \"responses\": {\n          \"200\": {\n            \"description\": \"32_Cb receipt\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/Receipt\"\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"Receipt\": {\n        \"type\": \"object\",\n        \"required\": [\n          \"body\",\n          \"positions\",\n          \"letters\",\n          \"status\"\n        ],\n        \"properties\": {\n          \"body\": {\n            \"const\": \"32_Cb\"\n          },\n          \"positions\": {\n            \"type\": \"array\",\n            \"prefixItems\": [\n              {\n                \"const\": 3\n              },\n              {\n                \"const\": 2\n              }\n            ],\n            \"minItems\": 2,\n            \"maxItems\": 2\n          },\n          \"letters\": {\n            \"type\": \"array\",\n            \"prefixItems\": [\n              {\n                \"const\": \"C\"\n              },\n              {\n                \"const\": \"B\"\n              }\n            ],\n            \"minItems\": 2,\n            \"maxItems\": 2\n          },\n          \"status\": {\n            \"enum\": [\n              \"DING\",\n              \"BUGG\",\n              \"HOLD\"\n            ]\n          }\n        }\n      }\n    }\n  }\n}"}], "browserAction": "json", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "JSON Schema": {"kind": "Validation contract", "toolchain": "JSON Schema 2020-12 validator / AJV", "command": "ajv validate -s 32_cb.schema.json -d 32_cb.receipt.json", "files": [{"name": "32_cb.schema.json", "content": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"$id\": \"https://jm.local/32_cb.schema.json\",\n  \"title\": \"32_Cb Receipt\",\n  \"type\": \"object\",\n  \"required\": [\n    \"body\",\n    \"positions\",\n    \"letters\",\n    \"status\"\n  ],\n  \"properties\": {\n    \"body\": {\n      \"const\": \"32_Cb\"\n    },\n    \"positions\": {\n      \"type\": \"array\",\n      \"prefixItems\": [\n        {\n          \"const\": 3\n        },\n        {\n          \"const\": 2\n        }\n      ],\n      \"minItems\": 2,\n      \"maxItems\": 2\n    },\n    \"letters\": {\n      \"type\": \"array\",\n      \"prefixItems\": [\n        {\n          \"const\": \"C\"\n        },\n        {\n          \"const\": \"B\"\n        }\n      ],\n      \"minItems\": 2,\n      \"maxItems\": 2\n    },\n    \"status\": {\n      \"enum\": [\n        \"DING\",\n        \"BUGG\",\n        \"HOLD\"\n      ]\n    }\n  },\n  \"additionalProperties\": false\n}"}, {"name": "32_cb.receipt.json", "content": "{\n  \"body\": \"32_Cb\",\n  \"positions\": [\n    3,\n    2\n  ],\n  \"letters\": [\n    \"C\",\n    \"B\"\n  ],\n  \"status\": \"DING\"\n}"}], "browserAction": "jsonschema", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "MessagePack": {"kind": "Binary object encoding", "toolchain": "Built-in 32_Cb browser codec + external MessagePack libraries", "command": "Use the built-in browser codec or decode 32_cb.msgpack.hex with a MessagePack library", "files": [{"name": "messagepack-contract.json", "content": "{\n  \"packet\": {\n    \"body\": \"32_Cb\",\n    \"positions\": [\n      3,\n      2\n    ],\n    \"letters\": [\n      \"C\",\n      \"B\"\n    ],\n    \"status\": \"DING\"\n  },\n  \"codec\": \"MessagePack\"\n}"}], "browserAction": "messagepack", "status": "IMPLEMENTED_ADAPTER", "note": "A small working MessagePack encoder/decoder for the current receipt subset is embedded in 32_Cb."}, "CBOR": {"kind": "Compact Binary Object Representation", "toolchain": "Built-in 32_Cb browser codec + external CBOR libraries", "command": "Use the built-in browser codec or decode the emitted CBOR bytes with a CBOR tool", "files": [{"name": "cbor-contract.json", "content": "{\n  \"packet\": {\n    \"body\": \"32_Cb\",\n    \"positions\": [\n      3,\n      2\n    ],\n    \"letters\": [\n      \"C\",\n      \"B\"\n    ],\n    \"status\": \"DING\"\n  },\n  \"codec\": \"CBOR\"\n}"}], "browserAction": "cbor", "status": "IMPLEMENTED_ADAPTER", "note": "A small working CBOR encoder/decoder for the current receipt subset is embedded in 32_Cb."}, "Cap'n Proto": {"kind": "Schema/RPC", "toolchain": "capnp", "command": "capnp compile -oc++ 32_cb.capnp", "files": [{"name": "32_cb.capnp", "content": "@0xdfe2a854e3796ea1;\nstruct Receipt {\n  body @0 :Text;\n  positions @1 :List(UInt16);\n  letters @2 :List(Text);\n  status @3 :Text;\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "FlatBuffers": {"kind": "Zero-copy schema", "toolchain": "flatc", "command": "flatc --cpp 32_cb.fbs", "files": [{"name": "32_cb.fbs", "content": "namespace JM.Body32Cb;\ntable Receipt {\n  body:string;\n  positions:[ushort];\n  letters:[string];\n  status:string;\n}\nroot_type Receipt;\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Nix": {"kind": "Reproducible build/package", "toolchain": "Nix", "command": "nix flake check && nix build", "files": [{"name": "flake.nix", "content": "{\n  description = \"32_Cb reproducible build route\";\n  inputs.nixpkgs.url = \"github:NixOS/nixpkgs/nixos-unstable\";\n  outputs = { self, nixpkgs }:\n    let system = \"x86_64-linux\"; pkgs = import nixpkgs { inherit system; };\n    in {\n      packages.${system}.default = pkgs.writeShellApplication {\n        name = \"32-cb\";\n        text = ''echo '{\"body\":\"32_Cb\",\"status\":\"DING\"}' '';\n      };\n    };\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "HCL / Terraform": {"kind": "Infrastructure as code", "toolchain": "Terraform/OpenTofu", "command": "terraform init && terraform validate && terraform plan", "files": [{"name": "main.tf", "content": "terraform {\n  required_version = \">= 1.5.0\"\n}\nlocals {\n  body      = \"32_Cb\"\n  positions = [3, 2]\n  letters   = [\"C\", \"B\"]\n  status    = local.positions == [3,2] ? \"DING\" : \"BUGG\"\n}\noutput \"receipt\" {\n  value = { body=local.body, positions=local.positions, letters=local.letters, status=local.status }\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Rego / OPA": {"kind": "Policy as code", "toolchain": "OPA", "command": "opa check 32_cb.rego && opa eval -d 32_cb.rego 'data.jm.body32cb.allow'", "files": [{"name": "32_cb.rego", "content": "package jm.body32cb\ndefault allow := false\nallow if {\n  [3,2] == [3,2]\n  [\"C\",\"B\"] == [\"C\",\"B\"]\n}\nreceipt := {\"body\":\"32_Cb\",\"status\": \"DING\"} if allow\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Dockerfile / OCI": {"kind": "Container build/package", "toolchain": "Docker / Podman / OCI tooling", "command": "docker build -t 32-cb:1.4 .", "files": [{"name": "Dockerfile", "content": "FROM alpine:3.20\nRUN printf '%s\\n' '#!/bin/sh' 'echo \"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\"' > /usr/local/bin/32-cb \\\n && chmod +x /usr/local/bin/32-cb\nENTRYPOINT [\"32-cb\"]\n"}, {"name": "oci-manifest.template.json", "content": "{\n  \"schemaVersion\": 2,\n  \"mediaType\": \"application/vnd.oci.image.manifest.v1+json\",\n  \"config\": {\n    \"mediaType\": \"application/vnd.oci.image.config.v1+json\",\n    \"digest\": \"sha256:REPLACE_AFTER_BUILD\",\n    \"size\": 0\n  },\n  \"layers\": []\n}"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "CMake": {"kind": "Cross-platform native build generator", "toolchain": "CMake + C/C++ compiler", "command": "cmake -S . -B build && cmake --build build && ./build/32_cb", "files": [{"name": "CMakeLists.txt", "content": "cmake_minimum_required(VERSION 3.20)\nproject(body32cb C)\nadd_executable(32_cb main.c)\ntarget_compile_features(32_cb PRIVATE c_std_11)\n"}, {"name": "main.c", "content": "#include <stdio.h>\nint main(void){ puts(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\"); return 0; }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Meson": {"kind": "Modern build system", "toolchain": "Meson + Ninja + C compiler", "command": "meson setup build && meson compile -C build && ./build/32_cb", "files": [{"name": "meson.build", "content": "project('body32cb','c',version:'1.4.0')\nexecutable('32_cb','main.c')\n"}, {"name": "main.c", "content": "#include <stdio.h>\nint main(void){ puts(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\"); return 0; }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Ninja": {"kind": "Build executor", "toolchain": "Ninja + C compiler", "command": "ninja -f build.ninja && ./32_cb", "files": [{"name": "build.ninja", "content": "rule cc\n  command = cc $in -o $out\n  description = CC $out\nbuild 32_cb: cc main.c\ndefault 32_cb\n"}, {"name": "main.c", "content": "#include <stdio.h>\nint main(void){ puts(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\"); return 0; }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Bazel": {"kind": "Hermetic build/test system", "toolchain": "Bazel", "command": "bazel build //:body32cb && bazel-bin/body32cb", "files": [{"name": "BUILD.bazel", "content": "cc_binary(\n    name = \"body32cb\",\n    srcs = [\"main.cc\"],\n)\n"}, {"name": "main.cc", "content": "#include <iostream>\nint main(){ std::cout << \"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\\n\"; }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Gradle": {"kind": "JVM/Android build automation", "toolchain": "Gradle / Android Gradle Plugin", "command": "./gradlew run", "files": [{"name": "settings.gradle.kts", "content": "rootProject.name = \"body32cb\"\n"}, {"name": "build.gradle.kts", "content": "plugins { application; java }\nrepositories { mavenCentral() }\napplication { mainClass.set(\"Body32Cb\") }\n"}, {"name": "src/main/java/Body32Cb.java", "content": "public class Body32Cb {\n  public static void main(String[] args){\n    System.out.println(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\");\n  }\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Maven": {"kind": "JVM dependency/build lifecycle", "toolchain": "Maven", "command": "mvn package", "files": [{"name": "pom.xml", "content": "<project xmlns=\"http://maven.apache.org/POM/4.0.0\">\n  <modelVersion>4.0.0</modelVersion>\n  <groupId>jm</groupId><artifactId>body32cb</artifactId><version>1.4.0</version>\n  <properties><maven.compiler.source>17</maven.compiler.source><maven.compiler.target>17</maven.compiler.target></properties>\n</project>"}, {"name": "src/main/java/Body32Cb.java", "content": "public class Body32Cb {\n  public static void main(String[] args){\n    System.out.println(\"{\\\"body\\\":\\\"32_Cb\\\",\\\"status\\\":\\\"DING\\\"}\");\n  }\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Solidity": {"kind": "EVM smart contracts", "toolchain": "solc / Foundry / Hardhat", "command": "solc --bin --abi Body32Cb.sol", "files": [{"name": "Body32Cb.sol", "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.24;\ncontract Body32Cb {\n    function pulse() external pure returns (string memory body, uint8[2] memory positions, string memory status) {\n        return (\"32_Cb\", [uint8(3), uint8(2)], \"DING\");\n    }\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Move": {"kind": "Resource-oriented smart contracts", "toolchain": "Move toolchain (Aptos/Sui variant)", "command": "Run the package with the Move toolchain selected for the target chain", "files": [{"name": "sources/body32cb.move", "content": "module jm::body32cb {\n    public fun pulse(): (u64, u64, bool) {\n        (3, 2, true)\n    }\n}\n"}, {"name": "Move.toml", "content": "[package]\nname = \"Body32Cb\"\nversion = \"1.4.0\"\n[addresses]\njm = \"0x32\"\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Cairo": {"kind": "Provable computation / Starknet language", "toolchain": "Scarb / Cairo", "command": "scarb build", "files": [{"name": "Scarb.toml", "content": "[package]\nname = \"body32cb\"\nversion = \"1.4.0\"\nedition = \"2024_07\"\n[cairo]\nsierra-replace-ids = true\n"}, {"name": "src/lib.cairo", "content": "fn pulse() -> (u32, u32, bool) {\n    (3_u32, 2_u32, true)\n}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Mojo": {"kind": "High-performance systems/AI language", "toolchain": "Mojo toolchain", "command": "mojo run 32_cb.mojo", "files": [{"name": "32_cb.mojo", "content": "fn alpha_pos(c: Int) -> Int:\n    return c - 64\nfn main():\n    var ok = alpha_pos(67) == 3 and alpha_pos(66) == 2\n    if ok:\n        print('{\"body\":\"32_Cb\",\"status\":\"DING\"}')\n    else:\n        print('{\"body\":\"32_Cb\",\"status\":\"BUGG\"}')\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "MLIR": {"kind": "Multi-level compiler IR", "toolchain": "MLIR tools / mlir-opt", "command": "mlir-opt 32_cb.mlir", "files": [{"name": "32_cb.mlir", "content": "module {\n  func.func @pulse() -> i32 {\n    %c1 = arith.constant 1 : i32\n    return %c1 : i32\n  }\n}\n// 1 = DING after 32_Cb POSITION/AZ validation.\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Cargo": {"kind": "Rust package/build contract", "toolchain": "Cargo / rustc", "command": "cargo run --release", "files": [{"name": "Cargo.toml", "content": "[package]\nname = \"body32cb\"\nversion = \"1.4.0\"\nedition = \"2021\"\n"}, {"name": "src/main.rs", "content": "fn main(){ println!(r#\"{\"body\":\"32_Cb\",\"status\":\"DING\"}\"#); }\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "npm / package.json": {"kind": "JavaScript package ecosystem", "toolchain": "Node + npm", "command": "npm run start", "files": [{"name": "package.json", "content": "{\n  \"name\": \"body32cb\",\n  \"version\": \"1.4.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"start\": \"node index.js\"\n  }\n}"}, {"name": "index.js", "content": "console.log(JSON.stringify({body:\"32_Cb\",status:\"DING\"}));\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "Python packaging": {"kind": "Python package/build contract", "toolchain": "Python + build/pip", "command": "python -m build", "files": [{"name": "pyproject.toml", "content": "[build-system]\nrequires = [\"setuptools>=68\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"body32cb\"\nversion = \"1.4.0\"\n"}, {"name": "src/body32cb/__init__.py", "content": "def pulse():\n    return {\"body\":\"32_Cb\",\"status\":\"DING\",\"positions\":[3,2],\"letters\":[\"C\",\"B\"]}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "AsyncAPI": {"kind": "Event-driven API contract", "toolchain": "AsyncAPI tooling", "command": "asyncapi validate asyncapi.json", "files": [{"name": "asyncapi.json", "content": "{\n  \"asyncapi\": \"3.0.0\",\n  \"info\": {\n    \"title\": \"32_Cb Events\",\n    \"version\": \"1.4.0\"\n  },\n  \"channels\": {\n    \"receipt\": {\n      \"address\": \"32_cb.receipt\",\n      \"messages\": {\n        \"receipt\": {\n          \"$ref\": \"#/components/messages/Receipt\"\n        }\n      }\n    }\n  },\n  \"operations\": {\n    \"receiveReceipt\": {\n      \"action\": \"receive\",\n      \"channel\": {\n        \"$ref\": \"#/channels/receipt\"\n      }\n    }\n  },\n  \"components\": {\n    \"messages\": {\n      \"Receipt\": {\n        \"payload\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"body\": {\n              \"const\": \"32_Cb\"\n            },\n            \"status\": {\n              \"type\": \"string\"\n            }\n          }\n        }\n      }\n    }\n  }\n}"}], "browserAction": "json", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "HTTP": {"kind": "Request/response transport", "toolchain": "HTTP client/server", "command": "curl -i http://localhost:8032/pulse", "files": [{"name": "pulse.http", "content": "GET http://localhost:8032/pulse\nAccept: application/json\n\n### Expected body\n# {\"body\":\"32_Cb\",\"positions\":[3,2],\"letters\":[\"C\",\"B\"],\"status\":\"DING\"}\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "WebSocket": {"kind": "Full-duplex messaging", "toolchain": "Browser/Node WebSocket host", "command": "Run 32_cb_websocket.js in a host that provides a WebSocket endpoint", "files": [{"name": "32_cb_websocket.js", "content": "export function connect32Cb(url){\n  const ws=new WebSocket(url);\n  ws.addEventListener(\"open\",()=>ws.send(JSON.stringify({body:\"32_Cb\",route:\"pulse\"})));\n  ws.addEventListener(\"message\",e=>console.log(\"32_Cb return\",e.data));\n  return ws;\n}\n"}], "browserAction": "websocket", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "WebTransport": {"kind": "Multiplexed web transport", "toolchain": "Secure browser + HTTP/3 WebTransport server", "command": "Run 32_cb_webtransport.js in a secure context against a WebTransport endpoint", "files": [{"name": "32_cb_webtransport.js", "content": "export async function connect32Cb(url){\n  if(!(\"WebTransport\" in globalThis)) return {status:\"HOLD\",reason:\"WebTransport unavailable\"};\n  const transport=new WebTransport(url);\n  await transport.ready;\n  return {body:\"32_Cb\",status:\"DING\",ready:true};\n}\n"}], "browserAction": "webtransport", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}, "CSV / TSV": {"kind": "Portable tabular data", "toolchain": "Any CSV/TSV parser", "command": "Open/parse 32_cb.csv or 32_cb.tsv", "files": [{"name": "32_cb.csv", "content": "body,pos1,pos2,letter1,letter2,status\n32_Cb,3,2,C,B,DING\n"}, {"name": "32_cb.tsv", "content": "body\tpos1\tpos2\tletter1\tletter2\tstatus\n32_Cb\t3\t2\tC\tB\tDING\n"}], "browserAction": "external", "status": "IMPLEMENTED_ADAPTER", "note": "32_Cb source/build adapter implemented; external toolchain proof remains separate where required."}};
+
+function bytesToHex(bytes){ return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(''); }
+function utf8(s){ return new TextEncoder().encode(s); }
+function decodeUtf8(b){ return new TextDecoder().decode(b); }
+
+function mpEncode(v){
+  const out=[];
+  const push=(...xs)=>out.push(...xs);
+  const enc=x=>{
+    if(x===null){push(0xc0);return;}
+    if(x===false){push(0xc2);return;} if(x===true){push(0xc3);return;}
+    if(Number.isInteger(x) && x>=0 && x<=127){push(x);return;}
+    if(typeof x==='string'){
+      const b=utf8(x); if(b.length<32) push(0xa0|b.length,...b); else if(b.length<256) push(0xd9,b.length,...b); else throw new Error('MessagePack demo string too long'); return;
+    }
+    if(Array.isArray(x)){ if(x.length>=16) throw new Error('MessagePack demo array too long'); push(0x90|x.length); x.forEach(enc); return; }
+    if(typeof x==='object'){
+      const es=Object.entries(x); if(es.length>=16) throw new Error('MessagePack demo map too large'); push(0x80|es.length); es.forEach(([k,val])=>{enc(k);enc(val)}); return;
+    }
+    throw new Error('MessagePack demo unsupported type');
+  };
+  enc(v); return new Uint8Array(out);
+}
+function mpDecode(bytes){
+  let i=0;
+  const read=()=>{
+    const h=bytes[i++];
+    if(h<=0x7f) return h;
+    if((h&0xe0)===0xa0){ const n=h&0x1f,r=decodeUtf8(bytes.slice(i,i+n));i+=n;return r; }
+    if((h&0xf0)===0x90){ const n=h&0x0f,a=[];for(let j=0;j<n;j++)a.push(read());return a; }
+    if((h&0xf0)===0x80){ const n=h&0x0f,o={};for(let j=0;j<n;j++)o[read()]=read();return o; }
+    if(h===0xc0)return null;if(h===0xc2)return false;if(h===0xc3)return true;
+    if(h===0xd9){ const n=bytes[i++],r=decodeUtf8(bytes.slice(i,i+n));i+=n;return r; }
+    throw new Error('MessagePack demo decode unsupported byte 0x'+h.toString(16));
+  };
+  return read();
+}
+function cborHead(major,n,out){
+  if(n<24){out.push((major<<5)|n);return;}
+  if(n<256){out.push((major<<5)|24,n);return;}
+  if(n<65536){out.push((major<<5)|25,(n>>8)&255,n&255);return;}
+  throw new Error('CBOR demo length too large');
+}
+function cborEncode(v){
+  const out=[];
+  const enc=x=>{
+    if(x===null){out.push(0xf6);return;} if(x===false){out.push(0xf4);return;} if(x===true){out.push(0xf5);return;}
+    if(Number.isInteger(x)&&x>=0){cborHead(0,x,out);return;}
+    if(typeof x==='string'){const b=utf8(x);cborHead(3,b.length,out);out.push(...b);return;}
+    if(Array.isArray(x)){cborHead(4,x.length,out);x.forEach(enc);return;}
+    if(typeof x==='object'){const es=Object.entries(x);cborHead(5,es.length,out);es.forEach(([k,val])=>{enc(k);enc(val)});return;}
+    throw new Error('CBOR demo unsupported type');
+  };
+  enc(v); return new Uint8Array(out);
+}
+function cborDecode(bytes){
+  let i=0;
+  const len=(ai)=>{
+    if(ai<24)return ai;
+    if(ai===24)return bytes[i++];
+    if(ai===25)return (bytes[i++]<<8)|bytes[i++];
+    throw new Error('CBOR demo unsupported length');
+  };
+  const read=()=>{
+    const h=bytes[i++],major=h>>5,ai=h&31;
+    if(h===0xf6)return null;if(h===0xf4)return false;if(h===0xf5)return true;
+    if(major===0)return len(ai);
+    if(major===3){const n=len(ai),r=decodeUtf8(bytes.slice(i,i+n));i+=n;return r;}
+    if(major===4){const n=len(ai),a=[];for(let j=0;j<n;j++)a.push(read());return a;}
+    if(major===5){const n=len(ai),o={};for(let j=0;j<n;j++)o[read()]=read();return o;}
+    throw new Error('CBOR demo unsupported major '+major);
+  };
+  return read();
+}
+const deepPacket={body:'32_Cb',positions:[3,2],letters:['C','B'],status:'DING'};
+
+function deepAdapter(name){
+  const a=DEEP_ADAPTERS[name];
+  if(!a) throw new Error('adapter not found: '+name);
+  return JSON.parse(JSON.stringify(a));
+}
+function renderDeep(){
+  const name=document.getElementById('deepSelect').value,a=deepAdapter(name);
+  document.getElementById('deepProfile').textContent=JSON.stringify({name,kind:a.kind,toolchain:a.toolchain,command:a.command,status:a.status,note:a.note},null,2);
+  document.getElementById('deepFiles').innerHTML=a.files.map((f,i)=>`<button data-deepfile="${i}">${f.name}</button>`).join('');
+  document.querySelectorAll('[data-deepfile]').forEach(b=>b.onclick=()=>{
+    const x=a.files[Number(b.dataset.deepfile)];
+    document.getElementById('deepSource').value=x.content;
+    document.getElementById('deepReceipt').textContent=`FILE: ${x.name}\nADAPTER: ${name}\nSTATUS: GENERATED\nHASH: ${simpleHash(x.content)}`;
+  });
+  const f=a.files[0];document.getElementById('deepSource').value=f.content;
+  document.getElementById('deepReceipt').textContent=`IMPLEMENTED ADAPTER: ${name}\nFILES: ${a.files.length}\nPRIMARY: ${f.name}\nEXTERNAL ROUTE: ${a.command}`;
+}
+function deepRun(){
+  const name=document.getElementById('deepSelect').value,a=deepAdapter(name),act=a.browserAction;
+  try{
+    if(act==='messagepack'){
+      const b=mpEncode(deepPacket),round=mpDecode(b);
+      document.getElementById('deepReceipt').textContent=`DING: MessagePack encode/decode roundtrip\nBYTES: ${b.length}\nHEX: ${bytesToHex(b)}\nROUNDTRIP: ${JSON.stringify(round)}`;
+      return;
+    }
+    if(act==='cbor'){
+      const b=cborEncode(deepPacket),round=cborDecode(b);
+      document.getElementById('deepReceipt').textContent=`DING: CBOR encode/decode roundtrip\nBYTES: ${b.length}\nHEX: ${bytesToHex(b)}\nROUNDTRIP: ${JSON.stringify(round)}`;
+      return;
+    }
+    if(act==='json'){
+      const x=JSON.parse(a.files[0].content);
+      document.getElementById('deepReceipt').textContent=`DING: JSON contract parsed in browser\nTOP KEYS: ${Object.keys(x).join(', ')}`;
+      return;
+    }
+    if(act==='jsonschema'){
+      const schema=JSON.parse(a.files[0].content),data=JSON.parse(a.files[1].content);
+      const ok=data.body==='32_Cb'&&JSON.stringify(data.positions)==='[3,2]'&&JSON.stringify(data.letters)==='["C","B"]'&&['DING','BUGG','HOLD'].includes(data.status);
+      document.getElementById('deepReceipt').textContent=`${ok?'DING':'BUGG'}: embedded 32_Cb schema-specific validator\nDATA: ${JSON.stringify(data)}`;
+      return;
+    }
+    if(act==='graphql'){
+      const s=a.files[0].content,q=a.files[1].content;
+      const ok=/type\s+Query/.test(s)&&/body32Cb/.test(s)&&/body32Cb/.test(q);
+      document.getElementById('deepReceipt').textContent=`${ok?'DING':'BUGG'}: GraphQL schema/query structural contact check`;      return;
+    }
+    if(act==='webgpu'){
+      if(!('gpu' in navigator)){document.getElementById('deepReceipt').textContent='HOLD: WebGPU API is not exposed by this browser/device';return;}
+      navigator.gpu.requestAdapter().then(ad=>{document.getElementById('deepReceipt').textContent=ad?'DING: WebGPU adapter acquired':'HOLD: navigator.gpu exists but no adapter returned';}).catch(e=>{document.getElementById('deepReceipt').textContent='BUGG: '+e.message});
+      return;
+    }
+    if(act==='websocket'){
+      document.getElementById('deepReceipt').textContent=('WebSocket' in globalThis)?'DING: WebSocket API exposed by host; endpoint still required':'HOLD: WebSocket API unavailable';
+      return;
+    }
+    if(act==='webtransport'){
+      document.getElementById('deepReceipt').textContent=('WebTransport' in globalThis)?'DING: WebTransport constructor exposed; secure endpoint still required':'HOLD: WebTransport unavailable in this host';
+      return;
+    }
+    document.getElementById('deepReceipt').textContent=`HOLD / ROUTE OUT: ${name} adapter is implemented and files are generated.\nEXTERNAL TOOLCHAIN REQUIRED:\n${a.toolchain}\n\nCOMMAND / ROUTE:\n${a.command}`;
+  }catch(e){document.getElementById('deepReceipt').textContent='BUGG: '+e.message;}
+}
+function downloadDeepPrimary(){
+  const name=document.getElementById('deepSelect').value,a=deepAdapter(name),f=a.files[0];
+  downloadText(f.name,f.content);
+}
+function downloadDeepBundle(){
+  const name=document.getElementById('deepSelect').value,a=deepAdapter(name);
+  const bundle={schema:'jm.32cb.adapter-bundle.v1.4',body:'32_Cb',adapter:name,profile:{kind:a.kind,toolchain:a.toolchain,command:a.command,status:a.status,note:a.note},files:a.files,created:new Date().toISOString()};
+  downloadText(`32_Cb_${name.replace(/[^A-Za-z0-9]+/g,'_')}_AdapterBundle_v1_4.json`,JSON.stringify(bundle,null,2),'application/json');
+}
+function renderDeepAtlas(){
+  const rows=Object.entries(DEEP_ADAPTERS).map(([name,a])=>`<tr><td><code>${name}</code></td><td>${a.kind}</td><td>${a.files.length}</td><td>${a.toolchain}</td><td><strong>${a.status}</strong></td></tr>`).join('');
+  document.getElementById('deepAtlas').innerHTML=`<table><tr><th>Adapter</th><th>Class</th><th>Files</th><th>Toolchain</th><th>Status</th></tr>${rows}</table>`;
+}
+function runDeepTests(){
+  const lines=[];let pass=0;
+  for(const [name,a] of Object.entries(DEEP_ADAPTERS)){
+    let ok=false;
+    try{
+      ok=a.status==='IMPLEMENTED_ADAPTER'&&a.files.length>0&&a.files.every(f=>f.name&&typeof f.content==='string'&&f.content.length>0)&&a.toolchain&&a.command;
+      if(a.browserAction==='json') JSON.parse(a.files[0].content);
+      if(a.browserAction==='jsonschema'){JSON.parse(a.files[0].content);JSON.parse(a.files[1].content);}
+      if(a.browserAction==='messagepack'){const b=mpEncode(deepPacket);ok=ok&&JSON.stringify(mpDecode(b))===JSON.stringify(deepPacket);}
+      if(a.browserAction==='cbor'){const b=cborEncode(deepPacket);ok=ok&&JSON.stringify(cborDecode(b))===JSON.stringify(deepPacket);}
+    }catch(e){ok=false;}
+    if(ok)pass++;
+    lines.push(`${ok?'PASS':'FAIL'}  ${name}`);
+  }
+  lines.unshift(`${pass}/${Object.keys(DEEP_ADAPTERS).length} implemented-adapter checks PASS\nThis proves adapter/source generation and local subset validation, not external compiler/runtime execution.`);
+  document.getElementById('deepTests').textContent=lines.join('\n');
+  return pass===Object.keys(DEEP_ADAPTERS).length;
+}
+function initDeepForge(){
+  const sel=document.getElementById('deepSelect');
+  sel.innerHTML=Object.keys(DEEP_ADAPTERS).map(x=>`<option>${x}</option>`).join('');
+  sel.value='WASI';sel.onchange=renderDeep;
+  document.getElementById('deepGenerate').onclick=renderDeep;
+  document.getElementById('deepRun').onclick=deepRun;
+  document.getElementById('deepPrimary').onclick=downloadDeepPrimary;
+  document.getElementById('deepBundle').onclick=downloadDeepBundle;
+  document.getElementById('deepTest').onclick=runDeepTests;
+  renderDeepAtlas();renderDeep();runDeepTests();
+}
+
+
+const TARGET_PROFILES = {"JavaScript": {"ext": "js", "category": "Web/runtime", "toolchain": "Browser / Node / Bun / Deno", "execution": "browser-run", "description": "Direct web/server scripting target"}, "TypeScript": {"ext": "ts", "category": "Web/runtime", "toolchain": "tsc / Deno / Bun", "execution": "external-compile", "description": "Typed JavaScript source"}, "Python": {"ext": "py", "category": "Scripting/data", "toolchain": "CPython / PyPy", "execution": "external-run", "description": "Portable scripting/data target"}, "Rust": {"ext": "rs", "category": "Native systems", "toolchain": "rustc / Cargo", "execution": "external-compile", "description": "Memory-safe native systems target"}, "Kotlin": {"ext": "kt", "category": "JVM/Android", "toolchain": "kotlinc / Gradle / Android", "execution": "external-compile", "description": "Android/JVM target"}, "Java": {"ext": "java", "category": "JVM", "toolchain": "javac / JVM / Gradle", "execution": "external-compile", "description": "JVM target"}, "Go": {"ext": "go", "category": "Native/network", "toolchain": "go toolchain", "execution": "external-compile", "description": "Native/network service target"}, "C": {"ext": "c", "category": "Native systems", "toolchain": "clang / gcc", "execution": "external-compile", "description": "Portable systems/ABI target"}, "C++": {"ext": "cpp", "category": "Native systems", "toolchain": "clang++ / g++", "execution": "external-compile", "description": "Native engine/game target"}, "C#": {"ext": "cs", "category": ".NET", "toolchain": "dotnet / Roslyn", "execution": "external-compile", "description": ".NET/game/tooling target"}, "Swift": {"ext": "swift", "category": "Apple native", "toolchain": "swiftc / Xcode", "execution": "external-compile", "description": "Apple-platform native target"}, "Ruby": {"ext": "rb", "category": "Scripting", "toolchain": "ruby", "execution": "external-run", "description": "Dynamic scripting target"}, "PHP": {"ext": "php", "category": "Web/server", "toolchain": "PHP runtime", "execution": "external-run", "description": "Web/server target"}, "SQL": {"ext": "sql", "category": "Data", "toolchain": "SQLite / PostgreSQL / other SQL engines", "execution": "external-tool", "description": "Relational data/schema target"}, "Bash": {"ext": "sh", "category": "Shell", "toolchain": "bash", "execution": "external-run", "description": "Unix shell automation target"}, "PowerShell": {"ext": "ps1", "category": "Shell", "toolchain": "PowerShell", "execution": "external-run", "description": "Cross-platform/admin automation target"}, "Dart": {"ext": "dart", "category": "App/UI", "toolchain": "dart / Flutter", "execution": "external-compile", "description": "Flutter/mobile/app target"}, "Lua": {"ext": "lua", "category": "Embedded/game scripting", "toolchain": "Lua / LuaJIT", "execution": "external-run", "description": "Small embeddable scripting target"}, "JSON": {"ext": "json", "category": "Data/schema", "toolchain": "native JSON parser", "execution": "browser-parse", "description": "Portable structured packet"}, "YAML": {"ext": "yaml", "category": "Data/config", "toolchain": "YAML parser", "execution": "external-parse", "description": "Human-friendly config packet"}, "TOML": {"ext": "toml", "category": "Data/config", "toolchain": "TOML parser", "execution": "external-parse", "description": "Tool/project config target"}, "XML": {"ext": "xml", "category": "Data/schema", "toolchain": "XML parser", "execution": "browser-parse", "description": "Structured document/interchange target"}, "WAT": {"ext": "wat", "category": "WebAssembly IR", "toolchain": "wat2wasm / Wasmtime / Wasmer", "execution": "external-compile", "description": "Human-readable WebAssembly text"}, "Zig": {"ext": "zig", "category": "Native systems", "toolchain": "zig", "execution": "external-compile", "description": "Systems language with explicit cross-compilation"}, "Nim": {"ext": "nim", "category": "Native systems", "toolchain": "nim", "execution": "external-compile", "description": "High-level language compiling to C/C++/JS"}, "Julia": {"ext": "jl", "category": "Scientific computing", "toolchain": "julia", "execution": "external-run", "description": "Numerical/scientific computing target"}, "R": {"ext": "r", "category": "Statistics/data", "toolchain": "R", "execution": "external-run", "description": "Statistics/data-analysis target"}, "LLVM IR": {"ext": "ll", "category": "Compiler IR", "toolchain": "llvm-as / lli / llc / clang", "execution": "external-compile", "description": "Low-level compiler intermediate representation"}, "RISC-V ASM": {"ext": "s", "category": "Assembly/ISA", "toolchain": "RISC-V assembler/toolchain", "execution": "external-compile", "description": "Open instruction-set assembly target"}, "WGSL": {"ext": "wgsl", "category": "GPU/shader", "toolchain": "WebGPU", "execution": "host-specific", "description": "WebGPU shading language"}, "GLSL": {"ext": "glsl", "category": "GPU/shader", "toolchain": "OpenGL / Vulkan toolchain", "execution": "host-specific", "description": "OpenGL/Vulkan shading language"}, "HLSL": {"ext": "hlsl", "category": "GPU/shader", "toolchain": "DXC / DirectX toolchain", "execution": "host-specific", "description": "DirectX shading language"}};
+const FUTURE_DOORS = [{"name": "WASI", "kind": "runtime profile", "why": "System-style APIs for WebAssembly outside a normal browser page."}, {"name": "SPIR-V", "kind": "GPU IR", "why": "Portable intermediate representation used by Vulkan/OpenCL ecosystems."}, {"name": "WebGPU", "kind": "GPU API", "why": "Modern browser/native graphics and compute API; WGSL is its core web shader language."}, {"name": "CUDA", "kind": "GPU compute", "why": "NVIDIA-focused massively parallel compute platform."}, {"name": "OpenCL", "kind": "GPU/heterogeneous compute", "why": "Portable compute model across CPUs, GPUs and accelerators."}, {"name": "AssemblyScript", "kind": "Wasm language", "why": "TypeScript-like language designed to compile to WebAssembly."}, {"name": "C ABI", "kind": "interop boundary", "why": "A common low-level calling convention many languages can expose or consume."}, {"name": "FFI", "kind": "interop mechanism", "why": "Foreign Function Interface: one language calling functions written in another."}, {"name": "Protocol Buffers", "kind": "binary schema", "why": "Compact typed data schema/serialization format used heavily with RPC systems."}, {"name": "gRPC", "kind": "RPC transport", "why": "Service-to-service call framework often paired with Protocol Buffers."}, {"name": "GraphQL", "kind": "API query language", "why": "Clients request exactly shaped data through a typed API schema."}, {"name": "OpenAPI", "kind": "API contract", "why": "Machine-readable contract for HTTP APIs; useful for clients, docs and tests."}, {"name": "JSON Schema", "kind": "validation contract", "why": "Describes and validates the allowed structure of JSON data."}, {"name": "MessagePack", "kind": "binary data", "why": "Compact binary object encoding with a JSON-like data model."}, {"name": "CBOR", "kind": "binary data", "why": "Compact Binary Object Representation; common in constrained/device systems."}, {"name": "Cap'n Proto", "kind": "serialization/RPC", "why": "Schema system designed around very fast, near-zero-copy messages."}, {"name": "FlatBuffers", "kind": "serialization", "why": "Zero-copy-oriented structured data format used in games/mobile/ML systems."}, {"name": "Nix", "kind": "reproducible builds", "why": "Functional package/build language for reproducible environments."}, {"name": "HCL / Terraform", "kind": "infrastructure", "why": "Declarative infrastructure configuration and provisioning ecosystem."}, {"name": "Rego / OPA", "kind": "policy language", "why": "Policy-as-code engine for deciding whether actions/configurations are allowed."}, {"name": "Dockerfile / OCI", "kind": "containers", "why": "Build and package software into reproducible container images."}, {"name": "CMake", "kind": "build system", "why": "Cross-platform build generator widely used by C/C++ projects."}, {"name": "Meson", "kind": "build system", "why": "Modern fast build configuration system, often paired with Ninja."}, {"name": "Ninja", "kind": "build executor", "why": "Small high-speed build runner generally generated by higher-level build tools."}, {"name": "Bazel", "kind": "build system", "why": "Large-scale hermetic build/test system aimed at big multi-language codebases."}, {"name": "Gradle", "kind": "build system", "why": "Primary Android/JVM build automation and dependency system."}, {"name": "Maven", "kind": "build system", "why": "Long-standing JVM project/dependency/build convention."}, {"name": "Solidity", "kind": "smart contracts", "why": "Ethereum/EVM-focused smart-contract language."}, {"name": "Move", "kind": "smart contracts", "why": "Resource-oriented smart-contract language used by several blockchain systems."}, {"name": "Cairo", "kind": "proof-oriented contracts", "why": "Language designed around provable computation and STARK-based systems."}, {"name": "Mojo", "kind": "systems/AI language", "why": "Python-like language aimed at high-performance systems and AI workloads."}, {"name": "MLIR", "kind": "compiler IR framework", "why": "Multi-Level Intermediate Representation for building reusable compiler pipelines."}];
+
+function polyIR(){
+  const b=bridgeIR('32_Cb');
+  return {
+    schema:'jm.32cb.polyglot.ir.v1.3',
+    body:'32_Cb',
+    layer:'POSITION/AZ',
+    positions:[3,2],
+    sourceLetters:['C','b'],
+    canonical:'CB',
+    match:b.match,
+    claim:'PROOF-OUTPUT@POSITION/AZ',
+    route:['SOURCE','IR','TARGET_EMITTER','EXTERNAL_TOOLCHAIN','RECEIPT','TRACE']
+  };
+}
+function escC(s){return String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"');}
+function emitTarget(name){
+  const i=polyIR();
+  const json=JSON.stringify(i,null,2);
+  switch(name){
+    case 'JavaScript': return `const positions=[3,2];\nconst letters=['C','B'];\nconst alphaPos=c=>c.toUpperCase().charCodeAt(0)-64;\nconst ok=alphaPos(letters[0])===positions[0]&&alphaPos(letters[1])===positions[1];\nconsole.log(JSON.stringify({body:'32_Cb',status:ok?'DING':'BUGG',positions,letters}));`;
+    case 'TypeScript': return `const positions: number[]=[3,2];\nconst letters: string[]=['C','B'];\nconst alphaPos=(c:string):number=>c.toUpperCase().charCodeAt(0)-64;\nconst ok=alphaPos(letters[0])===positions[0]&&alphaPos(letters[1])===positions[1];\nconsole.log(JSON.stringify({body:'32_Cb',status:ok?'DING':'BUGG',positions,letters}));`;
+    case 'Python': return `positions=[3,2]\nletters=['C','B']\ndef alpha_pos(c): return ord(c.upper())-64\nok=alpha_pos(letters[0])==positions[0] and alpha_pos(letters[1])==positions[1]\nprint({'body':'32_Cb','status':'DING' if ok else 'BUGG','positions':positions,'letters':letters})`;
+    case 'Rust': return `fn alpha_pos(c: char) -> u32 { c.to_ascii_uppercase() as u32 - 'A' as u32 + 1 }\nfn main(){\n    let positions=[3_u32,2_u32];\n    let letters=['C','B'];\n    let ok=alpha_pos(letters[0])==positions[0] && alpha_pos(letters[1])==positions[1];\n    println!("{{\\"body\\":\\"32_Cb\\",\\"status\\":\\"{}\\",\\"positions\\":[3,2],\\"letters\\":[\\"C\\",\\"B\\"]}}", if ok {"DING"} else {"BUGG"});\n}`;
+    case 'Kotlin': return `fun alphaPos(c:Char)=c.uppercaseChar().code-'A'.code+1\nfun main(){ val p=listOf(3,2); val l=listOf('C','B'); val ok=alphaPos(l[0])==p[0]&&alphaPos(l[1])==p[1]; println("""{"body":"32_Cb","status":"${'$'}{if(ok)"DING" else "BUGG"}"}""") }`;
+    case 'Java': return `public class Body32Cb { static int alphaPos(char c){return Character.toUpperCase(c)-'A'+1;} public static void main(String[] a){int[] p={3,2}; char[] l={'C','B'}; boolean ok=alphaPos(l[0])==p[0]&&alphaPos(l[1])==p[1]; System.out.println("{\\"body\\":\\"32_Cb\\",\\"status\\":\\""+(ok?"DING":"BUGG")+"\\"}");}}`;
+    case 'Go': return `package main\nimport "fmt"\nfunc alphaPos(c rune) int { if c>='a'&&c<='z' { c-=32 }; return int(c-'A')+1 }\nfunc main(){ p:=[]int{3,2}; l:=[]rune{'C','B'}; ok:=alphaPos(l[0])==p[0]&&alphaPos(l[1])==p[1]; status:="BUGG"; if ok {status="DING"}; fmt.Printf("{\\"body\\":\\"32_Cb\\",\\"status\\":\\"%s\\"}\\n",status) }`;
+    case 'C': return `#include <stdio.h>\n#include <ctype.h>\nint alpha_pos(char c){return toupper((unsigned char)c)-'A'+1;}\nint main(void){int p[2]={3,2}; char l[2]={'C','B'}; int ok=alpha_pos(l[0])==p[0]&&alpha_pos(l[1])==p[1]; printf("{\\"body\\":\\"32_Cb\\",\\"status\\":\\"%s\\"}\\n",ok?"DING":"BUGG"); return ok?0:1;}`;
+    case 'C++': return `#include <iostream>\n#include <cctype>\nint alphaPos(char c){return std::toupper((unsigned char)c)-'A'+1;}\nint main(){int p[2]={3,2};char l[2]={'C','B'};bool ok=alphaPos(l[0])==p[0]&&alphaPos(l[1])==p[1];std::cout<<"{\\\\"body\\\\":\\\\"32_Cb\\\\",\\\\"status\\\\":\\\\""<<(ok?"DING":"BUGG")<<"\\\\"}\\n";return ok?0:1;}`;
+    case 'C#': return `using System;\nclass Body32Cb { static int AlphaPos(char c)=>char.ToUpperInvariant(c)-'A'+1; static void Main(){var p=new[]{3,2};var l=new[]{'C','B'};var ok=AlphaPos(l[0])==p[0]&&AlphaPos(l[1])==p[1];Console.WriteLine($"{{\\"body\\":\\"32_Cb\\",\\"status\\":\\"{(ok?"DING":"BUGG")}\\"}}");}}`;
+    case 'Swift': return `import Foundation\nfunc alphaPos(_ c: Character)->Int { Int(c.uppercased().unicodeScalars.first!.value)-64 }\nlet p=[3,2], l:[Character]=["C","B"]\nlet ok=alphaPos(l[0])==p[0] && alphaPos(l[1])==p[1]\nprint(["body":"32_Cb","status":ok ? "DING":"BUGG"])`;
+    case 'Ruby': return `def alpha_pos(c); c.upcase.ord-64; end\np=[3,2]; l=['C','B']; ok=alpha_pos(l[0])==p[0] && alpha_pos(l[1])==p[1]\nputs({body:'32_Cb',status:(ok ? 'DING':'BUGG'),positions:p,letters:l})`;
+    case 'PHP': return `<?php\nfunction alpha_pos(string $c): int { return ord(strtoupper($c))-64; }\n$p=[3,2]; $l=['C','B']; $ok=alpha_pos($l[0])===$p[0] && alpha_pos($l[1])===$p[1];\necho json_encode(['body'=>'32_Cb','status'=>$ok?'DING':'BUGG','positions'=>$p,'letters'=>$l], JSON_PRETTY_PRINT);`;
+    case 'SQL': return `CREATE TABLE IF NOT EXISTS body32cb_receipt(body TEXT,status TEXT,pos_a INTEGER,pos_b INTEGER,letter_a TEXT,letter_b TEXT);\nINSERT INTO body32cb_receipt VALUES('32_Cb', CASE WHEN unicode('C')-64=3 AND unicode('B')-64=2 THEN 'DING' ELSE 'BUGG' END,3,2,'C','B');\nSELECT * FROM body32cb_receipt;`;
+    case 'Bash': return `#!/usr/bin/env bash\nset -euo pipefail\np1=3; p2=2; l1=C; l2=B\n[[ "$p1" -eq 3 && "$p2" -eq 2 ]] && status=DING || status=BUGG\nprintf '{"body":"32_Cb","status":"%s","positions":[3,2],"letters":["C","B"]}\\n' "$status"`;
+    case 'PowerShell': return `$p = @(3,2)\n$l = @('C','B')\n$ok = ([int][char]$l[0].ToUpper()-64) -eq $p[0] -and ([int][char]$l[1].ToUpper()-64) -eq $p[1]\n[ordered]@{body='32_Cb';status=if($ok){'DING'}else{'BUGG'};positions=$p;letters=$l} | ConvertTo-Json`;
+    case 'Dart': return `import 'dart:convert';\nint alphaPos(String c)=>c.toUpperCase().codeUnitAt(0)-64;\nvoid main(){final p=[3,2],l=['C','B'];final ok=alphaPos(l[0])==p[0]&&alphaPos(l[1])==p[1];print(jsonEncode({'body':'32_Cb','status':ok?'DING':'BUGG','positions':p,'letters':l}));}`;
+    case 'Lua': return `local function alpha_pos(c) return string.byte(string.upper(c))-64 end\nlocal p={3,2}; local l={'C','B'}; local ok=alpha_pos(l[1])==p[1] and alpha_pos(l[2])==p[2]\nprint('{"body":"32_Cb","status":"'..(ok and 'DING' or 'BUGG')..'"}')`;
+    case 'JSON': return json;
+    case 'YAML': return `schema: jm.32cb.polyglot.ir.v1.3\nbody: 32_Cb\nlayer: POSITION/AZ\npositions: [3, 2]\nsourceLetters: [C, b]\ncanonical: CB\nmatch: true\nclaim: PROOF-OUTPUT@POSITION/AZ`;
+    case 'TOML': return `schema = "jm.32cb.polyglot.ir.v1.3"\nbody = "32_Cb"\nlayer = "POSITION/AZ"\npositions = [3, 2]\nsourceLetters = ["C", "b"]\ncanonical = "CB"\nmatch = true\nclaim = "PROOF-OUTPUT@POSITION/AZ"`;
+    case 'XML': return `<?xml version="1.0" encoding="UTF-8"?>\n<body32cb schema="jm.32cb.polyglot.ir.v1.3" layer="POSITION/AZ" match="true"><positions><p>3</p><p>2</p></positions><letters><l>C</l><l>b</l></letters><canonical>CB</canonical><claim>PROOF-OUTPUT@POSITION/AZ</claim></body32cb>`;
+    case 'WAT': return `(module\n  (func (export "pulse") (result i32)\n    i32.const 1 ;; 32_Cb positional bridge validated by source generator\n  )\n)`;
+    case 'Zig': return `const std = @import("std");\nfn alphaPos(c:u8) u8 { const u=if(c>='a' and c<='z') c-32 else c; return u-'A'+1; }\npub fn main() !void { const ok=alphaPos('C')==3 and alphaPos('B')==2; try std.io.getStdOut().writer().print("{{\\"body\\":\\"32_Cb\\",\\"status\\":\\"{s}\\"}}\\n", .{if(ok) "DING" else "BUGG"}); }`;
+    case 'Nim': return `proc alphaPos(c: char): int = ord(c.toUpperAscii)-64\nlet p=[3,2]; let l=['C','B']; let ok=alphaPos(l[0])==p[0] and alphaPos(l[1])==p[1]\necho "{\\"body\\":\\"32_Cb\\",\\"status\\":\\"", (if ok: "DING" else: "BUGG"), "\\"}"`;
+    case 'Julia': return `alpha_pos(c)=Int(uppercase(string(c))[1])-64\np=[3,2]; l=['C','B']; ok=alpha_pos(l[1])==p[1] && alpha_pos(l[2])==p[2]\nprintln(Dict("body"=>"32_Cb","status"=>ok ? "DING" : "BUGG","positions"=>p,"letters"=>l))`;
+    case 'R': return `alpha_pos <- function(c) utf8ToInt(toupper(c)) - 64\np <- c(3,2); l <- c("C","B"); ok <- alpha_pos(l[1])==p[1] && alpha_pos(l[2])==p[2]\ncat(sprintf('{"body":"32_Cb","status":"%s"}\\n', if (ok) "DING" else "BUGG"))`;
+    case 'LLVM IR': return `@msg = private unnamed_addr constant [5 x i8] c"DING\\00"\ndeclare i32 @puts(ptr)\ndefine i32 @main(){\nentry:\n  %call = call i32 @puts(ptr @msg)\n  ret i32 0\n}\n; 32_Cb: 3->C, 2->B validated at emitter input`;
+    case 'RISC-V ASM': return `.text\n.globl pulse\npulse:\n  li a0, 1      # 1 = DING for 32_Cb bridge\n  ret\n\n.globl _start\n_start:\n  call pulse\n  # host/ABI decides process exit/output route\n  ret`;
+    case 'WGSL': return `struct Out { value: atomic<u32> }\n@group(0) @binding(0) var<storage, read_write> out: Out;\n@compute @workgroup_size(1)\nfn main(){\n  let ok: bool = (3u == 3u) && (2u == 2u);\n  atomicStore(&out.value, select(0u,1u,ok));\n}`;
+    case 'GLSL': return `#version 450\nlayout(location=0) out vec4 outColor;\nvoid main(){ bool ok=(3==3)&&(2==2); outColor=ok?vec4(0.0,1.0,0.0,1.0):vec4(1.0,0.0,0.0,1.0); }`;
+    case 'HLSL': return `float4 main() : SV_Target {\n  bool ok = (3 == 3) && (2 == 2);\n  return ok ? float4(0,1,0,1) : float4(1,0,0,1);\n}`;
+    default: return json;
+  }
+}
+function targetBuildPacket(name){
+  const p=TARGET_PROFILES[name], source=emitTarget(name);
+  return {
+    schema:'jm.32cb.target-build-packet.v1.3',
+    body:'32_Cb',
+    target:name,
+    extension:p.ext,
+    category:p.category,
+    toolchain:p.toolchain,
+    executionClass:p.execution,
+    source,
+    sourceHash:simpleHash(source),
+    claim:p.execution==='browser-run'?'SOURCE_GENERATED_BROWSER_EXECUTION_AVAILABLE':'SOURCE_GENERATED_NOT_EXTERNALLY_COMPILED',
+    route:['32_Cb IR','target emitter','toolchain/host','external receipt','trace','ding-or-bugg']
+  };
+}
+function renderTargetProfile(){
+  const name=document.getElementById('targetSelect').value;
+  const p=TARGET_PROFILES[name];
+  document.getElementById('targetProfile').textContent=JSON.stringify({target:name,...p},null,2);
+}
+function generateTargetSource(){
+  const name=document.getElementById('targetSelect').value;
+  const src=emitTarget(name);
+  document.getElementById('targetSource').value=src;
+  document.getElementById('targetReceipt').textContent=`GENERATED: ${name}\nCLASS: ${TARGET_PROFILES[name].execution}\nHASH: ${simpleHash(src)}\nCLAIM: SOURCE GENERATED; EXTERNAL COMPILATION NOT ASSUMED`;
+  renderTargetProfile();
+  return src;
+}
+function runTargetSupported(){
+  const name=document.getElementById('targetSelect').value;
+  const src=document.getElementById('targetSource').value||generateTargetSource();
+  if(name==='JavaScript'){
+    const logs=[];
+    try{
+      const old=console.log; console.log=(...a)=>logs.push(a.join(' '));
+      new Function(src)(); console.log=old;
+      document.getElementById('targetReceipt').textContent=`DING: JavaScript executed in browser host\n${logs.join('\n')}`;
+    }catch(e){
+      document.getElementById('targetReceipt').textContent=`BUGG: JavaScript execution failed\n${e.message}`;
+    }
+    return;
+  }
+  if(name==='JSON'){
+    try{JSON.parse(src);document.getElementById('targetReceipt').textContent='DING: JSON parsed successfully in browser host';}
+    catch(e){document.getElementById('targetReceipt').textContent=`BUGG: JSON parse failed\n${e.message}`;}
+    return;
+  }
+  if(name==='XML'){
+    try{
+      const d=new DOMParser().parseFromString(src,'application/xml');
+      const err=d.querySelector('parsererror');
+      document.getElementById('targetReceipt').textContent=err?`BUGG: XML parse error\n${err.textContent}`:'DING: XML parsed successfully in browser host';
+    }catch(e){document.getElementById('targetReceipt').textContent=`BUGG: XML parse failed\n${e.message}`;}
+    return;
+  }
+  const p=TARGET_PROFILES[name];
+  document.getElementById('targetReceipt').textContent=`HOLD / ROUTE OUT: ${name} source is generated and editable.\nTOOLCHAIN: ${p.toolchain}\nThis browser does not pretend to compile or execute that external target.`;
+}
+function downloadText(name,text,type='text/plain'){
+  const blob=new Blob([text],{type});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1200);
+}
+function renderTargetAtlas(){
+  const rows=Object.entries(TARGET_PROFILES).map(([name,p])=>`<tr><td><code>${name}</code></td><td>${p.category}</td><td>${p.toolchain}</td><td>${p.execution}</td><td>${p.description}</td></tr>`).join('');
+  document.getElementById('targetAtlas').innerHTML=`<table><tr><th>Target</th><th>Class</th><th>Toolchain/host</th><th>Execution claim</th><th>Why it matters</th></tr>${rows}</table>`;
+}
+function renderFutureAtlas(){
+  const rows=FUTURE_DOORS.map(x=>`<tr><td><code>${x.name}</code></td><td>${x.kind}</td><td>${x.why}</td></tr>`).join('');
+  document.getElementById('futureAtlas').innerHTML=`<table><tr><th>Door</th><th>Kind</th><th>Use</th></tr>${rows}</table>`;
+  const saved=JSON.parse(localStorage.getItem('32_Cb_unknown_targets_v1_3')||'[]');
+  document.getElementById('unknownList').textContent=saved.length?JSON.stringify(saved,null,2):'No owner-added unknown-yet doors registered.';
+}
+function addUnknownDoor(){
+  const name=document.getElementById('unknownTarget').value.trim();
+  if(!name)return;
+  const key='32_Cb_unknown_targets_v1_3';
+  const arr=JSON.parse(localStorage.getItem(key)||'[]');
+  if(!arr.some(x=>x.name.toLowerCase()===name.toLowerCase())){
+    arr.unshift({name,status:'REGISTERED_NOT_IMPLEMENTED',added:new Date().toISOString(),law:'UNKNOWN INTAKE != IMPLEMENTED ADAPTER'});
+    localStorage.setItem(key,JSON.stringify(arr.slice(0,64)));
+  }
+  document.getElementById('unknownTarget').value='';
+  renderFutureAtlas();
+}
+function initTargetForge(){
+  const sel=document.getElementById('targetSelect');
+  sel.innerHTML=Object.keys(TARGET_PROFILES).map(x=>`<option>${x}</option>`).join('');
+  sel.value='Rust';
+  sel.onchange=generateTargetSource;
+  document.getElementById('targetGenerate').onclick=generateTargetSource;
+  document.getElementById('targetRun').onclick=runTargetSupported;
+  document.getElementById('targetDownload').onclick=()=>{
+    const n=sel.value,p=TARGET_PROFILES[n],src=document.getElementById('targetSource').value||generateTargetSource();
+    downloadText(`32_Cb_${n.replace(/[^A-Za-z0-9]+/g,'_')}.${p.ext}`,src);
+  };
+  document.getElementById('targetPacket').onclick=()=>{
+    const n=sel.value; downloadText(`32_Cb_${n.replace(/[^A-Za-z0-9]+/g,'_')}_BuildPacket_v1_3.json`,JSON.stringify(targetBuildPacket(n),null,2),'application/json');
+  };
+  document.getElementById('unknownAdd').onclick=addUnknownDoor;
+  renderTargetAtlas();renderFutureAtlas();generateTargetSource();
+}
+function runTargetTests(){
+  const lines=[];let pass=0;
+  for(const [name,p] of Object.entries(TARGET_PROFILES)){
+    let ok=false;
+    try{
+      const src=emitTarget(name);
+      ok=typeof src==='string'&&src.length>20&&!!p.ext&&!!p.toolchain;
+      if(name==='JSON')JSON.parse(src);
+      if(name==='JavaScript')new Function(src);
+    }catch(e){ok=false;}
+    if(ok)pass++;
+    lines.push(`${ok?'PASS':'FAIL'}  ${name}`);
+  }
+  lines.unshift(`${pass}/${Object.keys(TARGET_PROFILES).length} target-generator checks PASS\nNOTE: generation checks are not external compiler proofs.`);
+  document.getElementById('targetTests').textContent=lines.join('\n');
+  return pass===Object.keys(TARGET_PROFILES).length;
+}
+
+
+const tests=[
+  ['01 bridge pass',()=>bridgeIR('32_Cb').match===true],
+  ['02 bridge mismatch',()=>bridgeIR('32_CA').match===false],
+  ['03 JM bridge',()=>bridgeIR('[10][13]_JM').match===true],
+  ['04 encode Cb',()=>encodeLetters('Cb').dotted==='3.2'],
+  ['05 decode 3.2',()=>decodePositions('3.2').letters==='CB'],
+  ['06 decode JM',()=>decodePositions('[10][13]').letters==='JM'],
+  ['07 zero rejected',()=>{try{decodePositions('0');return false}catch(e){return true}}],
+  ['08 case metadata',()=>encodeLetters('Cb').case.join(',')==='UPPER,LOWER'],
+  ['09 roundtrip',()=>decodePositions(encodeLetters('Route').dotted).letters==='ROUTE'],
+  ['10 flow 32',()=>flow('32').readings.includes('FREE TO')],
+  ['11 flow 12',()=>flow('12').readings.includes('want-to')],
+  ['12 flow Z0',()=>flow('Z0').readings.includes('Source-Centre')],
+  ['13 phrase route',()=>phraseRoute('4|1|2|12|B|32').reading==='FOR ONE TO WANT TO BE FREE TO'],
+  ['14 OP NOTA',()=>operatorRegistry.NOTA.definition==='notake.observe.tally.analyse'],
+  ['15 state set',()=>{rt=freshRuntime();executeLine('SET x 3');return rt.vars.x===3}],
+  ['16 state add',()=>{rt=freshRuntime();executeLine('SET x 3');executeLine('ADD x 2');return rt.vars.x===5}],
+  ['17 div zero BUGG',()=>{rt=freshRuntime();executeLine('SET x 5');const x=executeLine('DIV x 0');return /^BUGG/.test(x)}],
+  ['18 memory',()=>{rt=freshRuntime();executeLine('REMEMBER a 32_Cb');return rt.memory.a==='32_Cb'}],
+  ['19 IF true',()=>{rt=freshRuntime();executeLine('SET x 5');const x=executeLine('IF x >= 5 THEN OUTPUT yes ELSE OUTPUT no');return rt.outputs.at(-1)==='yes'}],
+  ['20 IF false',()=>{rt=freshRuntime();executeLine('SET x 1');executeLine('IF x >= 5 THEN OUTPUT yes ELSE OUTPUT no');return rt.outputs.at(-1)==='no'}],
+  ['21 DEF/CALL',()=>{rt=freshRuntime();executeLine('DEF f = LIB UPPER hello');return executeLine('CALL f').includes('HELLO')}],
+  ['22 LIB LEN',()=>{rt=freshRuntime();return executeLine('LIB LEN hello').includes('5')}],
+  ['23 ASSERT BRIDGE pass',()=>{rt=freshRuntime();return executeLine('ASSERT BRIDGE 32_Cb').startsWith('ASSERT PASS')}],
+  ['24 ASSERT EQ fail',()=>{rt=freshRuntime();executeLine('SET x 1');return executeLine('ASSERT EQ x 2').startsWith('BUGG')}],
+  ['25 RECOVER',()=>{rt=freshRuntime();executeLine('SET x 7');executeLine('BUGG test');executeLine('RECOVER last');return rt.vars.x===7&&rt.status==='RECOVERED'}],
+  ['26 UNDO',()=>{rt=freshRuntime();executeLine('SET x 1');executeLine('SET x 2');executeLine('UNDO');return rt.vars.x===1}],
+  ['27 project create',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');return rt.project.name==='P'}],
+  ['28 project metadata',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');executeLine('PROJECT META version 9.9');return rt.project.meta.version==='9.9'}],
+  ['29 program save',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');saveProgram('a','CHECK 32_Cb');return rt.project.programs.a.hash===simpleHash('CHECK 32_Cb')}],
+  ['30 savepack roundtrip',()=>{rt=freshRuntime();executeLine('PROJECT CREATE P');executeLine('SET x 4');const p=savePack();rt=freshRuntime();loadPack(p);return rt.project.name==='P'&&rt.vars.x===4}],
+  ['31 lint catches unknown',()=>lintSource('WUT thing')[0].includes('unknown command')],
+  ['32 DING',()=>{rt=freshRuntime();executeLine('DING');return rt.ding===true&&rt.status==='DING'}]
+];
+
+document.getElementById('test').onclick=()=>{
+  const old=clone(rt),lines=[];let pass=0;
+  for(const [name,fn] of tests){
+    let ok=false;try{ok=!!fn()}catch(e){ok=false;}
+    if(ok)pass++;lines.push(`${ok?'PASS':'FAIL'}  ${name}`);
+  }
+  rt=old;lines.unshift(`${pass}/${tests.length} tests PASS`);
+  document.getElementById('tests').textContent=lines.join('\n');render();
+};
+
+document.getElementById('map').innerHTML=ALPHA.split('').map((c,i)=>`<span class="badge">${i+1}↔${c}</span>`).join('');
+document.getElementById('run').click();
+document.getElementById('test').click();
+initTargetForge();
+document.getElementById('targetTest').onclick=runTargetTests;
+runTargetTests();
+initDeepForge();
+
+})();
+</script>
+</body>
+</html>

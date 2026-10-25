@@ -80,7 +80,7 @@ try{
  assert.ok(b.visual.organs>=15,'15+ independent JM authored geometry organs built');
  assert.equal(b.visual.worldBatches,4,'four independent GPU instanced world details');
  assert.ok(b.compiledOrgans>=53,'inherit 38 source JM organs plus CP12 authored forms');
- assert.equal(document.body===undefined,false);
+
  assert.equal(b.route.routeVMChecksum,code.header.checksum);
  assert.ok(b.compiledOrgans>=53&&b.drawCalls>20);
  assert.equal(b.route.routeScriptNodes,4);

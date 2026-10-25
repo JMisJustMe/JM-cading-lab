@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#08090d" />
+<title>JM Two-Hand Estate Board v0.1</title>
+<style>
+:root{
+  --bg:#07080d; --panel:#111724; --panel2:#182034; --panel3:#202a42; --ink:#f7f7ff; --muted:#aab4cc;
+  --line:#34405d; --gold:#f1cf70; --blue:#88bcff; --green:#76e2a3; --red:#ff858c; --violet:#cba6ff; --orange:#ffc078;
+  --soft:rgba(255,255,255,.058); --shadow:0 18px 60px rgba(0,0,0,.38); --r:22px; --pad:clamp(12px,3vw,20px);
+}
+*{box-sizing:border-box;min-width:0} html{background:var(--bg);scroll-behavior:smooth} body{margin:0;overflow-x:hidden;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at 20% -10%,#263452 0,#111622 34%,#07080d 78%);touch-action:manipulation} button,input,textarea,select{font:inherit} button{cursor:pointer} a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}.wrap{width:min(1220px,100%);margin:0 auto}.safe{padding-left:max(var(--pad),env(safe-area-inset-left));padding-right:max(var(--pad),env(safe-area-inset-right))}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(7,8,13,.91);backdrop-filter:blur(15px);border-bottom:1px solid rgba(255,255,255,.12)}
+.topInner{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px max(var(--pad),env(safe-area-inset-left))}.brand h1{font-size:clamp(21px,5.5vw,38px);line-height:1.02;margin:0;letter-spacing:-.045em}.brand p{margin:5px 0 0;color:var(--muted);font-size:clamp(12px,3.2vw,14px);line-height:1.35}.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(241,207,112,.42);background:rgba(241,207,112,.11);color:var(--gold);font-weight:950;letter-spacing:.05em;border-radius:999px;padding:5px 9px;font-size:11px;white-space:nowrap}.topActions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.miniBtn,.action,.chip,.tab,.handMode{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;font-weight:900}.miniBtn{padding:8px 11px;font-size:12px}.miniBtn:hover,.action:hover,.chip:hover,.tab:hover,.handMode:hover,.house:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.progress{display:flex;gap:6px;overflow-x:auto;padding:0 max(var(--pad),env(safe-area-inset-left)) 10px;scrollbar-width:none}.progress::-webkit-scrollbar,.hscroll::-webkit-scrollbar{display:none}.step{flex:0 0 auto;border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 9px;color:#d8def0;background:rgba(255,255,255,.045);font-size:12px;font-weight:850}.step.on{border-color:rgba(241,207,112,.45);background:rgba(241,207,112,.12);color:var(--gold)}
+.app{display:grid;grid-template-columns:340px 1fr;gap:14px;padding:14px max(var(--pad),env(safe-area-inset-left)) 88px}.card{background:linear-gradient(180deg,rgba(255,255,255,.072),rgba(255,255,255,.028));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}.panel{padding:var(--pad)}.side{position:sticky;top:112px;max-height:calc(100dvh - 125px);overflow:auto}.main{display:flex;flex-direction:column;gap:14px}.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px}.sectionTitle h2,.sectionTitle h3{margin:0;letter-spacing:-.03em}.sectionTitle h2{font-size:clamp(21px,5vw,31px)}.sectionTitle h3{font-size:clamp(17px,4.3vw,23px)}.muted{color:var(--muted);line-height:1.5}.small{font-size:12.5px;color:var(--muted);line-height:1.43}.gold{color:var(--gold)}.blue{color:var(--blue)}.green{color:var(--green)}.red{color:var(--red)}.violet{color:var(--violet)}.mono,code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.monoBox{white-space:pre-wrap;word-break:break-word;background:#05070b;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:12px;color:#e9edff;line-height:1.45;font-size:12.5px;max-height:56dvh;overflow:auto}
+.notice{border:1px solid rgba(119,230,167,.32);background:rgba(119,230,167,.08);border-radius:16px;padding:11px;color:#dfffea}.warnBox{border:1px solid rgba(241,207,112,.34);background:rgba(241,207,112,.08);border-radius:16px;padding:11px}.badBox{border:1px solid rgba(255,133,140,.34);background:rgba(255,133,140,.08);border-radius:16px;padding:11px}.tag{display:inline-flex;align-items:center;width:max-content;max-width:100%;white-space:normal;border:1px solid rgba(241,207,112,.32);color:var(--gold);background:rgba(241,207,112,.09);border-radius:999px;padding:3px 7px;font-size:10.5px;font-weight:950}.tag.blue{border-color:rgba(132,184,255,.42);background:rgba(132,184,255,.10);color:#dceaff}.tag.green{border-color:rgba(119,230,167,.42);background:rgba(119,230,167,.10);color:#d9ffe9}.tag.red{border-color:rgba(255,133,140,.42);background:rgba(255,133,140,.10);color:#ffe0e3}.tag.violet{border-color:rgba(203,166,255,.42);background:rgba(203,166,255,.10);color:#f1e5ff}.hero{display:grid;grid-template-columns:1fr 330px;gap:14px}.heroBox{border:1px solid rgba(132,184,255,.33);background:linear-gradient(135deg,rgba(132,184,255,.14),rgba(203,166,255,.06));border-radius:calc(var(--r) - 2px);padding:var(--pad)}.quote{font-size:clamp(20px,5.2vw,34px);line-height:1.04;letter-spacing:-.05em;margin:12px 0}.modeRow{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.handMode{padding:10px 12px}.handMode.active{border-color:rgba(241,207,112,.56);background:rgba(241,207,112,.13);color:var(--gold)}.chip,.tab{flex:0 0 auto;padding:8px 10px;font-size:12px}.chip.hot,.tab.active{border-color:rgba(241,207,112,.52);background:rgba(241,207,112,.12);color:var(--gold)}.chip.green{border-color:rgba(119,230,167,.42);background:rgba(119,230,167,.10);color:#d9ffe9}.chip.blue{border-color:rgba(132,184,255,.42);background:rgba(132,184,255,.10);color:#dceaff}.hscroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.searchBox{width:100%;border:1px solid var(--line);border-radius:16px;background:#080b12;color:var(--ink);padding:13px 14px;outline:none;margin:8px 0}.searchBox:focus{border-color:rgba(241,207,112,.55);box-shadow:0 0 0 4px rgba(241,207,112,.08)}
+.board{display:grid;grid-template-columns:1fr minmax(220px,290px) 1fr;gap:12px;align-items:stretch}.handPanel{border:1px solid rgba(255,255,255,.12);border-radius:20px;background:rgba(0,0,0,.12);padding:11px}.handHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}.handHeader h3{margin:0;font-size:18px;letter-spacing:-.03em}.handHeader p{margin:3px 0 0}.fingerList{display:grid;gap:9px}.house{border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.045);border-radius:17px;padding:11px;text-align:left;color:var(--ink);display:flex;flex-direction:column;gap:5px;min-height:118px;transition:.18s ease}.house.selected{border-color:rgba(241,207,112,.62);background:linear-gradient(180deg,rgba(241,207,112,.15),rgba(255,255,255,.04))}.house.mainBody{border-color:rgba(119,230,167,.50)}.house.frontDesk{border-color:rgba(132,184,255,.46)}.house b{font-size:14px}.house p{margin:0;color:var(--muted);font-size:12px;line-height:1.35}.house .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}.bodyCore{display:flex;flex-direction:column;gap:10px;justify-content:center;text-align:center;border:1px solid rgba(241,207,112,.38);border-radius:24px;padding:14px;background:radial-gradient(circle at 50% 0,rgba(241,207,112,.16),rgba(255,255,255,.035) 48%,rgba(0,0,0,.12));min-height:100%}.bodyCore .symbol{font-size:44px;line-height:1}.bodyCore h3{margin:0;letter-spacing:-.035em}.bodyCore p{margin:0}.bodyCore a{display:inline-flex;justify-content:center;border:1px solid rgba(132,184,255,.4);background:rgba(132,184,255,.10);border-radius:999px;padding:9px 10px;font-weight:900;margin-top:6px}.closeHands .backHouse .house{transform:translateX(2px)}.closeHands .frontHouse .house{transform:translateX(-2px)}.openHands .bodyCore{border-color:rgba(132,184,255,.44)}.openHands .frontHouse .house{background:rgba(132,184,255,.055)}.closeHands .backHouse .house{background:rgba(119,230,167,.052)}
+.detailGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:12px}.routeForm{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-size:12px;color:var(--muted);font-weight:850}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:#080b12;color:var(--ink);border-radius:14px;padding:12px;outline:none}.field textarea{min-height:94px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(241,207,112,.55)}.full{grid-column:1/-1}.action{border-radius:12px;padding:9px 11px;font-size:12px}.action.primary{border-color:rgba(119,230,167,.45);background:rgba(119,230,167,.11);color:#dfffee}.action.warn{border-color:rgba(241,207,112,.45);background:rgba(241,207,112,.11);color:var(--gold)}.action.danger{border-color:rgba(255,133,140,.45);background:rgba(255,133,140,.10);color:#ffdfe2}.receiptActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.supportGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.support{border:1px solid rgba(255,255,255,.12);border-radius:17px;background:rgba(255,255,255,.04);padding:11px}.support h4{margin:0 0 5px}.support p{margin:0 0 8px}.lawGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}.law{border:1px solid rgba(255,255,255,.12);border-radius:15px;background:rgba(255,255,255,.04);padding:10px}.law b{display:block;color:var(--gold);font-size:12.5px}.law span{display:block;color:var(--muted);font-size:11.8px;line-height:1.35;margin-top:4px}.bottomNav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:none;background:rgba(7,8,13,.92);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.12);padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));gap:6px}.bottomNav button{flex:1;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.055);color:var(--ink);border-radius:14px;padding:9px 4px;font-size:11.5px;font-weight:900}
+@media(max-width:980px){.topInner{grid-template-columns:1fr}.topActions{justify-content:flex-start}.app{grid-template-columns:1fr;padding-top:10px}.side{position:relative;top:0;max-height:none;overflow:visible}.hero{grid-template-columns:1fr}.board{grid-template-columns:1fr}.bodyCore{min-height:auto}.bottomNav{display:flex}.desktopOnly{display:none!important}.detailGrid{grid-template-columns:1fr}}
+@media(max-width:620px){:root{--r:18px}.topbar{position:relative}.brand h1{font-size:24px}.brand p{font-size:12.5px}.app{gap:10px}.panel{padding:12px}.sectionTitle{align-items:flex-start;flex-direction:column}.routeForm{grid-template-columns:1fr}.field textarea{min-height:82px}.monoBox{font-size:11.8px;max-height:48dvh}.quote{font-size:24px}.bodyCore .symbol{font-size:38px}}
+</style>
+</head>
+<body class="closeHands">
+<header class="topbar">
+  <div class="topInner wrap">
+    <div class="brand">
+      <span class="pill">v0.1 • SUPPORTER BOARD • TWO-HAND ROUTE</span>
+      <h1>JM Two-Hand Estate Board</h1>
+      <p>Main body stays sovereign. Supporters get placed, checked, opened, frozen, or parked without becoming the throne.</p>
+    </div>
+    <div class="topActions">
+      <button class="miniBtn" onclick="jump('start')">Start</button>
+      <button class="miniBtn" onclick="jump('board')">Board</button>
+      <button class="miniBtn" onclick="jump('edit')">Edit</button>
+      <button class="miniBtn" onclick="jump('receipt')">Receipt</button>
+    </div>
+  </div>
+  <nav class="progress wrap" aria-label="Estate progress">
+    <span class="step on">1 Main Body</span><span class="step">2 Two Hands</span><span class="step">3 Place</span><span class="step">4 Status</span><span class="step">5 Ding</span><span class="step">6 Next</span>
+  </nav>
+</header>
+
+<main class="app wrap">
+  <aside class="side card panel" id="filters">
+    <div class="sectionTitle"><h3>Find / Filter</h3><span class="tag" id="countTag">10 houses</span></div>
+    <input id="search" class="searchBox" placeholder="Try: coding, game, proof, zion, public, QA, freeze..." oninput="renderAll()" />
+    <div class="hscroll" id="filterTabs"></div>
+    <p class="small">Tap a house to make it the active body. Use <b>Close Hands</b> for build/protect/prove and <b>Open Hands</b> for launch/display/use.</p>
+    <div class="modeRow">
+      <button id="closeBtn" class="handMode active" onclick="setMode('close')">Close Hands</button>
+      <button id="openBtn" class="handMode" onclick="setMode('open')">Open Hands</button>
+    </div>
+    <div class="notice small">
+      <b>Current main mount:</b><br>
+      JM Coding Body House — Intuitive Builder v0.3<br>
+      <span class="gold">OPEN_FIRST / PHONE_FIT_PATCH / SEPARATE_ROOMS / STAR_ROUTE_RECEIPTS</span>
+    </div>
+    <div style="height:10px"></div>
+    <div class="warnBox small"><b>Crown line</b><br>Both hands close to hold the body. Both hands open to show the body.</div>
+  </aside>
+
+  <section class="main">
+    <section class="hero" id="start">
+      <div class="card panel heroBox">
+        <div class="sectionTitle"><h2>Start Here</h2><span class="tag green">Add-on / Supporter</span></div>
+        <p class="quote"><span class="gold">Main body in the middle.</span><br>Supporters around it.</p>
+        <p class="muted">This board does not replace the Coding Body House. It places it as the current main coding body, then lets every other app, game, tool, theory, OS-route, or public door become a supporter with a clean status and next action.</p>
+        <div class="modeRow">
+          <button class="action primary" onclick="setMode('close');jump('board')">Close to build</button>
+          <button class="action warn" onclick="setMode('open');jump('board')">Open to show</button>
+          <a class="action" href="00_OPEN_FIRST_JM_CODING_BODY_HOUSE_INTUITIVE_BUILDER_v0_3.html">Open Coding Body House</a>
+        </div>
+      </div>
+      <div class="card panel">
+        <div class="sectionTitle"><h3>Active House</h3><span class="tag" id="activeSide"></span></div>
+        <div id="activeSummary"></div>
+      </div>
+    </section>
+
+    <section class="card panel" id="board">
+      <div class="sectionTitle"><h2>Two-Hand Estate Board</h2><span class="tag blue" id="modeTag">Close Hands</span></div>
+      <div class="board" id="handBoard"></div>
+    </section>
+
+    <section class="card panel" id="edit">
+      <div class="sectionTitle"><h2>Place / Status / Next Action</h2><span class="tag">Current-State Control</span></div>
+      <div class="detailGrid">
+        <div>
+          <div class="routeForm">
+            <div class="field"><label>House</label><input id="houseName" /></div>
+            <div class="field"><label>Side</label><select id="houseSide"><option>Back House / Inner Hand</option><option>Front House / Outer Hand</option></select></div>
+            <div class="field"><label>Purpose</label><input id="housePurpose" /></div>
+            <div class="field"><label>Status</label><select id="houseStatus"><option>RAW</option><option>BUILT</option><option>OPEN_FIRST</option><option>TESTED</option><option>DINGED</option><option>CROWNED</option><option>PARKED</option><option>SUPPORTER</option><option>NEEDS_QA</option><option>READY_TO_FREEZE</option><option>MAIN_BODY</option><option>FRONT_DESK</option></select></div>
+            <div class="field full"><label>Current body</label><input id="currentBody" /></div>
+            <div class="field full"><label>Open route / link / filename</label><input id="openRoute" /></div>
+            <div class="field full"><label>Next action</label><input id="nextAction" /></div>
+            <div class="field full"><label>Notes</label><textarea id="notes"></textarea></div>
+          </div>
+          <div class="receiptActions">
+            <button class="action primary" onclick="saveHouseEdit()">Save House</button>
+            <button class="action warn" onclick="generateReceipt()">Generate Receipt</button>
+            <button class="action" onclick="saveBoard()">Save Board Local</button>
+            <button class="action" onclick="resetBoard()">Reset Seed</button>
+          </div>
+        </div>
+        <div>
+          <div class="notice small"><b>Board rule</b><br>Add-ons support the main body; they do not replace it.</div>
+          <div style="height:10px"></div>
+          <div class="warnBox small"><b>Proof rule</b><br>A bug is not automatically a blessing. A caught bug can become a route. A bypassed bug becomes debt.</div>
+          <div style="height:10px"></div>
+          <div class="badBox small"><b>Crown limit</b><br>This board can place and receipt bodies. It does not crown a body unless the proof route earns it.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card panel" id="supporters">
+      <div class="sectionTitle"><h2>Supporter Register</h2><button class="miniBtn" onclick="addSupporter()">Add supporter</button></div>
+      <p class="small">Use this for extra apps, games, tools, theory bodies, Boring OS, RouteOS, music bodies, and public-door pieces.</p>
+      <div id="supportGrid" class="supportGrid"></div>
+    </section>
+
+    <section class="card panel" id="laws">
+      <div class="sectionTitle"><h2>Mounted Laws</h2><span class="tag">Protected</span></div>
+      <div id="lawGrid" class="lawGrid"></div>
+    </section>
+
+    <section class="card panel" id="receipt">
+      <div class="sectionTitle"><h2>Receipt / Export</h2><span class="tag green">Trace proves</span></div>
+      <div class="receiptActions">
+        <button class="action primary" onclick="generateReceipt()">Generate Receipt</button>
+        <button class="action warn" onclick="copyReceipt()">Copy Receipt</button>
+        <button class="action" onclick="exportReceipt()">Export Receipt JSON</button>
+        <button class="action" onclick="exportBoard()">Export Board JSON</button>
+        <label class="action" for="importFile">Import Board JSON</label><input id="importFile" type="file" accept="application/json" style="display:none" onchange="importBoard(event)" />
+      </div>
+      <pre id="receiptBox" class="monoBox">JM_TWO_HAND_ESTATE_BOARD_v0.1
+STATUS: READY
+
+No receipt yet. Select a house, update status if needed, then generate a receipt.
+
+Crown line:
+Both hands close to hold the body.
+Both hands open to show the body.</pre>
+    </section>
+  </section>
+</main>
+
+<nav class="bottomNav">
+  <button onclick="jump('start')">Start</button><button onclick="jump('board')">Board</button><button onclick="jump('edit')">Edit</button><button onclick="jump('supporters')">Support</button><button onclick="jump('receipt')">Receipt</button>
+</nav>
+
+<script>
+const STORAGE_KEY='JM_TWO_HAND_ESTATE_BOARD_v01';
+const RECEIPT_KEY='JM_TWO_HAND_ESTATE_RECEIPTS_v01';
+const SEED = {
+  version:'0.1',
+  mainBody:{
+    name:'JM Coding Body House — Intuitive Builder v0.3',
+    route:'00_OPEN_FIRST_JM_CODING_BODY_HOUSE_INTUITIVE_BUILDER_v0_3.html',
+    status:'OPEN_FIRST / PHONE_FIT_PATCH / SEPARATE_ROOMS / STAR_ROUTE_RECEIPTS',
+    role:'Main ecosystem coding body / body that equips other bodies'
+  },
+  mode:'close',
+  selectedId:'coding',
+  houses:[
+    {id:'theory',side:'Back House / Inner Hand',name:'Theory',purpose:'Meaning, laws, source logic',currentBody:'JM Theory House / build laws / route meanings',status:'SUPPORTER',openRoute:'',nextAction:'Gather current-best theory bodies and seal laws',notes:'Makes bodies true by preserving meaning before output.'},
+    {id:'coding',side:'Back House / Inner Hand',name:'Coding',purpose:'Forms and equips other bodies through coding bodies',currentBody:'JM Coding Body House — Intuitive Builder v0.3',status:'MAIN_BODY',openRoute:'00_OPEN_FIRST_JM_CODING_BODY_HOUSE_INTUITIVE_BUILDER_v0_3.html',nextAction:'Mount as main coding control body; do not rebuild first',notes:'Current main body. Starts by need, preserves separate rooms, generates Star Route receipts.'},
+    {id:'device',side:'Back House / Inner Hand',name:'Device / OS / RouteOS',purpose:'Carrier, phone/laptop, field route, shell logic',currentBody:'RouteOS / Kocodifying / device proof lane',status:'SUPPORTER',openRoute:'',nextAction:'Mount latest Boring OS / RouteOS body when available',notes:'Do not force generic OS identity inside JM unless translating outward.'},
+    {id:'proof',side:'Back House / Inner Hand',name:'Proof / Trace / Receipts',purpose:'Ding, QA, TraceBox, Factuling, BUGG',currentBody:'TraceBox / Factuling / Ding / BUGG proof cameras',status:'NEEDS_QA',openRoute:'',nextAction:'Connect receipt output from Coding Body House and supporter apps',notes:'Proof serves the route, not audition.'},
+    {id:'registry',side:'Back House / Inner Hand',name:'Registry / Zionfolder / Retrieval',purpose:'Saved bodies, OPEN_FIRST, recall, archive control',currentBody:'Zionfolder / registry cards / OPEN_FIRST route',status:'SUPPORTER',openRoute:'',nextAction:'Import current cards and open-first file list',notes:'Recall before rebuild. Restore before rewrite.'},
+    {id:'apps',side:'Front House / Outer Hand',name:'Apps',purpose:'Usable tools and add-on apps',currentBody:'Apps House supporters',status:'SUPPORTER',openRoute:'',nextAction:'List active phone apps and mark which support the main body',notes:'Apps are expressions/supporters, not competing centers.'},
+    {id:'games',side:'Front House / Outer Hand',name:'Games',purpose:'Playable bodies, mechanics, loops, GameCore',currentBody:'GameCore / PlayZone / playable bodies',status:'SUPPORTER',openRoute:'',nextAction:'Choose first game body for QA/play proof',notes:'Feel is proof. Playable before polish.'},
+    {id:'music',side:'Front House / Outer Hand',name:'Music / Lyrics',purpose:'Mouth, breath, rhythm, rap, lyric source',currentBody:'Music / Lyrics House',status:'SUPPORTER',openRoute:'',nextAction:'Mount lyric/music bodies as front-house outputs',notes:'The mouth-route matters. Speakability is part of the build.'},
+    {id:'story',side:'Front House / Outer Hand',name:'Story Worlds',purpose:'Characters, worlds, PlayZone, narrative bodies',currentBody:'Story Worlds / PlayZone body lane',status:'SUPPORTER',openRoute:'',nextAction:'Register story-world bodies and their launch routes',notes:'Worlds can be shown without collapsing into the coding house.'},
+    {id:'launcher',side:'Front House / Outer Hand',name:'Launcher / Public Door',purpose:'Front door, display surface, public route, dashboard',currentBody:'Boring OS / Public Door / Launcher candidate',status:'FRONT_DESK',openRoute:'',nextAction:'Mount Boring OS as normal-facing front desk when source is available',notes:'Receives, organizes, operates. Does not replace the main coding body.'}
+  ],
+  supporters:[
+    {name:'Boring OS / JM Zionfolder OS',role:'Normal-facing front desk / body operations',status:'SOURCE-LOCK REQUIRED',route:'',notes:'Mount as Front Desk supporter when exact current file is present.'},
+    {name:'JM Coding Body House v0.3',role:'Main coding body / equips other bodies',status:'MOUNTED',route:'00_OPEN_FIRST_JM_CODING_BODY_HOUSE_INTUITIVE_BUILDER_v0_3.html',notes:'Already mounted as Coding House current body.'}
+  ]
+};
+const LAWS=[
+ ['Main body stays sovereign','Supporters help the current main body; they do not replace it.'],
+ ['Both hands close to hold','Close Hands = build, protect, prove, repair, carry.'],
+ ['Both hands open to show','Open Hands = display, launch, teach, play, release.'],
+ ['Full Body. Straight Run. Correct After.','Build the usable body first, then inspect and repair.'],
+ ['Recall before rebuild','Find the saved body/card before inventing again.'],
+ ['Restore before rewrite','If a body already exists, repair and reconcile before replacing.'],
+ ['Single self-contained OPEN_FIRST HTML','Phone-openable route comes first. Backups support it.'],
+ ['Carrier-code obeys route','Generated HTML/JS/CSS exports the route. It does not become the source.'],
+ ['No Ding, no claim','Proof must match the claim being made.'],
+ ['Proof serves the route','Proof is for alignment, not audition.'],
+ ['Caught bug can become route','A bug becomes useful when spotted, contained, understood, and maximised safely.'],
+ ['No collapse','Bodies may connect without losing their own identity.']
+];
+let state=loadState();
+let activeFilter='All';
+let lastReceipt='';
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY); if(raw) return JSON.parse(raw);}catch(e){} return clone(SEED)}
+function saveBoard(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); flash('Board saved locally.');}
+function el(id){return document.getElementById(id)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function jump(id){const n=el(id); if(n) n.scrollIntoView({behavior:'smooth',block:'start'})}
+function setMode(mode){state.mode=mode; document.body.classList.toggle('closeHands',mode==='close'); document.body.classList.toggle('openHands',mode==='open'); saveBoard(); renderAll();}
+function filters(){return ['All','Back House','Front House','Needs QA','Ready to Freeze','Add-ons','Main Body','Front Desk','Parked'];}
+function setFilter(f){activeFilter=f; renderAll();}
+function houseById(id){return state.houses.find(h=>h.id===id)||state.houses[0]}
+function activeHouse(){return houseById(state.selectedId)}
+function searchable(h){return [h.side,h.name,h.purpose,h.currentBody,h.status,h.openRoute,h.nextAction,h.notes].join(' ').toLowerCase()}
+function filterHouse(h){const q=(el('search')?.value||'').toLowerCase().trim(); if(q && !searchable(h).includes(q)) return false; switch(activeFilter){case 'Back House': return h.side.includes('Back'); case 'Front House': return h.side.includes('Front'); case 'Needs QA': return h.status==='NEEDS_QA'||h.nextAction.toLowerCase().includes('qa'); case 'Ready to Freeze': return h.status==='READY_TO_FREEZE'; case 'Add-ons': return !['MAIN_BODY'].includes(h.status); case 'Main Body': return h.status==='MAIN_BODY'; case 'Front Desk': return h.status==='FRONT_DESK'||h.name.includes('Launcher'); case 'Parked': return h.status==='PARKED'; default:return true;}}
+function selectHouse(id){state.selectedId=id; saveBoard(); renderAll(); jump('edit')}
+function classFor(h){let c='house'; if(h.id===state.selectedId)c+=' selected'; if(h.status==='MAIN_BODY')c+=' mainBody'; if(h.status==='FRONT_DESK')c+=' frontDesk'; return c;}
+function tagFor(h){let cls='tag'; if(h.status==='MAIN_BODY')cls+=' green'; if(h.status==='FRONT_DESK')cls+=' blue'; if(h.status==='NEEDS_QA')cls+=' red'; if(h.status==='SUPPORTER')cls+=' violet'; return `<span class="${cls}">${esc(h.status)}</span>`}
+function houseCard(h){return `<button class="${classFor(h)}" onclick="selectHouse('${esc(h.id)}')">${tagFor(h)}<b>${esc(h.name)}</b><p>${esc(h.purpose)}</p><p><span class="gold">Body:</span> ${esc(h.currentBody)}</p><div class="row"><span class="tag blue">${h.side.includes('Back')?'Inner':'Outer'}</span>${h.openRoute?`<span class="tag green">open route</span>`:''}</div></button>`}
+function renderTabs(){el('filterTabs').innerHTML=filters().map(f=>`<button class="tab ${f===activeFilter?'active':''}" onclick="setFilter('${esc(f)}')">${esc(f)}</button>`).join('')}
+function renderBoard(){const shown=state.houses.filter(filterHouse); const back=shown.filter(h=>h.side.includes('Back')); const front=shown.filter(h=>h.side.includes('Front')); el('countTag').textContent=`${shown.length}/10 houses`; el('modeTag').textContent=state.mode==='close'?'Close Hands':'Open Hands'; el('closeBtn').classList.toggle('active',state.mode==='close'); el('openBtn').classList.toggle('active',state.mode==='open'); const core = state.mode==='close' ? {symbol:'👐',title:'Close Hands',text:'Build / protect / prove / repair / carry'} : {symbol:'🙌',title:'Open Hands',text:'Display / launch / teach / play / release'}; el('handBoard').innerHTML=`<div class="handPanel backHouse"><div class="handHeader"><div><h3>Back House / Inner Hand</h3><p class="small">Makes the body true.</p></div><span class="tag green">${back.length}</span></div><div class="fingerList">${back.map(houseCard).join('')||'<div class="small badBox">No back-house result under this filter.</div>'}</div></div><div class="bodyCore"><div class="symbol">${core.symbol}</div><h3>${core.title}</h3><p class="muted">${core.text}</p><div class="warnBox small"><b>Main mount</b><br>${esc(state.mainBody.name)}<br><span class="gold">${esc(state.mainBody.status)}</span></div><a href="${esc(state.mainBody.route)}">Open Main Coding Body</a></div><div class="handPanel frontHouse"><div class="handHeader"><div><h3>Front House / Outer Hand</h3><p class="small">Makes the body visible.</p></div><span class="tag blue">${front.length}</span></div><div class="fingerList">${front.map(houseCard).join('')||'<div class="small badBox">No front-house result under this filter.</div>'}</div></div>`}
+function renderActive(){const h=activeHouse(); el('activeSide').textContent=h.side.includes('Back')?'Inner Hand':'Outer Hand'; el('activeSummary').innerHTML=`<h3 style="margin:0 0 6px">${esc(h.name)}</h3><p class="muted">${esc(h.purpose)}</p><p class="small"><b class="gold">Current body:</b> ${esc(h.currentBody)}</p><p class="small"><b class="green">Status:</b> ${esc(h.status)}</p><p class="small"><b class="blue">Next:</b> ${esc(h.nextAction)}</p>${h.openRoute?`<a class="action" href="${esc(h.openRoute)}">Open route</a>`:''}`}
+function renderEdit(){const h=activeHouse(); el('houseName').value=h.name; el('houseSide').value=h.side; el('housePurpose').value=h.purpose; el('houseStatus').value=h.status; el('currentBody').value=h.currentBody; el('openRoute').value=h.openRoute; el('nextAction').value=h.nextAction; el('notes').value=h.notes;}
+function saveHouseEdit(){const h=activeHouse(); h.name=el('houseName').value.trim()||h.name; h.side=el('houseSide').value; h.purpose=el('housePurpose').value.trim(); h.status=el('houseStatus').value; h.currentBody=el('currentBody').value.trim(); h.openRoute=el('openRoute').value.trim(); h.nextAction=el('nextAction').value.trim(); h.notes=el('notes').value.trim(); saveBoard(); renderAll();}
+function renderSupporters(){el('supportGrid').innerHTML=state.supporters.map((s,i)=>`<article class="support"><span class="tag ${s.status==='MOUNTED'?'green':'blue'}">${esc(s.status)}</span><h4>${esc(s.name)}</h4><p class="small"><b>Role:</b> ${esc(s.role)}</p>${s.route?`<a class="action" href="${esc(s.route)}">Open</a>`:''}<button class="action danger" onclick="removeSupporter(${i})">Remove</button><p class="small">${esc(s.notes)}</p></article>`).join('')}
+function addSupporter(){const name=prompt('Supporter name?'); if(!name) return; state.supporters.push({name,role:'Supporter / add-on',status:'SOURCE-LOCK REQUIRED',route:'',notes:'Added manually. Place in the right house before crown.'}); saveBoard(); renderAll(); jump('supporters')}
+function removeSupporter(i){state.supporters.splice(i,1); saveBoard(); renderAll();}
+function renderLaws(){el('lawGrid').innerHTML=LAWS.map(([name,desc])=>`<div class="law"><b>${esc(name)}</b><span>${esc(desc)}</span></div>`).join('')}
+function generateReceipt(){const h=activeHouse(); const rec={type:'JM_TWO_HAND_ESTATE_BOARD_v0.1_RECEIPT',time:new Date().toISOString(),mode:state.mode==='close'?'Close Hands / build-protect-prove':'Open Hands / display-launch-release',main_body:state.mainBody,selected_house:{id:h.id,side:h.side,name:h.name,purpose:h.purpose,current_body:h.currentBody,status:h.status,open_route:h.openRoute,next_action:h.nextAction,notes:h.notes},checks:{main_body_sovereign:'PASS — Coding Body House remains main mounted body',supporters_not_throne:'PASS — add-ons are registered as supporters',two_hand_split:'PASS — five back-house and five front-house slots seeded',proof_law:'PASS — proof serves route, not audition',bug_law:'PASS — caught/contained/understood bug can become route; bypass creates debt',open_first:'PASS — board is single-file phone-first OPEN_FIRST HTML'},crown:'Both hands close to hold the body. Both hands open to show the body.'}; lastReceipt=JSON.stringify(rec,null,2); el('receiptBox').textContent=lastReceipt; const old=JSON.parse(localStorage.getItem(RECEIPT_KEY)||'[]'); old.unshift({time:rec.time,receipt:rec}); localStorage.setItem(RECEIPT_KEY,JSON.stringify(old.slice(0,30))); jump('receipt');}
+async function copyReceipt(){if(!lastReceipt) generateReceipt(); try{await navigator.clipboard.writeText(lastReceipt); flash('Receipt copied.')}catch(e){flash('Copy blocked; select receipt manually.')}}
+function exportReceipt(){if(!lastReceipt) generateReceipt(); download('JM_Two_Hand_Estate_Board_Receipt_v0_1.json',lastReceipt,'application/json')}
+function exportBoard(){download('JM_Two_Hand_Estate_Board_State_v0_1.json',JSON.stringify(state,null,2),'application/json')}
+function importBoard(ev){const f=ev.target.files?.[0]; if(!f)return; const r=new FileReader(); r.onload=()=>{try{const imported=JSON.parse(r.result); if(!imported.houses||!imported.mainBody) throw new Error('Not a board state'); state=imported; saveBoard(); renderAll(); flash('Board imported.')}catch(e){alert('Import failed: '+e.message)}}; r.readAsText(f); ev.target.value=''}
+function download(filename,text,type){const blob=new Blob([text],{type}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href)}
+function resetBoard(){if(!confirm('Reset board to v0.1 seed?')) return; state=clone(SEED); saveBoard(); renderAll();}
+function flash(msg){const old=document.title; document.title='✓ '+msg; setTimeout(()=>document.title=old,1200)}
+function renderAll(){document.body.classList.toggle('closeHands',state.mode==='close');document.body.classList.toggle('openHands',state.mode==='open');renderTabs();renderBoard();renderActive();renderEdit();renderSupporters();renderLaws();}
+renderAll();
+</script>
+</body>
+</html>

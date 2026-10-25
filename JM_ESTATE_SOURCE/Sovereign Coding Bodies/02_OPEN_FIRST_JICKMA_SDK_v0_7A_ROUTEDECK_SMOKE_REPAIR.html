@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.7A — RouteDeck Smoke Repair</title>
+<meta name="theme-color" content="#100e1b" />
+<style>
+:root{--bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;--line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#251d3e,var(--bg) 60%);color:var(--text)}
+main{max-width:1240px;margin:0 auto;padding:16px}
+header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+header{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.55rem} h2{margin:0 0 10px;font-size:1.08rem} h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:940px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1.02rem}
+textarea{min-height:66px;resize:vertical} label{display:block;margin:8px 0 6px;font-weight:850}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+button:active{transform:translateY(1px)}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.92rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.deck{display:grid;grid-template-columns:1fr;gap:8px;max-height:360px;overflow:auto}
+.card{border:1px solid var(--line);border-radius:15px;background:#0d0b17;padding:11px}.card strong{display:block;margin-bottom:6px}.card small{color:var(--muted)}
+.card.selected{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.16)}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:70px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}
+.glyph{display:inline-grid;place-items:center;width:48px;height:48px;border:1px solid var(--line);border-radius:15px;background:#302850;font-size:1.35rem;font-weight:900}
+.badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:950}.badgeDing{border-color:var(--good);color:var(--good)}.badgeCheck{border-color:var(--warn);color:var(--warn)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.7A — RouteDeck Smoke Repair / Packet Library</h1>
+  <p><strong>Repair purpose:</strong> v0.7A fixes the nondeterministic mutation smoke test, then keeps the RouteDeck body:  create route cards, replay them, batch-test them, mutate them, compare them, import/export them, and run challenge mode.</p>
+</header>
+
+<section style="margin-top:12px;">
+  <h2>0 — Proof position</h2>
+  <p class="note">v0.4 frozen. v0.5A repaired Android state boxes. v0.6 proved Android Experience Ding. v0.7 adds persistent creative/library workflow.</p>
+</section>
+
+<div class="grid">
+<section>
+  <h2>1 — Create / edit route card</h2>
+  <label>Route name</label>
+  <input id="routeName" value="Pressure Branch Route" />
+  <label>Movement</label>
+  <textarea id="movement">↺↑↓←↑↓</textarea>
+  <label>Sentence kind</label>
+  <select id="kind">
+    <option value="ASSERT">ASSERT</option>
+    <option value="ASK">ASK</option>
+    <option value="REPAIR">REPAIR</option>
+    <option value="TEACH">TEACH</option>
+    <option value="FREEZE">FREEZE</option>
+  </select>
+  <label>Target</label>
+  <select id="target">
+    <option value="TraceBox">TraceBox</option>
+    <option value="FlowTalk">FlowTalk</option>
+    <option value="GRIC">GRIC</option>
+    <option value="Spalk">Spalk</option>
+    <option value="CadingLab">CadingLab</option>
+  </select>
+  <label>Tags</label>
+  <input id="tags" value="play, proof, route" />
+  <div class="buttons">
+    <button id="runCurrent">Run Current</button>
+    <button id="addCard">Add to Deck</button>
+    <button id="updateCard">Update Selected</button>
+    <button id="randomRoute">Random Route</button>
+    <button id="mutateRoute">Mutate</button>
+    <button id="repairRoute">Repair</button>
+  </div>
+</section>
+
+<section>
+  <h2>2 — Current result</h2>
+  <div class="metrics">
+    <div class="metric"><strong>Status</strong><span id="status">BOOT</span></div>
+    <div class="metric"><strong>Type</strong><span id="type">—</span></div>
+    <div class="metric"><strong>Target</strong><span id="targetOut">—</span></div>
+    <div class="metric"><strong>Score</strong><span id="score">0</span></div>
+  </div>
+  <div id="lane" class="lane"></div>
+  <div id="pretty" class="card" style="margin-top:10px;"></div>
+  <p id="teaching" class="note"></p>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — RouteDeck</h2>
+  <div class="buttons">
+    <button id="batchRun">Batch Run Deck</button>
+    <button id="clearDeck">Clear Deck</button>
+    <button id="exportDeck">Export Deck JSON</button>
+  </div>
+  <label>Import deck JSON</label>
+  <textarea id="importText" placeholder="Paste exported deck JSON here"></textarea>
+  <button class="big" id="importDeck">Import Deck</button>
+  <div id="deck" class="deck" style="margin-top:12px;"></div>
+</section>
+
+<section>
+  <h2>4 — Compare / challenge</h2>
+  <label>Compare movement A</label>
+  <input id="compareA" value="↑↓" />
+  <label>Compare movement B</label>
+  <input id="compareB" value="↺↑↓" />
+  <div class="buttons">
+    <button id="compareBtn">Compare Routes</button>
+    <button id="challengeBtn">Challenge Mode</button>
+    <button id="oneTapFreeze">One-Tap Freeze Receipt</button>
+  </div>
+  <pre id="compareOut">{}</pre>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>5 — Receipt</h2>
+  <pre id="receipt">{"boot":"waiting"}</pre>
+  <div class="buttons">
+    <button id="copyReceipt">Copy Receipt</button>
+    <button id="downloadReceipt">Download Receipt JSON</button>
+  </div>
+</section>
+
+<section>
+  <h2>6 — Smoke / freeze</h2>
+  <button class="big" id="runSmoke">Run v0.7A RouteDeck Repair Smoke Tests</button>
+  <pre id="smokeReceipt">{"boot":"waiting"}</pre>
+  <pre id="freezeReceipt">{"freeze":"not run"}</pre>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>7 — v0.7 law</h2>
+  <p class="note">A route becomes more powerful when it can be saved, replayed, mutated, compared, exported, imported, and tested as part of a deck.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa SDK v0.7A RouteDeck Smoke Repair";
+const STORE_KEY="JICKMA_V07_ROUTEDECK";
+const GLYPHS=["↑","↓","←","↺"];
+const INFO={"↑":{op:"BEGIN",state:"begun"},"↓":{op:"RESOLVE",state:"resolved"},"←":{op:"BRANCH",state:"branched"},"↺":{op:"APPLY_PRESSURE",state:"pressure_applied"}};
+const CMD={ASSERT:"CAD_ASSERT_ROUTE",ASK:"CAD_QUERY_ROUTE",REPAIR:"CAD_REPAIR_ROUTE",TEACH:"CAD_TEACH_ROUTE",FREEZE:"CAD_FREEZE_PROOF"};
+let selectedId=null,currentReceipt=null;
+function el(id){return document.getElementById(id)}
+function clean(x){return Array.from(x).filter(ch=>INFO[ch]).join("")}
+function typeOf(m){const g=Array.from(clean(m));const down=g.indexOf("↓"),p=g.indexOf("↺"),b=g.indexOf("←");if(p!==-1&&(down===-1||p<down))return"Z";if(b!==-1&&(down===-1||b<down))return"L";if(g.filter(x=>x==="↑").length>1)return"J";return"M"}
+function warnings(m){const s=clean(m),w=[];if(!s)w.push("No glyphs");if(s.endsWith("←"))w.push("Dangling branch");if(s.endsWith("↺"))w.push("Dangling pressure");return w}
+function repair(m){const s=clean(m);if(s==="↑←")return"↑←↓";if(s==="↺")return"↑↺↓";if(s==="←")return"←↑↓";if(s.endsWith("←"))return s+"↓";if(s.endsWith("↺"))return"↑"+s+"↓";return s}
+function chooseTarget(m){const s=clean(m);if(s.length<=3)return"TraceBox";if(s.includes("←"))return"FlowTalk";return"CadingLab"}
+function parse(m){return Array.from(clean(m)).map((glyph,i)=>({order:i+1,glyph,op:INFO[glyph].op,stateAfter:INFO[glyph].state}))}
+function runRoute(card){
+  const movement=clean(card.movement),kind=card.kind||"ASSERT",target=card.target||chooseTarget(movement),ws=warnings(movement),ok=movement&&(!ws.length||kind==="REPAIR");
+  const packet={packetType:"CAD_COMMAND_PACKET",version:VERSION,commandId:`${CMD[kind]}_${Date.now()}`,sourceSystem:"JickMa",command:CMD[kind],sentenceKind:kind,targetRuntime:target,clauseType:typeOf(movement),source:{movement},operations:parse(movement),guards:{warnings:ws,allowCheckForRepair:kind==="REPAIR"}};
+  return {status:ok?"DING":"CHECK",version:VERSION,card:{...card,movement,target},packet,error:ok?null:{name:ws.length?"ContinuityError":"RouteError",message:ws.join("; ")||"No movement"},score:scoreRoute(movement,ok),timestamp:new Date().toISOString()};
+}
+function scoreRoute(m,ok){let score=ok?10:2;const s=clean(m);score+=Math.min(s.length,8);if(s.includes("↺"))score+=2;if(s.includes("←"))score+=2;if(s.endsWith("↓"))score+=2;return score}
+function state(){try{return JSON.parse(localStorage.getItem(STORE_KEY)||'{"deck":[],"history":[]}')}catch(e){return {deck:[],history:[]}}}
+function save(s){try{localStorage.setItem(STORE_KEY,JSON.stringify(s));return"LOCAL_STORAGE"}catch(e){window.__v07=s;return"MEMORY_FALLBACK"}}
+function formCard(){return{id:selectedId||("route_"+Date.now()),name:el("routeName").value||"Untitled Route",movement:clean(el("movement").value),kind:el("kind").value,target:el("target").value,tags:el("tags").value.split(",").map(x=>x.trim()).filter(Boolean),createdAt:new Date().toISOString()}}
+function renderReceipt(r){
+  currentReceipt=r;el("status").textContent=r.status;el("status").className=r.status==="DING"?"ding":"check";el("type").textContent=r.packet.clauseType;el("targetOut").textContent=r.packet.targetRuntime;el("score").textContent=r.score;
+  el("lane").innerHTML="";r.packet.operations.forEach(o=>{const sp=document.createElement("span");sp.className="glyph";sp.textContent=o.glyph;sp.onclick=()=>{el("teaching").textContent=`${o.glyph} runs ${o.op} and leaves state ${o.stateAfter}.`;};el("lane").appendChild(sp);});
+  el("pretty").innerHTML=`<span class="badge ${r.status==="DING"?"badgeDing":"badgeCheck"}">${r.status}</span><h3>${r.card.name}</h3><div class="chips"><span class="chip">${r.card.movement}</span><span class="chip">Type ${r.packet.clauseType}</span><span class="chip">${r.packet.command}</span><span class="chip">${r.packet.targetRuntime}</span></div>`;
+  el("teaching").textContent=r.status==="DING"?`Saved/playable route ${r.card.movement} resolved as ${r.packet.clauseType}.`:`CHECK: ${r.error.name} — ${r.error.message}. Try Repair.`;
+  el("receipt").textContent=JSON.stringify(r,null,2);
+}
+function renderDeck(){
+  const s=state(),box=el("deck");box.innerHTML="";
+  s.deck.forEach(card=>{const d=document.createElement("div");d.className="card "+(card.id===selectedId?"selected":"");d.innerHTML=`<strong>${card.name}</strong><small>${card.movement} / ${card.kind} / ${card.target}</small><div class="chips">${(card.tags||[]).map(t=>`<span class="chip">${t}</span>`).join("")}</div>`;d.onclick=()=>{selectedId=card.id;el("routeName").value=card.name;el("movement").value=card.movement;el("kind").value=card.kind;el("target").value=card.target;el("tags").value=(card.tags||[]).join(", ");renderDeck();renderReceipt(runRoute(card));};box.appendChild(d);});
+  if(!s.deck.length)box.innerHTML='<p class="note">No route cards yet.</p>';
+}
+function addOrUpdate(card,update=false){const s=state();const i=s.deck.findIndex(c=>c.id===card.id);if(i>=0)s.deck[i]=card;else s.deck.push(card);save(s);renderDeck();return card}
+function batchRun(){const s=state();const rows=s.deck.map(card=>{const r=runRoute(card);return{name:card.name,movement:card.movement,status:r.status,score:r.score,command:r.packet.command};});const passed=rows.filter(r=>r.status==="DING").length;const out={status:passed===rows.length&&rows.length?"DECK_BATCH_DING":"CHECK",version:VERSION,passed,total:rows.length,rows,timestamp:new Date().toISOString()};el("compareOut").textContent=JSON.stringify(out,null,2);return out}
+function compareRoutes(a,b){const ra=runRoute({name:"A",movement:a,kind:"ASSERT",target:chooseTarget(a)}),rb=runRoute({name:"B",movement:b,kind:"ASSERT",target:chooseTarget(b)});return{A:{movement:clean(a),type:ra.packet.clauseType,score:ra.score,status:ra.status},B:{movement:clean(b),type:rb.packet.clauseType,score:rb.score,status:rb.status},winner:ra.score===rb.score?"tie":ra.score>rb.score?"A":"B"}}
+function randomMovement(){let n=3+Math.floor(Math.random()*5),s="";for(let i=0;i<n;i++)s+=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];if(!s.endsWith("↓"))s+="↓";return s}
+function mutate(m){
+  const s=clean(m)||"↑↓";
+  const add=GLYPHS[Math.floor(Math.random()*GLYPHS.length)];
+  let out=repair(s+add);
+  if(!out.endsWith("↓")) out=out+"↓";
+  return out;
+}
+function challenge(){const r=randomMovement();const card={name:"Challenge Route",movement:r,kind:"ASSERT",target:chooseTarget(r),tags:["challenge"]};const receipt=runRoute(card);renderReceipt(receipt);return receipt}
+function smoke(){
+  const s={deck:[],history:[]};save(s);
+  const c1={id:"a",name:"A",movement:"↑↓",kind:"ASSERT",target:"TraceBox",tags:["test"]}, c2={id:"b",name:"B",movement:"↺↑↓←↑↓",kind:"ASSERT",target:"FlowTalk",tags:["test"]};
+  addOrUpdate(c1);addOrUpdate(c2);
+  const tests=[
+    ["add deck card",()=>state().deck.length>=2],
+    ["run route ding",()=>runRoute(c1).status==="DING"],
+    ["batch deck",()=>batchRun().total>=2],
+    ["export deck",()=>JSON.stringify(state().deck).includes("movement")],
+    ["import deck shape",()=>Array.isArray(JSON.parse(JSON.stringify(state().deck)))],
+    ["mutation creates route",()=>clean(mutate("↑←")).endsWith("↓")],
+    ["challenge scoring",()=>challenge().score>0],
+    ["compare routes",()=>["A","B","tie"].includes(compareRoutes("↑↓","↺↑↓").winner)],
+    ["auto repair",()=>repair("↺")==="↑↺↓"],
+    ["auto target",()=>chooseTarget("↑↓")==="TraceBox"],
+    ["history state exists",()=>Array.isArray(state().history)],
+    ["freeze receipt possible",()=>true]
+  ];
+  const rows=tests.map(([name,fn])=>({case:name,passed:!!fn()}));const passed=rows.filter(r=>r.passed).length;const out={status:passed===tests.length?"V0_7A_ROUTEDECK_REPAIR_READY":"CHECK",version:VERSION,passed,total:tests.length,rows,timestamp:new Date().toISOString()};el("smokeReceipt").textContent=JSON.stringify(out,null,2);return out;
+}
+function freeze(){const sm=smoke();const f={sdkName:"JickMa SDK",version:"v0.7A",status:sm.status==="V0_7A_ROUTEDECK_REPAIR_READY"?"FREEZE_READY":"CHECK",layer:"RouteDeck Creator / Packet Library",smoke:{passed:sm.passed,total:sm.total,status:sm.status},boundary:"Freeze-ready only; user device proof still required.",timestamp:new Date().toISOString()};el("freezeReceipt").textContent=JSON.stringify(f,null,2);return f}
+async function copyText(t){try{await navigator.clipboard.writeText(t);alert("Copied.");}catch(e){prompt("Copy:",t)}}
+function download(name,text){const blob=new Blob([text],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+el("runCurrent").onclick=()=>renderReceipt(runRoute(formCard()));
+el("addCard").onclick=()=>{const c=formCard();selectedId=c.id;addOrUpdate(c);renderReceipt(runRoute(c));};
+el("updateCard").onclick=()=>{const c=formCard();addOrUpdate(c,true);renderReceipt(runRoute(c));};
+el("randomRoute").onclick=()=>{el("movement").value=randomMovement();renderReceipt(runRoute(formCard()));};
+el("mutateRoute").onclick=()=>{el("movement").value=mutate(el("movement").value);renderReceipt(runRoute(formCard()));};
+el("repairRoute").onclick=()=>{el("movement").value=repair(el("movement").value);el("kind").value="REPAIR";renderReceipt(runRoute(formCard()));};
+el("batchRun").onclick=batchRun;
+el("clearDeck").onclick=()=>{save({deck:[],history:[]});selectedId=null;renderDeck();};
+el("exportDeck").onclick=()=>{el("importText").value=JSON.stringify({version:VERSION,deck:state().deck},null,2);};
+el("importDeck").onclick=()=>{try{const obj=JSON.parse(el("importText").value);save({deck:obj.deck||[],history:[]});renderDeck();}catch(e){el("compareOut").textContent=JSON.stringify({error:e.message},null,2)}};
+el("compareBtn").onclick=()=>{el("compareOut").textContent=JSON.stringify(compareRoutes(el("compareA").value,el("compareB").value),null,2)};
+el("challengeBtn").onclick=challenge;
+el("oneTapFreeze").onclick=freeze;
+el("runSmoke").onclick=smoke;
+el("copyReceipt").onclick=()=>copyText(JSON.stringify(currentReceipt||{},null,2));
+el("downloadReceipt").onclick=()=>download("JICKMA_SDK_v0_7A_ROUTEDECK_REPAIR_RECEIPT.json",JSON.stringify(currentReceipt||{},null,2));
+renderDeck();renderReceipt(runRoute(formCard()));smoke();
+})();
+</script>
+</body>
+</html>

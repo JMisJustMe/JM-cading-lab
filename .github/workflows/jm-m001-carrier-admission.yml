@@ -52,6 +52,31 @@ jobs:
         run: |
           npm install --no-audit --no-fund
           npm run build
+      - name: Repeat build to isolate toolchain drift from same-host nondeterminism
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp -a dist "$RUNNER_TEMP/jm-kicshift-first-dist"
+          npm run build
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, os
+          old=Path(os.environ['RUNNER_TEMP'])/'jm-kicshift-first-dist'
+          new=Path('dist')
+          def digests(p):
+              return {str(f.relative_to(p)):hashlib.sha256(f.read_bytes()).hexdigest()
+                      for f in p.rglob('*') if f.is_file()}
+          before,after=digests(old),digests(new)
+          assert before and before==after, 'Same-host KICSHIFT rebuild differs: HOLD and protect source'
+          print(json.dumps({'schema':'JM.M001.SameHostBuildRepeatability/0.1',
+                            'product':'JM KICSHIFT',
+                            'repeatable_files':len(before),
+                            'same_host_byte_repeatability':'PASS',
+                            'frozen_estate_carrier_parity':'NOT_YET_CHECKED',
+                            'release_authorised':False,
+                            'claim':'Same-host double build only; historical dependency lock and owner parity remain separate'},sort_keys=True))
+          PY
       - name: Recover matching deployable tree from existing canonical Estate mount
         shell: bash
         run: |

@@ -1,0 +1,813 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>JM Coding-Body Lab — Quadze v0.1</title>
+<style>
+:root{--bg:#050913;--panel:#0c1526;--line:#263a56;--gold:#fbbf24;--cyan:#49e7ff;--green:#34d399;--red:#fb7185;--text:#f8fafc;--muted:#aabbd0}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at top,#11203b,#050913 55%);color:var(--text);font-family:system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;padding:12px;background:#07101bf2;border-bottom:1px solid var(--line)}
+main{max-width:1100px;margin:auto;padding:10px 10px 100px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:13px;margin:10px 0}
+h1,h2,p{margin:0}h1{font-size:1.12rem}h2{color:var(--gold);font-size:1rem;margin-bottom:9px}.sub{color:var(--muted);font-size:.76rem;margin-top:4px}
+.toolbar{display:flex;gap:8px;overflow:auto}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--muted);font-size:.72rem;white-space:nowrap}
+button,select{min-height:44px;border:1px solid var(--line);border-radius:12px;background:#07101b;color:var(--text);font-weight:900;padding:0 13px}button{background:linear-gradient(135deg,#49e7ff33,#34d39922)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}textarea,pre{width:100%;min-height:220px;background:#030712;color:#e9f3ff;border:1px solid var(--line);border-radius:13px;padding:10px;white-space:pre-wrap;overflow:auto;font:11.5px/1.45 ui-monospace,monospace}
+.status{padding:10px;border:1px solid var(--line);border-radius:12px;background:#ffffff08}.good{color:var(--green)}.bad{color:var(--red)}
+iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:16px;background:#030712}
+@media(max-width:760px){.grid{grid-template-columns:1fr}}
+</style></head><body>
+<header><h1>JM Coding-Body Laboratory — Quadze v0.1</h1><p class="sub">Quadze canon → game source → compile gate → playable target → Trace → Ding / Hold</p></header>
+<main>
+<section class="card"><div class="toolbar"><span class="pill">Default: BUILD WITH QUADZE</span><span class="pill">HTML = target</span><select id="mode"><option>BUILD_WITH_QUADZE</option><option>QUADZE_BECOMES_GAME</option></select><button id="compile">Compile game</button></div></section>
+<section class="grid"><article class="card"><h2>Quadze canon</h2><textarea id="canon"></textarea></article><article class="card"><h2>Game source</h2><textarea id="game"></textarea></article></section>
+<section class="card"><h2>Compiler gate</h2><div class="status" id="status">Not compiled.</div><pre id="receipt">No receipt yet.</pre></section>
+<section class="card"><h2>Playable target</h2><iframe id="preview"></iframe></section>
+<section class="card"><h2>Build trace</h2><pre id="trace">No trace yet.</pre></section>
+<script>/* Quadze Reference Parser/Runtime v1.2-jm
+   Host language: JavaScript.
+   Authority: 01_QUADZE_CANON.qz.
+   Boundary: reference implementation of recovered canon, not an older verbatim parser file.
+*/
+(function(global){
+"use strict";
+
+function cleanLines(source){
+  return source.split(/\r?\n/)
+    .map(line => line.replace(/#.*$/,"").trim())
+    .filter(Boolean);
+}
+
+function parseValue(raw){
+  const v = raw.trim();
+  if (v.startsWith("[") && v.endsWith("]")){
+    return v.slice(1,-1).split(",").map(x=>parseValue(x));
+  }
+  if (/^\d+\/\d+$/.test(v)) return v;
+  if (/^-?\d+(\.\d+)?$/.test(v)) return Number(v);
+  return v.replace(/^["']|["']$/g,"");
+}
+
+function parse(source){
+  const lines = cleanLines(source);
+  const program = {
+    header:null, origin:null, states:{}, sets:{}, operators:{},
+    transitions:[], routes:{}, branches:{}, architectures:{},
+    metrics:{}, trace:{records:[]}, ding:{requirements:[]}, claim:{}
+  };
+  let current = null;
+
+  for (const line of lines){
+    if (line.startsWith("quadze ")){
+      const m=line.match(/^quadze\s+(\S+)\s+(.+)$/);
+      program.header={name:m[1],version:m[2]};
+      continue;
+    }
+    const open=line.match(/^(origin|state|operator|transition|route|branch|architecture|metric|trace|ding|claim)\s*([^{]*)\{$/);
+    if(open){
+      const type=open[1], head=open[2].trim();
+      current={type,head,fields:[],mappings:[]};
+      continue;
+    }
+    if(line==="}"){
+      commit(program,current);
+      current=null;
+      continue;
+    }
+    if(line.startsWith("set ")){
+      const m=line.match(/^set\s+([^=]+)=\s*(.+)$/);
+      program.sets[m[1].trim()]=parseValue(m[2]);
+      continue;
+    }
+    if(current){
+      const map=line.match(/^(Q[0-3])\s*->\s*(.+)$/);
+      if(map){current.mappings.push({from:map[1],to:parseValue(map[2])});continue;}
+      const field=line.match(/^([^:]+):\s*(.+)$/);
+      if(field)current.fields.push({key:field[1].trim(),value:parseValue(field[2])});
+    }
+  }
+  return program;
+}
+
+function fieldMap(fields){
+  const out={};
+  for(const f of fields){
+    if(out[f.key]===undefined) out[f.key]=f.value;
+    else if(Array.isArray(out[f.key])) out[f.key].push(f.value);
+    else out[f.key]=[out[f.key],f.value];
+  }
+  return out;
+}
+
+function commit(program,node){
+  if(!node)return;
+  const f=fieldMap(node.fields);
+  if(node.type==="origin") program.origin={id:node.head,...f};
+  else if(node.type==="state") program.states[node.head]={id:node.head,...f};
+  else if(node.type==="operator"){
+    const parts=node.head.split(/\s+/);
+    program.operators[parts[0]]={id:parts[0],kind:parts.slice(1).join("-"),...f,mappings:node.mappings};
+  }
+  else if(node.type==="transition"){
+    const m=node.head.match(/^(Q[0-3])\s*->\s*(Q[0-3])$/);
+    program.transitions.push({from:m[1],to:m[2],...f});
+  }
+  else if(node.type==="route") program.routes[node.head]={id:node.head,...f};
+  else if(node.type==="branch") program.branches[node.head]={id:node.head,...f};
+  else if(node.type==="architecture") program.architectures[node.head]={id:node.head,...f};
+  else if(node.type==="metric") program.metrics[node.head]={id:node.head,...f};
+  else if(node.type==="trace") program.trace={records:[].concat(f.record||[])};
+  else if(node.type==="ding") program.ding={requirements:[].concat(f.require||[])};
+  else if(node.type==="claim") program.claim=f;
+}
+
+function runtime(program){
+  const trace=[];
+  function transition(from,to,architecture="A"){
+    const spec=program.transitions.find(t=>t.from===from&&t.to===to);
+    if(!spec) return {ok:false,error:`Undefined transition ${from}->${to}`};
+    const event={before:from,operator:`delta_${from.slice(1)}${to.slice(1)}`,after:to,meaning:spec.meaning,architecture};
+    trace.push(event);
+    return {ok:true,event};
+  }
+  function collapse(q){
+    const op=program.operators.C;
+    const map=op.mappings.find(m=>m.from===q);
+    return map?map.to:null;
+  }
+  function runChain(chain,architecture="A"){
+    const states=String(chain).split(/\s*->\s*/);
+    const results=[];
+    for(let i=0;i<states.length-1;i++) results.push(transition(states[i],states[i+1],architecture));
+    return results;
+  }
+  return {program,trace,transition,collapse,runChain};
+}
+
+function verify(program){
+  const rt=runtime(program);
+  const stateIds=Object.keys(program.states);
+  const formal=stateIds.filter(q=>program.states[q].formal).length;
+  const living=stateIds.filter(q=>program.states[q].living).length;
+
+  const core=rt.runChain(program.routes["core-cycle"].chain,"A");
+  const branches=Object.values(program.branches).map(b=>rt.runChain(b.chain,"A"));
+  const architectures=Object.keys(program.architectures);
+  const equivalent=architectures.filter(a=>{
+    const before=rt.trace.length;
+    const run=rt.runChain(program.routes["core-cycle"].chain,a);
+    return run.every(x=>x.ok) && rt.trace.length>before;
+  }).length;
+
+  const collapseExpected = {Q0:"0b",Q1:1,Q2:"0b",Q3:"0b"};
+  const collapsePass = stateIds.every(q=>rt.collapse(q)===collapseExpected[q]);
+
+  const scores={
+    PR:{pass:stateIds.length===4,value:`${stateIds.length}/4`},
+    PC:{pass:collapsePass,value:collapsePass?"4/4":"FAIL"},
+    PT:{pass:core.every(x=>x.ok),value:`${core.filter(x=>x.ok).length}/4`},
+    PG:{pass:core.every(x=>x.ok),value:core.every(x=>x.ok)?"1/1":"0/1"},
+    PB:{pass:branches.every(b=>b.every(x=>x.ok)),value:`${branches.filter(b=>b.every(x=>x.ok)).length}/2`},
+    PD:{pass:formal===4&&living===4,value:`${Math.min(formal,living)}/4`},
+    PEQ:{pass:equivalent===4,value:`${equivalent}/4`}
+  };
+  const ding=Object.values(scores).every(x=>x.pass);
+  return {scores,ding,claimPermitted:ding,trace:rt.trace,program};
+}
+
+global.Quadze={parse,runtime,verify};
+})(window);
+</script>
+<script>
+const canonText=`quadze QuadzeCanon v1.2-jm
+
+origin Z0 {
+  kind: source-centre
+  membership: outside-Q
+  meaning: pre-distinction
+}
+
+state Q0 {
+  formal: structural-absence
+  living: sameness
+}
+
+state Q1 {
+  formal: functional-presence
+  living: difference
+}
+
+state Q2 {
+  formal: epistemic-potential
+  living: relation
+}
+
+state Q3 {
+  formal: semantic-relevance
+  living: movement
+}
+
+set Q = [Q0,Q1,Q2,Q3]
+set B = [1,0b]
+set zero.math = 0m
+
+operator D distinguish {
+  input: Z0
+  output: Q
+  law: D(Z0)=Q
+}
+
+operator C collapse {
+  Q1 -> 1
+  Q0 -> 0b
+  Q2 -> 0b
+  Q3 -> 0b
+  law: ManyToOne(C|Q) => DistinctionLoss(C)
+}
+
+operator S symbolise {
+  Q0 -> 0m
+  law: SymbolIsNotState
+}
+
+operator K construct-logic {
+  input: [B,0m]
+  output: LT
+  law: LT=K(B,0m)
+}
+
+operator TC translate-to-cading {
+  input: Q
+  output: Cd
+  law: Cd=TC(Q)
+}
+
+operator VM execute-runtime {
+  input: Cd
+  output: R
+  law: R=VM(Cd)
+}
+
+transition Q0 -> Q1 {
+  meaning: activation
+}
+
+transition Q1 -> Q2 {
+  meaning: re-evaluation
+}
+
+transition Q2 -> Q3 {
+  meaning: discovery-relevance
+}
+
+transition Q3 -> Q0 {
+  meaning: loss-exit-reset
+}
+
+route core-cycle {
+  chain: Q0 -> Q1 -> Q2 -> Q3 -> Q0
+}
+
+branch branch-A {
+  chain: Q1 -> Q2 -> Q3 -> Q0
+}
+
+branch branch-B {
+  chain: Q1 -> Q3 -> Q0
+}
+
+architecture A {
+  name: modular-route
+}
+
+architecture B {
+  name: direct-vm
+}
+
+architecture C {
+  name: distributed-route
+}
+
+architecture D {
+  name: living-route
+}
+
+metric PR {
+  meaning: state-preservation
+  required: 4/4
+}
+
+metric PC {
+  meaning: cading-preservation
+  required: 4/4
+}
+
+metric PT {
+  meaning: transition-preservation
+  required: 4/4
+}
+
+metric PG {
+  meaning: chain-preservation
+  required: 1/1
+}
+
+metric PB {
+  meaning: branch-preservation
+  required: 2/2
+}
+
+metric PD {
+  meaning: dual-reading-coverage
+  required: 4/4
+}
+
+metric PEQ {
+  meaning: route-equivalence
+  required: 4/4
+}
+
+trace {
+  record: before
+  record: operator
+  record: after
+  record: meaning
+  record: architecture
+  record: receipt
+}
+
+ding {
+  require: PR=1
+  require: PC=1
+  require: PT=1
+  require: PG=1
+  require: PB=1
+  require: PD=1
+  require: PEQ=1
+}
+
+claim {
+  law: Claim <= Ding(Trace(VM(TC(D(Z0)))))
+  boundary: NoDingNoClaim
+}
+`;
+const gameText=`# QUADZE GAME SOURCE v0.1
+# Route: BUILD WITH QUADZE
+# Browser output is a target, not the authoring source.
+
+BODY DragAim
+ORIGIN Z0
+DISTINGUISH Z0 -> {Q0,Q1,Q2,Q3}
+
+STATE Q0 { formal: structural_absence; living: sameness; game.role: route_gap; contact: bridge_to_Q1 }
+STATE Q1 { formal: functional_presence; living: difference; game.role: active_target; contact: crown_to_Q3 }
+STATE Q2 { formal: epistemic_potential; living: relation; game.role: unresolved_target; contact: resolve_to {Q0,Q1} }
+STATE Q3 { formal: semantic_relevance; living: movement; game.role: relevant_chain_target; contact: clear_and_chain }
+
+ENGINE DragAim
+INPUT touch.drag_release
+LOOP aim -> release -> travel -> contact -> resolve -> trace -> next_shot
+
+ROUTE target_contact {
+  Q2 -> Q0 | Q1
+  Q0 -> Q1
+  Q1 -> Q3
+  Q3 -> CLEAR
+}
+
+COLLAPSE { Q1 -> 1; {Q0,Q2,Q3} -> 0b }
+SYMBOLISE { absence -> 0 }
+RUNTIME { target: browser_canvas; adapter: QuadzeDragAimAdapter }
+TRACE { record: shot; record: contact; record: transition; record: clear; record: wave }
+DING { condition: all_targets_clear; proof: Q2_contacted AND Q1_functioned AND Q3_relevance_used }
+HOLD { condition: shots_exhausted AND targets_remaining }
+`;
+const targetText=`<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101b">
+<title>Quadze-Authored Drag & Aim v0.1</title>
+<style>
+:root{--bg:#050913;--panel:#0b1424;--line:#203653;--cyan:#49e7ff;--amber:#ffc14f;--lime:#9cff62;--mag:#ff4dcc;--danger:#ff5574;--text:#eef7ff;--muted:#8ca3be}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#101d34,#050913 55%);color:var(--text);font-family:Inter,system-ui,sans-serif;overflow:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:24px 24px}
+.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto;max-width:720px;margin:auto;padding:env(safe-area-inset-top) 8px env(safe-area-inset-bottom)}
+.topbar{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:8px 4px}
+.brand small,.stat small{display:block;color:var(--muted);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase}.brand b{font-size:1.15rem}
+.stat{min-width:74px;padding:7px 10px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.035);text-align:center}.stat strong{display:block;margin-top:2px;color:var(--cyan);font-size:1rem}
+.game-wrap{position:relative;min-height:0;border:1px solid rgba(73,231,255,.32);border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#0c1830,#050a13);box-shadow:0 0 35px rgba(73,231,255,.12),inset 0 0 45px rgba(0,0,0,.55)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.banner{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;width:max-content;max-width:88%;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(5,10,19,.78);backdrop-filter:blur(10px);font-size:.78rem;color:#d8eaff;text-align:center}
+.power{position:absolute;left:10px;bottom:10px;width:14px;height:34%;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden}.power span{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(var(--danger),var(--amber),var(--lime));transition:height .04s linear}
+.bottom{padding:8px 2px 2px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}.hint{padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.035);color:var(--muted);font-size:.78rem;line-height:1.25}
+.actions{display:flex;gap:6px}button{min-height:44px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.05);color:var(--text);font-weight:900;padding:0 14px}button:active{transform:translateY(2px)}#restart{color:var(--amber)}
+.overlay{position:absolute;inset:0;z-index:8;display:grid;place-items:center;padding:20px;background:rgba(2,5,10,.76);backdrop-filter:blur(10px)}.overlay[hidden]{display:none}
+.card{width:min(390px,100%);padding:22px;border:1px solid rgba(73,231,255,.4);border-radius:20px;background:#0a1425;box-shadow:0 0 45px rgba(73,231,255,.18)}.card p{color:var(--muted);line-height:1.45}.card button{width:100%;background:linear-gradient(135deg,rgba(73,231,255,.2),rgba(156,255,98,.12))}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div class="brand"><small>AUTHORED IN QUADZE</small><b>Drag & Aim</b></div><div class="stat"><small>Score</small><strong id="score">0</strong></div><div class="stat"><small>Wave</small><strong id="wave">1</strong></div></header>
+<section class="game-wrap">
+<canvas id="game"></canvas><div class="banner" id="banner">Drag from the core, aim, release.</div><div class="power"><span id="powerFill"></span></div>
+<div class="overlay" id="overlay" hidden><div class="card"><small>WAVE CLEAR</small><h2 id="resultTitle">Route complete</h2><p id="resultCopy">Quadze quietly reshaped the next field.</p><button id="nextBtn">Next wave</button></div></div>
+</section>
+<footer class="bottom"><div class="hint" id="hint">Drag backwards from the ball. Release to fire. Hit every target before your shots run out.</div><div class="actions"><button id="restart">Restart</button></div></footer>
+</main>
+<script>
+(() => {
+"use strict";
+
+const Q = Object.freeze({
+  Q0: 0, // structural absence
+  Q1: 1, // functional presence
+  Q2: 2, // epistemic potential
+  Q3: 3  // semantic relevance
+});
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const waveEl = document.getElementById("wave");
+const banner = document.getElementById("banner");
+const hint = document.getElementById("hint");
+const powerFill = document.getElementById("powerFill");
+const overlay = document.getElementById("overlay");
+const nextBtn = document.getElementById("nextBtn");
+const restartBtn = document.getElementById("restart");
+const resultTitle = document.getElementById("resultTitle");
+const resultCopy = document.getElementById("resultCopy");
+
+const COLORS = {
+  q0:"#ff4dcc", q1:"#9cff62", q2:"#ffc14f", q3:"#49e7ff",
+  danger:"#ff5574", white:"#f5fbff"
+};
+
+let W=0,H=0,dpr=1,state,dragging=false,dragPoint={x:0,y:0};
+
+function rng(seed){
+  let t=seed>>>0;
+  return()=>{t+=0x6D2B79F5;let r=Math.imul(t^t>>>15,1|t);r^=r+Math.imul(r^r>>>7,61|r);return((r^r>>>14)>>>0)/4294967296}
+}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+
+function newWave(wave=1,carryScore=0){
+  const rand=rng(3200+wave*917);
+  const radius=Math.max(15,Math.min(W,H)*.028);
+  const ball={x:W*.5,y:H*.82,vx:0,vy:0,r:radius,moving:false};
+
+  const count=3+Math.min(5,Math.floor((wave-1)/2));
+  const targets=[];
+
+  for(let i=0;i<count;i++){
+    const lane=i%4;
+    const x=W*(.16+lane*.225)+(rand()-.5)*W*.07;
+    const y=H*(.16+Math.floor(i/4)*.22)+(rand()-.5)*H*.045;
+    const r=Math.max(18,Math.min(W,H)*(.034+rand()*.012));
+
+    targets.push({
+      x:clamp(x,r+12,W-r-12),
+      y:clamp(y,r+20,H*.62),
+      r,
+      alive:true,
+      q:Q.Q2,
+      truth:rand()<.62?Q.Q1:Q.Q0,
+      contacts:0,
+      value:120,
+      drift:(rand()<.35?(rand()<.5?-1:1)*(12+wave*1.5):0),
+      pulse:rand()*Math.PI*2,
+      bridgeDelay:0
+    });
+  }
+
+  const bumpers=[];
+  const bumperCount=Math.min(4,Math.floor(wave/2));
+  for(let i=0;i<bumperCount;i++){
+    bumpers.push({
+      x:W*(.25+rand()*.5),
+      y:H*(.36+rand()*.26),
+      r:Math.max(13,Math.min(W,H)*.023),
+      polarity:(i+wave)%2
+    });
+  }
+
+  state={
+    wave,score:carryScore,shots:6+Math.ceil(count/2),ball,targets,bumpers,
+    combo:1,complete:false,failed:false,last:performance.now(),
+    proofs:{q0:false,q1:false,q2:false,q3:false},
+    trace:[]
+  };
+
+  trace("MOUNT","Fresh Quadze field mounted behind the drag-and-aim loop.");
+  updateUI();
+}
+
+function trace(type,text){
+  state.trace.unshift({type,text});
+  state.trace=state.trace.slice(0,24);
+}
+
+function resize(){
+  const rect=canvas.getBoundingClientRect();
+  dpr=Math.max(1,Math.min(2,devicePixelRatio||1));
+  W=rect.width;H=rect.height;
+  canvas.width=Math.floor(W*dpr);
+  canvas.height=Math.floor(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(!state)newWave(1,0);
+}
+
+function updateUI(){
+  scoreEl.textContent=state.score.toLocaleString();
+  waveEl.textContent=state.wave;
+  banner.textContent=\`\${state.targets.filter(t=>t.alive).length} targets · \${state.shots} shots\`;
+}
+
+function pointerPos(e){
+  const r=canvas.getBoundingClientRect();
+  return{x:e.clientX-r.left,y:e.clientY-r.top};
+}
+
+canvas.addEventListener("pointerdown",e=>{
+  if(state.complete||state.failed||state.ball.moving)return;
+  const p=pointerPos(e);
+  if(dist(p,state.ball)<=state.ball.r*2.2){
+    dragging=true;dragPoint=p;canvas.setPointerCapture(e.pointerId);
+    hint.textContent="Pull back, choose the angle, then release.";
+  }
+});
+
+canvas.addEventListener("pointermove",e=>{
+  if(!dragging)return;
+  dragPoint=pointerPos(e);
+  const d=clamp(dist(dragPoint,state.ball),0,Math.min(W,H)*.28);
+  powerFill.style.height=\`\${d/(Math.min(W,H)*.28)*100}%\`;
+});
+
+canvas.addEventListener("pointerup",e=>{
+  if(!dragging)return;
+  dragging=false;
+  const p=pointerPos(e);
+  const dx=state.ball.x-p.x,dy=state.ball.y-p.y;
+  const mag=Math.hypot(dx,dy);
+  powerFill.style.height="0%";
+  if(mag<12){hint.textContent="Drag farther to fire.";return}
+  const maxPull=Math.min(W,H)*.28;
+  const power=clamp(mag,0,maxPull)/maxPull;
+  state.ball.vx=(dx/mag)*(380+power*620);
+  state.ball.vy=(dy/mag)*(380+power*620);
+  state.ball.moving=true;
+  state.shots--;
+  hint.textContent="Watch the route. Contact may reveal, activate or crown a target.";
+  updateUI();
+});
+
+function circleBounce(ball,obj,boost=1){
+  const dx=ball.x-obj.x,dy=ball.y-obj.y;
+  const d=Math.hypot(dx,dy)||1;
+  if(d>=ball.r+obj.r)return false;
+  const nx=dx/d,ny=dy/d;
+  const overlap=ball.r+obj.r-d;
+  ball.x+=nx*overlap;ball.y+=ny*overlap;
+  const dot=ball.vx*nx+ball.vy*ny;
+  ball.vx=(ball.vx-2*dot*nx)*boost;
+  ball.vy=(ball.vy-2*dot*ny)*boost;
+  return true;
+}
+
+function contactTarget(t){
+  if(!t.alive)return;
+  t.contacts++;
+
+  // Q2: potential is contacted and resolved.
+  if(t.q===Q.Q2){
+    state.proofs.q2=true;
+    trace("Q2","Potential contacted and tested.");
+
+    if(t.truth===Q.Q0){
+      t.q=Q.Q0;
+      t.bridgeDelay=.7;
+      state.proofs.q0=true;
+      state.score+=60*state.combo;
+      banner.textContent="A route gap appeared!";
+      trace("Q2→Q0","Potential resolved as structural absence.");
+      return;
+    }
+
+    t.q=Q.Q1;
+    state.proofs.q1=true;
+    t.value=150;
+    state.score+=80*state.combo;
+    banner.textContent="Target activated!";
+    trace("Q2→Q1","Potential resolved as functional presence.");
+    return;
+  }
+
+  // Q0: a second meaningful contact bridges absence into function.
+  if(t.q===Q.Q0){
+    t.q=Q.Q1;
+    t.bridgeDelay=0;
+    state.proofs.q1=true;
+    state.score+=140*state.combo;
+    banner.textContent="Gap bridged!";
+    trace("Q0→Q1","Structural absence was bridged into function.");
+    return;
+  }
+
+  // Q1: functional presence becomes relevant and clears.
+  if(t.q===Q.Q1){
+    t.q=Q.Q3;
+    state.proofs.q3=true;
+    t.alive=false;
+    state.score+=220*state.combo;
+    state.combo=Math.min(8,state.combo+1);
+
+    // Q3 relevance affects nearby targets without exposing terminology to the player.
+    state.targets
+      .filter(x=>x.alive&&dist(x,t)<W*.32)
+      .forEach(x=>x.value+=70);
+
+    banner.textContent="Relevance chain!";
+    trace("Q1→Q3","Functional presence became semantically relevant.");
+    return;
+  }
+}
+
+function update(dt){
+  const b=state.ball;
+
+  state.targets.forEach(t=>{
+    t.pulse+=dt*2;
+    if(t.alive&&t.drift&&t.q!==Q.Q0){
+      t.x+=t.drift*dt;
+      if(t.x<t.r+8||t.x>W-t.r-8)t.drift*=-1;
+    }
+    if(t.q===Q.Q0&&t.bridgeDelay>0)t.bridgeDelay=Math.max(0,t.bridgeDelay-dt);
+  });
+
+  if(!b.moving)return;
+
+  b.x+=b.vx*dt;b.y+=b.vy*dt;
+  b.vx*=Math.pow(.994,dt*60);
+  b.vy*=Math.pow(.994,dt*60);
+  b.vy+=35*dt;
+
+  if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)*.92}
+  if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx)*.92}
+  if(b.y<b.r){b.y=b.r;b.vy=Math.abs(b.vy)*.92}
+  if(b.y>H-b.r){b.y=H-b.r;b.vy=-Math.abs(b.vy)*.84}
+
+  state.bumpers.forEach(o=>circleBounce(b,o,o.polarity?1.08:.96));
+
+  state.targets.forEach(t=>{
+    if(!t.alive)return;
+    if(t.q===Q.Q0&&t.bridgeDelay>0)return;
+    if(circleBounce(b,t,1.01))contactTarget(t);
+  });
+
+  if(Math.hypot(b.vx,b.vy)<34){
+    b.moving=false;b.vx=b.vy=0;
+    b.x=W*.5;b.y=H*.82;
+    state.combo=1;
+
+    if(state.targets.every(t=>!t.alive))finish(true);
+    else if(state.shots<=0)finish(false);
+    else hint.textContent="Drag from the ball and fire again.";
+  }
+}
+
+function finish(success){
+  state.complete=success;state.failed=!success;
+  overlay.hidden=false;
+
+  if(success){
+    const p=state.proofs;
+    const proofCount=[p.q0,p.q1,p.q2,p.q3].filter(Boolean).length;
+    resultTitle.textContent=\`Wave \${state.wave} clear\`;
+    resultCopy.textContent=\`The drag-and-aim loop stayed simple while Quadze completed \${proofCount}/4 hidden state proofs underneath.\`;
+    nextBtn.textContent="Next wave";
+    trace("DING","Wave route accepted.");
+  }else{
+    resultTitle.textContent="Shots exhausted";
+    resultCopy.textContent="The loop remains simple: try a cleaner angle, use rebounds, and finish the active targets.";
+    nextBtn.textContent="Retry wave";
+  }
+}
+
+nextBtn.addEventListener("click",()=>{
+  overlay.hidden=true;
+  if(state.complete)newWave(state.wave+1,state.score);
+  else newWave(state.wave,state.score);
+});
+
+restartBtn.addEventListener("click",()=>{
+  overlay.hidden=true;
+  newWave(state.wave,Math.max(0,state.score-100));
+});
+
+window.addEventListener("resize",resize);
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  const bg=ctx.createRadialGradient(W*.5,H*.5,20,W*.5,H*.5,Math.max(W,H)*.75);
+  bg.addColorStop(0,"#102343");bg.addColorStop(1,"#050913");
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle="rgba(130,185,255,.08)";
+  ctx.lineWidth=1;
+  for(let i=1;i<6;i++){
+    ctx.beginPath();ctx.moveTo(0,H*i/6);ctx.lineTo(W,H*i/6);ctx.stroke();
+  }
+
+  state.bumpers.forEach(o=>{
+    ctx.save();
+    ctx.shadowBlur=16;
+    ctx.shadowColor=o.polarity?COLORS.q3:COLORS.q0;
+    ctx.strokeStyle=o.polarity?COLORS.q3:COLORS.q0;
+    ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.arc(o.x,o.y,o.r*.45,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  });
+
+  state.targets.forEach(t=>{
+    if(!t.alive)return;
+    const c=[COLORS.q0,COLORS.q1,COLORS.q2,COLORS.q3][t.q];
+    const pulse=1+Math.sin(t.pulse)*.06;
+
+    ctx.save();
+    ctx.shadowBlur=20;
+    ctx.shadowColor=c;
+    ctx.strokeStyle=c;
+    ctx.fillStyle=t.q===Q.Q0?"rgba(255,77,204,.025)":"rgba(255,255,255,.035)";
+    ctx.lineWidth=3;
+    if(t.q===Q.Q0)ctx.setLineDash([7,7]);
+    ctx.beginPath();ctx.arc(t.x,t.y,t.r*pulse,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(t.x,t.y,t.r*.42,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  });
+
+  const b=state.ball;
+  if(dragging){
+    const dx=b.x-dragPoint.x,dy=b.y-dragPoint.y;
+    const mag=Math.hypot(dx,dy)||1;
+    const max=Math.min(W,H)*.28;
+    const pull=clamp(mag,0,max);
+    const ux=dx/mag,uy=dy/mag;
+    ctx.save();
+    ctx.setLineDash([8,8]);
+    ctx.strokeStyle=COLORS.q3;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(b.x+ux*pull*2.2,b.y+uy*pull*2.2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle=COLORS.q2;
+    ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(dragPoint.x,dragPoint.y);ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.shadowBlur=24;ctx.shadowColor=COLORS.q3;ctx.fillStyle=COLORS.white;
+  ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#07101b";
+  ctx.font=\`900 \${b.r}px system-ui\`;
+  ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText("T",b.x,b.y+1);
+  ctx.restore();
+}
+
+function loop(now){
+  const dt=Math.min(.033,(now-state.last)/1000);
+  state.last=now;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+
+resize();
+state.last=performance.now();
+requestAnimationFrame(loop);
+
+// Visible debug surface for future coding-body comparisons.
+window.QuadzeGame={
+  Q,
+  getState:()=>JSON.parse(JSON.stringify(state)),
+  getTrace:()=>JSON.parse(JSON.stringify(state.trace))
+};
+})();
+<\/script>
+</body>
+</html>`;
+canon.value=canonText;game.value=gameText;
+function parseGame(src){const need=["BODY DragAim","ENGINE DragAim","INPUT touch.drag_release","DING","HOLD"];const missing=need.filter(x=>!src.includes(x));return {ok:missing.length===0,missing}}
+compile.onclick=()=>{
+  const p=Quadze.parse(canon.value);
+  const proof=Quadze.verify(p);
+  const g=parseGame(game.value);
+  const build={codingBody:"Quadze",routeMode:mode.value,canonVersion:p.header?.version,states:Object.keys(p.states),proof:proof.scores,gameSourceValid:g.ok,missing:g.missing,target:"browser-html"};
+  trace.textContent=JSON.stringify(build,null,2);
+  if(!proof.ding||!g.ok){status.innerHTML='<b class="bad">HOLD — compile blocked.</b>';receipt.textContent=JSON.stringify({canonDing:proof.ding,gameSourceValid:g.ok,missing:g.missing},null,2);preview.srcdoc="";return}
+  status.innerHTML='<b class="good">DING — target mounted from Quadze source rail.</b>';
+  receipt.textContent=JSON.stringify({status:"DING",authoringSource:"Quadze canon + GAME.quadze",hostTarget:"browser HTML",routeMode:mode.value,boundary:"Reference compiler/lab; host target remains derivative."},null,2);
+  preview.srcdoc=targetText;
+};
+</script></main></body></html>

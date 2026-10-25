@@ -346,7 +346,7 @@ function vgWedge(parent,name,halfWidth,height,depth,material){
  return vgPart(parent,name,[[-a,-h/2,d],[a,-h/2,d],[0,h/2,d*.7],[-a*.8,-h/2,-d],[a*.8,-h/2,-d],[0,h/2,-d*.8]],
  [[0,1,2],[3,5,4],[0,3,4],[0,4,1],[1,4,5],[1,5,2],[2,5,3],[2,3,0]],material);
 }
-function vgSilk(parent,name,points,width,material){return bloomBlade(parent,'VG_'+name,points,width,material);}
+function vgSilk(parent,name,points,width,material){const mesh=bloomBlade(parent,'VG_'+name,points,width,material);RECEIPT.visguide.bladeCount++;return mesh;}
 function vgEar(parent,name,x,mat,dark){
  const anchor=new THREE.Group();anchor.position.set(x,.18,.04);parent.add(anchor);
  const rim=vgWedge(anchor,name,.24,.84,.19,mat);rim.rotation.z=x<0?.12:-.12;

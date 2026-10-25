@@ -28,3 +28,19 @@ python3 scripts/jm_build_closure.py \
 **Route:** proposed delivery + retained house → local byte/hash/CRC contact → typed decision → normal closure evidence gate → role/owner gate → separately authorised upload or reuse. No deletion or account quota claim in this adapter.
 
 **Standard:** recover before rebuild; body ≠ carrier ≠ route ≠ seat; no Ding without a consequence; integration ≠ replacement.
+
+
+## Real product contact — KICSHIFT original portable source
+
+The opt-in GitHub pre-delivery route builds the **existing** JM KICSHIFT portable source into an ephemeral dist directory and compares it against the **existing** frozen games-beyond/kicshift Estate mount. It changes neither source, mount nor user-facing URL. Two deployable trees are packaged independently with normalized ZIP metadata; the keeper's separate PORTABILITY_MANIFEST.json is excluded from the deployable-only comparison. File names and bytes remain intact.
+
+**Observed contact (25 October 2026):**
+- Real Vite build from untouched source: PASS (3 deployable files).
+- Dirty second build with generated dist present: **FAIL** — JS/CSS output hashes changed despite no source edits. Build process exit did not prove repeatability.
+- Corrected CI: preserve first output in ephemeral scratch, remove **only generated dist**, rebuild under the same installed dependencies: **3/3 exact byte and filename parity PASS**.
+- Historical frozen Estate carrier comparison: **DISTINCT_BYTES**, with different asset names/payloads. This is **historical carrier-parity HOLD**, not gameplay regression evidence or a release-promotion licence. The dependency versions are not pinned to the frozen build's exact environment by this test.
+- **No Library mutation, publication, replacement, quota credit or owner-device claim.**
+
+The failed dirty-run receipt remains in GitHub job history; the correction is cleaning only generated outputs before repeatability comparison, not weakening the test. Repeated-source ancestry never substitutes for actual output identity.
+
+**Execution boundary:** GitHub tests real publicly stored JM source/mount files, not private ChatGPT Library storage. Existing age/role/retirement requirements remain with Work and owner.

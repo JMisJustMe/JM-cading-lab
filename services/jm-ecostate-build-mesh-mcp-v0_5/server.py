@@ -864,7 +864,7 @@ def get_game_reentry_hints(args):
             raise ValueError("PINNED_GITHUB_BLOB_MISMATCH")
         source = json.loads(raw.decode("utf-8"))
         records = source.get("records") if isinstance(source, dict) else None
-        if source.get("schema") != "JM.CrossClientGameReentryHints/0.1":
+        if not isinstance(source, dict) or source.get("schema") != "JM.CrossClientGameReentryHints/0.1":
             raise ValueError("PUBLIC_HINT_SCHEMA_MISMATCH")
         if not isinstance(records, list) or len(records) != 7:
             raise ValueError("PUBLIC_HINT_CARDINALITY_MISMATCH")

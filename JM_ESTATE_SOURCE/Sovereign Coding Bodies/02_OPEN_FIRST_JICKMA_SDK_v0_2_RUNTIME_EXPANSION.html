@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.2 — Runtime Expansion</title>
+<meta name="theme-color" content="#151220" />
+<style>
+:root{
+  --bg:#090812;--panel:#151322;--panel2:#201b34;--text:#f6f1ff;--muted:#beb5d8;
+  --line:#3a3158;--good:#91f7a7;--warn:#ffd166;--bad:#ff8080;--chip:#2d2548;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:radial-gradient(circle at top,#211b36,var(--bg) 58%);color:var(--text)
+}
+main{max-width:1120px;margin:0 auto;padding:16px}
+header,section{
+  border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);
+  padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)
+}
+header{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.62rem}
+h2{margin:0 0 10px;font-size:1.08rem}
+h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{
+  width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);
+  padding:12px;font-size:1.05rem
+}
+textarea{min-height:72px;resize:vertical}
+label{display:block;margin:8px 0 6px;font-weight:800}
+button{
+  border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);
+  color:var(--text);font-weight:850;cursor:pointer
+}
+button:active{transform:translateY(1px)}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}
+.metric span{font-size:1.07rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.92rem}
+.lanes{display:grid;grid-template-columns:1fr;gap:8px}
+.lane{min-height:84px;border:1px dashed var(--line);border-radius:15px;background:#0d0b17;display:flex;flex-wrap:wrap;align-content:flex-start;gap:8px;padding:10px}
+.laneTitle{font-weight:900;color:var(--muted);margin:4px 0}
+.moveCard{width:66px;min-height:66px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(180deg,#31294f,#171321);display:grid;place-items:center;text-align:center;font-weight:900}
+.moveCard .g{font-size:1.7rem;line-height:1}.moveCard small{color:var(--muted);font-size:.67rem;font-weight:800}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:340px;overflow:auto}
+.visualWrap{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.visualWrap{grid-template-columns:1fr 1fr}}
+.square,.compass{height:190px;border:1px solid var(--line);border-radius:18px;background:#0d0b17;position:relative;overflow:hidden}
+.square:before{content:"";position:absolute;inset:35px;border:3px solid var(--line);border-radius:10px}
+.square .dot,.compass .dot{position:absolute;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#3b2f70;border:1px solid #66569a;font-weight:900}
+.square .z{left:calc(50% - 17px);top:24px}.square .m{left:calc(50% - 17px);bottom:24px}
+.compass:before{content:"";position:absolute;left:50%;top:15px;bottom:15px;border-left:2px solid var(--line)}
+.compass:after{content:"";position:absolute;top:50%;left:15px;right:15px;border-top:2px solid var(--line)}
+.compass .j{left:calc(50% - 17px);top:20px}.compass .l{left:22px;top:calc(50% - 17px)}
+.active{box-shadow:0 0 0 3px rgba(145,247,167,.25);border-color:var(--good)!important}
+table{width:100%;border-collapse:collapse}th,td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:.85rem}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.2 — Runtime Expansion</h1>
+  <p><strong>After v0.1B freeze proof:</strong> this body adds combinators, sentence kinds, FlowTalk multi-turn history, GRIC square/compass visualizer, and Spalk multi-lane rendering.</p>
+</header>
+
+<div class="grid">
+<section>
+  <h2>1 — Build a JickMa sentence</h2>
+  <label>Sentence kind</label>
+  <select id="sentenceKind">
+    <option value="ASSERT">ASSERT — state route</option>
+    <option value="ASK">ASK — seek route</option>
+    <option value="REPAIR">REPAIR — fix dangling route</option>
+    <option value="TEACH">TEACH — explain route</option>
+    <option value="FREEZE">FREEZE — proof route</option>
+  </select>
+
+  <label>Combinator</label>
+  <select id="combinator">
+    <option value="SEQ">SEQ — one after another</option>
+    <option value="PAR">PAR — side by side</option>
+    <option value="REC">REC — recursive pressure pass</option>
+    <option value="NEST">NEST — inner route inside outer route</option>
+  </select>
+
+  <label>Clause A</label>
+  <textarea id="clauseA">↺↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseA" data-preset="↑↓">A ↑↓</button>
+    <button data-target="clauseA" data-preset="↺↑↓">A ↺↑↓</button>
+    <button data-target="clauseA" data-preset="←↑↓">A ←↑↓</button>
+    <button data-target="clauseA" data-preset="↑↑↓">A ↑↑↓</button>
+    <button data-target="clauseA" data-preset="↑←">A ↑←</button>
+  </div>
+
+  <label>Clause B</label>
+  <textarea id="clauseB">←↑↓</textarea>
+  <div class="buttons">
+    <button data-target="clauseB" data-preset="↑↓">B ↑↓</button>
+    <button data-target="clauseB" data-preset="↺↑↓">B ↺↑↓</button>
+    <button data-target="clauseB" data-preset="←↑↓">B ←↑↓</button>
+    <button data-target="clauseB" data-preset="↑↑↓">B ↑↑↓</button>
+    <button data-target="clauseB" data-preset="↺">B ↺</button>
+  </div>
+
+  <label>Speaker / route name</label>
+  <input id="speaker" value="theo" />
+
+  <button class="big" id="run">Run v0.2 Sentence</button>
+  <button class="big" id="addTurn" style="margin-top:8px;">Add to FlowTalk History</button>
+</section>
+
+<section>
+  <h2>2 — Runtime result</h2>
+  <div class="metrics">
+    <div class="metric"><strong>Status</strong><span id="status">—</span></div>
+    <div class="metric"><strong>Sentence Kind</strong><span id="kindOut">—</span></div>
+    <div class="metric"><strong>Combinator</strong><span id="combOut">—</span></div>
+    <div class="metric"><strong>Overall State</strong><span id="stateOut">—</span></div>
+  </div>
+  <div class="chips" id="warnings"></div>
+
+  <h3>GRIC visualizer</h3>
+  <div class="visualWrap">
+    <div>
+      <div class="laneTitle">Square — Z / M</div>
+      <div class="square">
+        <div id="dotZ" class="dot z">Z</div>
+        <div id="dotM" class="dot m">M</div>
+      </div>
+    </div>
+    <div>
+      <div class="laneTitle">Compass — J / L</div>
+      <div class="compass">
+        <div id="dotJ" class="dot j">J</div>
+        <div id="dotL" class="dot l">L</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — Spalk multi-lane</h2>
+  <div class="lanes">
+    <div>
+      <div class="laneTitle">Lane A</div>
+      <div id="laneA" class="lane"></div>
+    </div>
+    <div>
+      <div class="laneTitle">Lane B</div>
+      <div id="laneB" class="lane"></div>
+    </div>
+    <div>
+      <div class="laneTitle">Combined / sentence lane</div>
+      <div id="laneCombined" class="lane"></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>4 — FlowTalk multi-turn</h2>
+  <p class="note">Each added turn stores speaker, sentence kind, combinator, clause types, status, and repair need.</p>
+  <table>
+    <thead><tr><th>#</th><th>Speaker</th><th>Kind</th><th>Combo</th><th>Types</th><th>Status</th></tr></thead>
+    <tbody id="historyRows"></tbody>
+  </table>
+  <div class="buttons">
+    <button id="clearHistory">Clear History</button>
+  </div>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>5 — Receipt</h2>
+  <pre id="receipt">{}</pre>
+  <div class="buttons">
+    <button id="copyReceipt">Copy Receipt</button>
+    <button id="downloadReceipt">Download Receipt JSON</button>
+    <button id="runSmoke">Run v0.2 Smoke Tests</button>
+  </div>
+  <pre id="smokeReceipt">{}</pre>
+</section>
+</main>
+
+<script>
+const VERSION = "JickMa SDK v0.2 Runtime Expansion";
+
+const GLYPH_INFO = {
+  "↑": { name:"Jick", action:"begin", field:"ignition" },
+  "↓": { name:"Mah", action:"resolve", field:"grounding" },
+  "←": { name:"Lethar", action:"branch", field:"route" },
+  "↺": { name:"Zhur", action:"apply_pressure", field:"cycle" }
+};
+
+const SENTENCE_EFFECTS = {
+  ASSERT: "state_route",
+  ASK: "seek_route",
+  REPAIR: "repair_route",
+  TEACH: "explain_route",
+  FREEZE: "proof_route"
+};
+
+let lastReceipt = null;
+let flowHistory = [];
+
+function el(id){return document.getElementById(id)}
+
+function parseMovements(input){
+  return [...input].filter(ch => GLYPH_INFO[ch]).map((glyph,index)=>({glyph,index,...GLYPH_INFO[glyph]}));
+}
+
+function inferClauseType(movements){
+  const glyphs = movements.map(m=>m.glyph);
+  const down = glyphs.indexOf("↓");
+  const pressure = glyphs.indexOf("↺");
+  const branch = glyphs.indexOf("←");
+  if(pressure !== -1 && (down === -1 || pressure < down)) return "Z";
+  if(branch !== -1 && (down === -1 || branch < down)) return "L";
+  if(glyphs.filter(g=>g==="↑").length > 1) return "J";
+  return "M";
+}
+
+function buildClause(input,label){
+  const movements = parseMovements(input);
+  return { label, raw:input, movements, type:inferClauseType(movements), empty:movements.length===0 };
+}
+
+function checkContinuity(clause){
+  const last = clause.movements.at(-1)?.glyph ?? null;
+  const warnings = [];
+  if(clause.empty) warnings.push(`${clause.label}: no movement glyphs detected.`);
+  if(last === "←") warnings.push(`${clause.label}: dangling branch needs return, choice, or resolution.`);
+  if(last === "↺") warnings.push(`${clause.label}: dangling pressure needs grounding, release, or recursion handling.`);
+  return { ok:warnings.length===0, warnings };
+}
+
+function gricMap(type){
+  if(type === "Z" || type === "M") return { body:"Square", reason:"structure / pressure / grounding" };
+  if(type === "J" || type === "L") return { body:"Compass", reason:"direction / ignition / route selection" };
+  return { body:"Unmapped", reason:"unknown type" };
+}
+
+function executeClause(clause){
+  const events=[]; let state="pending";
+  for(const movement of clause.movements){
+    if(movement.glyph==="↺"){state="pressure_applied";events.push({action:"apply_pressure",glyph:movement.glyph,state});}
+    else if(movement.glyph==="↑"){state="begun";events.push({action:"begin",glyph:movement.glyph,state});}
+    else if(movement.glyph==="←"){state="branched";events.push({action:"branch",glyph:movement.glyph,state});}
+    else if(movement.glyph==="↓"){state="resolved";events.push({action:"resolve",glyph:movement.glyph,state});}
+  }
+  const continuity = checkContinuity(clause);
+  return {
+    label: clause.label,
+    status: continuity.ok && !clause.empty ? "DING" : "CHECK",
+    clauseType: clause.type,
+    finalState: state,
+    gric: gricMap(clause.type),
+    continuity,
+    events
+  };
+}
+
+function combineClauses(combinator, clauseA, clauseB){
+  if(combinator === "SEQ"){
+    return { name:"SEQ", meaning:"Clause A runs, then Clause B runs.", movements:[...clauseA.movements,...clauseB.movements] };
+  }
+  if(combinator === "PAR"){
+    return { name:"PAR", meaning:"Clause A and Clause B are held side by side.", movements:[...clauseA.movements,...clauseB.movements] };
+  }
+  if(combinator === "REC"){
+    return { name:"REC", meaning:"Clause A is repeated as pressure before Clause B grounds it.", movements:[...clauseA.movements,{glyph:"↺",name:"RecMark",action:"repeat",field:"recursion"},...clauseB.movements] };
+  }
+  if(combinator === "NEST"){
+    return { name:"NEST", meaning:"Clause B is nested inside Clause A as inner route.", movements:[...clauseA.movements,{glyph:"←",name:"NestGate",action:"enter_inner",field:"nest"},...clauseB.movements,{glyph:"↓",name:"NestClose",action:"close_inner",field:"grounding"}] };
+  }
+  return { name:"UNKNOWN", meaning:"Unknown combinator.", movements:[] };
+}
+
+function runSentence(){
+  const sentenceKind = el("sentenceKind").value;
+  const combinator = el("combinator").value;
+  const speaker = el("speaker").value.trim() || "unknown";
+  const clauseA = buildClause(el("clauseA").value,"A");
+  const clauseB = buildClause(el("clauseB").value,"B");
+  const execA = executeClause(clauseA);
+  const execB = executeClause(clauseB);
+  const combo = combineClauses(combinator,clauseA,clauseB);
+  const combinedClause = { label:"COMBINED", raw:combo.movements.map(m=>m.glyph).join(""), movements:combo.movements, type:inferClauseType(combo.movements), empty:combo.movements.length===0 };
+  const execCombined = executeClause(combinedClause);
+
+  const warnings = [...execA.continuity.warnings,...execB.continuity.warnings,...execCombined.continuity.warnings];
+  const status = [execA.status,execB.status,execCombined.status].every(s=>s==="DING") ? "DING" : "CHECK";
+  const repairNeeded = status === "CHECK";
+
+  const receipt = {
+    status,
+    version: VERSION,
+    speaker,
+    sentenceKind,
+    sentenceEffect: SENTENCE_EFFECTS[sentenceKind],
+    combinator,
+    combinatorMeaning: combo.meaning,
+    overallState: execCombined.finalState,
+    repairNeeded,
+    clauses: { A: clauseA, B: clauseB, combined: combinedClause },
+    execution: { A: execA, B: execB, combined: execCombined },
+    flowtalk: {
+      turnCountIfAdded: flowHistory.length + 1,
+      continuityOk: warnings.length === 0,
+      warnings
+    },
+    gric: {
+      A: execA.gric,
+      B: execB.gric,
+      combined: execCombined.gric
+    },
+    spalk: {
+      lanes: ["A","B","combined"],
+      combinedMovementCount: combinedClause.movements.length
+    },
+    timestamp: new Date().toISOString()
+  };
+  return receipt;
+}
+
+function renderLane(id,movements){
+  const lane=el(id); lane.innerHTML="";
+  movements.forEach(m=>{
+    const card=document.createElement("div");
+    card.className="moveCard";
+    card.innerHTML=`<div><div class="g">${m.glyph}</div><small>${m.name || GLYPH_INFO[m.glyph]?.name || "Move"}</small></div>`;
+    lane.appendChild(card);
+  });
+  if(!movements.length) lane.innerHTML="<p>No movements.</p>";
+}
+
+function renderReceipt(receipt){
+  lastReceipt = receipt;
+  el("status").textContent = receipt.status;
+  el("status").className = receipt.status === "DING" ? "ding" : "check";
+  el("kindOut").textContent = receipt.sentenceKind;
+  el("combOut").textContent = receipt.combinator;
+  el("stateOut").textContent = receipt.overallState;
+
+  ["dotZ","dotM","dotJ","dotL"].forEach(id=>el(id).classList.remove("active"));
+  const types = [receipt.clauses.A.type, receipt.clauses.B.type, receipt.clauses.combined.type];
+  types.forEach(t => {
+    if(t==="Z") el("dotZ").classList.add("active");
+    if(t==="M") el("dotM").classList.add("active");
+    if(t==="J") el("dotJ").classList.add("active");
+    if(t==="L") el("dotL").classList.add("active");
+  });
+
+  const warnings = el("warnings"); warnings.innerHTML="";
+  if(receipt.flowtalk.warnings.length){
+    receipt.flowtalk.warnings.forEach(w=>{
+      const chip=document.createElement("span"); chip.className="chip"; chip.textContent="⚠ "+w; warnings.appendChild(chip);
+    });
+  }else{
+    const chip=document.createElement("span"); chip.className="chip"; chip.textContent="✓ FlowTalk continuity clear"; warnings.appendChild(chip);
+  }
+
+  renderLane("laneA", receipt.clauses.A.movements);
+  renderLane("laneB", receipt.clauses.B.movements);
+  renderLane("laneCombined", receipt.clauses.combined.movements);
+  el("receipt").textContent = JSON.stringify(receipt,null,2);
+}
+
+function renderHistory(){
+  const tbody=el("historyRows"); tbody.innerHTML="";
+  flowHistory.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${r.speaker}</td><td>${r.sentenceKind}</td><td>${r.combinator}</td><td>${r.clauses.A.type}/${r.clauses.B.type}/${r.clauses.combined.type}</td><td class="${r.status==='DING'?'ding':'check'}">${r.status}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function smokeTests(){
+  const cases = [
+    {kind:"ASSERT", combo:"SEQ", a:"↑↓", b:"←↑↓", expectStatus:"DING"},
+    {kind:"REPAIR", combo:"NEST", a:"↑↓", b:"↺↑↓", expectStatus:"DING"},
+    {kind:"FREEZE", combo:"REC", a:"↺↑↓", b:"↑↓", expectStatus:"DING"},
+    {kind:"ASK", combo:"PAR", a:"↑←", b:"↺", expectStatus:"CHECK"}
+  ];
+  const old = {
+    kind:el("sentenceKind").value, combo:el("combinator").value, a:el("clauseA").value, b:el("clauseB").value
+  };
+  const rows=[];
+  for(const c of cases){
+    el("sentenceKind").value=c.kind; el("combinator").value=c.combo; el("clauseA").value=c.a; el("clauseB").value=c.b;
+    const receipt=runSentence();
+    rows.push({case:c,actualStatus:receipt.status,passed:receipt.status===c.expectStatus,types:`${receipt.clauses.A.type}/${receipt.clauses.B.type}/${receipt.clauses.combined.type}`});
+  }
+  el("sentenceKind").value=old.kind; el("combinator").value=old.combo; el("clauseA").value=old.a; el("clauseB").value=old.b;
+  const passed=rows.filter(r=>r.passed).length;
+  const batch={status:passed===cases.length?"V0_2_SMOKE_READY":"CHECK",version:VERSION,passed,total:cases.length,rows,timestamp:new Date().toISOString()};
+  el("smokeReceipt").textContent=JSON.stringify(batch,null,2);
+}
+
+async function copyText(text){
+  try{await navigator.clipboard.writeText(text); alert("Copied.");}
+  catch{prompt("Copy:",text)}
+}
+function downloadText(filename,text){
+  const blob=new Blob([text],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=filename; a.click(); URL.revokeObjectURL(a.href);
+}
+
+document.querySelectorAll("[data-preset]").forEach(btn=>{
+  btn.addEventListener("click",()=>{el(btn.dataset.target).value=btn.dataset.preset; renderReceipt(runSentence());});
+});
+el("run").addEventListener("click",()=>renderReceipt(runSentence()));
+el("addTurn").addEventListener("click",()=>{const r=runSentence();flowHistory.push(r);renderReceipt(r);renderHistory();});
+el("clearHistory").addEventListener("click",()=>{flowHistory=[];renderHistory();});
+el("copyReceipt").addEventListener("click",()=>copyText(el("receipt").textContent));
+el("downloadReceipt").addEventListener("click",()=>downloadText("JICKMA_SDK_v0_2_RECEIPT.json",el("receipt").textContent));
+el("runSmoke").addEventListener("click",smokeTests);
+
+renderReceipt(runSentence());
+renderHistory();
+smokeTests();
+</script>
+</body>
+</html>

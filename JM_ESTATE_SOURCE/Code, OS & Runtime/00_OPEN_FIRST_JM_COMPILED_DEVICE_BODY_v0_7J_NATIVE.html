@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JM Compiled Device Body v0.7J — Native Coding Spine</title>
+<style data-compiled="styles.css">
+:root{
+  --bg:#0c0f14; --panel:#141922; --panel2:#0f141c; --text:#eef2f7; --muted:#9ba8b8;
+  --line:#2a3442; --good:#8bd3a8; --warn:#f4c96b; --bad:#ff8b8b; --accent:#8fb7ff;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:16px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line)}
+h1{font-size:1.2rem;margin:0 0 6px}.sub,.small{color:var(--muted);font-size:.8rem}
+.header-actions,.row,.laws{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+main{max-width:1250px;margin:auto;padding:16px;display:grid;gap:16px}
+section,.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+section h2{font-size:1rem;margin:0 0 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+@media(max-width:600px){header{display:block;padding:12px}.header-actions{margin-top:10px}main{padding:12px}section,.card{padding:14px}}
+.law,.pill{border:1px solid var(--line);background:var(--panel2);border-radius:999px;padding:6px 10px;font-size:.74rem;color:#d7e0eb}
+.device{position:relative;min-height:250px}.device.active{outline:2px solid var(--accent)}
+.device .tag{position:absolute;right:12px;top:12px;font-size:.7rem;color:var(--muted)}
+label{display:block;color:var(--muted);font-size:.78rem;margin-top:10px}
+input,textarea,select,button{font:inherit}
+input[type=text],textarea,select{width:100%;margin-top:5px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+textarea{min-height:120px;resize:vertical}input[type=range]{width:100%}
+button{background:#1b2431;color:var(--text);border:1px solid #344154;border-radius:10px;padding:8px 11px;cursor:pointer}
+button.primary{border-color:#5276aa;background:#1b2c46}button.danger{border-color:#7b4f4f;background:#321d1d}
+button:disabled{opacity:.45;cursor:not-allowed}.topgap{margin-top:12px}
+.metric{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:9px}
+.derived,.resultbox{padding:10px;border:1px dashed #3d4a5e;border-radius:10px;background:var(--panel2);margin-top:10px}
+.good{color:var(--good)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+#trace{max-height:310px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;background:#090c10;border-radius:10px;padding:10px;margin-top:10px}
+.trace-line{padding:5px 0;border-bottom:1px solid #151c25;color:#c8d2df}
+.snapshot,.grant,.test{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.branch{border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;background:#10151d}
+.branch pre{white-space:pre-wrap;font-family:inherit;font-size:.82rem;margin:8px 0;color:#e6edf6}
+code{color:#c7d9ff}
+h3{font-size:.9rem;margin:0 0 8px}
+.peer-row,.quarantine-row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.fingerprint{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem;color:#c7d9ff;word-break:break-all}
+.transport-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:var(--muted)}
+.transport-dot.live{background:var(--good)}.transport-dot.wait{background:var(--warn)}
+
+.policy-row{display:grid;grid-template-columns:minmax(110px,.8fr) minmax(130px,.8fr) 1.6fr;gap:10px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.policy-row label{margin:0}.policy-field{font-weight:700;padding-bottom:9px}.receipt-row{padding:10px 0;border-bottom:1px solid var(--line)}
+.receipt-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:5px}.field-chip{font-size:.7rem;border:1px solid var(--line);border-radius:999px;padding:3px 7px}
+.withheld{opacity:.65}.proof{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;word-break:break-all;color:#b9c8db}
+@media(max-width:650px){.policy-row{grid-template-columns:1fr}.policy-field{padding-bottom:0}}
+
+.profile-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 14px}.body-profile-section{border-color:#4b6282}.profile-grid code{word-break:break-word}@media(max-width:650px){.profile-grid{grid-template-columns:1fr 1fr}header{align-items:flex-start}.header-actions{max-width:100%}h1{overflow-wrap:anywhere}.laws{align-items:flex-start}}@media(max-width:390px){.profile-grid{grid-template-columns:1fr}}
+
+html,body{max-width:100%;overflow-x:hidden}main{width:100%;min-width:0}section,.card,.grid2,.grid3,.derived,.resultbox{min-width:0;max-width:100%}code,pre,p,.small,h1,h2,h3,.sub,.proof{overflow-wrap:anywhere;word-break:break-word}input,textarea,select,button{max-width:100%}.row>*{min-width:0}
+
+</style>
+<meta name="theme-color" content="#0c0f14">
+<meta name="jm-body-profile" content="jm-portable-singlefile-v1">
+<meta name="jm-body-version" content="0.7J">
+<meta name="jm-coding-spine" content="JMLogic→FlowTalk→RouteCode→OneBodyIR→RouteOS→CadenVM/JMVM→TraceBox→Receipt/Ding→BrowserTarget">
+</head>
+<body>
+<header>
+  <div>
+    <h1>JM Compiled Device Body v0.7J</h1>
+    <div class="sub">JM-native rebuild of proven v0.7 • OneBody/RouteOS compiled browser target • single-file • zero sibling-file dependencies</div>
+  </div>
+  <div class="header-actions">
+    <span id="persistenceBadge" class="pill">Persistence: checking…</span>
+    <span id="networkBadge" class="pill">Network: checking…</span>
+  </div>
+</header>
+
+<main>
+  <section class="body-profile-section">
+    <h2>Bound Device Body profile</h2>
+    <div id="bodyProfilePanel" class="resultbox">Reading host capabilities…</div>
+  </section>
+  <section class="body-profile-section">
+    <h2>JM Coding Spine — live mount</h2>
+    <div id="jmSpinePanel" class="resultbox">Mounting JM coding bodies…</div>
+    <div id="jmRouteReceipt" class="small topgap">No JM route receipt yet.</div>
+  </section>
+
+  <section class="constitution">
+    <h2>Constitution</h2>
+    <div class="laws">
+      <span class="law">Device Block stays</span>
+      <span class="law">Input ≠ intent ≠ behaviour</span>
+      <span class="law">Assist without atrophy</span>
+      <span class="law">Change ≠ improvement</span>
+      <span class="law">Regrade is allowed</span>
+      <span class="law">System survives interface</span>
+      <span class="law">Conflicts preserve both sides</span>
+      <span class="law">Capabilities require consent</span>
+      <span class="law">Unknown peers are quarantined</span>
+      <span class="law">Connectivity is optional, continuity is not</span>
+      <span class="law">Local-only means no network disclosure</span>
+      <span class="law">Every disclosure leaves a signed receipt</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>0. Identity / provenance</h2>
+    <div class="grid2">
+      <div>
+        <div id="identityPanel" class="resultbox">Identity not loaded yet.</div>
+        <div class="row topgap">
+          <button id="newIdentityBtn">Generate new identity</button>
+        </div>
+      </div>
+      <div>
+        <p class="small">This prototype uses a browser-generated ECDSA P-256 keypair to sign continuity packets. The visible fingerprint represents the public identity; the private key remains inside the local runtime state.</p>
+        <div id="offlinePanel" class="resultbox">Offline shell: checking…</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>1. Portable state — belongs to the user</h2>
+    <div class="grid2">
+      <div>
+        <label>Project identity<input id="projectName" type="text"></label>
+        <label>Working state / draft<textarea id="draft"></textarea></label>
+        <div class="row">
+          <button id="saveNowBtn" class="primary">Save now</button>
+          <span id="saveStatus" class="small">Not yet saved this session.</span>
+        </div>
+      </div>
+      <div>
+        <label>Assistance mode
+          <select id="assistMode">
+            <option value="off">Off — preserve manual skill</option>
+            <option value="assist">Assist — suggest, do not replace</option>
+            <option value="auto">Auto — convenience first</option>
+          </select>
+        </label>
+        <label>Layout preference
+          <select id="layoutPref">
+            <option value="compact">Compact</option>
+            <option value="balanced">Balanced</option>
+            <option value="spacious">Spacious</option>
+          </select>
+        </label>
+        <label>Portable-state owner
+          <input id="ownerLabel" type="text" placeholder="User">
+        </label>
+        <div class="row topgap">
+          <span class="small">Network/file disclosure is governed below by the replication policy.</span>
+          <input id="importPacketFile" type="file" accept="application/json" hidden>
+          <button id="importPacketBtn">Import packet</button>
+          
+        </div>
+        <p class="small">Imported signed packets are verified and merged field-by-field. Local device health never travels with portable state.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>2. Device Blocks — local state remains local</h2>
+    <div class="grid3" id="devices"></div>
+  </section>
+
+  <section>
+    <h2>3. Derived state — rebuilt from user + active body</h2>
+    <div id="derivedPanel" class="derived"></div>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <h2>4. Living Cursor / Intent Gate</h2>
+      <p class="small">The system classifies the signal before it executes the requested action.</p>
+      <label>Input signal
+        <select id="signalType">
+          <option value="tap">Deliberate tap</option>
+          <option value="hold">Deliberate hold</option>
+          <option value="glide">Glide across control</option>
+        </select>
+      </label>
+      <label>Requested action
+        <select id="requestedAction">
+          <option value="backspace">Delete last character</option>
+          <option value="clear">Clear entire draft</option>
+        </select>
+      </label>
+      <div class="row topgap">
+        <button id="signalBtn" class="primary">Send signal</button>
+        <button id="confirmBtn" disabled>Confirm armed action</button>
+      </div>
+      <div id="intentResult" class="resultbox">No signal yet.</div>
+    </section>
+
+    <section>
+      <h2>5. Regrade / snapshots</h2>
+      <div class="row">
+        <button id="snapshotBtn" class="primary">Create snapshot</button>
+        <span class="small">Returning to a preferred earlier state is not inherently “down.”</span>
+      </div>
+      <div id="snapshots"></div>
+    </section>
+  </div>
+
+  <section>
+    <h2>6. Continuity Bus — actual Device Block communication</h2>
+    <div class="grid2">
+      <div>
+        <h3>Local peer discovery</h3>
+        <p class="small">Same-origin tabs/windows discover each other through BroadcastChannel. In v0.6 this is deliberately a <b>discovery plane only</b>: portable-state content is blocked from broadcast transport.</p>
+        <div id="transportSummary" class="resultbox">Transport starting…</div>
+        <div class="row topgap"><button id="syncNowBtn" class="primary">Sync policy-allowed state now</button></div>
+        <div id="syncPanel" class="resultbox">Sync engine starting…</div>
+        <div id="peerList"></div>
+      </div>
+      <div>
+        <h3>Cross-device WebRTC handshake</h3>
+        <p class="small">One device creates an offer; the other creates an answer. The WebRTC DataChannel carries signed continuity envelopes peer-to-peer. NAT traversal is best-effort without a TURN relay.</p>
+        <label>Peer label<input id="rtcPeerLabel" type="text" value="Other Device"></label>
+        <div class="row topgap"><button id="createOfferBtn">Create offer</button><button id="acceptOfferBtn">Accept pasted offer → answer</button></div>
+        <label>Handshake text<textarea id="rtcHandshake" placeholder="Offer or answer appears/pastes here"></textarea></label>
+        <label>Offer peer ID<input id="rtcPeerId" type="text" placeholder="rtc-1"></label>
+        <div class="row topgap"><button id="applyAnswerBtn">Apply pasted answer</button><button id="copyHandshakeBtn">Copy handshake</button></div>
+        <div id="rtcStatus" class="resultbox">No WebRTC handshake yet.</div>
+      </div>
+    </div>
+    <div class="grid2 topgap">
+      <div>
+        <h3>Trust / quarantine inbox</h3>
+        <p class="small">A valid signature proves provenance; it does not automatically grant trust. Unknown identities wait here until the user decides.</p>
+        <div id="quarantinePanel"></div>
+      </div>
+      <div>
+        <h3>Trusted peers</h3>
+        <div id="trustedPeers"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>7. Sovereign replication policy</h2>
+    <div class="grid2">
+      <div>
+        <p class="small">Choose what each portable field is allowed to do. <b>Local-only</b> is enforced in the packet builder: the field value is absent from network packets, not merely hidden in the UI.</p>
+        <div id="policyRows"></div>
+        <div class="row topgap">
+          <button id="applyPolicyBtn" class="primary">Apply policy</button>
+          <button id="resetPolicyBtn">Reset balanced defaults</button>
+        </div>
+      </div>
+      <div>
+        <label>Preview / export target fingerprint<input id="policyTargetFingerprint" type="text" placeholder="peer fingerprint"></label>
+        <div class="row topgap">
+          <button id="previewPolicyBtn">Preview disclosure</button>
+          <button id="exportPolicyPacketBtn">Export policy-filtered packet</button>
+        </div>
+        <div id="policyPreview" class="resultbox">Choose a target fingerprint to see exactly what would leave this device.</div>
+        <p class="small topgap">Full backup is separate from replication policy because it is an explicit user-controlled recovery action. Full backups are only offered encrypted.</p>
+        <div class="row">
+          <button id="exportBackupBtn">Export encrypted sovereign backup</button>
+          <input id="importBackupFile" type="file" accept="application/json" hidden>
+          <button id="importBackupBtn">Import encrypted sovereign backup</button>
+        </div>
+      </div>
+    </div>
+    <div class="topgap">
+      <h3>Signed disclosure receipts</h3>
+      <p class="small">The ledger records which peer received which fields, which fields were withheld, the policy hash, and the packet hash.</p>
+      <div id="receiptPanel"></div>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section>
+      <h2>8. Conflict lab — preserve before deciding</h2>
+      <p class="small">Simulate another device editing the same portable state while this one also changes.</p>
+      <label>Incoming device
+        <select id="conflictDevice">
+          <option value="laptop">Laptop</option>
+          <option value="phone">Phone</option>
+          <option value="amapro">Ama‑Pro</option>
+        </select>
+      </label>
+      <label>Incoming draft
+        <textarea id="incomingDraft">This is an alternate edit from another device.</textarea>
+      </label>
+      <div class="row topgap">
+        <button id="createConflictBtn">Create incoming branch</button>
+      </div>
+      <div id="conflictPanel" class="resultbox">No unresolved conflict.</div>
+    </section>
+
+    <section>
+      <h2>9. Capability permissions</h2>
+      <p class="small">Apps/services request capabilities; the user grants scope and duration.</p>
+      <label>Requester<input id="permissionRequester" type="text" value="Demo Tool"></label>
+      <label>Capability
+        <select id="permissionCapability">
+          <option value="read-portable-state">Read portable state</option>
+          <option value="write-portable-state">Write portable state</option>
+          <option value="read-local-sensors">Read local sensors</option>
+          <option value="export-state">Export state</option>
+        </select>
+      </label>
+      <label>Requested duration
+        <select id="permissionDuration">
+          <option value="once">Once</option>
+          <option value="session">This session</option>
+          <option value="persistent">Persistent until revoked</option>
+        </select>
+      </label>
+      <div class="row topgap">
+        <button id="requestPermissionBtn" class="primary">Request capability</button>
+      </div>
+      <div id="permissionPanel" class="resultbox">No capability request pending.</div>
+      <div id="grants"></div>
+    </section>
+  </div>
+
+  <div class="grid2">
+    <section>
+      <h2>10. Trace / provenance ledger</h2>
+      <div class="row">
+        <button id="clearTrace">Clear ledger</button>
+        <span class="small">Transitions should be inspectable rather than mysterious.</span>
+      </div>
+      <div id="trace"></div>
+    </section>
+
+    <section>
+      <h2>11. Constitution test suite</h2>
+      <div class="row">
+        <button id="runTests" class="primary">Run tests</button>
+        <span id="testSummary" class="small">Not run yet.</span>
+      </div>
+      <div id="tests"></div>
+    </section>
+  </div>
+</main>
+
+
+<script data-module="jm-native-spine.js">
+window.JM=window.JM||{};
+JM.Native=(()=>{
+  const VERSION='0.7J';
+  const bodies=[
+    {name:'Cading / Kading',office:'source-authority',status:'mounted'},
+    {name:'JMLogic',office:'intent + route law',status:'mounted'},
+    {name:'FlowTalk',office:'meaning / signal guard',status:'mounted'},
+    {name:'RouteCode / RouteCore',office:'route registry',status:'mounted'},
+    {name:'OneBody IR',office:'neutral meaning envelope',status:'mounted'},
+    {name:'RouteOS',office:'route/runtime authority',status:'mounted'},
+    {name:'CadenVM / JMVM',office:'execution carrier',status:'mounted'},
+    {name:'TraceBox',office:'action/provenance trace',status:'mounted'},
+    {name:'ReceiptEngine + Ding/BUGG',office:'bounded outcome proof',status:'mounted'},
+    {name:'Zionfolder / OneBody HTML',office:'portable carrier',status:'compiled-target'}
+  ];
+  const sourceProof={
+    goldModeHub:'sha256:30a190d659cb0ed8fe7f43d96cc8279d783f10b45a5fb9622e2c9374ff2e5f78',
+    estateRebuildGate:'sha256:29dbd0ca740c484126c714e02138d50a7c74a245a309b1b88204cd8f30afb19f',
+    routeOSKernel:'sha256:7e145f041a26f4057a711738df2f681fd622e57aa740d96490e452a775cc52a5'
+  };
+  return{VERSION,bodies,sourceProof};
+})();
+
+JM.JMLogic=(()=>{
+  let seq=0;
+  const signal=(route,payload={},context={})=>({
+    schema:'jm.source-signal/v1',
+    signalId:`JM.SIG.${Date.now()}.${++seq}`,
+    source:context.source||'user/contact-field',
+    body:context.body||'JM Compiled Device Body',
+    route:String(route||''),
+    intent:context.intent||String(route||''),
+    payload,
+    at:new Date().toISOString()
+  });
+  return{signal};
+})();
+
+JM.FlowTalk=(()=>{
+  const guard=req=>{
+    if(!req||!req.route)throw new Error('BUGG: route missing');
+    if(!req.source)throw new Error('BUGG: source missing');
+    return {...req,meaningPreserved:true,guard:'FlowTalk'};
+  };
+  return{guard};
+})();
+
+JM.OneBodyIR=(()=>{
+  const lower=req=>({
+    schema:'jm.onebody-ir/v1',
+    body:req.body,
+    signalId:req.signalId,
+    source:req.source,
+    intent:req.intent,
+    route:req.route,
+    payload:req.payload,
+    traceRequired:true,
+    receiptRequired:true,
+    carrier:'browser-js-singlefile'
+  });
+  return{lower};
+})();
+
+JM.RouteCore=(()=>{
+  const routes=new Map();
+  const mount=(name,handler,meta={})=>{routes.set(name,{handler,meta:{...meta,route:name}});return true;};
+  const has=name=>routes.has(name);
+  const list=()=>[...routes.values()].map(x=>x.meta);
+  const execute=ir=>{
+    const r=routes.get(ir.route);if(!r)throw new Error(`BUGG: unmounted route ${ir.route}`);
+    return r.handler(ir.payload,ir);
+  };
+  return{mount,has,list,execute};
+})();
+
+JM.CadenVM=(()=>({
+  execute:ir=>JM.RouteCore.execute(ir)
+}))();
+JM.JMVM=JM.CadenVM;
+
+JM.ReceiptEngine=(()=>{
+  const receipts=[];
+  const issue=(ir,status,result)=>{
+    const rec={schema:'jm.route-receipt/v1',id:`JM.RECEIPT.${Date.now()}.${receipts.length+1}`,at:new Date().toISOString(),signalId:ir.signalId,route:ir.route,source:ir.source,status,result:status==='DING'?result:undefined,error:status==='BUGG'?String(result?.message||result):undefined};
+    receipts.unshift(rec);if(receipts.length>200)receipts.length=200;
+    if(JM.UI?.renderJMSpine)JM.UI.renderJMSpine(rec);
+    return rec;
+  };
+  return{receipts,issue};
+})();
+
+JM.RouteOS=(()=>{
+  const trace=(event,source,before,after)=>{try{JM.Trace?.log?.(event,source,before,after)}catch{}};
+  const finalize=(ir,result)=>{trace('jm-route-ding',ir.route,{signalId:ir.signalId},{carrier:ir.carrier});JM.ReceiptEngine.issue(ir,'DING',result);return result;};
+  const fail=(ir,error)=>{trace('jm-route-bugg',ir.route,{signalId:ir.signalId},{error:String(error?.message||error)});JM.ReceiptEngine.issue(ir,'BUGG',error);throw error;};
+  const run=(route,payload={},context={})=>{
+    const req=JM.FlowTalk.guard(JM.JMLogic.signal(route,payload,context));
+    const ir=JM.OneBodyIR.lower(req);
+    trace('jm-route-enter',route,null,{signalId:ir.signalId,source:ir.source,intent:ir.intent});
+    try{
+      const out=JM.CadenVM.execute(ir);
+      if(out&&typeof out.then==='function')return out.then(x=>finalize(ir,x)).catch(e=>fail(ir,e));
+      return finalize(ir,out);
+    }catch(e){return fail(ir,e)}
+  };
+  return{run,mount:JM.RouteCore.mount,list:JM.RouteCore.list,has:JM.RouteCore.has};
+})();
+</script>
+
+<script data-module="body-profile.js">
+window.JM=window.JM||{};
+JM.BodyProfile=(()=>{
+  const BUILD='0.7J';
+  const SOURCE_ARCHITECTURE='0.7-proven-donor/0.6-lineage';
+  const PROFILE_ID='jm-portable-singlefile-v1';
+  const isSingleFile=true;
+  const protocol=()=>{try{return location.protocol||'unknown:'}catch{return 'unknown:'}};
+  const secure=()=>!!globalThis.isSecureContext;
+  const webCrypto=()=>!!(globalThis.crypto&&crypto.subtle);
+  const indexedDBCap=()=>!!globalThis.indexedDB;
+  const localStorageCap=()=>{try{localStorage.setItem('__dc_profile','1');localStorage.removeItem('__dc_profile');return true}catch{return false}};
+  const broadcast=()=>typeof BroadcastChannel!=='undefined';
+  const webrtc=()=>typeof RTCPeerConnection!=='undefined';
+  const clipboard=()=>!!navigator?.clipboard;
+  const capabilities=()=>({
+    protocol:protocol(),secureContext:secure(),webCrypto:webCrypto(),indexedDB:indexedDBCap(),
+    localStorage:localStorageCap(),broadcastChannel:broadcast(),webRTC:webrtc(),clipboard:clipboard(),
+    serviceWorker:false,singleFile:true,externalAssetCount:0
+  });
+  const mode=()=>protocol()==='content:'?'android-content-uri':protocol()==='file:'?'file-uri':/^https?:$/.test(protocol())?'web-origin':'embedded-or-opaque';
+  return{BUILD,SOURCE_ARCHITECTURE,PROFILE_ID,isSingleFile,capabilities,mode};
+})();
+
+</script>
+<script data-module="events.js">
+window.JM=window.JM||{};
+JM.Events=(()=>{
+  const listeners=new Map();
+  const on=(name,fn)=>{
+    if(!listeners.has(name))listeners.set(name,new Set());
+    listeners.get(name).add(fn);
+    return()=>listeners.get(name)?.delete(fn);
+  };
+  const emit=(name,payload)=>{
+    for(const fn of listeners.get(name)||[]){
+      try{fn(payload)}catch(e){console.error('Event handler failed',name,e)}
+    }
+  };
+  return{on,emit};
+})();
+
+</script>
+<script data-module="core-state.js">
+window.JM = window.JM || {};
+JM.State = (() => {
+  const newLineageId = () => crypto.randomUUID ? crypto.randomUUID() : "lineage-"+Date.now();
+  const runtimeActorId = crypto.randomUUID ? "actor:"+crypto.randomUUID() : "actor:"+Date.now()+":"+Math.random().toString(16).slice(2);
+  const state = {
+    portable:{
+      projectName:"Continuity Project",
+      draft:"This text is portable state. Switch devices: it should remain here.",
+      assistMode:"assist",
+      layoutPref:"balanced",
+      ownerLabel:"User",
+      revision:1,
+      lineageId:newLineageId(),
+      updatedAt:new Date().toISOString(),
+      updatedBy:"phone",
+      clock:{[runtimeActorId]:1},
+      fieldClocks:{}
+    },
+    devices:{
+      phone:{name:"Phone",battery:62,temp:36,compute:55,network:"5G",active:true},
+      laptop:{name:"Laptop",battery:84,temp:33,compute:82,network:"Wi‑Fi",active:false},
+      amapro:{name:"Ama‑Pro",battery:71,temp:31,compute:68,network:"Local",active:false}
+    },
+    snapshots:[],
+    branches:[],
+    grants:[],
+    pendingPermission:null,
+    armedAction:null,
+    identity:null,
+    trustedPeers:[],
+    replicationPolicy:{
+      version:1,
+      fields:{
+        projectName:{mode:'trusted',allowlist:[]},
+        draft:{mode:'trusted',allowlist:[]},
+        assistMode:{mode:'trusted',allowlist:[]},
+        layoutPref:{mode:'trusted',allowlist:[]},
+        ownerLabel:{mode:'local-only',allowlist:[]}
+      }
+    },
+    receipts:[],
+    syncMeta:{dirty:false,dirtyFields:[],lastSyncAt:null,lastResult:null,lastDirtyReason:null}
+  };
+
+  const clone=x=>JSON.parse(JSON.stringify(x));
+  const activeDeviceKey=()=>Object.keys(state.devices).find(k=>state.devices[k].active);
+  const activeDevice=()=>state.devices[activeDeviceKey()];
+
+  const portableFields=['projectName','draft','assistMode','layoutPref','ownerLabel'];
+
+  const ensureClock = p => {
+    p.clock=p.clock||{};
+    p.fieldClocks=p.fieldClocks||{};
+    for(const field of portableFields){
+      if(!p.fieldClocks[field])p.fieldClocks[field]=clone(p.clock||{});
+    }
+  };
+
+  const touchPortable=(source,changedFields=portableFields)=>{
+    ensureClock(state.portable);
+    const device=activeDeviceKey();
+    const fields=[...new Set((changedFields&&changedFields.length!==undefined)?changedFields:portableFields)].filter(f=>portableFields.includes(f));
+    state.portable.clock[runtimeActorId]=(state.portable.clock[runtimeActorId]||0)+1;
+    for(const field of fields){
+      const fc=state.portable.fieldClocks[field]||(state.portable.fieldClocks[field]={});
+      fc[runtimeActorId]=(fc[runtimeActorId]||0)+1;
+    }
+    state.portable.revision+=1;
+    state.portable.updatedAt=new Date().toISOString();
+    state.portable.updatedBy=source||device;
+    if(JM.Events)JM.Events.emit('portable-changed',{source:source||device,fields,revision:state.portable.revision,clock:clone(state.portable.clock)});
+  };
+
+  const compareClocks=(a,b)=>{
+    const keys=[...new Set([...Object.keys(a||{}),...Object.keys(b||{})])];
+    let aGreater=false,bGreater=false;
+    for(const k of keys){
+      const av=(a&&a[k])||0,bv=(b&&b[k])||0;
+      if(av>bv)aGreater=true;
+      if(bv>av)bGreater=true;
+    }
+    if(!aGreater&&!bGreater)return "equal";
+    if(aGreater&&!bGreater)return "a-dominates";
+    if(bGreater&&!aGreater)return "b-dominates";
+    return "concurrent";
+  };
+
+  const derive=()=>{
+    const d=activeDevice(), modes=[];
+    if(d.temp>=42)modes.push("thermal-conserve");
+    if(d.battery<20)modes.push("low-power");
+    if(d.compute<40)modes.push("lightweight-render");
+    if(!modes.length)modes.push("normal");
+    return{
+      device:d.name,presentation:state.portable.layoutPref,assistance:state.portable.assistMode,
+      operatingMode:modes.join(" + "),continuityRevision:state.portable.revision,
+      lineageId:state.portable.lineageId,clock:clone(state.portable.clock||{})
+    };
+  };
+
+  ensureClock(state.portable);
+  return{state,clone,activeDeviceKey,activeDevice,touchPortable,derive,compareClocks,ensureClock,runtimeActorId,portableFields};
+})();
+
+</script>
+<script data-module="trace-ledger.js">
+window.JM=window.JM||{};
+JM.Trace=(()=>{
+  const ledger=[];
+  const now=()=>new Date().toLocaleTimeString();
+  const log=(event,source,before,after)=>{
+    ledger.unshift({time:now(),event,source,before,after});
+    if(ledger.length>250)ledger.length=250;
+    if(JM.Persistence)JM.Persistence.saveRuntime();
+    if(JM.UI&&JM.UI.renderTrace)JM.UI.renderTrace();
+  };
+  const clear=()=>{ledger.length=0;if(JM.Persistence)JM.Persistence.saveRuntime();if(JM.UI)JM.UI.renderTrace();};
+  return{ledger,log,clear};
+})();
+
+</script>
+<script data-module="persistence.js">
+window.JM=window.JM||{};
+JM.Persistence=(()=>{
+  const DB_NAME='device-continuity-v07';const STORE='runtime';const FALLBACK_KEY='dc-v0.7-runtime';let memoryRuntime=null;let lastEngine='unresolved';
+  const openDB=()=>new Promise((resolve,reject)=>{if(!('indexedDB'in window))return reject(new Error('IndexedDB unavailable'));try{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);}catch(e){reject(e)}});
+  const localUsable=()=>{try{localStorage.setItem('__dc','1');localStorage.removeItem('__dc');return true}catch{return false}};
+  const supported=()=>('indexedDB'in window)||localUsable();
+  const capability=()=>({durablePossible:supported(),memoryFallback:true,lastEngine});
+  const snapshotRuntime=()=>({portable:JM.State.state.portable,snapshots:JM.State.state.snapshots,branches:JM.State.state.branches,grants:JM.State.state.grants,trace:JM.Trace.ledger,identity:JM.State.state.identity,trustedPeers:JM.State.state.trustedPeers,replicationPolicy:JM.State.state.replicationPolicy,receipts:JM.State.state.receipts,syncMeta:JM.State.state.syncMeta});
+  const restoreRuntime=x=>{if(!x)return false;if(x.portable){JM.State.state.portable=x.portable;JM.State.ensureClock(JM.State.state.portable)}if(Array.isArray(x.snapshots))JM.State.state.snapshots=x.snapshots;if(Array.isArray(x.branches))JM.State.state.branches=x.branches;if(Array.isArray(x.grants))JM.State.state.grants=x.grants;if(Array.isArray(x.trace)){JM.Trace.ledger.length=0;JM.Trace.ledger.push(...x.trace)}if(x.identity)JM.State.state.identity=x.identity;if(Array.isArray(x.trustedPeers))JM.State.state.trustedPeers=x.trustedPeers;if(x.replicationPolicy)JM.State.state.replicationPolicy=x.replicationPolicy;if(Array.isArray(x.receipts))JM.State.state.receipts=x.receipts;if(x.syncMeta)JM.State.state.syncMeta=x.syncMeta;return true};
+  const saveRuntime=async()=>{const data=snapshotRuntime();memoryRuntime=JM.State.clone(data);try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(data,'current');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close();lastEngine='IndexedDB';return{ok:true,engine:lastEngine,durable:true}}catch{}try{if(localUsable()){localStorage.setItem(FALLBACK_KEY,JSON.stringify(data));lastEngine='localStorage';return{ok:true,engine:lastEngine,durable:true}}}catch{}lastEngine='memory';return{ok:true,engine:lastEngine,durable:false}};
+  const loadRuntime=async()=>{try{const db=await openDB();const data=await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly');const req=tx.objectStore(STORE).get('current');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});db.close();lastEngine='IndexedDB';return{restored:restoreRuntime(data),engine:lastEngine,durable:true}}catch{}try{if(localUsable()){const raw=localStorage.getItem(FALLBACK_KEY);lastEngine='localStorage';return{restored:restoreRuntime(raw?JSON.parse(raw):null),engine:lastEngine,durable:true}}}catch{}lastEngine='memory';return{restored:restoreRuntime(memoryRuntime),engine:lastEngine,durable:false}};
+  return{supported,capability,saveRuntime,loadRuntime};
+})();
+
+</script>
+<script data-module="identity.js">
+window.JM=window.JM||{};
+JM.Identity=(()=>{
+  const enc=new TextEncoder();
+  const available=()=>!!(globalThis.crypto&&crypto.subtle);
+  const requireCrypto=()=>{if(!available())throw new Error('WebCrypto unavailable in this host profile');};
+  const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const fromB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)).buffer;
+  const fingerprint=async(publicJwk)=>{requireCrypto();const bytes=enc.encode(JSON.stringify(publicJwk));const hash=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(hash)].slice(0,12).map(x=>x.toString(16).padStart(2,'0')).join(':');};
+  const generate=async()=>{requireCrypto();const pair=await crypto.subtle.generateKey({name:'ECDSA',namedCurve:'P-256'},true,['sign','verify']);const publicJwk=await crypto.subtle.exportKey('jwk',pair.publicKey);const privateJwk=await crypto.subtle.exportKey('jwk',pair.privateKey);const fp=await fingerprint(publicJwk);JM.State.state.identity={publicJwk,privateJwk,fingerprint:fp,createdAt:new Date().toISOString()};JM.Trace.log('identity-created','user',null,{fingerprint:fp});await JM.Persistence.saveRuntime();return JM.State.state.identity;};
+  const ensure=async()=>{if(!available())return{unavailable:true,fingerprint:'HOST:NO-WEBCRYPTO',createdAt:null};return JM.State.state.identity||generate();};
+  const sign=async(obj)=>{requireCrypto();const id=await ensure();const key=await crypto.subtle.importKey('jwk',id.privateJwk,{name:'ECDSA',namedCurve:'P-256'},false,['sign']);const bytes=enc.encode(JSON.stringify(obj));const sig=await crypto.subtle.sign({name:'ECDSA',hash:'SHA-256'},key,bytes);return{signature:b64(sig),publicJwk:id.publicJwk,fingerprint:id.fingerprint};};
+  const verify=async(obj,signature,publicJwk)=>{if(!available())return false;try{const key=await crypto.subtle.importKey('jwk',publicJwk,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);return await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,fromB64(signature),enc.encode(JSON.stringify(obj)));}catch{return false}};
+  return{available,generate,ensure,sign,verify,fingerprint};
+})();
+
+</script>
+<script data-module="crypto-packet.js">
+window.JM=window.JM||{};
+JM.CryptoPacket=(()=>{
+  const enc=new TextEncoder(),dec=new TextDecoder();
+  const b64=buf=>btoa(String.fromCharCode(...new Uint8Array(buf)));
+  const fromB64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+
+  const deriveKey=async(passphrase,salt)=>{
+    const material=await crypto.subtle.importKey("raw",enc.encode(passphrase),"PBKDF2",false,["deriveKey"]);
+    return crypto.subtle.deriveKey(
+      {name:"PBKDF2",salt,iterations:150000,hash:"SHA-256"},
+      material,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]
+    );
+  };
+
+  const encrypt=async(obj,passphrase)=>{
+    if(!passphrase)throw new Error("Passphrase required");
+    const salt=crypto.getRandomValues(new Uint8Array(16));
+    const iv=crypto.getRandomValues(new Uint8Array(12));
+    const key=await deriveKey(passphrase,salt);
+    const ciphertext=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(obj)));
+    return {scheme:"AES-GCM/PBKDF2-SHA256",iterations:150000,salt:b64(salt),iv:b64(iv),ciphertext:b64(ciphertext)};
+  };
+
+  const decrypt=async(wrapper,passphrase)=>{
+    const key=await deriveKey(passphrase,fromB64(wrapper.salt));
+    const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:fromB64(wrapper.iv)},key,fromB64(wrapper.ciphertext));
+    return JSON.parse(dec.decode(plain));
+  };
+
+  return{encrypt,decrypt};
+})();
+
+</script>
+<script data-module="device-block.js">
+window.JM=window.JM||{};
+JM.DeviceBlock=(()=>{
+  const switchTo=key=>{
+    const before=JM.State.activeDeviceKey();
+    Object.values(JM.State.state.devices).forEach(d=>d.active=false);
+    JM.State.state.devices[key].active=true;
+    JM.Trace.log("continuity-transfer","device-switch",before,key);
+  };
+  const updateLocal=(key,field,value)=>{
+    const d=JM.State.state.devices[key],before=d[field];
+    d[field]=value;
+    if(before!==value)JM.Trace.log("local-state-change",`${d.name}.${field}`,before,value);
+  };
+  return{switchTo,updateLocal};
+})();
+
+</script>
+<script data-module="intent-engine.js">
+window.JM=window.JM||{};
+JM.Intent=(()=>{
+  const classify=(signal,action)=>{
+    if(signal==="glide")return{intent:"ambiguous/accidental",execute:false,arm:false,reason:"glide is not treated as a deliberate press"};
+    if(action==="clear")return{intent:"deliberate-risky",execute:false,arm:true,reason:"destructive action requires a second deliberate signal"};
+    return{intent:"deliberate",execute:true,arm:false,reason:"low-risk action + deliberate signal"};
+  };
+  const evaluate=(signal,action)=>{
+    const c=classify(signal,action),p=JM.State.state.portable,before=p.draft;
+    JM.State.state.armedAction=null;
+    if(c.execute&&action==="backspace"){p.draft=p.draft.slice(0,-1);JM.State.touchPortable(JM.State.activeDeviceKey(),['draft']);}
+    else if(c.arm)JM.State.state.armedAction={action,expires:Date.now()+5000};
+    JM.Trace.log("intent-evaluation",`${signal}→${action}`,before,c.execute?p.draft:before);
+    return c;
+  };
+  const confirm=()=>{
+    const armed=JM.State.state.armedAction;
+    if(!armed||Date.now()>armed.expires){JM.State.state.armedAction=null;JM.Trace.log("intent-expired","confirm",null,null);return{ok:false,expired:true};}
+    if(armed.action==="clear"){
+      const p=JM.State.state.portable,before=p.draft;p.draft="";JM.State.touchPortable(JM.State.activeDeviceKey(),['draft']);
+      JM.Trace.log("confirmed-destructive-action","clear-draft",before,"");
+    }
+    JM.State.state.armedAction=null;return{ok:true};
+  };
+  return{classify,evaluate,confirm};
+})();
+
+</script>
+<script data-module="regrade.js">
+window.JM=window.JM||{};
+JM.Regrade=(()=>{
+  const snapshot=()=>{
+    const snap={time:new Date().toISOString(),portable:JM.State.clone(JM.State.state.portable)};
+    JM.State.state.snapshots.unshift(snap);
+    JM.Trace.log("snapshot-created","portable-state",null,`r${snap.portable.revision}`);
+    JM.Persistence.saveRuntime();return snap;
+  };
+  const apply=index=>{
+    const snap=JM.State.state.snapshots[index];if(!snap)return false;
+    const before=JM.State.clone(JM.State.state.portable);
+    const restored=JM.State.clone(snap.portable);
+    JM.State.state.portable=restored;JM.State.ensureClock(JM.State.state.portable);
+    const changed=JM.State.portableFields.filter(f=>JSON.stringify(before[f])!==JSON.stringify(restored[f]));
+    JM.State.touchPortable('regrade',changed);
+    JM.Trace.log("regrade",`snapshot-r${snap.portable.revision}`,before,JM.State.clone(restored));
+    JM.Persistence.saveRuntime();return true;
+  };
+  return{snapshot,apply};
+})();
+
+</script>
+<script data-module="policy-engine.js">
+window.JM=window.JM||{};
+JM.Policy=(()=>{
+  const modes=['local-only','trusted','allowlist'];
+  const enc=new TextEncoder();
+  const hex=buf=>[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  const ownFingerprint=()=>JM.State.state.identity?.fingerprint||null;
+  const normalize=()=>{
+    const s=JM.State.state;
+    s.replicationPolicy=s.replicationPolicy||{version:1,fields:{}};
+    s.replicationPolicy.fields=s.replicationPolicy.fields||{};
+    for(const f of JM.State.portableFields){
+      if(!s.replicationPolicy.fields[f])s.replicationPolicy.fields[f]={mode:f==='ownerLabel'?'local-only':'trusted',allowlist:[]};
+      const r=s.replicationPolicy.fields[f];
+      if(!modes.includes(r.mode))r.mode='local-only';
+      if(!Array.isArray(r.allowlist))r.allowlist=[];
+    }
+  };
+  const isSelf=fp=>!!fp&&fp===ownFingerprint();
+  const canShare=(field,fp)=>{
+    normalize();
+    const r=JM.State.state.replicationPolicy.fields[field];
+    if(!r||r.mode==='local-only')return false;
+    if(r.mode==='trusted')return isSelf(fp)||JM.Trust.isTrusted(fp);
+    if(r.mode==='allowlist')return r.allowlist.includes(fp);
+    return false;
+  };
+  const needsRemote=field=>{
+    normalize();
+    return JM.State.state.replicationPolicy.fields[field]?.mode!=='local-only';
+  };
+  const set=(field,mode,allowlist=[])=>{
+    normalize();if(!JM.State.portableFields.includes(field)||!modes.includes(mode))return false;
+    const before=JM.State.clone(JM.State.state.replicationPolicy.fields[field]);
+    JM.State.state.replicationPolicy.fields[field]={mode,allowlist:[...new Set(allowlist.filter(Boolean))]};
+    JM.State.state.replicationPolicy.version=(JM.State.state.replicationPolicy.version||0)+1;
+    JM.Trace.log('replication-policy-change',field,before,JM.State.clone(JM.State.state.replicationPolicy.fields[field]));
+    JM.Persistence.saveRuntime();
+    JM.Events.emit('policy-changed',{field,mode});
+    return true;
+  };
+  const resetBalanced=()=>{
+    for(const f of JM.State.portableFields){
+      JM.State.state.replicationPolicy.fields[f]={mode:f==='ownerLabel'?'local-only':'trusted',allowlist:[]};
+    }
+    JM.State.state.replicationPolicy.version=(JM.State.state.replicationPolicy.version||0)+1;
+    JM.Trace.log('replication-policy-reset','user',null,{version:JM.State.state.replicationPolicy.version});
+    JM.Persistence.saveRuntime();JM.Events.emit('policy-reset');
+  };
+  const weakHash=text=>{let h=2166136261;for(let i=0;i<text.length;i++){h^=text.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(16).padStart(8,'0')};
+  const hash=async()=>{
+    normalize();const text=JSON.stringify(JM.State.state.replicationPolicy);
+    if(JM.Identity.available())return hex(await crypto.subtle.digest('SHA-256',enc.encode(text)));
+    return 'UNVERIFIED-FNV32:'+weakHash(text);
+  };
+  const projectForPeer=async fp=>{
+    normalize();JM.State.ensureClock(JM.State.state.portable);
+    const p=JM.State.state.portable,fields={},fieldClocks={},included=[],withheld=[];
+    for(const f of JM.State.portableFields){
+      if(canShare(f,fp)){fields[f]=JM.State.clone(p[f]);fieldClocks[f]=JM.State.clone(p.fieldClocks[f]||{});included.push(f);}
+      else withheld.push(f);
+    }
+    return{
+      projection:{lineageId:p.lineageId,revision:p.revision,updatedAt:p.updatedAt,updatedBy:p.updatedBy,clock:JM.State.clone(p.clock||{}),fields,fieldClocks},
+      disclosure:{targetFingerprint:fp||null,included,withheld,policyVersion:JM.State.state.replicationPolicy.version,policyHash:await hash()}
+    };
+  };
+  const preview=fp=>projectForPeer(fp);
+  normalize();
+  return{modes,normalize,isSelf,canShare,needsRemote,set,resetBalanced,hash,projectForPeer,preview};
+})();
+
+</script>
+<script data-module="continuity-packet.js">
+window.JM=window.JM||{};
+JM.Packet=(()=>{
+  const makeSignedForPeer=async peerFingerprint=>{
+    const {projection,disclosure}=await JM.Policy.projectForPeer(peerFingerprint);
+    const body={schema:'device-continuity-packet',version:'0.6',exportedAt:new Date().toISOString(),sourceDevice:JM.State.activeDeviceKey(),projection,disclosure};
+    const auth=await JM.Identity.sign(body);
+    return{...body,auth};
+  };
+  const verify=async packet=>{
+    if(!packet||packet.schema!=='device-continuity-packet'||!packet.projection||!packet.disclosure||!packet.auth)return false;
+    const{auth,...body}=packet;return JM.Identity.verify(body,auth.signature,auth.publicJwk);
+  };
+  return{makeSignedForPeer,verify};
+})();
+
+</script>
+<script data-module="receipt-ledger.js">
+window.JM=window.JM||{};
+JM.Receipts=(()=>{
+  const enc=new TextEncoder();
+  const hex=buf=>[...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+  const packetHash=async packet=>hex(await crypto.subtle.digest('SHA-256',enc.encode(JSON.stringify(packet))));
+  const record=async body=>{
+    const auth=await JM.Identity.sign(body);
+    const receipt={body,auth};
+    JM.State.state.receipts.unshift(receipt);
+    if(JM.State.state.receipts.length>100)JM.State.state.receipts.length=100;
+    await JM.Persistence.saveRuntime();
+    JM.Events.emit('receipt-added',receipt);
+    return receipt;
+  };
+  const outbound=async(packet,peerFingerprint,target)=>record({
+    schema:'dc-disclosure-receipt',version:'0.6',direction:'outbound',at:new Date().toISOString(),
+    peerFingerprint,target,packetHash:await packetHash(packet),lineageId:packet.projection.lineageId,
+    revision:packet.projection.revision,included:packet.disclosure.included,withheld:packet.disclosure.withheld,
+    policyVersion:packet.disclosure.policyVersion,policyHash:packet.disclosure.policyHash
+  });
+  const inbound=async(packet,peerFingerprint,result)=>record({
+    schema:'dc-disclosure-receipt',version:'0.6',direction:'inbound',at:new Date().toISOString(),
+    peerFingerprint,packetHash:await packetHash(packet),lineageId:packet.projection?.lineageId||null,
+    revision:packet.projection?.revision||null,included:packet.disclosure?.included||[],withheld:packet.disclosure?.withheld||[],
+    policyVersion:packet.disclosure?.policyVersion||null,policyHash:packet.disclosure?.policyHash||null,
+    result:{appliedFields:result.appliedFields||[],conflicts:(result.conflicts||[]).map(x=>x.field),noops:result.noops||[]}
+  });
+  const verify=async receipt=>{
+    if(!receipt?.body||!receipt?.auth)return false;
+    return JM.Identity.verify(receipt.body,receipt.auth.signature,receipt.auth.publicJwk);
+  };
+  return{packetHash,record,outbound,inbound,verify};
+})();
+
+</script>
+<script data-module="backup.js">
+window.JM=window.JM||{};
+JM.Backup=(()=>{
+  const make=()=>({
+    schema:'dc-sovereign-backup',version:'0.6',createdAt:new Date().toISOString(),
+    portable:JM.State.clone(JM.State.state.portable),
+    replicationPolicy:JM.State.clone(JM.State.state.replicationPolicy),
+    snapshots:JM.State.clone(JM.State.state.snapshots)
+  });
+  const restore=async backup=>{
+    if(!backup||backup.schema!=='dc-sovereign-backup'||!backup.portable)return false;
+    const before=JM.State.clone(JM.State.state.portable);
+    JM.State.state.portable=JM.State.clone(backup.portable);JM.State.ensureClock(JM.State.state.portable);
+    if(backup.replicationPolicy)JM.State.state.replicationPolicy=JM.State.clone(backup.replicationPolicy);
+    if(Array.isArray(backup.snapshots))JM.State.state.snapshots=JM.State.clone(backup.snapshots);
+    JM.Policy.normalize();
+    JM.Trace.log('sovereign-backup-restore','user',before,JM.State.clone(JM.State.state.portable));
+    await JM.Persistence.saveRuntime();
+    JM.Events.emit('portable-restored',{fields:JM.State.portableFields});
+    return true;
+  };
+  return{make,restore};
+})();
+
+</script>
+<script data-module="conflict-engine.js">
+window.JM=window.JM||{};
+JM.Conflict=(()=>{
+  const clone=JM.State.clone;
+  const mergeClock=(a,b)=>{const out={};for(const k of new Set([...Object.keys(a||{}),...Object.keys(b||{})]))out[k]=Math.max((a&&a[k])||0,(b&&b[k])||0);return out;};
+  const makeFieldBranch=(field,localValue,incomingValue,localClock,incomingClock,relation,source)=>{
+    const b={id:crypto.randomUUID?crypto.randomUUID():'branch-'+Date.now()+Math.random(),type:'field',field,status:'unresolved',createdAt:new Date().toISOString(),relation,source,localValue:clone(localValue),incomingValue:clone(incomingValue),localClock:clone(localClock||{}),incomingClock:clone(incomingClock||{})};
+    JM.State.state.branches.unshift(b);return b;
+  };
+  const createIncoming=(deviceKey,draftText)=>{
+    const p=JM.State.state.portable;JM.State.ensureClock(p);
+    const incomingClock=clone(p.fieldClocks.draft||{});incomingClock['sim:'+deviceKey]=(incomingClock['sim:'+deviceKey]||0)+1;
+    const b=makeFieldBranch('draft',p.draft,draftText,p.fieldClocks.draft,incomingClock,'concurrent',deviceKey);
+    JM.Trace.log('conflict-created',deviceKey,{field:'draft',clock:p.fieldClocks.draft},{clock:incomingClock,branchId:b.id});JM.Persistence.saveRuntime();return b;
+  };
+  const unresolved=()=>JM.State.state.branches.find(b=>b.status==='unresolved');
+  const resolve=(branchId,choice)=>{
+    const b=JM.State.state.branches.find(x=>x.id===branchId);if(!b)return false;
+    if(b.type==='field'){
+      const p=JM.State.state.portable;JM.State.ensureClock(p);const field=b.field;
+      if(choice==='incoming')p[field]=clone(b.incomingValue);
+      else if(choice==='merge')p[field]=(typeof b.localValue==='string'&&typeof b.incomingValue==='string'&&b.localValue!==b.incomingValue)?`${b.localValue}\n\n--- MERGED BRANCH ---\n${b.incomingValue}`:clone(b.incomingValue);
+      p.fieldClocks[field]=mergeClock(b.localClock,b.incomingClock);
+      JM.State.touchPortable('conflict-resolution',[field]);
+    }else{
+      if(choice==='incoming'){JM.State.state.portable=clone(b.incoming);JM.State.touchPortable('conflict-resolution',JM.State.portableFields);}
+      else if(choice==='merge'){const before=JM.State.state.portable;before.draft=`${before.draft}\n\n--- MERGED BRANCH ---\n${b.incoming.draft}`;JM.State.touchPortable('conflict-resolution',['draft']);}
+    }
+    b.status='resolved';b.resolution=choice;b.resolvedAt=new Date().toISOString();JM.Trace.log('conflict-resolved',choice,{branchId:b.id},{field:b.field||'whole'});JM.Persistence.saveRuntime();return true;
+  };
+  const importPacket=async packet=>{
+    if(!(await JM.Packet.verify(packet)))return{ok:false,reason:'signature verification failed'};
+    const p=JM.State.state.portable,proj=packet.projection;JM.State.ensureClock(p);
+    if(proj.lineageId!==p.lineageId){
+      const b={id:crypto.randomUUID?crypto.randomUUID():'branch-'+Date.now(),type:'foreign-projection',status:'unresolved',createdAt:new Date().toISOString(),relation:'foreign-lineage',source:packet.auth.fingerprint,projection:clone(proj)};
+      JM.State.state.branches.unshift(b);JM.Trace.log('foreign-lineage-received','packet',{local:p.lineageId},{incoming:proj.lineageId,branchId:b.id});await JM.Persistence.saveRuntime();return{ok:true,conflict:true,branch:b,conflicts:[{field:'*',relation:'foreign-lineage'}],appliedFields:[],noops:[]};
+    }
+    const appliedFields=[],conflicts=[],noops=[];
+    for(const field of packet.disclosure.included||[]){
+      if(!JM.State.portableFields.includes(field))continue;
+      const incomingClock=proj.fieldClocks?.[field]||{};const localClock=p.fieldClocks[field]||{};const relation=JM.State.compareClocks(localClock,incomingClock);
+      const incomingValue=proj.fields?.[field];const localValue=p[field];
+      if(relation==='b-dominates'){
+        p[field]=clone(incomingValue);p.fieldClocks[field]=clone(incomingClock);appliedFields.push(field);
+      }else if(relation==='a-dominates')noops.push(field);
+      else if(relation==='equal'&&JSON.stringify(localValue)===JSON.stringify(incomingValue))noops.push(field);
+      else{
+        const rel=relation==='equal'?'equal-clock-divergence':relation;
+        const b=makeFieldBranch(field,localValue,incomingValue,localClock,incomingClock,rel,packet.auth.fingerprint);conflicts.push({field,relation:rel,branchId:b.id});
+      }
+    }
+    if(appliedFields.length){
+      p.clock=mergeClock(p.clock,proj.clock||{});p.revision=Math.max(p.revision||0,proj.revision||0);p.updatedAt=new Date().toISOString();p.updatedBy=`remote:${packet.auth.fingerprint}`;
+      JM.Events.emit('portable-changed',{source:'remote-sync',fields:appliedFields,revision:p.revision,clock:clone(p.clock)});
+    }
+    const result={ok:true,appliedFields,conflicts,noops,conflict:conflicts.length>0,fastForward:appliedFields.length>0&&conflicts.length===0};
+    await JM.Persistence.saveRuntime();return result;
+  };
+  return{createIncoming,unresolved,resolve,importPacket};
+})();
+
+</script>
+<script data-module="permissions.js">
+window.JM=window.JM||{};
+JM.Permissions=(()=>{
+  const request=(requester,capability,duration)=>{
+    const req={id:(crypto.randomUUID?crypto.randomUUID():"perm-"+Date.now()),requester,capability,duration,requestedAt:new Date().toISOString()};
+    JM.State.state.pendingPermission=req;
+    JM.Trace.log("capability-request",requester,null,{capability,duration});
+    return req;
+  };
+  const decide=(decision)=>{
+    const req=JM.State.state.pendingPermission;if(!req)return false;
+    if(decision==="allow"){
+      JM.State.state.grants.unshift({...req,grantedAt:new Date().toISOString(),status:"granted"});
+      JM.Trace.log("capability-granted",req.requester,null,{capability:req.capability,duration:req.duration});
+    }else{
+      JM.Trace.log("capability-denied",req.requester,null,{capability:req.capability,duration:req.duration});
+    }
+    JM.State.state.pendingPermission=null;JM.Persistence.saveRuntime();return true;
+  };
+  const revoke=id=>{
+    const g=JM.State.state.grants.find(x=>x.id===id);if(!g)return false;
+    g.status="revoked";g.revokedAt=new Date().toISOString();
+    JM.Trace.log("capability-revoked",g.requester,{capability:g.capability},null);
+    JM.Persistence.saveRuntime();return true;
+  };
+  const has=(requester,capability)=>JM.State.state.grants.some(g=>g.requester===requester&&g.capability===capability&&g.status==="granted");
+  return{request,decide,revoke,has};
+})();
+
+</script>
+<script data-module="trust-store.js">
+window.JM=window.JM||{};
+JM.Trust=(()=>{
+  const pending=[];
+  const isTrusted=fp=>JM.State.state.identity?.fingerprint===fp||JM.State.state.trustedPeers.some(x=>x.fingerprint===fp&&x.status==='trusted');
+  const trust=(fingerprint,label='Trusted peer')=>{
+    const existing=JM.State.state.trustedPeers.find(x=>x.fingerprint===fingerprint);
+    if(existing){existing.status='trusted';existing.label=label;existing.trustedAt=new Date().toISOString();}
+    else JM.State.state.trustedPeers.unshift({fingerprint,label,status:'trusted',trustedAt:new Date().toISOString()});
+    JM.Trace.log('peer-trusted','user',null,{fingerprint,label});
+    JM.Persistence.saveRuntime();
+    JM.Events.emit('trust-changed');
+  };
+  const revoke=fingerprint=>{
+    const p=JM.State.state.trustedPeers.find(x=>x.fingerprint===fingerprint);
+    if(p){p.status='revoked';p.revokedAt=new Date().toISOString();}
+    JM.Trace.log('peer-trust-revoked','user',{fingerprint},null);
+    JM.Persistence.saveRuntime();
+    JM.Events.emit('trust-changed');
+  };
+  const quarantine=item=>{
+    if(!pending.some(x=>x.id===item.id))pending.unshift(item);
+    JM.Trace.log('packet-quarantined','trust-gate',null,{fingerprint:item.fingerprint,id:item.id});
+    JM.Events.emit('quarantine-changed');
+  };
+  const removePending=id=>{
+    const i=pending.findIndex(x=>x.id===id); if(i>=0)pending.splice(i,1);
+    JM.Events.emit('quarantine-changed');
+  };
+  return{pending,isTrusted,trust,revoke,quarantine,removePending};
+})();
+
+</script>
+<script data-module="transport.js">
+window.JM=window.JM||{};
+JM.Transport=(()=>{
+  const instanceId=(crypto.randomUUID?crypto.randomUUID():'instance-'+Date.now());
+  const localPeers=new Map();
+  const rtcPeers=new Map();
+  let channel=null;
+  let rtcCounter=0;
+
+  const status=()=>({
+    instanceId,
+    broadcastSupported:'BroadcastChannel' in window,
+    cryptoReady:JM.Identity.available(),
+    webrtcSupported:'RTCPeerConnection' in window,
+    localPeers:[...localPeers.values()],
+    rtcPeers:[...rtcPeers.values()].map(p=>({id:p.id,label:p.label,state:p.state,fingerprint:p.fingerprint||null}))
+  });
+  const emitStatus=()=>JM.Events.emit('transport-status',status());
+
+  const sendEnvelope=async(target,kind,payload)=>{
+    if(!JM.Identity.available())throw new Error('Signed transport unavailable: WebCrypto is not available on this host');
+    const body={schema:'dc-envelope',version:'0.6',id:(crypto.randomUUID?crypto.randomUUID():'env-'+Date.now()),sentAt:new Date().toISOString(),instanceId,kind,payload};
+    const auth=await JM.Identity.sign(body);
+    const envelope={...body,auth};
+    if(target==='broadcast'){
+      if(kind!=='hello'){JM.Trace.log('broadcast-data-blocked','transport',null,{kind});return false;}
+      channel?.postMessage(envelope);
+    }
+    else{
+      const peer=rtcPeers.get(target);
+      if(peer?.dc?.readyState==='open')peer.dc.send(JSON.stringify(envelope));
+    }
+    return envelope;
+  };
+
+  const verifyEnvelope=async env=>{
+    if(!env||env.schema!=='dc-envelope'||!env.auth)return false;
+    const {auth,...body}=env;
+    return JM.Identity.verify(body,auth.signature,auth.publicJwk);
+  };
+
+  const receiveEnvelope=async(env,transportLabel)=>{
+    if(env.instanceId===instanceId)return;
+    const ok=await verifyEnvelope(env);
+    if(!ok){JM.Trace.log('transport-envelope-rejected',transportLabel,null,{reason:'bad-signature'});return;}
+    const fp=env.auth.fingerprint;
+    if(env.kind==='hello'){
+      const label=env.payload?.deviceLabel||'Peer';
+      if(transportLabel.startsWith('broadcast'))localPeers.set(env.instanceId,{id:env.instanceId,label,fingerprint:fp,lastSeen:Date.now(),transport:'broadcast',state:'live'});
+      if(transportLabel.startsWith('webrtc:')){const id=transportLabel.split(':')[1];const peer=rtcPeers.get(id);if(peer){peer.fingerprint=fp;peer.label=label||peer.label;}}
+      JM.Trace.log('peer-hello',transportLabel,null,{fingerprint:fp,label});
+      emitStatus();
+      JM.Events.emit('peer-hello',{fingerprint:fp,label,transport:transportLabel,instanceId:env.instanceId});
+      return;
+    }
+    if(!JM.Trust.isTrusted(fp)){
+      JM.Trust.quarantine({id:env.id,fingerprint:fp,receivedAt:new Date().toISOString(),envelope:env,transport:transportLabel});
+      return;
+    }
+    JM.Events.emit('transport-message',{envelope:env,transport:transportLabel,fingerprint:fp});
+  };
+
+  const startBroadcast=async()=>{
+    if(!JM.Identity.available())return false;
+    if(!('BroadcastChannel' in window))return false;
+    channel=new BroadcastChannel('device-continuity-v05');
+    channel.onmessage=e=>receiveEnvelope(e.data,'broadcast');
+    await sendEnvelope('broadcast','hello',{deviceLabel:JM.State.activeDevice().name});
+    setInterval(async()=>{
+      for(const [id,p] of localPeers)if(Date.now()-p.lastSeen>15000)localPeers.delete(id);
+      await sendEnvelope('broadcast','hello',{deviceLabel:JM.State.activeDevice().name});
+      emitStatus();
+    },5000);
+    emitStatus();
+    return true;
+  };
+
+  const waitIce=pc=>new Promise(resolve=>{
+    if(pc.iceGatheringState==='complete')return resolve();
+    const f=()=>{if(pc.iceGatheringState==='complete'){pc.removeEventListener('icegatheringstatechange',f);resolve();}};
+    pc.addEventListener('icegatheringstatechange',f);
+    setTimeout(resolve,8000);
+  });
+
+  const attachDataChannel=(peer,dc)=>{
+    peer.dc=dc;
+    dc.onopen=async()=>{
+      peer.state='connected';emitStatus();
+      JM.Trace.log('webrtc-connected',peer.label,null,{peerId:peer.id});
+      await sendEnvelope(peer.id,'hello',{deviceLabel:JM.State.activeDevice().name});
+      JM.Events.emit('peer-connected',{peerId:peer.id});
+    };
+    dc.onclose=()=>{peer.state='closed';emitStatus();};
+    dc.onerror=()=>{peer.state='error';emitStatus();};
+    dc.onmessage=e=>{try{receiveEnvelope(JSON.parse(e.data),`webrtc:${peer.id}`)}catch{JM.Trace.log('webrtc-message-rejected',peer.id,null,{reason:'invalid-json'})}};
+  };
+
+  const newPeer=label=>{
+    if(!JM.Identity.available())throw new Error('WebRTC continuity transport requires WebCrypto on this host');
+    if(!('RTCPeerConnection' in window))throw new Error('WebRTC unavailable');
+    const id=`rtc-${++rtcCounter}`;
+    const pc=new RTCPeerConnection({iceServers:[{urls:'stun:stun.l.google.com:19302'}]});
+    const peer={id,label:label||id,pc,dc:null,state:'new',fingerprint:null};
+    rtcPeers.set(id,peer);
+    pc.onconnectionstatechange=()=>{peer.state=pc.connectionState;emitStatus();};
+    pc.ondatachannel=e=>attachDataChannel(peer,e.channel);
+    emitStatus();return peer;
+  };
+
+  const encodeDesc=d=>btoa(unescape(encodeURIComponent(JSON.stringify(d))));
+  const decodeDesc=s=>JSON.parse(decodeURIComponent(escape(atob(s.trim()))));
+
+  const createOffer=async label=>{
+    const peer=newPeer(label||'Remote peer');
+    attachDataChannel(peer,peer.pc.createDataChannel('continuity'));
+    await peer.pc.setLocalDescription(await peer.pc.createOffer());
+    await waitIce(peer.pc);
+    peer.state='offer-created';emitStatus();
+    return{peerId:peer.id,description:encodeDesc(peer.pc.localDescription)};
+  };
+  const acceptOffer=async(encoded,label)=>{
+    const peer=newPeer(label||'Offer peer');
+    await peer.pc.setRemoteDescription(decodeDesc(encoded));
+    await peer.pc.setLocalDescription(await peer.pc.createAnswer());
+    await waitIce(peer.pc);
+    peer.state='answer-created';emitStatus();
+    return{peerId:peer.id,description:encodeDesc(peer.pc.localDescription)};
+  };
+  const acceptAnswer=async(peerId,encoded)=>{
+    const peer=rtcPeers.get(peerId);if(!peer)throw new Error('Unknown peer');
+    await peer.pc.setRemoteDescription(decodeDesc(encoded));
+    peer.state='answer-applied';emitStatus();return true;
+  };
+
+  const sendToPeer=(peerId,kind,payload)=>sendEnvelope(peerId,kind,payload);
+  const broadcast=(kind,payload)=>sendEnvelope('broadcast',kind,payload);
+  const connectedTargets=()=>{
+    const out=[];if(channel&&localPeers.size>0)out.push('broadcast');
+    for(const [id,p] of rtcPeers)if(p.dc?.readyState==='open')out.push(id);
+    return out;
+  };
+  const dataTargets=()=>{
+    const out=[];for(const [id,p] of rtcPeers)if(p.dc?.readyState==='open'&&p.fingerprint)out.push({targetId:id,fingerprint:p.fingerprint,label:p.label||id});return out;
+  };
+  const isDataKindAllowedOnBroadcast=kind=>kind==='hello';
+  return{instanceId,status,startBroadcast,createOffer,acceptOffer,acceptAnswer,sendToPeer,broadcast,connectedTargets,dataTargets,isDataKindAllowedOnBroadcast,receiveEnvelope};
+})();
+
+</script>
+<script data-module="sync-engine.js">
+window.JM=window.JM||{};
+JM.Sync=(()=>{
+  let sending=false;
+  const normalizeDirty=()=>{const m=JM.State.state.syncMeta;m.dirtyFields=Array.isArray(m.dirtyFields)?m.dirtyFields:[];m.dirty=m.dirtyFields.length>0;};
+  const status=()=>{normalizeDirty();return{dirty:JM.State.state.syncMeta.dirty,dirtyFields:[...JM.State.state.syncMeta.dirtyFields],queueLength:JM.State.state.syncMeta.dirtyFields.length,lastSyncAt:JM.State.state.syncMeta.lastSyncAt||null,lastResult:JM.State.state.syncMeta.lastResult||null,targets:JM.Transport?.dataTargets?.()||[]};};
+  const markDirty=(reason,fields=JM.State.portableFields)=>{
+    normalizeDirty();const m=JM.State.state.syncMeta;
+    for(const f of fields||[])if(JM.Policy.needsRemote(f)&&!m.dirtyFields.includes(f))m.dirtyFields.push(f);
+    m.dirty=m.dirtyFields.length>0;m.lastDirtyReason=reason||'portable-change';JM.Persistence.saveRuntime();JM.Events.emit('sync-status',status());schedule();
+  };
+  const schedule=()=>{clearTimeout(schedule.t);schedule.t=setTimeout(()=>sendLatest('auto'),400);};
+  const sendLatest=async(reason='manual')=>{
+    if(!JM.Identity.available()){const m=JM.State.state.syncMeta;m.lastResult='host-no-webcrypto';await JM.Persistence.saveRuntime();JM.Events.emit('sync-status',status());return false;}
+    if(sending)return false;normalizeDirty();const m=JM.State.state.syncMeta;const targets=JM.Transport.dataTargets();
+    if(!targets.length){m.dirty=m.dirtyFields.length>0;m.lastResult=m.dirty?'queued-no-data-peer':'settled-local-only';await JM.Persistence.saveRuntime();JM.Events.emit('sync-status',status());return false;}
+    sending=true;const sent=new Set();let deliveries=0;
+    try{
+      for(const target of targets){
+        if(!JM.Trust.isTrusted(target.fingerprint)&&!JM.Policy.isSelf(target.fingerprint))continue;
+        const packet=await JM.Packet.makeSignedForPeer(target.fingerprint);
+        const eligible=packet.disclosure.included.filter(f=>m.dirtyFields.includes(f));
+        if(!eligible.length)continue;
+        const narrowed=JM.State.clone(packet);narrowed.disclosure.included=packet.disclosure.included.filter(f=>eligible.includes(f));narrowed.disclosure.withheld=[...new Set([...packet.disclosure.withheld,...packet.disclosure.included.filter(f=>!eligible.includes(f))])];
+        for(const f of Object.keys(narrowed.projection.fields))if(!eligible.includes(f)){delete narrowed.projection.fields[f];delete narrowed.projection.fieldClocks[f];}
+        const body={schema:narrowed.schema,version:narrowed.version,exportedAt:narrowed.exportedAt,sourceDevice:narrowed.sourceDevice,projection:narrowed.projection,disclosure:narrowed.disclosure};narrowed.auth=await JM.Identity.sign(body);
+        await JM.Transport.sendToPeer(target.targetId,'state',{packet:narrowed,reason});await JM.Receipts.outbound(narrowed,target.fingerprint,target.targetId);deliveries++;eligible.forEach(f=>sent.add(f));
+      }
+      m.dirtyFields=m.dirtyFields.filter(f=>!sent.has(f));m.dirty=m.dirtyFields.length>0;m.lastSyncAt=new Date().toISOString();m.lastResult=deliveries?`sent:${deliveries}`:(m.dirty?'no-eligible-peer':'settled');
+      JM.Trace.log('continuity-sync-send',reason,null,{deliveries,sentFields:[...sent],remaining:m.dirtyFields});await JM.Persistence.saveRuntime();JM.Events.emit('sync-status',status());return deliveries>0;
+    }finally{sending=false;}
+  };
+  const handleIncoming=async({envelope,transport,fingerprint})=>{
+    if(envelope.kind!=='state')return;const packet=envelope.payload?.packet;const result=await JM.Conflict.importPacket(packet);if(result.ok)await JM.Receipts.inbound(packet,fingerprint,result);
+    JM.Trace.log('continuity-sync-receive',transport,{fingerprint},{result});if(result.appliedFields?.length)JM.UI?.applyPortable?.();if(result.conflict)JM.UI?.renderConflict?.();
+    const m=JM.State.state.syncMeta;m.lastResult=result.appliedFields?.length?'received-fields':result.conflict?'received-conflict':'received-noop';m.lastSyncAt=new Date().toISOString();await JM.Persistence.saveRuntime();JM.Events.emit('sync-status',status());
+  };
+  const acceptQuarantined=async(id,mode)=>{const item=JM.Trust.pending.find(x=>x.id===id);if(!item)return false;if(mode==='trust')JM.Trust.trust(item.fingerprint,item.envelope.payload?.deviceLabel||'Trusted peer');if(mode==='once'||mode==='trust'){JM.Trust.removePending(id);JM.Events.emit('transport-message',{envelope:item.envelope,transport:item.transport,fingerprint:item.fingerprint});return true;}JM.Trust.removePending(id);JM.Trace.log('quarantined-packet-rejected','user',null,{id,fingerprint:item.fingerprint});return true;};
+  const init=()=>{normalizeDirty();JM.Events.on('portable-changed',x=>markDirty(x?.source,x?.fields));JM.Events.on('policy-changed',x=>markDirty('policy-change',[x.field]));JM.Events.on('policy-reset',()=>markDirty('policy-reset',JM.State.portableFields));JM.Events.on('transport-message',handleIncoming);JM.Events.on('peer-connected',()=>sendLatest('peer-connected'));JM.Events.on('peer-hello',({fingerprint})=>{if((JM.Trust.isTrusted(fingerprint)||JM.Policy.isSelf(fingerprint))&&status().dirty)sendLatest('trusted-peer-seen');});};
+  return{init,markDirty,sendLatest,status,acceptQuarantined};
+})();
+
+</script>
+<script data-module="tests.js">
+window.JM=window.JM||{};
+JM.Tests=(()=>{
+  const run=async()=>{
+    const s=JM.State.state,results=[];
+    const t=(name,pass,detail)=>results.push({name,pass:!!pass,status:pass?'PASS':'FAIL',detail});
+    const skip=(name,detail)=>results.push({name,pass:false,status:'SKIP',detail});
+    const cryptoReady=JM.Identity.available();
+    const active=JM.State.activeDeviceKey(),other=Object.keys(s.devices).find(k=>k!==active),draft=s.portable.draft;
+    JM.State.ensureClock(s.portable);
+    t('Device Blocks exist',Object.keys(s.devices).length>=3,'Phone, Laptop and Ama-Pro remain stable device identities.');
+    t('Portable fields have independent causal clocks',JM.State.portableFields.every(f=>!!s.portable.fieldClocks[f]),'Each replicated field has its own version vector.');
+    t('Glide is not deliberate intent',!JM.Intent.classify('glide','backspace').execute,'A glide cannot silently execute a press.');
+    t('Destructive actions need stronger intent',JM.Intent.classify('tap','clear').arm===true,'Clear is armed rather than immediately executed.');
+    const a={x:2,y:1},b={x:2,y:2};t('Causal clock detects newer state',JM.State.compareClocks(a,b)==='b-dominates','Version vectors distinguish succession.');
+    const c={x:3,y:1},d={x:2,y:2};t('Causal clock detects concurrency',JM.State.compareClocks(c,d)==='concurrent','Independent edits are recognised as concurrent.');
+    const fake='aa:bb:test-peer',originalPolicy=JM.State.clone(s.replicationPolicy);
+    JM.Trust.trust(fake,'Test peer');JM.Policy.set('ownerLabel','local-only',[]);JM.Policy.set('draft','trusted',[]);
+    const projected=await JM.Policy.projectForPeer(fake);
+    t('Local-only value is physically absent from disclosure projection',!Object.prototype.hasOwnProperty.call(projected.projection.fields,'ownerLabel'),'Local-only enforcement happens before packet signing/networking.');
+    t('Trusted field can be projected to trusted peer',Object.prototype.hasOwnProperty.call(projected.projection.fields,'draft'),'Trusted policy releases the field only to an eligible peer.');
+    t('Disclosure metadata names withheld fields',projected.disclosure.withheld.includes('ownerLabel'),'Recipient/audit metadata records withholding.');
+    t('Broadcast plane blocks state payloads',JM.Transport.isDataKindAllowedOnBroadcast('state')===false,'BroadcastChannel remains discovery-only.');
+    t('Replication policy offers explicit local-only mode',JM.Policy.modes.includes('local-only'),'User can declare a field non-replicating.');
+    t('Policy offers fingerprint allowlists',JM.Policy.modes.includes('allowlist'),'A field can be limited to named peer identities.');
+    t('Offline outbox tracks fields',Array.isArray(s.syncMeta.dirtyFields),'Kernel knows exactly which fields still need eligible delivery.');
+    t('WebRTC data targets are distinct from discovery targets',Array.isArray(JM.Transport.dataTargets()),'Data plane exposes direct peer targets only.');
+    const persist=await JM.Persistence.saveRuntime();t('Runtime state store is available',persist.ok,'Durable storage is used when host permits it; memory fallback preserves this running session.');
+    if(cryptoReady){
+      const id=await JM.Identity.ensure();t('Identity has public fingerprint',!!id.fingerprint,'Continuity identity is inspectable.');
+      const packet=await JM.Packet.makeSignedForPeer(fake);t('Policy packet is cryptographically signed',await JM.Packet.verify(packet),'Projection and disclosure metadata are signed together.');
+      const receipt=await JM.Receipts.outbound(packet,fake,'test-target');t('Disclosure receipt signature verifies',await JM.Receipts.verify(receipt),'The disclosure decision itself leaves signed evidence.');
+      t('Receipt records sent and withheld fields',receipt.body.included.includes('draft')&&receipt.body.withheld.includes('ownerLabel'),'Receipt reflects actual packet disclosure.');
+      const p0=JM.State.clone(s.portable);const localClock=JM.State.clone(p0.fieldClocks.draft);const incomingClock=JM.State.clone(localClock);incomingClock['actor:test-concurrent']=(incomingClock['actor:test-concurrent']||0)+1;const localChanged=JM.State.clone(localClock);localChanged[JM.State.runtimeActorId]=(localChanged[JM.State.runtimeActorId]||0)+1;s.portable.fieldClocks.draft=localChanged;s.portable.draft=draft+' local';
+      const body={schema:'device-continuity-packet',version:'0.6',exportedAt:new Date().toISOString(),sourceDevice:'test',projection:{lineageId:s.portable.lineageId,revision:s.portable.revision+1,updatedAt:new Date().toISOString(),updatedBy:'test',clock:s.portable.clock,fields:{draft:draft+' remote'},fieldClocks:{draft:incomingClock}},disclosure:{targetFingerprint:id.fingerprint,included:['draft'],withheld:JM.State.portableFields.filter(f=>f!=='draft'),policyVersion:s.replicationPolicy.version,policyHash:await JM.Policy.hash()}};const auth=await JM.Identity.sign(body);const rr=await JM.Conflict.importPacket({...body,auth});
+      t('Concurrent field edits become a field conflict',rr.conflict&&rr.conflicts.some(x=>x.field==='draft'),'Only the divergent field is branched; unrelated fields remain untouched.');if(rr.conflicts[0])JM.Conflict.resolve(rr.conflicts[0].branchId,'local');s.portable=p0;
+    }else{
+      skip('Identity has public fingerprint','Host does not expose WebCrypto; core body remains usable but cryptographic identity is intentionally disabled.');
+      skip('Policy packet is cryptographically signed','Requires WebCrypto. No unsigned substitute is accepted.');
+      skip('Disclosure receipt signature verifies','Requires WebCrypto. Signed receipt law fails closed rather than weakening itself.');
+      skip('Concurrent signed packet import','Requires a verifiable signed packet. Local conflict mechanics remain available separately.');
+    }
+    s.replicationPolicy=originalPolicy;JM.Policy.normalize();JM.Trust.revoke(fake);await JM.Persistence.saveRuntime();
+    t('Trace/provenance exists',JM.Trace.ledger.length>0,'Meaningful transitions leave inspectable records.');
+    t('JM coding bodies are mounted',JM.Native.bodies.filter(b=>b.status==='mounted').length>=9,'Cading/JMLogic/FlowTalk/OneBody/RouteOS/CadenVM/Trace/Receipt bodies are declared in the executable spine.');
+    t('RouteOS owns executable contact routes',JM.RouteOS.list().length>=20,'User/contact actions enter mounted RouteOS routes rather than directly owning state mutation.');
+    t('OneBody IR is the carrier handoff',JM.OneBodyIR.lower(JM.FlowTalk.guard(JM.JMLogic.signal('tests.run',{},{}))).schema==='jm.onebody-ir/v1','Route meaning is lowered into a neutral OneBody IR envelope before execution.');
+    t('JMVM/CadenVM executes RouteCore',JM.JMVM===JM.CadenVM&&typeof JM.CadenVM.execute==='function','The runtime carrier executes mounted route handlers through the shared VM office.');
+    t('Route receipts Ding or BUGG',JM.ReceiptEngine.receipts.every(r=>r.status==='DING'||r.status==='BUGG'),'Every routed outcome has an explicit bounded result state.');
+    return results;
+  };
+  return{run};
+})();
+
+</script>
+
+<script data-module="jm-native-mounts.js">
+JM.NativeMounts=(()=>{
+  let installed=false;
+  const mount=(name,handler,office)=>JM.RouteOS.mount(name,handler,{office,owner:'JM Estate',version:'0.7J'});
+  const install=()=>{
+    if(installed)return;installed=true;
+    mount('portable.update',({source='UI',values={}})=>{
+      const p=JM.State.state.portable,before=JM.State.clone(p);
+      for(const f of JM.State.portableFields)if(Object.prototype.hasOwnProperty.call(values,f))p[f]=values[f];
+      if(!p.ownerLabel)p.ownerLabel='User';
+      const changed=JM.State.portableFields.filter(f=>JSON.stringify(before[f])!==JSON.stringify(p[f]));
+      if(changed.length){JM.State.touchPortable(source,changed);JM.Trace.log('portable-state-change',source,before,JM.State.clone(p));}
+      JM.Persistence.saveRuntime();return{changed,revision:p.revision};
+    },'OneBody state route');
+    mount('device.switch',({key})=>JM.DeviceBlock.switchTo(key),'Device Block route');
+    mount('device.local.update',({key,field,value})=>JM.DeviceBlock.updateLocal(key,field,value),'Device Block local route');
+    mount('intent.evaluate',({signal,action})=>JM.Intent.evaluate(signal,action),'Living Cursor / Intent Gate');
+    mount('intent.confirm',()=>JM.Intent.confirm(),'Living Cursor / Intent Gate');
+    mount('snapshot.create',()=>JM.Regrade.snapshot(),'Regrade route');
+    mount('snapshot.apply',({index})=>JM.Regrade.apply(index),'Regrade route');
+    mount('trace.clear',()=>JM.Trace.clear(),'TraceBox control route');
+    mount('conflict.create',({device,draft})=>JM.Conflict.createIncoming(device,draft),'Conflict preservation route');
+    mount('conflict.resolve',({branchId,choice})=>JM.Conflict.resolve(branchId,choice),'Conflict preservation route');
+    mount('permission.request',({requester,capability,duration})=>JM.Permissions.request(requester,capability,duration),'PermissionGate route');
+    mount('permission.decide',({decision})=>JM.Permissions.decide(decision),'PermissionGate route');
+    mount('permission.revoke',({id})=>JM.Permissions.revoke(id),'PermissionGate route');
+    mount('sync.send',({reason='manual'})=>JM.Sync.sendLatest(reason),'Continuity transport route');
+    mount('tests.run',()=>JM.Tests.run(),'Constitution proof route');
+    mount('identity.rotate',async()=>{JM.State.state.identity=null;return JM.Identity.generate();},'Identity/provenance route');
+    mount('policy.reset',()=>JM.Policy.resetBalanced(),'Replication policy route');
+    mount('policy.set',({field,mode,allowlist})=>JM.Policy.set(field,mode,allowlist),'Replication policy route');
+    mount('transport.offer',({label})=>JM.Transport.createOffer(label),'WebRTC route');
+    mount('transport.acceptOffer',({description,label})=>JM.Transport.acceptOffer(description,label),'WebRTC route');
+    mount('transport.acceptAnswer',({peerId,description})=>JM.Transport.acceptAnswer(peerId,description),'WebRTC route');
+    mount('backup.restore',({backup})=>JM.Backup.restore(backup),'Sovereign backup route');
+    mount('packet.import',({packet})=>JM.Conflict.importPacket(packet),'Signed packet route');
+    mount('trust.revoke',({fingerprint})=>JM.Trust.revoke(fingerprint),'Trust route');
+  };
+  return{install};
+})();
+</script>
+
+<script data-module="ui.js">
+window.JM=window.JM||{};
+JM.UI=(()=>{
+  const $=id=>document.getElementById(id);
+  const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+  const syncPortable=(source="UI")=>{
+    const values={projectName:$("projectName").value,draft:$("draft").value,assistMode:$("assistMode").value,layoutPref:$("layoutPref").value,ownerLabel:$("ownerLabel").value||"User"};
+    const r=JM.RouteOS.run('portable.update',{source,values},{source:'ContactField/UI',intent:'preserve portable user state'});
+    renderDerived();updateBadges();return r;
+  };
+  const applyPortable=()=>{
+    const p=JM.State.state.portable;
+    $("projectName").value=p.projectName;$("draft").value=p.draft;$("assistMode").value=p.assistMode;
+    $("layoutPref").value=p.layoutPref;$("ownerLabel").value=p.ownerLabel||"User";renderDerived();
+  };
+  const renderDerived=()=>{
+    const x=JM.State.derive();
+    $("derivedPanel").innerHTML=`<div><strong>${esc(x.device)}</strong> is embodying the same portable state.</div>
+      <div class="small topgap">presentation=<code>${esc(x.presentation)}</code> · assistance=<code>${esc(x.assistance)}</code> ·
+      operatingMode=<code>${esc(x.operatingMode)}</code> · revision=<code>${x.continuityRevision}</code><br>
+      lineage=<code>${esc(x.lineageId)}</code><br>clock=<code>${esc(JSON.stringify(x.clock))}</code></div>`;
+  };
+  const renderDevices=()=>{
+    $("devices").innerHTML="";
+    for(const [key,d] of Object.entries(JM.State.state.devices)){
+      const el=document.createElement("div");el.className="card device"+(d.active?" active":"");
+      el.innerHTML=`<span class="tag">${d.active?"ACTIVE BODY":"AVAILABLE BODY"}</span><h3 style="margin:0 0 10px">${esc(d.name)}</h3>
+      <button class="activate">${d.active?"Active":"Continue here"}</button>
+      <div class="metric"><span>Battery</span><span class="batteryVal">${d.battery}%</span></div><input class="battery" type="range" min="0" max="100" value="${d.battery}">
+      <div class="metric"><span>Temperature</span><span class="tempVal">${d.temp}°C</span></div><input class="temp" type="range" min="20" max="55" value="${d.temp}">
+      <div class="metric"><span>Compute headroom</span><span class="computeVal">${d.compute}%</span></div><input class="compute" type="range" min="10" max="100" value="${d.compute}">
+      <label>Network<select class="network">${["Offline","Local","Wi‑Fi","4G","5G"].map(n=>`<option ${n===d.network?"selected":""}>${n}</option>`).join("")}</select></label>`;
+      el.querySelector(".activate").onclick=()=>{JM.RouteOS.run('device.switch',{key},{source:'ContactField/device-card'});renderDevices();renderDerived();};
+      ["battery","temp","compute"].forEach(f=>{const r=el.querySelector("."+f);r.oninput=()=>{const v=Number(r.value);JM.RouteOS.run('device.local.update',{key,field:f,value:v},{source:'ContactField/device-slider'});el.querySelector("."+f+"Val").textContent=v+(f==="temp"?"°C":"%");if(d.active)renderDerived();};});
+      el.querySelector(".network").onchange=e=>{JM.RouteOS.run('device.local.update',{key,field:'network',value:e.target.value},{source:'ContactField/device-network'});if(d.active)renderDerived();};
+      $("devices").appendChild(el);
+    }
+  };
+  const renderTrace=()=>{
+    $("trace").innerHTML=JM.Trace.ledger.length?JM.Trace.ledger.map(t=>`<div class="trace-line">[${t.time}] <b>${esc(t.event)}</b> · ${esc(t.source)}<br>
+    <span style="color:#7f8d9f">before:</span> ${esc(JSON.stringify(t.before))}<br><span style="color:#7f8d9f">after:</span> ${esc(JSON.stringify(t.after))}</div>`).join(""):`<div class="small">No trace yet.</div>`;
+  };
+  const renderSnapshots=()=>{
+    $("snapshots").innerHTML=JM.State.state.snapshots.length?JM.State.state.snapshots.map((s,i)=>`<div class="snapshot"><div><b>r${s.portable.revision}</b> · ${esc(s.portable.projectName)}
+    <div class="small">${new Date(s.time).toLocaleString()} · ${esc(s.portable.updatedBy||"unknown")}</div></div><button class="regrade" data-i="${i}">Regrade</button></div>`).join(""):`<p class="small">No snapshots yet.</p>`;
+    document.querySelectorAll(".regrade").forEach(b=>b.onclick=()=>{JM.RouteOS.run('snapshot.apply',{index:Number(b.dataset.i)},{source:'ContactField/regrade'});applyPortable();renderSnapshots();});
+  };
+  const renderConflict=()=>{
+    const b=JM.Conflict.unresolved();
+    if(!b){$("conflictPanel").innerHTML="No unresolved conflict.";return;}
+    $("conflictPanel").innerHTML=`<div class="warn"><b>Unresolved branch</b> — both versions are preserved.</div>
+      <div class="branch"><b>Local · r${b.local.revision}</b><pre>${esc(b.local.draft)}</pre></div>
+      <div class="branch"><b>Incoming · ${esc(b.incoming.updatedBy)} · r${b.incoming.revision}</b><pre>${esc(b.incoming.draft)}</pre></div>
+      <div class="row topgap">
+        <button data-choice="local">Keep local</button>
+        <button data-choice="incoming">Use incoming</button>
+        <button data-choice="merge" class="primary">Merge / preserve both</button>
+      </div>`;
+    $("conflictPanel").querySelectorAll("button[data-choice]").forEach(btn=>btn.onclick=()=>{JM.RouteOS.run('conflict.resolve',{branchId:b.id,choice:btn.dataset.choice},{source:'ContactField/conflict'});applyPortable();renderConflict();});
+  };
+  const renderPermission=()=>{
+    const req=JM.State.state.pendingPermission;
+    $("permissionPanel").innerHTML=req?`<b>${esc(req.requester)}</b> requests <code>${esc(req.capability)}</code> for <code>${esc(req.duration)}</code>.
+      <div class="row topgap"><button id="allowPermission" class="primary">Allow</button><button id="denyPermission">Deny</button></div>`:"No capability request pending.";
+    if(req){$("allowPermission").onclick=()=>{JM.RouteOS.run('permission.decide',{decision:'allow'},{source:'ContactField/permission'});renderPermission();renderGrants();};$("denyPermission").onclick=()=>{JM.RouteOS.run('permission.decide',{decision:'deny'},{source:'ContactField/permission'});renderPermission();renderGrants();};}
+  };
+  const renderGrants=()=>{
+    const active=JM.State.state.grants.filter(g=>g.status==="granted");
+    $("grants").innerHTML=active.length?active.map(g=>`<div class="grant"><div><b>${esc(g.requester)}</b> · ${esc(g.capability)}<div class="small">${esc(g.duration)}</div></div><button class="revoke" data-id="${g.id}">Revoke</button></div>`).join(""):`<p class="small">No active grants.</p>`;
+    document.querySelectorAll(".revoke").forEach(b=>b.onclick=()=>{JM.RouteOS.run('permission.revoke',{id:b.dataset.id},{source:'ContactField/permission'});renderGrants();});
+  };
+  const renderTests=results=>{
+    $("tests").innerHTML=results.map(t=>{const st=t.status||(t.pass?'PASS':'FAIL');const cls=st==='PASS'?'good':st==='SKIP'?'warn':'bad';return `<div class="test"><div><b>${esc(t.name)}</b><div class="small">${esc(t.detail)}</div></div><span class="${cls}">${esc(st)}</span></div>`;}).join('');
+    const pass=results.filter(t=>(t.status||(t.pass?'PASS':'FAIL'))==='PASS').length,skip=results.filter(t=>t.status==='SKIP').length,fail=results.length-pass-skip;
+    $("testSummary").textContent=`${pass} passed · ${skip} skipped · ${fail} failed`;
+  };
+  const updateBadges=()=>{
+    const persist=JM.Persistence.supported();
+    $("persistenceBadge").textContent=`Persistence: ${persist?"available":"unavailable"}`;$("persistenceBadge").className="pill "+(persist?"good":"warn");
+    $("networkBadge").textContent=`Browser: ${navigator.onLine?"online":"offline"}`;$("networkBadge").className="pill "+(navigator.onLine?"good":"warn");
+  };
+  const saveNow=async()=>{syncPortable("manual-save");const r=await JM.Persistence.saveRuntime();$("saveStatus").textContent=r.ok?`Saved ${new Date().toLocaleTimeString()} via ${r.engine}`:"Persistence unavailable in this browser context.";};
+
+
+  const renderTransport=()=>{
+    const s=JM.Transport.status();
+    $("transportSummary").innerHTML=
+      `<div><span class="transport-dot ${s.cryptoReady?"live":"wait"}"></span>Signed transport: <b>${s.cryptoReady?"ready":"disabled — host has no WebCrypto"}</b></div>
+       <div><span class="transport-dot ${s.broadcastSupported?"live":"wait"}"></span>BroadcastChannel: <b>${s.broadcastSupported?"available":"unavailable"}</b></div>
+       <div><span class="transport-dot ${s.webrtcSupported?"live":"wait"}"></span>WebRTC: <b>${s.webrtcSupported?"available":"unavailable"}</b></div>
+       <div class="small topgap">instance=<code>${esc(s.instanceId)}</code></div>`;
+    const peers=[...s.localPeers,...s.rtcPeers];
+    $("peerList").innerHTML=peers.length?peers.map(p=>`<div class="peer-row"><div><b>${esc(p.label||p.id)}</b><div class="small">${esc(p.transport||"webrtc")} · ${esc(p.state||"seen")}</div><div class="fingerprint">${esc(p.fingerprint||"identity pending")}</div></div><span class="${p.state==="connected"||p.transport==="broadcast"?"good":"warn"}">${esc(p.state||"live")}</span></div>`).join(""):`<p class="small">No live peers detected yet. Open v0.5 in a second tab to test BroadcastChannel immediately.</p>`;
+  };
+
+  const renderSync=()=>{
+    const s=JM.Sync.status();
+    $("syncPanel").innerHTML=`<b>${s.dirty?"Unsynced portable change":"No unsent local changes"}</b><br>
+      <span class="small">dataPeers=${s.targets.length} · outboxFields=${s.queueLength} · result=${esc(s.lastResult||"none")} · last=${esc(s.lastSyncAt||"never")}</span>`;
+  };
+
+  const renderQuarantine=()=>{
+    $("quarantinePanel").innerHTML=JM.Trust.pending.length?JM.Trust.pending.map(x=>`<div class="quarantine-row"><div><b>Unknown signed peer</b><div class="fingerprint">${esc(x.fingerprint)}</div><div class="small">${esc(x.transport)}</div></div><div class="row"><button data-q="${x.id}" data-mode="once">Allow once</button><button data-q="${x.id}" data-mode="trust" class="primary">Trust + apply</button><button data-q="${x.id}" data-mode="reject">Reject</button></div></div>`).join(""):`<p class="small">No quarantined peer messages.</p>`;
+    document.querySelectorAll("[data-q]").forEach(b=>b.onclick=async()=>{await JM.Sync.acceptQuarantined(b.dataset.q,b.dataset.mode);renderQuarantine();renderTrusted();});
+  };
+
+  const renderTrusted=()=>{
+    const active=JM.State.state.trustedPeers.filter(p=>p.status==="trusted");
+    $("trustedPeers").innerHTML=active.length?active.map(p=>`<div class="peer-row"><div><b>${esc(p.label)}</b><div class="fingerprint">${esc(p.fingerprint)}</div></div><button class="revoke-trust" data-fp="${esc(p.fingerprint)}">Revoke trust</button></div>`).join(""):`<p class="small">No peer identities trusted yet.</p>`;
+    document.querySelectorAll(".revoke-trust").forEach(b=>b.onclick=()=>{JM.RouteOS.run('trust.revoke',{fingerprint:b.dataset.fp},{source:'ContactField/trust'});renderTrusted();});
+  };
+
+  const renderPolicies=()=>{
+    JM.Policy.normalize();const pol=JM.State.state.replicationPolicy.fields;
+    $("policyRows").innerHTML=JM.State.portableFields.map(f=>{const r=pol[f];return `<div class="policy-row" data-field="${esc(f)}"><div class="policy-field">${esc(f)}</div><label>Mode<select class="policy-mode">${JM.Policy.modes.map(m=>`<option value="${m}" ${m===r.mode?'selected':''}>${m}</option>`).join('')}</select></label><label>Allowlist fingerprints (comma/newline)<input class="policy-allow" type="text" value="${esc((r.allowlist||[]).join(', '))}" placeholder="used only for allowlist mode"></label></div>`;}).join('');
+  };
+  const applyPolicies=()=>{
+    document.querySelectorAll('.policy-row').forEach(row=>{const f=row.dataset.field;const mode=row.querySelector('.policy-mode').value;const allow=row.querySelector('.policy-allow').value.split(/[\n,]+/).map(x=>x.trim()).filter(Boolean);JM.RouteOS.run('policy.set',{field:f,mode,allowlist:allow},{source:'ContactField/policy'});});renderPolicies();renderSync();
+  };
+  const renderPolicyPreview=async()=>{
+    const fp=$("policyTargetFingerprint").value.trim();if(!fp){$("policyPreview").textContent='Enter a peer fingerprint first.';return;}
+    const x=await JM.Policy.preview(fp);const vals=x.projection.fields;
+    $("policyPreview").innerHTML=`<b>Would disclose ${x.disclosure.included.length} field(s)</b><div class="receipt-meta">${x.disclosure.included.map(f=>`<span class="field-chip good">${esc(f)}</span>`).join('')||'<span class="small">none</span>'}</div><div class="small topgap">Withheld</div><div class="receipt-meta">${x.disclosure.withheld.map(f=>`<span class="field-chip withheld">${esc(f)}</span>`).join('')}</div><div class="small topgap">Values in projected packet:</div><pre class="proof">${esc(JSON.stringify(vals,null,2))}</pre><div class="small">policyHash=<code>${esc(x.disclosure.policyHash)}</code></div>`;
+  };
+  const renderReceipts=async()=>{
+    const list=JM.State.state.receipts.slice(0,12);if(!list.length){$("receiptPanel").innerHTML='<p class="small">No disclosure receipts yet.</p>';return;}
+    const rows=[];for(const r of list){const ok=await JM.Receipts.verify(r);const b=r.body;rows.push(`<div class="receipt-row"><div><b>${esc(b.direction)} → ${esc(b.peerFingerprint||'unknown')}</b> <span class="${ok?'good':'bad'}">${ok?'SIGNED ✓':'INVALID'}</span></div><div class="small">${esc(b.at)} · revision ${esc(b.revision)} · policy v${esc(b.policyVersion)}</div><div class="receipt-meta">${(b.included||[]).map(f=>`<span class="field-chip good">sent:${esc(f)}</span>`).join('')}${(b.withheld||[]).map(f=>`<span class="field-chip withheld">held:${esc(f)}</span>`).join('')}</div><div class="proof">packet ${esc((b.packetHash||'').slice(0,32))}… · policy ${esc((b.policyHash||'').slice(0,24))}…</div></div>`);}$("receiptPanel").innerHTML=rows.join('');
+  };
+
+  const renderIdentity=async()=>{
+    const caps=JM.BodyProfile.capabilities();
+    if(JM.Identity.available()){const id=await JM.Identity.ensure();$("identityPanel").innerHTML=`<b>Continuity identity</b><br><span class="small">fingerprint</span><br><code>${esc(id.fingerprint)}</code>`;}
+    else{$("identityPanel").innerHTML=`<b>Cryptographic identity unavailable on this host</b><br><span class="small">The body has not substituted weaker signing. Local state, Device Blocks, policy preview, regrade and intent features remain usable.</span>`;}
+    $("offlinePanel").innerHTML=`Portable body: <span class="good">self-contained</span><br><span class="small">No service worker or sibling files are required. protocol=<code>${esc(caps.protocol)}</code></span>`;
+  };
+
+  const renderBodyProfile=()=>{
+    const c=JM.BodyProfile.capabilities(),bool=v=>`<span class="${v?'good':'warn'}">${v?'available':'unavailable'}</span>`;
+    $("bodyProfilePanel").innerHTML=`<div><b>${esc(JM.BodyProfile.PROFILE_ID)}</b> · body v${esc(JM.BodyProfile.BUILD)} · lineage ${esc(JM.BodyProfile.SOURCE_ARCHITECTURE)}</div><div class="profile-grid topgap"><div>Host mode <code>${esc(JM.BodyProfile.mode())}</code></div><div>Protocol <code>${esc(c.protocol)}</code></div><div>External assets <b>0</b></div><div>Single file ${bool(c.singleFile)}</div><div>WebCrypto ${bool(c.webCrypto)}</div><div>IndexedDB ${bool(c.indexedDB)}</div><div>localStorage ${bool(c.localStorage)}</div><div>BroadcastChannel ${bool(c.broadcastChannel)}</div><div>WebRTC ${bool(c.webRTC)}</div></div><p class="small topgap">Core body requires no network. Cryptographic identity/encryption and signed transport activate only when the host exposes WebCrypto; the build fails closed rather than inventing weaker security.</p>`;
+  };
+
+  const downloadJson=(obj,name)=>{
+    const blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();URL.revokeObjectURL(url);
+  };
+
+  const askPassphrase=(verb)=>{
+    const p=prompt(`${verb} passphrase`);
+    if(!p)throw new Error("Passphrase required");
+    return p;
+  };
+
+  const bind=()=>{
+    ["projectName","draft","assistMode","layoutPref","ownerLabel"].forEach(id=>$(id).addEventListener("change",()=>syncPortable(id)));
+    $("saveNowBtn").onclick=saveNow;
+    $("signalBtn").onclick=()=>{syncPortable("intent-precheck");const r=JM.RouteOS.run('intent.evaluate',{signal:$("signalType").value,action:$("requestedAction").value},{source:'ContactField/intent'});$("confirmBtn").disabled=!r.arm;applyPortable();$("intentResult").innerHTML=`<b>Intent:</b> ${esc(r.intent)}<br><span class="small">${esc(r.reason)}</span>`;};
+    $("confirmBtn").onclick=()=>{const r=JM.RouteOS.run('intent.confirm',{}, {source:'ContactField/intent-confirm'});$("confirmBtn").disabled=true;applyPortable();$("intentResult").innerHTML=r.ok?`<span class="good">Confirmed deliberate action executed.</span>`:`<span class="warn">Armed action expired.</span>`;};
+    $("snapshotBtn").onclick=()=>{syncPortable("snapshot");JM.RouteOS.run('snapshot.create',{}, {source:'ContactField/snapshot'});renderSnapshots();};
+    $("clearTrace").onclick=()=>JM.RouteOS.run('trace.clear',{}, {source:'ContactField/trace'});
+    $("createConflictBtn").onclick=()=>{syncPortable("conflict-local");JM.RouteOS.run('conflict.create',{device:$("conflictDevice").value,draft:$("incomingDraft").value},{source:'ContactField/conflict'});renderConflict();};
+    $("requestPermissionBtn").onclick=()=>{JM.RouteOS.run('permission.request',{requester:$("permissionRequester").value,capability:$("permissionCapability").value,duration:$("permissionDuration").value},{source:'ContactField/permission'});renderPermission();};
+    $("syncNowBtn").onclick=async()=>{if(!JM.Identity.available()){alert('Signed sync is disabled because this host does not expose WebCrypto.');return;}await JM.RouteOS.run('sync.send',{reason:'manual'},{source:'ContactField/sync'});renderSync();};
+    $("createOfferBtn").onclick=async()=>{
+      if(!JM.Identity.available()){alert('WebRTC continuity transport is disabled without WebCrypto.');return;}
+      try{$("rtcStatus").textContent="Creating offer and gathering ICE candidates…";const r=await JM.RouteOS.run('transport.offer',{label:$("rtcPeerLabel").value},{source:'ContactField/webrtc'});$("rtcPeerId").value=r.peerId;$("rtcHandshake").value=r.description;$("rtcStatus").innerHTML=`Offer ready. Send the handshake text to the other device. Peer ID: <code>${esc(r.peerId)}</code>`;renderTransport();}
+      catch(e){$("rtcStatus").textContent="Offer failed: "+e.message;}
+    };
+    $("acceptOfferBtn").onclick=async()=>{
+      if(!JM.Identity.available()){alert('WebRTC continuity transport is disabled without WebCrypto.');return;}
+      try{$("rtcStatus").textContent="Accepting offer and creating answer…";const r=await JM.RouteOS.run('transport.acceptOffer',{description:$("rtcHandshake").value,label:$("rtcPeerLabel").value},{source:'ContactField/webrtc'});$("rtcPeerId").value=r.peerId;$("rtcHandshake").value=r.description;$("rtcStatus").textContent="Answer ready. Return this handshake text to the offer device.";renderTransport();}
+      catch(e){$("rtcStatus").textContent="Offer could not be accepted: "+e.message;}
+    };
+    $("applyAnswerBtn").onclick=async()=>{
+      try{await JM.RouteOS.run('transport.acceptAnswer',{peerId:$("rtcPeerId").value,description:$("rtcHandshake").value},{source:'ContactField/webrtc'});$("rtcStatus").textContent="Answer applied. Waiting for the peer-to-peer channel to open…";renderTransport();}
+      catch(e){$("rtcStatus").textContent="Answer could not be applied: "+e.message;}
+    };
+    $("copyHandshakeBtn").onclick=async()=>{
+      try{await navigator.clipboard.writeText($("rtcHandshake").value);$("rtcStatus").textContent="Handshake copied.";}
+      catch{$("rtcHandshake").select();document.execCommand("copy");$("rtcStatus").textContent="Handshake copied using fallback.";}
+    };
+    $("runTests").onclick=async()=>{syncPortable("test-precheck");$("testSummary").textContent="Running…";const r=await JM.RouteOS.run('tests.run',{}, {source:'ContactField/constitution'});renderDevices();renderDerived();renderConflict();renderPermission();renderGrants();renderTests(r);};
+    $("newIdentityBtn").onclick=async()=>{
+      if(!JM.Identity.available()){alert('This host does not expose WebCrypto. No weaker identity will be generated.');return;}
+      if(!confirm('Generate a new local continuity identity? Existing signed packets will still verify with their embedded public key, but this device will sign future packets with the new identity.'))return;
+      await JM.RouteOS.run('identity.rotate',{}, {source:'ContactField/identity'});await renderIdentity();
+    };
+    $("previewPolicyBtn").onclick=renderPolicyPreview;
+    $("applyPolicyBtn").onclick=()=>{applyPolicies();renderPolicyPreview();};
+    $("resetPolicyBtn").onclick=()=>{JM.RouteOS.run('policy.reset',{}, {source:'ContactField/policy'});renderPolicies();renderPolicyPreview();};
+    $("exportPolicyPacketBtn").onclick=async()=>{
+      if(!JM.Identity.available()){alert('Signed packet export requires WebCrypto on this host. Policy preview still works.');return;}
+      const fp=$("policyTargetFingerprint").value.trim();if(!fp){alert('Enter the target fingerprint first.');return;}
+      syncPortable('policy-packet-export');const packet=await JM.Packet.makeSignedForPeer(fp);downloadJson(packet,'continuity-policy-packet.json');await JM.Receipts.outbound(packet,fp,'file-export');renderReceipts();
+    };
+    $("exportBackupBtn").onclick=async()=>{
+      if(!JM.Identity.available()){alert('Encrypted backup export requires WebCrypto on this host.');return;}
+      try{syncPortable('backup-export');const wrapper=await JM.CryptoPacket.encrypt(JM.Backup.make(),askPassphrase('Backup encryption'));downloadJson({schema:'encrypted-sovereign-backup',version:'0.6',payload:wrapper},'sovereign-backup-encrypted.json');JM.Trace.log('sovereign-backup-export','user',null,{encrypted:true});}
+      catch(e){if(e.message!=='Passphrase required')alert('Backup encryption failed.');}
+    };
+    $("importBackupBtn").onclick=()=>$("importBackupFile").click();
+    $("importBackupFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const wrapper=JSON.parse(await f.text());const backup=await JM.CryptoPacket.decrypt(wrapper.payload,askPassphrase('Backup decryption'));if(!(await JM.RouteOS.run('backup.restore',{backup},{source:'ContactField/backup'})))throw new Error('invalid');applyPortable();renderPolicies();renderSnapshots();renderPolicyPreview();}catch{alert('Encrypted sovereign backup could not be restored.');}};
+    $("importPacketBtn").onclick=()=>$("importPacketFile").click();
+    $("importPacketFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;if(!JM.Identity.available()){alert('Signed packet import requires WebCrypto on this host.');return;}try{const packet=JSON.parse(await f.text());const r=await JM.RouteOS.run('packet.import',{packet},{source:'ContactField/packet-import'});if(!r.ok)alert('Packet rejected: '+r.reason);else await JM.Receipts.inbound(packet,packet.auth.fingerprint,r);applyPortable();renderConflict();renderReceipts();}catch{alert('Could not read or verify that continuity packet.');}};
+    window.addEventListener("online",updateBadges);window.addEventListener("offline",updateBadges);
+  };
+  
+  const renderJMSpine=(receipt=null)=>{
+    const mounted=JM.RouteOS.list();
+    const bodyHtml=JM.Native.bodies.map(b=>`<span class="field-chip ${b.status==='mounted'?'good':''}">${esc(b.name)} · ${esc(b.office)}</span>`).join('');
+    $("jmSpinePanel").innerHTML=`<b>JM native authority active</b> · v${esc(JM.Native.VERSION)}<div class="receipt-meta topgap">${bodyHtml}</div><div class="small topgap">Mounted executable routes: <b>${mounted.length}</b> · carrier: <code>browser-js-singlefile</code><br>Source → Signal → Route → State Change → Trace → Ding/BUGG → Receipt → recoverable OneBody target</div>`;
+    const r=receipt||JM.ReceiptEngine.receipts[0];if(r)$("jmRouteReceipt").innerHTML=`Latest route receipt: <code>${esc(r.route)}</code> · <span class="${r.status==='DING'?'good':'bad'}">${esc(r.status)}</span> · ${esc(r.id)}`;
+  };
+
+  return{bind,applyPortable,renderDerived,renderDevices,renderTrace,renderSnapshots,renderConflict,renderPermission,renderGrants,renderTests,updateBadges,renderIdentity,renderTransport,renderSync,renderQuarantine,renderTrusted,renderPolicies,renderPolicyPreview,renderReceipts,renderBodyProfile,renderJMSpine};
+})();
+
+</script>
+<script data-module="app.js">
+window.addEventListener('DOMContentLoaded',async()=>{
+  JM.NativeMounts.install();
+  const restore=await JM.Persistence.loadRuntime();
+  JM.Policy.normalize();
+  if(JM.Identity.available())await JM.Identity.ensure();
+
+  JM.UI.bind();JM.UI.applyPortable();JM.UI.renderDevices();JM.UI.renderDerived();JM.UI.renderTrace();JM.UI.renderSnapshots();JM.UI.renderConflict();JM.UI.renderPermission();JM.UI.renderGrants();JM.UI.updateBadges();JM.UI.renderBodyProfile();JM.UI.renderJMSpine();await JM.UI.renderIdentity();
+
+  JM.Sync.init();
+  if(JM.Identity.available())await JM.Transport.startBroadcast();
+  JM.Events.on('transport-status',()=>JM.UI.renderTransport());JM.Events.on('sync-status',()=>JM.UI.renderSync());JM.Events.on('quarantine-changed',()=>JM.UI.renderQuarantine());JM.Events.on('trust-changed',()=>{JM.UI.renderTrusted();JM.UI.renderPolicies();});JM.Events.on('receipt-added',()=>JM.UI.renderReceipts());
+  JM.UI.renderTransport();JM.UI.renderSync();JM.UI.renderQuarantine();JM.UI.renderTrusted();JM.UI.renderPolicies();await JM.UI.renderReceipts();
+
+  JM.Trace.log(restore.restored?'runtime-restored':'prototype-start','system',null,{version:'0.7J-jm-native-body',sourceArchitecture:'0.7-proven-donor/0.6-lineage',bodyProfile:JM.BodyProfile.PROFILE_ID,hostMode:JM.BodyProfile.mode(),persistenceEngine:restore.engine,activeDevice:JM.State.activeDeviceKey(),portableRevision:JM.State.state.portable.revision,webCrypto:JM.Identity.available(),externalAssets:0});
+  if(JM.State.state.syncMeta.dirty&&JM.Identity.available())JM.RouteOS.run('sync.send',{reason:'restore-outbox'},{source:'RouteOS/startup'});
+  JM.RouteOS.run('portable.update',{source:'JM-native-startup',values:{}},{source:'RouteOS/startup',intent:'prove native spine contact'});
+});
+
+</script>
+</body>
+</html>

@@ -37,3 +37,66 @@ jobs:
           assert proof['boundary'].startswith('SYNTHETIC')
           print('JM M001 ADMISSION PREFLIGHT: PASS 7/7; private carriers not loaded')
           PY
+
+  kicshift-real-source-contact:
+    name: Contact real JM KICSHIFT portable package before delivery
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build original preserved KICSHIFT product source
+        working-directory: apps-tools-games/jm-portable-body/kicshift-v0.1
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+      - name: Recover matching deployable tree from existing canonical Estate mount
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, zipfile
+          candidate = Path('apps-tools-games/jm-portable-body/kicshift-v0.1/dist')
+          keeper = Path('games-beyond/kicshift')
+          assert (candidate / 'index.html').is_file(), 'actual built product index absent'
+          assert (keeper / 'index.html').is_file(), 'existing Estate keeper index absent'
+          names = sorted(str(p.relative_to(candidate)) for p in candidate.rglob('*') if p.is_file())
+          assert len(names) >= 2, 'too few deployable source members'
+          assert all((keeper/name).is_file() for name in names), 'canonical keeper is missing source-deployable members: HOLD'
+          for output, root in [(Path('/tmp/jm-kicshift-proposed.zip'),candidate),(Path('/tmp/jm-kicshift-keeper.zip'),keeper)]:
+              with zipfile.ZipFile(output,'w') as z:
+                  for name in names:
+                      b=(root/name).read_bytes()
+                      info=zipfile.ZipInfo(name,date_time=(1980,1,1,0,0,0))
+                      info.compress_type=zipfile.ZIP_DEFLATED
+                      z.writestr(info,b)
+          print(json.dumps({'schema':'JM.M001.RealProductCarrierContact/0.1','product':'JM KICSHIFT portable original','source_members':len(names),'keeper_route':'games-beyond/kicshift','comparison_scope':'exact names from new deployable dist, not extra keeper metadata','stage':'pre-delivery','actual_files_compared':True},sort_keys=True))
+          PY
+      - name: Run original JM admission gate on real independently rebuilt product files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 agent-runtime/host-adapters/storage-admission/JM_M001_Carrier_Admission_Gate_v0_1.py \
+            --candidate /tmp/jm-kicshift-proposed.zip \
+            --keeper /tmp/jm-kicshift-keeper.zip > /tmp/jm-kicshift-admission.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          x=json.loads(Path('/tmp/jm-kicshift-admission.json').read_text())
+          assert x['schema']=='JM.M001.CarrierAdmission/0.1'
+          assert x['state'] in {'SAME_BYTES_ROLE_HOLD','DISTINCT_BYTES'},x
+          assert x['crc_candidate']==x['crc_keeper']=='PASS',x
+          assert x['admission_authorised'] is False
+          assert x['retirement_authorised'] is False
+          assert x['library_mutations']==0
+          assert x['account_quota_savings_claimed_bytes']==0
+          # Do not upload or modify any source/delivery destination in this proof job.
+          print(json.dumps({'product':'JM KICSHIFT','real_source_build':True,
+                            'admission_state':x['state'],
+                            'matched_all_deployable_bytes':x['whole_byte_equality'],
+                            'next':'REUSE_IF_ROLE_CLEAR' if x['state']=='SAME_BYTES_ROLE_HOLD' else 'NORMAL_SEPARATE_PACKAGE_AUTHORITY',
+                            'quota_savings_claimed':0},sort_keys=True))
+          PY

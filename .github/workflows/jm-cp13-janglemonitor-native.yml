@@ -4,6 +4,7 @@ on:
     paths:
       - 'coding-estate/integration/codegornization-cp13/**'
       - '.github/workflows/jm-cp13-janglemonitor-native.yml'
+      - 'registry/build-routes/JM_CP13_JANGLEMONITOR_NATIVE_IDENTITY_BUILD_ROUTE_MANIFEST_v0.1.json'
   workflow_dispatch:
 permissions:
   contents: read

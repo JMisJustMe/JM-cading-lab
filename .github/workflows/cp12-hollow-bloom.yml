@@ -1,0 +1,55 @@
+name: CP12 Hollow Bloom Original Contact
+on:
+  push:
+    paths:
+      - 'engine/demo/cp12-hollow-bloom-v0.2.html'
+      - 'tests/cp12-hollow-bloom-contact.mjs'
+      - '.github/workflows/cp12-hollow-bloom.yml'
+  pull_request:
+    paths:
+      - 'engine/demo/cp12-hollow-bloom-v0.2.html'
+      - 'tests/cp12-hollow-bloom-contact.mjs'
+      - '.github/workflows/cp12-hollow-bloom.yml'
+permissions:
+  contents: read
+jobs:
+  authentic-webgl-and-gameplay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned Three.js / browser proof
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Execute authored character / world / six original coding bodies
+        env:
+          CP12_VISUAL_CASE: ${{ matrix.scenario }}
+        run: node tests/cp12-hollow-bloom-contact.mjs
+      - name: Preserve actual GPU screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp12-hollow-bloom-${{ matrix.scenario }}
+          path: cp12-hollow-evidence/*.png
+          if-no-files-found: ignore
+  preserved-game-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Preserve existing native three-body contact
+        run: node tests/cp11-sovereign-contact.mjs
+      - name: Preserve existing RouteOS contact
+        run: CP11_ROUTE_CASE=1 node tests/cp11-routeos-contact.mjs
+      - name: Preserve previous CP12 visual descendant
+        run: CP12_VISUAL_CASE=1 node tests/cp12-vale-visual-contact.mjs

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.1B — Freeze Harness</title>
+<meta name="theme-color" content="#171321" />
+<style>
+  :root {
+    --bg: #090811;
+    --panel: #151322;
+    --panel2: #201b33;
+    --text: #f6f1ff;
+    --muted: #bfb6d8;
+    --line: #382f55;
+    --good: #90f7a5;
+    --warn: #ffd166;
+    --bad: #ff7f7f;
+    --chip: #2b2445;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #201a34, var(--bg) 58%);
+    color: var(--text);
+  }
+  main {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  header, section {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: rgba(21,19,34,.94);
+    padding: 16px;
+    box-shadow: 0 14px 44px rgba(0,0,0,.22);
+  }
+  header {
+    background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+  }
+  h1 { margin: 0 0 8px; font-size: 1.65rem; }
+  h2 { margin: 0 0 10px; font-size: 1.08rem; }
+  h3 { margin: 12px 0 8px; font-size: 1rem; }
+  p { color: var(--muted); line-height: 1.5; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (min-width: 840px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  textarea {
+    width: 100%;
+    min-height: 76px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #080710;
+    color: var(--text);
+    padding: 12px;
+    font-size: 1.2rem;
+    resize: vertical;
+  }
+  button {
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    padding: 11px 13px;
+    background: var(--chip);
+    color: var(--text);
+    font-weight: 800;
+    cursor: pointer;
+  }
+  button:active { transform: translateY(1px); }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .big {
+    width: 100%;
+    font-size: 1.08rem;
+    background: #31275a;
+  }
+  .mega {
+    font-size: 1.12rem;
+    background: #3a2d70;
+    min-height: 54px;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 8px;
+  }
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel2);
+    padding: 10px;
+  }
+  .metric strong {
+    display: block;
+    color: var(--muted);
+    font-size: .82rem;
+    margin-bottom: 4px;
+  }
+  .metric span {
+    font-size: 1.13rem;
+    font-weight: 900;
+  }
+  .ding { color: var(--good); }
+  .check { color: var(--warn); }
+  .fail { color: var(--bad); }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .chip {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 10px;
+    border: 1px solid var(--line);
+    border-radius:999px;
+    background: var(--chip);
+    color: var(--text);
+    font-size:.92rem;
+  }
+  .lane {
+    min-height: 88px;
+    border: 1px dashed var(--line);
+    border-radius: 15px;
+    background: #0d0b17;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+  .moveCard {
+    width: 65px;
+    min-height: 65px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #30294c, #171321);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-weight: 900;
+  }
+  .moveCard .g { font-size: 1.7rem; line-height: 1; }
+  .moveCard small { color: var(--muted); font-size: .67rem; font-weight: 800; }
+  table {
+    width:100%;
+    border-collapse: collapse;
+    overflow:hidden;
+    border-radius:14px;
+  }
+  th, td {
+    border-bottom: 1px solid var(--line);
+    padding: 9px;
+    text-align:left;
+    vertical-align:top;
+  }
+  th { color: var(--muted); font-size:.86rem; }
+  tr:last-child td { border-bottom:0; }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #07060d;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    max-height: 320px;
+    overflow:auto;
+  }
+  .note {
+    border-left: 4px solid var(--line);
+    padding-left: 10px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>JickMa SDK v0.1B — Freeze Harness</h1>
+    <p><strong>Purpose:</strong> prove v0.1A/v0.1B runtime behaviour with one-tap Android freeze tests. This does not crown the system by itself; it generates the receipt needed for the freeze decision.</p>
+  </header>
+
+  <div class="grid">
+    <section>
+      <h2>1 — Manual JickMa run</h2>
+      <p>Glyphs: <strong>↑ ↓ ← ↺</strong></p>
+      <textarea id="input">↺↑↓</textarea>
+      <div class="buttons">
+        <button data-preset="↑↓">↑↓ M</button>
+        <button data-preset="↺↑↓">↺↑↓ Z</button>
+        <button data-preset="←↑↓">←↑↓ L</button>
+        <button data-preset="↑↑↓">↑↑↓ J</button>
+        <button data-preset="↑←">↑← CHECK</button>
+        <button data-preset="↺">↺ CHECK</button>
+      </div>
+      <button class="big" id="run">Run Manual Test</button>
+
+      <h3>Spalk visual lane</h3>
+      <div id="lane" class="lane"></div>
+    </section>
+
+    <section>
+      <h2>2 — Manual result</h2>
+      <div class="metrics">
+        <div class="metric"><strong>Status</strong><span id="status">—</span></div>
+        <div class="metric"><strong>Clause</strong><span id="ctype">—</span></div>
+        <div class="metric"><strong>Final State</strong><span id="fstate">—</span></div>
+        <div class="metric"><strong>GRIC</strong><span id="gric">—</span></div>
+      </div>
+      <div class="chips" id="warnings"></div>
+      <h3>Manual receipt</h3>
+      <pre id="receipt">{}</pre>
+    </section>
+  </div>
+
+  <section style="margin-top:12px;">
+    <h2>3 — Freeze Tests</h2>
+    <p class="note">Tap once. The harness runs all six canonical tests and produces a batch receipt. Freeze requires correct runtime outputs on device, plus receipt copy/download proof.</p>
+    <button class="big mega" id="runAll">Run All Freeze Tests</button>
+    <div class="metrics" style="margin-top:10px;">
+      <div class="metric"><strong>Batch Status</strong><span id="batchStatus">NOT RUN</span></div>
+      <div class="metric"><strong>Passed</strong><span id="passed">0 / 6</span></div>
+    </div>
+    <div style="overflow:auto; margin-top:10px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Input</th>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody id="testRows"></tbody>
+      </table>
+    </div>
+    <h3>Batch freeze receipt</h3>
+    <pre id="batchReceipt">{}</pre>
+    <div class="buttons">
+      <button id="copyManual">Copy Manual Receipt</button>
+      <button id="copyBatch">Copy Batch Receipt</button>
+      <button id="downloadBatch">Download Batch JSON</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const VERSION = "JickMa SDK v0.1B Freeze Harness";
+const GLYPH_INFO = {
+  "↑": { name: "Jick", action: "begin", field: "ignition" },
+  "↓": { name: "Mah", action: "resolve", field: "grounding" },
+  "←": { name: "Lethar", action: "branch", field: "route" },
+  "↺": { name: "Zhur", action: "apply_pressure", field: "cycle" }
+};
+
+const FREEZE_TESTS = [
+  { input: "↑↓", expected: { status: "DING", clauseType: "M", finalState: "resolved", gricBody: "Square" } },
+  { input: "↺↑↓", expected: { status: "DING", clauseType: "Z", finalState: "resolved", gricBody: "Square" } },
+  { input: "←↑↓", expected: { status: "DING", clauseType: "L", finalState: "resolved", gricBody: "Compass" } },
+  { input: "↑↑↓", expected: { status: "DING", clauseType: "J", finalState: "resolved", gricBody: "Compass" } },
+  { input: "↑←", expected: { status: "CHECK", clauseType: "L", finalState: "branched", gricBody: "Compass", warningIncludes: "Dangling branch" } },
+  { input: "↺", expected: { status: "CHECK", clauseType: "Z", finalState: "pressure_applied", gricBody: "Square", warningIncludes: "Dangling pressure" } }
+];
+
+function parseMovements(input) {
+  return [...input].filter(ch => GLYPH_INFO[ch]).map((glyph, index) => ({
+    glyph,
+    index,
+    ...GLYPH_INFO[glyph]
+  }));
+}
+
+function inferClauseType(movements) {
+  const glyphs = movements.map(m => m.glyph);
+  const down = glyphs.indexOf("↓");
+  const pressure = glyphs.indexOf("↺");
+  const branch = glyphs.indexOf("←");
+  if (pressure !== -1 && (down === -1 || pressure < down)) return "Z";
+  if (branch !== -1 && (down === -1 || branch < down)) return "L";
+  if (glyphs.filter(g => g === "↑").length > 1) return "J";
+  return "M";
+}
+
+function buildClause(input) {
+  const movements = parseMovements(input);
+  return { raw: input, movements, type: inferClauseType(movements), empty: movements.length === 0 };
+}
+
+function checkContinuity(clause) {
+  const last = clause.movements.at(-1)?.glyph ?? null;
+  const warnings = [];
+  if (clause.empty) warnings.push("No movement glyphs detected.");
+  if (last === "←") warnings.push("Dangling branch: ← needs a return, choice, or resolution.");
+  if (last === "↺") warnings.push("Dangling pressure: ↺ needs grounding, release, or recursion handling.");
+  return { ok: warnings.length === 0, warnings };
+}
+
+function gricMap(type) {
+  if (type === "Z" || type === "M") return { body: "Square", reason: "structure / pressure / grounding" };
+  if (type === "J" || type === "L") return { body: "Compass", reason: "direction / ignition / route selection" };
+  return { body: "Unmapped", reason: "unknown type" };
+}
+
+function executeClause(clause) {
+  const events = [];
+  let state = "pending";
+  for (const movement of clause.movements) {
+    if (movement.glyph === "↺") {
+      state = "pressure_applied";
+      events.push({ action: "apply_pressure", glyph: movement.glyph, state });
+    } else if (movement.glyph === "↑") {
+      state = "begun";
+      events.push({ action: "begin", glyph: movement.glyph, state });
+    } else if (movement.glyph === "←") {
+      state = "branched";
+      events.push({ action: "branch", glyph: movement.glyph, state });
+    } else if (movement.glyph === "↓") {
+      state = "resolved";
+      events.push({ action: "resolve", glyph: movement.glyph, state });
+    }
+  }
+  const continuity = checkContinuity(clause);
+  const gric = gricMap(clause.type);
+  return {
+    status: continuity.ok && !clause.empty ? "DING" : "CHECK",
+    version: VERSION,
+    clauseType: clause.type,
+    movementCount: clause.movements.length,
+    finalState: state,
+    gric,
+    continuity,
+    events,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function runJickMa(input) {
+  const clause = buildClause(input);
+  const receipt = executeClause(clause);
+  return { clause, receipt };
+}
+
+function compareResult(actual, expected) {
+  const checks = [
+    actual.status === expected.status,
+    actual.clauseType === expected.clauseType,
+    actual.finalState === expected.finalState,
+    actual.gric.body === expected.gricBody
+  ];
+  if (expected.warningIncludes) {
+    checks.push(actual.continuity.warnings.some(w => w.includes(expected.warningIncludes)));
+  }
+  return checks.every(Boolean);
+}
+
+const el = id => document.getElementById(id);
+let lastManual = null;
+let lastBatch = null;
+
+function renderManual() {
+  const result = runJickMa(el("input").value);
+  lastManual = result;
+  el("status").textContent = result.receipt.status;
+  el("status").className = result.receipt.status === "DING" ? "ding" : "check";
+  el("ctype").textContent = result.receipt.clauseType;
+  el("fstate").textContent = result.receipt.finalState;
+  el("gric").textContent = result.receipt.gric.body;
+  el("receipt").textContent = JSON.stringify(result, null, 2);
+
+  const lane = el("lane");
+  lane.innerHTML = "";
+  result.clause.movements.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "moveCard";
+    card.innerHTML = `<div><div class="g">${m.glyph}</div><small>${m.name}</small></div>`;
+    lane.appendChild(card);
+  });
+  if (!result.clause.movements.length) lane.innerHTML = "<p>No movement glyphs detected.</p>";
+
+  const warnings = el("warnings");
+  warnings.innerHTML = "";
+  if (result.receipt.continuity.warnings.length) {
+    result.receipt.continuity.warnings.forEach(w => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = "⚠ " + w;
+      warnings.appendChild(chip);
+    });
+  } else {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = "✓ Continuity clear";
+    warnings.appendChild(chip);
+  }
+}
+
+function runAll() {
+  const rows = [];
+  let passCount = 0;
+
+  for (const test of FREEZE_TESTS) {
+    const result = runJickMa(test.input);
+    const passed = compareResult(result.receipt, test.expected);
+    if (passed) passCount++;
+    rows.push({ test, actual: result.receipt, passed });
+  }
+
+  const batchStatus = passCount === FREEZE_TESTS.length ? "FREEZE_READY" : "CHECK";
+  lastBatch = {
+    status: batchStatus,
+    version: VERSION,
+    proofMeaning: batchStatus === "FREEZE_READY"
+      ? "All canonical freeze tests passed in this runtime."
+      : "One or more freeze tests needs inspection.",
+    passed: passCount,
+    total: FREEZE_TESTS.length,
+    tests: rows,
+    boundary: "Device screenshot or exported receipt should be used as freeze proof. Open/UI load alone is not full runtime freeze.",
+    timestamp: new Date().toISOString()
+  };
+
+  el("batchStatus").textContent = batchStatus;
+  el("batchStatus").className = batchStatus === "FREEZE_READY" ? "ding" : "check";
+  el("passed").textContent = `${passCount} / ${FREEZE_TESTS.length}`;
+  el("passed").className = passCount === FREEZE_TESTS.length ? "ding" : "check";
+  el("batchReceipt").textContent = JSON.stringify(lastBatch, null, 2);
+
+  const tbody = el("testRows");
+  tbody.innerHTML = "";
+  rows.forEach(row => {
+    const tr = document.createElement("tr");
+    const expected = `${row.test.expected.status} / ${row.test.expected.clauseType} / ${row.test.expected.finalState} / ${row.test.expected.gricBody}`;
+    const actual = `${row.actual.status} / ${row.actual.clauseType} / ${row.actual.finalState} / ${row.actual.gric.body}`;
+    tr.innerHTML = `
+      <td><strong>${row.test.input}</strong></td>
+      <td>${expected}</td>
+      <td>${actual}</td>
+      <td class="${row.passed ? "ding" : "fail"}">${row.passed ? "PASS" : "FAIL"}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Copied.");
+  } catch {
+    prompt("Copy:", text);
+  }
+}
+
+function downloadText(filename, text, type="application/json") {
+  const blob = new Blob([text], { type });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.querySelectorAll("[data-preset]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    el("input").value = btn.dataset.preset;
+    renderManual();
+  });
+});
+el("run").addEventListener("click", renderManual);
+el("runAll").addEventListener("click", runAll);
+el("copyManual").addEventListener("click", () => copyText(el("receipt").textContent));
+el("copyBatch").addEventListener("click", () => copyText(el("batchReceipt").textContent));
+el("downloadBatch").addEventListener("click", () => {
+  const text = el("batchReceipt").textContent || "{}";
+  downloadText("JICKMA_SDK_v0_1B_FREEZE_BATCH_RECEIPT.json", text);
+});
+renderManual();
+runAll();
+</script>
+</body>
+</html>

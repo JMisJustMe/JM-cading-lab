@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.6 — Experience Play Lab</title>
+<meta name="theme-color" content="#110f1d" />
+<style>
+:root{
+  --bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;
+  --line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#251d3e,var(--bg) 60%);color:var(--text)}
+main{max-width:1220px;margin:0 auto;padding:16px}
+header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+header{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.55rem} h2{margin:0 0 10px;font-size:1.08rem} h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:920px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1.05rem}
+textarea{min-height:68px;resize:vertical} label{display:block;margin:8px 0 6px;font-weight:850}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+button:active{transform:translateY(1px)}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.92rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.hud{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}@media(min-width:750px){.hud{grid-template-columns:repeat(4,1fr)}}
+.card{border:1px solid var(--line);border-radius:15px;background:#0d0b17;padding:11px;min-height:86px}.card strong{display:block;margin-bottom:6px}.card small{color:var(--muted)}
+.goodBorder{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.16)}
+.playOn{box-shadow:0 0 0 4px rgba(146,247,170,.16), inset 0 0 28px rgba(146,247,170,.08)}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:86px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}
+.glyph{display:inline-grid;place-items:center;width:52px;height:52px;border:1px solid var(--line);border-radius:16px;background:#302850;font-size:1.5rem;font-weight:900;position:relative;user-select:none}
+.playOn .glyph{animation:pop .35s ease both}.glyph.pressure{transform:skew(-8deg);background:#3b2e58}.glyph.branch{border-radius:20px 20px 8px 20px}.glyph.resolve{background:#243b32}.glyph.ignite{background:#3a315e}
+@keyframes pop{0%{transform:scale(.8);opacity:.2}100%{transform:scale(1);opacity:1}}
+.badge{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:999px;padding:9px 14px;font-weight:950}
+.badgeDing{background:rgba(146,247,170,.12);border-color:var(--good);color:var(--good)}
+.badgeCheck{background:rgba(255,209,102,.12);border-color:var(--warn);color:var(--warn)}
+.meter{height:18px;border-radius:999px;border:1px solid var(--line);background:#222;margin-top:8px;overflow:hidden}
+.meter span{display:block;height:100%;width:100%}.green span{background:var(--good)}.yellow span{background:var(--warn)}.red span{background:var(--bad)}
+.timeline{display:grid;gap:8px;max-height:250px;overflow:auto}.timeline button{text-align:left;width:100%;background:#0d0b17}
+.consoleTabs{display:flex;flex-wrap:wrap;gap:8px}.consoleTabs button.active{border-color:var(--good)}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main id="app">
+<header>
+  <h1>JickMa SDK v0.6 — Experience / Play / Lab Layer</h1>
+  <p><strong>Purpose:</strong> wrap the proven core with a toy-grade, lab-grade, dev-grade experience: Play Mode, suggestions, auto-repair, pretty receipts, interactive Spalk, continuity meter, dev console, teaching mode, timeline, auto-routing, and one-tap freeze.</p>
+</header>
+
+<section style="margin-top:12px;">
+  <h2>0 — Proof position</h2>
+  <p class="note">v0.4 stays frozen. v0.5A proved Android state/receipt/smoke boxes. v0.6 wraps the core without breaking it.</p>
+</section>
+
+<div class="grid">
+<section>
+  <h2>1 — Play Lab input</h2>
+
+  <div class="buttons">
+    <button id="togglePlay">Play Mode: OFF</button>
+    <button id="toggleTeach">Teaching Mode: ON</button>
+    <button id="autoTargetBtn">Auto-Route Target</button>
+  </div>
+
+  <label>Movement string</label>
+  <textarea id="movement">↺↑↓←↑↓</textarea>
+  <div id="suggestions" class="buttons"></div>
+  <div class="buttons">
+    <button data-preset="↑↓">↑↓ simple</button>
+    <button data-preset="↑←">↑← dangling branch</button>
+    <button data-preset="↺">↺ dangling pressure</button>
+    <button data-preset="↺↑↓←↑↓">multi route</button>
+    <button data-preset="↑↑↓">ignition</button>
+  </div>
+
+  <label>Sentence kind</label>
+  <select id="sentenceKind">
+    <option value="ASSERT">ASSERT → CAD_ASSERT_ROUTE</option>
+    <option value="ASK">ASK → CAD_QUERY_ROUTE</option>
+    <option value="REPAIR">REPAIR → CAD_REPAIR_ROUTE</option>
+    <option value="TEACH">TEACH → CAD_TEACH_ROUTE</option>
+    <option value="FREEZE">FREEZE → CAD_FREEZE_PROOF</option>
+  </select>
+
+  <label>Target runtime</label>
+  <select id="target">
+    <option value="TraceBox">TraceBox</option>
+    <option value="FlowTalk">FlowTalk</option>
+    <option value="GRIC">GRIC</option>
+    <option value="Spalk">Spalk</option>
+    <option value="CadingLab">CadingLab</option>
+  </select>
+
+  <button class="big" id="run">Run Experience Route</button>
+  <button class="big" id="repairBtn" style="margin-top:8px;">Apply Auto-Repair</button>
+</section>
+
+<section>
+  <h2>2 — Play HUD</h2>
+  <div class="metrics">
+    <div class="metric"><strong>Status</strong><span id="status">BOOTING</span></div>
+    <div class="metric"><strong>Clause Type</strong><span id="clauseType">—</span></div>
+    <div class="metric"><strong>Target</strong><span id="targetOut">—</span></div>
+    <div class="metric"><strong>Command</strong><span id="commandOut">—</span></div>
+  </div>
+
+  <h3>Continuity meter</h3>
+  <div id="meter" class="meter green"><span></span></div>
+  <div id="warnings" class="chips"><span class="chip">booting…</span></div>
+
+  <h3>Spalk touch lane</h3>
+  <div id="lane" class="lane"></div>
+  <p id="glyphInfo" class="note">Tap a glyph to inspect it.</p>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — Pretty receipt</h2>
+  <div id="prettyReceipt" class="card"></div>
+  <h3>Teaching mode explanation</h3>
+  <p id="teaching" class="note"></p>
+</section>
+
+<section>
+  <h2>4 — State timeline</h2>
+  <div id="timeline" class="timeline"></div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>5 — Dev console</h2>
+  <div class="consoleTabs">
+    <button data-tab="movement" class="active">Movements</button>
+    <button data-tab="packet">Packet</button>
+    <button data-tab="receipt">Receipt</button>
+    <button data-tab="state">State</button>
+    <button data-tab="errors">Errors</button>
+  </div>
+  <pre id="devConsole">{}</pre>
+</section>
+
+<section>
+  <h2>6 — Freeze / Smoke</h2>
+  <div class="buttons">
+    <button id="runSmoke">Run v0.6 Experience Smoke Tests</button>
+    <button id="oneTapFreeze">One-Tap Freeze Receipt</button>
+    <button id="copyReceipt">Copy Current Receipt</button>
+    <button id="downloadReceipt">Download Current Receipt JSON</button>
+  </div>
+  <pre id="smokeReceipt">{"boot":"waiting"}</pre>
+  <pre id="freezeReceipt">{"freeze":"not run"}</pre>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>7 — v0.6 law</h2>
+  <p class="note">A playable language engine should not only run. It should invite, suggest, repair, teach, show its state, and make proof feel touchable.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+
+const VERSION = "JickMa SDK v0.6 Experience Play Lab";
+const STORAGE_KEY = "JICKMA_SDK_v0_6_STATE";
+
+const GLYPH_INFO = {
+  "↑": { name:"Jick", meaning:"ignition / begin", op:"BEGIN", state:"begun", cls:"ignite" },
+  "↓": { name:"Mah", meaning:"resolution / grounding", op:"RESOLVE", state:"resolved", cls:"resolve" },
+  "←": { name:"Lethar", meaning:"branch / route turn", op:"BRANCH", state:"branched", cls:"branch" },
+  "↺": { name:"Zhur", meaning:"pressure / recursion", op:"APPLY_PRESSURE", state:"pressure_applied", cls:"pressure" }
+};
+const KIND_TO_COMMAND = {ASSERT:"CAD_ASSERT_ROUTE",ASK:"CAD_QUERY_ROUTE",REPAIR:"CAD_REPAIR_ROUTE",TEACH:"CAD_TEACH_ROUTE",FREEZE:"CAD_FREEZE_PROOF"};
+const suggestionRules = {"↑":["←","↺","↑","↓"],"←":["↑","↺"],"↺":["↑","←"],"↓":["↑"]};
+
+let playMode = false;
+let teachingMode = true;
+let currentTab = "movement";
+let memoryState = null;
+let currentReceipt = null;
+
+function el(id){return document.getElementById(id)}
+function safeText(id,obj){const n=el(id); if(n)n.textContent=typeof obj==="string"?obj:JSON.stringify(obj,null,2)}
+function safeStoreGet(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")}catch(e){return memoryState||{}}}
+function safeStoreSet(obj){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(obj)); memoryState=obj; return "LOCAL_STORAGE"}catch(e){memoryState=obj; return "MEMORY_FALLBACK"}}
+function state(){const s=safeStoreGet(); return {routeHistory:[], lastReceipt:null, lastError:null, continuity:{openBranch:false,openPressure:false}, storageMode:"UNKNOWN", ...s}}
+function saveState(s){s.storageMode=safeStoreSet(s); return s.storageMode}
+
+function cleanMovement(x){return Array.from(x).filter(ch=>GLYPH_INFO[ch]).join("")}
+function parseMovements(input){return Array.from(cleanMovement(input)).map((glyph,index)=>({glyph,index,...GLYPH_INFO[glyph]}))}
+function inferType(movements){
+  const glyphs=movements.map(m=>m.glyph);
+  const down=glyphs.indexOf("↓"), pressure=glyphs.indexOf("↺"), branch=glyphs.indexOf("←");
+  if(pressure!==-1 && (down===-1 || pressure<down)) return "Z";
+  if(branch!==-1 && (down===-1 || branch<down)) return "L";
+  if(glyphs.filter(g=>g==="↑").length>1) return "J";
+  return "M";
+}
+function warningsFor(movement){
+  const m=cleanMovement(movement);
+  const warnings=[];
+  if(!m)warnings.push("No movement glyphs.");
+  if(m.endsWith("←"))warnings.push("Dangling branch.");
+  if(m.endsWith("↺"))warnings.push("Dangling pressure.");
+  return warnings;
+}
+function autoRepair(m){
+  const s=cleanMovement(m);
+  if(s==="↑←")return "↑←↓";
+  if(s==="↺")return "↑↺↓";
+  if(s==="←")return "←↑↓";
+  if(s.endsWith("←"))return s+"↓";
+  if(s.endsWith("↺"))return "↑"+s+"↓";
+  return null;
+}
+function suggestNext(movementString){
+  const last=cleanMovement(movementString).slice(-1);
+  return suggestionRules[last] || ["↑","↺"];
+}
+function chooseTarget(movementString){
+  const m=cleanMovement(movementString);
+  if(m.length<=3)return "TraceBox";
+  if(m.includes("←"))return "FlowTalk";
+  return "CadingLab";
+}
+function buildPacket(movement, kind, target){
+  const movements=parseMovements(movement);
+  const clauseType=inferType(movements);
+  const warnings=warningsFor(movement);
+  const ops=movements.map((m,i)=>({order:i+1,glyph:m.glyph,op:m.op,stateAfter:m.state}));
+  return {
+    packetType:"CAD_COMMAND_PACKET",
+    version:VERSION,
+    commandId:`${KIND_TO_COMMAND[kind]}_${Date.now()}`,
+    sourceSystem:"JickMa",
+    targetRuntime:target,
+    command:KIND_TO_COMMAND[kind],
+    sentenceKind:kind,
+    clauseType,
+    source:{movement:cleanMovement(movement)},
+    operations:ops,
+    guards:{warnings, allowCheckForRepair:kind==="REPAIR"},
+    createdAt:new Date().toISOString()
+  };
+}
+function execute(packet){
+  const warnings=packet.guards.warnings;
+  const ok = warnings.length===0 || packet.guards.allowCheckForRepair;
+  if(!packet.operations.length)return {status:"CHECK",errorName:"RouteError",errorMessage:"No movement glyphs.",finalState:"blocked"};
+  if(!ok)return {status:"CHECK",errorName:"ContinuityError",errorMessage:warnings.join(" "),finalState:"blocked"};
+  const finalState=packet.operations.at(-1)?.stateAfter || "pending";
+  return {status:"DING",errorName:null,errorMessage:null,finalState};
+}
+function explain(receipt){
+  if(receipt.status==="DING"){
+    return `DING: ${receipt.packet.source.movement} formed a ${receipt.packet.clauseType}-type route and executed as ${receipt.packet.command} into ${receipt.packet.targetRuntime}.`;
+  }
+  return `CHECK: ${receipt.errorName} — ${receipt.errorMessage}. ${receipt.repairSuggestion ? "Auto-repair available: "+receipt.repairSuggestion : "Try grounding the route with ↓."}`;
+}
+function runRoute(){
+  const movement=el("movement").value;
+  const kind=el("sentenceKind").value;
+  const target=el("target").value;
+  const packet=buildPacket(movement,kind,target);
+  const ex=execute(packet);
+  const repairSuggestion=autoRepair(movement);
+  const receipt={
+    status:ex.status,
+    version:VERSION,
+    experienceLayer:["Play Mode","Smart Suggestions","Auto-Repair","Pretty Receipts","Interactive Spalk","Continuity Meter","Dev Console","Teaching Mode","State Timeline","Auto-Routing","One-Tap Freeze"],
+    packet,
+    errorName:ex.errorName,
+    errorMessage:ex.errorMessage,
+    finalState:ex.finalState,
+    repairSuggestion,
+    proofMeaning: ex.status==="DING" ? "Experience route ran and rendered visible play/lab output." : "Experience route captured CHECK and offered repair/teaching route.",
+    timestamp:new Date().toISOString()
+  };
+  const s=state();
+  s.lastReceipt=receipt;
+  s.lastError=receipt.errorName ? {name:receipt.errorName,message:receipt.errorMessage} : null;
+  s.continuity={openBranch:packet.source.movement.endsWith("←"),openPressure:packet.source.movement.endsWith("↺")};
+  s.routeHistory.push({movement:packet.source.movement,status:receipt.status,command:packet.command,target:packet.targetRuntime,ts:Date.now()});
+  if(s.routeHistory.length>20)s.routeHistory=s.routeHistory.slice(-20);
+  saveState(s);
+  currentReceipt=receipt;
+  render(receipt);
+  return receipt;
+}
+function renderSuggestions(){
+  const box=el("suggestions"); box.innerHTML="";
+  suggestNext(el("movement").value).forEach(g=>{
+    const b=document.createElement("button"); b.textContent="Suggest "+g; b.onclick=()=>{el("movement").value=cleanMovement(el("movement").value)+g; runRoute();}; box.appendChild(b);
+  });
+}
+function renderLane(receipt){
+  const lane=el("lane"); lane.innerHTML="";
+  receipt.packet.operations.forEach(o=>{
+    const span=document.createElement("span");
+    span.className="glyph "+(GLYPH_INFO[o.glyph]?.cls||"");
+    span.dataset.glyph=o.glyph; span.dataset.index=o.order;
+    span.textContent=o.glyph;
+    span.onclick=()=>{safeText("glyphInfo",`${o.glyph} = ${GLYPH_INFO[o.glyph].name}: ${GLYPH_INFO[o.glyph].meaning}. Operation: ${o.op}.`);};
+    lane.appendChild(span);
+  });
+  if(!receipt.packet.operations.length)lane.innerHTML='<span class="chip">No glyphs</span>';
+}
+function renderMeter(receipt){
+  const meter=el("meter");
+  if(receipt.packet.source.movement.endsWith("↺"))meter.className="meter red";
+  else if(receipt.packet.source.movement.endsWith("←"))meter.className="meter yellow";
+  else meter.className="meter green";
+}
+function renderPretty(receipt){
+  const cls=receipt.status==="DING"?"badge badgeDing":"badge badgeCheck";
+  el("prettyReceipt").innerHTML = `
+    <div class="${cls}">${receipt.status}</div>
+    <h3>${receipt.packet.source.movement || "No movement"}</h3>
+    <div class="chips">
+      <span class="chip">Type ${receipt.packet.clauseType}</span>
+      <span class="chip">${receipt.packet.targetRuntime}</span>
+      <span class="chip">${receipt.packet.command}</span>
+      <span class="chip">${receipt.finalState}</span>
+    </div>
+  `;
+}
+function renderTimeline(){
+  const box=el("timeline"); box.innerHTML="";
+  const s=state();
+  [...s.routeHistory].reverse().forEach((r,i)=>{
+    const b=document.createElement("button");
+    b.innerHTML=`<strong>${r.status}</strong> ${r.movement || "∅"}<br><small>${r.command} → ${r.target}</small>`;
+    b.onclick=()=>{el("movement").value=r.movement; runRoute();};
+    box.appendChild(b);
+  });
+  if(!s.routeHistory.length)box.innerHTML='<p class="note">No timeline yet.</p>';
+}
+function renderConsole(receipt){
+  const s=state();
+  const data={
+    movement: receipt.packet.source.movement,
+    packet: receipt.packet,
+    receipt,
+    state:{continuity:s.continuity, routeHistoryLength:s.routeHistory.length, storageMode:s.storageMode},
+    errors: receipt.errorName ? {name:receipt.errorName,message:receipt.errorMessage} : {none:true}
+  };
+  safeText("devConsole", data[currentTab]);
+}
+function render(receipt){
+  const app=el("app"); if(playMode)app.classList.add("playOn"); else app.classList.remove("playOn");
+  safeText("status", receipt.status); el("status").className=receipt.status==="DING"?"ding":"check";
+  safeText("clauseType", receipt.packet.clauseType);
+  safeText("targetOut", receipt.packet.targetRuntime);
+  safeText("commandOut", receipt.packet.command);
+  const warnings=el("warnings"); warnings.innerHTML="";
+  const items=receipt.packet.guards.warnings.length ? receipt.packet.guards.warnings : ["Continuity closed"];
+  items.forEach(w=>{const c=document.createElement("span"); c.className="chip"; c.textContent=(w==="Continuity closed"?"✓ ":"⚠ ")+w; warnings.appendChild(c);});
+  el("repairBtn").style.display=receipt.repairSuggestion ? "block" : "none";
+  renderSuggestions();
+  renderLane(receipt);
+  renderMeter(receipt);
+  renderPretty(receipt);
+  safeText("teaching", teachingMode ? explain(receipt) : "Teaching Mode is off.");
+  renderTimeline();
+  renderConsole(receipt);
+}
+function runSmokeTests(){
+  const cases=[
+    {name:"play route ding", movement:"↑↓", kind:"ASSERT", target:"TraceBox", expect:"DING"},
+    {name:"suggestions available", movement:"↑", fn:()=>suggestNext("↑").length>=4},
+    {name:"auto repair branch", movement:"↑←", fn:()=>autoRepair("↑←")==="↑←↓"},
+    {name:"auto repair pressure", movement:"↺", fn:()=>autoRepair("↺")==="↑↺↓"},
+    {name:"continuity check", movement:"↑←", kind:"ASK", target:"FlowTalk", expect:"CHECK"},
+    {name:"repair route carries check", movement:"↑←", kind:"REPAIR", target:"FlowTalk", expect:"DING"},
+    {name:"auto routing short", fn:()=>chooseTarget("↑↓")==="TraceBox"},
+    {name:"auto routing branch", fn:()=>chooseTarget("↺↑↓←↑↓")==="FlowTalk"},
+    {name:"pretty receipt target", movement:"↺↑↓", kind:"ASSERT", target:"CadingLab", expect:"DING"},
+    {name:"timeline exists", fn:()=>Array.isArray(state().routeHistory)}
+  ];
+  const old={movement:el("movement").value,kind:el("sentenceKind").value,target:el("target").value};
+  const rows=[];
+  cases.forEach(c=>{
+    let passed=false, actual=null;
+    if(c.fn){passed=!!c.fn(); actual=String(passed);}
+    else{
+      el("movement").value=c.movement; el("sentenceKind").value=c.kind; el("target").value=c.target;
+      const r=runRoute(); actual=r.status; passed=r.status===c.expect;
+    }
+    rows.push({case:c.name, actual, passed});
+  });
+  el("movement").value=old.movement; el("sentenceKind").value=old.kind; el("target").value=old.target; runRoute();
+  const passed=rows.filter(r=>r.passed).length;
+  const batch={status:passed===cases.length?"V0_6_EXPERIENCE_READY":"CHECK",version:VERSION,passed,total:cases.length,rows,timestamp:new Date().toISOString()};
+  safeText("smokeReceipt", batch);
+  return batch;
+}
+function oneTapFreeze(){
+  const smoke=runSmokeTests();
+  const freeze={
+    sdkName:"JickMa SDK",
+    version:"v0.6",
+    status:smoke.status==="V0_6_EXPERIENCE_READY"?"FREEZE_READY":"CHECK",
+    layer:"Experience / Play / Lab",
+    smoke:{passed:smoke.passed,total:smoke.total,status:smoke.status},
+    frozenBy:"theo_pending_device_proof",
+    boundary:"Freeze-ready receipt generated by runtime. Final freeze still requires user device proof screenshot.",
+    timestamp:new Date().toISOString()
+  };
+  safeText("freezeReceipt", freeze);
+  return freeze;
+}
+async function copyText(text){try{await navigator.clipboard.writeText(text);alert("Copied.");}catch(e){prompt("Copy:",text)}}
+function downloadText(filename,text){const blob=new Blob([text],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href)}
+
+document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{el("movement").value=b.dataset.preset;runRoute();});
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-tab]").forEach(x=>x.classList.remove("active"));b.classList.add("active");currentTab=b.dataset.tab; if(currentReceipt)renderConsole(currentReceipt);});
+el("movement").addEventListener("input",()=>{renderSuggestions(); if(playMode)runRoute();});
+el("togglePlay").onclick=()=>{playMode=!playMode; el("togglePlay").textContent="Play Mode: "+(playMode?"ON":"OFF"); runRoute();};
+el("toggleTeach").onclick=()=>{teachingMode=!teachingMode; el("toggleTeach").textContent="Teaching Mode: "+(teachingMode?"ON":"OFF"); runRoute();};
+el("autoTargetBtn").onclick=()=>{el("target").value=chooseTarget(el("movement").value); runRoute();};
+el("run").onclick=runRoute;
+el("repairBtn").onclick=()=>{const r=autoRepair(el("movement").value); if(r){el("movement").value=r; el("sentenceKind").value="REPAIR"; runRoute();}};
+el("runSmoke").onclick=runSmokeTests;
+el("oneTapFreeze").onclick=oneTapFreeze;
+el("copyReceipt").onclick=()=>copyText(JSON.stringify(currentReceipt||{},null,2));
+el("downloadReceipt").onclick=()=>downloadText("JICKMA_SDK_v0_6_EXPERIENCE_RECEIPT.json",JSON.stringify(currentReceipt||{},null,2));
+
+runRoute();
+runSmokeTests();
+})();
+</script>
+</body>
+</html>

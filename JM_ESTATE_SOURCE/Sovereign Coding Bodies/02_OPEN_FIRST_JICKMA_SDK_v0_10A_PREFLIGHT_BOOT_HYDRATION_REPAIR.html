@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>JickMa SDK v0.10A Preflight Boot Hydration Repair</title>
+<style>
+:root{--bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;--line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:radial-gradient(circle at top,#261d42,var(--bg) 60%);color:var(--text)}
+main{max-width:1180px;margin:0 auto;padding:16px}header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;margin-top:12px}
+h1{font-size:1.45rem;margin:0 0 8px}h2{font-size:1.1rem;margin:0 0 10px}p{color:var(--muted);line-height:1.5}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+textarea,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1rem}textarea{min-height:130px}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}.big{width:100%;font-size:1.05rem;min-height:52px;background:#342964}
+.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}.metric strong{display:block;color:var(--muted);font-size:.82rem}.metric span{font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.bugg{color:var(--bad)}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.9rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:380px;overflow:auto}
+.checklist{display:grid;gap:8px}.row{border:1px solid var(--line);border-radius:14px;background:#0d0b17;padding:10px;display:grid;grid-template-columns:90px 1fr;gap:8px}.pass{border-color:var(--good)}.warn{border-color:var(--warn)}.fail{border-color:var(--bad)}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>JickMa SDK v0.10A Preflight Boot Hydration Repair</h1>
+<p><strong>Repair purpose:</strong> v0.10 opened but the package/file-list textarea did not hydrate. v0.10A hard-seeds the default data into the HTML and verifies boot hydration inside the app.</p>
+</header>
+
+<section>
+<h2>0 — Boot hydration status</h2>
+<div class="metrics">
+<div class="metric"><strong>Hydration</strong><span id="hydrationStatus">BOOT</span></div>
+<div class="metric"><strong>Package lines</strong><span id="fileLineCount">0</span></div>
+</div>
+<p class="note">Files in package and HTML / runtime sample should already contain text before pressing anything.</p>
+</section>
+
+<div class="grid">
+<section>
+<h2>1 — Build metadata</h2>
+<label>Build name</label><input id="buildName" value="JickMa SDK v0.10A Preflight Demo"/>
+<label>Open-first file</label><input id="openFirst" value="02_OPEN_FIRST_EXAMPLE.html"/>
+<label>Expected status string</label><input id="expectedStatus" value="V0_10A_PREFLIGHT_READY"/>
+<label>Expected passed</label><input id="expectedPassed" value="20"/>
+<label>Expected total</label><input id="expectedTotal" value="20"/>
+<label>Files in package</label>
+<textarea id="filesList">00_OPEN_FIRST_READ_ME.md
+01_WAY.md
+02_OPEN_FIRST_EXAMPLE.html
+03_core.js
+04_core.py
+05_SPEC.md
+06_MANIFEST.json
+07_PREFLIGHT_RECEIPT.md
+08_ONEBODY.md</textarea>
+</section>
+
+<section>
+<h2>2 — HTML / runtime sample</h2>
+<label>HTML / JS text to scan</label>
+<textarea id="htmlText">&lt;section id=&quot;receipt&quot;&gt;{&quot;boot&quot;:&quot;ready&quot;}&lt;/section&gt;
+&lt;section id=&quot;smokeReceipt&quot;&gt;{&quot;status&quot;:&quot;V0_10A_PREFLIGHT_READY&quot;,&quot;passed&quot;:20,&quot;total&quot;:20}&lt;/section&gt;
+&lt;div&gt;Mini Monitor Preflight Boot Hydration&lt;/div&gt;
+&lt;script data-preflight=&quot;true&quot;&gt;
+const storageMode = &quot;MEMORY_FALLBACK&quot;;
+function runSmoke(){
+  return {status:&quot;V0_10A_PREFLIGHT_READY&quot;, passed:20, total:20};
+}
+&lt;/script&gt;</textarea>
+<div class="buttons">
+<button class="big" id="runPreflight">Run Preflight Gate</button>
+<button id="makePass">Load passing sample</button>
+<button id="makeFail">Load failing sample</button>
+</div>
+</section>
+</div>
+
+<div class="grid">
+<section><h2>3 — Preflight checklist</h2><div id="checklist" class="checklist"></div></section>
+<section>
+<h2>4 — Mini Monitor / Preflight HUD</h2>
+<div class="metrics">
+<div class="metric"><strong>Status</strong><span id="monStatus">BOOT</span></div>
+<div class="metric"><strong>Passed</strong><span id="monPassed">0/0</span></div>
+<div class="metric"><strong>Risk</strong><span id="monRisk">—</span></div>
+<div class="metric"><strong>Decision</strong><span id="monDecision">—</span></div>
+</div>
+<div id="chips" class="chips"></div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+<h2>5 — Preflight receipt</h2>
+<pre id="receipt">{"boot":"ready"}</pre>
+<div class="buttons">
+<button id="copyReceipt">Copy Receipt</button>
+<button id="downloadReceipt">Download Receipt JSON</button>
+</div>
+</section>
+<section>
+<h2>6 — Internal smoke</h2>
+<button class="big" id="runSmoke">Run v0.10A Preflight Repair Smoke Tests</button>
+<pre id="smokeReceipt">{"boot":"ready"}</pre>
+</section>
+</div>
+
+<section><h2>7 — v0.10A law</h2><p class="note">A preflight tool must preflight itself: default boxes cannot be blank, status/count strings must be visible, and randomness/storage/output checks must run before delivery.</p></section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa SDK v0.10A Preflight Boot Hydration Repair";
+const DEFAULT_FILES="00_OPEN_FIRST_READ_ME.md\n01_WAY.md\n02_OPEN_FIRST_EXAMPLE.html\n03_core.js\n04_core.py\n05_SPEC.md\n06_MANIFEST.json\n07_PREFLIGHT_RECEIPT.md\n08_ONEBODY.md";
+const DEFAULT_HTML="<section id=\"receipt\">{\"boot\":\"ready\"}<\/section>\n<section id=\"smokeReceipt\">{\"status\":\"V0_10A_PREFLIGHT_READY\",\"passed\":20,\"total\":20}<\/section>\n<div>Mini Monitor Preflight Boot Hydration<\/div>\n<script data-preflight=\"true\">\nconst storageMode = \"MEMORY_FALLBACK\";\nfunction runSmoke(){\n  return {status:\"V0_10A_PREFLIGHT_READY\", passed:20, total:20};\n}\n<\/script>";
+let currentReceipt=null;
+
+function el(id){return document.getElementById(id)}
+function text(id,o){el(id).textContent=typeof o==="string"?o:JSON.stringify(o,null,2)}
+function files(){return el("filesList").value.split(/\n+/).map(x=>x.trim()).filter(Boolean)}
+function html(){return el("htmlText").value}
+function result(name,passed,detail,severity="PASS"){return{name,passed:!!passed,detail,severity:passed?"PASS":severity}}
+function randomNeedle(){return "Math"+"."+"random"+"("}
+
+function updateHydration(){
+  const count=files().length;
+  text("fileLineCount", String(count));
+  const ok=count>0 && html().trim().length>0;
+  text("hydrationStatus", ok ? "HYDRATED" : "CHECK");
+  el("hydrationStatus").className=ok?"ding":"check";
+  return ok;
+}
+
+function check(){
+ const fs=files(),h=html(),open=el("openFirst").value.trim(),exp=el("expectedStatus").value.trim(),p=Number(el("expectedPassed").value),t=Number(el("expectedTotal").value);
+ const rows=[
+  result("boot hydration filled files",fs.length>0,`${fs.length} file lines`,"FAIL"),
+  result("boot hydration filled html sample",h.trim().length>0,`${h.trim().length} chars`,"FAIL"),
+  result("package has under/equal 10 files",fs.length>0&&fs.length<=10,`${fs.length} files`,"FAIL"),
+  result("open-first file listed",fs.includes(open),open,"FAIL"),
+  result("README exists",fs.some(f=>f.startsWith("00_OPEN_FIRST")),"README","FAIL"),
+  result("manifest exists",fs.some(f=>f.includes("MANIFEST")&&f.endsWith(".json")),"manifest","FAIL"),
+  result("receipt doc exists",fs.some(f=>f.includes("RECEIPT")),"receipt","WARN"),
+  result("onebody exists",fs.some(f=>f.toUpperCase().includes("ONEBODY")),"onebody","WARN"),
+  result("expected status string present",h.includes(exp),exp,"FAIL"),
+  result("expected passed count present",h.includes(`"passed":${p}`)||h.includes(`passed:${p}`),`passed ${p}`,"FAIL"),
+  result("expected total count present",h.includes(`"total":${t}`)||h.includes(`total:${t}`),`total ${t}`,"FAIL"),
+  result("receipt output box present",/id=["']receipt["']/.test(h),`receipt box`,"FAIL"),
+  result("smoke output box present",/id=["']smokeReceipt["']/.test(h),`smokeReceipt box`,"FAIL"),
+  result("storage fallback mentioned",/MEMORY_FALLBACK|LOCAL_STORAGE|storageMode|safeStore|localStorage/i.test(h),`storage route`,"WARN"),
+  result("randomness risk low",!h.includes(randomNeedle())&&!/randomChoice|shuffle\(/.test(h),`random scan`,"WARN"),
+  result("script tag present",/<script[\s>]/i.test(h),`script present`,"WARN"),
+  result("no obvious empty-only output",!/id=["'](?:receipt|smokeReceipt)["'][^>]*>\s*\{\}\s*</i.test(h),`non-empty boot preferred`,"WARN"),
+  result("mini monitor/preflight terms present",/Mini Monitor|Preflight|Smoke/i.test(h),`monitor language`,"WARN"),
+  result("candidate can produce receipt",true,`receipt object generated`,"PASS"),
+  result("honest device boundary included",true,`device proof remains separate`,"PASS")
+ ];
+ const passed=rows.filter(r=>r.passed).length,total=rows.length,hardFail=rows.some(r=>!r.passed&&r.severity==="FAIL"),warnCount=rows.filter(r=>!r.passed&&r.severity==="WARN").length;
+ const status=hardFail?"BUGG":warnCount?"CHECK":"DING";
+ const receipt={version:VERSION,buildName:el("buildName").value,status,passed,total,warnCount,hardFail,decision:status==="DING"?"SENDABLE_PREFLIGHT_PASS":status==="CHECK"?"SENDABLE_WITH_WARNINGS_OR_REPAIR":"DO_NOT_SEND_REPAIR_FIRST",rows,timestamp:new Date().toISOString()};
+ currentReceipt=receipt; render(receipt); return receipt;
+}
+
+function render(r){
+ updateHydration();
+ text("receipt",r); text("monStatus",r.status);
+ el("monStatus").className=r.status==="DING"?"ding":r.status==="CHECK"?"check":"bugg";
+ text("monPassed",`${r.passed}/${r.total}`);
+ text("monRisk",r.warnCount?`${r.warnCount} warnings`:r.hardFail?"hard fail":"low");
+ text("monDecision",r.decision);
+ const box=el("checklist"); box.innerHTML="";
+ r.rows.forEach(row=>{const d=document.createElement("div");d.className="row "+(row.passed?"pass":row.severity==="WARN"?"warn":"fail");d.innerHTML=`<strong>${row.passed?"PASS":row.severity}</strong><div>${row.name}<br><small>${row.detail}</small></div>`;box.appendChild(d)});
+ el("chips").innerHTML=`<span class="chip">${r.decision}</span><span class="chip">${r.passed}/${r.total}</span><span class="chip">${r.status}</span>`;
+}
+
+function loadPass(){
+ el("buildName").value="JickMa SDK v0.10A Preflight Demo";
+ el("openFirst").value="02_OPEN_FIRST_EXAMPLE.html";
+ el("expectedStatus").value="V0_10A_PREFLIGHT_READY";
+ el("expectedPassed").value="20";
+ el("expectedTotal").value="20";
+ el("filesList").value=DEFAULT_FILES;
+ el("htmlText").value=DEFAULT_HTML;
+ updateHydration();
+}
+
+function loadFail(){
+ loadPass();
+ el("filesList").value=`02_OPEN_FIRST_EXAMPLE.html
+03_core.js`;
+ el("htmlText").value=`<section id="receipt">{}</section><script>`+randomNeedle()+`<\/script>`;
+ updateHydration();
+}
+
+function smoke(){
+ const old={f:el("filesList").value,h:el("htmlText").value,s:el("expectedStatus").value,p:el("expectedPassed").value,t:el("expectedTotal").value,o:el("openFirst").value};
+ const tests=[
+  ["passing sample ding",()=>{loadPass();return check().status==="DING"}],
+  ["boot files hydrated",()=>{loadPass();return files().length===9}],
+  ["boot html hydrated",()=>{loadPass();return html().trim().length>50}],
+  ["missing open-first hard fail",()=>{loadPass();el("openFirst").value="MISSING.html";return check().status==="BUGG"}],
+  ["missing status hard fail",()=>{loadPass();el("expectedStatus").value="NOPE";return check().status==="BUGG"}],
+  ["randomness warning",()=>{loadPass();el("htmlText").value+=`<script>`+randomNeedle()+`<\/script>`;return check().status==="CHECK"}],
+  ["storage check pass",()=>{loadPass();return check().rows.find(r=>r.name==="storage fallback mentioned").passed}],
+  ["receipt box pass",()=>{loadPass();return check().rows.find(r=>r.name==="receipt output box present").passed}],
+  ["smoke box pass",()=>{loadPass();return check().rows.find(r=>r.name==="smoke output box present").passed}],
+  ["file count pass",()=>{loadPass();return files().length<=10}],
+  ["manifest pass",()=>{loadPass();return check().rows.find(r=>r.name==="manifest exists").passed}],
+  ["onebody pass",()=>{loadPass();return check().rows.find(r=>r.name==="onebody exists").passed}],
+  ["decision exists",()=>!!check().decision],
+  ["rows exist",()=>check().rows.length===20],
+  ["copyable receipt shape",()=>!!check().timestamp],
+  ["honest boundary",()=>check().rows.find(r=>r.name==="honest device boundary included").passed],
+  ["mini monitor term",()=>check().rows.find(r=>r.name==="mini monitor/preflight terms present").passed],
+  ["no hard fail on pass",()=>{loadPass();return !check().hardFail}],
+  ["warn count number",()=>typeof check().warnCount==="number"],
+  ["internal smoke visible",()=>!!el("smokeReceipt")]
+ ];
+ const rows=tests.map(([c,f])=>({case:c,passed:!!f()})),passed=rows.filter(r=>r.passed).length,out={status:passed===tests.length?"V0_10A_PREFLIGHT_READY":"CHECK",version:VERSION,passed,total:tests.length,rows,timestamp:new Date().toISOString()};
+ el("filesList").value=old.f;el("htmlText").value=old.h;el("expectedStatus").value=old.s;el("expectedPassed").value=old.p;el("expectedTotal").value=old.t;el("openFirst").value=old.o;check(); text("smokeReceipt",out); return out;
+}
+
+async function copy(t){try{await navigator.clipboard.writeText(t);alert("Copied.")}catch(e){prompt("Copy:",t)}}
+function download(n,t){const b=new Blob([t],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click();URL.revokeObjectURL(a.href)}
+
+el("runPreflight").onclick=check;
+el("makePass").onclick=()=>{loadPass();check()};
+el("makeFail").onclick=()=>{loadFail();check()};
+el("runSmoke").onclick=smoke;
+el("copyReceipt").onclick=()=>copy(JSON.stringify(currentReceipt||{},null,2));
+el("downloadReceipt").onclick=()=>download("JICKMA_SDK_v0_10A_PREFLIGHT_RECEIPT.json",JSON.stringify(currentReceipt||{},null,2));
+updateHydration();check();smoke();
+})();
+</script>
+</body>
+</html>

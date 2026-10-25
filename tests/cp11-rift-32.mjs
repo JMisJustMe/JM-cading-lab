@@ -40,7 +40,7 @@ const wait=async(page,test,timeout=15000)=>page.waitForFunction(test,{timeout});
 const click=async(page,selector)=>page.locator(selector).click({timeout:14000});
 async function clearTargets(page,n,selector,limit){
  for(let i=0;i<limit;i++){
-  if(await page.evaluate(target=>window.__CP11[target]===n,selector))return i;
+  if(await page.evaluate(([target,n])=>window.__CP11[target]===n,[selector,n]))return i;
   await page.waitForTimeout(570);
   await click(page,'#pulse');
  }

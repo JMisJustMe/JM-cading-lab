@@ -1,4 +1,4 @@
-name: JM CP11 live KO-derived native Fold decisions
+name: JM CP11 converged live decisions and native-to-source KO return
 on:
   pull_request:
     paths:
@@ -51,9 +51,18 @@ jobs:
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp09_living_rivals_test.gd > evidence/cp09-living.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp10_ko_contact_test.gd > evidence/cp10-ko-native.log 2>&1
           timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp11_ko_live_test.gd > evidence/cp11-live-native.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path godot --script res://tests/cp11_converged_native_test.gd > evidence/cp11-converged-native.log 2>&1
+          node verify-converged-return.mjs > evidence/cp11-converged-ko-reverse.log 2>&1
+          python3 - <<'PY'
+          import pathlib,re
+          text=pathlib.Path('evidence/cp11-converged-native.log').read_text()
+          m=re.search(r'CP11 CONVERGED SUMMARY (\d+)/(\d+)',text)
+          assert m and int(m[1])==int(m[2]) and int(m[1])>=20,'CONVERGENCE_NATIVE_ASSERTION_HOLD'
+          print('Independent native source-to-live-return checks:',m[0])
+          PY
           # Headless Godot tests may return 0 despite scripting errors after assertions.
           # A native PASS is not earned until the raw execution log is error-free.
-          if grep -nE 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' evidence/cp11-live-native.log; then
+          if grep -nE 'SCRIPT ERROR:|Parse Error:|ERROR: Failed to load' evidence/cp11-live-native.log evidence/cp11-converged-native.log; then
             echo "::error::CP11 native script error despite assertions"
             exit 1
           fi

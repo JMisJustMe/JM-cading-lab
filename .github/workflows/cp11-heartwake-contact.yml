@@ -1,0 +1,34 @@
+name: CP11 Heartwake — Real WebGL + Game Phase Contact
+on:
+  push:
+    paths:
+      - 'engine/demo/cp11-heartwake-v0.3.html'
+      - 'tests/cp11-heartwake-browser.mjs'
+      - '.github/workflows/cp11-heartwake-contact.yml'
+  pull_request:
+    paths:
+      - 'engine/demo/cp11-heartwake-v0.3.html'
+      - 'tests/cp11-heartwake-browser.mjs'
+      - '.github/workflows/cp11-heartwake-contact.yml'
+permissions:
+  contents: read
+jobs:
+  cp11-heartwake-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned real Three.js and Chromium driver
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Prove CP11 v0.3 real WebGL and 2-phase game consequence
+        run: node tests/cp11-heartwake-browser.mjs
+      - name: Preserve phase and Fold-shape screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp11-heartwake-real-webgl
+          path: cp11-evidence/cp11-heartwake-*.png
+          if-no-files-found: ignore

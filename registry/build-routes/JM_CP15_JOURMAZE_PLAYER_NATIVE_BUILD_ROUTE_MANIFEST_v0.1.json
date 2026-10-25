@@ -1,0 +1,103 @@
+{
+  "schema": "jm.build-route-manifest/0.1",
+  "manifest": "JM CP15 Build Route Manifest — JourMaze Native Player Tactics",
+  "instantiation_mode": "prospective-live-route",
+  "created_for": {
+    "body": "CP15 JM JourMaze player-selectable native SLINGFALL route deck",
+    "body_type": "additive playable Godot child of existing live KO/JM line; no new JM coding identity",
+    "intended_destination": "Draft PR #464 child of PR #463; signed ARM64 Android debug APK and actual native engine gameplay tests"
+  },
+  "authority": {
+    "repository": "JMisJustMe/JM-cading-lab",
+    "work_pr": 464,
+    "inherited_base_sha": "546f20f4b796089d3b8c250b9cca032162f9246a",
+    "source_authority": [
+      "CP11 native converged KO source #461 — protected original auto AEGIS/TRIAGE/COUNTER and KO TRACE",
+      "CP12 source-original JudgeMaker #463 — remains independent source-verification lane",
+      "CP14 source-original JourMaze #462 — exact frozen donor 56c5ff4f76a222eb32d6b01d955ed0fe45d5389e5c14cba12f8e7618157545db",
+      "JM CODE 62-64 founding executable closure v1.0"
+    ],
+    "owner_permission": "User said 'Let's go' after explicit plan to put JM/KO cooperation into player-facing gameplay; work on draft only",
+    "no_retrofit": true,
+    "no_canonical_replacement": true
+  },
+  "foundation": {
+    "recovered": "Existing Godot CP11 live native three-action system, three original 62–64 founding authorities and native device export CI; preserved relevant source and consumed original JourMaze donor",
+    "donor_selection": "Exact original JourMaze independently computes route selection in Node; native recipient implements bounded actions from sealed route packet; original KO auto recipient remains unchanged",
+    "why_new_player_surface": "Previously CP14 routes existed only in CI evidence; player could not select them for meaningful in-game consequences"
+  },
+  "exact_stack": {
+    "donor": "coding-estate/integration/codegornization-cp15/donors/JM_JourMaze.html",
+    "compiler": "coding-estate/integration/codegornization-cp15/compile-routes.mjs",
+    "graft": "coding-estate/integration/codegornization-cp15/prepare-native.mjs",
+    "recipient": "coding-estate/integration/codegornization-cp15/native/CP15Recipient.gd",
+    "scene": "coding-estate/integration/codegornization-cp15/native/CP15Main.tscn",
+    "nativeTests": "coding-estate/integration/codegornization-cp15/native/cp15_route_native_test.gd",
+    "CI": ".github/workflows/jm-cp15-player-tactics-native.yml",
+    "hosts": [
+      "Node 22 builder",
+      "Godot 4.5.2 Linux native test",
+      "signed ARM64 Godot Android debug test APK"
+    ]
+  },
+  "true_gaps": {
+    "new_coding_identity_required": false,
+    "new_language_required": false,
+    "new_capability_creation_authorized": false,
+    "gap": "Player could inspect compiled KO traces but not directly choose JourMaze routes and cause unique battle-state changes on the device",
+    "solution": "Provide native touch-deck with three selectable bounded tactics BRACE (blue shield), RALLY (injured ally heal), TRAP (near rival stun+damage), source-derived route identity, safe live eligibility and energy costs",
+    "not_claimed": "Full original JourMaze JS interpreter in Android, physical Samsung Fold owner acceptance or game-release quality"
+  },
+  "proof_lanes": {
+    "original_donor_sha": {
+      "status": "PENDING_EXACT_HEAD_CI",
+      "sha256": "56c5ff4f76a222eb32d6b01d955ed0fe45d5389e5c14cba12f8e7618157545db"
+    },
+    "genuine_original_execution": {
+      "status": "PENDING_EXACT_HEAD_CI",
+      "required": "original JM JourMaze 5/5 founding self-tests and three distinct selected route variants"
+    },
+    "native_touch_effects": {
+      "status": "PENDING_EXACT_HEAD_CI",
+      "required": "native Button pressed signals cause real energy/shield/HP/stun modifications, with receipt and recovery"
+    },
+    "inherited_CP11": {
+      "status": "PENDING_RETEST",
+      "required": "existing KO native auto and trace remain functional"
+    },
+    "Android_APK": {
+      "status": "PENDING_BUILD"
+    },
+    "owner_physical_Fold": {
+      "status": "HOLD — requires owner",
+      "meaning": "Signed build does not prove install, layout on Samsung Fold or finger usability"
+    },
+    "whole_estate": {
+      "status": "NOT_CLAIMED"
+    }
+  },
+  "host_and_surfaces": {
+    "source_identity_preserved": true,
+    "host": "GitHub Actions Node and Godot",
+    "Android_app": "new child debug APK only after CI",
+    "physical_owner_contact": false
+  },
+  "escalation": {
+    "if_test_red": "Inspect actual logs, fix smallest attributable problem, rerun native and whole CI",
+    "if_source_drift": "HOLD and recover original frozen source without rewriting donor",
+    "owner_required_for": "physical Fold gameplay acceptance and promotion/merge decisions"
+  },
+  "state": {
+    "route": "AUTHORIZED_DRAFT_CHILD_EXECUTION",
+    "build_authorized_by_manifest": true,
+    "merge_authorized": false,
+    "release_authorized": false,
+    "crown": "PENDING CI AND SEPARATE OWNER TOUCH"
+  },
+  "next_route": {
+    "step": "Run exact original Node donor → Godot test → signed APK plus governance gates, inspect returned logs and artifact, report scoped proof and owner HOLD"
+  },
+  "manifest_proof": {
+    "result": "Exact distinct JourMaze original reused for native play; no silent original replacement or upgrade of proof jurisdiction"
+  }
+}

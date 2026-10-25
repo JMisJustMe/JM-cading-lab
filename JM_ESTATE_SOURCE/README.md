@@ -20,7 +20,23 @@ Preserve original named JM coding bodies, version identities, operational heads,
 
 - `Coding/`: 37 original standalone coding-body files have been imported so far from the separate Coding Library directory, including Natural Operational Language Bounce v0.1/v0.2, Coding Body Lab QUADZE, TBS controls, Two Hand Estate Board, and Coding Body House builders. **This Coding directory remains INCOMPLETE.**
 
-**Current bounded import tally (GitHub tree at `1af58026ae124d39ae500bb6d4e6f7dd5945c44b`, 2026-10-25):** **164 original source/script files**: 61 `Sovereign Coding Bodies/` + 41 `Games/` + 8 `Game Engines/` + 37 `Coding/` + 13 `Coding Systems/` + 3 `Coding Estate/` + 1 `Coding - Language - Runtime - OS/`. Plus **4 supporting records**: this `README.md`, `Sovereign Coding Bodies/00_OPEN_FIRST_JM_CODING_ECOSYSTEM_CURRENT.md`, and two original JSON manifests (100-Body Federation, 32_Cb). The recursive Git tree has `truncated: false`; 168/168 imported paths have nonzero blob sizes (13,410,661 bytes total). These counts describe **the bounded GitHub import**, not coverage of the whole Library. Selected representative source files were read back against Library-read source text; full Library-to-GitHub byte-for-byte equality is **HOLD**. Source presence does not prove native execution or cross-body contact.
+**Checkpoint A tally (GitHub tree at `1af58026ae124d39ae500bb6d4e6f7dd5945c44b`, 2026-10-25):** **164 original source/script files**: 61 `Sovereign Coding Bodies/` + 41 `Games/` + 8 `Game Engines/` + 37 `Coding/` + 13 `Coding Systems/` + 3 `Coding Estate/` + 1 `Coding - Language - Runtime - OS/`. Plus **4 supporting records**: this `README.md`, `Sovereign Coding Bodies/00_OPEN_FIRST_JM_CODING_ECOSYSTEM_CURRENT.md`, and two original JSON manifests (100-Body Federation, 32_Cb). The recursive Git tree has `truncated: false`; 168/168 imported paths have nonzero blob sizes (13,410,661 bytes total). These counts describe **the bounded GitHub import**, not coverage of the whole Library. Selected representative source files were read back against Library-read source text; full Library-to-GitHub byte-for-byte equality is **HOLD**. Source presence does not prove native execution or cross-body contact.
+
+## Current verified import — Checkpoint B (2026-10-25)
+
+**GitHub tree at `de82a0a29adf5ca373ab577f019a7f50d4ef8097`:** 173 files beneath `JM_ESTATE_SOURCE/`, comprising **169 original source/script files** and **4 supporting records**. All 173 Git blobs have nonzero byte sizes; recursive tree `truncated: false`. Source-family counts: 61 Sovereign Coding Bodies; 41 Games; 8 Game Engines; 37 Coding; 13 Coding Systems; 3 Coding Estate; 1 Coding - Language - Runtime - OS; **5 Code, OS & Runtime**. Total imported Git blob payload at this checkpoint: **13,536,318 bytes**.
+
+Five exact Library originals were newly imported after Checkpoint A. Each was fetched back from GitHub and its Git blob SHA-1 matched an independently computed Git blob hash of the original Library raw file; its returned UTF-8 text also exactly matched the reconstructed original byte content. No source file was altered to fabricate a match. The first file matched raw Library text directly; the next four were reconstructed by restoring a trailing newline verified from raw Library bytes (the text extractor omitted it).
+
+| Preserved source path within `JM_ESTATE_SOURCE/` | Raw size (bytes) | Exact Git blob SHA-1 |
+| --- | ---: | --- |
+| `Code, OS & Runtime/00_OPEN_FIRST_JM_BODYOS_v0_1.html` | 15,638 | `b62092fb1c603189e197a24e883bdea1d9e13dfb` |
+| `Code, OS & Runtime/00_OPEN_FIRST_JM_ANDROID_FORGE_v1_0.html` | 58,489 | `54f497a8ba8e32a2dcadacd652dca594f9c0fb89` |
+| `Code, OS & Runtime/JM32-1DA Early Runtime/START_HERE_JM32-1DA_ACTIVE_HTML_SYSTEM_v0_3_2b.html` | 5,001 | `f19363526642b2ef1daba35bafcd43e0970695c3` |
+| `Code, OS & Runtime/CodeHand/OPEN_FIRST_JM_CODE_HAND_JS_CPP_BRIDGE_v0_2_ANDROID_INLINE.html` | 14,203 | `f5f041d6d825899b0c3d6bcf4201b776e8722d66` |
+| `Code, OS & Runtime/JM Actual Engine/JM_ACTUAL_ENGINE_v12_0_PORTRAIT_LIVING_VISUAL_ENGINE_FINAL_GOLD.html` | 31,846 | `6761b0f5b8d645f4a671ebe746a89037ad1f33d2` |
+
+**Evidence boundary:** five exact original-to-GitHub byte identities **PASS**. The remaining source population has not all been compared against raw originals. An earlier attempted read of `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_1.html` was incomplete and that source remains **HOLD / unimported**. GitHub custody of the listed files does **not** mean native execution, typed transport, cross-body consequences, or device acceptance. Whole-Estate recovery remains **HOLD**; exclude secrets, binary artifacts and uninspected ZIP interiors from public publication.
 
 ## Import boundaries and HOLDs
 

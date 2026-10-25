@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.8A — Debugger Timeline Storage Repair</title>
+<meta name="theme-color" content="#100d1a" />
+<style>
+:root{
+  --bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;
+  --line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;--deep:#090712;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#251d3e,var(--bg) 60%);color:var(--text)}
+main{max-width:1280px;margin:0 auto;padding:16px}
+header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+header{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.55rem} h2{margin:0 0 10px;font-size:1.08rem} h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:960px){.grid{grid-template-columns:1.05fr .95fr}}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1.02rem}
+textarea{min-height:72px;resize:vertical} label{display:block;margin:8px 0 6px;font-weight:850}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+button:active{transform:translateY(1px)}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.fail{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.9rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.stack{display:grid;grid-template-columns:1fr;gap:8px}
+.layer{border:1px solid var(--line);border-radius:15px;background:#0d0b17;padding:11px;display:grid;gap:6px}
+.layer.active{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.16)}
+.layer strong{display:flex;justify-content:space-between;gap:8px}.layer small{color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:820px){.two{grid-template-columns:1fr 1fr}}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:70px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}
+.glyph{display:inline-grid;place-items:center;width:46px;height:46px;border:1px solid var(--line);border-radius:15px;background:#302850;font-size:1.3rem;font-weight:900}
+.glyph.pressure{transform:skew(-8deg);background:#3b2e58}.glyph.branch{border-radius:20px 20px 8px 20px}.glyph.resolve{background:#243b32}.glyph.ignite{background:#3a315e}
+.badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:950}.badgeDing{border-color:var(--good);color:var(--good)}.badgeCheck{border-color:var(--warn);color:var(--warn)}
+.timeline{display:grid;gap:8px;max-height:360px;overflow:auto}.timeline button{text-align:left;background:#0d0b17}
+.inspector{min-height:260px}
+.panelTitle{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.arcBox{border:1px solid var(--line);border-radius:14px;background:var(--deep);padding:10px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.8A — Debugger Timeline Storage Repair / QuestDeck Studio Phase 1</h1>
+  <p><strong>Purpose:</strong> one screen that x-rays a single movement through the symbolic stack: JickMa → Cading → FlowTalk → GRIC → Spalk → Spelk → Event-Spine, with timeline, inspector, and debug receipt.</p>
+</header>
+
+<section style="margin-top:12px;">
+  <h2>0 — Proof boundary</h2>
+  <p class="note">v0.7A is still the device proof gate for RouteDeck. v0.8A repairs v0.8's Android 13/14 smoke issue and remains a forward candidate: debugger/studio Phase 1 built from the Theo Symbolic Stack v0.1.</p>
+</section>
+
+<div class="grid">
+<section>
+  <h2>1 — Run with Debug</h2>
+  <label>Movement / sentence input</label>
+  <textarea id="movement">↺↑↓←↑↓</textarea>
+  <div class="buttons">
+    <button data-preset="↑↓">Simple ↑↓</button>
+    <button data-preset="↺↑↓">Pressure ↺↑↓</button>
+    <button data-preset="←↑↓">Branch ←↑↓</button>
+    <button data-preset="↑←">Dangling ↑←</button>
+    <button data-preset="↺↑↓←↑↓">Stack route</button>
+  </div>
+
+  <label>Target runtime</label>
+  <select id="target">
+    <option value="TraceBox">TraceBox</option>
+    <option value="FlowTalk">FlowTalk</option>
+    <option value="GRIC">GRIC</option>
+    <option value="Spalk">Spalk</option>
+    <option value="CadingLab">CadingLab</option>
+  </select>
+
+  <label>Sentence kind</label>
+  <select id="kind">
+    <option value="ASSERT">ASSERT</option>
+    <option value="ASK">ASK</option>
+    <option value="REPAIR">REPAIR</option>
+    <option value="TEACH">TEACH</option>
+    <option value="FREEZE">FREEZE</option>
+  </select>
+
+  <button class="big" id="runDebug">Run With Debug</button>
+
+  <div class="metrics" style="margin-top:10px;">
+    <div class="metric"><strong>Status</strong><span id="status">BOOT</span></div>
+    <div class="metric"><strong>DebugRun ID</strong><span id="runId">—</span></div>
+    <div class="metric"><strong>Layer Count</strong><span id="layerCount">7</span></div>
+    <div class="metric"><strong>Arc</strong><span id="arcOut">—</span></div><div class="metric"><strong>Storage</strong><span id="storageOut">BOOT</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>2 — Inspector</h2>
+  <p class="note">Tap a layer, glyph, timeline item, or panel to inspect it.</p>
+  <pre id="inspector" class="inspector">{}</pre>
+  <div class="buttons">
+    <button id="copyDebug">Copy Debug Receipt</button>
+    <button id="downloadDebug">Download Debug JSON</button>
+    <button id="runSmoke">Run v0.8A Debugger Repair Smoke Tests</button>
+  </div>
+  <pre id="smokeReceipt">{"boot":"waiting"}</pre>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — Theo Symbolic Stack Panels</h2>
+  <div id="stack" class="stack"></div>
+</section>
+
+<section>
+  <h2>4 — Timeline</h2>
+  <div id="timeline" class="timeline"></div>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>5 — Layer X-Ray</h2>
+  <div class="two">
+    <div>
+      <div class="panelTitle"><h3>JickMa — Movement Grammar</h3><button data-inspect="jickma">Inspect</button></div>
+      <div id="jickmaLane" class="lane"></div>
+      <div id="jickmaChips" class="chips"></div>
+    </div>
+    <div>
+      <div class="panelTitle"><h3>Cading — Execution Packet</h3><button data-inspect="cading">Inspect</button></div>
+      <div id="cadingPretty" class="arcBox"></div>
+    </div>
+  </div>
+  <div class="two" style="margin-top:12px;">
+    <div>
+      <div class="panelTitle"><h3>FlowTalk — Continuity</h3><button data-inspect="flowtalk">Inspect</button></div>
+      <div id="flowtalkPretty" class="arcBox"></div>
+    </div>
+    <div>
+      <div class="panelTitle"><h3>GRIC — Geometry</h3><button data-inspect="gric">Inspect</button></div>
+      <div id="gricPretty" class="arcBox"></div>
+    </div>
+  </div>
+  <div class="two" style="margin-top:12px;">
+    <div>
+      <div class="panelTitle"><h3>Spalk — Motion Lanes</h3><button data-inspect="spalk">Inspect</button></div>
+      <div id="spalkLane" class="lane"></div>
+    </div>
+    <div>
+      <div class="panelTitle"><h3>Spelk — Written Motion</h3><button data-inspect="spelk">Inspect</button></div>
+      <div id="spelkLane" class="lane"></div>
+    </div>
+  </div>
+  <div style="margin-top:12px;">
+    <div class="panelTitle"><h3>Event-Spine — Narrative Arc</h3><button data-inspect="narrative">Inspect</button></div>
+    <div id="narrativePretty" class="arcBox"></div>
+  </div>
+</section>
+
+<section style="margin-top:12px;">
+  <h2>6 — Debug Receipt</h2>
+  <pre id="debugReceipt">{}</pre>
+</section>
+
+<section style="margin-top:12px;">
+  <h2>7 — v0.8 law</h2>
+  <p class="note">A system becomes easier to build when every run can show where it passed, where it bent, where it branched, where it marked, and where it became story.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa SDK v0.8A Debugger Timeline Storage Repair";
+const STORE="JICKMA_V08A_DEBUG_RUNS";
+const GLYPH={
+  "↑":{name:"Jick",op:"BEGIN",state:"begun",field:"ignition",cls:"ignite"},
+  "↓":{name:"Mah",op:"RESOLVE",state:"resolved",field:"grounding",cls:"resolve"},
+  "←":{name:"Lethar",op:"BRANCH",state:"branched",field:"route",cls:"branch"},
+  "↺":{name:"Zhur",op:"APPLY_PRESSURE",state:"pressure_applied",field:"cycle",cls:"pressure"}
+};
+const CMD={ASSERT:"CAD_ASSERT_ROUTE",ASK:"CAD_QUERY_ROUTE",REPAIR:"CAD_REPAIR_ROUTE",TEACH:"CAD_TEACH_ROUTE",FREEZE:"CAD_FREEZE_PROOF"};
+const STACK=[
+  {n:10,name:"Mythic-Structure",sys:"Empiramid",desc:"chambers / ascent / perspective"},
+  {n:9,name:"Meta-Logic",sys:"TBS Quadze",desc:"Z0 / Interpretator / Use Law"},
+  {n:8,name:"Narrative Engine",sys:"Event-Spine",desc:"arc / pressure / loop"},
+  {n:7,name:"Marking",sys:"Spelk",desc:"written symbolic motion"},
+  {n:6,name:"Motion",sys:"Spalk",desc:"lanes / movement paths"},
+  {n:5,name:"Geometry",sys:"GRIC",desc:"square-compass logic"},
+  {n:4,name:"Continuity",sys:"FlowTalk",desc:"stance / pressure inheritance"},
+  {n:3,name:"Execution",sys:"Cading",desc:"packets / receipts / DING"},
+  {n:2,name:"Movement Grammar",sys:"JickMa",desc:"↑ ↓ ← ↺"},
+  {n:1,name:"Pre-Symbolic",sys:"Marks Before Words",desc:"raw trace / proto-meaning"}
+];
+let currentRun=null;
+function el(id){return document.getElementById(id)}
+function text(id,obj){el(id).textContent=typeof obj==="string"?obj:JSON.stringify(obj,null,2)}
+function clean(x){return Array.from(x).filter(ch=>GLYPH[ch]).join("")}
+function glyphs(m){return Array.from(clean(m)).map((g,i)=>({glyph:g,index:i,...GLYPH[g]}))}
+function clauseType(gs){
+  const arr=gs.map(x=>x.glyph);const down=arr.indexOf("↓"),p=arr.indexOf("↺"),b=arr.indexOf("←");
+  if(p!==-1&&(down===-1||p<down))return"Z";
+  if(b!==-1&&(down===-1||b<down))return"L";
+  if(arr.filter(x=>x==="↑").length>1)return"J";
+  return"M";
+}
+function warnings(m){const s=clean(m),w=[];if(!s)w.push("No glyphs");if(s.endsWith("←"))w.push("Dangling branch");if(s.endsWith("↺"))w.push("Dangling pressure");return w}
+function gricFor(type){return (type==="Z"||type==="M")?{body:"Square",reason:"structure / pressure / grounding"}:{body:"Compass",reason:"direction / ignition / branch"}}
+function arcFor(m,type,status){const s=clean(m);if(status!=="DING")return"Repair Arc";if(s.includes("↺")&&s.includes("←"))return"Pressure Branch Arc";if(s.includes("↺"))return"Pressure Descent";if(s.includes("←"))return"Branching Field";if(type==="J")return"Ignition Spiral";return"Soft-Return Cycle"}
+function spelkMarks(gs){return gs.map((g,i)=>({mark:g.glyph,index:i,notation:g.glyph==="↺"?"curve":g.glyph==="←"?"fork":g.glyph==="↓"?"stop-line":"rise-mark"}))}
+function runWithDebug(){
+  const input=el("movement").value, target=el("target").value, kind=el("kind").value;
+  const g=glyphs(input), type=clauseType(g), warn=warnings(input), status=(g.length && (!warn.length||kind==="REPAIR"))?"DING":"CHECK";
+  const packet={packetType:"CAD_COMMAND_PACKET",version:VERSION,commandId:`${CMD[kind]}_${Date.now()}`,sourceSystem:"JickMa",targetRuntime:target,command:CMD[kind],sentenceKind:kind,source:{movement:clean(input)},clauseType:type,operations:g.map((x,i)=>({order:i+1,glyph:x.glyph,op:x.op,stateAfter:x.state})),guards:{warnings:warn,allowCheckForRepair:kind==="REPAIR"}};
+  const receipt={status,finalState:status==="DING"?(packet.operations.at(-1)?.stateAfter||"pending"):"blocked",errors:status==="CHECK"?warn:[]};
+  const gric=gricFor(type), spalk={lanes:[{name:"main",glyphs:g.map(x=>x.glyph),motion:g.map(x=>x.field)}]}, spelk={marks:spelkMarks(g)};
+  const narrative={arc:arcFor(input,type,status),notes:status==="DING"?"Route became an interpretable arc.":"Route needs repair before full arc."};
+  const run={id:"debug_"+Date.now(),ts:Date.now(),storageMode,inputMovement:clean(input),jickma:{glyphs:g,clauses:[{raw:clean(input),type}],sentenceType:type,errors:warn},cading:{packet,receipt,status,errors:receipt.errors},flowtalk:{continuityState:{openBranch:clean(input).endsWith("←"),openPressure:clean(input).endsWith("↺")},stance:status==="DING"?"stable":"repair-needed",pressure:clean(input).includes("↺")?"present":"clear"},gric:{geometry:gric},spalk,spelk,narrative};
+  currentRun=run;pushRun(run);render(run);return run;
+}
+let storageMode = "BOOT";
+let memoryRuns = [];
+function storageAvailable(){
+  try{
+    const k="__jickma_v08a_test__";
+    localStorage.setItem(k,"1");
+    localStorage.removeItem(k);
+    storageMode="LOCAL_STORAGE";
+    return true;
+  }catch(e){
+    storageMode="MEMORY_FALLBACK";
+    return false;
+  }
+}
+storageAvailable();
+function pushRun(run){
+  let arr = getRuns();
+  arr.push(run);
+  arr = arr.slice(-20);
+  memoryRuns = arr;
+  if(storageMode==="LOCAL_STORAGE"){
+    try{
+      localStorage.setItem(STORE,JSON.stringify(arr));
+    }catch(e){
+      storageMode="MEMORY_FALLBACK";
+      memoryRuns=arr;
+    }
+  }
+  const out=document.getElementById("storageOut");
+  if(out) out.textContent=storageMode;
+}
+function getRuns(){
+  if(storageMode==="LOCAL_STORAGE"){
+    try{
+      const raw=localStorage.getItem(STORE);
+      if(raw) return JSON.parse(raw);
+      return memoryRuns || [];
+    }catch(e){
+      storageMode="MEMORY_FALLBACK";
+      return memoryRuns || [];
+    }
+  }
+  return memoryRuns || [];
+}
+function inspect(path){if(!currentRun)return;text("inspector", path?currentRun[path]:currentRun)}
+function renderStack(){
+  const box=el("stack");box.innerHTML="";
+  STACK.forEach(layer=>{const d=document.createElement("div");d.className="layer active";d.innerHTML=`<strong><span>L${layer.n} — ${layer.name}</span><span>${layer.sys}</span></strong><small>${layer.desc}</small>`;d.onclick=()=>text("inspector",layer);box.appendChild(d);});
+}
+function renderGlyphLane(id,items,asMarks=false){
+  const lane=el(id);lane.innerHTML="";
+  items.forEach((x,i)=>{const sp=document.createElement("span");sp.className="glyph "+(GLYPH[x.glyph||x.mark]?.cls||"");sp.textContent=x.glyph||x.mark;sp.onclick=()=>text("inspector",x);lane.appendChild(sp);});
+  if(!items.length)lane.innerHTML='<span class="chip">No glyphs</span>';
+}
+function render(run){
+  text("status",run.cading.status);el("status").className=run.cading.status==="DING"?"ding":"check";text("runId",run.id.replace("debug_",""));text("arcOut",run.narrative.arc);text("storageOut",storageMode);
+  renderStack();
+  renderGlyphLane("jickmaLane",run.jickma.glyphs);renderGlyphLane("spalkLane",run.jickma.glyphs);renderGlyphLane("spelkLane",run.spelk.marks,true);
+  el("jickmaChips").innerHTML=`<span class="chip">Type ${run.jickma.sentenceType}</span><span class="chip">${run.inputMovement}</span><span class="chip">${run.jickma.errors.length?run.jickma.errors.join(", "):"well-formed"}</span>`;
+  el("cadingPretty").innerHTML=`<span class="badge ${run.cading.status==="DING"?"badgeDing":"badgeCheck"}">${run.cading.status}</span><div class="chips"><span class="chip">${run.cading.packet.command}</span><span class="chip">${run.cading.packet.targetRuntime}</span><span class="chip">${run.cading.receipt.finalState}</span></div>`;
+  el("flowtalkPretty").innerHTML=`<div class="chips"><span class="chip">stance: ${run.flowtalk.stance}</span><span class="chip">pressure: ${run.flowtalk.pressure}</span><span class="chip">branch open: ${run.flowtalk.continuityState.openBranch}</span></div>`;
+  el("gricPretty").innerHTML=`<div class="chips"><span class="chip">${run.gric.geometry.body}</span><span class="chip">${run.gric.geometry.reason}</span></div>`;
+  el("narrativePretty").innerHTML=`<strong>${run.narrative.arc}</strong><p>${run.narrative.notes}</p>`;
+  text("debugReceipt",run);text("inspector",run);
+  renderTimeline();
+}
+function renderTimeline(){
+  const box=el("timeline");box.innerHTML="";
+  getRuns().slice().reverse().forEach(r=>{const b=document.createElement("button");b.innerHTML=`<strong>${r.cading.status}</strong> ${r.inputMovement}<br><small>${r.narrative.arc} / ${r.cading.packet.command}</small>`;b.onclick=()=>{currentRun=r;render(r);};box.appendChild(b);});
+}
+function smoke(){
+  const tests=[
+    ["parse glyphs",()=>glyphs("↺↑↓").length===3],
+    ["infer Z",()=>clauseType(glyphs("↺↑↓"))==="Z"],
+    ["infer L",()=>clauseType(glyphs("←↑↓"))==="L"],
+    ["ding simple",()=>{el("movement").value="↑↓";el("kind").value="ASSERT";return runWithDebug().cading.status==="DING"}],
+    ["check dangling",()=>{el("movement").value="↑←";el("kind").value="ASK";return runWithDebug().cading.status==="CHECK"}],
+    ["repair dangling",()=>{el("movement").value="↑←";el("kind").value="REPAIR";return runWithDebug().cading.status==="DING"}],
+    ["cading packet",()=>!!currentRun.cading.packet.command],
+    ["flowtalk continuity",()=>typeof currentRun.flowtalk.continuityState.openBranch==="boolean"],
+    ["gric geometry",()=>["Square","Compass"].includes(currentRun.gric.geometry.body)],
+    ["spalk lanes",()=>Array.isArray(currentRun.spalk.lanes)],
+    ["spelk marks",()=>Array.isArray(currentRun.spelk.marks)],
+    ["narrative arc",()=>!!currentRun.narrative.arc],
+    ["timeline runs",()=>getRuns().length>0],
+    ["storage fallback active",()=>["LOCAL_STORAGE","MEMORY_FALLBACK"].includes(storageMode)],
+    ["inspector available",()=>!!el("inspector").textContent]
+  ];
+  const rows=tests.map(([name,fn])=>({case:name,passed:!!fn()}));
+  const passed=rows.filter(r=>r.passed).length;
+  const out={status:passed===tests.length?"V0_8A_DEBUGGER_REPAIR_READY":"CHECK",version:VERSION,passed,total:tests.length,rows,timestamp:new Date().toISOString()};
+  text("smokeReceipt",out);return out;
+}
+async function copyText(t){try{await navigator.clipboard.writeText(t);alert("Copied.")}catch(e){prompt("Copy:",t)}}
+function download(name,t){const blob=new Blob([t],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{el("movement").value=b.dataset.preset;runWithDebug()});
+document.querySelectorAll("[data-inspect]").forEach(b=>b.onclick=()=>inspect(b.dataset.inspect));
+el("runDebug").onclick=runWithDebug;el("runSmoke").onclick=smoke;
+el("copyDebug").onclick=()=>copyText(JSON.stringify(currentRun||{},null,2));
+el("downloadDebug").onclick=()=>download("JICKMA_SDK_v0_8A_DEBUG_RUN.json",JSON.stringify(currentRun||{},null,2));
+runWithDebug();smoke();
+})();
+</script>
+</body>
+</html>

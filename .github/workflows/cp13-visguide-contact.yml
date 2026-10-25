@@ -1,0 +1,52 @@
+name: JM CP13 VISGUIDE Actor World Form Contact
+on:
+  push:
+    paths:
+      - 'engine/demo/cp13-visguide-ember-kite-v0.3.html'
+      - 'tests/cp13-visguide-actor-world.mjs'
+      - '.github/workflows/cp13-visguide-contact.yml'
+  pull_request:
+    paths:
+      - 'engine/demo/cp13-visguide-ember-kite-v0.3.html'
+      - 'tests/cp13-visguide-actor-world.mjs'
+      - '.github/workflows/cp13-visguide-contact.yml'
+permissions:
+  contents: read
+jobs:
+  real-visual-comparisons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario: [0,1,2,3,4,5,6,7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Render ACTOR / WORLD / PLAY / SHAPE and prove native game parity
+        env:
+          CP13_VISGUIDE_CASE: ${{ matrix.scenario }}
+        run: node tests/cp13-visguide-actor-world.mjs
+      - name: Preserve actual visual comparisons
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp13-visguide-${{ matrix.scenario }}
+          path: cp13-visguide-evidence/*.png
+          if-no-files-found: ignore
+  original-contact-lineage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - run: node tests/cp11-sovereign-contact.mjs
+      - run: CP11_ROUTE_CASE=1 node tests/cp11-routeos-contact.mjs
+      - run: CP12_VISUAL_CASE=1 node tests/cp12-vale-visual-contact.mjs
+      - run: CP12_VISUAL_CASE=1 node tests/cp12-hollow-bloom-contact.mjs

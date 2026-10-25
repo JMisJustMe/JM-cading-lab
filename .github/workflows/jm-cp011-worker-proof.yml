@@ -1,0 +1,33 @@
+name: JM CP01.1 real Web Workers CI proof
+on:
+  push:
+    branches:
+      - experiment/jm-cp011-browser-workers-20261025
+    paths:
+      - .github/workflows/jm-cp011-worker-proof.yml
+      - tests/jm-cp011-worker-proof/browser-worker-proof.mjs
+  workflow_dispatch:
+jobs:
+  actual-browser-worker-contact:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test-only Chromium runner
+        run: |
+          npm install --prefix tests/jm-cp011-worker-proof --no-package-lock --no-save playwright@1.55.0
+          node tests/jm-cp011-worker-proof/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Real module Web Workers and original donor contact
+        run: node tests/jm-cp011-worker-proof/browser-worker-proof.mjs
+      - name: Preserve independent evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jm-cp011-browser-worker-proof
+          path: /tmp/jm-cp011-browser-worker-receipt.json
+          if-no-files-found: warn

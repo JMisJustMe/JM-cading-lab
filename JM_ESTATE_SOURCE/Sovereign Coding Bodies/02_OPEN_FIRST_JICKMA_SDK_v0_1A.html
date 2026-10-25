@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.1A — Open First</title>
+<meta name="theme-color" content="#161421" />
+<style>
+  :root {
+    --bg: #090811;
+    --panel: #151322;
+    --panel2: #1d1a2c;
+    --text: #f5f1ff;
+    --muted: #b9b0d0;
+    --line: #332d4c;
+    --good: #83f7a3;
+    --warn: #ffd166;
+    --bad: #ff7b7b;
+    --chip: #29243d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, #19142b, var(--bg) 55%);
+    color: var(--text);
+  }
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  header {
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    box-shadow: 0 16px 50px rgba(0,0,0,.25);
+  }
+  h1 { margin: 0 0 6px; font-size: 1.6rem; }
+  h2 { margin: 0 0 10px; font-size: 1.05rem; }
+  p { color: var(--muted); line-height: 1.5; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  @media (min-width: 800px) {
+    .grid { grid-template-columns: 1.1fr .9fr; }
+  }
+  section {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(21,19,34,.9);
+    padding: 14px;
+  }
+  label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  textarea, input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #080710;
+    color: var(--text);
+    padding: 12px;
+    font-size: 1.15rem;
+  }
+  textarea { min-height: 72px; resize: vertical; }
+  button {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: var(--chip);
+    color: var(--text);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:active { transform: translateY(1px); }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .big {
+    width: 100%;
+    font-size: 1.05rem;
+    background: #2c2450;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 10px;
+    background: var(--chip);
+    color: var(--text);
+  }
+  .glyph {
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+  .typeBox {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .metric {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--panel2);
+    padding: 10px;
+  }
+  .metric strong {
+    display: block;
+    font-size: .85rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .metric span {
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+  .ding { color: var(--good); }
+  .check { color: var(--warn); }
+  .bad { color: var(--bad); }
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #07060d;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px;
+    max-height: 280px;
+    overflow: auto;
+  }
+  .lane {
+    min-height: 92px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    background: #0d0b17;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 8px;
+    padding: 10px;
+  }
+  .moveCard {
+    width: 64px;
+    min-height: 64px;
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #2a2541, #161421);
+    display: grid;
+    place-items: center;
+    text-align: center;
+    font-weight: 900;
+  }
+  .moveCard small {
+    display: block;
+    font-size: .68rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>JickMa SDK v0.1A</h1>
+    <p><strong>Open-first executable body.</strong> Parse movement glyphs into clause type, execution state, GRIC map, FlowTalk continuity check, Spalk visual lane, and receipt.</p>
+  </header>
+
+  <div class="grid">
+    <section>
+      <h2>1 — Movement input</h2>
+      <label for="input">Use glyphs: ↑ ↓ ← ↺</label>
+      <textarea id="input">↺↑↓</textarea>
+      <div class="buttons">
+        <button data-preset="↑↓">↑↓ M / simple resolve</button>
+        <button data-preset="↺↑↓">↺↑↓ Z / pressure</button>
+        <button data-preset="←↑↓">←↑↓ L / branch</button>
+        <button data-preset="↑↑↓">↑↑↓ J / ignition</button>
+        <button data-preset="↑←">↑← CHECK / dangling branch</button>
+        <button data-preset="↺">↺ CHECK / dangling pressure</button>
+      </div>
+      <button class="big" id="run">Run JickMa</button>
+
+      <h2 style="margin-top:14px;">2 — Spalk visual lane</h2>
+      <div id="lane" class="lane"></div>
+    </section>
+
+    <section>
+      <h2>3 — Result</h2>
+      <div class="typeBox">
+        <div class="metric"><strong>Status</strong><span id="status">—</span></div>
+        <div class="metric"><strong>Clause Type</strong><span id="ctype">—</span></div>
+        <div class="metric"><strong>Final State</strong><span id="fstate">—</span></div>
+        <div class="metric"><strong>GRIC Body</strong><span id="gric">—</span></div>
+      </div>
+      <div class="chips" id="warnings"></div>
+      <h2 style="margin-top:14px;">4 — Receipt</h2>
+      <pre id="receipt">{}</pre>
+      <div class="buttons">
+        <button id="copy">Copy receipt</button>
+        <button id="download">Download receipt JSON</button>
+      </div>
+    </section>
+  </div>
+
+  <section style="margin-top:12px;">
+    <h2>Movement key</h2>
+    <div class="chips">
+      <span class="chip"><span class="glyph">↑</span> Jick / begin / ignition</span>
+      <span class="chip"><span class="glyph">↓</span> Mah / resolve / grounding</span>
+      <span class="chip"><span class="glyph">←</span> Branch / route turn</span>
+      <span class="chip"><span class="glyph">↺</span> Pressure / recursion / cycle</span>
+    </div>
+  </section>
+</main>
+
+<script>
+const GLYPH_INFO = {
+  "↑": { name: "Jick", action: "begin", field: "ignition" },
+  "↓": { name: "Mah", action: "resolve", field: "grounding" },
+  "←": { name: "Lethar", action: "branch", field: "route" },
+  "↺": { name: "Zhur", action: "apply_pressure", field: "cycle" }
+};
+
+function parseMovements(input) {
+  return [...input].filter(ch => GLYPH_INFO[ch]).map((glyph, index) => ({
+    glyph,
+    index,
+    ...GLYPH_INFO[glyph]
+  }));
+}
+
+function inferClauseType(movements) {
+  const glyphs = movements.map(m => m.glyph);
+  const down = glyphs.indexOf("↓");
+  const pressure = glyphs.indexOf("↺");
+  const branch = glyphs.indexOf("←");
+
+  if (pressure !== -1 && (down === -1 || pressure < down)) return "Z";
+  if (branch !== -1 && (down === -1 || branch < down)) return "L";
+  if (glyphs.filter(g => g === "↑").length > 1) return "J";
+  return "M";
+}
+
+function buildClause(input) {
+  const movements = parseMovements(input);
+  return {
+    raw: input,
+    movements,
+    type: inferClauseType(movements),
+    empty: movements.length === 0
+  };
+}
+
+function checkContinuity(clause) {
+  const last = clause.movements.at(-1)?.glyph ?? null;
+  const warnings = [];
+  if (clause.empty) warnings.push("No movement glyphs detected.");
+  if (last === "←") warnings.push("Dangling branch: ← needs a return, choice, or resolution.");
+  if (last === "↺") warnings.push("Dangling pressure: ↺ needs grounding, release, or recursion handling.");
+  return { ok: warnings.length === 0, warnings };
+}
+
+function gricMap(type) {
+  if (type === "Z" || type === "M") return { body: "Square", reason: "structure / pressure / grounding" };
+  if (type === "J" || type === "L") return { body: "Compass", reason: "direction / ignition / route selection" };
+  return { body: "Unmapped", reason: "unknown type" };
+}
+
+function executeClause(clause) {
+  const events = [];
+  let state = "pending";
+  for (const movement of clause.movements) {
+    if (movement.glyph === "↺") {
+      state = "pressure_applied";
+      events.push({ action: "apply_pressure", glyph: movement.glyph, state });
+    } else if (movement.glyph === "↑") {
+      state = "begun";
+      events.push({ action: "begin", glyph: movement.glyph, state });
+    } else if (movement.glyph === "←") {
+      state = "branched";
+      events.push({ action: "branch", glyph: movement.glyph, state });
+    } else if (movement.glyph === "↓") {
+      state = "resolved";
+      events.push({ action: "resolve", glyph: movement.glyph, state });
+    }
+  }
+  const continuity = checkContinuity(clause);
+  const gric = gricMap(clause.type);
+  return {
+    status: continuity.ok && !clause.empty ? "DING" : "CHECK",
+    version: "JickMa SDK v0.1A",
+    clauseType: clause.type,
+    movementCount: clause.movements.length,
+    finalState: state,
+    gric,
+    continuity,
+    events,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function runJickMa(input) {
+  const clause = buildClause(input);
+  const receipt = executeClause(clause);
+  return { clause, receipt };
+}
+
+const el = id => document.getElementById(id);
+let lastReceipt = null;
+
+function render() {
+  const result = runJickMa(el("input").value);
+  lastReceipt = result.receipt;
+
+  el("status").textContent = result.receipt.status;
+  el("status").className = result.receipt.status === "DING" ? "ding" : "check";
+  el("ctype").textContent = result.receipt.clauseType;
+  el("fstate").textContent = result.receipt.finalState;
+  el("gric").textContent = result.receipt.gric.body;
+  el("receipt").textContent = JSON.stringify({ clause: result.clause, receipt: result.receipt }, null, 2);
+
+  const lane = el("lane");
+  lane.innerHTML = "";
+  result.clause.movements.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "moveCard";
+    card.innerHTML = `<div><div style="font-size:1.7rem">${m.glyph}</div><small>${m.name}</small></div>`;
+    lane.appendChild(card);
+  });
+  if (!result.clause.movements.length) {
+    lane.innerHTML = "<p>No movement glyphs detected.</p>";
+  }
+
+  const warnings = el("warnings");
+  warnings.innerHTML = "";
+  if (result.receipt.continuity.warnings.length) {
+    result.receipt.continuity.warnings.forEach(w => {
+      const chip = document.createElement("span");
+      chip.className = "chip";
+      chip.textContent = "⚠ " + w;
+      warnings.appendChild(chip);
+    });
+  } else {
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.textContent = "✓ Continuity clear";
+    warnings.appendChild(chip);
+  }
+}
+
+document.querySelectorAll("[data-preset]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    el("input").value = btn.dataset.preset;
+    render();
+  });
+});
+el("run").addEventListener("click", render);
+el("copy").addEventListener("click", async () => {
+  const text = el("receipt").textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("Receipt copied.");
+  } catch {
+    prompt("Copy receipt:", text);
+  }
+});
+el("download").addEventListener("click", () => {
+  const blob = new Blob([el("receipt").textContent], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "JICKMA_SDK_v0_1A_RECEIPT.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+render();
+</script>
+</body>
+</html>

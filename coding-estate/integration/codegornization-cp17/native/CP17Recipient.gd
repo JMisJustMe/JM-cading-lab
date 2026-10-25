@@ -90,3 +90,8 @@ func _sync_native_rails() -> void:
 		cp17_audit_text.text=cp17_review_summary()
 	if is_instance_valid(cp15_dock):
 		_fit_cp17_deck(get_viewport_rect().size)
+
+func _finish() -> void:
+	super._finish()
+	# Game-over is an immediate UI state transition, not a later input event.
+	_sync_native_rails()

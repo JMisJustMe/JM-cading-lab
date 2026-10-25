@@ -241,6 +241,72 @@ with tempfile.TemporaryDirectory() as td:
     else:
         raise AssertionError("duplicate registry ids did not fail closed")
 
+
+# Pinned public game re-entry relay: source contact is distinct from hosted
+# CURRENT_REGISTRY and independent Gemini direct GitHub access.
+import io
+from unittest.mock import patch
+
+assert server.VERSION == "0.8.5"
+assert "get_game_reentry_hints" in server.HANDLERS
+assert len([t for t in server.TOOLS if t["name"] == "get_game_reentry_hints"]) == 1
+assert server.GAME_REENTRY_BLOB_SHA == "9dc8b72b00e0e7b8fbf51c04a6f341c2bf9b20b5"
+assert server.GAME_REENTRY_COMMIT == "d92e48fb8379e0ed0995a457a5409f32ee0b9cb6"
+
+synthetic = {
+    "schema": "JM.CrossClientGameReentryHints/0.1",
+    "date": "2026-10-25",
+    "records": [{"id": rid, "current_authority": "TEST_NO_CROWN", "query": rid}
+                for rid in sorted(server.GAME_REENTRY_IDS)],
+}
+def git_blob_digest(raw_bytes):
+    return hashlib.sha1(
+        b"blob " + str(len(raw_bytes)).encode("ascii") + b"\0" + raw_bytes
+    ).hexdigest()
+
+def run_pinned_fixture(payload):
+    raw_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    with patch.object(server, "GAME_REENTRY_BLOB_SHA", git_blob_digest(raw_bytes)):
+        with patch.object(server.urllib.request, "urlopen", return_value=io.BytesIO(raw_bytes)):
+            return server.get_game_reentry_hints({})
+
+positive = run_pinned_fixture(synthetic)
+assert positive["state"] == "PINNED_PUBLIC_SOURCE_CONTACT", positive
+assert positive["record_count"] == 7
+assert positive["git_blob_sha"] == git_blob_digest(json.dumps(synthetic, separators=(",", ":")).encode("utf-8"))
+assert positive["current_head_authority"] == "NOT_ASSERTED"
+assert positive["independent_gemini_github_fetch"] == "NOT_PROVEN"
+assert positive["mutation_performed"] is False
+assert len(server.CURRENT) == 22
+
+with patch.object(server.urllib.request, "urlopen", return_value=io.BytesIO(b"tampered")):
+    tampered = server.get_game_reentry_hints({})
+assert tampered["state"] == "HOLD" and tampered["records"] == []
+
+with patch.object(server.urllib.request, "urlopen", side_effect=OSError("unreachable")):
+    offline = server.get_game_reentry_hints({})
+assert offline["state"] == "HOLD" and offline["records"] == []
+
+with patch.object(server.urllib.request, "urlopen", return_value=io.BytesIO(b"x" * 12001)):
+    oversized = server.get_game_reentry_hints({})
+assert oversized["state"] == "HOLD" and oversized["record_count"] == 0
+
+wrong_schema = dict(synthetic)
+wrong_schema["schema"] = "BAD"
+assert run_pinned_fixture(wrong_schema)["state"] == "HOLD"
+
+duplicate = dict(synthetic)
+duplicate["records"] = list(synthetic["records"])
+duplicate["records"][1] = dict(duplicate["records"][0])
+assert run_pinned_fixture(duplicate)["state"] == "HOLD"
+
+no_authority = dict(synthetic)
+no_authority["records"] = [dict(x) for x in synthetic["records"]]
+del no_authority["records"][0]["current_authority"]
+assert run_pinned_fixture(no_authority)["state"] == "HOLD"
+
+print("JM_PUBLIC_GAME_REENTRY_RELAY: 7/7 deterministic assertions PASS (mock contact only)")
+
 print(json.dumps({
     "state":"PASS",
     "server_version":server.VERSION,

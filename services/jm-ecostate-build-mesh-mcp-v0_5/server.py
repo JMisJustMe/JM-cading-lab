@@ -22,6 +22,19 @@ SUPPORTED_PROTOCOLS = {"2025-06-18", "2025-03-26"}
 DEFAULT_PROTOCOL = "2025-06-18"
 NAV_CACHE_TTL = int(os.environ.get("JM_NAV_CACHE_TTL", "300"))
 NAV_CACHE = {}
+# Exact public-safe source frozen by the separate cross-client PR #465 commit.
+# This is NOT the hosted current-registry, a private Library bridge, or a game-body authority.
+GAME_REENTRY_COMMIT = "d92e48fb8379e0ed0995a457a5409f32ee0b9cb6"
+GAME_REENTRY_BLOB_SHA = "9dc8b72b00e0e7b8fbf51c04a6f341c2bf9b20b5"
+GAME_REENTRY_URL = (
+    "https://raw.githubusercontent.com/JMisJustMe/JM-cading-lab/"
+    + GAME_REENTRY_COMMIT
+    + "/registry/cross-client-game-reentry-hints-v0_1.json"
+)
+GAME_REENTRY_IDS = {
+    "CB-ORIGINAL", "CB-THREE-FORMS", "CLASHVERSE", "RIFT-DUEL",
+    "VALE-GAMEPLAY", "VALE-ENGINE", "CP11-RIFT-TRIAL",
+}
 SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
 CURRENT_REGISTRY_PATH = os.environ.get(
     "JM_CURRENT_REGISTRY_PATH",
@@ -812,6 +825,66 @@ def plan_capability_inheritance(args):
     }
 
 
+
+def get_game_reentry_hints(args):
+    """
+    Read-only server-side contact with an immutable public GitHub artifact.
+    Source/branch navigation HINTS, never private current-head authority.
+    Missing, altered or malformed source fails CLOSED without a fallback.
+    """
+    base = {
+        "schema": "JM.BuildMesh.PublicGameReentryRelay/0.1",
+        "source_url": GAME_REENTRY_URL,
+        "source_commit": GAME_REENTRY_COMMIT,
+        "expected_git_blob_sha": GAME_REENTRY_BLOB_SHA,
+        "transport": "EXISTING_HOSTED_MCP_FETCHED_PUBLIC_GITHUB",
+        "authority": "PUBLIC_SAFE_NAVIGATION_HINTS_ONLY",
+        "current_head_authority": "NOT_ASSERTED",
+        "independent_gemini_github_fetch": "NOT_PROVEN",
+        "mutation_performed": False,
+        "boundary": (
+            "Read-only MCP relay of public game identities. Gemini direct GitHub "
+            "contact, private Estate current pointers, execution and owner device "
+            "are separate gates. A pinned public hint never outranks private receipts."
+        ),
+    }
+    try:
+        request = urllib.request.Request(
+            GAME_REENTRY_URL,
+            headers={"Accept": "application/json", "User-Agent": "JM-Build-Mesh-Source-Relay/0.1"},
+        )
+        with urllib.request.urlopen(request, timeout=8) as response:
+            raw = response.read(12001)
+        if not raw or len(raw) > 12000:
+            raise ValueError("PUBLIC_HINT_SIZE_OUT_OF_BOUNDS")
+        computed_blob = hashlib.sha1(
+            b"blob " + str(len(raw)).encode("ascii") + b"\0" + raw
+        ).hexdigest()
+        if computed_blob != GAME_REENTRY_BLOB_SHA:
+            raise ValueError("PINNED_GITHUB_BLOB_MISMATCH")
+        source = json.loads(raw.decode("utf-8"))
+        records = source.get("records") if isinstance(source, dict) else None
+        if not isinstance(source, dict) or source.get("schema") != "JM.CrossClientGameReentryHints/0.1":
+            raise ValueError("PUBLIC_HINT_SCHEMA_MISMATCH")
+        if not isinstance(records, list) or len(records) != 7:
+            raise ValueError("PUBLIC_HINT_CARDINALITY_MISMATCH")
+        ids = [r.get("id") if isinstance(r, dict) else None for r in records]
+        if len(set(ids)) != 7 or set(ids) != GAME_REENTRY_IDS:
+            raise ValueError("PUBLIC_HINT_IDENTITIES_MISMATCH")
+        if not all(r.get("current_authority") and r.get("query") for r in records):
+            raise ValueError("PUBLIC_HINT_FIELDS_MISSING")
+        return {
+            **base, "state": "PINNED_PUBLIC_SOURCE_CONTACT",
+            "source_schema": source["schema"], "source_date": source.get("date"),
+            "git_blob_sha": computed_blob, "record_count": 7, "records": records,
+        }
+    except (OSError, ValueError, TypeError, KeyError, UnicodeError, json.JSONDecodeError):
+        return {
+            **base, "state": "HOLD", "reason": "SOURCE_UNREACHABLE_OR_VALIDATION_FAILED",
+            "record_count": 0, "records": [],
+        }
+
+
 def build_sync_contract(args):
     name = (args.get("name") or "").strip()
     private_queries = []
@@ -1136,6 +1209,7 @@ TOOLS = [
     {"name":"build_capability_mesh","description":"Construct a bounded cross-build capability mesh from named builds or an objective; edges indicate contact reasons, not merges.","inputSchema":{"type":"object","properties":{"builds":{"type":"array","maxItems":12,"items":{"type":"string"}},"objective":{"type":"string"},"max_nodes":{"type":"integer","minimum":2,"maximum":20}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"detect_propagation_gaps","description":"Find relevant capabilities declared elsewhere but not on a target profile; returns candidates, never mandatory propagation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"limit":{"type":"integer","minimum":1,"maximum":12}},"required":["target"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_capability_inheritance","description":"Plan a bounded donor-to-target capability inheritance route with explicit contact and proof gates; performs no mutation.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"objective":{"type":"string"},"max_donors":{"type":"integer","minimum":1,"maximum":8}},"required":["target","objective"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
+    {"name":"get_game_reentry_hints","description":"Retrieve the pinned public-safe seven-game lineage index through this existing hosted MCP with exact source-blob validation; navigation only, never private current-head authority.","inputSchema":{"type":"object","properties":{},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":True}},
     {"name":"build_sync_contract","description":"Return the hosted snapshot identity plus private-host search/reconciliation rules without ingesting private Library content.","inputSchema":{"type":"object","properties":{"name":{"type":"string"}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"estate_keeper_contract","description":"Return the delta-first host/private Estate Keeper contract for registry, body↔carrier, proof, storage and reclaim maintenance without ingesting private Library content or performing mutation.","inputSchema":{"type":"object","properties":{"scope":{"type":"string"},"last_checkpoint":{"type":"string"},"changed_count":{"type":"integer","minimum":0},"unresolved_count":{"type":"integer","minimum":0}},"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
     {"name":"plan_artifact_route","description":"Plan one governed artifact-general route for a book, comic, theory, app, APK or downloadable/addable link while keeping proof surface-specific.","inputSchema":{"type":"object","properties":{"target":{"type":"string"},"artifact_type":{"type":"string","enum":["book","comic","theory","app","apk","download"]},"outputs":{"type":"array","maxItems":8,"items":{"type":"string"}},"objective":{"type":"string"}},"required":["target","artifact_type"],"additionalProperties":False},"annotations":{"readOnlyHint":True,"destructiveHint":False,"idempotentHint":True,"openWorldHint":False}},
@@ -1155,6 +1229,7 @@ HANDLERS = {
     "build_capability_mesh": build_capability_mesh,
     "detect_propagation_gaps": detect_propagation_gaps,
     "plan_capability_inheritance": plan_capability_inheritance,
+    "get_game_reentry_hints": get_game_reentry_hints,
     "build_sync_contract": build_sync_contract,
     "estate_keeper_contract": estate_keeper_contract,
     "prepare_operation_gate": prepare_operation_gate,

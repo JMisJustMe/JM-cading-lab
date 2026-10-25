@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>JickMa SDK v0.9 — Controller Cover Lab + Mini Monitor</title>
+<meta name="theme-color" content="#100d1a" />
+<style>
+:root{
+  --bg:#070610;--panel:#151322;--panel2:#211b34;--text:#f8f3ff;--muted:#beb5d7;
+  --line:#3b3159;--good:#92f7aa;--warn:#ffd166;--bad:#ff8080;--chip:#2d2549;--deep:#090712;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at top,#261d42,var(--bg) 60%);color:var(--text)}
+main{max-width:1280px;margin:0 auto;padding:16px}
+header,section{border:1px solid var(--line);border-radius:18px;background:rgba(21,19,34,.94);padding:16px;box-shadow:0 14px 44px rgba(0,0,0,.22)}
+header{background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.018))}
+h1{margin:0 0 8px;font-size:1.55rem} h2{margin:0 0 10px;font-size:1.08rem} h3{margin:12px 0 8px;font-size:1rem}
+p{color:var(--muted);line-height:1.5}.grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+@media(min-width:960px){.grid{grid-template-columns:1fr 1fr}}
+textarea,select,input{width:100%;border:1px solid var(--line);border-radius:14px;background:#080710;color:var(--text);padding:12px;font-size:1.02rem}
+textarea{min-height:72px;resize:vertical} label{display:block;margin:8px 0 6px;font-weight:850}
+button{border:1px solid var(--line);border-radius:13px;padding:11px 13px;background:var(--chip);color:var(--text);font-weight:850;cursor:pointer}
+button:active{transform:translateY(1px)}.buttons{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.big{width:100%;font-size:1.08rem;background:#342964;min-height:52px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric{border:1px solid var(--line);border-radius:14px;background:var(--panel2);padding:10px}
+.metric strong{display:block;color:var(--muted);font-size:.82rem;margin-bottom:4px}.metric span{font-size:1.02rem;font-weight:900}
+.ding{color:var(--good)}.check{color:var(--warn)}.bugg{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}.chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:var(--chip);font-size:.9rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#07060d;border:1px solid var(--line);border-radius:14px;padding:12px;max-height:360px;overflow:auto}
+.note{border-left:4px solid var(--line);padding-left:10px;color:var(--muted)}
+.controller{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:420px;margin:0 auto}
+.ctrlBtn{min-height:76px;font-size:1.55rem;border-radius:22px;background:#302850}
+.ctrlBtn small{display:block;font-size:.75rem;color:var(--muted);margin-top:3px}
+.monitor{position:sticky;top:8px;border:1px solid var(--line);border-radius:18px;background:#090712;padding:12px;z-index:2}
+.monitor.ding{border-color:var(--good);box-shadow:0 0 0 3px rgba(146,247,170,.14)}
+.monitor.check{border-color:var(--warn);box-shadow:0 0 0 3px rgba(255,209,102,.12)}
+.monitor.bugg{border-color:var(--bad);box-shadow:0 0 0 3px rgba(255,128,128,.12)}
+.badge{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:8px 12px;font-weight:950}
+.badgeDing{border-color:var(--good);color:var(--good)}.badgeCheck{border-color:var(--warn);color:var(--warn)}.badgeBugg{border-color:var(--bad);color:var(--bad)}
+.lane{display:flex;flex-wrap:wrap;gap:8px;min-height:70px;border:1px dashed var(--line);border-radius:15px;padding:10px;background:#090712}
+.glyph{display:inline-grid;place-items:center;width:46px;height:46px;border:1px solid var(--line);border-radius:15px;background:#302850;font-size:1.3rem;font-weight:900}
+.log{display:grid;gap:8px;max-height:310px;overflow:auto}.log button{text-align:left;background:#0d0b17}
+.mapGrid{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center}
+.coverPreview{border:1px solid var(--line);border-radius:14px;background:#0d0b17;padding:10px}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>JickMa SDK v0.9 — Controller Cover Lab + Mini Monitor</h1>
+  <p><strong>Purpose:</strong> map any cover into JickMa movement, then let the app monitor itself from inside: action, expected route, actual route, DING/CHECK/BUGG, layer, trace, and exportable receipt.</p>
+</header>
+
+<section style="margin-top:12px;">
+  <h2>0 — Frozen base</h2>
+  <p class="note">Built after v0.8A Frozen Android Debugger Repair Ding. v0.9 turns inspection into control, and external proof into an in-app Mini Monitor.</p>
+</section>
+
+<div class="grid">
+<section>
+  <h2>1 — Controller Cover Lab</h2>
+  <label>Cover type</label>
+  <select id="coverType">
+    <option value="gamepad">Gamepad Cover</option>
+    <option value="rhythm">Rhythm Cover</option>
+    <option value="comic">Comic Panel Cover</option>
+    <option value="story">Story Room Cover</option>
+    <option value="app">Normal App Cover</option>
+    <option value="custom">Custom Cover</option>
+  </select>
+  <div class="buttons">
+    <button id="loadCover">Load Cover Mapping</button>
+    <button id="resetMovement">Clear Movement</button>
+    <button id="autoExpected">Auto Expected Route</button>
+  </div>
+
+  <h3>Action → Glyph mapping</h3>
+  <div id="mappingEditor"></div>
+
+  <h3>Controller</h3>
+  <div id="controller" class="controller"></div>
+</section>
+
+<section>
+  <h2>2 — Mini Monitor / Receipt HUD</h2>
+  <div id="miniMonitor" class="monitor">
+    <div class="metrics">
+      <div class="metric"><strong>Status</strong><span id="monStatus">BOOT</span></div>
+      <div class="metric"><strong>Action</strong><span id="monAction">—</span></div>
+      <div class="metric"><strong>Expected</strong><span id="monExpected">—</span></div>
+      <div class="metric"><strong>Actual</strong><span id="monActual">—</span></div>
+      <div class="metric"><strong>Layer</strong><span id="monLayer">—</span></div>
+      <div class="metric"><strong>Trace</strong><span id="monTrace">—</span></div>
+    </div>
+    <div id="monitorChips" class="chips"></div>
+  </div>
+
+  <label>Expected route</label>
+  <input id="expectedRoute" value="↺↑↓←↑↓" />
+  <label>Actual movement</label>
+  <textarea id="movement">↺↑↓←↑↓</textarea>
+  <div class="buttons">
+    <button id="runRoute">Run Route</button>
+    <button id="forceCheck">Force CHECK example</button>
+    <button id="forceBugg">Force BUGG example</button>
+  </div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>3 — Cover preview / route lane</h2>
+  <div id="coverPreview" class="coverPreview"></div>
+  <h3>Movement lane</h3>
+  <div id="lane" class="lane"></div>
+  <p id="teaching" class="note"></p>
+</section>
+
+<section>
+  <h2>4 — Recent trace log</h2>
+  <div id="traceLog" class="log"></div>
+  <div class="buttons">
+    <button id="copyReceipt">Copy Current Receipt</button>
+    <button id="downloadReceipt">Download Receipt JSON</button>
+    <button id="exportLog">Export Trace Log</button>
+    <button id="clearLog">Clear Log</button>
+  </div>
+</section>
+</div>
+
+<div class="grid">
+<section>
+  <h2>5 — Current receipt</h2>
+  <pre id="receipt">{"boot":"waiting"}</pre>
+</section>
+
+<section>
+  <h2>6 — Internal tests</h2>
+  <button class="big" id="runSmoke">Run v0.9 Mini Monitor Smoke Tests</button>
+  <pre id="smokeReceipt">{"boot":"waiting"}</pre>
+</section>
+</div>
+
+<section style="margin-top:12px;">
+  <h2>7 — v0.9 law</h2>
+  <p class="note">The creation should not need to leave itself to know whether it worked. The Mini Monitor turns proof into part of the app’s surface.</p>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const VERSION="JickMa SDK v0.9 Controller Cover Lab + Mini Monitor";
+const STORE="JICKMA_V09_MONITOR_LOG";
+const GLYPH={
+  "↑":{name:"Jick",op:"BEGIN",state:"begun",layer:"JickMa"},
+  "↓":{name:"Mah",op:"RESOLVE",state:"resolved",layer:"JickMa"},
+  "←":{name:"Lethar",op:"BRANCH",state:"branched",layer:"Spalk"},
+  "↺":{name:"Zhur",op:"APPLY_PRESSURE",state:"pressure_applied",layer:"FlowTalk"}
+};
+const COVER_MAPS={
+  gamepad:{A:"↑",B:"↓",X:"←",Y:"↺"},
+  rhythm:{Beat:"↑",Drop:"↓",Break:"←",Loop:"↺"},
+  comic:{OpenPanel:"↑",ClosePanel:"↓",AltPath:"←",RepeatBeat:"↺"},
+  story:{EnterRoom:"↑",ResolveRoom:"↓",ChooseDoor:"←",Revisit:"↺"},
+  app:{Create:"↑",Save:"↓",Back:"←",Retry:"↺"},
+  custom:{Button1:"↑",Button2:"↓",Button3:"←",Button4:"↺"}
+};
+let currentMap={...COVER_MAPS.gamepad}, currentReceipt=null;
+function el(id){return document.getElementById(id)}
+function text(id,obj){el(id).textContent=typeof obj==="string"?obj:JSON.stringify(obj,null,2)}
+function clean(x){return Array.from(x).filter(ch=>GLYPH[ch]).join("")}
+function glyphs(m){return Array.from(clean(m)).map((g,i)=>({glyph:g,index:i,...GLYPH[g]}))}
+function warnings(m){const s=clean(m),w=[];if(!s)w.push("No movement glyphs");if(s.endsWith("←"))w.push("Dangling branch");if(s.endsWith("↺"))w.push("Dangling pressure");return w}
+function layerFor(m){const s=clean(m);if(s.endsWith("↺"))return"FlowTalk";if(s.endsWith("←"))return"Spalk";if(s.includes("←"))return"Spalk";if(s.includes("↺"))return"FlowTalk";return"JickMa/Cading"}
+function statusFor(expected,actual,forced){
+  if(forced==="BUGG")return"BUGG";
+  const ws=warnings(actual);
+  if(ws.length)return"CHECK";
+  if(clean(expected)!==clean(actual))return"CHECK";
+  return"DING";
+}
+function traceId(){return "trace_"+Date.now()}
+function store(){try{return JSON.parse(localStorage.getItem(STORE)||"[]")}catch(e){return window.__v09Log||[]}}
+function saveLog(log){try{localStorage.setItem(STORE,JSON.stringify(log));return"LOCAL_STORAGE"}catch(e){window.__v09Log=log;return"MEMORY_FALLBACK"}}
+function pushReceipt(r){let log=store();log.push(r);log=log.slice(-30);r.storageMode=saveLog(log);return r}
+function buildReceipt(action="ManualRun", forced=null){
+  const expected=clean(el("expectedRoute").value), actual=clean(el("movement").value);
+  const st=statusFor(expected,actual,forced);
+  const ws=warnings(actual);
+  const receipt={version:VERSION,traceId:traceId(),status:st,action,coverType:el("coverType").value,expectedRoute:expected,actualRoute:actual,layerAffected:layerFor(actual),glyphs:glyphs(actual),expectedMatched:expected===actual,errors:st==="BUGG"?["Forced BUGG example"]:ws,proofMeaning:st==="DING"?"Action matched expected route.":st==="CHECK"?"Action ran but did not match expected route or needs repair.":"Action produced explicit BUGG state.",timestamp:new Date().toISOString()};
+  return pushReceipt(receipt);
+}
+function renderMapping(){
+  const box=el("mappingEditor");box.innerHTML="";
+  Object.entries(currentMap).forEach(([action,glyph])=>{
+    const row=document.createElement("div");row.className="mapGrid";
+    row.innerHTML=`<input data-action="${action}" value="${action}" /><select data-glyph="${action}"><option value="↑">↑ Begin</option><option value="↓">↓ Resolve</option><option value="←">← Branch</option><option value="↺">↺ Pressure</option></select>`;
+    box.appendChild(row);
+    row.querySelector("select").value=glyph;
+    row.querySelector("input").oninput=(e)=>{const old=action,val=e.target.value||old;currentMap[val]=currentMap[old];if(val!==old)delete currentMap[old];renderController();};
+    row.querySelector("select").onchange=(e)=>{currentMap[action]=e.target.value;renderController();};
+  });
+}
+function renderController(){
+  const box=el("controller");box.innerHTML="";
+  Object.entries(currentMap).forEach(([action,glyph])=>{
+    const b=document.createElement("button");b.className="ctrlBtn";b.innerHTML=`${glyph}<small>${action}</small>`;
+    b.onclick=()=>{el("movement").value=clean(el("movement").value)+glyph;renderReceipt(buildReceipt(action));};
+    box.appendChild(b);
+  });
+  el("coverPreview").innerHTML=`<strong>${el("coverType").value}</strong><div class="chips">${Object.entries(currentMap).map(([a,g])=>`<span class="chip">${a} → ${g}</span>`).join("")}</div>`;
+}
+function renderLane(r){
+  const lane=el("lane");lane.innerHTML="";
+  r.glyphs.forEach(g=>{const sp=document.createElement("span");sp.className="glyph";sp.textContent=g.glyph;sp.onclick=()=>text("teaching",`${g.glyph} = ${g.name}. ${g.op} → ${g.state}. Layer: ${g.layer}`);lane.appendChild(sp);});
+  if(!r.glyphs.length)lane.innerHTML='<span class="chip">No glyphs</span>';
+}
+function renderMonitor(r){
+  currentReceipt=r;
+  const mon=el("miniMonitor");mon.className="monitor "+r.status.toLowerCase();
+  text("monStatus",r.status);el("monStatus").className=r.status==="DING"?"ding":r.status==="CHECK"?"check":"bugg";
+  text("monAction",r.action);text("monExpected",r.expectedRoute||"∅");text("monActual",r.actualRoute||"∅");text("monLayer",r.layerAffected);text("monTrace",r.traceId.replace("trace_",""));
+  el("monitorChips").innerHTML=`<span class="chip">${r.coverType}</span><span class="chip">matched: ${r.expectedMatched}</span><span class="chip">storage: ${r.storageMode||"pending"}</span>`;
+}
+function renderLog(){
+  const box=el("traceLog");box.innerHTML="";
+  store().slice().reverse().forEach(r=>{const b=document.createElement("button");b.innerHTML=`<strong>${r.status}</strong> ${r.action}<br><small>${r.actualRoute} / ${r.layerAffected}</small>`;b.onclick=()=>renderReceipt(r);box.appendChild(b);});
+  if(!store().length)box.innerHTML='<p class="note">No trace yet.</p>';
+}
+function renderReceipt(r){
+  renderMonitor(r);renderLane(r);text("receipt",r);renderLog();
+  text("teaching",r.status==="DING"?`DING: ${r.action} produced ${r.actualRoute} exactly as expected.`:r.status==="CHECK"?`CHECK: expected ${r.expectedRoute}, actual ${r.actualRoute}. Inspect or repair.`:`BUGG: explicit bug state captured inside app.`);
+}
+function loadCover(){
+  const t=el("coverType").value;currentMap={...COVER_MAPS[t]};renderMapping();renderController();
+}
+function autoExpected(){el("expectedRoute").value=clean(el("movement").value)||"↑↓";renderReceipt(buildReceipt("AutoExpected"))}
+function smoke(){
+  const tests=[
+    ["cover maps exist",()=>Object.keys(COVER_MAPS).length>=6],
+    ["gamepad has four actions",()=>Object.keys(COVER_MAPS.gamepad).length===4],
+    ["action appends glyph",()=>{el("movement").value="";el("expectedRoute").value="↑";currentMap={A:"↑"};renderController();el("controller").querySelector("button").click();return clean(el("movement").value)==="↑"}],
+    ["ding exact route",()=>{el("movement").value="↑↓";el("expectedRoute").value="↑↓";return buildReceipt("test").status==="DING"}],
+    ["check mismatch",()=>{el("movement").value="↑";el("expectedRoute").value="↑↓";return buildReceipt("test").status==="CHECK"}],
+    ["check dangling branch",()=>{el("movement").value="↑←";el("expectedRoute").value="↑←";return buildReceipt("test").status==="CHECK"}],
+    ["bugg forced",()=>{el("movement").value="↑↓";el("expectedRoute").value="↑↓";return buildReceipt("test","BUGG").status==="BUGG"}],
+    ["layer flowtalk",()=>layerFor("↺")==="FlowTalk"],
+    ["layer spalk",()=>layerFor("↑←")==="Spalk"],
+    ["glyph parser",()=>glyphs("↑↓←↺").length===4],
+    ["trace id exists",()=>!!buildReceipt("test").traceId],
+    ["receipt export shape",()=>!!buildReceipt("test").proofMeaning],
+    ["log stores",()=>store().length>0],
+    ["monitor render",()=>!!el("monStatus").textContent],
+    ["controller preview",()=>!!el("coverPreview").textContent],
+    ["internal tests visible",()=>!!el("smokeReceipt")]
+  ];
+  const rows=tests.map(([name,fn])=>({case:name,passed:!!fn()}));
+  const passed=rows.filter(r=>r.passed).length;
+  const out={status:passed===tests.length?"V0_9_MINI_MONITOR_READY":"CHECK",version:VERSION,passed,total:tests.length,rows,timestamp:new Date().toISOString()};
+  text("smokeReceipt",out);return out;
+}
+async function copyText(t){try{await navigator.clipboard.writeText(t);alert("Copied.")}catch(e){prompt("Copy:",t)}}
+function download(name,t){const blob=new Blob([t],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)}
+el("loadCover").onclick=loadCover;el("resetMovement").onclick=()=>{el("movement").value="";renderReceipt(buildReceipt("ClearMovement"))};el("autoExpected").onclick=autoExpected;
+el("runRoute").onclick=()=>renderReceipt(buildReceipt("ManualRun"));el("forceCheck").onclick=()=>{el("movement").value="↑←";renderReceipt(buildReceipt("ForceCheck"))};el("forceBugg").onclick=()=>renderReceipt(buildReceipt("ForceBugg","BUGG"));
+el("copyReceipt").onclick=()=>copyText(JSON.stringify(currentReceipt||{},null,2));el("downloadReceipt").onclick=()=>download("JICKMA_SDK_v0_9_MINI_MONITOR_RECEIPT.json",JSON.stringify(currentReceipt||{},null,2));
+el("exportLog").onclick=()=>download("JICKMA_SDK_v0_9_TRACE_LOG.json",JSON.stringify(store(),null,2));el("clearLog").onclick=()=>{saveLog([]);renderLog();};
+el("runSmoke").onclick=smoke;
+loadCover();renderReceipt(buildReceipt("BootRun"));smoke();
+})();
+</script>
+</body>
+</html>

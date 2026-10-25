@@ -11,8 +11,9 @@ from difflib import SequenceMatcher
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
 from capabilities import CAPABILITY_PROFILES, PROFILE_BY_ID
+from cross_client import TOOLS as CROSS_CLIENT_TOOLS, HANDLERS as CROSS_CLIENT_HANDLERS
 
-VERSION = "0.8.5"
+VERSION = "0.8.6"
 SERVER_NAME = "JM ECOSTATE Build Mesh Native MCP"
 NAVIGATOR_MCP = os.environ.get(
     "JM_NAVIGATOR_MCP",
@@ -1236,6 +1237,11 @@ HANDLERS = {
     "plan_artifact_route": plan_artifact_route,
 }
 
+if set(CROSS_CLIENT_HANDLERS) & set(HANDLERS):
+    raise RuntimeError("HOLD: cross-client tool name collision")
+TOOLS.extend(CROSS_CLIENT_TOOLS)
+HANDLERS.update(CROSS_CLIENT_HANDLERS)
+
 def tool_result(data):
     return {
         "content": [{"type": "text", "text": json.dumps(data, ensure_ascii=False, indent=2)}],
@@ -1250,7 +1256,7 @@ def rpc_error(request_id, code, message):
     return {"jsonrpc": "2.0", "id": request_id, "error": {"code": code, "message": message}}
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "JMBuildMeshNativeMCP/0.8.5"
+    server_version = "JMBuildMeshNativeMCP/0.8.6"
 
     def log_message(self, fmt, *args):
         sys.stdout.write(f"{self.address_string()} - {fmt % args}\n")

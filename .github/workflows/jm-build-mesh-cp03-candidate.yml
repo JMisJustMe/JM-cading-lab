@@ -1,0 +1,37 @@
+name: JM Build Mesh CP03 Cross-Client Candidate
+
+on:
+  push:
+    branches:
+      - feature/jm-build-mesh-086-cp03
+    paths:
+      - ".github/workflows/jm-build-mesh-cp03-candidate.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+  pull_request:
+    branches:
+      - build-mesh-native-mcp-v0-5
+    paths:
+      - ".github/workflows/jm-build-mesh-cp03-candidate.yml"
+      - "services/jm-ecostate-build-mesh-mcp-v0_5/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cp03-native-boundaries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Syntax check, original source and additive module
+        run: |
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/server.py
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/cross_client.py
+          python -m py_compile services/jm-ecostate-build-mesh-mcp-v0_5/test_cp03_integration.py
+      - name: Native CP03 integration and local HTTP test
+        run: python -m unittest discover -s services/jm-ecostate-build-mesh-mcp-v0_5 -p test_cp03_integration.py -v

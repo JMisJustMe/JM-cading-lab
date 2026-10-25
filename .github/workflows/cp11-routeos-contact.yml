@@ -1,0 +1,51 @@
+name: JM CP11 RouteOS Real Contact
+on:
+  push:
+    paths:
+      - 'engine/demo/cp11-routed-evade-v0.6.html'
+      - 'tests/cp11-routeos-contact.mjs'
+      - '.github/workflows/cp11-routeos-contact.yml'
+  pull_request:
+    paths:
+      - 'engine/demo/cp11-routed-evade-v0.6.html'
+      - 'tests/cp11-routeos-contact.mjs'
+      - '.github/workflows/cp11-routeos-contact.yml'
+permissions:
+  contents: read
+jobs:
+  routeos-real-webgl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      matrix:
+        contact_case: [0, 1, 2, 3, 4, 5, 6, 7]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install exact Three.js + Chromium driver
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Execute original RouteScript RouteVM RouteOS across real GPU browser scenarios
+        env:
+          CP11_ROUTE_CASE: ${{ matrix.contact_case }}
+        run: node tests/cp11-routeos-contact.mjs
+      - name: Preserve real browser route contact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp11-routeos-case-${{ matrix.contact_case }}
+          path: cp11-route-evidence/*.png
+          if-no-files-found: ignore
+  inherited-three-body:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Preserve original JMLogic/GameCore/Game-CODING strike test
+        run: node tests/cp11-sovereign-contact.mjs

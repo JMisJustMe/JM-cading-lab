@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>JM Sovereign Permission Atlas</title>
+  <style>
+    :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#eef4ff;background:#0b0f17}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#17243b 0,#0b0f17 42%);padding:18px}
+    main{max-width:900px;margin:0 auto}.eyebrow{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#9bb7e7}
+    h1{font-size:clamp(2rem,8vw,3.6rem);line-height:.95;margin:.5rem 0 1rem}h2{font-size:1.15rem;margin:0 0 .5rem}p{line-height:1.55;color:#c5d0e3}
+    .keeper{font-size:1.05rem;color:#fff;border-left:3px solid #8fb8ff;padding:.35rem 0 .35rem 1rem;margin:1rem 0 1.4rem}
+    .summary,.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.summary{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:12px}
+    .card{background:rgba(20,29,45,.92);border:1px solid #2b3c59;border-radius:16px;padding:14px}.wide{grid-column:1/-1}
+    .label{font-size:.72rem;color:#9db0cc;text-transform:uppercase;letter-spacing:.08em}.value{margin-top:6px;font-weight:780;overflow-wrap:anywhere}
+    .good{color:#9ef0bd}.warn{color:#ffd391}.bad{color:#ff9b9b}.info{color:#9fc6ff}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    button{appearance:none;border:0;border-radius:12px;padding:11px 13px;font-weight:800;background:#eaf1ff;color:#111927;min-height:44px}
+    button.secondary{background:#253650;color:#edf4ff}button.caution{background:#4a3522;color:#ffe0aa}button:disabled{opacity:.45}
+    .state{display:inline-block;border:1px solid #405470;border-radius:999px;padding:4px 8px;font-size:.68rem;letter-spacing:.05em;margin-top:4px}
+    .route{font-size:.72rem;color:#9db0cc}.diagnostic{min-height:1.5rem;color:#e9f1ff}.preview{width:100%;max-height:260px;background:#080b11;border-radius:12px;margin-top:10px;display:none}
+    .meter{height:18px;border-radius:999px;background:#111a28;border:1px solid #314461;overflow:hidden;margin-top:10px}.meter>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#85a8ff,#9ef0bd);transition:width 70ms linear}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#070a10;border:1px solid #27354c;border-radius:14px;padding:12px;max-height:330px;overflow:auto;font-size:.75rem;color:#cbd8ed}
+    details{margin-top:12px}summary{cursor:pointer;font-weight:800}.unmounted{opacity:.78}.tiny{font-size:.78rem;color:#8294ae}footer{font-size:.78rem;color:#7f91ab;margin-top:22px}
+    @media(max-width:650px){.grid,.summary{grid-template-columns:1fr 1fr}.summary .card:nth-child(n+3){grid-column:auto}}
+    @media(max-width:460px){.grid,.summary{grid-template-columns:1fr}.wide{grid-column:auto}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">JM / RouteOS PermissionGate v0.2</div>
+  <h1>Sovereign Permission Atlas</h1>
+  <p class="keeper">Participation means the person can decide. Recoverability means every denial, block or cancellation leaves a usable route forward.</p>
+
+  <section class="summary" aria-label="Shell status">
+    <div class="card"><div class="label">Secure origin</div><div id="secure" class="value">Checking…</div></div>
+    <div class="card"><div class="label">Native bridge</div><div id="bridge" class="value">Checking…</div></div>
+    <div class="card"><div class="label">Android API</div><div id="api" class="value">Unknown</div></div>
+    <div class="card"><div class="label">Mounted routes</div><div id="mountedCount" class="value">0</div></div>
+  </section>
+
+  <p id="diagnostic" class="diagnostic">No route attempted yet.</p>
+
+  <section class="grid" aria-label="Mounted permission routes">
+    <article class="card">
+      <div class="label">Web hardware · runtime</div><h2>Microphone</h2>
+      <div class="route">HTML getUserMedia → shell handoff → Android runtime prompt</div>
+      <div id="state-microphone" class="state">UNKNOWN</div>
+      <div class="controls"><button data-media="microphone">Open mic</button><button class="secondary" data-stop="media">Stop</button></div>
+      <div class="meter"><span id="micLevel"></span></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Web hardware · runtime</div><h2>Camera</h2>
+      <div class="route">HTML getUserMedia → shell handoff → Android runtime prompt</div>
+      <div id="state-camera" class="state">UNKNOWN</div>
+      <div class="controls"><button data-media="camera">Open camera</button><button class="secondary" data-stop="media">Stop</button></div>
+      <video id="cameraPreview" class="preview" autoplay playsinline muted></video>
+    </article>
+
+    <article class="card">
+      <div class="label">Web geolocation · runtime</div><h2>Foreground location</h2>
+      <div class="route">HTML geolocation → shell handoff → approximate/precise Android choice</div>
+      <div id="state-location" class="state">UNKNOWN</div>
+      <div class="controls"><button id="locationButton">Request location</button></div>
+      <p id="locationResult" class="tiny">No location requested.</p>
+    </article>
+
+    <article class="card">
+      <div class="label">Runtime · version-aware</div><h2>Notifications</h2>
+      <div class="route">Runtime prompt on Android 13+; no prompt on older versions</div>
+      <div id="state-notifications" class="state">UNKNOWN</div>
+      <div class="controls"><button data-request="notifications">Request</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Runtime · version-aware</div><h2>Nearby devices</h2>
+      <div class="route">Bluetooth/Wi-Fi permission set changes with Android version</div>
+      <div id="state-nearby_devices" class="state">UNKNOWN</div>
+      <div class="controls"><button data-request="nearby_devices">Request</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Runtime · version-aware</div><h2>Physical activity</h2>
+      <div class="route">Activity recognition prompt where Android requires it</div>
+      <div id="state-activity_recognition" class="state">UNKNOWN</div>
+      <div class="controls"><button data-request="activity_recognition">Request</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Runtime · sensitive data</div><h2>Contacts</h2>
+      <div class="route">The lab tests the gate; it does not read contacts after approval</div>
+      <div id="state-contacts" class="state">UNKNOWN</div>
+      <div class="controls"><button data-request="contacts">Request</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Runtime · sensitive data</div><h2>Calendar</h2>
+      <div class="route">The lab tests the gate; it does not read calendar data after approval</div>
+      <div id="state-calendar" class="state">UNKNOWN</div>
+      <div class="controls"><button data-request="calendar">Request</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">System picker · permission-minimising</div><h2>Photo or video</h2>
+      <div class="route">The user selects specific media; no broad library grant</div>
+      <div id="state-photo_picker" class="state">UNKNOWN</div>
+      <div class="controls"><button data-picker="photo_picker">Open picker</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">System picker · permission-minimising</div><h2>Document</h2>
+      <div class="route">Storage Access Framework; the user selects a specific file</div>
+      <div id="state-document_picker" class="state">UNKNOWN</div>
+      <div class="controls"><button data-picker="document_picker">Open picker</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Special Settings access</div><h2>Draw over apps</h2>
+      <div class="route">Android owns a separate Settings screen</div>
+      <div id="state-overlay" class="state">UNKNOWN</div>
+      <div class="controls"><button class="caution" data-special="overlay">Open route</button></div>
+    </article>
+
+    <article class="card">
+      <div class="label">Special Settings access</div><h2>Exact alarms</h2>
+      <div class="route">For genuinely time-critical user-facing functions</div>
+      <div id="state-exact_alarm" class="state">UNKNOWN</div>
+      <div class="controls"><button class="caution" data-special="exact_alarm">Open route</button></div>
+    </article>
+
+    <article class="card wide">
+      <div class="label">Special restricted access · lab only</div><h2>Manage all files</h2>
+      <div class="route">This is intentionally visible as an exceptional route. Prefer app storage, MediaStore, photo picker or document picker.</div>
+      <div id="state-all_files" class="state">UNKNOWN</div>
+      <div class="controls"><button class="caution" data-special="all_files">Open restricted route</button></div>
+    </article>
+  </section>
+
+  <details class="card unmounted">
+    <summary>Capabilities represented but deliberately not mounted</summary>
+    <div id="unmountedList"></div>
+  </details>
+
+  <section class="card" style="margin-top:12px">
+    <div class="label">Participation & recovery controls</div>
+    <div class="controls">
+      <button class="secondary" id="refresh">Refresh states</button>
+      <button class="secondary" id="settings">Open app settings</button>
+      <button class="secondary" id="copy">Copy session receipts</button>
+      <button class="secondary" id="clear">Clear native ledger</button>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:12px">
+    <div class="label">Visible session receipt</div>
+    <pre id="log">[]</pre>
+  </section>
+
+  <footer>v0.2 surfaces Android permission classes honestly. It does not bypass the OS, inspect other apps, or make system/signature powers available to an ordinary APK.</footer>
+</main>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const receipts = [];
+  const streams = new Set();
+  let audioContext = null;
+  let animationFrame = null;
+
+  function receipt(event, result, detail = {}) {
+    const body = {timestamp: new Date().toISOString(), source: 'html-body', event, result, ...detail};
+    receipts.push(body);
+    $('log').textContent = JSON.stringify(receipts, null, 2);
+    try { localStorage.setItem('jm_permission_session_v02', JSON.stringify(receipts)); } catch (_) {}
+    return body;
+  }
+
+  function diagnose(text) { $('diagnostic').textContent = text; }
+  function setState(id, state) {
+    const node = $(`state-${id}`); if (!node) return;
+    node.textContent = state;
+    node.className = `state ${state.includes('GRANTED') || state.includes('AVAILABLE') ? 'good' : state.includes('DENIED') || state.includes('UNAVAILABLE') ? 'bad' : 'warn'}`;
+  }
+
+  const bridgeAvailable = !!(window.jmPermissions && typeof window.jmPermissions.postMessage === 'function');
+  $('secure').textContent = window.isSecureContext ? 'PASS' : 'BLOCKED';
+  $('secure').className = `value ${window.isSecureContext ? 'good' : 'bad'}`;
+  $('bridge').textContent = bridgeAvailable ? 'CONNECTED' : 'BROWSER-ONLY';
+  $('bridge').className = `value ${bridgeAvailable ? 'good' : 'warn'}`;
+  receipt('PAGE_OPEN', 'READY', {secureContext: window.isSecureContext, origin: location.origin, bridgeAvailable});
+
+  function post(action, capability) {
+    if (!bridgeAvailable) {
+      diagnose('Native bridge unavailable. That is expected when this HTML is opened outside the Android shell.');
+      receipt('BRIDGE_COMMAND', 'EXPECTED_UNAVAILABLE', {action, capability});
+      return false;
+    }
+    window.jmPermissions.postMessage(JSON.stringify({action, capability}));
+    receipt('BRIDGE_COMMAND', 'SENT', {action, capability});
+    return true;
+  }
+
+  async function openMedia(kind) {
+    if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      diagnose('getUserMedia is unavailable in this context.');
+      receipt('WEB_MEDIA', 'UNAVAILABLE', {kind}); return;
+    }
+    diagnose(`${kind} request travelling through the shell…`);
+    try {
+      const constraints = kind === 'microphone' ? {audio:true,video:false} : {audio:false,video:true};
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streams.add(stream);
+      setState(kind, 'ACTIVE_FOR_USE');
+      receipt('WEB_MEDIA', 'ACTIVE', {kind, tracks:stream.getTracks().map(t => t.kind)});
+      if (kind === 'camera') {
+        $('cameraPreview').srcObject = stream; $('cameraPreview').style.display = 'block';
+      } else {
+        runMeter(stream);
+      }
+      stream.getTracks().forEach(track => track.addEventListener('ended', () => {
+        streams.delete(stream); setState(kind, 'ROUTE_CLOSED'); receipt('WEB_MEDIA', 'TRACK_ENDED', {kind});
+      }));
+      diagnose(`${kind} route active. Stop closes the HTML tracks immediately.`);
+    } catch (error) {
+      setState(kind, 'DENIED_OR_BLOCKED');
+      diagnose(`${error.name}: ${error.message}`);
+      receipt('WEB_MEDIA', 'FAILED', {kind, name:error.name, message:error.message});
+    }
+  }
+
+  function runMeter(stream) {
+    if (audioContext) audioContext.close().catch(() => {});
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser(); analyser.fftSize = 256;
+    audioContext.createMediaStreamSource(stream).connect(analyser);
+    const values = new Uint8Array(analyser.frequencyBinCount);
+    const tick = () => {
+      analyser.getByteFrequencyData(values);
+      const average = values.reduce((sum, value) => sum + value, 0) / values.length;
+      $('micLevel').style.width = `${Math.min(100, average * 1.6)}%`;
+      animationFrame = requestAnimationFrame(tick);
+    }; tick();
+  }
+
+  function stopAll(reason = 'user-stop') {
+    if (animationFrame) cancelAnimationFrame(animationFrame); animationFrame = null;
+    streams.forEach(stream => stream.getTracks().forEach(track => track.stop())); streams.clear();
+    if (audioContext) audioContext.close().catch(() => {}); audioContext = null;
+    $('micLevel').style.width = '0%'; $('cameraPreview').srcObject = null; $('cameraPreview').style.display = 'none';
+    receipt('ACTIVE_ROUTES', 'CLOSED', {reason}); diagnose(`Active HTML routes closed: ${reason}.`);
+  }
+
+  window.jmStopAllCapabilities = stopAll;
+  window.jmNativePermissionEvent = nativeReceipt => {
+    receipts.push({source:'native-shell', ...nativeReceipt});
+    $('log').textContent = JSON.stringify(receipts, null, 2);
+    if (nativeReceipt.capability && nativeReceipt.result) setState(nativeReceipt.capability, nativeReceipt.result);
+    diagnose(`${nativeReceipt.event}: ${nativeReceipt.result}${nativeReceipt.recovery ? ` · Recovery: ${nativeReceipt.recovery}` : ''}`);
+  };
+
+  window.jmNativeCapabilitySnapshot = payload => {
+    $('api').textContent = payload.android_api;
+    const catalogue = Array.from(payload.catalogue || []);
+    $('mountedCount').textContent = catalogue.filter(item => item.mounted).length;
+    catalogue.forEach(item => setState(item.id, item.state));
+    if (payload.special) Object.entries(payload.special).forEach(([id,state]) => setState(id,state));
+    $('unmountedList').innerHTML = catalogue.filter(item => !item.mounted).map(item =>
+      `<p><strong>${escapeHtml(item.title)}</strong> · <span class="route">${escapeHtml(item.route)}</span><br>${escapeHtml(item.purpose)}<br><span class="tiny">Recovery/mount rule: ${escapeHtml(item.recovery)}</span></p>`
+    ).join('');
+    receipt('CAPABILITY_SNAPSHOT', 'RECEIVED', {androidApi:payload.android_api, entries:catalogue.length});
+  };
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]));
+  }
+
+  document.querySelectorAll('[data-media]').forEach(button => button.addEventListener('click', () => openMedia(button.dataset.media)));
+  document.querySelectorAll('[data-stop]').forEach(button => button.addEventListener('click', () => stopAll('user-stop')));
+  document.querySelectorAll('[data-request]').forEach(button => button.addEventListener('click', () => post('request', button.dataset.request)));
+  document.querySelectorAll('[data-picker]').forEach(button => button.addEventListener('click', () => post('picker', button.dataset.picker)));
+  document.querySelectorAll('[data-special]').forEach(button => button.addEventListener('click', () => post('special', button.dataset.special)));
+
+  $('locationButton').addEventListener('click', () => {
+    if (!navigator.geolocation) { diagnose('Geolocation API unavailable.'); receipt('GEOLOCATION','UNAVAILABLE'); return; }
+    diagnose('Location request travelling through the shell…'); receipt('GEOLOCATION','STARTED');
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const accuracy = Math.round(position.coords.accuracy);
+        $('locationResult').textContent = `Received a foreground location fix with approximately ${accuracy} m accuracy. Coordinates are deliberately not written into the visible ledger.`;
+        setState('location','LOCATION_FIX_RECEIVED'); receipt('GEOLOCATION','FIX_RECEIVED',{accuracyMetres:accuracy}); diagnose('Location route completed.');
+      },
+      error => { $('locationResult').textContent = `${error.code}: ${error.message}`; setState('location','DENIED_OR_FAILED'); receipt('GEOLOCATION','FAILED',{code:error.code,message:error.message}); diagnose(`Location failed: ${error.message}`); },
+      {enableHighAccuracy:false,timeout:12000,maximumAge:0}
+    );
+  });
+
+  $('refresh').addEventListener('click', () => post('status'));
+  $('settings').addEventListener('click', () => post('open_app_settings'));
+  $('clear').addEventListener('click', () => post('clear_ledger'));
+  $('copy').addEventListener('click', async () => {
+    const text = JSON.stringify(receipts, null, 2);
+    try { await navigator.clipboard.writeText(text); diagnose('Session receipts copied.'); }
+    catch (_) { const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();diagnose('Session receipts copied.'); }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden && streams.size) stopAll('page-hidden'); });
+
+  if (bridgeAvailable) post('status');
+  else diagnose('Browser diagnostic mode: native-only buttons will record an expected unavailable route.');
+})();
+</script>
+</body>
+</html>

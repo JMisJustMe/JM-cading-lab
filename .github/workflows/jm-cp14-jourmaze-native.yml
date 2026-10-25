@@ -1,0 +1,70 @@
+name: JM CP14 JourMaze evidence-grounded native contact routes
+on:
+  pull_request:
+    paths:
+      - 'coding-estate/integration/codegornization-cp14/**'
+      - '.github/workflows/jm-cp14-jourmaze-native.yml'
+      - 'registry/build-routes/JM_CP14_JOURMAZE_NATIVE_ROUTE_BUILD_ROUTE_MANIFEST_v0.1.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compute-proof-routes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Recover frozen JudgeMaker actual executor
+        run: |
+          echo 'f0dbce602b239e84c415350d16675127b27d771842b5cd12819432fee874dde6  coding-estate/integration/codegornization-cp12/donors/JM_JudgeMaker.html' | sha256sum -c -
+          node --check coding-estate/integration/codegornization-cp12/adjudicate-native.mjs
+      - name: Verify exact original JangleMonitor and inspect new original executor
+        run: |
+          echo 'cdb57ae2376e219f253b2f57382d11d4b378b305c408a6468d6757d2a9e88302  coding-estate/integration/codegornization-cp13/donors/JM_JangleMonitor.html' | sha256sum -c -
+          node --check coding-estate/integration/codegornization-cp13/monitor-native.mjs
+      - name: Verify actual original JourMaze code before native route
+        run: |
+          echo '56c5ff4f76a222eb32d6b01d955ed0fe45d5389e5c14cba12f8e7618157545db  coding-estate/integration/codegornization-cp14/donors/JM_JourMaze.html' | sha256sum -c -
+          node --check coding-estate/integration/codegornization-cp14/route-native.mjs
+      - name: Inherit original CP10 build-stage KO execution and native recipient
+        run: |
+          node coding-estate/integration/codegornization-cp10/prepare-native.mjs
+          cp coding-estate/integration/codegornization-cp12/native/cp12_native_return.gd coding-estate/integration/codegornization-cp10/godot/tests/cp12_native_return.gd
+          curl -fL --retry 2 https://github.com/godotengine/godot-builds/releases/download/4.5.2-stable/Godot_v4.5.2-stable_linux.x86_64.zip -o /tmp/godot.zip
+          echo '87f6e6be292929e363d15ed9052f277b2ba4e95ed994e1e099048097be2dfd03  /tmp/godot.zip' | sha256sum -c -
+          mkdir -p /tmp/jmcp12godot
+          unzip -q /tmp/godot.zip -d /tmp/jmcp12godot
+          chmod +x /tmp/jmcp12godot/Godot_v4.5.2-stable_linux.x86_64
+          echo /tmp/jmcp12godot >> "$GITHUB_PATH"
+      - name: Execute actual native CP10 and generate actual CP12 consequence receipt
+        run: |
+          set -euo pipefail
+          mkdir -p coding-estate/integration/codegornization-cp12/evidence
+          Godot_v4.5.2-stable_linux.x86_64 --headless --path coding-estate/integration/codegornization-cp10/godot --editor --import --quit > coding-estate/integration/codegornization-cp12/evidence/native-import.log 2>&1
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path coding-estate/integration/codegornization-cp10/godot --script res://tests/cp10_ko_contact_test.gd > coding-estate/integration/codegornization-cp12/evidence/inherited-cp10.log 2>&1
+          export CP12_NATIVE_RETURN_PATH="$PWD/coding-estate/integration/codegornization-cp12/evidence/native-ko-return.json"
+          timeout 60s Godot_v4.5.2-stable_linux.x86_64 --headless --path coding-estate/integration/codegornization-cp10/godot --script res://tests/cp12_native_return.gd > coding-estate/integration/codegornization-cp12/evidence/cp12-native.log 2>&1
+          test -s "$CP12_NATIVE_RETURN_PATH"
+      - name: Original JudgeMaker independent verdict + adversarial HOLDs
+        run: |
+          node coding-estate/integration/codegornization-cp12/adjudicate-native.mjs coding-estate/integration/codegornization-cp12/evidence/native-ko-return.json
+      - name: Original JangleMonitor independent identity boundary over actual native return
+        run: |
+          node coding-estate/integration/codegornization-cp13/monitor-native.mjs
+      - name: Execute exact original JourMaze route grammar on admissible native evidence
+        run: |
+          node coding-estate/integration/codegornization-cp14/route-native.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jm-cp14-original-jourmaze-native-evidence-proof-routes
+          path: |
+            coding-estate/integration/codegornization-cp12/evidence/
+            coding-estate/integration/codegornization-cp13/evidence/
+            coding-estate/integration/codegornization-cp14/evidence/
+          retention-days: 30

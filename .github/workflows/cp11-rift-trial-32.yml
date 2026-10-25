@@ -1,0 +1,49 @@
+name: CP11 Rift Trial — 32 Independent Real WebGL Contacts
+on:
+  push:
+    paths:
+      - 'engine/demo/cp11-rift-trial-v0.4.html'
+      - 'tests/cp11-rift-32.mjs'
+      - '.github/workflows/cp11-rift-trial-32.yml'
+permissions:
+  contents: read
+jobs:
+  webgl-contact:
+    name: "Real WebGL contact ${{ matrix.case_index }} / 31"
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        case_index: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned real Three.js plus Chromium driver
+        run: npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund three@0.180.0 playwright-core@1.56.0
+      - name: Execute independent hardware-agnostic real WebGL scenario
+        env:
+          CASE_INDEX: ${{ matrix.case_index }}
+        run: node tests/cp11-rift-32.mjs
+      - name: Preserve scene framebuffer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cp11-rift-contact-${{ matrix.case_index }}
+          path: cp11-evidence/cp11-rift-case-*.png
+          if-no-files-found: ignore
+  thirty-two-contact-ding:
+    name: "32 / 32 CP11 contact gate"
+    if: ${{ always() }}
+    needs: webgl-contact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Distinguish green 32-run fanout from partial/failure
+        env:
+          MATRIX_RESULT: ${{ needs.webgl-contact.result }}
+        run: |
+          test "$MATRIX_RESULT" = success
+          echo 'CP11 32/32 independent real-WebGL matrix jobs succeeded.'

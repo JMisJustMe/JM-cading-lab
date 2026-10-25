@@ -22,7 +22,7 @@ Preserve original named JM coding bodies, version identities, operational heads,
 
 **Checkpoint A tally (GitHub tree at `1af58026ae124d39ae500bb6d4e6f7dd5945c44b`, 2026-10-25):** **164 original source/script files**: 61 `Sovereign Coding Bodies/` + 41 `Games/` + 8 `Game Engines/` + 37 `Coding/` + 13 `Coding Systems/` + 3 `Coding Estate/` + 1 `Coding - Language - Runtime - OS/`. Plus **4 supporting records**: this `README.md`, `Sovereign Coding Bodies/00_OPEN_FIRST_JM_CODING_ECOSYSTEM_CURRENT.md`, and two original JSON manifests (100-Body Federation, 32_Cb). The recursive Git tree has `truncated: false`; 168/168 imported paths have nonzero blob sizes (13,410,661 bytes total). These counts describe **the bounded GitHub import**, not coverage of the whole Library. Selected representative source files were read back against Library-read source text; full Library-to-GitHub byte-for-byte equality is **HOLD**. Source presence does not prove native execution or cross-body contact.
 
-## Current verified import — Checkpoint B (2026-10-25)
+## Verified import — Checkpoint B (2026-10-25)
 
 **GitHub tree at `de82a0a29adf5ca373ab577f019a7f50d4ef8097`:** 173 files beneath `JM_ESTATE_SOURCE/`, comprising **169 original source/script files** and **4 supporting records**. All 173 Git blobs have nonzero byte sizes; recursive tree `truncated: false`. Source-family counts: 61 Sovereign Coding Bodies; 41 Games; 8 Game Engines; 37 Coding; 13 Coding Systems; 3 Coding Estate; 1 Coding - Language - Runtime - OS; **5 Code, OS & Runtime**. Total imported Git blob payload at this checkpoint: **13,536,318 bytes**.
 
@@ -36,7 +36,21 @@ Five exact Library originals were newly imported after Checkpoint A. Each was fe
 | `Code, OS & Runtime/CodeHand/OPEN_FIRST_JM_CODE_HAND_JS_CPP_BRIDGE_v0_2_ANDROID_INLINE.html` | 14,203 | `f5f041d6d825899b0c3d6bcf4201b776e8722d66` |
 | `Code, OS & Runtime/JM Actual Engine/JM_ACTUAL_ENGINE_v12_0_PORTRAIT_LIVING_VISUAL_ENGINE_FINAL_GOLD.html` | 31,846 | `6761b0f5b8d645f4a671ebe746a89037ad1f33d2` |
 
-**Evidence boundary:** five exact original-to-GitHub byte identities **PASS**. The remaining source population has not all been compared against raw originals. An earlier attempted read of `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_1.html` was incomplete and that source remains **HOLD / unimported**. GitHub custody of the listed files does **not** mean native execution, typed transport, cross-body consequences, or device acceptance. Whole-Estate recovery remains **HOLD**; exclude secrets, binary artifacts and uninspected ZIP interiors from public publication.
+**Evidence boundary:** five exact original-to-GitHub byte identities **PASS**. The remaining source population has not all been compared against raw originals. At this checkpoint, an attempted read of `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_1.html` was incomplete; the subsequent Checkpoint C below resolves this HOLD with exact original blob verification. GitHub custody of the listed files does **not** mean native execution, typed transport, cross-body consequences, or device acceptance. Whole-Estate recovery remains **HOLD**; exclude secrets, binary artifacts and uninspected ZIP interiors from public publication.
+
+## Current verified import — Checkpoint C (2026-10-25)
+
+**GitHub tree at `2f8823eabc06f6c0c6c4910ee1f7e45f8ad38b19`:** **172 original source/script files + 4 supporting records = 176 nonempty Git files** in `JM_ESTATE_SOURCE/`. Recursive Git tree `truncated: false`; total file payload **13,871,875 bytes** at this pinned commit. The `Code, OS & Runtime/` family now contributes **8** original source files. The earlier source-family counts remain unchanged: 61 Sovereign Coding Bodies; 41 Games; 8 Game Engines; 37 Coding; 13 Coding Systems; 3 Coding Estate; 1 Coding - Language - Runtime - OS.
+
+In addition to the five exact originals in Checkpoint B, these three previously omitted large original files have now been imported **byte-for-byte** from ChatGPT Library. Raw Library bytes were independently checked with Git blob SHA-1; line-window chunks were reassembled with their missing boundary newlines; the reconstructed blobs were verified against the raw file hash **before** committing; every GitHub source file was then fetched back and matched the original hash.
+
+| Preserved additional source under `JM_ESTATE_SOURCE/Code, OS & Runtime/` | Raw size (bytes) | Verified original/GitHub blob SHA-1 |
+| --- | ---: | --- |
+| `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_1.html` | 102,977 | `cc862ebfa8a9da8f79d15e97486eadc3a5357484` |
+| `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_2.html` | 127,124 | `384de88eb16157e377c38ccb2196969eef731e3f` |
+| `00_OPEN_FIRST_JM_COMPILED_DEVICE_BODY_v0_7J_NATIVE.html` | 102,981 | `6b5615e6fe956429380b462380d66eed403e241d` |
+
+**Bounded proof:** **8/8 newly imported original files** in Checkpoints B+C have exact source-to-GitHub Git blob identity and post-write readback. This is **not** 172/172 independent original comparisons, complete ZIP-content recovery, execution proof, native parity, or a claim that the whole Estate has been transferred. Source inventory and safe transfer remain in progress; no changes to `main`.
 
 ## Import boundaries and HOLDs
 
